@@ -10,6 +10,9 @@ export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './re
 export { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 export type { AgentOutput, RunOptions, RunResult } from './runner.js';
 
+export { applyEdit, resolvePolicy } from './editor.js';
+export type { EditContext, EditResult } from './editor.js';
+
 export {
   buildAgentContext,
   buildAgentPrompt,

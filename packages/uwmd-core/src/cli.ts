@@ -11,6 +11,9 @@ import { compact, diff } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
+import { applyEdit } from './editor.js';
+import type { EditContext } from './editor.js';
+import type { EditOperation } from './protocol.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
@@ -400,6 +403,45 @@ switch (command) {
     console.log('');
     break;
 
+  case 'edit': {
+    if (!positional[0] || !positional[1]) {
+      console.error('Usage: uwmd edit <file> <operation.json> [--actor <name>] [--source <pattern>] [--agent-id <id>] [--agent-version <v>] [--confidence high|medium|low] [--output <file>]');
+      process.exit(1);
+    }
+    const fileContent = readFile(positional[0]);
+    const opJson = readFile(positional[1]);
+    let op: EditOperation;
+    try {
+      op = JSON.parse(opJson) as EditOperation;
+    } catch (err) {
+      console.error(`Could not parse operation JSON: ${err}`);
+      process.exit(1);
+    }
+    const parsedFile = parseUWFile(fileContent);
+    const ctx: EditContext = {
+      actor: (flags['actor'] as string | undefined) ?? 'system',
+      source: (flags['source'] as string | undefined) ?? 'manual',
+      agentId: (flags['agent-id'] as string | undefined) ?? null,
+      agentVersion: (flags['agent-version'] as string | undefined) ?? null,
+      confidence: (flags['confidence'] as 'high' | 'medium' | 'low' | undefined) ?? 'medium',
+    };
+    const result = applyEdit(fileContent, parsedFile, op, ctx);
+    if (!result.ok || !result.content) {
+      console.error(`Edit rejected: [${result.error?.code}] ${result.error?.message}`);
+      if (result.error?.pointer) console.error(`  pointer: ${result.error.pointer}`);
+      process.exit(1);
+    }
+    const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(positional[0]);
+    writeFileSync(outPath, result.content, 'utf-8');
+    const summary = op.kind === 'frontmatter_set'
+      ? `frontmatter.${op.path}`
+      : op.kind === 'pipeline_log_append'
+        ? 'pipeline_log entry'
+        : `${op.section_id} v${result.newVersion}${result.supersededPriorBlock ? ' [superseded prior]' : ''}`;
+    console.log(`Applied ${op.kind} (${summary}) → ${basename(outPath)}`);
+    break;
+  }
+
   case 'init':
     cmdInit(flags);
     break;
@@ -418,6 +460,7 @@ Commands:
   validate <file>              Run all validation checks
   render   <file>              Render to output format (see --format)
   run      <file>              Invoke a Bancroft agent (see --agent)
+  edit     <file> <op.json>    Apply an EditOperation (Tier-2)
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
   init                         Generate a blank .uw.md file
@@ -443,6 +486,11 @@ Options:
   --api-key <k>      Anthropic API key (run --live, or use ANTHROPIC_API_KEY)
   --model <m>        Claude model (run --live, default: claude-sonnet-4-6)
   --instructions <i> Extra instructions for the agent (run --live)
+  --actor <n>        Actor name for the edit (edit, default: system)
+  --source <s>       _meta.source pattern (edit, default: manual)
+  --agent-id <id>    Agent identifier when source is agent/* (edit)
+  --agent-version <v>Agent semver (edit)
+  --confidence <c>   Confidence level for new block: high|medium|low (edit)
 `);
     process.exit(0);
 }
