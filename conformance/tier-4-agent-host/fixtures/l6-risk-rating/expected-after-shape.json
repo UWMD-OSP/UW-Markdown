@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmarkdown.org/conformance/tier-4/l6-risk-rating/expected-after-shape",
+  "title": "L6 Risk Rating — post-run shape assertion",
+  "description": "Shape contract for the `.uw.md` file after L6 runs against before.uw.md. Validates the parsed file (frontmatter + sections) — not the raw markdown bytes. Use the conformance runner with --tier=4 to apply this against a live agent run.",
+  "type": "object",
+  "required": ["frontmatter", "sections"],
+  "properties": {
+    "frontmatter": {
+      "type": "object",
+      "required": ["uw_version", "deal_id", "last_modified"],
+      "properties": {
+        "uw_version": { "const": "1.1" },
+        "deal_id": { "const": "TEST-T4-001" },
+        "deal_stage": { "const": "credit_approval" },
+        "last_modified": {
+          "type": "string",
+          "description": "MUST be updated by the host after the L6 edit per §V.4."
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "required": ["property", "risk_assessment"],
+      "properties": {
+        "property": {
+          "type": "object",
+          "description": "Upstream context — must remain present and unmodified by L6."
+        },
+        "risk_assessment": {
+          "type": "object",
+          "required": ["section_id", "_meta", "content"],
+          "properties": {
+            "section_id": { "const": "risk_assessment" },
+            "_meta": {
+              "type": "object",
+              "required": ["section_id", "version", "source", "agent_id", "agent_version", "actor", "timestamp", "confidence"],
+              "properties": {
+                "section_id": { "const": "risk_assessment" },
+                "version": { "type": "integer", "minimum": 1 },
+                "superseded": { "type": "boolean" },
+                "source": { "const": "agent" },
+                "agent_id": {
+                  "type": "string",
+                  "pattern": "^L6"
+                },
+                "agent_version": { "type": "string" },
+                "actor": { "type": "string" },
+                "timestamp": { "type": "string", "format": "date-time" },
+                "confidence": { "enum": ["low", "medium", "high"] },
+                "human_review_required": { "type": "boolean" },
+                "flags": { "type": "array" }
+              }
+            },
+            "content": {
+              "type": "object",
+              "required": ["overall_rating", "risk_score", "key_risks"],
+              "properties": {
+                "overall_rating": {
+                  "enum": ["low", "moderate", "elevated", "high", "severe"]
+                },
+                "risk_score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10
+                },
+                "key_risks": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": ["category", "severity", "description"],
+                    "properties": {
+                      "category": { "type": "string" },
+                      "severity": { "enum": ["low", "moderate", "high", "critical"] },
+                      "description": { "type": "string", "minLength": 1 }
+                    }
+                  }
+                },
+                "mitigants": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "rationale": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "pipelineLog": {
+      "type": "array",
+      "description": "If present, the L6 run SHOULD append at least one entry per §V.5.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "agent_id": { "type": "string" },
+          "ts": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -28,5 +28,13 @@ fixtures/<scenario-id>/
 
 | Scenario | Tests |
 |---|---|
-| `revpar-basic` | RevPAR = adr × occupancy with literal inputs |
-| `dscr-from-section` | DSCR derived by deepGet path resolution |
+| `revpar-basic` | RevPAR = adr × occupancy with literal inputs from `quick_metrics` |
+| `dscr-from-section` | DSCR derived by deepGet path resolution across `noi_model` and `debt_structure` sections |
+
+Run via:
+
+```bash
+node scripts/run-conformance.mjs --tier=3
+```
+
+Comparison strips the volatile `evaluated_at` timestamp from `expected-result.json`.

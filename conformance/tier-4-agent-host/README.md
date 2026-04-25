@@ -32,3 +32,18 @@ fixtures/<scenario-id>/
 | Scenario | Layer | Validates |
 |---|---|---|
 | `l6-risk-rating` | L6 | Layer produces a `risk_assessment` section with `overall_rating`, `risk_score`, and `key_risks`; pipeline log gets a new entry; existing sections are unchanged. |
+
+## Running
+
+Tier 4 is **operator-driven**, not part of CI — LLM calls cost money and
+are nondeterministic. The reference runner ships a lint-only pass that
+parses each `before.uw.md` and validates each `expected-after-shape.json`
+as a well-formed JSON Schema:
+
+```bash
+node scripts/run-conformance.mjs --tier=4
+```
+
+Live agent runs against the shape are out of scope for the reference runner;
+hosts validate their own post-run files against the shape using `ajv` or
+equivalent.

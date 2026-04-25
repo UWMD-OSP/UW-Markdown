@@ -1,10 +1,10 @@
 ---
 uw_version: "1.1"
-deal_id: TEST-MIN-001
-deal_name: "Minimal Screening Fixture"
+deal_id: TEST-T2-002
+deal_name: "Section Replace Fixture"
 created: "2026-01-15T10:00:00Z"
 last_modified: "2026-01-15T10:00:00Z"
-property_address: "100 Test Lane"
+property_address: "300 Test Boulevard"
 city: "Phoenix"
 state: "AZ"
 zip: "85001"
@@ -14,23 +14,11 @@ status: under_review
 recommendation: pending
 quick_metrics:
   purchase_price: 10000000
-  loan_amount: 7500000
-  noi_underwritten: 600000
-  dscr: 1.25
-  ltv: 0.75
-  debt_yield: 0.08
-  cap_rate: 0.06
-  equity_required: 2500000
 flags: []
 blocking_flags: []
 tier: screener
 created_by: "test-fixture"
 ---
-
-# Minimal Screening Fixture
-
-This is the smallest possible conformant file at the screening stage —
-property and quick_metrics only.
 
 ```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=medium
 {
@@ -53,16 +41,7 @@ property and quick_metrics only.
   "content": {
     "total_units": 50,
     "year_built": 1995,
-    "building_class": "B",
-    "asset_subtype": "garden",
-    "total_nra_sqft": 45000,
-    "land_area_acres": 2.1,
-    "stories": 2,
-    "parking_spaces": 75,
-    "parking_type": "surface",
-    "zoning": "R-3",
-    "condition": "good",
-    "amenities": ["pool", "laundry"]
+    "building_class": "B"
   },
   "_notes": null
 }

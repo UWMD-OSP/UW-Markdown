@@ -1,0 +1,7 @@
+{
+  "id": "implied_dscr",
+  "label": "DSCR (NOI / annual debt service)",
+  "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+  "unit": "x",
+  "deterministic": true
+}

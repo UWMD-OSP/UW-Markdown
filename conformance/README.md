@@ -29,10 +29,37 @@ conformance/
 2. For each tier you claim, run every fixture in that tier through your tool.
 3. Compare your output to the corresponding `expected/` output.
 
-**Tiers 1–3 use byte-exact comparison** (after JSON canonicalization where
-applicable). **Tier 4 uses shape assertions** — LLM nondeterminism makes byte
-equality impractical, so the expected output is a JSON Schema fragment
-describing the shape of an acceptable agent response.
+**Tiers 1–3 use byte-exact comparison** (after JSON canonicalization and
+volatile-field stripping where applicable). **Tier 4 uses shape assertions** —
+LLM nondeterminism makes byte equality impractical, so the expected output is
+a JSON Schema fragment describing the shape of an acceptable agent response.
+
+## Running the reference test runner
+
+The reference implementation ships a runner at
+[`scripts/run-conformance.mjs`](../scripts/run-conformance.mjs) that exercises
+the corpus against `@uwmd/core`. CI runs tiers 1–3 on every PR.
+
+```bash
+# Default: tiers 1, 2, 3
+node scripts/run-conformance.mjs
+
+# Specific tiers
+node scripts/run-conformance.mjs --tier=1,3
+
+# Tier 4 is operator-driven (lint-only — does not invoke an LLM)
+node scripts/run-conformance.mjs --tier=4
+
+# Bootstrap / refresh expected outputs from the current library
+node scripts/run-conformance.mjs --update
+
+# Machine-readable output
+node scripts/run-conformance.mjs --json
+```
+
+Volatile fields stripped before byte comparison: `last_modified`,
+`_meta.timestamp`, `ts=` fence attributes. These change every run and are
+not normative.
 
 ## Adding a fixture
 

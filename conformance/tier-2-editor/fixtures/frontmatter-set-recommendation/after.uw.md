@@ -1,17 +1,17 @@
 ---
 uw_version: "1.1"
-deal_id: TEST-MIN-001
-deal_name: "Minimal Screening Fixture"
+deal_id: TEST-T2-001
+deal_name: "Tier-2 Editor Fixture"
 created: "2026-01-15T10:00:00Z"
-last_modified: "2026-01-15T10:00:00Z"
-property_address: "100 Test Lane"
+last_modified: "<volatile>"
+property_address: "200 Test Avenue"
 city: "Phoenix"
 state: "AZ"
 zip: "85001"
 asset_class: multifamily
 deal_stage: screening
 status: under_review
-recommendation: pending
+recommendation: "approve"
 quick_metrics:
   purchase_price: 10000000
   loan_amount: 7500000
@@ -27,12 +27,11 @@ tier: screener
 created_by: "test-fixture"
 ---
 
-# Minimal Screening Fixture
+# Tier-2 Editor Fixture
 
-This is the smallest possible conformant file at the screening stage —
-property and quick_metrics only.
+A minimal file used to exercise EditOperation dispatch.
 
-```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=medium
+```json uw:section=property source=manual ts=<volatile> v=1 confidence=medium
 {
   "section_id": "property",
   "_meta": {
@@ -43,7 +42,7 @@ property and quick_metrics only.
     "agent_id": null,
     "agent_version": null,
     "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
+    "timestamp": "<volatile>",
     "confidence": "medium",
     "human_review_required": false,
     "flags": [],
@@ -53,16 +52,7 @@ property and quick_metrics only.
   "content": {
     "total_units": 50,
     "year_built": 1995,
-    "building_class": "B",
-    "asset_subtype": "garden",
-    "total_nra_sqft": 45000,
-    "land_area_acres": 2.1,
-    "stories": 2,
-    "parking_spaces": 75,
-    "parking_type": "surface",
-    "zoning": "R-3",
-    "condition": "good",
-    "amenities": ["pool", "laundry"]
+    "building_class": "B"
   },
   "_notes": null
 }

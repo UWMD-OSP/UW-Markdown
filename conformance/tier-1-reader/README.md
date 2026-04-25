@@ -34,3 +34,13 @@ For each fixture `<id>.uw.md`, the corresponding `expected/` directory contains:
 A conforming Tier-1 Reader does not need to match the `rendered-*` outputs
 byte-for-byte (different presentations are encouraged), but its parse output
 MUST canonicalize to the same `<id>.parsed.json`.
+
+## Running
+
+```bash
+node scripts/run-conformance.mjs --tier=1
+```
+
+The reference runner compares a canonical projection of the parse output
+(`{ frontmatter, sections, pipelineLog, customCalculations, customScenarios, extensions }`)
+after stripping volatile fields (`last_modified`, `_meta.timestamp`).

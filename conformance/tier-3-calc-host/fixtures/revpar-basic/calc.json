@@ -1,0 +1,7 @@
+{
+  "id": "revpar",
+  "label": "Revenue per Available Room",
+  "formula": "quick_metrics.adr * quick_metrics.occupancy",
+  "unit": "$",
+  "deterministic": true
+}

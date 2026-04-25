@@ -1,0 +1,10 @@
+{
+  "kind": "section_supersede",
+  "section_id": "risk_assessment",
+  "content": {
+    "overall_rating": "elevated",
+    "risk_score": 7,
+    "key_risks": ["market softening", "concentration", "rate environment"],
+    "review_notes": "Updated post-rate-shock analysis."
+  }
+}

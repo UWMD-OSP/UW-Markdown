@@ -1,0 +1,10 @@
+{
+  "kind": "section_replace",
+  "section_id": "property",
+  "content": {
+    "total_units": 60,
+    "year_built": 1995,
+    "building_class": "B+",
+    "renovated_year": 2022
+  }
+}

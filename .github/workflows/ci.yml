@@ -34,12 +34,8 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Verify conformance fixtures parse
-        run: |
-          for f in conformance/tier-1-reader/fixtures/*.uw.md; do
-            echo "Parsing $f"
-            node packages/uwmd-core/dist/cli.js parse "$f" > /dev/null
-          done
+      - name: Run conformance suite (tiers 1-3)
+        run: node scripts/run-conformance.mjs --tier=1,2,3
 
   validate-schema:
     name: Validate module manifest JSON Schema
