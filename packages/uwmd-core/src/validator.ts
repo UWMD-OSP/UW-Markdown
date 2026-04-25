@@ -11,6 +11,36 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
+import { BUILTIN_REMEDIATIONS } from './protocol.js';
+import type { IssueRemediation } from './protocol.js';
+
+// ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
+//
+// Validator constructs inline messages with deal-specific values, but the
+// registry provides canonical title/remediation/spec_ref copy keyed by code.
+// `lookupRemediation` is also exported from the package index so module
+// authors can extend the registry uniformly.
+
+const REMEDIATION_INDEX: Readonly<Record<string, IssueRemediation>> = (() => {
+  const idx: Record<string, IssueRemediation> = {};
+  for (const r of BUILTIN_REMEDIATIONS) idx[r.code] = r;
+  return Object.freeze(idx);
+})();
+
+export function lookupRemediation(code: string): IssueRemediation | undefined {
+  return REMEDIATION_INDEX[code];
+}
+
+function enrichWithRemediation(msg: ValidationMessage): ValidationMessage {
+  const reg = REMEDIATION_INDEX[msg.code];
+  if (!reg) return msg;
+  return {
+    ...msg,
+    title: msg.title ?? reg.title,
+    remediation: msg.remediation ?? reg.remediation,
+    spec_ref: msg.spec_ref ?? reg.spec_ref,
+  };
+}
 
 // ─── Stage completeness requirements (spec §5.1) ──────────────────────────────
 
@@ -35,6 +65,11 @@ export function validateUWFile(
   checkFinancialValidity(parsed, thresholds, issues);
   checkCrossSectionConsistency(parsed, issues);
   checkMetaIntegrity(parsed, issues);
+
+  // Enrich every issue with BUILTIN_REMEDIATIONS title/remediation/spec_ref
+  // when the code matches the registry. Keeps inline messages (which carry
+  // deal-specific values) and adds canonical remediation copy.
+  for (let i = 0; i < issues.length; i++) issues[i] = enrichWithRemediation(issues[i]!);
 
   const errors = issues.filter(i => i.severity === 'error');
   const warnings = issues.filter(i => i.severity === 'warning');

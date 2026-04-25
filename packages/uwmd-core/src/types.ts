@@ -153,6 +153,12 @@ export interface ValidationMessage {
   message: string;
   value?: unknown;
   threshold?: { min?: number; max?: number };
+  /** Short title from BUILTIN_REMEDIATIONS, when a matching registry entry exists. */
+  title?: string;
+  /** Imperative remediation copy from BUILTIN_REMEDIATIONS, when available. */
+  remediation?: string;
+  /** Spec section anchor for deep-linking, when available. */
+  spec_ref?: string;
 }
 
 export interface StageReadiness {

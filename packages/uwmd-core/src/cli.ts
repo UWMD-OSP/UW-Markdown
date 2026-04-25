@@ -13,7 +13,8 @@ import { render } from './renderer.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
 import type { EditContext } from './editor.js';
-import type { EditOperation } from './protocol.js';
+import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
+import { evaluateCalc } from './calc/index.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
@@ -442,6 +443,45 @@ switch (command) {
     break;
   }
 
+  case 'calc': {
+    if (!positional[0] || !positional[1]) {
+      console.error('Usage: uwmd calc <file> <calc.json|formula>');
+      process.exit(1);
+    }
+    const fileContent = readFile(positional[0]!);
+    const parsed = parseUWFile(fileContent);
+
+    // Second arg is either a JSON file path or a raw formula string.
+    let decls: ModuleCalcDecl[];
+    const argTwo = positional[1]!;
+    if (existsSync(resolve(argTwo))) {
+      const raw = JSON.parse(readFileSync(resolve(argTwo), 'utf-8'));
+      decls = Array.isArray(raw) ? raw : [raw];
+    } else {
+      decls = [{ id: 'inline', label: 'inline', formula: argTwo, deterministic: true }];
+    }
+
+    const ctx: CalcEvaluationContext = {
+      parsed,
+      prior_results: {},
+      locale: 'en-US',
+    };
+
+    const results = decls.map((d) => evaluateCalc(d, ctx));
+    for (const r of results) {
+      if (r.ok) {
+        console.log(`${r.calc_id} = ${r.display ?? String(r.value)}`);
+      } else {
+        console.log(`${r.calc_id} ERROR [${r.error?.code}] ${r.error?.message}`);
+      }
+    }
+    if (flags['json']) {
+      console.log(JSON.stringify(results, null, 2));
+    }
+    if (results.some((r) => !r.ok)) process.exit(1);
+    break;
+  }
+
   case 'init':
     cmdInit(flags);
     break;
@@ -463,6 +503,7 @@ Commands:
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
+  calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uw.md file
   summary  <file>              Print quick metrics to terminal
   layers                       List Bancroft agent layers

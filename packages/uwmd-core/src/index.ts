@@ -2,7 +2,7 @@
 // Public API surface
 
 export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
-export { validateUWFile } from './validator.js';
+export { validateUWFile, lookupRemediation } from './validator.js';
 export { compact, diff } from './compactor.js';
 export { render } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
@@ -12,6 +12,9 @@ export type { AgentOutput, RunOptions, RunResult } from './runner.js';
 
 export { applyEdit, resolvePolicy } from './editor.js';
 export type { EditContext, EditResult } from './editor.js';
+
+export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
+export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 
 export {
   buildAgentContext,
