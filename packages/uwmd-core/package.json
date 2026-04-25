@@ -1,0 +1,44 @@
+{
+  "name": "@uwmd/core",
+  "version": "1.0.0",
+  "description": "Reference implementation of the UW Markdown standard — parser, validator, renderer, and CLI for .uw.md underwriting files.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "directory": "packages/uwmd-core"
+  },
+  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "uwmd": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "parse": "node dist/cli.js parse",
+    "validate": "node dist/cli.js validate",
+    "summary": "node dist/cli.js summary"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.91.1"
+  }
+}

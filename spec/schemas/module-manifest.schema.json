@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/module-manifest.schema.json",
+  "title": "UW Markdown Module Manifest",
+  "description": "Declarative manifest for a UW Markdown module. Modules extend the standard 21 sections with asset-class-specific schemas, calculations, validations, view models, and agent layer prompts. Modules in v1 are declarative-only — formulas use a safe-expression language; no executable code. Mirrors the TypeScript ModuleManifest type in @uwmd/core/protocol.ts.",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "id",
+    "name",
+    "version",
+    "description",
+    "authors",
+    "license",
+    "requires_protocol",
+    "requires_format",
+    "requires_tier"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "const": "1",
+      "description": "Manifest schema version. Always '1' for protocol v1."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+      "minLength": 3,
+      "maxLength": 128,
+      "description": "Stable identifier. Reverse-DNS recommended (e.g. 'org.uwmd.hospitality')."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Human-readable module name."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+      "description": "Module semver."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "authors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier (e.g. 'MIT', 'Apache-2.0').",
+      "minLength": 1
+    },
+    "requires_protocol": {
+      "type": "string",
+      "description": "Semver range against the UW Protocol version (e.g. '>=1.0.0 <2.0.0' or '^1')."
+    },
+    "requires_format": {
+      "type": "string",
+      "description": "Semver range against the .uw.md format version."
+    },
+    "requires_tier": {
+      "type": "string",
+      "enum": ["tier-1-reader", "tier-2-editor", "tier-3-calc-host", "tier-4-agent-host"],
+      "description": "Minimum host tier required to load this module. A module with custom calculations requires at least tier-3-calc-host."
+    },
+    "asset_classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "multifamily", "office", "retail", "industrial", "self_storage",
+          "hospitality", "mixed_use", "senior_housing", "student_housing", "land"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Asset classes this module is intended for. Omit to indicate the module is class-agnostic."
+    },
+    "deal_stages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "screening", "term_sheet", "full_underwrite",
+          "credit_approval", "closing", "monitoring"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "sections": {
+      "type": "array",
+      "description": "Custom or extended section declarations. v1 cannot declare new asset_class values, but can extend existing standard sections with additional optional fields, or add module-namespaced sections.",
+      "items": {
+        "type": "object",
+        "required": ["id", "display_name", "schema"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "display_name": { "type": "string", "minLength": 1 },
+          "schema": {
+            "type": "object",
+            "description": "JSON Schema fragment for the section content. Validated by the calc host on load."
+          },
+          "required": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, the host treats this section as mandatory for the declared deal_stages."
+          }
+        }
+      }
+    },
+    "calculations": {
+      "type": "array",
+      "description": "Custom calculations contributed by this module. Each is a safe-expression formula evaluated by a Tier-3 calc host.",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "formula", "deterministic"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "label": { "type": "string", "minLength": 1 },
+          "formula": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL_v1.md §VIII.1."
+          },
+          "unit": {
+            "type": "string",
+            "description": "Display unit (e.g. '%', '$', 'x')."
+          },
+          "deterministic": {
+            "type": "boolean",
+            "description": "MUST be true in v1. Reserved for v2 stochastic calcs."
+          }
+        }
+      }
+    },
+    "validations": {
+      "type": "array",
+      "description": "Cross-section consistency rules contributed by this module.",
+      "items": {
+        "type": "object",
+        "required": ["code", "severity", "message", "rule"],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,8}-[A-Z0-9-]+$",
+            "description": "Module-namespaced validation code (e.g. 'CC-MOD-HOSP-01')."
+          },
+          "severity": { "type": "string", "enum": ["error", "warning", "info"] },
+          "message": { "type": "string", "minLength": 1 },
+          "rule": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Safe-expression returning boolean. true = passes; false = emits the message."
+          }
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "description": "Partial override of FinancialThresholds defaults. Only properties present are overridden.",
+      "additionalProperties": true
+    },
+    "view_models": {
+      "type": "array",
+      "description": "Per-section view-model overrides. Replaces BUILTIN_VIEW_MODELS entries for matching section_id.",
+      "items": {
+        "type": "object",
+        "required": ["section_id", "display_name", "display_order", "description", "primary_fields"],
+        "additionalProperties": false,
+        "properties": {
+          "section_id": { "type": "string" },
+          "display_name": { "type": "string" },
+          "display_order": { "type": "integer", "minimum": 0 },
+          "description": { "type": "string" },
+          "primary_fields": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/fieldViewHint" }
+          },
+          "detail_fields": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/fieldViewHint" }
+          },
+          "multi_variant": { "type": "boolean" }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "Free-form host-specific UI hints. Hosts MAY ignore unrecognized keys.",
+      "additionalProperties": true
+    },
+    "agent_layers": {
+      "type": "array",
+      "description": "Bancroft-style agent layer declarations contributed by this module.",
+      "items": {
+        "type": "object",
+        "required": ["id", "reads", "writes", "prompt_template"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^L\\d+(?:_[a-z_]+)?$" },
+          "reads": { "type": "array", "items": { "type": "string" } },
+          "writes": { "type": "array", "items": { "type": "string" } },
+          "prompt_template": {
+            "type": "string",
+            "description": "Template body for the layer's system prompt. Placeholders use {{ section.field }} syntax resolved by the agent host."
+          }
+        }
+      }
+    },
+    "depends_on": {
+      "type": "array",
+      "description": "Other modules this one requires. The host MUST refuse to load if a dependency is missing or version-incompatible.",
+      "items": {
+        "type": "object",
+        "required": ["id", "version"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "version": {
+            "type": "string",
+            "description": "Semver range."
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "fieldViewHint": {
+      "type": "object",
+      "required": ["path", "label", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Dot-path within the section's content, resolved via parser.deepGet."
+        },
+        "label": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["currency", "percent", "ratio", "count", "date", "string", "enum", "list"]
+        },
+        "primary": { "type": "boolean" },
+        "unit": { "type": "string" },
+        "decimals": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "enum": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

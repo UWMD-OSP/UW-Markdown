@@ -1,0 +1,140 @@
+# CRE DEAL CONTEXT — Parkview Apartments — Glendale, AZ
+FILE FORMAT: .uw.md v1.1 | DEAL ID: uw_2026_a3f9b1
+ADDRESS: 1234 W Camelback Rd, Glendale AZ 85301
+ASSET CLASS: multifamily | STAGE: full_underwrite | STATUS: in_progress
+RECOMMENDATION: pending
+LAST MODIFIED: 2026-04-24T15:42:00Z
+
+## KEY METRICS
+Purchase Price: $7,200,000 | Loan: $5,040,000 | Equity: $2,400,000
+NOI (UW): $396,635 | DSCR: 1.109x | LTV: 70.00%
+Cap Rate: 5.51% | Debt Yield: 7.87% | IRR (levered): 6.30%
+
+## PIPELINE STATE
+L0_ingestion: complete | L1_screening: complete | L2_underwriting: complete | L4_structuring: complete | L5_compliance: in_progress | L6_risk: pending | L7_assembly: pending
+
+## FLAGS
+Active: dscr_warning_amortizing, loss_to_lease_present
+Blocking: none
+
+## DEAL CONTEXT
+THESIS: Owner-operated asset with 6.8% loss-to-lease. Management replacement + lease-up to market rents over 18 months without capital outlay. Infill submarket with positive population growth and limited new supply at this price point.
+RATIONALE: Estate sale — motivated seller, clean title, no major deferred maintenance flagged in preliminary walk. LOI accepted at $7.2M after 3 weeks of marketing.
+VALUE CREATION: Replace property management (current PM charges 10% — benchmark is 5.5%). Execute lease renewals at market rents through natural turnover. No renovation capex required on units themselves — common areas recently updated by seller.
+HOLD STRATEGY: long_term_hold
+SPECIAL CIRCUMSTANCES: Estate sale. Current owner is out-of-state heir, not a sophisticated real estate operator. Management is month-to-month with a local PM firm. Seller wants clean close — no seller financing, no contingencies beyond standard DD.
+IDENTIFIED RISKS: DSCR compresses to ~1.11x once IO period ends — tight if NOI doesn't grow as projected; Loss-to-lease means current income understates potential but also means leases are stale and renewal risk exists; Phoenix metro supply pipeline is elevated for 2026-2027 — may pressure rent growth in year 2; Seller's T-12 prepared by management company, not CPA — expenses may be understated
+IDENTIFIED OPPORTUNITIES: Management fee reduction from 10% to 5.5% adds ~$19k NOI immediately; Natural turnover at 25-30%/yr means rents can reach market within 18-24 months without buyouts; Submarket has <5% vacancy — strong renter demand provides cushion on lease-up timing
+
+USER NARRATIVE:
+# Parkview Apartments — Glendale, AZ
+
+> **Deal ID:** uw_2026_a3f9b1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress — Full Underwrite  
+> **48 Units** | **1987 Vintage** | **$7,200,000 Purchase** | **$150,000/Unit** | **5.51% Cap Rate**
+
+---
+
+## Deal Context {#deal_context}
+
+Parkview is a 48-unit garden-style multifamily in the Camelback corridor of Glendale, AZ — a stable, infill westside Phoenix submarket with consistent renter demand driven by proximity to State Farm Stadium, Banner Health campuses, and the Westgate entertainment district. The property has been owner-operated for 14 years with below-market rents and deferred professional management, which is exactly the inefficiency that creates the buy opportunity here.
+
+The thesis is straightforward: acquire at a realistic in-place yield, replace management, push rents toward market over the first 18 months through natural turnover, and hold for 5 years as the submarket continues to absorb population growth from Phoenix metro expansion. No heavy value-add capital required — this is an income play with a moderate rent-growth kicker, not a repositioning.
+
+The owner is motivated — estate sale situation, wants a clean close. LOI accepted at $7.2M. 45-day due diligence, 30-day close. We are competing against one other buyer who is likely financing through a local bank.
+
+## PROPERTY
+Units: 48 | Built: 1987 | Renovated: 2023
+Class: B | Condition: average_good | Subtype: garden_style
+NRA: 41400 sqft | Land: 1.8 acres | Stories: 2
+Parking: 72 spaces (surface) | Zoning: R-3 Multi-Family Residential
+Deferred Maintenance Est: $0
+Amenities: laundry_room, pool, covered_parking_partial, leasing_office
+
+## NOI MODEL (high confidence)
+GPR: n/a
+Vacancy Loss: n/a (n/a)
+Other Income: n/a
+EGI: n/a
+Total OpEx: n/a
+NOI: $396,635
+OpEx Ratio: n/a
+
+## DEBT STRUCTURE
+Loan: $5,040,000 | Type: conventional
+Rate: 5.88% | Term: 5yr | Am: 30yr
+IO Period: 12 months | Recourse: partial
+DSCR (IO): n/a | DSCR (amortizing): n/a
+LTV: n/a | Debt Yield: n/a
+Annual DS: $357,612 | Monthly DS: $29,801
+
+## VALUATION
+Purchase Price: $7,200,000
+UW Value: n/a
+Appraised Value: n/a (n/a)
+Going-in Cap: n/a
+Price/Unit: n/a | Price/SF: n/a
+
+## DCF / HOLD PERIOD
+Hold: 5 years
+Exit Cap: 6.00%
+Rent Growth: n/a/yr
+Levered IRR: n/a | Unlevered IRR: n/a
+Equity Multiple: n/ax
+Exit Value: n/a
+
+### Annual Cash Flows
+  Yr1: NOI=$396,635 | NCF(L)=$100,535
+  Yr2: NOI=$409,705 | NCF(L)=$52,093
+  Yr3: NOI=$423,197 | NCF(L)=$65,585
+  Yr4: NOI=$437,124 | NCF(L)=$79,512
+  Yr5: NOI=$451,499 | NCF(L)=$93,887
+
+## SOURCES & USES
+Total Sources: n/a | Total Uses: n/a
+Loan: n/a | Equity: n/a
+Purchase: $7,200,000 | Closing Costs: n/a | Reserves: n/a
+
+## MARKET ANALYSIS
+
+---
+
+## Market Analysis {#market_analysis}
+
+The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter market with vacancy below the Phoenix metro average. Rent growth has moderated from 2021–2022 peaks but remains positive at ~3% annually. New supply pipeline is concentrated in the Scottsdale and Tempe corridors — not meaningful competition at this price point. Cap rates for B-class multifamily in this submarket have stabilized in the 5.25–5.75% range after the 2023–2024 corr…
+
+## BORROWER / SPONSOR
+Name: n/a
+Net Worth: n/a | Liquidity: n/a
+Experience: n/a yrs | Prior Deals: n/a
+Credit Score: n/a
+
+## VALIDATION ISSUES
+[WARNING] FV_DSCR_BELOW_THRESHOLD (debt_structure): DSCR 1.1090 is below warning threshold of 1.2
+
+## CUSTOM CALCULATIONS
+True All-In Yield: 0.0533 pct — NOI divided by (purchase_price + closing_costs + reserves)
+Loan Constant: 0.071 pct — Annual debt service divided by loan amount
+
+## CUSTOM SCENARIOS
+scen_001 (upside): IRR=7.10% EM=1.4x DSCR=n/a
+
+## STRESS TEST RESULTS
+base_case: DSCR=n/a IRR=n/a Pass=n/a
+mild_stress: DSCR=n/a IRR=n/a Pass=n/a
+moderate_stress: DSCR=n/a IRR=n/a Pass=n/a
+severe_stress: DSCR=n/a IRR=n/a Pass=n/a
+
+## RISK ASSESSMENT
+Overall Rating: n/a
+Risk Score: n/a
+Key Risks: 
+
+## PIPELINE LOG (recent)
+2026-04-24T11:10:00 engine:dcfEngine.ts → engine_run [success]
+2026-04-24T11:16:00 engine:financialValidityChecker → validation [success]
+2026-04-24T12:30:00 agent:L2-CRE-07 → agent_run [success]
+2026-04-24T14:10:00 user:jared → user_edit [success]
+2026-04-24T14:20:00 user:jared → user_edit [success]
+
+---
+Deal ID: uw_2026_a3f9b1 | .uw.md format v1.1 | This file is the canonical underwriting record for this deal.

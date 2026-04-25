@@ -1,0 +1,58 @@
+name: Bug report
+description: A defect in @uwmd/core, the CLI, or a starter tool.
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Spec ambiguities go in the *Spec question* template instead.
+
+  - type: input
+    id: package
+    attributes:
+      label: Package or tool
+      description: Which package, CLI command, or tool is affected?
+      placeholder: "@uwmd/core, uwmd CLI (parse), tools/web-viewer, etc."
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `npm ls @uwmd/core` or the commit SHA you're on.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Minimal steps to reproduce. A small `.uw.md` snippet that triggers the bug is ideal.
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include error messages, stack traces, or unexpected output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Node version, OS, anything else relevant.
+      placeholder: |
+        Node: 20.10.0
+        OS: macOS 14.4

@@ -1,0 +1,38 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-MIN-001",
+    "deal_name": "Minimal Screening Fixture",
+    "created": "2026-01-15T10:00:00Z",
+    "last_modified": "2026-01-15T10:00:00Z",
+    "property_address": "100 Test Lane",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "multifamily",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "quick_metrics": {
+      "purchase_price": 10000000,
+      "loan_amount": 7500000,
+      "noi_underwritten": 600000,
+      "dscr": 1.25,
+      "ltv": 0.75,
+      "debt_yield": 0.08,
+      "cap_rate": 0.06,
+      "equity_required": 2500000
+    },
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "screener",
+    "created_by": "test-fixture"
+  },
+  "sections": {},
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

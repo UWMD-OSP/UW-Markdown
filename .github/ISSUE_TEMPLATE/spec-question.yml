@@ -1,0 +1,46 @@
+name: Spec question or proposal
+description: A question, ambiguity, or proposed change to UW_FORMAT_SPEC_v1.md, UW_PROTOCOL_v1.md, or the JSON schemas.
+labels: ["spec", "needs-discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Spec changes are higher-stakes than code changes because third parties build on top of these documents. Please be thorough.
+
+  - type: dropdown
+    id: spec
+    attributes:
+      label: Which spec?
+      options:
+        - "UW_FORMAT_SPEC_v1.md (the file format)"
+        - "UW_PROTOCOL_v1.md (the implementer contract)"
+        - "module-manifest.schema.json"
+        - "Cross-cutting / not sure"
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: Section or paragraph
+      description: e.g. "§4.7 Operating Statement", "Part V.3", "schema property `calculations[].deterministic`".
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question or ambiguity
+      description: What's unclear, missing, or contradictory in the current spec?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed clarification or change (optional)
+      description: If you have a specific edit in mind, paste the proposed text or describe the change.
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility impact (if proposing a change)
+      description: Does this break existing implementers? If so, what's the deprecation path?

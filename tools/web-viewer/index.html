@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UW Markdown — Reference Viewer</title>
+<style>
+  :root {
+    --bg: #0e1014;
+    --panel: #161a21;
+    --panel-2: #1d222b;
+    --border: #262d39;
+    --text: #e6e8ec;
+    --muted: #8a93a3;
+    --accent: #4ea1ff;
+    --good: #5ad17a;
+    --warn: #f0b65c;
+    --bad: #ef6f6c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+         background: var(--bg); color: var(--text); }
+  header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+  header h1 { margin: 0; font-size: 16px; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 12px; }
+  main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+  .drop { border: 2px dashed var(--border); border-radius: 12px; padding: 48px; text-align: center; color: var(--muted);
+          transition: border-color .15s, background .15s; cursor: pointer; }
+  .drop.hover { border-color: var(--accent); background: rgba(78, 161, 255, .06); }
+  .drop input[type=file] { display: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 24px; }
+  .chip { background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
+  .chip strong { color: var(--text); margin-right: 6px; }
+  .chip.flag-blocking { color: var(--bad); border-color: rgba(239, 111, 108, .4); }
+  .chip.flag-warning  { color: var(--warn); border-color: rgba(240, 182, 92, .4); }
+  .chip.flag-good     { color: var(--good); border-color: rgba(90, 209, 122, .4); }
+  .deal-name { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .deal-addr { color: var(--muted); margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .card-head { padding: 12px 16px; display: flex; align-items: baseline; justify-content: space-between;
+               border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .card-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
+  .card-head .desc { color: var(--muted); font-size: 12px; margin-left: 8px; }
+  .card-head .toggle { color: var(--muted); font-size: 11px; }
+  .card-body { padding: 12px 16px; display: none; background: var(--panel-2); }
+  .card.open .card-body { display: block; }
+  .primary { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 16px; background: var(--panel-2); }
+  .metric { display: flex; flex-direction: column; gap: 2px; min-width: 90px; }
+  .metric .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  .metric .value { font-size: 16px; font-weight: 600; }
+  .detail-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+  .detail-rows .label { color: var(--muted); }
+  .detail-rows .value { text-align: right; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; }
+  .panel h3 { margin: 0 0 12px; font-size: 14px; }
+  .issue { padding: 8px 10px; border-left: 3px solid var(--border); background: var(--panel-2);
+           border-radius: 4px; margin-bottom: 6px; font-size: 13px; }
+  .issue.error    { border-color: var(--bad); }
+  .issue.warning  { border-color: var(--warn); }
+  .issue.info     { border-color: var(--accent); }
+  .issue .code    { color: var(--muted); font-size: 11px; margin-right: 6px; }
+  .pipeline { display: flex; flex-wrap: wrap; gap: 12px; }
+  .pipeline .step { padding: 6px 10px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--border);
+                    font-size: 12px; color: var(--muted); }
+  .pipeline .step.complete { color: var(--good); border-color: rgba(90, 209, 122, .3); }
+  .pipeline .step.in_progress { color: var(--accent); border-color: rgba(78, 161, 255, .3); }
+  .pipeline .step.failed { color: var(--bad); border-color: rgba(239, 111, 108, .3); }
+  .footer { color: var(--muted); font-size: 11px; margin-top: 24px; text-align: center; }
+  .err { color: var(--bad); padding: 16px; background: rgba(239, 111, 108, .08); border-radius: 8px; border: 1px solid rgba(239, 111, 108, .3); }
+</style>
+</head>
+<body>
+<header>
+  <h1>UW Markdown</h1>
+  <span class="sub">Reference Tier-1 Viewer · drop a <code>.uw.md</code> file</span>
+</header>
+<main id="app">
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept=".md,.uwmd,.uw,.txt" />
+    <div><strong>Drop a .uw.md file here</strong> or click to choose</div>
+    <div style="margin-top:8px; font-size: 12px;">No upload — everything runs in your browser.</div>
+  </label>
+  <div id="content"></div>
+</main>
+
+<script type="module">
+// ─── Minimal inline .uw.md parser ─────────────────────────────────────────────
+// This is a Tier-1 reference parser. It implements just enough to display a
+// deal: frontmatter + uw fence blocks + prose. It is deliberately small so
+// readers can see how the format works end-to-end. For production use, prefer
+// @uwmd/core's parser.
+
+function parseFrontmatter(raw) {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  if (!m) return { frontmatter: {}, rest: raw };
+  const fm = parseYamlSubset(m[1]);
+  return { frontmatter: fm, rest: raw.slice(m[0].length) };
+}
+
+// Tiny YAML subset parser: scalars, mappings, sequences, basic nesting via indent.
+function parseYamlSubset(text) {
+  const lines = text.split(/\r?\n/);
+  const root = {};
+  const stack = [{ indent: -1, value: root }];
+
+  for (const line of lines) {
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    const indent = line.length - line.trimStart().length;
+    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
+    const parent = stack[stack.length - 1].value;
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith('- ')) {
+      const v = parseScalar(trimmed.slice(2));
+      if (Array.isArray(parent)) parent.push(v);
+      continue;
+    }
+    const colon = trimmed.indexOf(':');
+    if (colon < 0) continue;
+    const key = trimmed.slice(0, colon).trim();
+    const rest = trimmed.slice(colon + 1).trim();
+    if (rest === '') {
+      // Look ahead: does next non-empty line start with '-'? then array, else object
+      const next = lines.slice(lines.indexOf(line) + 1).find(l => l.trim() && !l.trim().startsWith('#'));
+      const isArr = next && next.trim().startsWith('- ');
+      const v = isArr ? [] : {};
+      parent[key] = v;
+      stack.push({ indent, value: v });
+    } else if (rest === '[]') {
+      parent[key] = [];
+    } else if (rest.startsWith('[') && rest.endsWith(']')) {
+      parent[key] = rest.slice(1, -1).split(',').map(s => parseScalar(s.trim())).filter(x => x !== '');
+    } else {
+      parent[key] = parseScalar(rest);
+    }
+  }
+  return root;
+}
+function parseScalar(s) {
+  if (s === '' || s === '~' || s === 'null') return null;
+  if (s === 'true') return true;
+  if (s === 'false') return false;
+  if (/^-?\d+$/.test(s)) return parseInt(s, 10);
+  if (/^-?\d*\.\d+$/.test(s)) return parseFloat(s);
+  if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) return s.slice(1, -1);
+  return s;
+}
+
+function parseUW(raw) {
+  const { frontmatter, rest } = parseFrontmatter(raw);
+  const sections = {};
+  const superseded = {};
+  const fenceRe = /```uw\b([^\n]*)\n([\s\S]*?)\n```/g;
+  let m;
+  while ((m = fenceRe.exec(rest)) !== null) {
+    const annot = parseAnnotation(m[1]);
+    let content;
+    try { content = JSON.parse(m[2]); } catch (e) { continue; }
+    const sectionId = annot.section || (content && content._meta && content._meta.section);
+    if (!sectionId) continue;
+    const block = { annotation: annot, meta: content._meta || {}, content };
+    if (annot.superseded || (content._meta && content._meta.superseded)) {
+      (superseded[sectionId] ??= []).push(block);
+    } else if (annot.variant) {
+      (sections[sectionId] ??= {})[annot.variant] = block;
+    } else {
+      sections[sectionId] = block;
+    }
+  }
+  return { frontmatter, sections, superseded, raw };
+}
+
+function parseAnnotation(line) {
+  const out = {};
+  const re = /uw:([a-z_]+)=(\S+)/g;
+  let m;
+  while ((m = re.exec(line)) !== null) {
+    const k = m[1], v = m[2];
+    out[k] = v === 'true' ? true : v === 'false' ? false : /^\d+$/.test(v) ? parseInt(v, 10) : v;
+  }
+  return out;
+}
+
+// ─── Display rules (port of @uwmd/core/format.ts) ─────────────────────────────
+const NULL_DISPLAY = 'n/a';
+function fmtCurrency(v) { return v == null || !isFinite(+v) ? NULL_DISPLAY : '$' + Number(v).toLocaleString('en-US'); }
+function fmtPercent(v, dec = 2) { return v == null || !isFinite(+v) ? NULL_DISPLAY : (Number(v) * 100).toFixed(dec) + '%'; }
+function fmtRatio(v, dec = 3, suffix = 'x') { return v == null || !isFinite(+v) ? NULL_DISPLAY : Number(v).toFixed(dec) + suffix; }
+function fmtCount(v) { return v == null ? NULL_DISPLAY : String(Math.trunc(Number(v))); }
+function fmtString(v) { return v == null ? NULL_DISPLAY : String(v); }
+function fmtList(v) { return Array.isArray(v) && v.length ? v.join(', ') : NULL_DISPLAY; }
+function fmtField(value, kind, decimals) {
+  if (kind === 'currency') return fmtCurrency(value);
+  if (kind === 'percent')  return fmtPercent(value, decimals ?? 2);
+  if (kind === 'ratio')    return fmtRatio(value, decimals ?? 3);
+  if (kind === 'count')    return fmtCount(value);
+  if (kind === 'list')     return fmtList(value);
+  return fmtString(value);
+}
+function deepGet(obj, path) {
+  return path.split('.').reduce((cur, p) => cur == null ? cur : cur[p], obj);
+}
+
+// ─── BUILTIN_VIEW_MODELS (a subset; see protocol.ts for the canonical list) ───
+const VIEW_MODELS = {
+  property: { name: 'Property', order: 0, primary: [
+    ['total_units', 'Units', 'count'], ['year_built', 'Built', 'count'],
+    ['building_class', 'Class', 'string'], ['asset_subtype', 'Subtype', 'string'],
+  ], detail: [
+    ['year_renovated', 'Renovated', 'count'], ['total_nra_sqft', 'NRA (sqft)', 'count'],
+    ['land_area_acres', 'Land (acres)', 'ratio', 2], ['parking_spaces', 'Parking', 'count'],
+    ['zoning', 'Zoning', 'string'], ['amenities', 'Amenities', 'list'],
+  ]},
+  noi_model: { name: 'NOI Model', order: 1, primary: [
+    ['net_operating_income', 'NOI', 'currency'], ['effective_gross_income', 'EGI', 'currency'],
+    ['total_operating_expenses', 'OpEx', 'currency'], ['opex_ratio', 'OpEx Ratio', 'percent'],
+  ]},
+  debt_structure: { name: 'Debt', order: 2, primary: [
+    ['loan_amount', 'Loan', 'currency'], ['interest_rate', 'Rate', 'percent'],
+    ['dscr', 'DSCR', 'ratio'], ['ltv', 'LTV', 'percent'],
+  ], detail: [
+    ['loan_term_years', 'Term (yrs)', 'count'], ['amortization_years', 'Amortization (yrs)', 'count'],
+    ['debt_yield', 'Debt Yield', 'percent'], ['annual_debt_service', 'Annual DS', 'currency'],
+  ]},
+  valuation: { name: 'Valuation', order: 3, primary: [
+    ['purchase_price', 'Purchase Price', 'currency'],
+    ['underwritten_value', 'UW Value', 'currency'],
+    ['going_in_cap_rate', 'Going-in Cap', 'percent'],
+    ['price_per_unit', 'Price/Unit', 'currency'],
+  ]},
+  dcf: { name: 'DCF', order: 4, primary: [
+    ['levered_irr', 'Levered IRR', 'percent'],
+    ['levered_equity_multiple', 'Equity Multiple', 'ratio'],
+    ['assumptions.hold_period_years', 'Hold (yrs)', 'count'],
+    ['assumptions.exit_cap_rate', 'Exit Cap', 'percent'],
+  ]},
+  market_analysis: { name: 'Market', order: 5, primary: [
+    ['msa', 'MSA', 'string'], ['market_vacancy_rate', 'Vacancy', 'percent'],
+    ['average_asking_rent', 'Asking Rent', 'currency'],
+  ]},
+  borrower_sponsor: { name: 'Sponsor', order: 6, primary: [
+    ['name', 'Name', 'string'], ['net_worth', 'Net Worth', 'currency'],
+    ['liquidity', 'Liquidity', 'currency'], ['years_experience', 'Experience (yrs)', 'count'],
+  ]},
+  risk_assessment: { name: 'Risk Assessment', order: 7, primary: [
+    ['overall_rating', 'Rating', 'string'], ['risk_score', 'Score', 'count'],
+    ['key_risks', 'Key Risks', 'list'],
+  ]},
+};
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function el(tag, attrs = {}, children = []) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v;
+    else if (k === 'onclick') e.onclick = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of [].concat(children)) {
+    if (c == null) continue;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  return e;
+}
+
+function renderDeal(parsed) {
+  const fm = parsed.frontmatter;
+  const root = document.createDocumentFragment();
+  root.appendChild(el('h2', { class: 'deal-name' }, fm.deal_name || 'Untitled Deal'));
+  root.appendChild(el('p', { class: 'deal-addr' },
+    [fm.property_address, fm.city, fm.state, fm.zip].filter(Boolean).join(', ')
+  ));
+
+  const chips = el('div', { class: 'chips' });
+  if (fm.deal_stage)     chips.appendChild(el('span', { class: 'chip' }, [el('strong', {}, 'Stage'), fm.deal_stage]));
+  if (fm.asset_class)    chips.appendChild(el('span', { class: 'chip' }, [el('strong', {}, 'Class'), fm.asset_class]));
+  if (fm.recommendation) chips.appendChild(el('span', { class: 'chip' }, [el('strong', {}, 'Recommendation'), fm.recommendation]));
+  if (fm.status)         chips.appendChild(el('span', { class: 'chip' }, [el('strong', {}, 'Status'), fm.status]));
+  const bcount = (fm.blocking_flags || []).length;
+  const fcount = (fm.flags || []).length;
+  if (bcount > 0) chips.appendChild(el('span', { class: 'chip flag-blocking' }, `${bcount} blocking flag${bcount > 1 ? 's' : ''}`));
+  if (fcount > 0) chips.appendChild(el('span', { class: 'chip flag-warning' }, `${fcount} flag${fcount > 1 ? 's' : ''}`));
+  root.appendChild(chips);
+
+  // Quick metrics summary
+  if (fm.quick_metrics) {
+    const qm = fm.quick_metrics;
+    const metrics = [
+      ['Purchase Price', fmtCurrency(qm.purchase_price)],
+      ['Loan', fmtCurrency(qm.loan_amount)],
+      ['NOI', fmtCurrency(qm.noi_underwritten)],
+      ['DSCR', fmtRatio(qm.dscr)],
+      ['LTV', fmtPercent(qm.ltv)],
+      ['Cap Rate', fmtPercent(qm.cap_rate)],
+      ['Debt Yield', fmtPercent(qm.debt_yield)],
+      ['IRR', fmtPercent(qm.irr_projected)],
+    ];
+    const primary = el('div', { class: 'panel' }, [
+      el('h3', {}, 'Quick Metrics'),
+      el('div', { class: 'primary' }, metrics.map(([l, v]) =>
+        el('div', { class: 'metric' }, [el('span', { class: 'label' }, l), el('span', { class: 'value' }, v)])
+      )),
+    ]);
+    root.appendChild(primary);
+  }
+
+  // Sections
+  const grid = el('div', { class: 'grid', style: 'margin-top: 16px;' });
+  const orderedIds = Object.keys(VIEW_MODELS).sort((a, b) => VIEW_MODELS[a].order - VIEW_MODELS[b].order);
+  for (const id of orderedIds) {
+    const block = parsed.sections[id];
+    if (!block) continue;
+    const content = block.content || {};
+    const vm = VIEW_MODELS[id];
+    const card = el('div', { class: 'card' });
+    const head = el('div', { class: 'card-head' }, [
+      el('div', {}, [el('h3', {}, vm.name)]),
+      el('span', { class: 'toggle' }, vm.detail ? '▾ details' : ''),
+    ]);
+    head.onclick = () => card.classList.toggle('open');
+    card.appendChild(head);
+    const primary = el('div', { class: 'primary' });
+    for (const [path, label, kind, decimals] of vm.primary) {
+      primary.appendChild(el('div', { class: 'metric' }, [
+        el('span', { class: 'label' }, label),
+        el('span', { class: 'value' }, fmtField(deepGet(content, path), kind, decimals)),
+      ]));
+    }
+    card.appendChild(primary);
+    if (vm.detail) {
+      const body = el('div', { class: 'card-body' });
+      const rows = el('div', { class: 'detail-rows' });
+      for (const [path, label, kind, decimals] of vm.detail) {
+        rows.appendChild(el('span', { class: 'label' }, label));
+        rows.appendChild(el('span', { class: 'value' }, fmtField(deepGet(content, path), kind, decimals)));
+      }
+      body.appendChild(rows);
+      card.appendChild(body);
+    }
+    grid.appendChild(card);
+  }
+  root.appendChild(grid);
+
+  // Pipeline
+  if (fm.pipeline_state) {
+    const panel = el('div', { class: 'panel' }, [
+      el('h3', {}, 'Pipeline'),
+      el('div', { class: 'pipeline' }, Object.entries(fm.pipeline_state).map(([k, v]) =>
+        el('span', { class: `step ${v}` }, `${k} · ${v}`)
+      )),
+    ]);
+    root.appendChild(panel);
+  }
+
+  // Flags
+  if ((fm.flags || []).length || (fm.blocking_flags || []).length) {
+    const panel = el('div', { class: 'panel' }, [el('h3', {}, 'Flags')]);
+    for (const f of (fm.blocking_flags || [])) panel.appendChild(el('div', { class: 'issue error' }, [el('span', { class: 'code' }, 'BLOCKING'), f]));
+    for (const f of (fm.flags || []))          panel.appendChild(el('div', { class: 'issue warning' }, [el('span', { class: 'code' }, 'FLAG'), f]));
+    root.appendChild(panel);
+  }
+
+  // Superseded summary
+  const supersededIds = Object.keys(parsed.superseded);
+  if (supersededIds.length) {
+    const panel = el('div', { class: 'panel' }, [
+      el('h3', {}, 'Supersede History'),
+      ...supersededIds.map(id => el('div', { class: 'issue info' },
+        `${id}: ${parsed.superseded[id].length} prior version${parsed.superseded[id].length > 1 ? 's' : ''}`
+      )),
+    ]);
+    root.appendChild(panel);
+  }
+
+  root.appendChild(el('div', { class: 'footer' },
+    `Deal ID: ${fm.deal_id || 'n/a'} · format v${fm.uw_version || '1.1'} · This is a reference Tier-1 viewer.`
+  ));
+  return root;
+}
+
+// ─── Wire up ─────────────────────────────────────────────────────────────────
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const content = document.getElementById('content');
+
+function loadText(text) {
+  content.innerHTML = '';
+  try {
+    const parsed = parseUW(text);
+    content.appendChild(renderDeal(parsed));
+  } catch (e) {
+    content.appendChild(el('div', { class: 'err' }, 'Parse failed: ' + e.message));
+  }
+}
+
+drop.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(loadText);
+});
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('hover'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('hover'); }));
+drop.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  f.text().then(loadText);
+});
+</script>
+</body>
+</html>

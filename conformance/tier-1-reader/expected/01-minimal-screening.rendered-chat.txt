@@ -1,0 +1,14 @@
+# CRE DEAL CONTEXT — Minimal Screening Fixture
+FILE FORMAT: .uw.md v1.1 | DEAL ID: TEST-MIN-001
+ADDRESS: 100 Test Lane, Phoenix AZ 85001
+ASSET CLASS: multifamily | STAGE: screening | STATUS: under_review
+RECOMMENDATION: pending
+LAST MODIFIED: 2026-01-15T10:00:00Z
+
+## KEY METRICS
+Purchase Price: $10,000,000 | Loan: $7,500,000 | Equity: $2,500,000
+NOI (UW): $600,000 | DSCR: 1.25x | LTV: 75.00%
+Cap Rate: 6.00% | Debt Yield: 8.00% | IRR (levered): n/a
+
+---
+Deal ID: TEST-MIN-001 | .uw.md format v1.1 | This file is the canonical underwriting record for this deal.
