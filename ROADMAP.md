@@ -17,11 +17,15 @@ or get reordered as we learn from adopters.
 
 ---
 
-## v1 release blockers
+## v1 release readiness
 
-Everything required to call the public release of v1 *credible* — i.e.
-every claim in the README is backed by a passing conformance fixture
-and a normative schema.
+Everything required to call the v1 release *credible* — i.e. every
+claim in the README is backed by a passing conformance fixture and a
+normative schema. **All shipped.** The repo can flip to public at any
+time on this surface alone; the actual flip is intentionally deferred
+until the tool ecosystem (see below) is broader, then kicked off via
+the [Pre-public-flip checklist](#pre-public-flip-checklist) at the
+bottom of this document.
 
 | Status | Item | Tracking |
 |---|---|---|
@@ -32,12 +36,11 @@ and a normative schema.
 | ✅ | JSON Schemas for the 6 boundary-crossing types + spec ordering / cross-ref fixes | commit `ae8ab6d` |
 | ✅ | Governance / OSS scaffolding (SECURITY/GOVERNANCE/MAINTAINERS/CODEOWNERS, RFC template) | commit `b8c97b8` |
 | ✅ | npm publish workflow on `v*` tag with provenance | commit `b8c97b8` |
-| 📋 | Repo rename to `uw-markdown` (matches `@uwmd` package scope and reads cleanly) | pre-flip |
-| 📋 | Public flip — switch repo from private to public + register `@uwmd` org on npm + add `NPM_TOKEN` secret | pre-flip |
 
 ## v1 follow-on tools
 
-These ship after the public flip. README already promises them — order
+Tool surface to grow before the public flip. None of these are blocked
+on going public — they ship into the private repo and wait. Order
 reflects effort vs. devex value.
 
 | Status | Item | Notes |
@@ -66,6 +69,21 @@ context. This list is the maintainable copy.
 | Conformance test runner v2 | Language-agnostic driver and reporter format so non-TS implementers don't write their own. | `scripts/run-conformance.mjs` is TS-only |
 | Stochastic calculations | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps). | Protocol §VIII |
 | Hospitality module | Reference module for the module system. Worked example sketched in protocol Appendix E. | `packages/uwmd-module-hospitality/` (planned) |
+
+## Pre-public-flip checklist
+
+The last thing that happens before the repo flips from private to
+public. Held until the tool surface (above) is broad enough to be
+worth shipping. Nothing else in the project is blocked on this — every
+preceding section can land in private.
+
+| Status | Item | Notes |
+|---|---|---|
+| 📋 | Repo rename to `uw-markdown` | Matches `@uwmd` package scope and reads cleanly. Update README clone URL, `package.json` `repository.url`, CHANGELOG compare link, and the `tools/web-editor` footer link in the same change. |
+| 📋 | Register `@uwmd` org on npm | Required before the release workflow can publish `@uwmd/core`. The `uwmd` package is unscoped and only needs the publisher to be the org owner. |
+| 📋 | Add `NPM_TOKEN` repo secret | Gates the publish step in `.github/workflows/release.yml`. |
+| 📋 | Tag and ship `v1.0.0` | First production publish of `@uwmd/core` and `uwmd`. Cuts the CHANGELOG `[Unreleased]` section. |
+| 📋 | Flip repo private → public | Final action. After this, `SECURITY.md` reporting is live; CodeQL/scanner reports may start arriving. |
 
 ## Permanently out of scope (v1)
 
