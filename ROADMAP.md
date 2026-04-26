@@ -30,10 +30,10 @@ and a normative schema.
 | ✅ | Validator wired to `BUILTIN_REMEDIATIONS` registry (no inline strings) | commit `137a858` |
 | ✅ | Conformance corpus filled (Tiers 1-4 fixtures) + runner gating tiers 1-3 in CI | commit `0536c67` |
 | ✅ | JSON Schemas for the 6 boundary-crossing types + spec ordering / cross-ref fixes | commit `ae8ab6d` |
-| 🚧 | Governance / OSS scaffolding (this file + SECURITY/GOVERNANCE/MAINTAINERS/CODEOWNERS, RFC template) | this PR |
-| 📋 | npm publish workflow on `v*` tag with provenance | Phase 4 |
-| 📋 | Repo rename to `uw-markdown` (matches `@uwmd` package scope and reads cleanly) | Phase 4 |
-| 📋 | Public flip — switch repo from private to public | Phase 4 |
+| ✅ | Governance / OSS scaffolding (SECURITY/GOVERNANCE/MAINTAINERS/CODEOWNERS, RFC template) | commit `b8c97b8` |
+| ✅ | npm publish workflow on `v*` tag with provenance | commit `b8c97b8` |
+| 📋 | Repo rename to `uw-markdown` (matches `@uwmd` package scope and reads cleanly) | pre-flip |
+| 📋 | Public flip — switch repo from private to public + register `@uwmd` org on npm + add `NPM_TOKEN` secret | pre-flip |
 
 ## v1 follow-on tools
 
@@ -42,7 +42,7 @@ reflects effort vs. devex value.
 
 | Status | Item | Notes |
 |---|---|---|
-| 📋 | VS Code extension | Lowest effort, highest devex value. Syntax highlight + section folding + on-save validation. |
+| ✅ | VS Code extension (preview 0.1.0) | `tools/vscode-uwmd/` — syntax highlight + section folding + document outline + on-save validation via `@uwmd/core`. |
 | 📋 | Documentation site | Docusaurus or VitePress. Renders `spec/`, `conformance/`, an interactive playground. |
 | 📋 | Tier-2 web editor | Built on the existing single-file viewer. Edit panels emit `EditOperation` JSON; applies via `applyEdit()`. |
 | 📋 | Excel ↔ `.uw.md` converter | Highest implementation cost. Define a "lossy converter" boundary explicitly. |

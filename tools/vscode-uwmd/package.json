@@ -1,0 +1,76 @@
+{
+  "name": "vscode-uwmd",
+  "displayName": "UW Markdown",
+  "description": "Syntax highlighting, section folding, and on-save validation for .uw.md underwriting files.",
+  "version": "0.1.0",
+  "publisher": "uwmd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "directory": "tools/vscode-uwmd"
+  },
+  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/tree/main/tools/vscode-uwmd",
+  "categories": ["Programming Languages", "Linters", "Formatters"],
+  "keywords": ["uwmd", "uw.md", "underwriting", "commercial real estate", "cre"],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:uwmd"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "uwmd",
+        "aliases": ["UW Markdown", "uwmd"],
+        "extensions": [".uw.md"],
+        "filenamePatterns": ["*.uw.md"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "uwmd",
+        "scopeName": "text.uwmd",
+        "path": "./syntaxes/uwmd.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.frontmatter.uwmd": "yaml",
+          "meta.embedded.block.json.uwmd": "json"
+        }
+      }
+    ],
+    "configuration": {
+      "title": "UW Markdown",
+      "properties": {
+        "uwmd.validate.onSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run @uwmd/core validation when a .uw.md file is saved and surface issues as diagnostics."
+        },
+        "uwmd.validate.onChange": {
+          "type": "boolean",
+          "default": false,
+          "description": "Re-validate while typing. Disabled by default — parsing on every keystroke can flicker for large files."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@uwmd/core": "file:../../packages/uwmd-core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.4.0"
+  }
+}

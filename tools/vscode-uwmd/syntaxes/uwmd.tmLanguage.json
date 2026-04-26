@@ -1,0 +1,131 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "UW Markdown",
+  "scopeName": "text.uwmd",
+  "fileTypes": ["uw.md"],
+  "patterns": [
+    { "include": "#frontmatter" },
+    { "include": "#fenced-uwmd-block" },
+    { "include": "#fenced-generic-block" },
+    { "include": "#heading" },
+    { "include": "#bold" },
+    { "include": "#italic" },
+    { "include": "#inline-code" },
+    { "include": "#link" },
+    { "include": "#list-marker" },
+    { "include": "#blockquote" },
+    { "include": "#html-comment" }
+  ],
+  "repository": {
+    "frontmatter": {
+      "begin": "\\A---\\s*$",
+      "end": "^---\\s*$",
+      "name": "markup.heading.frontmatter.uwmd",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.frontmatter.uwmd" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.frontmatter.uwmd" }
+      },
+      "patterns": [
+        {
+          "begin": "(?<=^---\\s*$)",
+          "end": "(?=^---\\s*$)",
+          "contentName": "meta.embedded.block.frontmatter.uwmd",
+          "patterns": [{ "include": "source.yaml" }]
+        }
+      ]
+    },
+    "fenced-uwmd-block": {
+      "begin": "^(\\s*)(```)\\s*(uwmd)(?:\\s+(json))?\\s*$",
+      "end": "^\\1(```)\\s*$",
+      "name": "markup.fenced_code.block.uwmd",
+      "beginCaptures": {
+        "2": { "name": "punctuation.definition.markdown.uwmd" },
+        "3": { "name": "fenced_code.block.language.uwmd" },
+        "4": { "name": "fenced_code.block.language.json.uwmd" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.markdown.uwmd" }
+      },
+      "patterns": [
+        {
+          "begin": "(?<=^```\\s*uwmd(?:\\s+json)?\\s*$)",
+          "end": "(?=^\\s*```\\s*$)",
+          "contentName": "meta.embedded.block.json.uwmd",
+          "patterns": [{ "include": "source.json" }]
+        }
+      ]
+    },
+    "fenced-generic-block": {
+      "begin": "^(\\s*)(```)\\s*([A-Za-z0-9_+-]+)?\\s*$",
+      "end": "^\\1(```)\\s*$",
+      "name": "markup.fenced_code.block.generic.uwmd",
+      "beginCaptures": {
+        "2": { "name": "punctuation.definition.markdown.uwmd" },
+        "3": { "name": "fenced_code.block.language.uwmd" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.markdown.uwmd" }
+      }
+    },
+    "heading": {
+      "match": "^(#{1,6})\\s+(.*?)\\s*$",
+      "captures": {
+        "1": { "name": "punctuation.definition.heading.uwmd" },
+        "2": { "name": "entity.name.section.uwmd markup.heading.uwmd" }
+      },
+      "name": "markup.heading.uwmd"
+    },
+    "bold": {
+      "match": "(\\*\\*)([^*\\n]+)(\\*\\*)",
+      "name": "markup.bold.uwmd",
+      "captures": {
+        "1": { "name": "punctuation.definition.bold.uwmd" },
+        "3": { "name": "punctuation.definition.bold.uwmd" }
+      }
+    },
+    "italic": {
+      "match": "(?<![*\\w])(\\*)([^*\\n]+?)(\\*)(?![*\\w])",
+      "name": "markup.italic.uwmd",
+      "captures": {
+        "1": { "name": "punctuation.definition.italic.uwmd" },
+        "3": { "name": "punctuation.definition.italic.uwmd" }
+      }
+    },
+    "inline-code": {
+      "match": "(`)([^`\\n]+)(`)",
+      "name": "markup.inline.raw.uwmd",
+      "captures": {
+        "1": { "name": "punctuation.definition.raw.uwmd" },
+        "3": { "name": "punctuation.definition.raw.uwmd" }
+      }
+    },
+    "link": {
+      "match": "(\\[)([^\\]\\n]+)(\\])(\\()([^)\\n]+)(\\))",
+      "name": "markup.underline.link.uwmd",
+      "captures": {
+        "2": { "name": "string.other.link.title.uwmd" },
+        "5": { "name": "markup.underline.link.uwmd" }
+      }
+    },
+    "list-marker": {
+      "match": "^\\s*([-*+]|\\d+\\.)\\s+",
+      "captures": {
+        "1": { "name": "punctuation.definition.list.uwmd" }
+      }
+    },
+    "blockquote": {
+      "match": "^\\s*(>)\\s*(.*)$",
+      "name": "markup.quote.uwmd",
+      "captures": {
+        "1": { "name": "punctuation.definition.quote.uwmd" }
+      }
+    },
+    "html-comment": {
+      "begin": "<!--",
+      "end": "-->",
+      "name": "comment.block.html.uwmd"
+    }
+  }
+}
