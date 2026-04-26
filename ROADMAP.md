@@ -54,21 +54,23 @@ reflects effort vs. devex value.
 
 ## v2 spec exploration
 
-Each item below opens as an RFC under `docs/rfcs/` once that process is
-in place. None are required for v1 conformance — they would constitute
-v2 of the protocol, the format, or both.
+Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
+None are required for v1 conformance — they constitute v2 of the
+protocol, the format, or both. RFCs are `draft` until the BDFL accepts;
+acceptance follows the 14-day comment window in
+[`GOVERNANCE.md`](./GOVERNANCE.md).
 
 Mirrored in `spec/UW_PROTOCOL_v1.md` §XIII so spec readers see them in
 context. This list is the maintainable copy.
 
-| Item | Why it matters | Anchor |
+| RFC | Item | Why it matters |
 |---|---|---|
-| Locale negotiation | v1 freezes formatting to `en-US`. International adopters need other locales. | `SupportedLocale` hook in `protocol.ts` |
-| Module signing | Sigstore-style signature on module manifests, verified by host policy. | Protocol §VII (Module System) |
-| Custom asset-class declarations from modules | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. | `types.ts` — `AssetClass` |
-| Conformance test runner v2 | Language-agnostic driver and reporter format so non-TS implementers don't write their own. | `scripts/run-conformance.mjs` is TS-only |
-| Stochastic calculations | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps). | Protocol §VIII |
-| Hospitality module | Reference module for the module system. Worked example sketched in protocol Appendix E. | `packages/uwmd-module-hospitality/` (planned) |
+| [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
+| [0002](./docs/rfcs/0002-module-signing.md)        | Module signing                                | Sigstore-style signature on module manifests, verified by host policy. |
+| [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |
+| [0004](./docs/rfcs/0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | `scripts/run-conformance.mjs` is TS-only — non-TS implementers can't self-certify against the same runner. |
+| [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
+| [0006](./docs/rfcs/0006-hospitality-module.md)    | Hospitality reference module                  | First real consumer of the module system. ADR/RevPAR/occupancy + STR-comp validations. |
 
 ## Pre-public-flip checklist
 
