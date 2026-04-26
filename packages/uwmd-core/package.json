@@ -27,7 +27,8 @@
     "test:watch": "vitest",
     "parse": "node dist/cli.js parse",
     "validate": "node dist/cli.js validate",
-    "summary": "node dist/cli.js summary"
+    "summary": "node dist/cli.js summary",
+    "prepublishOnly": "npm run build && npm test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

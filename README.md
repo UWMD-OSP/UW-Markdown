@@ -52,20 +52,11 @@ To open the reference web viewer, point any browser at
 
 ## Roadmap
 
-Planned starter tools (will live in `tools/` or `packages/`):
+The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights:
 
-- **Excel ↔ `.uw.md` converter** — round-trips deals between common Excel models and the format.
-- **Full-featured web editor** — Tier-2 conformance, free for any user.
-- **Standalone AI agents** — downloadable CLIs that wrap the agent host for analysts who don't write code.
-- **VS Code extension** — syntax highlighting, section folding, validation on save.
-- **Documentation site** — Docusaurus-based reference, hosted at the project's custom domain (TBD).
-
-Planned spec work:
-
-- Locale / i18n support (v1 freezes `en-US`).
-- Module signing.
-- Conformance test runner (corpus ships in v1; runner is v2).
-- Custom asset-class declarations from modules.
+- **v1 release blockers** — Tier-2/3 implementation, conformance runner, JSON Schemas, governance scaffolding (this PR), npm publish.
+- **v1 follow-on tools** — VS Code extension → docs site → web editor → Excel converter → standalone CLI.
+- **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/).
 
 ## Who's building on it
 
@@ -80,6 +71,14 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to file a spec change, add a
 conformance fixture, or propose a new tool.
 
 This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
+
+## Project documents
+
+- [ROADMAP.md](./ROADMAP.md) — what's planned, what's shipped, what's deferred.
+- [GOVERNANCE.md](./GOVERNANCE.md) — decision-making model and RFC process.
+- [MAINTAINERS.md](./MAINTAINERS.md) — current maintainers and areas of ownership.
+- [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
+- [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
 
 ## License
 

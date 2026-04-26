@@ -1,0 +1,86 @@
+# Roadmap
+
+The single source of truth for what's planned for UW Markdown. Work in
+the README "Planned" list and the protocol spec's §XIII "Future work"
+both feed back to this document.
+
+This roadmap is **directional**, not contractual. Items move, get cut,
+or get reordered as we learn from adopters.
+
+## Status legend
+
+- ✅ **Shipped** — landed and documented
+- 🚧 **In progress** — actively being worked on
+- 📋 **Next** — committed for the upcoming release
+- 💭 **Considered** — would be valuable; not yet committed
+- ❄ **Frozen** — explicitly deferred to a later major version
+
+---
+
+## v1 release blockers
+
+Everything required to call the public release of v1 *credible* — i.e.
+every claim in the README is backed by a passing conformance fixture
+and a normative schema.
+
+| Status | Item | Tracking |
+|---|---|---|
+| ✅ | Tier-2 Editor — `applyEdit()` dispatcher + `BUILTIN_EDIT_POLICIES` enforcement | commit `e947e2d` |
+| ✅ | Tier-3 Calc Host — safe-expression parser + evaluator + built-ins (`sum`, `pmt`, `npv`, `irr`, …) | commit `137a858` |
+| ✅ | Validator wired to `BUILTIN_REMEDIATIONS` registry (no inline strings) | commit `137a858` |
+| ✅ | Conformance corpus filled (Tiers 1-4 fixtures) + runner gating tiers 1-3 in CI | commit `0536c67` |
+| ✅ | JSON Schemas for the 6 boundary-crossing types + spec ordering / cross-ref fixes | commit `ae8ab6d` |
+| 🚧 | Governance / OSS scaffolding (this file + SECURITY/GOVERNANCE/MAINTAINERS/CODEOWNERS, RFC template) | this PR |
+| 📋 | npm publish workflow on `v*` tag with provenance | Phase 4 |
+| 📋 | Repo rename to `uw-markdown` (matches `@uwmd` package scope and reads cleanly) | Phase 4 |
+| 📋 | Public flip — switch repo from private to public | Phase 4 |
+
+## v1 follow-on tools
+
+These ship after the public flip. README already promises them — order
+reflects effort vs. devex value.
+
+| Status | Item | Notes |
+|---|---|---|
+| 📋 | VS Code extension | Lowest effort, highest devex value. Syntax highlight + section folding + on-save validation. |
+| 📋 | Documentation site | Docusaurus or VitePress. Renders `spec/`, `conformance/`, an interactive playground. |
+| 📋 | Tier-2 web editor | Built on the existing single-file viewer. Edit panels emit `EditOperation` JSON; applies via `applyEdit()`. |
+| 📋 | Excel ↔ `.uw.md` converter | Highest implementation cost. Define a "lossy converter" boundary explicitly. |
+| 💭 | Standalone CLI installer | `npx uwmd init` / `validate` / `run` for non-developers who don't want to clone. Mostly redundant once `@uwmd/core` is on npm. |
+| 💭 | `docs/CONFORMING_TOOLS.md` | Once adopters arrive — keeps the README from becoming a giant list. |
+
+## v2 spec exploration
+
+Each item below opens as an RFC under `docs/rfcs/` once that process is
+in place. None are required for v1 conformance — they would constitute
+v2 of the protocol, the format, or both.
+
+Mirrored in `spec/UW_PROTOCOL_v1.md` §XIII so spec readers see them in
+context. This list is the maintainable copy.
+
+| Item | Why it matters | Anchor |
+|---|---|---|
+| Locale negotiation | v1 freezes formatting to `en-US`. International adopters need other locales. | `SupportedLocale` hook in `protocol.ts` |
+| Module signing | Sigstore-style signature on module manifests, verified by host policy. | Protocol §VII (Module System) |
+| Custom asset-class declarations from modules | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. | `types.ts` — `AssetClass` |
+| Conformance test runner v2 | Language-agnostic driver and reporter format so non-TS implementers don't write their own. | `scripts/run-conformance.mjs` is TS-only |
+| Stochastic calculations | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps). | Protocol §VIII |
+| Hospitality module | Reference module for the module system. Worked example sketched in protocol Appendix E. | `packages/uwmd-module-hospitality/` (planned) |
+
+## Permanently out of scope (v1)
+
+Listed so we don't keep re-litigating these:
+
+- ❄ Network protocols. The `.uw.md` file is the protocol surface; how it's transported is out of scope (protocol §I.2).
+- ❄ Persistence / storage. How implementations cache, version, or back up the file is out of scope.
+- ❄ UI design beyond display conventions. Implementations may render any way they wish provided values format identically.
+- ❄ License change. MIT is a permanent commitment for v1 (governance §License changes).
+
+## How to propose a roadmap change
+
+- **Editorial reorder / status update**: open a PR directly.
+- **New roadmap item**: open an issue with the *Feature* template
+  describing the user need; if accepted, it gets added here with the
+  appropriate status.
+- **New v2 RFC**: copy `docs/rfcs/0000-template.md` and submit per
+  `GOVERNANCE.md` rules.

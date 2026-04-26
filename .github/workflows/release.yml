@@ -1,0 +1,65 @@
+name: Release
+
+# Publishes @uwmd/core to npm when a version tag (v*) is pushed.
+#
+# Prerequisites (one-time setup before the first tag):
+# 1. Register the @uwmd organization on npmjs.com.
+# 2. Create an npm automation token with publish scope.
+# 3. Add it to this repo's secrets as NPM_TOKEN.
+# 4. Verify the package's `repository.url` and `homepage` in
+#    packages/uwmd-core/package.json match the canonical repo URL.
+#
+# Tag and ship a release:
+#   git tag v1.0.0 && git push origin v1.0.0
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    name: Publish @uwmd/core
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run conformance suite (tiers 1-3)
+        run: npm run conformance
+
+      - name: Validate JSON Schemas
+        run: npm run validate-schemas
+
+      - name: Verify package version matches tag
+        run: |
+          PKG_VERSION="v$(node -p "require('./packages/uwmd-core/package.json').version")"
+          if [ "$PKG_VERSION" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Publish to npm with provenance
+        working-directory: packages/uwmd-core
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

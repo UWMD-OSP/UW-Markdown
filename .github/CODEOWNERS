@@ -1,0 +1,39 @@
+# UW Markdown — code ownership
+#
+# GitHub auto-requests review from the listed owners when a PR touches
+# matching paths. Order matters: later patterns override earlier ones.
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+#
+# All current paths route to the BDFL — UW Markdown is a solo project.
+# As maintainers join, replace `@jaredmaxey` with the relevant handles
+# per area-of-ownership in MAINTAINERS.md.
+
+# Default owner for everything not matched by a more specific rule.
+*                                       @jaredmaxey
+
+# ── Spec (normative) ────────────────────────────────────────────────────────
+# Any change to the spec or protocol requires BDFL review per GOVERNANCE.md.
+/spec/UW_FORMAT_SPEC_v1.md              @jaredmaxey
+/spec/UW_PROTOCOL_v1.md                 @jaredmaxey
+/spec/schemas/                          @jaredmaxey
+
+# ── Reference library ───────────────────────────────────────────────────────
+/packages/uwmd-core/src/protocol.ts     @jaredmaxey
+/packages/uwmd-core/                    @jaredmaxey
+
+# ── Conformance corpus + runner ────────────────────────────────────────────
+/conformance/                           @jaredmaxey
+/scripts/run-conformance.mjs            @jaredmaxey
+/scripts/validate-schemas.mjs           @jaredmaxey
+
+# ── Tools ──────────────────────────────────────────────────────────────────
+/tools/                                 @jaredmaxey
+
+# ── Governance + OSS scaffolding ───────────────────────────────────────────
+/GOVERNANCE.md                          @jaredmaxey
+/MAINTAINERS.md                         @jaredmaxey
+/SECURITY.md                            @jaredmaxey
+/CONTRIBUTING.md                        @jaredmaxey
+/ROADMAP.md                             @jaredmaxey
+/CODE_OF_CONDUCT.md                     @jaredmaxey
+/.github/                               @jaredmaxey

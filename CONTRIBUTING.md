@@ -45,17 +45,29 @@ cd packages/uwmd-core
 
 Spec changes — to `UW_FORMAT_SPEC_v1.md`, `UW_PROTOCOL_v1.md`, or
 `spec/schemas/*` — are higher-stakes than code changes because third parties
-build on top of these documents. A spec PR must include:
+build on top of these documents. The process depends on whether the change is
+**editorial** or **normative** (see [GOVERNANCE.md](./GOVERNANCE.md) for the
+full distinction):
 
-1. **Motivation** — what's broken, missing, or unclear in the current spec.
-2. **Proposed change** — the exact text edits.
-3. **Compatibility analysis** — does this break existing implementers? If so, propose a deprecation path.
-4. **Conformance impact** — which fixtures need updating; new fixtures if behavior expands.
-5. **Reference implementation** — a PR against `packages/uwmd-core/` showing the change is implementable, OR a stub if implementation lands in a follow-up.
+- **Editorial** (typo, clarification, broken cross-reference, no behavior
+  change for any conforming implementation) — open a PR directly. Fast-track.
+- **Normative** (changes what an implementation MUST/SHOULD do, adds or
+  removes API surface, alters validation semantics) — requires an RFC.
 
-Normative changes (RFC 2119 MUST/SHOULD) require explicit reviewer sign-off.
-Editorial changes (typos, clarifications that don't change behavior) can be
-fast-tracked.
+To file a normative change:
+
+1. Copy [`docs/rfcs/0000-template.md`](./docs/rfcs/0000-template.md) to a new
+   file `docs/rfcs/NNNN-<short-slug>.md` (next free number).
+2. Fill in every section — Summary, Motivation, Proposed change, Compatibility
+   analysis, Conformance impact, Reference implementation, Alternatives,
+   Unresolved questions, Prior art. RFCs missing sections get bounced.
+3. Open a PR titled `RFC NNNN: <short title>`.
+4. PR sits open at least **14 days** for third-party implementers to weigh in.
+5. BDFL accepts, requests changes, or rejects per
+   [`GOVERNANCE.md`](./GOVERNANCE.md#normative-changes-change-implementer-behavior).
+
+See [`docs/rfcs/README.md`](./docs/rfcs/README.md) for the full process and
+status values.
 
 ## Adding a conformance fixture
 
