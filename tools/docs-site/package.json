@@ -1,0 +1,18 @@
+{
+  "name": "uwmd-docs-site",
+  "private": true,
+  "version": "0.1.0",
+  "description": "UW Markdown documentation site (VitePress).",
+  "type": "module",
+  "scripts": {
+    "prebuild": "node scripts/prebuild.mjs",
+    "dev": "npm run prebuild && vitepress dev",
+    "build": "npm run prebuild && vitepress build",
+    "preview": "vitepress preview",
+    "clean": "node scripts/prebuild.mjs --clean"
+  },
+  "devDependencies": {
+    "vitepress": "^1.5.0",
+    "vue": "^3.5.0"
+  }
+}

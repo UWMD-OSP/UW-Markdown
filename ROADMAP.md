@@ -43,7 +43,7 @@ reflects effort vs. devex value.
 | Status | Item | Notes |
 |---|---|---|
 | ✅ | VS Code extension (preview 0.1.0) | `tools/vscode-uwmd/` — syntax highlight + section folding + document outline + on-save validation via `@uwmd/core`. |
-| 📋 | Documentation site | Docusaurus or VitePress. Renders `spec/`, `conformance/`, an interactive playground. |
+| ✅ | Documentation site (preview 0.1.0) | `tools/docs-site/` — VitePress build of spec / protocol / schemas / conformance / project docs. Interactive playground deferred to 0.2. |
 | 📋 | Tier-2 web editor | Built on the existing single-file viewer. Edit panels emit `EditOperation` JSON; applies via `applyEdit()`. |
 | 📋 | Excel ↔ `.uw.md` converter | Highest implementation cost. Define a "lossy converter" boundary explicitly. |
 | 💭 | Standalone CLI installer | `npx uwmd init` / `validate` / `run` for non-developers who don't want to clone. Mostly redundant once `@uwmd/core` is on npm. |
