@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/calc-result.schema.json",
+  "title": "UW Calc Engine Result",
+  "description": "Output of a single safe-expression evaluation by a Tier-3 Calc Host. Mirrors the CalcResult interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §VIII for the safe-expression language and the deterministic-evaluation contract.",
+  "type": "object",
+  "required": ["calc_id", "ok", "value"],
+  "additionalProperties": false,
+  "properties": {
+    "calc_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ID from the calculation declaration."
+    },
+    "ok": {
+      "type": "boolean",
+      "description": "True if evaluation succeeded. False when `error` is set."
+    },
+    "value": {
+      "type": ["number", "string", "boolean", "null"],
+      "description": "Result of the expression. Null when an input was null (per the null-propagation rule §VIII.2) or when ok=false."
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unit string copied from the calc declaration (e.g. '%', '$', 'x', 'units'). Renderers use this to pick a number formatter."
+    },
+    "display": {
+      "type": "string",
+      "description": "Pre-formatted display string per DEFAULT_NUMBER_FORMAT (en-US in v1). Convenience for renderers that don't want to re-format."
+    },
+    "error": {
+      "$ref": "https://uwmd.org/schemas/protocol-error.schema.json",
+      "description": "Set when ok=false. Code MUST be one of CALC-PARSE-001, CALC-RESOLVE-001, CALC-TYPE-001, CALC-DIV-ZERO, CALC-IRR-DIVERGE, CALC-LIMIT-001, or a module-prefixed code."
+    }
+  },
+  "examples": [
+    {
+      "calc_id": "revpar",
+      "ok": true,
+      "value": 104.76,
+      "unit": "$",
+      "display": "$104.76"
+    },
+    {
+      "calc_id": "implied_dscr",
+      "ok": true,
+      "value": 1.3895781637717122,
+      "unit": "x",
+      "display": "1.390x"
+    },
+    {
+      "calc_id": "broken_calc",
+      "ok": false,
+      "value": null,
+      "error": {
+        "category": "calc",
+        "code": "CALC-DIV-ZERO",
+        "message": "Division by zero in expression 'a / b' (b = 0)."
+      }
+    }
+  ]
+}

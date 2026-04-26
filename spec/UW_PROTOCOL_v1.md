@@ -95,11 +95,15 @@ V2 will introduce a locale negotiation mechanism; the type
 ### I.4 Self-declaration
 
 Every conforming implementation SHOULD expose an
-`ImplementationManifest` (the TypeScript interface in `protocol.ts`)
-that documents its tier, capabilities, supported asset classes,
-protocol version, and format version. Hosts that load `.uw.md` files
-from third parties MAY use the manifest to refuse files that exceed
-their declared format version.
+`ImplementationManifest` that documents its tier, capabilities,
+supported asset classes, protocol version, and format version. Hosts
+that load `.uw.md` files from third parties MAY use the manifest to
+refuse files that exceed their declared format version.
+
+**Normative schema:** [`spec/schemas/implementation-manifest.schema.json`](schemas/implementation-manifest.schema.json).
+The TypeScript interface in [`@uwmd/core/protocol.ts`](../packages/uwmd-core/src/protocol.ts)
+is a mirror — implementations in non-TS languages SHOULD validate
+against the JSON Schema.
 
 ---
 
@@ -183,6 +187,13 @@ Tier 4 uses shape assertions due to LLM nondeterminism (§IX.6).
 ## III. Display Conventions
 
 ### III.1 Number formatting
+
+**Normative schema for remediation entries:**
+[`spec/schemas/issue-remediation.schema.json`](schemas/issue-remediation.schema.json)
+(used by §III.6). Every entry in `BUILTIN_REMEDIATIONS` and any module
+remediation table MUST validate against it.
+
+
 
 All numeric display strings MUST be produced by rules equivalent to
 those encoded in `DEFAULT_NUMBER_FORMAT` (`protocol.ts`) and
@@ -280,6 +291,9 @@ declare `depends_on` relationships that establish a precedence.
 
 ## V. Edit Semantics
 
+**Normative schema:** [`spec/schemas/edit-operation.schema.json`](schemas/edit-operation.schema.json)
+defines the wire shape for every `EditOperation` accepted by a Tier-2 Editor.
+
 ### V.1 Round-trip preservation
 
 A Tier-2 Editor receiving an `.uw.md` and returning an `.uw.md`
@@ -359,7 +373,7 @@ file (treating the host as a fixed observer of pre-computed values).
 
 ### VI.3 InstitutionConfig layering
 
-A `.uw.institution.json` sidecar (format spec §6.6) overrides
+A `.uw.institution.json` sidecar (format spec Appendix C.6) overrides
 threshold defaults. Implementations MUST apply the institution config
 to validation but MUST NOT apply it to display formatting in v1
 (locale is frozen).
@@ -406,6 +420,9 @@ host MUST refuse to load a module whose `requires_tier` is
 ---
 
 ## VIII. Calc Engine Contract (Tier 3)
+
+**Normative schema:** [`spec/schemas/calc-result.schema.json`](schemas/calc-result.schema.json)
+defines the shape of every value a Tier-3 Calc Host returns.
 
 ### VIII.1 Safe-expression grammar (EBNF)
 
@@ -556,8 +573,12 @@ type `ModuleManifest` in `protocol.ts` is kept in lockstep.
 
 ## XI. Error Taxonomy
 
-All protocol-level errors MUST be expressible as a `ProtocolError`
-(`protocol.ts`):
+**Normative schema:** [`spec/schemas/protocol-error.schema.json`](schemas/protocol-error.schema.json).
+The TypeScript `ProtocolError` interface in `@uwmd/core/protocol.ts` is a
+mirror — implementers in any language SHOULD validate emitted errors
+against the JSON Schema.
+
+All protocol-level errors MUST be expressible as a `ProtocolError`:
 
 ```ts
 {
@@ -597,6 +618,32 @@ edit and SHOULD refuse to display sections it does not recognize.
 
 A module declaring `requires_protocol: ">=2"` MUST NOT load on a
 host advertising protocol version `1.x.y`.
+
+---
+
+## XIII. Future work (non-normative)
+
+The following items are deferred to v2 and consolidated here for
+discoverability. None of them are required for v1 conformance.
+
+- **Locale negotiation** — v1 freezes formatting to `en-US`. The
+  `SupportedLocale` type in `protocol.ts` is the v2 hook; full
+  locale negotiation will land via RFC.
+- **Module signing** — Sigstore-style signature on module manifests,
+  verified by the host according to its policy.
+- **Custom asset-class declarations from modules** — the asset-class
+  enum is hard-coded in `types.ts` for v1; modules cannot extend it
+  without a spec bump.
+- **Conformance test runner v2** — language-agnostic driver and
+  reporter format so non-TS implementers don't have to write their
+  own runner.
+- **Stochastic calculations** — `deterministic: false` calc declarations
+  (Monte Carlo, sensitivity sweeps).
+- **Hospitality module** — full implementation of the example sketched
+  in Appendix E, serving as the reference module for the module system.
+
+Each of these opens as an RFC under `docs/rfcs/` once that process
+is in place.
 
 ---
 

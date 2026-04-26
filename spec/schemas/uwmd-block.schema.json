@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uwmd-block.schema.json",
+  "title": "UW Markdown Section Block",
+  "description": "JSON envelope inside a fenced ```json uw:section=... block in a .uw.md file. The block carries a section_id, provenance metadata (`_meta`), the section payload (`content`), and an optional free-text `_notes` annotation. Mirrors UWBlock + UWMeta in @uwmd/core/types.ts.",
+  "type": "object",
+  "required": ["section_id", "_meta", "content"],
+  "additionalProperties": true,
+  "properties": {
+    "section_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Section identifier. Standard sections use the IDs registered in UW_FORMAT_SPEC_v1.md §4. Extension sections MUST start with 'x_'."
+    },
+    "_meta": {
+      "$ref": "#/$defs/UWMeta"
+    },
+    "content": {
+      "description": "Section payload. Schema is per-section (see UW_FORMAT_SPEC_v1.md §4.x for each standard section). For extension sections (x_*) the content is unrestricted.",
+      "oneOf": [
+        { "type": "object" },
+        { "type": "array" }
+      ]
+    },
+    "_notes": {
+      "type": ["string", "null"],
+      "description": "Free-text annotation. Never validated, never consumed by agents. See §3 universal field."
+    }
+  },
+  "$defs": {
+    "UWMeta": {
+      "type": "object",
+      "required": [
+        "section_id",
+        "version",
+        "source",
+        "actor",
+        "timestamp",
+        "confidence"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "section_id": {
+          "type": "string",
+          "description": "MUST match the outer section_id."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonically increasing per supersede chain. New blocks for the same section get version = max(prev) + 1."
+        },
+        "superseded": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when a later block has replaced this one. Pipeline_log entries omit this field — they are append-only."
+        },
+        "source": {
+          "type": "string",
+          "description": "Provenance tag matching one of the BUILTIN_EDIT_POLICIES patterns (e.g. 'manual', 'agent/L6-01', 'document/rent_roll', 'system/init', 'institution/threshold-override'). See protocol §V.3.",
+          "minLength": 1
+        },
+        "agent_id": {
+          "type": ["string", "null"],
+          "description": "REQUIRED when source matches 'agent/*'. Typically the layer ID (e.g. 'L6-01')."
+        },
+        "agent_version": {
+          "type": ["string", "null"],
+          "description": "Semver of the agent that produced the block, when source = agent/*."
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "User identifier or system actor that initiated the write."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 UTC timestamp at write time."
+        },
+        "confidence": {
+          "enum": ["high", "medium", "low"],
+          "description": "See format spec §3.2."
+        },
+        "human_review_required": {
+          "type": "boolean",
+          "default": false
+        },
+        "flags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "input_hash": {
+          "type": ["string", "null"],
+          "pattern": "^(sha256:[0-9a-f]{64}|null)$",
+          "description": "Reproducibility anchor: sha256 of the inputs used to produce content. Null if not applicable."
+        },
+        "notes": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "section_id": "property",
+      "_meta": {
+        "section_id": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "agent_id": null,
+        "agent_version": null,
+        "actor": "jared@example.com",
+        "timestamp": "2026-04-25T10:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": [],
+        "input_hash": null,
+        "notes": null
+      },
+      "content": {
+        "total_units": 100,
+        "year_built": 2005,
+        "building_class": "B+"
+      },
+      "_notes": null
+    }
+  ]
+}

@@ -7,6 +7,25 @@
 
 ---
 
+### Conformance language
+
+The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
+"**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**MAY**", and
+"**OPTIONAL**" in this document are to be interpreted as described in
+[RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119). For
+implementation requirements (what tools must *do* with these bytes), see
+the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
+
+### Section count
+
+Part IV registers **22 numbered subsections (§ 4.0 – § 4.21)**:
+21 standard data sections (§ 4.0 – § 4.20) plus the extension-section
+meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
+content. When this and the protocol document refer to "the 21 standard
+sections" they mean § 4.0 through § 4.20.
+
+---
+
 ## Part I — Design Philosophy
 
 ### 1.1 The Core Problem This Solves
@@ -1760,6 +1779,47 @@ The `ai_synthesis` sub-object is populated by `agent:L7-01` after the full under
 
 ---
 
+### § 4.18 — Pipeline Log
+
+**ID:** `pipeline_log`  
+**Header:** `## Pipeline Log {#pipeline_log}`  
+**Purpose:** Immutable append-only execution history. Every agent run, user edit, render, and validation event is recorded. This is the audit trail.  
+**Written by:** All tools (append-only — never superseded, only appended to)  
+**Required for pipeline stage:** All stages
+
+```json
+{
+  "_meta": { "...": "see §2.5 (note: pipeline_log _meta has no superseded field — it is always append-only)" },
+  "entries": [
+    {
+      "entry_id": "string",
+      "timestamp": "ISO8601",
+      "event_type": "file_created | agent_run | user_edit | wizard_input | engine_run | render | import | export | validation | compact | note | flag_raised | flag_cleared | human_review | approval",
+      "agent_or_actor": "string",
+      "section_affected": null,
+      "status": "success | partial | failed | skipped | pending",
+      "input_sections": [],
+      "output_sections": [],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": null,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": null
+    }
+  ]
+}
+```
+
+Although Pipeline Log is registered here as §4.18, the **rendered file
+position** is always last — see §2.1. The split between registry order and
+file position is intentional: the registry orders sections by topic; the
+file orders them so readers see the most recent run history at the bottom.
+
+---
+
 ### § 4.19 — Custom Calculations
 
 **ID:** `custom_calculations`  
@@ -1986,42 +2046,6 @@ The `content` object is entirely free-form. Any valid JSON is accepted.
 | `x_tax_analysis` | Tax & Depreciation | Cost segregation, bonus depreciation, tax-adjusted returns |
 
 **Graduating to standard:** When an extension section appears frequently enough across deals that a consistent schema emerges, it is a candidate for a standard section in the next spec release. Submit via the spec changelog process with: the `x_` schema you've been using, a description of the use case, and at least 3 example instances.
-
----
-
-### § 4.18 — Pipeline Log
-
-**ID:** `pipeline_log`  
-**Header:** `## Pipeline Log {#pipeline_log}`  
-**Purpose:** Immutable append-only execution history. Every agent run, user edit, render, and validation event is recorded. This is the audit trail.  
-**Written by:** All tools (append-only — never superseded, only appended to)  
-**Required for pipeline stage:** All stages
-
-```json
-{
-  "_meta": { "...": "see §2.5 (note: pipeline_log _meta has no superseded field — it is always append-only)" },
-  "entries": [
-    {
-      "entry_id": "string",
-      "timestamp": "ISO8601",
-      "event_type": "file_created | agent_run | user_edit | wizard_input | engine_run | render | import | export | validation | compact | note | flag_raised | flag_cleared | human_review | approval",
-      "agent_or_actor": "string",
-      "section_affected": null,
-      "status": "success | partial | failed | skipped | pending",
-      "input_sections": [],
-      "output_sections": [],
-      "flags_raised": [],
-      "flags_cleared": [],
-      "duration_ms": null,
-      "input_hash": null,
-      "output_hash": null,
-      "error_code": null,
-      "error_message": null,
-      "notes": null
-    }
-  ]
-}
-```
 
 ---
 

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/issue-remediation.schema.json",
+  "title": "UW Issue Remediation Entry",
+  "description": "One entry in a remediation registry. Renderers SHOULD surface the title and remediation text verbatim — the goal is uniform UX across every conforming implementation. Modules ship their own entries to extend BUILTIN_REMEDIATIONS. Mirrors the IssueRemediation interface in @uwmd/core/protocol.ts and is referenced by ProtocolError.code lookups. See UW_PROTOCOL_v1.md §III.6.",
+  "type": "object",
+  "required": ["code", "severity", "title", "description", "remediation"],
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,}$",
+      "description": "Stable validation code (e.g. 'CC-01'). MUST match the code on a ValidationMessage / ProtocolError for the renderer to look it up."
+    },
+    "severity": {
+      "enum": ["error", "warning", "info"],
+      "description": "Default severity emitted by the validator. Implementations MAY override per institution config."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Short title shown in the issue list (e.g. 'NOI mismatch')."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain-language description of what is wrong."
+    },
+    "remediation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Imperative remediation copy (e.g. 'Recompute LTV from current loan_amount / purchase_price.')."
+    },
+    "spec_ref": {
+      "type": "string",
+      "description": "Spec section anchor for deep-linking (e.g. '§5.3 CC-01')."
+    }
+  },
+  "examples": [
+    {
+      "code": "CC-02",
+      "severity": "error",
+      "title": "DSCR mismatch",
+      "description": "debt_structure.dscr disagrees with quick_metrics.dscr.",
+      "remediation": "Recompute DSCR = NOI / annual_debt_service and update both surfaces.",
+      "spec_ref": "§5.3 CC-02"
+    }
+  ]
+}

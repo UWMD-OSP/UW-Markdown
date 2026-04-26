@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/protocol-error.schema.json",
+  "title": "UW Protocol Error",
+  "description": "Structured error returned by any conforming implementation when an operation fails. Mirrors the ProtocolError interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §XI for the full error taxonomy and the per-category code prefixes.",
+  "type": "object",
+  "required": ["category", "code", "message"],
+  "additionalProperties": false,
+  "properties": {
+    "category": {
+      "enum": ["parse", "validate", "render", "edit", "calc", "agent", "module", "version"],
+      "description": "Top-level error class. Drives which subsystem the implementer surfaces it to."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,}$",
+      "description": "Stable machine-readable code. Conventional prefixes: PROTO-EDIT-*, CALC-*, MOD-*, AGENT-*, VAL-*, RENDER-*. New codes added by modules SHOULD prefix the module id (e.g. HOSP-LSTAR-001)."
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable description. Localized to en-US in v1."
+    },
+    "pointer": {
+      "type": "string",
+      "description": "Path into the file (e.g. 'frontmatter.quick_metrics.dscr', 'sections.noi_model.content.net_operating_income'). Helps editors highlight the offending location."
+    },
+    "remediation": {
+      "type": "string",
+      "description": "Suggested fix. SHOULD reuse the BUILTIN_REMEDIATIONS copy when the code matches a registered remediation."
+    },
+    "cause": {
+      "type": "string",
+      "description": "Underlying error message if this wraps a thrown exception."
+    }
+  },
+  "examples": [
+    {
+      "category": "edit",
+      "code": "PROTO-EDIT-001",
+      "message": "Cannot replace section 'risk_assessment' — source 'agent/L6-01' has supersede_on_edit:true. Use kind=section_supersede instead.",
+      "pointer": "sections.risk_assessment",
+      "remediation": "Issue a section_supersede operation."
+    },
+    {
+      "category": "calc",
+      "code": "CALC-DIV-ZERO",
+      "message": "Division by zero in formula 'noi_model.net_operating_income / debt_structure.annual_debt_service'.",
+      "pointer": "custom_calculations.implied_dscr"
+    },
+    {
+      "category": "validate",
+      "code": "CC-02",
+      "message": "DSCR mismatch: debt_structure.dscr=1.30 vs quick_metrics.dscr=1.25",
+      "pointer": "frontmatter.quick_metrics.dscr",
+      "remediation": "Recompute DSCR = NOI / annual_debt_service and update both surfaces."
+    }
+  ]
+}

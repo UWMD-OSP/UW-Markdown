@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/edit-operation.schema.json",
+  "title": "UW Markdown Edit Operation",
+  "description": "A discrete edit a Tier-2 Editor applies to a parsed .uw.md file. Discriminated union over the four operation kinds. Mirrors the EditOperation type union in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §V for semantics, BUILTIN_EDIT_POLICIES for authority, and §V.6 for the immutable frontmatter fields.",
+  "oneOf": [
+    { "$ref": "#/$defs/FrontmatterSet" },
+    { "$ref": "#/$defs/SectionReplace" },
+    { "$ref": "#/$defs/SectionSupersede" },
+    { "$ref": "#/$defs/PipelineLogAppend" }
+  ],
+  "$defs": {
+    "FrontmatterSet": {
+      "type": "object",
+      "required": ["kind", "path", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "frontmatter_set" },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dot-path into frontmatter (e.g. 'recommendation', 'quick_metrics.dscr'). MUST NOT target uw_version, deal_id, or created — those are immutable per §V.6."
+        },
+        "value": {
+          "description": "New value. Type depends on the field at `path`."
+        }
+      }
+    },
+    "SectionReplace": {
+      "type": "object",
+      "required": ["kind", "section_id", "content", "meta"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "section_replace" },
+        "section_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "variant": {
+          "type": "string",
+          "description": "For multi-variant sections (e.g. stress_tests). Omit for single-variant sections."
+        },
+        "content": {
+          "type": "object",
+          "description": "Full replacement payload — overwrites the existing block in place. Allowed only when BUILTIN_EDIT_POLICIES.supersede_on_edit = false for this source."
+        },
+        "meta": {
+          "type": "object",
+          "description": "Partial UWMeta. Host fills in version, timestamp, actor, source as required."
+        }
+      }
+    },
+    "SectionSupersede": {
+      "type": "object",
+      "required": ["kind", "section_id", "content", "meta"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "section_supersede" },
+        "section_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "variant": { "type": "string" },
+        "content": {
+          "type": "object",
+          "description": "New block payload. The previous block is flagged superseded:true; this one is appended at version = max(prev)+1."
+        },
+        "meta": {
+          "type": "object"
+        }
+      }
+    },
+    "PipelineLogAppend": {
+      "type": "object",
+      "required": ["kind", "entry"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "pipeline_log_append" },
+        "entry": {
+          "type": "object",
+          "description": "A single pipeline_log entry per format spec §4.18.",
+          "properties": {
+            "entry_id": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" },
+            "event_type": {
+              "enum": [
+                "file_created", "agent_run", "user_edit", "wizard_input",
+                "engine_run", "render", "import", "export", "validation",
+                "compact", "note", "flag_raised", "flag_cleared",
+                "human_review", "approval"
+              ]
+            },
+            "agent_or_actor": { "type": "string" },
+            "section_affected": { "type": ["string", "null"] },
+            "status": {
+              "enum": ["success", "partial", "failed", "skipped", "pending"]
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "kind": "frontmatter_set",
+      "path": "recommendation",
+      "value": "approve"
+    },
+    {
+      "kind": "section_replace",
+      "section_id": "property",
+      "content": { "total_units": 100, "year_built": 2005, "building_class": "B+" },
+      "meta": { "actor": "jared@example.com", "confidence": "high" }
+    },
+    {
+      "kind": "section_supersede",
+      "section_id": "risk_assessment",
+      "content": { "overall_rating": "elevated", "risk_score": 7, "key_risks": [] },
+      "meta": { "source": "agent/L6-01", "agent_id": "L6-01", "agent_version": "1.2.0", "actor": "system" }
+    },
+    {
+      "kind": "pipeline_log_append",
+      "entry": {
+        "entry_id": "evt_001",
+        "timestamp": "2026-04-25T10:00:00Z",
+        "event_type": "agent_run",
+        "agent_or_actor": "L6-01",
+        "section_affected": "risk_assessment",
+        "status": "success"
+      }
+    }
+  ]
+}

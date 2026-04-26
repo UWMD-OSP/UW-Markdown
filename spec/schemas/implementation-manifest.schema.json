@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/implementation-manifest.schema.json",
+  "title": "UW Implementation Manifest",
+  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §I.4.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "version",
+    "protocol_version",
+    "format_version",
+    "tier"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+      "minLength": 3,
+      "maxLength": 128,
+      "description": "Stable identifier. Reverse-DNS recommended (e.g. 'io.uwmd.web-viewer')."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+      "description": "Implementation semver."
+    },
+    "protocol_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Protocol semver this implementation targets (e.g. '1.0.0')."
+    },
+    "format_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Format semver this implementation can read (e.g. '1.1')."
+    },
+    "tier": {
+      "enum": [
+        "tier-1-reader",
+        "tier-2-editor",
+        "tier-3-calc-host",
+        "tier-4-agent-host"
+      ],
+      "description": "Highest tier the implementation self-certifies to. Each tier is a strict superset of the previous."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "parse", "validate",
+          "render-json", "render-csv", "render-summary", "render-chat", "render-pdf", "render-docx",
+          "edit-replace", "edit-supersede", "edit-frontmatter",
+          "calc-evaluate", "calc-deterministic",
+          "agent-host", "module-load"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Finer-grained capability flags. Tier sets a coarse floor; capabilities allow advertising partial conformance."
+    },
+    "asset_classes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "multifamily", "office", "retail", "industrial", "self_storage",
+          "hospitality", "mixed_use", "senior_housing", "student_housing", "land"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Asset classes the implementation specifically supports. Omit to mean 'all'."
+    },
+    "role": {
+      "enum": ["web", "cli", "desktop", "ide-extension", "library", "service"],
+      "description": "Form factor of the implementation. Informational."
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri",
+      "description": "Public homepage / docs URL."
+    }
+  },
+  "examples": [
+    {
+      "id": "io.uwmd.core",
+      "name": "@uwmd/core",
+      "version": "0.1.0",
+      "protocol_version": "1.0.0",
+      "format_version": "1.1",
+      "tier": "tier-4-agent-host",
+      "capabilities": [
+        "parse", "validate", "render-summary", "render-chat",
+        "edit-replace", "edit-supersede", "edit-frontmatter",
+        "calc-evaluate", "calc-deterministic", "agent-host"
+      ],
+      "role": "library",
+      "homepage": "https://uwmd.org"
+    }
+  ]
+}
