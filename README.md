@@ -28,6 +28,15 @@ same files without losing fidelity.
 
 ## Quick start
 
+**No clone needed** — once `uwmd` is published to npm, scaffold and validate a deal file with:
+
+```bash
+npx uwmd init my-deal.uw.md
+npx uwmd validate my-deal.uw.md
+```
+
+To work from source instead:
+
 ```bash
 git clone https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git
 cd Underwriting-Markdown-Private-1.0
@@ -35,8 +44,8 @@ npm install
 npm run build
 
 # Parse and validate the example file
-node packages/uwmd-core/dist/cli.js parse examples/Parkview-Apts-Glendale-AZ.uw.md
-node packages/uwmd-core/dist/cli.js validate examples/Parkview-Apts-Glendale-AZ.uw.md
+npm run cli -- parse examples/Parkview-Apts-Glendale-AZ.uw.md
+npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md
 ```
 
 To open the reference web viewer, point any browser at

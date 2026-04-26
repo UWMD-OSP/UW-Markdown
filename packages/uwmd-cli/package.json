@@ -1,0 +1,36 @@
+{
+  "name": "uwmd",
+  "version": "1.0.0",
+  "description": "Command-line installer for UW Markdown — `npx uwmd init|parse|validate|render|run` for .uw.md underwriting files. Thin wrapper over @uwmd/core.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "directory": "packages/uwmd-cli"
+  },
+  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0",
+  "type": "module",
+  "bin": {
+    "uwmd": "bin/uwmd.mjs"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm --prefix ../uwmd-core run build && npm --prefix ../.. test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
+  },
+  "dependencies": {
+    "@uwmd/core": "1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "uwmd",
+    "underwriting",
+    "commercial-real-estate",
+    "cli",
+    "markdown"
+  ]
+}

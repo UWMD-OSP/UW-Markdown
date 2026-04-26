@@ -78,8 +78,8 @@ Fixtures live under `conformance/tier-N-*/fixtures/` with expected outputs in
    the tier) in the relevant `fixtures/` directory with a numeric prefix.
 2. Generate expected outputs by running `@uwmd/core` against the fixture:
    ```bash
-   node packages/uwmd-core/dist/cli.js parse <fixture> > <expected>.parsed.json
-   node packages/uwmd-core/dist/cli.js render <fixture> --format chat > <expected>.rendered.txt
+   npm run cli -- parse <fixture> > <expected>.parsed.json
+   npm run cli -- render <fixture> --format chat > <expected>.rendered.txt
    ```
 3. Add an entry to the per-tier README explaining what the fixture exercises.
 4. For Tier-4 (agent-host) fixtures, expected outputs are *shape assertions*,

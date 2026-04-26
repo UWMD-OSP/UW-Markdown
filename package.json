@@ -8,7 +8,7 @@
   "scripts": {
     "build": "npm run build -w @uwmd/core",
     "test": "npm test -w @uwmd/core",
-    "cli": "node packages/uwmd-core/dist/cli.js",
+    "cli": "node packages/uwmd-cli/bin/uwmd.mjs",
     "conformance": "node scripts/run-conformance.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs"
   },

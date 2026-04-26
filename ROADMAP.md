@@ -44,9 +44,9 @@ reflects effort vs. devex value.
 |---|---|---|
 | ✅ | VS Code extension (preview 0.1.0) | `tools/vscode-uwmd/` — syntax highlight + section folding + document outline + on-save validation via `@uwmd/core`. |
 | ✅ | Documentation site (preview 0.1.0) | `tools/docs-site/` — VitePress build of spec / protocol / schemas / conformance / project docs. Interactive playground deferred to 0.2. |
-| 📋 | Tier-2 web editor | Built on the existing single-file viewer. Edit panels emit `EditOperation` JSON; applies via `applyEdit()`. |
-| 📋 | Excel ↔ `.uw.md` converter | Highest implementation cost. Define a "lossy converter" boundary explicitly. |
-| 💭 | Standalone CLI installer | `npx uwmd init` / `validate` / `run` for non-developers who don't want to clone. Mostly redundant once `@uwmd/core` is on npm. |
+| ✅ | Standalone CLI installer (preview 1.0.0) | `packages/uwmd-cli/` — publishes as `uwmd` on npm. `npx uwmd init` / `validate` / `parse` / `render` / `edit` / `calc` / `run` for non-developers who don't want to clone. Thin wrapper over `@uwmd/core` (depends on it via the new `./cli` subpath export). No calc-drift risk. |
+| 💭 | Calc-aware editor (web + desktop) | The single editor for `.uw.md` files. Embeds the Tier-3 calc engine and re-runs every dependent calc on every edit, so derived values (NOI, DSCR, LTV, IRR, valuation) never drift from inputs. Replaces the originally-planned narrative-only Tier-2 web editor — that design was rejected because separating "safe" narrative edits from "unsafe" numeric edits creates two paths into the same file and a wrong incentive to use the easier one. |
+| 💭 | Excel ↔ `.uw.md` converter | Same calc-integrity rule applies: the converter must own both sides of the round-trip (cell formulas ↔ section content + calc declarations) so a workbook saved-then-opened in either tool produces identical numbers. Define a "lossy converter" boundary explicitly. |
 | 💭 | `docs/CONFORMING_TOOLS.md` | Once adopters arrive — keeps the README from becoming a giant list. |
 
 ## v2 spec exploration
