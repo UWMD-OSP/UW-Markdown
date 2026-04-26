@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UW Markdown — Calc-Aware Editor</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <h1>UW Markdown <span class="tag">calc-aware editor</span></h1>
+        <div class="header-actions">
+          <input
+            type="file"
+            id="file-input"
+            accept=".uw.md,.md,text/markdown"
+            hidden
+          />
+          <button id="open-btn" type="button">Open .uw.md</button>
+          <button id="save-btn" type="button" disabled>Download</button>
+        </div>
+      </header>
+
+      <main id="main">
+        <aside id="sidebar" class="sidebar">
+          <div class="empty-state">
+            <p>Drop a <code>.uw.md</code> file here, or click <strong>Open</strong>.</p>
+          </div>
+        </aside>
+
+        <div id="content-wrap">
+          <div id="calc-dashboard" class="calc-dashboard" hidden></div>
+          <section id="content" class="content">
+            <div class="placeholder">
+              <h2>No file loaded</h2>
+              <p>
+                This is the calc-aware editor for UW Markdown. Drop a
+                <code>.uw.md</code> deal file to begin. Every numeric edit re-runs
+                every dependent calc immediately, so derived values
+                (NOI, DSCR, LTV, IRR, valuation) never drift from inputs.
+              </p>
+              <p class="placeholder-status" id="bundle-status">Loading engine…</p>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <div id="validation-panel" class="validation-panel" hidden></div>
+
+      <footer class="app-footer">
+        <span id="status">Ready</span>
+        <span class="footer-meta">
+          <a href="https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0" target="_blank" rel="noopener">UW Markdown</a>
+          —
+          preview <code>0.1.0</code>
+        </span>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "@uwmd/web-editor",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Calc-aware web editor for .uw.md files. Embeds the @uwmd/core parser, validator, Tier-2 dispatcher, and Tier-3 calc engine in the browser so derived values (NOI, DSCR, LTV, IRR, valuation) never drift from inputs.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@uwmd/core": "file:../../packages/uwmd-core"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0"
+  }
+}
