@@ -28,6 +28,14 @@ export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 
 export {
+  MULTIFAMILY_PACK,
+  emitFromAst,
+  emitExcelFormula,
+  ExcelEmitError,
+} from './packs/index.js';
+export type { ExcelEmitOptions } from './packs/index.js';
+
+export {
   buildAgentContext,
   buildAgentPrompt,
   isContextReady,

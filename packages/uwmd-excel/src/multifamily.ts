@@ -1,7 +1,10 @@
 // Multifamily workbook layout.
 //
-// Single source of truth for the schema-to-cells mapping. The converter
-// (`toWorkbook.ts`) is generic; everything asset-class-specific lives here.
+// Layout-only: which sections become which sheet rows, which inputs become
+// workbook-scope named ranges. The derived-metric formulas themselves are
+// NOT defined here — they come from MULTIFAMILY_PACK in @uwmd/core and are
+// emitted as Excel syntax via `emitExcelFormula` at write time, so adding a
+// metric only happens in one place.
 //
 // Layout shape:
 //   - Sheet "Underwriting" — executive summary. Header (deal name / address)
@@ -15,10 +18,9 @@
 // Named ranges defined here are the workbook's *contract*: as long as a
 // downstream sheet references `=cap_rate` or `=noi`, it can be reorganized
 // without breaking the formulas.
-//
-// The eight derived-metric formulas mirror @uwmd/core's MULTIFAMILY_STARTER_PACK
-// from the web editor, so Excel and `evaluateCalc()` produce identical numbers
-// by construction. That's the calc-integrity rule on the Excel side.
+
+import { MULTIFAMILY_PACK, emitExcelFormula } from '@uwmd/core';
+import type { ModuleCalcDecl } from '@uwmd/core';
 
 export interface IncomeLine {
   label: string;
@@ -70,21 +72,45 @@ export const NAMED_INPUTS: readonly NamedInput[] = [
   { name: 'equity_sponsor',       label: 'Sponsor Equity',         source: { section: 'sources_uses',   path: 'sources.equity_sponsor' },      format: 'currency' },
 ];
 
-/** Derived metric — formula references named inputs (and `noi`, defined on the Operating Statement sheet). */
-export interface DerivedMetric {
-  name: string;
-  label: string;
-  formula: string;          // Excel formula, leading "=" included
-  format: 'percent' | 'ratio' | 'currency';
+/**
+ * Map from calc-engine identifier path to workbook-scope named range. Built
+ * from NAMED_INPUTS plus the implicit `noi` range that the Operating Statement
+ * sheet creates. Consumed by emitExcelFormula() to translate a canonical
+ * ModuleCalcDecl formula into Excel syntax.
+ */
+export const NAMED_RANGE_MAP: ReadonlyMap<string, string> = new Map<string, string>([
+  ...NAMED_INPUTS.map((i): [string, string] => [`${i.source.section}.${i.source.path}`, i.name]),
+  // Operating Statement sheet creates `noi` as the named range for the NOI cell.
+  ['noi_model.net_operating_income', 'noi'],
+]);
+
+/** Excel format keyed by the canonical pack's unit. */
+function excelFormatFor(unit: string | undefined): 'percent' | 'ratio' | 'currency' | 'count' {
+  switch (unit) {
+    case '%': return 'percent';
+    case 'x': return 'ratio';
+    case '$': return 'currency';
+    default:  return 'count';
+  }
 }
 
-export const DERIVED_METRICS: readonly DerivedMetric[] = [
-  { name: 'cap_rate',       label: 'Cap Rate',       formula: '=noi/purchase_price',                           format: 'percent' },
-  { name: 'ltv',            label: 'LTV',            formula: '=loan_amount/purchase_price',                   format: 'percent' },
-  { name: 'dscr',           label: 'DSCR',           formula: '=noi/annual_debt_service',                      format: 'ratio'   },
-  { name: 'debt_yield',     label: 'Debt Yield',     formula: '=noi/loan_amount',                              format: 'percent' },
-  { name: 'price_per_unit', label: 'Price / Unit',   formula: '=purchase_price/total_units',                   format: 'currency' },
-  { name: 'loan_per_unit',  label: 'Loan / Unit',    formula: '=loan_amount/total_units',                      format: 'currency' },
-  { name: 'loan_per_sqft',  label: 'Loan / SqFt',    formula: '=loan_amount/total_nra_sqft',                   format: 'currency' },
-  { name: 'cash_on_cash',   label: 'Cash-on-Cash',   formula: '=(noi-annual_debt_service)/equity_sponsor',     format: 'percent' },
-];
+/** A derived metric, resolved from the canonical pack at build time. */
+export interface DerivedMetric {
+  id: string;
+  label: string;
+  formula: string;          // Excel formula, leading "=" included
+  format: 'percent' | 'ratio' | 'currency' | 'count';
+}
+
+/**
+ * Derived metrics for the multifamily workbook. Built by emitting Excel
+ * formulas for every calc in MULTIFAMILY_PACK — defining a new metric in
+ * @uwmd/core's pack automatically surfaces it here.
+ */
+export const DERIVED_METRICS: readonly DerivedMetric[] =
+  (MULTIFAMILY_PACK.calculations ?? []).map((decl: ModuleCalcDecl) => ({
+    id: decl.id,
+    label: decl.label,
+    formula: `=${emitExcelFormula(decl.formula, { namedRanges: NAMED_RANGE_MAP })}`,
+    format: excelFormatFor(decl.unit),
+  }));

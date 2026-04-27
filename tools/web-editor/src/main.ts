@@ -4,11 +4,10 @@
 // produces a frontmatter_set EditOperation, gets routed through runEdit(),
 // and reparses the file so in-memory state never drifts from canonical.
 
-import { PROTOCOL_VERSION, FORMAT_VERSION } from '@uwmd/core/browser';
+import { PROTOCOL_VERSION, FORMAT_VERSION, MULTIFAMILY_PACK } from '@uwmd/core/browser';
 import type { EditOperation } from '@uwmd/core/browser';
 import { loadInitialState, runEdit, type EditState } from './edits.js';
 import { renderSectionList, renderSectionView, renderCalcDashboard, renderValidationPanel } from './ui.js';
-import { MULTIFAMILY_STARTER_PACK } from './calc-pack.js';
 
 interface AppState {
   loaded: EditState | null;
@@ -114,7 +113,7 @@ function calcPackFor(parsed: EditState['parsed']) {
   // For now, multifamily-only. Other asset classes get an empty pack until
   // their starter packs ship.
   const assetClass = (parsed.frontmatter as { asset_class?: string }).asset_class;
-  if (assetClass === 'multifamily') return MULTIFAMILY_STARTER_PACK;
+  if (assetClass === 'multifamily') return MULTIFAMILY_PACK.calculations ?? [];
   return [];
 }
 
