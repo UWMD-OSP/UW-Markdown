@@ -51,7 +51,7 @@ function record(tier, scenario, status, message) {
   if (!JSON_OUT) {
     const tag = status === 'pass' ? 'PASS' : status === 'updated' ? 'UPDT' : 'FAIL';
     const symbol = status === 'pass' ? ' ✓' : status === 'updated' ? ' ↻' : ' ✗';
-    console.log(`[${tag}]${symbol} tier-${tier}/${scenario}${message ? ' — ' + message : ''}`);
+    console.log(`[${tag}]${symbol} tier-${tier}/${scenario}${message ? ` — ${message}` : ''}`);
   }
 }
 
@@ -103,7 +103,7 @@ function isMultiVariant(entry) {
 // ─── String normalization for byte-comparison tests ──────────────────────────
 
 function normalize(text) {
-  return text.replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trimEnd() + '\n';
+  return `${text.replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trimEnd()}\n`;
 }
 
 // ─── Tier 1: Reader ──────────────────────────────────────────────────────────
@@ -134,7 +134,7 @@ function runTier1() {
 
     // Compare canonical parsed JSON.
     const actualParsed = canonicalParsed(parsed);
-    const actualParsedStr = JSON.stringify(actualParsed, null, 2) + '\n';
+    const actualParsedStr = `${JSON.stringify(actualParsed, null, 2)}\n`;
     const expectedParsedPath = join(expectedDir, `${id}.parsed.json`);
 
     if (UPDATE) {
@@ -167,7 +167,7 @@ function runTier1() {
         : rendered.text ?? JSON.stringify(rendered, null, 2);
 
       if (UPDATE) {
-        writeFileSync(expectedPath, renderedText.trimEnd() + '\n');
+        writeFileSync(expectedPath, `${renderedText.trimEnd()}\n`);
         record('1', `${id} [render-${fmt}]`, 'updated');
       } else if (!existsSync(expectedPath)) {
         record('1', `${id} [render-${fmt}]`, 'fail', `missing baseline: ${basename(expectedPath)}`);
@@ -279,7 +279,7 @@ function runTier3() {
       ...(result.unit ? { unit: result.unit } : {}),
       ...(result.error ? { error: { code: result.error.code, category: result.error.category } } : {}),
     };
-    const projectedStr = JSON.stringify(projected, null, 2) + '\n';
+    const projectedStr = `${JSON.stringify(projected, null, 2)}\n`;
 
     if (UPDATE) {
       writeFileSync(expectedPath, projectedStr);

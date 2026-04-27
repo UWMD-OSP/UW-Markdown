@@ -93,8 +93,8 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
   const qm = fm.quick_metrics ?? {};
   const property = getSection(parsed, 'property');
   const debt = getSection(parsed, 'debt_structure');
-  const noi = getSection(parsed, 'noi_model');
-  const valuation = getSection(parsed, 'valuation');
+  const _noi = getSection(parsed, 'noi_model');
+  const _valuation = getSection(parsed, 'valuation');
 
   const pct = (v: unknown) => formatPercentCsv(v);
   const num = (v: unknown) => formatNumberCsv(v);
@@ -153,7 +153,7 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   const qm = fm.quick_metrics ?? {};
   const property = getSection(parsed, 'property');
   const debt = getSection(parsed, 'debt_structure');
-  const noi = getSection(parsed, 'noi_model');
+  const _noi = getSection(parsed, 'noi_model');
   const dcf = getSection(parsed, 'dcf');
   const dealCtx = getSection(parsed, 'deal_context');
   const validation = validateUWFile(parsed);
@@ -529,7 +529,7 @@ Key Risks: ${((deepGet(c, 'key_risks') as string[] | undefined) ?? []).slice(0, 
   if (estimatedTokens > maxTokens) {
     // Trim to budget by dropping lower-priority sections from the end
     const budget = maxTokens * 4;
-    content = content.slice(0, budget) + '\n\n[TRUNCATED — full data in source .uw.md file]';
+    content = `${content.slice(0, budget)}\n\n[TRUNCATED — full data in source .uw.md file]`;
     truncated = true;
   }
 

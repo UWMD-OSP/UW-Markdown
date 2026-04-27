@@ -63,7 +63,7 @@ export function writeAgentBlock(
   const { sectionId, variant } = output;
   const now = new Date().toISOString();
   const agentId = opts.agentId ?? 'user';
-  const actor = opts.actor ?? 'system';
+  const _actor = opts.actor ?? 'system';
 
   // Determine the existing block (if any) for this section/variant
   let existingBlock: UWBlock | null = null;
@@ -171,7 +171,7 @@ function markBlockSuperseded(lines: string[], block: UWBlock): string[] {
   // 2. _meta.superseded inside the JSON body
   for (let i = block.lineStart; i < block.lineEnd - 1; i++) {
     const line = result[i];
-    if (line && line.includes('"superseded": false')) {
+    if (line?.includes('"superseded": false')) {
       result[i] = line.replace('"superseded": false', '"superseded": true');
       break;
     }
@@ -222,7 +222,7 @@ function appendPipelineLogEntry(
   // Find the most recent pipeline_log block
   const lastLogBlock = parsed.pipeline_log[parsed.pipeline_log.length - 1];
   const blockLines = lines.slice(lastLogBlock.lineStart - 1, lastLogBlock.lineEnd);
-  const joinedBlock = blockLines.join('\n');
+  const _joinedBlock = blockLines.join('\n');
 
   // Parse current entries array from the JSON
   let blockContent: Record<string, unknown>;

@@ -14,7 +14,7 @@ export type Expr =
   | { kind: 'call'; name: string; args: Expr[] }
   | { kind: 'unary'; op: '-' | '!'; operand: Expr }
   | { kind: 'binary'; op: BinaryOp; left: Expr; right: Expr }
-  | { kind: 'cond'; test: Expr; then: Expr; else: Expr };
+  | { kind: 'cond'; test: Expr; consequent: Expr; else: Expr };
 
 export type BinaryOp =
   | '+' | '-' | '*' | '/' | '%'
@@ -37,7 +37,7 @@ interface Token {
   pos: number;
 }
 
-const KEYWORDS = new Set(['true', 'false', 'null']);
+const _KEYWORDS = new Set(['true', 'false', 'null']);
 // Maximum input length — guards against accidental enormous inputs.
 const MAX_INPUT_LEN = 4096;
 
@@ -161,10 +161,10 @@ class Parser {
     const test = this.parseComparison();
     if (this.match('qmark')) {
       this.advance();
-      const thenBranch = this.parseExpr();
+      const consequent = this.parseExpr();
       this.expect('colon', "Expected ':' in ternary");
-      const elseBranch = this.parseExpr();
-      return { kind: 'cond', test, then: thenBranch, else: elseBranch };
+      const alternate = this.parseExpr();
+      return { kind: 'cond', test, consequent, else: alternate };
     }
     return test;
   }
@@ -226,7 +226,7 @@ class Parser {
 
     if (tok.kind === 'number') {
       this.advance();
-      return { kind: 'literal', value: parseFloat(tok.value) };
+      return { kind: 'literal', value: Number.parseFloat(tok.value) };
     }
     if (tok.kind === 'string') {
       this.advance();

@@ -33,12 +33,20 @@ npm run build
 npm test
 ```
 
+Run `npm install` from the repo root for workspace packages
+(`packages/*` — `@uwmd/core`, `@uwmd/excel`, `uwmd`). The root
+`package-lock.json` is the single source of truth for those.
+
+The starter tools under `tools/*` are intentionally *not* npm workspace
+members (different toolchains: VitePress, Vite, vsce). Each commits its
+own `package-lock.json` and you install them with `npm install` inside
+their directory.
+
 The reference library lives at `packages/uwmd-core/`. To work on it directly:
 
 ```bash
-cd packages/uwmd-core
-./node_modules/.bin/tsc --watch    # rebuild on save
-./node_modules/.bin/vitest          # tests in watch mode
+npm run build -w @uwmd/core -- --watch   # rebuild on save
+npm test -w @uwmd/core -- --watch        # tests in watch mode
 ```
 
 ## Filing a spec change

@@ -91,7 +91,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     if (!Number.isInteger(d)) {
       throw new CalcError('CALC-TYPE-001', `round: decimals must be integer, got ${d}.`);
     }
-    const factor = Math.pow(10, d);
+    const factor = 10 ** d;
     // Half-away-from-zero (Math.round in JS is half-up for positives, half-down for negatives).
     const sign = n < 0 ? -1 : 1;
     return sign * Math.floor(Math.abs(n) * factor + 0.5) / factor;
@@ -110,7 +110,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
       throw new CalcError('CALC-TYPE-001', 'pmt: n must be > 0.');
     }
     if (rate === 0) return pv / n;
-    return (pv * rate) / (1 - Math.pow(1 + rate, -n));
+    return (pv * rate) / (1 - (1 + rate) ** -n);
   },
 
   // npv(rate, ...flows) — flow at index 0 is at t=0 (undiscounted).
@@ -122,7 +122,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     let acc = 0;
     for (let t = 0; t < args.length - 1; t++) {
       const flow = asNumber(args[t + 1]!, 'npv');
-      acc += flow / Math.pow(1 + rate, t);
+      acc += flow / (1 + rate) ** t;
     }
     return acc;
   },
@@ -130,19 +130,19 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
   // irr(...flows) — bisection + Newton fallback. Null if no real root.
   irr(args) {
     if (args.length < 2) {
-      throw new CalcError('CALC-TYPE-001', `irr: requires at least 2 cash flows.`);
+      throw new CalcError('CALC-TYPE-001', 'irr: requires at least 2 cash flows.');
     }
-    const flows = args.map((a, i) => asNumber(a!, 'irr'));
+    const flows = args.map((a, _i) => asNumber(a!, 'irr'));
 
     // Newton-Raphson starting at 0.1.
     const npvAt = (r: number): number => {
       let acc = 0;
-      for (let t = 0; t < flows.length; t++) acc += flows[t]! / Math.pow(1 + r, t);
+      for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
       return acc;
     };
     const dnpvAt = (r: number): number => {
       let acc = 0;
-      for (let t = 1; t < flows.length; t++) acc += -t * flows[t]! / Math.pow(1 + r, t + 1);
+      for (let t = 1; t < flows.length; t++) acc += -t * flows[t]! / (1 + r) ** (t + 1);
       return acc;
     };
 

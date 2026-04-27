@@ -54,6 +54,12 @@ const COPIES = [
   // RFCs
   { from: 'docs/rfcs/README.md',       to: 'about/rfcs/index.md', title: 'RFC Process' },
   { from: 'docs/rfcs/0000-template.md', to: 'about/rfcs/template.md', title: 'RFC Template' },
+  { from: 'docs/rfcs/0001-locale-negotiation.md',     to: 'about/rfcs/0001-locale-negotiation.md' },
+  { from: 'docs/rfcs/0002-module-signing.md',         to: 'about/rfcs/0002-module-signing.md' },
+  { from: 'docs/rfcs/0003-module-asset-classes.md',   to: 'about/rfcs/0003-module-asset-classes.md' },
+  { from: 'docs/rfcs/0004-conformance-runner-v2.md',  to: 'about/rfcs/0004-conformance-runner-v2.md' },
+  { from: 'docs/rfcs/0005-stochastic-calculations.md', to: 'about/rfcs/0005-stochastic-calculations.md' },
+  { from: 'docs/rfcs/0006-hospitality-module.md',     to: 'about/rfcs/0006-hospitality-module.md' },
 ];
 
 // ─── Link rewriter ────────────────────────────────────────────────────────────
@@ -117,6 +123,13 @@ function rewriteLinks(md) {
 
     if (NORMALIZED_LINK_MAP.has(norm)) {
       return `](${NORMALIZED_LINK_MAP.get(norm)}${frag})`;
+    }
+
+    // Numbered RFC paths — both `docs/rfcs/NNNN-slug.md` (from repo-root docs)
+    // and `NNNN-slug.md` (from inside docs/rfcs/) map to /about/rfcs/NNNN-slug.
+    const rfcMatch = norm.match(/^(?:docs\/rfcs\/)?(\d{4}-[a-z0-9-]+)\.md$/);
+    if (rfcMatch) {
+      return `](/about/rfcs/${rfcMatch[1]}${frag})`;
     }
 
     // Paths into source/code dirs → link out to GitHub

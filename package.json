@@ -6,17 +6,20 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @uwmd/core",
-    "test": "npm test -w @uwmd/core",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
     "cli": "node packages/uwmd-cli/bin/uwmd.mjs",
     "conformance": "node scripts/run-conformance.mjs",
-    "validate-schemas": "node scripts/validate-schemas.mjs"
+    "validate-schemas": "node scripts/validate-schemas.mjs",
+    "lint": "biome lint .",
+    "format": "biome format --write ."
   },
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1"
   }

@@ -31,7 +31,7 @@ async function regenTier1() {
     const canonical = JSON.parse(JSON.stringify(parsed, (k, v) => k === 'raw' ? undefined : v));
     await writeFile(
       join(expectedDir, `${id}.parsed.json`),
-      JSON.stringify(canonical, null, 2) + '\n',
+      `${JSON.stringify(canonical, null, 2)}\n`,
     );
 
     const summary = render(parsed, { format: 'summary' });

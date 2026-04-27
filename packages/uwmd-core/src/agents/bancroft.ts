@@ -75,7 +75,7 @@ export async function runBancroftAgent(
   const toolName = isMultiSection ? 'write_multiple_uw_sections' : 'write_uw_section';
 
   let currentContent = fileContent;
-  let currentParsed = parseUWFile(fileContent);
+  const currentParsed = parseUWFile(fileContent);
 
   // ── Context check ──────────────────────────────────────────────────────────
   const ctx = buildAgentContext(currentParsed, agentId);

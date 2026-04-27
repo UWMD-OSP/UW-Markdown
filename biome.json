@@ -1,0 +1,60 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "files": {
+    "ignore": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.vitepress/dist/**",
+      "**/.vitepress/cache/**",
+      "**/coverage/**",
+      "**/*.tsbuildinfo",
+      "package-lock.json",
+      "**/package-lock.json",
+      "examples/**",
+      "conformance/**/expected/**",
+      "conformance/**/fixtures/**",
+      "spec/schemas/**",
+      "tools/docs-site/spec/**",
+      "tools/docs-site/conformance/**",
+      "tools/docs-site/about/**"
+    ]
+  },
+  "organizeImports": { "enabled": false },
+  "formatter": { "enabled": false },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off",
+        "useNodejsImportProtocol": "warn"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noConsoleLog": "off",
+        "noAssignInExpressions": "warn"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "useLiteralKeys": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "warn"
+      },
+      "performance": {
+        "noDelete": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "es5",
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "lineWidth": 100
+    }
+  }
+}

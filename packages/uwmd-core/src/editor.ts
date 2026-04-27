@@ -214,7 +214,7 @@ function applySectionReplace(
     };
   }
 
-  if (policy && policy.supersede_on_edit) {
+  if (policy?.supersede_on_edit) {
     return {
       ok: false,
       error: protoError(
@@ -399,7 +399,7 @@ function matchSource(source: string, pattern: string): { matched: boolean; score
   if (pattern === source) return { matched: true, score: 1_000_000 };
   if (!pattern.includes('*')) return { matched: false, score: 0 };
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
-  const re = new RegExp('^' + escaped + '$');
+  const re = new RegExp(`^${escaped}$`);
   if (re.test(source)) return { matched: true, score: pattern.length };
   return { matched: false, score: 0 };
 }
@@ -482,7 +482,7 @@ function markBlockSuperseded(lines: string[], block: UWBlock): string[] {
   }
   for (let i = block.lineStart; i < block.lineEnd - 1; i++) {
     const line = result[i];
-    if (line && line.includes('"superseded": false')) {
+    if (line?.includes('"superseded": false')) {
       result[i] = line.replace('"superseded": false', '"superseded": true');
       break;
     }

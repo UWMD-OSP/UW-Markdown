@@ -13,6 +13,7 @@ import type {
   ValidationResult,
   EditOperation,
   EditContext,
+  EditResult,
 } from '@uwmd/core/browser';
 
 export interface EditState {
@@ -50,7 +51,7 @@ export function runEdit(
   op: EditOperation,
   ctx: EditContext = DEFAULT_CONTEXT
 ): EditOutcome {
-  let result;
+  let result: EditResult;
   try {
     result = applyEdit(state.source, state.parsed, op, ctx);
   } catch (err) {

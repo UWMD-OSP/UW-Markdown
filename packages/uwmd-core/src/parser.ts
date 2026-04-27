@@ -87,7 +87,7 @@ function parseScalar(raw: string): unknown {
   }
   // Number
   const num = Number(raw);
-  if (!isNaN(num) && raw !== '') return num;
+  if (!Number.isNaN(num) && raw !== '') return num;
   return raw;
 }
 
@@ -104,7 +104,7 @@ function parseFenceAnnotation(sectionId: string, rest: string): UWFenceAnnotatio
 
     switch (key) {
       case 'v':
-        annotation.v = parseInt(value, 10);
+        annotation.v = Number.parseInt(value, 10);
         break;
       case 'superseded':
         annotation.superseded = value === 'true';
@@ -130,7 +130,7 @@ const MULTI_VARIANT_SECTIONS = new Set([
 ]);
 
 // Sections routed to dedicated collections rather than the main sections map
-const RESERVED_SECTION_IDS = new Set([
+const _RESERVED_SECTION_IDS = new Set([
   'pipeline_log',
   'custom_calculations',
   'custom_scenarios',

@@ -107,7 +107,7 @@ class UWMDFoldingProvider implements vscode.FoldingRangeProvider {
     const lineCount = doc.lineCount;
 
     let frontmatterStart = -1;
-    let headingStack: { line: number; level: number }[] = [];
+    const headingStack: { line: number; level: number }[] = [];
     let fenceStart = -1;
 
     for (let i = 0; i < lineCount; i++) {

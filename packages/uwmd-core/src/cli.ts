@@ -107,7 +107,7 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
     console.log(`\nIssues (${result.issues.length}):`);
     for (const issue of result.issues) {
       const prefix = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN] ' : '[INFO] ';
-      const location = issue.section ? ` [${issue.section}${issue.field ? '.' + issue.field : ''}]` : '';
+      const location = issue.section ? ` [${issue.section}${issue.field ? `.${issue.field}` : ''}]` : '';
       console.log(`  ${prefix}${location} ${issue.message}`);
     }
   } else {
@@ -271,13 +271,13 @@ switch (command) {
     const result = render(parsedFile, {
       format: fmt as RenderFormat,
       tier: flags['tier'] as RenderTier | undefined,
-      maxTokens: flags['max-tokens'] ? parseInt(flags['max-tokens'] as string, 10) : undefined,
+      maxTokens: flags['max-tokens'] ? Number.parseInt(flags['max-tokens'] as string, 10) : undefined,
     });
     if (flags['output']) {
       writeFileSync(resolve(flags['output'] as string), result.content, 'utf-8');
       console.log(`Rendered ${fmt} → ${flags['output']}${result.truncated ? ' [TRUNCATED]' : ''}${result.estimatedTokens ? ` (~${result.estimatedTokens} tokens)` : ''}`);
     } else {
-      process.stdout.write(result.content + '\n');
+      process.stdout.write(`${result.content}\n`);
       if (result.estimatedTokens) process.stderr.write(`(~${result.estimatedTokens} tokens)\n`);
     }
     break;

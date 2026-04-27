@@ -75,7 +75,7 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       if (typeof test !== 'boolean') {
         throw new CalcError('CALC-TYPE-001', `Ternary condition must be boolean, got ${typeof test}.`);
       }
-      return test ? evalNode(expr.then, ctx, state) : evalNode(expr.else, ctx, state);
+      return test ? evalNode(expr.consequent, ctx, state) : evalNode(expr.else, ctx, state);
     }
   }
 }
@@ -134,7 +134,7 @@ function evalBinary(op: string, l: CalcValue, r: CalcValue): CalcValue {
         throw new CalcError('CALC-TYPE-001', `Operator '${op}' requires numbers.`);
       }
       if ((op === '/' || op === '%') && r === 0) {
-        throw new CalcError('CALC-DIV-ZERO', `Division by zero.`);
+        throw new CalcError('CALC-DIV-ZERO', 'Division by zero.');
       }
       if (op === '-') return l - r;
       if (op === '*') return l * r;

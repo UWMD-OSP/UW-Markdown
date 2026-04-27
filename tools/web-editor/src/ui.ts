@@ -152,7 +152,7 @@ function makeNavRow(
   onSelect: (id: string) => void
 ): HTMLLIElement {
   const li = document.createElement('li');
-  li.className = 'section-item' + (activeId === id ? ' active' : '');
+  li.className = `section-item${activeId === id ? ' active' : ''}`;
   li.innerHTML = `<span>${escapeHtml(label)}</span>${badge ?? ''}`;
   li.addEventListener('click', () => onSelect(id));
   return li;
