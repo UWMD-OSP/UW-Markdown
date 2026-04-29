@@ -24,8 +24,91 @@ const FRONTMATTER_RE = /^---\s*$/;
 const KV_RE = /(\w+)=([^\s]+)/g;
 
 // ─── YAML frontmatter parser ──────────────────────────────────────────────────
-// Minimal inline parser — handles the scalar types used in .uw.md frontmatter.
-// For full YAML support, swap this for js-yaml: yaml.load(yamlText).
+// Deliberately implements a strict YAML SUBSET — see UW_FORMAT_SPEC_v1.md
+// Appendix A "YAML subset" for the full grammar. The supported surface:
+//
+//   - Scalars: string (bare or single/double-quoted), number, boolean, null, ~
+//   - Mappings: `key: value` and one-level nested `key:` + indented children
+//   - Sequences: `- item` lines under a key
+//   - Comments: `#` to end of line
+//   - Empty inline arrays: `[]`
+//
+// Explicitly REJECTED with UNSUPPORTED_YAML_FEATURE so authors are not lulled
+// into thinking these work:
+//
+//   - Anchors and aliases (`&name`, `*name`)
+//   - Explicit tags (`!!str`, `!!int`, `!Custom`)
+//   - Multi-line literal/folded scalars (`|`, `>`)
+//   - Flow-style mappings or sequences (`{a: 1}`, `[1, 2, 3]` other than `[]`)
+//   - Complex keys (`?` indicator)
+//   - YAML directives (`%YAML`, `%TAG`)
+//
+// Detection runs as a pre-pass on the frontmatter lines so we can point at the
+// exact line that broke the contract.
+
+const UNSUPPORTED_YAML_PATTERNS: { pattern: RegExp; feature: string }[] = [
+  // Anchor / alias indicators: `key: &name value` or `key: *name`. Must follow
+  // the colon (or appear at line start as a sequence-item alias).
+  { pattern: /:\s*&\w/, feature: 'YAML anchor (&name)' },
+  { pattern: /:\s*\*\w/, feature: 'YAML alias (*name)' },
+  { pattern: /^\s*-\s*&\w/, feature: 'YAML anchor (&name) on sequence item' },
+  { pattern: /^\s*-\s*\*\w/, feature: 'YAML alias (*name) on sequence item' },
+  // Explicit tags: `!!str`, `!!int`, `!Custom`. `!=` and `!==` are valid in
+  // strings, so require the next char to be a letter or another `!`.
+  { pattern: /:\s*!!?[A-Za-z]/, feature: 'YAML explicit tag (!! / !)' },
+  // Multi-line literal/folded block scalars at end of a `key:` line.
+  { pattern: /:\s*[|>][+-]?\s*(#.*)?$/, feature: 'YAML block scalar (| or >)' },
+  // Complex key indicator at start of a line.
+  { pattern: /^\s*\?\s/, feature: 'YAML complex key (?)' },
+  // YAML directives.
+  { pattern: /^%(YAML|TAG)\b/, feature: 'YAML directive (%YAML / %TAG)' },
+];
+
+export class UWMDParseError extends Error {
+  readonly code: string;
+  readonly line?: number;
+  readonly feature?: string;
+  constructor(code: string, message: string, opts: { line?: number; feature?: string } = {}) {
+    super(`[${code}] ${message}`);
+    this.name = 'UWMDParseError';
+    this.code = code;
+    this.line = opts.line;
+    this.feature = opts.feature;
+  }
+}
+
+function rejectUnsupportedYaml(lines: string[]): void {
+  for (let n = 0; n < lines.length; n++) {
+    const line = lines[n];
+    // Strip trailing comment so `# anchor` text doesn't false-positive.
+    const codePart = stripYamlComment(line);
+    for (const { pattern, feature } of UNSUPPORTED_YAML_PATTERNS) {
+      if (pattern.test(codePart)) {
+        throw new UWMDParseError(
+          'UNSUPPORTED_YAML_FEATURE',
+          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix A).`,
+          { line: n + 1, feature },
+        );
+      }
+    }
+  }
+}
+
+function stripYamlComment(line: string): string {
+  // Conservative: only strip `#` that follows whitespace AND is not inside
+  // a quoted string. Good enough for a frontmatter-rejection pre-pass.
+  let inSingle = false;
+  let inDouble = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === "'" && !inDouble) inSingle = !inSingle;
+    else if (c === '"' && !inSingle) inDouble = !inDouble;
+    else if (c === '#' && !inSingle && !inDouble && (i === 0 || /\s/.test(line[i - 1]!))) {
+      return line.slice(0, i);
+    }
+  }
+  return line;
+}
 
 function parseYamlFrontmatter(text: string): Record<string, unknown> {
   const result: Record<string, unknown> = {};
@@ -166,8 +249,13 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
     }
     i++; // move past closing ---
     try {
+      // Hard reject unsupported YAML features (anchors, tags, block scalars,
+      // etc.) regardless of strict mode — these silently produced wrong data
+      // before, which is worse than a clean error.
+      rejectUnsupportedYaml(yamlLines);
       result.frontmatter = parseYamlFrontmatter(yamlLines.join('\n')) as UWFrontmatter;
     } catch (err) {
+      if (err instanceof UWMDParseError) throw err;
       if (strict) throw new Error(`Frontmatter parse error: ${err}`);
       (result.frontmatter as Record<string, unknown>)._parse_error = String(err);
     }

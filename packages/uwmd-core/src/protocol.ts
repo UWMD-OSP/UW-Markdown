@@ -26,7 +26,7 @@ import type {
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.0.0' as const;
+export const PROTOCOL_VERSION = '1.1.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -182,6 +182,246 @@ export interface SectionViewModel {
 }
 
 export type ViewModelRegistry = Readonly<Record<string, SectionViewModel>>;
+
+// ─── Source tags & fallback cascade (Protocol §IX) ────────────────────────────
+
+/**
+ * Ordered cascade steps used to resolve a value that has no explicit
+ * user input or document extraction. A producer MUST stamp
+ * `_meta.source` with the cascade step that produced the value, and
+ * MUST NOT reorder this cascade. See protocol §IX.
+ *
+ * Step 0 (`user_override`) and step 1 (`user_input`) are detected by
+ * walking the parsed file for an existing block at the field path
+ * whose `_meta.source` matches; the remaining steps are looked up in
+ * external tables (investor profile, market data) or built-in tables
+ * (asset class, global, system).
+ */
+export type CascadeStep =
+  | 'user_override'
+  | 'user_input'
+  | 'investor_profile'
+  | 'market_data'
+  | 'asset_class_default'
+  | 'global_default'
+  | 'system_default';
+
+/** Ordered cascade as a runtime value (frozen). Index === precedence. */
+export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
+  'user_override',
+  'user_input',
+  'investor_profile',
+  'market_data',
+  'asset_class_default',
+  'global_default',
+  'system_default',
+]);
+
+/**
+ * The full set of canonical short-form source tags producers stamp into
+ * `_meta.source`. The first seven values match `CascadeStep` 1:1; the
+ * remaining four are non-cascade tags retained from v1.0 for back-compat
+ * (`manual`, `ai_extracted`, `agent_computed`, `scenario_default`).
+ *
+ * `scenario_default` is retained but its meaning is sharpened to mean
+ * "value derived from a named scenario in the file or institution
+ * config." Producers needing a generic fallback SHOULD use
+ * `system_default` instead.
+ *
+ * Long-form patterns (e.g. `agent/L6-01`, `document/rent_roll`,
+ * `import:filename.pdf`) remain valid; this constant enumerates the
+ * canonical short forms only.
+ */
+export const SOURCE_TAGS = Object.freeze([
+  'user_input',
+  'user_override',
+  'manual',
+  'investor_profile',
+  'market_data',
+  'ai_extracted',
+  'agent_computed',
+  'asset_class_default',
+  'scenario_default',
+  'global_default',
+  'system_default',
+] as const);
+
+export type CanonicalSourceTag = (typeof SOURCE_TAGS)[number];
+
+// ─── Incomplete-data policies (Format Spec §4.22) ─────────────────────────────
+
+/**
+ * What a producer should do when an incomplete-data condition (missing or
+ * provisional value) is encountered for a `(section, field, stage)` tuple.
+ *
+ * - `halt`        — refuse to advance; surface as DQ-02 error.
+ * - `degrade`     — continue, but mark the affected output as conditional.
+ * - `substitute`  — fill from the cascade step named by `fallback_source`.
+ * - `defer`       — continue and surface the gap; treat the deficiency as
+ *                   acceptable at this stage.
+ */
+export type GapAction =
+  | { kind: 'halt' }
+  | { kind: 'degrade' }
+  | { kind: 'substitute'; fallback_source: CascadeStep }
+  | { kind: 'defer' };
+
+export interface IncompleteDataPolicy {
+  /** Section the policy applies to. Required. */
+  section: string;
+  /** Optional dot-path within the section. When omitted, the policy applies
+   *  to the whole section. */
+  field_path?: string;
+  /** Optional pipeline stage. When omitted, the policy applies at every stage. */
+  stage?: import('./types.js').DealStage;
+  action: GapAction;
+  /** Human-readable explanation of why this policy exists. */
+  rationale?: string;
+}
+
+/**
+ * Curated default policies covering high-impact (section, stage) pairs in the
+ * multifamily workflow. Adopters MAY extend this set; lookups consult adopter
+ * policies first, then these defaults.
+ *
+ * Policies stack: more-specific (with field_path) wins over less-specific;
+ * within the same specificity, more-specific stage wins over wildcard.
+ */
+export const BUILTIN_INCOMPLETE_DATA_POLICIES: readonly IncompleteDataPolicy[] = Object.freeze([
+  // ─── rent_roll ─────────────────────────────────────────────────────────────
+  {
+    section: 'rent_roll',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+    rationale: 'Scope-stage triage: assume default vacancy/occupancy.',
+  },
+  {
+    section: 'rent_roll',
+    stage: 'screening',
+    action: { kind: 'degrade' },
+    rationale: 'Screening tolerates estimates; surface as conditional.',
+  },
+  {
+    section: 'rent_roll',
+    stage: 'full_underwrite',
+    action: { kind: 'halt' },
+    rationale: 'Full underwrite requires the actual rent roll.',
+  },
+
+  // ─── noi_model ─────────────────────────────────────────────────────────────
+  {
+    section: 'noi_model',
+    field_path: 'expense_ratio',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'noi_model',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'noi_model',
+    stage: 'screening',
+    action: { kind: 'degrade' },
+  },
+  {
+    section: 'noi_model',
+    stage: 'full_underwrite',
+    action: { kind: 'halt' },
+    rationale: 'Full underwrite requires a T-12 / proforma derived NOI.',
+  },
+
+  // ─── debt_structure ────────────────────────────────────────────────────────
+  {
+    section: 'debt_structure',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'debt_structure',
+    stage: 'screening',
+    action: { kind: 'substitute', fallback_source: 'investor_profile' },
+  },
+  {
+    section: 'debt_structure',
+    stage: 'term_sheet',
+    action: { kind: 'halt' },
+    rationale: 'Term sheet stage requires concrete debt terms.',
+  },
+
+  // ─── valuation ─────────────────────────────────────────────────────────────
+  {
+    section: 'valuation',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'valuation',
+    stage: 'full_underwrite',
+    action: { kind: 'halt' },
+  },
+
+  // ─── borrower_sponsor ──────────────────────────────────────────────────────
+  {
+    section: 'borrower_sponsor',
+    stage: 'screening',
+    action: { kind: 'defer' },
+    rationale: 'Sponsor diligence often arrives later; record but allow advance.',
+  },
+  {
+    section: 'borrower_sponsor',
+    stage: 'credit_approval',
+    action: { kind: 'halt' },
+  },
+
+  // ─── compliance ────────────────────────────────────────────────────────────
+  {
+    section: 'compliance',
+    stage: 'closing',
+    action: { kind: 'halt' },
+    rationale: 'Compliance gaps cannot be carried into closing.',
+  },
+]);
+
+/**
+ * Look up the most-specific applicable policy for `(section, field_path, stage)`.
+ *
+ * Specificity order (highest to lowest):
+ *   1. matching section + matching field_path + matching stage
+ *   2. matching section + matching field_path (any stage)
+ *   3. matching section + matching stage (any field)
+ *   4. matching section (any field, any stage)
+ *
+ * Returns null when no policy matches.
+ */
+export function lookupIncompleteDataPolicy(
+  section: string,
+  field_path: string | undefined,
+  stage: import('./types.js').DealStage,
+  policies: readonly IncompleteDataPolicy[] = BUILTIN_INCOMPLETE_DATA_POLICIES,
+): IncompleteDataPolicy | null {
+  let best: IncompleteDataPolicy | null = null;
+  let bestScore = -1;
+  for (const p of policies) {
+    if (p.section !== section) continue;
+    const fieldMatch = p.field_path === undefined || p.field_path === field_path;
+    if (!fieldMatch) continue;
+    const stageMatch = p.stage === undefined || p.stage === stage;
+    if (!stageMatch) continue;
+    let score = 0;
+    if (p.field_path !== undefined) score += 4;
+    if (p.stage !== undefined) score += 2;
+    // Tie-break: prefer policies for the exact stage over wildcard, even if
+    // both have field_path defined.
+    if (p.stage === stage) score += 1;
+    if (score > bestScore) {
+      bestScore = score;
+      best = p;
+    }
+  }
+  return best;
+}
 
 // ─── Edit semantics (Part V) ──────────────────────────────────────────────────
 
@@ -594,6 +834,15 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
       { path: 'rationale',  label: 'Rationale', kind: 'string' },
     ],
   },
+  gaps: {
+    section_id: 'gaps', display_name: 'Gaps', display_order: 21,
+    description: 'Open data gaps blocking stage advancement or carrying provisional defaults. Maintained by the editor when --maintain-gaps is on; otherwise hand-curated.',
+    primary_fields: [
+      { path: 'summary.total_open',              label: 'Open',              kind: 'count', primary: true },
+      { path: 'summary.blocking_current_stage',  label: 'Blocking Current',  kind: 'count' },
+      { path: 'summary.blocking_next_stage',     label: 'Blocking Next',     kind: 'count' },
+    ],
+  },
 });
 
 /**
@@ -685,6 +934,196 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A section\'s _meta.timestamp is older than the file last_modified by more than 30 days.',
     remediation: 'Refresh the section, supersede with a new agent/manual write, or mark deliberate stale.',
     spec_ref: '§5.3 CC-10',
+  },
+  {
+    code: 'DQ-01', severity: 'warning',
+    title: 'Provisional block without gap entry',
+    description: 'A block is marked _meta.provisional=true but no entry in the `gaps` section references it.',
+    remediation: 'Add a `gaps` item naming this section/path (or run editor with --maintain-gaps), or remove the provisional flag.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §3.4 / §4.22',
+  },
+  {
+    code: 'DQ-02', severity: 'error',
+    title: 'Provisional value consumed at incompatible stage',
+    description: 'A provisional / placeholder value is being consumed at a stage whose policy requires real data.',
+    remediation: 'Replace the provisional value with observed data, downgrade deal_stage, or update INCOMPLETE_DATA_POLICIES if appropriate.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.7-§V.8',
+  },
+  {
+    code: 'DQ-03', severity: 'warning',
+    title: 'Partial block without field-level enumeration',
+    description: 'A block is marked _meta.partial=true but has no _meta.field_overrides[] enumeration.',
+    remediation: 'List the affected paths in field_overrides with reason ("missing"|"illegible"|"estimated").',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §3.4',
+  },
+  {
+    code: 'DQ-04', severity: 'error',
+    title: 'Scope-stage readiness gap',
+    description: 'A field required for scope-stage readiness is missing.',
+    remediation: 'Provide the missing scope-stage field (property.address, property.asset_class, and at least one of property.units or property.asking_price) or downgrade deal_stage.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2',
+  },
+  {
+    code: 'DQ-05', severity: 'info',
+    title: 'Stale gap',
+    description: 'A `gaps` item has not been re-checked recently and may be obsolete.',
+    remediation: 'Re-check the gap and refresh `last_checked`, or close the gap if it has been resolved.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §4.22',
+  },
+
+  // ─── Integrity (INT-NN) — content_hash / parent_hash chain checks ──────────
+  {
+    code: 'INT-01', severity: 'error',
+    title: 'Parent hash mismatch',
+    description: 'A block\'s _meta.parent_hash does not equal the prior block\'s _meta.content_hash in the supersede chain.',
+    remediation: 'Recompute the block from the current head: stamp parent_hash with the prior block\'s content_hash and bump the version.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.10',
+  },
+  {
+    code: 'INT-02', severity: 'error',
+    title: 'Stale parent hash on edit',
+    description: 'applyEdit was invoked with a parent_hash that does not match the current head of the section.',
+    remediation: 'Re-read the file, take the latest head\'s content_hash, and retry the edit with the fresh parent_hash.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.10',
+  },
+  {
+    code: 'INT-03', severity: 'warning',
+    title: 'Partially hashed chain',
+    description: 'Some blocks in a supersede chain carry _meta.content_hash and others do not.',
+    remediation: 'Once any block in a chain is hashed, every subsequent block MUST be hashed; rehash the unstamped blocks.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.10',
+  },
+  {
+    code: 'INT-04', severity: 'warning',
+    title: 'Content hash does not recompute',
+    description: 'A block\'s stamped _meta.content_hash does not match the SHA-256 of its current canonicalized content.',
+    remediation: 'Either restore the original content or re-stamp content_hash from the current canonicalized form.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.9',
+  },
+
+  // ─── Provenance / policy (POL-NN) — actor and operation authority ──────────
+  {
+    code: 'POL-01', severity: 'error',
+    title: 'Unauthorized actor',
+    description: 'The block\'s _meta.actor is not authorized to write this section per its EditPolicy.',
+    remediation: 'Re-issue the edit from an actor allowed by the section\'s policy (see BUILTIN_EDIT_POLICIES).',
+    spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+  },
+  {
+    code: 'POL-02', severity: 'error',
+    title: 'Replace where supersede is required',
+    description: 'The section\'s policy requires supersede_on_edit but the head version > 1 has no superseded prior versions.',
+    remediation: 'Re-issue the edit as section_supersede so the prior version is preserved as a superseded block.',
+    spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+  },
+
+  // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────
+  // Severity is the *highest* severity any emission of this code can carry
+  // (e.g. FV-04 may be warning OR error depending on threshold).
+  {
+    code: 'FV-01', severity: 'warning',
+    title: 'Cap rate below threshold',
+    description: 'Going-in cap rate is below the configured warning threshold.',
+    remediation: 'Verify NOI and purchase price; an unusually low cap rate often indicates an aggressive valuation.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-02', severity: 'warning',
+    title: 'Cap rate above threshold',
+    description: 'Going-in cap rate is above the configured warning threshold.',
+    remediation: 'A high cap rate may indicate distressed pricing or market dislocation; confirm the underwriting story.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-03', severity: 'warning',
+    title: 'Debt yield below threshold',
+    description: 'Debt yield is below the configured warning threshold.',
+    remediation: 'Re-check NOI and loan amount; consider a smaller loan or higher equity.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-04', severity: 'error',
+    title: 'DSCR below threshold',
+    description: 'DSCR is below the configured threshold (warning or error).',
+    remediation: 'Re-size the loan, lower the rate assumption, or increase NOI to meet the lender constraint.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-05', severity: 'warning',
+    title: 'Equity multiple below minimum',
+    description: 'Levered equity multiple is below the configured minimum.',
+    remediation: 'Re-examine hold period, exit assumptions, and capital structure.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-06', severity: 'warning',
+    title: 'Equity multiple above maximum',
+    description: 'Levered equity multiple is above the configured maximum (likely unrealistic).',
+    remediation: 'Sanity-check exit cap, rent growth, and hold-period assumptions.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-07', severity: 'warning',
+    title: 'IRR below threshold',
+    description: 'Levered IRR is below the configured warning threshold.',
+    remediation: 'Verify the projected exit value and cash-flow trajectory.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-08', severity: 'warning',
+    title: 'IRR above threshold',
+    description: 'Levered IRR is above the configured warning threshold (likely unrealistic).',
+    remediation: 'An IRR over the upper threshold usually signals an aggressive exit cap or rent-growth assumption.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-09', severity: 'error',
+    title: 'LTV above threshold',
+    description: 'LTV is above the configured threshold (warning or error).',
+    remediation: 'Reduce loan size or increase appraised value support.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-10', severity: 'warning',
+    title: 'OpEx ratio below minimum',
+    description: 'OpEx as a share of EGI is suspiciously low.',
+    remediation: 'Verify that all operating line items are captured (taxes, insurance, management, R&M, payroll, utilities).',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-11', severity: 'warning',
+    title: 'OpEx ratio above maximum',
+    description: 'OpEx as a share of EGI is unusually high.',
+    remediation: 'Investigate one-time items, deferred maintenance, or below-market rents.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-12', severity: 'warning',
+    title: 'Annual rent growth above threshold',
+    description: 'Annual rent growth assumption exceeds the configured threshold.',
+    remediation: 'Tie rent growth to a published submarket forecast or document the rationale.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-13', severity: 'warning',
+    title: 'Vacancy below minimum',
+    description: 'Vacancy assumption is below the configured floor.',
+    remediation: 'Use the higher of submarket stabilized vacancy or institutional minimum.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-14', severity: 'warning',
+    title: 'Vacancy above maximum',
+    description: 'Vacancy assumption is above the configured warning threshold.',
+    remediation: 'A vacancy over the upper threshold usually indicates lease-up or distress; re-examine the value-creation story.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'UNSUPPORTED_YAML_FEATURE', severity: 'error',
+    title: 'Unsupported YAML feature in frontmatter',
+    description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',
+    remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC_v1.md Appendix A — scalars, simple mappings, and dash-prefixed sequences.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md Appendix A',
   },
 ]);
 

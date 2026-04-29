@@ -36,6 +36,12 @@ and how it gets accepted.
 | [0004](./0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | draft | conformance, tooling |
 | [0005](./0005-stochastic-calculations.md) | Stochastic calculations                    | draft | protocol, core, conformance |
 | [0006](./0006-hospitality-module.md)    | Hospitality reference module                | draft | core, conformance |
+| [0007](./0007-sensitivity-tables.md)    | Sensitivity tables as a calc primitive      | draft | protocol, core, conformance |
+| [0008](./0008-lease-up-modeling.md)     | Lease-up modeling                           | draft | protocol, core, conformance |
+| [0009](./0009-meta-v2-reorg.md)         | `_meta` v2 sub-object reorganization        | draft | format, protocol, core, conformance |
+| [0010](./0010-signed-blocks.md)         | Signed blocks                               | draft | format, protocol, core, conformance |
+| [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | draft | protocol, core, conformance |
+| [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
 
 ## Status values
 

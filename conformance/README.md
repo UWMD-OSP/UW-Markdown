@@ -12,14 +12,26 @@ The corpus is organized by **conformance tier** (see
 ```
 conformance/
 ├── tier-1-reader/      Parse + display, read-only
-│   ├── fixtures/       .uw.md files an implementer parses
+│   ├── fixtures/       Well-formed .uw.md files an implementer parses
+│   ├── malformed/      Files exercising validator / integrity / policy codes
+│   │                     (CC-NN, FV-NN, DQ-NN, INT-NN, POL-NN, META_*)
+│   │                     plus optional <id>.policies.json siblings for
+│   │                     POL-* fixtures
 │   └── expected/       Expected JSON parses + display strings + chat-format renders
 ├── tier-2-editor/      Round-trip writes, supersede semantics
 │   └── fixtures/       <scenario>/{before.uw.md, operation.json, after.uw.md}
+│                         Optional siblings: context.json (EditContext),
+│                         options.json (ApplyEditOptions, e.g. {integrity: true,
+│                         maintainGaps: true}), expected-error.json (negative
+│                         path — assert applyEdit rejects with a specific code)
 ├── tier-3-calc-host/   Custom calculation evaluation
-│   └── fixtures/       <scenario>/{deal.uw.md, calc.json, expected-result.json}
+│   ├── fixtures/       <scenario>/{deal.uw.md, calc.json, expected-result.json}
+│   └── refinement/     <scenario>/{deal.uw.md, expected-graph.json}
+│                         Exercises extractDependencyGraph() against a fixture
 └── tier-4-agent-host/  AI agent layers producing write_uw_section calls
-    └── fixtures/       <scenario>/{before.uw.md, expected-after-shape.json}
+    ├── fixtures/       <scenario>/{before.uw.md, expected-after-shape.json}
+    └── profile/        <scenario>/{expected-layer-profiles.json}
+                          Asserts BANCROFT_LAYERS layer→consumed_profile contract
 ```
 
 ## How to self-certify
@@ -58,8 +70,10 @@ node scripts/run-conformance.mjs --json
 ```
 
 Volatile fields stripped before byte comparison: `last_modified`,
-`_meta.timestamp`, `ts=` fence attributes. These change every run and are
-not normative.
+`_meta.timestamp`, `ts=` fence attributes, and `_meta.content_hash`
+values (hashes canonicalize over the timestamp, so they vary per run
+even when content is stable). These change every run and are not
+normative.
 
 ## Adding a fixture
 

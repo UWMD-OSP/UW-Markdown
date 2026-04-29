@@ -98,6 +98,42 @@
         },
         "notes": {
           "type": ["string", "null"]
+        },
+        "partial": {
+          "type": "boolean",
+          "description": "Optional. True when at least one field inside the block is missing or unknown. When true, field_overrides SHOULD enumerate which paths and why. See format spec Part III §3."
+        },
+        "provisional": {
+          "type": "boolean",
+          "description": "Optional. True when the entire block is a placeholder derived from defaults rather than observed data. Stronger than confidence:'low'."
+        },
+        "field_overrides": {
+          "type": "array",
+          "description": "Optional. Per-field overrides where block-level confidence/source does not apply uniformly.",
+          "items": {
+            "type": "object",
+            "required": ["path"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Dot-notated path relative to the block content root (e.g. 'units[7].current_rent')."
+              },
+              "confidence": { "enum": ["high", "medium", "low"] },
+              "source": { "type": "string" },
+              "reason": { "enum": ["illegible", "missing", "overridden", "estimated", "computed"] },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "Optional. sha256 of the canonicalized block content (RFC 8785 JCS minus _meta.content_hash and _meta.signature). See protocol §IX.2."
+        },
+        "parent_hash": {
+          "type": ["string", "null"],
+          "pattern": "^([0-9a-f]{64})?$",
+          "description": "Optional. content_hash of the block this one supersedes; null on a chain root. If any block in a supersede chain has it, all later blocks in that chain MUST."
         }
       }
     }

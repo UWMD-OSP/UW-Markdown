@@ -10,6 +10,7 @@
 import type { ParsedUWFile, UWBlock, UWFrontmatter, PipelineStatus } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
 import { render } from './renderer.js';
+import { buildContext, type ContextProfile, type ContextResult } from './context-profiles.js';
 
 // ─── Agent layer definitions ──────────────────────────────────────────────────
 
@@ -20,6 +21,13 @@ export interface LayerDefinition {
   reads: string[];    // section IDs this layer reads
   writes: string[];   // section IDs this layer writes
   pipelineStateKey: string;
+  /**
+   * Normative context profile this layer consumes (Protocol §XI).
+   * Conformance Tier-4 verifies a host requests exactly this profile when
+   * preparing the layer's input. Phase 4 default; Phase 5 layers (L0a/L0b)
+   * declare their own.
+   */
+  consumed_profile: ContextProfile;
 }
 
 export const BANCROFT_LAYERS: LayerDefinition[] = [
@@ -30,6 +38,25 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: [],  // L0 reads raw documents, not sections
     writes: ['rent_roll', 'operating_statement', 'lease_schedule'],
     pipelineStateKey: 'L0_ingestion',
+    consumed_profile: 'summary',
+  },
+  {
+    id: 'L0a',
+    layer: 0,
+    name: 'Scope',
+    reads: ['property'],
+    writes: ['market_analysis', 'noi_model', 'debt_structure', 'valuation', 'quick_metrics', 'gaps'],
+    pipelineStateKey: 'L0a_scope',
+    consumed_profile: 'summary',
+  },
+  {
+    id: 'L0b',
+    layer: 0,
+    name: 'Scope Refinement',
+    reads: ['*'],
+    writes: ['property', 'noi_model', 'debt_structure', 'gaps'],
+    pipelineStateKey: 'L0b_refinement',
+    consumed_profile: 'compact',
   },
   {
     id: 'L1',
@@ -38,6 +65,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: ['deal_context', 'property', 'ownership'],
     writes: ['screening', 'preliminary_sizing'],
     pipelineStateKey: 'L1_screening',
+    consumed_profile: 'summary',
   },
   {
     id: 'L2',
@@ -46,6 +74,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: ['deal_context', 'property', 'rent_roll', 'operating_statement', 'borrower_sponsor'],
     writes: ['noi_model', 'valuation', 'market_analysis'],
     pipelineStateKey: 'L2_underwriting',
+    consumed_profile: 'relevant',
   },
   {
     id: 'L4',
@@ -54,6 +83,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: ['deal_context', 'property', 'noi_model', 'valuation', 'market_analysis', 'borrower_sponsor', 'sources_uses'],
     writes: ['debt_structure', 'sources_uses', 'covenants'],
     pipelineStateKey: 'L4_structuring',
+    consumed_profile: 'relevant',
   },
   {
     id: 'L5',
@@ -62,6 +92,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: ['deal_context', 'property', 'ownership', 'borrower_sponsor', 'debt_structure', 'valuation'],
     writes: ['compliance'],
     pipelineStateKey: 'L5_compliance',
+    consumed_profile: 'relevant',
   },
   {
     id: 'L6',
@@ -70,6 +101,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: ['deal_context', 'property', 'noi_model', 'valuation', 'debt_structure', 'market_analysis', 'borrower_sponsor', 'stress_tests', 'dcf', 'compliance'],
     writes: ['risk_assessment'],
     pipelineStateKey: 'L6_risk',
+    consumed_profile: 'relevant',
   },
   {
     id: 'L7',
@@ -78,6 +110,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
     reads: ['*'],  // reads everything
     writes: ['pipeline_log', 'deal_context'],  // writes ai_synthesis to deal_context
     pipelineStateKey: 'L7_assembly',
+    consumed_profile: 'live',
   },
 ];
 
@@ -101,6 +134,12 @@ export interface AgentContext {
   // Chat-format context string for direct injection into Claude API messages
   chatContext: string;
   chatTokenEstimate: number;
+  /**
+   * Normative context payload built from the layer's `consumed_profile`
+   * (Protocol §XI). Hosts SHOULD send this — not `chatContext` — to the
+   * agent when running under the conformance contract.
+   */
+  profileContext: ContextResult;
 }
 
 // ─── Main context builder ─────────────────────────────────────────────────────
@@ -156,6 +195,14 @@ export function buildAgentContext(
     maxTokens: opts.maxChatTokens ?? 8000,
   });
 
+  // Build the normative profile context per the layer's declared consumption.
+  // For 'relevant', pass layer.reads as the section filter so the host receives
+  // exactly the documented contract.
+  const profileContext = buildContext(parsed, layer.consumed_profile, {
+    sections: layer.consumed_profile === 'relevant' ? sectionsToRead : undefined,
+    maxTokens: opts.maxChatTokens,
+  });
+
   return {
     agentId,
     layer,
@@ -174,6 +221,7 @@ export function buildAgentContext(
     pipelineState,
     chatContext: chatResult.content,
     chatTokenEstimate: chatResult.estimatedTokens ?? 0,
+    profileContext,
   };
 }
 
@@ -247,6 +295,8 @@ function resolveLayer(agentId: string): LayerDefinition {
 // Absent required sections set context.missingRequired and block isContextReady().
 const REQUIRED_BY_LAYER: Record<string, string[]> = {
   L0: [],
+  L0a: ['property'],
+  L0b: [],   // operates on whatever L0a produced
   L1: ['property'],
   L2: ['property', 'rent_roll'],
   L4: ['noi_model', 'valuation'],
@@ -269,6 +319,8 @@ function getAllSectionIds(parsed: ParsedUWFile): string[] {
 function getLayerDescription(layerId: string): string {
   const descriptions: Record<string, string> = {
     L0: 'You extract structured data from raw uploaded documents (rent rolls, T-12 operating statements, lease schedules). Output must represent exactly what the documents say — no inference, no interpolation.',
+    L0a: 'You produce an initial scoped .uw.md from minimal user input by walking the fallback cascade. Every defaulted value MUST be stamped provisional. Your output is a triage view, not a commitment.',
+    L0b: 'You iteratively ask the user the smallest set of questions that meaningfully tighten the deal\u2019s output ranges. Wraps refinement.ts in a conversational loop. See L0b-prompt.md for the full system prompt.',
     L1: 'You perform initial deal screening — flag red flags, assess deal feasibility against standard thresholds, and produce a preliminary sizing. You are the gatekeeper before full underwriting begins.',
     L2: 'You perform full underwriting analysis — NOI reconstruction, market positioning, valuation, and borrower assessment. You are the primary analytical layer.',
     L4: 'You structure the debt — size the loan, build the sources and uses table, design term sheet terms, and identify covenants. You work from the underwritten NOI and value.',
@@ -309,6 +361,8 @@ export function isContextReady(context: AgentContext): boolean {
 export function getLayerDependencies(layerId: string): string[] {
   const deps: Record<string, string[]> = {
     L0: [],
+    L0a: [],
+    L0b: ['L0a'],
     L1: ['L0'],
     L2: ['L0', 'L1'],
     L4: ['L2'],

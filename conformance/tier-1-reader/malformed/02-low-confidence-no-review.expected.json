@@ -1,0 +1,6 @@
+{
+  "description": "Section has _meta.confidence == 'low' without human_review_required: true. Validator must emit the META_LOW_CONFIDENCE_NO_REVIEW_FLAG advisory.",
+  "must_parse": true,
+  "expected_codes": ["META_LOW_CONFIDENCE_NO_REVIEW_FLAG"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (validator code taxonomy)"
+}

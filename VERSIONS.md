@@ -1,0 +1,80 @@
+# Versions
+
+UW Markdown ships three independently-versioned surfaces. The format
+spec, the protocol spec, and each implementation package each carry
+their own semver per the policy in
+[CHANGELOG.md](CHANGELOG.md#versioning). This file is the
+authoritative compatibility matrix.
+
+## Why three streams?
+
+A format change is not an implementation change. Adopters who write
+their own parsers/validators need to pin against the *format* version,
+not the reference library version. The reference library will release
+patches and features faster than the format will evolve; tying them
+together would force every adopter to track every library release.
+
+The same logic applies to the protocol: a Tier-2 editor and a Tier-3
+calc host can be released independently as long as both honor the
+same protocol version.
+
+## Current matrix
+
+| Surface | Version | Pairs with |
+|---|---|---|
+| `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
+| UW Protocol | **1.1** | format ≥ 1.0 |
+| `@uwmd/core` | **1.0.0** | format 1.1, protocol 1.1 |
+| `uwmd` (CLI) | **1.0.0** | `@uwmd/core` 1.0.x |
+| `@uwmd/excel` | **0.1.0** | `@uwmd/core` 1.0.x, format 1.1 multifamily pack |
+| `tools/web-editor` | **0.1.0** (private) | `@uwmd/core` 1.0.x browser entry |
+| `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
+| `tools/vscode-uwmd` | **0.1.0** | format 1.1 |
+
+## Compatibility rules
+
+1. **Format minor versions are additive.** A 1.2 file may use new
+   sections or fields that a 1.1 reader doesn't understand; the reader
+   MUST still parse known sections per protocol §III.1 ("unknown
+   sections render as default cards"). 1.x files must never break a
+   1.0 reader's ability to read them.
+2. **Protocol minor versions strengthen requirements monotonically.**
+   A 1.1-conformant tool is automatically 1.0-conformant. New required
+   behavior in a 1.x protocol is opt-in for 1.0 tools and becomes
+   normative at the next major.
+3. **Library majors require explicit re-pinning.** `@uwmd/core` 2.x
+   may break the calling shape; 1.x will not. Patches and minors are
+   safe to update through normal `npm install`.
+4. **The format and protocol majors move together.** A `.uw.md` v2
+   file requires UW Protocol v2 to be fully read.
+
+## Pinning recommendations
+
+| If you're building... | Pin to... |
+|---|---|
+| A read-only viewer | format ≥ 1.0, protocol ≥ 1.0, `@uwmd/core@^1` |
+| An editor | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1` |
+| A calc host | format = 1.1, protocol = 1.1, `@uwmd/core@^1.0`, multifamily pack 1.x |
+| An agent host | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1`, plus an LLM SDK of your choice |
+| A CLI script that calls `uwmd` | `uwmd@^1` |
+
+## Release coordination
+
+When a release crosses surfaces (e.g. a format minor that requires
+library changes), the order is:
+
+1. Spec change merged to `main` with the new version number.
+2. Schemas updated and validated in CI.
+3. Library release on the matching version.
+4. Tools that depend on the new behavior bumped to consume the new
+   library.
+5. CHANGELOG entry summarizing the cross-surface release.
+
+Single-surface releases (a library patch with no spec change, a
+tools-only fix) follow normal semver and don't need coordination.
+
+## History
+
+For per-release details see [CHANGELOG.md](CHANGELOG.md). For why a
+specific design was made the way it was, see
+[`docs/rfcs/`](docs/rfcs/) or the relevant spec section.

@@ -176,6 +176,55 @@ sequence of 16 outputs (the test vector for PCG-XSL-RR-64).
 
 5. **Inline samples in the file.** Calc result includes the full sample array as a section content. Rejected — `samples: 100_000` makes files unreadable. The `return_samples: false` default and summary-only output is the right tradeoff; consumers who need the full samples can re-run the calc.
 
+## Range types and "napkin mode" (subsection)
+
+The Phase 5 refinement engine added in v1.1 (see
+[`packages/uwmd-core/src/refinement.ts`](../../packages/uwmd-core/src/refinement.ts))
+ranks gaps by their effect on output ranges, but evaluates those
+ranges via interval arithmetic — propagating `low`/`central`/`high`
+through the calc graph as three independent scalar evaluations. That
+approximation is correct under the monotonicity assumption and
+deliberately cheap, but it leaks information that proper distributions
+would preserve (joint distributions across coupled inputs collapse
+to worst-case brackets).
+
+This RFC's stochastic mechanism is the principled successor: when
+"napkin mode" outputs are needed at scope or screening stage, an
+implementation MAY substitute a stochastic calc for the interval
+approximation. Concretely:
+
+- Each provisional input contributes a distribution rather than a
+  range. The asset-class default tables in
+  [`packages/uwmd-core/src/defaults.ts`](../../packages/uwmd-core/src/defaults.ts)
+  carry `low/central/high`; under this RFC, an adopter MAY interpret
+  those as the parameters of a triangular distribution
+  (`triangular(low, central, high)`) without a spec change.
+- The output for each calc becomes the `distribution` shape defined
+  above. The refinement engine's `range_today` collapses to
+  `{ p10, p90 }` of the sampled distribution, which is tighter and
+  more meaningful than the worst-case interval bracket.
+- VOI ranking remains valid; collapsing a gap reduces the
+  distribution's variance, and the engine ranks by variance
+  reduction instead of interval width.
+
+Two practical constraints:
+
+1. **Determinism**: the refinement engine MUST seed the PRNG
+   deterministically from the file's `deal_id` plus the calc id, so
+   that `uwmd refine` produces the same ranking on every run for the
+   same inputs.
+2. **Performance**: scope-stage refinement runs interactively
+   (sub-second). Sample budget should default to 1,000 per calc per
+   ranking pass — adequate for stable VOI ordering but not for
+   publishable distribution summaries. A separate `--samples` flag on
+   `uwmd refine` lets adopters trade speed for tightness.
+
+The interval-arithmetic implementation in v1.1 is documented as the
+"v1.1 approximation"; this RFC is its principled v2 form. No
+back-compat break: the `RankedGap` shape remains the same
+(`prior_range`, `affected_outputs`, `total_voi`), but the values
+become tighter.
+
 ## Unresolved questions
 
 - **Sample budget.** A host loading 50 stochastic calcs with `samples: 100_000` each evaluates 5M expressions. Recommend a global host limit (`max_total_samples`) reported in `ImplementationManifest.limits`. Default proposal: 1M.

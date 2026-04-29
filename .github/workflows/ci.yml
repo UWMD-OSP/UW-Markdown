@@ -49,6 +49,53 @@ jobs:
       - name: Run conformance suite (tiers 1-3)
         run: node scripts/run-conformance.mjs --tier=1,2,3
 
+  coverage:
+    name: Coverage report
+    runs-on: ubuntu-latest
+    # Soft floor: this job reports coverage to the summary but never fails
+    # the build. Tighten with a hard threshold once the baseline number
+    # has been ratcheted up enough to gate on.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run @uwmd/core test suite with coverage
+        run: npm --prefix packages/uwmd-core run test:coverage
+      - name: Publish coverage summary
+        if: always()
+        run: |
+          set -e
+          summary=packages/uwmd-core/coverage/coverage-summary.json
+          if [ ! -f "$summary" ]; then
+            echo "::warning ::coverage-summary.json not found at $summary"
+            exit 0
+          fi
+          {
+            echo "## @uwmd/core coverage"
+            echo ""
+            node -e '
+              const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).total;
+              const fmt = (m) => m.pct.toFixed(2) + "% (" + m.covered + "/" + m.total + ")";
+              console.log("| Metric | Coverage |");
+              console.log("|---|---|");
+              for (const k of ["lines", "statements", "functions", "branches"]) {
+                console.log("| " + k + " | " + fmt(s[k]) + " |");
+              }
+            ' "$summary"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uwmd-core-coverage
+          path: packages/uwmd-core/coverage/
+          retention-days: 14
+
   validate-schemas:
     name: Validate JSON Schemas
     runs-on: ubuntu-latest

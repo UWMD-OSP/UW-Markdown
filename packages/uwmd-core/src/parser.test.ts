@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
+import { parseUWFile, getSection, getSectionVariant, deepGet, UWMDParseError } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
@@ -310,8 +310,98 @@ describe('Parkview example file', () => {
   it.skipIf(!exampleContent)('validation produces issues (DSCR warning expected)', () => {
     const parsed = parseUWFile(exampleContent);
     const result = validateUWFile(parsed);
-    // The Parkview example has a known DSCR warning (1.109x < 1.20x warning threshold)
-    const dscrIssues = result.issues.filter(i => i.code.includes('DSCR'));
+    // The Parkview example has a known DSCR warning (1.109x < 1.20x warning threshold).
+    // FV codes were renamed to FV-NN in v1.1; legacy_code carries the old name during the
+    // deprecation window (drops in v1.2).
+    const dscrIssues = result.issues.filter(i =>
+      i.code === 'FV-04' || (i.legacy_code ?? '').includes('DSCR')
+    );
     expect(dscrIssues.length).toBeGreaterThan(0);
+  });
+});
+
+// ─── YAML subset enforcement (UW_FORMAT_SPEC_v1.md Appendix D) ────────────────
+
+describe('parseUWFile — YAML subset rejection', () => {
+  const HEADER = `---
+uw_version: "1.1"
+deal_id: "uw_2026_TEST"
+deal_name: "YAML subset test"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "1 Test St"
+city: "Phoenix"
+state: "AZ"
+zip: "85001"
+asset_class: multifamily`;
+
+  function withFrontmatterLine(extra: string): string {
+    return `${HEADER}\n${extra}\n---\n`;
+  }
+
+  it('rejects YAML anchors with UNSUPPORTED_YAML_FEATURE', () => {
+    const content = withFrontmatterLine('shared_address: &addr "1 Anchor Way"');
+    expect(() => parseUWFile(content)).toThrow(UWMDParseError);
+    try {
+      parseUWFile(content);
+    } catch (e) {
+      expect((e as UWMDParseError).code).toBe('UNSUPPORTED_YAML_FEATURE');
+      expect((e as UWMDParseError).feature).toMatch(/anchor/i);
+    }
+  });
+
+  it('rejects YAML aliases with UNSUPPORTED_YAML_FEATURE', () => {
+    const content = withFrontmatterLine('billing_address: *addr');
+    expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it('rejects explicit !! tags with UNSUPPORTED_YAML_FEATURE', () => {
+    const content = withFrontmatterLine('zip_again: !!str 85001');
+    expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it('rejects | block scalar with UNSUPPORTED_YAML_FEATURE', () => {
+    const content = withFrontmatterLine('notes: |\n  line one\n  line two');
+    expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it('rejects > folded block scalar with UNSUPPORTED_YAML_FEATURE', () => {
+    const content = withFrontmatterLine('notes: >\n  folded line');
+    expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it('rejects YAML directives with UNSUPPORTED_YAML_FEATURE', () => {
+    const content = `---\n%YAML 1.2\nuw_version: "1.1"\ndeal_id: "x"\ndeal_name: "x"\ncreated: "2026-01-01T00:00:00Z"\nlast_modified: "2026-01-01T00:00:00Z"\nproperty_address: "1 a"\ncity: "Phoenix"\nstate: "AZ"\nzip: "85001"\nasset_class: multifamily\n---\n`;
+    expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it('accepts the supported subset (scalars, nested mappings, sequences, []) without throwing', () => {
+    const content = `---
+uw_version: "1.1"
+deal_id: "uw_2026_OK"
+deal_name: "All-supported subset"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "1 OK Way"
+city: "Phoenix"
+state: 'AZ'
+zip: "85001"
+asset_class: multifamily
+quick_metrics:
+  purchase_price: 1000000
+  loan_amount: 750000
+flags: []
+tags:
+  - a
+  - b
+# trailing comment is fine
+---
+`;
+    expect(() => parseUWFile(content)).not.toThrow();
+  });
+
+  it('does not false-positive on # in quoted strings', () => {
+    const content = withFrontmatterLine('notes: "# not a comment, just a hash"');
+    expect(() => parseUWFile(content)).not.toThrow();
   });
 });

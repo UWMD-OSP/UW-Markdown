@@ -33,6 +33,15 @@ reference runner to populate `_meta` provenance.
 | `frontmatter-set-recommendation` | `frontmatter_set` of `recommendation` | Frontmatter update + `last_modified` bump |
 | `section-replace-property` | `section_replace` of `property` (manual source) | In-place section replace per `BUILTIN_EDIT_POLICIES` (no supersede) |
 | `section-supersede-risk-rating` | `section_replace` of `risk_assessment` (agent source) | Supersede chain: prior version flagged `superseded: true`, new version appended |
+| `gaps-section-update` | `frontmatter_set` with `options.json: {maintainGaps: true}` | Post-write maintainer hook regenerates the `gaps` section under actor `system/gaps-maintainer` |
+| `parent-hash-stamp` | `section_supersede` with `options.json: {integrity: true}` and `context.json` carrying `parentHash` | `applyEditAsync` recomputes `content_hash` and stamps `parent_hash` against the prior block's hash; `content_hash` is masked as `<volatile>` in baseline because canonicalization includes the timestamp |
+| `stale-parent-rejected` | `section_supersede` with `context.parentHash` deliberately wrong | Negative-path fixture: `expected-error.json` asserts `applyEditAsync` rejects with `INT-02` |
+
+### Optional fixture siblings
+
+- `context.json` — `EditContext` (source, agent_id, agent_version, actor, optional `parentHash`).
+- `options.json` — `ApplyEditOptions` (`{integrity?: boolean, maintainGaps?: boolean, …}`); when `integrity: true` the runner routes the edit through `applyEditAsync`.
+- `expected-error.json` — `{code, category}` for negative-path fixtures. When present, the runner asserts the edit fails with that code instead of comparing against `after.uw.md`.
 
 A conforming Tier-2 Editor's output for `before.uw.md + operation.json` MUST
 match `after.uw.md` after both files are normalized (stripping trailing

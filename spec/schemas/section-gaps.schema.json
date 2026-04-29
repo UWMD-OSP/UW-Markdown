@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-gaps.schema.json",
+  "title": "UW Markdown Gaps Section",
+  "description": "Content payload for the `gaps` standard section (UW_FORMAT_SPEC_v1.md §4.22). Enumerates open data gaps blocking stage advancement or carrying provisional defaults.",
+  "type": "object",
+  "required": ["items"],
+  "additionalProperties": true,
+  "properties": {
+    "items": {
+      "type": "array",
+      "description": "Open gap inventory. Each entry names a missing or low-quality field, optionally with the stage it blocks and an owner.",
+      "items": {
+        "type": "object",
+        "required": ["section", "reason"],
+        "additionalProperties": true,
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Section ID where the gap lives."
+          },
+          "field_path": {
+            "type": "string",
+            "description": "Optional dot-notated path within the section's content. When omitted, the gap applies to the whole section."
+          },
+          "reason": {
+            "enum": [
+              "missing",
+              "illegible",
+              "out_of_scope",
+              "deferred",
+              "blocked_by_dependency",
+              "awaiting_external"
+            ],
+            "description": "Why this gap exists. `missing` and `illegible` typically come from L0 ingestion; `awaiting_external` is used for third-party reports."
+          },
+          "blocks_stage": {
+            "enum": ["scope", "screening", "term_sheet", "full_underwrite", "credit_approval", "closing", "monitoring"],
+            "description": "Lowest stage that cannot advance until this gap closes."
+          },
+          "first_seen": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this gap was first recorded."
+          },
+          "last_checked": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this gap was last verified to still be open. Drives DQ-05 staleness."
+          },
+          "owner": {
+            "type": "string",
+            "description": "Actor or agent responsible for resolving the gap."
+          },
+          "note": {
+            "type": "string",
+            "description": "Free-text context."
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Aggregate counts for fast pipeline routing. Recomputed on every gap maintenance write.",
+      "additionalProperties": false,
+      "properties": {
+        "total_open": { "type": "integer", "minimum": 0 },
+        "blocking_current_stage": { "type": "integer", "minimum": 0 },
+        "blocking_next_stage": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "examples": [
+    {
+      "items": [
+        {
+          "section": "rent_roll",
+          "reason": "missing",
+          "blocks_stage": "screening",
+          "first_seen": "2026-04-25T10:00:00Z",
+          "last_checked": "2026-04-27T09:00:00Z",
+          "owner": "agent/L0a",
+          "note": "Awaiting unit-level rent roll from broker."
+        },
+        {
+          "section": "noi_model",
+          "field_path": "expense_ratio",
+          "reason": "deferred",
+          "blocks_stage": "full_underwrite",
+          "owner": "manual",
+          "note": "Using asset-class default until T-12 arrives."
+        }
+      ],
+      "summary": {
+        "total_open": 2,
+        "blocking_current_stage": 1,
+        "blocking_next_stage": 1
+      }
+    }
+  ]
+}

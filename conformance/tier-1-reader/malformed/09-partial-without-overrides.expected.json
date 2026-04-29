@@ -1,0 +1,6 @@
+{
+  "description": "noi_model declares _meta.partial: true but provides no field_overrides[] enumeration. Validator must emit DQ-03.",
+  "must_parse": true,
+  "expected_codes": ["DQ-03"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (DQ-03)"
+}

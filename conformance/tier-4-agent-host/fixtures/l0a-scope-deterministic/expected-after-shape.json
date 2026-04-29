@@ -1,0 +1,11 @@
+{
+  "description": "L0a writes provisional defaults across noi_model, debt_structure, valuation, market_analysis, and a populated gaps section. Shape-only contract; live runs are operator-driven.",
+  "must_write_sections": ["noi_model", "debt_structure", "valuation", "market_analysis", "gaps"],
+  "must_stamp_meta": {
+    "source": "asset_class_default",
+    "actor": "agent/L0a",
+    "provisional": true
+  },
+  "must_advance_stage_to": "scope",
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §IX.5 (Bancroft layer registry)"
+}

@@ -10,8 +10,8 @@ export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './re
 export { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 export type { AgentOutput, RunOptions, RunResult } from './runner.js';
 
-export { applyEdit, resolvePolicy } from './editor.js';
-export type { EditContext, EditResult } from './editor.js';
+export { applyEdit, applyEditAsync, resolvePolicy } from './editor.js';
+export type { EditContext, EditResult, EditOptions } from './editor.js';
 
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
@@ -38,6 +38,38 @@ export type { BancroftRunOptions, BancroftRunResult, ProgressEvent } from './age
 export { WRITE_UW_SECTION_TOOL, WRITE_MULTIPLE_SECTIONS_TOOL, MULTI_SECTION_LAYERS } from './agents/schemas.js';
 export type { ToolOutput } from './agents/schemas.js';
 export { generateBlankUWFile } from './init.js';
+
+// ─── Asset-class defaults & cascade (Protocol §V.7-§V.8) ──────────────────────
+export {
+  MULTIFAMILY_DEFAULTS,
+  getAssetClassDefaults,
+  getDefaultRange,
+  listDefaultedFields,
+} from './defaults.js';
+export type { DefaultRange, DefaultUnit, AssetClassDefaults } from './defaults.js';
+
+export { inferGaps, summarizeGaps, readGapsContent } from './gaps.js';
+export type { GapItem, GapReason, GapSummary, GapsContent, InferGapsOptions } from './gaps.js';
+
+export {
+  sha256Hex,
+  computeBlockHash,
+  verifyChain,
+  verifyProvenance,
+} from './integrity.js';
+export type { IntegrityCode, IntegrityIssue, IntegrityResult } from './integrity.js';
+
+export { canonicalize } from './integrity-canonical.js';
+
+export { resolveValue, readInFile } from './cascade.js';
+export type {
+  CascadeContext,
+  ResolvedValue,
+  MarketDataLookup,
+  InvestorProfile,
+  GlobalDefaults,
+  SystemDefaults,
+} from './cascade.js';
 
 export type {
   // Core types
@@ -97,6 +129,10 @@ export {
   BUILTIN_VIEW_MODELS,
   BUILTIN_EDIT_POLICIES,
   BUILTIN_REMEDIATIONS,
+  BUILTIN_INCOMPLETE_DATA_POLICIES,
+  CASCADE_ORDER,
+  SOURCE_TAGS,
+  lookupIncompleteDataPolicy,
 } from './protocol.js';
 export type {
   ViewerTier,
@@ -127,8 +163,32 @@ export type {
   ModuleLoadResult,
   ProtocolError,
   ProtocolErrorCategory,
+  CascadeStep,
+  CanonicalSourceTag,
+  GapAction,
+  IncompleteDataPolicy,
 } from './protocol.js';
 
 // Convenience re-export: diff result type
 export type { SectionDiff } from './compactor.js';
 export type { InitOptions } from './init.js';
+
+// ─── Refinement / context profiles (Protocol §IX, §X) ────────────────────────
+export { extractDependencyGraph, getExprDependencies } from './calc/dependencies.js';
+export type { DependencyGraph } from './calc/dependencies.js';
+
+export { rankGaps } from './refinement.js';
+export type {
+  RankGapsOptions,
+  RankGapsResult,
+  RankedGap,
+  OutputSensitivity,
+  NonMonotonicWarning,
+} from './refinement.js';
+
+export { buildContext } from './context-profiles.js';
+export type {
+  ContextProfile,
+  BuildContextOptions,
+  ContextResult,
+} from './context-profiles.js';

@@ -1,0 +1,6 @@
+{
+  "description": "noi_model block carries _meta.provisional but no gaps entry references it. Validator must emit DQ-01.",
+  "must_parse": true,
+  "expected_codes": ["DQ-01"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (DQ-01)"
+}

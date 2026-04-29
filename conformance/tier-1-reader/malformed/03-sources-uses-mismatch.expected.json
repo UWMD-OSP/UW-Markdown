@@ -1,0 +1,6 @@
+{
+  "description": "sources_uses section has total_sources != total_uses. Validator must emit CC-04 (cross-section consistency, error severity).",
+  "must_parse": true,
+  "expected_codes": ["CC-04"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (validator code taxonomy)"
+}

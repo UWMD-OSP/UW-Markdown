@@ -1,0 +1,5 @@
+{
+  "code": "INT-02",
+  "category": "integrity",
+  "description": "applyEdit must reject when ctx.parentHash does not match the section head's stamped content_hash."
+}

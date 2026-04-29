@@ -1,0 +1,9 @@
+{
+  "kind": "section_replace",
+  "section_id": "property",
+  "content": {
+    "address": "500 Stale Parent Way",
+    "asset_class": "multifamily",
+    "units": 30
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "description": "risk_assessment was written by agent/L1, but the fixture-bound policy restricts agent/L1 to human_only authority. verifyProvenance must emit POL-01.",
+  "must_parse": true,
+  "expected_codes": ["POL-01"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (POL-01)"
+}

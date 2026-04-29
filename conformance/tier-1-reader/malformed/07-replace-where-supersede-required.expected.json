@@ -1,0 +1,6 @@
+{
+  "description": "noi_model is at version 2 with source agent/L2 (policy supersede_on_edit:true), yet no superseded prior version exists. verifyProvenance must emit POL-02.",
+  "must_parse": true,
+  "expected_codes": ["POL-02"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (POL-02)"
+}

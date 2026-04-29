@@ -1,0 +1,6 @@
+{
+  "description": "Two versions of the property block where v2.parent_hash does not match v1.content_hash. verifyChain must emit INT-01.",
+  "must_parse": true,
+  "expected_codes": ["INT-01"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (INT-01)"
+}

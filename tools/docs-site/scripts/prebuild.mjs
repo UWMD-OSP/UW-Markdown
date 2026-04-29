@@ -15,7 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
 const REPO_ROOT = resolve(SITE_ROOT, '..', '..');
 
-const GENERATED_DIRS = ['spec', 'conformance', 'about'];
+const GENERATED_DIRS = ['spec', 'conformance', 'about', 'guide'];
 
 if (process.argv.includes('--clean')) {
   for (const d of GENERATED_DIRS) {
@@ -50,6 +50,12 @@ const COPIES = [
   { from: 'CONTRIBUTING.md',     to: 'about/contributing.md' },
   { from: 'CODE_OF_CONDUCT.md',  to: 'about/code-of-conduct.md' },
   { from: 'CHANGELOG.md',        to: 'about/changelog.md' },
+  { from: 'ARCHITECTURE.md',     to: 'about/architecture.md', title: 'Architecture' },
+  { from: 'VERSIONS.md',         to: 'about/versions.md',     title: 'Versions' },
+
+  // Guide / on-ramps (source of truth in docs/)
+  { from: 'docs/GLOSSARY.md',    to: 'guide/glossary.md', title: 'Glossary' },
+  { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools comparison' },
 
   // RFCs
   { from: 'docs/rfcs/README.md',       to: 'about/rfcs/index.md', title: 'RFC Process' },
@@ -60,6 +66,12 @@ const COPIES = [
   { from: 'docs/rfcs/0004-conformance-runner-v2.md',  to: 'about/rfcs/0004-conformance-runner-v2.md' },
   { from: 'docs/rfcs/0005-stochastic-calculations.md', to: 'about/rfcs/0005-stochastic-calculations.md' },
   { from: 'docs/rfcs/0006-hospitality-module.md',     to: 'about/rfcs/0006-hospitality-module.md' },
+  { from: 'docs/rfcs/0007-sensitivity-tables.md',     to: 'about/rfcs/0007-sensitivity-tables.md' },
+  { from: 'docs/rfcs/0008-lease-up-modeling.md',      to: 'about/rfcs/0008-lease-up-modeling.md' },
+  { from: 'docs/rfcs/0009-meta-v2-reorg.md',          to: 'about/rfcs/0009-meta-v2-reorg.md' },
+  { from: 'docs/rfcs/0010-signed-blocks.md',          to: 'about/rfcs/0010-signed-blocks.md' },
+  { from: 'docs/rfcs/0011-capability-tokens.md',      to: 'about/rfcs/0011-capability-tokens.md' },
+  { from: 'docs/rfcs/0013-corpus-retrieval.md',       to: 'about/rfcs/0013-corpus-retrieval.md' },
 ];
 
 // ─── Link rewriter ────────────────────────────────────────────────────────────
@@ -77,6 +89,12 @@ const NORMALIZED_LINK_MAP = new Map([
   ['CONTRIBUTING.md', '/about/contributing'],
   ['CODE_OF_CONDUCT.md', '/about/code-of-conduct'],
   ['CHANGELOG.md', '/about/changelog'],
+  ['ARCHITECTURE.md', '/about/architecture'],
+  ['VERSIONS.md', '/about/versions'],
+  ['docs/GLOSSARY.md', '/guide/glossary'],
+  ['docs/TOOLS.md', '/guide/tools'],
+  ['GLOSSARY.md', '/guide/glossary'],
+  ['TOOLS.md', '/guide/tools'],
   ['LICENSE', 'https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/blob/main/LICENSE'],
 
   // Spec

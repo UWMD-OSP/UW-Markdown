@@ -31,14 +31,31 @@ fixtures/<scenario-id>/
 
 | Scenario | Layer | Validates |
 |---|---|---|
-| `l6-risk-rating` | L6 | Layer produces a `risk_assessment` section with `overall_rating`, `risk_score`, and `key_risks`; pipeline log gets a new entry; existing sections are unchanged. |
+| `fixtures/l6-risk-rating` | L6 | Layer produces a `risk_assessment` section with `overall_rating`, `risk_score`, and `key_risks`; pipeline log gets a new entry; existing sections are unchanged. |
+| `fixtures/l0a-scope-deterministic` | L0a (Scope) | Scope agent walks the asset-class fallback cascade for every required input and stamps results provisional. Shape contract: `must_write_sections` (`noi_model`, `debt_structure`, `valuation`, `market_analysis`, `gaps`), `must_stamp_meta` (`source: asset_class_default`, `actor: agent/L0a`, `provisional: true`), `must_advance_stage_to: scope`. |
+
+### Profile contract
+
+A separate `profile/` subdirectory asserts that every entry in
+`BANCROFT_LAYERS` declares the right `consumed_profile`. This is a
+lightweight contract test — not LLM-driven — that catches accidental
+profile-policy drift introduced by future layer additions.
+
+```
+profile/<scenario-id>/
+└── expected-layer-profiles.json   { layer_id: consumed_profile, … }
+```
+
+| Scenario | Validates |
+|---|---|
+| `profile/consumer-profile-contract` | Sorted `(layer_id → consumed_profile)` map matches the recorded baseline. Update only when intentionally changing a layer's profile. |
 
 ## Running
 
 Tier 4 is **operator-driven**, not part of CI — LLM calls cost money and
 are nondeterministic. The reference runner ships a lint-only pass that
-parses each `before.uw.md` and validates each `expected-after-shape.json`
-as a well-formed JSON Schema:
+parses each `before.uw.md`, validates each `expected-after-shape.json`
+as a well-formed JSON Schema, and runs the profile-contract assertion:
 
 ```bash
 node scripts/run-conformance.mjs --tier=4

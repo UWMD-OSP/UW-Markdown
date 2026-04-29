@@ -1,0 +1,5 @@
+[
+  { "source_pattern": "agent/L1", "authority": "human_only", "supersede_on_edit": false },
+  { "source_pattern": "agent/*",  "authority": "either",     "supersede_on_edit": true  },
+  { "source_pattern": "manual",   "authority": "either",     "supersede_on_edit": false }
+]

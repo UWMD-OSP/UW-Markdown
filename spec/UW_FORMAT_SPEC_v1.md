@@ -18,7 +18,7 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **22 numbered subsections (§ 4.0 – § 4.21)**:
+Part IV registers **23 numbered subsections (§ 4.0 – § 4.22)**:
 21 standard data sections (§ 4.0 – § 4.20) plus the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content. When this and the protocol document refer to "the 21 standard
@@ -117,6 +117,12 @@ loan_type: "permanent | bridge | construction | value_add | refinance"
 scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up | nnn_single_tenant | lihtc_section8 | house_flip | commercial_flip | property_conversion | build_to_rent | distressed_reo | land_banking"
 
 # ── Pipeline State ────────────────────────────────────────
+# Layer keys correspond 1:1 to BANCROFT_LAYERS in the reference library.
+# L3 is intentionally reserved for a future pre-structuring layer and is
+# omitted from v1; conforming files MUST NOT define L3_* keys. A layer key
+# absent from pipeline_state is treated as "pending" by default. Use
+# "skipped" only when a layer is explicitly bypassed for this deal
+# (e.g. a refinance with no L0 ingestion).
 pipeline_state:
   L0_ingestion:    "complete | in_progress | pending | skipped | failed"
   L1_screening:    "complete | in_progress | pending | skipped | failed"
@@ -128,7 +134,7 @@ pipeline_state:
 
 # ── Overall Status ────────────────────────────────────────
 status: "draft | in_progress | complete | flagged | archived"
-deal_stage: "screening | term_sheet | full_underwrite | credit_approval | closing | monitoring"
+deal_stage: "scope | screening | term_sheet | full_underwrite | credit_approval | closing | monitoring"
 recommendation: "pending | approve | approve_with_conditions | decline | null"
 
 # ── Key Metrics (denormalized for quick parsing) ──────────
@@ -159,6 +165,18 @@ created_by: "wizard | import | manual | agent"
 source_documents: []                 # list of filenames ingested via L0
 ---
 ```
+
+**Pipeline stages.** The `deal_stage` enum advances monotonically as
+the deal progresses. The `scope` stage indicates a back-of-napkin
+readiness level: a `scope`-stage file MAY consist almost entirely of
+provisional blocks (see Part III §3.4 `_meta.provisional`) and
+represents triage rather than commitment. The minimum content for
+`scope` is a `property` section with at least an address, an asset
+class, and one of `units` or `asking_price`; everything else MAY be
+filled in from the fallback cascade (see Protocol §IX). Advancing
+past `scope` requires real documents, not better assumptions —
+producers MUST re-stamp defaulted blocks with observed data before
+setting `deal_stage: screening` or later.
 
 ### 2.3 Section Headers
 
@@ -239,6 +257,12 @@ Every data block MUST contain a `_meta` object as its first key. This is the can
 | `input_hash` | string | Hash of the inputs that produced this block (for reproducibility) |
 | `notes` | string | Free-text notes from the agent or user |
 
+Blocks MAY also carry the optional fields `partial`, `provisional`,
+`field_overrides`, `content_hash`, and `parent_hash`. See Part III
+§3.4 for their semantics. These fields are additive: a block omitting
+them is well-formed, and validators MUST NOT reject blocks for their
+absence.
+
 ### 2.6 Source Identifiers
 
 | Pattern | Meaning |
@@ -256,6 +280,25 @@ Every data block MUST contain a `_meta` object as its first key. This is the can
 | `market:websearch` | Market data from live web search |
 | `profile:investor` | Sourced from the investor's saved profile / buy box |
 | `scenario:defaults` | Scenario default assumptions |
+
+The following short-form source tags are normative for cascade
+resolution (see Protocol §IX). Producers stamping a value resolved by
+the fallback cascade MUST use the tag corresponding to the cascade
+step that produced the value.
+
+| Tag | Meaning |
+|---|---|
+| `user_input` | The user typed the value (initial entry). |
+| `user_override` | The user explicitly overrode a prior value. |
+| `manual` | A human-authored block, source not otherwise classified. |
+| `investor_profile` | Resolved from the active investor profile / buy box. |
+| `market_data` | Resolved from a market-data lookup at write time. |
+| `ai_extracted` | Extracted from a source document by an AI agent. |
+| `agent_computed` | Computed by an agent from prior agent outputs. |
+| `asset_class_default` | Pulled from the published asset-class default table for the deal's asset class. |
+| `scenario_default` | A value derived from a named scenario in this file or institution config. |
+| `global_default` | Pulled from a non-asset-class fallback table. |
+| `system_default` | Hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
 
 ### 2.7 Update Semantics
 
@@ -328,6 +371,54 @@ The pipeline respects two types of human review requirements:
 **Soft gate** (`human_review_required: true` on a block): The pipeline continues but flags the deal for human attention before the next stage.
 
 **Hard gate** (a `blocking_flags` entry in frontmatter): The pipeline halts. No further agents run until the flag is cleared by a human. Examples: OFAC match, appraised value > UW value by >10%, Phase II environmental required.
+
+### 3.4 Optional Integrity / Quality Fields
+
+Beyond the required and recommended `_meta` fields described above
+(§2.5), blocks MAY carry the following optional fields. A block
+lacking any of these fields is well-formed; validators MUST NOT
+reject blocks for omitting them.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `partial` | boolean | The block is present but at least one field inside it is missing or unknown. When `partial: true`, an enumeration of which paths and why SHOULD be provided in `field_overrides`. |
+| `provisional` | boolean | The entire block is a placeholder, derived from defaults rather than observed data. Stronger signal than `confidence: 'low'`. Downstream consumers SHOULD label outputs derived from provisional blocks accordingly. |
+| `field_overrides` | array | Per-field overrides where the block-level `confidence`, `source`, or annotations do not apply uniformly. Each entry has a dot-notated `path` relative to the block's content root and may carry its own `confidence`, `source`, `reason` (`illegible | missing | overridden | estimated | computed`), and `note`. |
+| `content_hash` | string | The SHA-256 hash of the block's canonicalized JSON content. The canonicalization rule (RFC 8785 JCS, with `_meta.content_hash` and `_meta.signature` removed before hashing) is defined in Protocol §IX.2. Producers MAY emit; consumers MAY ignore. |
+| `parent_hash` | string \| null | The `content_hash` of the block this one supersedes. `null` on a chain root. Required only when participating in an integrity-checked supersede chain — once any block in a supersede chain carries `content_hash`, every later block in that chain MUST carry both `content_hash` and `parent_hash`. |
+
+**Precedence with `field_overrides`.** A `field_overrides` entry
+whose `path` matches a field replaces, for that field only, the
+block-level `confidence` and `source`. The block-level values still
+apply to every field not enumerated. This produces two surfaces for
+expressing confidence; the consolidation lives in the v2 `_meta`
+reorganization (RFC 0009).
+
+**Path syntax.** `field_overrides[].path` uses dot-notation with
+bracketed array indices (e.g. `units[7].current_rent`). Paths whose
+key segments contain a literal `.` are not expressible; no current
+section schema uses dotted keys.
+
+**Integrity opt-in.** A file containing zero `content_hash` fields is
+indistinguishable from a pre-integrity file; chain verification is a
+no-op. To benefit from chain verification, a producer SHOULD stamp
+`content_hash` on every block it writes once it adopts the integrity
+path.
+
+### 3.5 `confidence` vs `human_review_required`
+
+`confidence` and `human_review_required` are orthogonal:
+
+- `confidence` is a quality estimate of the data ("how much do we
+  trust the value?").
+- `human_review_required` is a workflow gate ("must a human review
+  this before the file can advance to the next stage?").
+
+High-confidence data MAY require review (e.g. for compliance audit).
+Low-confidence data MAY NOT require review (e.g. a placeholder filled
+in while drafting that the producer plans to overwrite). Validators
+MUST NOT infer one from the other; the existing
+`META_LOW_CONFIDENCE_NO_REVIEW_FLAG` issue is informational only.
 
 ---
 
@@ -2049,6 +2140,55 @@ The `content` object is entirely free-form. Any valid JSON is accepted.
 
 ---
 
+### § 4.22 — Gaps
+
+**ID:** `gaps`  
+**Header:** `## Gaps {#gaps}`  
+**Purpose:** A first-class inventory of the data the deal does not yet have. Blocks held back by missing inputs, fields filled from defaults, and items deferred for later rounds all surface here. Drives the refinement engine (Protocol §X) and is consulted by every validator that needs to know whether a missing value is intentional or accidental.  
+**Written by:** `agent/L0a` (initial scope), `agent/L0b` (refinement loop), `manual` (analyst notes), or `system/gaps-maintainer` (auto-maintenance hook in the editor)  
+**Required for pipeline stage:** Optional at every stage (a deal with no open gaps simply omits the section)  
+**Dependencies:** None — gaps reference other sections by ID/path but do not require them to exist  
+**Schema:** [`spec/schemas/section-gaps.schema.json`](schemas/section-gaps.schema.json)
+
+A gap entry names a missing or low-quality field by `(section, field_path)` and records *why* it is open (`missing | illegible | out_of_scope | deferred | blocked_by_dependency | awaiting_external`). Optional metadata declares the lowest stage the gap blocks, who owns resolving it, and how stale the entry is.
+
+```json uw:section=gaps source=system/gaps-maintainer ts=ISO8601 v=1 confidence=high
+{
+  "_meta": { "...": "see §2.5" },
+  "_notes": null,
+  "items": [
+    {
+      "section": "rent_roll",
+      "reason": "missing",
+      "blocks_stage": "screening",
+      "first_seen": "2026-04-25T10:00:00Z",
+      "last_checked": "2026-04-27T09:00:00Z",
+      "owner": "agent/L0a",
+      "note": "Awaiting unit-level rent roll from broker."
+    },
+    {
+      "section": "noi_model",
+      "field_path": "expense_ratio",
+      "reason": "deferred",
+      "blocks_stage": "full_underwrite",
+      "owner": "manual",
+      "note": "Using asset-class default until T-12 arrives."
+    }
+  ],
+  "summary": {
+    "total_open": 2,
+    "blocking_current_stage": 1,
+    "blocking_next_stage": 1
+  }
+}
+```
+
+**Auto-maintenance.** When a Tier-2 editor is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.source: 'system/gaps-maintainer'` and `_meta.actor: 'system'` so it is filterable from human-authored entries.
+
+**Validator codes.** A `provisional` block with no matching gap entry triggers `DQ-01`; a `partial` block with no `field_overrides` triggers `DQ-03`; consuming a provisional block at a stage whose policy is `halt` triggers `DQ-02`; a stale entry (older than the institution's freshness threshold) triggers `DQ-05`. See Protocol §III.6a.
+
+---
+
 ## Part V — Validation Rules
 
 ### 5.1 Pipeline Stage Completeness Requirements
@@ -2345,6 +2485,47 @@ Extension sections that stabilize into consistent schemas are candidates for pro
 3. A spec change proposal is submitted with: the schema, use-case description, 3+ example instances, and proposed standard section ID
 
 Promoted sections are assigned a section number in the next minor version of the spec. The `x_` version continues to parse correctly — old files are never broken.
+
+---
+
+## Appendix D — YAML Subset (Frontmatter)
+
+The `.uw.md` frontmatter (between the opening and closing `---` markers) is parsed against a strict YAML **subset**, not full YAML 1.2. Conforming readers MUST reject frontmatter that uses any feature outside this subset with the validator code `UNSUPPORTED_YAML_FEATURE`.
+
+### D.1 — Supported
+
+| Feature | Example |
+| ------- | ------- |
+| Scalar — bare string | `state: AZ` |
+| Scalar — single-quoted string | `notes: 'I need to recheck'` |
+| Scalar — double-quoted string | `deal_name: "Parkview Apartments"` |
+| Scalar — integer or decimal number | `purchase_price: 7200000` |
+| Scalar — boolean | `human_review_required: true` |
+| Scalar — null | `extension_id: null` (or `~`) |
+| Empty inline sequence | `flags: []` |
+| Mapping (top level) | `key: value` per line |
+| Mapping (nested, one level) | indented two spaces under a `key:` line |
+| Sequence | dash-prefixed items under a `key:` line |
+| Comments | `# comment` to end of line |
+
+### D.2 — Rejected
+
+The following YAML features are NOT part of the subset and MUST cause the parser to throw `UNSUPPORTED_YAML_FEATURE`:
+
+| Feature | Why rejected |
+| ------- | ------------ |
+| Anchors and aliases (`&name`, `*name`) | Implicit cross-references conflict with the explicit-provenance design; surprising round-trip behavior in editors. |
+| Explicit tags (`!!str`, `!!int`, `!Custom`) | Type coercion is governed by the spec's field schemas, not YAML tag dispatch. |
+| Block scalars (`\|`, `>`) | Multi-line literal scalars create ambiguous indentation rules and cause silent data loss when concatenated. |
+| Flow-style mappings or non-empty sequences (`{a: 1}`, `[1, 2, 3]`) | The on-disk representation is meant to be diff-friendly and one-value-per-line. The empty inline sequence `[]` is the lone exception, since it is unambiguous. |
+| Complex keys (`?` indicator) | Mapping keys must be simple scalars in `.uw.md`. |
+| Directives (`%YAML`, `%TAG`) | The format pins a single YAML dialect (this subset). |
+
+### D.3 — Rationale
+
+The format is intentionally minimal so a reader can be implemented in a few hundred lines without depending on a full YAML parser. Banning these features early — rather than allowing them and quietly producing wrong data — keeps cross-implementation behavior identical and prevents subtle round-trip bugs in editors that re-emit frontmatter.
+
+If you need long-form prose in a section, put it in the markdown body (between fenced section blocks) or in a dedicated extension section, not in frontmatter.
 
 ---
 

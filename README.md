@@ -7,9 +7,9 @@
 This repository is the home of the standard:
 
 - [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) — the file format specification.
-- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — the contract any conforming viewer, editor, calc host, or AI host must satisfy. *(in progress)*
+- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — the contract any conforming viewer, editor, calc host, or AI host must satisfy.
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
-- [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against. *(in progress)*
+- [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
 - [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned).
 - [`examples/`](examples/) — sample `.uw.md` deal files.
 

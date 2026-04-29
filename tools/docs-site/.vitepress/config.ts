@@ -22,6 +22,7 @@ export default defineConfig({
     siteTitle: 'UW Markdown',
 
     nav: [
+      { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },
       { text: 'Spec', link: '/spec/format' },
       { text: 'Protocol', link: '/spec/protocol' },
       { text: 'Schemas', link: '/spec/schemas/' },
@@ -38,6 +39,32 @@ export default defineConfig({
     ],
 
     sidebar: {
+      '/tutorials/': [
+        {
+          text: 'Get started',
+          items: [
+            { text: 'Your first .uw.md', link: '/tutorials/your-first-uwmd-file' },
+            { text: 'Glossary', link: '/guide/glossary' },
+            { text: 'Tools comparison', link: '/guide/tools' },
+          ],
+        },
+      ],
+      '/guide/': [
+        {
+          text: 'Reference',
+          items: [
+            { text: 'Glossary', link: '/guide/glossary' },
+            { text: 'Tools comparison', link: '/guide/tools' },
+            { text: 'Feeding .uw.md to an LLM', link: '/guide/feeding-uwmd-to-an-llm' },
+          ],
+        },
+        {
+          text: 'Get started',
+          items: [
+            { text: 'Your first .uw.md', link: '/tutorials/your-first-uwmd-file' },
+          ],
+        },
+      ],
       '/spec/': [
         {
           text: 'Specifications',
@@ -65,6 +92,8 @@ export default defineConfig({
           text: 'Project',
           items: [
             { text: 'Roadmap', link: '/about/roadmap' },
+            { text: 'Architecture', link: '/about/architecture' },
+            { text: 'Versions', link: '/about/versions' },
             { text: 'Governance', link: '/about/governance' },
             { text: 'Maintainers', link: '/about/maintainers' },
             { text: 'Security', link: '/about/security' },
@@ -78,6 +107,18 @@ export default defineConfig({
           items: [
             { text: 'Process', link: '/about/rfcs/' },
             { text: 'Template', link: '/about/rfcs/template' },
+            { text: '0001 — Locale negotiation', link: '/about/rfcs/0001-locale-negotiation' },
+            { text: '0002 — Module signing', link: '/about/rfcs/0002-module-signing' },
+            { text: '0003 — Module asset classes', link: '/about/rfcs/0003-module-asset-classes' },
+            { text: '0004 — Conformance runner v2', link: '/about/rfcs/0004-conformance-runner-v2' },
+            { text: '0005 — Stochastic calculations', link: '/about/rfcs/0005-stochastic-calculations' },
+            { text: '0006 — Hospitality module', link: '/about/rfcs/0006-hospitality-module' },
+            { text: '0007 — Sensitivity tables', link: '/about/rfcs/0007-sensitivity-tables' },
+            { text: '0008 — Lease-up modeling', link: '/about/rfcs/0008-lease-up-modeling' },
+            { text: '0009 — _meta v2 reorg', link: '/about/rfcs/0009-meta-v2-reorg' },
+            { text: '0010 — Signed blocks', link: '/about/rfcs/0010-signed-blocks' },
+            { text: '0011 — Capability tokens', link: '/about/rfcs/0011-capability-tokens' },
+            { text: '0013 — Corpus retrieval', link: '/about/rfcs/0013-corpus-retrieval' },
           ],
         },
       ],

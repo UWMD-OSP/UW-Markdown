@@ -127,6 +127,153 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     return acc;
   },
 
+  // ─── Math builtins ──────────────────────────────────────────────────────────
+
+  // abs(num) — null propagates.
+  abs(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `abs: expected 1 argument, got ${args.length}.`);
+    }
+    const n = asNumberOrNull(args[0]!, 'abs');
+    return n === null ? null : Math.abs(n);
+  },
+
+  // floor(num) — null propagates.
+  floor(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `floor: expected 1 argument, got ${args.length}.`);
+    }
+    const n = asNumberOrNull(args[0]!, 'floor');
+    return n === null ? null : Math.floor(n);
+  },
+
+  // ceil(num) — null propagates.
+  ceil(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `ceil: expected 1 argument, got ${args.length}.`);
+    }
+    const n = asNumberOrNull(args[0]!, 'ceil');
+    return n === null ? null : Math.ceil(n);
+  },
+
+  // sqrt(num) — null propagates; negative input → CALC-TYPE-001.
+  sqrt(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `sqrt: expected 1 argument, got ${args.length}.`);
+    }
+    const n = asNumberOrNull(args[0]!, 'sqrt');
+    if (n === null) return null;
+    if (n < 0) {
+      throw new CalcError('CALC-TYPE-001', `sqrt: negative input ${n} produces non-real result.`);
+    }
+    return Math.sqrt(n);
+  },
+
+  // pow(base, exp) — null propagates.
+  pow(args) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `pow: expected 2 arguments, got ${args.length}.`);
+    }
+    const base = asNumberOrNull(args[0]!, 'pow');
+    const exp = asNumberOrNull(args[1]!, 'pow');
+    if (base === null || exp === null) return null;
+    const r = base ** exp;
+    if (!Number.isFinite(r)) {
+      throw new CalcError('CALC-TYPE-001', `pow: result is not finite (${base}^${exp}).`);
+    }
+    return r;
+  },
+
+  // log(num) — natural log; null propagates; non-positive → CALC-TYPE-001.
+  log(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `log: expected 1 argument, got ${args.length}.`);
+    }
+    const n = asNumberOrNull(args[0]!, 'log');
+    if (n === null) return null;
+    if (n <= 0) {
+      throw new CalcError('CALC-TYPE-001', `log: input must be positive, got ${n}.`);
+    }
+    return Math.log(n);
+  },
+
+  // exp(num) — null propagates.
+  exp(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `exp: expected 1 argument, got ${args.length}.`);
+    }
+    const n = asNumberOrNull(args[0]!, 'exp');
+    if (n === null) return null;
+    const r = Math.exp(n);
+    if (!Number.isFinite(r)) {
+      throw new CalcError('CALC-TYPE-001', `exp: result is not finite (exp(${n})).`);
+    }
+    return r;
+  },
+
+  // ─── Financial builtins ─────────────────────────────────────────────────────
+
+  // fv(rate, n, pmt, pv?) — future value of a series of equal payments + initial pv.
+  // Sign convention: returns the *positive* future value of pv invested at `rate`
+  // with `pmt` deposits per period. Mirrors Excel's FV with type=0 (end of period)
+  // but without Excel's signed convention.
+  fv(args) {
+    if (args.length < 3 || args.length > 4) {
+      throw new CalcError('CALC-TYPE-001', `fv: expected (rate, n, pmt[, pv]), got ${args.length} args.`);
+    }
+    const rate = asNumber(args[0]!, 'fv');
+    const n = asNumber(args[1]!, 'fv');
+    const pmt = asNumber(args[2]!, 'fv');
+    const pv = args[3] === undefined ? 0 : asNumber(args[3]!, 'fv');
+    if (rate === 0) return pv + pmt * n;
+    const growth = (1 + rate) ** n;
+    return pv * growth + pmt * (growth - 1) / rate;
+  },
+
+  // pv(rate, n, pmt, fv?) — present value of a series of equal payments + future value.
+  // Inverse of fv: returns the lump-sum today equivalent to receiving `pmt` per
+  // period for `n` periods at `rate`, plus a final `fv` payoff.
+  pv(args) {
+    if (args.length < 3 || args.length > 4) {
+      throw new CalcError('CALC-TYPE-001', `pv: expected (rate, n, pmt[, fv]), got ${args.length} args.`);
+    }
+    const rate = asNumber(args[0]!, 'pv');
+    const n = asNumber(args[1]!, 'pv');
+    const pmt = asNumber(args[2]!, 'pv');
+    const fv = args[3] === undefined ? 0 : asNumber(args[3]!, 'pv');
+    if (rate === 0) return pmt * n + fv;
+    const discount = (1 + rate) ** -n;
+    return pmt * (1 - discount) / rate + fv * discount;
+  },
+
+  // nper(rate, pmt, pv, fv?) — number of periods to pay down pv with pmt payments.
+  // Unsigned convention matching pmt(): pv > 0 is the loan balance, pmt > 0 is
+  // the periodic payment, fv (default 0) is the residual balloon.
+  // Closed-form: pv*(1+r)^n - pmt*((1+r)^n - 1)/r = fv  →
+  //              n = log((pmt - fv*r) / (pmt - pv*r)) / log(1+r).
+  // Throws CALC-TYPE-001 if the equation has no real solution.
+  nper(args) {
+    if (args.length < 3 || args.length > 4) {
+      throw new CalcError('CALC-TYPE-001', `nper: expected (rate, pmt, pv[, fv]), got ${args.length} args.`);
+    }
+    const rate = asNumber(args[0]!, 'nper');
+    const pmt = asNumber(args[1]!, 'nper');
+    const pv = asNumber(args[2]!, 'nper');
+    const fv = args[3] === undefined ? 0 : asNumber(args[3]!, 'nper');
+    if (rate === 0) {
+      if (pmt === 0) {
+        throw new CalcError('CALC-TYPE-001', 'nper: pmt must be non-zero when rate is zero.');
+      }
+      return (pv - fv) / pmt;
+    }
+    const num = pmt - fv * rate;
+    const den = pmt - pv * rate;
+    if (den === 0 || num / den <= 0) {
+      throw new CalcError('CALC-TYPE-001', 'nper: no real solution for the given inputs.');
+    }
+    return Math.log(num / den) / Math.log(1 + rate);
+  },
+
   // irr(...flows) — bisection + Newton fallback. Null if no real root.
   irr(args) {
     if (args.length < 2) {

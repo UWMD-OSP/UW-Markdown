@@ -18,7 +18,8 @@ export type Expr =
 
 export type BinaryOp =
   | '+' | '-' | '*' | '/' | '%'
-  | '==' | '!=' | '<' | '<=' | '>' | '>=';
+  | '==' | '!=' | '<' | '<=' | '>' | '>='
+  | '&&' | '||';
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,7 @@ type TokenKind =
   | 'plus' | 'minus' | 'star' | 'slash' | 'percent'
   | 'bang'
   | 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte'
+  | 'amp_amp' | 'pipe_pipe'
   | 'eof';
 
 interface Token {
@@ -100,6 +102,8 @@ function tokenize(input: string): Token[] {
     if (two === '!=') { out.push({ kind: 'neq', value: two, pos: i }); i += 2; continue; }
     if (two === '<=') { out.push({ kind: 'lte', value: two, pos: i }); i += 2; continue; }
     if (two === '>=') { out.push({ kind: 'gte', value: two, pos: i }); i += 2; continue; }
+    if (two === '&&') { out.push({ kind: 'amp_amp', value: two, pos: i }); i += 2; continue; }
+    if (two === '||') { out.push({ kind: 'pipe_pipe', value: two, pos: i }); i += 2; continue; }
 
     switch (c) {
       case '(': out.push({ kind: 'lparen', value: c, pos: i }); i++; continue;
@@ -156,9 +160,9 @@ class Parser {
     return this.parseConditional();
   }
 
-  // conditional := comparison ( "?" expr ":" expr )?
+  // conditional := logicalOr ( "?" expr ":" expr )?
   private parseConditional(): Expr {
-    const test = this.parseComparison();
+    const test = this.parseLogicalOr();
     if (this.match('qmark')) {
       this.advance();
       const consequent = this.parseExpr();
@@ -167,6 +171,28 @@ class Parser {
       return { kind: 'cond', test, consequent, else: alternate };
     }
     return test;
+  }
+
+  // logicalOr := logicalAnd ( "||" logicalAnd )*
+  private parseLogicalOr(): Expr {
+    let left = this.parseLogicalAnd();
+    while (this.match('pipe_pipe')) {
+      this.advance();
+      const right = this.parseLogicalAnd();
+      left = { kind: 'binary', op: '||', left, right };
+    }
+    return left;
+  }
+
+  // logicalAnd := comparison ( "&&" comparison )*
+  private parseLogicalAnd(): Expr {
+    let left = this.parseComparison();
+    while (this.match('amp_amp')) {
+      this.advance();
+      const right = this.parseComparison();
+      left = { kind: 'binary', op: '&&', left, right };
+    }
+    return left;
   }
 
   // comparison := additive ( ( "==" | "!=" | "<=" | ">=" | "<" | ">" ) additive )?

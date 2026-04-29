@@ -66,8 +66,27 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       return !v;
     }
 
-    case 'binary':
+    case 'binary': {
+      // Logical operators short-circuit and propagate null. The right side is
+      // only evaluated if the left side does not already determine the answer.
+      if (expr.op === '&&' || expr.op === '||') {
+        const left = evalNode(expr.left, ctx, state);
+        if (left === null) return null;
+        if (typeof left !== 'boolean') {
+          throw new CalcError('CALC-TYPE-001', `Operator '${expr.op}' requires booleans, got ${typeof left} on left.`);
+        }
+        // Short-circuit: false && _ = false; true || _ = true.
+        if (expr.op === '&&' && left === false) return false;
+        if (expr.op === '||' && left === true) return true;
+        const right = evalNode(expr.right, ctx, state);
+        if (right === null) return null;
+        if (typeof right !== 'boolean') {
+          throw new CalcError('CALC-TYPE-001', `Operator '${expr.op}' requires booleans, got ${typeof right} on right.`);
+        }
+        return right;
+      }
       return evalBinary(expr.op, evalNode(expr.left, ctx, state), evalNode(expr.right, ctx, state));
+    }
 
     case 'cond': {
       const test = evalNode(expr.test, ctx, state);

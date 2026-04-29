@@ -8,6 +8,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm test --workspaces --if-present",
+    "test:coverage": "npm --prefix packages/uwmd-core run test:coverage",
     "cli": "node packages/uwmd-cli/bin/uwmd.mjs",
     "conformance": "node scripts/run-conformance.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",

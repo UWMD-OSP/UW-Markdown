@@ -12,6 +12,8 @@ import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
+import { verifyChain, verifyProvenance } from './integrity.js';
+import type { IntegrityResult } from './integrity.js';
 import type { EditContext } from './editor.js';
 import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
 import { evaluateCalc } from './calc/index.js';
@@ -19,6 +21,12 @@ import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } 
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
 import type { RenderFormat, RenderTier } from './renderer.js';
+import { buildContext } from './context-profiles.js';
+import type { ContextProfile } from './context-profiles.js';
+import { rankGaps } from './refinement.js';
+import { resolveValue } from './cascade.js';
+import { getAssetClassDefaults } from './defaults.js';
+import { MULTIFAMILY_PACK } from './packs/multifamily.js';
 
 const [, , command, ...args] = process.argv;
 
@@ -46,7 +54,13 @@ function parseFlags(rawArgs: string[]): Record<string, string | boolean> {
   for (let i = 0; i < rawArgs.length; i++) {
     const arg = rawArgs[i];
     if (arg.startsWith('--')) {
-      const key = arg.slice(2);
+      const body = arg.slice(2);
+      const eqIdx = body.indexOf('=');
+      if (eqIdx >= 0) {
+        flags[body.slice(0, eqIdx)] = body.slice(eqIdx + 1);
+        continue;
+      }
+      const key = body;
       const next = rawArgs[i + 1];
       if (next && !next.startsWith('--')) {
         flags[key] = next;
@@ -116,6 +130,67 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
   console.log('');
 
   process.exit(result.errors.length > 0 ? 1 : 0);
+}
+
+async function cmdVerify(file: string, flags: Record<string, string | boolean>): Promise<void> {
+  const content = readFile(file);
+  const parsed = parseUWFile(content);
+
+  // No flag set → run all three.
+  const onlyValidate = flags['validate'] === true;
+  const onlyIntegrity = flags['integrity'] === true;
+  const onlyPolicy = flags['policy'] === true;
+  const runAll = !onlyValidate && !onlyIntegrity && !onlyPolicy;
+
+  const sections: Record<string, unknown> = {};
+  let hadError = false;
+
+  if (runAll || onlyValidate) {
+    const v = validateUWFile(parsed);
+    sections['validation'] = v;
+    if (v.errors.length > 0) hadError = true;
+  }
+  let chain: IntegrityResult | undefined;
+  let prov: IntegrityResult | undefined;
+  if (runAll || onlyIntegrity) {
+    chain = await verifyChain(parsed);
+    sections['integrity'] = chain;
+    if (!chain.ok) hadError = true;
+  }
+  if (runAll || onlyPolicy) {
+    prov = verifyProvenance(parsed);
+    sections['provenance'] = prov;
+    if (!prov.ok) hadError = true;
+  }
+
+  if (flags['json']) {
+    console.log(JSON.stringify({ ok: !hadError, ...sections }, null, 2));
+  } else {
+    console.log(`\n${hadError ? '✗' : '✓'}  ${hadError ? 'FAIL' : 'OK'} — ${basename(file)}\n`);
+    if ('validation' in sections) {
+      const v = sections['validation'] as ReturnType<typeof validateUWFile>;
+      console.log(`Validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
+      for (const issue of v.issues) {
+        const tag = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN] ' : '[INFO] ';
+        const loc = issue.section ? ` [${issue.section}${issue.field ? `.${issue.field}` : ''}]` : '';
+        console.log(`  ${tag}${loc} ${issue.code ? `${issue.code}: ` : ''}${issue.message}`);
+      }
+    }
+    if (chain) {
+      console.log(`\nIntegrity: ${chain.ok ? 'ok' : 'FAIL'} — chains_with_hashes=${chain.chains_with_hashes}, chains_verified=${chain.chains_verified}`);
+      for (const issue of chain.issues) {
+        console.log(`  [${issue.severity.toUpperCase()}] ${issue.code}${issue.section ? ` [${issue.section}]` : ''}: ${issue.message}`);
+      }
+    }
+    if (prov) {
+      console.log(`\nProvenance: ${prov.ok ? 'ok' : 'FAIL'} (${prov.issues.length} issue${prov.issues.length === 1 ? '' : 's'})`);
+      for (const issue of prov.issues) {
+        console.log(`  [${issue.severity.toUpperCase()}] ${issue.code}${issue.section ? ` [${issue.section}]` : ''}: ${issue.message}`);
+      }
+    }
+    console.log('');
+  }
+  process.exit(hadError ? 1 : 0);
 }
 
 function cmdCompact(file: string, flags: Record<string, string | boolean>): void {
@@ -229,6 +304,82 @@ function cmdSummary(file: string): void {
 `);
 }
 
+function cmdScope(file: string, flags: Record<string, string | boolean>): void {
+  const content = readFile(file);
+  const parsed = parseUWFile(content);
+  const assetClass =
+    (flags['asset-class'] as string | undefined) ??
+    (parsed.frontmatter.asset_class as string | undefined) ??
+    'multifamily';
+
+  const table = getAssetClassDefaults(assetClass);
+  if (!table) {
+    console.error(`No published asset-class default table for '${assetClass}'.`);
+    process.exit(1);
+  }
+
+  const out: Record<string, { value: unknown; step: string; range?: unknown; resolved_from?: string }> = {};
+  for (const path of Object.keys(table.fields)) {
+    const r = resolveValue(path, parsed);
+    out[path] = {
+      value: r.value,
+      step: r.step,
+      range: r.range,
+      resolved_from: r.resolved_from,
+    };
+  }
+
+  const payload = {
+    deal_id: parsed.frontmatter.deal_id ?? null,
+    deal_stage_target: 'scope',
+    asset_class: assetClass,
+    defaults_table: `${assetClass}@${table.version}`,
+    resolved: out,
+  };
+  const text = JSON.stringify(payload, null, 2);
+  if (flags['output']) {
+    writeFileSync(resolve(flags['output'] as string), text, 'utf-8');
+    console.log(`Scope view written to ${flags['output']} (${Object.keys(out).length} fields)`);
+  } else {
+    process.stdout.write(`${text}\n`);
+  }
+}
+
+function cmdRefine(file: string, flags: Record<string, string | boolean>): void {
+  const content = readFile(file);
+  const parsed = parseUWFile(content);
+  const targets = flags['targets']
+    ? (flags['targets'] as string).split(',').map(s => s.trim()).filter(Boolean)
+    : undefined;
+  const top = flags['top'] ? Number.parseInt(flags['top'] as string, 10) : 10;
+
+  const result = rankGaps(parsed, { targets, top, packs: [MULTIFAMILY_PACK] });
+
+  if (flags['json']) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    return;
+  }
+
+  console.log('\n─── Refinement ranking ───');
+  console.log(`graph_size=${result.diagnostics.graph_size} resolved=${result.diagnostics.resolved} perturbations=${result.diagnostics.perturbations}`);
+  if (result.diagnostics.non_monotonic.length > 0) {
+    console.log(`⚠  Non-monotonic outputs: ${result.diagnostics.non_monotonic.map(w => w.output_id).join(', ')}`);
+  }
+  console.log('');
+  if (result.by_voi.length === 0) {
+    console.log('No gap-driven inputs found among the requested targets.');
+    return;
+  }
+  result.by_voi.forEach((g, i) => {
+    console.log(`${i + 1}. ${g.field_path}`);
+    console.log(`   range:    [${g.prior_range.low} … ${g.prior_range.central} … ${g.prior_range.high}]`);
+    console.log(`   voi:      ${g.total_voi.toFixed(4)}`);
+    console.log(`   touches:  ${g.affected_outputs.map(o => o.output_id).join(', ')}`);
+    if (g.question_template) console.log(`   ask:      "${g.question_template}"`);
+    console.log('');
+  });
+}
+
 // ─── Router ───────────────────────────────────────────────────────────────────
 
 const flags = parseFlags(args);
@@ -253,6 +404,11 @@ switch (command) {
     cmdValidate(positional[0], flags);
     break;
 
+  case 'verify':
+    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--json]'); process.exit(1); }
+    await cmdVerify(positional[0], flags);
+    break;
+
   case 'compact':
     if (!positional[0]) { console.error('Usage: uwmd compact <file> [--output <file>] [--dry-run]'); process.exit(1); }
     cmdCompact(positional[0], flags);
@@ -264,10 +420,36 @@ switch (command) {
     break;
 
   case 'render': {
-    if (!positional[0]) { console.error('Usage: uwmd render <file> --format <json|csv|chat|summary> [--output <file>] [--tier screener|analyst] [--max-tokens 12000]'); process.exit(1); }
-    const fmt = (flags['format'] as string | undefined) ?? 'summary';
+    if (!positional[0]) { console.error('Usage: uwmd render <file> [--format <json|csv|chat|summary>] [--profile <summary|live|compact|full|relevant>] [--sections a,b,c] [--max-tokens 12000] [--no-meta] [--output <file>] [--tier screener|analyst]'); process.exit(1); }
     const content = readFile(positional[0]);
     const parsedFile = parseUWFile(content);
+
+    if (flags['profile']) {
+      const profile = flags['profile'] as ContextProfile;
+      const validProfiles = ['summary', 'live', 'compact', 'full', 'relevant'] as const;
+      if (!validProfiles.includes(profile as (typeof validProfiles)[number])) {
+        console.error(`Unknown profile '${profile as string}'. Valid: ${validProfiles.join(' | ')}`);
+        process.exit(1);
+      }
+      const sectionsList = flags['sections']
+        ? (flags['sections'] as string).split(',').map(s => s.trim()).filter(Boolean)
+        : undefined;
+      const result = buildContext(parsedFile, profile, {
+        sections: sectionsList,
+        maxTokens: flags['max-tokens'] ? Number.parseInt(flags['max-tokens'] as string, 10) : undefined,
+        includeMeta: flags['no-meta'] ? false : undefined,
+      });
+      if (flags['output']) {
+        writeFileSync(resolve(flags['output'] as string), result.content, 'utf-8');
+        console.log(`Rendered profile=${profile} → ${flags['output']}${result.truncated ? ' [TRUNCATED]' : ''} (~${result.tokenEstimate} tokens)`);
+      } else {
+        process.stdout.write(`${result.content}\n`);
+        process.stderr.write(`(~${result.tokenEstimate} tokens, profile=${profile}${result.truncated ? ', truncated' : ''})\n`);
+      }
+      break;
+    }
+
+    const fmt = (flags['format'] as string | undefined) ?? 'summary';
     const result = render(parsedFile, {
       format: fmt as RenderFormat,
       tier: flags['tier'] as RenderTier | undefined,
@@ -491,6 +673,16 @@ switch (command) {
     cmdSummary(positional[0]);
     break;
 
+  case 'scope':
+    if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--output <file>]'); process.exit(1); }
+    cmdScope(positional[0], flags);
+    break;
+
+  case 'refine':
+    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--json]'); process.exit(1); }
+    cmdRefine(positional[0], flags);
+    break;
+
   default:
     console.log(`
 uwmd — .uw.md underwriting file toolkit
@@ -498,6 +690,7 @@ uwmd — .uw.md underwriting file toolkit
 Commands:
   parse    <file>              Parse file and output JSON
   validate <file>              Run all validation checks
+  verify   <file>              Validate + verify integrity (hashes) + provenance (actor/policy)
   render   <file>              Render to output format (see --format)
   run      <file>              Invoke a Bancroft agent (see --agent)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
@@ -506,6 +699,8 @@ Commands:
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uw.md file
   summary  <file>              Print quick metrics to terminal
+  scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
+  refine   <file>              Rank gaps by value-of-information for stated calc targets
   layers                       List Bancroft agent layers
 
 Options:

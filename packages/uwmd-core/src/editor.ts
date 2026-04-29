@@ -23,6 +23,8 @@ import type {
 import { BUILTIN_EDIT_POLICIES } from './protocol.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';
+import { inferGaps, summarizeGaps } from './gaps.js';
+import { computeBlockHash } from './integrity.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -43,6 +45,13 @@ export interface EditContext {
   confidence?: 'high' | 'medium' | 'low';
   /** Free-form `_meta.notes` for the new block. */
   notes?: string;
+  /**
+   * SHA-256 content_hash of the section's current head, captured at read time.
+   * Required when the head carries `_meta.content_hash` AND the caller is
+   * editing through `applyEditAsync` with `integrity: true`. A mismatch with
+   * the live head triggers INT-02 (concurrent write detected).
+   */
+  parentHash?: string | null;
 }
 
 export interface EditResult {
@@ -68,12 +77,126 @@ const IMMUTABLE_FRONTMATTER_FIELDS: readonly string[] = [
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
+/**
+ * Optional behaviors that layer on top of the base edit. Currently:
+ *   - `maintainGaps`: after a successful section or frontmatter edit, re-parse
+ *     the file, recompute gaps via inferGaps(mergeWithExisting=true), and
+ *     write the result back as the `gaps` section. The maintenance write is
+ *     stamped with source='system/gaps-maintainer' so it can be filtered.
+ *     Default: false. See FORMAT_SPEC §4.22.
+ */
+export interface EditOptions {
+  maintainGaps?: boolean;
+  /**
+   * Enable content_hash chain enforcement (UW_PROTOCOL_v1.md §V.10):
+   *   - If the section's current head has `_meta.content_hash`, the caller's
+   *     `EditContext.parentHash` MUST equal it (else INT-02).
+   *   - The new block is stamped with `parent_hash = prior.content_hash`.
+   *   - The new block's `content_hash` is computed and stamped.
+   * No effect when the prior head carries no content_hash (chain stays opt-out).
+   *
+   * Only honored by `applyEditAsync` (hashing requires async crypto APIs).
+   */
+  integrity?: boolean;
+}
+
 export function applyEdit(
   fileContent: string,
   parsed: ParsedUWFile,
   op: EditOperation,
   ctx: EditContext,
   policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
+  options: EditOptions = {},
+): EditResult {
+  // INT-02: stale parent hash detection (sync portion). When the section head
+  // carries content_hash, ctx.parentHash must match it. The async stamping of
+  // the new block's content_hash happens in applyEditAsync.
+  if ((op.kind === 'section_replace' || op.kind === 'section_supersede')) {
+    const head = lookupSection(parsed, op.section_id, op.variant);
+    const headHash = head?.meta?.content_hash;
+    if (headHash && ctx.parentHash != null && ctx.parentHash !== headHash) {
+      return {
+        ok: false,
+        error: protoError(
+          'INT-02',
+          `Stale parent_hash for '${op.section_id}': caller-supplied '${ctx.parentHash}' does not match current head '${headHash}'. Re-read and retry.`,
+          op.section_id,
+        ),
+      };
+    }
+  }
+
+  const result = dispatchEdit(fileContent, parsed, op, ctx, policies);
+  if (!result.ok || !result.content) return result;
+
+  // Skip gap maintenance when this very edit is itself the gaps maintenance
+  // write — prevents infinite recursion.
+  const isGapsWrite =
+    (op.kind === 'section_replace' || op.kind === 'section_supersede') &&
+    op.section_id === 'gaps';
+  if (!options.maintainGaps || isGapsWrite) return result;
+
+  return maintainGapsAfterEdit(result, policies);
+}
+
+/**
+ * Async wrapper around `applyEdit` that adds content_hash chain stamping when
+ * `options.integrity` is set AND the section's prior head carried a
+ * `content_hash`. Otherwise behaves identically to `applyEdit`.
+ *
+ * Hashing is async because Web Crypto's SHA-256 is async; this preserves the
+ * sync `applyEdit` API surface for callers that don't need integrity.
+ */
+export async function applyEditAsync(
+  fileContent: string,
+  parsed: ParsedUWFile,
+  op: EditOperation,
+  ctx: EditContext,
+  policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
+  options: EditOptions = {},
+): Promise<EditResult> {
+  const result = applyEdit(fileContent, parsed, op, ctx, policies, options);
+  if (!result.ok || !result.content || !options.integrity) return result;
+  if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return result;
+
+  const priorHead = lookupSection(parsed, op.section_id, op.variant);
+  const priorHash = priorHead?.meta?.content_hash;
+  if (!priorHash) return result; // chain stays opt-out when prior is unhashed
+
+  const reparsed = parseUWFile(result.content);
+  const newHead = lookupSection(reparsed, op.section_id, op.variant);
+  if (!newHead) return result;
+
+  // Stamp parent_hash + content_hash on the new head.
+  newHead.meta.parent_hash = priorHash;
+  // Compute over the block (canonicalizer strips content_hash itself).
+  newHead.meta.content_hash = await computeBlockHash(newHead);
+
+  const stamped = restampBlockMeta(result.content, newHead);
+  return { ...result, content: stamped };
+}
+
+/**
+ * Re-emit a single block in `content` with a fresh _meta payload. Locates the
+ * block by lineStart/lineEnd from the parsed AST and rewrites only that range.
+ */
+function restampBlockMeta(content: string, block: UWBlock): string {
+  const lines = content.split('\n');
+  const fence = lines[block.lineStart - 1] ?? '';
+  const closing = lines[block.lineEnd - 1] ?? '```';
+  const updatedContent = { ...block.content, _meta: block.meta };
+  const json = JSON.stringify(updatedContent, null, 2);
+  const before = lines.slice(0, block.lineStart - 1);
+  const after = lines.slice(block.lineEnd);
+  return [...before, fence, ...json.split('\n'), closing, ...after].join('\n');
+}
+
+function dispatchEdit(
+  fileContent: string,
+  parsed: ParsedUWFile,
+  op: EditOperation,
+  ctx: EditContext,
+  policies: readonly EditPolicy[],
 ): EditResult {
   switch (op.kind) {
     case 'frontmatter_set':
@@ -97,6 +220,47 @@ export function applyEdit(
       };
     }
   }
+}
+
+function maintainGapsAfterEdit(prior: EditResult, policies: readonly EditPolicy[]): EditResult {
+  if (!prior.content) return prior;
+  let reparsed: ParsedUWFile;
+  try {
+    reparsed = parseUWFile(prior.content);
+  } catch {
+    // If the edit produced unparseable output, surface the original result.
+    // The caller is expected to validate before persisting anyway.
+    return prior;
+  }
+  const stage = reparsed.frontmatter.deal_stage ?? 'scope';
+  const items = inferGaps(reparsed, { mergeWithExisting: true, stage });
+  const summary = summarizeGaps(items, stage);
+  const gapsContent = { items, summary };
+
+  const existing = getSection(reparsed, 'gaps');
+  const ctx: EditContext = {
+    actor: 'system/gaps-maintainer',
+    source: 'system/gaps-maintainer',
+    confidence: 'high',
+    notes: 'Auto-maintained by editor; see FORMAT_SPEC §4.22.',
+  };
+  const op: EditOperation = existing
+    ? {
+        kind: 'section_replace',
+        section_id: 'gaps',
+        content: gapsContent as unknown as Record<string, unknown>,
+        meta: { confidence: 'high' },
+      }
+    : {
+        kind: 'section_supersede',
+        section_id: 'gaps',
+        content: gapsContent as unknown as Record<string, unknown>,
+        meta: { confidence: 'high' },
+      };
+
+  const after = dispatchEdit(prior.content, reparsed, op, ctx, policies);
+  if (!after.ok) return prior; // best-effort: if maintenance fails, keep the prior result
+  return { ...prior, content: after.content };
 }
 
 // ─── frontmatter_set ──────────────────────────────────────────────────────────

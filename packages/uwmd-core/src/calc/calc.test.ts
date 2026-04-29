@@ -144,6 +144,56 @@ describe('evaluate', () => {
   });
 });
 
+// ─── Logical operators (Phase B) ──────────────────────────────────────────────
+
+describe('logical operators', () => {
+  it('&& short-circuits when left is false', () => {
+    // If && did not short-circuit, the right side would throw CALC-DIV-ZERO.
+    expect(evaluate(parseExpression('false && (1 / 0 > 0)'), makeCtx())).toBe(false);
+  });
+
+  it('|| short-circuits when left is true', () => {
+    expect(evaluate(parseExpression('true || (1 / 0 > 0)'), makeCtx())).toBe(true);
+  });
+
+  it('&& evaluates right when left is true', () => {
+    expect(evaluate(parseExpression('true && false'), makeCtx())).toBe(false);
+    expect(evaluate(parseExpression('true && true'), makeCtx())).toBe(true);
+  });
+
+  it('|| evaluates right when left is false', () => {
+    expect(evaluate(parseExpression('false || true'), makeCtx())).toBe(true);
+    expect(evaluate(parseExpression('false || false'), makeCtx())).toBe(false);
+  });
+
+  it('null on left propagates to null', () => {
+    expect(evaluate(parseExpression('quick_metrics.dscr && true'), makeCtx())).toBe(null);
+    expect(evaluate(parseExpression('quick_metrics.dscr || true'), makeCtx())).toBe(null);
+  });
+
+  it('null on right propagates to null (when left does not short-circuit)', () => {
+    expect(evaluate(parseExpression('true && quick_metrics.dscr'), makeCtx())).toBe(null);
+    expect(evaluate(parseExpression('false || quick_metrics.dscr'), makeCtx())).toBe(null);
+  });
+
+  it('non-boolean operand → CALC-TYPE-001', () => {
+    expect(() => evaluate(parseExpression('1 && true'), makeCtx())).toThrow(/CALC-TYPE/);
+    expect(() => evaluate(parseExpression('true && 1'), makeCtx())).toThrow(/CALC-TYPE/);
+  });
+
+  it('precedence: || binds looser than &&', () => {
+    // false || (true && true) = true; (false || true) && true = true — both true
+    // but check the parse shape via evaluation that can distinguish.
+    // false || true && false → false || (true && false) → false || false = false
+    expect(evaluate(parseExpression('false || true && false'), makeCtx())).toBe(false);
+  });
+
+  it('precedence: && binds tighter than comparison? — no, same as JS', () => {
+    // 1 < 2 && 2 < 3 → (1 < 2) && (2 < 3) = true
+    expect(evaluate(parseExpression('1 < 2 && 2 < 3'), makeCtx())).toBe(true);
+  });
+});
+
 // ─── Variable resolution ──────────────────────────────────────────────────────
 
 describe('variable resolution', () => {
@@ -232,6 +282,86 @@ describe('builtins', () => {
 
   it('unknown function → CALC-RESOLVE-001', () => {
     expect(() => evaluate(parseExpression('frobulate(1, 2)'), makeCtx())).toThrow(/CALC-RESOLVE/);
+  });
+
+  // ─── Math builtins (Phase B) ────────────────────────────────────────────────
+
+  it('abs / floor / ceil / sqrt', () => {
+    expect(evaluate(parseExpression('abs(-7.2)'), makeCtx())).toBe(7.2);
+    expect(evaluate(parseExpression('abs(null)'), makeCtx())).toBe(null);
+    expect(evaluate(parseExpression('floor(2.9)'), makeCtx())).toBe(2);
+    expect(evaluate(parseExpression('floor(-2.1)'), makeCtx())).toBe(-3);
+    expect(evaluate(parseExpression('ceil(2.1)'), makeCtx())).toBe(3);
+    expect(evaluate(parseExpression('ceil(-2.9)'), makeCtx())).toBe(-2);
+    expect(evaluate(parseExpression('sqrt(16)'), makeCtx())).toBe(4);
+  });
+
+  it('sqrt of negative → CALC-TYPE-001', () => {
+    expect(() => evaluate(parseExpression('sqrt(-1)'), makeCtx())).toThrow(/CALC-TYPE/);
+  });
+
+  it('pow / log / exp', () => {
+    expect(evaluate(parseExpression('pow(2, 10)'), makeCtx())).toBe(1024);
+    expect(evaluate(parseExpression('pow(null, 2)'), makeCtx())).toBe(null);
+    expect(evaluate(parseExpression('log(exp(1))'), makeCtx()) as number).toBeCloseTo(1, 9);
+    // exp(0) = 1 exactly
+    expect(evaluate(parseExpression('exp(0)'), makeCtx())).toBe(1);
+  });
+
+  it('log of non-positive → CALC-TYPE-001', () => {
+    expect(() => evaluate(parseExpression('log(0)'), makeCtx())).toThrow(/CALC-TYPE/);
+    expect(() => evaluate(parseExpression('log(-1)'), makeCtx())).toThrow(/CALC-TYPE/);
+  });
+
+  // ─── Financial builtins (Phase B) ───────────────────────────────────────────
+
+  it('fv: lump-sum growth', () => {
+    // 100k at 5%/yr for 30 years, no payments → 100000 * 1.05^30 ≈ 432,194.24
+    const v = evaluate(parseExpression('fv(0.05, 30, 0, 100000)'), makeCtx()) as number;
+    expect(v).toBeCloseTo(432194.24, 2);
+  });
+
+  it('fv: ordinary annuity', () => {
+    // $1000/yr for 30 yrs at 5% → 1000 * ((1.05^30 - 1)/0.05) ≈ 66,438.85
+    const v = evaluate(parseExpression('fv(0.05, 30, 1000)'), makeCtx()) as number;
+    expect(v).toBeCloseTo(66438.85, 2);
+  });
+
+  it('fv: zero-rate edge case', () => {
+    expect(evaluate(parseExpression('fv(0, 10, 100, 50)'), makeCtx())).toBe(1050);
+  });
+
+  it('pv: matches loan amount given pmt+rate+n', () => {
+    // pv(0.05/12, 360, pmt(0.05/12, 360, 100000)) ≈ 100000
+    const v = evaluate(
+      parseExpression('pv(0.05 / 12, 360, pmt(0.05 / 12, 360, 100000))'),
+      makeCtx(),
+    ) as number;
+    expect(v).toBeCloseTo(100000, 2);
+  });
+
+  it('pv: zero-rate edge case', () => {
+    // pmt*n + fv = 100*10 + 50 = 1050
+    expect(evaluate(parseExpression('pv(0, 10, 100, 50)'), makeCtx())).toBe(1050);
+  });
+
+  it('nper: 30-year mortgage round-trip', () => {
+    // pmt for 30y at 5% / month on 100k, then nper should give back 360.
+    const v = evaluate(
+      parseExpression('nper(0.05 / 12, pmt(0.05 / 12, 360, 100000), 100000)'),
+      makeCtx(),
+    ) as number;
+    expect(v).toBeCloseTo(360, 4);
+  });
+
+  it('nper: zero-rate edge case', () => {
+    // 1000 / 100 = 10 periods to pay off with no interest.
+    expect(evaluate(parseExpression('nper(0, 100, 1000)'), makeCtx())).toBe(10);
+  });
+
+  it('nper: no real solution → CALC-TYPE-001', () => {
+    // pmt < pv*rate means the loan grows faster than payments — never paid off.
+    expect(() => evaluate(parseExpression('nper(0.10, 50, 1000)'), makeCtx())).toThrow(/CALC-TYPE/);
   });
 });
 

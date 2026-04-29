@@ -8,12 +8,35 @@ export type PipelineStatus = 'complete' | 'in_progress' | 'pending' | 'skipped' 
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 
 export type DealStage =
+  | 'scope'
   | 'screening'
   | 'term_sheet'
   | 'full_underwrite'
   | 'credit_approval'
   | 'closing'
   | 'monitoring';
+
+/**
+ * Source tags surface where a value came from. Producers stamp `_meta.source`
+ * with a value drawn from this union or an institution-defined pattern (e.g.
+ * 'agent/L6-01', 'document/rent_roll'). Free-form strings remain valid for
+ * forward compat; this union enumerates the canonical values.
+ *
+ * Cascade-resolved values use the lower seven tags below; see protocol §IX.
+ */
+export type SourceTag =
+  | 'user_input'
+  | 'user_override'
+  | 'manual'
+  | 'investor_profile'
+  | 'market_data'
+  | 'ai_extracted'
+  | 'agent_computed'
+  | 'asset_class_default'
+  | 'scenario_default'
+  | 'global_default'
+  | 'system_default'
+  | (string & {});
 
 export type AssetClass =
   | 'multifamily'
@@ -29,11 +52,20 @@ export type AssetClass =
 
 // ─── Provenance ───────────────────────────────────────────────────────────────
 
+export interface UWFieldOverride {
+  /** Dot-notated path relative to the block's content root (e.g. "units[7].current_rent"). */
+  path: string;
+  confidence?: ConfidenceLevel;
+  source?: SourceTag;
+  reason?: 'illegible' | 'missing' | 'overridden' | 'estimated' | 'computed';
+  note?: string;
+}
+
 export interface UWMeta {
   section: string;
   version: number;
   superseded: boolean;
-  source: string;               // see spec §2.6 for source identifier patterns
+  source: SourceTag;            // see spec §2.6 for source identifier patterns
   agent_id: string | null;
   agent_version: string | null;
   actor: string;
@@ -43,6 +75,42 @@ export interface UWMeta {
   flags: string[];
   input_hash: string | null;    // sha256:... — reproducibility anchor
   notes: string | null;
+
+  // ─── Optional integrity / quality fields (format spec Part III §3) ──────────
+
+  /**
+   * True when at least one field inside this block is missing or unknown.
+   * When true, `field_overrides` SHOULD enumerate which paths and why.
+   */
+  partial?: boolean;
+
+  /**
+   * True when the entire block is a placeholder, derived from defaults rather
+   * than observed data. Stronger signal than confidence:'low'. Downstream
+   * consumers SHOULD label outputs derived from provisional blocks.
+   */
+  provisional?: boolean;
+
+  /**
+   * Per-field overrides where the block-level confidence/source does not apply
+   * uniformly. The path is dot-notated relative to the block content root.
+   */
+  field_overrides?: UWFieldOverride[];
+
+  /**
+   * sha256 of the canonicalized block content (excluding _meta.content_hash
+   * and _meta.signature themselves). See protocol §IX.2 for the
+   * canonicalization rule. Optional; when present, the chain becomes
+   * verifiable.
+   */
+  content_hash?: string;
+
+  /**
+   * content_hash of the block this one supersedes. null on a chain root.
+   * Optional, but if any block in a supersede chain has it, all later blocks
+   * in that chain MUST.
+   */
+  parent_hash?: string | null;
 }
 
 // ─── Fence annotation (parsed from the opening ``` line) ─────────────────────
@@ -159,9 +227,16 @@ export interface ValidationMessage {
   remediation?: string;
   /** Spec section anchor for deep-linking, when available. */
   spec_ref?: string;
+  /**
+   * Deprecated string-form code from prior versions, emitted alongside
+   * the canonical numeric `code` for one release as a migration aid.
+   * Consumers should switch to reading `code`. Removal target: v1.2.
+   */
+  legacy_code?: string;
 }
 
 export interface StageReadiness {
+  scope: boolean;
   screening: boolean;
   term_sheet: boolean;
   full_underwrite: boolean;

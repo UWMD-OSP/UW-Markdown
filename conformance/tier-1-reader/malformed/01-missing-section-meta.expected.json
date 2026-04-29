@@ -1,0 +1,6 @@
+{
+  "description": "Property block has content but no _meta — validator must surface META_MISSING for that section.",
+  "must_parse": true,
+  "expected_codes": ["META_MISSING"],
+  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a (validator code taxonomy)"
+}

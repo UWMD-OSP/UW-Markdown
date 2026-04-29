@@ -1,4 +1,4 @@
-# UW Protocol — v1.0
+# UW Protocol — v1.1
 
 **Status:** Draft  ·  **Format pairing:** `.uw.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.0.0`) — the
+- **Protocol version** (this document, currently `1.1.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -253,6 +253,36 @@ SHOULD render the matching `IssueRemediation` from
 goal is uniform UX across implementations, so end-users learning the
 format on one tool see the same remediation copy on another.
 
+### III.6a Validator code taxonomy
+
+Every issue code emitted by a conforming validator MUST belong to one
+of three families. The prefix is part of the contract — adopters can
+filter, group, and route issues by prefix without parsing the message
+text.
+
+| Prefix | Family | Meaning | Default severity |
+|---|---|---|---|
+| `CC-NN` | Cross-section consistency | Two or more sections disagree about the same fact (e.g. loan amount in `sources_uses` ≠ loan amount in `debt_structure`). NN is a two-digit integer registered in this spec. | `warning` or `error` depending on the specific check |
+| `FV_*` | Single-section financial validity | One section's value falls outside a registered plausibility threshold (e.g. vacancy rate well below the asset class's `warning_below`). The suffix names the field and direction. | typically `warning` |
+| `META_*` | `_meta` / provenance integrity | A block's `_meta` object is missing, malformed, or internally inconsistent (e.g. low confidence without `human_review_required: true`). | `info` or `warning` |
+
+The currently registered `CC-NN` codes are `CC-01` through `CC-10`,
+defined in §VI of the format spec. New `CC-NN` codes are added by RFC
+and MUST extend the integer sequence without renumbering. `FV_*` and
+`META_*` codes are open extension points: the reference validator
+ships an initial set, modules MAY add their own, and adopters MUST
+treat unknown codes within the same family the same way they treat
+known codes (render the message; consult `BUILTIN_REMEDIATIONS` if
+present; fall back to message text otherwise).
+
+The reference registry lives in
+[`packages/uwmd-core/src/validator.ts`](../packages/uwmd-core/src/validator.ts);
+remediation copy lives in `BUILTIN_REMEDIATIONS` in the same file.
+Implementations that surface validator output to end users SHOULD use
+the prefix to colorize, group, or filter issues — for example, a UI
+might collapse `META_*` notices behind a "show provenance issues"
+toggle while always surfacing `CC-NN` and `FV_*` inline.
+
 ---
 
 ## IV. View Models
@@ -354,6 +384,147 @@ replace/supersede policy as single-variant sections.
 post-init edits. `last_modified` MUST be updated on every write.
 `pipeline_state` MUST be updated by Tier-4 hosts as layers complete.
 
+### V.7 Fallback cascade
+
+A producer that needs to assign a value to a field for which no
+explicit user input or document extraction is available MUST resolve
+the value by walking the following ordered cascade. The first step
+that yields a value wins. The producer MUST stamp the resulting
+`_meta.source` (or, when only a subset of fields was resolved this
+way, a `_meta.field_overrides[].source`) with the cascade step that
+produced the value.
+
+| Step | Source tag | Description |
+|---:|---|---|
+| 1 | `user_override` | An explicit user-entered correction. |
+| 2 | `user_input` | An explicit user-entered initial value. |
+| 3 | `investor_profile` | Values declared in the active investor profile (e.g. preferred rate spread). |
+| 4 | `market_data` | A market-data lookup at the time of resolution. |
+| 5 | `asset_class_default` | The published default for the deal's asset class. See §V.8. |
+| 6 | `global_default` | The published global default. |
+| 7 | `system_default` | A hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
+
+A producer MAY skip steps that are not available (e.g. no investor
+profile attached). A producer MUST NOT reorder the cascade. The
+runtime constant `CASCADE_ORDER` in `protocol.ts` is the canonical
+machine-readable representation; conformant resolvers walk this
+array.
+
+A producer that resolves a value via a step at or below
+`asset_class_default` (i.e. not from observed user or document data)
+SHOULD also stamp the resulting block with `_meta.provisional: true`
+unless the value originated from `investor_profile` or fresher
+`market_data`. This signals the refinement engine that the field is
+a candidate for value-of-information ranking.
+
+When the resolved value carries an associated range (e.g.
+asset-class defaults publish `{low, central, high}`), the producer
+MAY also stamp `_meta.field_overrides` for that path with the range
+recorded under the entry's `note`, so downstream tooling can compute
+value-of-information without re-resolving the cascade.
+
+### V.8 Asset-class default tables
+
+The reference library publishes per-asset-class default tables under
+`@uwmd/core/defaults`. Each entry resolves to a `{low, central,
+high}` triple plus a unit and source tag. Producers consuming the
+table at cascade step 5 (`asset_class_default`) MUST use the
+published `central` value as the resolved scalar and MAY surface the
+range to downstream consumers via `field_overrides`.
+
+Tables are versioned independently of the protocol; consumers MAY
+pin a specific table version via institution config. Default-table
+revisions bump their semver and appear in the CHANGELOG.
+
+The `MarketDataLookup` interface (cascade step 4) is defined by the
+reference library but ships no built-in implementation; adopters
+bring their own (CoStar, Yardi, internal). When no implementation is
+attached, step 4 is silently skipped and resolution falls through to
+step 5.
+
+### V.9 Canonical block JSON
+
+The `_meta.content_hash` of a block is the SHA-256 hash of the
+**canonical JSON serialization** of the block's content (the JSON
+object inside the fence, exclusive of the fence annotation line and
+exclusive of `_meta.content_hash` and `_meta.signature` themselves).
+
+The canonical form is **RFC 8785 (JCS — JSON Canonicalization
+Scheme)** with one uw-md addition: the keys `content_hash` and
+`signature` inside any nested `_meta`-shaped object are removed
+before hashing. A `_meta`-shaped object is any object that carries
+the keys `section`, `version`, AND `source` — this catches both the
+top-level `_meta` and any nested provenance (e.g. inside
+`field_overrides`).
+
+Implementations MUST produce **byte-identical** canonical output
+across platforms. Specifically:
+
+- Object keys are sorted by code-unit comparison (RFC 8785 §3.2.3).
+- Strings are JSON-escaped per RFC 8785 §3.2.2.
+- Numbers serialize per ECMAScript ToString (RFC 8785 §3.2.2.3),
+  with `-0` rendered as `0` and non-finite numbers rejected
+  (canonical JSON has no representation for `Infinity` or `NaN`).
+- `undefined` values inside objects are dropped (mirroring
+  `JSON.stringify`).
+
+The reference library's implementation is in
+`@uwmd/core/integrity-canonical`; it is dependency-free and ~120
+lines.
+
+### V.10 Block integrity (content_hash + parent_hash chains)
+
+Two optional `_meta` fields make supersede chains tamper-evident:
+
+- `content_hash` — the canonical-JSON SHA-256 of the block (§V.9).
+- `parent_hash` — the `content_hash` of the block this one
+  supersedes; `null` on a chain root.
+
+**Opt-in.** A block lacking both fields is well-formed and verifies
+as `ok: true, chains_with_hashes: 0`. A producer that wants
+tamper-evidence MUST stamp every block it writes within a hashed
+chain. Once any block in a supersede sequence carries
+`content_hash`, every later block in that sequence MUST carry one
+(else `INT-03 warning`).
+
+**Verification (`verifyChain`).** For every supersede chain in a
+parsed file:
+
+1. If no block in the chain carries `content_hash`, the chain is
+   skipped.
+2. Each non-root block's `parent_hash` MUST equal the prior block's
+   `content_hash` (else `INT-01 error`).
+3. Each block's stamped `content_hash` MUST recompute from its
+   current canonicalized content (else `INT-04 warning`).
+
+**Editor enforcement (`applyEdit`).** When the section's current
+head carries `content_hash`, the caller's `EditContext.parentHash`
+MUST equal it; mismatch is rejected as `INT-02` (concurrent write
+detected). The new block is then stamped with `parent_hash =
+prior.content_hash` and a freshly computed `content_hash`. The
+async stamping is performed by `applyEditAsync` (Web Crypto's
+SHA-256 is async); the sync `applyEdit` performs only the INT-02
+mismatch check.
+
+**Provenance verification (`verifyProvenance`).** Cross-checks
+`_meta.actor` and the operation that produced the block against the
+section's `EditPolicy`:
+
+- `POL-01 error` — actor not authorized for the policy authority
+  (`agent_only`, `human_only`, `system_only`, `either`).
+- `POL-02 error` — `section_replace` used where the policy mandates
+  `section_supersede` (heuristic: `version > 1` with no superseded
+  prior versions visible).
+
+**Adversarial-write caveat.** A non-conforming producer can
+trivially defeat integrity by simply not stamping `content_hash`
+(`verifyChain` returns "no chain to verify" silently). Adopters who
+need adversarial resistance MUST enforce a "must have hashes" policy
+externally — for example, a CI gate that runs `uwmd verify
+--integrity` and rejects files where `chains_with_hashes <
+chains_with_supersedes`. RFC 0010 (signed blocks) is the right tool
+for stronger guarantees and is deferred from v1.
+
 ---
 
 ## VI. Extensibility
@@ -428,7 +599,9 @@ defines the shape of every value a Tier-3 Calc Host returns.
 
 ```
 expr        ::= conditional
-conditional ::= comparison ( "?" expr ":" expr )?
+conditional ::= logicalOr ( "?" expr ":" expr )?
+logicalOr   ::= logicalAnd ( "||" logicalAnd )*
+logicalAnd  ::= comparison ( "&&" comparison )*
 comparison  ::= additive ( ( "==" | "!=" | "<=" | ">=" | "<" | ">" ) additive )?
 additive    ::= multiplicative ( ( "+" | "-" ) multiplicative )*
 multiplicative ::= unary ( ( "*" | "/" | "%" ) unary )*
@@ -445,6 +618,12 @@ string      ::= "'" [^']* "'"
 bool        ::= "true" | "false"
 null        ::= "null"
 ```
+
+Logical operators `&&` and `||` short-circuit: the right operand is
+only evaluated when the left does not determine the result. Both
+operands MUST be `boolean` or `null`; non-boolean operands raise
+`CALC-TYPE-001`. A `null` operand propagates as `null` (matching the
+arithmetic null-propagation rule).
 
 Hosts MUST reject any input that does not parse against this grammar.
 Notably absent: assignment, function definitions, arrow functions,
@@ -475,7 +654,17 @@ Identifiers and dot-paths resolve against the
 | `coalesce(...args)` | `(any)[] → any` | First non-null. |
 | `if(cond, then, else)` | `(bool, any, any) → any` | |
 | `round(num, dec)` | `(number, number) → number` | Half-away-from-zero. |
+| `abs(num)` | `(number\|null) → number\|null` | Absolute value; null propagates. |
+| `floor(num)` | `(number\|null) → number\|null` | Round toward `-∞`; null propagates. |
+| `ceil(num)` | `(number\|null) → number\|null` | Round toward `+∞`; null propagates. |
+| `sqrt(num)` | `(number\|null) → number\|null` | Negative input raises `CALC-TYPE-001`. |
+| `pow(base, exp)` | `(number\|null, number\|null) → number\|null` | `base ** exp`. Non-finite result raises `CALC-TYPE-001`. |
+| `log(num)` | `(number\|null) → number\|null` | Natural log. Non-positive input raises `CALC-TYPE-001`. |
+| `exp(num)` | `(number\|null) → number\|null` | `e^num`. Non-finite result raises `CALC-TYPE-001`. |
 | `pmt(rate, n, pv)` | Standard mortgage payment formula. |
+| `fv(rate, n, pmt[, pv])` | Future value of a series of equal payments + initial pv. |
+| `pv(rate, n, pmt[, fv])` | Present value of a series of equal payments + future value. |
+| `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. |
 | `npv(rate, ...flows)` | Net present value. |
 | `irr(...flows)` | Internal rate of return; null if no real root. |
 
@@ -552,6 +741,83 @@ Because LLM outputs are nondeterministic, the Tier-4 conformance
 fixtures use JSON Schema shape assertions rather than byte-equality.
 A run is considered conformant if the post-run file shape matches
 the expected schema and the `pipeline_log` entry was appended.
+
+### IX.7 Context Profiles
+
+A consumer of a `.uw.md` file SHOULD declare which **context profile**
+it consumes. The profile determines which sections are included,
+whether superseded blocks appear, whether prose is included, and the
+approximate token budget the producer targets when constructing the
+context payload.
+
+The five normative profiles are:
+
+| Profile | Audience | Includes | Notes |
+|---|---|---|---|
+| `summary` | Chat agents, orchestration heuristics | Frontmatter slim subset, `pipeline_state`, `quick_metrics`, `gaps` head | Soft target ≤ 600 tokens (chars/4 estimate). |
+| `live` | Calc-aware editors | All non-superseded sections, full prose | Default for human-facing tools. |
+| `compact` | LLMs at scale | All non-superseded sections, JSON only, minified, ordered stable→volatile | Targets ≤ 55% of `live` token count on the canonical Parkview fixture. `_meta` stripped by default. |
+| `full` | Archival / forensic | Every byte, prose included, no compaction | Round-trips the input file byte-for-byte when no truncation. |
+| `relevant` | Custom Bancroft layers | Caller-supplied section list, `live`-style payload | Used by `consumed_profile: 'relevant'` layers; the host passes the layer's `reads` as the section filter. |
+
+A producer that satisfies a request for profile `X` MUST NOT return
+a context strictly larger than `X` allows; it MAY return a smaller
+context (e.g. truncated to fit `maxTokens`) and MUST set
+`truncated: true` in the result when it does.
+
+The `compact` profile MUST order sections **stable-first** so prompt-
+cache prefixes survive frequent edits to volatile downstream
+sections. The canonical order is:
+
+1. `frontmatter`
+2. `property`
+3. `ownership`
+4. `borrower_sponsor`
+5. `debt_structure`
+6. `sources_uses`
+7. `valuation`
+8. `rent_roll`
+9. `operating_statement`
+10. `noi_model`
+11. `market_analysis`
+12. `compliance`
+13. `risk_assessment`
+14. `dcf`
+15. `stress_tests`
+16. `custom_calculations`
+17. `gaps`
+18. `extensions`
+
+Sections not on this list trail the canonical prefix in
+`Object.keys` order.
+
+Token estimates use the `chars/4` approximation; producers MUST
+document the approximation and SHOULD validate periodically against
+the true tokenizer cost (typical drift ±5% on `.uw.md` content).
+
+### IX.8 Layer-declared profile consumption
+
+Each Bancroft layer declares a `consumed_profile` field in
+`BANCROFT_LAYERS`. A host MUST request that profile (and only that
+profile) when preparing the layer's input context. Conformance Tier-4
+verifies the declaration via the
+`consumer-profile-contract` fixture.
+
+For canonical v1 layers the declared profiles are:
+
+| Layer | `consumed_profile` |
+|---|---|
+| L0 — Document Ingestion | `summary` |
+| L1 — Screening | `summary` |
+| L2 — Underwriting | `relevant` |
+| L4 — Structuring | `relevant` |
+| L5 — Compliance | `relevant` |
+| L6 — Risk Rating | `relevant` |
+| L7 — Assembly | `live` |
+
+Module-contributed layers MUST declare `consumed_profile`. A module
+layer that consumes `full` or that declines to declare a profile is
+non-conformant.
 
 ---
 

@@ -11,8 +11,9 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS } from './protocol.js';
-import type { IssueRemediation } from './protocol.js';
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy } from './protocol.js';
+import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
+import { readGapsContent } from './gaps.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
 //
@@ -42,16 +43,92 @@ function enrichWithRemediation(msg: ValidationMessage): ValidationMessage {
   };
 }
 
+// ─── Financial-validity code mapping (Phase 1.4) ─────────────────────────────
+//
+// Legacy `FV_*` string codes are renamed to `FV-NN` numeric form. The legacy
+// code travels alongside the new code as `legacy_code` for one release; v1.2
+// drops `legacy_code` entirely. See protocol §III.6a.
+
+const FV_CODE_MAP: Readonly<Record<string, string>> = Object.freeze({
+  FV_CAP_RATE_BELOW_THRESHOLD:        'FV-01',
+  FV_CAP_RATE_ABOVE_THRESHOLD:        'FV-02',
+  FV_DEBT_YIELD_BELOW_THRESHOLD:      'FV-03',
+  FV_DSCR_BELOW_THRESHOLD:            'FV-04',
+  FV_EQUITY_MULTIPLE_BELOW_MIN:       'FV-05',
+  FV_EQUITY_MULTIPLE_ABOVE_MAX:       'FV-06',
+  FV_IRR_PROJECTED_BELOW_THRESHOLD:   'FV-07',
+  FV_IRR_PROJECTED_ABOVE_THRESHOLD:   'FV-08',
+  FV_LTV_ABOVE_THRESHOLD:             'FV-09',
+  FV_OPEX_BELOW_MIN:                  'FV-10',
+  FV_OPEX_ABOVE_MAX:                  'FV-11',
+  FV_RENT_GROWTH_ABOVE_MAX:           'FV-12',
+  FV_VACANCY_BELOW_MIN:               'FV-13',
+  FV_VACANCY_ABOVE_MAX:               'FV-14',
+});
+
+/** Resolve a legacy `FV_*` string to its `FV-NN` form. Returns the input if no mapping exists. */
+function fvCode(legacy: string): { code: string; legacy_code: string } {
+  const mapped = FV_CODE_MAP[legacy];
+  return mapped ? { code: mapped, legacy_code: legacy } : { code: legacy, legacy_code: legacy };
+}
+
 // ─── Stage completeness requirements (spec §5.1) ──────────────────────────────
 
-const STAGE_REQUIREMENTS: Record<DealStage, string[]> = {
-  screening:        ['property', 'debt_structure', 'validation'],
-  term_sheet:       ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'],
-  full_underwrite:  ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'],
-  credit_approval:  ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'],
-  closing:          ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'],
-  monitoring:       ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'],
+/**
+ * A stage's readiness contract. `required_sections` is the legacy section
+ * list; `required_field_paths` enforces field-level presence (used by the
+ * `scope` stage); `required_one_of` enforces "at least one of these paths
+ * must resolve" (also `scope`-only today).
+ *
+ * Paths are dot-notated relative to a section's content root, prefixed with
+ * the section ID (e.g. `property.asking_price`, `property.units`).
+ */
+export interface StageRequirement {
+  required_sections: string[];
+  required_field_paths?: string[];
+  required_one_of?: string[][];
+}
+
+export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
+  scope: {
+    required_sections: ['property'],
+    required_field_paths: ['property.address', 'property.asset_class'],
+    required_one_of: [['property.asking_price', 'property.units']],
+  },
+  screening:        { required_sections: ['property', 'debt_structure', 'validation'] },
+  term_sheet:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'] },
+  full_underwrite:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'] },
+  credit_approval:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'] },
+  closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+  monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
 };
+
+/**
+ * Legacy helper that returns just the section-list portion of a stage's
+ * requirements. Preserved for callers that pre-date the widened
+ * `StageRequirement` shape; new code SHOULD consult `STAGE_REQUIREMENTS`
+ * directly.
+ */
+export function getRequiredSections(stage: DealStage): readonly string[] {
+  return STAGE_REQUIREMENTS[stage].required_sections;
+}
+
+/**
+ * Resolve a dot-notated path of the form `<section>.<field>...` against
+ * the parsed file's content blocks. Returns `undefined` when any segment
+ * is missing. Variant maps are not traversed; multi-variant sections must
+ * use a section-only check.
+ */
+function resolveSectionFieldPath(parsed: ParsedUWFile, path: string): unknown {
+  const dot = path.indexOf('.');
+  const sectionId = dot === -1 ? path : path.slice(0, dot);
+  const rest = dot === -1 ? '' : path.slice(dot + 1);
+  const block = parsed.sections[sectionId];
+  if (!block || isVariantMap(block)) return undefined;
+  const content = (block as UWBlock).content;
+  if (rest === '') return content;
+  return deepGet(content, rest);
+}
 
 // ─── Main validate function ───────────────────────────────────────────────────
 
@@ -65,6 +142,8 @@ export function validateUWFile(
   checkFinancialValidity(parsed, thresholds, issues);
   checkCrossSectionConsistency(parsed, issues);
   checkMetaIntegrity(parsed, issues);
+  checkScopeReadiness(parsed, issues);
+  checkDataQuality(parsed, issues);
 
   // Enrich every issue with BUILTIN_REMEDIATIONS title/remediation/spec_ref
   // when the code matches the registry. Keeps inline messages (which carry
@@ -161,8 +240,9 @@ function checkFinancialValidity(
         : check.value > rule.limit;
 
       if (hit) {
+        const legacy = `FV_${check.metric.toUpperCase()}_${rule.direction.toUpperCase()}_THRESHOLD`;
         issues.push({
-          code: `FV_${check.metric.toUpperCase()}_${rule.direction.toUpperCase()}_THRESHOLD`,
+          ...fvCode(legacy),
           severity: rule.type,
           section: check.section,
           field: check.metric,
@@ -185,20 +265,20 @@ function checkFinancialValidity(
 
     if (vacancyRate != null) {
       if (vacancyRate < t.vacancy_rate.warning_below) {
-        issues.push({ code: 'FV_VACANCY_BELOW_MIN', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually low (below ${(t.vacancy_rate.warning_below * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { min: t.vacancy_rate.warning_below } });
+        issues.push({ ...fvCode('FV_VACANCY_BELOW_MIN'), severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually low (below ${(t.vacancy_rate.warning_below * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { min: t.vacancy_rate.warning_below } });
       }
       if (vacancyRate > t.vacancy_rate.warning_above) {
-        issues.push({ code: 'FV_VACANCY_ABOVE_MAX', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually high (above ${(t.vacancy_rate.warning_above * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { max: t.vacancy_rate.warning_above } });
+        issues.push({ ...fvCode('FV_VACANCY_ABOVE_MAX'), severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually high (above ${(t.vacancy_rate.warning_above * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { max: t.vacancy_rate.warning_above } });
       }
     }
 
     if (egi != null && opex != null && egi > 0) {
       const opexRatio = opex / egi;
       if (opexRatio < t.opex_ratio.warning_below) {
-        issues.push({ code: 'FV_OPEX_BELOW_MIN', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is suspiciously low (below ${(t.opex_ratio.warning_below * 100).toFixed(0)}%)`, value: opexRatio, threshold: { min: t.opex_ratio.warning_below } });
+        issues.push({ ...fvCode('FV_OPEX_BELOW_MIN'), severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is suspiciously low (below ${(t.opex_ratio.warning_below * 100).toFixed(0)}%)`, value: opexRatio, threshold: { min: t.opex_ratio.warning_below } });
       }
       if (opexRatio > t.opex_ratio.warning_above) {
-        issues.push({ code: 'FV_OPEX_ABOVE_MAX', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is unusually high (above ${(t.opex_ratio.warning_above * 100).toFixed(0)}%)`, value: opexRatio, threshold: { max: t.opex_ratio.warning_above } });
+        issues.push({ ...fvCode('FV_OPEX_ABOVE_MAX'), severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is unusually high (above ${(t.opex_ratio.warning_above * 100).toFixed(0)}%)`, value: opexRatio, threshold: { max: t.opex_ratio.warning_above } });
       }
     }
   }
@@ -209,17 +289,17 @@ function checkFinancialValidity(
     const rentGrowth = deepGet(dcfBlock.content, 'assumptions.annual_rent_growth') as number | undefined
       ?? deepGet(dcfBlock.content, 'rent_growth_assumption') as number | undefined;
     if (rentGrowth != null && rentGrowth > t.annual_rent_growth.warning_above) {
-      issues.push({ code: 'FV_RENT_GROWTH_ABOVE_MAX', severity: 'warning', section: 'dcf', field: 'annual_rent_growth', message: `Annual rent growth assumption ${(rentGrowth * 100).toFixed(1)}% is above the ${(t.annual_rent_growth.warning_above * 100).toFixed(0)}% warning threshold`, value: rentGrowth, threshold: { max: t.annual_rent_growth.warning_above } });
+      issues.push({ ...fvCode('FV_RENT_GROWTH_ABOVE_MAX'), severity: 'warning', section: 'dcf', field: 'annual_rent_growth', message: `Annual rent growth assumption ${(rentGrowth * 100).toFixed(1)}% is above the ${(t.annual_rent_growth.warning_above * 100).toFixed(0)}% warning threshold`, value: rentGrowth, threshold: { max: t.annual_rent_growth.warning_above } });
     }
 
     const equityMultiple = deepGet(dcfBlock.content, 'levered_equity_multiple') as number | undefined
       ?? deepGet(dcfBlock.content, 'summary.equity_multiple') as number | undefined;
     if (equityMultiple != null) {
       if (equityMultiple < t.equity_multiple.warning_below) {
-        issues.push({ code: 'FV_EQUITY_MULTIPLE_BELOW_MIN', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is below ${t.equity_multiple.warning_below}x warning threshold`, value: equityMultiple, threshold: { min: t.equity_multiple.warning_below } });
+        issues.push({ ...fvCode('FV_EQUITY_MULTIPLE_BELOW_MIN'), severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is below ${t.equity_multiple.warning_below}x warning threshold`, value: equityMultiple, threshold: { min: t.equity_multiple.warning_below } });
       }
       if (equityMultiple > t.equity_multiple.warning_above) {
-        issues.push({ code: 'FV_EQUITY_MULTIPLE_ABOVE_MAX', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is above ${t.equity_multiple.warning_above}x warning threshold`, value: equityMultiple, threshold: { max: t.equity_multiple.warning_above } });
+        issues.push({ ...fvCode('FV_EQUITY_MULTIPLE_ABOVE_MAX'), severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is above ${t.equity_multiple.warning_above}x warning threshold`, value: equityMultiple, threshold: { max: t.equity_multiple.warning_above } });
       }
     }
   }
@@ -378,6 +458,12 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
         }
       }
 
+      // `confidence` and `human_review_required` are orthogonal (spec §3.5):
+      // confidence is a quality estimate; human_review_required is a workflow
+      // gate. The combination "low confidence + no review flag" is a common
+      // smell — drafts often forget to flag — but it is not normatively wrong.
+      // This emission is therefore informational only; do not promote it to a
+      // warning without changing the spec.
       if (block.meta.confidence === 'low' && !block.meta.human_review_required) {
         issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
       }
@@ -398,10 +484,21 @@ function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
     return !!parsed.sections[id];
   };
 
-  const stageReady = (stage: DealStage): boolean =>
-    STAGE_REQUIREMENTS[stage].every(s => hasSection(s));
+  const hasFieldPath = (path: string): boolean => {
+    const v = resolveSectionFieldPath(parsed, path);
+    return v !== undefined && v !== null && v !== '';
+  };
+
+  const stageReady = (stage: DealStage): boolean => {
+    const req = STAGE_REQUIREMENTS[stage];
+    if (!req.required_sections.every(s => hasSection(s))) return false;
+    if (req.required_field_paths && !req.required_field_paths.every(hasFieldPath)) return false;
+    if (req.required_one_of && !req.required_one_of.every(group => group.some(hasFieldPath))) return false;
+    return true;
+  };
 
   return {
+    scope:           stageReady('scope'),
     screening:       stageReady('screening'),
     term_sheet:      stageReady('term_sheet'),
     full_underwrite: stageReady('full_underwrite'),
@@ -411,9 +508,148 @@ function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
   };
 }
 
+// ─── DQ-04: scope-stage readiness ────────────────────────────────────────────
+//
+// Emitted when a file declares `deal_stage: scope` (or has no stage and is
+// being checked against scope-readiness) and one of the scope-required
+// fields is missing. Field-level rather than section-level so the message
+// can name the exact path. Sectional gaps are still reported via
+// stage_readiness.
+
+function checkScopeReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  if (parsed.frontmatter.deal_stage !== 'scope') return;
+  const req = STAGE_REQUIREMENTS.scope;
+  const missing = (path: string): boolean => {
+    const v = resolveSectionFieldPath(parsed, path);
+    return v === undefined || v === null || v === '';
+  };
+  for (const path of req.required_field_paths ?? []) {
+    if (missing(path)) {
+      issues.push({
+        code: 'DQ-04',
+        severity: 'error',
+        field: path,
+        message: `Scope-stage readiness requires ${path}; field is missing.`,
+      });
+    }
+  }
+  for (const group of req.required_one_of ?? []) {
+    if (group.every(missing)) {
+      issues.push({
+        code: 'DQ-04',
+        severity: 'error',
+        field: group.join('|'),
+        message: `Scope-stage readiness requires at least one of: ${group.join(', ')}.`,
+      });
+    }
+  }
+}
+
 function isVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
   return !('annotation' in (val as object));
+}
+
+// ─── DQ-01..03 / DQ-05: data quality checks ──────────────────────────────────
+//
+// DQ-01: provisional block not referenced from the gaps section
+// DQ-02: provisional value consumed at a stage whose policy is `halt`
+// DQ-03: partial block without field-level enumeration
+// DQ-05: stale `gaps` item (last_checked older than threshold)
+
+const DEFAULT_GAP_STALENESS_DAYS = 14;
+
+interface DataQualityOptions {
+  policies?: readonly IncompleteDataPolicy[];
+  gap_staleness_days?: number;
+  /** Override "now" for deterministic tests. */
+  now?: string;
+}
+
+export function checkDataQuality(
+  parsed: ParsedUWFile,
+  issues: ValidationMessage[],
+  opts: DataQualityOptions = {},
+): void {
+  const policies = opts.policies ?? BUILTIN_INCOMPLETE_DATA_POLICIES;
+  const stage: DealStage = parsed.frontmatter.deal_stage ?? 'scope';
+  const gaps = readGapsContent(parsed);
+  const gapKeys = new Set<string>();
+  if (gaps) {
+    for (const item of gaps.items) {
+      gapKeys.add(`${item.section}::`);
+      if (item.field_path) gapKeys.add(`${item.section}::${item.field_path}`);
+    }
+  }
+
+  // Walk every present section's _meta for provisional/partial flags
+  for (const sectionId of Object.keys(parsed.sections)) {
+    const entry = parsed.sections[sectionId];
+    if (!entry) continue;
+    const blocks: UWBlock[] = isVariantMap(entry)
+      ? Object.values(entry as Record<string, UWBlock>)
+      : [entry as UWBlock];
+
+    for (const block of blocks) {
+      const m = block.meta;
+
+      // DQ-01: provisional block not in gaps
+      if (m.provisional) {
+        const referenced = gapKeys.has(`${sectionId}::`) ||
+          // Any field-level gap counts as referencing the section
+          [...gapKeys].some((k) => k.startsWith(`${sectionId}::`) && k !== `${sectionId}::`);
+        if (!referenced) {
+          issues.push({
+            code: 'DQ-01',
+            severity: 'warning',
+            section: sectionId,
+            message: `Block ${sectionId} is provisional but no gaps entry references it.`,
+          });
+        }
+
+        // DQ-02: provisional value consumed at a `halt` stage
+        const policy = lookupIncompleteDataPolicy(sectionId, undefined, stage, policies);
+        if (policy?.action.kind === 'halt') {
+          issues.push({
+            code: 'DQ-02',
+            severity: 'error',
+            section: sectionId,
+            message: `Provisional ${sectionId} cannot be consumed at stage '${stage}' (policy: halt).`,
+          });
+        }
+      }
+
+      // DQ-03: partial without enumeration
+      if (m.partial && (!m.field_overrides || m.field_overrides.length === 0)) {
+        issues.push({
+          code: 'DQ-03',
+          severity: 'warning',
+          section: sectionId,
+          message: `Block ${sectionId} is marked partial but has no field_overrides[] enumeration.`,
+        });
+      }
+    }
+  }
+
+  // DQ-05: stale gaps
+  if (gaps) {
+    const now = opts.now ? Date.parse(opts.now) : Date.now();
+    const thresholdMs = (opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS) * 86_400_000;
+    for (const item of gaps.items) {
+      if (!item.last_checked) continue;
+      const last = Date.parse(item.last_checked);
+      if (Number.isNaN(last)) continue;
+      if (now - last > thresholdMs) {
+        issues.push({
+          code: 'DQ-05',
+          severity: 'info',
+          section: item.section,
+          field: item.field_path,
+          message: `Gap last checked ${item.last_checked}; exceeds staleness threshold (${opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS}d).`,
+        });
+      }
+    }
+  }
 }
 
 // Re-export UWBlock for use in validator callers

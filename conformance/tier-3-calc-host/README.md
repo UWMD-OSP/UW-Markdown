@@ -28,8 +28,25 @@ fixtures/<scenario-id>/
 
 | Scenario | Tests |
 |---|---|
-| `revpar-basic` | RevPAR = adr × occupancy with literal inputs from `quick_metrics` |
-| `dscr-from-section` | DSCR derived by deepGet path resolution across `noi_model` and `debt_structure` sections |
+| `fixtures/revpar-basic` | RevPAR = adr × occupancy with literal inputs from `quick_metrics` |
+| `fixtures/dscr-from-section` | DSCR derived by deepGet path resolution across `noi_model` and `debt_structure` sections |
+
+### Refinement scenarios
+
+A separate `refinement/` subdirectory exercises the dependency-graph
+extraction used by the v1.1 refinement engine
+(`extractDependencyGraph` from `@uwmd/core/calc/dependencies`):
+
+```
+refinement/<scenario-id>/
+├── deal.uw.md             Input deal file
+└── expected-graph.json    Expected projection of the dependency graph
+                            (sorted maps and sets for stable comparison)
+```
+
+| Scenario | Tests |
+|---|---|
+| `refinement/dependency-graph-multifamily` | Multifamily pack only (no `custom_calculations`); asserts the calc → input edge set matches the recorded shape |
 
 Run via:
 
@@ -37,4 +54,6 @@ Run via:
 node scripts/run-conformance.mjs --tier=3
 ```
 
-Comparison strips the volatile `evaluated_at` timestamp from `expected-result.json`.
+Comparison strips the volatile `evaluated_at` timestamp from
+`expected-result.json`. The refinement scenario uses byte-exact
+comparison against `expected-graph.json` after sorting maps and sets.

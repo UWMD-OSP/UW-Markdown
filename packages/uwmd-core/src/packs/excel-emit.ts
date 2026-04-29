@@ -64,7 +64,6 @@ const FUNCTION_MAP: Record<string, string> = {
   fv: 'FV',
   pv: 'PV',
   nper: 'NPER',
-  rate: 'RATE',
 };
 
 /**
@@ -121,6 +120,8 @@ export function emitFromAst(expr: Expr, opts: ExcelEmitOptions): string {
         case '!=': return `(${left}<>${right})`;
         case '<': case '<=': case '>': case '>=':
           return `(${left}${expr.op}${right})`;
+        case '&&': return `AND(${left},${right})`;
+        case '||': return `OR(${left},${right})`;
       }
       throw new ExcelEmitError('EXCEL-EMIT-OP', 'Unreachable: unhandled binary operator.');
     }
