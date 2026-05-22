@@ -1,0 +1,114 @@
+# 08 — Tools
+
+All tools depend on `@uwmd/core` and nothing else from this monorepo (the
+dependency rule from [01 — Architecture](01-architecture.md)). The human-oriented
+"which tool should I use" guide is [`docs/TOOLS.md`](../TOOLS.md); this page is the
+developer view (where the code is, how it's built, what to know when changing it).
+
+## `uwmd` CLI — `packages/uwmd-cli`
+
+A thin npm package whose `bin/uwmd.mjs` is one line: `import '@uwmd/core/cli'`.
+All logic is in `@uwmd/core`'s [`src/cli.ts`](../../packages/uwmd-core/src/cli.ts).
+
+Commands (from `cli.ts`):
+
+Command | Purpose
+---|---
+`parse <file>` | Parse → JSON (`--compact`, `--strict`)
+`validate <file>` | Run validation (`--institution <cfg>`, `--json`)
+`verify <file>` | Validate + integrity (hashes) + provenance (`--validate`/`--integrity`/`--policy`/`--json`)
+`render <file>` | Render (`--format json\|csv\|chat\|summary`, or `--profile`, `--max-tokens`, `--output`)
+`run <file> --agent <id>` | Tier-4 agent (`--context-only`, `--prompt`, `--live`, `--model`, `--api-key`, `--instructions`)
+`edit <file> <op.json>` | Apply a Tier-2 `EditOperation` (`--actor`, `--source`, `--confidence`, …)
+`calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula (Tier-3)
+`compact <file>` | Strip superseded blocks (`--dry-run`, `--output`)
+`diff <a> <b>` | Section-by-section comparison
+`init` | Scaffold a blank `.uw.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--tier`)
+`summary <file>` | Print quick metrics to terminal
+`scope <file>` | Resolve every required input via the fallback cascade (triage view)
+`refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
+`layers` | List Bancroft agent layers
+
+From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
+CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
+
+## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.1.0)
+
+`.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:
+`uwmd-excel <input.uw.md> [-o output.xlsx]`.
+
+Key design: the workbook ships **formulas, not pre-computed values**, so it stays
+in sync with the calc engine by construction. The engine (`toWorkbook.ts`) is
+generic; each asset class supplies a `WorkbookLayout` (`src/layout.ts`) selected
+by `frontmatter.asset_class` via the registry (`src/layouts.ts`,
+`getLayoutForAssetClass`). Supported: **multifamily, office, retail, industrial**
+(`MULTIFAMILY_LAYOUT`/`OFFICE_LAYOUT`/`RETAIL_LAYOUT`/`INDUSTRIAL_LAYOUT`); an
+unsupported class throws `UnsupportedAssetClassError`.
+
+Layout:
+- **Underwriting** sheet — header (deal name/address) + an inputs block (each
+  `NamedInput` cell a workbook-scope **named range**) + a derived-metrics block
+  whose formulas reference those names.
+- **Operating Statement** sheet — income/expense line items. Income deduction
+  lines carry `sign: -1` (vacancy etc. are stored positive), so `EGI =
+  SUM(income lines)` foots to the stored `effective_gross_income` and
+  `NOI = EGI − total opex` foots to the stored `net_operating_income`. EGI, total
+  opex, and NOI are exposed as the `effective_gross_income`,
+  `total_operating_expenses`, and `noi` named ranges.
+- **Pipeline Log** sheet — flat audit table of `pipeline_log` entries.
+
+A `WorkbookLayout` is just `{ assetClass, pack, incomeLines, expenseLines,
+namedInputs }`. The engine derives the calc-path → named-range map
+(`buildNamedRangeMap`) and the derived-metrics block (`buildDerivedMetrics`,
+emitting `emitExcelFormula` for every pack calc) **from the layout**, so the
+formulas and the named ranges the engine creates can't drift. **Adding a metric
+is a one-place change in `@uwmd/core`'s pack** — it surfaces automatically,
+provided its inputs have named ranges (else `EXCEL-EMIT-PATH`) and its builtins
+map to Excel (else `EXCEL-EMIT-FN`).
+
+> **Parity is computed, not assumed.** `toWorkbook.test.ts` builds each example
+> deal's workbook, asserts the operating statement **foots** (signed income →
+> stored EGI, expenses → stored opex, EGI − opex → stored NOI), and evaluates
+> every derived-metric formula against the workbook's named-range values,
+> comparing to `evaluateCalc()` to 6 decimals. (An earlier converter summed
+> income without signs — double-counting vacancy — and the old test missed it
+> because it only checked formula *text*. Adding a new class's example deal must
+> keep its operating statement footing.)
+
+Build: `tsc`. Test: `vitest run`.
+
+## Web viewer — `tools/web-viewer`
+
+Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
+it renders (embeds a minimal Parser + Renderer). Tier-1 demo. Skip it for editing
+or calc.
+
+## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.1.0, private)
+
+Vite + TypeScript, no UI framework. Embeds `@uwmd/core/browser` (parser,
+validator, Tier-2 edit dispatcher, Tier-3 calc engine). Numeric edits re-run every
+dependent calc immediately, so the file can't be left internally inconsistent.
+Files: `src/main.ts` (entry/state), `src/edits.ts` (edit dispatch), `src/ui.ts`
+(rendering: section list, calc dashboard, validation panel). Build: `vite build`.
+TS uses `Bundler` resolution + DOM libs; **must import from `@uwmd/core/browser`**
+(not `@uwmd/core`) to keep the Anthropic SDK out of the bundle.
+
+## VS Code extension — `tools/vscode-uwmd` (`vscode-uwmd` 0.1.0)
+
+Authoring extension: syntax highlighting (`syntaxes/uwmd.tmLanguage.json` —
+YAML frontmatter + Markdown + embedded JSON), section folding, document outline,
+on-save validation diagnostics tied to `BUILTIN_REMEDIATIONS`. Entry:
+`src/extension.ts`; `activationEvents: onLanguage:uwmd`. Bundled with esbuild
+(`esbuild.mjs`); package with `vsce package`. Not yet on the marketplace.
+
+## Docs site — `tools/docs-site` (VitePress)
+
+The **published, human-facing** documentation site. A prebuild step
+(`scripts/prebuild.mjs`) copies repo-root markdown (spec, governance, RFCs,
+schemas, examples) into the site tree and rewrites links — repo root stays the
+single source of truth. Config: `.vitepress/config.ts`. Dev: `npm run dev`;
+build: `npm run build`.
+
+> This wiki (`docs/wiki/`) is deliberately **not** wired into the docs-site nav —
+> it is internal dev/agent documentation, not part of the published standard.
+> Keep it that way unless the decision changes.

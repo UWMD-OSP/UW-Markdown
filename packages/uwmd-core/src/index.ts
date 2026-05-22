@@ -18,6 +18,10 @@ export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 
 export {
   MULTIFAMILY_PACK,
+  OFFICE_PACK,
+  RETAIL_PACK,
+  INDUSTRIAL_PACK,
+  getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
   ExcelEmitError,
@@ -42,6 +46,9 @@ export { generateBlankUWFile } from './init.js';
 // ─── Asset-class defaults & cascade (Protocol §V.7-§V.8) ──────────────────────
 export {
   MULTIFAMILY_DEFAULTS,
+  OFFICE_DEFAULTS,
+  RETAIL_DEFAULTS,
+  INDUSTRIAL_DEFAULTS,
   getAssetClassDefaults,
   getDefaultRange,
   listDefaultedFields,

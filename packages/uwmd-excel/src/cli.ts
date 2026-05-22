@@ -1,15 +1,18 @@
-// uwmd-excel CLI — convert a .uw.md file to a multifamily underwriting workbook.
+// uwmd-excel CLI — convert a .uw.md file to an underwriting workbook.
 //
 // Usage:
 //   uwmd-excel <input.uw.md> [-o output.xlsx]
 //
-// Defaults output to <input>.xlsx alongside the input file. Errors are reported
-// to stderr with a non-zero exit code; success prints the absolute output path.
+// Supports multifamily, office, retail, and industrial deals (the asset classes
+// with a registered workbook layout). Defaults output to <input>.xlsx alongside
+// the input file. Errors are reported to stderr with a non-zero exit code;
+// success prints the absolute output path.
 
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname, basename, extname, join } from 'node:path';
 import { parseUWFile } from '@uwmd/core';
 import { toWorkbook } from './toWorkbook.js';
+import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 interface ParsedArgs {
   input: string;
@@ -54,7 +57,8 @@ function defaultOutputName(inputPath: string): string {
 function printHelp(): void {
   process.stdout.write(
     [
-      'uwmd-excel — convert a .uw.md file to a multifamily underwriting workbook',
+      'uwmd-excel — convert a .uw.md file to an underwriting workbook',
+      '  (multifamily, office, retail, industrial)',
       '',
       'Usage:',
       '  uwmd-excel <input.uw.md> [-o output.xlsx]',
@@ -82,10 +86,10 @@ export async function main(argv: readonly string[]): Promise<number> {
   const raw = await readFile(args.input, 'utf8');
   const parsed = parseUWFile(raw);
 
-  const assetClass = parsed.frontmatter.asset_class;
-  if (assetClass !== 'multifamily') {
+  const assetClass = String(parsed.frontmatter.asset_class ?? '');
+  if (!getLayoutForAssetClass(assetClass)) {
     process.stderr.write(
-      `uwmd-excel: unsupported asset_class "${assetClass}". Only "multifamily" is implemented in 0.1.0.\n`,
+      `uwmd-excel: unsupported asset_class "${assetClass}". Supported: ${SUPPORTED_ASSET_CLASSES.join(', ')}.\n`,
     );
     return 1;
   }

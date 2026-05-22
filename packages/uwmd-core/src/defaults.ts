@@ -141,8 +141,382 @@ export const MULTIFAMILY_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Office asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized Class A/B suburban and CBD office. Ranges run wider
+ * than multifamily — office cash flows are lumpier (lease rollover, TI/LC, longer
+ * downtime) and pricing is more dispersed across markets and building class.
+ * Like the multifamily table these are triage-grade (scope-stage VOI ranking),
+ * not committee underwriting.
+ *
+ * Citations name the canonical industry source; specific point values within
+ * the range reflect a blend of published surveys and internal calibration.
+ * Bump `version` when any low/central/high shifts beyond round-off.
+ */
+export const OFFICE_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'office',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.38,
+      central: 0.45,
+      high: 0.52,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'BOMA / IREM Office Income & Expense (opex as share of EGI, gross basis)',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.08,
+      central: 0.13,
+      high: 0.2,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE / JLL US office vacancy distribution (post-2023 structural band)',
+    },
+    'noi_model.rent_growth_pct_y1': {
+      low: 0.0,
+      central: 0.02,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE-EA / CoStar office asking-rent growth bands',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.02,
+      central: 0.03,
+      high: 0.04,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'BOMA management fee survey (third-party fee on EGI)',
+    },
+    'noi_model.ti_allowance_psf_new': {
+      low: 40,
+      central: 65,
+      high: 100,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'CBRE / CompStak tenant-improvement allowance, new leases ($/SF)',
+    },
+    'noi_model.ti_allowance_psf_renewal': {
+      low: 15,
+      central: 30,
+      high: 50,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'CBRE / CompStak tenant-improvement allowance, renewals ($/SF)',
+    },
+    'noi_model.leasing_commission_pct': {
+      low: 0.04,
+      central: 0.06,
+      high: 0.08,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Brokerage leasing-commission band (% of total lease value, new deals)',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.065,
+      central: 0.075,
+      high: 0.085,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CMBS / life-co office fixed quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard permanent office amortization (25-30 yr)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 12,
+      high: 36,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Office IO availability range (0-3 yr, longer on bridge)',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.5,
+      central: 0.6,
+      high: 0.68,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Office LTV envelope for stabilized assets (conservative post-2023)',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.065,
+      central: 0.075,
+      high: 0.09,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE / RCA US office exit cap distribution',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.015,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, taxes)',
+    },
+  },
+};
+
+/**
+ * Retail asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized grocery-anchored and neighborhood retail on a
+ * predominantly NNN lease structure. The defining retail trait is expense
+ * recovery: most operating expenses are reimbursed by tenants, so the *effective*
+ * (unrecovered) expense ratio is low even though gross expenses are not. Triage
+ * grade (scope-stage VOI ranking), not committee underwriting.
+ *
+ * Citations name the canonical industry source; specific point values within
+ * the range reflect a blend of published surveys and internal calibration.
+ * Bump `version` when any low/central/high shifts beyond round-off.
+ */
+export const RETAIL_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'retail',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.22,
+      central: 0.3,
+      high: 0.4,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'ICSC / NCREIF retail opex as share of EGI (net of NNN recoveries)',
+    },
+    'noi_model.expense_recovery_rate': {
+      low: 0.7,
+      central: 0.85,
+      high: 0.95,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'NNN recovery rate — share of recoverable opex billed back to tenants',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.04,
+      central: 0.07,
+      high: 0.12,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CoStar / ICSC neighborhood & community center vacancy distribution',
+    },
+    'noi_model.rent_growth_pct_y1': {
+      low: 0.01,
+      central: 0.025,
+      high: 0.04,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CoStar retail asking-rent growth bands (open-air centers)',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.03,
+      central: 0.04,
+      high: 0.05,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'ICSC management fee survey (third-party fee on EGI)',
+    },
+    'noi_model.ti_allowance_psf_inline_new': {
+      low: 20,
+      central: 40,
+      high: 70,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'CBRE / CompStak inline tenant-improvement allowance, new leases ($/SF)',
+    },
+    'noi_model.leasing_commission_pct': {
+      low: 0.04,
+      central: 0.05,
+      high: 0.06,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Brokerage leasing-commission band (% of total lease value, retail)',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.06,
+      central: 0.0675,
+      high: 0.08,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CMBS / life-co retail fixed quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard permanent retail amortization (25-30 yr)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 0,
+      high: 24,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Retail IO availability range (0-2 yr on permanent debt)',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.55,
+      central: 0.62,
+      high: 0.7,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Retail LTV envelope for stabilized, credit-anchored centers',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.065,
+      central: 0.0725,
+      high: 0.085,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE / RCA US retail exit cap distribution (grocery-anchored)',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.015,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, taxes)',
+    },
+  },
+};
+
+/**
+ * Industrial asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized Class A/B bulk-distribution and logistics product on
+ * NNN leases. Industrial has the lowest effective expense ratio of the major
+ * classes (cheap to operate, near-total expense recovery) and the tightest cap
+ * rates. Triage grade (scope-stage VOI ranking), not committee underwriting.
+ *
+ * Citations name the canonical industry source; specific point values within
+ * the range reflect a blend of published surveys and internal calibration.
+ * Bump `version` when any low/central/high shifts beyond round-off.
+ */
+export const INDUSTRIAL_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'industrial',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.15,
+      central: 0.22,
+      high: 0.3,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'NAIOP / NCREIF industrial opex as share of EGI (net of NNN recoveries)',
+    },
+    'noi_model.expense_recovery_rate': {
+      low: 0.85,
+      central: 0.92,
+      high: 0.98,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'NNN recovery rate — industrial leases recover near-all recoverable opex',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.03,
+      central: 0.05,
+      high: 0.09,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE / Cushman US industrial vacancy distribution (big-box logistics)',
+    },
+    'noi_model.rent_growth_pct_y1': {
+      low: 0.02,
+      central: 0.035,
+      high: 0.05,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE-EA / CoStar industrial asking-rent growth bands',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.015,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'NAIOP management fee survey (third-party fee on EGI, NNN)',
+    },
+    'noi_model.ti_allowance_psf_new': {
+      low: 2,
+      central: 5,
+      high: 12,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'CBRE / CompStak warehouse tenant-improvement allowance, new leases ($/SF)',
+    },
+    'noi_model.leasing_commission_pct': {
+      low: 0.04,
+      central: 0.05,
+      high: 0.06,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Brokerage leasing-commission band (% of total lease value, industrial)',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.058,
+      central: 0.065,
+      high: 0.075,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CMBS / life-co industrial fixed quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard permanent industrial amortization (25-30 yr)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 0,
+      high: 24,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Industrial IO availability range (0-2 yr on permanent debt)',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.55,
+      central: 0.62,
+      high: 0.7,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Industrial LTV envelope for stabilized logistics assets',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.055,
+      central: 0.065,
+      high: 0.075,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CBRE / RCA US industrial exit cap distribution',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.015,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, taxes)',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
+  office: OFFICE_DEFAULTS,
+  retail: RETAIL_DEFAULTS,
+  industrial: INDUSTRIAL_DEFAULTS,
 });
 
 /**

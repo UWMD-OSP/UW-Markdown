@@ -240,11 +240,11 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   "expenses": {
     "property_taxes": 142000,
     "insurance": 38000,
-    "utilities": 84000,
+    "utilities": 86550,
     "repairs_maintenance": 62000,
     "management_fee": 36000,
     "general_admin": 18000,
-    "total_operating_expenses": 380000
+    "total_operating_expenses": 382550
   },
   "net_operating_income": 300000,
   "noi_per_sf": 7.06

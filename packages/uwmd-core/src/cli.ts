@@ -26,7 +26,7 @@ import type { ContextProfile } from './context-profiles.js';
 import { rankGaps } from './refinement.js';
 import { resolveValue } from './cascade.js';
 import { getAssetClassDefaults } from './defaults.js';
-import { MULTIFAMILY_PACK } from './packs/multifamily.js';
+import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
 
 const [, , command, ...args] = process.argv;
 
@@ -353,7 +353,13 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
     : undefined;
   const top = flags['top'] ? Number.parseInt(flags['top'] as string, 10) : 10;
 
-  const result = rankGaps(parsed, { targets, top, packs: [MULTIFAMILY_PACK] });
+  const assetClass =
+    (flags['asset-class'] as string | undefined) ??
+    (parsed.frontmatter.asset_class as string | undefined) ??
+    'multifamily';
+  const pack = getPackForAssetClass(assetClass) ?? MULTIFAMILY_PACK;
+
+  const result = rankGaps(parsed, { targets, top, packs: [pack] });
 
   if (flags['json']) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

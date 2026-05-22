@@ -1,159 +1,207 @@
-// Round-trip test: parse Parkview → toWorkbook → re-read buffer with exceljs.
+// Workbook conversion + calc-integrity tests across all supported asset classes.
 //
-// Verifies the calc-integrity contract end-to-end:
-//   1. Every NAMED_INPUTS cell holds the numeric value from the corresponding
-//      .uw.md section, accessible via the workbook-scope named range.
-//   2. Every DERIVED_METRICS cell carries the expected formula string. Formulas
-//      are not evaluated by exceljs on write — Excel computes them on open —
-//      but the formula text itself is the contract: same expression as
-//      MULTIFAMILY_STARTER_PACK in @uwmd/core, just spelled in Excel syntax.
-//   3. The Operating Statement sheet has the income/expense line values, the
-//      EGI sub-total formula, the total-opex sub-total formula, and the NOI
-//      formula. The `noi` named range points at the NOI cell.
+// The headline contract: every derived-metric formula in the workbook, when
+// evaluated against the workbook's own named-range values, equals what
+// `evaluateCalc()` produces against the same .uw.md — to 6 decimals. This is the
+// Excel↔evaluator parity invariant. The operating statement is also checked to
+// FOOT: signed income lines sum to the stored EGI, expense lines sum to the
+// stored opex, and EGI − opex equals the stored NOI. (An earlier version summed
+// income without signs, double-counting vacancy; that test only checked formula
+// text, not results, so it missed the bug. This one computes results.)
 
 import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import ExcelJS from 'exceljs';
-import { parseUWFile } from '@uwmd/core';
-import { toWorkbook } from './toWorkbook.js';
-import {
-  NAMED_INPUTS,
-  DERIVED_METRICS,
-  INCOME_LINES,
-  EXPENSE_LINES,
-} from './multifamily.js';
+import { parseUWFile, evaluateCalc, emitExcelFormula } from '@uwmd/core';
+import type { CalcEvaluationContext } from '@uwmd/core';
+import { toWorkbook, UnsupportedAssetClassError } from './toWorkbook.js';
+import { buildNamedRangeMap, SUBTOTAL_RANGES } from './layout.js';
+import type { WorkbookLayout } from './layout.js';
+import { MULTIFAMILY_LAYOUT } from './multifamily.js';
+import { OFFICE_LAYOUT } from './office.js';
+import { RETAIL_LAYOUT } from './retail.js';
+import { INDUSTRIAL_LAYOUT } from './industrial.js';
+import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
-const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+const EXAMPLES = resolve(__dirname, '../../../examples');
 
-async function buildParkviewWorkbook(): Promise<ExcelJS.Workbook> {
-  const raw = await readFile(PARKVIEW, 'utf8');
+const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
+  { file: 'Parkview-Apts-Glendale-AZ.uw.md', layout: MULTIFAMILY_LAYOUT },
+  { file: 'Riverside-Office-Phoenix-AZ.uw.md', layout: OFFICE_LAYOUT },
+  { file: 'Cactus-Crossing-Retail-Mesa-AZ.uw.md', layout: RETAIL_LAYOUT },
+  { file: 'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md', layout: INDUSTRIAL_LAYOUT },
+];
+
+async function roundTrip(file: string): Promise<ExcelJS.Workbook> {
+  const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
   const parsed = parseUWFile(raw);
   const wb = await toWorkbook(parsed);
-  // Round-trip through xlsx serialization so we exercise the same code path
-  // the CLI produces.
   const buf = await wb.xlsx.writeBuffer();
   const reloaded = new ExcelJS.Workbook();
   await reloaded.xlsx.load(buf as ArrayBuffer);
   return reloaded;
 }
 
-function cellAt(wb: ExcelJS.Workbook, address: string): ExcelJS.Cell {
-  // address like "Underwriting!$B$8" — split into sheet + cell.
-  const [sheetName, ref] = address.split('!');
+function cellAt(wb: ExcelJS.Workbook, address: string): ExcelJS.Cell | null {
+  const bang = address.lastIndexOf('!');
+  if (bang < 0) return null;
+  let sheetName = address.slice(0, bang);
+  const ref = address.slice(bang + 1);
+  if (sheetName.startsWith("'") && sheetName.endsWith("'")) {
+    sheetName = sheetName.slice(1, -1).replace(/''/g, "'");
+  }
   const ws = wb.getWorksheet(sheetName);
-  if (!ws) throw new Error(`worksheet not found: ${sheetName}`);
-  return ws.getCell(ref);
+  return ws ? ws.getCell(ref) : null;
 }
 
-describe('toWorkbook (multifamily)', () => {
-  it('writes every named input as a named range with the source value', async () => {
-    const wb = await buildParkviewWorkbook();
-    const raw = await readFile(PARKVIEW, 'utf8');
-    const parsed = parseUWFile(raw);
+function namedNumber(wb: ExcelJS.Workbook, name: string): number | null {
+  const ranges = wb.definedNames.getRanges(name);
+  if (!ranges.ranges.length) return null;
+  const cell = cellAt(wb, ranges.ranges[0]);
+  const v = cell?.value;
+  return typeof v === 'number' ? v : null;
+}
 
-    for (const input of NAMED_INPUTS) {
-      const ranges = wb.definedNames.getRanges(input.name);
-      expect(ranges.ranges.length, `named range "${input.name}" should exist`).toBeGreaterThan(0);
+function rowByLabel(ws: ExcelJS.Worksheet): Map<string, number> {
+  const m = new Map<string, number>();
+  ws.eachRow((row, idx) => {
+    const v = row.getCell(1).value;
+    if (typeof v === 'string') m.set(v, idx);
+  });
+  return m;
+}
 
-      const address = ranges.ranges[0];
-      const cell = cellAt(wb, address);
-      const expected = (() => {
-        const sec = parsed.sections[input.source.section];
-        if (!sec || Array.isArray(sec)) return undefined;
-        // deepGet via dot-path
-        const parts = input.source.path.split('.');
-        let cur: unknown = (sec as { content: Record<string, unknown> }).content;
-        for (const p of parts) {
-          if (cur && typeof cur === 'object') cur = (cur as Record<string, unknown>)[p];
-          else cur = undefined;
-        }
-        return typeof cur === 'number' ? cur : null;
-      })();
-
-      expect(cell.value, `${input.name} value`).toBe(expected);
-    }
+describe('layout registry', () => {
+  it('supports the four core commercial classes', () => {
+    expect([...SUPPORTED_ASSET_CLASSES].sort()).toEqual([
+      'industrial',
+      'multifamily',
+      'office',
+      'retail',
+    ]);
   });
 
-  it('writes every derived metric as the expected Excel formula', async () => {
-    const wb = await buildParkviewWorkbook();
-    const ws = wb.getWorksheet('Underwriting');
-    expect(ws).toBeTruthy();
-
-    // The Underwriting sheet is laid out by writeUnderwritingSheet — find each
-    // metric by label in column A so we don't depend on absolute row numbers.
-    const labelToRow = new Map<string, number>();
-    ws!.eachRow((row, idx) => {
-      const v = row.getCell(1).value;
-      if (typeof v === 'string') labelToRow.set(v, idx);
-    });
-
-    for (const m of DERIVED_METRICS) {
-      const row = labelToRow.get(m.label);
-      expect(row, `${m.label} should appear in column A`).toBeTruthy();
-      const cell = ws!.getCell(`B${row}`);
-      const v = cell.value;
-      expect(v && typeof v === 'object' && 'formula' in v, `${m.label} should be a formula`).toBe(true);
-      const formula = (v as { formula: string }).formula;
-      // multifamily.ts formulas have a leading "="; the cell stores them stripped.
-      expect(`=${formula}`).toBe(m.formula);
-    }
+  it('returns null for an unregistered class', () => {
+    expect(getLayoutForAssetClass('self_storage')).toBeNull();
   });
 
-  it('writes the operating-statement line items, sub-totals, and NOI named range', async () => {
-    const wb = await buildParkviewWorkbook();
-    const raw = await readFile(PARKVIEW, 'utf8');
-    const parsed = parseUWFile(raw);
-    const ws = wb.getWorksheet('Operating Statement');
-    expect(ws).toBeTruthy();
-
-    const noi = parsed.sections['noi_model'] as { content: Record<string, unknown> };
-    const income = (noi.content as { income: Record<string, { value: number }> }).income;
-    const expenses = (noi.content as { expenses: Record<string, { value: number }> }).expenses;
-
-    const labelToRow = new Map<string, number>();
-    ws!.eachRow((row, idx) => {
-      const v = row.getCell(1).value;
-      if (typeof v === 'string') labelToRow.set(v, idx);
-    });
-
-    for (const line of INCOME_LINES) {
-      const row = labelToRow.get(line.label);
-      expect(row, `${line.label} row`).toBeTruthy();
-      const expected = income[line.path.split('.')[0]]?.value ?? null;
-      expect(ws!.getCell(`B${row}`).value).toBe(expected);
-    }
-    for (const line of EXPENSE_LINES) {
-      const row = labelToRow.get(line.label);
-      expect(row, `${line.label} row`).toBeTruthy();
-      const expected = expenses[line.path.split('.')[0]]?.value ?? null;
-      expect(ws!.getCell(`B${row}`).value).toBe(expected);
-    }
-
-    // Sub-totals are formulas, not literals.
-    const egiCell = ws!.getCell(`B${labelToRow.get('Effective Gross Income')}`);
-    expect(egiCell.value && typeof egiCell.value === 'object' && 'formula' in egiCell.value).toBe(true);
-
-    const opexCell = ws!.getCell(`B${labelToRow.get('Total Operating Expenses')}`);
-    expect(opexCell.value && typeof opexCell.value === 'object' && 'formula' in opexCell.value).toBe(true);
-
-    const noiCell = ws!.getCell(`B${labelToRow.get('Net Operating Income')}`);
-    expect(noiCell.value && typeof noiCell.value === 'object' && 'formula' in noiCell.value).toBe(true);
-
-    // The `noi` named range must point at the NOI cell.
-    const noiRanges = wb.definedNames.getRanges('noi');
-    expect(noiRanges.ranges.length).toBeGreaterThan(0);
-    expect(noiRanges.ranges[0]).toContain("'Operating Statement'");
-    expect(noiRanges.ranges[0]).toContain(`$${labelToRow.get('Net Operating Income')}`);
-  });
-
-  it('writes a Pipeline Log sheet with one row per pipeline_log entry', async () => {
-    const wb = await buildParkviewWorkbook();
-    const raw = await readFile(PARKVIEW, 'utf8');
-    const parsed = parseUWFile(raw);
-    const ws = wb.getWorksheet('Pipeline Log');
-    expect(ws).toBeTruthy();
-    // 1 header row + N data rows.
-    expect(ws!.rowCount).toBe(1 + parsed.pipeline_log.length);
+  it('toWorkbook throws UnsupportedAssetClassError for an unregistered class', async () => {
+    const parsed = parseUWFile(
+      ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "self_storage"', '---', '# X'].join('\n'),
+    );
+    await expect(toWorkbook(parsed)).rejects.toBeInstanceOf(UnsupportedAssetClassError);
   });
 });
+
+for (const { file, layout } of CASES) {
+  describe(`toWorkbook — ${layout.assetClass} (${file})`, () => {
+    it('writes every named input as a named range holding the stored value', async () => {
+      const wb = await roundTrip(file);
+      const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
+      const parsed = parseUWFile(raw);
+
+      for (const input of layout.namedInputs) {
+        const sec = parsed.sections[input.source.section] as { content: Record<string, unknown> };
+        let cur: unknown = sec?.content;
+        for (const p of input.source.path.split('.')) {
+          cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[p] : undefined;
+        }
+        const expected = typeof cur === 'number' ? cur : null;
+        expect(namedNumber(wb, input.name), `${input.name}`).toBe(expected);
+      }
+    });
+
+    it('operating statement foots: signed income → EGI, expenses → opex, EGI − opex → NOI', async () => {
+      const wb = await roundTrip(file);
+      const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
+      const parsed = parseUWFile(raw);
+      const noi = (parsed.sections['noi_model'] as { content: Record<string, unknown> }).content;
+      const income = noi['income'] as Record<string, number>;
+      const expenses = noi['expenses'] as Record<string, number>;
+      const storedEGI = income['effective_gross_income'];
+      const storedOpex = expenses['total_operating_expenses'];
+      const storedNOI = noi['net_operating_income'] as number;
+
+      const ws = wb.getWorksheet('Operating Statement')!;
+      const labelToRow = rowByLabel(ws);
+
+      // income line cells (already signed by the engine) sum to stored EGI
+      let incomeSum = 0;
+      for (const line of layout.incomeLines) {
+        const row = labelToRow.get(line.label);
+        expect(row, `${line.label} row`).toBeTruthy();
+        const v = ws.getCell(`B${row}`).value;
+        expect(typeof v).toBe('number');
+        incomeSum += v as number;
+      }
+      expect(incomeSum).toBeCloseTo(storedEGI, 6);
+
+      let opexSum = 0;
+      for (const line of layout.expenseLines) {
+        const row = labelToRow.get(line.label);
+        expect(row, `${line.label} row`).toBeTruthy();
+        const v = ws.getCell(`B${row}`).value;
+        expect(typeof v).toBe('number');
+        opexSum += v as number;
+      }
+      expect(opexSum).toBeCloseTo(storedOpex, 6);
+
+      // the footing invariant the converter relies on for parity
+      expect(storedEGI - storedOpex).toBeCloseTo(storedNOI, 6);
+    });
+
+    it('every derived metric matches evaluateCalc (Excel↔evaluator parity to 6 decimals)', async () => {
+      const wb = await roundTrip(file);
+      const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
+      const parsed = parseUWFile(raw);
+      const noi = (parsed.sections['noi_model'] as { content: Record<string, unknown> }).content;
+      const income = noi['income'] as Record<string, number>;
+      const expenses = noi['expenses'] as Record<string, number>;
+
+      // values keyed by named-range name: inputs read from the workbook,
+      // subtotals from the (footing) stored values.
+      const values: Record<string, number> = {};
+      for (const input of layout.namedInputs) {
+        const n = namedNumber(wb, input.name);
+        expect(n, `${input.name} resolved`).not.toBeNull();
+        values[input.name] = n as number;
+      }
+      for (const line of layout.incomeLines) {
+        if (line.name) {
+          const n = namedNumber(wb, line.name);
+          expect(n, `${line.name} resolved`).not.toBeNull();
+          values[line.name] = n as number;
+        }
+      }
+      values[SUBTOTAL_RANGES.egi] = income['effective_gross_income'];
+      values[SUBTOTAL_RANGES.opex] = expenses['total_operating_expenses'];
+      values[SUBTOTAL_RANGES.noi] = noi['net_operating_income'] as number;
+
+      const map = buildNamedRangeMap(layout);
+      const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
+
+      for (const decl of layout.pack.calculations ?? []) {
+        const direct = evaluateCalc(decl, ctx);
+        expect(direct.ok, `${decl.id} evaluateCalc`).toBe(true);
+
+        let formula = emitExcelFormula(decl.formula, { namedRanges: map });
+        for (const name of Object.keys(values)) {
+          formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+        }
+        expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
+        // eslint-disable-next-line no-new-func
+        const excelLike = new Function(`return (${formula});`)() as number;
+        expect(excelLike, `${decl.id}`).toBeCloseTo(direct.value as number, 6);
+      }
+    });
+
+    it('writes a Pipeline Log sheet with one row per pipeline_log entry', async () => {
+      const wb = await roundTrip(file);
+      const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
+      const parsed = parseUWFile(raw);
+      const ws = wb.getWorksheet('Pipeline Log')!;
+      expect(ws.rowCount).toBe(1 + parsed.pipeline_log.length);
+    });
+  });
+}

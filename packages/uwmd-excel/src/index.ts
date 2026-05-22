@@ -1,15 +1,23 @@
 // Public API for @uwmd/excel.
 
-export { toWorkbook } from './toWorkbook.js';
+export { toWorkbook, UnsupportedAssetClassError } from './toWorkbook.js';
+
 export {
-  INCOME_LINES,
-  EXPENSE_LINES,
-  NAMED_INPUTS,
-  DERIVED_METRICS,
-} from './multifamily.js';
+  buildNamedRangeMap,
+  buildDerivedMetrics,
+  excelFormatFor,
+  SUBTOTAL_RANGES,
+} from './layout.js';
 export type {
+  WorkbookLayout,
   IncomeLine,
   ExpenseLine,
   NamedInput,
   DerivedMetric,
-} from './multifamily.js';
+} from './layout.js';
+
+export { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
+export { MULTIFAMILY_LAYOUT } from './multifamily.js';
+export { OFFICE_LAYOUT } from './office.js';
+export { RETAIL_LAYOUT } from './retail.js';
+export { INDUSTRIAL_LAYOUT } from './industrial.js';

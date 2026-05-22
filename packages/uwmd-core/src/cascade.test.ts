@@ -194,8 +194,8 @@ describe('cascade — asset class selection', () => {
     expect(result.value).toBe(0.06);
   });
 
-  it('returns no asset_class_default for unregistered class (office)', () => {
-    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'office' }));
+  it('returns no asset_class_default for unregistered class (self_storage)', () => {
+    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'self_storage' }));
     expect(result.step).toBe('system_default');
     expect(result.value).toBeUndefined();
   });

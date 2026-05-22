@@ -106,7 +106,7 @@ once the public flip lands.
 
 Emits a live underwriting workbook. Derived metrics ship as Excel
 formulas, not pre-computed values, so the workbook stays in sync with
-the calc engine by construction. The same `MULTIFAMILY_PACK` drives
+the calc engine by construction. The asset class's calc pack drives
 both paths; a parity test asserts they agree to six decimals.
 
 Best for: handing a deal to someone who lives in Excel. Producing
@@ -116,8 +116,9 @@ Skip it for: storing your data in. The `.uw.md` file remains the
 source of truth — the workbook is an export, not a roundtrip target
 in v1.
 
-Currently multifamily-only. Other asset packs land alongside the
-relevant format spec updates.
+Supports multifamily, office, retail, and industrial (the asset
+classes with a registered workbook layout); other classes land
+alongside their calc packs.
 
 ---
 

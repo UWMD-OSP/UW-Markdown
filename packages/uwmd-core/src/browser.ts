@@ -29,6 +29,10 @@ export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 
 export {
   MULTIFAMILY_PACK,
+  OFFICE_PACK,
+  RETAIL_PACK,
+  INDUSTRIAL_PACK,
+  getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
   ExcelEmitError,
