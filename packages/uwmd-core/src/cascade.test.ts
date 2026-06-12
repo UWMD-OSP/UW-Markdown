@@ -194,8 +194,14 @@ describe('cascade — asset class selection', () => {
     expect(result.value).toBe(0.06);
   });
 
-  it('returns no asset_class_default for unregistered class (self_storage)', () => {
+  it('uses self_storage defaults when registered', () => {
     const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'self_storage' }));
+    expect(result.step).toBe('asset_class_default');
+    expect(result.value).toBe(0.12);
+  });
+
+  it('returns no asset_class_default for unregistered class (hospitality)', () => {
+    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'hospitality' }));
     expect(result.step).toBe('system_default');
     expect(result.value).toBeUndefined();
   });

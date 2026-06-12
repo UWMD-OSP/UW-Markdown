@@ -3,8 +3,8 @@
 // Usage:
 //   uwmd-excel <input.uw.md> [-o output.xlsx]
 //
-// Supports multifamily, office, retail, and industrial deals (the asset classes
-// with a registered workbook layout). Defaults output to <input>.xlsx alongside
+// Supports every asset class with a registered workbook layout. Defaults output to
+// <input>.xlsx alongside
 // the input file. Errors are reported to stderr with a non-zero exit code;
 // success prints the absolute output path.
 
@@ -58,7 +58,7 @@ function printHelp(): void {
   process.stdout.write(
     [
       'uwmd-excel — convert a .uw.md file to an underwriting workbook',
-      '  (multifamily, office, retail, industrial)',
+      `  (${SUPPORTED_ASSET_CLASSES.join(', ')})`,
       '',
       'Usage:',
       '  uwmd-excel <input.uw.md> [-o output.xlsx]',

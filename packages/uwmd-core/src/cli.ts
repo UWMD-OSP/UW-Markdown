@@ -10,6 +10,8 @@ import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
+import { renderReportHtml } from './report.js';
+import { stringifyUWJson } from './uwjson.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
@@ -302,6 +304,52 @@ function cmdSummary(file: string): void {
   Superseded blocks: ${Object.values(parsed.superseded).reduce((n, a) => n + a.length, 0)}
 ─────────────────────────────────────────────────
 `);
+}
+
+function cmdExport(file: string, flags: Record<string, string | boolean>): void {
+  const content = readFile(file);
+  const parsed = parseUWFile(content);
+  const text = stringifyUWJson(parsed, {
+    // --no-superseded or --compact drops the append-only history.
+    includeSuperseded: !(flags['no-superseded'] === true || flags['compact'] === true),
+  });
+
+  // Default output path: swap the .uw.md suffix for .uw.json (fall back to appending).
+  const outPath = flags['output']
+    ? resolve(flags['output'] as string)
+    : resolve(file.endsWith('.uw.md') ? `${file.slice(0, -'.uw.md'.length)}.uw.json` : `${file}.uw.json`);
+
+  if (flags['stdout']) {
+    process.stdout.write(text);
+    return;
+  }
+
+  writeFileSync(outPath, text, 'utf-8');
+  console.log(`Exported ${basename(file)} → ${basename(outPath)} (.uw.json sibling)`);
+}
+
+function cmdReport(file: string, flags: Record<string, string | boolean>): void {
+  const content = readFile(file);
+  const parsed = parseUWFile(content);
+  const result = renderReportHtml(parsed, {
+    tier: flags['tier'] as RenderTier | undefined,
+    preparedBy: flags['prepared-by'] as string | undefined,
+  });
+
+  // Default output path: swap the .uw.md suffix for .report.html.
+  const outPath = flags['output']
+    ? resolve(flags['output'] as string)
+    : resolve(file.endsWith('.uw.md') ? `${file.slice(0, -'.uw.md'.length)}.report.html` : `${file}.report.html`);
+
+  if (flags['stdout']) {
+    process.stdout.write(result.html);
+    return;
+  }
+
+  writeFileSync(outPath, result.html, 'utf-8');
+  const label = result.tier === 'analyst' ? 'credit memo' : 'lender package';
+  console.log(`Rendered ${label} → ${basename(outPath)} (${result.sectionsRendered.length} sections${result.sectionsSkipped.length ? `, skipped: ${result.sectionsSkipped.join(', ')}` : ''})`);
+  console.log('For PDF output, use @uwmd/report (uwmd-report) or print this HTML from a browser.');
 }
 
 function cmdScope(file: string, flags: Record<string, string | boolean>): void {
@@ -679,6 +727,16 @@ switch (command) {
     cmdSummary(positional[0]);
     break;
 
+  case 'export':
+    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--stdout]'); process.exit(1); }
+    cmdExport(positional[0], flags);
+    break;
+
+  case 'report':
+    if (!positional[0]) { console.error('Usage: uwmd report <file.uw.md> [--tier screener|analyst] [--prepared-by <name>] [--output <file.html>] [--stdout]'); process.exit(1); }
+    cmdReport(positional[0], flags);
+    break;
+
   case 'scope':
     if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--output <file>]'); process.exit(1); }
     cmdScope(positional[0], flags);
@@ -705,6 +763,8 @@ Commands:
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uw.md file
   summary  <file>              Print quick metrics to terminal
+  export   <file>              Export to a lossless .uw.json sibling (provenance + history preserved)
+  report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
   layers                       List Bancroft agent layers
@@ -715,6 +775,8 @@ Options:
   --json             JSON output (validate)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
+  --no-superseded    Drop append-only history from the .uw.json export (export)
+  --stdout           Write the .uw.json to stdout instead of a file (export)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

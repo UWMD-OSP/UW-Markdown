@@ -21,7 +21,9 @@ Module | Responsibility | Key exports
 `parser.ts` | `.uw.md` text → `ParsedUWFile` | `parseUWFile`, `getSection`, `getSectionVariant`, `deepGet`
 `validator.ts` | Cross-section / financial / DQ checks | `validateUWFile`, `lookupRemediation`
 `editor.ts` | Tier-2 edit dispatcher | `applyEdit`, `applyEditAsync`, `resolvePolicy`
-`renderer.ts` | Render to json/csv/chat/summary/html | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)
+`renderer.ts` | Render to json/csv/chat/summary | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)
+`report.ts` | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
+`uwjson.ts` | Lossless `.uw.json` sibling serialization (export + re-hydrate) | `toUWJson`, `stringifyUWJson`, `parseUWJson`, `fromUWJson`, `UWJsonDocument`
 `runner.ts` | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta`
 `compactor.ts` | Live view + section diff | `compact`, `diff`
 `init.ts` | Scaffold a blank `.uw.md` | `generateBlankUWFile`
@@ -32,11 +34,12 @@ Module | Responsibility | Key exports
 `context.ts` | Bancroft layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
 `context-profiles.ts` | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
 `cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile`
-`defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
+`defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
 `integrity.ts` | content/parent-hash chain + provenance | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`
 `integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
+`modules.ts` | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
 `calc/` | Tier-3 safe-expression engine | see [04 — Calc engine](04-calc-engine.md)
 `packs/` | Calc packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
 `agents/` | Tier-4 Bancroft agent host | see [06 — Bancroft agents](06-bancroft-agents.md)
@@ -90,10 +93,73 @@ golden rule of Tier-2:** bytes outside the modified region are preserved exactly
 ## renderer.ts (Tier-1)
 
 `render(parsed, options) → RenderResult`. Formats: `json`, `csv`, `chat`
-(token-budgeted context string for an LLM), `summary` (markdown), plus HTML.
-`chat`/`summary` are the formats exercised by Tier-1 conformance. PDF/DOCX are
-stubs deferred to a third-party pipeline. `RenderOptions` include `format`,
+(token-budgeted context string for an LLM), `summary` (markdown).
+`chat`/`summary` are the formats exercised by Tier-1 conformance. The `pdf`/
+`docx` enum values remain stubs in `render()` — the real document path is
+`report.ts` (HTML) plus `@uwmd/report` (PDF). `RenderOptions` include `format`,
 `tier` (`screener`|`analyst`), and `maxTokens`.
+
+## report.ts (Tier-1)
+
+`renderReportHtml(parsed, opts?) → ReportResult` implements the spec's rendering
+targets **§7.1 Lender Package** (tier `screener`, 10 sections from cover page to
+assumptions/disclosures) and **§7.2 Credit Memo** (tier `analyst`, adds market
+analysis, financial analysis with stress matrix, due diligence, risk, compliance,
+covenants, appendix). Output is a single self-contained HTML document with
+`REPORT_CSS` embedded (print-aware: `@page`, page breaks, color-adjust), or an
+`<article>` fragment via `opts.fragment` for hosts that include `REPORT_CSS`
+themselves (the web editor's preview tab does this via iframe `srcDoc`).
+
+Pure string generation, zero dependencies, exported from both `index.ts` and
+`browser.ts`. Every number is read from the file — engine/pack output — never
+recomputed at render time; sections with no data are skipped and reported in
+`sectionsSkipped`. Default tier comes from frontmatter `tier`. CLI:
+`uwmd report <file> [--tier] [--prepared-by] [--output|--stdout]`. PDF is
+`@uwmd/report`'s job (see [08 — Tools](08-tools.md)).
+
+## uwjson.ts — the `.uw.json` sibling form (Tier-1)
+
+A `.uw.json` document is the **lossless, machine-first projection** of a `.uw.md`
+file. It exists so tools — the coming calc-aware editor/viewer especially — can
+work against strict, schema-shaped JSON without parsing Markdown, while still
+seeing everything the Markdown form carries.
+
+Distinguish it from the `json` **render** target (`renderer.ts`). That target is
+a *lossy current-state data view*: it flattens to current values and drops prose,
+`_meta` provenance, fence annotations, and supersede history. `uwjson.ts` is
+*lossless* — every block keeps its `_meta`, its annotation, the prose that
+preceded it, and the full append-only `superseded` history. The round trip
+
+```
+.uw.md  → parseUWFile → toUWJson → stringifyUWJson      (export)
+.uw.json → parseUWJson → fromUWJson → ParsedUWFile      (re-hydrate)
+```
+
+is faithful at the model level: `fromUWJson` rebuilds the same `ParsedUWFile`
+shape `parseUWFile` produces, so `validateUWFile`, the calc engine, the packs,
+and `render` all run against a `.uw.json` source unchanged. (Re-hydrated `raw` is
+`''` — there is no canonical Markdown byte stream behind a `.uw.json`, so Tier-2
+byte-preserving `applyEdit` still needs the `.uw.md`; read/validate/calc
+consumers do not.)
+
+- `toUWJson(parsed, opts?) → UWJsonDocument` — `opts.includeSuperseded` (default
+  `true`; set `false` for a compacted export), `opts.generatedAt`, `opts.generator`.
+- `stringifyUWJson(parsed, opts?) → string` — pretty-printed, trailing newline.
+- `parseUWJson(text) → UWJsonDocument` — structural validation; throws
+  `UWJsonError` (`UWJSON_INVALID_JSON`, `UWJSON_MISSING_VERSION`,
+  `UWJSON_MISSING_SECTIONS`, …).
+- `fromUWJson(doc) → ParsedUWFile` — re-hydrate into the in-memory model.
+
+CLI: `uwmd export <file.uw.md>` writes the sibling `.uw.json`
+(`--no-superseded` to compact, `--stdout` to pipe).
+
+> **Status — derived view, not (yet) normative.** This is a *library-provided*
+> serialization. It does **not** touch `spec/`, the JSON Schemas, or the protocol,
+> and it carries its own independent `uwjson_version` (`UWJSON_VERSION`). Promoting
+> `.uw.json` to a *normative* sibling of the `.uw.md` format — with its own JSON
+> Schema in `spec/schemas/` and a conformance tier — is **future RFC work** (see
+> [11 — Governance](11-build-release-governance.md)); per invariant #7 the spec,
+> schema, and protocol move in lockstep, so that step is deliberately deferred.
 
 ## runner.ts
 
@@ -108,8 +174,8 @@ the prior version, bumping `version`, updating pipeline state, appending a
 in `protocol.ts`): `user_override → user_input → investor_profile → market_data →
 asset_class_default → global_default → system_default`. Asset-class defaults are
 published `{low, central, high}` ranges with citations in `defaults.ts`
-(`MULTIFAMILY_DEFAULTS` is the only table today). The CLI `uwmd scope` command
-materializes the full resolved triage view.
+(multifamily, office, retail, industrial, and self-storage today). The CLI
+`uwmd scope` command materializes the full resolved triage view.
 
 ## refinement.ts + gaps.ts
 
@@ -141,7 +207,8 @@ tables every conforming tool references:
 - Incomplete data: `IncompleteDataPolicy`, `GapAction`,
   `BUILTIN_INCOMPLETE_DATA_POLICIES`, `lookupIncompleteDataPolicy`.
 - Calc contract: `CalcEvaluationContext`, `CalcResult`, `ModuleCalcDecl`.
-- Modules: `ModuleManifest` (+ section/calc/validation/agent-layer decls).
+- Modules: `ModuleManifest` (+ section/calc/validation/agent-layer decls);
+  `modules.ts` validates and registers declarative v1 manifests.
 - Errors: `ProtocolError`, `ProtocolErrorCategory`.
 - Remediations: `IssueRemediation`, `BUILTIN_REMEDIATIONS` (CC/DQ/INT/POL/FV copy).
 
@@ -155,7 +222,7 @@ Goal | Start here
 Parser bug | `parser.ts` + `parser.test.ts`
 New validator check | `validator.ts` (register copy in `BUILTIN_REMEDIATIONS`)
 New calc builtin | `calc/builtins.ts` + `calc.test.ts`, then `packs/excel-emit.ts`
-New derived metric | `packs/multifamily.ts` (one place, all tools pick it up)
+New derived metric | the relevant file in `packs/` (one place, all tools pick it up)
 New agent layer | `context.ts` (`BANCROFT_LAYERS`) + `agents/`
 New edit semantics | `editor.ts` + `protocol.ts` (`EditOperation`/policy)
 New display formatter | `format.ts` + the relevant `BUILTIN_VIEW_MODELS` entry

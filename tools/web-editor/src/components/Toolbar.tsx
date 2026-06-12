@@ -1,0 +1,80 @@
+import { useRef } from 'react';
+import type { DealState } from '../state.js';
+import type { EditorTab } from '../App.js';
+
+export function Toolbar(props: {
+  deal: DealState;
+  tab: EditorTab;
+  onTab: (t: EditorTab) => void;
+  onOpen: (file: File) => void;
+  onDownload: () => void;
+}) {
+  const { deal, tab, onTab, onOpen, onDownload } = props;
+  const fileInput = useRef<HTMLInputElement>(null);
+  const dealName = (deal.loaded?.parsed.frontmatter as { deal_name?: string } | undefined)?.deal_name;
+
+  return (
+    <header className="flex items-center gap-4 border-b border-rule bg-accent px-4 py-2 text-white">
+      <h1 className="font-display text-base font-semibold tracking-wide">
+        UW<span className="opacity-60">/</span>MD
+      </h1>
+
+      {deal.loaded && (
+        <>
+          <span className="max-w-72 truncate text-sm opacity-90" title={deal.filename}>
+            {dealName ?? deal.filename}
+            {deal.dirty && <span className="ml-1.5 text-amber-300">●</span>}
+          </span>
+
+          <nav className="ml-2 flex overflow-hidden rounded border border-white/25 text-xs">
+            <TabButton active={tab === 'edit'} onClick={() => onTab('edit')}>
+              Editor
+            </TabButton>
+            <TabButton active={tab === 'report'} onClick={() => onTab('report')}>
+              Report Preview
+            </TabButton>
+          </nav>
+        </>
+      )}
+
+      <div className="ml-auto flex items-center gap-2">
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".uw.md,.md,text/markdown"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) onOpen(f);
+            e.target.value = '';
+          }}
+        />
+        <button type="button" className="btn-toolbar" onClick={() => fileInput.current?.click()}>
+          Open .uw.md
+        </button>
+        <button
+          type="button"
+          className="btn-toolbar disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!deal.loaded}
+          onClick={onDownload}
+        >
+          Download{deal.dirty ? ' *' : ''}
+        </button>
+      </div>
+    </header>
+  );
+}
+
+function TabButton(props: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={props.onClick}
+      className={`px-3 py-1 transition-colors ${
+        props.active ? 'bg-white font-semibold text-accent' : 'text-white/85 hover:bg-white/10'
+      }`}
+    >
+      {props.children}
+    </button>
+  );
+}

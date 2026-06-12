@@ -7,9 +7,11 @@ User-facing tools built on `@uwmd/core`. Deep reference:
 
 - `web-viewer/` — single-file `index.html` (<500 LOC), no build. Tier-1 drag-drop
   reader. Embeds a minimal parser + renderer.
-- `web-editor/` — Vite + TypeScript (no framework). Tier-2/3 calc-aware editor;
-  `src/main.ts` (state), `src/edits.ts` (edit dispatch), `src/ui.ts` (render).
-  Build: `npm run build` (vite).
+- `web-editor/` — React 18 + Tailwind 4 (Vite). Tier-2/3 calc-aware editor with
+  a live §7.1/§7.2 report-preview tab; `src/state.ts` (useDeal hook),
+  `src/edits.ts` (edit dispatch — the applyEdit chokepoint), `src/catalog.ts`
+  (editable-field allow-lists), `src/components/*` (UI).
+  Build: `npm run build` (tsc --noEmit + vite).
 - `vscode-uwmd/` — authoring extension (syntax, folding, on-save validation).
   Entry `src/extension.ts`; grammar in `syntaxes/`; bundled with esbuild; package
   via `vsce package`.

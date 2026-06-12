@@ -25,6 +25,8 @@ Command | Purpose
 `diff <a> <b>` | Section-by-section comparison
 `init` | Scaffold a blank `.uw.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--tier`)
 `summary <file>` | Print quick metrics to terminal
+`export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
+`report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
 `layers` | List Bancroft agent layers
@@ -41,8 +43,9 @@ Key design: the workbook ships **formulas, not pre-computed values**, so it stay
 in sync with the calc engine by construction. The engine (`toWorkbook.ts`) is
 generic; each asset class supplies a `WorkbookLayout` (`src/layout.ts`) selected
 by `frontmatter.asset_class` via the registry (`src/layouts.ts`,
-`getLayoutForAssetClass`). Supported: **multifamily, office, retail, industrial**
-(`MULTIFAMILY_LAYOUT`/`OFFICE_LAYOUT`/`RETAIL_LAYOUT`/`INDUSTRIAL_LAYOUT`); an
+`getLayoutForAssetClass`). Supported: **multifamily, office, retail, industrial,
+self-storage** (`MULTIFAMILY_LAYOUT`/`OFFICE_LAYOUT`/`RETAIL_LAYOUT`/
+`INDUSTRIAL_LAYOUT`/`SELF_STORAGE_LAYOUT`); an
 unsupported class throws `UnsupportedAssetClassError`.
 
 Layout:
@@ -77,21 +80,56 @@ map to Excel (else `EXCEL-EMIT-FN`).
 
 Build: `tsc`. Test: `vitest run`.
 
+## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.1.0)
+
+`.uw.md → .pdf` for the lender package / credit memo. The HTML is produced by
+`@uwmd/core`'s `renderReportHtml` (deterministic, §7.1/§7.2); this package only
+adds the headless-Chromium print step. CLI bin:
+`uwmd-report <input.uw.md> [-o out.pdf] [--tier screener|analyst] [--format pdf|html] [--prepared-by <name>] [--browser <path>]`.
+Programmatic API: `generateReport(parsed, opts)`.
+
+Key design: depends on **`playwright-core`** (no bundled browser download).
+Browser resolution order: explicit `--browser` / `UWMD_REPORT_BROWSER` env →
+system Chrome channel → system Edge channel → a Playwright-managed Chromium if
+the user ran `playwright install`. No browser → typed `BrowserNotFoundError`
+with instructions; `--format html` always works browser-free (the print
+stylesheet is embedded, so printing that HTML from any browser yields the same
+PDF). `preferCSSPageSize` is on and Playwright margins are zeroed — page layout
+is owned entirely by `REPORT_CSS`'s `@page`/`@media print` rules in core.
+
+Build: `tsc`. Test: `vitest run` (the PDF test self-skips when no Chromium-based
+browser is present).
+
 ## Web viewer — `tools/web-viewer`
 
 Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
 it renders (embeds a minimal Parser + Renderer). Tier-1 demo. Skip it for editing
 or calc.
 
-## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.1.0, private)
+## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.2.0, private)
 
-Vite + TypeScript, no UI framework. Embeds `@uwmd/core/browser` (parser,
-validator, Tier-2 edit dispatcher, Tier-3 calc engine). Numeric edits re-run every
-dependent calc immediately, so the file can't be left internally inconsistent.
-Files: `src/main.ts` (entry/state), `src/edits.ts` (edit dispatch), `src/ui.ts`
-(rendering: section list, calc dashboard, validation panel). Build: `vite build`.
-TS uses `Bundler` resolution + DOM libs; **must import from `@uwmd/core/browser`**
-(not `@uwmd/core`) to keep the Anthropic SDK out of the bundle.
+React 18 + Tailwind CSS 4 (Vite). Embeds `@uwmd/core/browser` (parser, validator,
+Tier-2 edit dispatcher, Tier-3 calc engine, report renderer). Two tabs:
+
+- **Editor** — sidebar with per-section validation badges, frontmatter form,
+  per-section numeric inputs (hand-curated allow-list in `src/catalog.ts`),
+  block `_meta` chips (version/source/confidence/review), collapsible raw-JSON
+  view, pipeline-log table, and a pinned calc strip that re-evaluates the asset
+  class's full pack (`getPackForAssetClass`) on every render — derived values
+  cannot lag inputs.
+- **Report Preview** — the same `renderReportHtml` HTML the CLI/`@uwmd/report`
+  produce, re-rendered live in a sandboxed iframe (`srcDoc`) on every edit, with
+  Lender Package / Credit Memo tier toggle, Download HTML, and Print/PDF.
+
+All mutations still flow through `src/edits.ts` → `applyEdit()` → re-parse (the
+single chokepoint; React state just holds the result — see `src/state.ts`).
+Files: `src/main.tsx` (entry), `src/App.tsx` (shell/tabs), `src/state.ts`
+(`useDeal` hook), `src/edits.ts` (edit dispatch), `src/catalog.ts` (editable
+field allow-lists), `src/components/*` (Toolbar, Sidebar, CalcDashboard,
+SectionView, FrontmatterEditor, PipelineLog, ValidationPanel, ReportPreview).
+Build: `tsc --noEmit && vite build`. TS uses `Bundler` resolution + DOM libs +
+`react-jsx`; **must import from `@uwmd/core/browser`** (not `@uwmd/core`) to
+keep the Anthropic SDK out of the bundle.
 
 ## VS Code extension — `tools/vscode-uwmd` (`vscode-uwmd` 0.1.0)
 

@@ -4,6 +4,7 @@ import {
   OFFICE_DEFAULTS,
   RETAIL_DEFAULTS,
   INDUSTRIAL_DEFAULTS,
+  SELF_STORAGE_DEFAULTS,
   getAssetClassDefaults,
   getDefaultRange,
   listDefaultedFields,
@@ -189,6 +190,48 @@ describe('defaults — INDUSTRIAL_DEFAULTS', () => {
   });
 });
 
+describe('defaults — SELF_STORAGE_DEFAULTS', () => {
+  it('declares asset_class and version', () => {
+    expect(SELF_STORAGE_DEFAULTS.asset_class).toBe('self_storage');
+    expect(SELF_STORAGE_DEFAULTS.version).toBe('1.0.0');
+  });
+
+  it('every entry satisfies low <= central <= high', () => {
+    for (const [path, range] of Object.entries(SELF_STORAGE_DEFAULTS.fields)) {
+      expect(range.low, `${path}.low`).toBeLessThanOrEqual(range.central);
+      expect(range.central, `${path}.central`).toBeLessThanOrEqual(range.high);
+    }
+  });
+
+  it('every entry stamps source = asset_class_default with a citation and unit', () => {
+    for (const [path, range] of Object.entries(SELF_STORAGE_DEFAULTS.fields)) {
+      expect(range.source, `${path}.source`).toBe('asset_class_default');
+      expect(range.citation, `${path}.citation`).toBeTruthy();
+      expect(range.unit, `${path}.unit`).toBeDefined();
+    }
+  });
+
+  it('covers the v1.0 self-storage input set', () => {
+    const expected = [
+      'noi_model.expense_ratio',
+      'rent_roll.vacancy_pct',
+      'rent_roll.economic_vacancy_pct',
+      'noi_model.rent_growth_pct_y1',
+      'noi_model.management_fee_pct',
+      'noi_model.revenue_per_nrsf',
+      'debt_structure.rate_pct',
+      'debt_structure.amortization_months',
+      'debt_structure.io_months',
+      'debt_structure.ltv_pct',
+      'valuation.exit_cap_rate_pct',
+      'sources_uses.closing_costs_pct',
+    ];
+    for (const path of expected) {
+      expect(SELF_STORAGE_DEFAULTS.fields[path], path).toBeDefined();
+    }
+  });
+});
+
 describe('defaults — registry helpers', () => {
   it('getAssetClassDefaults returns the multifamily table', () => {
     const t = getAssetClassDefaults('multifamily');
@@ -210,8 +253,13 @@ describe('defaults — registry helpers', () => {
     expect(t).toBe(INDUSTRIAL_DEFAULTS);
   });
 
+  it('getAssetClassDefaults returns the self-storage table', () => {
+    const t = getAssetClassDefaults('self_storage');
+    expect(t).toBe(SELF_STORAGE_DEFAULTS);
+  });
+
   it('getAssetClassDefaults returns null for unregistered classes', () => {
-    expect(getAssetClassDefaults('self_storage')).toBeNull();
+    expect(getAssetClassDefaults('hospitality')).toBeNull();
     expect(getAssetClassDefaults('not-a-real-class')).toBeNull();
   });
 
@@ -231,11 +279,15 @@ describe('defaults — registry helpers', () => {
     const ind = getDefaultRange('industrial', 'valuation.exit_cap_rate_pct');
     expect(ind?.central).toBe(0.065);
     expect(ind?.unit).toBe('percent');
+
+    const ss = getDefaultRange('self_storage', 'rent_roll.economic_vacancy_pct');
+    expect(ss?.central).toBe(0.15);
+    expect(ss?.unit).toBe('percent');
   });
 
   it('getDefaultRange returns null for unknown field', () => {
     expect(getDefaultRange('multifamily', 'no.such.field')).toBeNull();
-    expect(getDefaultRange('self_storage', 'noi_model.expense_ratio')).toBeNull();
+    expect(getDefaultRange('hospitality', 'noi_model.expense_ratio')).toBeNull();
   });
 
   it('listDefaultedFields enumerates the table keys', () => {
@@ -255,6 +307,10 @@ describe('defaults — registry helpers', () => {
     expect(industrialPaths.length).toBe(Object.keys(INDUSTRIAL_DEFAULTS.fields).length);
     expect(industrialPaths).toContain('noi_model.expense_recovery_rate');
 
-    expect(listDefaultedFields('self_storage')).toEqual([]);
+    const selfStoragePaths = listDefaultedFields('self_storage');
+    expect(selfStoragePaths.length).toBe(Object.keys(SELF_STORAGE_DEFAULTS.fields).length);
+    expect(selfStoragePaths).toContain('rent_roll.economic_vacancy_pct');
+
+    expect(listDefaultedFields('hospitality')).toEqual([]);
   });
 });

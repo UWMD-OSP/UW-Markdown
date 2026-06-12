@@ -1,7 +1,7 @@
 # 13 — Build status (living document)
 
-**Last verified:** 2026-05-21 (office + retail + industrial packs + multi-class Excel
-converter landed; against working tree).
+**Last verified:** 2026-06-11 (report renderer + @uwmd/report PDF pipeline +
+React web-editor rebuild landed; against working tree).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -37,50 +37,64 @@ not core gaps.
   renderer (`json`/`csv`/`chat`/`summary`). See [03](03-core-library.md).
 - **Calc engine:** sandboxed parser+evaluator, 17 builtins incl.
   `pmt/fv/pv/nper/irr/npv`, full error taxonomy, property tests. See [04](04-calc-engine.md).
-- **Multifamily + office + retail + industrial packs:** `MULTIFAMILY_PACK` (8
-  metrics), `OFFICE_PACK` (11), `RETAIL_PACK` (12), `INDUSTRIAL_PACK` (12),
-  selectable via `getPackForAssetClass`. The Excel converter has a `WorkbookLayout`
+- **Multifamily + office + retail + industrial + self-storage packs:**
+  `MULTIFAMILY_PACK` (8 metrics), `OFFICE_PACK` (11), `RETAIL_PACK` (12),
+  `INDUSTRIAL_PACK` (12), `SELF_STORAGE_PACK` (12), selectable via
+  `getPackForAssetClass`. The Excel converter has a `WorkbookLayout`
   per class (selected via `getLayoutForAssetClass`); its `toWorkbook.test.ts`
-  computes parity for all four (operating statement foots; metrics == evaluateCalc
+  computes parity for all five (operating statement foots; metrics == evaluateCalc
   to 6 decimals). Pack-level parity also pinned in each `packs/*.test.ts`. See
   [05](05-calc-packs.md), [08](08-tools.md).
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
-- **CLI:** 14 commands. See [08](08-tools.md).
+- **CLI:** 15 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
+- **`.uw.json` sibling form:** `uwjson.ts` exports a lossless JSON projection of a
+  `.uw.md` file (provenance + prose + supersede history) and re-hydrates it into a
+  `ParsedUWFile`. Library/export feature only — a *normative* `.uw.json` (own JSON
+  Schema + conformance tier) is deferred to a future RFC. See [03](03-core-library.md).
 - **Conformance:** 29 fixtures, 4 tiers, CI gates tiers 1–3. See [09](09-conformance-testing.md).
-- **Tools:** CLI, Excel converter, web-viewer, web-editor, VS Code ext, docs-site
+- **Report renderer + PDF pipeline:** `report.ts` in core renders the spec's
+  §7.1 Lender Package / §7.2 Credit Memo as deterministic print-ready HTML
+  (`renderReportHtml`, browser-safe, `uwmd report` CLI); `@uwmd/report`
+  (`uwmd-report`) prints it to PDF via playwright-core + system Chrome/Edge.
+  See [03](03-core-library.md), [08](08-tools.md).
+- **Tools:** CLI, Excel converter, report PDF pipeline, web-viewer, web-editor
+  (React + Tailwind, with live report preview), VS Code ext, docs-site
   (all preview).
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 
 ## 🟡 Partial — works but needs improvement
 
-- **Asset-class coverage = the 4 core commercial types.** `AssetClass` lists 10
-  classes; multifamily, office, retail, and industrial each have a pack + defaults
-  table + worked example + Excel layout, and `scope`/`refine`/Excel resolve all
-  four off `frontmatter.asset_class`. Self_storage/hospitality/senior_housing/
+- **Asset-class coverage = 5 of 10 classes.** `AssetClass` lists 10 classes;
+  multifamily, office, retail, industrial, and self-storage each have a pack +
+  defaults table + worked example + Excel layout, and `scope`/`refine`/Excel
+  resolve all five off `frontmatter.asset_class`. Hospitality/senior_housing/
   student_housing/mixed_use/land remain unbuilt — the next packs to add. **A
   shrinking limiter, but the long tail of classes is still uncovered.**
-- **Module system is types-only.** `ModuleManifest`/`ModuleLoadResult` are defined
-  and the schema exists, but there is **no loader/registrar** — packs are
-  compiled-in constants; third parties can't load external packs/modules yet.
+- **Module system is declarative-only.** `modules.ts` validates and registers
+  in-process `ModuleManifest` objects (shape, formulas, dependency load order,
+  tier/protocol/format compatibility), but there is no dynamic import, signing,
+  or custom asset-class declaration support.
 - **Refinement VOI is approximate.** Perturbation-only, marginal (not joint) VOI;
   non-monotonic outputs only warn; `refinement.ts` carries an empty v1 placeholder
   for the L0b loop.
-- **Test coverage uneven.** No dedicated unit test for `renderer.ts`,
-  `compactor.ts`, `init.ts`, `format.ts`, `context.ts`, or core `cli.ts`; validator
+- **Test coverage uneven.** No dedicated unit test for `compactor.ts`, `init.ts`,
+  `format.ts`, `context.ts`, or core `cli.ts`; validator
   has only `validator.dq.test.ts` (CC/FV mainly via conformance). CI coverage gate
   is a soft floor (`continue-on-error`).
-- **Examples = 4 deals** (multifamily, office, retail, industrial); other classes/loan types undemonstrated.
+- **Examples = 5 deals** (multifamily, office, retail, industrial, self-storage);
+  other classes/loan types undemonstrated.
 - **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
   FAQ/troubleshooting, and a calc "calling-convention" guide are still missing.
 
 ## 🔴 Stubs / not implemented
 
-- **PDF / DOCX rendering** — `render()` returns empty content for both
-  (`renderer.ts`); deferred to an external pipeline. (Core renders
-  `json/csv/chat/summary`; HTML lives in the web tools, not core.)
+- **DOCX rendering** — `render()` still returns empty content for `docx`
+  (`renderer.ts`); the Word credit-memo target has no pipeline. (PDF is now
+  built — see `report.ts` + `@uwmd/report` above; `render({format:'pdf'})`
+  remains a stub enum pointing at that pipeline.)
 - **Reverse Excel (`.xlsx → .uw.md`)** — not built; converter is one-way.
 - **Provider-neutral agent host** — `agents/bancroft.ts` is hard-coupled to
   `@anthropic-ai/sdk`; no second backend despite the provider-neutral §IX claim.
@@ -105,17 +119,19 @@ no public RFC venue.
 
 ## Suggested priority order
 
-1. **More asset-class packs + defaults + Excel layouts** (self-storage,
-   hospitality next) — the 4 core commercial types landed end-to-end (pack +
+1. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
+   five classes have landed end-to-end (pack +
    defaults + worked example + Excel layout). Keep widening coverage. Each is a
    library-only change (no RFC); add a worked example whose operating statement
    foots, and a `WorkbookLayout`. See [05 recipe](05-calc-packs.md), [08](08-tools.md).
-2. **Module loader** — make the module *types* into a real load/validate/register
-   path (precondition for RFC 0003).
-3. **Unit tests for `renderer.ts` and validator CC/FV** — largest under-tested
-   surfaces; then ratchet the CI coverage floor.
-4. **PDF/DOCX path** (or formally scope it out) — the headline "lender-ready
-   package" artifact.
+2. **Module loader hardening** — the v1 in-process loader exists; next steps are
+   richer schema validation, recorded fixtures, and host UX for loading manifests
+   from files (module signing/custom asset-class identifiers stay v2/RFC work).
+3. **Unit tests for validator CC/FV plus untested core helpers** (`compactor.ts`,
+   `init.ts`, `format.ts`, `context.ts`, core `cli.ts`) — largest remaining
+   under-tested surfaces; then ratchet the CI coverage floor.
+4. **DOCX path** (or formally scope it out) — PDF landed via `report.ts` +
+   `@uwmd/report`; Word remains the gap for institutions that edit memos.
 5. **Recorded-replay Tier-4 + a second agent backend** — proves the agent contract
    is actually provider-neutral.
 

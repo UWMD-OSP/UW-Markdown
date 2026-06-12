@@ -17,6 +17,18 @@ export { validateUWFile, lookupRemediation } from './validator.js';
 export { compact, diff } from './compactor.js';
 export { render } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
+export { renderReportHtml, REPORT_CSS } from './report.js';
+export type { ReportOptions, ReportResult } from './report.js';
+
+export {
+  UWJSON_VERSION,
+  UWJsonError,
+  toUWJson,
+  stringifyUWJson,
+  parseUWJson,
+  fromUWJson,
+} from './uwjson.js';
+export type { UWJsonDocument, UWJsonBlock, ToUWJsonOptions } from './uwjson.js';
 
 export { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 export type { AgentOutput, RunOptions, RunResult } from './runner.js';
@@ -32,12 +44,21 @@ export {
   OFFICE_PACK,
   RETAIL_PACK,
   INDUSTRIAL_PACK,
+  SELF_STORAGE_PACK,
   getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
   ExcelEmitError,
 } from './packs/index.js';
 export type { ExcelEmitOptions } from './packs/index.js';
+
+export {
+  loadModuleManifest,
+  createModuleRegistry,
+  getModuleCalculationsForAssetClass,
+  ModuleRegistryError,
+} from './modules.js';
+export type { ModuleRegistry, LoadModuleOptions, CreateModuleRegistryOptions } from './modules.js';
 
 export {
   buildAgentContext,

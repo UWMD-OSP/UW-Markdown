@@ -9,6 +9,73 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Lender Package / Credit Memo report renderer** in `@uwmd/core`
+  (`report.ts`) — `renderReportHtml(parsed, opts)` implements the spec's
+  rendering targets §7.1 (Tier 1 Lender Package: cover page, executive summary
+  with metric grid, property overview, proforma, rent-roll summary, debt
+  structure, sources & uses, borrower summary, exit analysis, assumptions table
+  with source badges + standard disclaimer) and §7.2 (Tier 2 Credit Memo: adds
+  market analysis with comps, financial analysis with annual cash flows +
+  stress matrix + break-even, due diligence, risk assessment, compliance,
+  covenants, pipeline-log appendix). Output is a self-contained, print-aware
+  HTML document (embedded `REPORT_CSS` with `@page`/`@media print` rules) or an
+  `<article>` fragment for embedding. Zero dependencies, browser-safe, exported
+  from `index.ts` and `browser.ts`; every number is read from the file (calc
+  engine/pack output), never recomputed. Handles both multifamily
+  `unit_mix_summary` and commercial `tenants` rent rolls, single-variant maps,
+  and missing sections (skipped + reported in `sectionsSkipped`). New
+  `uwmd report` CLI subcommand (`--tier`, `--prepared-by`, `--output`,
+  `--stdout`).
+- **PDF report pipeline** ([`packages/uwmd-report/`](./packages/uwmd-report/),
+  preview `0.1.0`) — new `@uwmd/report` package providing
+  `uwmd-report <file.uw.md> [-o out.pdf] [--tier] [--format pdf|html]` and a
+  programmatic `generateReport(parsed, opts)` API. Prints core's report HTML to
+  PDF via **playwright-core** with no bundled-browser download: resolves
+  `--browser`/`UWMD_REPORT_BROWSER`, then system Chrome, then system Edge, then
+  a Playwright-managed Chromium; typed `BrowserNotFoundError` with remediation
+  otherwise. Page layout is owned entirely by core's `REPORT_CSS`
+  (`preferCSSPageSize`, zero engine margins), so browser print of the HTML and
+  the CLI PDF are identical.
+
+### Changed
+- **Web editor rebuilt on React 18 + Tailwind CSS 4**
+  ([`tools/web-editor/`](./tools/web-editor/), preview `0.2.0`) — replaces the
+  vanilla-TS stage-3 editor. Adds: a pinned calc strip that evaluates the asset
+  class's full pack via `getPackForAssetClass` (all five shipped classes, was
+  multifamily-only), block `_meta` provenance chips
+  (version/source/confidence/review-required), collapsible raw-JSON block view,
+  per-section prose display, pipeline-log table, and a **live Report Preview
+  tab** rendering `renderReportHtml` in a sandboxed iframe on every edit with
+  Lender Package / Credit Memo toggle, Download HTML, and Print/PDF. The edit
+  chokepoint is unchanged: every mutation flows through `src/edits.ts` →
+  `applyEdit()` → re-parse, so in-memory state can never drift from canonical
+  bytes (React state only holds the result).
+- **Lossless `.uw.json` sibling serialization** in `@uwmd/core` (`uwjson.ts`) —
+  `toUWJson`/`stringifyUWJson` export a `.uw.md` file to a machine-first JSON
+  document that preserves every block's `_meta` provenance, fence annotation,
+  per-section prose, and append-only `superseded` history; `parseUWJson`/
+  `fromUWJson` re-hydrate it into the same `ParsedUWFile` shape `parseUWFile`
+  produces, so the validator, calc engine, packs, and renderer run against a
+  `.uw.json` source unchanged. Exported from both `index.ts` and `browser.ts` for
+  web tooling. New `uwmd export` CLI subcommand (`--no-superseded`, `--stdout`).
+  This is a **derived, library-provided view** — it carries its own
+  `uwjson_version` and does **not** touch `spec/`, the JSON Schemas, or the
+  protocol; promoting `.uw.json` to a normative sibling format is deferred to a
+  future RFC.
+- **Renderer unit tests** in `@uwmd/core` covering JSON projection, superseded
+  history opt-in, CSV numeric/percent output, summary/chat rendering, chat
+  truncation, and the explicit PDF/DOCX stub targets.
+- **Self-storage calc pack + defaults + worked example + Excel layout** —
+  `SELF_STORAGE_PACK` adds twelve deterministic metrics keyed off NRSF, rentable
+  units, physical occupancy, and economic occupancy. `SELF_STORAGE_DEFAULTS`
+  registers cascade/refinement ranges, `Sonoran-Self-Storage-Peoria-AZ.uw.md`
+  provides a footing worked example, and `@uwmd/excel` now emits a self-storage
+  workbook layout with Excel↔evaluator parity to 6 decimals.
+- **Declarative module loader/registry** in `@uwmd/core` — `modules.ts` validates
+  and registers in-process `ModuleManifest` objects, including shape checks,
+  formula/rule parsing, dependency load order, and tier/protocol/format
+  compatibility. Dynamic imports, signing, and custom asset-class identifiers
+  remain v2/RFC work.
 - Repo restructured into OSS-ready monorepo (`spec/`, `packages/`, `examples/`, `conformance/`, `tools/`).
 - `@uwmd/core` package (renamed from `uwmd`).
 - UW Protocol v1 specification (`spec/UW_PROTOCOL_v1.md`).

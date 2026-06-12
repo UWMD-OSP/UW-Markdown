@@ -9,12 +9,14 @@ import { MULTIFAMILY_LAYOUT } from './multifamily.js';
 import { OFFICE_LAYOUT } from './office.js';
 import { RETAIL_LAYOUT } from './retail.js';
 import { INDUSTRIAL_LAYOUT } from './industrial.js';
+import { SELF_STORAGE_LAYOUT } from './self-storage.js';
 
 const LAYOUT_REGISTRY: Readonly<Record<string, WorkbookLayout>> = Object.freeze({
   multifamily: MULTIFAMILY_LAYOUT,
   office: OFFICE_LAYOUT,
   retail: RETAIL_LAYOUT,
   industrial: INDUSTRIAL_LAYOUT,
+  self_storage: SELF_STORAGE_LAYOUT,
 });
 
 /** Asset classes with a workbook layout, for help text and error messages. */

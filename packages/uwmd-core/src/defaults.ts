@@ -512,11 +512,123 @@ export const INDUSTRIAL_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Self-storage asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized drive-up and climate-controlled storage facilities.
+ * The key class-specific inputs are physical occupancy, economic occupancy,
+ * and revenue per net rentable square foot. Triage grade (scope-stage VOI
+ * ranking), not committee underwriting.
+ */
+export const SELF_STORAGE_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'self_storage',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.28,
+      central: 0.34,
+      high: 0.42,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'SSA / NAREIT self-storage operating expense bands',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.08,
+      central: 0.12,
+      high: 0.2,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Yardi Matrix / Radius+ self-storage physical vacancy distribution',
+    },
+    'rent_roll.economic_vacancy_pct': {
+      low: 0.1,
+      central: 0.15,
+      high: 0.24,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Self-storage economic vacancy band including concessions and loss-to-lease',
+    },
+    'noi_model.rent_growth_pct_y1': {
+      low: 0.01,
+      central: 0.025,
+      high: 0.045,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Yardi Matrix self-storage rent-growth bands',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.04,
+      central: 0.05,
+      high: 0.06,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Third-party self-storage management fee band',
+    },
+    'noi_model.revenue_per_nrsf': {
+      low: 10,
+      central: 15,
+      high: 22,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'Radius+ / Yardi Matrix annual revenue per occupied NRSF bands',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.0625,
+      central: 0.07,
+      high: 0.08,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CMBS / life-co self-storage fixed quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard permanent self-storage amortization (25-30 yr)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 0,
+      high: 24,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Self-storage IO availability range (0-2 yr on permanent debt)',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.55,
+      central: 0.65,
+      high: 0.72,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Self-storage LTV envelope for stabilized assets',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.055,
+      central: 0.065,
+      high: 0.0775,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'RCA / Green Street self-storage cap-rate distribution',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.015,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, taxes)',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
   retail: RETAIL_DEFAULTS,
   industrial: INDUSTRIAL_DEFAULTS,
+  self_storage: SELF_STORAGE_DEFAULTS,
 });
 
 /**

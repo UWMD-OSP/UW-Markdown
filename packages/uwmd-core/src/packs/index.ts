@@ -10,11 +10,13 @@ import { MULTIFAMILY_PACK } from './multifamily.js';
 import { OFFICE_PACK } from './office.js';
 import { RETAIL_PACK } from './retail.js';
 import { INDUSTRIAL_PACK } from './industrial.js';
+import { SELF_STORAGE_PACK } from './self-storage.js';
 
 export { MULTIFAMILY_PACK } from './multifamily.js';
 export { OFFICE_PACK } from './office.js';
 export { RETAIL_PACK } from './retail.js';
 export { INDUSTRIAL_PACK } from './industrial.js';
+export { SELF_STORAGE_PACK } from './self-storage.js';
 export {
   emitFromAst,
   emitExcelFormula,
@@ -32,6 +34,7 @@ const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
   office: OFFICE_PACK,
   retail: RETAIL_PACK,
   industrial: INDUSTRIAL_PACK,
+  self_storage: SELF_STORAGE_PACK,
 });
 
 /**
