@@ -5,14 +5,17 @@
 import { useState } from 'react';
 import type { EditOperation, ParsedUWFile, UWBlock } from '@uwmd/core/browser';
 import {
-  deepGet,
-  deepSet,
   displayName,
   fieldsForSection,
+  getNumeric,
+  setNumeric,
   type NumericSectionField,
 } from '../catalog.js';
 import { FrontmatterEditor } from './FrontmatterEditor.js';
 import { PipelineLog } from './PipelineLog.js';
+import { RentRollTable } from './RentRollTable.js';
+import { NoiLineItems } from './NoiLineItems.js';
+import { HistoryView } from './HistoryView.js';
 
 type SectionEntry = UWBlock | Record<string, UWBlock>;
 
@@ -57,6 +60,7 @@ export function SectionView(props: {
           dispatch={dispatch}
         />
       ))}
+      <HistoryView parsed={parsed} sectionId={activeId} />
     </div>
   );
 }
@@ -67,11 +71,18 @@ function isBlock(entry: SectionEntry): entry is UWBlock {
 
 function ProseView({ prose }: { prose: string | undefined }) {
   if (!prose?.trim()) return null;
+  // Strip markdown scaffolding the structured views already render: headings,
+  // dividers, pipe tables, blockquote callouts (same filter as core report.ts).
   const paragraphs = prose
     .split('\n')
     .filter((l) => {
       const t = l.trim();
-      return !/^#{1,6}\s/.test(t) && !/^-{3,}$/.test(t);
+      return (
+        !/^#{1,6}\s/.test(t) &&
+        !/^(-{3,}|\*{3,}|_{3,})$/.test(t) &&
+        !/^\|.*\|$/.test(t) &&
+        !/^>\s?/.test(t)
+      );
     })
     .join('\n')
     .trim()
@@ -111,8 +122,15 @@ function BlockView(props: {
         <span className="ml-auto">{meta?.timestamp?.slice(0, 19).replace('T', ' ')}</span>
       </header>
 
+      {sectionId === 'rent_roll' && (
+        <RentRollTable sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
+      {sectionId === 'noi_model' && (
+        <NoiLineItems sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
+
       {fields.length > 0 && (
-        <div className="grid grid-cols-1 gap-x-6 gap-y-3 px-4 py-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-rule px-4 py-4 sm:grid-cols-2">
           {fields.map((f) => (
             <NumericField
               key={f.path}
@@ -175,16 +193,16 @@ function NumericField(props: {
   dispatch: Dispatch;
 }) {
   const { field, block, variant, dispatch } = props;
-  const value = deepGet(block.content, field.path);
+  const value = getNumeric(block.content, field.path);
   const display = formatForInput(value, field.kind);
 
   const commit = (raw: string) => {
     const next = parseInput(raw, field.kind);
-    if (next === null || next === (typeof value === 'number' ? value : undefined)) return;
+    if (next === null || next === value) return;
 
     const newContent = JSON.parse(JSON.stringify(block.content)) as Record<string, unknown>;
     delete newContent['_meta'];
-    deepSet(newContent, field.path, next);
+    setNumeric(newContent, field.path, next);
 
     dispatch({
       kind: 'section_replace',

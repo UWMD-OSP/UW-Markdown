@@ -116,12 +116,34 @@ export interface NumericSectionField {
 export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   { section_id: 'property', path: 'total_units', label: 'Total units', kind: 'count' },
   { section_id: 'property', path: 'total_nra_sqft', label: 'Total NRA (sqft)', kind: 'count' },
+  { section_id: 'property', path: 'year_built', label: 'Year built', kind: 'count' },
+  { section_id: 'property', path: 'parking_spaces', label: 'Parking spaces', kind: 'count' },
+  { section_id: 'rent_roll', path: 'in_place_rent_annual', label: 'In-place rent (annual)', kind: 'currency' },
+  { section_id: 'rent_roll', path: 'gross_potential_rent_annual', label: 'GPR (annual)', kind: 'currency' },
+  { section_id: 'rent_roll', path: 'physical_occupancy_pct', label: 'Physical occupancy (fraction)', kind: 'rate' },
+  { section_id: 'rent_roll', path: 'economic_occupancy_pct', label: 'Economic occupancy (fraction)', kind: 'rate' },
   { section_id: 'valuation', path: 'purchase_price', label: 'Purchase price', kind: 'currency' },
+  { section_id: 'valuation', path: 'income_approach.cap_rate_applied', label: 'Cap rate applied (fraction)', kind: 'rate' },
+  { section_id: 'valuation', path: 'value_used_for_ltv', label: 'Value used for LTV', kind: 'currency' },
   { section_id: 'noi_model', path: 'net_operating_income', label: 'NOI', kind: 'currency' },
   { section_id: 'debt_structure', path: 'loan_amount', label: 'Loan amount', kind: 'currency' },
   { section_id: 'debt_structure', path: 'interest_rate', label: 'Interest rate (fraction)', kind: 'rate' },
   { section_id: 'debt_structure', path: 'annual_debt_service', label: 'Annual debt service', kind: 'currency' },
+  { section_id: 'debt_structure', path: 'amortization_years', label: 'Amortization (years)', kind: 'count' },
+  { section_id: 'debt_structure', path: 'loan_term_years', label: 'Loan term (years)', kind: 'count' },
+  { section_id: 'debt_structure', path: 'io_period_months', label: 'IO period (months)', kind: 'count' },
   { section_id: 'sources_uses', path: 'sources.equity_sponsor', label: 'Sponsor equity', kind: 'currency' },
+  { section_id: 'sources_uses', path: 'sources.senior_loan', label: 'Senior loan', kind: 'currency' },
+  { section_id: 'sources_uses', path: 'uses.purchase_price', label: 'Purchase price (use)', kind: 'currency' },
+  { section_id: 'dcf', path: 'assumptions.revenue_growth_rate', label: 'Revenue growth (fraction)', kind: 'rate' },
+  { section_id: 'dcf', path: 'assumptions.expense_growth_rate', label: 'Expense growth (fraction)', kind: 'rate' },
+  { section_id: 'dcf', path: 'assumptions.exit_cap_rate', label: 'Exit cap rate (fraction)', kind: 'rate' },
+  { section_id: 'dcf', path: 'assumptions.discount_rate', label: 'Discount rate (fraction)', kind: 'rate' },
+  { section_id: 'dcf', path: 'hold_period_years', label: 'Hold period (years)', kind: 'count' },
+  { section_id: 'operating_statement', path: 'income.gross_potential_rent', label: 'GPR', kind: 'currency' },
+  { section_id: 'operating_statement', path: 'income.effective_gross_income', label: 'EGI', kind: 'currency' },
+  { section_id: 'operating_statement', path: 'expenses.total_operating_expenses', label: 'Total OpEx', kind: 'currency' },
+  { section_id: 'operating_statement', path: 'net_operating_income', label: 'NOI', kind: 'currency' },
 ];
 
 export function fieldsForSection(id: string): readonly NumericSectionField[] {
@@ -150,4 +172,31 @@ export function deepSet(obj: Record<string, unknown>, path: string, value: unkno
     cur = cur[parts[i]] as Record<string, unknown>;
   }
   cur[parts[parts.length - 1]] = value;
+}
+
+/** Read a number that may be stored bare or wrapped as `{ value, ... }`
+ *  (the noi_model convention that preserves rationale/source alongside). */
+export function getNumeric(content: unknown, path: string): number | undefined {
+  const raw = deepGet(content, path);
+  if (typeof raw === 'number') return raw;
+  if (raw !== null && typeof raw === 'object' && typeof (raw as { value?: unknown }).value === 'number') {
+    return (raw as { value: number }).value;
+  }
+  return undefined;
+}
+
+/** Write a number respecting the `{ value, ... }` wrapper if present —
+ *  editing a wrapped field updates `.value` and keeps rationale/source. */
+export function setNumeric(content: Record<string, unknown>, path: string, value: number): void {
+  const existing = deepGet(content, path);
+  if (
+    existing !== null &&
+    typeof existing === 'object' &&
+    !Array.isArray(existing) &&
+    'value' in (existing as Record<string, unknown>)
+  ) {
+    deepSet(content, `${path}.value`, value);
+  } else {
+    deepSet(content, path, value);
+  }
 }

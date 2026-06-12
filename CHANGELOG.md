@@ -38,6 +38,19 @@ protocol, and each package each carry an independent semver).
   the CLI PDF are identical.
 
 ### Changed
+- **Web editor 0.3.0 — richer editing surfaces** ([`tools/web-editor/`](./tools/web-editor/)):
+  **editable rent-roll tables** (unit-mix rows for multifamily-style rolls,
+  tenant rows for commercial — cell edits replace the row through
+  `applyEdit()`); **NOI line-item editor** (income/expense entries; wrapped
+  `{value, …}` fields are updated via a wrapper-aware `setNumeric` that
+  preserves rationale/source provenance, stored totals shown read-only with
+  validator-flagged drift); **snapshot-based undo/redo** (restores prior
+  canonical source verbatim; Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z + toolbar);
+  **New Deal dialog** scaffolding a blank file via `generateBlankUWFile`;
+  **per-section superseded-version history view**; **Source tab** (read-only
+  canonical bytes + copy); **Ctrl+S** download; numeric allow-list expanded
+  from 8 to ~30 fields across eight sections (incl. DCF assumptions and
+  operating statement).
 - **Web editor rebuilt on React 18 + Tailwind CSS 4**
   ([`tools/web-editor/`](./tools/web-editor/), preview `0.2.0`) — replaces the
   vanilla-TS stage-3 editor. Adds: a pinned calc strip that evaluates the asset

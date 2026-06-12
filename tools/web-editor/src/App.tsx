@@ -1,4 +1,5 @@
-// App shell — toolbar, sidebar, editor / report-preview tabs, validation strip.
+// App shell — toolbar, sidebar, editor / report-preview / source tabs,
+// validation strip, new-deal dialog, global keyboard shortcuts.
 
 import { useCallback, useEffect, useState } from 'react';
 import { PROTOCOL_VERSION, FORMAT_VERSION } from '@uwmd/core/browser';
@@ -8,15 +9,18 @@ import { Sidebar } from './components/Sidebar.js';
 import { CalcDashboard } from './components/CalcDashboard.js';
 import { SectionView } from './components/SectionView.js';
 import { ReportPreview } from './components/ReportPreview.js';
+import { SourceView } from './components/SourceView.js';
 import { ValidationPanel } from './components/ValidationPanel.js';
+import { NewDealDialog } from './components/NewDealDialog.js';
 
-export type EditorTab = 'edit' | 'report';
+export type EditorTab = 'edit' | 'report' | 'source';
 
 export function App() {
   const [deal, actions] = useDeal();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [tab, setTab] = useState<EditorTab>('edit');
   const [dragOver, setDragOver] = useState(false);
+  const [showNewDialog, setShowNewDialog] = useState(false);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -54,6 +58,33 @@ export function App() {
     };
   }, [handleFile]);
 
+  // Global shortcuts: Ctrl+Z undo, Ctrl+Y / Ctrl+Shift+Z redo, Ctrl+S download.
+  // Undo/redo are suppressed while a form control has focus so native text
+  // editing keeps its own undo.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      const k = e.key.toLowerCase();
+      if (k === 's') {
+        e.preventDefault();
+        actions.download();
+        return;
+      }
+      const t = e.target as HTMLElement;
+      const inField = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT';
+      if (inField) return;
+      if (k === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        actions.undo();
+      } else if (k === 'y' || (k === 'z' && e.shiftKey)) {
+        e.preventDefault();
+        actions.redo();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [actions]);
+
   return (
     <div className={`flex h-full flex-col ${dragOver ? 'outline-4 -outline-offset-4 outline-dashed outline-accent' : ''}`}>
       <Toolbar
@@ -61,6 +92,9 @@ export function App() {
         tab={tab}
         onTab={setTab}
         onOpen={handleFile}
+        onNew={() => setShowNewDialog(true)}
+        onUndo={actions.undo}
+        onRedo={actions.redo}
         onDownload={actions.download}
       />
 
@@ -77,7 +111,7 @@ export function App() {
               }}
             />
             <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-              {tab === 'edit' ? (
+              {tab === 'edit' && (
                 <>
                   <CalcDashboard parsed={deal.loaded.parsed} />
                   <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
@@ -88,13 +122,17 @@ export function App() {
                     />
                   </div>
                 </>
-              ) : (
+              )}
+              {tab === 'report' && (
                 <ReportPreview parsed={deal.loaded.parsed} filename={deal.filename} />
+              )}
+              {tab === 'source' && (
+                <SourceView source={deal.loaded.source} filename={deal.filename} />
               )}
             </main>
           </>
         ) : (
-          <EmptyState error={deal.loadError} />
+          <EmptyState error={deal.loadError} onNew={() => setShowNewDialog(true)} />
         )}
       </div>
 
@@ -103,14 +141,25 @@ export function App() {
       <footer className="flex items-center justify-between border-t border-rule bg-paper px-4 py-1.5 text-xs text-muted">
         <span>{deal.status}</span>
         <span>
-          protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.2.0
+          protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.3.0
         </span>
       </footer>
+
+      {showNewDialog && (
+        <NewDealDialog
+          onCreate={(opts) => {
+            actions.newDeal(opts);
+            setActiveSection('__frontmatter__');
+            setTab('edit');
+          }}
+          onClose={() => setShowNewDialog(false)}
+        />
+      )}
     </div>
   );
 }
 
-function EmptyState({ error }: { error: string | null }) {
+function EmptyState({ error, onNew }: { error: string | null; onNew: () => void }) {
   return (
     <div className="flex flex-1 items-center justify-center">
       <div className="max-w-md text-center">
@@ -118,8 +167,12 @@ function EmptyState({ error }: { error: string | null }) {
         <h1 className="font-display text-2xl text-accent">UW Markdown Editor</h1>
         <p className="mt-3 text-muted">
           Drop a <code className="rounded bg-accent-soft px-1.5 py-0.5">.uw.md</code> deal file
-          anywhere, or use <strong>Open</strong>. Every numeric edit re-runs every dependent calc
-          immediately, and the lender package preview is one tab away.
+          anywhere, use <strong>Open</strong>, or{' '}
+          <button type="button" className="font-semibold text-accent underline" onClick={onNew}>
+            start a new deal
+          </button>
+          . Every numeric edit re-runs every dependent calc immediately, and the lender package
+          preview is one tab away.
         </p>
         {error && (
           <p className="mt-4 rounded border border-error/30 bg-error/5 px-4 py-3 text-left text-sm text-error">

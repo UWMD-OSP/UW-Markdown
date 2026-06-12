@@ -61,4 +61,17 @@ input.num {
   .btn-secondary:hover {
     background-color: var(--color-accent-soft);
   }
+  .input {
+    width: 100%;
+    border: 1px solid var(--color-rule);
+    border-radius: 0.25rem;
+    background: var(--color-paper);
+    padding: 0.375rem 0.625rem;
+    font-size: 0.875rem;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-accent);
+  }
 }

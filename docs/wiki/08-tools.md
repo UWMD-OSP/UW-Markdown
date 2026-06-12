@@ -106,27 +106,42 @@ Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
 it renders (embeds a minimal Parser + Renderer). Tier-1 demo. Skip it for editing
 or calc.
 
-## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.2.0, private)
+## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.3.0, private)
 
 React 18 + Tailwind CSS 4 (Vite). Embeds `@uwmd/core/browser` (parser, validator,
-Tier-2 edit dispatcher, Tier-3 calc engine, report renderer). Two tabs:
+Tier-2 edit dispatcher, Tier-3 calc engine, report renderer, init scaffolder).
+Three tabs:
 
 - **Editor** — sidebar with per-section validation badges, frontmatter form,
-  per-section numeric inputs (hand-curated allow-list in `src/catalog.ts`),
-  block `_meta` chips (version/source/confidence/review), collapsible raw-JSON
-  view, pipeline-log table, and a pinned calc strip that re-evaluates the asset
-  class's full pack (`getPackForAssetClass`) on every render — derived values
-  cannot lag inputs.
+  per-section numeric inputs (hand-curated allow-list in `src/catalog.ts`,
+  ~30 fields across property/rent_roll/valuation/noi_model/debt_structure/
+  sources_uses/dcf/operating_statement), **editable rent-roll tables** (unit-mix
+  rows for multifamily-style rolls, tenant rows for commercial), an **NOI
+  line-item editor** (wrapped `{value, …}` fields are edited via `setNumeric`,
+  which updates `.value` and preserves rationale/source; stored totals shown
+  read-only — the validator flags drift), block `_meta` chips, collapsible
+  raw-JSON view, **superseded-version history** per section, pipeline-log
+  table, and a pinned calc strip that re-evaluates the asset class's full pack
+  (`getPackForAssetClass`) on every render.
 - **Report Preview** — the same `renderReportHtml` HTML the CLI/`@uwmd/report`
   produce, re-rendered live in a sandboxed iframe (`srcDoc`) on every edit, with
   Lender Package / Credit Memo tier toggle, Download HTML, and Print/PDF.
+- **Source** — read-only canonical byte string (exactly what Download writes),
+  with copy button — handy for verifying Tier-2 byte preservation.
+
+Plus: **undo/redo** (snapshot-based — restores a prior canonical source
+verbatim, never "reverses" an op; Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z, suppressed
+while a form control is focused), **Ctrl+S** download, and a **New Deal**
+dialog that scaffolds a blank file via `generateBlankUWFile`.
 
 All mutations still flow through `src/edits.ts` → `applyEdit()` → re-parse (the
 single chokepoint; React state just holds the result — see `src/state.ts`).
-Files: `src/main.tsx` (entry), `src/App.tsx` (shell/tabs), `src/state.ts`
-(`useDeal` hook), `src/edits.ts` (edit dispatch), `src/catalog.ts` (editable
-field allow-lists), `src/components/*` (Toolbar, Sidebar, CalcDashboard,
-SectionView, FrontmatterEditor, PipelineLog, ValidationPanel, ReportPreview).
+Files: `src/main.tsx` (entry), `src/App.tsx` (shell/tabs/shortcuts),
+`src/state.ts` (`useDeal` hook + undo stacks), `src/edits.ts` (edit dispatch),
+`src/catalog.ts` (allow-lists + `getNumeric`/`setNumeric` wrapper-aware
+helpers), `src/components/*` (Toolbar, Sidebar, CalcDashboard, SectionView,
+FrontmatterEditor, RentRollTable, NoiLineItems, HistoryView, SourceView,
+NewDealDialog, PipelineLog, ValidationPanel, ReportPreview).
 Build: `tsc --noEmit && vite build`. TS uses `Bundler` resolution + DOM libs +
 `react-jsx`; **must import from `@uwmd/core/browser`** (not `@uwmd/core`) to
 keep the Anthropic SDK out of the bundle.

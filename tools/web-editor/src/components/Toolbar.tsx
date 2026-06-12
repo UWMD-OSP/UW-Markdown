@@ -7,9 +7,12 @@ export function Toolbar(props: {
   tab: EditorTab;
   onTab: (t: EditorTab) => void;
   onOpen: (file: File) => void;
+  onNew: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
   onDownload: () => void;
 }) {
-  const { deal, tab, onTab, onOpen, onDownload } = props;
+  const { deal, tab, onTab, onOpen, onNew, onUndo, onRedo, onDownload } = props;
   const fileInput = useRef<HTMLInputElement>(null);
   const dealName = (deal.loaded?.parsed.frontmatter as { deal_name?: string } | undefined)?.deal_name;
 
@@ -21,7 +24,7 @@ export function Toolbar(props: {
 
       {deal.loaded && (
         <>
-          <span className="max-w-72 truncate text-sm opacity-90" title={deal.filename}>
+          <span className="max-w-64 truncate text-sm opacity-90" title={deal.filename}>
             {dealName ?? deal.filename}
             {deal.dirty && <span className="ml-1.5 text-amber-300">●</span>}
           </span>
@@ -33,7 +36,31 @@ export function Toolbar(props: {
             <TabButton active={tab === 'report'} onClick={() => onTab('report')}>
               Report Preview
             </TabButton>
+            <TabButton active={tab === 'source'} onClick={() => onTab('source')}>
+              Source
+            </TabButton>
           </nav>
+
+          <div className="flex gap-1">
+            <button
+              type="button"
+              title="Undo (Ctrl+Z)"
+              className="btn-toolbar disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!deal.canUndo}
+              onClick={onUndo}
+            >
+              ↶ Undo
+            </button>
+            <button
+              type="button"
+              title="Redo (Ctrl+Y)"
+              className="btn-toolbar disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!deal.canRedo}
+              onClick={onRedo}
+            >
+              ↷ Redo
+            </button>
+          </div>
         </>
       )}
 
@@ -49,11 +76,15 @@ export function Toolbar(props: {
             e.target.value = '';
           }}
         />
+        <button type="button" className="btn-toolbar" onClick={onNew}>
+          New
+        </button>
         <button type="button" className="btn-toolbar" onClick={() => fileInput.current?.click()}>
           Open .uw.md
         </button>
         <button
           type="button"
+          title="Download (Ctrl+S)"
           className="btn-toolbar disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!deal.loaded}
           onClick={onDownload}
