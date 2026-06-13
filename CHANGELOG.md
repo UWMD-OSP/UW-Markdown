@@ -38,6 +38,28 @@ protocol, and each package each carry an independent semver).
   the CLI PDF are identical.
 
 ### Changed
+- **`@uwmd/core/browser` now exports the intelligence + calc-introspection
+  surfaces** — `resolveValue`/`readInFile` (cascade), `rankGaps` (value-of-
+  information), `inferGaps`/`summarizeGaps`/`readGapsContent`, the asset-class
+  default tables (`getAssetClassDefaults`/`getDefaultRange`/`listDefaultedFields`
+  + the five `*_DEFAULTS`), and `getExprDependencies`/`extractDependencyGraph`,
+  with their types. All confirmed browser-safe (no node, no SDK); previously
+  only on the node `index.ts` entry. Enables the web editor's intelligence and
+  calc-transparency panels.
+- **Web editor 0.4.0 — extensive build-out** ([`tools/web-editor/`](./tools/web-editor/)):
+  five tabs (Editor, Intelligence, Report, Diff, Source). New **Intelligence**
+  tab surfaces **Scope** (every required input resolved through the fallback
+  cascade with its source step + range) and **Refine** (VOI gap ranking with
+  affected-output ranges and suggested questions). New **edit-provenance bar**
+  threading actor/source/confidence/notes/human-review into `_meta` and toggling
+  **replace vs. append (supersede)** mode (promotes `section_replace` →
+  `section_supersede`). New **assumptions editor** capturing override rationale
+  (`is_overridden`/`original_value`/`override_rationale`), **generic field
+  editor** for every scalar leaf (narrative strings → textareas), **add/remove
+  rent-roll rows**, **clickable calc cards** opening a formula + resolved-inputs
+  + result detail (`CalcDetail`), and a **Diff** tab (section + frontmatter
+  changes since load/save via core `diff()`). Edit chokepoint unchanged
+  (`edits.ts` → `applyEdit()` → re-parse); modal Escape handling made global.
 - **Web editor 0.3.0 — richer editing surfaces** ([`tools/web-editor/`](./tools/web-editor/)):
   **editable rent-roll tables** (unit-mix rows for multifamily-style rolls,
   tenant rows for commercial — cell edits replace the row through

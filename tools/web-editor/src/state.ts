@@ -10,19 +10,28 @@
 // in-memory, pre-save convenience; the saved file's pipeline log still
 // records whatever was applied at save time.)
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { generateBlankUWFile } from '@uwmd/core/browser';
 import type { EditOperation, InitOptions } from '@uwmd/core/browser';
-import { loadInitialState, runEdit, type EditState } from './edits.js';
+import {
+  loadInitialState,
+  runEdit,
+  DEFAULT_EDIT_SETTINGS,
+  type EditState,
+  type EditSettings,
+} from './edits.js';
 
 export interface DealState {
   loaded: EditState | null;
+  /** The source as loaded/last-saved — basis for the diff view. */
+  originalSource: string;
   filename: string;
   dirty: boolean;
   status: string;
   loadError: string | null;
   canUndo: boolean;
   canRedo: boolean;
+  editSettings: EditSettings;
 }
 
 export interface DealActions {
@@ -33,6 +42,7 @@ export interface DealActions {
   redo: () => void;
   download: () => void;
   setStatus: (text: string) => void;
+  setEditSettings: (patch: Partial<EditSettings>) => void;
 }
 
 export function useDeal(): [DealState, DealActions] {
@@ -42,14 +52,20 @@ export function useDeal(): [DealState, DealActions] {
   const [filename, setFilename] = useState('');
   const [status, setStatus] = useState('Ready — drop a .uw.md file to begin');
   const [loadError, setLoadError] = useState<string | null>(null);
-  const originalSource = useRef('');
+  const [editSettings, setEditSettingsState] = useState<EditSettings>(DEFAULT_EDIT_SETTINGS);
+  // The source as loaded or last-saved — the diff baseline and dirty check.
+  const [originalSource, setOriginalSource] = useState('');
 
-  const dirty = !!loaded && loaded.source !== originalSource.current;
+  const dirty = !!loaded && loaded.source !== originalSource;
+
+  const setEditSettings = useCallback((patch: Partial<EditSettings>) => {
+    setEditSettingsState((s) => ({ ...s, ...patch }));
+  }, []);
 
   const loadFile = useCallback((text: string, name: string) => {
     try {
       const state = loadInitialState(text);
-      originalSource.current = text;
+      setOriginalSource(text);
       setLoaded(state);
       setPast([]);
       setFuture([]);
@@ -72,8 +88,8 @@ export function useDeal(): [DealState, DealActions] {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
       loadFile(text, `${slug || 'new-deal'}.uw.md`);
-      // A brand-new file is unsaved by definition.
-      originalSource.current = '';
+      // A brand-new file is unsaved by definition — empty diff baseline.
+      setOriginalSource('');
       setStatus('New deal created — fill in the frontmatter, then add data');
     },
     [loadFile],
@@ -82,7 +98,7 @@ export function useDeal(): [DealState, DealActions] {
   const applyOp = useCallback(
     (op: EditOperation) => {
       if (!loaded) return;
-      const outcome = runEdit(loaded, op);
+      const outcome = runEdit(loaded, op, editSettings);
       if (!outcome.ok) {
         setStatus(`Edit rejected: ${outcome.message}`);
         return;
@@ -92,7 +108,7 @@ export function useDeal(): [DealState, DealActions] {
       setLoaded(outcome.state);
       setStatus(`Edited — ${issueSummary(outcome.state)} (unsaved)`);
     },
-    [loaded],
+    [loaded, editSettings],
   );
 
   const undo = useCallback(() => {
@@ -124,7 +140,7 @@ export function useDeal(): [DealState, DealActions] {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    originalSource.current = loaded.source;
+    setOriginalSource(loaded.source);
     setStatus(`Saved ${a.download}`);
   }, [loaded, filename]);
 
@@ -143,14 +159,16 @@ export function useDeal(): [DealState, DealActions] {
   return [
     {
       loaded,
+      originalSource,
       filename,
       dirty,
       status,
       loadError,
       canUndo: past.length > 0,
       canRedo: future.length > 0,
+      editSettings,
     },
-    { loadFile, newDeal, applyOp, undo, redo, download, setStatus },
+    { loadFile, newDeal, applyOp, undo, redo, download, setStatus, setEditSettings },
   ];
 }
 

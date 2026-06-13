@@ -34,10 +34,27 @@ export interface EditFailed {
 
 export type EditOutcome = EditApplied | EditFailed;
 
-const DEFAULT_CONTEXT: EditContext = {
+/** Edit provenance + mode, configurable from the toolbar. Controls what gets
+ *  stamped on `_meta` and whether a section edit replaces in place or appends
+ *  a superseding version (the append-only provenance path). */
+export interface EditSettings {
+  actor: string;
+  source: string;
+  confidence: 'high' | 'medium' | 'low';
+  notes: string;
+  humanReview: boolean;
+  /** 'replace' edits the head block in place; 'supersede' appends a new
+   *  version and archives the prior one. */
+  mode: 'replace' | 'supersede';
+}
+
+export const DEFAULT_EDIT_SETTINGS: EditSettings = {
   actor: 'web-editor',
   source: 'manual',
   confidence: 'high',
+  notes: '',
+  humanReview: false,
+  mode: 'replace',
 };
 
 export function loadInitialState(source: string): EditState {
@@ -46,14 +63,29 @@ export function loadInitialState(source: string): EditState {
   return { source, parsed, validation };
 }
 
+/** Apply an edit through the protocol, honoring the active EditSettings.
+ *
+ *  Section edits carry the settings' provenance on `_meta`; in 'supersede'
+ *  mode a `section_replace` is promoted to `section_supersede` so the prior
+ *  version is archived rather than overwritten. frontmatter_set and
+ *  pipeline_log_append are unaffected by mode. */
 export function runEdit(
   state: EditState,
   op: EditOperation,
-  ctx: EditContext = DEFAULT_CONTEXT
+  settings: EditSettings = DEFAULT_EDIT_SETTINGS,
 ): EditOutcome {
+  const ctx: EditContext = {
+    actor: settings.actor || 'web-editor',
+    source: settings.source || 'manual',
+    confidence: settings.confidence,
+    ...(settings.notes.trim() ? { notes: settings.notes.trim() } : {}),
+  };
+
+  const effectiveOp = applySettingsToOp(op, settings);
+
   let result: EditResult;
   try {
-    result = applyEdit(state.source, state.parsed, op, ctx);
+    result = applyEdit(state.source, state.parsed, effectiveOp, ctx);
   } catch (err) {
     return { ok: false, message: err instanceof Error ? err.message : String(err) };
   }
@@ -71,4 +103,18 @@ export function runEdit(
     ok: true,
     state: { source: result.content, parsed, validation },
   };
+}
+
+function applySettingsToOp(op: EditOperation, settings: EditSettings): EditOperation {
+  if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return op;
+
+  const meta = {
+    ...op.meta,
+    confidence: settings.confidence,
+    ...(settings.humanReview ? { human_review_required: true } : {}),
+  };
+
+  // Promote replace → supersede when in append mode.
+  const kind = settings.mode === 'supersede' ? 'section_supersede' : op.kind;
+  return { ...op, kind, meta } as EditOperation;
 }

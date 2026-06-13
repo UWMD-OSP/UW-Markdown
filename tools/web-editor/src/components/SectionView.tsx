@@ -15,6 +15,8 @@ import { FrontmatterEditor } from './FrontmatterEditor.js';
 import { PipelineLog } from './PipelineLog.js';
 import { RentRollTable } from './RentRollTable.js';
 import { NoiLineItems } from './NoiLineItems.js';
+import { AssumptionsEditor } from './AssumptionsEditor.js';
+import { GenericFieldEditor } from './GenericFieldEditor.js';
 import { HistoryView } from './HistoryView.js';
 
 type SectionEntry = UWBlock | Record<string, UWBlock>;
@@ -128,6 +130,9 @@ function BlockView(props: {
       {sectionId === 'noi_model' && (
         <NoiLineItems sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
+      {sectionId === 'assumptions' && (
+        <AssumptionsEditor sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
 
       {fields.length > 0 && (
         <div className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-rule px-4 py-4 sm:grid-cols-2">
@@ -146,6 +151,8 @@ function BlockView(props: {
           </p>
         </div>
       )}
+
+      <GenericFieldEditor sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
 
       <div className="border-t border-rule px-4 py-2">
         <button

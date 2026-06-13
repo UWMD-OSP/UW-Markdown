@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { InitOptions, AssetClass } from '@uwmd/core/browser';
 import { ASSET_CLASSES, TIERS } from '../catalog.js';
 
@@ -12,6 +12,14 @@ export function NewDealDialog(props: {
   const [state, setState] = useState('');
   const [assetClass, setAssetClass] = useState<string>('multifamily');
   const [tier, setTier] = useState<string>('screener');
+
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') props.onClose();
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [props.onClose]);
 
   const create = () => {
     props.onCreate({

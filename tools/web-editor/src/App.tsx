@@ -12,8 +12,11 @@ import { ReportPreview } from './components/ReportPreview.js';
 import { SourceView } from './components/SourceView.js';
 import { ValidationPanel } from './components/ValidationPanel.js';
 import { NewDealDialog } from './components/NewDealDialog.js';
+import { Intelligence } from './components/Intelligence.js';
+import { DiffView } from './components/DiffView.js';
+import { EditModeBar } from './components/EditModeBar.js';
 
-export type EditorTab = 'edit' | 'report' | 'source';
+export type EditorTab = 'edit' | 'intelligence' | 'report' | 'diff' | 'source';
 
 export function App() {
   const [deal, actions] = useDeal();
@@ -114,6 +117,7 @@ export function App() {
               {tab === 'edit' && (
                 <>
                   <CalcDashboard parsed={deal.loaded.parsed} />
+                  <EditModeBar settings={deal.editSettings} onChange={actions.setEditSettings} />
                   <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
                     <SectionView
                       parsed={deal.loaded.parsed}
@@ -123,8 +127,12 @@ export function App() {
                   </div>
                 </>
               )}
+              {tab === 'intelligence' && <Intelligence parsed={deal.loaded.parsed} />}
               {tab === 'report' && (
                 <ReportPreview parsed={deal.loaded.parsed} filename={deal.filename} />
+              )}
+              {tab === 'diff' && (
+                <DiffView originalSource={deal.originalSource} currentSource={deal.loaded.source} />
               )}
               {tab === 'source' && (
                 <SourceView source={deal.loaded.source} filename={deal.filename} />
@@ -141,7 +149,7 @@ export function App() {
       <footer className="flex items-center justify-between border-t border-rule bg-paper px-4 py-1.5 text-xs text-muted">
         <span>{deal.status}</span>
         <span>
-          protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.3.0
+          protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.4.0
         </span>
       </footer>
 

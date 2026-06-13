@@ -33,7 +33,7 @@ Module | Responsibility | Key exports
 `format.ts` | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
 `context.ts` | Bancroft layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
 `context-profiles.ts` | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
-`cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile`
+`cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`

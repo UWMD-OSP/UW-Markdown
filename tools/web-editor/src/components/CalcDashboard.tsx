@@ -2,11 +2,17 @@
 // against the current parsed file on every render (i.e. after every edit).
 // That's the calc-integrity contract: derived values cannot lag behind inputs
 // because there is no caching layer between the file and these cards.
+//
+// Cards are clickable: selecting one opens CalcDetail (formula + resolved
+// inputs + result/error), making the deterministic engine legible.
 
+import { useState } from 'react';
 import { evaluateCalc, getPackForAssetClass } from '@uwmd/core/browser';
-import type { ParsedUWFile } from '@uwmd/core/browser';
+import type { ParsedUWFile, ModuleCalcDecl } from '@uwmd/core/browser';
+import { CalcDetail } from './CalcDetail.js';
 
 export function CalcDashboard({ parsed }: { parsed: ParsedUWFile }) {
+  const [selected, setSelected] = useState<ModuleCalcDecl | null>(null);
   const assetClass = (parsed.frontmatter as { asset_class?: string }).asset_class ?? '';
   const pack = getPackForAssetClass(assetClass);
   const calcs = pack?.calculations ?? [];
@@ -19,25 +25,34 @@ export function CalcDashboard({ parsed }: { parsed: ParsedUWFile }) {
   };
 
   return (
-    <div className="flex gap-px overflow-x-auto border-b border-rule bg-rule">
-      {calcs.map((decl) => {
-        const result = evaluateCalc(decl, ctx);
-        const ok = result.ok && result.value !== null && result.value !== undefined;
-        const display = ok ? (result.display ?? String(result.value)) : '—';
-        const errTitle = !ok && result.error ? `${result.error.code}: ${result.error.message}` : undefined;
-        return (
-          <div
-            key={decl.id ?? decl.label}
-            title={errTitle}
-            className={`min-w-28 flex-1 bg-paper px-3 py-2 ${ok ? '' : 'opacity-50'}`}
-          >
-            <div className="truncate text-[0.62rem] font-semibold tracking-wider text-muted uppercase">
-              {decl.label}
-            </div>
-            <div className="text-base font-semibold text-accent tabular-nums">{display}</div>
-          </div>
-        );
-      })}
-    </div>
+    <>
+      <div className="flex gap-px overflow-x-auto border-b border-rule bg-rule">
+        {calcs.map((decl) => {
+          const result = evaluateCalc(decl, ctx);
+          const ok = result.ok && result.value !== null && result.value !== undefined;
+          const display = ok ? (result.display ?? String(result.value)) : '—';
+          const errTitle = !ok && result.error ? `${result.error.code}: ${result.error.message}` : undefined;
+          return (
+            <button
+              type="button"
+              key={decl.id ?? decl.label}
+              title={errTitle ?? 'Click for formula + inputs'}
+              onClick={() => setSelected(decl)}
+              className={`min-w-28 flex-1 bg-paper px-3 py-2 text-left transition-colors hover:bg-accent-soft ${ok ? '' : 'opacity-50'}`}
+            >
+              <div className="truncate text-[0.62rem] font-semibold tracking-wider text-muted uppercase">
+                {decl.label}
+              </div>
+              <div className={`text-base font-semibold tabular-nums ${ok ? 'text-accent' : 'text-error'}`}>
+                {display}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      {selected && (
+        <CalcDetail decl={selected} parsed={parsed} onClose={() => setSelected(null)} />
+      )}
+    </>
   );
 }

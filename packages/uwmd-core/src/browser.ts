@@ -71,6 +71,37 @@ export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js
 
 export { generateBlankUWFile } from './init.js';
 
+// ─── Intelligence surfaces (browser-safe: no node, no SDK) ───────────────────
+// Cascade resolution, value-of-information gap ranking, completeness gaps,
+// asset-class default tables, and calc dependency introspection. These power
+// the editor's "what's resolved / what's missing / what to ask next" panels
+// and the calc-transparency view.
+export { resolveValue, readInFile } from './cascade.js';
+export type { CascadeContext, ResolvedValue } from './cascade.js';
+export { rankGaps } from './refinement.js';
+export type {
+  RankGapsOptions,
+  RankGapsResult,
+  RankedGap,
+  OutputSensitivity,
+  NonMonotonicWarning,
+} from './refinement.js';
+export { inferGaps, summarizeGaps, readGapsContent } from './gaps.js';
+export type { GapItem, GapSummary, GapsContent, GapReason, InferGapsOptions } from './gaps.js';
+export {
+  getAssetClassDefaults,
+  getDefaultRange,
+  listDefaultedFields,
+  MULTIFAMILY_DEFAULTS,
+  OFFICE_DEFAULTS,
+  RETAIL_DEFAULTS,
+  INDUSTRIAL_DEFAULTS,
+  SELF_STORAGE_DEFAULTS,
+} from './defaults.js';
+export type { AssetClassDefaults, DefaultRange, DefaultUnit } from './defaults.js';
+export { getExprDependencies, extractDependencyGraph } from './calc/dependencies.js';
+export type { DependencyGraph, ExtractDependencyGraphOptions } from './calc/dependencies.js';
+
 export type {
   UWBlock,
   UWFenceAnnotation,

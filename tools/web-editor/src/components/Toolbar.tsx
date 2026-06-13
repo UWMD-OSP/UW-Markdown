@@ -33,8 +33,14 @@ export function Toolbar(props: {
             <TabButton active={tab === 'edit'} onClick={() => onTab('edit')}>
               Editor
             </TabButton>
+            <TabButton active={tab === 'intelligence'} onClick={() => onTab('intelligence')}>
+              Intelligence
+            </TabButton>
             <TabButton active={tab === 'report'} onClick={() => onTab('report')}>
-              Report Preview
+              Report
+            </TabButton>
+            <TabButton active={tab === 'diff'} onClick={() => onTab('diff')}>
+              Diff
             </TabButton>
             <TabButton active={tab === 'source'} onClick={() => onTab('source')}>
               Source

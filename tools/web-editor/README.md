@@ -1,29 +1,33 @@
-# `@uwmd/web-editor` — Calc-Aware Editor (preview 0.3.0)
+# `@uwmd/web-editor` — Calc-Aware Editor (preview 0.4.0)
 
 The single editor for `.uw.md` files. Embeds the [`@uwmd/core`](../../packages/uwmd-core/) parser, validator, Tier-2 dispatcher, Tier-3 calc engine, and the §7.1/§7.2 report renderer in the browser so derived values (NOI, DSCR, LTV, IRR, valuation) never drift from inputs — and the lender package is always one tab away.
 
-> **Status:** preview 0.3.0 — richer editing surfaces on the 0.2.0 React + Tailwind rebuild. Same edit chokepoint throughout.
+> **Status:** preview 0.4.0 — extensive build-out (intelligence, provenance, transparency, full data entry) on the React + Tailwind base. Same edit chokepoint throughout.
 
 ## What it does
 
-- **Editor tab** — sidebar with per-section validation badges, frontmatter form,
-  ~30 numeric inputs (hand-curated allow-list, `src/catalog.ts`), **editable
-  rent-roll tables** (unit mix / tenants), an **NOI line-item editor**
-  (wrapper-aware: editing a `{value, …}` field updates `.value` and keeps
-  rationale/source), block `_meta` provenance chips, collapsible raw-JSON view,
-  **superseded-version history**, pipeline-log table, and a pinned metric strip
-  that re-evaluates the asset class's full calc pack
-  (`getPackForAssetClass` — all five shipped classes) after **every** edit.
-- **Report Preview tab** — the spec's §7.1 Lender Package / §7.2 Credit Memo
-  (`renderReportHtml` from core), re-rendered live in a sandboxed iframe on
-  every edit. Tier toggle, Download HTML, Print/PDF (the print stylesheet is
-  embedded, so browser print matches `uwmd-report`'s PDF output exactly).
-- **Source tab** — the current canonical byte string (exactly what Download
-  writes), for eyeballing Tier-2 byte preservation.
-- **Undo/redo** — snapshot-based (Ctrl+Z / Ctrl+Y); restores a prior canonical
-  source verbatim, so it can never desync from the file. **Ctrl+S** downloads.
-- **New Deal** — scaffolds a blank `.uw.md` via core's `generateBlankUWFile`
-  (canonical section order, empty stubs, initial pipeline-log entry).
+Five tabs:
+
+- **Editor** — sidebar with per-section validation badges; an **edit-provenance
+  bar** (actor/source/confidence/notes/human-review, and **replace vs. append
+  (supersede)** mode); frontmatter form; ~30 curated numeric inputs; **editable
+  rent-roll tables** with add/remove rows; an **NOI line-item editor**
+  (wrapper-aware `{value,…}` editing that keeps rationale/source); an
+  **assumptions editor** that captures override rationale; a **generic field
+  editor** for every scalar (narrative strings → textareas); a **clickable
+  metric strip** where each calc opens its formula + resolved inputs + result;
+  block `_meta` chips, raw-JSON view, superseded-version history, pipeline log.
+- **Intelligence** — **Scope** (every required input resolved through the
+  fallback cascade, with where it came from and the published range) and
+  **Refine** (value-of-information ranking — the missing/defaulted inputs that
+  move the deal's metrics most, with suggested questions).
+- **Report** — the §7.1 Lender Package / §7.2 Credit Memo, live in a sandboxed
+  iframe, with tier toggle, Download HTML, Print/PDF.
+- **Diff** — section + frontmatter changes since load / last save.
+- **Source** — the current canonical bytes (exactly what Download writes).
+
+Plus snapshot-based **undo/redo** (Ctrl+Z / Ctrl+Y), **Ctrl+S** download, and a
+**New Deal** dialog (`generateBlankUWFile`).
 
 ## Why one editor and not a separate "narrative" editor?
 
