@@ -64,6 +64,18 @@ export { WRITE_UW_SECTION_TOOL, WRITE_MULTIPLE_SECTIONS_TOOL, MULTI_SECTION_LAYE
 export type { ToolOutput } from './agents/schemas.js';
 export { generateBlankUWFile } from './init.js';
 
+// ─── Section footing (line items → section totals) ────────────────────────────
+export { deriveRentRoll, rentRollVariant } from './rentroll.js';
+export type {
+  RentRollVariant,
+  RentRollBasis,
+  RentRollDerivation,
+  DerivedField,
+  DerivedKind,
+} from './rentroll.js';
+export { deriveOperatingStatement } from './opstatement.js';
+export type { OperatingStatementDerivation } from './opstatement.js';
+
 // ─── Asset-class defaults & cascade (Protocol §V.7-§V.8) ──────────────────────
 export {
   MULTIFAMILY_DEFAULTS,
@@ -105,6 +117,7 @@ export type {
   UWBlock,
   UWFenceAnnotation,
   UWMeta,
+  UWFieldOverride,
   UWFrontmatter,
   UWPipelineState,
   UWQuickMetrics,

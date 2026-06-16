@@ -149,7 +149,7 @@ export function App() {
       <footer className="flex items-center justify-between border-t border-rule bg-paper px-4 py-1.5 text-xs text-muted">
         <span>{deal.status}</span>
         <span>
-          protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.4.0
+          protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.5.0
         </span>
       </footer>
 

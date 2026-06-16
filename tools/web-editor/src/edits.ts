@@ -7,7 +7,7 @@
 // is what guarantees calc-integrity: nothing can write a value to the
 // file without going through the protocol's edit semantics.
 
-import { parseUWFile, validateUWFile, applyEdit } from '@uwmd/core/browser';
+import { parseUWFile, validateUWFile, applyEdit, getSection, getSectionVariant } from '@uwmd/core/browser';
 import type {
   ParsedUWFile,
   ValidationResult,
@@ -81,7 +81,7 @@ export function runEdit(
     ...(settings.notes.trim() ? { notes: settings.notes.trim() } : {}),
   };
 
-  const effectiveOp = applySettingsToOp(op, settings);
+  const effectiveOp = carryForwardOverrides(applySettingsToOp(op, settings), state.parsed);
 
   let result: EditResult;
   try {
@@ -103,6 +103,22 @@ export function runEdit(
     ok: true,
     state: { source: result.content, parsed, validation },
   };
+}
+
+/** Persist a section's `_meta.field_overrides` across edits. The protocol's
+ *  buildMeta() doesn't carry prior `_meta` forward, so without this any edit
+ *  that doesn't re-state the overrides (e.g. a generic scalar edit) would drop
+ *  the hand-pinned totals. An op that *explicitly* sets field_overrides (the
+ *  rent-roll model, including an empty list to clear) always wins. */
+function carryForwardOverrides(op: EditOperation, parsed: ParsedUWFile): EditOperation {
+  if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return op;
+  if (op.meta && 'field_overrides' in op.meta) return op;
+  const block = op.variant
+    ? getSectionVariant(parsed, op.section_id, op.variant)
+    : getSection(parsed, op.section_id);
+  const existing = block?.meta?.field_overrides;
+  if (!existing || existing.length === 0) return op;
+  return { ...op, meta: { ...op.meta, field_overrides: existing } } as EditOperation;
 }
 
 function applySettingsToOp(op: EditOperation, settings: EditSettings): EditOperation {

@@ -118,10 +118,8 @@ export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   { section_id: 'property', path: 'total_nra_sqft', label: 'Total NRA (sqft)', kind: 'count' },
   { section_id: 'property', path: 'year_built', label: 'Year built', kind: 'count' },
   { section_id: 'property', path: 'parking_spaces', label: 'Parking spaces', kind: 'count' },
-  { section_id: 'rent_roll', path: 'in_place_rent_annual', label: 'In-place rent (annual)', kind: 'currency' },
-  { section_id: 'rent_roll', path: 'gross_potential_rent_annual', label: 'GPR (annual)', kind: 'currency' },
-  { section_id: 'rent_roll', path: 'physical_occupancy_pct', label: 'Physical occupancy (fraction)', kind: 'rate' },
-  { section_id: 'rent_roll', path: 'economic_occupancy_pct', label: 'Economic occupancy (fraction)', kind: 'rate' },
+  // rent_roll totals (GPR, in-place rent, occupancy) are footed from line items
+  // by the RentRollModel surface, not hand-entered — see components/RentRollModel.
   { section_id: 'valuation', path: 'purchase_price', label: 'Purchase price', kind: 'currency' },
   { section_id: 'valuation', path: 'income_approach.cap_rate_applied', label: 'Cap rate applied (fraction)', kind: 'rate' },
   { section_id: 'valuation', path: 'value_used_for_ltv', label: 'Value used for LTV', kind: 'currency' },
@@ -140,10 +138,8 @@ export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   { section_id: 'dcf', path: 'assumptions.exit_cap_rate', label: 'Exit cap rate (fraction)', kind: 'rate' },
   { section_id: 'dcf', path: 'assumptions.discount_rate', label: 'Discount rate (fraction)', kind: 'rate' },
   { section_id: 'dcf', path: 'hold_period_years', label: 'Hold period (years)', kind: 'count' },
-  { section_id: 'operating_statement', path: 'income.gross_potential_rent', label: 'GPR', kind: 'currency' },
-  { section_id: 'operating_statement', path: 'income.effective_gross_income', label: 'EGI', kind: 'currency' },
-  { section_id: 'operating_statement', path: 'expenses.total_operating_expenses', label: 'Total OpEx', kind: 'currency' },
-  { section_id: 'operating_statement', path: 'net_operating_income', label: 'NOI', kind: 'currency' },
+  // operating_statement income/expense lines and footed totals (EGI, OpEx, NOI)
+  // are owned by the OperatingStatementModel surface — see that component.
 ];
 
 export function fieldsForSection(id: string): readonly NumericSectionField[] {

@@ -9,6 +9,24 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Deterministic section-footing in `@uwmd/core`** (`derived.ts`, `rentroll.ts`,
+  `opstatement.ts`) — `deriveRentRoll(content)` rolls a unit-level (multifamily)
+  or tenant-level (commercial) schedule up into the section's totals (GPR,
+  in-place rent, physical occupancy, loss-to-lease, concessions, net effective
+  rent, leased/vacant SF, rent PSF, WALT, plus a recomputed `unit_mix_summary` /
+  `tenant_concentration`), tolerant of both the spec naming
+  (`nra_sqft`/`base_rent_annual`) and the worked-example naming
+  (`leased_sf`/`annual_base_rent`) and writing back to whichever total keys the
+  block already uses. `deriveOperatingStatement(content)` foots EGI / total OpEx
+  (excluding below-the-line capex + replacement reserves) / NOI / expense ratio /
+  NOI margin from the income and expense line items, with `other_income` and
+  `utilities` sub-rollups. Both are pure (no I/O, never mutate), return
+  `DerivedField[]` via the shared `derived.ts` collector (which drops any
+  non-finite result so partial data never writes `NaN`), and honor invariant #1
+  (not AI math — plain deterministic arithmetic, the same spirit as the calc
+  packs) and #4 (one source so the editor, CLI, and Excel converter never
+  disagree). Exported from both `index.ts` and `browser.ts`; covered by
+  `rentroll.test.ts` (13) and `opstatement.test.ts` (8).
 - **Lender Package / Credit Memo report renderer** in `@uwmd/core`
   (`report.ts`) — `renderReportHtml(parsed, opts)` implements the spec's
   rendering targets §7.1 (Tier 1 Lender Package: cover page, executive summary
@@ -38,6 +56,23 @@ protocol, and each package each carry an independent semver).
   the CLI PDF are identical.
 
 ### Changed
+- **Web editor 0.5.0 — rent-roll & operating-statement become underwriting
+  *models*, not forms** ([`tools/web-editor/`](./tools/web-editor/)). New
+  `RentRollModel` and `OperatingStatementModel` surfaces (shared `Footed.tsx`)
+  treat the line items as the only inputs and render the section totals as
+  locked **"ƒ derived"** cells footed live by core's `deriveRentRoll` /
+  `deriveOperatingStatement`. Every mutation (cell edit, add/remove row,
+  override, revert) clones the block, mutates one array, re-foots, writes back
+  every non-pinned total, and dispatches a single `section_replace` through the
+  `applyEdit()` chokepoint, so the file can never be left internally
+  inconsistent. A footed total can be **pinned by hand** via an inline override
+  editor; the pin is recorded in the format's own `_meta.field_overrides`
+  (`reason: "overridden"`) and badged "manual" until reverted to formula. The
+  edit dispatcher (`edits.ts`) now **carries `field_overrides` forward** across
+  unrelated edits (the protocol's `buildMeta()` doesn't), and the generic scalar
+  editor accepts `lockedPaths` so each footed total has exactly one editing
+  path. Replaces the old `RentRollTable` (deleted) and the hand-entered
+  rent-roll/operating-statement numeric fields.
 - **`@uwmd/core/browser` now exports the intelligence + calc-introspection
   surfaces** — `resolveValue`/`readInFile` (cascade), `rankGaps` (value-of-
   information), `inferGaps`/`summarizeGaps`/`readGapsContent`, the asset-class

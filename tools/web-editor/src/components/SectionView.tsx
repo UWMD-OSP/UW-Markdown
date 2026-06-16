@@ -13,7 +13,11 @@ import {
 } from '../catalog.js';
 import { FrontmatterEditor } from './FrontmatterEditor.js';
 import { PipelineLog } from './PipelineLog.js';
-import { RentRollTable } from './RentRollTable.js';
+import { RentRollModel, derivedPaths } from './RentRollModel.js';
+import {
+  OperatingStatementModel,
+  operatingStatementDerivedPaths,
+} from './OperatingStatementModel.js';
 import { NoiLineItems } from './NoiLineItems.js';
 import { AssumptionsEditor } from './AssumptionsEditor.js';
 import { GenericFieldEditor } from './GenericFieldEditor.js';
@@ -112,6 +116,14 @@ function BlockView(props: {
   const [showJson, setShowJson] = useState(false);
   const meta = block.meta;
   const fields = fieldsForSection(sectionId);
+  // Paths a section model foots automatically — lock them out of the generic
+  // scalar editor so each total has exactly one editing path.
+  const lockedPaths =
+    sectionId === 'rent_roll'
+      ? derivedPaths(block)
+      : sectionId === 'operating_statement'
+        ? operatingStatementDerivedPaths(block)
+        : undefined;
 
   return (
     <section className="mt-5 rounded border border-rule bg-paper">
@@ -125,7 +137,15 @@ function BlockView(props: {
       </header>
 
       {sectionId === 'rent_roll' && (
-        <RentRollTable sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+        <RentRollModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
+      {sectionId === 'operating_statement' && (
+        <OperatingStatementModel
+          sectionId={sectionId}
+          variant={variant}
+          block={block}
+          dispatch={dispatch}
+        />
       )}
       {sectionId === 'noi_model' && (
         <NoiLineItems sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
@@ -152,7 +172,13 @@ function BlockView(props: {
         </div>
       )}
 
-      <GenericFieldEditor sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      <GenericFieldEditor
+        sectionId={sectionId}
+        variant={variant}
+        block={block}
+        dispatch={dispatch}
+        lockedPaths={lockedPaths}
+      />
 
       <div className="border-t border-rule px-4 py-2">
         <button

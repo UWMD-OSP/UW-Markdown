@@ -22,9 +22,13 @@ export function GenericFieldEditor(props: {
   variant: string | undefined;
   block: UWBlock;
   dispatch: (op: EditOperation) => void;
+  /** Paths that are footed/derived elsewhere (e.g. rent-roll totals) and must
+   *  not be hand-edited here — they have exactly one editing path. */
+  lockedPaths?: Set<string>;
 }) {
   const [open, setOpen] = useState(false);
-  const leaves = collectLeaves(props.block.content);
+  const all = collectLeaves(props.block.content);
+  const leaves = props.lockedPaths ? all.filter((l) => !props.lockedPaths?.has(l.path)) : all;
   if (leaves.length === 0) return null;
 
   return (

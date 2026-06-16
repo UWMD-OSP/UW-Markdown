@@ -36,6 +36,17 @@ export type { AgentOutput, RunOptions, RunResult } from './runner.js';
 export { applyEdit, resolvePolicy } from './editor.js';
 export type { EditContext, EditResult } from './editor.js';
 
+export { deriveRentRoll, rentRollVariant } from './rentroll.js';
+export type {
+  RentRollVariant,
+  RentRollBasis,
+  RentRollDerivation,
+  DerivedField,
+  DerivedKind,
+} from './rentroll.js';
+export { deriveOperatingStatement } from './opstatement.js';
+export type { OperatingStatementDerivation } from './opstatement.js';
+
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 
@@ -106,6 +117,7 @@ export type {
   UWBlock,
   UWFenceAnnotation,
   UWMeta,
+  UWFieldOverride,
   UWFrontmatter,
   UWPipelineState,
   UWQuickMetrics,
