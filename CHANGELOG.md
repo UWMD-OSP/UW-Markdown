@@ -26,7 +26,19 @@ protocol, and each package each carry an independent semver).
   (not AI math — plain deterministic arithmetic, the same spirit as the calc
   packs) and #4 (one source so the editor, CLI, and Excel converter never
   disagree). Exported from both `index.ts` and `browser.ts`; covered by
-  `rentroll.test.ts` (13) and `opstatement.test.ts` (8).
+  `rentroll.test.ts` (13) and `opstatement.test.ts` (8). Extended to three more
+  sections (`debt.ts`, `sourcesuses.ts`, `valuation.ts`): `deriveDebt(content)`
+  foots monthly + annual debt service from the loan terms — fully-amortizing via
+  a `pmt()` byte-identical to the calc engine's `pmt` builtin, `loan × rate` when
+  interest-only (detected from `amortization: "interest_only"` or a missing/zero
+  term), rate-key tolerant; `deriveSourcesUses(content)` foots the per-bucket
+  `sources.total`/`uses.total`, the nested `closing_costs.total`, and the
+  top-level project-cost mirrors from the line items, and reports the
+  sources-vs-uses `gap`/`balanced` so an imbalance surfaces without being
+  silently written; `deriveValuation(content)` foots the income-approach
+  `indicated_value = noi_used / cap_rate_applied` (and its delta to purchase
+  price) entirely from the block's own inputs. Covered by `debt.test.ts` (6),
+  `sourcesuses.test.ts` (6), `valuation.test.ts` (5).
 - **Lender Package / Credit Memo report renderer** in `@uwmd/core`
   (`report.ts`) — `renderReportHtml(parsed, opts)` implements the spec's
   rendering targets §7.1 (Tier 1 Lender Package: cover page, executive summary
@@ -72,7 +84,15 @@ protocol, and each package each carry an independent semver).
   unrelated edits (the protocol's `buildMeta()` doesn't), and the generic scalar
   editor accepts `lockedPaths` so each footed total has exactly one editing
   path. Replaces the old `RentRollTable` (deleted) and the hand-entered
-  rent-roll/operating-statement numeric fields.
+  rent-roll/operating-statement numeric fields. The same pattern now extends to
+  three more sections — `DebtModel` (loan terms in, monthly/annual debt service
+  footed), `SourcesUsesModel` (every source/use line in, bucket + closing-cost +
+  project-cost totals footed, with a live sources-vs-uses **balance check**), and
+  `ValuationModel` (NOI + cap rate in, income-approach indicated value footed) —
+  via a shared `model-kit.tsx` (the `useFooting` write-path hook + `InputRow` /
+  `FootedRow` row primitives). Those three sections drop out of the flat numeric
+  allow-list (`catalog.ts`); their footed totals are locked out of the generic
+  scalar editor so each has exactly one editing path.
 - **`@uwmd/core/browser` now exports the intelligence + calc-introspection
   surfaces** — `resolveValue`/`readInFile` (cascade), `rankGaps` (value-of-
   information), `inferGaps`/`summarizeGaps`/`readGapsContent`, the asset-class

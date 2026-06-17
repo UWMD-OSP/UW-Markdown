@@ -18,6 +18,9 @@ import {
   OperatingStatementModel,
   operatingStatementDerivedPaths,
 } from './OperatingStatementModel.js';
+import { DebtModel, debtDerivedPaths } from './DebtModel.js';
+import { SourcesUsesModel, sourcesUsesDerivedPaths } from './SourcesUsesModel.js';
+import { ValuationModel, valuationDerivedPaths } from './ValuationModel.js';
 import { NoiLineItems } from './NoiLineItems.js';
 import { AssumptionsEditor } from './AssumptionsEditor.js';
 import { GenericFieldEditor } from './GenericFieldEditor.js';
@@ -26,6 +29,16 @@ import { HistoryView } from './HistoryView.js';
 type SectionEntry = UWBlock | Record<string, UWBlock>;
 
 export type Dispatch = (op: EditOperation) => void;
+
+// Per-section "footed paths" — totals a model surface owns, locked out of the
+// generic scalar editor so each has exactly one editing path.
+const DERIVED_PATHS: Record<string, (block: UWBlock) => Set<string>> = {
+  rent_roll: derivedPaths,
+  operating_statement: operatingStatementDerivedPaths,
+  debt_structure: debtDerivedPaths,
+  sources_uses: sourcesUsesDerivedPaths,
+  valuation: valuationDerivedPaths,
+};
 
 export function SectionView(props: {
   parsed: ParsedUWFile;
@@ -118,12 +131,7 @@ function BlockView(props: {
   const fields = fieldsForSection(sectionId);
   // Paths a section model foots automatically — lock them out of the generic
   // scalar editor so each total has exactly one editing path.
-  const lockedPaths =
-    sectionId === 'rent_roll'
-      ? derivedPaths(block)
-      : sectionId === 'operating_statement'
-        ? operatingStatementDerivedPaths(block)
-        : undefined;
+  const lockedPaths = DERIVED_PATHS[sectionId]?.(block);
 
   return (
     <section className="mt-5 rounded border border-rule bg-paper">
@@ -146,6 +154,15 @@ function BlockView(props: {
           block={block}
           dispatch={dispatch}
         />
+      )}
+      {sectionId === 'debt_structure' && (
+        <DebtModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
+      {sectionId === 'sources_uses' && (
+        <SourcesUsesModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
+      {sectionId === 'valuation' && (
+        <ValuationModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
       {sectionId === 'noi_model' && (
         <NoiLineItems sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />

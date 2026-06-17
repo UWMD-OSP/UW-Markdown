@@ -120,19 +120,12 @@ export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   { section_id: 'property', path: 'parking_spaces', label: 'Parking spaces', kind: 'count' },
   // rent_roll totals (GPR, in-place rent, occupancy) are footed from line items
   // by the RentRollModel surface, not hand-entered — see components/RentRollModel.
-  { section_id: 'valuation', path: 'purchase_price', label: 'Purchase price', kind: 'currency' },
-  { section_id: 'valuation', path: 'income_approach.cap_rate_applied', label: 'Cap rate applied (fraction)', kind: 'rate' },
-  { section_id: 'valuation', path: 'value_used_for_ltv', label: 'Value used for LTV', kind: 'currency' },
   { section_id: 'noi_model', path: 'net_operating_income', label: 'NOI', kind: 'currency' },
-  { section_id: 'debt_structure', path: 'loan_amount', label: 'Loan amount', kind: 'currency' },
-  { section_id: 'debt_structure', path: 'interest_rate', label: 'Interest rate (fraction)', kind: 'rate' },
-  { section_id: 'debt_structure', path: 'annual_debt_service', label: 'Annual debt service', kind: 'currency' },
-  { section_id: 'debt_structure', path: 'amortization_years', label: 'Amortization (years)', kind: 'count' },
-  { section_id: 'debt_structure', path: 'loan_term_years', label: 'Loan term (years)', kind: 'count' },
-  { section_id: 'debt_structure', path: 'io_period_months', label: 'IO period (months)', kind: 'count' },
-  { section_id: 'sources_uses', path: 'sources.equity_sponsor', label: 'Sponsor equity', kind: 'currency' },
-  { section_id: 'sources_uses', path: 'sources.senior_loan', label: 'Senior loan', kind: 'currency' },
-  { section_id: 'sources_uses', path: 'uses.purchase_price', label: 'Purchase price (use)', kind: 'currency' },
+  // valuation, debt_structure, and sources_uses are now footed-model surfaces
+  // (ValuationModel / DebtModel / SourcesUsesModel): their inputs are edited in
+  // the model and their totals foot from those inputs, so they are no longer in
+  // this flat numeric grid. The generic field editor (collapsed) remains the
+  // escape hatch for any other scalar leaf, with footed totals locked out.
   { section_id: 'dcf', path: 'assumptions.revenue_growth_rate', label: 'Revenue growth (fraction)', kind: 'rate' },
   { section_id: 'dcf', path: 'assumptions.expense_growth_rate', label: 'Expense growth (fraction)', kind: 'rate' },
   { section_id: 'dcf', path: 'assumptions.exit_cap_rate', label: 'Exit cap rate (fraction)', kind: 'rate' },

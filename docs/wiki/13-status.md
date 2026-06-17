@@ -1,7 +1,9 @@
 # 13 — Build status (living document)
 
-**Last verified:** 2026-06-11 (report renderer + @uwmd/report PDF pipeline +
-React web-editor rebuild landed; against working tree).
+**Last verified:** 2026-06-16 (report renderer + @uwmd/report PDF pipeline +
+React web-editor rebuild landed; web-editor 0.5.0 footed-model surfaces —
+rent-roll, operating statement, debt, sources & uses, valuation — landed on a
+deterministic core footing layer; against working tree).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -60,8 +62,10 @@ not core gaps.
   (`uwmd-report`) prints it to PDF via playwright-core + system Chrome/Edge.
   See [03](03-core-library.md), [08](08-tools.md).
 - **Tools:** CLI, Excel converter, report PDF pipeline, web-viewer, web-editor
-  (React + Tailwind, with live report preview), VS Code ext, docs-site
-  (all preview).
+  (React + Tailwind, with live report preview; rent-roll, operating-statement,
+  debt, sources-&-uses, and valuation are **footed-model surfaces** — line items
+  in, section totals derived by core's `derive*` functions, hand-overrides via
+  `_meta.field_overrides`), VS Code ext, docs-site (all preview).
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 

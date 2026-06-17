@@ -75,6 +75,12 @@ export type {
 } from './rentroll.js';
 export { deriveOperatingStatement } from './opstatement.js';
 export type { OperatingStatementDerivation } from './opstatement.js';
+export { deriveDebt } from './debt.js';
+export type { DebtDerivation } from './debt.js';
+export { deriveSourcesUses } from './sourcesuses.js';
+export type { SourcesUsesDerivation } from './sourcesuses.js';
+export { deriveValuation } from './valuation.js';
+export type { ValuationDerivation } from './valuation.js';
 
 // ─── Asset-class defaults & cascade (Protocol §V.7-§V.8) ──────────────────────
 export {
