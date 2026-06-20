@@ -9,6 +9,21 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Web editor test harness** ([`tools/web-editor/`](./tools/web-editor/)) — the
+  calc-aware editor previously shipped with **zero tests** despite being the
+  Tier-2/3 chokepoint. Adds Vitest (dev-only; not in the production bundle —
+  bundle hash unchanged) with a `test` script and a Node test environment, plus
+  two suites: `src/edits.test.ts` (7 tests) pins the `runEdit()` contract — a
+  `frontmatter_set` applies and re-parses so in-memory state can't drift from the
+  canonical bytes, a rejected op returns a failed outcome instead of throwing,
+  `EditSettings` thread confidence + `human_review_required` onto the written
+  block, `supersede` mode archives the prior block (two fences) where `replace`
+  edits in place (one), and `carryForwardOverrides()` keeps a pinned
+  `_meta.field_overrides` alive across a later edit that doesn't restate it; and
+  `src/catalog.test.ts` (16 tests) covers the path helpers and the wrapper-aware
+  `getNumeric`/`setNumeric` that preserve the `{ value, … }` provenance wrapper.
+  23 tests, all green; `npm --prefix tools/web-editor run test` and `run build`
+  both pass.
 - **Deterministic section-footing in `@uwmd/core`** (`derived.ts`, `rentroll.ts`,
   `opstatement.ts`) — `deriveRentRoll(content)` rolls a unit-level (multifamily)
   or tenant-level (commercial) schedule up into the section's totals (GPR,

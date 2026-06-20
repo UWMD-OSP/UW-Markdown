@@ -87,7 +87,9 @@ not core gaps.
 - **Test coverage uneven.** No dedicated unit test for `compactor.ts`, `init.ts`,
   `format.ts`, `context.ts`, or core `cli.ts`; validator
   has only `validator.dq.test.ts` (CC/FV mainly via conformance). CI coverage gate
-  is a soft floor (`continue-on-error`).
+  is a soft floor (`continue-on-error`). The **web-editor** now has its first tests
+  (Vitest: `edits.test.ts` covers the `runEdit()` chokepoint, `catalog.test.ts` the
+  path/number helpers — 23 tests); its footed-model surfaces are still untested (next).
 - **Examples = 5 deals** (multifamily, office, retail, industrial, self-storage);
   other classes/loan types undemonstrated.
 - **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
