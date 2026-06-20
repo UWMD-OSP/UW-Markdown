@@ -52,6 +52,8 @@ export { deriveSourcesUses } from './sourcesuses.js';
 export type { SourcesUsesDerivation } from './sourcesuses.js';
 export { deriveValuation } from './valuation.js';
 export type { ValuationDerivation } from './valuation.js';
+export { deriveDCF } from './dcf.js';
+export type { DCFDerivation } from './dcf.js';
 
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';

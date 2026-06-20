@@ -126,11 +126,9 @@ export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   // the model and their totals foot from those inputs, so they are no longer in
   // this flat numeric grid. The generic field editor (collapsed) remains the
   // escape hatch for any other scalar leaf, with footed totals locked out.
-  { section_id: 'dcf', path: 'assumptions.revenue_growth_rate', label: 'Revenue growth (fraction)', kind: 'rate' },
-  { section_id: 'dcf', path: 'assumptions.expense_growth_rate', label: 'Expense growth (fraction)', kind: 'rate' },
-  { section_id: 'dcf', path: 'assumptions.exit_cap_rate', label: 'Exit cap rate (fraction)', kind: 'rate' },
-  { section_id: 'dcf', path: 'assumptions.discount_rate', label: 'Discount rate (fraction)', kind: 'rate' },
-  { section_id: 'dcf', path: 'hold_period_years', label: 'Hold period (years)', kind: 'count' },
+  // dcf assumptions, per-year cash flows, and the exit waterfall are owned by the
+  // DcfModel footed surface — its levered CF / cash-on-cash / disposition / net /
+  // proceeds totals foot from line items, so they're no longer a flat numeric grid.
   // operating_statement income/expense lines and footed totals (EGI, OpEx, NOI)
   // are owned by the OperatingStatementModel surface — see that component.
 ];

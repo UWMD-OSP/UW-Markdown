@@ -9,6 +9,28 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **DCF footing in `@uwmd/core` + a DCF footed-model surface in the web editor**
+  ([`dcf.ts`](./packages/uwmd-core/src/dcf.ts),
+  [`tools/web-editor/src/components/DcfModel.tsx`](./tools/web-editor/)) — the
+  `dcf` section was the last calc-bearing section still edited as a flat numeric
+  grid. New `deriveDCF(content)` foots the relationships that follow
+  unambiguously from a DCF block's own stored inputs — per projection year
+  `net_cash_flow_levered = NOI − annual_debt_service` and
+  `cash_on_cash_return = levered / cumulative_equity_invested`, and the exit
+  waterfall `disposition_costs = exit_value_gross × disposition_costs_pct`,
+  `exit_value_net = gross − disposition`, and
+  `net_proceeds_to_equity = net − loan_balance_at_exit`. It deliberately leaves
+  `exit_value_gross` (capitalizes a *forward* NOI the block doesn't store) and
+  `returns.*` (IRR / NPV / equity multiple — cash-flow-timing convention) as
+  inputs, in the same narrow, self-contained spirit as `deriveValuation`. Pure,
+  exported from `index.ts` + `browser.ts`, and pinned to the Parkview worked
+  example in [`dcf.test.ts`](./packages/uwmd-core/src/dcf.test.ts) (8 tests). The
+  web editor's new `DcfModel` surface edits the assumptions, the per-year
+  cash-flow rows (add/remove years), and the exit gross + loan balance; the
+  derived totals render as locked **ƒ derived** cells and IRR/NPV/equity multiple
+  show read-only as engine-provided. Removes the five flat `dcf` entries from the
+  editor's numeric catalog. Web-editor tests grew to 25 (a dcf array round-trip
+  through `applyEdit` + reparse, plus array-indexed `deepGet`/`deepSet`).
 - **Web editor test harness** ([`tools/web-editor/`](./tools/web-editor/)) — the
   calc-aware editor previously shipped with **zero tests** despite being the
   Tier-2/3 chokepoint. Adds Vitest (dev-only; not in the production bundle —

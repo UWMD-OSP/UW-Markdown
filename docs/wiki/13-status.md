@@ -63,9 +63,10 @@ not core gaps.
   See [03](03-core-library.md), [08](08-tools.md).
 - **Tools:** CLI, Excel converter, report PDF pipeline, web-viewer, web-editor
   (React + Tailwind, with live report preview; rent-roll, operating-statement,
-  debt, sources-&-uses, and valuation are **footed-model surfaces** — line items
-  in, section totals derived by core's `derive*` functions, hand-overrides via
-  `_meta.field_overrides`), VS Code ext, docs-site (all preview).
+  debt, sources-&-uses, valuation, **and DCF/hold-period** are **footed-model
+  surfaces** — line items in, section totals derived by core's `derive*`
+  functions, hand-overrides via `_meta.field_overrides`), VS Code ext, docs-site
+  (all preview).
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 

@@ -54,6 +54,15 @@ describe('deepSet', () => {
     deepSet(obj, 'a.add', 2);
     expect(obj).toEqual({ a: { keep: 1, add: 2 } });
   });
+
+  it('reads and writes through numeric array indices (the DCF per-year path form)', () => {
+    const obj: Record<string, unknown> = { rows: [{ noi: 100 }, { noi: 200 }] };
+    expect(deepGet(obj, 'rows.1.noi')).toBe(200);
+    deepSet(obj, 'rows.0.levered', 60);
+    expect((obj.rows as Array<Record<string, unknown>>)[0]).toEqual({ noi: 100, levered: 60 });
+    // The array stays an array — index assignment must not turn it into an object.
+    expect(Array.isArray(obj.rows)).toBe(true);
+  });
 });
 
 describe('getNumeric', () => {
@@ -96,9 +105,11 @@ describe('setNumeric', () => {
 
 describe('fieldsForSection / displayName', () => {
   it('returns only the fields for the given section', () => {
-    const dcf = fieldsForSection('dcf');
-    expect(dcf.length).toBeGreaterThan(0);
-    expect(dcf.every((f) => f.section_id === 'dcf')).toBe(true);
+    // property keeps a flat numeric grid (total_units, year_built, …); the
+    // calc-bearing sections like dcf are owned by footed model surfaces instead.
+    const fields = fieldsForSection('property');
+    expect(fields.length).toBeGreaterThan(0);
+    expect(fields.every((f) => f.section_id === 'property')).toBe(true);
   });
 
   it('returns an empty list for a section with no editable numeric fields', () => {

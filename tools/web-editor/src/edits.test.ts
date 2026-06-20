@@ -7,7 +7,7 @@
 // so it's the thing most worth testing.
 
 import { describe, it, expect } from 'vitest';
-import { generateBlankUWFile, getSection } from '@uwmd/core/browser';
+import { generateBlankUWFile, getSection, deriveDCF } from '@uwmd/core/browser';
 import type { EditOperation, UWFieldOverride } from '@uwmd/core/browser';
 import { loadInitialState, runEdit, DEFAULT_EDIT_SETTINGS, type EditState } from './edits.js';
 
@@ -132,5 +132,46 @@ describe('runEdit — carryForwardOverrides', () => {
     // The pinned override must survive — buildMeta() doesn't carry _meta forward,
     // so carryForwardOverrides() is the thing keeping it alive.
     expect(getSection(later.state.parsed, 'rent_roll')?.meta?.field_overrides).toEqual(overrides);
+  });
+});
+
+describe('runEdit — dcf array-indexed content round-trips through applyEdit', () => {
+  it('preserves per-year rows and foots them after reparse (what DcfModel relies on)', () => {
+    const state = blankState();
+    const outcome = runEdit(state, {
+      kind: 'section_replace',
+      section_id: 'dcf',
+      content: {
+        assumptions: { disposition_costs_pct: 0.02 },
+        annual_cash_flows: [
+          {
+            year: 1,
+            net_operating_income: 396_635,
+            annual_debt_service: 296_100,
+            cumulative_equity_invested: 2_400_000,
+          },
+        ],
+        exit_analysis: { exit_value_gross: 7_750_733, loan_balance_at_exit: 4_800_000 },
+      },
+      meta: {},
+    });
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) return;
+    const block = getSection(outcome.state.parsed, 'dcf');
+    expect(block).toBeTruthy();
+    if (!block) return;
+
+    // The array of per-year rows survived the protocol edit + reparse as an array.
+    const content = block.content as Record<string, unknown>;
+    const flows = content['annual_cash_flows'] as Array<Record<string, unknown>>;
+    expect(Array.isArray(flows)).toBe(true);
+    expect(flows[0]['net_operating_income']).toBe(396_635);
+
+    // And deriveDCF foots the reparsed block exactly as the footed surface would.
+    const d = deriveDCF(content);
+    const at = (p: string) => d.fields.find((f) => f.path === p)?.value;
+    expect(at('annual_cash_flows.0.net_cash_flow_levered')).toBe(100_535);
+    expect(at('exit_analysis.net_proceeds_to_equity')).toBe(2_795_718);
   });
 });

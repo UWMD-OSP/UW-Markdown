@@ -21,6 +21,7 @@ import {
 import { DebtModel, debtDerivedPaths } from './DebtModel.js';
 import { SourcesUsesModel, sourcesUsesDerivedPaths } from './SourcesUsesModel.js';
 import { ValuationModel, valuationDerivedPaths } from './ValuationModel.js';
+import { DcfModel, dcfDerivedPaths } from './DcfModel.js';
 import { NoiLineItems } from './NoiLineItems.js';
 import { AssumptionsEditor } from './AssumptionsEditor.js';
 import { GenericFieldEditor } from './GenericFieldEditor.js';
@@ -38,6 +39,7 @@ const DERIVED_PATHS: Record<string, (block: UWBlock) => Set<string>> = {
   debt_structure: debtDerivedPaths,
   sources_uses: sourcesUsesDerivedPaths,
   valuation: valuationDerivedPaths,
+  dcf: dcfDerivedPaths,
 };
 
 export function SectionView(props: {
@@ -163,6 +165,9 @@ function BlockView(props: {
       )}
       {sectionId === 'valuation' && (
         <ValuationModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+      )}
+      {sectionId === 'dcf' && (
+        <DcfModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
       {sectionId === 'noi_model' && (
         <NoiLineItems sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
