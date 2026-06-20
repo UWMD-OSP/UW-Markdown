@@ -123,6 +123,7 @@ export function App() {
                       parsed={deal.loaded.parsed}
                       activeId={activeSection}
                       dispatch={actions.applyOp}
+                      validation={deal.loaded.validation}
                     />
                   </div>
                 </>

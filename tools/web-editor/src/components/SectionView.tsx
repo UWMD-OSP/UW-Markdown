@@ -3,7 +3,13 @@
 // Every change dispatches an EditOperation; nothing mutates state directly.
 
 import { useState } from 'react';
-import type { EditOperation, ParsedUWFile, UWBlock } from '@uwmd/core/browser';
+import type {
+  EditOperation,
+  ParsedUWFile,
+  UWBlock,
+  ValidationResult,
+  ValidationMessage,
+} from '@uwmd/core/browser';
 import {
   displayName,
   fieldsForSection,
@@ -46,8 +52,9 @@ export function SectionView(props: {
   parsed: ParsedUWFile;
   activeId: string | null;
   dispatch: Dispatch;
+  validation: ValidationResult;
 }) {
-  const { parsed, activeId, dispatch } = props;
+  const { parsed, activeId, dispatch, validation } = props;
 
   if (!activeId) {
     return <p className="text-muted">Select a section from the sidebar.</p>;
@@ -68,10 +75,16 @@ export function SectionView(props: {
     ? [[undefined, entry]]
     : Object.entries(entry);
 
+  // Issues the validator raised against THIS section — shown in-context here, with
+  // the same BUILTIN_REMEDIATIONS copy the footer surfaces (read off the message,
+  // never re-authored), so a fix is one glance from the offending field.
+  const sectionIssues = validation.issues.filter((i) => i.section === activeId);
+
   return (
     <div className="max-w-3xl">
       <h2 className="font-display text-xl text-accent">{displayName(activeId)}</h2>
       <ProseView prose={props.parsed.prose[activeId]} />
+      <SectionIssues issues={sectionIssues} />
       {variants.map(([variant, block]) => (
         <BlockView
           key={variant ?? 'default'}
@@ -79,9 +92,45 @@ export function SectionView(props: {
           variant={variant}
           block={block}
           dispatch={dispatch}
+          issues={sectionIssues}
         />
       ))}
       <HistoryView parsed={parsed} sectionId={activeId} />
+    </div>
+  );
+}
+
+function severityTone(severity: ValidationMessage['severity']): string {
+  return severity === 'error'
+    ? 'text-error border-error/40 bg-error/5'
+    : severity === 'warning'
+      ? 'text-warn border-warn/40 bg-warn/5'
+      : 'text-muted border-rule bg-canvas';
+}
+
+/** The validator's issues for the current section, rendered inline with their
+ *  remediation copy. Returns nothing when the section is clean. */
+function SectionIssues({ issues }: { issues: ValidationMessage[] }) {
+  if (issues.length === 0) return null;
+  return (
+    <div className="mt-3 space-y-1.5">
+      {issues.map((i) => (
+        <div
+          key={`${i.code}|${i.field ?? ''}|${i.message}`}
+          className={`rounded border px-3 py-2 text-sm ${severityTone(i.severity)}`}
+        >
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-[0.6rem] font-bold uppercase">{i.severity}</span>
+            <code className="text-xs text-muted">{i.code}</code>
+            {i.field && (
+              <span className="rounded bg-accent-soft px-1.5 text-xs text-accent">{i.field}</span>
+            )}
+            {i.title && <strong>{i.title}</strong>}
+          </div>
+          <div className="mt-0.5 text-muted">{i.message}</div>
+          {i.remediation && <div className="mt-0.5 text-xs">→ {i.remediation}</div>}
+        </div>
+      ))}
     </div>
   );
 }
@@ -126,8 +175,9 @@ function BlockView(props: {
   variant: string | undefined;
   block: UWBlock;
   dispatch: Dispatch;
+  issues: ValidationMessage[];
 }) {
-  const { sectionId, variant, block, dispatch } = props;
+  const { sectionId, variant, block, dispatch, issues } = props;
   const [showJson, setShowJson] = useState(false);
   const meta = block.meta;
   const fields = fieldsForSection(sectionId);
@@ -185,6 +235,7 @@ function BlockView(props: {
               block={block}
               variant={variant}
               dispatch={dispatch}
+              issues={issues.filter((i) => i.field === f.path)}
             />
           ))}
           <p className="text-xs text-muted sm:col-span-2">
@@ -246,10 +297,19 @@ function NumericField(props: {
   block: UWBlock;
   variant: string | undefined;
   dispatch: Dispatch;
+  issues: ValidationMessage[];
 }) {
-  const { field, block, variant, dispatch } = props;
+  const { field, block, variant, dispatch, issues } = props;
   const value = getNumeric(block.content, field.path);
   const display = formatForInput(value, field.kind);
+
+  const hasError = issues.some((i) => i.severity === 'error');
+  const hasWarning = !hasError && issues.some((i) => i.severity === 'warning');
+  const borderClass = hasError
+    ? 'border-error/60 focus:border-error focus:ring-error'
+    : hasWarning
+      ? 'border-warn/60 focus:border-warn focus:ring-warn'
+      : 'border-rule focus:border-accent focus:ring-accent';
 
   const commit = (raw: string) => {
     const next = parseInput(raw, field.kind);
@@ -268,22 +328,43 @@ function NumericField(props: {
     });
   };
 
+  const fieldId = `nf-${field.section_id}-${field.path}`;
+  const msgId = `${fieldId}-msg`;
+
   return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-semibold text-muted">{field.label}</span>
+    <div className="block">
+      <label htmlFor={fieldId} className="mb-1 block text-xs font-semibold text-muted">
+        {field.label}
+      </label>
       <input
+        id={fieldId}
         type="text"
         inputMode="decimal"
-        className="num w-full rounded border border-rule bg-paper px-2.5 py-1.5 text-sm focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+        className={`num w-full rounded border bg-paper px-2.5 py-1.5 text-sm focus:ring-1 focus:outline-none ${borderClass}`}
         defaultValue={display}
         key={display} /* re-sync after external edits */
         placeholder="—"
+        aria-invalid={hasError || hasWarning}
+        aria-describedby={issues.length > 0 ? msgId : undefined}
         onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
         }}
       />
-    </label>
+      {issues.length > 0 && (
+        <div id={msgId}>
+          {issues.map((i) => (
+            <span
+              key={i.code}
+              className={`mt-1 block text-xs ${i.severity === 'error' ? 'text-error' : 'text-warn'}`}
+            >
+              {i.message}
+              {i.remediation ? ` → ${i.remediation}` : ''}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

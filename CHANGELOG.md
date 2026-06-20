@@ -9,6 +9,16 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Web editor: inline validator remediations** ([`tools/web-editor/src/components/SectionView.tsx`](./tools/web-editor/))
+  — the validator's issues for the active section now render **in context** at the
+  top of that section (severity, code, field badge, message, and the
+  `BUILTIN_REMEDIATIONS` copy), and the offending flat numeric field is flagged
+  with a red border, `aria-invalid`, an associated `<label>`, and the remediation
+  shown beneath it via `aria-describedby` — all read off the `ValidationMessage`
+  (never re-authored, so the footer and the inline copy can't drift). The global
+  `ValidationPanel` footer is unchanged. `SectionView.test.tsx` (jsdom) pins that
+  the remediation shows in-context and the field is marked invalid, and that a
+  clean section shows nothing. Web-editor suite is now 31 tests across 4 files.
 - **Web-editor component tests for the footed-model surfaces** (jsdom)
   ([`tools/web-editor/src/components/footed-model.test.tsx`](./tools/web-editor/))
   — adds jsdom + `@testing-library/react` (dev-only; bundle unchanged) and pins
