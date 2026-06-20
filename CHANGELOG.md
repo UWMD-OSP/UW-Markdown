@@ -9,6 +9,16 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Web editor: accessibility & keyboard pass** ([`tools/web-editor/`](./tools/web-editor/))
+  — a global `:focus-visible` ring (light on the navy toolbar) so keyboard users
+  can see focus without cluttering mouse use; the New Deal dialog gains
+  `aria-modal`, `aria-labelledby`, real `<label htmlFor>` associations on every
+  field, and initial focus (it already closed on Esc); the editor-views tabs are a
+  labelled `<nav>` with `aria-current` on the active tab; the footed-cell override
+  inputs get `aria-label`s; (the report iframe already had a `title`). A new
+  `a11y.test.tsx` runs **axe-core** against the dialog and a flagged section view
+  and fails on any serious/critical violation (color-contrast excluded — jsdom
+  can't compute rendered colors). Web-editor suite is now 33 tests across 5 files.
 - **Web editor: inline validator remediations** ([`tools/web-editor/src/components/SectionView.tsx`](./tools/web-editor/))
   — the validator's issues for the active section now render **in context** at the
   top of that section (severity, code, field badge, message, and the

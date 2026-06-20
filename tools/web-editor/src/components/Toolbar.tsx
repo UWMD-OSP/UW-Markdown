@@ -29,7 +29,7 @@ export function Toolbar(props: {
             {deal.dirty && <span className="ml-1.5 text-amber-300">●</span>}
           </span>
 
-          <nav className="ml-2 flex overflow-hidden rounded border border-white/25 text-xs">
+          <nav aria-label="Editor views" className="ml-2 flex overflow-hidden rounded border border-white/25 text-xs">
             <TabButton active={tab === 'edit'} onClick={() => onTab('edit')}>
               Editor
             </TabButton>
@@ -107,6 +107,7 @@ function TabButton(props: { active: boolean; onClick: () => void; children: Reac
     <button
       type="button"
       onClick={props.onClick}
+      aria-current={props.active ? 'page' : undefined}
       className={`px-3 py-1 transition-colors ${
         props.active ? 'bg-white font-semibold text-accent' : 'text-white/85 hover:bg-white/10'
       }`}

@@ -35,6 +35,18 @@ input.num {
   font-variant-numeric: tabular-nums;
 }
 
+/* Keyboard focus: a visible ring on every interactive element for keyboard users
+ * (mouse clicks don't trigger :focus-visible, so the dense UI stays clean). */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+/* On the navy toolbar the accent ring would vanish — use a light ring there. */
+.bg-accent :focus-visible {
+  outline-color: #ffffff;
+}
+
 @layer components {
   .btn-toolbar {
     border: 1px solid rgb(255 255 255 / 0.3);

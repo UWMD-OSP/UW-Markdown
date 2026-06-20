@@ -43,30 +43,36 @@ export function NewDealDialog(props: {
     >
       <dialog
         open
-        aria-label="New deal"
+        aria-modal="true"
+        aria-labelledby="new-deal-title"
         className="static w-[26rem] rounded border border-rule bg-paper p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === 'Enter') create();
         }}
       >
-        <h2 className="font-display text-lg text-accent">New Deal</h2>
+        <h2 id="new-deal-title" className="font-display text-lg text-accent">
+          New Deal
+        </h2>
         <p className="mt-1 text-xs text-muted">
           Scaffolds a blank .uw.md via <code>generateBlankUWFile</code> — canonical section order,
           empty data stubs, initial pipeline-log entry.
         </p>
 
         <div className="mt-4 space-y-3">
-          <Field label="Deal name">
+          <Field id="nd-deal-name" label="Deal name">
             <input
+              id="nd-deal-name"
+              autoFocus
               className="input"
               value={dealName}
               placeholder="Parkview Apartments — Glendale, AZ"
               onChange={(e) => setDealName(e.target.value)}
             />
           </Field>
-          <Field label="Property address">
+          <Field id="nd-address" label="Property address">
             <input
+              id="nd-address"
               className="input"
               value={address}
               placeholder="1234 W Camelback Rd"
@@ -74,16 +80,21 @@ export function NewDealDialog(props: {
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="City">
-              <input className="input" value={city} onChange={(e) => setCity(e.target.value)} />
+            <Field id="nd-city" label="City">
+              <input id="nd-city" className="input" value={city} onChange={(e) => setCity(e.target.value)} />
             </Field>
-            <Field label="State">
-              <input className="input" value={state} onChange={(e) => setState(e.target.value)} />
+            <Field id="nd-state" label="State">
+              <input id="nd-state" className="input" value={state} onChange={(e) => setState(e.target.value)} />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Asset class">
-              <select className="input" value={assetClass} onChange={(e) => setAssetClass(e.target.value)}>
+            <Field id="nd-asset-class" label="Asset class">
+              <select
+                id="nd-asset-class"
+                className="input"
+                value={assetClass}
+                onChange={(e) => setAssetClass(e.target.value)}
+              >
                 {ASSET_CLASSES.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -91,8 +102,8 @@ export function NewDealDialog(props: {
                 ))}
               </select>
             </Field>
-            <Field label="Tier">
-              <select className="input" value={tier} onChange={(e) => setTier(e.target.value)}>
+            <Field id="nd-tier" label="Tier">
+              <select id="nd-tier" className="input" value={tier} onChange={(e) => setTier(e.target.value)}>
                 {TIERS.map((t) => (
                   <option key={t} value={t}>
                     {t}
@@ -120,10 +131,12 @@ export function NewDealDialog(props: {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
   return (
     <div>
-      <span className="mb-1 block text-xs font-semibold text-muted">{label}</span>
+      <label htmlFor={id} className="mb-1 block text-xs font-semibold text-muted">
+        {label}
+      </label>
       {children}
     </div>
   );

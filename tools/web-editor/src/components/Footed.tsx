@@ -99,6 +99,7 @@ function OverrideInput(props: {
         autoFocus
         type="text"
         inputMode="decimal"
+        aria-label={`Override value for ${field.label}`}
         className="num w-24 rounded border border-accent bg-paper px-1.5 py-0.5 text-sm focus:ring-1 focus:ring-accent focus:outline-none"
         value={raw}
         onChange={(e) => setRaw(e.target.value)}
@@ -110,6 +111,7 @@ function OverrideInput(props: {
       <input
         type="text"
         placeholder="why?"
+        aria-label={`Reason for overriding ${field.label}`}
         className="w-20 rounded border border-rule bg-paper px-1.5 py-0.5 text-xs focus:border-accent focus:outline-none"
         value={note}
         onChange={(e) => setNote(e.target.value)}
