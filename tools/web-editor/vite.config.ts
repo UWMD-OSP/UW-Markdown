@@ -7,11 +7,12 @@ export default defineConfig({
   root: '.',
   base: './',
   plugins: [react(), tailwindcss()],
-  // Unit tests run in Node: edits.ts / catalog.ts are pure logic over
-  // @uwmd/core/browser with no DOM. Component (jsdom) tests come later (T-003).
+  // Pure logic tests (edits.ts / catalog.ts) run in Node by default. Component
+  // tests are *.test.tsx and opt into jsdom with a `// @vitest-environment jsdom`
+  // docblock, so the fast node suite isn't slowed by a DOM it doesn't need.
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
   },
   build: {
     target: 'es2022',

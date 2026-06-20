@@ -9,6 +9,17 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Web-editor component tests for the footed-model surfaces** (jsdom)
+  ([`tools/web-editor/src/components/footed-model.test.tsx`](./tools/web-editor/))
+  — adds jsdom + `@testing-library/react` (dev-only; bundle unchanged) and pins
+  the contract every footed surface shares: editing one input re-foots the
+  dependent totals and dispatches **exactly one** `section_replace`. Covers
+  `ValuationModel` (NOI change re-foots indicated value) and the new `DcfModel`
+  (a year's NOI re-foots its levered cash flow; the gross exit value re-foots the
+  whole disposition→net→proceeds waterfall; "+ Add year" appends a projection
+  year in one dispatch). Component tests are `*.test.tsx` and opt into jsdom via a
+  `// @vitest-environment jsdom` docblock, so the pure node suite stays fast.
+  Web-editor suite is now 29 tests across 3 files.
 - **DCF footing in `@uwmd/core` + a DCF footed-model surface in the web editor**
   ([`dcf.ts`](./packages/uwmd-core/src/dcf.ts),
   [`tools/web-editor/src/components/DcfModel.tsx`](./tools/web-editor/)) — the
