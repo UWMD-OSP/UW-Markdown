@@ -9,6 +9,11 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **CI now builds and tests the web editor** ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml))
+  — a new `web-editor` job builds `@uwmd/core`, then runs the web editor's own
+  `npm run build` (tsc + vite) and `npm test` (33 vitest cases). The root
+  `npm test` only covers workspace packages, and `tools/*` are intentionally not
+  workspace members, so the editor's calc-integrity suite was never gated in CI.
 - **Web editor: accessibility & keyboard pass** ([`tools/web-editor/`](./tools/web-editor/))
   — a global `:focus-visible` ring (light on the navy toolbar) so keyboard users
   can see focus without cluttering mouse use; the New Deal dialog gains
@@ -134,6 +139,14 @@ protocol, and each package each carry an independent semver).
   otherwise. Page layout is owned entirely by core's `REPORT_CSS`
   (`preferCSSPageSize`, zero engine margins), so browser print of the HTML and
   the CLI PDF are identical.
+
+### Fixed
+- **Web editor lint errors that were failing the CI `lint` job** — `biome lint`
+  flags (recommended-default errors): `noAutofocus` on the New Deal dialog and the
+  footed-cell override input (replaced the `autoFocus` attribute with a ref +
+  `useEffect().focus()`), and `noArrayIndexKey` on the DCF per-year rows (now keyed
+  by the row's year). These had accumulated across the unpushed web-editor train;
+  the lint job is green again.
 
 ### Changed
 - **Web editor 0.5.0 — rent-roll & operating-statement become underwriting

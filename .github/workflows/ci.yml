@@ -49,6 +49,33 @@ jobs:
       - name: Run conformance suite (tiers 1-3)
         run: node scripts/run-conformance.mjs --tier=1,2,3
 
+  web-editor:
+    name: Web editor (build + test)
+    runs-on: ubuntu-latest
+    # tools/* are intentionally NOT npm-workspace members, so the root `npm test`
+    # above doesn't cover them. The web editor is the Tier-2/3 calc-integrity
+    # chokepoint and carries its own vitest suite — run it here. It consumes
+    # @uwmd/core's built dist via a file: dependency, so core must be built first.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install workspaces
+        run: npm ci
+      - name: Build @uwmd/core (web editor imports its dist)
+        run: npm run build
+      - name: Install web-editor deps
+        run: npm ci
+        working-directory: tools/web-editor
+      - name: Build web editor (tsc --noEmit + vite)
+        run: npm run build
+        working-directory: tools/web-editor
+      - name: Test web editor
+        run: npm test
+        working-directory: tools/web-editor
+
   coverage:
     name: Coverage report
     runs-on: ubuntu-latest

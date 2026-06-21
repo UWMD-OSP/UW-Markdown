@@ -4,7 +4,7 @@
 // and a "revert to ƒ" affordance when hand-pinned. Used by RentRollModel and
 // OperatingStatementModel so every footed total behaves identically.
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DerivedField } from '@uwmd/core/browser';
 
 export function FootedValue(props: {
@@ -83,6 +83,14 @@ function OverrideInput(props: {
   const { field, initial, onSave, onCancel } = props;
   const [raw, setRaw] = useState(formatDerived(initial, field.kind, true));
   const [note, setNote] = useState('');
+  const valueRef = useRef<HTMLInputElement>(null);
+
+  // Focus the value field when the inline override opens (accessible replacement
+  // for the autoFocus attribute, which biome's a11y lint flags).
+  useEffect(() => {
+    valueRef.current?.focus();
+    valueRef.current?.select();
+  }, []);
 
   const save = () => {
     const value = parseOverride(raw, field.kind);
@@ -96,7 +104,7 @@ function OverrideInput(props: {
   return (
     <span className="flex items-center justify-end gap-1">
       <input
-        autoFocus
+        ref={valueRef}
         type="text"
         inputMode="decimal"
         aria-label={`Override value for ${field.label}`}

@@ -135,10 +135,12 @@ export function DcfModel(props: {
             No projection years yet. Add a year, or load a deal whose DCF was generated upstream.
           </p>
         ) : (
-          flows.map((_, i) => (
-            <div key={i} className="mt-3 border-t border-rule pt-2 first:mt-1 first:border-t-0">
+          flows.map((_, i) => {
+            const year = getNumeric(content, `annual_cash_flows.${i}.year`) ?? i + 1;
+            return (
+            <div key={`y${year}`} className="mt-3 border-t border-rule pt-2 first:mt-1 first:border-t-0">
               <div className="flex items-center justify-between">
-                <SubHeading>Year {String(getNumeric(content, `annual_cash_flows.${i}.year`) ?? i + 1)}</SubHeading>
+                <SubHeading>Year {String(year)}</SubHeading>
                 <button
                   type="button"
                   className="text-[0.65rem] text-muted hover:text-error hover:underline"
@@ -175,7 +177,8 @@ export function DcfModel(props: {
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { InitOptions, AssetClass } from '@uwmd/core/browser';
 import { ASSET_CLASSES, TIERS } from '../catalog.js';
 
@@ -12,6 +12,13 @@ export function NewDealDialog(props: {
   const [state, setState] = useState('');
   const [assetClass, setAssetClass] = useState<string>('multifamily');
   const [tier, setTier] = useState<string>('screener');
+  const firstFieldRef = useRef<HTMLInputElement>(null);
+
+  // Move focus into the dialog on open (the accessible alternative to the
+  // autoFocus attribute, which biome's a11y lint flags).
+  useEffect(() => {
+    firstFieldRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -63,7 +70,7 @@ export function NewDealDialog(props: {
           <Field id="nd-deal-name" label="Deal name">
             <input
               id="nd-deal-name"
-              autoFocus
+              ref={firstFieldRef}
               className="input"
               value={dealName}
               placeholder="Parkview Apartments — Glendale, AZ"
