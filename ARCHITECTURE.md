@@ -67,6 +67,8 @@ implement only one tier can read just the relevant sections.
   edit semantics, calc-engine grammar (EBNF), AI-host contract.
 - [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md) — deterministic
   Envelope 1.0 mapping, namespace, integrity, and secure decoding rules.
+- [`spec/UW_CSV_BUNDLE_v1.md`](spec/UW_CSV_BUNDLE_v1.md) — normalized tables,
+  deterministic ZIP, model reconstruction, views, and extraction limits.
 - [`spec/schemas/`](spec/schemas/) — JSON Schema 2020-12 definitions plus the
   structural UW XML XSD.
 

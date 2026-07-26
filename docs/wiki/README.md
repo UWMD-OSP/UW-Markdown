@@ -41,13 +41,14 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
 ## The fastest possible orientation
 
 - **One package matters most:** `packages/uwmd-core` (`@uwmd/core`). Everything
-  else depends on it; its runtime dependencies are `@anthropic-ai/sdk` and `fast-xml-parser`.
+  else depends on it; its runtime dependencies are `@anthropic-ai/sdk`, `fast-xml-parser`, and `fflate`.
 - **The public API is a single file:** [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts).
   If a symbol isn't exported there, tools can't use it.
 - **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC_v1.md`](../../spec/UW_FORMAT_SPEC_v1.md)
   defines the authoring file, [`spec/UW_PROTOCOL_v1.md`](../../spec/UW_PROTOCOL_v1.md)
-  defines conforming software, and [`spec/UW_XML_MAPPING_v1.md`](../../spec/UW_XML_MAPPING_v1.md)
-  defines the XML representation. `protocol.ts` mirrors the protocol surface.
+  defines conforming software, while [`spec/UW_XML_MAPPING_v1.md`](../../spec/UW_XML_MAPPING_v1.md)
+  and [`spec/UW_CSV_BUNDLE_v1.md`](../../spec/UW_CSV_BUNDLE_v1.md) define model
+  representations. `protocol.ts` mirrors the protocol surface.
 - **One invariant rules them all:** *AI extracts and narrates; it never
   calculates.* All NOI/DSCR/LTV/IRR/DCF math is deterministic in `calc/` +
   `packs/`. See [10 — Conventions & invariants](10-conventions-invariants.md).

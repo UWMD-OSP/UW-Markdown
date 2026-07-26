@@ -44,7 +44,7 @@ Accepted RFC 0014 defines a coordinated but independently versioned release trai
 | UW Document Envelope | 1.0 | Stable schema and core implementation complete; not yet published. |
 | UW JSON mapping | 1.0.0 | Core implementation complete; release pending. |
 | UW XML mapping | 1.0.0 | Deterministic mapping, secure codec, XSD, and conversion tests implemented; release pending. |
-| UW CSV bundle | 1.0.0 candidate | Planned next; mapping version is independent. |
+| UW CSV bundle | 1.0.0 | Normalized model codec, safe deterministic ZIP, and six views implemented; release pending. |
 
 These are candidate versions, not the current compatibility matrix. They become
 authoritative only after RFC acceptance, implementation, conformance, and the

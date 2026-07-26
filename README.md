@@ -72,9 +72,9 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
 
 - **v1 release blockers** — Tier-2/3 implementation, conformance runner, JSON Schemas, governance scaffolding (this PR), npm publish.
 - **v1 follow-on tools** — VS Code extension → docs site → web editor → Excel converter → standalone CLI.
-- **v1.1+ machine interchange** — a shared document envelope with lossless JSON
-  and XML codecs, followed by the normalized CSV bundle and optional API/MCP
-  bindings defined in accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
+- **v1.1+ machine interchange** — a shared document envelope with lossless JSON,
+  XML, and normalized CSV-bundle codecs; optional API/MCP bindings are next under
+  accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
 - **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/).
 
 ## Who's building on it
@@ -99,6 +99,7 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 - [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
 - [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
 - [UW XML Mapping 1.0](./spec/UW_XML_MAPPING_v1.md) — deterministic, lossless XML representation and secure decoding rules.
+- [UW CSV Bundle 1.0](./spec/UW_CSV_BUNDLE_v1.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.
 - [1.1+ interchange release plan](./docs/releases/1.1-plus-interchange-plan.md) —
   governance gates and phased delivery for JSON, XML, CSV, API, and MCP.
 

@@ -47,6 +47,17 @@ export {
 } from './uwxml.js';
 export type { UWXmlOptions } from './uwxml.js';
 
+export {
+  UW_CSV_BUNDLE_VERSION,
+  UW_CSV_BUNDLE_MEDIA_TYPE,
+  UWCSVError,
+  encodeUWCSVBundle,
+  decodeUWCSVBundle,
+  encodeUWCSVZip,
+  decodeUWCSVZip,
+  UW_CSV_BUNDLE_CODEC,
+} from './uwcsv.js';
+export type { UWCSVBundle, UWCSVDecodeOptions } from './uwcsv.js';
 export { CORE_CODEC_REGISTRY, encodeUWDocument, decodeUWDocument } from './codecs.js';
 
 export {

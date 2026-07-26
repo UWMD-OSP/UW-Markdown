@@ -333,25 +333,30 @@ async function cmdExport(file: string, flags: Record<string, string | boolean>):
 const FORMAT_ALIASES: Record<string, string> = {
   json: 'uw-json',
   xml: 'uw-xml',
+  csv: 'uw-csv-bundle',
+  'csv-bundle': 'uw-csv-bundle',
   'uw-json': 'uw-json',
   'uw-xml': 'uw-xml',
+  'uw-csv-bundle': 'uw-csv-bundle',
 };
 
 async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
-  const content = readFile(file);
   if (file.toLowerCase().endsWith('.uw.md')) {
-    return toUWEnvelope(parseUWFile(content));
+    return toUWEnvelope(parseUWFile(readFile(file)));
   }
   const sourceCodec = CORE_CODEC_REGISTRY.findByFileName(file);
   if (!sourceCodec || !sourceCodec.descriptor.directions.includes('read')) {
     throw new Error(`Cannot detect a readable UW representation for ${file}.`);
   }
-  return sourceCodec.decode(content);
+  const input = sourceCodec.descriptor.id === 'uw-csv-bundle'
+    ? new Uint8Array(readFileSync(resolve(file)))
+    : readFile(file);
+  return sourceCodec.decode(input);
 }
 
 function replaceUWExtension(file: string, extension: string): string {
   const lower = file.toLowerCase();
-  for (const suffix of ['.uw.md', '.uw.json', '.uw.xml']) {
+  for (const suffix of ['.uw.csv.zip', '.uw.md', '.uw.json', '.uw.xml']) {
     if (lower.endsWith(suffix)) return `${file.slice(0, -suffix.length)}${extension}`;
   }
   return `${file}${extension}`;
@@ -360,7 +365,7 @@ function replaceUWExtension(file: string, extension: string): string {
 async function cmdConvert(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const requested = flags['to'];
   if (typeof requested !== 'string') {
-    throw new Error('convert requires --to uw-json|uw-xml.');
+    throw new Error('convert requires --to uw-json|uw-xml|uw-csv-bundle.');
   }
   const targetId = FORMAT_ALIASES[requested.toLowerCase()] ?? requested;
   const target = CORE_CODEC_REGISTRY.get(targetId);
@@ -369,11 +374,11 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
   }
   const envelope = await loadEnvelope(file);
   const encoded = await target.encode(envelope);
-  if (typeof encoded !== 'string') {
-    throw new Error(`Representation ${targetId} did not produce text output.`);
+  if (typeof encoded !== 'string' && !(encoded instanceof Uint8Array)) {
+    throw new Error(`Representation ${targetId} did not produce file-compatible output.`);
   }
   if (flags['stdout']) {
-    process.stdout.write(encoded);
+    process.stdout.write(typeof encoded === 'string' ? encoded : Buffer.from(encoded));
     return;
   }
   const extension = target.descriptor.file_extensions[0];
@@ -805,7 +810,7 @@ switch (command) {
     break;
 
   case 'convert':
-    if (!positional[0]) { console.error('Usage: uwmd convert <file.uw.md|file.uw.json|file.uw.xml> --to uw-json|uw-xml [--output <file>] [--stdout]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd convert <file.uw.md|file.uw.json|file.uw.xml|file.uw.csv.zip> --to uw-json|uw-xml|uw-csv-bundle [--output <file>] [--stdout]'); process.exit(1); }
     await cmdConvert(positional[0], flags);
     break;
   case 'report':
@@ -841,7 +846,7 @@ Commands:
   summary  <file>              Print quick metrics to terminal
   export   <file>              Export a digested UW JSON 1.0 document
   formats                       List registered machine representations
-  convert  <file>              Convert Markdown/JSON/XML to a model representation
+  convert  <file>              Convert Markdown/JSON/XML/CSV bundle representations
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
@@ -855,7 +860,7 @@ Options:
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
   --stdout           Write export/convert output to stdout
-  --to <format>       Target representation: uw-json|uw-xml (convert)
+  --to <format>       Target representation: uw-json|uw-xml|uw-csv-bundle (convert)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

@@ -1,9 +1,9 @@
 # 13 — Build status (living document)
 
-**Review update:** 2026-07-26 — RFC 0014 Phase A and core Phase B discovery are
-implemented; owner-led governance is active.
-**Last verified:** 2026-07-26 (Envelope 1.0, UW JSON 1.0, Protocol 1.2 discovery,
-schemas, CLI, package verification, and core tests; working tree).
+**Review update:** 2026-07-26 — RFC 0014 Phases A–D are implemented;
+owner-led governance is active.
+**Last verified:** 2026-07-26 (Envelope, JSON, XML, CSV bundle, Protocol 1.2
+discovery, schemas, CLI, package verification, and core tests; release branch).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -51,9 +51,10 @@ not core gaps.
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
 - **CLI:** 16 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
-- **Machine interchange Phase A:** Envelope 1.0, its normative JSON Schema,
-  UW JSON 1.0, semantic digest/equivalence helpers, codec registry, and digested
-  CLI export are implemented and tested. See [03](03-core-library.md).
+- **Machine interchange Phases A–D:** Envelope 1.0, normative schemas, UW JSON
+  1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
+  helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
+  conversion are implemented and tested. See [03](03-core-library.md).
 - **Conformance:** 29 fixtures, 4 tiers, CI gates tiers 1–3. See [09](09-conformance-testing.md).
 - **Report renderer + PDF pipeline:** `report.ts` in core renders the spec's
   §7.1 Lender Package / §7.2 Credit Memo as deterministic print-ready HTML
@@ -115,8 +116,9 @@ not core gaps.
 RFC 0014 defines a format-neutral envelope plus UW JSON, XML, and normalized CSV
 bundle mappings. Envelope 1.0, UW JSON 1.0, semantic digests, the codec registry,
 Protocol 1.2 representation descriptors/negotiation, schemas, `uwmd export`,
-`uwmd formats`, deterministic UW XML 1.0, and Markdown/JSON/XML `uwmd convert`
-are implemented. CSV bundles and HTTP/MCP profiles remain the next phases. See the
+`uwmd formats`, deterministic UW XML 1.0, normalized UW CSV Bundle 1.0, and
+Markdown/JSON/XML/CSV `uwmd convert` are implemented. HTTP/MCP reference profiles
+remain the next phase. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
 

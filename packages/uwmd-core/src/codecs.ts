@@ -2,8 +2,9 @@ import { CodecRegistry } from './codec.js';
 import type { UWDocumentEnvelope } from './envelope.js';
 import { UW_JSON_CODEC } from './uwjson.js';
 import { UW_XML_CODEC } from './uwxml.js';
+import { UW_CSV_BUNDLE_CODEC } from './uwcsv.js';
 
-export const CORE_CODEC_REGISTRY = new CodecRegistry([UW_JSON_CODEC, UW_XML_CODEC]);
+export const CORE_CODEC_REGISTRY = new CodecRegistry([UW_JSON_CODEC, UW_XML_CODEC, UW_CSV_BUNDLE_CODEC]);
 
 export async function encodeUWDocument(
   representationId: string,

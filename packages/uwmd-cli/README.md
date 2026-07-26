@@ -35,7 +35,7 @@ uwmd <command> [args]
 | `uwmd summary <file>` | One-screen deal summary |
 | `uwmd export <file.uw.md>` | Write a digested, model-lossless `.uw.json` sibling |
 | `uwmd formats` | List registered machine representations |
-| `uwmd convert <file> --to uw-json\|uw-xml` | Convert Markdown, verified JSON, or verified XML |
+| `uwmd convert <file> --to uw-json\|uw-xml\|uw-csv-bundle` | Convert Markdown, verified JSON/XML, or normalized CSV ZIP bundles |
 | `uwmd layers <file>` | Show the agent-context layer breakdown |
 
 Run any command without arguments for usage help.
