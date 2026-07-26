@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseUWFile } from './parser.js';
-import { render } from './renderer.js';
+import { render, UnsupportedRenderFormatError } from './renderer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(
@@ -110,10 +110,17 @@ asset_class: multifamily
     expect(result.estimatedTokens).toBeGreaterThan(40);
   });
 
-  it('keeps pdf and docx as explicit empty stub render targets', () => {
+  it('fails explicitly for formats that require dedicated pipelines', () => {
     const parsed = loadFixture();
 
-    expect(render(parsed, { format: 'pdf' })).toEqual({ format: 'pdf', content: '' });
-    expect(render(parsed, { format: 'docx' })).toEqual({ format: 'docx', content: '' });
+    for (const format of ['pdf', 'docx'] as const) {
+      expect(() => render(parsed, { format })).toThrowError(UnsupportedRenderFormatError);
+
+      try {
+        render(parsed, { format });
+      } catch (error) {
+        expect(error).toMatchObject({ code: 'UNSUPPORTED_RENDER_FORMAT', format });
+      }
+    }
   });
 });

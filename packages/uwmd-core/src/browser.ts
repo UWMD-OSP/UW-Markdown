@@ -15,7 +15,7 @@
 export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
 export { validateUWFile, lookupRemediation } from './validator.js';
 export { compact, diff } from './compactor.js';
-export { render } from './renderer.js';
+export { render, UnsupportedRenderFormatError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';
 export type { ReportOptions, ReportResult } from './report.js';

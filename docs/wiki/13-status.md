@@ -103,10 +103,11 @@ not core gaps.
 
 ## 🔴 Stubs / not implemented
 
-- **DOCX rendering** — `render()` still returns empty content for `docx`
-  (`renderer.ts`); the Word credit-memo target has no pipeline. (PDF is now
-  built — see `report.ts` + `@uwmd/report` above; `render({format:'pdf'})`
-  remains a stub enum pointing at that pipeline.)
+- **DOCX rendering** — the Word credit-memo target has no pipeline. The core
+  renderer now rejects `docx` explicitly with typed `UnsupportedRenderFormatError`
+  instead of returning an apparently successful empty document. PDF is built via
+  `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
+  that package.
 - **Reverse Excel (`.xlsx → .uw.md`)** — not built; converter is one-way.
 - **Provider-neutral agent host** — `agents/bancroft.ts` is hard-coupled to
   `@anthropic-ai/sdk`; no second backend despite the provider-neutral §IX claim.

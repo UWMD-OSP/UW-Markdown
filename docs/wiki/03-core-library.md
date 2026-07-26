@@ -94,9 +94,11 @@ golden rule of Tier-2:** bytes outside the modified region are preserved exactly
 
 `render(parsed, options) → RenderResult`. Formats: `json`, `csv`, `chat`
 (token-budgeted context string for an LLM), `summary` (markdown).
-`chat`/`summary` are the formats exercised by Tier-1 conformance. The `pdf`/
-`docx` enum values remain stubs in `render()` — the real document path is
-`report.ts` (HTML) plus `@uwmd/report` (PDF). `RenderOptions` include `format`,
+`chat`/`summary` are the formats exercised by Tier-1 conformance. The `pdf` and
+`docx` enum values are reserved for dedicated pipelines; requesting either from
+the core renderer throws typed `UnsupportedRenderFormatError` instead of
+returning empty content. Use `report.ts` (HTML) plus `@uwmd/report` for PDF.
+`RenderOptions` include `format`,
 `tier` (`screener`|`analyst`), and `maxTokens`.
 
 ## report.ts (Tier-1)

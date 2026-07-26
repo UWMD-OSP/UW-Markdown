@@ -156,6 +156,10 @@ protocol, and each package each carry an independent semver).
   without a closing fence now raises typed `UNCLOSED_SECTION_FENCE` even outside
   strict mode, preventing the remainder of a deal from being swallowed as one
   malformed block.
+- **Unsupported document targets fail explicitly** - the core `pdf` and `docx`
+  render targets now throw typed `UnsupportedRenderFormatError` instead of
+  returning successful-looking empty output. PDF callers are directed to
+  `@uwmd/report`; DOCX remains explicitly unimplemented.
 - **Web editor lint errors that were failing the CI `lint` job** — `biome lint`
   flags (recommended-default errors): `noAutofocus` on the New Deal dialog and the
   footed-cell override input (replaced the `autoFocus` attribute with a ref +
@@ -164,13 +168,13 @@ protocol, and each package each carry an independent semver).
   the lint job is green again.
 
 ### Changed
-- **Web editor 0.5.0 — rent-roll & operating-statement become underwriting
 - **Dependency hardening** - the workspace Vitest and coverage-provider floor is
   raised to 3.2.6, clearing the critical development-server advisory. Safe
   transitive lockfile updates also patch Vite, esbuild, PostCSS, fast-uri, tmp,
   and brace-expansion versions where upstream ranges permit. Remaining ExcelJS
   archive/UUID advisories require an upstream release or a separately validated
   converter migration and therefore remain a release blocker.
+- **Web editor 0.5.0 — rent-roll & operating-statement become underwriting
   *models*, not forms** ([`tools/web-editor/`](./tools/web-editor/)). New
   `RentRollModel` and `OperatingStatementModel` surfaces (shared `Footed.tsx`)
   treat the line items as the only inputs and render the section totals as
