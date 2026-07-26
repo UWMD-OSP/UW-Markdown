@@ -26,6 +26,8 @@ Command | Purpose
 `init` | Scaffold a blank `.uw.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--tier`)
 `summary <file>` | Print quick metrics to terminal
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
+`formats` | List registered model representations and media types (`--json`)
+`convert <file> --to <format>` | Convert `.uw.md`, verified `.uw.json`, or verified `.uw.xml` to `uw-json` or `uw-xml` (`--stdout`, `--output`)
 `report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)

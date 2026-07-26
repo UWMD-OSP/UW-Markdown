@@ -40,10 +40,11 @@ Accepted RFC 0014 defines a coordinated but independently versioned release trai
 | `.uw.md` format | 1.1 (unchanged) | No syntax change proposed. |
 | UW Protocol | 1.2.0 | Representation descriptors, schema, and negotiation implemented; binding profiles pending. |
 | `@uwmd/core` | 1.1.0 | Envelope 1.0, JSON mapping, digest helpers, and codec registry implemented for the release. |
-| `uwmd` | 1.1.0 | `formats` and digested export implemented; `convert` lands with XML/CSV. |
+| `uwmd` | 1.1.0 | `formats`, digested export, and Markdown/JSON/XML `convert` implemented. |
 | UW Document Envelope | 1.0 | Stable schema and core implementation complete; not yet published. |
 | UW JSON mapping | 1.0.0 | Core implementation complete; release pending. |
-| UW XML / CSV mappings | 1.0.0 candidates | Planned next; mapping versions are independent. |
+| UW XML mapping | 1.0.0 | Deterministic mapping, secure codec, XSD, and conversion tests implemented; release pending. |
+| UW CSV bundle | 1.0.0 candidate | Planned next; mapping version is independent. |
 
 These are candidate versions, not the current compatibility matrix. They become
 authoritative only after RFC acceptance, implementation, conformance, and the

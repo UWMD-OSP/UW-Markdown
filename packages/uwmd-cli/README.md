@@ -33,6 +33,9 @@ uwmd <command> [args]
 | `uwmd compact <file>` | Strip narrative; emit the canonical JSON-only form |
 | `uwmd diff <a> <b>` | Diff two `.uw.md` files at the section level |
 | `uwmd summary <file>` | One-screen deal summary |
+| `uwmd export <file.uw.md>` | Write a digested, model-lossless `.uw.json` sibling |
+| `uwmd formats` | List registered machine representations |
+| `uwmd convert <file> --to uw-json\|uw-xml` | Convert Markdown, verified JSON, or verified XML |
 | `uwmd layers <file>` | Show the agent-context layer breakdown |
 
 Run any command without arguments for usage help.

@@ -52,11 +52,12 @@ tiers include all lower ones.
 ## Repository map
 
 ```
-spec/                      Normative specs + JSON Schemas
+spec/                      Normative specs + JSON Schemas + XML XSD
   UW_FORMAT_SPEC_v1.md     File shape: frontmatter, 21 standard sections (§4.0-4.20),
                            extension meta-spec (§4.21), gaps (§4.22), CC-NN checks
   UW_PROTOCOL_v1.md        Tiers, display, edit semantics, calc EBNF, AI-host contract
-  schemas/                 JSON Schema 2020-12, $id-anchored at https://uwmd.org/schemas/...
+  UW_XML_MAPPING_v1.md     Deterministic Envelope 1.0 XML representation
+  schemas/                 JSON Schema 2020-12 plus structural UW XML XSD
 
 packages/
   uwmd-core/   (@uwmd/core 1.1.0)  The reference library — see 03-core-library.md

@@ -41,12 +41,13 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
 ## The fastest possible orientation
 
 - **One package matters most:** `packages/uwmd-core` (`@uwmd/core`). Everything
-  else depends on it; it depends on nothing but `@anthropic-ai/sdk`.
+  else depends on it; its runtime dependencies are `@anthropic-ai/sdk` and `fast-xml-parser`.
 - **The public API is a single file:** [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts).
   If a symbol isn't exported there, tools can't use it.
-- **The contract is two spec files:** [`spec/UW_FORMAT_SPEC_v1.md`](../../spec/UW_FORMAT_SPEC_v1.md)
-  (the file shape) and [`spec/UW_PROTOCOL_v1.md`](../../spec/UW_PROTOCOL_v1.md)
-  (what conforming software must do). `protocol.ts` is the executable mirror of the second.
+- **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC_v1.md`](../../spec/UW_FORMAT_SPEC_v1.md)
+  defines the authoring file, [`spec/UW_PROTOCOL_v1.md`](../../spec/UW_PROTOCOL_v1.md)
+  defines conforming software, and [`spec/UW_XML_MAPPING_v1.md`](../../spec/UW_XML_MAPPING_v1.md)
+  defines the XML representation. `protocol.ts` mirrors the protocol surface.
 - **One invariant rules them all:** *AI extracts and narrates; it never
   calculates.* All NOI/DSCR/LTV/IRR/DCF math is deterministic in `calc/` +
   `packs/`. See [10 — Conventions & invariants](10-conventions-invariants.md).
@@ -58,9 +59,8 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
 When sources conflict, trust them in this order:
 
 1. **The current source code** — the ground truth for *what the code does today*.
-2. **`spec/UW_FORMAT_SPEC_v1.md` and `spec/UW_PROTOCOL_v1.md`** — normative for
-   *what conforming behavior should be*. Changing these requires an RFC.
-3. **`spec/schemas/*.schema.json`** — the JSON Schemas for boundary payloads.
+2. **Versioned normative files under `spec/`** — the format, protocol, and representation mappings that define conforming behavior. Changing these requires an RFC.
+3. **`spec/schemas/`** — JSON Schemas and structural XML tooling schemas for boundary payloads.
 4. **Root docs** — `ARCHITECTURE.md`, `README.md`, `docs/GLOSSARY.md`, `docs/TOOLS.md`.
 5. **This wiki** — orientation and cross-references. If this wiki is wrong, fix it,
    but never treat it as authority over 1–4.

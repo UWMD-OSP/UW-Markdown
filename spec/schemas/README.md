@@ -1,18 +1,19 @@
-# UW Markdown — JSON Schemas
+# UW Markdown — Schemas
 
-Normative JSON Schemas for protocol types that cross integration
-boundaries. Tools written in any language can validate against these
-without reverse-engineering [`@uwmd/core/protocol.ts`](../../packages/uwmd-core/src/protocol.ts).
+Normative JSON Schemas for protocol types and a structural XSD for UW XML that
+cross integration boundaries. Tools written in any language can validate these
+contracts without reverse-engineering the reference TypeScript implementation.
 
-All schemas use [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/schema)
-and publish under the `https://uwmd.org/schemas/` `$id` prefix
-(placeholder pending hosting decision; current canonical location is
-this directory).
+The JSON schemas use [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/schema)
+and publish under the `https://uwmd.org/schemas/` `$id` prefix. The XSD targets
+the UW XML 1.0 namespace `https://uwmd.org/ns/document/1`. The current canonical
+files live in this directory pending publication on `uwmd.org`.
 
 | Schema | Mirrors | Spec section |
 |---|---|---|
 | [`uwmd-block.schema.json`](uwmd-block.schema.json) | `UWBlock` + `UWMeta` | Format §2.4–§2.6 |
 | [uw-document-envelope.schema.json](uw-document-envelope.schema.json) | UWDocumentEnvelope | RFC 0014 / Envelope 1.0 |
+| [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 1.0 tooling schema | [UW XML Mapping 1.0](../UW_XML_MAPPING_v1.md) |
 | [`edit-operation.schema.json`](edit-operation.schema.json) | `EditOperation` (discriminated union) | Protocol §V |
 | [`protocol-error.schema.json`](protocol-error.schema.json) | `ProtocolError` | Protocol §XI |
 | [`implementation-manifest.schema.json`](implementation-manifest.schema.json) | `ImplementationManifest` | Protocol §I.4 |
@@ -26,7 +27,7 @@ this directory).
 npx --yes ajv-cli compile -s spec/schemas/<name>.schema.json
 ```
 
-CI runs this on every PR for all schemas in this directory.
+CI runs JSON Schema validation on every PR. The UW XML codec tests and docs-site build cover the XML mapping; the XSD is also compiled during release verification.
 
 ## Updating a schema
 

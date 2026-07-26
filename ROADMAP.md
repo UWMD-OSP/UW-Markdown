@@ -65,8 +65,9 @@ targets additive representation discovery for protocol 1.2, and stages
 |---|---|---|
 | ✅ | RFC 0014 architecture | Accepted by the project owner on 2026-07-26 under owner-led governance. |
 | ✅ | Envelope + UW JSON | Envelope 1.0 schema, JSON 1.0 codec, semantic digest, registry, CLI export, and tests implemented. |
-| 🟡 | Registry + discovery | Protocol 1.2 descriptors, manifest schema, negotiation, and `uwmd formats` implemented; HTTP/MCP profiles and `convert` remain. |
-| 📋 | UW XML + CSV bundle | Implement only after mappings, safety limits, and CSV structure are accepted. |
+| ✅ | Registry + discovery | Protocol 1.2 descriptors, manifest schema, negotiation, and `uwmd formats` implemented; HTTP/MCP profiles remain. |
+| ✅ | UW XML | Deterministic XML 1.0 mapping, XSD, secure codec, digest checks, and `uwmd convert` implemented. |
+| 📋 | UW CSV bundle | Normalized bundle structure accepted; implementation is the next codec phase. |
 
 Detailed sequencing and release gates:
 [`docs/releases/1.1-plus-interchange-plan.md`](./docs/releases/1.1-plus-interchange-plan.md).

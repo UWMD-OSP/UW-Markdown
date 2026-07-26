@@ -6,6 +6,8 @@ export default defineConfig({
     'An open standard for commercial real-estate underwriting documents — readable by humans, AI tools, and software alike.',
   cleanUrls: true,
   lastUpdated: true,
+  // XSD is copied to public/ as a downloadable static asset.
+  ignoreDeadLinks: [/\.xsd$/],
   srcExclude: ['README.md'],
 
   head: [
@@ -25,6 +27,7 @@ export default defineConfig({
       { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },
       { text: 'Spec', link: '/spec/format' },
       { text: 'Protocol', link: '/spec/protocol' },
+      { text: 'XML', link: '/spec/xml' },
       { text: 'Schemas', link: '/spec/schemas/' },
       { text: 'Conformance', link: '/conformance/' },
       { text: 'About', link: '/about/roadmap' },
@@ -70,8 +73,9 @@ export default defineConfig({
           text: 'Specifications',
           items: [
             { text: 'Format spec (v1.1)', link: '/spec/format' },
-            { text: 'Protocol spec (v1.0)', link: '/spec/protocol' },
-            { text: 'JSON Schemas', link: '/spec/schemas/' },
+            { text: 'Protocol spec (v1.2)', link: '/spec/protocol' },
+            { text: 'XML mapping (v1.0)', link: '/spec/xml' },
+            { text: 'Schemas', link: '/spec/schemas/' },
           ],
         },
       ],
