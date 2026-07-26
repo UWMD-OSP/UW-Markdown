@@ -56,14 +56,14 @@ reflects effort vs. devex value.
 
 ## v1.1+ machine interchange
 
-RFC [0014](./docs/rfcs/0014-multi-format-interchange.md) proposes the
+Accepted RFC [0014](./docs/rfcs/0014-multi-format-interchange.md) defines the
 post-v1.0 machine-interchange train. It keeps the `.uw.md` format at 1.1,
 targets additive representation discovery for protocol 1.2, and stages
 `@uwmd/core` / `uwmd` 1.1 releases for the document envelope and codecs.
 
 | Status | Item | Notes |
 |---|---|---|
-| 🚧 | RFC 0014 review | Draft prepared; open the RFC PR, mark active when ready, run the 14-day comment window, and record BDFL acceptance before normative changes merge. |
+| ✅ | RFC 0014 architecture | Accepted 2026-07-26 under a recorded single-maintainer bootstrap waiver; implementation remains phased and unshipped. |
 | 📋 | Envelope + UW JSON | Promote the existing lossless `.uw.json` shape into a neutral schema and codec without changing Markdown syntax. |
 | 📋 | Registry + discovery | Add protocol 1.2 representation descriptors and optional HTTP/MCP companion profiles. |
 | 📋 | UW XML + CSV bundle | Implement only after mappings, safety limits, and CSV structure are accepted. |

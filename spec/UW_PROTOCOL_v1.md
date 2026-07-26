@@ -908,7 +908,7 @@ required for v1 conformance.
   (Monte Carlo, sensitivity sweeps).
 - **Hospitality module** — full implementation of the example sketched
   in Appendix E, serving as the reference module for the module system.
-- **Multi-format interchange** — RFC 0014 proposes an additive post-v1.0 train:
+- **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
   protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
   and optional HTTP/MCP binding profiles. The `.uw.md` format remains 1.1.
 

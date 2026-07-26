@@ -72,7 +72,7 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
 - **v1 follow-on tools** — VS Code extension → docs site → web editor → Excel converter → standalone CLI.
 - **v1.1+ machine interchange** — a shared document envelope with lossless JSON,
   XML, and normalized CSV-bundle codecs plus optional API/MCP bindings, proposed
-  in [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
+  in accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
 - **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/).
 
 ## Who's building on it

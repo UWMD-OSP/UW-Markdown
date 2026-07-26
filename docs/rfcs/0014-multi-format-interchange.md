@@ -1,9 +1,10 @@
 ---
 rfc: 0014
 title: Define extensible multi-format interchange
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-07-25
+accepted: 2026-07-26
 affects:
   - format-spec
   - protocol-spec
@@ -477,6 +478,16 @@ On 2026-07-26, the BDFL selected the recommended model:
   all six named views listed in §7;
 - canonical envelope 1.2 emits `content._meta` and per-block prose exactly once;
   legacy `.uw.json` 1.1 duplicate fields are read-compatible only.
+
+### Bootstrap governance disposition
+
+The BDFL accepted this RFC on 2026-07-26 and explicitly waived the 14-day
+comment period for this decision because the project has one maintainer, no
+other contributors, and no published implementation dependency on the proposed
+contract. This is a one-time bootstrap exception, does not amend
+`GOVERNANCE.md`, and does not waive review periods for future multi-contributor
+normative changes. Acceptance authorizes phased implementation; it does not mark
+the codecs or protocol 1.2 behavior as implemented or conformant.
 
 ## Unresolved questions
 

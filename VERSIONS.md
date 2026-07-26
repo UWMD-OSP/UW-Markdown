@@ -33,13 +33,13 @@ same protocol version.
 
 ## Planned 1.1+ interchange train
 
-RFC 0014 proposes a coordinated but independently versioned release after the
+Accepted RFC 0014 defines a coordinated but independently versioned release after the
 first public v1.0.0 packages:
 
 | Surface | Candidate version | Status |
 |---|---:|---|
 | `.uw.md` format | 1.1 (unchanged) | No syntax change proposed. |
-| UW Protocol | 1.2.0 | Draft RFC; additive representation discovery only. |
+| UW Protocol | 1.2.0 | Accepted plan; additive representation discovery is not implemented yet. |
 | `@uwmd/core` | 1.1.0 | Planned envelope and codec APIs. |
 | `uwmd` | 1.1.0 | Planned formats/convert CLI. |
 | UW Document Envelope | 1.2 | Candidate canonical shape; legacy experimental `.uw.json` 1.1 remains readable. |

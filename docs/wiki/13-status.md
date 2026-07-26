@@ -121,8 +121,9 @@ not core gaps.
 RFC 0014 defines a format-neutral envelope plus UW JSON, XML, and normalized CSV
 bundle mappings. The proposed release keeps `.uw.md` at format 1.1, targets
 protocol 1.2 representation discovery and `@uwmd/core` / `uwmd` 1.1, and
-keeps HTTP/MCP as optional binding profiles. It is a draft, not implemented or
-normative. See the
+keeps HTTP/MCP as optional binding profiles. RFC 0014 was accepted on 2026-07-26
+under a recorded single-maintainer bootstrap waiver; it is not implemented or
+part of current conformance yet. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
 
