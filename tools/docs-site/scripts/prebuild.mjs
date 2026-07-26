@@ -72,6 +72,7 @@ const COPIES = [
   { from: 'docs/rfcs/0010-signed-blocks.md',          to: 'about/rfcs/0010-signed-blocks.md' },
   { from: 'docs/rfcs/0011-capability-tokens.md',      to: 'about/rfcs/0011-capability-tokens.md' },
   { from: 'docs/rfcs/0013-corpus-retrieval.md',       to: 'about/rfcs/0013-corpus-retrieval.md' },
+  { from: 'docs/rfcs/0014-multi-format-interchange.md', to: 'about/rfcs/0014-multi-format-interchange.md' },
 ];
 
 // ─── Link rewriter ────────────────────────────────────────────────────────────

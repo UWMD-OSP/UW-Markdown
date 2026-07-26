@@ -907,6 +907,9 @@ discoverability. None of them are required for v1 conformance.
   (Monte Carlo, sensitivity sweeps).
 - **Hospitality module** — full implementation of the example sketched
   in Appendix E, serving as the reference module for the module system.
+- **Multi-format interchange** — a format-neutral document envelope with
+  lossless JSON, XML, and normalized CSV-bundle encodings plus HTTP/MCP
+  representation discovery. See RFC 0014.
 
 Each of these opens as an RFC under `docs/rfcs/` once that process
 is in place.

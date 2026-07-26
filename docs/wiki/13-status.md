@@ -121,7 +121,8 @@ not core gaps.
 Range/stochastic calcs (0005), sensitivity-table builtin (0007), lease-up modeling
 (0008), custom asset-class declarations from modules (0003), module signing (0002),
 locale/multi-currency (0001), conformance runner v2 (0004), `_meta` v2 reorg
-(0009), signed blocks (0010), capability tokens (0011), corpus retrieval (0013).
+(0009), signed blocks (0010), capability tokens (0011), corpus retrieval (0013),
+and multi-format JSON/XML/CSV interchange with API/MCP bindings (0014).
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
