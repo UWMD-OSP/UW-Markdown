@@ -51,6 +51,21 @@ stable resource representations for complete records. HTTP clients need ordinary
 content negotiation, cache validators, and explicit errors. Both should use the
 same codecs instead of implementing transport-specific serializers.
 
+### Release classification
+
+This is a post-v1.0, **1.1+ release train**, not a `.uw.md` format bump. The
+candidate surface versions are:
+
+- `.uw.md` format **1.1 unchanged**;
+- UW Protocol **1.2.0**, for additive representation discovery;
+- `@uwmd/core` and `uwmd` **1.1.0**, for the envelope and codec APIs;
+- independently versioned UW JSON, XML, and CSV mappings at their first stable
+  mapping versions.
+
+HTTP and MCP remain optional companion binding profiles. No existing conformance
+tier is required to implement a network transport. The coordinated release plan
+is [`docs/releases/1.1-plus-interchange-plan.md`](../releases/1.1-plus-interchange-plan.md).
+
 ## Proposed change
 
 ### 1. Separate model, encoding, view, and transport
@@ -66,42 +81,56 @@ A transport MUST NOT change the semantics of an encoding. A view MUST identify
 itself as a view and MUST NOT claim lossless or model-equivalent round-trip.
 
 `.uw.md` remains the canonical authoring representation. It is the only v1
-representation with a byte-preserving Tier-2 edit contract. Other encodings
-round-trip the envelope, not the original Markdown byte stream.
+representation with a byte-preserving Tier-2 edit contract. A source adapter
+that retains the original bytes implements that contract; encoding an envelope
+alone does not. Other encodings round-trip the envelope, not the original
+Markdown byte stream.
 
 ### 2. UW Document Envelope
 
 The normative envelope starts from the existing `UWJsonDocument` shape:
 
 ```ts
+interface UWEnvelopeBlock {
+  annotation: UWFenceAnnotation;
+  /** Complete fenced JSON object; _meta appears here exactly once. */
+  content: Record<string, unknown>;
+  /** Markdown immediately preceding this exact block. */
+  prose?: string;
+}
+
 interface UWDocumentEnvelope {
-  envelope_version: string;
+  envelope_version: "1.2";
   format_version: string;
   generated_at?: string;
   generator?: string;
   frontmatter: UWFrontmatter;
-  prose: Record<string, string>;
   sections: Record<string, UWEnvelopeBlock | Record<string, UWEnvelopeBlock>>;
   pipeline_log: UWEnvelopeBlock[];
   custom_calculations: UWEnvelopeBlock[];
   custom_scenarios: UWEnvelopeBlock[];
   extensions: Record<string, UWEnvelopeBlock>;
   superseded: Record<string, UWEnvelopeBlock[]>;
+  [key: string]: unknown;
 }
 ```
 
-The implementation MAY retain `uwjson_version` as an alias during migration, but
-the neutral schema MUST use `envelope_version`. The envelope version governs the
-container shape; `format_version` governs UW section semantics. Codec and bundle
-versions are independent and MUST NOT be inferred from either field.
+The neutral schema uses `envelope_version: "1.2"`. The envelope version governs
+the container shape; `format_version` governs UW Markdown section semantics.
+Codec and bundle versions are independent and MUST NOT be inferred from either
+field.
 
-An envelope block MUST preserve the existing annotation, `_meta` provenance,
-content, and prose values. JSON object member order is not semantic. Array order,
-absent versus present values, JSON scalar types, variants, and superseded order
-are semantic and MUST be preserved.
+An envelope block MUST preserve its annotation, `_meta` provenance, content,
+and prose values. `content._meta` is the sole authoritative provenance value,
+and `block.prose` is the sole authoritative prose value. Canonical encoders MUST
+NOT emit the experimental duplicate `block.meta` or top-level `prose` index.
+Readers MUST accept the legacy `.uw.json` 1.1 shape, verify duplicate values when
+both are present, reject conflicts, and normalize it to envelope 1.2. JSON object
+member order is not semantic. Array order, absent versus present values, JSON
+scalar types, variants, and superseded order are semantic and MUST be preserved.
 
-`generated_at` and `generator` are volatile serialization metadata. They MUST be
-excluded when calculating semantic equivalence.
+`generated_at` and `generator` are volatile serialization metadata. They and
+`semantic_digest` itself MUST be excluded when calculating semantic equivalence.
 
 ### 3. Fidelity classes
 
@@ -109,7 +138,7 @@ Every representation descriptor MUST declare one of these fidelity classes:
 
 | Fidelity | Guarantee |
 |---|---|
-| `source` | Preserves the authoring byte stream under the Tier-2 edit rules. |
+| `source` | Can preserve an existing authoring byte stream under the Tier-2 edit rules. |
 | `model` | Decodes to a semantically equivalent UW Document Envelope. |
 | `view` | Deliberately omits or transforms data for a named use case. |
 
@@ -149,6 +178,11 @@ interface UWCodec<TInput = unknown, TOutput = unknown> {
   decode(input: TInput, options?: DecodeOptions): UWDocumentEnvelope;
   encode(document: UWDocumentEnvelope, options?: EncodeOptions): TOutput;
 }
+
+interface UWSourceAdapter<TSource = string> {
+  parse(source: TSource, options?: DecodeOptions): UWDocumentEnvelope;
+  applyEdit(source: TSource, operation: EditOperation): TSource;
+}
 ```
 
 `@uwmd/core` will expose `CodecRegistry`, `registerCodec`,
@@ -157,8 +191,10 @@ Registration MUST reject duplicate IDs and ambiguous media types unless an
 explicit priority is supplied. Core codec IDs are reserved with the `uw-`
 prefix; third-party codecs SHOULD use a reverse-domain ID.
 
-Negotiation MUST select by exact media type, then structured suffix, then
-wildcard, honoring quality values where the transport supports them. When two
+HTTP negotiation MUST follow the standard exact, type-wildcard, and full-wildcard
+`Accept` matching rules and honor quality values. Structured syntax suffixes aid
+generic content-type dispatch after a representation is selected; suffix
+wildcards such as `application/*+json` are not valid negotiation rules. When two
 representations tie, the server preference order is UW JSON, UW Markdown, UW
 XML, then CSV bundle. A caller MAY require a minimum fidelity; a `view` MUST
 never satisfy a request for `model` or `source`.
@@ -197,11 +233,13 @@ UW XML is a deterministic XML 1.0 mapping of the envelope.
 | Fidelity | `model` |
 | Character encoding | UTF-8 |
 
-The root is `<uw:document>`. Envelope properties map to child elements in the
-schema order. Objects use named child elements; arrays use repeated `<uw:item>`
-children. JSON strings, numbers, booleans, and nulls use `uw:type` only where
-the schema or an extension does not determine the type. XML attributes are
-limited to envelope/format versions, discriminators, and identifiers; business
+The root is `<uw:document>`. Known envelope properties map to child elements in
+schema order. Arrays use repeated `<uw:item>` children. Unknown members,
+extension members, and keys that are not valid XML names use
+`<uw:member name="original-key">`; a decoder MUST restore the exact JSON key.
+JSON strings, numbers, booleans, and nulls use `uw:type` wherever the schema does
+not determine the type. XML attributes are limited to envelope/format versions,
+discriminators, identifiers, and the `name`/`type` mapping attributes; business
 values MUST remain elements.
 
 XML decoders MUST disable DTDs and external entity resolution and MUST enforce
@@ -229,10 +267,11 @@ The required files are:
 | File | Purpose |
 |---|---|
 | `manifest.json` | Bundle, envelope, and format versions; semantic digest; file inventory and SHA-256 hashes. |
-| `frontmatter.csv` | One row per frontmatter value, keyed by JSON Pointer and carrying JSON type. |
-| `blocks.csv` | One row per block with a deterministic `block_ref`, collection, section, variant, history position, annotation, and provenance. |
-| `fields.csv` | Long-form block content: `block_ref`, JSON Pointer, JSON type, and canonical JSON value. |
-| `prose.csv` | Scope/reference and exact prose text, including quoted newlines. |
+| `document.csv` | One row carrying deal identity plus envelope and generator metadata. |
+| `frontmatter.csv` | One row per frontmatter value: JSON Pointer, JSON type, canonical JSON value. |
+| `blocks.csv` | One row per block: `block_ref`, collection, section, variant, ordinal, and current/superseded state. |
+| `block_values.csv` | Long form values: `block_ref`, scope (`annotation`, `meta`, or `content`), JSON Pointer, JSON type, canonical JSON value. `meta` rows map to `content._meta`; `content` rows exclude that subtree. |
+| `prose.csv` | `prose_ref`, scope, section/block reference, and exact prose text, including quoted newlines. |
 
 `block_ref` is an encoding-local JSON Pointer into the envelope, not a durable
 business identifier. This avoids adding unstable IDs to existing `.uw.md`
@@ -242,13 +281,18 @@ CSV follows RFC 4180 conventions with UTF-8 and CRLF records. Canonical JSON in
 the value column preserves numbers, booleans, null, arrays, and objects without
 type guessing. Implementations MUST defend against ZIP path traversal,
 decompression bombs, excessive file counts, and spreadsheet formula injection.
-Formula escaping is a presentation policy and MUST be reversible before digest
-verification.
+Normalized value cells are data and MUST NOT be evaluated as formulas. A wide
+view exporter MUST declare its spreadsheet-safety escaping policy in the
+manifest; any escaping that affects semantic values MUST be reversed before
+digest verification.
 
-Asset-specific wide files such as `rent_roll.csv` or
-`operating_statement.csv` MAY appear under `views/`. Each MUST be listed in the
-manifest with `fidelity: "view"` and a stable profile ID. They are never required
-to reconstruct the envelope.
+Wide files MAY appear under `views/` and are never required to reconstruct the
+envelope. The first reference release MUST ship exporters for these six named
+views when their source sections are present: `deal_summary.csv`,
+`rent_roll.csv`, `operating_statement.csv`, `debt.csv`, `valuation.csv`,
+and `sources_uses.csv`. Each emitted view MUST be listed in the manifest with
+`fidelity: "view"`, a stable profile ID, its source section(s), and its column
+schema version.
 
 ### 8. HTTP API binding
 
@@ -270,7 +314,8 @@ model-fidelity representation.
 
 ### 9. MCP binding
 
-An MCP server SHOULD expose each deal as a resource with a stable URI and an
+An MCP binding profile SHOULD expose each deal as a resource with a stable URI
+and an
 explicit MIME type. Resource templates SHOULD provide representation and view
 parameters where the host supports them. Complete UW JSON and UW XML documents
 may be returned as text resources; ZIP bundles MUST be returned as binary
@@ -293,7 +338,8 @@ Large or binary results SHOULD be resource links. MCP prompts and agent context
 SHOULD request an existing context profile or named view rather than loading a
 complete audit envelope by default.
 
-MCP is a transport binding only: the tool names above MUST delegate to the same
+MCP is an optional transport binding only: the tool names above MUST delegate
+to the same
 codec registry, validator, and editor used by file and HTTP integrations.
 
 ### 10. Future encodings
@@ -319,7 +365,8 @@ envelope value and passes the cross-format equivalence corpus.
    registry and conformance contract.
 
 Each phase can ship independently after the RFC is accepted. No phase is a v1.0
-release blocker.
+release blocker. Version coordination and governance gates are tracked in the
+[1.1+ release plan](../releases/1.1-plus-interchange-plan.md).
 
 ## Compatibility analysis
 
@@ -332,9 +379,10 @@ release blocker.
   Markdown guarantees.
 - **Tier-3 Calc Hosts and Tier-4 Agent Hosts:** operate on the same parsed model.
   Transport and codec selection are additive.
-- **Existing `.uw.json` users:** the initial implementation accepts both
-  `uwjson_version` and `envelope_version` and emits both during one minor release.
-  A later major version may stop emitting the alias after a deprecation notice.
+- **Existing `.uw.json` users:** readers accept `uwjson_version: "1.1"` and its
+  duplicate `block.meta` / top-level `prose` fields, reject conflicting
+  duplicates, and normalize them to envelope 1.2. Canonical writers emit only
+  `envelope_version: "1.2"`, `content._meta`, and per-block prose.
 - **Existing renderer JSON/CSV users:** outputs remain available as named views.
   CLI aliases may warn before any rename.
 - **Modules:** section and extension payloads are preserved; no module manifest
@@ -376,11 +424,13 @@ then, the TypeScript reference runner gates the reference implementation.
 - **API surface:** `UWDocumentEnvelope`, `RepresentationCapability`, `UWCodec`,
   `CodecRegistry`, `encodeUWDocument`, `decodeUWDocument`,
   `negotiateRepresentation`, and semantic digest helpers.
-- **Migration:** `UWJsonDocument` becomes a deprecated type alias for
-  `UWDocumentEnvelope`. Existing `toUWJson`, `parseUWJson`, and `fromUWJson`
-  delegate to the JSON codec.
+- **Migration:** retain `UWJsonDocument` as the deprecated legacy input type;
+  add a `LegacyUWJsonDocument` alias if needed for clarity. Existing
+  `parseUWJson` accepts both shapes and normalizes to `UWDocumentEnvelope`;
+  `toUWJson` emits canonical envelope 1.2.
 - **Views:** existing `renderJson` and `renderCsv` keep their output shape but are
-  documented and exposed as `deal-summary` views.
+  documented as legacy summary views. The CSV bundle exporter adds the six
+  approved named wide views without treating them as model-fidelity inputs.
 - **Test plan:** unit tests per codec; property-based round trips; golden
   cross-format digests; hostile input tests; manifest and negotiation tests; CLI
   integration tests; MCP/HTTP contract examples validated against their schemas.
@@ -418,10 +468,20 @@ limits, or future codecs. A descriptor array is additive and discoverable.
 Separate HTTP and MCP schemas would drift from file serialization. Reusing one
 envelope and registry keeps validation, conversion, and conformance centralized.
 
+## Decisions recorded
+
+On 2026-07-26, the BDFL selected the recommended model:
+
+- the normalized lossless CSV bundle is authoritative;
+- wide CSVs remain view-fidelity outputs, and the first reference release ships
+  all six named views listed in §7;
+- canonical envelope 1.2 emits `content._meta` and per-block prose exactly once;
+  legacy `.uw.json` 1.1 duplicate fields are read-compatible only.
+
 ## Unresolved questions
 
-1. Should the final neutral field be `envelope_version` or
-   `document_version`, and how long should `uwjson_version` be emitted?
+1. Should the final neutral field remain `envelope_version` permanently, or
+   become `document_version` in a later envelope major?
 2. Should CSV ZIP use a vendor `+zip` media type or `application/zip` with a
    profile parameter until registration guidance is settled?
 3. Does v2 need durable block IDs, or is deterministic JSON-Pointer identity

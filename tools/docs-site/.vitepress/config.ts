@@ -122,6 +122,13 @@ export default defineConfig({
             { text: '0014 — Multi-format interchange', link: '/about/rfcs/0014-multi-format-interchange' },
           ],
         },
+        {
+          text: 'Release Plans',
+          collapsed: false,
+          items: [
+            { text: '1.1+ — Machine interchange', link: '/about/releases/1.1-plus-interchange' },
+          ],
+        },
       ],
     },
 

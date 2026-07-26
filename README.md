@@ -70,6 +70,9 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
 
 - **v1 release blockers** — Tier-2/3 implementation, conformance runner, JSON Schemas, governance scaffolding (this PR), npm publish.
 - **v1 follow-on tools** — VS Code extension → docs site → web editor → Excel converter → standalone CLI.
+- **v1.1+ machine interchange** — a shared document envelope with lossless JSON,
+  XML, and normalized CSV-bundle codecs plus optional API/MCP bindings, proposed
+  in [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
 - **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/).
 
 ## Who's building on it
@@ -93,6 +96,8 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 - [MAINTAINERS.md](./MAINTAINERS.md) — current maintainers and areas of ownership.
 - [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
 - [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
+- [1.1+ interchange release plan](./docs/releases/1.1-plus-interchange-plan.md) —
+  governance gates and phased delivery for JSON, XML, CSV, API, and MCP.
 
 ## License
 

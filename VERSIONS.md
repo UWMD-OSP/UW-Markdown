@@ -31,6 +31,25 @@ same protocol version.
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.1.0** | format 1.1 |
 
+## Planned 1.1+ interchange train
+
+RFC 0014 proposes a coordinated but independently versioned release after the
+first public v1.0.0 packages:
+
+| Surface | Candidate version | Status |
+|---|---:|---|
+| `.uw.md` format | 1.1 (unchanged) | No syntax change proposed. |
+| UW Protocol | 1.2.0 | Draft RFC; additive representation discovery only. |
+| `@uwmd/core` | 1.1.0 | Planned envelope and codec APIs. |
+| `uwmd` | 1.1.0 | Planned formats/convert CLI. |
+| UW Document Envelope | 1.2 | Candidate canonical shape; legacy experimental `.uw.json` 1.1 remains readable. |
+| UW JSON / XML / CSV mappings | independently versioned | Planned; mapping versions are not package or format versions. |
+
+These are candidate versions, not the current compatibility matrix. They become
+authoritative only after RFC acceptance, implementation, conformance, and the
+corresponding release entry in `CHANGELOG.md`. See the
+[1.1+ interchange release plan](docs/releases/1.1-plus-interchange-plan.md).
+
 ## Compatibility rules
 
 1. **Format minor versions are additive.** A 1.2 file may use new

@@ -36,7 +36,10 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
-per-surface sections.
+per-surface sections. Candidate versions and unaccepted RFC work belong in a
+release plan, not in the current matrix or shipped changelog. The active
+post-v1.0 plan is
+[`docs/releases/1.1-plus-interchange-plan.md`](../releases/1.1-plus-interchange-plan.md).
 
 ## CI / CD (`.github/workflows/`)
 
@@ -61,7 +64,8 @@ per-surface sections.
   (0002), custom asset classes (0003), conformance runner v2 (0004), stochastic
   calcs (0005), hospitality module (0006), sensitivity tables (0007), lease-up
   modeling (0008), `_meta` v2 reorg (0009), signed blocks (0010), capability
-  tokens (0011), corpus retrieval (0013).
+  tokens (0011), corpus retrieval (0013), and the post-v1.0 machine-interchange
+  train (0014).
 - Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).

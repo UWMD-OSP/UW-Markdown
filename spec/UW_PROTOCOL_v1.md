@@ -889,8 +889,9 @@ host advertising protocol version `1.x.y`.
 
 ## XIII. Future work (non-normative)
 
-The following items are deferred to v2 and consolidated here for
-discoverability. None of them are required for v1 conformance.
+The following items are deferred beyond v1.0 and consolidated here for
+discoverability. Unless an item says otherwise, it is v2 exploration. None is
+required for v1 conformance.
 
 - **Locale negotiation** — v1 freezes formatting to `en-US`. The
   `SupportedLocale` type in `protocol.ts` is the v2 hook; full
@@ -907,9 +908,9 @@ discoverability. None of them are required for v1 conformance.
   (Monte Carlo, sensitivity sweeps).
 - **Hospitality module** — full implementation of the example sketched
   in Appendix E, serving as the reference module for the module system.
-- **Multi-format interchange** — a format-neutral document envelope with
-  lossless JSON, XML, and normalized CSV-bundle encodings plus HTTP/MCP
-  representation discovery. See RFC 0014.
+- **Multi-format interchange** — RFC 0014 proposes an additive post-v1.0 train:
+  protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
+  and optional HTTP/MCP binding profiles. The `.uw.md` format remains 1.1.
 
 Each of these opens as an RFC under `docs/rfcs/` once that process
 is in place.
