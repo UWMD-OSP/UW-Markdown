@@ -30,8 +30,8 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.1.0).
-- **Packages** — each `package.json` (`@uwmd/core` 1.0.0, `uwmd` 1.0.0,
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.2.0).
+- **Packages** — each `package.json` (`@uwmd/core` 1.1.0, `uwmd` 1.1.0,
   `@uwmd/excel` 0.1.0).
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
@@ -52,9 +52,10 @@ post-v1.0 plan is
 
 ## Governance & RFCs
 
-- Model: BDFL + contributors ([`GOVERNANCE.md`](../../GOVERNANCE.md)). Central
-  distinction is **editorial** changes (one maintainer approval) vs. **normative**
-  changes (RFC + BDFL approval + 14-day comment window).
+- Model: owner-led until outside contributions begin
+  ([`GOVERNANCE.md`](../../GOVERNANCE.md)). The owner can accept and implement
+  changes immediately. External PRs require owner review; after the first external
+  PR merges, normative RFCs also receive a 14-day public comment window.
 - **Normative = anything that changes the spec, protocol, schemas, or
   conformance contract.** That includes most things this wiki's recipes touch when
   they alter behavior: new sections, new validation codes that change conformance,

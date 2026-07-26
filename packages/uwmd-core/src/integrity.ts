@@ -22,7 +22,11 @@ import { BUILTIN_EDIT_POLICIES } from './protocol.js';
  * digest. Async to support Web Crypto on browsers without Node's `crypto`.
  */
 export async function sha256Hex(value: unknown): Promise<string> {
-  const text = canonicalize(value);
+  return sha256TextHex(canonicalize(value));
+}
+
+/** SHA-256 of an exact UTF-8 string, without JSON canonicalization. */
+export async function sha256TextHex(text: string): Promise<string> {
   const bytes = new TextEncoder().encode(text);
 
   // Prefer Node's synchronous crypto when available; falls back to Web Crypto.
@@ -38,7 +42,7 @@ export async function sha256Hex(value: unknown): Promise<string> {
     return mod.createHash('sha256').update(bytes).digest('hex');
   }
   const subtle = g.crypto?.subtle;
-  if (!subtle) throw new Error('integrity.sha256Hex: no crypto provider available.');
+  if (!subtle) throw new Error('integrity.sha256TextHex: no crypto provider available.');
   const digest = await subtle.digest('SHA-256', bytes);
   return bytesToHex(new Uint8Array(digest));
 }

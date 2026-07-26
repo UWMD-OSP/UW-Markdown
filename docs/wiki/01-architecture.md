@@ -59,8 +59,8 @@ spec/                      Normative specs + JSON Schemas
   schemas/                 JSON Schema 2020-12, $id-anchored at https://uwmd.org/schemas/...
 
 packages/
-  uwmd-core/   (@uwmd/core 1.0.0)  The reference library — see 03-core-library.md
-  uwmd-cli/    (uwmd 1.0.0)        Thin npx wrapper over @uwmd/core's cli.ts
+  uwmd-core/   (@uwmd/core 1.1.0)  The reference library — see 03-core-library.md
+  uwmd-cli/    (uwmd 1.1.0)        Thin npx wrapper over @uwmd/core's cli.ts
   uwmd-excel/  (@uwmd/excel 0.1.0) .uw.md → .xlsx workbook (formulas, not values)
 
 tools/

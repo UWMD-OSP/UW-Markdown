@@ -1,14 +1,9 @@
 # 13 — Build status (living document)
 
-**Review update:** 2026-07-25 - Windows CRLF parsing is fixed and regression
-tested; Windows build/test/conformance and blocking core-coverage jobs are added
-to CI; critical development dependency advisories are remediated. The first npm
-publication remains open. ExcelJS transitive advisories are isolated to the
-separately versioned, currently unpublished `@uwmd/excel` add-on.
-**Last verified:** 2026-07-25 (report renderer + @uwmd/report PDF pipeline +
-React web-editor rebuild landed; web-editor 0.5.0 footed-model surfaces —
-rent-roll, operating statement, debt, sources & uses, valuation — landed on a
-deterministic core footing layer; against working tree).
+**Review update:** 2026-07-26 — RFC 0014 Phase A and core Phase B discovery are
+implemented; owner-led governance is active.
+**Last verified:** 2026-07-26 (Envelope 1.0, UW JSON 1.0, Protocol 1.2 discovery,
+schemas, CLI, package verification, and core tests; working tree).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -55,11 +50,10 @@ not core gaps.
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
-- **CLI:** 15 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
-- **`.uw.json` sibling form:** `uwjson.ts` exports a lossless JSON projection of a
-  `.uw.md` file (provenance + prose + supersede history) and re-hydrates it into a
-  `ParsedUWFile`. Library/export feature only — a *normative* `.uw.json` (own JSON
-  Schema + conformance tier) is deferred to a future RFC. See [03](03-core-library.md).
+- **CLI:** 16 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
+- **Machine interchange Phase A:** Envelope 1.0, its normative JSON Schema,
+  UW JSON 1.0, semantic digest/equivalence helpers, codec registry, and digested
+  CLI export are implemented and tested. See [03](03-core-library.md).
 - **Conformance:** 29 fixtures, 4 tiers, CI gates tiers 1–3. See [09](09-conformance-testing.md).
 - **Report renderer + PDF pipeline:** `report.ts` in core renders the spec's
   §7.1 Lender Package / §7.2 Credit Memo as deterministic print-ready HTML
@@ -116,14 +110,13 @@ not core gaps.
 - **Market-data / investor-profile** — interface-only; no reference implementation.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
 
-## 📋 Planned for the post-v1.0 1.1+ train
+## 📋 Active 1.1+ machine-interchange train
 
 RFC 0014 defines a format-neutral envelope plus UW JSON, XML, and normalized CSV
-bundle mappings. The proposed release keeps `.uw.md` at format 1.1, targets
-protocol 1.2 representation discovery and `@uwmd/core` / `uwmd` 1.1, and
-keeps HTTP/MCP as optional binding profiles. RFC 0014 was accepted on 2026-07-26
-under a recorded single-maintainer bootstrap waiver; it is not implemented or
-part of current conformance yet. See the
+bundle mappings. Envelope 1.0, UW JSON 1.0, semantic digests, the codec registry,
+Protocol 1.2 representation descriptors/negotiation, schemas, `uwmd export`, and
+`uwmd formats` are implemented. XML, CSV bundles, `uwmd convert`, and HTTP/MCP
+profiles remain the next phases. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
 
@@ -138,13 +131,13 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 
 ## ⚙️ Operational — gates the public launch
 
-> **Current state (2026-07-25):** the repository is public. The remaining launch
-> gates are the `@uwmd` npm organization, `NPM_TOKEN`, and the first `v1.0.0`
-> tag/publication. The Excel add-on remains held separately until
-> its ExcelJS dependency chain is upgraded, replaced, or formally risk-accepted.
+> **Current state (2026-07-26):** the repository is public. The remaining launch
+> gates are the `@uwmd` npm organization, `NPM_TOKEN`, and the first `v1.1.0`
+> tag/publication. The Excel add-on remains held separately until its ExcelJS
+> dependency chain is upgraded, replaced, or formally risk-accepted.
 
 Completed: public repository and canonical rename to `uw-markdown`. Remaining:
-register the `@uwmd` npm org, add `NPM_TOKEN`, and tag/publish `v1.0.0`.
+register the `@uwmd` npm org, add `NPM_TOKEN`, and tag/publish `v1.1.0`.
 Review-flagged: single-maintainer bus factor, personal security email, and no
 public RFC venue.
 

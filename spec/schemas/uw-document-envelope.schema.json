@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uw-document-envelope.schema.json",
+  "title": "UW Document Envelope 1.0",
+  "description": "Format-neutral, lossless-at-the-model-layer envelope for UW Markdown representations.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "envelope_version",
+    "format_version",
+    "frontmatter",
+    "sections",
+    "pipeline_log",
+    "custom_calculations",
+    "custom_scenarios",
+    "extensions",
+    "superseded"
+  ],
+  "properties": {
+    "envelope_version": { "const": "1.0" },
+    "format_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "generator": { "type": "string", "minLength": 1 },
+    "semantic_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "frontmatter": {
+      "type": "object",
+      "required": ["uw_version", "deal_id", "deal_name"],
+      "properties": {
+        "uw_version": { "type": "string" },
+        "deal_id": { "type": "string" },
+        "deal_name": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          { "$ref": "#/$defs/block" },
+          { "$ref": "#/$defs/variantMap" }
+        ]
+      }
+    },
+    "pipeline_log": { "$ref": "#/$defs/blockArray" },
+    "custom_calculations": { "$ref": "#/$defs/blockArray" },
+    "custom_scenarios": { "$ref": "#/$defs/blockArray" },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/block" }
+    },
+    "superseded": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/blockArray" }
+    }
+  },
+  "$defs": {
+    "annotation": {
+      "type": "object",
+      "required": ["section"],
+      "properties": { "section": { "type": "string", "minLength": 1 } },
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "section",
+        "version",
+        "superseded",
+        "source",
+        "agent_id",
+        "agent_version",
+        "actor",
+        "timestamp",
+        "confidence",
+        "human_review_required",
+        "flags",
+        "input_hash",
+        "notes"
+      ],
+      "properties": {
+        "section": { "type": "string" },
+        "version": { "type": "integer", "minimum": 1 },
+        "superseded": { "type": "boolean" },
+        "source": { "type": "string" },
+        "agent_id": { "type": ["string", "null"] },
+        "agent_version": { "type": ["string", "null"] },
+        "actor": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "confidence": { "enum": ["high", "medium", "low"] },
+        "human_review_required": { "type": "boolean" },
+        "flags": { "type": "array", "items": { "type": "string" } },
+        "input_hash": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "content": {
+      "type": "object",
+      "required": ["_meta"],
+      "properties": { "_meta": { "$ref": "#/$defs/meta" } },
+      "additionalProperties": true
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["annotation", "content"],
+      "properties": {
+        "annotation": { "$ref": "#/$defs/annotation" },
+        "content": { "$ref": "#/$defs/content" },
+        "prose": { "type": "string" }
+      }
+    },
+    "variantMap": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/block" }
+    },
+    "blockArray": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/block" }
+    }
+  }
+}

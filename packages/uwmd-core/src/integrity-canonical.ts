@@ -27,6 +27,11 @@ export function canonicalize(value: unknown): string {
   return serialize(stripExcludedKeys(value));
 }
 
+/** RFC 8785 serialization without block-integrity field exclusions. */
+export function canonicalizeExact(value: unknown): string {
+  return serialize(value);
+}
+
 function stripExcludedKeys(input: unknown): unknown {
   if (input === null || typeof input !== 'object') return input;
   if (Array.isArray(input)) return input.map(stripExcludedKeys);

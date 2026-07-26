@@ -1,127 +1,110 @@
 # Governance
 
-This document describes how decisions get made on UW Markdown — the
-format spec, the protocol spec, the reference library, the conformance
-corpus, and the tools maintained in this repository.
+UW Markdown is currently an owner-led open-source project. The rules below keep
+solo development fast while defining the protections that apply if other people
+begin contributing.
 
-## TL;DR
+## Current mode: owner-led development
 
-For v1, UW Markdown uses a **BDFL + contributors** model. A single
-maintainer (the BDFL) has final say on normative changes; everyone
-else contributes via PRs. As the project grows, this is expected to
-evolve into a maintainer council via the promotion path described
-below.
+The project owner is [jaredmaxey](https://github.com/jaredmaxey). While the owner
+is the only contributor actively maintaining the project, the owner may:
+
+- change code, specifications, schemas, tests, documentation, and release plans
+  directly;
+- accept and implement an RFC immediately;
+- merge owner-authored pull requests without a waiting period or separate
+  approval; and
+- cut releases when the applicable automated checks pass.
+
+RFCs remain useful design records, but there is no mandatory public-comment
+window in owner-led mode. No waiver is required for an owner decision.
+
+## External contributions
+
+An external contribution is work submitted by anyone other than the project
+owner. External contributions are welcome and use pull requests.
+
+Every external pull request requires owner review before merge. The owner may
+request changes, accept the contribution, or decline it. Contributors agree that
+merged work is licensed under the repository's MIT License.
+
+The collaborative rules below activate automatically after the first external
+pull request is merged. The owner may activate them earlier by updating this
+file.
+
+## Collaborative mode
+
+Once collaborative mode is active:
+
+### Editorial and implementation changes
+
+Typo fixes, clarifications with no normative impact, tests, refactors, bug fixes,
+and implementations of already-accepted designs require:
+
+- a pull request;
+- passing applicable automated checks; and
+- one maintainer approval.
+
+### Normative changes
+
+A normative change alters what a conforming implementation must do, including
+MUST/SHOULD requirements, standard fields, schemas, calculation grammar,
+conformance expectations, or breaking public API changes.
+
+A normative change requires:
+
+- an RFC in `docs/rfcs/`;
+- a public comment period of at least 14 days;
+- project-owner approval; and
+- a reference implementation in the same pull request or a linked follow-up.
+
+The owner may extend the comment period when outside implementations need time
+to evaluate the change. Emergency security fixes may be merged immediately and
+documented afterward.
 
 ## Roles
 
-### BDFL (Benevolent Dictator For Life)
+### Project owner
 
-- Single named individual; currently [jaredmaxey](https://github.com/jaredmaxey).
-- Final authority on all normative changes to the format spec
-  (`UW_FORMAT_SPEC_v1.md`), the protocol spec (`UW_PROTOCOL_v1.md`),
-  and the JSON Schemas in `spec/schemas/`.
-- Final say on disputed PRs and contested module designs.
-- Resolves ties when maintainers disagree.
+The project owner has final authority over scope, normative decisions, releases,
+maintainer appointments, and disputed pull requests.
 
 ### Maintainers
 
-- Have commit access and can approve PRs to all areas of the repo.
-- Listed in [`MAINTAINERS.md`](./MAINTAINERS.md) with their areas of
-  ownership (spec, `@uwmd/core`, conformance corpus, web viewer,
-  etc.). Reflected in `.github/CODEOWNERS`.
-- Currently the BDFL is the only maintainer (solo project).
+Maintainers have commit or review authority for areas listed in
+[`MAINTAINERS.md`](./MAINTAINERS.md). A maintainer may be appointed by the owner
+after demonstrating sustained, constructive work on the project.
 
 ### Contributors
 
-- Anyone who has had a PR merged. Listed implicitly in `git log`.
-- May be invited to become maintainers per the promotion path below.
+A contributor is anyone whose external pull request has been merged. Contributors
+may propose RFCs, review designs, implement tools, and participate in project
+discussion.
 
-## Decision-making
+## Disputes
 
-### Editorial changes (no normative impact)
+Discussion happens in the relevant issue, RFC, or pull request. The project owner
+makes the final decision when consensus is not reached and records a short
+rationale.
 
-Typo fixes, clarifying prose, doc reorganization, code refactors that
-preserve behavior, test additions, conformance fixture additions
-(when the expected output is uncontested):
+## Conformance corpus
 
-- Open a PR.
-- One maintainer approval required.
-- Merge.
+The conformance corpus is normative. In collaborative mode, changes that alter
+expected conforming behavior follow the normative-change process. A new fixture
+that only demonstrates already-specified behavior follows the ordinary pull
+request process.
 
-### Normative changes (change implementer behavior)
+## Modules
 
-Any change to MUST/SHOULD language in either spec, any new field in a
-standard section, any change to the calc engine grammar, any new
-`BUILTIN_*` table entry, any breaking change to `@uwmd/core`'s public
-API:
+This document governs modules maintained in this repository. Third-party modules
+choose their own governance.
 
-- Open an RFC (see [`docs/rfcs/0000-template.md`](./docs/rfcs/0000-template.md)).
-- BDFL approval required.
-- A 14-day comment period before merging — gives third-party
-  implementers time to weigh in.
-- Reference implementation must land in the same PR or a clearly
-  linked follow-up.
-- Merge with the version bump documented in `CHANGELOG.md`.
+## License
 
-### Disputed PRs
-
-If two maintainers disagree on a normative change:
-
-- Discussion happens in the PR thread.
-- If consensus is not reached within 7 days, the BDFL decides.
-- The decision is recorded in the PR thread with a one-line
-  rationale.
-
-## Promotion path
-
-A contributor becomes a maintainer when they have:
-
-1. Had ≥ 5 substantive PRs merged.
-2. Reviewed ≥ 3 other contributors' PRs constructively.
-3. Demonstrated familiarity with the spec by either implementing
-   against it (a tool, a third-party port) or substantially
-   contributing to it.
-
-Promotion is proposed by an existing maintainer in a private message
-to the BDFL and announced in `MAINTAINERS.md` once accepted.
-
-When the maintainer count reaches 3, this document is revised to
-shift from BDFL-final to majority-of-maintainers-with-BDFL-veto for
-normative changes — at which point the BDFL role becomes a
-tiebreaker, not a unilateral authority.
-
-## Conformance and the corpus
-
-The conformance corpus (`conformance/`) is normative — adding,
-modifying, or removing a fixture changes what implementers must
-support to claim a tier. Fixture changes therefore follow the
-**normative changes** track above.
-
-A new fixture that exercises an edge case the existing corpus
-doesn't cover is editorial if `@uwmd/core` produces the same
-expected output without code changes. If it requires changing the
-reference library to make the fixture pass, it is normative.
-
-## Module ecosystem
-
-Modules (asset-class extensions like the planned `hospitality`
-module) live in their own packages and have their own maintainers.
-This governance document covers only the standard modules shipped
-from this repository. Third-party module governance is up to the
-module's authors.
-
-## License changes
-
-The MIT license is a permanent commitment for v1. A license change
-would require:
-
-- BDFL approval.
-- Sign-off from every contributor whose code is in the affected
-  files (or removal of their contributions).
-
-This is intentionally hard. Don't expect a license change.
+The project is MIT licensed. A license change requires project-owner approval
+and any contributor permissions legally required for the affected work.
 
 ## Amendments
 
-Changes to this document follow the **normative changes** track
-(RFC + 14-day comment period + BDFL approval).
+In owner-led mode, the owner may amend this document directly. In collaborative
+mode, amendments use the normative-change process.

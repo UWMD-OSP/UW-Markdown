@@ -9,13 +9,21 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
-- **Accepted RFC 0014: extensible multi-format interchange** — defines the
-  post-v1.0 release architecture for a format-neutral envelope, model-fidelity
-  JSON/XML/normalized CSV encodings, six named CSV views, representation
-  discovery, and optional HTTP/MCP bindings. The RFC was accepted on 2026-07-26
-  under a recorded single-maintainer bootstrap waiver; implementation remains
-  phased and unshipped.
-
+- **UW Document Envelope 1.0 and UW JSON 1.0 (RFC 0014 Phase A)** — adds the
+  format-neutral `UWDocumentEnvelope`, a normative JSON Schema, one authoritative
+  `_meta` and prose location per block, semantic canonicalization/digests,
+  equivalence checks, `CodecRegistry`, the registered `uw-json` codec, verified
+  parsing, and digested `uwmd export` output. Core and CLI round-trip, tampering,
+  registry, and schema tests cover the new contract. XML, CSV, discovery, and
+  HTTP/MCP bindings remain later RFC 0014 phases.
+- **Protocol 1.2 representation discovery** — `ImplementationManifest` now
+  advertises typed representation descriptors; its normative schema mirrors the
+  addition. `negotiateRepresentation` implements Accept quality/specificity and
+  fidelity filtering, `resolveInputRepresentation` resolves Content-Type, and
+  `uwmd formats` exposes the live registry for API/MCP hosts.- **Owner-led governance mode** — the owner may accept RFCs and merge
+  owner-authored work immediately while the project is solo. External pull
+  requests require owner review; collaborative 14-day normative comment periods
+  activate automatically after the first outside contribution merges.
 - **Cross-platform release gates** - CI now runs the complete build, workspace
   tests, and tiers 1-3 conformance suite on Windows/Node 20 in addition to the
   existing Ubuntu matrix. Core coverage is now a blocking gate at 70% lines,
@@ -260,19 +268,8 @@ protocol, and each package each carry an independent semver).
   chokepoint is unchanged: every mutation flows through `src/edits.ts` →
   `applyEdit()` → re-parse, so in-memory state can never drift from canonical
   bytes (React state only holds the result).
-- **Lossless `.uw.json` sibling serialization** in `@uwmd/core` (`uwjson.ts`) —
-  `toUWJson`/`stringifyUWJson` export a `.uw.md` file to a machine-first JSON
-  document that preserves every block's `_meta` provenance, fence annotation,
-  per-section prose, and append-only `superseded` history; `parseUWJson`/
-  `fromUWJson` re-hydrate it into the same `ParsedUWFile` shape `parseUWFile`
-  produces, so the validator, calc engine, packs, and renderer run against a
-  `.uw.json` source unchanged. Exported from both `index.ts` and `browser.ts` for
-  web tooling. New `uwmd export` CLI subcommand (`--no-superseded`, `--stdout`).
-  This is a **derived, library-provided view** — it carries its own
-  `uwjson_version` and does **not** touch `spec/`, the JSON Schemas, or the
-  protocol; promoting `.uw.json` to a normative sibling format is deferred to a
-  future RFC.
-- **Renderer unit tests** in `@uwmd/core` covering JSON projection, superseded
+- **Initial `.uw.json` prototype** in `@uwmd/core` established the model-level
+  round-trip and CLI export path later stabilized by RFC 0014 Phase A above.- **Renderer unit tests** in `@uwmd/core` covering JSON projection, superseded
   history opt-in, CSV numeric/percent output, summary/chat rendering, chat
   truncation, and the explicit PDF/DOCX stub targets.
 - **Self-storage calc pack + defaults + worked example + Excel layout** —
@@ -300,7 +297,7 @@ protocol, and each package each carry an independent semver).
 - Validator wired to `BUILTIN_REMEDIATIONS` registry (no inline strings; per protocol §III.6).
 - **Conformance runner** (`scripts/run-conformance.mjs`) executing tiers 1–4 with CI gate on tiers 1–3. Filled missing tier-2/3/4 fixtures (`frontmatter-set-recommendation` before/after pair, `revpar-basic`, `dscr-from-section`, `l6-risk-rating` shape assertion).
 - **JSON Schemas** for all six boundary-crossing protocol types: `uwmd-block`, `edit-operation`, `protocol-error`, `implementation-manifest`, `calc-result`, `issue-remediation`. Programmatic validator (`scripts/validate-schemas.mjs`) using ajv 2020 + ajv-formats with cross-file `$ref` pre-registration. CI gate.
-- **Governance scaffolding** — [SECURITY.md](./SECURITY.md), [GOVERNANCE.md](./GOVERNANCE.md) (BDFL + contributors model, normative-vs-editorial split, RFC process), [MAINTAINERS.md](./MAINTAINERS.md), [`.github/CODEOWNERS`](./.github/CODEOWNERS), [ROADMAP.md](./ROADMAP.md), [`docs/rfcs/`](./docs/rfcs/) directory with template and process README.
+- **Governance scaffolding** — [SECURITY.md](./SECURITY.md), [GOVERNANCE.md](./GOVERNANCE.md) (owner-led mode with contributor-activated collaborative safeguards and an RFC process), [MAINTAINERS.md](./MAINTAINERS.md), [`.github/CODEOWNERS`](./.github/CODEOWNERS), [ROADMAP.md](./ROADMAP.md), [`docs/rfcs/`](./docs/rfcs/) directory with template and process README.
 - **npm publish workflow** ([`.github/workflows/release.yml`](./.github/workflows/release.yml)) — on `v*` tag, runs full test + conformance + schema-validation gate, then publishes `@uwmd/core` to npm with provenance. `prepublishOnly` script in the package mirrors the same gate locally.
 - **VS Code extension** ([`tools/vscode-uwmd/`](./tools/vscode-uwmd/), preview `0.1.0`) — syntax highlighting for `.uw.md` (YAML frontmatter + Markdown + embedded JSON in `uwmd json` blocks), folding for frontmatter / fenced blocks / heading sections, document outline, and on-save validation surfacing every `@uwmd/core` issue with its `code`, `title`, `remediation`, and `spec_ref`. Bundled via esbuild; ships as `.vsix`.
 - **Documentation site** ([`tools/docs-site/`](./tools/docs-site/), preview `0.1.0`) — VitePress build covering the format spec, protocol spec, JSON Schemas, conformance corpus per tier, and the full set of project documents (roadmap, governance, contributing, security, RFC process). Repo-root markdown remains the single source of truth; `scripts/prebuild.mjs` copies content into the site tree at build time and rewrites relative links to site URLs. Ships as a 2.9 MB static bundle deployable to any static host.

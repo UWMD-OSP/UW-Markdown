@@ -11,7 +11,7 @@ import { compact, diff } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
-import { stringifyUWJson } from './uwjson.js';
+import { CORE_CODEC_REGISTRY, stringifyUWJsonWithDigest } from './uwjson.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
@@ -306,10 +306,10 @@ function cmdSummary(file: string): void {
 `);
 }
 
-function cmdExport(file: string, flags: Record<string, string | boolean>): void {
+async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
   const parsed = parseUWFile(content);
-  const text = stringifyUWJson(parsed, {
+  const text = await stringifyUWJsonWithDigest(parsed, {
     // --no-superseded or --compact drops the append-only history.
     includeSuperseded: !(flags['no-superseded'] === true || flags['compact'] === true),
   });
@@ -328,6 +328,19 @@ function cmdExport(file: string, flags: Record<string, string | boolean>): void 
   console.log(`Exported ${basename(file)} → ${basename(outPath)} (.uw.json sibling)`);
 }
 
+function cmdFormats(flags: Record<string, string | boolean>): void {
+  const descriptors = CORE_CODEC_REGISTRY.list();
+  if (flags['json']) {
+    console.log(JSON.stringify(descriptors, null, 2));
+    return;
+  }
+  console.log('Registered UW representations:\n');
+  for (const descriptor of descriptors) {
+    console.log(
+      `  ${descriptor.id.padEnd(16)} ${descriptor.fidelity.padEnd(6)} ${descriptor.directions.join('/').padEnd(10)} ${descriptor.media_types[0]}`,
+    );
+  }
+}
 function cmdReport(file: string, flags: Record<string, string | boolean>): void {
   const content = readFile(file);
   const parsed = parseUWFile(content);
@@ -729,9 +742,12 @@ switch (command) {
 
   case 'export':
     if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--stdout]'); process.exit(1); }
-    cmdExport(positional[0], flags);
+    await cmdExport(positional[0], flags);
     break;
 
+  case 'formats':
+    cmdFormats(flags);
+    break;
   case 'report':
     if (!positional[0]) { console.error('Usage: uwmd report <file.uw.md> [--tier screener|analyst] [--prepared-by <name>] [--output <file.html>] [--stdout]'); process.exit(1); }
     cmdReport(positional[0], flags);
@@ -763,7 +779,8 @@ Commands:
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uw.md file
   summary  <file>              Print quick metrics to terminal
-  export   <file>              Export to a lossless .uw.json sibling (provenance + history preserved)
+  export   <file>              Export a digested UW JSON 1.0 document
+  formats                       List registered machine representations
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets

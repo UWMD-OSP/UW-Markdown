@@ -32,7 +32,23 @@ describe('uwmd CLI', () => {
     const r = runCli(['validate', FIXTURE]);
     expect(r.status).toBe(0);
   });
+  it('exports a digested UW Document Envelope to stdout', () => {
+    const r = runCli(['export', FIXTURE, '--stdout']);
+    expect(r.status).toBe(0);
+    const exported = JSON.parse(r.stdout);
+    expect(exported.envelope_version).toBe('1.0');
+    expect(exported.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
+    expect(exported).not.toHaveProperty('uwjson_version');
+    expect(exported).not.toHaveProperty('prose');
+  });
 
+  it('lists registered representations for API discovery', () => {
+    const r = runCli(['formats', '--json']);
+    expect(r.status).toBe(0);
+    expect(JSON.parse(r.stdout)).toContainEqual(
+      expect.objectContaining({ id: 'uw-json', fidelity: 'model' }),
+    );
+  });
   it('exits non-zero on a missing file', () => {
     const r = runCli(['parse', resolve(__dirname, 'this-file-does-not-exist.uw.md')]);
     expect(r.status).not.toBe(0);

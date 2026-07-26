@@ -21,14 +21,57 @@ export { renderReportHtml, REPORT_CSS } from './report.js';
 export type { ReportOptions, ReportResult } from './report.js';
 
 export {
-  UWJSON_VERSION,
+  UW_JSON_REPRESENTATION_VERSION,
+  UW_JSON_MEDIA_TYPE,
   UWJsonError,
   toUWJson,
+  stringifyUWEnvelope,
   stringifyUWJson,
+  stringifyUWJsonWithDigest,
   parseUWJson,
+  parseUWJsonVerified,
   fromUWJson,
+  UW_JSON_CODEC,
+  CORE_CODEC_REGISTRY,
+  encodeUWDocument,
+  decodeUWDocument,
 } from './uwjson.js';
-export type { UWJsonDocument, UWJsonBlock, ToUWJsonOptions } from './uwjson.js';
+export type { ToUWJsonOptions } from './uwjson.js';
+
+export {
+  UW_ENVELOPE_VERSION,
+  UWEnvelopeError,
+  toUWEnvelope,
+  fromUWEnvelope,
+  envelopeSemanticValue,
+  canonicalizeUWEnvelope,
+  computeEnvelopeDigest,
+  stampEnvelopeDigest,
+  verifyEnvelopeDigest,
+  areEnvelopesEquivalent,
+  assertUWEnvelope,
+} from './envelope.js';
+export type {
+  UWEnvelopeBlock,
+  UWEnvelopeSectionEntry,
+  UWDocumentEnvelope,
+  ToEnvelopeOptions,
+  EnvelopeDigestVerification,
+} from './envelope.js';
+
+export {
+  negotiateRepresentation,
+  resolveInputRepresentation,
+  RepresentationNegotiationError,
+} from './negotiation.js';
+export type { NegotiationOptions, NegotiatedRepresentation } from './negotiation.js';
+export { CodecRegistry, UWCodecError } from './codec.js';
+export type {
+  UWCodec,
+  RepresentationDescriptor,
+  RepresentationDirection,
+  RepresentationFidelity,
+} from './codec.js';
 
 export { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 export type { AgentOutput, RunOptions, RunResult } from './runner.js';
