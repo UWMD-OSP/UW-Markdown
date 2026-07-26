@@ -23,4 +23,4 @@ core render targets throw `UnsupportedRenderFormatError`; use `@uwmd/report` for
 PDF generation.
 
 Specification, examples, and conformance fixtures:
-[github.com/jaredmaxey/Underwriting-Markdown-Private-1.0](https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0).
+[github.com/jaredmaxey/uw-markdown](https://github.com/jaredmaxey/uw-markdown).

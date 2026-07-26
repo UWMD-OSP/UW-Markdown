@@ -11,7 +11,7 @@ hero:
       link: /spec/format
     - theme: alt
       text: Browse on GitHub
-      link: https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0
+      link: https://github.com/jaredmaxey/uw-markdown
     - theme: alt
       text: View the protocol
       link: /spec/protocol

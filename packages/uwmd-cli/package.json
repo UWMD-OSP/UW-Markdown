@@ -4,10 +4,10 @@
   "description": "Command-line installer for UW Markdown — `npx uwmd init|parse|validate|render|run` for .uw.md underwriting files. Thin wrapper over @uwmd/core.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "url": "git+https://github.com/jaredmaxey/uw-markdown.git",
     "directory": "packages/uwmd-cli"
   },
-  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0",
+  "homepage": "https://uwmd.org",
   "type": "module",
   "bin": {
     "uwmd": "bin/uwmd.mjs"

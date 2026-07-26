@@ -127,14 +127,14 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 ## ⚙️ Operational — gates the public launch
 
 > **Current state (2026-07-25):** the repository is public. The remaining launch
-> gates are the canonical repo rename, `@uwmd` npm organization, `NPM_TOKEN`, the
-> first `v1.0.0` tag/publication. The Excel add-on remains held separately until
+> gates are the `@uwmd` npm organization, `NPM_TOKEN`, and the first `v1.0.0`
+> tag/publication. The Excel add-on remains held separately until
 > its ExcelJS dependency chain is upgraded, replaced, or formally risk-accepted.
 
-From the ROADMAP pre-public-flip checklist (all pending): repo rename to
-`uw-markdown`, register `@uwmd` npm org, add `NPM_TOKEN`, tag/publish `v1.0.0`,
-flip public. Review-flagged: single-maintainer bus factor, personal security email,
-no public RFC venue.
+Completed: public repository and canonical rename to `uw-markdown`. Remaining:
+register the `@uwmd` npm org, add `NPM_TOKEN`, and tag/publish `v1.0.0`.
+Review-flagged: single-maintainer bus factor, personal security email, and no
+public RFC venue.
 
 ## Suggested priority order
 

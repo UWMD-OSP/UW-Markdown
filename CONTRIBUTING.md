@@ -26,8 +26,8 @@ tools/                        Starter tools (web-viewer, future: excel converter
 ## Local development
 
 ```bash
-git clone https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git
-cd Underwriting-Markdown-Private-1.0
+git clone https://github.com/jaredmaxey/uw-markdown.git
+cd uw-markdown
 npm install
 npm run build
 npm test

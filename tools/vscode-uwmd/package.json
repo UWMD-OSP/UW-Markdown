@@ -7,10 +7,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "url": "https://github.com/jaredmaxey/uw-markdown.git",
     "directory": "tools/vscode-uwmd"
   },
-  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/tree/main/tools/vscode-uwmd",
+  "homepage": "https://uwmd.org",
   "categories": [
     "Programming Languages",
     "Linters",

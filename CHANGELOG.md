@@ -173,11 +173,14 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 - **Dependency hardening** - the workspace Vitest and coverage-provider floor is
+- **Canonical project identity** - the repository is renamed to
+  `jaredmaxey/uw-markdown`, package repository links follow the new URL, and
+  public package/homepage metadata now points to `https://uwmd.org`.
   raised to 3.2.6, clearing the critical development-server advisory. Safe
   transitive lockfile updates also patch Vite, esbuild, PostCSS, fast-uri, tmp,
   and brace-expansion versions where upstream ranges permit. Remaining ExcelJS
   archive/UUID advisories require an upstream release or a separately validated
-  converter migration and therefore remain a release blocker.
+  converter migration before the separately versioned Excel add-on can publish.
 - **Web editor 0.5.0 — rent-roll & operating-statement become underwriting
   *models*, not forms** ([`tools/web-editor/`](./tools/web-editor/)). New
   `RentRollModel` and `OperatingStatementModel` surfaces (shared `Footed.tsx`)
@@ -351,4 +354,4 @@ protocol, and each package each carry an independent semver).
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/jaredmaxey/uw-markdown/compare/v1.0.0...HEAD

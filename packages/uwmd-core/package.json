@@ -4,10 +4,10 @@
   "description": "Reference implementation of the UW Markdown standard — parser, validator, renderer, and CLI for .uw.md underwriting files.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "url": "https://github.com/jaredmaxey/uw-markdown.git",
     "directory": "packages/uwmd-core"
   },
-  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0",
+  "homepage": "https://uwmd.org",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

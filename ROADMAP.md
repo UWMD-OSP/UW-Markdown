@@ -21,16 +21,13 @@ or get reordered as we learn from adopters.
 
 > **Status update (2026-07-25):** The repository is already public. The historical
 > pre-public-flip checklist below is superseded; the remaining launch work is the
-> repository rename, npm organization registration, `NPM_TOKEN`, and the first
+> npm organization registration, `NPM_TOKEN`, and the first
 > `v1.0.0` package publication.
 
-Everything required to call the v1 release *credible* — i.e. every
-claim in the README is backed by a passing conformance fixture and a
-normative schema. **All shipped.** The repo can flip to public at any
-time on this surface alone; the actual flip is intentionally deferred
-until the tool ecosystem (see below) is broader, then kicked off via
-the [Pre-public-flip checklist](#pre-public-flip-checklist) at the
-bottom of this document.
+Everything required to call the v1 release *credible* is shipped: README claims
+are backed by conformance fixtures and normative schemas. The repository is now
+public and renamed to `uw-markdown`; the remaining v1 work is npm account setup
+and the first package publication.
 
 | Status | Item | Tracking |
 |---|---|---|
@@ -89,11 +86,11 @@ preceding section can land in private.
 
 | Status | Item | Notes |
 |---|---|---|
-| 📋 | Repo rename to `uw-markdown` | Matches `@uwmd` package scope and reads cleanly. Update README clone URL, `package.json` `repository.url`, CHANGELOG compare link, and the `tools/web-editor` footer link in the same change. |
+| ✅ | Repo rename to `uw-markdown` | Completed 2026-07-25; repository, package metadata, documentation links, and local remote updated. |
 | 📋 | Register `@uwmd` org on npm | Required before the release workflow can publish `@uwmd/core`. The `uwmd` package is unscoped and only needs the publisher to be the org owner. |
 | 📋 | Add `NPM_TOKEN` repo secret | Gates the publish step in `.github/workflows/release.yml`. |
 | 📋 | Tag and ship `v1.0.0` | First production publish of `@uwmd/core` and `uwmd`. Cuts the CHANGELOG `[Unreleased]` section. |
-| 📋 | Flip repo private → public | Final action. After this, `SECURITY.md` reporting is live; CodeQL/scanner reports may start arriving. |
+| ✅ | Flip repo private → public | Completed before the 2026-07-25 release-readiness review. |
 
 ## Permanently out of scope (v1)
 
