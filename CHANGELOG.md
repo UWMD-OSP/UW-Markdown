@@ -9,6 +9,11 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **UW CSV Bundle 1.0 (RFC 0014 Phase D)** — adds the normalized model-fidelity
+  directory and deterministic ZIP codecs, manifest inventory and file hashes,
+  semantic-digest verification, bounded extraction defenses, and all six named
+  spreadsheet-safe view profiles. The shared registry and `uwmd convert` now
+  round-trip Markdown, JSON, XML, and `.uw.csv.zip` representations.
 - **UW XML 1.0 and cross-format conversion (RFC 0014 Phase C)** — adds the
   deterministic `uw-xml` codec, namespace and normative mapping specification,
   structural XSD, semantic-digest verification, bounded secure parsing, and

@@ -13,6 +13,10 @@ function runCli(args: string[]) {
   return spawnSync(process.execPath, [CLI_BIN, ...args], { encoding: 'utf8' });
 }
 
+function runCliBinary(args: string[]) {
+  return spawnSync(process.execPath, [CLI_BIN, ...args]);
+}
+
 describe('uwmd CLI', () => {
   it('prints help on --help with exit code 0', () => {
     const r = runCli(['--help']);
@@ -68,6 +72,22 @@ describe('uwmd CLI', () => {
       rmSync(temp, { recursive: true, force: true });
     }
   });
+  it('converts Markdown to a CSV bundle ZIP and back to verified JSON', () => {
+    const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-csv-'));
+    try {
+      const zip = runCliBinary(['convert', FIXTURE, '--to', 'csv', '--stdout']);
+      expect(zip.status).toBe(0);
+      expect(zip.stdout.subarray(0, 4)).toEqual(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
+      const zipPath = resolve(temp, 'deal.uw.csv.zip');
+      writeFileSync(zipPath, zip.stdout);
+      const json = runCli(['convert', zipPath, '--to', 'json', '--stdout']);
+      expect(json.status).toBe(0);
+      const envelope = JSON.parse(json.stdout);
+      expect(envelope.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
   it('lists registered representations for API discovery', () => {
     const r = runCli(['formats', '--json']);
     expect(r.status).toBe(0);
@@ -76,6 +96,9 @@ describe('uwmd CLI', () => {
     );
     expect(JSON.parse(r.stdout)).toContainEqual(
       expect.objectContaining({ id: 'uw-xml', fidelity: 'model' }),
+    );
+    expect(JSON.parse(r.stdout)).toContainEqual(
+      expect.objectContaining({ id: 'uw-csv-bundle', fidelity: 'model' }),
     );
   });
   it('exits non-zero on a missing file', () => {

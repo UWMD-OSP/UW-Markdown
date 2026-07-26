@@ -21,9 +21,16 @@ const envelope = toUWEnvelope({
 
 describe('core codec registry', () => {
   it('registers JSON and XML through one API', async () => {
-    expect(CORE_CODEC_REGISTRY.list().map((item) => item.id)).toEqual(['uw-json', 'uw-xml']);
+    expect(CORE_CODEC_REGISTRY.list().map((item) => item.id)).toEqual([
+      'uw-csv-bundle',
+      'uw-json',
+      'uw-xml',
+    ]);
     const encoded = await encodeUWDocument('uw-xml', envelope);
     const decoded = await decodeUWDocument('uw-xml', encoded);
     expect(decoded.frontmatter.deal_id).toBe('uw_codecs');
+    const csv = await encodeUWDocument('uw-csv-bundle', envelope);
+    const fromCsv = await decodeUWDocument('uw-csv-bundle', csv);
+    expect(fromCsv.frontmatter.deal_id).toBe('uw_codecs');
   });
 });

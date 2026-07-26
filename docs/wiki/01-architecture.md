@@ -57,6 +57,7 @@ spec/                      Normative specs + JSON Schemas + XML XSD
                            extension meta-spec (§4.21), gaps (§4.22), CC-NN checks
   UW_PROTOCOL_v1.md        Tiers, display, edit semantics, calc EBNF, AI-host contract
   UW_XML_MAPPING_v1.md     Deterministic Envelope 1.0 XML representation
+  UW_CSV_BUNDLE_v1.md      Normalized CSV directory/ZIP representation
   schemas/                 JSON Schema 2020-12 plus structural UW XML XSD
 
 packages/

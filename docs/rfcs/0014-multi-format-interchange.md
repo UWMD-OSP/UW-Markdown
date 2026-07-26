@@ -432,10 +432,10 @@ then, the TypeScript reference runner gates the reference implementation.
   cross-format digests; hostile input tests; manifest and negotiation tests; CLI
   integration tests; MCP/HTTP contract examples validated against their schemas.
 
-Phases A-C are implemented in `@uwmd/core`: Envelope 1.0, UW JSON 1.0,
-representation discovery/negotiation, and the deterministic secure UW XML 1.0
-codec. The CLI exports JSON and converts Markdown/JSON/XML. CSV bundles,
-transport bindings, and their cross-format conformance remain phased follow-up work.
+Phases A-D are implemented in `@uwmd/core`: Envelope 1.0, UW JSON 1.0,
+representation discovery/negotiation, deterministic secure UW XML 1.0, and the
+normalized deterministic UW CSV Bundle 1.0 with all six views. The CLI exports
+JSON and converts Markdown/JSON/XML/CSV. HTTP and MCP bindings remain Phase E.
 
 ## Alternatives considered
 

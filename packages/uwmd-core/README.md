@@ -27,9 +27,10 @@ Specification, examples, and conformance fixtures:
 
 ## Machine interchange
 
-UW Document Envelope 1.0 is the shared model behind deterministic UW JSON 1.0
-and UW XML 1.0. Both codecs preserve provenance, prose, extensions, arrays, and
-superseded history and verify the same semantic SHA-256 digest.
+UW Document Envelope 1.0 is the shared model behind deterministic UW JSON 1.0,
+UW XML 1.0, and normalized UW CSV Bundle 1.0. All three preserve provenance,
+prose, extensions, arrays, and superseded history and verify the same semantic
+SHA-256 digest.
 
 ```ts
 import {
@@ -37,13 +38,15 @@ import {
   parseUWFile,
   parseUWXmlVerified,
   stringifyUWXml,
+  encodeUWCSVZip,
   toUWEnvelope,
 } from '@uwmd/core';
 
 const envelope = toUWEnvelope(parseUWFile(markdown));
 const xml = await stringifyUWXml(envelope);
 const verified = await parseUWXmlVerified(xml);
+const csvZip = await encodeUWCSVZip(verified);
 const json = await CORE_CODEC_REGISTRY.encode<string>('uw-json', verified);
 ```
 
-See the [UW XML Mapping 1.0](https://github.com/jaredmaxey/uw-markdown/blob/main/spec/UW_XML_MAPPING_v1.md) for the normative mapping and parser limits.
+See the [UW XML Mapping 1.0](https://github.com/jaredmaxey/uw-markdown/blob/main/spec/UW_XML_MAPPING_v1.md) and [UW CSV Bundle 1.0](https://github.com/jaredmaxey/uw-markdown/blob/main/spec/UW_CSV_BUNDLE_v1.md) specifications.
