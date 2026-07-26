@@ -1,4 +1,4 @@
-import { CodecRegistry, type UWCodec } from './codec.js';
+import type { UWCodec } from './codec.js';
 import {
   assertUWEnvelope,
   fromUWEnvelope,
@@ -92,21 +92,3 @@ export const UW_JSON_CODEC: UWCodec<string> = {
   encode: async (envelope) => stringifyUWEnvelope(await stampEnvelopeDigest(envelope)),
   decode: parseUWJsonVerified,
 };
-
-export const CORE_CODEC_REGISTRY = new CodecRegistry([UW_JSON_CODEC]);
-
-export function encodeUWDocument(
-  representationId: string,
-  envelope: UWDocumentEnvelope,
-  registry: CodecRegistry = CORE_CODEC_REGISTRY,
-): Promise<unknown> {
-  return registry.encode(representationId, envelope);
-}
-
-export function decodeUWDocument(
-  representationId: string,
-  input: unknown,
-  registry: CodecRegistry = CORE_CODEC_REGISTRY,
-): Promise<UWDocumentEnvelope> {
-  return registry.decode(representationId, input);
-}

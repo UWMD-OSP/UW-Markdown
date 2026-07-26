@@ -154,11 +154,10 @@ consumers do not.)
 - `parseUWJson(text) → UWDocumentEnvelope` and `parseUWJsonVerified(text)` —
   structural parsing, with optional digest enforcement.
 - `fromUWJson(doc) → ParsedUWFile` — rehydrates the in-memory model.
-- `CodecRegistry` and `UW_JSON_CODEC` — discover and invoke model codecs by ID,
-  media type, or filename; XML and CSV register through the same contract.
+- `CodecRegistry`, `CORE_CODEC_REGISTRY`, `UW_JSON_CODEC`, and `UW_XML_CODEC` — discover and invoke model codecs by ID, media type, or filename.
+- `stringifyUWXml(envelope)` / `parseUWXml(text)` — deterministic UW XML 1.0 with digest verification and secure parsing limits.
 
-CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json`
-(`--no-superseded` to compact, `--stdout` to pipe).
+CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--no-superseded` to compact, `--stdout` to pipe). `uwmd convert <file> --to uw-json|uw-xml` converts Markdown, verified JSON, and verified XML through the shared envelope.
 
 > **Status — normative Envelope 1.0 / UW JSON 1.0 implementation.** The schema is
 > `spec/schemas/uw-document-envelope.schema.json`. This is model-lossless, not

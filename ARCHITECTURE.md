@@ -3,8 +3,9 @@
 This document describes how the UW Markdown repository is organized so
 contributors can navigate it without reverse-engineering from commit
 history. For *what* the format is and *why* it's designed the way it
-is, see [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) and
-[`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md).
+is, see [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md),
+[`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md), and the representation
+mappings such as [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md).
 
 ## The big picture
 
@@ -55,7 +56,7 @@ The project has five layers, each consuming the one above it:
 
 ## Spec layer
 
-Two normative documents and one schema set. Adopters needing to
+Versioned normative documents and one schema set. Adopters needing to
 implement only one tier can read just the relevant sections.
 
 - [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) — file shape:
@@ -64,8 +65,10 @@ implement only one tier can read just the relevant sections.
 - [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — what conforming
   software must do: the four conformance tiers, display conventions,
   edit semantics, calc-engine grammar (EBNF), AI-host contract.
-- [`spec/schemas/`](spec/schemas/) — JSON Schema 2020-12 definitions,
-  `$id`-anchored at `https://uwmd.org/schemas/...`.
+- [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md) — deterministic
+  Envelope 1.0 mapping, namespace, integrity, and secure decoding rules.
+- [`spec/schemas/`](spec/schemas/) — JSON Schema 2020-12 definitions plus the
+  structural UW XML XSD.
 
 ## Reference library: `@uwmd/core`
 

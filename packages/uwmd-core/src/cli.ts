@@ -11,7 +11,9 @@ import { compact, diff } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
-import { CORE_CODEC_REGISTRY, stringifyUWJsonWithDigest } from './uwjson.js';
+import { stringifyUWJsonWithDigest } from './uwjson.js';
+import { toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
+import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
@@ -328,6 +330,59 @@ async function cmdExport(file: string, flags: Record<string, string | boolean>):
   console.log(`Exported ${basename(file)} → ${basename(outPath)} (.uw.json sibling)`);
 }
 
+const FORMAT_ALIASES: Record<string, string> = {
+  json: 'uw-json',
+  xml: 'uw-xml',
+  'uw-json': 'uw-json',
+  'uw-xml': 'uw-xml',
+};
+
+async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
+  const content = readFile(file);
+  if (file.toLowerCase().endsWith('.uw.md')) {
+    return toUWEnvelope(parseUWFile(content));
+  }
+  const sourceCodec = CORE_CODEC_REGISTRY.findByFileName(file);
+  if (!sourceCodec || !sourceCodec.descriptor.directions.includes('read')) {
+    throw new Error(`Cannot detect a readable UW representation for ${file}.`);
+  }
+  return sourceCodec.decode(content);
+}
+
+function replaceUWExtension(file: string, extension: string): string {
+  const lower = file.toLowerCase();
+  for (const suffix of ['.uw.md', '.uw.json', '.uw.xml']) {
+    if (lower.endsWith(suffix)) return `${file.slice(0, -suffix.length)}${extension}`;
+  }
+  return `${file}${extension}`;
+}
+
+async function cmdConvert(file: string, flags: Record<string, string | boolean>): Promise<void> {
+  const requested = flags['to'];
+  if (typeof requested !== 'string') {
+    throw new Error('convert requires --to uw-json|uw-xml.');
+  }
+  const targetId = FORMAT_ALIASES[requested.toLowerCase()] ?? requested;
+  const target = CORE_CODEC_REGISTRY.get(targetId);
+  if (!target.descriptor.directions.includes('write')) {
+    throw new Error(`Representation ${targetId} is not writable.`);
+  }
+  const envelope = await loadEnvelope(file);
+  const encoded = await target.encode(envelope);
+  if (typeof encoded !== 'string') {
+    throw new Error(`Representation ${targetId} did not produce text output.`);
+  }
+  if (flags['stdout']) {
+    process.stdout.write(encoded);
+    return;
+  }
+  const extension = target.descriptor.file_extensions[0];
+  const outPath = flags['output']
+    ? resolve(flags['output'] as string)
+    : resolve(replaceUWExtension(file, extension));
+  writeFileSync(outPath, encoded, 'utf-8');
+  console.log(`Converted ${basename(file)} → ${basename(outPath)} (${targetId})`);
+}
 function cmdFormats(flags: Record<string, string | boolean>): void {
   const descriptors = CORE_CODEC_REGISTRY.list();
   if (flags['json']) {
@@ -748,6 +803,11 @@ switch (command) {
   case 'formats':
     cmdFormats(flags);
     break;
+
+  case 'convert':
+    if (!positional[0]) { console.error('Usage: uwmd convert <file.uw.md|file.uw.json|file.uw.xml> --to uw-json|uw-xml [--output <file>] [--stdout]'); process.exit(1); }
+    await cmdConvert(positional[0], flags);
+    break;
   case 'report':
     if (!positional[0]) { console.error('Usage: uwmd report <file.uw.md> [--tier screener|analyst] [--prepared-by <name>] [--output <file.html>] [--stdout]'); process.exit(1); }
     cmdReport(positional[0], flags);
@@ -781,6 +841,7 @@ Commands:
   summary  <file>              Print quick metrics to terminal
   export   <file>              Export a digested UW JSON 1.0 document
   formats                       List registered machine representations
+  convert  <file>              Convert Markdown/JSON/XML to a model representation
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
@@ -793,7 +854,8 @@ Options:
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
-  --stdout           Write the .uw.json to stdout instead of a file (export)
+  --stdout           Write export/convert output to stdout
+  --to <format>       Target representation: uw-json|uw-xml (convert)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

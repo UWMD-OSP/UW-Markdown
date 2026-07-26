@@ -9,18 +9,25 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **UW XML 1.0 and cross-format conversion (RFC 0014 Phase C)** — adds the
+  deterministic `uw-xml` codec, namespace and normative mapping specification,
+  structural XSD, semantic-digest verification, bounded secure parsing, and
+  shared JSON/XML registry APIs. `uwmd convert` now converts `.uw.md`, verified
+  `.uw.json`, and verified `.uw.xml`; round-trip, hostile-input, registry, and
+  CLI integration tests cover the implementation.
 - **UW Document Envelope 1.0 and UW JSON 1.0 (RFC 0014 Phase A)** — adds the
   format-neutral `UWDocumentEnvelope`, a normative JSON Schema, one authoritative
   `_meta` and prose location per block, semantic canonicalization/digests,
   equivalence checks, `CodecRegistry`, the registered `uw-json` codec, verified
   parsing, and digested `uwmd export` output. Core and CLI round-trip, tampering,
-  registry, and schema tests cover the new contract. XML, CSV, discovery, and
-  HTTP/MCP bindings remain later RFC 0014 phases.
+  registry, and schema tests cover the new contract. XML and discovery now ship
+  in the same 1.1 release train; CSV and HTTP/MCP bindings remain later phases.
 - **Protocol 1.2 representation discovery** — `ImplementationManifest` now
   advertises typed representation descriptors; its normative schema mirrors the
   addition. `negotiateRepresentation` implements Accept quality/specificity and
   fidelity filtering, `resolveInputRepresentation` resolves Content-Type, and
-  `uwmd formats` exposes the live registry for API/MCP hosts.- **Owner-led governance mode** — the owner may accept RFCs and merge
+  `uwmd formats` exposes the live registry for API/MCP hosts.
+- **Owner-led governance mode** — the owner may accept RFCs and merge
   owner-authored work immediately while the project is solo. External pull
   requests require owner review; collaborative 14-day normative comment periods
   activate automatically after the first outside contribution merges.

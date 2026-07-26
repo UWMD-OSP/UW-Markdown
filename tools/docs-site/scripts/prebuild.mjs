@@ -15,7 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
 const REPO_ROOT = resolve(SITE_ROOT, '..', '..');
 
-const GENERATED_DIRS = ['spec', 'conformance', 'about', 'guide'];
+const GENERATED_DIRS = ['spec', 'conformance', 'about', 'guide', 'public'];
 
 if (process.argv.includes('--clean')) {
   for (const d of GENERATED_DIRS) {
@@ -32,8 +32,10 @@ if (process.argv.includes('--clean')) {
 const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.0)' },
-  { from: 'spec/schemas/README.md',      to: 'spec/schemas/index.md', title: 'JSON Schemas' },
+  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.2)' },
+  { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
+  { from: 'spec/schemas/README.md',      to: 'spec/schemas/index.md', title: 'Schemas' },
+  { from: 'spec/schemas/uw-document-envelope.xsd', to: 'public/schemas/uw-document-envelope.xsd' },
 
   // Conformance
   { from: 'conformance/README.md',                  to: 'conformance/index.md',  title: 'Conformance Corpus' },
@@ -104,12 +106,17 @@ const NORMALIZED_LINK_MAP = new Map([
   // Spec
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
   ['spec/UW_PROTOCOL_v1.md', '/spec/protocol'],
+  ['spec/UW_XML_MAPPING_v1.md', '/spec/xml'],
   ['UW_FORMAT_SPEC_v1.md', '/spec/format'],
   ['UW_PROTOCOL_v1.md', '/spec/protocol'],
+  ['UW_XML_MAPPING_v1.md', '/spec/xml'],
   ['spec/schemas/', '/spec/schemas/'],
   ['spec/schemas/README.md', '/spec/schemas/'],
   ['schemas/', '/spec/schemas/'],
   ['schemas/README.md', '/spec/schemas/'],
+  ['uw-document-envelope.xsd', '/schemas/uw-document-envelope.xsd'],
+  ['schemas/uw-document-envelope.xsd', '/schemas/uw-document-envelope.xsd'],
+  ['spec/schemas/uw-document-envelope.xsd', '/schemas/uw-document-envelope.xsd'],
 
   // RFCs
   ['docs/rfcs/0000-template.md', '/about/rfcs/template'],

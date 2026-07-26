@@ -21,11 +21,22 @@ export {
   parseUWJsonVerified,
   fromUWJson,
   UW_JSON_CODEC,
-  CORE_CODEC_REGISTRY,
-  encodeUWDocument,
-  decodeUWDocument,
 } from './uwjson.js';
 export type { ToUWJsonOptions } from './uwjson.js';
+
+export {
+  UW_XML_REPRESENTATION_VERSION,
+  UW_XML_MEDIA_TYPE,
+  UW_XML_NAMESPACE,
+  UWXmlError,
+  stringifyUWXml,
+  parseUWXml,
+  parseUWXmlVerified,
+  UW_XML_CODEC,
+} from './uwxml.js';
+export type { UWXmlOptions } from './uwxml.js';
+
+export { CORE_CODEC_REGISTRY, encodeUWDocument, decodeUWDocument } from './codecs.js';
 
 export {
   UW_ENVELOPE_VERSION,

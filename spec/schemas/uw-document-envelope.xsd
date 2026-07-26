@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:uw="https://uwmd.org/ns/document/1"
+  targetNamespace="https://uwmd.org/ns/document/1"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <xs:annotation>
+    <xs:documentation>
+      Structural XSD for UW XML 1.0. Normative JSON-type, member-name,
+      duplicate-key, envelope, and semantic-digest checks are performed by the
+      UW XML codec and are specified in UW_XML_MAPPING_v1.md.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:attribute name="type" type="uw:valueType"/>
+
+  <xs:simpleType name="valueType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="object"/>
+      <xs:enumeration value="array"/>
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="number"/>
+      <xs:enumeration value="boolean"/>
+      <xs:enumeration value="null"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="value" mixed="true">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:any namespace="##targetNamespace" processContents="lax"/>
+    </xs:sequence>
+    <xs:attribute ref="uw:type" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:element name="item" type="uw:value"/>
+  <xs:element name="member" type="uw:value"/>
+
+  <xs:element name="document">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:any namespace="##targetNamespace" processContents="lax"/>
+      </xs:sequence>
+      <xs:attribute name="envelope-version" type="xs:string" use="required"/>
+      <xs:attribute name="format-version" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -114,9 +114,9 @@ not core gaps.
 
 RFC 0014 defines a format-neutral envelope plus UW JSON, XML, and normalized CSV
 bundle mappings. Envelope 1.0, UW JSON 1.0, semantic digests, the codec registry,
-Protocol 1.2 representation descriptors/negotiation, schemas, `uwmd export`, and
-`uwmd formats` are implemented. XML, CSV bundles, `uwmd convert`, and HTTP/MCP
-profiles remain the next phases. See the
+Protocol 1.2 representation descriptors/negotiation, schemas, `uwmd export`,
+`uwmd formats`, deterministic UW XML 1.0, and Markdown/JSON/XML `uwmd convert`
+are implemented. CSV bundles and HTTP/MCP profiles remain the next phases. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
 
