@@ -2,6 +2,9 @@
 
 > An open standard for underwriting documents — readable by humans, AI tools, and software alike.
 
+> **Release status:** The repository is public, but `@uwmd/core` and the `uwmd`
+> CLI have not yet been published to npm. Use the source workflow below for now.
+
 **`.uw.md`** is a Markdown-based file format for commercial real-estate underwriting deals. It pairs human-readable prose with structured JSON blocks, supports an append-only update history, validates against published consistency rules, and bundles cleanly into context for AI agents.
 
 This repository is the home of the standard:

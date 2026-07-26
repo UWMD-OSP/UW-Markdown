@@ -223,7 +223,10 @@ const _RESERVED_SECTION_IDS = new Set([
 
 export function parseUWFile(content: string, options: ParseOptions = {}): ParsedUWFile {
   const { strict = false } = options;
-  const lines = content.split('\n');
+  // `.uw.md` is a portable text format. Strip the CR component of Windows
+  // CRLF endings while parsing, but retain `result.raw` byte-for-byte so Tier-2
+  // editors can still preserve untouched regions of the source document.
+  const lines = content.split(/\r?\n/);
 
   const result: ParsedUWFile = {
     frontmatter: {} as UWFrontmatter,
@@ -292,6 +295,18 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       jsonLines.push(lines[i]);
       i++;
     }
+
+    // A recognized UW section fence must be closed. Treating the remainder of
+    // the document as malformed JSON in non-strict mode can silently swallow
+    // every following section, which is unsafe for an underwriting record.
+    if (i >= lines.length) {
+      throw new UWMDParseError(
+        'UNCLOSED_SECTION_FENCE',
+        `Section '${sectionId}' opened at line ${lineStart} has no closing fence.`,
+        { line: lineStart },
+      );
+    }
+
     const lineEnd = i + 1; // 1-indexed, closing ```
     i++; // move past closing ```
 

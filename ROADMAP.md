@@ -19,6 +19,11 @@ or get reordered as we learn from adopters.
 
 ## v1 release readiness
 
+> **Status update (2026-07-25):** The repository is already public. The historical
+> pre-public-flip checklist below is superseded; the remaining launch work is the
+> repository rename, npm organization registration, `NPM_TOKEN`, and the first
+> `v1.0.0` package publication.
+
 Everything required to call the v1 release *credible* — i.e. every
 claim in the README is backed by a passing conformance fixture and a
 normative schema. **All shipped.** The repo can flip to public at any
@@ -73,6 +78,9 @@ context. This list is the maintainable copy.
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | Hospitality reference module                  | First real consumer of the module system. ADR/RevPAR/occupancy + STR-comp validations. |
 
 ## Pre-public-flip checklist
+
+> **Superseded:** the public flip is complete. Retained for launch-history context;
+> unchecked rows remain prerequisites for the first npm release.
 
 The last thing that happens before the repo flips from private to
 public. Held until the tool surface (above) is broad enough to be

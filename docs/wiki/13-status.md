@@ -1,6 +1,10 @@
 # 13 — Build status (living document)
 
-**Last verified:** 2026-06-16 (report renderer + @uwmd/report PDF pipeline +
+**Review update:** 2026-07-25 - Windows CRLF parsing is fixed and regression
+tested; Windows build/test/conformance and blocking core-coverage jobs are added
+to CI; critical development dependency advisories are remediated. The first npm
+publication and ExcelJS transitive-advisory resolution remain open.
+**Last verified:** 2026-07-25 (report renderer + @uwmd/report PDF pipeline +
 React web-editor rebuild landed; web-editor 0.5.0 footed-model surfaces —
 rent-roll, operating statement, debt, sources & uses, valuation — landed on a
 deterministic core footing layer; against working tree).
@@ -119,6 +123,11 @@ locale/multi-currency (0001), conformance runner v2 (0004), `_meta` v2 reorg
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
+
+> **Current state (2026-07-25):** the repository is public. The remaining launch
+> gates are the canonical repo rename, `@uwmd` npm organization, `NPM_TOKEN`, the
+> first `v1.0.0` tag/publication, and resolution or formal acceptance of the
+> ExcelJS transitive dependency advisories.
 
 From the ROADMAP pre-public-flip checklist (all pending): repo rename to
 `uw-markdown`, register `@uwmd` npm org, add `NPM_TOKEN`, tag/publish `v1.0.0`,

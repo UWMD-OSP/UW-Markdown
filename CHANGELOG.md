@@ -9,6 +9,13 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Cross-platform release gates** - CI now runs the complete build, workspace
+  tests, and tiers 1-3 conformance suite on Windows/Node 20 in addition to the
+  existing Ubuntu matrix. Core coverage is now a blocking gate at 70% lines,
+  70% statements, 70% branches, and 90% functions, based on a measured baseline
+  of 72.45% / 72.45% / 74.25% / 91.92% respectively.
+- **Repository line-ending policy** - `.gitattributes` pins text files to LF while
+  retaining CRLF for Windows command scripts.
 - **CI now builds and tests the web editor** ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml))
   — a new `web-editor` job builds `@uwmd/core`, then runs the web editor's own
   `npm run build` (tsc + vite) and `npm test` (33 vitest cases). The root
@@ -141,6 +148,14 @@ protocol, and each package each carry an independent semver).
   the CLI PDF are identical.
 
 ### Fixed
+- **Windows CRLF parsing** - `parseUWFile()` now accepts CRLF documents without
+  silently dropping every fenced UW section. The parser retains `raw` input
+  byte-for-byte while normalizing line endings only for structural scanning.
+  Regression coverage exercises a complete CRLF section.
+- **Unterminated section fences fail closed** - a recognized `uw:section` fence
+  without a closing fence now raises typed `UNCLOSED_SECTION_FENCE` even outside
+  strict mode, preventing the remainder of a deal from being swallowed as one
+  malformed block.
 - **Web editor lint errors that were failing the CI `lint` job** — `biome lint`
   flags (recommended-default errors): `noAutofocus` on the New Deal dialog and the
   footed-cell override input (replaced the `autoFocus` attribute with a ref +
@@ -150,6 +165,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 - **Web editor 0.5.0 — rent-roll & operating-statement become underwriting
+- **Dependency hardening** - the workspace Vitest and coverage-provider floor is
+  raised to 3.2.6, clearing the critical development-server advisory. Safe
+  transitive lockfile updates also patch Vite, esbuild, PostCSS, fast-uri, tmp,
+  and brace-expansion versions where upstream ranges permit. Remaining ExcelJS
+  archive/UUID advisories require an upstream release or a separately validated
+  converter migration and therefore remain a release blocker.
   *models*, not forms** ([`tools/web-editor/`](./tools/web-editor/)). New
   `RentRollModel` and `OperatingStatementModel` surfaces (shared `Footed.tsx`)
   treat the line items as the only inputs and render the section totals as

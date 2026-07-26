@@ -6,10 +6,10 @@ Orientation for AI agents working in this repo. The deep reference is the
 ## What this is
 
 UW Markdown is the open **`.uw.md`** standard (Markdown + JSON for commercial
-real-estate underwriting) plus its reference implementation. It is a **library +
-specification**, not a web app: there is **no React frontend, no Express server,
-no database** here. `underwriter.cc` is a separate product that consumes this
-standard.
+real-estate underwriting) plus its reference implementation. The primary product
+is a **library + specification**, supported by static tools including a React web
+editor. There is no Express server or database here. `underwriter.cc` is a
+separate product that consumes this standard.
 
 ## Where things live
 
