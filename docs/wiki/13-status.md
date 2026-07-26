@@ -1,6 +1,11 @@
 # 13 — Build status (living document)
 
-**Last verified:** 2026-06-16 (report renderer + @uwmd/report PDF pipeline +
+**Review update:** 2026-07-25 - Windows CRLF parsing is fixed and regression
+tested; Windows build/test/conformance and blocking core-coverage jobs are added
+to CI; critical development dependency advisories are remediated. The first npm
+publication remains open. ExcelJS transitive advisories are isolated to the
+separately versioned, currently unpublished `@uwmd/excel` add-on.
+**Last verified:** 2026-07-25 (report renderer + @uwmd/report PDF pipeline +
 React web-editor rebuild landed; web-editor 0.5.0 footed-model surfaces —
 rent-roll, operating statement, debt, sources & uses, valuation — landed on a
 deterministic core footing layer; against working tree).
@@ -99,10 +104,11 @@ not core gaps.
 
 ## 🔴 Stubs / not implemented
 
-- **DOCX rendering** — `render()` still returns empty content for `docx`
-  (`renderer.ts`); the Word credit-memo target has no pipeline. (PDF is now
-  built — see `report.ts` + `@uwmd/report` above; `render({format:'pdf'})`
-  remains a stub enum pointing at that pipeline.)
+- **DOCX rendering** — the Word credit-memo target has no pipeline. The core
+  renderer now rejects `docx` explicitly with typed `UnsupportedRenderFormatError`
+  instead of returning an apparently successful empty document. PDF is built via
+  `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
+  that package.
 - **Reverse Excel (`.xlsx → .uw.md`)** — not built; converter is one-way.
 - **Provider-neutral agent host** — `agents/bancroft.ts` is hard-coupled to
   `@anthropic-ai/sdk`; no second backend despite the provider-neutral §IX claim.
@@ -120,10 +126,15 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 
 ## ⚙️ Operational — gates the public launch
 
-From the ROADMAP pre-public-flip checklist (all pending): repo rename to
-`uw-markdown`, register `@uwmd` npm org, add `NPM_TOKEN`, tag/publish `v1.0.0`,
-flip public. Review-flagged: single-maintainer bus factor, personal security email,
-no public RFC venue.
+> **Current state (2026-07-25):** the repository is public. The remaining launch
+> gates are the `@uwmd` npm organization, `NPM_TOKEN`, and the first `v1.0.0`
+> tag/publication. The Excel add-on remains held separately until
+> its ExcelJS dependency chain is upgraded, replaced, or formally risk-accepted.
+
+Completed: public repository and canonical rename to `uw-markdown`. Remaining:
+register the `@uwmd` npm org, add `NPM_TOKEN`, and tag/publish `v1.0.0`.
+Review-flagged: single-maintainer bus factor, personal security email, and no
+public RFC venue.
 
 ## Suggested priority order
 

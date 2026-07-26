@@ -9,6 +9,13 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Cross-platform release gates** - CI now runs the complete build, workspace
+  tests, and tiers 1-3 conformance suite on Windows/Node 20 in addition to the
+  existing Ubuntu matrix. Core coverage is now a blocking gate at 70% lines,
+  70% statements, 70% branches, and 90% functions, based on a measured baseline
+  of 72.45% / 72.45% / 74.25% / 91.92% respectively.
+- **Repository line-ending policy** - `.gitattributes` pins text files to LF while
+  retaining CRLF for Windows command scripts.
 - **CI now builds and tests the web editor** ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml))
   — a new `web-editor` job builds `@uwmd/core`, then runs the web editor's own
   `npm run build` (tsc + vite) and `npm test` (33 vitest cases). The root
@@ -141,6 +148,22 @@ protocol, and each package each carry an independent semver).
   the CLI PDF are identical.
 
 ### Fixed
+- **Windows CRLF parsing** - `parseUWFile()` now accepts CRLF documents without
+  silently dropping every fenced UW section. The parser retains `raw` input
+  byte-for-byte while normalizing line endings only for structural scanning.
+  Regression coverage exercises a complete CRLF section.
+- **Unterminated section fences fail closed** - a recognized `uw:section` fence
+  without a closing fence now raises typed `UNCLOSED_SECTION_FENCE` even outside
+  strict mode, preventing the remainder of a deal from being swallowed as one
+  malformed block.
+- **Unsupported document targets fail explicitly** - the core `pdf` and `docx`
+  render targets now throw typed `UnsupportedRenderFormatError` instead of
+  returning successful-looking empty output. PDF callers are directed to
+  `@uwmd/report`; DOCX remains explicitly unimplemented.
+- **Publishable core package contents** - `@uwmd/core` now explicitly ships its
+  compiled `dist` API and package README while excluding source tests. CI and the
+  release workflow run `verify-packages` so a package whose exports point at
+  missing artifacts cannot be published again.
 - **Web editor lint errors that were failing the CI `lint` job** — `biome lint`
   flags (recommended-default errors): `noAutofocus` on the New Deal dialog and the
   footed-cell override input (replaced the `autoFocus` attribute with a ref +
@@ -149,6 +172,15 @@ protocol, and each package each carry an independent semver).
   the lint job is green again.
 
 ### Changed
+- **Dependency hardening** - the workspace Vitest and coverage-provider floor is
+- **Canonical project identity** - the repository is renamed to
+  `jaredmaxey/uw-markdown`, package repository links follow the new URL, and
+  public package/homepage metadata now points to `https://uwmd.org`.
+  raised to 3.2.6, clearing the critical development-server advisory. Safe
+  transitive lockfile updates also patch Vite, esbuild, PostCSS, fast-uri, tmp,
+  and brace-expansion versions where upstream ranges permit. Remaining ExcelJS
+  archive/UUID advisories require an upstream release or a separately validated
+  converter migration before the separately versioned Excel add-on can publish.
 - **Web editor 0.5.0 — rent-roll & operating-statement become underwriting
   *models*, not forms** ([`tools/web-editor/`](./tools/web-editor/)). New
   `RentRollModel` and `OperatingStatementModel` surfaces (shared `Footed.tsx`)
@@ -322,4 +354,4 @@ protocol, and each package each carry an independent semver).
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/jaredmaxey/uw-markdown/compare/v1.0.0...HEAD

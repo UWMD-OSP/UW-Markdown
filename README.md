@@ -2,6 +2,11 @@
 
 > An open standard for underwriting documents — readable by humans, AI tools, and software alike.
 
+> **Release status:** The repository is public, but `@uwmd/core` and the `uwmd`
+> CLI have not yet been published to npm. Use the source workflow below for now.
+
+**Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/jaredmaxey/uw-markdown](https://github.com/jaredmaxey/uw-markdown)
+
 **`.uw.md`** is a Markdown-based file format for commercial real-estate underwriting deals. It pairs human-readable prose with structured JSON blocks, supports an append-only update history, validates against published consistency rules, and bundles cleanly into context for AI agents.
 
 This repository is the home of the standard:
@@ -38,8 +43,8 @@ npx uwmd validate my-deal.uw.md
 To work from source instead:
 
 ```bash
-git clone https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git
-cd Underwriting-Markdown-Private-1.0
+git clone https://github.com/jaredmaxey/uw-markdown.git
+cd uw-markdown
 npm install
 npm run build
 

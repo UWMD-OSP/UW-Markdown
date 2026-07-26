@@ -32,7 +32,7 @@ export default defineConfig({
         text: 'v1',
         items: [
           { text: 'Changelog', link: '/about/changelog' },
-          { text: 'GitHub', link: 'https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0' },
+          { text: 'GitHub', link: 'https://github.com/jaredmaxey/uw-markdown' },
           { text: 'npm — @uwmd/core', link: 'https://www.npmjs.com/package/@uwmd/core' },
         ],
       },
@@ -125,7 +125,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0' },
+      { icon: 'github', link: 'https://github.com/jaredmaxey/uw-markdown' },
     ],
 
     footer: {
@@ -139,7 +139,7 @@ export default defineConfig({
 
     editLink: {
       pattern:
-        'https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/edit/main/:path',
+        'https://github.com/jaredmaxey/uw-markdown/edit/main/:path',
       text: 'Edit this page on GitHub',
     },
 

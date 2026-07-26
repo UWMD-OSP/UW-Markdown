@@ -188,6 +188,56 @@ asset_class: multifamily
   });
 });
 
+describe('parseUWFile portability and structural integrity', () => {
+  it('parses CRLF documents without dropping structured sections', () => {
+    const content = `---
+uw_version: "1.1"
+deal_id: "uw_2026_CRLF"
+deal_name: "CRLF Deal"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "123 Main St"
+city: "Phoenix"
+state: "AZ"
+zip: "85001"
+asset_class: multifamily
+---
+
+\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
+{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "wizard", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 48 }
+\`\`\`
+`.replace(/\n/g, '\r\n');
+
+    const parsed = parseUWFile(content);
+
+    expect(parsed.raw).toBe(content);
+    expect(getSection(parsed, 'property')?.content['total_units']).toBe(48);
+  });
+
+  it('rejects an unterminated UW section fence even outside strict mode', () => {
+    const content = `---
+uw_version: "1.1"
+deal_id: "uw_2026_UNCLOSED"
+deal_name: "Unclosed Deal"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "123 Main St"
+city: "Phoenix"
+state: "AZ"
+zip: "85001"
+asset_class: multifamily
+---
+
+\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
+{ "_meta": { "section": "property" }, "total_units": 48 }
+`;
+
+    expect(() => parseUWFile(content)).toThrowError(
+      expect.objectContaining({ code: 'UNCLOSED_SECTION_FENCE', line: 14 }),
+    );
+  });
+});
+
 // ─── deepGet ──────────────────────────────────────────────────────────────────
 
 describe('deepGet', () => {

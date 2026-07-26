@@ -7,12 +7,22 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0.git",
+    "url": "https://github.com/jaredmaxey/uw-markdown.git",
     "directory": "tools/vscode-uwmd"
   },
-  "homepage": "https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/tree/main/tools/vscode-uwmd",
-  "categories": ["Programming Languages", "Linters", "Formatters"],
-  "keywords": ["uwmd", "uw.md", "underwriting", "commercial real estate", "cre"],
+  "homepage": "https://uwmd.org",
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters"
+  ],
+  "keywords": [
+    "uwmd",
+    "uw.md",
+    "underwriting",
+    "commercial real estate",
+    "cre"
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -24,9 +34,16 @@
     "languages": [
       {
         "id": "uwmd",
-        "aliases": ["UW Markdown", "uwmd"],
-        "extensions": [".uw.md"],
-        "filenamePatterns": ["*.uw.md"],
+        "aliases": [
+          "UW Markdown",
+          "uwmd"
+        ],
+        "extensions": [
+          ".uw.md"
+        ],
+        "filenamePatterns": [
+          "*.uw.md"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -69,7 +86,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.85.0",
-    "@vscode/vsce": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
     "esbuild": "^0.25.0",
     "typescript": "^5.4.0"
   }

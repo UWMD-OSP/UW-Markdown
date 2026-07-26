@@ -1,6 +1,6 @@
 # `uwmd` — UW Markdown CLI
 
-The standalone command-line installer for [UW Markdown](https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0) — an open standard for commercial real-estate underwriting documents.
+The standalone command-line installer for [UW Markdown](https://github.com/jaredmaxey/uw-markdown) — an open standard for commercial real-estate underwriting documents.
 
 This package is a thin wrapper around [`@uwmd/core`](https://www.npmjs.com/package/@uwmd/core) so that anyone can use the tooling without cloning the monorepo.
 
@@ -51,8 +51,8 @@ import { parseUWFile, validateUWFile, evaluateCalc } from '@uwmd/core';
 
 ## Conformance
 
-This CLI is the reference implementation of the UW Markdown protocol's Tier-1 (Reader), Tier-2 (Editor), Tier-3 (Calc Host), and Tier-4 (Agent Host) conformance levels. See the [protocol spec](https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/blob/main/spec/UW_PROTOCOL_v1.md) for what each tier guarantees.
+This CLI is the reference implementation of the UW Markdown protocol's Tier-1 (Reader), Tier-2 (Editor), Tier-3 (Calc Host), and Tier-4 (Agent Host) conformance levels. See the [protocol spec](https://github.com/jaredmaxey/uw-markdown/blob/main/spec/UW_PROTOCOL_v1.md) for what each tier guarantees.
 
 ## License
 
-[MIT](https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/blob/main/LICENSE) © UW Markdown contributors.
+[MIT](https://github.com/jaredmaxey/uw-markdown/blob/main/LICENSE) © UW Markdown contributors.

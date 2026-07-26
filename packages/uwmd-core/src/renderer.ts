@@ -1,6 +1,6 @@
 // .uw.md renderer — converts a ParsedUWFile to output formats
 // Formats: json | csv | chat | summary
-// PDF and DOCX are stub targets that require external rendering pipelines.
+// PDF and DOCX require dedicated external rendering pipelines.
 // Spec: UW_FORMAT_SPEC_v1.md §6.4
 
 import type { ParsedUWFile, UWBlock, ValidationResult } from './types.js';
@@ -32,6 +32,20 @@ export interface RenderResult {
   truncated?: boolean;
 }
 
+export class UnsupportedRenderFormatError extends Error {
+  readonly code = 'UNSUPPORTED_RENDER_FORMAT';
+  readonly format: 'pdf' | 'docx';
+
+  constructor(format: 'pdf' | 'docx') {
+    const guidance = format === 'pdf'
+      ? 'Use @uwmd/report to generate PDF output.'
+      : 'DOCX output is not implemented; use summary, HTML, or PDF output instead.';
+    super(`The core renderer does not support '${format}' output. ${guidance}`);
+    this.name = 'UnsupportedRenderFormatError';
+    this.format = format;
+  }
+}
+
 // ─── Router ───────────────────────────────────────────────────────────────────
 
 export function render(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
@@ -42,12 +56,7 @@ export function render(parsed: ParsedUWFile, opts: RenderOptions): RenderResult 
     case 'summary': return renderSummary(parsed);
     case 'pdf':
     case 'docx':
-      return {
-        format: opts.format,
-        content: '',
-        // PDF/DOCX require an external rendering pipeline (e.g., Puppeteer, docx npm pkg).
-        // Use the json render target to feed an external renderer.
-      };
+      throw new UnsupportedRenderFormatError(opts.format);
     default:
       throw new Error(`Unknown render format: ${opts.format}`);
   }

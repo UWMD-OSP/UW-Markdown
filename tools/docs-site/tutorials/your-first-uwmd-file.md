@@ -21,7 +21,7 @@ By the end you'll have a 30-line `.uw.md` file containing:
 
 This is *intentionally* the smallest conformant file, not a realistic
 underwrite. To see a full deal, look at
-[`examples/Parkview-Apts-Glendale-AZ.uw.md`](https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
+[`examples/Parkview-Apts-Glendale-AZ.uw.md`](https://github.com/jaredmaxey/uw-markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
 once you're done here.
 
 ## Step 1 — Create the file
@@ -152,7 +152,7 @@ You should see no errors. If the validator complains:
 ## Step 5 — Open it in a viewer
 
 Drag `hello-deal.uw.md` into the
-[reference web viewer](https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/tree/main/tools/web-viewer)
+[reference web viewer](https://github.com/jaredmaxey/uw-markdown/tree/main/tools/web-viewer)
 (`tools/web-viewer/index.html`). You'll see the deal rendered with
 the property section as a card.
 

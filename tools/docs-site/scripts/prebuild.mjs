@@ -95,7 +95,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['docs/TOOLS.md', '/guide/tools'],
   ['GLOSSARY.md', '/guide/glossary'],
   ['TOOLS.md', '/guide/tools'],
-  ['LICENSE', 'https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/blob/main/LICENSE'],
+  ['LICENSE', 'https://github.com/jaredmaxey/uw-markdown/blob/main/LICENSE'],
 
   // Spec
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
@@ -126,7 +126,7 @@ function normalize(path) {
   return path.replace(/^(\.\.?\/)+/, '');
 }
 
-const GITHUB_BLOB = 'https://github.com/jaredmaxey/Underwriting-Markdown-Private-1.0/blob/main';
+const GITHUB_BLOB = 'https://github.com/jaredmaxey/uw-markdown/blob/main';
 
 function rewriteLinks(md) {
   // Markdown link: [text](url) and [text](url#frag)
