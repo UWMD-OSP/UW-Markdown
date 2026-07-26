@@ -5,7 +5,7 @@ contributors can navigate it without reverse-engineering from commit
 history. For *what* the format is and *why* it's designed the way it
 is, see [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md),
 [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md), and the representation
-mappings such as [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md).
+mappings such as [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md), plus optional transport profiles under [`spec/bindings/`](spec/bindings/).
 
 ## The big picture
 
@@ -69,6 +69,8 @@ implement only one tier can read just the relevant sections.
   Envelope 1.0 mapping, namespace, integrity, and secure decoding rules.
 - [`spec/UW_CSV_BUNDLE_v1.md`](spec/UW_CSV_BUNDLE_v1.md) — normalized tables,
   deterministic ZIP, model reconstruction, views, and extraction limits.
+- [`spec/bindings/`](spec/bindings/) — HTTP Binding 1.0, MCP Binding 1.0,
+  and the example OpenAPI 3.1 API contract.
 - [`spec/schemas/`](spec/schemas/) — JSON Schema 2020-12 definitions plus the
   structural UW XML XSD.
 
@@ -83,6 +85,7 @@ this library; tools depend on it.
 | `parser.ts` | `.uw.md` → `ParsedUWFile` (frontmatter + sections + `_meta`). |
 | `validator.ts` | Cross-section + financial-validity + meta-integrity checks. Hosts `BUILTIN_REMEDIATIONS`, the registry referenced by protocol §III.6a. |
 | `editor.ts` | Tier-2 dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
+| `bindings.ts` | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs/editor. |
 | `renderer.ts` | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
 | `runner.ts` + `agents/` | Tier-4 host. `runBancroftAgent` is the Claude-backed reference implementation; the contract in `protocol.ts` §IX is provider-neutral. |
 | `calc/` | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
@@ -157,8 +160,9 @@ These constraints exist to keep the boundaries clean:
 
 1. **Spec depends on nothing.** Any spec change requires an RFC
    regardless of whether implementations follow.
-2. **`@uwmd/core` depends only on `@anthropic-ai/sdk`** at runtime
-   (and the SDK is excluded from the `browser` entry).
+2. **`@uwmd/core` keeps transport logic dependency-light.** Runtime dependencies
+   are `@anthropic-ai/sdk` (excluded from `browser`), `fast-xml-parser`, and
+   `fflate`; HTTP/MCP adapters introduce no server-SDK dependency.
 3. **Tools depend on `@uwmd/core`** plus their own UI/runtime stack.
    Tools MUST NOT reach into other tools' code.
 4. **Conformance fixtures depend on nothing.** They are pure data and

@@ -38,13 +38,15 @@ Accepted RFC 0014 defines a coordinated but independently versioned release trai
 | Surface | Candidate version | Status |
 |---|---:|---|
 | `.uw.md` format | 1.1 (unchanged) | No syntax change proposed. |
-| UW Protocol | 1.2.0 | Representation descriptors, schema, and negotiation implemented; binding profiles pending. |
-| `@uwmd/core` | 1.1.0 | Envelope 1.0, JSON mapping, digest helpers, and codec registry implemented for the release. |
-| `uwmd` | 1.1.0 | `formats`, digested export, and Markdown/JSON/XML `convert` implemented. |
+| UW Protocol | 1.2.0 | Representation descriptors, negotiation, and HTTP/MCP binding profiles implemented. |
+| `@uwmd/core` | 1.1.0 | Envelope 1.0, JSON/XML/CSV codecs, digest helpers, registry, and binding adapters implemented. |
+| `uwmd` | 1.1.0 | `formats`, digested export, and Markdown/JSON/XML/CSV `convert` implemented. |
 | UW Document Envelope | 1.0 | Stable schema and core implementation complete; not yet published. |
 | UW JSON mapping | 1.0.0 | Core implementation complete; release pending. |
 | UW XML mapping | 1.0.0 | Deterministic mapping, secure codec, XSD, and conversion tests implemented; release pending. |
 | UW CSV bundle | 1.0.0 | Normalized model codec, safe deterministic ZIP, and six views implemented; release pending. |
+| HTTP binding | 1.0.0 | Optional companion profile, OpenAPI 3.1 contract, and core adapters implemented; release pending. |
+| MCP binding | 1.0.0 | Optional companion profile, resources/tool shapes, and reference adapters implemented; release pending. |
 
 These are candidate versions, not the current compatibility matrix. They become
 authoritative only after RFC acceptance, implementation, conformance, and the

@@ -59,6 +59,33 @@ export {
 } from './uwcsv.js';
 export type { UWCSVBundle, UWCSVDecodeOptions } from './uwcsv.js';
 export { CORE_CODEC_REGISTRY, encodeUWDocument, decodeUWDocument } from './codecs.js';
+export {
+  UWMD_PUBLIC_ORIGIN,
+  UWMD_DEAL_RESOURCE_TEMPLATE,
+  UWBindingError,
+  uwmdDealResourceURI,
+  uwmdETag,
+  createUWHTTPResponse,
+  decodeUWHTTPRequest,
+  assertUWIfMatch,
+  createUWMCPResource,
+  createUWMCPGetDocumentResult,
+  createUWMCPValidationResult,
+  createUWMCPListRepresentationsResult,
+  applyUWMDSourceEdit,
+  createUWMCPApplyEditResult,
+} from './bindings.js';
+export type {
+  UWHTTPBody,
+  UWHTTPResponse,
+  UWHTTPResponseOptions,
+  UWCSVView,
+  UWMCPResourceContent,
+  UWMCPResourceLink,
+  UWMCPToolResult,
+  UWMCPDocumentOptions,
+  UWSourceEditResult,
+} from './bindings.js';
 
 export {
   UW_ENVELOPE_VERSION,
