@@ -9,6 +9,13 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **HTTP and MCP Binding 1.0 (RFC 0014 Phase E)** — publishes stable
+  `https://uwmd.org/deals/{deal_id}` resource identities, an OpenAPI 3.1 contract,
+  negotiated HTTP responses with semantic ETags and preconditions, MCP text/blob
+  resources, compact dual structured/text tool results, resource links, all five
+  reference tool handlers, and a runnable SDK-neutral adapter example. Core
+  binding tests cover JSON/XML/CSV transport, `304`/`406`/`412`/`415`/`428`,
+  resource variants, validation results, and Tier-2 source edits.
 - **UW CSV Bundle 1.0 (RFC 0014 Phase D)** — adds the normalized model-fidelity
   directory and deterministic ZIP codecs, manifest inventory and file hashes,
   semantic-digest verification, bounded extraction defenses, and all six named
@@ -25,8 +32,8 @@ protocol, and each package each carry an independent semver).
   `_meta` and prose location per block, semantic canonicalization/digests,
   equivalence checks, `CodecRegistry`, the registered `uw-json` codec, verified
   parsing, and digested `uwmd export` output. Core and CLI round-trip, tampering,
-  registry, and schema tests cover the new contract. XML and discovery now ship
-  in the same 1.1 release train; CSV and HTTP/MCP bindings remain later phases.
+  registry, and schema tests cover the new contract. XML, CSV, discovery, and
+  HTTP/MCP companion profiles now ship in the same 1.1 release train.
 - **Protocol 1.2 representation discovery** — `ImplementationManifest` now
   advertises typed representation descriptors; its normative schema mirrors the
   addition. `negotiateRepresentation` implements Accept quality/specificity and

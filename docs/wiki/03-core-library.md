@@ -1,8 +1,8 @@
 # 03 — Core library (`@uwmd/core`)
 
 `packages/uwmd-core` is the reference implementation and the heart of the repo.
-Everything else depends on it; it depends only on `@anthropic-ai/sdk` (excluded
-from the browser entry).
+Everything else depends on it. Its runtime dependencies are `@anthropic-ai/sdk`
+(excluded from the browser entry), `fast-xml-parser`, and `fflate`.
 
 - **Package:** `@uwmd/core` 1.1.0 release candidate, ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
 - **Public API:** [`src/index.ts`](../../packages/uwmd-core/src/index.ts) — the
@@ -25,6 +25,7 @@ Module | Responsibility | Key exports
 `report.ts` | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
 `envelope.ts` | Format-neutral model + semantic digest/equivalence | `UWDocumentEnvelope`, `toUWEnvelope`, `verifyEnvelopeDigest`
 `codec.ts` | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
+`bindings.ts` | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results, source edits
 `uwjson.ts` | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
 `runner.ts` | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta`
 `compactor.ts` | Live view + section diff | `compact`, `diff`
@@ -157,6 +158,8 @@ consumers do not.)
 - `CodecRegistry`, `CORE_CODEC_REGISTRY`, `UW_JSON_CODEC`, and `UW_XML_CODEC` — discover and invoke model codecs by ID, media type, or filename.
 - `stringifyUWXml(envelope)` / `parseUWXml(text)` — deterministic UW XML 1.0 with digest verification and secure parsing limits.
 - `encodeUWCSVBundle` / `decodeUWCSVBundle` — normalized directory form; `encodeUWCSVZip` / `decodeUWCSVZip` provide deterministic bounded ZIP interchange and all six views.
+- `createUWHTTPResponse` / `decodeUWHTTPRequest` / `assertUWIfMatch` — negotiated model bytes, semantic ETags, and optimistic concurrency.
+- `createUWMCPResource` and `createUWMCP*Result` — text/blob resources, compact structured results, JSON fallback, and resource links.
 
 CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--no-superseded` to compact, `--stdout` to pipe). `uwmd convert <file> --to uw-json|uw-xml|uw-csv-bundle` converts Markdown and all verified model representations through the shared envelope.
 

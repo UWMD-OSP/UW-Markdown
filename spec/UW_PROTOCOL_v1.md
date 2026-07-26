@@ -81,7 +81,8 @@ supports via its `ImplementationManifest` (§I.4).
 - The bytes-on-disk format. See [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md).
 - UI design beyond display conventions. Implementations MAY render
   any way they wish provided values resolve to the same display strings.
-- Network server behavior. Optional HTTP and MCP bindings may carry registered
+- Deployment-specific network server behavior. Optional [HTTP](bindings/UW_HTTP_BINDING_v1.md)
+  and [MCP](bindings/UW_MCP_BINDING_v1.md) companion profiles carry registered
   representations, but no conformance tier requires a network transport.
 - Persistence. How implementations cache, version, or back up the file
   is out of scope.

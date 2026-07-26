@@ -1,8 +1,8 @@
 # 13 — Build status (living document)
 
-**Review update:** 2026-07-26 — RFC 0014 Phases A–D are implemented;
+**Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-07-26 (Envelope, JSON, XML, CSV bundle, Protocol 1.2
+**Last verified:** 2026-07-26 (Envelope, JSON, XML, CSV bundle, HTTP/MCP bindings, Protocol 1.2
 discovery, schemas, CLI, package verification, and core tests; release branch).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
@@ -51,7 +51,7 @@ not core gaps.
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
 - **CLI:** 16 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
-- **Machine interchange Phases A–D:** Envelope 1.0, normative schemas, UW JSON
+- **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
@@ -116,9 +116,10 @@ not core gaps.
 RFC 0014 defines a format-neutral envelope plus UW JSON, XML, and normalized CSV
 bundle mappings. Envelope 1.0, UW JSON 1.0, semantic digests, the codec registry,
 Protocol 1.2 representation descriptors/negotiation, schemas, `uwmd export`,
-`uwmd formats`, deterministic UW XML 1.0, normalized UW CSV Bundle 1.0, and
-Markdown/JSON/XML/CSV `uwmd convert` are implemented. HTTP/MCP reference profiles
-remain the next phase. See the
+`uwmd formats`, deterministic UW XML 1.0, normalized UW CSV Bundle 1.0,
+Markdown/JSON/XML/CSV `uwmd convert`, HTTP Binding 1.0, MCP Binding 1.0, and
+reference adapters are implemented. Package publication is the remaining release
+step. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
 

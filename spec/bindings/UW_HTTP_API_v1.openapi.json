@@ -1,0 +1,230 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "UW Markdown Reference API",
+    "version": "1.0.0",
+    "description": "Example HTTP binding for UW Protocol 1.2 registered representations. Deployment, authentication, and persistence are implementation-specific."
+  },
+  "servers": [
+    { "url": "https://api.example.com", "description": "Replace with the deployment API origin" }
+  ],
+  "paths": {
+    "/v1/deals/{deal_id}": {
+      "parameters": [
+        { "$ref": "#/components/parameters/DealId" }
+      ],
+      "get": {
+        "operationId": "getUWDocument",
+        "summary": "Retrieve a negotiated model representation",
+        "parameters": [
+          { "$ref": "#/components/parameters/IfNoneMatch" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Document" },
+          "304": { "$ref": "#/components/responses/NotModified" },
+          "406": { "$ref": "#/components/responses/NotAcceptable" }
+        }
+      },
+      "put": {
+        "operationId": "putUWDocument",
+        "summary": "Create or replace a verified model representation",
+        "parameters": [
+          { "$ref": "#/components/parameters/IfMatch" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/vnd.uwmd.document+json": {
+              "schema": { "$ref": "https://uwmd.org/schemas/uw-document-envelope.schema.json" }
+            },
+            "application/vnd.uwmd.document+xml": {
+              "schema": { "type": "string" }
+            },
+            "application/vnd.uwmd.csv-bundle+zip": {
+              "schema": { "type": "string", "format": "binary" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Document" },
+          "201": { "$ref": "#/components/responses/Document" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "412": { "$ref": "#/components/responses/PreconditionFailed" },
+          "415": { "$ref": "#/components/responses/UnsupportedMediaType" },
+          "428": { "$ref": "#/components/responses/PreconditionRequired" }
+        }
+      },
+      "patch": {
+        "operationId": "applyUWEdit",
+        "summary": "Apply one Tier-2 protocol edit with optimistic concurrency",
+        "parameters": [
+          { "$ref": "#/components/parameters/RequiredIfMatch" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EditRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/EditReceipt" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "409": { "$ref": "#/components/responses/EditConflict" },
+          "412": { "$ref": "#/components/responses/PreconditionFailed" },
+          "428": { "$ref": "#/components/responses/PreconditionRequired" }
+        }
+      }
+    },
+    "/v1/representations": {
+      "get": {
+        "operationId": "listUWRepresentations",
+        "summary": "Discover registered representations",
+        "responses": {
+          "200": {
+            "description": "Ordered representation descriptors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["representations"],
+                  "properties": {
+                    "representations": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Representation" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "DealId": {
+        "name": "deal_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 1 }
+      },
+      "IfNoneMatch": {
+        "name": "If-None-Match",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string" }
+      },
+      "RequiredIfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    },
+    "headers": {
+      "ETag": { "schema": { "type": "string", "pattern": "^\\\"sha256:[0-9a-f]{64}\\\"$" } },
+      "Vary": { "schema": { "type": "string", "const": "Accept" } },
+      "SemanticDigest": { "schema": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" } }
+    },
+    "schemas": {
+      "Representation": {
+        "type": "object",
+        "required": ["id", "media_types", "file_extensions", "directions", "fidelity", "representation_version"],
+        "properties": {
+          "id": { "type": "string" },
+          "media_types": { "type": "array", "items": { "type": "string" } },
+          "file_extensions": { "type": "array", "items": { "type": "string" } },
+          "directions": { "type": "array", "items": { "enum": ["read", "write"] } },
+          "fidelity": { "enum": ["source", "model", "view"] },
+          "representation_version": { "type": "string" },
+          "view": { "type": "string" },
+          "max_bytes": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "EditRequest": {
+        "type": "object",
+        "required": ["operation", "context"],
+        "properties": {
+          "operation": { "$ref": "https://uwmd.org/schemas/edit-operation.schema.json" },
+          "context": {
+            "type": "object",
+            "required": ["actor", "source"],
+            "properties": {
+              "actor": { "type": "string", "minLength": 1 },
+              "source": { "type": "string", "minLength": 1 },
+              "confidence": { "enum": ["high", "medium", "low"] },
+              "agentId": { "type": ["string", "null"] },
+              "agentVersion": { "type": ["string", "null"] },
+              "notes": { "type": "string" }
+            }
+          }
+        }
+      },
+      "EditReceipt": {
+        "type": "object",
+        "required": ["ok", "deal_id", "resource_uri", "semantic_digest", "etag"],
+        "properties": {
+          "ok": { "const": true },
+          "deal_id": { "type": "string" },
+          "resource_uri": { "type": "string", "format": "uri" },
+          "semantic_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "etag": { "type": "string" },
+          "new_version": { "type": "integer", "minimum": 1 },
+          "superseded_prior_block": { "type": "boolean" }
+        }
+      },
+      "BindingError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "status": { "type": "integer" },
+          "pointer": { "type": "string" },
+          "remediation": { "type": "string" }
+        }
+      }
+    },
+    "responses": {
+      "Document": {
+        "description": "Negotiated model representation",
+        "headers": {
+          "ETag": { "$ref": "#/components/headers/ETag" },
+          "Vary": { "$ref": "#/components/headers/Vary" },
+          "UWMD-Semantic-Digest": { "$ref": "#/components/headers/SemanticDigest" }
+        },
+        "content": {
+          "application/vnd.uwmd.document+json": {
+            "schema": { "$ref": "https://uwmd.org/schemas/uw-document-envelope.schema.json" }
+          },
+          "application/vnd.uwmd.document+xml": { "schema": { "type": "string" } },
+          "application/vnd.uwmd.csv-bundle+zip": { "schema": { "type": "string", "format": "binary" } }
+        }
+      },
+      "NotModified": { "description": "Semantic ETag matched; no response body" },
+      "EditReceipt": {
+        "description": "Edit applied",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EditReceipt" } } }
+      },
+      "BadRequest": { "$ref": "#/components/responses/Error" },
+      "NotAcceptable": { "$ref": "#/components/responses/Error" },
+      "EditConflict": { "$ref": "#/components/responses/Error" },
+      "PreconditionFailed": { "$ref": "#/components/responses/Error" },
+      "UnsupportedMediaType": { "$ref": "#/components/responses/Error" },
+      "PreconditionRequired": { "$ref": "#/components/responses/Error" },
+      "Error": {
+        "description": "Stable binding or protocol error",
+        "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/BindingError" } } }
+      }
+    }
+  }
+}

@@ -432,10 +432,10 @@ then, the TypeScript reference runner gates the reference implementation.
   cross-format digests; hostile input tests; manifest and negotiation tests; CLI
   integration tests; MCP/HTTP contract examples validated against their schemas.
 
-Phases A-D are implemented in `@uwmd/core`: Envelope 1.0, UW JSON 1.0,
+Phases A–E are implemented in `@uwmd/core`: Envelope 1.0, UW JSON 1.0,
 representation discovery/negotiation, deterministic secure UW XML 1.0, and the
 normalized deterministic UW CSV Bundle 1.0 with all six views. The CLI exports
-JSON and converts Markdown/JSON/XML/CSV. HTTP and MCP bindings remain Phase E.
+JSON and converts Markdown/JSON/XML/CSV. HTTP Binding 1.0, MCP Binding 1.0, OpenAPI 3.1 components, and shared reference adapters complete Phase E.
 
 ## Alternatives considered
 
@@ -480,22 +480,20 @@ On 2026-07-26, the BDFL selected the recommended model:
 ### Governance disposition
 
 The project owner accepted this RFC on 2026-07-26 under the owner-led mode in
-`GOVERNANCE.md`. Phase A is implemented; later phases become conformant only as
-their specifications, schemas, code, and fixtures land.
+`GOVERNANCE.md`. Phases A–E are implemented with their specifications, code,
+fixtures, and release documentation.
 
-## Unresolved questions
+## Deferred questions
 
-1. Should the final neutral field remain `envelope_version` permanently, or
-   become `document_version` in a later envelope major?
-2. Should CSV ZIP use a vendor `+zip` media type or `application/zip` with a
-   profile parameter until registration guidance is settled?
-3. Does v2 need durable block IDs, or is deterministic JSON-Pointer identity
-   sufficient outside collaborative merge workflows?
-4. Which HTTP paths belong in the core protocol versus an OpenAPI companion
-   specification?
-5. Should the MCP binding use stable HTTPS resource identities, a registered
-   `uwmd:` URI scheme, or allow servers to choose while preserving deal IDs?
-6. What input-size limits should the reference codecs choose by default?
+1. Any rename of `envelope_version` to `document_version` is deferred to a later
+   envelope major.
+2. Durable collaborative block IDs remain a v2 design question; deterministic
+   JSON-Pointer identity is sufficient for this release.
+
+CSV ZIP uses the vendor `application/vnd.uwmd.csv-bundle+zip` media type. HTTP
+paths live in the optional OpenAPI/HTTP companion profile rather than the core
+protocol. Those Phase D/E questions are resolved.
+
 
 ## Prior art
 

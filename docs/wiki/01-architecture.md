@@ -58,6 +58,7 @@ spec/                      Normative specs + JSON Schemas + XML XSD
   UW_PROTOCOL_v1.md        Tiers, display, edit semantics, calc EBNF, AI-host contract
   UW_XML_MAPPING_v1.md     Deterministic Envelope 1.0 XML representation
   UW_CSV_BUNDLE_v1.md      Normalized CSV directory/ZIP representation
+  bindings/                HTTP/MCP profiles + OpenAPI 3.1 contract
   schemas/                 JSON Schema 2020-12 plus structural UW XML XSD
 
 packages/
@@ -82,9 +83,9 @@ docs/           GLOSSARY.md, TOOLS.md, rfcs/, and this wiki/
 From `ARCHITECTURE.md`, restated because agents break these most often:
 
 1. **Spec depends on nothing.** Any spec change requires an RFC (`docs/rfcs/`).
-2. **`@uwmd/core` depends only on `@anthropic-ai/sdk`** at runtime — and the SDK
-   is *excluded* from the `@uwmd/core/browser` entry so the parser/validator/calc
-   engine can be bundled into a browser without pulling in the Anthropic client.
+2. **`@uwmd/core` keeps transport logic dependency-light.** Runtime dependencies
+   are `@anthropic-ai/sdk` (excluded from `@uwmd/core/browser`),
+   `fast-xml-parser`, and `fflate`; HTTP/MCP adapters add no server SDK.
 3. **Tools depend on `@uwmd/core`** (browser entry where applicable) plus their
    own UI/runtime stack. **Tools MUST NOT reach into other tools' code.**
 4. **Conformance fixtures depend on nothing.** They are pure data, versioned
