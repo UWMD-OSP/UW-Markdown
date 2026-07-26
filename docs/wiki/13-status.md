@@ -3,7 +3,8 @@
 **Review update:** 2026-07-25 - Windows CRLF parsing is fixed and regression
 tested; Windows build/test/conformance and blocking core-coverage jobs are added
 to CI; critical development dependency advisories are remediated. The first npm
-publication and ExcelJS transitive-advisory resolution remain open.
+publication remains open. ExcelJS transitive advisories are isolated to the
+separately versioned, currently unpublished `@uwmd/excel` add-on.
 **Last verified:** 2026-07-25 (report renderer + @uwmd/report PDF pipeline +
 React web-editor rebuild landed; web-editor 0.5.0 footed-model surfaces —
 rent-roll, operating statement, debt, sources & uses, valuation — landed on a
@@ -127,8 +128,8 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 
 > **Current state (2026-07-25):** the repository is public. The remaining launch
 > gates are the canonical repo rename, `@uwmd` npm organization, `NPM_TOKEN`, the
-> first `v1.0.0` tag/publication, and resolution or formal acceptance of the
-> ExcelJS transitive dependency advisories.
+> first `v1.0.0` tag/publication. The Excel add-on remains held separately until
+> its ExcelJS dependency chain is upgraded, replaced, or formally risk-accepted.
 
 From the ROADMAP pre-public-flip checklist (all pending): repo rename to
 `uw-markdown`, register `@uwmd` npm org, add `NPM_TOKEN`, tag/publish `v1.0.0`,

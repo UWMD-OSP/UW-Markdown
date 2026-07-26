@@ -22,6 +22,12 @@
     },
     "./cli": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "!dist/**/*.test.*",
+    "!dist/**/*.property.test.*"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

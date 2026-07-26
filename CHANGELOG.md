@@ -160,6 +160,10 @@ protocol, and each package each carry an independent semver).
   render targets now throw typed `UnsupportedRenderFormatError` instead of
   returning successful-looking empty output. PDF callers are directed to
   `@uwmd/report`; DOCX remains explicitly unimplemented.
+- **Publishable core package contents** - `@uwmd/core` now explicitly ships its
+  compiled `dist` API and package README while excluding source tests. CI and the
+  release workflow run `verify-packages` so a package whose exports point at
+  missing artifacts cannot be published again.
 - **Web editor lint errors that were failing the CI `lint` job** — `biome lint`
   flags (recommended-default errors): `noAutofocus` on the New Deal dialog and the
   footed-cell override input (replaced the `autoFocus` attribute with a ref +

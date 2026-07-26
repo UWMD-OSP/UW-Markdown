@@ -179,9 +179,9 @@ function parseScalar(raw: string): unknown {
 function parseFenceAnnotation(sectionId: string, rest: string): UWFenceAnnotation {
   const annotation: UWFenceAnnotation = { section: sectionId };
   KV_RE.lastIndex = 0;
-  let match: RegExpExecArray | null;
+  let match = KV_RE.exec(rest);
 
-  while ((match = KV_RE.exec(rest)) !== null) {
+  while (match !== null) {
     const key = match[1];
     const value = match[2];
 
@@ -198,6 +198,7 @@ function parseFenceAnnotation(sectionId: string, rest: string): UWFenceAnnotatio
       default:
         annotation[key] = value;
     }
+    match = KV_RE.exec(rest);
   }
 
   return annotation;

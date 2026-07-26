@@ -91,7 +91,7 @@ function deriveMultifamily(content: Row): RentRollDerivation {
   return { variant: 'multifamily', basis: 'none', fields: [] };
 }
 
-function deriveMultifamilyFromUnits(content: Row, units: Row[]): RentRollDerivation {
+function deriveMultifamilyFromUnits(_content: Row, units: Row[]): RentRollDerivation {
   const c = collector();
   const n = units.length;
   let occ = 0;
@@ -182,7 +182,7 @@ function buildUnitMix(units: Row[], total: number): Row[] {
   });
 }
 
-function deriveMultifamilyFromMix(content: Row, mix: Row[]): RentRollDerivation {
+function deriveMultifamilyFromMix(_content: Row, mix: Row[]): RentRollDerivation {
   const c = collector();
   let total = 0;
   let gprM = 0;

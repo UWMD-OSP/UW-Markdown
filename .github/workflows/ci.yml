@@ -42,6 +42,10 @@ jobs:
 
       - name: Build
         run: npm run build
+      - name: Verify publishable package contents
+        if: matrix.node == 20
+        run: npm run verify-packages
+
 
       - name: Test
         run: npm test

@@ -12,6 +12,7 @@
     "cli": "node packages/uwmd-cli/bin/uwmd.mjs",
     "conformance": "node scripts/run-conformance.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
+    "verify-packages": "node scripts/verify-packages.mjs",
     "lint": "biome lint .",
     "format": "biome format --write ."
   },

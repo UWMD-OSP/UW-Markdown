@@ -43,6 +43,9 @@ jobs:
         run: npm ci
 
       - name: Build
+      - name: Verify publishable package contents
+        run: npm run verify-packages
+
         run: npm run build
 
       - name: Run unit tests
