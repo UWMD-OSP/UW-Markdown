@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonicalize } from './integrity-canonical.js';
+import { canonicalize, canonicalizeExact } from './integrity-canonical.js';
 
 describe('canonicalize — RFC 8785 (JCS) with uwmd exclusions', () => {
   it('sorts object keys by code-unit comparison', () => {
@@ -53,5 +53,13 @@ describe('canonicalize — RFC 8785 (JCS) with uwmd exclusions', () => {
   it('does NOT strip content_hash from non-meta objects', () => {
     const out = canonicalize({ payload: { content_hash: 'abc' } });
     expect(out).toBe('{"payload":{"content_hash":"abc"}}');
+  });
+});
+
+describe('canonicalizeExact', () => {
+  it('preserves integrity fields for document-level semantic digests', () => {
+    const value = { _meta: { section: 'x', version: 1, source: 'manual', content_hash: 'abc' } };
+    expect(canonicalizeExact(value)).toContain('content_hash');
+    expect(canonicalize(value)).not.toContain('content_hash');
   });
 });

@@ -31,7 +31,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@uwmd/core": "1.0.0",
+    "@uwmd/core": "1.1.0",
     "playwright-core": "^1.49.0"
   },
   "devDependencies": {

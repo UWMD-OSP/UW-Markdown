@@ -63,9 +63,9 @@ targets additive representation discovery for protocol 1.2, and stages
 
 | Status | Item | Notes |
 |---|---|---|
-| ✅ | RFC 0014 architecture | Accepted 2026-07-26 under a recorded single-maintainer bootstrap waiver; implementation remains phased and unshipped. |
-| 📋 | Envelope + UW JSON | Promote the existing lossless `.uw.json` shape into a neutral schema and codec without changing Markdown syntax. |
-| 📋 | Registry + discovery | Add protocol 1.2 representation descriptors and optional HTTP/MCP companion profiles. |
+| ✅ | RFC 0014 architecture | Accepted by the project owner on 2026-07-26 under owner-led governance. |
+| ✅ | Envelope + UW JSON | Envelope 1.0 schema, JSON 1.0 codec, semantic digest, registry, CLI export, and tests implemented. |
+| 🟡 | Registry + discovery | Protocol 1.2 descriptors, manifest schema, negotiation, and `uwmd formats` implemented; HTTP/MCP profiles and `convert` remain. |
 | 📋 | UW XML + CSV bundle | Implement only after mappings, safety limits, and CSV structure are accepted. |
 
 Detailed sequencing and release gates:
@@ -75,8 +75,8 @@ Detailed sequencing and release gates:
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
 None are required for v1 conformance — they constitute v2 of the
-protocol, the format, or both. RFCs are `draft` until the BDFL accepts;
-acceptance follows the 14-day comment window in
+protocol, the format, or both. RFCs are `draft` until the project owner accepts.
+The 14-day comment window applies after collaborative governance activates; see
 [`GOVERNANCE.md`](./GOVERNANCE.md).
 
 Mirrored in `spec/UW_PROTOCOL_v1.md` §XIII so spec readers see them in

@@ -26,7 +26,7 @@ import type {
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.1.0' as const;
+export const PROTOCOL_VERSION = '1.2.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -65,6 +65,22 @@ export type ViewerCapability =
   | 'agent-host'
   | 'module-load';
 
+export type RepresentationFidelity = 'source' | 'model' | 'view';
+export type RepresentationDirection = 'read' | 'write';
+
+/** Discoverable support for one source, model, or view representation. */
+export interface RepresentationCapability {
+  id: string;
+  media_types: string[];
+  file_extensions: string[];
+  directions: RepresentationDirection[];
+  fidelity: RepresentationFidelity;
+  representation_version: string;
+  /** Required for view-fidelity representations. */
+  view?: string;
+  streaming?: boolean;
+  max_bytes?: number;
+}
 /**
  * What a conforming implementation declares about itself. A reader of a
  * `.uw.md` file should be able to discover whether a given tool will be
@@ -85,6 +101,8 @@ export interface ImplementationManifest {
   tier: ViewerTier;
   /** Optional finer-grained capability list. */
   capabilities?: ViewerCapability[];
+  /** Machine-readable representation discovery (Protocol 1.2+). */
+  representations?: RepresentationCapability[];
   /** Asset classes the implementation specifically supports (omit = all). */
   asset_classes?: AssetClass[];
   /** Role / form factor of the implementation. */

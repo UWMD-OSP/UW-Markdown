@@ -64,7 +64,12 @@
       "uniqueItems": true,
       "description": "Finer-grained capability flags. Tier sets a coarse floor; capabilities allow advertising partial conformance."
     },
-    "asset_classes": {
+    "representations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/representationCapability" },
+      "uniqueItems": true,
+      "description": "Machine-readable representation support (Protocol 1.2+)."
+    },    "asset_classes": {
       "type": "array",
       "items": {
         "enum": [
@@ -85,7 +90,48 @@
       "description": "Public homepage / docs URL."
     }
   },
-  "examples": [
+  "$defs": {
+    "representationCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "media_types", "file_extensions", "directions", "fidelity",
+        "representation_version"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
+        "media_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$" }
+        },
+        "file_extensions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^\\.[A-Za-z0-9._-]+$" }
+        },
+        "directions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["read", "write"] }
+        },
+        "fidelity": { "enum": ["source", "model", "view"] },
+        "representation_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "view": { "type": "string", "minLength": 1 },
+        "streaming": { "type": "boolean" },
+        "max_bytes": { "type": "integer", "minimum": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "fidelity": { "const": "view" } } },
+          "then": { "required": ["view"] }
+        }
+      ]
+    }
+  },  "examples": [
     {
       "id": "io.uwmd.core",
       "name": "@uwmd/core",

@@ -10,21 +10,16 @@ and how it gets accepted.
 
 ## Process
 
-1. Copy [`0000-template.md`](./0000-template.md) to a new file named
-   `NNNN-<short-slug>.md`. Pick the next free 4-digit number.
-2. Fill in every section. RFCs without compatibility analysis,
-   conformance impact, or a reference implementation plan get bounced.
-3. Open a PR titled `RFC NNNN: <short title>`.
-4. The PR sits open for **at least 14 days** — this gives third-party
-   implementers a chance to weigh in.
-5. The BDFL accepts, requests changes, or rejects per
-   [`GOVERNANCE.md`](../../GOVERNANCE.md#normative-changes-change-implementer-behavior).
-6. On accept: the RFC merges to `main`, status flips to `accepted`, and
-   the spec / library changes land in a follow-up PR (or the same one).
-7. On reject: the RFC merges with status `rejected` and a one-paragraph
-   summary of why. Rejected RFCs stay in the directory as institutional
-   memory — they document paths the project considered and chose not to
-   take.
+1. Copy [`0000-template.md`](./0000-template.md) to
+   `NNNN-<short-slug>.md` using the next free number.
+2. Fill in the design, compatibility, conformance, and implementation sections.
+3. Open a pull request or, in owner-led mode, commit it with the implementation.
+4. The project owner accepts, requests changes, or rejects the proposal.
+5. In owner-led mode there is no mandatory waiting period. After collaborative
+   mode activates under [`GOVERNANCE.md`](../../GOVERNANCE.md), a normative RFC
+   remains open for public comment for at least 14 days before acceptance.
+6. Accepted RFCs move to `accepted`; after the implementation ships, they move
+   to `implemented`. Rejected and superseded RFCs remain as design history.
 
 ## Index
 
@@ -48,7 +43,7 @@ and how it gets accepted.
 
 - **draft** — author is still iterating; reviewers may comment but
   the proposal is not stable.
-- **active** — open for comment; in the 14-day window.
+- **active** — open for comment; the 14-day minimum applies in collaborative mode.
 - **accepted** — merged with intent to implement.
 - **implemented** — the change has shipped in a release; CHANGELOG
   entry exists.

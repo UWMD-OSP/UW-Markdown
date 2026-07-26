@@ -4,7 +4,7 @@
 Everything else depends on it; it depends only on `@anthropic-ai/sdk` (excluded
 from the browser entry).
 
-- **Package:** `@uwmd/core` 1.0.0, ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
+- **Package:** `@uwmd/core` 1.1.0 release candidate, ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
 - **Public API:** [`src/index.ts`](../../packages/uwmd-core/src/index.ts) — the
   single source of truth for what's exported. If it isn't there, tools can't import it.
 - **Entry points (`package.json` `exports`):**
@@ -23,7 +23,9 @@ Module | Responsibility | Key exports
 `editor.ts` | Tier-2 edit dispatcher | `applyEdit`, `applyEditAsync`, `resolvePolicy`
 `renderer.ts` | Render to json/csv/chat/summary | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)
 `report.ts` | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
-`uwjson.ts` | Lossless `.uw.json` sibling serialization (export + re-hydrate) | `toUWJson`, `stringifyUWJson`, `parseUWJson`, `fromUWJson`, `UWJsonDocument`
+`envelope.ts` | Format-neutral model + semantic digest/equivalence | `UWDocumentEnvelope`, `toUWEnvelope`, `verifyEnvelopeDigest`
+`codec.ts` | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
+`uwjson.ts` | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
 `runner.ts` | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta`
 `compactor.ts` | Live view + section diff | `compact`, `diff`
 `init.ts` | Scaffold a blank `.uw.md` | `generateBlankUWFile`
@@ -144,25 +146,24 @@ and `render` all run against a `.uw.json` source unchanged. (Re-hydrated `raw` i
 byte-preserving `applyEdit` still needs the `.uw.md`; read/validate/calc
 consumers do not.)
 
-- `toUWJson(parsed, opts?) → UWJsonDocument` — `opts.includeSuperseded` (default
-  `true`; set `false` for a compacted export), `opts.generatedAt`, `opts.generator`.
-- `stringifyUWJson(parsed, opts?) → string` — pretty-printed, trailing newline.
-- `parseUWJson(text) → UWJsonDocument` — structural validation; throws
-  `UWJsonError` (`UWJSON_INVALID_JSON`, `UWJSON_MISSING_VERSION`,
-  `UWJSON_MISSING_SECTIONS`, …).
-- `fromUWJson(doc) → ParsedUWFile` — re-hydrate into the in-memory model.
+- `toUWJson(parsed, opts?) → UWDocumentEnvelope` — converts the parsed model to
+  Envelope 1.0; superseded history is included by default.
+- `stringifyUWJson(parsed, opts?) → string` — pretty-printed UW JSON 1.0.
+- `stringifyUWJsonWithDigest(parsed, opts?) → Promise<string>` — adds the
+  canonical `semantic_digest` used by CLI exports and cross-format checks.
+- `parseUWJson(text) → UWDocumentEnvelope` and `parseUWJsonVerified(text)` —
+  structural parsing, with optional digest enforcement.
+- `fromUWJson(doc) → ParsedUWFile` — rehydrates the in-memory model.
+- `CodecRegistry` and `UW_JSON_CODEC` — discover and invoke model codecs by ID,
+  media type, or filename; XML and CSV register through the same contract.
 
-CLI: `uwmd export <file.uw.md>` writes the sibling `.uw.json`
+CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json`
 (`--no-superseded` to compact, `--stdout` to pipe).
 
-> **Status — derived view, not (yet) normative.** This is a *library-provided*
-> serialization. It does **not** touch `spec/`, the JSON Schemas, or the protocol,
-> and it carries its own independent `uwjson_version` (`UWJSON_VERSION`). Promoting
-> `.uw.json` to a *normative* sibling of the `.uw.md` format — with its own JSON
-> Schema in `spec/schemas/` and a conformance tier — is **future RFC work** (see
-> [11 — Governance](11-build-release-governance.md)); per invariant #7 the spec,
-> schema, and protocol move in lockstep, so that step is deliberately deferred.
-
+> **Status — normative Envelope 1.0 / UW JSON 1.0 implementation.** The schema is
+> `spec/schemas/uw-document-envelope.schema.json`. This is model-lossless, not
+> byte-preserving: Markdown source bytes remain exclusive to the `.uw.md` source
+> adapter.
 ## runner.ts
 
 The low-level write path used by the agent host and CLI. `buildMeta(...)`
@@ -200,8 +201,8 @@ The executable mirror of `UW_PROTOCOL_v1.md`. It **re-uses** types from `types.t
 (never duplicates them) and adds the protocol-layer types plus the `BUILTIN_*`
 tables every conforming tool references:
 
-- Versions: `PROTOCOL_VERSION` (1.1.0), `FORMAT_VERSION` (1.1).
-- Tiers/capabilities: `ViewerTier`, `ViewerCapability`, `ImplementationManifest`.
+- Versions: `PROTOCOL_VERSION` (1.2.0), `FORMAT_VERSION` (1.1).
+- Tiers/capabilities: `ViewerTier`, `ViewerCapability`, `ImplementationManifest`, `RepresentationCapability`.
 - Display: `DEFAULT_NUMBER_FORMAT`, `DEFAULT_DATE_FORMAT`, `BUILTIN_VIEW_MODELS`
   (per-section render hints), `SectionViewModel`, `FieldViewHint`.
 - Edits: `EditOperation`, `EditPolicy`, `EditAuthority`, `BUILTIN_EDIT_POLICIES`.

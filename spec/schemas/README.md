@@ -12,6 +12,7 @@ this directory).
 | Schema | Mirrors | Spec section |
 |---|---|---|
 | [`uwmd-block.schema.json`](uwmd-block.schema.json) | `UWBlock` + `UWMeta` | Format §2.4–§2.6 |
+| [uw-document-envelope.schema.json](uw-document-envelope.schema.json) | UWDocumentEnvelope | RFC 0014 / Envelope 1.0 |
 | [`edit-operation.schema.json`](edit-operation.schema.json) | `EditOperation` (discriminated union) | Protocol §V |
 | [`protocol-error.schema.json`](protocol-error.schema.json) | `ProtocolError` | Protocol §XI |
 | [`implementation-manifest.schema.json`](implementation-manifest.schema.json) | `ImplementationManifest` | Protocol §I.4 |

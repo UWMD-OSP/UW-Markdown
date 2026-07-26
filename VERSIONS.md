@@ -23,27 +23,27 @@ same protocol version.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
-| UW Protocol | **1.1** | format ≥ 1.0 |
-| `@uwmd/core` | **1.0.0** | format 1.1, protocol 1.1 |
-| `uwmd` (CLI) | **1.0.0** | `@uwmd/core` 1.0.x |
-| `@uwmd/excel` | **0.1.0** | `@uwmd/core` 1.0.x, format 1.1 multifamily pack |
-| `tools/web-editor` | **0.1.0** (private) | `@uwmd/core` 1.0.x browser entry |
+| UW Protocol | **1.2.0** | format ≥ 1.0 |
+| `@uwmd/core` | **1.1.0-rc** | format 1.1, protocol 1.2.0 |
+| `uwmd` (CLI) | **1.1.0-rc** | `@uwmd/core` 1.1.x |
+| `@uwmd/excel` | **0.1.0** | `@uwmd/core` 1.1.x, format 1.1 multifamily pack |
+| `tools/web-editor` | **0.5.0** (private) | `@uwmd/core` 1.1.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.1.0** | format 1.1 |
 
 ## Planned 1.1+ interchange train
 
-Accepted RFC 0014 defines a coordinated but independently versioned release after the
-first public v1.0.0 packages:
+Accepted RFC 0014 defines a coordinated but independently versioned release train:
 
 | Surface | Candidate version | Status |
 |---|---:|---|
 | `.uw.md` format | 1.1 (unchanged) | No syntax change proposed. |
-| UW Protocol | 1.2.0 | Accepted plan; additive representation discovery is not implemented yet. |
-| `@uwmd/core` | 1.1.0 | Planned envelope and codec APIs. |
-| `uwmd` | 1.1.0 | Planned formats/convert CLI. |
-| UW Document Envelope | 1.2 | Candidate canonical shape; legacy experimental `.uw.json` 1.1 remains readable. |
-| UW JSON / XML / CSV mappings | independently versioned | Planned; mapping versions are not package or format versions. |
+| UW Protocol | 1.2.0 | Representation descriptors, schema, and negotiation implemented; binding profiles pending. |
+| `@uwmd/core` | 1.1.0 | Envelope 1.0, JSON mapping, digest helpers, and codec registry implemented for the release. |
+| `uwmd` | 1.1.0 | `formats` and digested export implemented; `convert` lands with XML/CSV. |
+| UW Document Envelope | 1.0 | Stable schema and core implementation complete; not yet published. |
+| UW JSON mapping | 1.0.0 | Core implementation complete; release pending. |
+| UW XML / CSV mappings | 1.0.0 candidates | Planned next; mapping versions are independent. |
 
 These are candidate versions, not the current compatibility matrix. They become
 authoritative only after RFC acceptance, implementation, conformance, and the

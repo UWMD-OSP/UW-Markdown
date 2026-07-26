@@ -89,7 +89,7 @@ Markdown byte stream.
 
 ### 2. UW Document Envelope
 
-The normative envelope starts from the existing `UWJsonDocument` shape:
+The normative envelope is the shared `UWDocumentEnvelope` type:
 
 ```ts
 interface UWEnvelopeBlock {
@@ -101,10 +101,11 @@ interface UWEnvelopeBlock {
 }
 
 interface UWDocumentEnvelope {
-  envelope_version: "1.2";
+  envelope_version: "1.0";
   format_version: string;
   generated_at?: string;
   generator?: string;
+  semantic_digest?: string;
   frontmatter: UWFrontmatter;
   sections: Record<string, UWEnvelopeBlock | Record<string, UWEnvelopeBlock>>;
   pipeline_log: UWEnvelopeBlock[];
@@ -116,7 +117,7 @@ interface UWDocumentEnvelope {
 }
 ```
 
-The neutral schema uses `envelope_version: "1.2"`. The envelope version governs
+The neutral schema uses `envelope_version: "1.0"`. The envelope version governs
 the container shape; `format_version` governs UW Markdown section semantics.
 Codec and bundle versions are independent and MUST NOT be inferred from either
 field.
@@ -125,8 +126,7 @@ An envelope block MUST preserve its annotation, `_meta` provenance, content,
 and prose values. `content._meta` is the sole authoritative provenance value,
 and `block.prose` is the sole authoritative prose value. Canonical encoders MUST
 NOT emit the experimental duplicate `block.meta` or top-level `prose` index.
-Readers MUST accept the legacy `.uw.json` 1.1 shape, verify duplicate values when
-both are present, reject conflicts, and normalize it to envelope 1.2. JSON object
+JSON object
 member order is not semantic. Array order, absent versus present values, JSON
 scalar types, variants, and superseded order are semantic and MUST be preserved.
 
@@ -147,16 +147,17 @@ Every representation descriptor MUST declare one of these fidelity classes:
 defined below is `model`; wide analytical CSVs are `view`.
 
 Two envelopes are semantically equivalent when their canonical JSON forms are
-byte-equal after removing volatile serialization metadata. Canonical JSON and
-SHA-256 follow Protocol v1 §V.9 and RFC 8785. Encoders SHOULD emit a
+byte-equal after removing volatile serialization metadata. Canonical JSON follows
+RFC 8785 without the block-integrity hash exclusions in Protocol §V.9; SHA-256 is
+computed over those exact canonical UTF-8 bytes. Encoders SHOULD emit a
 `semantic_digest` using `sha256:<lowercase hex>`; decoders that receive it MUST
 verify it before returning a document.
 
 ### 4. Representation registry and codec contract
 
 `ImplementationManifest` gains an additive `representations` array. Existing
-`render-*` capability tokens remain valid for v1 compatibility but are
-deprecated for interchange discovery.
+`render-*` capability tokens continue to describe rendering features;
+interchange discovery uses representation descriptors.
 
 ```ts
 type RepresentationFidelity = 'source' | 'model' | 'view';
@@ -356,8 +357,8 @@ envelope value and passes the cross-format equivalence corpus.
 
 ### 11. Delivery phases
 
-1. **Envelope and UW JSON:** publish the neutral envelope schema, migrate
-   `uwjson_version`, and add semantic digest/equivalence tests.
+1. **Envelope and UW JSON:** publish the neutral envelope schema, stable JSON
+   mapping, codec registration, and semantic digest/equivalence tests.
 2. **Registry and negotiation:** land the codec API, manifest descriptors, and
    HTTP/MCP binding specifications.
 3. **UW XML:** implement the namespace mapping, secure parser, and fixtures.
@@ -380,10 +381,6 @@ release blocker. Version coordination and governance gates are tracked in the
   Markdown guarantees.
 - **Tier-3 Calc Hosts and Tier-4 Agent Hosts:** operate on the same parsed model.
   Transport and codec selection are additive.
-- **Existing `.uw.json` users:** readers accept `uwjson_version: "1.1"` and its
-  duplicate `block.meta` / top-level `prose` fields, reject conflicting
-  duplicates, and normalize them to envelope 1.2. Canonical writers emit only
-  `envelope_version: "1.2"`, `content._meta`, and per-block prose.
 - **Existing renderer JSON/CSV users:** outputs remain available as named views.
   CLI aliases may warn before any rename.
 - **Modules:** section and extension payloads are preserved; no module manifest
@@ -425,19 +422,18 @@ then, the TypeScript reference runner gates the reference implementation.
 - **API surface:** `UWDocumentEnvelope`, `RepresentationCapability`, `UWCodec`,
   `CodecRegistry`, `encodeUWDocument`, `decodeUWDocument`,
   `negotiateRepresentation`, and semantic digest helpers.
-- **Migration:** retain `UWJsonDocument` as the deprecated legacy input type;
-  add a `LegacyUWJsonDocument` alias if needed for clarity. Existing
-  `parseUWJson` accepts both shapes and normalizes to `UWDocumentEnvelope`;
-  `toUWJson` emits canonical envelope 1.2.
+- **JSON mapping:** `parseUWJson` and `toUWJson` use the stable envelope 1.0
+  shape directly; the pre-publication experimental shape is not a compatibility
+  target.
 - **Views:** existing `renderJson` and `renderCsv` keep their output shape but are
-  documented as legacy summary views. The CSV bundle exporter adds the six
+  documented as summary views. The CSV bundle exporter adds the six
   approved named wide views without treating them as model-fidelity inputs.
 - **Test plan:** unit tests per codec; property-based round trips; golden
   cross-format digests; hostile input tests; manifest and negotiation tests; CLI
   integration tests; MCP/HTTP contract examples validated against their schemas.
 
-The implementation is follow-up work. The current RFC establishes names and
-boundaries before code is added.
+Phase A (Envelope and UW JSON) is implemented in `@uwmd/core`. Later codecs,
+transport bindings, and full cross-format conformance remain phased follow-up work.
 
 ## Alternatives considered
 
@@ -476,18 +472,14 @@ On 2026-07-26, the BDFL selected the recommended model:
 - the normalized lossless CSV bundle is authoritative;
 - wide CSVs remain view-fidelity outputs, and the first reference release ships
   all six named views listed in §7;
-- canonical envelope 1.2 emits `content._meta` and per-block prose exactly once;
-  legacy `.uw.json` 1.1 duplicate fields are read-compatible only.
+- canonical envelope 1.0 emits `content._meta` and per-block prose exactly once;
+  the unpublished experimental JSON shape is intentionally unsupported.
 
-### Bootstrap governance disposition
+### Governance disposition
 
-The BDFL accepted this RFC on 2026-07-26 and explicitly waived the 14-day
-comment period for this decision because the project has one maintainer, no
-other contributors, and no published implementation dependency on the proposed
-contract. This is a one-time bootstrap exception, does not amend
-`GOVERNANCE.md`, and does not waive review periods for future multi-contributor
-normative changes. Acceptance authorizes phased implementation; it does not mark
-the codecs or protocol 1.2 behavior as implemented or conformant.
+The project owner accepted this RFC on 2026-07-26 under the owner-led mode in
+`GOVERNANCE.md`. Phase A is implemented; later phases become conformant only as
+their specifications, schemas, code, and fixtures land.
 
 ## Unresolved questions
 

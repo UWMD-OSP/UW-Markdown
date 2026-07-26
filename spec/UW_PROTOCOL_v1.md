@@ -1,6 +1,6 @@
-# UW Protocol — v1.1
+# UW Protocol — v1.2
 
-**Status:** Draft  ·  **Format pairing:** `.uw.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Release candidate  ·  **Format pairing:** `.uw.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.1.0`) — the
+- **Protocol version** (this document, currently `1.2.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -72,6 +72,7 @@ supports via its `ImplementationManifest` (§I.4).
 - The contract for hosting Bancroft-style AI agents.
 - The module manifest schema.
 - The protocol error taxonomy.
+- Representation discovery, fidelity classes, and media negotiation.
 - The forward-compatibility rules for unknown frontmatter fields,
   unknown sections, and unknown extensions.
 
@@ -80,8 +81,8 @@ supports via its `ImplementationManifest` (§I.4).
 - The bytes-on-disk format. See [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md).
 - UI design beyond display conventions. Implementations MAY render
   any way they wish provided values resolve to the same display strings.
-- Network protocols. The `.uw.md` file is the protocol surface; how it
-  is transported is out of scope.
+- Network server behavior. Optional HTTP and MCP bindings may carry registered
+  representations, but no conformance tier requires a network transport.
 - Persistence. How implementations cache, version, or back up the file
   is out of scope.
 
@@ -95,7 +96,7 @@ V2 will introduce a locale negotiation mechanism; the type
 ### I.4 Self-declaration
 
 Every conforming implementation SHOULD expose an
-`ImplementationManifest` that documents its tier, capabilities,
+`ImplementationManifest` that documents its tier, capabilities, representations,
 supported asset classes, protocol version, and format version. Hosts
 that load `.uw.md` files from third parties MAY use the manifest to
 refuse files that exceed their declared format version.
@@ -104,6 +105,35 @@ refuse files that exceed their declared format version.
 The TypeScript interface in [`@uwmd/core/protocol.ts`](../packages/uwmd-core/src/protocol.ts)
 is a mirror — implementations in non-TS languages SHOULD validate
 against the JSON Schema.
+
+### I.5 Representation discovery and negotiation
+
+Protocol 1.2 adds the optional `ImplementationManifest.representations` array.
+Each entry is a `RepresentationCapability` with:
+
+- stable `id`;
+- one or more `media_types` and `file_extensions`;
+- supported `directions` (`read`, `write`, or both);
+- `fidelity` (`source`, `model`, or `view`);
+- an independently versioned `representation_version`; and
+- for views, a required `view` identifier.
+
+`source` fidelity can preserve an authoring byte stream, `model` fidelity
+round-trips a semantically equivalent UW Document Envelope, and `view` fidelity
+is intentionally lossy. A view MUST NOT advertise `model` fidelity.
+
+HTTP-style output negotiation uses ordinary `Accept` media ranges and quality
+values. Exact types are more specific than `type/*`, which is more specific than
+`*/*`; structured suffixes do not create an implicit wildcard. A caller may also
+require a direction and minimum fidelity. No acceptable representation produces
+`REPRESENTATION_NOT_ACCEPTABLE` (HTTP binding status 406). An unsupported input
+`Content-Type` produces `REPRESENTATION_UNSUPPORTED_MEDIA_TYPE` (HTTP binding
+status 415).
+
+The normative manifest shape is in
+[`implementation-manifest.schema.json`](schemas/implementation-manifest.schema.json).
+The reference functions are `negotiateRepresentation` and
+`resolveInputRepresentation` in `@uwmd/core`.
 
 ---
 
@@ -923,7 +953,7 @@ For each tier you claim:
 
 - [ ] Run every fixture in `conformance/tier-N-*/`. Output matches.
 - [ ] Publish your `ImplementationManifest` (id, version, tier,
-      capabilities, supported asset classes).
+      capabilities, representations, supported asset classes).
 - [ ] Document any non-default configuration users must set to
       achieve conformance.
 - [ ] Add yourself to the README's "Who's building on it" section

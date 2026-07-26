@@ -4,6 +4,7 @@ import {
   CASCADE_ORDER,
   SOURCE_TAGS,
   lookupIncompleteDataPolicy,
+  PROTOCOL_VERSION,
 } from './protocol.js';
 
 describe('protocol — CASCADE_ORDER', () => {
@@ -66,5 +67,11 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
     for (const p of BUILTIN_INCOMPLETE_DATA_POLICIES) {
       expect(p.section.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('protocol — representation discovery', () => {
+  it('publishes protocol 1.2 for representation capabilities', () => {
+    expect(PROTOCOL_VERSION).toBe('1.2.0');
   });
 });

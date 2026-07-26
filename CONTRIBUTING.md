@@ -70,9 +70,10 @@ To file a normative change:
    analysis, Conformance impact, Reference implementation, Alternatives,
    Unresolved questions, Prior art. RFCs missing sections get bounced.
 3. Open a PR titled `RFC NNNN: <short title>`.
-4. PR sits open at least **14 days** for third-party implementers to weigh in.
-5. BDFL accepts, requests changes, or rejects per
-   [`GOVERNANCE.md`](./GOVERNANCE.md#normative-changes-change-implementer-behavior).
+4. The project owner accepts, requests changes, or rejects the proposal. In
+   owner-led mode there is no mandatory waiting period; after collaborative mode
+   activates, normative RFCs remain open at least **14 days**.
+5. See [`GOVERNANCE.md`](./GOVERNANCE.md) for the current governance mode.
 
 See [`docs/rfcs/README.md`](./docs/rfcs/README.md) for the full process and
 status values.
