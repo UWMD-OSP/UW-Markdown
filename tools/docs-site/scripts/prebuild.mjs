@@ -72,6 +72,8 @@ const COPIES = [
   { from: 'docs/rfcs/0010-signed-blocks.md',          to: 'about/rfcs/0010-signed-blocks.md' },
   { from: 'docs/rfcs/0011-capability-tokens.md',      to: 'about/rfcs/0011-capability-tokens.md' },
   { from: 'docs/rfcs/0013-corpus-retrieval.md',       to: 'about/rfcs/0013-corpus-retrieval.md' },
+  { from: 'docs/rfcs/0014-multi-format-interchange.md', to: 'about/rfcs/0014-multi-format-interchange.md' },
+  { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
 // ─── Link rewriter ────────────────────────────────────────────────────────────
@@ -95,6 +97,8 @@ const NORMALIZED_LINK_MAP = new Map([
   ['docs/TOOLS.md', '/guide/tools'],
   ['GLOSSARY.md', '/guide/glossary'],
   ['TOOLS.md', '/guide/tools'],
+  ['docs/releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
+  ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['LICENSE', 'https://github.com/jaredmaxey/uw-markdown/blob/main/LICENSE'],
 
   // Spec

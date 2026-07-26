@@ -42,6 +42,7 @@ and how it gets accepted.
 | [0010](./0010-signed-blocks.md)         | Signed blocks                               | draft | format, protocol, core, conformance |
 | [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | draft | protocol, core, conformance |
 | [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
+| [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 

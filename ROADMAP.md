@@ -54,6 +54,23 @@ reflects effort vs. devex value.
 | ✅ | Excel converter (preview 0.1.0) | `packages/uwmd-excel/` — `.uw.md` → `.xlsx` for multifamily. Two-sheet workbook (Underwriting + Operating Statement) with named-range inputs and derived-metric formulas mirroring `MULTIFAMILY_STARTER_PACK`, plus a flat Pipeline Log audit sheet. NOI is itself a formula on the Operating Statement sheet, so editing any line item ripples through to every metric. Reverse direction (`.xlsx` → `.uw.md`) deferred — calc-aware web editor remains the Tier-2 chokepoint for now. |
 | 💭 | `docs/CONFORMING_TOOLS.md` | Once adopters arrive — keeps the README from becoming a giant list. |
 
+## v1.1+ machine interchange
+
+Accepted RFC [0014](./docs/rfcs/0014-multi-format-interchange.md) defines the
+post-v1.0 machine-interchange train. It keeps the `.uw.md` format at 1.1,
+targets additive representation discovery for protocol 1.2, and stages
+`@uwmd/core` / `uwmd` 1.1 releases for the document envelope and codecs.
+
+| Status | Item | Notes |
+|---|---|---|
+| ✅ | RFC 0014 architecture | Accepted 2026-07-26 under a recorded single-maintainer bootstrap waiver; implementation remains phased and unshipped. |
+| 📋 | Envelope + UW JSON | Promote the existing lossless `.uw.json` shape into a neutral schema and codec without changing Markdown syntax. |
+| 📋 | Registry + discovery | Add protocol 1.2 representation descriptors and optional HTTP/MCP companion profiles. |
+| 📋 | UW XML + CSV bundle | Implement only after mappings, safety limits, and CSV structure are accepted. |
+
+Detailed sequencing and release gates:
+[`docs/releases/1.1-plus-interchange-plan.md`](./docs/releases/1.1-plus-interchange-plan.md).
+
 ## v2 spec exploration
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
@@ -73,6 +90,7 @@ context. This list is the maintainable copy.
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | `scripts/run-conformance.mjs` is TS-only — non-TS implementers can't self-certify against the same runner. |
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | Hospitality reference module                  | First real consumer of the module system. ADR/RevPAR/occupancy + STR-comp validations. |
+
 
 ## Pre-public-flip checklist
 

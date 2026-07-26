@@ -9,6 +9,13 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Accepted RFC 0014: extensible multi-format interchange** — defines the
+  post-v1.0 release architecture for a format-neutral envelope, model-fidelity
+  JSON/XML/normalized CSV encodings, six named CSV views, representation
+  discovery, and optional HTTP/MCP bindings. The RFC was accepted on 2026-07-26
+  under a recorded single-maintainer bootstrap waiver; implementation remains
+  phased and unshipped.
+
 - **Cross-platform release gates** - CI now runs the complete build, workspace
   tests, and tiers 1-3 conformance suite on Windows/Node 20 in addition to the
   existing Ubuntu matrix. Core coverage is now a blocking gate at 70% lines,

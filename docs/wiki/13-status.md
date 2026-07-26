@@ -116,12 +116,24 @@ not core gaps.
 - **Market-data / investor-profile** — interface-only; no reference implementation.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
 
+## 📋 Planned for the post-v1.0 1.1+ train
+
+RFC 0014 defines a format-neutral envelope plus UW JSON, XML, and normalized CSV
+bundle mappings. The proposed release keeps `.uw.md` at format 1.1, targets
+protocol 1.2 representation discovery and `@uwmd/core` / `uwmd` 1.1, and
+keeps HTTP/MCP as optional binding profiles. RFC 0014 was accepted on 2026-07-26
+under a recorded single-maintainer bootstrap waiver; it is not implemented or
+part of current conformance yet. See the
+[release plan](../releases/1.1-plus-interchange-plan.md) and
+[RFC 0014](../rfcs/0014-multi-format-interchange.md).
+
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 
 Range/stochastic calcs (0005), sensitivity-table builtin (0007), lease-up modeling
 (0008), custom asset-class declarations from modules (0003), module signing (0002),
 locale/multi-currency (0001), conformance runner v2 (0004), `_meta` v2 reorg
-(0009), signed blocks (0010), capability tokens (0011), corpus retrieval (0013).
+(0009), signed blocks (0010), capability tokens (0011), and corpus retrieval
+(0013).
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch

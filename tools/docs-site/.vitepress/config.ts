@@ -119,6 +119,14 @@ export default defineConfig({
             { text: '0010 — Signed blocks', link: '/about/rfcs/0010-signed-blocks' },
             { text: '0011 — Capability tokens', link: '/about/rfcs/0011-capability-tokens' },
             { text: '0013 — Corpus retrieval', link: '/about/rfcs/0013-corpus-retrieval' },
+            { text: '0014 — Multi-format interchange', link: '/about/rfcs/0014-multi-format-interchange' },
+          ],
+        },
+        {
+          text: 'Release Plans',
+          collapsed: false,
+          items: [
+            { text: '1.1+ — Machine interchange', link: '/about/releases/1.1-plus-interchange' },
           ],
         },
       ],
