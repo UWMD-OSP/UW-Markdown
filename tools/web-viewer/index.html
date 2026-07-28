@@ -152,7 +152,7 @@ function parseUW(raw) {
   const { frontmatter, rest } = parseFrontmatter(raw);
   const sections = {};
   const superseded = {};
-  const fenceRe = /```uw\b([^\n]*)\n([\s\S]*?)\n```/g;
+  const fenceRe = /```(?:json\s+)?(uw(?::|\b)[^\r\n]*)\r?\n([\s\S]*?)\r?\n```/g;
   let m;
   while ((m = fenceRe.exec(rest)) !== null) {
     const annot = parseAnnotation(m[1]);
@@ -406,6 +406,20 @@ drop.addEventListener('drop', e => {
   const f = e.dataTransfer.files[0]; if (!f) return;
   f.text().then(loadText);
 });
+
+const sample = new URLSearchParams(window.location.search).get('sample');
+if (sample && /^\/viewer\/samples\/[A-Za-z0-9._-]+\.uw\.md$/.test(sample)) {
+  fetch(sample)
+    .then(response => {
+      if (!response.ok) throw new Error('Sample could not be loaded.');
+      return response.text();
+    })
+    .then(loadText)
+    .catch(error => {
+      content.innerHTML = '';
+      content.appendChild(el('div', { class: 'err' }, error.message));
+    });
+}
 </script>
 </body>
 </html>

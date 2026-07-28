@@ -10,6 +10,12 @@ const repoRoot = resolve(siteRoot, '..', '..');
 
 const files = [
   ['docs/site-assets/og.png', 'og.png'],
+  ['tools/web-viewer/index.html', 'viewer/app/index.html'],
+  ['examples/Parkview-Apts-Glendale-AZ.uw.md', 'viewer/samples/Parkview-Apts-Glendale-AZ.uw.md'],
+  ['examples/Riverside-Office-Phoenix-AZ.uw.md', 'viewer/samples/Riverside-Office-Phoenix-AZ.uw.md'],
+  ['examples/Cactus-Crossing-Retail-Mesa-AZ.uw.md', 'viewer/samples/Cactus-Crossing-Retail-Mesa-AZ.uw.md'],
+  ['examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md', 'viewer/samples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md'],
+  ['examples/Sonoran-Self-Storage-Peoria-AZ.uw.md', 'viewer/samples/Sonoran-Self-Storage-Peoria-AZ.uw.md'],
   ['docs/downloads/templates/blank-screener.uw.md', 'downloads/templates/blank-screener.uw.md'],
   ['docs/downloads/templates/blank-analyst.uw.md', 'downloads/templates/blank-analyst.uw.md'],
   ['tools/web-viewer/index.html', 'downloads/programs/uwmd-viewer.html'],

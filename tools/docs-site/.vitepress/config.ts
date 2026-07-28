@@ -34,6 +34,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Downloads', link: '/downloads/' },
+      { text: 'Viewer', link: '/viewer/' },
       { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },
       { text: 'For AI', link: '/ai/' },
       { text: 'Spec', link: '/spec/format' },
