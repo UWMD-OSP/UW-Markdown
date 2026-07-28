@@ -9,7 +9,7 @@ const siteRoot = resolve(scriptDir, '..');
 const repoRoot = resolve(siteRoot, '..', '..');
 
 const files = [
-  ['docs/site-assets/og.png', 'og.png'],
+  ['docs/site-assets/og-v2.png', 'og-v2.png'],
   ['tools/web-viewer/index.html', 'viewer/app/index.html'],
   ['examples/Parkview-Apts-Glendale-AZ.uw.md', 'viewer/samples/Parkview-Apts-Glendale-AZ.uw.md'],
   ['examples/Riverside-Office-Phoenix-AZ.uw.md', 'viewer/samples/Riverside-Office-Phoenix-AZ.uw.md'],

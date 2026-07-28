@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'UW Markdown',
   description:
-    'An open standard for commercial real-estate underwriting documents — readable by humans, AI tools, and software alike.',
+    'One open, human-readable, machine-verifiable file for commercial real-estate underwriting.',
   cleanUrls: true,
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
@@ -11,60 +11,54 @@ export default defineConfig({
   srcExclude: ['README.md'],
 
   head: [
-    ['meta', { name: 'theme-color', content: '#0f172a' }],
+    ['meta', { name: 'theme-color', content: '#315f4b' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'UW Markdown' }],
     ['meta', {
       property: 'og:description',
-      content: 'Open standard for CRE underwriting documents.',
+      content: 'One open, human-readable, machine-verifiable file for commercial real-estate underwriting.',
     }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
-    ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og.png' }],
+    ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'UW Markdown' }],
     ['meta', {
       name: 'twitter:description',
-      content: 'Open standard for CRE underwriting documents.',
+      content: 'One open, human-readable, machine-verifiable file for commercial real-estate underwriting.',
     }],
-    ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og.png' }],
+    ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og-v2.png' }],
   ],
 
   themeConfig: {
     siteTitle: 'UW Markdown',
 
     nav: [
-      { text: 'Downloads', link: '/downloads/' },
-      {
-        text: 'Editor',
-        link: 'https://www.uwmd.org/editor/',
-        target: '_self',
-      },
-      { text: 'Viewer', link: '/viewer/' },
-      { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },
-      { text: 'For AI', link: '/ai/' },
-      { text: 'Spec', link: '/spec/format' },
+      { text: 'About', link: '/tutorials/your-first-uwmd-file' },
+      { text: 'Specification', link: '/spec/format' },
       { text: 'Protocol', link: '/spec/protocol' },
-      { text: 'XML', link: '/spec/xml' },
-      { text: 'CSV', link: '/spec/csv' },
+      { text: 'Examples', link: 'https://github.com/jaredmaxey/uw-markdown/tree/main/examples' },
+      { text: 'Viewer', link: '/viewer/' },
       {
-        text: 'Bindings',
+        text: 'Tools',
         items: [
-          { text: 'HTTP 1.0', link: '/spec/http' },
-          { text: 'MCP 1.0', link: '/spec/mcp' },
-          { text: 'OpenAPI 3.1', link: '/spec/UW_HTTP_API_v1.openapi.json' },
+          { text: 'Getting started', link: '/tutorials/your-first-uwmd-file' },
+          { text: 'Downloads', link: '/downloads/' },
+          { text: 'CLI and library', link: '/guide/tools' },
+          { text: 'Reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
+          { text: 'For AI and agents', link: '/ai/' },
+          { text: 'Schemas', link: '/spec/schemas/' },
+          { text: 'Conformance', link: '/conformance/' },
         ],
       },
-      { text: 'Schemas', link: '/spec/schemas/' },
-      { text: 'Conformance', link: '/conformance/' },
-      { text: 'About', link: '/about/roadmap' },
       {
-        text: 'v1',
+        text: 'v1.1',
         items: [
+          { text: 'Version matrix', link: '/about/versions' },
           { text: 'Changelog', link: '/about/changelog' },
-          { text: 'GitHub', link: 'https://github.com/jaredmaxey/uw-markdown' },
-          { text: 'npm — @uwmd/core', link: 'https://www.npmjs.com/package/@uwmd/core' },
+          { text: 'Roadmap', link: '/about/roadmap' },
         ],
       },
+      { text: 'Source', link: 'https://github.com/jaredmaxey/uw-markdown' },
     ],
 
     sidebar: {
