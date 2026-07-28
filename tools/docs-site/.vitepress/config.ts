@@ -36,7 +36,8 @@ export default defineConfig({
       { text: 'Downloads', link: '/downloads/' },
       {
         text: 'Editor',
-        link: '/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md',
+        link: 'https://www.uwmd.org/editor/',
+        target: '_self',
       },
       { text: 'Viewer', link: '/viewer/' },
       { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },

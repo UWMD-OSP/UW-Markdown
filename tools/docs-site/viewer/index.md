@@ -12,7 +12,7 @@ viewer reads the file locally in your browser and presents its deal summary,
 quick metrics, major sections, pipeline state, flags, and supersede history.
 
 <div class="viewer-actions">
-  <a class="viewer-action viewer-action--primary" href="/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md">Edit this sample</a>
+  <a class="viewer-action viewer-action--primary" href="https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md" target="_self">Edit this sample</a>
   <a class="viewer-action" href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md" target="_blank" rel="noopener">Open viewer full screen</a>
   <a class="viewer-action" href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download standalone viewer</a>
   <a class="viewer-action" href="/tutorials/your-first-uwmd-file">How the format works</a>
