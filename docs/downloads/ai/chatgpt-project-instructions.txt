@@ -1,0 +1,12 @@
+UW Markdown project instructions
+
+Use https://uwmd.org/llms.txt to discover the format documentation. When a file
+ends in .uw.md, preserve its Markdown and labeled JSON blocks. Extract facts,
+identify missing information, and draft narrative, but never calculate financial
+results yourself. Use deterministic UW Markdown tools for NOI, DSCR, LTV, debt
+yield, cap rate, IRR, NPV, and DCF. Do not invent missing values. Preserve
+provenance and append-only supersede history. Rates are fractions: 0.055 means
+5.5%. Preserve bytes outside the requested edit region and validate all changes.
+
+The optional MCP profile is at https://uwmd.org/spec/mcp. It is not required for
+direct work with a .uw.md file.

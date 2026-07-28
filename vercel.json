@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm --prefix tools/docs-site ci",
+  "buildCommand": "npm --prefix tools/docs-site run prebuild && node tools/docs-site/scripts/prepare-public.mjs && cd tools/docs-site && npm exec vitepress build",
+  "outputDirectory": "tools/docs-site/.vitepress/dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(llms.txt|llms-full.txt)",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=3600" }
+      ]
+    }
+  ]
+}

@@ -7,7 +7,7 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
-  ignoreDeadLinks: [/\.xsd$/],
+  ignoreDeadLinks: [/\.xsd$/, /^\/downloads\//],
   srcExclude: ['README.md'],
 
   head: [
@@ -24,7 +24,9 @@ export default defineConfig({
     siteTitle: 'UW Markdown',
 
     nav: [
+      { text: 'Downloads', link: '/downloads/' },
       { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },
+      { text: 'For AI', link: '/ai/' },
       { text: 'Spec', link: '/spec/format' },
       { text: 'Protocol', link: '/spec/protocol' },
       { text: 'XML', link: '/spec/xml' },

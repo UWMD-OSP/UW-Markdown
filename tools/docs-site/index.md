@@ -3,71 +3,74 @@ layout: home
 
 hero:
   name: UW Markdown
-  text: An open standard for underwriting documents
-  tagline: Readable by humans, AI tools, and software alike. The same kind of move CommonMark made for prose, OpenAPI made for APIs, JSON Schema made for data — applied to commercial real-estate underwriting.
+  text: Underwriting documents that people, software, and AI can share
+  tagline: An open, vendor-neutral file format for commercial real-estate underwriting. One readable file keeps the narrative, deal data, calculations, validation, and provenance together.
   actions:
     - theme: brand
-      text: Read the spec
-      link: /spec/format
+      text: Download a blank file
+      link: /downloads/
     - theme: alt
-      text: Browse on GitHub
+      text: Read the 10-minute guide
+      link: /tutorials/your-first-uwmd-file
+    - theme: alt
+      text: View on GitHub
       link: https://github.com/jaredmaxey/uw-markdown
-    - theme: alt
-      text: View the protocol
-      link: /spec/protocol
-
-features:
-  - icon: 📄
-    title: One file, every audience
-    details: A `.uw.md` deal pairs human-readable Markdown prose with structured JSON blocks. Open it in any editor; parse it with any tool; feed it to any AI agent. No proprietary container.
-
-  - icon: 🧮
-    title: Four conformance tiers
-    details: Reader, Editor, Calc Host, Agent Host. Each tier is a published contract with a fixture corpus. Implementers self-certify against the tiers they support — no central body, no certification fees.
-
-  - icon: 🔒
-    title: Validation built in
-    details: Every claim in the format — financial validity, cross-section consistency, supersede semantics — has a runnable check. The reference library `@uwmd/core` exposes the same validator the conformance gate uses.
-
-  - icon: 🤖
-    title: Agent-ready
-    details: Sections, layers, and edit policies are first-class concepts. Agent hosts append updates with full provenance; the file remains a stable artifact across runs.
-
-  - icon: 🧩
-    title: Modular by design
-    details: The base format covers the universals. Asset-class specifics (multifamily, office, hospitality) ship as modules — additional sections, calcs, validations, and agent layers, declared in a manifest the host can verify.
-
-  - icon: 🏛
-    title: Governed openly
-    details: Normative changes go through a 14-day RFC window. The format spec, the protocol spec, and the JSON Schemas are all in this repo, all under MIT.
 ---
 
-## Why a standard?
+## Start here
 
-Underwriting is dominated by Excel models and Word credit memos that are
-opaque to software, AI, and anyone outside the originator's firm. Every shop
-reinvents the wheel. Every analyst rebuilds the same models. AI tools see
-dollar signs as text and cap rates as `0.05`.
+UW Markdown is a plain-text standard for commercial real-estate underwriting.
+The file extension is `.uw.md`. Read it in any text editor, track it in Git,
+validate it with the reference tools, export it to Excel, or give the same file
+to an AI system without translating the deal into another format.
 
-`.uw.md` is a published, versioned, vendor-neutral text format that lets every
-tool — bank platforms, analyst spreadsheets, document parsers, AI assistants,
-internal credit systems — read and write the same files without losing
-fidelity.
+- **Underwriters and lenders:** [download a blank file](/downloads/) or open a
+  complete [example deal](https://github.com/jaredmaxey/uw-markdown/tree/main/examples).
+- **Developers:** follow the [first-file tutorial](/tutorials/your-first-uwmd-file),
+  then use the [format spec](/spec/format), [protocol](/spec/protocol), and
+  [conformance corpus](/conformance/).
+- **AI systems and agent builders:** begin with the [AI information page](/ai/)
+  or machine-readable [`llms.txt`](/llms.txt). An optional
+  [MCP binding profile](/spec/mcp) is documented, but no connector is required.
 
-## Quick start
+## What is in one file?
+
+A `.uw.md` document combines ordinary Markdown with labeled JSON blocks. The
+Markdown explains the deal to a person. The JSON gives software stable fields.
+Deterministic calculation packs compute values such as NOI, DSCR, LTV, debt
+yield, and IRR. AI may extract facts and write narrative, but it does not perform
+the financial math.
+
+Files retain their history: updates supersede earlier blocks instead of erasing
+them, and provenance records who or what made each change.
+
+## Downloads
+
+The [downloads page](/downloads/) has blank screener and analyst templates, a
+single-file browser viewer, complete example deals, source packages, and small
+instruction files for Codex, Claude, ChatGPT, and Gemini. Everything is plain
+text or a static file; there is no account or hosted connector to configure.
+
+## Build with UW Markdown
+
+The TypeScript reference implementation includes a parser, validator,
+byte-preserving editor, deterministic calculation engine, format converters,
+CLI, Excel export, report rendering, and reference HTTP/MCP adapter shapes.
 
 ```bash
-npm install @uwmd/core
-
-# Parse, validate, and render a deal file
-npx uwmd parse path/to/deal.uw.md
-npx uwmd validate path/to/deal.uw.md
-npx uwmd summary path/to/deal.uw.md
+npx uwmd init my-deal.uw.md
+npx uwmd validate my-deal.uw.md
+npx uwmd summary my-deal.uw.md
 ```
 
-## Get involved
+Browse the [repository](https://github.com/jaredmaxey/uw-markdown), compare the
+[available tools](/guide/tools), or read the [developer architecture](/about/architecture).
 
-- Read the [format spec](/spec/format) and [protocol spec](/spec/protocol).
-- Browse the [conformance corpus](/conformance/) to see what each tier guarantees.
-- File a normative change via the [RFC process](/about/rfcs/).
-- Ship a tool — see [Contributing](/about/contributing) and add yourself to the implementers list.
+## Open standard, open governance
+
+The specification, schemas, fixtures, and reference implementation are public
+under the MIT License. Normative changes use an open RFC process, and
+implementations can test themselves against published conformance tiers.
+
+[Read the specification](/spec/format) · [See the roadmap](/about/roadmap) ·
+[Contribute on GitHub](https://github.com/jaredmaxey/uw-markdown/blob/main/CONTRIBUTING.md)

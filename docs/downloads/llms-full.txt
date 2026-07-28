@@ -1,0 +1,47 @@
+# UW Markdown — expanded AI index
+
+UW Markdown is an open `.uw.md` standard for commercial real-estate underwriting. It is a library and specification, not a hosted deal database. AI systems can work directly with the text file; HTTP and MCP profiles are optional.
+
+## Canonical resources
+
+- Home: https://uwmd.org/
+- Repository: https://github.com/jaredmaxey/uw-markdown
+- Architecture: https://uwmd.org/about/architecture
+- Changelog: https://uwmd.org/about/changelog
+- Versions: https://uwmd.org/about/versions
+- Governance: https://uwmd.org/about/governance
+- Contributing: https://uwmd.org/about/contributing
+
+## Learn and download
+
+- First file: https://uwmd.org/tutorials/your-first-uwmd-file
+- Glossary: https://uwmd.org/guide/glossary
+- Tools: https://uwmd.org/guide/tools
+- Downloads: https://uwmd.org/downloads/
+- AI information: https://uwmd.org/ai/
+
+## Normative and interoperability documentation
+
+- Format 1.1: https://uwmd.org/spec/format
+- Protocol 1.2: https://uwmd.org/spec/protocol
+- XML mapping 1.0: https://uwmd.org/spec/xml
+- CSV bundle 1.0: https://uwmd.org/spec/csv
+- Schemas: https://uwmd.org/spec/schemas/
+- HTTP binding 1.0: https://uwmd.org/spec/http
+- OpenAPI: https://uwmd.org/spec/UW_HTTP_API_v1.openapi.json
+- MCP binding 1.0: https://uwmd.org/spec/mcp
+- Conformance: https://uwmd.org/conformance/
+
+## AI invariants
+
+AI extracts source facts, classifies information, identifies gaps, and writes narrative. AI does not calculate NOI, DSCR, LTV, debt yield, cap rate, IRR, NPV, or DCF. Those values come from deterministic calculation packs. Scoped Tier-2 edits preserve bytes outside the edited region. Provenance is append-only. Rates are fractions. Missing source values remain missing and should be recorded as gaps.
+
+## Optional MCP tool names
+
+- uwmd.get_document
+- uwmd.validate
+- uwmd.convert
+- uwmd.apply_edit
+- uwmd.list_representations
+
+These are contracts for an implementation. The documentation site does not expose live deal resources or mutation tools.

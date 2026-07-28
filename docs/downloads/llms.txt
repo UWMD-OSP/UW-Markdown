@@ -1,0 +1,36 @@
+# UW Markdown
+
+> Open, vendor-neutral text format for commercial real-estate underwriting documents. Files combine readable Markdown, structured JSON, deterministic calculations, validation, and provenance.
+
+Canonical site: https://uwmd.org
+Repository: https://github.com/jaredmaxey/uw-markdown
+License: MIT
+
+## Start
+
+- First file: https://uwmd.org/tutorials/your-first-uwmd-file
+- Downloads: https://uwmd.org/downloads/
+- AI guide: https://uwmd.org/ai/
+
+## Contracts
+
+- UW Format 1.1: https://uwmd.org/spec/format
+- UW Protocol 1.2: https://uwmd.org/spec/protocol
+- Schemas: https://uwmd.org/spec/schemas/
+- Conformance: https://uwmd.org/conformance/
+
+## Optional profiles
+
+- HTTP: https://uwmd.org/spec/http
+- OpenAPI: https://uwmd.org/spec/UW_HTTP_API_v1.openapi.json
+- MCP: https://uwmd.org/spec/mcp
+
+## Critical rules for AI
+
+- AI extracts facts and writes narrative; deterministic code performs financial math.
+- Preserve provenance and append-only supersede history.
+- Preserve bytes outside a scoped edit.
+- Rates are stored as fractions, not display percentages.
+- Do not invent missing deal data.
+
+Expanded index: https://uwmd.org/llms-full.txt

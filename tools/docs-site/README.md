@@ -38,9 +38,8 @@ To add a new page, edit:
 
 ## Deploy
 
-The `.vitepress/dist/` output is a static site — drop it on any host
-(Netlify, Vercel, GitHub Pages, S3 + CloudFront). Deployment workflow lands
-in a follow-up PR once the canonical hostname is decided.
+The repository-root `vercel.json` builds this package and serves
+`.vitepress/dist/` as a static site. The canonical hostname is `uwmd.org`.
 
 ## Roadmap
 
