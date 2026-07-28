@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm --prefix tools/docs-site ci",
-  "buildCommand": "npm --prefix tools/docs-site run prebuild && node tools/docs-site/scripts/prepare-public.mjs && cd tools/docs-site && npm exec vitepress build",
+  "installCommand": "npm ci && npm --prefix tools/docs-site ci && npm --prefix tools/web-editor ci",
+  "buildCommand": "npm run build -w @uwmd/core && npm --prefix tools/docs-site run prebuild && npm --prefix tools/web-editor run build && node tools/docs-site/scripts/prepare-public.mjs && cd tools/docs-site && npm exec vitepress build",
   "outputDirectory": "tools/docs-site/.vitepress/dist",
   "cleanUrls": true,
   "trailingSlash": false,

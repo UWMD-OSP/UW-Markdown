@@ -66,7 +66,8 @@ not core gaps.
   debt, sources-&-uses, valuation, **and DCF/hold-period** are **footed-model
   surfaces** — line items in, section totals derived by core's `derive*`
   functions, hand-overrides via `_meta.field_overrides`), VS Code ext, docs-site
-  (the docs-site is the public text-first docs/download hub and embeds the Tier-1 reference viewer; the web editor remains a preview surface).
+  (the docs-site is the public text-first docs/download hub, publishes the Tier-1
+  reference viewer, and hosts the calc-aware web editor as a public preview).
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 

@@ -1,7 +1,7 @@
 // App shell — toolbar, sidebar, editor / report-preview / source tabs,
 // validation strip, new-deal dialog, global keyboard shortcuts.
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PROTOCOL_VERSION, FORMAT_VERSION } from '@uwmd/core/browser';
 import { useDeal } from './state.js';
 import { Toolbar } from './components/Toolbar.js';
@@ -24,6 +24,7 @@ export function App() {
   const [tab, setTab] = useState<EditorTab>('edit');
   const [dragOver, setDragOver] = useState(false);
   const [showNewDialog, setShowNewDialog] = useState(false);
+  const sampleLoaded = useRef(false);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -36,6 +37,30 @@ export function App() {
     [actions],
   );
 
+  // Public docs can deep-link to a bundled example. Keep this deliberately
+  // constrained to the site's read-only sample directory.
+  useEffect(() => {
+    if (sampleLoaded.current) return;
+    sampleLoaded.current = true;
+    const sample = new URLSearchParams(window.location.search).get('sample');
+    if (!sample || !/^\/viewer\/samples\/[A-Za-z0-9-]+\.uw\.md$/.test(sample)) return;
+
+    const filename = sample.split('/').pop() ?? 'sample.uw.md';
+    actions.setStatus(`Loading ${filename}…`);
+    void fetch(sample)
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.text();
+      })
+      .then((source) => {
+        actions.loadFile(source, filename);
+        setActiveSection('__frontmatter__');
+      })
+      .catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : String(error);
+        actions.setStatus(`Could not load sample: ${message}`);
+      });
+  }, [actions]);
   // Whole-window drag & drop.
   useEffect(() => {
     const over = (e: DragEvent) => {

@@ -7,11 +7,11 @@ hero:
   tagline: An open, vendor-neutral file format for commercial real-estate underwriting. One readable file keeps the narrative, deal data, calculations, validation, and provenance together.
   actions:
     - theme: brand
+      text: Try the editor
+      link: /editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md
+    - theme: alt
       text: Download a blank file
       link: /downloads/
-    - theme: alt
-      text: Read the 10-minute guide
-      link: /tutorials/your-first-uwmd-file
     - theme: alt
       text: View on GitHub
       link: https://github.com/jaredmaxey/uw-markdown
@@ -24,8 +24,8 @@ The file extension is `.uw.md`. Read it in any text editor, track it in Git,
 validate it with the reference tools, export it to Excel, or give the same file
 to an AI system without translating the deal into another format.
 
-- **Underwriters and lenders:** use the [reference web viewer](/viewer/),
-  [download a blank file](/downloads/), or open a complete
+- **Underwriters and lenders:** [try the reference editor](/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md),
+  use the lightweight [web viewer](/viewer/), [download a blank file](/downloads/), or open a complete
   [example deal](https://github.com/jaredmaxey/uw-markdown/tree/main/examples).
 - **Developers:** follow the [first-file tutorial](/tutorials/your-first-uwmd-file),
   then use the [format spec](/spec/format), [protocol](/spec/protocol), and

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { copyFile, mkdir } from 'node:fs/promises';
+import { copyFile, cp, mkdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -34,3 +34,7 @@ for (const [source, destination] of files) {
   await copyFile(join(repoRoot, source), output);
   console.log(`[public] ${destination}`);
 }
+const editorOutput = join(siteRoot, 'public', 'editor');
+await mkdir(editorOutput, { recursive: true });
+await cp(join(repoRoot, 'tools', 'web-editor', 'dist'), editorOutput, { recursive: true });
+console.log('[public] editor/');

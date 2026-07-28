@@ -34,6 +34,10 @@ export default defineConfig({
 
     nav: [
       { text: 'Downloads', link: '/downloads/' },
+      {
+        text: 'Editor',
+        link: '/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md',
+      },
       { text: 'Viewer', link: '/viewer/' },
       { text: 'Guide', link: '/tutorials/your-first-uwmd-file' },
       { text: 'For AI', link: '/ai/' },
