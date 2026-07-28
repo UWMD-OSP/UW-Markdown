@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   root: '.',
-  base: './',
+  base: '/editor/',
   plugins: [react(), tailwindcss()],
   // Pure logic tests (edits.ts / catalog.ts) run in Node by default. Component
   // tests are *.test.tsx and opt into jsdom with a `// @vitest-environment jsdom`
