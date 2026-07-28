@@ -18,6 +18,15 @@ export default defineConfig({
       property: 'og:description',
       content: 'Open standard for CRE underwriting documents.',
     }],
+    ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
+    ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og.png' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'UW Markdown' }],
+    ['meta', {
+      name: 'twitter:description',
+      content: 'Open standard for CRE underwriting documents.',
+    }],
+    ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og.png' }],
   ],
 
   themeConfig: {

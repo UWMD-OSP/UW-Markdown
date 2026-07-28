@@ -9,6 +9,7 @@ const siteRoot = resolve(scriptDir, '..');
 const repoRoot = resolve(siteRoot, '..', '..');
 
 const files = [
+  ['docs/site-assets/og.png', 'og.png'],
   ['docs/downloads/templates/blank-screener.uw.md', 'downloads/templates/blank-screener.uw.md'],
   ['docs/downloads/templates/blank-analyst.uw.md', 'downloads/templates/blank-analyst.uw.md'],
   ['tools/web-viewer/index.html', 'downloads/programs/uwmd-viewer.html'],
