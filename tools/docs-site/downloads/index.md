@@ -9,9 +9,9 @@ Start with a plain-text file. No account, connector, or special editor is requir
 
 ## Blank templates
 
-- [Blank screener template (`.uw.md`)](/downloads/templates/blank-screener.uw.md)
+- <a href="/downloads/templates/blank-screener.uw.md" download="blank-screener.uw.md">Download the blank screener template (<code>.uw.md</code>)</a>
   — a lightweight first-pass underwriting file.
-- [Blank analyst template (`.uw.md`)](/downloads/templates/blank-analyst.uw.md)
+- <a href="/downloads/templates/blank-analyst.uw.md" download="blank-analyst.uw.md">Download the blank analyst template (<code>.uw.md</code>)</a>
   — the same open structure marked for full underwriting.
 
 Both templates default to multifamily. Change `asset_class` to `office`,
@@ -24,7 +24,7 @@ npx uwmd init my-deal.uw.md --asset-class office --tier analyst
 
 ## Programs
 
-- [Download the browser viewer (`.html`)](/downloads/programs/uwmd-viewer.html)
+- <a href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download the browser viewer (<code>.html</code>)</a>
   — save it, open it in a browser, and drop a `.uw.md` file onto the page.
 - [Download all source code (`.zip`)](https://github.com/jaredmaxey/uw-markdown/archive/refs/heads/main.zip)
   — includes the CLI, core library, Excel exporter, report renderer, web tools,
@@ -47,11 +47,11 @@ npx uwmd init my-deal.uw.md --asset-class office --tier analyst
 Add the relevant file to an AI project or paste its contents into the platform's
 project instructions.
 
-- [Codex / agent skill (`SKILL.md`)](/downloads/ai/uwmd-skill/SKILL.md)
-- [Claude project instructions (`CLAUDE.md`)](/downloads/ai/CLAUDE.md)
-- [ChatGPT project instructions (`.txt`)](/downloads/ai/chatgpt-project-instructions.txt)
-- [Gemini project instructions (`GEMINI.md`)](/downloads/ai/GEMINI.md)
-- [Platform-neutral AI guide (`.md`)](/downloads/ai/UWMD-AI-GUIDE.md)
+- <a href="/downloads/ai/uwmd-skill/SKILL.md" download="SKILL.md">Codex / agent skill (<code>SKILL.md</code>)</a>
+- <a href="/downloads/ai/CLAUDE.md" download="CLAUDE.md">Claude project instructions (<code>CLAUDE.md</code>)</a>
+- <a href="/downloads/ai/chatgpt-project-instructions.txt" download="chatgpt-project-instructions.txt">ChatGPT project instructions (<code>.txt</code>)</a>
+- <a href="/downloads/ai/GEMINI.md" download="GEMINI.md">Gemini project instructions (<code>GEMINI.md</code>)</a>
+- <a href="/downloads/ai/UWMD-AI-GUIDE.md" download="UWMD-AI-GUIDE.md">Platform-neutral AI guide (<code>.md</code>)</a>
 
 For automated discovery, use [`llms.txt`](/llms.txt), the expanded
 [`llms-full.txt`](/llms-full.txt), or the [AI information page](/ai/).

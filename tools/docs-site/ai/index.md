@@ -39,11 +39,11 @@ The MCP profile defines `uwmd.get_document`, `uwmd.validate`, `uwmd.convert`,
 
 ## Ready-to-use instruction files
 
-Download a [Codex-compatible skill](/downloads/ai/uwmd-skill/SKILL.md),
-[Claude instructions](/downloads/ai/CLAUDE.md),
-[ChatGPT project instructions](/downloads/ai/chatgpt-project-instructions.txt),
-[Gemini instructions](/downloads/ai/GEMINI.md), or the
-[platform-neutral guide](/downloads/ai/UWMD-AI-GUIDE.md).
+- <a href="/downloads/ai/uwmd-skill/SKILL.md" download="SKILL.md">Codex-compatible skill</a>
+- <a href="/downloads/ai/CLAUDE.md" download="CLAUDE.md">Claude instructions</a>
+- <a href="/downloads/ai/chatgpt-project-instructions.txt" download="chatgpt-project-instructions.txt">ChatGPT project instructions</a>
+- <a href="/downloads/ai/GEMINI.md" download="GEMINI.md">Gemini instructions</a>
+- <a href="/downloads/ai/UWMD-AI-GUIDE.md" download="UWMD-AI-GUIDE.md">Platform-neutral guide</a>
 
 ## Canonical project
 
