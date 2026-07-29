@@ -8,6 +8,16 @@ import { describe, it, expect } from 'vitest';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
 const FIXTURE = resolve(__dirname, '..', '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uw.md');
+const LITE_FIXTURE = resolve(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'conformance',
+  'lite',
+  'fixtures',
+  '01-minimal.uw.md',
+);
 
 function runCli(args: string[]) {
   return spawnSync(process.execPath, [CLI_BIN, ...args], { encoding: 'utf8' });
@@ -30,7 +40,36 @@ describe('uwmd CLI', () => {
     const parsed = JSON.parse(r.stdout);
     expect(parsed).toMatchObject({
       frontmatter: expect.any(Object),
+
       sections: expect.any(Object),
+    });
+  });
+
+  it('parses a UW Lite document with typed anchored fields', () => {
+    const r = runCli(['parse', LITE_FIXTURE]);
+    expect(r.status).toBe(0);
+    const parsed = JSON.parse(r.stdout);
+    expect(parsed).toMatchObject({
+      representation: 'uw-lite-markdown',
+      representation_version: '1.0',
+      issues: [],
+    });
+    expect(parsed.fields).toContainEqual(
+      expect.objectContaining({
+        path: 'acquisition.purchase_price',
+        value: 12_500_000,
+        unit: 'USD',
+      }),
+    );
+  });
+
+  it('validates a UW Lite document without treating it as UWX', () => {
+    const r = runCli(['validate', LITE_FIXTURE, '--json']);
+    expect(r.status).toBe(0);
+    expect(JSON.parse(r.stdout)).toMatchObject({
+      representation: 'uw-lite-markdown',
+      overall_status: 'clean',
+      issues: [],
     });
   });
 

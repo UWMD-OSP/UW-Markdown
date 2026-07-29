@@ -134,8 +134,10 @@ to .uwx.md; RFC 0016 defines receipts for unchanged signed content and
 deterministic math consistency, not input truth. The first compatibility slice
 is built: representation constants/detection, parseUWXFile, legacy structured
 .uw.md recognition, byte-identical migration planning, and
-uwmd migrate-source. The normative spec rename, Lite parser/compiler, receipts,
-remaining CLI/tool integration, and new conformance corpus are in progress.
+uwmd migrate-source, the normative Lite 1.0 grammar, source-located parser/AST,
+typed values, financial canonicalizer, canonical renderer, first fixture, and
+CLI parse/validate support. The structured spec rename, Lite compiler/projection,
+receipts, remaining tools, and expanded conformance corpus are in progress.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 

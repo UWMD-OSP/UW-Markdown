@@ -27,6 +27,20 @@ export type {
   UWSourceMigration,
 } from './source-representation.js';
 
+export {
+  UWLiteError,
+  parseUWLite,
+  canonicalizeUWLiteFinancial,
+  renderCanonicalUWLite,
+} from './lite.js';
+export type {
+  UWLiteScalar,
+  UWLiteSourceRange,
+  UWLiteIssue,
+  UWLiteNode,
+  UWLiteFieldNode,
+  ParsedUWLite,
+} from './lite.js';
 
 export {
   UW_JSON_REPRESENTATION_VERSION,

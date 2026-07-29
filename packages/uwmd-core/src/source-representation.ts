@@ -38,7 +38,7 @@ export class UWSourceRepresentationError extends Error {
 
 const UWX_FENCE = /^\`\`\`json[ \t]+uw:section=\S+/m;
 const LITE_VERSION = /^uw_lite_version\s*:/m;
-const LITE_FIELD_ANCHOR = /<!--[ \t]*uw:[A-Za-z0-9_.-]+[ \t]*-->/;
+const LITE_FIELD_ANCHOR = /<!--[ \t]*uw:[A-Za-z0-9_.-]+(?:[ \t]+.*?)?[ \t]*-->/;
 
 /**
  * Detect the two Markdown source representations without interpreting financial

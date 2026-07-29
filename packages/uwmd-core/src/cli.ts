@@ -37,6 +37,7 @@ import {
   UWX_REPRESENTATION_ID,
   UWX_EXTENSION,
 } from './source-representation.js';
+import { parseUWLite } from './lite.js';
 
 const [, , command, ...args] = process.argv;
 
@@ -87,6 +88,25 @@ function parseFlags(rawArgs: string[]): Record<string, string | boolean> {
 
 function cmdParse(file: string, flags: Record<string, string | boolean>): void {
   const content = readFile(file);
+  const detection = detectUWSourceRepresentation(content, file);
+  if (detection.representation !== UWX_REPRESENTATION_ID) {
+    const lite = parseUWLite(content);
+    console.log(
+      JSON.stringify(
+        {
+          representation: lite.representation,
+          representation_version: lite.representation_version,
+          frontmatter: lite.frontmatter,
+          fields: lite.fields,
+          issues: lite.issues,
+        },
+        null,
+        flags['compact'] ? 0 : 2,
+      ),
+    );
+    return;
+  }
+  for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content, { strict: flags['strict'] === true });
   const output = {
     frontmatter: parsed.frontmatter,
@@ -104,6 +124,38 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
 
 function cmdValidate(file: string, flags: Record<string, string | boolean>): void {
   const content = readFile(file);
+  const detection = detectUWSourceRepresentation(content, file);
+  if (detection.representation !== UWX_REPRESENTATION_ID) {
+    const lite = parseUWLite(content);
+    const errors = lite.issues.filter((issue) => issue.severity === 'error');
+    const warnings = lite.issues.filter((issue) => issue.severity === 'warning');
+    const result = {
+      representation: lite.representation,
+      overall_status: errors.length > 0 ? 'errors' : warnings.length > 0 ? 'warnings' : 'clean',
+      issues: lite.issues,
+      errors,
+      warnings,
+    };
+    if (flags['json']) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+    console.log(`\n${result.overall_status.toUpperCase()} - ${basename(file)}\n`);
+    if (result.issues.length === 0) {
+      console.log('No Lite syntax issues found.');
+    } else {
+      for (const issue of result.issues) {
+        const location = issue.line ? ` line ${issue.line}` : '';
+        const field = issue.field_path ? ` [${issue.field_path}]` : '';
+        console.log(
+          `  [${issue.severity.toUpperCase()}]${location}${field} ${issue.code}: ${issue.message}`,
+        );
+      }
+    }
+    console.log('');
+    process.exit(errors.length > 0 ? 1 : 0);
+  }
+  for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
   const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
   const result = validateUWFile(parsed, instCfg?.thresholds);

@@ -16,7 +16,13 @@ protocol, and each package each carry an independent semver).
   legacy migration planner. The uwmd migrate-source command safely copies a
   structured legacy .uw.md to a sibling .uwx.md, refuses Lite/mixed content and
   existing destinations by default, and supports dry-run reporting. Receipt
-  signing and the Lite parser/compiler remain implementation work.
+  signing and the Lite-to-envelope compiler remain implementation work.
+- **UW Lite Markdown 1.0 parser foundation** adds the normative constrained
+  grammar, lossless source-located AST, explicit anchored fields, normalized
+  currency/rate/ratio values and units, duplicate/ambiguity diagnostics,
+  presentation-insensitive financial canonicalization, canonical rendering,
+  browser-safe public APIs, a conformance fixture, and CLI parse/validate
+  support. Parsing remains separate from deterministic envelope compilation.
 - **HTTP and MCP Binding 1.0 (RFC 0014 Phase E)** — publishes stable
   `https://uwmd.org/deals/{deal_id}` resource identities, an OpenAPI 3.1 contract,
   negotiated HTTP responses with semantic ETags and preconditions, MCP text/blob
