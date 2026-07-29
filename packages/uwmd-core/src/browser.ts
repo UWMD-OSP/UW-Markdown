@@ -12,12 +12,31 @@
 // Everything else — parser, validator, renderer, editor, calc engine, format
 // helpers, protocol surface, types — is identical to the main entry.
 
-export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
+export { parseUWFile, parseUWFile as parseUWXFile, getSection, getSectionVariant, deepGet } from './parser.js';
 export { validateUWFile, lookupRemediation } from './validator.js';
 export { compact, diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';
+export {
+  UW_LITE_REPRESENTATION_ID,
+  UWX_REPRESENTATION_ID,
+  UW_LITE_REPRESENTATION_VERSION,
+  UWX_REPRESENTATION_VERSION,
+  UW_LITE_MEDIA_TYPE,
+  UWX_MEDIA_TYPE,
+  UW_LITE_EXTENSION,
+  UWX_EXTENSION,
+  UWSourceRepresentationError,
+  detectUWSourceRepresentation,
+  migrateLegacyUWMarkdown,
+} from './source-representation.js';
+export type {
+  UWSourceRepresentation,
+  UWSourceDetection,
+  UWSourceMigration,
+} from './source-representation.js';
+
 export type { ReportOptions, ReportResult } from './report.js';
 
 export {

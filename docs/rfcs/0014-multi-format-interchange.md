@@ -15,6 +15,12 @@ affects:
 
 # RFC 0014: Define extensible multi-format interchange
 
+> **Extension update:** RFC 0015 supersedes this RFC only where it assigns the
+> .uw.md extension and canonical-authoring role to the existing structured
+> Markdown syntax. That syntax is now UW Extended Markdown (.uwx.md). The
+> envelope, model codecs, views, transports, and fidelity rules below remain in
+> force.
+
 ## Summary
 
 Define a format-neutral UW Document Envelope and an extensible codec contract for

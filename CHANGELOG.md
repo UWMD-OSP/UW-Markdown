@@ -9,6 +9,14 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **UW Lite / UWX transition foundation (RFCs 0015 and 0016)** adds the
+  pre-launch .uw.md Lite and .uwx.md Extended split plus signed deterministic
+  math receipts. Core now exposes representation constants, content-aware
+  source detection, the parseUWXFile compatibility name, and a byte-identical
+  legacy migration planner. The uwmd migrate-source command safely copies a
+  structured legacy .uw.md to a sibling .uwx.md, refuses Lite/mixed content and
+  existing destinations by default, and supports dry-run reporting. Receipt
+  signing and the Lite parser/compiler remain implementation work.
 - **HTTP and MCP Binding 1.0 (RFC 0014 Phase E)** — publishes stable
   `https://uwmd.org/deals/{deal_id}` resource identities, an OpenAPI 3.1 contract,
   negotiated HTTP responses with semantic ETags and preconditions, MCP text/blob

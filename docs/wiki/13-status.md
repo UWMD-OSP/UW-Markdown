@@ -4,6 +4,9 @@
 owner-led governance is active.
 **Last verified:** 2026-07-26 (Envelope, JSON, XML, CSV bundle, HTTP/MCP bindings, Protocol 1.2
 discovery, schemas, CLI, package verification, and core tests; release branch).
+**Transition update:** 2026-07-28 (RFCs 0015/0016 accepted; source
+detection/migration verified with build, 404 tests, and 26 conformance cases).
+
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -123,6 +126,16 @@ reference adapters are implemented. Package publication is the remaining release
 step. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
+
+## Active Lite / UWX transition
+
+RFC 0015 assigns human-readable Lite to .uw.md and the current structured format
+to .uwx.md; RFC 0016 defines receipts for unchanged signed content and
+deterministic math consistency, not input truth. The first compatibility slice
+is built: representation constants/detection, parseUWXFile, legacy structured
+.uw.md recognition, byte-identical migration planning, and
+uwmd migrate-source. The normative spec rename, Lite parser/compiler, receipts,
+remaining CLI/tool integration, and new conformance corpus are in progress.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 

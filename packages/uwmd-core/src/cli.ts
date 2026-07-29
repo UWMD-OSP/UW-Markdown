@@ -31,6 +31,12 @@ import { rankGaps } from './refinement.js';
 import { resolveValue } from './cascade.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
+import {
+  detectUWSourceRepresentation,
+  migrateLegacyUWMarkdown,
+  UWX_REPRESENTATION_ID,
+  UWX_EXTENSION,
+} from './source-representation.js';
 
 const [, , command, ...args] = process.argv;
 
@@ -341,8 +347,17 @@ const FORMAT_ALIASES: Record<string, string> = {
 };
 
 async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
-  if (file.toLowerCase().endsWith('.uw.md')) {
-    return toUWEnvelope(parseUWFile(readFile(file)));
+  const lower = file.toLowerCase();
+  if (lower.endsWith('.uw.md') || lower.endsWith(UWX_EXTENSION)) {
+    const content = readFile(file);
+    const detection = detectUWSourceRepresentation(content, file);
+    if (detection.representation !== UWX_REPRESENTATION_ID) {
+      throw new Error(
+        'UW Lite parsing is not available yet. Use a .uwx.md structured source or a model representation.',
+      );
+    }
+    for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
+    return toUWEnvelope(parseUWFile(content));
   }
   const sourceCodec = CORE_CODEC_REGISTRY.findByFileName(file);
   if (!sourceCodec || !sourceCodec.descriptor.directions.includes('read')) {
@@ -356,7 +371,7 @@ async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
 
 function replaceUWExtension(file: string, extension: string): string {
   const lower = file.toLowerCase();
-  for (const suffix of ['.uw.csv.zip', '.uw.md', '.uw.json', '.uw.xml']) {
+  for (const suffix of ['.uw.csv.zip', '.uwx.md', '.uw.md', '.uw.json', '.uw.xml']) {
     if (lower.endsWith(suffix)) return `${file.slice(0, -suffix.length)}${extension}`;
   }
   return `${file}${extension}`;
@@ -400,6 +415,30 @@ function cmdFormats(flags: Record<string, string | boolean>): void {
       `  ${descriptor.id.padEnd(16)} ${descriptor.fidelity.padEnd(6)} ${descriptor.directions.join('/').padEnd(10)} ${descriptor.media_types[0]}`,
     );
   }
+}
+
+function cmdMigrateSource(file: string, flags: Record<string, string | boolean>): void {
+  const sourcePath = resolve(file);
+  const content = readFile(file);
+  const migration = migrateLegacyUWMarkdown(sourcePath, content);
+  const destination = flags['output']
+    ? resolve(flags['output'] as string)
+    : resolve(migration.destination_file);
+
+  if (destination === sourcePath) {
+    throw new Error('Migration destination must differ from the source path.');
+  }
+  if (existsSync(destination) && flags['force'] !== true) {
+    throw new Error(`Migration destination already exists: ${destination}. Use --force to replace it.`);
+  }
+  if (flags['dry-run']) {
+    console.log(JSON.stringify({ ...migration, content: undefined, destination_file: destination }, null, 2));
+    return;
+  }
+
+  writeFileSync(destination, migration.content, 'utf-8');
+  for (const warning of migration.warnings) console.warn(`Warning: ${warning}`);
+  console.log(`Migrated ${basename(sourcePath)} -> ${basename(destination)} (byte-identical content)`);
 }
 function cmdReport(file: string, flags: Record<string, string | boolean>): void {
   const content = readFile(file);
@@ -809,6 +848,11 @@ switch (command) {
     cmdFormats(flags);
     break;
 
+  case 'migrate-source':
+    if (!positional[0]) { console.error('Usage: uwmd migrate-source <legacy.uw.md> [--output <file.uwx.md>] [--dry-run] [--force]'); process.exit(1); }
+    cmdMigrateSource(positional[0], flags);
+    break;
+
   case 'convert':
     if (!positional[0]) { console.error('Usage: uwmd convert <file.uw.md|file.uw.json|file.uw.xml|file.uw.csv.zip> --to uw-json|uw-xml|uw-csv-bundle [--output <file>] [--stdout]'); process.exit(1); }
     await cmdConvert(positional[0], flags);
@@ -850,6 +894,7 @@ Commands:
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
+  migrate-source <file>         Copy legacy structured .uw.md to byte-identical .uwx.md
   layers                       List Bancroft agent layers
 
 Options:

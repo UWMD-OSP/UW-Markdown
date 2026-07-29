@@ -38,6 +38,8 @@ and how it gets accepted.
 | [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | draft | protocol, core, conformance |
 | [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
 | [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | accepted | format, protocol, core, conformance, tooling |
+| [0015](./0015-lite-extended-format-split.md) | Split Lite .uw.md from Extended .uwx.md | accepted | format, protocol, core, conformance, tooling |
+| [0016](./0016-signed-math-verification-receipts.md) | Signed deterministic math verification receipts | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 
