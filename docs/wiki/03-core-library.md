@@ -19,6 +19,8 @@ Everything else depends on it. Its runtime dependencies are `@anthropic-ai/sdk`
 Module | Responsibility | Key exports
 ---|---|---
 `parser.ts` | `.uw.md` text → `ParsedUWFile` | `parseUWFile`, `getSection`, `getSectionVariant`, `deepGet`
+`lite.ts` | Constrained Lite parser, AST, renderer, financial canonical form | `parseUWLite`, `canonicalizeUWLiteFinancial`
+`lite-bridge.ts` | Lite compilation, UWX serialization, lossy projections | `compileUWLite`, `stringifyUWX`, `projectUWEnvelopeToLite`
 `validator.ts` | Cross-section / financial / DQ checks | `validateUWFile`, `lookupRemediation`
 `editor.ts` | Tier-2 edit dispatcher | `applyEdit`, `applyEditAsync`, `resolvePolicy`
 `renderer.ts` | Render to json/csv/chat/summary | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)

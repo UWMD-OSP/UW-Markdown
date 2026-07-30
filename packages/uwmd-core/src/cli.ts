@@ -11,8 +11,12 @@ import { compact, diff } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
-import { stringifyUWJsonWithDigest } from './uwjson.js';
-import { toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
+import { stringifyUWEnvelope } from './uwjson.js';
+import {
+  stampEnvelopeDigest,
+  toUWEnvelope,
+  type UWDocumentEnvelope,
+} from './envelope.js';
 import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
@@ -35,9 +39,17 @@ import {
   detectUWSourceRepresentation,
   migrateLegacyUWMarkdown,
   UWX_REPRESENTATION_ID,
+  UW_LITE_SOURCE_DESCRIPTOR,
+  UWX_SOURCE_DESCRIPTOR,
   UWX_EXTENSION,
 } from './source-representation.js';
 import { parseUWLite } from './lite.js';
+import {
+  compileUWLite,
+  projectUWEnvelopeToLite,
+  stringifyUWX,
+} from './lite-bridge.js';
+import { UW_LITE_REPRESENTATION_ID } from './source-representation.js';
 
 const [, , command, ...args] = process.argv;
 
@@ -367,17 +379,15 @@ function cmdSummary(file: string): void {
 }
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
-  const parsed = parseUWFile(content);
-  const text = await stringifyUWJsonWithDigest(parsed, {
-    // --no-superseded or --compact drops the append-only history.
-    includeSuperseded: !(flags['no-superseded'] === true || flags['compact'] === true),
-  });
+  const includeSuperseded = !(flags['no-superseded'] === true || flags['compact'] === true);
+  const loaded = await loadEnvelope(file);
+  const envelope = includeSuperseded ? loaded : { ...loaded, superseded: {} };
+  const text = stringifyUWEnvelope(await stampEnvelopeDigest(envelope));
 
   // Default output path: swap the .uw.md suffix for .uw.json (fall back to appending).
   const outPath = flags['output']
     ? resolve(flags['output'] as string)
-    : resolve(file.endsWith('.uw.md') ? `${file.slice(0, -'.uw.md'.length)}.uw.json` : `${file}.uw.json`);
+    : resolve(replaceUWExtension(file, '.uw.json'));
 
   if (flags['stdout']) {
     process.stdout.write(text);
@@ -394,6 +404,12 @@ const FORMAT_ALIASES: Record<string, string> = {
   csv: 'uw-csv-bundle',
   'csv-bundle': 'uw-csv-bundle',
   'uw-json': 'uw-json',
+  lite: 'uw-lite-markdown',
+  uw: 'uw-lite-markdown',
+  uwx: 'uwx-markdown',
+  'uw-lite': 'uw-lite-markdown',
+  'uw-lite-markdown': 'uw-lite-markdown',
+  'uwx-markdown': 'uwx-markdown',
   'uw-xml': 'uw-xml',
   'uw-csv-bundle': 'uw-csv-bundle',
 };
@@ -404,9 +420,14 @@ async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
     const content = readFile(file);
     const detection = detectUWSourceRepresentation(content, file);
     if (detection.representation !== UWX_REPRESENTATION_ID) {
-      throw new Error(
-        'UW Lite parsing is not available yet. Use a .uwx.md structured source or a model representation.',
-      );
+      const compilation = compileUWLite(parseUWLite(content));
+      if (!compilation.ok) {
+        const issues = compilation.report.issues
+          .map((issue) => `${issue.code}: ${issue.message}`)
+          .join('; ');
+        throw new Error(`UW Lite compilation failed: ${issues}`);
+      }
+      return compilation.envelope;
     }
     for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
     return toUWEnvelope(parseUWFile(content));
@@ -432,15 +453,45 @@ function replaceUWExtension(file: string, extension: string): string {
 async function cmdConvert(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const requested = flags['to'];
   if (typeof requested !== 'string') {
-    throw new Error('convert requires --to uw-json|uw-xml|uw-csv-bundle.');
+    throw new Error(
+      'convert requires --to uw-lite-markdown|uwx-markdown|uw-json|uw-xml|uw-csv-bundle.',
+    );
   }
   const targetId = FORMAT_ALIASES[requested.toLowerCase()] ?? requested;
-  const target = CORE_CODEC_REGISTRY.get(targetId);
-  if (!target.descriptor.directions.includes('write')) {
-    throw new Error(`Representation ${targetId} is not writable.`);
-  }
   const envelope = await loadEnvelope(file);
-  const encoded = await target.encode(envelope);
+  let encoded: string | Uint8Array;
+  let extension: string;
+  if (targetId === UWX_REPRESENTATION_ID) {
+    encoded = stringifyUWX(envelope);
+    extension = UWX_EXTENSION;
+  } else if (targetId === UW_LITE_REPRESENTATION_ID) {
+    const projection = projectUWEnvelopeToLite(envelope);
+    encoded = projection.content;
+    extension = '.uw.md';
+    if (projection.report.lossy) {
+      console.warn(
+        `Warning: Lite projection omitted ${projection.report.omitted_paths.length} advanced path(s).`,
+      );
+    }
+    if (typeof flags['projection-report'] === 'string') {
+      writeFileSync(
+        resolve(flags['projection-report']),
+        JSON.stringify(projection.report, null, 2),
+        'utf-8',
+      );
+    }
+  } else {
+    const target = CORE_CODEC_REGISTRY.get(targetId);
+    if (!target.descriptor.directions.includes('write')) {
+      throw new Error(`Representation ${targetId} is not writable.`);
+    }
+    const targetEncoded = await target.encode(envelope);
+    if (typeof targetEncoded !== 'string' && !(targetEncoded instanceof Uint8Array)) {
+      throw new Error(`Representation ${targetId} did not produce file-compatible output.`);
+    }
+    encoded = targetEncoded;
+    extension = target.descriptor.file_extensions[0];
+  }
   if (typeof encoded !== 'string' && !(encoded instanceof Uint8Array)) {
     throw new Error(`Representation ${targetId} did not produce file-compatible output.`);
   }
@@ -448,7 +499,6 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
     process.stdout.write(typeof encoded === 'string' ? encoded : Buffer.from(encoded));
     return;
   }
-  const extension = target.descriptor.file_extensions[0];
   const outPath = flags['output']
     ? resolve(flags['output'] as string)
     : resolve(replaceUWExtension(file, extension));
@@ -456,7 +506,11 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
   console.log(`Converted ${basename(file)} → ${basename(outPath)} (${targetId})`);
 }
 function cmdFormats(flags: Record<string, string | boolean>): void {
-  const descriptors = CORE_CODEC_REGISTRY.list();
+  const descriptors = [
+    UW_LITE_SOURCE_DESCRIPTOR,
+    UWX_SOURCE_DESCRIPTOR,
+    ...CORE_CODEC_REGISTRY.list(),
+  ];
   if (flags['json']) {
     console.log(JSON.stringify(descriptors, null, 2));
     return;
@@ -906,7 +960,7 @@ switch (command) {
     break;
 
   case 'convert':
-    if (!positional[0]) { console.error('Usage: uwmd convert <file.uw.md|file.uw.json|file.uw.xml|file.uw.csv.zip> --to uw-json|uw-xml|uw-csv-bundle [--output <file>] [--stdout]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd convert <file.uw.md|file.uwx.md|file.uw.json|file.uw.xml|file.uw.csv.zip> --to lite|uwx|uw-json|uw-xml|uw-csv-bundle [--projection-report <file>] [--output <file>] [--stdout]'); process.exit(1); }
     await cmdConvert(positional[0], flags);
     break;
   case 'report':
@@ -942,7 +996,7 @@ Commands:
   summary  <file>              Print quick metrics to terminal
   export   <file>              Export a digested UW JSON 1.0 document
   formats                       List registered machine representations
-  convert  <file>              Convert Markdown/JSON/XML/CSV bundle representations
+  convert  <file>              Convert Lite/UWX/JSON/XML/CSV bundle representations
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
@@ -957,7 +1011,8 @@ Options:
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
   --stdout           Write export/convert output to stdout
-  --to <format>       Target representation: uw-json|uw-xml|uw-csv-bundle (convert)
+  --to <format>       Target: lite|uwx|uw-json|uw-xml|uw-csv-bundle (convert)
+  --projection-report Write the UWX-to-Lite omission report as JSON (convert)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

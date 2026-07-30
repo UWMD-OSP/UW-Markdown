@@ -1,6 +1,8 @@
 ---
 uw_lite_version: 1.0
 deal_name: Parkview Apartments
+deal_id: uw_lite_parkview
+created: 2026-07-29T00:00:00Z
 asset_class: multifamily
 ---
 

@@ -1,3 +1,5 @@
+import type { RepresentationCapability } from './protocol.js';
+
 export const UW_LITE_REPRESENTATION_ID = 'uw-lite-markdown' as const;
 export const UWX_REPRESENTATION_ID = 'uwx-markdown' as const;
 export const UW_LITE_REPRESENTATION_VERSION = '1.0' as const;
@@ -6,6 +8,24 @@ export const UW_LITE_MEDIA_TYPE = 'text/vnd.uwmd.lite+markdown' as const;
 export const UWX_MEDIA_TYPE = 'text/vnd.uwmd.extended+markdown' as const;
 export const UW_LITE_EXTENSION = '.uw.md' as const;
 export const UWX_EXTENSION = '.uwx.md' as const;
+
+export const UW_LITE_SOURCE_DESCRIPTOR: RepresentationCapability = {
+  id: UW_LITE_REPRESENTATION_ID,
+  media_types: [UW_LITE_MEDIA_TYPE],
+  file_extensions: [UW_LITE_EXTENSION],
+  directions: ['read', 'write'],
+  fidelity: 'source',
+  representation_version: UW_LITE_REPRESENTATION_VERSION,
+};
+
+export const UWX_SOURCE_DESCRIPTOR: RepresentationCapability = {
+  id: UWX_REPRESENTATION_ID,
+  media_types: [UWX_MEDIA_TYPE],
+  file_extensions: [UWX_EXTENSION],
+  directions: ['read', 'write'],
+  fidelity: 'source',
+  representation_version: UWX_REPRESENTATION_VERSION,
+};
 
 export type UWSourceRepresentation =
   | typeof UW_LITE_REPRESENTATION_ID

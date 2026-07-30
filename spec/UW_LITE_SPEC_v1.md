@@ -125,6 +125,24 @@ versioned field catalog, checks required inputs and units, applies only
 spec-declared defaults, and returns a UW Document Envelope plus a report of
 errors, warnings, defaults, and exclusions.
 
+The reference `deal-summary-v1` bridge maps these aliases:
+
+| Lite path | UW envelope path | Unit |
+|---|---|---|
+| `acquisition.purchase_price` | `valuation.purchase_price` | `USD` |
+| `valuation.going_in_cap_rate` | same | `fraction` |
+| `noi.net_operating_income` | `noi_model.net_operating_income` | `USD` |
+| `debt.loan_amount` | `debt_structure.loan_amount` | `USD` |
+| `debt.interest_rate` | `debt_structure.interest_rate` | `fraction` |
+| `debt.annual_debt_service` | `debt_structure.annual_debt_service` | `USD` |
+| `property.total_units` | same | absent |
+| `property.total_nra_sqft` | same | absent |
+
+Direct paths under registered UW sections are also accepted. Period-qualified
+and non-base-scenario fields require later versioned profiles and are rejected
+rather than flattened. The complete original Lite source is retained in the
+`x_uw_lite_source` envelope extension.
+
 `Lite -> Envelope -> UWX` is deterministic for supported constructs.
 `UWX -> Lite` is a named, explicitly lossy projection and must return an
 omission report. Projection cannot claim model-fidelity round-trip.

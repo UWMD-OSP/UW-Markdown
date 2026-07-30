@@ -136,8 +136,12 @@ is built: representation constants/detection, parseUWXFile, legacy structured
 .uw.md recognition, byte-identical migration planning, and
 uwmd migrate-source, the normative Lite 1.0 grammar, source-located parser/AST,
 typed values, financial canonicalizer, canonical renderer, first fixture, and
-CLI parse/validate support. The structured spec rename, Lite compiler/projection,
-receipts, remaining tools, and expanded conformance corpus are in progress.
+CLI parse/validate support. The deterministic deal-summary bridge now compiles
+Lite into the Document Envelope/UWX, preserves the complete Lite source in a
+namespaced extension, projects UWX back to Lite with explicit loss reporting,
+and powers CLI convert/export plus representation discovery. The structured
+spec rename, signed verification receipts, remaining tools, and expanded
+conformance corpus are in progress.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 
