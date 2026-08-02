@@ -2,8 +2,9 @@
 
 > An open standard for underwriting documents — readable by humans, AI tools, and software alike.
 
-> **Release status:** The repository is public, but `@uwmd/core` and the `uwmd`
-> CLI have not yet been published to npm. Use the source workflow below for now.
+> **Release status:** `@uwmd/core` and the `uwmd` CLI are not yet on npm — build
+> from source using the quick start below. The spec, schemas, and conformance
+> corpus are stable at format 1.1 / protocol 1.2.
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/jaredmaxey/uw-markdown](https://github.com/jaredmaxey/uw-markdown)
 
@@ -70,11 +71,14 @@ To open the reference web viewer, point any browser at
 
 The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights:
 
-- **v1 release blockers** — Tier-2/3 implementation, conformance runner, JSON Schemas, governance scaffolding (this PR), npm publish.
-- **v1 follow-on tools** — VS Code extension → docs site → web editor → Excel converter → standalone CLI.
-- **v1.1+ machine interchange** — a shared document envelope with lossless JSON,
-  XML, and normalized CSV-bundle codecs plus HTTP/MCP companion bindings under
-  accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
+- **Shipped in v1** — Tier-1/2/3 implementation, the conformance runner, the JSON
+  Schemas, and the tool set (VS Code extension, docs site, web editor, Excel
+  converter, PDF report pipeline, standalone CLI).
+- **Shipped in v1.1** — machine interchange: a shared document envelope with
+  lossless JSON, XML, and normalized CSV-bundle codecs, plus HTTP/MCP companion
+  bindings, under accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
+- **Next** — npm publication of `@uwmd/core` and `uwmd`, and additional
+  asset-class calc packs.
 - **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/).
 
 ## Who's building on it

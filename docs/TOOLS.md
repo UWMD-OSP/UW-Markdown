@@ -95,8 +95,8 @@ where you need a script, not a UI.
 
 Skip it for: interactive editing.
 
-Thin wrapper over `@uwmd/core`. The `uwmd` package will be on npm
-once the public flip lands.
+Thin wrapper over `@uwmd/core`. Not yet on npm — until it is, run it
+from a clone with `npm run cli -- <cmd>`.
 
 ---
 
