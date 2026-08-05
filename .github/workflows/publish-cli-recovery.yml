@@ -1,0 +1,69 @@
+name: Publish CLI Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: CLI version to publish (must match packages/uwmd-cli/package.json)
+        required: true
+        type: string
+
+jobs:
+  publish-cli:
+    name: Publish uwmd CLI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run conformance suite
+        run: npm run conformance
+
+      - name: Validate JSON Schemas
+        run: npm run validate-schemas
+
+      - name: Verify publishable package contents
+        run: npm run verify-packages
+
+      - name: Verify recovery target
+        shell: bash
+        run: |
+          CLI_VERSION="$(node -p "require('./packages/uwmd-cli/package.json').version")"
+          CORE_VERSION="$(node -p "require('./packages/uwmd-cli/package.json').dependencies['@uwmd/core']")"
+          if [ "$CLI_VERSION" != "${{ inputs.version }}" ]; then
+            echo "Requested ${{ inputs.version }}, but uwmd is $CLI_VERSION"
+            exit 1
+          fi
+          if [ "$(npm view "@uwmd/core@$CORE_VERSION" version)" != "$CORE_VERSION" ]; then
+            echo "@uwmd/core@$CORE_VERSION is not published"
+            exit 1
+          fi
+          if npm view "uwmd@$CLI_VERSION" version >/dev/null 2>&1; then
+            echo "uwmd@$CLI_VERSION is already published"
+            exit 1
+          fi
+
+      - name: Publish uwmd CLI with provenance
+        working-directory: packages/uwmd-cli
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
