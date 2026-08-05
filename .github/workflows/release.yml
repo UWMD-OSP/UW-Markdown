@@ -14,7 +14,7 @@ name: Release
 #    canonical repo URL.
 #
 # Tag and ship a release:
-#   git tag v1.1.1 && git push origin v1.1.1
+#   git tag v1.1.2 && git push origin v1.1.2
 
 on:
   push:

@@ -8,6 +8,11 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-08-04
+
+### Fixed
+- **Release lockfile completeness** — regenerates the npm lockfile so clean CI installs include every package required by the published workspace manifests.
+
 ## [1.1.1] - 2026-08-04
 
 ### Fixed
