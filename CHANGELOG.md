@@ -8,6 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+- **Local batch collection indexer** — introduces @uwmd/batch, a deterministic directory runner that validates required deal envelopes, captures semantic digests, and emits JSON/CSV read models for database-adjacent underwriting workflows without changing the canonical .uw.md protocol.
+
 ## [1.1.3] - 2026-08-04
 
 ### Fixed

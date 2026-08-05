@@ -51,6 +51,7 @@ not core gaps.
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
 - **CLI:** 16 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
+- **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uw.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
 - **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
@@ -147,20 +148,21 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-1. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
+1. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
+2. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
    five classes have landed end-to-end (pack +
    defaults + worked example + Excel layout). Keep widening coverage. Each is a
    library-only change (no RFC); add a worked example whose operating statement
    foots, and a `WorkbookLayout`. See [05 recipe](05-calc-packs.md), [08](08-tools.md).
-2. **Module loader hardening** — the v1 in-process loader exists; next steps are
+3. **Module loader hardening** — the v1 in-process loader exists; next steps are
    richer schema validation, recorded fixtures, and host UX for loading manifests
    from files (module signing/custom asset-class identifiers stay v2/RFC work).
-3. **Unit tests for validator CC/FV plus untested core helpers** (`compactor.ts`,
+4. **Unit tests for validator CC/FV plus untested core helpers** (`compactor.ts`,
    `init.ts`, `format.ts`, `context.ts`, core `cli.ts`) — largest remaining
    under-tested surfaces; then ratchet the CI coverage floor.
-4. **DOCX path** (or formally scope it out) — PDF landed via `report.ts` +
+5. **DOCX path** (or formally scope it out) — PDF landed via `report.ts` +
    `@uwmd/report`; Word remains the gap for institutions that edit memos.
-5. **Recorded-replay Tier-4 + a second agent backend** — proves the agent contract
+6. **Recorded-replay Tier-4 + a second agent backend** — proves the agent contract
    is actually provider-neutral.
 
 ---

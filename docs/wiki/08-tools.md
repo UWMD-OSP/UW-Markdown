@@ -36,6 +36,20 @@ Command | Purpose
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
+## Batch collection indexer — `packages/uwmd-batch` (`@uwmd/batch` 0.1.0)
+
+A local batch runner for a directory of canonical `.uw.md` deal files. It recursively
+indexes every candidate, validates the required UW frontmatter envelope, records each
+deal's semantic digest, and writes deterministic `uwmd-collection.json` and CSV
+projections:
+
+```bash
+npx @uwmd/batch deals --out batch-output
+```
+
+The output is intentionally a read model, not a new storage protocol: databases or
+other structured systems may import it while `.uw.md` remains the canonical record.
+Invalid or non-UW files are included with an error instead of halting the batch.
 ## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.1.0)
 
 `.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:
