@@ -8,6 +8,11 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-08-04
+
+### Fixed
+- **Coordinated npm release** — publishes the `uwmd` CLI with its exact `@uwmd/core@1.1.1` dependency after the initial scoped-package bootstrap release.
+
 ## [1.1.0] - 2026-08-04
 
 ### Added
