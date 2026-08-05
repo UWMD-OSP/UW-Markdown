@@ -25,7 +25,7 @@ same protocol version.
 | `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
 | UW Protocol | **1.2.0** | format ≥ 1.0 |
 | `@uwmd/core` | **1.1.2** | format 1.1, protocol 1.2.0 |
-| `uwmd` (CLI) | **1.1.2** | `@uwmd/core` 1.1.x |
+| `@uwmd/cli` (CLI) | **1.1.3** | `@uwmd/core` 1.1.2 |
 | `@uwmd/excel` | **0.1.0** | `@uwmd/core` 1.1.x, format 1.1 multifamily pack |
 | `tools/web-editor` | **0.5.0** (private) | `@uwmd/core` 1.1.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
@@ -40,7 +40,7 @@ Accepted RFC 0014 defines a coordinated but independently versioned release trai
 | `.uw.md` format | 1.1 (unchanged) | No syntax change proposed. |
 | UW Protocol | 1.2.0 | Representation descriptors, negotiation, and HTTP/MCP binding profiles implemented. |
 | `@uwmd/core` | 1.1.0 | Envelope 1.0, JSON/XML/CSV codecs, digest helpers, registry, and binding adapters implemented. |
-| `uwmd` | 1.1.0 | `formats`, digested export, and Markdown/JSON/XML/CSV `convert` implemented. |
+| `@uwmd/cli` | 1.1.3 | `formats`, digested export, and Markdown/JSON/XML/CSV `convert` implemented. |
 | UW Document Envelope | 1.0 | Stable schema and core implementation complete; not yet published. |
 | UW JSON mapping | 1.0.0 | Core implementation complete; release pending. |
 | UW XML mapping | 1.0.0 | Deterministic mapping, secure codec, XSD, and conversion tests implemented; release pending. |
@@ -78,7 +78,7 @@ corresponding release entry in `CHANGELOG.md`. See the
 | An editor | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1` |
 | A calc host | format = 1.1, protocol = 1.1, `@uwmd/core@^1.0`, multifamily pack 1.x |
 | An agent host | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1`, plus an LLM SDK of your choice |
-| A CLI script that calls `uwmd` | `uwmd@^1` |
+| A CLI script that calls `uwmd` | `@uwmd/cli@^1` |
 
 ## Release coordination
 

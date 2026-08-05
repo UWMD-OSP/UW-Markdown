@@ -1,6 +1,6 @@
 name: Release
 
-# Publishes @uwmd/core (library) and uwmd (CLI installer) to npm when a
+# Publishes @uwmd/core (library) and @uwmd/cli (CLI installer) to npm when a
 # version tag (v*) is pushed. Both packages share a single tag — they
 # version in lockstep because the CLI re-exposes the library's CLI module.
 #
@@ -23,7 +23,7 @@ on:
 
 jobs:
   publish:
-    name: Publish @uwmd/core + uwmd
+    name: Publish @uwmd/core + @uwmd/cli
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -84,7 +84,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish uwmd CLI to npm with provenance
+      - name: Publish @uwmd/cli to npm with provenance
         working-directory: packages/uwmd-cli
         run: npm publish --provenance --access public
         env:

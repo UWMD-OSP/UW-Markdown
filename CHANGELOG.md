@@ -8,6 +8,11 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-08-04
+
+### Fixed
+- **Scoped CLI distribution** — renames the npm package from the unpublishable uwmd name to @uwmd/cli; its installed executable remains uwmd.
+
 ## [1.1.2] - 2026-08-04
 
 ### Fixed

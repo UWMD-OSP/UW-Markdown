@@ -10,7 +10,7 @@ on:
 
 jobs:
   publish-cli:
-    name: Publish uwmd CLI
+    name: Publish @uwmd/cli
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -47,6 +47,7 @@ jobs:
       - name: Verify recovery target
         shell: bash
         run: |
+          CLI_PACKAGE="$(node -p "require('./packages/uwmd-cli/package.json').name")"
           CLI_VERSION="$(node -p "require('./packages/uwmd-cli/package.json').version")"
           CORE_VERSION="$(node -p "require('./packages/uwmd-cli/package.json').dependencies['@uwmd/core']")"
           if [ "$CLI_VERSION" != "${{ inputs.version }}" ]; then
@@ -57,12 +58,12 @@ jobs:
             echo "@uwmd/core@$CORE_VERSION is not published"
             exit 1
           fi
-          if npm view "uwmd@$CLI_VERSION" version >/dev/null 2>&1; then
-            echo "uwmd@$CLI_VERSION is already published"
+          if npm view "$CLI_PACKAGE@$CLI_VERSION" version >/dev/null 2>&1; then
+            echo "$CLI_PACKAGE@$CLI_VERSION is already published"
             exit 1
           fi
 
-      - name: Publish uwmd CLI with provenance
+      - name: Publish @uwmd/cli with provenance
         working-directory: packages/uwmd-cli
         run: npm publish --provenance --access public
         env:

@@ -39,8 +39,8 @@ if (leakedCoreFiles.length > 0) {
   throw new Error(`@uwmd/core package leaks source or tests: ${leakedCoreFiles.join(', ')}`);
 }
 
-const cliFiles = packedFiles('uwmd');
-requireFiles('uwmd', cliFiles, ['package.json', 'README.md', 'bin/uwmd.mjs']);
+const cliFiles = packedFiles('@uwmd/cli');
+requireFiles('@uwmd/cli', cliFiles, ['package.json', 'README.md', 'bin/uwmd.mjs']);
 
 console.log(`[PASS] @uwmd/core package: ${coreFiles.size} files, production artifacts present`);
-console.log(`[PASS] uwmd package: ${cliFiles.size} files, CLI wrapper present`);
+console.log(`[PASS] @uwmd/cli package: ${cliFiles.size} files, CLI wrapper present`);

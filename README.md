@@ -2,7 +2,7 @@
 
 > An open standard for underwriting documents — readable by humans, AI tools, and software alike.
 
-> **Release status:** `@uwmd/core` and the `uwmd` CLI are not yet on npm — build
+> **Release status:** `@uwmd/core` is published; the CLI is distributed as `@uwmd/cli` — build
 > from source using the quick start below. The spec, schemas, and conformance
 > corpus are stable at format 1.1 / protocol 1.2.
 
@@ -34,11 +34,11 @@ same files without losing fidelity.
 
 ## Quick start
 
-**No clone needed** — once `uwmd` is published to npm, scaffold and validate a deal file with:
+**No clone needed** — install the scoped CLI package and scaffold or validate a deal file with:
 
 ```bash
-npx uwmd init my-deal.uw.md
-npx uwmd validate my-deal.uw.md
+npx @uwmd/cli init my-deal.uw.md
+npx @uwmd/cli validate my-deal.uw.md
 ```
 
 To work from source instead:
@@ -77,7 +77,7 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
 - **Shipped in v1.1** — machine interchange: a shared document envelope with
   lossless JSON, XML, and normalized CSV-bundle codecs, plus HTTP/MCP companion
   bindings, under accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
-- **Next** — npm publication of `@uwmd/core` and `uwmd`, and additional
+- **Next** — npm publication of the `@uwmd/cli` command launcher, and additional
   asset-class calc packs.
 - **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/).
 

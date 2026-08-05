@@ -49,7 +49,7 @@ reflects effort vs. devex value.
 |---|---|---|
 | ✅ | VS Code extension (preview 0.1.0) | `tools/vscode-uwmd/` — syntax highlight + section folding + document outline + on-save validation via `@uwmd/core`. |
 | ✅ | Documentation site (preview 0.1.0) | `tools/docs-site/` — VitePress build of spec / protocol / schemas / conformance / project docs. Interactive playground deferred to 0.2. |
-| ✅ | Standalone CLI installer (preview 1.0.0) | `packages/uwmd-cli/` — publishes as `uwmd` on npm. `npx uwmd init` / `validate` / `parse` / `render` / `edit` / `calc` / `run` for non-developers who don't want to clone. Thin wrapper over `@uwmd/core` (depends on it via the new `./cli` subpath export). No calc-drift risk. |
+| ✅ | Standalone CLI installer (preview 1.0.0) | `packages/uwmd-cli/` — publishes as `@uwmd/cli` on npm (executable: `uwmd`). `npx @uwmd/cli init` / `validate` / `parse` / `render` / `edit` / `calc` / `run` for non-developers who don't want to clone. Thin wrapper over `@uwmd/core` (depends on it via the new `./cli` subpath export). No calc-drift risk. |
 | ✅ | Calc-aware web editor (preview 0.1.0) | `tools/web-editor/` — Vite + plain TS bundle on `@uwmd/core/browser`. Embeds the Tier-2 dispatcher and Tier-3 calc engine in the browser. Frontmatter editing + numeric section editing on five calc-bearing sections (property, valuation, noi_model, debt_structure, sources_uses) dispatch through `applyEdit()`; multifamily calc starter pack (cap rate, LTV, DSCR, debt yield, $/unit, $/sqft, price/unit, cash-on-cash) re-evaluates every render so derived values can never drift from inputs. Validation footer surfaces every `ValidationMessage` with `BUILTIN_REMEDIATIONS` copy. Replaces the originally-planned narrative-only Tier-2 web editor — that design was rejected because separating "safe" narrative edits from "unsafe" numeric edits creates two paths into the same file and a wrong incentive to use the easier one. |
 | ✅ | Excel converter (preview 0.1.0) | `packages/uwmd-excel/` — `.uw.md` → `.xlsx` for multifamily. Two-sheet workbook (Underwriting + Operating Statement) with named-range inputs and derived-metric formulas mirroring `MULTIFAMILY_STARTER_PACK`, plus a flat Pipeline Log audit sheet. NOI is itself a formula on the Operating Statement sheet, so editing any line item ripples through to every metric. Reverse direction (`.xlsx` → `.uw.md`) deferred — calc-aware web editor remains the Tier-2 chokepoint for now. |
 | 💭 | `docs/CONFORMING_TOOLS.md` | Once adopters arrive — keeps the README from becoming a giant list. |
@@ -107,9 +107,9 @@ preceding section can land in private.
 | Status | Item | Notes |
 |---|---|---|
 | ✅ | Repo rename to `uw-markdown` | Completed 2026-07-25; repository, package metadata, documentation links, and local remote updated. |
-| 📋 | Register `@uwmd` org on npm | Required before the release workflow can publish `@uwmd/core`. The `uwmd` package is unscoped and only needs the publisher to be the org owner. |
+| ✅ | Register `@uwmd` org on npm | Completed; `@uwmd/core` is published from the organization. |
 | 📋 | Add `NPM_TOKEN` repo secret | Gates the publish step in `.github/workflows/release.yml`. |
-| 📋 | Tag and ship `v1.0.0` | First production publish of `@uwmd/core` and `uwmd`. Cuts the CHANGELOG `[Unreleased]` section. |
+| 📋 | Publish `@uwmd/cli` | The CLI is scoped because npm rejects the unscoped `uwmd` name under its similarity-protection policy. |
 | ✅ | Flip repo private → public | Completed before the 2026-07-25 release-readiness review. |
 
 ## Permanently out of scope (v1)
