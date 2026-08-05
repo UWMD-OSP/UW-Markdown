@@ -8,13 +8,13 @@ name: Release
 # 1. Register the @uwmd organization on npmjs.com.
 # 2. Reserve the unscoped `uwmd` package name on npm (publish 1.0.0 by hand
 #    once, or use `npm owner add` after the first automated publish).
-# 3. Create an npm automation token with publish scope for both packages.
+# 3. Create an npm granular access token with publish scope for both packages.
 # 4. Add it to this repo's secrets as NPM_TOKEN.
 # 5. Verify `repository.url` and `homepage` in both packages match the
 #    canonical repo URL.
 #
 # Tag and ship a release:
-#   git tag v1.0.0 && git push origin v1.0.0
+#   git tag v1.1.0 && git push origin v1.1.0
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.14.0
           cache: npm
           registry-url: 'https://registry.npmjs.org'
 

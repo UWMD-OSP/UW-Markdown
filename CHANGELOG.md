@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-04
+
 ### Added
 - **HTTP and MCP Binding 1.0 (RFC 0014 Phase E)** — publishes stable
   `https://uwmd.org/deals/{deal_id}` resource identities, an OpenAPI 3.1 contract,

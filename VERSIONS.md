@@ -24,8 +24,8 @@ same protocol version.
 |---|---|---|
 | `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
 | UW Protocol | **1.2.0** | format ≥ 1.0 |
-| `@uwmd/core` | **1.1.0-rc** | format 1.1, protocol 1.2.0 |
-| `uwmd` (CLI) | **1.1.0-rc** | `@uwmd/core` 1.1.x |
+| `@uwmd/core` | **1.1.0** | format 1.1, protocol 1.2.0 |
+| `uwmd` (CLI) | **1.1.0** | `@uwmd/core` 1.1.x |
 | `@uwmd/excel` | **0.1.0** | `@uwmd/core` 1.1.x, format 1.1 multifamily pack |
 | `tools/web-editor` | **0.5.0** (private) | `@uwmd/core` 1.1.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
