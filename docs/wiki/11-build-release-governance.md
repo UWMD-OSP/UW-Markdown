@@ -47,7 +47,7 @@ post-v1.0 plan is
   (Node 20 & 22 matrix) that installs, builds, tests, and runs conformance
   tiers 1–3. Tier 4 is excluded (non-deterministic / operator-driven).
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
-  `@uwmd/core` and `uwmd` (shared release, npm provenance via `id-token: write`).
+  `@uwmd/core` and `@uwmd/cli` (npm provenance via `id-token: write`).
 - **`CODEOWNERS`** routes spec / schema / reference-library paths to the BDFL.
 
 ## Governance & RFCs

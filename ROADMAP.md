@@ -108,8 +108,8 @@ preceding section can land in private.
 |---|---|---|
 | ✅ | Repo rename to `uw-markdown` | Completed 2026-07-25; repository, package metadata, documentation links, and local remote updated. |
 | ✅ | Register `@uwmd` org on npm | Completed; `@uwmd/core` is published from the organization. |
-| 📋 | Add `NPM_TOKEN` repo secret | Gates the publish step in `.github/workflows/release.yml`. |
-| 📋 | Publish `@uwmd/cli` | The CLI is scoped because npm rejects the unscoped `uwmd` name under its similarity-protection policy. |
+| ✅ | Add `NPM_TOKEN` repo secret | Configured for release automation. |
+| ✅ | Publish `@uwmd/cli` | Published as `@uwmd/cli@1.1.3`; its executable remains `uwmd`. |
 | ✅ | Flip repo private → public | Completed before the 2026-07-25 release-readiness review. |
 
 ## Permanently out of scope (v1)

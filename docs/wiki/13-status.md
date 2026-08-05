@@ -2,7 +2,7 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-07-26 (Envelope, JSON, XML, CSV bundle, HTTP/MCP bindings, Protocol 1.2
+**Last verified:** 2026-08-04 (Envelope, JSON, XML, CSV bundle, HTTP/MCP bindings, Protocol 1.2
 discovery, schemas, CLI, package verification, and core tests; release branch).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
@@ -135,15 +135,15 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 
 ## ⚙️ Operational — gates the public launch
 
-> **Current state (2026-07-26):** the repository is public. The remaining launch
-> gates are the `@uwmd` npm organization, `NPM_TOKEN`, and the first `v1.1.0`
-> tag/publication. The Excel add-on remains held separately until its ExcelJS
-> dependency chain is upgraded, replaced, or formally risk-accepted.
+> **Current state (2026-08-04):** the repository is public and the first npm
+> packages are live: `@uwmd/core@1.1.2` and `@uwmd/cli@1.1.3`. The CLI package
+> is scoped because npm rejects the unscoped `uwmd` name; its executable remains
+> `uwmd`. The Excel add-on remains held separately until its ExcelJS dependency
+> chain is upgraded, replaced, or formally risk-accepted.
 
-Completed: public repository and canonical rename to `uw-markdown`. Remaining:
-register the `@uwmd` npm org, add `NPM_TOKEN`, and tag/publish `v1.1.0`.
-Review-flagged: single-maintainer bus factor, personal security email, and no
-public RFC venue.
+Completed: public repository, canonical rename to `uw-markdown`, npm organization,
+release secret, and initial package publication. Review-flagged: single-maintainer
+bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
