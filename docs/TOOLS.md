@@ -124,6 +124,8 @@ alongside their calc packs.
 
 ## Programmatic agent host
 
+Bancroft is UWMD optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a .uw.md file; other providers and application-specific agents can use the same format and Tier-4 host contract.
+
 **[`packages/uwmd-core/src/agents/bancroft.ts`](../packages/uwmd-core/src/agents/bancroft.ts)
 — Tier-4 reference implementation.**
 

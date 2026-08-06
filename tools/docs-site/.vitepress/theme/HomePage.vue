@@ -2,13 +2,13 @@
   <main class="uw-home">
     <section class="uw-hero" aria-labelledby="uw-home-title">
       <div class="uw-hero-copy">
-        <div class="uw-kicker"><span class="uw-file-mark" aria-hidden="true">UW</span> Open underwriting format</div>
-        <h1 id="uw-home-title"><code>.uw.md</code> is one file for the whole underwriting record.</h1>
-        <p class="uw-lede">Human-readable. Machine-verifiable. Built for commercial real estate.</p>
-        <p class="uw-intro">UW Markdown keeps deal narrative, structured assumptions, deterministic calculations, validation, and append-only history together in plain text.</p>
+        <div class="uw-kicker"><span class="uw-file-mark" aria-hidden="true">UW</span> Open underwriting interoperability standard</div>
+        <h1 id="uw-home-title"><code>.uw.md</code> is the canonical data contract for underwriting systems.</h1>
+        <p class="uw-lede">AI-ready. Code-verifiable. Portable across systems.</p>
+        <p class="uw-intro">UW Markdown gives AI agents, deterministic calculation services, internal platforms, and any compatible editor or viewer one stable underwriting record to exchange and extend.</p>
         <nav class="uw-actions" aria-label="Get started">
-          <a class="uw-button uw-button-primary" href="#example">View an example</a>
-          <a class="uw-button" href="/spec/format">Read the specification</a>
+          <a class="uw-button uw-button-primary" href="/spec/protocol">Explore the protocol</a>
+          <a class="uw-button" href="/ai/">Build with AI and code</a>
           <a class="uw-text-link" href="https://github.com/jaredmaxey/uw-markdown">Source on GitHub <span aria-hidden="true">→</span></a>
         </nav>
       </div>
@@ -31,17 +31,17 @@
     </section>
 
     <div class="uw-trust-strip" aria-label="Format summary">
-      <span><strong>FORMAT</strong> 1.1</span>
-      <span><strong>PROTOCOL</strong> 1.2</span>
-      <span><strong>REPRESENTATIONS</strong> Markdown · JSON · XML · CSV</span>
-      <span><strong>CONFORMANCE</strong> Tiers 1–3 gated</span>
+      <span><strong>CANONICAL RECORD</strong> Deal facts + provenance</span>
+      <span><strong>DETERMINISTIC</strong> Validation + calculation</span>
+      <span><strong>REPRESENTATIONS</strong> Markdown / JSON / XML / CSV</span>
+      <span><strong>INTEROPERABLE</strong> Agents / tools / systems</span>
     </div>
 
     <section id="example" class="uw-section uw-example" aria-labelledby="example-title">
       <header class="uw-section-heading">
         <div>
-          <p class="uw-eyebrow">A real file, not a mockup</p>
-          <h2 id="example-title">Readable on the left. Computable on the right.</h2>
+          <p class="uw-eyebrow">One canonical record</p>
+          <h2 id="example-title">The same underwriting data works everywhere.</h2>
         </div>
         <a href="https://github.com/jaredmaxey/uw-markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md">Open complete example <span aria-hidden="true">→</span></a>
       </header>
@@ -53,7 +53,7 @@
         </div>
         <div class="uw-file-views">
           <section class="uw-source" aria-labelledby="source-title">
-            <div class="uw-subhead"><h3 id="source-title">Source</h3><span>plain text</span></div>
+            <div class="uw-subhead"><h3 id="source-title">Canonical record</h3><span>portable source</span></div>
             <pre><code><span class="tok-rule">---</span>
 <span class="tok-key">uw_version:</span> <span class="tok-string">"1.1"</span>
 <span class="tok-key">deal_name:</span> <span class="tok-string">"Parkview Apartments"</span>
@@ -80,7 +80,7 @@ fees use the new agreement at 5.5% of EGI.
           </section>
 
           <section class="uw-render" aria-labelledby="render-title">
-            <div class="uw-subhead"><h3 id="render-title">Rendered underwriting</h3><span>analyst view</span></div>
+            <div class="uw-subhead"><h3 id="render-title">Compatible consumer</h3><span>underwriting view</span></div>
             <div class="uw-deal-heading">
               <p>Parkview Apartments</p>
               <span>48 units · Glendale, Arizona</span>
@@ -118,10 +118,10 @@ fees use the new agreement at 5.5% of EGI.
         </div>
       </div>
       <div class="uw-capability-grid">
-        <article><span class="uw-index">01</span><h3>Readable</h3><p>Assumptions and conclusions remain understandable as ordinary Markdown.</p></article>
-        <article><span class="uw-index">02</span><h3>Structured</h3><p>Standard JSON blocks give software stable, typed fields to work with.</p></article>
-        <article><span class="uw-index">03</span><h3>Verifiable</h3><p>Validators and calculation hosts check consistency and produce deterministic results.</p></article>
-        <article><span class="uw-index">04</span><h3>Portable</h3><p>One file moves among people, agents, editors, viewers, and calculation systems.</p></article>
+        <article><span class="uw-index">01</span><h3>Code-native</h3><p>Typed sections, schemas, and conformance make the record dependable software input.</p></article>
+        <article><span class="uw-index">02</span><h3>AI-ready</h3><p>Agents can extract, reason over, and propose changes against one shared contract.</p></article>
+        <article><span class="uw-index">03</span><h3>Deterministic</h3><p>Validators and calculation hosts check consistency and own all underwriting math.</p></article>
+        <article><span class="uw-index">04</span><h3>Interoperable</h3><p>Any compatible platform, editor, viewer, or service can load the same record.</p></article>
       </div>
     </section>
 
@@ -129,15 +129,15 @@ fees use the new agreement at 5.5% of EGI.
       <div class="uw-section-heading">
         <div>
           <p class="uw-eyebrow">How it works</p>
-          <h2 id="how-title">Plain text in. Auditable underwriting out.</h2>
+          <h2 id="how-title">One record in. Any compatible underwriting system out.</h2>
         </div>
         <a href="/tutorials/your-first-uwmd-file">Build your first file <span aria-hidden="true">→</span></a>
       </div>
       <ol class="uw-steps">
-        <li><span>1</span><div><strong>Create or receive</strong><p>Start with a single <code>.uw.md</code> file.</p></div></li>
-        <li><span>2</span><div><strong>Read and parse</strong><p>Use the narrative directly; software reads the labeled blocks.</p></div></li>
-        <li><span>3</span><div><strong>Validate and compute</strong><p>Conforming hosts check rules and run deterministic calculation packs.</p></div></li>
-        <li><span>4</span><div><strong>Append the record</strong><p>Changes supersede prior blocks without destroying history.</p></div></li>
+        <li><span>1</span><div><strong>Ingest the record</strong><p>Any compatible tool, service, or agent loads the same <code>.uw.md</code> deal.</p></div></li>
+        <li><span>2</span><div><strong>Parse shared facts</strong><p>Structured sections give every consumer a stable underwriting vocabulary.</p></div></li>
+        <li><span>3</span><div><strong>Validate and compute</strong><p>Conforming hosts enforce rules and run deterministic calculation packs.</p></div></li>
+        <li><span>4</span><div><strong>Preserve the record</strong><p>Changes supersede prior blocks without destroying provenance or history.</p></div></li>
       </ol>
     </section>
 
@@ -161,11 +161,11 @@ fees use the new agreement at 5.5% of EGI.
     <section class="uw-section uw-closing" aria-labelledby="closing-title">
       <div>
         <p class="uw-eyebrow">Start with the artifact</p>
-        <h2 id="closing-title">One file. Open rules. Verifiable underwriting.</h2>
+        <h2 id="closing-title">One underwriting record. Open rules. Every compatible system.</h2>
       </div>
       <nav class="uw-actions" aria-label="Project links">
-        <a class="uw-button uw-button-primary" href="/downloads/">Download a file</a>
-        <a class="uw-button" href="/spec/format">Read the spec</a>
+        <a class="uw-button uw-button-primary" href="/ai/">Build with AI and code</a>
+        <a class="uw-button" href="/spec/protocol">Read the protocol</a>
         <a class="uw-text-link" href="https://github.com/jaredmaxey/uw-markdown">Browse source <span aria-hidden="true">→</span></a>
       </nav>
     </section>

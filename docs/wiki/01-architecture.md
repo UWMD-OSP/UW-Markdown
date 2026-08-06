@@ -98,7 +98,7 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
    pipeline log + superseded history.
 2. It is **validated** (`validateUWFile`) against cross-section consistency
    (CC-NN), financial thresholds (FV-NN), and data-quality rules (DQ-NN).
-3. **Bancroft agents** (Tier-4) read curated context, call Claude, and write
+3. **Optional Bancroft reference agents** (Tier-4) read curated context, call Claude, and write
    structured section blocks back — *extracting data, never computing financials*.
 4. **Derived metrics** (cap rate, DSCR, LTV, …) are computed **deterministically**
    by the calc engine from the multifamily pack — same formulas, every tool.

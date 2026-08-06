@@ -5,7 +5,7 @@ description: Blank UW Markdown templates, programs, examples, and AI instruction
 
 # Downloads
 
-Start with a plain-text file. No account, connector, or special editor is required.
+Start with the canonical underwriting record. No account, connector, or preferred editor is required: compatible agents, services, systems, editors, and viewers can all load it.
 
 ## Blank templates
 

@@ -29,7 +29,7 @@ uwmd <command> [args]
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |
 | `uwmd edit <file> <op.json>` | Apply a Tier-2 `EditOperation` and write back |
 | `uwmd calc <file> <calc.json>` | Evaluate a Tier-3 calc declaration |
-| `uwmd run <file>` | Invoke the Tier-4 Bancroft agent host |
+| `uwmd run <file>` | Invoke UWMD optional Claude-backed Bancroft reference agent suite |
 | `uwmd compact <file>` | Strip narrative; emit the canonical JSON-only form |
 | `uwmd diff <a> <b>` | Diff two `.uw.md` files at the section level |
 | `uwmd summary <file>` | One-screen deal summary |

@@ -1,6 +1,6 @@
 # 06 — Bancroft agents (Tier-4)
 
-Bancroft is the AI agent layer. Each agent is a **layer** in an underwriting
+Bancroft is UWMD optional **reference suite** of AI agents. It is not part of the file format and no user or implementer must run it to create, read, validate, edit, calculate, or exchange UWMD files. Each agent is a **layer** in an underwriting
 pipeline (L0…L7). A layer reads a curated subset of the deal, calls Claude with a
 structured-output tool, and writes section blocks back via the supersede-aware
 writer. **Agents extract and narrate; they never compute financial metrics.**

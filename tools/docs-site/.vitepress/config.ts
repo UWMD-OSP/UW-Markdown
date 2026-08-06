@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'UW Markdown',
   description:
-    'One open, human-readable, machine-verifiable file for commercial real-estate underwriting.',
+    'An open, AI- and code-native interoperability standard for commercial real-estate underwriting.',
   cleanUrls: true,
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
@@ -16,7 +16,7 @@ export default defineConfig({
     ['meta', { property: 'og:title', content: 'UW Markdown' }],
     ['meta', {
       property: 'og:description',
-      content: 'One open, human-readable, machine-verifiable file for commercial real-estate underwriting.',
+      content: 'An open, AI- and code-native interoperability standard for commercial real-estate underwriting.',
     }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
     ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],
@@ -24,7 +24,7 @@ export default defineConfig({
     ['meta', { name: 'twitter:title', content: 'UW Markdown' }],
     ['meta', {
       name: 'twitter:description',
-      content: 'One open, human-readable, machine-verifiable file for commercial real-estate underwriting.',
+      content: 'An open, AI- and code-native interoperability standard for commercial real-estate underwriting.',
     }],
     ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og-v2.png' }],
   ],
@@ -46,6 +46,7 @@ export default defineConfig({
           { text: 'CLI and library', link: '/guide/tools' },
           { text: 'Reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
           { text: 'For AI and agents', link: '/ai/' },
+          { text: 'Bounded agent skills', link: '/ai/skills' },
           { text: 'Schemas', link: '/spec/schemas/' },
           { text: 'Conformance', link: '/conformance/' },
         ],
@@ -148,6 +149,7 @@ export default defineConfig({
             { text: '0011 — Capability tokens', link: '/about/rfcs/0011-capability-tokens' },
             { text: '0013 — Corpus retrieval', link: '/about/rfcs/0013-corpus-retrieval' },
             { text: '0014 — Multi-format interchange', link: '/about/rfcs/0014-multi-format-interchange' },
+            { text: '0015 — Portfolio relationships', link: '/about/rfcs/0015-portfolio-relationships' },
           ],
         },
         {

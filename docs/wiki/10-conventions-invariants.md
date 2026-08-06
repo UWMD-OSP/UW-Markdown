@@ -7,7 +7,7 @@ hold the system together. Breaking them is grounds for blocking a PR.
 
 ### 1. The deterministic calc boundary — AI never does financial math
 All NOI / DSCR / LTV / cap rate / IRR / DCF / amortization math is computed by the
-deterministic calc engine (`calc/` + `packs/`). AI agents (Bancroft) only
+deterministic calc engine (`calc/` + `packs/`). AI agents (including the optional Bancroft reference suite) only
 **extract data** (from documents, market knowledge) and **write narrative**. The
 agent system prompt literally instructs Claude: *"Never calculate financial
 figures."* Agents may write an *input* a formula reads (e.g.

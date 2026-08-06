@@ -1,12 +1,12 @@
 # UW Markdown
 
-> An open standard for underwriting documents — readable by humans, AI tools, and software alike.
+> An open interoperability standard for AI- and code-driven underwriting systems.
 
 > **Release status:** `@uwmd/core@1.1.2` and `@uwmd/cli@1.1.3` are published on npm. The spec, schemas, and conformance corpus are stable at format 1.1 / protocol 1.2.
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/jaredmaxey/uw-markdown](https://github.com/jaredmaxey/uw-markdown)
 
-**`.uw.md`** is a Markdown-based file format for commercial real-estate underwriting deals. It pairs human-readable prose with structured JSON blocks, supports an append-only update history, validates against published consistency rules, and bundles cleanly into context for AI agents.
+**`.uw.md`** is a canonical underwriting record for commercial real-estate systems. It carries narrative, typed deal facts, deterministic calculations, validation, and append-only provenance in an open format that AI agents, services, editors, viewers, and internal platforms can all load.
 
 This repository is the home of the standard:
 
@@ -24,11 +24,12 @@ opaque to software, AI, and anyone outside the originator's firm. Every shop
 reinvents the wheel. Every analyst rebuilds the same models. AI tools see
 dollar signs as text and cap rates as 0.05.
 
-`.uw.md` is the same kind of move CommonMark made for prose, OpenAPI made for
-APIs, and JSON Schema made for data: a published, versioned, vendor-neutral
-text format that lets every tool — bank platforms, analyst spreadsheets,
-document parsers, AI assistants, internal credit systems — read and write the
-same files without losing fidelity.
+`.uw.md` is the same kind of move OpenAPI made for APIs and JSON Schema made
+for data: a published, versioned, vendor-neutral underwriting contract. It lets
+AI agents, calculation services, bank platforms, analyst tools, document
+parsers, and internal credit systems load and exchange the same record without
+losing fidelity. Its text form is a portability property, not the product
+constraint.
 
 ## Quick start
 
@@ -60,8 +61,8 @@ To open the reference web viewer, point any browser at
 ## What ships in v1
 
 - The format spec (`UW_FORMAT_SPEC_v1.md`) — 21 standard sections, validation rules, supersede semantics.
-- The protocol spec (`UW_PROTOCOL_v1.md`) — four conformance tiers (Reader, Editor, Calc Host, Agent Host), display conventions, edit semantics, module manifest.
-- `@uwmd/core` — parser, validator, renderer, runner, Claude-based agent host.
+- The protocol spec (`UW_PROTOCOL_v1.md`) - four conformance tiers (Reader, Editor, Calc Host, Agent Host), display conventions, edit semantics, and module manifest. Tier 4 describes a host capability; it does not require Bancroft.
+- `@uwmd/core` - parser, validator, renderer, runner, and an optional Claude-backed Bancroft reference agent suite.
 - A conformance corpus per tier so third parties can self-certify.
 - A single-file web viewer demonstrating Tier-1 conformance in <500 LOC.
 

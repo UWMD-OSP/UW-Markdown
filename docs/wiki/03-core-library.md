@@ -34,7 +34,7 @@ Module | Responsibility | Key exports
 `protocol.ts` | Executable protocol contract + BUILTIN_* tables | see [§ protocol](#protocol-the-contract-surface)
 `types.ts` | Format type definitions | `UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`, `DEFAULT_THRESHOLDS`, …
 `format.ts` | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
-`context.ts` | Bancroft layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
+`context.ts` | Optional Bancroft reference-layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
 `context-profiles.ts` | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
 `cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
@@ -45,7 +45,7 @@ Module | Responsibility | Key exports
 `modules.ts` | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
 `calc/` | Tier-3 safe-expression engine | see [04 — Calc engine](04-calc-engine.md)
 `packs/` | Calc packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
-`agents/` | Tier-4 Bancroft agent host | see [06 — Bancroft agents](06-bancroft-agents.md)
+`agents/` | Optional Tier-4 Bancroft reference agent host | see [06 — Bancroft agents](06-bancroft-agents.md)
 
 ## parser.ts
 

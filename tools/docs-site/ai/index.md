@@ -1,12 +1,14 @@
 ---
-title: UW Markdown for AI
-description: A concise, machine-friendly map of UW Markdown for AI systems and agent builders.
+title: UW Markdown for AI and code
+description: The interoperability contract for AI agents, deterministic services, and underwriting software.
 ---
 
-# UW Markdown for AI
+# UW Markdown for AI and code
 
-UW Markdown is an open file standard, not a hosted AI service. An AI can work
-directly with `.uw.md` text. No custom connector or MCP server is required.
+UW Markdown is an open interoperability standard, not a hosted AI service or a
+single application. AI agents, deterministic calculation services, internal
+underwriting systems, and compatible editors or viewers can load the same deal
+record directly. No custom connector or MCP server is required.
 
 ## Core rules
 

@@ -112,6 +112,8 @@ not core gaps.
 - **Tier-4 conformance** — shape/lint-only; no live-LLM or recorded-replay gate.
 - **Market-data / investor-profile** — interface-only; no reference implementation.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
+  RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
+  reference implementation exists.
 
 ## 📋 Active 1.1+ machine-interchange train
 
@@ -131,7 +133,7 @@ Range/stochastic calcs (0005), sensitivity-table builtin (0007), lease-up modeli
 (0008), custom asset-class declarations from modules (0003), module signing (0002),
 locale/multi-currency (0001), conformance runner v2 (0004), `_meta` v2 reorg
 (0009), signed blocks (0010), capability tokens (0011), and corpus retrieval
-(0013).
+(0013), and portfolio/relationship profiles (0015).
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
