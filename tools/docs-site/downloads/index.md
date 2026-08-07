@@ -26,21 +26,21 @@ npx uwmd init my-deal.uw.md --asset-class office --tier analyst
 
 - <a href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download the browser viewer (<code>.html</code>)</a>
   — save it, open it in a browser, and drop a `.uw.md` file onto the page.
-- [Download all source code (`.zip`)](https://github.com/jaredmaxey/uw-markdown/archive/refs/heads/main.zip)
+- [Download all source code (`.zip`)](https://github.com/UWMD-OSP/UW-Markdown/archive/refs/heads/main.zip)
   — includes the CLI, core library, Excel exporter, report renderer, web tools,
   VS Code extension, schemas, and tests.
-- [GitHub releases](https://github.com/jaredmaxey/uw-markdown/releases) — packaged
+- [GitHub releases](https://github.com/UWMD-OSP/UW-Markdown/releases) — packaged
   release assets appear here as they are published.
-- [Browse the programs on GitHub](https://github.com/jaredmaxey/uw-markdown#repository-layout)
+- [Browse the programs on GitHub](https://github.com/UWMD-OSP/UW-Markdown#repository-layout)
   — use this while the first public npm and extension packages are being published.
 
 ## Example deals
 
-- [Multifamily](https://raw.githubusercontent.com/jaredmaxey/uw-markdown/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
-- [Office](https://raw.githubusercontent.com/jaredmaxey/uw-markdown/main/examples/Riverside-Office-Phoenix-AZ.uw.md)
-- [Retail](https://raw.githubusercontent.com/jaredmaxey/uw-markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uw.md)
-- [Industrial](https://raw.githubusercontent.com/jaredmaxey/uw-markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md)
-- [Self-storage](https://raw.githubusercontent.com/jaredmaxey/uw-markdown/main/examples/Sonoran-Self-Storage-Peoria-AZ.uw.md)
+- [Multifamily](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
+- [Office](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Riverside-Office-Phoenix-AZ.uw.md)
+- [Retail](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uw.md)
+- [Industrial](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md)
+- [Self-storage](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Sonoran-Self-Storage-Peoria-AZ.uw.md)
 
 ## AI instruction files
 

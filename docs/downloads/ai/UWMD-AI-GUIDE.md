@@ -1,7 +1,7 @@
 # UW Markdown AI guide
 
 UW Markdown (`.uw.md`) is an open, plain-text format for commercial real-estate
-underwriting. The repository is https://github.com/jaredmaxey/uw-markdown and
+underwriting. The repository is https://github.com/UWMD-OSP/UW-Markdown and
 the documentation is at https://uwmd.org.
 
 When working with a UW Markdown file:

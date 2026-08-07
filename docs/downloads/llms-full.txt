@@ -5,7 +5,7 @@ UW Markdown is an open `.uw.md` standard for commercial real-estate underwriting
 ## Canonical resources
 
 - Home: https://uwmd.org/
-- Repository: https://github.com/jaredmaxey/uw-markdown
+- Repository: https://github.com/UWMD-OSP/UW-Markdown
 - Architecture: https://uwmd.org/about/architecture
 - Changelog: https://uwmd.org/about/changelog
 - Versions: https://uwmd.org/about/versions

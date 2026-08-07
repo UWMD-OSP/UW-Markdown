@@ -485,11 +485,11 @@ fixtures, and release documentation.
 
 Implementation audit trail:
 
-- [PR #2](https://github.com/jaredmaxey/uw-markdown/pull/2) — accepted RFC;
-- [PR #3](https://github.com/jaredmaxey/uw-markdown/pull/3) — Envelope/JSON and discovery;
-- [PR #4](https://github.com/jaredmaxey/uw-markdown/pull/4) — XML;
-- [PR #5](https://github.com/jaredmaxey/uw-markdown/pull/5) — CSV bundle;
-- [PR #6](https://github.com/jaredmaxey/uw-markdown/pull/6) — HTTP/MCP bindings.
+- [PR #2](https://github.com/UWMD-OSP/UW-Markdown/pull/2) — accepted RFC;
+- [PR #3](https://github.com/UWMD-OSP/UW-Markdown/pull/3) — Envelope/JSON and discovery;
+- [PR #4](https://github.com/UWMD-OSP/UW-Markdown/pull/4) — XML;
+- [PR #5](https://github.com/UWMD-OSP/UW-Markdown/pull/5) — CSV bundle;
+- [PR #6](https://github.com/UWMD-OSP/UW-Markdown/pull/6) — HTTP/MCP bindings.
 
 ## Deferred questions
 

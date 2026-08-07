@@ -3,7 +3,7 @@
 > Open, vendor-neutral text format for commercial real-estate underwriting documents. Files combine readable Markdown, structured JSON, deterministic calculations, validation, and provenance.
 
 Canonical site: https://uwmd.org
-Repository: https://github.com/jaredmaxey/uw-markdown
+Repository: https://github.com/UWMD-OSP/UW-Markdown
 License: MIT
 
 ## Start

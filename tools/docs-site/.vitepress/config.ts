@@ -36,7 +36,7 @@ export default defineConfig({
       { text: 'About', link: '/tutorials/your-first-uwmd-file' },
       { text: 'Specification', link: '/spec/format' },
       { text: 'Protocol', link: '/spec/protocol' },
-      { text: 'Examples', link: 'https://github.com/jaredmaxey/uw-markdown/tree/main/examples' },
+      { text: 'Examples', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
       { text: 'Viewer', link: '/viewer/' },
       {
         text: 'Tools',
@@ -59,7 +59,7 @@ export default defineConfig({
           { text: 'Roadmap', link: '/about/roadmap' },
         ],
       },
-      { text: 'Source', link: 'https://github.com/jaredmaxey/uw-markdown' },
+      { text: 'Source', link: 'https://github.com/UWMD-OSP/UW-Markdown' },
     ],
 
     sidebar: {
@@ -166,7 +166,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/jaredmaxey/uw-markdown' },
+      { icon: 'github', link: 'https://github.com/UWMD-OSP/UW-Markdown' },
     ],
 
     footer: {
@@ -180,7 +180,7 @@ export default defineConfig({
 
     editLink: {
       pattern:
-        'https://github.com/jaredmaxey/uw-markdown/edit/main/:path',
+        'https://github.com/UWMD-OSP/UW-Markdown/edit/main/:path',
       text: 'Edit this page on GitHub',
     },
 

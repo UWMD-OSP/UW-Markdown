@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-**Email security reports to: [jaredmaxey@icloud.com](mailto:jaredmaxey@icloud.com)**
+**Email security reports to: [team@uwmd.org](mailto:team@uwmd.org)**
 with the subject prefix `[uwmd-security]`. Include:
 
 - A short description of the issue.

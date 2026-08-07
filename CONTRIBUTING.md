@@ -26,8 +26,8 @@ tools/                        Starter tools (web-viewer, future: excel converter
 ## Local development
 
 ```bash
-git clone https://github.com/jaredmaxey/uw-markdown.git
-cd uw-markdown
+git clone https://github.com/UWMD-OSP/UW-Markdown.git
+cd UW-Markdown
 npm install
 npm run build
 npm test

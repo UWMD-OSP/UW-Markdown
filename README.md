@@ -4,7 +4,7 @@
 
 > **Release status:** `@uwmd/core@1.1.2` and `@uwmd/cli@1.1.3` are published on npm. The spec, schemas, and conformance corpus are stable at format 1.1 / protocol 1.2.
 
-**Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/jaredmaxey/uw-markdown](https://github.com/jaredmaxey/uw-markdown)
+**Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 
 **`.uw.md`** is a canonical underwriting record for commercial real-estate systems. It carries narrative, typed deal facts, deterministic calculations, validation, and append-only provenance in an open format that AI agents, services, editors, viewers, and internal platforms can all load.
 
@@ -43,8 +43,8 @@ npx @uwmd/cli validate my-deal.uw.md
 To work from source instead:
 
 ```bash
-git clone https://github.com/jaredmaxey/uw-markdown.git
-cd uw-markdown
+git clone https://github.com/UWMD-OSP/UW-Markdown.git
+cd UW-Markdown
 npm install
 npm run build
 
