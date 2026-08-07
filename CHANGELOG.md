@@ -29,6 +29,26 @@ protocol, and each package each carry an independent semver).
 ## [1.1.0] - 2026-08-04
 
 ### Added
+- **UW Lite / UWX transition foundation (RFCs 0015 and 0016)** adds the
+  pre-launch .uw.md Lite and .uwx.md Extended split plus signed deterministic
+  math receipts. Core now exposes representation constants, content-aware
+  source detection, the parseUWXFile compatibility name, and a byte-identical
+  legacy migration planner. The uwmd migrate-source command safely copies a
+  structured legacy .uw.md to a sibling .uwx.md, refuses Lite/mixed content and
+  existing destinations by default, and supports dry-run reporting.
+- **Deterministic UW Lite bridge** compiles the deal-summary Lite profile into a
+  UW Document Envelope/UWX source, preserves the complete human-readable source
+  in a namespaced extension, and rejects unsupported periods, scenarios, or
+  units instead of guessing. The reverse UWX-to-Lite projection emits a
+  machine-readable omission report whenever advanced data is dropped. The CLI
+  exposes both directions through convert, accepts Lite in export, and lists
+  Lite/UWX in representation discovery. Receipt signing remains implementation work.
+- **UW Lite Markdown 1.0 parser foundation** adds the normative constrained
+  grammar, lossless source-located AST, explicit anchored fields, normalized
+  currency/rate/ratio values and units, duplicate/ambiguity diagnostics,
+  presentation-insensitive financial canonicalization, canonical rendering,
+  browser-safe public APIs, a conformance fixture, and CLI parse/validate
+  support. Parsing remains separate from deterministic envelope compilation.
 - **HTTP and MCP Binding 1.0 (RFC 0014 Phase E)** — publishes stable
   `https://uwmd.org/deals/{deal_id}` resource identities, an OpenAPI 3.1 contract,
   negotiated HTTP responses with semantic ETags and preconditions, MCP text/blob

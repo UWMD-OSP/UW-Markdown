@@ -1,13 +1,23 @@
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, it, expect } from 'vitest';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
 const FIXTURE = resolve(__dirname, '..', '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uw.md');
+const LITE_FIXTURE = resolve(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'conformance',
+  'lite',
+  'fixtures',
+  '01-minimal.uw.md',
+);
 
 function runCli(args: string[]) {
   return spawnSync(process.execPath, [CLI_BIN, ...args], { encoding: 'utf8' });
@@ -30,8 +40,72 @@ describe('uwmd CLI', () => {
     const parsed = JSON.parse(r.stdout);
     expect(parsed).toMatchObject({
       frontmatter: expect.any(Object),
+
       sections: expect.any(Object),
     });
+  });
+
+  it('parses a UW Lite document with typed anchored fields', () => {
+    const r = runCli(['parse', LITE_FIXTURE]);
+    expect(r.status).toBe(0);
+    const parsed = JSON.parse(r.stdout);
+    expect(parsed).toMatchObject({
+      representation: 'uw-lite-markdown',
+      representation_version: '1.0',
+      issues: [],
+    });
+    expect(parsed.fields).toContainEqual(
+      expect.objectContaining({
+        path: 'acquisition.purchase_price',
+        value: 12_500_000,
+        unit: 'USD',
+      }),
+    );
+  });
+
+  it('validates a UW Lite document without treating it as UWX', () => {
+    const r = runCli(['validate', LITE_FIXTURE, '--json']);
+    expect(r.status).toBe(0);
+    expect(JSON.parse(r.stdout)).toMatchObject({
+      representation: 'uw-lite-markdown',
+      overall_status: 'clean',
+      issues: [],
+    });
+  });
+
+  it('compiles UW Lite to structured UWX on stdout', () => {
+    const r = runCli(['convert', LITE_FIXTURE, '--to', 'uwx', '--stdout']);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('```json uw:section=valuation');
+    expect(r.stdout).toContain('"purchase_price": 12500000');
+    expect(r.stdout).toContain('```json uw:section=x_uw_lite_source');
+  });
+
+  it('writes an explicit omission report for lossy UWX-to-Lite projection', () => {
+    const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-lite-'));
+    try {
+      const reportPath = resolve(temp, 'projection.json');
+      const r = runCli([
+        'convert',
+        FIXTURE,
+        '--to',
+        'lite',
+        '--projection-report',
+        reportPath,
+        '--stdout',
+      ]);
+      expect(r.status).toBe(0);
+      expect(r.stdout).toContain('uw_lite_version: 1.0');
+      const report = JSON.parse(readFileSync(reportPath, 'utf8'));
+      expect(report).toMatchObject({
+        profile: 'deal-summary-v1',
+        lossy: true,
+        omitted_paths: expect.any(Array),
+      });
+      expect(report.omitted_paths.length).toBeGreaterThan(0);
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
   });
 
   it('validates the bundled fixture without errors', () => {
@@ -46,6 +120,17 @@ describe('uwmd CLI', () => {
     expect(exported.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(exported).not.toHaveProperty('uwjson_version');
     expect(exported).not.toHaveProperty('prose');
+  });
+
+  it('exports a UW Lite document as a digested UW Document Envelope', () => {
+    const r = runCli(['export', LITE_FIXTURE, '--stdout']);
+    expect(r.status).toBe(0);
+    const exported = JSON.parse(r.stdout);
+    expect(exported.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
+    expect(exported.sections.valuation.content.purchase_price).toBe(12_500_000);
+    expect(exported.extensions.x_uw_lite_source.content.markdown).toContain(
+      '# Acquisition',
+    );
   });
 
   it('converts Markdown to deterministic UW XML on stdout', () => {
@@ -99,6 +184,12 @@ describe('uwmd CLI', () => {
     );
     expect(JSON.parse(r.stdout)).toContainEqual(
       expect.objectContaining({ id: 'uw-csv-bundle', fidelity: 'model' }),
+    );
+    expect(JSON.parse(r.stdout)).toContainEqual(
+      expect.objectContaining({ id: 'uw-lite-markdown', fidelity: 'source' }),
+    );
+    expect(JSON.parse(r.stdout)).toContainEqual(
+      expect.objectContaining({ id: 'uwx-markdown', fidelity: 'source' }),
     );
   });
   it('exits non-zero on a missing file', () => {

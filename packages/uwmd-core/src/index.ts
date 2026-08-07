@@ -8,6 +8,59 @@ export { render, UnsupportedRenderFormatError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';
 export type { ReportOptions, ReportResult } from './report.js';
+export {
+  UW_LITE_REPRESENTATION_ID,
+  UWX_REPRESENTATION_ID,
+  UW_LITE_REPRESENTATION_VERSION,
+  UWX_REPRESENTATION_VERSION,
+  UW_LITE_MEDIA_TYPE,
+  UWX_MEDIA_TYPE,
+  UW_LITE_EXTENSION,
+  UW_LITE_SOURCE_DESCRIPTOR,
+  UWX_SOURCE_DESCRIPTOR,
+  UWX_EXTENSION,
+  UWSourceRepresentationError,
+  detectUWSourceRepresentation,
+  migrateLegacyUWMarkdown,
+} from './source-representation.js';
+export type {
+  UWSourceRepresentation,
+  UWSourceDetection,
+  UWSourceMigration,
+} from './source-representation.js';
+
+export {
+  UWLiteError,
+  parseUWLite,
+  canonicalizeUWLiteFinancial,
+  renderCanonicalUWLite,
+} from './lite.js';
+export type {
+  UWLiteScalar,
+  UWLiteSourceRange,
+  UWLiteIssue,
+  UWLiteNode,
+  UWLiteFieldNode,
+  ParsedUWLite,
+} from './lite.js';
+
+export {
+  UW_LITE_BRIDGE_PROFILE,
+  UW_LITE_SOURCE_EXTENSION,
+  UW_LITE_FIELD_MAPPINGS,
+  UWLiteBridgeError,
+  compileUWLite,
+  projectUWEnvelopeToLite,
+  stringifyUWX,
+} from './lite-bridge.js';
+export type {
+  UWLiteFieldMapping,
+  UWLiteCompilationIssue,
+  UWLiteCompilationReport,
+  UWLiteCompilationResult,
+  UWLiteProjectionReport,
+  UWLiteProjectionResult,
+} from './lite-bridge.js';
 
 export {
   UW_JSON_REPRESENTATION_VERSION,

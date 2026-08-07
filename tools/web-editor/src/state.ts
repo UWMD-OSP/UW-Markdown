@@ -1,18 +1,25 @@
-// Deal state hook — the single owner of the loaded file.
-//
-// All mutations flow through runEdit() (edits.ts), which calls @uwmd/core's
-// applyEdit() and re-parses, so the in-memory state never drifts from the
-// canonical byte string. React state here is just a holder for that result.
-//
-// Undo/redo is snapshot-based: every applied edit pushes the previous
-// EditState onto `past`. Undo restores a prior canonical source verbatim —
-// it never tries to "reverse" an operation, so it can't desync. (This is an
-// in-memory, pre-save convenience; the saved file's pipeline log still
-// records whatever was applied at save time.)
+// Deal state hook — canonical UWX editing plus the UW Lite bridge.
+// Lite input is compiled once into the existing structured edit pipeline; all
+// subsequent mutations still pass through runEdit() and preserve provenance.
 
 import { useCallback, useEffect, useState } from 'react';
-import { generateBlankUWFile } from '@uwmd/core/browser';
-import type { EditOperation, InitOptions } from '@uwmd/core/browser';
+import {
+  compileUWLite,
+  detectUWSourceRepresentation,
+  generateBlankUWFile,
+  parseUWLite,
+  projectUWEnvelopeToLite,
+  stringifyUWX,
+  toUWEnvelope,
+  UWX_REPRESENTATION_ID,
+} from '@uwmd/core/browser';
+import type {
+  EditOperation,
+  InitOptions,
+  UWLiteCompilationReport,
+  UWLiteProjectionReport,
+  UWSourceRepresentation,
+} from '@uwmd/core/browser';
 import {
   loadInitialState,
   runEdit,
@@ -23,9 +30,11 @@ import {
 
 export interface DealState {
   loaded: EditState | null;
-  /** The source as loaded/last-saved — basis for the diff view. */
+  /** The canonical UWX bytes as loaded/last-saved — basis for the diff view. */
   originalSource: string;
   filename: string;
+  sourceRepresentation: UWSourceRepresentation | null;
+  liteCompilation: UWLiteCompilationReport | null;
   dirty: boolean;
   status: string;
   loadError: string | null;
@@ -40,7 +49,8 @@ export interface DealActions {
   applyOp: (op: EditOperation) => void;
   undo: () => void;
   redo: () => void;
-  download: () => void;
+  downloadUWX: () => void;
+  downloadLite: () => UWLiteProjectionReport | null;
   setStatus: (text: string) => void;
   setEditSettings: (patch: Partial<EditSettings>) => void;
 }
@@ -50,135 +60,155 @@ export function useDeal(): [DealState, DealActions] {
   const [past, setPast] = useState<EditState[]>([]);
   const [future, setFuture] = useState<EditState[]>([]);
   const [filename, setFilename] = useState('');
-  const [status, setStatus] = useState('Ready — drop a .uw.md file to begin');
+  const [sourceRepresentation, setSourceRepresentation] = useState<UWSourceRepresentation | null>(null);
+  const [liteCompilation, setLiteCompilation] = useState<UWLiteCompilationReport | null>(null);
+  const [status, setStatus] = useState('Ready — open a .uw.md Lite or .uwx.md structured deal');
   const [loadError, setLoadError] = useState<string | null>(null);
   const [editSettings, setEditSettingsState] = useState<EditSettings>(DEFAULT_EDIT_SETTINGS);
-  // The source as loaded or last-saved — the diff baseline and dirty check.
   const [originalSource, setOriginalSource] = useState('');
 
   const dirty = !!loaded && loaded.source !== originalSource;
 
   const setEditSettings = useCallback((patch: Partial<EditSettings>) => {
-    setEditSettingsState((s) => ({ ...s, ...patch }));
+    setEditSettingsState((current) => ({ ...current, ...patch }));
   }, []);
 
   const loadFile = useCallback((text: string, name: string) => {
     try {
-      const state = loadInitialState(text);
-      setOriginalSource(text);
+      const detection = detectUWSourceRepresentation(text, name);
+      const isLite = detection.representation !== UWX_REPRESENTATION_ID;
+      const compilation = isLite ? compileUWLite(parseUWLite(text)) : null;
+      if (compilation && !compilation.ok) {
+        const messages = compilation.report.issues
+          .filter((issue) => issue.severity === 'error')
+          .map((issue) => `${issue.code}: ${issue.message}`)
+          .join(' ');
+        throw new Error(`Lite compilation needs attention. ${messages}`);
+      }
+      const source = compilation ? stringifyUWX(compilation.envelope) : text;
+      const state = loadInitialState(source);
+      const workingName = ensureUWXFilename(name);
+      setOriginalSource(source);
       setLoaded(state);
       setPast([]);
       setFuture([]);
-      setFilename(name);
+      setFilename(workingName);
+      setSourceRepresentation(detection.representation);
+      setLiteCompilation(compilation?.report ?? null);
       setLoadError(null);
-      setStatus(`${name} — ${Object.keys(state.parsed.sections).length} sections, ${issueSummary(state)}`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setLoadError(`Couldn't parse ${name}: ${msg}`);
-      setStatus(`Parse failed: ${msg}`);
-      console.error(err);
+      const prefix = compilation
+        ? `Compiled Lite → UWX (${compilation.report.mappings.length} mapped field${compilation.report.mappings.length === 1 ? '' : 's'})`
+        : detection.legacy_extension
+          ? 'Loaded legacy structured source; ready to migrate to .uwx.md'
+          : 'Loaded UWX';
+      setStatus(`${prefix} — ${Object.keys(state.parsed.sections).length} sections, ${issueSummary(state)}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setLoadError(`Couldn't open ${name}: ${message}`);
+      setStatus(`Open failed: ${message}`);
+      console.error(error);
     }
   }, []);
 
-  const newDeal = useCallback(
-    (opts: InitOptions) => {
-      const text = generateBlankUWFile(opts);
-      const slug = (opts.dealName ?? 'new-deal')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      loadFile(text, `${slug || 'new-deal'}.uw.md`);
-      // A brand-new file is unsaved by definition — empty diff baseline.
-      setOriginalSource('');
-      setStatus('New deal created — fill in the frontmatter, then add data');
-    },
-    [loadFile],
-  );
+  const newDeal = useCallback((opts: InitOptions) => {
+    const source = generateBlankUWFile(opts);
+    const slug = (opts.dealName ?? 'new-deal').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    loadFile(source, `${slug || 'new-deal'}.uwx.md`);
+    setOriginalSource('');
+    setStatus('New UWX deal created — fill in the frontmatter, then add data');
+  }, [loadFile]);
 
-  const applyOp = useCallback(
-    (op: EditOperation) => {
-      if (!loaded) return;
-      const outcome = runEdit(loaded, op, editSettings);
-      if (!outcome.ok) {
-        setStatus(`Edit rejected: ${outcome.message}`);
-        return;
-      }
-      setPast((p) => [...p.slice(-49), loaded]); // cap the stack at 50
-      setFuture([]);
-      setLoaded(outcome.state);
-      setStatus(`Edited — ${issueSummary(outcome.state)} (unsaved)`);
-    },
-    [loaded, editSettings],
-  );
+  const applyOp = useCallback((op: EditOperation) => {
+    if (!loaded) return;
+    const outcome = runEdit(loaded, op, editSettings);
+    if (!outcome.ok) {
+      setStatus(`Edit rejected: ${outcome.message}`);
+      return;
+    }
+    setPast((items) => [...items.slice(-49), loaded]);
+    setFuture([]);
+    setLoaded(outcome.state);
+    setStatus(`Edited UWX — ${issueSummary(outcome.state)} (unsaved)`);
+  }, [loaded, editSettings]);
 
   const undo = useCallback(() => {
     if (past.length === 0 || !loaded) return;
-    const prev = past[past.length - 1];
-    setPast((p) => p.slice(0, -1));
-    setFuture((f) => [loaded, ...f]);
-    setLoaded(prev);
-    setStatus(`Undid edit — ${issueSummary(prev)}`);
+    const previous = past[past.length - 1];
+    setPast((items) => items.slice(0, -1));
+    setFuture((items) => [loaded, ...items]);
+    setLoaded(previous);
+    setStatus(`Undid edit — ${issueSummary(previous)}`);
   }, [past, loaded]);
 
   const redo = useCallback(() => {
     if (future.length === 0 || !loaded) return;
     const next = future[0];
-    setFuture((f) => f.slice(1));
-    setPast((p) => [...p, loaded]);
+    setFuture((items) => items.slice(1));
+    setPast((items) => [...items, loaded]);
     setLoaded(next);
     setStatus(`Redid edit — ${issueSummary(next)}`);
   }, [future, loaded]);
 
-  const download = useCallback(() => {
+  const downloadUWX = useCallback(() => {
     if (!loaded) return;
-    const blob = new Blob([loaded.source], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = ensureUWMdSuffix(filename || 'deal.uw.md');
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadText(loaded.source, ensureUWXFilename(filename || 'deal.uwx.md'));
     setOriginalSource(loaded.source);
-    setStatus(`Saved ${a.download}`);
+    setStatus(`Saved ${ensureUWXFilename(filename || 'deal.uwx.md')}`);
   }, [loaded, filename]);
 
-  // Warn before navigating away with unsaved edits.
+  const downloadLite = useCallback((): UWLiteProjectionReport | null => {
+    if (!loaded) return null;
+    const projection = projectUWEnvelopeToLite(toUWEnvelope(loaded.parsed));
+    const liteName = ensureLiteFilename(filename || 'deal.uwx.md');
+    downloadText(projection.content, liteName);
+    const qualifier = projection.report.lossy
+      ? `; ${projection.report.omitted_paths.length} advanced path(s) omitted — review the loss report`
+      : '; lossless for this profile';
+    setStatus(`Exported ${liteName}${qualifier}`);
+    return projection.report;
+  }, [loaded, filename]);
+
   useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => {
+    const handler = (event: BeforeUnloadEvent) => {
       if (dirty) {
-        e.preventDefault();
-        e.returnValue = '';
+        event.preventDefault();
+        event.returnValue = '';
       }
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, [dirty]);
 
-  return [
-    {
-      loaded,
-      originalSource,
-      filename,
-      dirty,
-      status,
-      loadError,
-      canUndo: past.length > 0,
-      canRedo: future.length > 0,
-      editSettings,
-    },
-    { loadFile, newDeal, applyOp, undo, redo, download, setStatus, setEditSettings },
-  ];
+  return [{ loaded, originalSource, filename, sourceRepresentation, liteCompilation, dirty, status, loadError,
+    canUndo: past.length > 0, canRedo: future.length > 0, editSettings },
+  { loadFile, newDeal, applyOp, undo, redo, downloadUWX, downloadLite, setStatus, setEditSettings }];
 }
 
 function issueSummary(state: EditState): string {
-  const n = state.validation.issues.length;
-  return `${n} issue${n === 1 ? '' : 's'}`;
+  const count = state.validation.issues.length;
+  return `${count} issue${count === 1 ? '' : 's'}`;
 }
 
-function ensureUWMdSuffix(name: string): string {
-  if (name.endsWith('.uw.md')) return name;
-  if (name.endsWith('.md')) return name.replace(/\.md$/, '.uw.md');
-  return `${name}.uw.md`;
+function ensureUWXFilename(name: string): string {
+  if (name.toLowerCase().endsWith('.uwx.md')) return name;
+  if (name.toLowerCase().endsWith('.uw.md')) return `${name.slice(0, -'.uw.md'.length)}.uwx.md`;
+  return `${name.replace(/\.md$/i, '')}.uwx.md`;
+}
+
+function ensureLiteFilename(name: string): string {
+  if (name.toLowerCase().endsWith('.uwx.md')) return `${name.slice(0, -'.uwx.md'.length)}.uw.md`;
+  if (name.toLowerCase().endsWith('.uw.md')) return name;
+  return `${name.replace(/\.md$/i, '')}.uw.md`;
+}
+
+function downloadText(content: string, filename: string): void {
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
 }

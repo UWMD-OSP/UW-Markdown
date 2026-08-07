@@ -127,6 +127,20 @@ step. See the
 [release plan](../releases/1.1-plus-interchange-plan.md) and
 [RFC 0014](../rfcs/0014-multi-format-interchange.md).
 
+## Active Lite / UWX transition
+
+RFC 0015 assigns human-readable Lite to .uw.md and the current structured format
+to .uwx.md; RFC 0016 defines receipts for unchanged signed content and
+deterministic math consistency, not input truth. The first compatibility slice
+is built: representation constants/detection, parseUWXFile, legacy structured
+.uw.md recognition, byte-identical migration planning, and
+uwmd migrate-source, the normative Lite 1.0 grammar, source-located parser/AST,
+typed values, financial canonicalizer, canonical renderer, first fixture, and
+CLI parse/validate support. The deterministic deal-summary bridge now compiles
+Lite into the Document Envelope/UWX, preserves the complete Lite source in a
+namespaced extension, projects UWX back to Lite with explicit loss reporting,
+and powers CLI convert/export plus representation discovery. The public web editor and docs site now expose the bridge: Lite imports become editable UWX records, UWX-to-Lite exports name every omitted path, and the format guidance distinguishes the readable summary from the complete working record. The structured spec rename, signed verification receipts, and expanded conformance corpus are in progress.
+
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 
 Range/stochastic calcs (0005), sensitivity-table builtin (0007), lease-up modeling

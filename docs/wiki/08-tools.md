@@ -26,8 +26,9 @@ Command | Purpose
 `init` | Scaffold a blank `.uw.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--tier`)
 `summary <file>` | Print quick metrics to terminal
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
-`formats` | List registered model representations and media types (`--json`)
-`convert <file> --to <format>` | Convert `.uw.md`, verified `.uw.json`/`.uw.xml`, or `.uw.csv.zip` to `uw-json`, `uw-xml`, or `uw-csv-bundle` (`--stdout`, `--output`)
+`formats` | List Lite, UWX, and registered model representations/media types (`--json`)
+`convert <file> --to <format>` | Convert `.uw.md`, `.uwx.md`, verified model formats, or CSV bundles to `lite`, `uwx`, `uw-json`, `uw-xml`, or `uw-csv-bundle`
+`migrate-source <file>` | Copy legacy structured `.uw.md` to byte-identical `.uwx.md` (`--dry-run`, `--force`)
 `report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
@@ -124,7 +125,7 @@ or calc.
 
 ## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.4.0, private)
 
-React 18 + Tailwind CSS 4 (Vite). Embeds `@uwmd/core/browser` (parser, validator,
+React 18 + Tailwind CSS 4 (Vite). Opens `.uw.md` Lite summaries by compiling their supported anchored fields into a canonical `.uwx.md` record (retaining the complete Lite source in a namespaced extension), and opens `.uwx.md` structured records directly. Export Lite is explicitly loss-reported: omitted UWX paths are listed before the smaller deal-summary projection is downloaded. Embeds `@uwmd/core/browser` (parser, validator,
 Tier-2 edit dispatcher, Tier-3 calc engine, report renderer, init scaffolder,
 cascade/refinement/gaps intelligence, calc dependency introspection). Five tabs:
 

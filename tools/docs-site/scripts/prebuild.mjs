@@ -35,6 +35,7 @@ const COPIES = [
   { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.2)' },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
+  { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
   { from: 'spec/bindings/README.md', to: 'spec/bindings/index.md', title: 'Transport Bindings' },
   { from: 'spec/bindings/UW_HTTP_BINDING_v1.md', to: 'spec/http.md', title: 'UW HTTP Binding (v1.0)' },
   { from: 'spec/bindings/UW_MCP_BINDING_v1.md', to: 'spec/mcp.md', title: 'UW MCP Binding (v1.0)' },
@@ -63,6 +64,7 @@ const COPIES = [
   // Guide / on-ramps (source of truth in docs/)
   { from: 'docs/GLOSSARY.md',    to: 'guide/glossary.md', title: 'Glossary' },
   { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools comparison' },
+  { from: 'docs/UW_LITE_AND_UWX.md', to: 'guide/lite-and-uwx.md', title: 'UW Lite and UWX' },
 
   // RFCs
   { from: 'docs/rfcs/README.md',       to: 'about/rfcs/index.md', title: 'RFC Process' },
@@ -103,8 +105,10 @@ const NORMALIZED_LINK_MAP = new Map([
   ['VERSIONS.md', '/about/versions'],
   ['docs/GLOSSARY.md', '/guide/glossary'],
   ['docs/TOOLS.md', '/guide/tools'],
+  ['docs/UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
   ['GLOSSARY.md', '/guide/glossary'],
   ['TOOLS.md', '/guide/tools'],
+  ['UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
   ['docs/releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['LICENSE', 'https://github.com/jaredmaxey/uw-markdown/blob/main/LICENSE'],
@@ -114,6 +118,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['spec/UW_PROTOCOL_v1.md', '/spec/protocol'],
   ['spec/UW_XML_MAPPING_v1.md', '/spec/xml'],
   ['spec/UW_CSV_BUNDLE_v1.md', '/spec/csv'],
+  ['spec/UW_LITE_SPEC_v1.md', '/spec/lite'],
   ['spec/bindings/', '/spec/bindings/'],
   ['spec/bindings/README.md', '/spec/bindings/'],
   ['bindings/', '/spec/bindings/'],
@@ -131,6 +136,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['UW_PROTOCOL_v1.md', '/spec/protocol'],
   ['UW_XML_MAPPING_v1.md', '/spec/xml'],
   ['UW_CSV_BUNDLE_v1.md', '/spec/csv'],
+  ['UW_LITE_SPEC_v1.md', '/spec/lite'],
   ['spec/schemas/', '/spec/schemas/'],
   ['spec/schemas/README.md', '/spec/schemas/'],
   ['schemas/', '/spec/schemas/'],

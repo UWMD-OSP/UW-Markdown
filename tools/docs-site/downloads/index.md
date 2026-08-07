@@ -7,7 +7,7 @@ description: Blank UW Markdown templates, programs, examples, and AI instruction
 
 Start with the canonical underwriting record. No account, connector, or preferred editor is required: compatible agents, services, systems, editors, and viewers can all load it.
 
-## Blank templates
+## Choose a format`r`n`r`nStart with [UW Lite and UWX](/guide/lite-and-uwx): `.uw.md` Lite is a lean, readable summary; `.uwx.md` is the complete structured underwriting record. The reference editor opens either one and makes lossy UWX-to-Lite exports explicit.`r`n`r`n## Blank templates
 
 - <a href="/downloads/templates/blank-screener.uw.md" download="blank-screener.uw.md">Download the blank screener template (<code>.uw.md</code>)</a>
   — a lightweight first-pass underwriting file.
