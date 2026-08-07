@@ -139,9 +139,7 @@ typed values, financial canonicalizer, canonical renderer, first fixture, and
 CLI parse/validate support. The deterministic deal-summary bridge now compiles
 Lite into the Document Envelope/UWX, preserves the complete Lite source in a
 namespaced extension, projects UWX back to Lite with explicit loss reporting,
-and powers CLI convert/export plus representation discovery. The structured
-spec rename, signed verification receipts, remaining tools, and expanded
-conformance corpus are in progress.
+and powers CLI convert/export plus representation discovery. The public web editor and docs site now expose the bridge: Lite imports become editable UWX records, UWX-to-Lite exports name every omitted path, and the format guidance distinguishes the readable summary from the complete working record. The structured spec rename, signed verification receipts, and expanded conformance corpus are in progress.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 

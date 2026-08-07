@@ -70,6 +70,7 @@ export default defineConfig({
             { text: 'Your first .uw.md', link: '/tutorials/your-first-uwmd-file' },
             { text: 'Glossary', link: '/guide/glossary' },
             { text: 'Tools comparison', link: '/guide/tools' },
+            { text: 'UW Lite and UWX', link: '/guide/lite-and-uwx' },
           ],
         },
       ],
@@ -79,6 +80,7 @@ export default defineConfig({
           items: [
             { text: 'Glossary', link: '/guide/glossary' },
             { text: 'Tools comparison', link: '/guide/tools' },
+            { text: 'UW Lite and UWX', link: '/guide/lite-and-uwx' },
             { text: 'Feeding .uw.md to an LLM', link: '/guide/feeding-uwmd-to-an-llm' },
           ],
         },
@@ -97,6 +99,7 @@ export default defineConfig({
             { text: 'Protocol spec (v1.2)', link: '/spec/protocol' },
             { text: 'XML mapping (v1.0)', link: '/spec/xml' },
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
+            { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
             { text: 'HTTP binding (v1.0)', link: '/spec/http' },
             { text: 'MCP binding (v1.0)', link: '/spec/mcp' },
             { text: 'OpenAPI 3.1 contract', link: '/spec/UW_HTTP_API_v1.openapi.json' },

@@ -125,7 +125,7 @@ or calc.
 
 ## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.4.0, private)
 
-React 18 + Tailwind CSS 4 (Vite). Embeds `@uwmd/core/browser` (parser, validator,
+React 18 + Tailwind CSS 4 (Vite). Opens `.uw.md` Lite summaries by compiling their supported anchored fields into a canonical `.uwx.md` record (retaining the complete Lite source in a namespaced extension), and opens `.uwx.md` structured records directly. Export Lite is explicitly loss-reported: omitted UWX paths are listed before the smaller deal-summary projection is downloaded. Embeds `@uwmd/core/browser` (parser, validator,
 Tier-2 edit dispatcher, Tier-3 calc engine, report renderer, init scaffolder,
 cascade/refinement/gaps intelligence, calc dependency introspection). Five tabs:
 

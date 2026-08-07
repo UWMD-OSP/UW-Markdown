@@ -8,7 +8,7 @@ Pick the one that matches what you're trying to do.
 
 | If you want to... | Reach for | Tier |
 |---|---|---|
-| Open a `.uw.md` someone sent you | [Web viewer](#web-viewer) | 1 (read) |
+| Open a `.uw.md` Lite summary or `.uwx.md` structured deal | [Web editor](#web-editor) | 2 + 3 |
 | Author a deal file by hand | [VS Code extension](#vs-code-extension) | 1 + lint |
 | Edit numeric fields and watch DSCR/LTV recompute | [Web editor](#web-editor) | 2 + 3 |
 | Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) | 1 + 2 |
@@ -61,6 +61,8 @@ Not yet on the marketplace; install via `vsce package` + `code
 ## Web editor
 
 **[`tools/web-editor/`](../tools/web-editor/) — calc-aware browser editor.**
+
+It opens readable .uw.md Lite summaries and complete .uwx.md structured records. Lite imports compile into UWX before editing; exporting back to Lite always shows any omitted advanced fields. See [UW Lite and UWX](UW_LITE_AND_UWX.md).
 
 Single-page app. Embeds the `@uwmd/core` parser, validator, Tier-2
 edit dispatcher, and Tier-3 calc engine in the browser. Every
