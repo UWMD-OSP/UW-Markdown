@@ -4,7 +4,7 @@
   "description": "Reference implementation of the UW Markdown standard — parser, validator, renderer, and CLI for .uw.md underwriting files.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaredmaxey/uw-markdown.git",
+    "url": "https://github.com/UWMD-OSP/UW-Markdown.git",
     "directory": "packages/uwmd-core"
   },
   "homepage": "https://uwmd.org",

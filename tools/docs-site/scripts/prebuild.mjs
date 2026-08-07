@@ -111,7 +111,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
   ['docs/releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
-  ['LICENSE', 'https://github.com/jaredmaxey/uw-markdown/blob/main/LICENSE'],
+  ['LICENSE', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/LICENSE'],
 
   // Spec
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
@@ -164,7 +164,7 @@ function normalize(path) {
   return path.replace(/^(\.\.?\/)+/, '');
 }
 
-const GITHUB_BLOB = 'https://github.com/jaredmaxey/uw-markdown/blob/main';
+const GITHUB_BLOB = 'https://github.com/UWMD-OSP/UW-Markdown/blob/main';
 
 function rewriteLinks(md) {
   // Markdown link: [text](url) and [text](url#frag)

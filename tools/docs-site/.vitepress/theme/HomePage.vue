@@ -9,7 +9,7 @@
         <nav class="uw-actions" aria-label="Get started">
           <a class="uw-button uw-button-primary" href="/spec/protocol">Explore the protocol</a>
           <a class="uw-button" href="/ai/">Build with AI and code</a>
-          <a class="uw-text-link" href="https://github.com/jaredmaxey/uw-markdown">Source on GitHub <span aria-hidden="true">→</span></a>
+          <a class="uw-text-link" href="https://github.com/UWMD-OSP/UW-Markdown">Source on GitHub <span aria-hidden="true">→</span></a>
         </nav>
       </div>
 
@@ -43,7 +43,7 @@
           <p class="uw-eyebrow">One canonical record</p>
           <h2 id="example-title">The same underwriting data works everywhere.</h2>
         </div>
-        <a href="https://github.com/jaredmaxey/uw-markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md">Open complete example <span aria-hidden="true">→</span></a>
+        <a href="https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md">Open complete example <span aria-hidden="true">→</span></a>
       </header>
 
       <div class="uw-file-window">
@@ -166,7 +166,7 @@ fees use the new agreement at 5.5% of EGI.
       <nav class="uw-actions" aria-label="Project links">
         <a class="uw-button uw-button-primary" href="/ai/">Build with AI and code</a>
         <a class="uw-button" href="/spec/protocol">Read the protocol</a>
-        <a class="uw-text-link" href="https://github.com/jaredmaxey/uw-markdown">Browse source <span aria-hidden="true">→</span></a>
+        <a class="uw-text-link" href="https://github.com/UWMD-OSP/UW-Markdown">Browse source <span aria-hidden="true">→</span></a>
       </nav>
     </section>
   </main>

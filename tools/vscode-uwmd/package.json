@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaredmaxey/uw-markdown.git",
+    "url": "https://github.com/UWMD-OSP/UW-Markdown.git",
     "directory": "tools/vscode-uwmd"
   },
   "homepage": "https://uwmd.org",
