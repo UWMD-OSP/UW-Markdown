@@ -1,0 +1,3 @@
+interface:
+  display_name: "UWMD Portfolio Rollup,short_description=Prepare portfolio rollup edits.,default_prompt=Prepare bounded portfolio rollup structured edits only."
+  short_description: "UWMD Portfolio Rollup,short_description=Prepare portfolio helper"
