@@ -2,7 +2,9 @@
   "name": "uwmd-monorepo",
   "private": true,
   "description": "UW Markdown — open-source standard for underwriting documents.",
+  "//workspaces": "Every other package depends on @uwmd/core, and `npm run build --workspaces` runs in this listed order (globs expand alphabetically). uwmd-core MUST stay pinned first or a clean checkout fails: uwmd-batch would build ahead of it and cannot resolve '@uwmd/core'. The trailing glob still picks up new packages automatically; npm de-duplicates the repeated path.",
   "workspaces": [
+    "packages/uwmd-core",
     "packages/*"
   ],
   "scripts": {
