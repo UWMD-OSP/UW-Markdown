@@ -1,0 +1,4 @@
+{
+  "description": "An anchored field with no display value is invalid rather than null.",
+  "expected_codes": ["LITE_VALUE_INVALID"]
+}

@@ -1,0 +1,4 @@
+{
+  "description": "Compilation requires deterministic identity frontmatter (deal_id, deal_name, created).",
+  "expected_codes": ["LITE_COMPILE_FRONTMATTER_REQUIRED"]
+}

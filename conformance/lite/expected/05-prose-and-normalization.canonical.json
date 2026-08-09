@@ -1,0 +1,1 @@
+{"canonicalization":"uw-lite-financial","fields":[{"attributes":{},"path":"acquisition.purchase_price","period":null,"scenario":null,"unit":"USD","value":9400000},{"attributes":{"note":"broker OM page 4","source":"broker"},"path":"valuation.going_in_cap_rate","period":null,"scenario":"base","unit":"fraction","value":0.055}],"version":"1.0"}

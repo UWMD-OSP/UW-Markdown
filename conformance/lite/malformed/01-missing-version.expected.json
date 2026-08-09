@@ -1,0 +1,4 @@
+{
+  "description": "Frontmatter omits uw_lite_version, which section 3 requires.",
+  "expected_codes": ["LITE_VERSION_REQUIRED"]
+}

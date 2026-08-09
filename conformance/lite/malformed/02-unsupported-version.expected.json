@@ -1,0 +1,4 @@
+{
+  "description": "uw_lite_version must resolve to 1.0 for this profile.",
+  "expected_codes": ["LITE_VERSION_UNSUPPORTED"]
+}

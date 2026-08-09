@@ -1,0 +1,4 @@
+{
+  "description": "Anchor attributes must use key=value syntax; stray tokens are errors.",
+  "expected_codes": ["LITE_ATTRIBUTE_SYNTAX"]
+}

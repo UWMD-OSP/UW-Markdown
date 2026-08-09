@@ -1,0 +1,5 @@
+{
+  "description": "Unterminated frontmatter is a hard parse failure, not a recoverable issue.",
+  "must_parse": false,
+  "expected_codes": ["LITE_UNCLOSED_FRONTMATTER"]
+}

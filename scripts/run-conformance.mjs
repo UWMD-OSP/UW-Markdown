@@ -5,19 +5,24 @@
 // Usage:
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
-//   --tier=...   Comma-separated tier numbers to run. Default: 1,2,3.
+//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,lite.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
+//                `lite` is a representation-level suite (UW Lite parse,
+//                canonicalization, rendering, and the deal-summary-v1 bridge)
+//                rather than a protocol tier, so it is named rather than
+//                numbered.
 //   --update     Regenerate expected/* files from current library output.
 //                Use carefully — this overwrites the baseline.
 //   --json       Emit machine-readable JSON summary to stdout.
 //
 // Exit codes: 0 = all passed, 1 = at least one failure.
 
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve, join, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 import {
   parseUWFile,
@@ -32,6 +37,12 @@ import {
   rankGaps,
   buildContext,
   BANCROFT_LAYERS,
+  parseUWLite,
+  canonicalizeUWLiteFinancial,
+  renderCanonicalUWLite,
+  compileUWLite,
+  projectUWEnvelopeToLite,
+  stringifyUWX,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -46,7 +57,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,lite').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -59,7 +70,10 @@ function record(tier, scenario, status, message) {
   if (!JSON_OUT) {
     const tag = status === 'pass' ? 'PASS' : status === 'updated' ? 'UPDT' : 'FAIL';
     const symbol = status === 'pass' ? ' ✓' : status === 'updated' ? ' ↻' : ' ✗';
-    console.log(`[${tag}]${symbol} tier-${tier}/${scenario}${message ? ` — ${message}` : ''}`);
+    // Numbered protocol tiers render as `tier-N`; named suites (e.g. `lite`)
+    // stand alone.
+    const label = /^\d/.test(String(tier)) ? `tier-${tier}` : String(tier);
+    console.log(`[${tag}]${symbol} ${label}/${scenario}${message ? ` — ${message}` : ''}`);
   }
 }
 
@@ -570,6 +584,268 @@ function runTier4() {
   }
 }
 
+// ─── Lite: parse → canonicalize → render → compile → project ─────────────────
+// UW Lite (`spec/UW_LITE_SPEC_v1.md`) is a source representation rather than a
+// protocol tier, so it runs under the name `lite`. Each fixture in `fixtures/`
+// must parse cleanly and then freeze five artifacts: the RFC 8785 financial
+// canonical form, its SHA-256 digest, the canonical rendering, the
+// deal-summary-v1 compilation report plus UWX serialization, and the UWX→Lite
+// projection. `malformed/` covers parse-time errors, `compile/` covers
+// bridge-time errors, and `equivalence.json` asserts that fixtures differing
+// only along spec §6 excluded axes share one digest.
+
+const LITE_DIR = join(CONFORMANCE_DIR, 'lite');
+
+// Computed with stock node:crypto rather than the library's own hash helper,
+// so a frozen digest means something to a third-party implementer.
+function liteDigest(canonical) {
+  return `sha256:${createHash('sha256').update(canonical, 'utf8').digest('hex')}`;
+}
+
+function liteBaseline(scenario, file, actual) {
+  const expectedDir = join(LITE_DIR, 'expected');
+  if (!existsSync(expectedDir)) mkdirSync(expectedDir, { recursive: true });
+  const path = join(expectedDir, file);
+  if (UPDATE) {
+    writeFileSync(path, actual);
+    record('lite', scenario, 'updated');
+  } else if (!existsSync(path)) {
+    record('lite', scenario, 'fail', `missing baseline: ${file}`);
+  } else if (normalize(readFileSync(path, 'utf8')) === normalize(actual)) {
+    record('lite', scenario, 'pass');
+  } else {
+    record('lite', scenario, 'fail', `output differs from ${file}`);
+  }
+}
+
+function errorCodes(issues) {
+  return (issues ?? []).filter((i) => i.severity === 'error').map((i) => i.code);
+}
+
+function runLiteFixtures() {
+  const dir = join(LITE_DIR, 'fixtures');
+  if (!existsSync(dir)) return;
+  const fixtures = readdirSync(dir).filter((f) => f.endsWith('.uw.md')).sort();
+
+  for (const fixture of fixtures) {
+    const id = fixture.replace(/\.uw\.md$/, '');
+    const source = readFileSync(join(dir, fixture), 'utf8');
+
+    let parsed;
+    try {
+      parsed = parseUWLite(source);
+    } catch (e) {
+      record('lite', `${id} [parse]`, 'fail', `parse threw: ${e.message}`);
+      continue;
+    }
+    const parseErrors = errorCodes(parsed.issues);
+    if (parseErrors.length > 0) {
+      record('lite', `${id} [parse]`, 'fail', `expected a clean parse, saw: ${parseErrors.join(', ')}`);
+      continue;
+    }
+    record('lite', `${id} [parse]`, 'pass');
+
+    let canonical;
+    try {
+      canonical = canonicalizeUWLiteFinancial(parsed);
+    } catch (e) {
+      record('lite', `${id} [canonical]`, 'fail', `canonicalization threw: ${e.message}`);
+      continue;
+    }
+    liteBaseline(`${id} [canonical]`, `${id}.canonical.json`, `${canonical}\n`);
+    liteBaseline(`${id} [digest]`, `${id}.digest.txt`, `${liteDigest(canonical)}\n`);
+
+    const rendered = renderCanonicalUWLite(parsed);
+    liteBaseline(`${id} [render]`, `${id}.rendered.uw.md`, `${rendered.trimEnd()}\n`);
+
+    // Spec §7: parsing a canonical rendering must yield the same financial
+    // canonical form as the source. An invariant, so it carries no baseline.
+    try {
+      const reparsed = parseUWLite(rendered);
+      const reErrors = errorCodes(reparsed.issues);
+      if (reErrors.length > 0) {
+        record('lite', `${id} [render-roundtrip]`, 'fail', `canonical rendering does not re-parse cleanly: ${reErrors.join(', ')}`);
+      } else if (canonicalizeUWLiteFinancial(reparsed) !== canonical) {
+        record('lite', `${id} [render-roundtrip]`, 'fail', 'canonical rendering yields a different financial canonical form');
+      } else {
+        record('lite', `${id} [render-roundtrip]`, 'pass');
+      }
+    } catch (e) {
+      record('lite', `${id} [render-roundtrip]`, 'fail', `re-parse of canonical rendering threw: ${e.message}`);
+    }
+
+    const compiled = compileUWLite(parsed);
+    liteBaseline(
+      `${id} [compile-report]`,
+      `${id}.compile.json`,
+      `${JSON.stringify({ ok: compiled.ok, report: compiled.report }, null, 2)}\n`,
+    );
+    if (!compiled.ok) {
+      record('lite', `${id} [compile]`, 'fail', `fixtures/ documents must compile; saw: ${errorCodes(compiled.report.issues).join(', ')}`);
+      continue;
+    }
+    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${stringifyUWX(compiled.envelope).trimEnd()}\n`);
+
+    const projection = projectUWEnvelopeToLite(compiled.envelope);
+    liteBaseline(
+      `${id} [projection-report]`,
+      `${id}.projection.json`,
+      `${JSON.stringify(projection.report, null, 2)}\n`,
+    );
+    liteBaseline(`${id} [projection]`, `${id}.projected.uw.md`, `${projection.content.trimEnd()}\n`);
+  }
+}
+
+// Parse-time negative tests. Each <id>.uw.md has an <id>.expected.json naming
+// the codes that MUST appear; extras are allowed. `must_parse: false` means
+// parseUWLite is required to throw a UWLiteError with a listed code.
+function runLiteMalformed() {
+  const dir = join(LITE_DIR, 'malformed');
+  if (!existsSync(dir)) return;
+  const fixtures = readdirSync(dir).filter((f) => f.endsWith('.uw.md')).sort();
+
+  for (const fixture of fixtures) {
+    const id = fixture.replace(/\.uw\.md$/, '');
+    const expectedPath = join(dir, `${id}.expected.json`);
+    if (!existsSync(expectedPath)) {
+      record('lite', `malformed/${id}`, 'fail', `missing ${id}.expected.json`);
+      continue;
+    }
+    let expected;
+    try {
+      expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    } catch (e) {
+      record('lite', `malformed/${id}`, 'fail', `expected.json is not valid JSON: ${e.message}`);
+      continue;
+    }
+    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
+    if (expectedCodes.length === 0) {
+      record('lite', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
+      continue;
+    }
+    const mustParse = expected.must_parse !== false;
+    const source = readFileSync(join(dir, fixture), 'utf8');
+
+    let parsed;
+    try {
+      parsed = parseUWLite(source);
+    } catch (e) {
+      if (mustParse) {
+        record('lite', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
+      } else if (!expectedCodes.includes(e.code)) {
+        record('lite', `malformed/${id}`, 'fail', `threw ${e.code ?? '(no code)'}, expected one of ${expectedCodes.join(', ')}`);
+      } else {
+        record('lite', `malformed/${id}`, 'pass');
+      }
+      continue;
+    }
+    if (!mustParse) {
+      record('lite', `malformed/${id}`, 'fail', 'expected parse to throw, but it succeeded');
+      continue;
+    }
+
+    const actual = new Set((parsed.issues ?? []).map((i) => i.code));
+    const missing = expectedCodes.filter((c) => !actual.has(c));
+    if (missing.length > 0) {
+      const seen = [...actual].sort().join(', ') || '(none)';
+      record('lite', `malformed/${id}`, 'fail', `parser did not surface ${missing.join(', ')} — saw: [${seen}]`);
+    } else {
+      record('lite', `malformed/${id}`, 'pass');
+    }
+  }
+}
+
+// Bridge-time negative tests: these documents parse cleanly but must be
+// rejected by compileUWLite with the declared codes.
+function runLiteCompile() {
+  const dir = join(LITE_DIR, 'compile');
+  if (!existsSync(dir)) return;
+  const fixtures = readdirSync(dir).filter((f) => f.endsWith('.uw.md')).sort();
+
+  for (const fixture of fixtures) {
+    const id = fixture.replace(/\.uw\.md$/, '');
+    const expectedPath = join(dir, `${id}.expected.json`);
+    if (!existsSync(expectedPath)) {
+      record('lite', `compile/${id}`, 'fail', `missing ${id}.expected.json`);
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
+    if (expectedCodes.length === 0) {
+      record('lite', `compile/${id}`, 'fail', 'expected.json has no expected_codes');
+      continue;
+    }
+
+    let parsed;
+    try {
+      parsed = parseUWLite(readFileSync(join(dir, fixture), 'utf8'));
+    } catch (e) {
+      record('lite', `compile/${id}`, 'fail', `parse threw: ${e.message}`);
+      continue;
+    }
+    const parseErrors = errorCodes(parsed.issues);
+    if (parseErrors.length > 0) {
+      record('lite', `compile/${id}`, 'fail', `compile fixtures must parse cleanly (move to malformed/); saw: ${parseErrors.join(', ')}`);
+      continue;
+    }
+
+    const compiled = compileUWLite(parsed);
+    if (compiled.ok) {
+      record('lite', `compile/${id}`, 'fail', `expected compilation to fail with ${expectedCodes.join(', ')}, but it succeeded`);
+      continue;
+    }
+    const actual = new Set((compiled.report.issues ?? []).map((i) => i.code));
+    const missing = expectedCodes.filter((c) => !actual.has(c));
+    if (missing.length > 0) {
+      const seen = [...actual].sort().join(', ') || '(none)';
+      record('lite', `compile/${id}`, 'fail', `compiler did not surface ${missing.join(', ')} — saw: [${seen}]`);
+    } else {
+      record('lite', `compile/${id}`, 'pass');
+    }
+  }
+}
+
+// Spec §6 excludes labels, headings, prose, field order, bullet character,
+// whitespace, comma grouping, and equivalent numeric spellings from the
+// canonical form. Fixtures in one group differ only along those axes and so
+// must share a single digest.
+function runLiteEquivalence() {
+  const manifestPath = join(LITE_DIR, 'equivalence.json');
+  if (!existsSync(manifestPath)) return;
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+
+  for (const group of manifest.groups ?? []) {
+    const digests = new Map();
+    let broken = false;
+    for (const id of group.fixtures ?? []) {
+      const path = join(LITE_DIR, 'fixtures', `${id}.uw.md`);
+      if (!existsSync(path)) {
+        record('lite', `equivalence/${group.id}`, 'fail', `missing fixture ${id}.uw.md`);
+        broken = true;
+        break;
+      }
+      try {
+        digests.set(id, liteDigest(canonicalizeUWLiteFinancial(parseUWLite(readFileSync(path, 'utf8')))));
+      } catch (e) {
+        record('lite', `equivalence/${group.id}`, 'fail', `${id} failed to canonicalize: ${e.message}`);
+        broken = true;
+        break;
+      }
+    }
+    if (broken) continue;
+    if (digests.size < 2) {
+      record('lite', `equivalence/${group.id}`, 'fail', 'an equivalence group needs at least two fixtures');
+      continue;
+    }
+    if (new Set(digests.values()).size === 1) {
+      record('lite', `equivalence/${group.id}`, 'pass');
+    } else {
+      const detail = [...digests].map(([id, d]) => `${id}=${d.slice(0, 23)}…`).join(', ');
+      record('lite', `equivalence/${group.id}`, 'fail', `expected one shared digest, got ${detail}`);
+    }
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -577,6 +853,7 @@ const dispatch = {
   '2': async () => { await runTier2(); },
   '3': async () => { runTier3(); await runTier3Refinement(); },
   '4': async () => { runTier4(); await runTier4Profile(); },
+  'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

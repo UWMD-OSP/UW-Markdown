@@ -1,0 +1,4 @@
+{
+  "description": "An alias and a direct path that resolve to the same envelope target collide instead of overwriting.",
+  "expected_codes": ["LITE_COMPILE_TARGET_CONFLICT"]
+}

@@ -1,0 +1,4 @@
+{
+  "description": "Anchors outside the versioned catalog and outside registered UW sections are compilation errors; the parser still preserves them.",
+  "expected_codes": ["LITE_COMPILE_FIELD_UNKNOWN"]
+}

@@ -18,7 +18,7 @@ Script | Does
 `npm test` | Vitest across all workspaces
 `npm run test:coverage` | `@uwmd/core` coverage
 `npm run cli -- <cmd>` | Run the CLI from source (`packages/uwmd-cli/bin/uwmd.mjs`)
-`npm run conformance` | `scripts/run-conformance.mjs` (tiers 1,2,3 by default)
+`npm run conformance` | `scripts/run-conformance.mjs` (tiers 1,2,3 + `lite` by default)
 `npm run validate-schemas` | `scripts/validate-schemas.mjs`
 `npm run lint` / `npm run format` | Biome lint / format
 

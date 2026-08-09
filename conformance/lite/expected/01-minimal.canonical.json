@@ -1,0 +1,1 @@
+{"canonicalization":"uw-lite-financial","fields":[{"attributes":{},"path":"acquisition.purchase_price","period":null,"scenario":null,"unit":"USD","value":12500000},{"attributes":{},"path":"valuation.going_in_cap_rate","period":null,"scenario":"base","unit":"fraction","value":0.055}],"version":"1.0"}

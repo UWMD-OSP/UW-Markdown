@@ -22,8 +22,9 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # tiers 1,2,3 (default)
-npm run conformance -- --tier=1,2,3,4
+npm run conformance                 # tiers 1,2,3 + lite (default)
+npm run conformance -- --tier=1,2,3,4,lite
+npm run conformance -- --tier=lite         # the UW Lite suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -71,6 +72,41 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 - `profile/<scenario>/expected-layer-profiles.json` — asserts the `layer →
   consumed_profile` map from `BANCROFT_LAYERS` matches the baseline.
 
+### UW Lite — representation + bridge
+
+`conformance/lite/` is **named, not numbered**: UW Lite
+([`spec/UW_LITE_SPEC_v1.md`](../../spec/UW_LITE_SPEC_v1.md)) is a source
+representation rather than a protocol conformance tier. It runs by default.
+
+- `fixtures/*.uw.md` must parse with **zero** error-severity issues *and*
+  compile through `deal-summary-v1`. Each freezes five artifacts in `expected/`:
+  `<id>.canonical.json` (RFC 8785 financial canonical form), `<id>.digest.txt`,
+  `<id>.rendered.uw.md` (canonical rendering), `<id>.compile.json` +
+  `<id>.uwx.md`, and `<id>.projection.json` + `<id>.projected.uw.md`.
+- `malformed/<id>.uw.md` + `<id>.expected.json` — parse-time `LITE_*` codes.
+  `"must_parse": false` asserts `parseUWLite` **throws** with a listed code
+  (used for `LITE_UNCLOSED_FRONTMATTER`).
+- `compile/<id>.uw.md` + `<id>.expected.json` — documents that parse cleanly but
+  must be **rejected by the bridge** with `LITE_COMPILE_*`. The runner fails a
+  fixture here that has parse errors, to keep the two layers separate.
+- `equivalence.json` — groups of fixtures differing only along axes spec §6
+  excludes; all members must hash to one digest.
+
+Two properties are asserted as **invariants, not baselines**, so they bind any
+implementation regardless of our frozen output:
+
+1. **Rendering round-trip (§7).** Parsing a canonical rendering reproduces the
+   source's financial canonical form.
+2. **Display equivalence (§6).** Labels, headings, prose, field order, bullet
+   character, whitespace, comma grouping, and equivalent numeric spellings do
+   not reach the canonical form.
+
+Digests use stock `node:crypto` in the runner rather than the library's own
+`sha256Hex`, so a frozen digest is independent evidence rather than a
+restatement of the implementation. The whole Lite bridge is deterministic (no
+wall-clock, no randomness — timestamps come from `frontmatter.created`), so
+baselines need no volatile-field stripping.
+
 ## Schema validation
 
 `npm run validate-schemas` → [`scripts/validate-schemas.mjs`](../../scripts/validate-schemas.mjs)
@@ -82,7 +118,7 @@ matching `protocol.ts` types (notably `ModuleManifest` ↔
 ## What CI runs
 
 `.github/workflows/ci.yml`: lint (Biome) on Node 20, then build + test +
-`run-conformance.mjs --tier=1,2,3` on a Node 20/22 matrix. `release.yml` publishes
+`run-conformance.mjs --tier=1,2,3,lite` on a Node 20/22 matrix. `release.yml` publishes
 `@uwmd/core` and `uwmd` on `v*` tags. (See [11 — Build, release & governance](11-build-release-governance.md).)
 
 ## Adding fixtures (quick reference)
@@ -95,6 +131,12 @@ matching `protocol.ts` types (notably `ModuleManifest` ↔
   `context.json`/`options.json`), then `--tier=2 --update` to mint `after.uw.md`.
 - **Tier 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--tier=3
   --update`.
+- **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--tier=lite --update`. Run
+  `--tier=lite` *without* `--update` first — the negative and invariant checks
+  (malformed, compile, round-trip, equivalence) need no baselines, so they
+  validate your fixture before you freeze anything. For a negative case, add
+  `<id>.uw.md` + `<id>.expected.json` under `lite/malformed/` (parse errors) or
+  `lite/compile/` (bridge errors); neither needs `--update`.
 - Regeneration helper: [`scripts/regen-conformance.mjs`](../../scripts/regen-conformance.mjs).
 
 > `--update` overwrites baselines from current library output — only use it when

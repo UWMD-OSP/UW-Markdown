@@ -1,0 +1,4 @@
+{
+  "description": "The (path, period, scenario) tuple must be unique; duplicates are errors rather than last-write-wins.",
+  "expected_codes": ["LITE_FIELD_DUPLICATE"]
+}

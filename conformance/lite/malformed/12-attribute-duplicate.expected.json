@@ -1,0 +1,4 @@
+{
+  "description": "A repeated attribute name on one anchor is ambiguous and must be reported.",
+  "expected_codes": ["LITE_ATTRIBUTE_DUPLICATE"]
+}

@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "report": {
+    "profile": "deal-summary-v1",
+    "mappings": [
+      {
+        "lite_path": "property.total_units",
+        "target_path": "property.total_units"
+      },
+      {
+        "lite_path": "property.total_nra_sqft",
+        "target_path": "property.total_nra_sqft"
+      },
+      {
+        "lite_path": "acquisition.purchase_price",
+        "target_path": "valuation.purchase_price"
+      },
+      {
+        "lite_path": "valuation.going_in_cap_rate",
+        "target_path": "valuation.going_in_cap_rate"
+      },
+      {
+        "lite_path": "noi.net_operating_income",
+        "target_path": "noi_model.net_operating_income"
+      },
+      {
+        "lite_path": "debt.loan_amount",
+        "target_path": "debt_structure.loan_amount"
+      },
+      {
+        "lite_path": "debt.interest_rate",
+        "target_path": "debt_structure.interest_rate"
+      },
+      {
+        "lite_path": "debt.annual_debt_service",
+        "target_path": "debt_structure.annual_debt_service"
+      }
+    ],
+    "defaults": [
+      {
+        "path": "frontmatter.uw_version",
+        "value": "1.1",
+        "reason": "RFC 0015 keeps UW semantic format 1.1 for the initial bridge."
+      }
+    ],
+    "issues": [],
+    "source_preserved_in": "x_uw_lite_source"
+  }
+}

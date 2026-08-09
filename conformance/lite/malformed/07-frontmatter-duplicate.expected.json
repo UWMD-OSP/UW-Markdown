@@ -1,0 +1,4 @@
+{
+  "description": "Section 3 requires unique top-level frontmatter keys.",
+  "expected_codes": ["LITE_FRONTMATTER_DUPLICATE"]
+}

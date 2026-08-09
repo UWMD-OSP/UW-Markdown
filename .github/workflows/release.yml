@@ -52,7 +52,7 @@ jobs:
       - name: Run unit tests
         run: npm test
 
-      - name: Run conformance suite (tiers 1-3)
+      - name: Run conformance suite (tiers 1-3 + lite)
         run: npm run conformance
 
       - name: Validate JSON Schemas

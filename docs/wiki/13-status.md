@@ -139,7 +139,19 @@ typed values, financial canonicalizer, canonical renderer, first fixture, and
 CLI parse/validate support. The deterministic deal-summary bridge now compiles
 Lite into the Document Envelope/UWX, preserves the complete Lite source in a
 namespaced extension, projects UWX back to Lite with explicit loss reporting,
-and powers CLI convert/export plus representation discovery. The public web editor and docs site now expose the bridge: Lite imports become editable UWX records, UWX-to-Lite exports name every omitted path, and the format guidance distinguishes the readable summary from the complete working record. The structured spec rename, signed verification receipts, and expanded conformance corpus are in progress.
+and powers CLI convert/export plus representation discovery. The public web editor and docs site now expose the bridge: Lite imports become editable UWX records, UWX-to-Lite exports name every omitted path, and the format guidance distinguishes the readable summary from the complete working record.
+
+The Lite representation now has its own conformance suite (`conformance/lite/`,
+run by default and wired into CI): five well-formed fixtures each freezing the
+financial canonical form, its SHA-256 digest, the canonical rendering, the
+`deal-summary-v1` compilation plus UWX serialization, and the UWX→Lite
+projection report; twelve `malformed/` fixtures covering every parse-time
+`LITE_*` code; six `compile/` fixtures covering every `LITE_COMPILE_*` code; and
+two spec invariants asserted without baselines — the §7 canonical-rendering
+round-trip and the §6 display-equivalence digest match. That took the corpus
+from 26 to 90 assertions.
+
+The structured spec rename and signed verification receipts are in progress.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 

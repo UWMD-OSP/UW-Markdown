@@ -28,11 +28,46 @@ conformance/
 │   ├── fixtures/       <scenario>/{deal.uw.md, calc.json, expected-result.json}
 │   └── refinement/     <scenario>/{deal.uw.md, expected-graph.json}
 │                         Exercises extractDependencyGraph() against a fixture
-└── tier-4-agent-host/  AI agent layers producing write_uw_section calls
-    ├── fixtures/       <scenario>/{before.uw.md, expected-after-shape.json}
-    └── profile/        <scenario>/{expected-layer-profiles.json}
-                          Asserts BANCROFT_LAYERS layer→consumed_profile contract
+├── tier-4-agent-host/  AI agent layers producing write_uw_section calls
+│   ├── fixtures/       <scenario>/{before.uw.md, expected-after-shape.json}
+│   └── profile/        <scenario>/{expected-layer-profiles.json}
+│                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
+└── lite/               UW Lite representation + deal-summary-v1 bridge
+    ├── fixtures/       Well-formed .uw.md Lite documents that must parse
+    │                     cleanly AND compile; each freezes five artifacts in
+    │                     expected/ (see below)
+    ├── malformed/      Parse-time errors (LITE_*) with <id>.expected.json
+    │                     declaring expected_codes; optional "must_parse": false
+    │                     asserts parseUWLite throws instead
+    ├── compile/        Documents that parse cleanly but must FAIL the bridge
+    │                     (LITE_COMPILE_*), same <id>.expected.json shape
+    ├── equivalence.json  Groups of fixtures that differ only along axes
+    │                     UW_LITE_SPEC_v1 §6 excludes; all must share one digest
+    └── expected/       Per fixture: <id>.canonical.json (RFC 8785 financial
+                          canonical form), <id>.digest.txt (sha256 over its exact
+                          UTF-8 bytes), <id>.rendered.uw.md (canonical rendering),
+                          <id>.compile.json + <id>.uwx.md (deal-summary-v1
+                          compilation), <id>.projection.json + <id>.projected.uw.md
+                          (UWX→Lite projection with its omission report)
 ```
+
+The `lite` suite is named rather than numbered because UW Lite is a *source
+representation*, not a protocol conformance tier. It runs by default; select it
+alone with `--tier=lite`.
+
+Two Lite properties are asserted as invariants rather than baselines, so they
+hold for any conforming implementation regardless of frozen output:
+
+- **Rendering round-trip (§7).** Parsing a canonical rendering must reproduce
+  the source document's financial canonical form.
+- **Display equivalence (§6).** Labels, headings, prose, field order, bullet
+  character, whitespace, comma grouping, and equivalent numeric spellings are
+  excluded from the canonical form, so fixtures differing only along those axes
+  must hash to one digest.
+
+Digests are computed by the runner with stock `node:crypto` rather than the
+library's own hash helper, so a frozen digest is meaningful evidence to a
+third-party implementer rather than a restatement of our implementation.
 
 ## How to self-certify
 

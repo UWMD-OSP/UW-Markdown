@@ -1,0 +1,4 @@
+{
+  "description": "A Lite document without frontmatter cannot declare its representation version.",
+  "expected_codes": ["LITE_FRONTMATTER_REQUIRED", "LITE_VERSION_REQUIRED"]
+}

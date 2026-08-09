@@ -1,0 +1,4 @@
+{
+  "description": "Frontmatter entries must use key: value syntax.",
+  "expected_codes": ["LITE_FRONTMATTER_SYNTAX"]
+}

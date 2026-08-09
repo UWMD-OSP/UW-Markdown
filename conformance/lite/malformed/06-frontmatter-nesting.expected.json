@@ -1,0 +1,4 @@
+{
+  "description": "Lite 1.0 frontmatter is a flat scalar subset; nested mappings are rejected.",
+  "expected_codes": ["LITE_FRONTMATTER_NESTING_UNSUPPORTED"]
+}

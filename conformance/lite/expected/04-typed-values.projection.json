@@ -1,0 +1,19 @@
+{
+  "profile": "deal-summary-v1",
+  "projected_paths": [],
+  "omitted_paths": [
+    "assumptions.assumable_debt",
+    "assumptions.dscr_floor",
+    "assumptions.exit_cap_rate",
+    "assumptions.hold_period_years",
+    "assumptions.rent_growth",
+    "assumptions.vacancy.year_1",
+    "dcf.terminal_value",
+    "market_analysis.tier",
+    "risk_assessment.sponsor_rating"
+  ],
+  "warnings": [
+    "Projection omits data that is not represented by the selected Lite profile."
+  ],
+  "lossy": true
+}

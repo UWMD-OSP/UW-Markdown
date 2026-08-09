@@ -1,0 +1,4 @@
+{
+  "description": "Only the base scenario maps into a current UWX section in deal-summary-v1.",
+  "expected_codes": ["LITE_COMPILE_SCENARIO_UNSUPPORTED"]
+}

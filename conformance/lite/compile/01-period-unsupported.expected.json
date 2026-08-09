@@ -1,0 +1,4 @@
+{
+  "description": "Period-qualified fields are rejected rather than flattened; they require a later versioned profile.",
+  "expected_codes": ["LITE_COMPILE_PERIOD_UNSUPPORTED"]
+}

@@ -1,0 +1,4 @@
+{
+  "description": "A mapped USD field written as a bare number carries no unit and must not be silently coerced.",
+  "expected_codes": ["LITE_COMPILE_UNIT_MISMATCH"]
+}

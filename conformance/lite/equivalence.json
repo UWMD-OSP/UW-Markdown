@@ -1,0 +1,19 @@
+{
+  "description": "Groups of Lite fixtures that differ only along axes UW_LITE_SPEC_v1 section 6 excludes from the financial canonical form. Every fixture in a group MUST produce a byte-identical canonical form and therefore an identical sha256 digest.",
+  "groups": [
+    {
+      "id": "display-formatting-invariance",
+      "excluded_axes": [
+        "labels",
+        "headings",
+        "prose",
+        "field order",
+        "bullet character",
+        "whitespace",
+        "comma grouping",
+        "equivalent numeric display spellings"
+      ],
+      "fixtures": ["02-full-deal-summary", "03-display-variants"]
+    }
+  ]
+}

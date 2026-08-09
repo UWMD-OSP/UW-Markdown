@@ -1,0 +1,4 @@
+{
+  "description": "An anchored line that does not match the field production is preserved as opaque source, not guessed.",
+  "expected_codes": ["LITE_FIELD_SYNTAX"]
+}
