@@ -397,7 +397,7 @@ function compileFrontmatter(
     report.defaults.push({
       path: 'frontmatter.uw_version',
       value: FORMAT_VERSION,
-      reason: 'RFC 0015 keeps UW semantic format 1.1 for the initial bridge.',
+      reason: 'RFC 0017 keeps UW semantic format 1.1 for the initial bridge.',
     });
   }
 

@@ -3,7 +3,7 @@
 **Extension:** `.uw.md`  
 **Media type:** `text/vnd.uwmd.lite+markdown`  
 **Representation ID:** `uw-lite-markdown`  
-**Status:** implementation draft under accepted RFC 0015
+**Status:** implementation draft under RFC 0017 (draft)
 
 ## 1. Purpose and assurance boundary
 
@@ -149,10 +149,13 @@ omission report. Projection cannot claim model-fidelity round-trip.
 
 ## 9. Verification receipts
 
-Receipts follow RFC 0016. A positive trusted result means signed content is
-unchanged and deterministic math agrees with stated inputs, pack, and policy. It
-does not mean inputs are true, complete, audited, or supported by source
-documents.
+Receipts follow RFC 0016, which is currently a **draft**; this reference is
+therefore informative until that RFC is accepted, and no receipt behavior is
+normative for Lite 1.0 conformance yet.
+
+A positive trusted result means signed content is unchanged and deterministic
+math agrees with stated inputs, pack, and policy. It does not mean inputs are
+true, complete, audited, or supported by source documents.
 
 ## 10. Compatibility
 

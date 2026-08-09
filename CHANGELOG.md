@@ -36,9 +36,12 @@ protocol, and each package each carry an independent semver).
 ## [1.1.0] - 2026-08-04
 
 ### Added
-- **UW Lite / UWX transition foundation (RFCs 0015 and 0016)** adds the
-  pre-launch .uw.md Lite and .uwx.md Extended split plus signed deterministic
-  math receipts. Core now exposes representation constants, content-aware
+- **UW Lite / UWX transition foundation (RFC 0017)** adds the
+  pre-launch .uw.md Lite and .uwx.md Extended split. (This entry originally cited
+  "RFCs 0015 and 0016": 0015 belongs to the unrelated portfolio-relationships
+  proposal, and 0016 did not exist. The split is governed by RFC 0017; receipts
+  are defined by RFC 0016, both drafts. Receipts are **not** implemented — the
+  original wording overstated what shipped.) Core now exposes representation constants, content-aware
   source detection, the parseUWXFile compatibility name, and a byte-identical
   legacy migration planner. The uwmd migrate-source command safely copies a
   structured legacy .uw.md to a sibling .uwx.md, refuses Lite/mixed content and

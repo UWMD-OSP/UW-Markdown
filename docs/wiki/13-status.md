@@ -129,9 +129,13 @@ step. See the
 
 ## Active Lite / UWX transition
 
-RFC 0015 assigns human-readable Lite to .uw.md and the current structured format
+RFC 0017 assigns human-readable Lite to .uw.md and the current structured format
 to .uwx.md; RFC 0016 defines receipts for unchanged signed content and
-deterministic math consistency, not input truth. The first compatibility slice
+deterministic math consistency, not input truth. Both are **drafts** awaiting
+owner acceptance, and receipts are specified but not implemented. (These were
+previously cited as RFCs 0015 and 0016; 0015 belongs to the unrelated
+portfolio-relationships proposal and 0016 did not exist — see the process-failure
+note in RFC 0017.) The first compatibility slice
 is built: representation constants/detection, parseUWXFile, legacy structured
 .uw.md recognition, byte-identical migration planning, and
 uwmd migrate-source, the normative Lite 1.0 grammar, source-located parser/AST,

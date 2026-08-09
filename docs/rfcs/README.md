@@ -39,6 +39,14 @@ and how it gets accepted.
 | [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
 | [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | accepted | format, protocol, core, conformance, tooling |
 | [0015](./0015-portfolio-relationships.md) | Portfolio and relationship profiles | draft | format, protocol, core, conformance, tooling |
+| [0016](./0016-verification-receipts.md) | Signed deterministic verification receipts | draft | format, protocol, core, conformance, tooling |
+| [0017](./0017-uw-lite-source-representation.md) | `.uw.md` Lite / `.uwx.md` Extended source split | draft | format, protocol, core, conformance, tooling |
+
+`0012` is an unused number, left as a gap so existing references keep their
+meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
+its RFC was written, and records that process failure rather than hiding it. See
+its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
+section.
 
 ## Status values
 
