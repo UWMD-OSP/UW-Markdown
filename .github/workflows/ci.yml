@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Manual trigger, so CI can be re-run without inventing a commit — useful
+  # when a run failed for an infrastructure reason rather than a code one.
+  workflow_dispatch:
 
 jobs:
   lint:
