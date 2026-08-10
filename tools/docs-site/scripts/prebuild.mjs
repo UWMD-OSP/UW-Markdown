@@ -213,6 +213,35 @@ function withFrontmatter(md, title) {
   return `---\ntitle: ${JSON.stringify(title)}\n---\n\n${md}`;
 }
 
+// ─── RFC status banner ────────────────────────────────────────────────────────
+// VitePress consumes YAML frontmatter, so an RFC's `status:` never reaches the
+// rendered page. That is dangerous for `draft`: a reader lands on a proposal
+// with no signal that nobody has accepted it. Lift the status into a visible
+// callout, keyed off the RFC's own frontmatter so it cannot drift.
+
+const RFC_STATUS_NOTE = {
+  draft: ['warning', 'Draft — not accepted. This proposal is still being iterated on and may change or be rejected. Do not implement against it.'],
+  active: ['warning', 'Open for comment. Not yet accepted; details may still change.'],
+  accepted: ['tip', 'Accepted — merged with intent to implement.'],
+  implemented: ['tip', 'Implemented — this change has shipped.'],
+  rejected: ['danger', 'Rejected. Retained as design history; do not implement.'],
+  superseded: ['danger', 'Superseded by a later RFC. Retained as design history.'],
+  withdrawn: ['danger', 'Withdrawn by its author. Retained as design history.'],
+};
+
+function withRfcStatusBanner(md, toPath) {
+  // Only numbered RFC pages; the index and template have no status of their own.
+  if (!/^about\/rfcs\/\d{4}-/.test(toPath.replace(/\\/g, '/'))) return md;
+  const fm = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/.exec(md);
+  if (!fm) return md;
+  const status = /^status:[ \t]*(\S+)/m.exec(fm[1])?.[1];
+  const note = RFC_STATUS_NOTE[status];
+  if (!note) return md;
+  const [kind, text] = note;
+  const banner = `\n::: ${kind} Status: ${status}\n${text}\n:::\n`;
+  return md.slice(0, fm[0].length) + banner + md.slice(fm[0].length);
+}
+
 // ─── Run copies ───────────────────────────────────────────────────────────────
 
 let count = 0;
@@ -229,6 +258,7 @@ for (const c of COPIES) {
   let md = await readFile(src, 'utf8');
   md = rewriteLinks(md);
   md = withFrontmatter(md, c.title);
+  md = withRfcStatusBanner(md, c.to);
   await writeFile(dst, md, 'utf8');
   console.log(`[copy]  ${c.from}  →  ${relative(SITE_ROOT, dst)}`);
   count++;
