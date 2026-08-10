@@ -131,8 +131,9 @@ step. See the
 
 RFC 0017 assigns human-readable Lite to .uw.md and the current structured format
 to .uwx.md; RFC 0016 defines receipts for unchanged signed content and
-deterministic math consistency, not input truth. Both are **drafts** awaiting
-owner acceptance, and receipts are specified but not implemented. (These were
+deterministic math consistency, not input truth. Both were **accepted
+2026-08-09**. The Lite/UWX split (0017) is implemented; **receipts (0016) are
+specified but not built** — that is the next feature slice. (These were
 previously cited as RFCs 0015 and 0016; 0015 belongs to the unrelated
 portfolio-relationships proposal and 0016 did not exist — see the process-failure
 note in RFC 0017.) The first compatibility slice

@@ -1,9 +1,10 @@
 ---
 rfc: 0017
 title: Split .uw.md Lite from .uwx.md Extended as distinct source representations
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-08
+accepted: 2026-08-09
 affects:
   - format-spec
   - protocol-spec
@@ -14,11 +15,12 @@ affects:
 
 # RFC 0017: Split `.uw.md` Lite from `.uwx.md` Extended as distinct source representations
 
-> **Corrective and retroactive.** The change this RFC describes has already
-> shipped. It is written after the fact to close a governance gap, and it records
-> that gap honestly in [Process failure](#process-failure) rather than presenting
-> the work as if it followed the normal order. The status stays `draft` until the
-> project owner accepts it; nothing here should be read as self-approval.
+> **Corrective and retroactive.** The change this RFC describes had already
+> shipped when this RFC was written. It documents the change after the fact to
+> close a governance gap, and records that gap honestly in
+> [Process failure](#process-failure) rather than presenting the work as if it
+> followed the normal order. Accepted 2026-08-09, after the implementation —
+> which is the irregularity being corrected, not a precedent.
 
 ## Summary
 
@@ -269,10 +271,11 @@ semantically equivalent. Rejected.
   scenarios. Do those arrive as `deal-summary-v2`, or as separately named
   profiles (`operating-v1`)? Naming affects the compiler's catalog lookup and
   should be settled before a second profile exists.
-- **Should the Lite spec's §9 receipts reference stay normative** while
-  [RFC 0016](./0016-verification-receipts.md) is `draft`? A normative reference to
-  a draft is the same class of problem this RFC is correcting. Recommendation:
-  soften §9 to informative until 0016 is accepted.
+- ~~**Should the Lite spec's §9 receipts reference stay normative** while
+  RFC 0016 is `draft`?~~ **Resolved 2026-08-09:**
+  [RFC 0016](./0016-verification-receipts.md) was accepted alongside this RFC, so
+  §9 is normative again. Note that receipts are specified but **not yet
+  implemented** — §9 defines the contract, it does not describe shipped behavior.
 - **Tool-level conformance for loss reporting.** The omission report is verified;
   the requirement that a caller *surfaces* it is not testable in the current
   corpus.

@@ -1,9 +1,10 @@
 ---
 rfc: 0016
 title: Define signed deterministic verification receipts
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-08
+accepted: 2026-08-09
 affects:
   - format-spec
   - protocol-spec
