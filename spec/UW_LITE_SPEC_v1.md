@@ -149,13 +149,16 @@ omission report. Projection cannot claim model-fidelity round-trip.
 
 ## 9. Verification receipts
 
-Receipts follow accepted RFC 0016. Receipt issuance and verification are
-specified but **not yet implemented**; this section defines the contract a
-conforming implementation must meet, not shipped behavior.
+Receipts follow accepted RFC 0016, normatively defined in
+[`UW_RECEIPT_v1.md`](UW_RECEIPT_v1.md). Issuance and verification are
+implemented in `@uwmd/core` (`receipts.ts`) and exercised by
+`conformance/receipts/`.
 
 A positive trusted result means signed content is unchanged and deterministic
 math agrees with stated inputs, pack, and policy. It does not mean inputs are
-true, complete, audited, or supported by source documents.
+true, complete, audited, or supported by source documents. Consumers must not
+present a verified receipt as an unqualified checkmark; see
+`UW_RECEIPT_v1.md` §1.
 
 ## 10. Compatibility
 

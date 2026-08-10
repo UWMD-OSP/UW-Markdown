@@ -53,8 +53,8 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Run conformance suite (tiers 1-3 + lite)
-        run: node scripts/run-conformance.mjs --tier=1,2,3,lite
+      - name: Run conformance suite (tiers 1-3 + lite + receipts)
+        run: node scripts/run-conformance.mjs --tier=1,2,3,lite,receipts
 
   web-editor:
     name: Web editor (build + test)
@@ -158,5 +158,5 @@ jobs:
         run: npm run build
       - name: Test
         run: npm test
-      - name: Run conformance suite (tiers 1-3 + lite)
-        run: node scripts/run-conformance.mjs --tier=1,2,3,lite
+      - name: Run conformance suite (tiers 1-3 + lite + receipts)
+        run: node scripts/run-conformance.mjs --tier=1,2,3,lite,receipts

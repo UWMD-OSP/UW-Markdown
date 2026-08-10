@@ -16,6 +16,26 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Added
+- **Verification receipts (RFC 0016)** — a detached JSON document binding a
+  canonical digest of an underwriting record to the deterministic outputs a
+  named calc pack produced from it, so a party who did not run the calculation
+  can confirm offline that the numbers follow from the inputs. Adds the
+  normative [`spec/UW_RECEIPT_v1.md`](spec/UW_RECEIPT_v1.md) and
+  `spec/schemas/uw-receipt.schema.json`; `receipts.ts` in `@uwmd/core` (exported
+  from both `index.ts` and the browser entry, since unsigned issuance and
+  verification need no cryptographic dependency); `uwmd receipt issue` and
+  `uwmd receipt verify`; and a `receipts` conformance suite
+  (`--tier=receipts`, 11 assertions) covering issuance, the four verification
+  outcomes, and refusal. Verification is three-state — `verified` / `failed` /
+  `unverifiable` — and never collapses "cannot decide" into either of the
+  others. Two invariants are asserted without a baseline: re-issuance over an
+  unmodified record reproduces the same digest and results, and every
+  verification lands on exactly one of the three verdicts. Resolves RFC 0016's
+  open question on engine-version mismatch in favour of `unverifiable`
+  (`RCP-07`) rather than `failed`, so a document is never blamed for an engine
+  upgrade. A receipt attests that stated outputs follow from stated inputs; it
+  attests nothing about whether those inputs are true, and consumers MUST NOT
+  render a `verified` verdict as an unqualified checkmark.
 - **Local batch collection indexer** — introduces @uwmd/batch, a deterministic directory runner that validates required deal envelopes, captures semantic digests, and emits JSON/CSV read models for database-adjacent underwriting workflows without changing the canonical .uw.md protocol.
 
 ## [1.1.3] - 2026-08-04

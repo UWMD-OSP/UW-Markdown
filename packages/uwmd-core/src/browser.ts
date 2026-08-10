@@ -353,3 +353,43 @@ export type {
 
 export type { SectionDiff } from './compactor.js';
 export type { InitOptions } from './init.js';
+
+// Receipts (RFC 0016) — issuance and verification are browser-safe: SHA-256
+// comes from Web Crypto via `integrity.sha256TextHex`, and no signing backend
+// is bundled here.
+export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
+export {
+  UW_RECEIPT_VERSION,
+  UW_LITE_CANONICALIZATION,
+  UWX_CANONICALIZATION,
+  RECEIPT_RESULT_TOLERANCE,
+  BUILTIN_POLICY_SET,
+  BUILTIN_POLICY_SET_VERSION,
+  ReceiptError,
+  resolveReceiptSubject,
+  computeReceiptResults,
+  computeResultsDigest,
+  issueReceipt,
+  receiptSigningPayload,
+  verifyReceipt,
+  assertUWReceipt,
+} from './receipts.js';
+export type {
+  UWReceipt,
+  UWReceiptSubject,
+  UWReceiptResult,
+  UWReceiptComputation,
+  UWReceiptPolicy,
+  UWReceiptSignature,
+  UWReceiptCanonicalization,
+  UWReceiptVerdict,
+  UWReceiptIssue,
+  UWReceiptIssueCode,
+  UWReceiptVerification,
+  ReceiptErrorCode,
+  ReceiptSignatureVerifier,
+  ReceiptSubjectOptions,
+  ReceiptSubjectResolution,
+  ReceiptIssuanceOptions,
+  ReceiptVerificationOptions,
+} from './receipts.js';

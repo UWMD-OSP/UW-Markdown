@@ -32,6 +32,8 @@ Command | Purpose
 `report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
+`receipt issue <file>` | Issue a detached verification receipt (`--output`, `--issued-at`, `--stdout`)
+`receipt verify <file> <receipt.json>` | Verify a receipt (`--json`; exits 0 verified, 1 failed, 3 unverifiable)
 `layers` | List Bancroft agent layers
 
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the

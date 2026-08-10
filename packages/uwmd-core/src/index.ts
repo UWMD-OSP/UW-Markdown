@@ -255,6 +255,44 @@ export type { IntegrityCode, IntegrityIssue, IntegrityResult } from './integrity
 
 export { canonicalize } from './integrity-canonical.js';
 
+export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
+
+export {
+  UW_RECEIPT_VERSION,
+  UW_LITE_CANONICALIZATION,
+  UWX_CANONICALIZATION,
+  RECEIPT_RESULT_TOLERANCE,
+  BUILTIN_POLICY_SET,
+  BUILTIN_POLICY_SET_VERSION,
+  ReceiptError,
+  resolveReceiptSubject,
+  computeReceiptResults,
+  computeResultsDigest,
+  issueReceipt,
+  receiptSigningPayload,
+  verifyReceipt,
+  assertUWReceipt,
+} from './receipts.js';
+export type {
+  UWReceipt,
+  UWReceiptSubject,
+  UWReceiptResult,
+  UWReceiptComputation,
+  UWReceiptPolicy,
+  UWReceiptSignature,
+  UWReceiptCanonicalization,
+  UWReceiptVerdict,
+  UWReceiptIssue,
+  UWReceiptIssueCode,
+  UWReceiptVerification,
+  ReceiptErrorCode,
+  ReceiptSignatureVerifier,
+  ReceiptSubjectOptions,
+  ReceiptSubjectResolution,
+  ReceiptIssuanceOptions,
+  ReceiptVerificationOptions,
+} from './receipts.js';
+
 export { resolveValue, readInFile } from './cascade.js';
 export type {
   CascadeContext,
