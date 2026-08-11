@@ -86,6 +86,17 @@ The linked sequence formed when block B carries
 `_meta.supersedes: <A.id>`. Cycles are forbidden; the validator
 emits a `META_SUPERSEDE_CYCLE` issue when it detects one.
 
+### Verification receipt
+A detached JSON file binding a digest of a deal's canonical
+financial content to the outputs a named calc pack produced from
+it, so a third party can confirm offline that the numbers follow
+from the record. It attests **nothing** about whether the inputs
+are true. Verification returns one of three states — `verified`,
+`failed`, or `unverifiable` — and never collapses the third into
+either of the others. See
+[Verification receipts](UW_RECEIPTS.md) and
+[the spec](../spec/UW_RECEIPT_v1.md).
+
 ### View model
 A declarative spec for how a section renders. Registered in
 `BUILTIN_VIEW_MODELS` in

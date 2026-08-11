@@ -14,6 +14,7 @@ Pick the one that matches what you're trying to do.
 | Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) | 1 + 2 |
 | Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) | 3 (export) |
 | Run an LLM agent over the deal | `runBancroftAgent` from `@uwmd/core` | 4 |
+| Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) | 3 |
 
 If you're not sure what conformance tier means, see the
 [protocol spec §II](../spec/UW_PROTOCOL_v1.md) or the
@@ -69,6 +70,9 @@ edit dispatcher, and Tier-3 calc engine in the browser. Every
 numeric edit re-runs every dependent calc immediately, so the file
 can never be left internally inconsistent.
 
+The **Receipt** tab issues and verifies
+[verification receipts](UW_RECEIPTS.md) client-side — nothing is uploaded.
+
 Best for: working on a deal where you care about derived values (NOI,
 DSCR, LTV, IRR, valuation). Demoing the calc engine to someone
 unfamiliar with the format.
@@ -90,7 +94,13 @@ npx uwmd validate my-deal.uw.md       # check
 npx uwmd parse my-deal.uw.md          # to JSON
 npx uwmd render my-deal.uw.md --html  # to HTML
 npx uwmd run my-deal.uw.md L6         # invoke a Bancroft layer
+npx uwmd receipt issue my-deal.uwx.md # issue a verification receipt
+npx uwmd receipt verify my-deal.uwx.md my-deal.receipt.json
 ```
+
+`receipt verify` exits 0 for `verified`, 1 for `failed`, and **3 for
+`unverifiable`** — "cannot decide" is a distinct outcome, not a pass
+or a rejection. See [Verification receipts](UW_RECEIPTS.md).
 
 Best for: CI gates. Pre-commit hooks. Batch processing. Anything
 where you need a script, not a UI.

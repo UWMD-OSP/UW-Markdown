@@ -66,6 +66,7 @@ const COPIES = [
   { from: 'docs/GLOSSARY.md',    to: 'guide/glossary.md', title: 'Glossary' },
   { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools comparison' },
   { from: 'docs/UW_LITE_AND_UWX.md', to: 'guide/lite-and-uwx.md', title: 'UW Lite and UWX' },
+  { from: 'docs/UW_RECEIPTS.md',     to: 'guide/receipts.md',     title: 'Verification receipts' },
 
   // RFCs
   { from: 'docs/rfcs/README.md',       to: 'about/rfcs/index.md', title: 'RFC Process' },
@@ -109,9 +110,11 @@ const NORMALIZED_LINK_MAP = new Map([
   ['docs/GLOSSARY.md', '/guide/glossary'],
   ['docs/TOOLS.md', '/guide/tools'],
   ['docs/UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
+  ['docs/UW_RECEIPTS.md', '/guide/receipts'],
   ['GLOSSARY.md', '/guide/glossary'],
   ['TOOLS.md', '/guide/tools'],
   ['UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
+  ['UW_RECEIPTS.md', '/guide/receipts'],
   ['docs/releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['LICENSE', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/LICENSE'],
@@ -186,9 +189,12 @@ function rewriteLinks(md) {
       return `](${NORMALIZED_LINK_MAP.get(norm)}${frag})`;
     }
 
-    // Numbered RFC paths — both `docs/rfcs/NNNN-slug.md` (from repo-root docs)
-    // and `NNNN-slug.md` (from inside docs/rfcs/) map to /about/rfcs/NNNN-slug.
-    const rfcMatch = norm.match(/^(?:docs\/rfcs\/)?(\d{4}-[a-z0-9-]+)\.md$/);
+    // Numbered RFC paths all map to /about/rfcs/NNNN-slug, in each of the three
+    // spellings a correct GitHub-relative link takes depending on where the
+    // linking file sits: `docs/rfcs/NNNN-slug.md` from the repo root,
+    // `rfcs/NNNN-slug.md` from inside docs/, and `NNNN-slug.md` from inside
+    // docs/rfcs/.
+    const rfcMatch = norm.match(/^(?:docs\/)?(?:rfcs\/)?(\d{4}-[a-z0-9-]+)\.md$/);
     if (rfcMatch) {
       return `](/about/rfcs/${rfcMatch[1]}${frag})`;
     }

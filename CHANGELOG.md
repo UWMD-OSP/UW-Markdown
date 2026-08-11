@@ -16,6 +16,17 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Added
+- **Receipts on the docs-site** — adds `docs/UW_RECEIPTS.md`, published at
+  `/guide/receipts`: a human-facing explanation of what a receipt does and does
+  not attest, how to issue and verify one, why verification has three outcomes
+  rather than two (including the `unverifiable` exit code of 3), and why a
+  receipt going stale after an edit is expected rather than alarming. Linked
+  from the Tools nav and both guide sidebars, cross-referenced from
+  `docs/TOOLS.md` (decision tree, CLI examples, web-editor entry) and a new
+  `docs/GLOSSARY.md` entry. Also fixes a gap in the docs-site link rewriter:
+  RFC links spelled `rfcs/NNNN-slug.md` — the correct GitHub-relative form from
+  a file inside `docs/` — previously failed the build's dead-link check, since
+  only `docs/rfcs/NNNN-slug.md` and bare `NNNN-slug.md` were recognized.
 - **Receipts in the web editor** — a **Receipt** tab issues and verifies RFC 0016
   receipts entirely client-side via `@uwmd/core/browser`; nothing is uploaded.
   Issuance runs the asset class's pack over the open deal and offers the
