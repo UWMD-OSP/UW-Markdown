@@ -16,6 +16,24 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Added
+- **Receipts in the web editor** — a **Receipt** tab issues and verifies RFC 0016
+  receipts entirely client-side via `@uwmd/core/browser`; nothing is uploaded.
+  Issuance runs the asset class's pack over the open deal and offers the
+  `.receipt.json` sidecar; verification accepts a receipt file and continuously
+  re-verifies against the in-editor document. The panel renders **four** states
+  rather than three: core's `verified` / `failed` / `unverifiable`, plus a
+  UI-level **`stale`**. A digest mismatch is reclassified as stale only when this
+  session issued the receipt and the deal has since been edited — spec §6's
+  "editors SHOULD treat any existing receipt as stale once a write lands" — while
+  the same mismatch on a receipt that arrived as a file stays `failed`, so an
+  ordinary edit never reads as tampering and tampering never reads as an edit.
+  Per `UW_RECEIPT_v1.md` §1 no verdict is a bare checkmark: each states what it
+  attests, and `verified` carries the "not correct, complete, audited, or
+  approved" caveat inline rather than behind a disclosure. Web-editor suite goes
+  33 → 56 tests, including the stale-vs-failed distinction, an axe-core pass over
+  the rendered verdict, and a test that forces the Web Crypto branch of
+  `sha256TextHex` (jsdom leaks `process`, so the component tests would otherwise
+  only ever exercise the Node path the browser never takes).
 - **Verification receipts (RFC 0016)** — a detached JSON document binding a
   canonical digest of an underwriting record to the deterministic outputs a
   named calc pack produced from it, so a party who did not run the calculation

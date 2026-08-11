@@ -6,11 +6,14 @@
 // contrast is excluded because jsdom can't compute rendered colors.
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, waitFor, screen, fireEvent } from '@testing-library/react';
 import axe from 'axe-core';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { generateBlankUWFile, parseUWFile, validateUWFile } from '@uwmd/core/browser';
 import { NewDealDialog } from './NewDealDialog.js';
 import { SectionView } from './SectionView.js';
+import { ReceiptPanel } from './ReceiptPanel.js';
 
 afterEach(cleanup);
 
@@ -43,6 +46,17 @@ describe('a11y smoke (axe-core)', () => {
     const { container } = render(
       <SectionView parsed={parsed} activeId="property" dispatch={vi.fn()} validation={validation} />,
     );
+    expect(await seriousViolations(container)).toEqual([]);
+  });
+
+  it('the receipt panel, with a verdict and results table rendered, has no serious/critical violations', async () => {
+    const source = readFileSync(
+      resolve(__dirname, '../../../../conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md'),
+      'utf8',
+    );
+    const { container } = render(<ReceiptPanel source={source} filename="deal.uwx.md" />);
+    fireEvent.click(screen.getByRole('button', { name: /issue receipt/i }));
+    await waitFor(() => expect(screen.getByText(/^Verified$/i)).toBeTruthy());
     expect(await seriousViolations(container)).toEqual([]);
   });
 });

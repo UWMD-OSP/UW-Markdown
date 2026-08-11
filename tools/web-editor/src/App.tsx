@@ -15,8 +15,9 @@ import { NewDealDialog } from './components/NewDealDialog.js';
 import { Intelligence } from './components/Intelligence.js';
 import { DiffView } from './components/DiffView.js';
 import { EditModeBar } from './components/EditModeBar.js';
+import { ReceiptPanel } from './components/ReceiptPanel.js';
 
-export type EditorTab = 'edit' | 'intelligence' | 'report' | 'diff' | 'source';
+export type EditorTab = 'edit' | 'intelligence' | 'report' | 'receipt' | 'diff' | 'source';
 
 export function App() {
   const [deal, actions] = useDeal();
@@ -106,6 +107,7 @@ export function App() {
             </>}
             {tab === 'intelligence' && <Intelligence parsed={deal.loaded.parsed} />}
             {tab === 'report' && <ReportPreview parsed={deal.loaded.parsed} filename={deal.filename} />}
+            {tab === 'receipt' && <ReceiptPanel source={deal.loaded.source} filename={deal.filename} />}
             {tab === 'diff' && <DiffView originalSource={deal.originalSource} currentSource={deal.loaded.source} />}
             {tab === 'source' && <SourceView source={deal.loaded.source} filename={deal.filename} />}
           </main>

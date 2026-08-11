@@ -103,9 +103,10 @@ not core gaps.
   `format.ts`, `context.ts`, or core `cli.ts`; validator
   has only `validator.dq.test.ts` (CC/FV mainly via conformance). CI coverage gate
   is a soft floor (`continue-on-error`). The **web-editor** now has a Vitest suite
-  (33 tests, 5 files): the `runEdit()` chokepoint + catalog helpers (node), jsdom
-  component tests for the footed surfaces and inline-remediation wiring, and an
-  axe-core a11y smoke check.
+  (56 tests, 7 files): the `runEdit()` chokepoint + catalog helpers (node), jsdom
+  component tests for the footed surfaces and inline-remediation wiring, receipt
+  issuance/verification incl. the stale-vs-failed distinction and a forced
+  Web-Crypto path, and an axe-core a11y smoke check.
 - **Examples = 5 deals** (multifamily, office, retail, industrial, self-storage);
   other classes/loan types undemonstrated.
 - **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
@@ -197,11 +198,13 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-1. **Surface receipts in the tools that need them** — the library and CLI ship;
-   the web editor and docs-site do not yet expose issue/verify, and neither does
-   the VS Code extension. Any UI that does must honour the
-   `UW_RECEIPT_v1.md` §1 assurance boundary rather than showing a bare
-   checkmark. Receipt **signing** stays blocked on the RFC 0010 signing package.
+1. **Finish surfacing receipts** — the library, CLI, and **web editor** ship
+   (the editor's Receipt tab issues and verifies client-side, and adds a
+   UI-level `stale` state for post-edit digest mismatches). The **docs-site**
+   and **VS Code extension** still do not expose issue/verify. Any UI that does
+   must honour the `UW_RECEIPT_v1.md` §1 assurance boundary rather than showing
+   a bare checkmark. Receipt **signing** stays blocked on the RFC 0010 signing
+   package.
 2. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
 3. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
    five classes have landed end-to-end (pack +

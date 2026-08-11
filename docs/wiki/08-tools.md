@@ -125,11 +125,12 @@ Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
 it renders (embeds a minimal Parser + Renderer). Tier-1 demo. Skip it for editing
 or calc.
 
-## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.4.0, private)
+## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.5.0, private)
 
 React 18 + Tailwind CSS 4 (Vite). Opens `.uw.md` Lite summaries by compiling their supported anchored fields into a canonical `.uwx.md` record (retaining the complete Lite source in a namespaced extension), and opens `.uwx.md` structured records directly. Export Lite is explicitly loss-reported: omitted UWX paths are listed before the smaller deal-summary projection is downloaded. Embeds `@uwmd/core/browser` (parser, validator,
 Tier-2 edit dispatcher, Tier-3 calc engine, report renderer, init scaffolder,
-cascade/refinement/gaps intelligence, calc dependency introspection). Five tabs:
+cascade/refinement/gaps intelligence, calc dependency introspection, receipt
+issuance/verification). Six tabs:
 
 - **Editor** — sidebar with per-section validation badges; an **edit-provenance
   bar** (`EditModeBar`) controlling what gets stamped on `_meta`
@@ -151,6 +152,19 @@ cascade/refinement/gaps intelligence, calc dependency introspection). Five tabs:
   the deal's metrics, with affected-output ranges and a suggested question.
 - **Report** — the `renderReportHtml` §7.1/§7.2 package, live in a sandboxed
   iframe, with tier toggle, Download HTML, and Print/PDF.
+- **Receipt** — issue and verify RFC 0016 verification receipts entirely
+  client-side (`src/receipts.ts` + `ReceiptPanel`). Issuance runs the asset
+  class's pack over the open deal and offers the `.receipt.json` sidecar;
+  verification accepts a receipt file and re-verifies continuously against the
+  in-editor document. Renders **four** states, not three: core's
+  `verified`/`failed`/`unverifiable` plus a UI-level **`stale`**. A digest
+  mismatch is reclassified as stale only when *this session* issued the receipt
+  and the deal has since been edited — spec §6's "editors SHOULD treat any
+  existing receipt as stale once a write lands". A mismatch on a receipt that
+  arrived as a file stays `failed`. Per `UW_RECEIPT_v1.md` §1 the panel never
+  shows a bare checkmark: every verdict states what it attests, and `verified`
+  carries the "not correct/complete/audited/approved" caveat inline rather than
+  behind a disclosure.
 - **Diff** — section + frontmatter changes since the file was loaded / last saved
   (core `diff()`), the "what did I touch this session" view.
 - **Source** — read-only canonical bytes (exactly what Download writes), with copy.
