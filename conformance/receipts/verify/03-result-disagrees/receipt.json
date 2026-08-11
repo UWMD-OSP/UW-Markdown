@@ -1,0 +1,78 @@
+{
+  "receipt_version": "1.0",
+  "subject": {
+    "representation": "uwx-markdown",
+    "representation_version": "1.0",
+    "canonicalization": "uw-envelope-semantic",
+    "canonicalization_version": "1.0",
+    "digest": "sha256:caa73f0e1dc38cf536149ff5dbdfbd72e21fad6263f6574adeea99f8803822f2"
+  },
+  "computation": {
+    "pack": "org.uwmd.pack.multifamily",
+    "pack_version": "1.0.0",
+    "engine": "@uwmd/core",
+    "engine_version": "1.1.2",
+    "results": [
+      {
+        "calc_id": "cap_rate",
+        "value": 0.0575,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "cash_on_cash",
+        "value": 0.03130434782608696,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "debt_yield",
+        "value": 0.08846153846153847,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "dscr",
+        "value": 1.95,
+        "unit": "x",
+        "computed": true
+      },
+      {
+        "calc_id": "loan_per_sqft",
+        "value": 109.85915492957747,
+        "unit": "$",
+        "computed": true
+      },
+      {
+        "calc_id": "loan_per_unit",
+        "value": 97500,
+        "unit": "$",
+        "computed": true
+      },
+      {
+        "calc_id": "ltv",
+        "value": 0.65,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "price_per_unit",
+        "value": 150000,
+        "unit": "$",
+        "computed": true
+      }
+    ],
+    "results_digest": "sha256:9e28d6b461da569a148cb377549d9d640c5ccb5d00c95ca84cf85b93100871f7"
+  },
+  "policy": {
+    "policy_set": "builtin",
+    "policy_set_version": "1.0",
+    "validation": {
+      "errors": 0,
+      "warnings": 5
+    }
+  },
+  "issued_at": "2026-08-09T00:00:00Z",
+  "issuer": "conformance",
+  "signature": null
+}

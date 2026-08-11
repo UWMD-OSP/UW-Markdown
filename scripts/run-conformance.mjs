@@ -5,14 +5,15 @@
 // Usage:
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
-//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,lite.
+//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,lite,receipts.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
 //                `lite` is a representation-level suite (UW Lite parse,
 //                canonicalization, rendering, and the deal-summary-v1 bridge)
-//                rather than a protocol tier, so it is named rather than
-//                numbered.
+//                and `receipts` is an artifact-level suite (RFC 0016 issuance,
+//                verification, and refusal) — neither is a protocol tier, so
+//                both are named rather than numbered.
 //   --update     Regenerate expected/* files from current library output.
 //                Use carefully — this overwrites the baseline.
 //   --json       Emit machine-readable JSON summary to stdout.
@@ -43,6 +44,9 @@ import {
   compileUWLite,
   projectUWEnvelopeToLite,
   stringifyUWX,
+  issueReceipt,
+  verifyReceipt,
+  assertUWReceipt,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -57,7 +61,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,lite').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,lite,receipts').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -846,6 +850,168 @@ function runLiteEquivalence() {
   }
 }
 
+// ─── Receipts: issue → verify → refuse ───────────────────────────────────────
+// Verification receipts (`spec/UW_RECEIPT_v1.md`, RFC 0016) are a detached
+// artifact rather than a protocol tier, so like `lite` this suite is named.
+//
+//   issue/<scenario>/    deal.{uw,uwx}.md + expected-receipt.json (issued_at stubbed)
+//   verify/<scenario>/   deal.* + receipt.json + expected-verdict.json
+//   refuse/<scenario>/   deal.* + expected.json naming the ReceiptError code
+//
+// Two invariants are asserted without a baseline, so they bind any
+// implementation regardless of our frozen output: re-issuance over an
+// unmodified record reproduces the same subject digest and results, and a
+// verifier always lands on exactly one of the three verdicts.
+
+const RECEIPTS_DIR = join(CONFORMANCE_DIR, 'receipts');
+const RECEIPT_ISSUED_AT = '2026-08-09T00:00:00Z';
+const RECEIPT_ISSUER = 'conformance';
+
+function receiptScenarios(kind) {
+  const dir = join(RECEIPTS_DIR, kind);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort()
+    .map((name) => ({ id: name, dir: join(dir, name) }));
+}
+
+function receiptDeal(scenarioDir) {
+  const file = readdirSync(scenarioDir).find((f) => f.endsWith('.uw.md') || f.endsWith('.uwx.md'));
+  if (!file) return null;
+  return { path: join(scenarioDir, file), source: readFileSync(join(scenarioDir, file), 'utf8') };
+}
+
+function receiptBaseline(scenario, path, actual) {
+  if (UPDATE) {
+    writeFileSync(path, actual);
+    record('receipts', scenario, 'updated');
+  } else if (!existsSync(path)) {
+    record('receipts', scenario, 'fail', `missing baseline: ${basename(path)}`);
+  } else if (normalize(readFileSync(path, 'utf8')) === normalize(actual)) {
+    record('receipts', scenario, 'pass');
+  } else {
+    record('receipts', scenario, 'fail', `output differs from ${basename(path)}`);
+  }
+}
+
+async function runReceiptIssue() {
+  for (const { id, dir } of receiptScenarios('issue')) {
+    const deal = receiptDeal(dir);
+    if (!deal) {
+      record('receipts', `issue/${id}`, 'fail', 'no deal.uw.md or deal.uwx.md in scenario');
+      continue;
+    }
+
+    let receipt;
+    try {
+      receipt = await issueReceipt(deal.source, {
+        filename: deal.path,
+        issued_at: RECEIPT_ISSUED_AT,
+        issuer: RECEIPT_ISSUER,
+      });
+    } catch (e) {
+      record('receipts', `issue/${id}`, 'fail', `issuance threw: ${e.message}`);
+      continue;
+    }
+
+    receiptBaseline(
+      `issue/${id}`,
+      join(dir, 'expected-receipt.json'),
+      `${JSON.stringify(receipt, null, 2)}\n`,
+    );
+
+    // §4 re-issuance stability — asserted directly, not against a baseline.
+    try {
+      const again = await issueReceipt(deal.source, {
+        filename: deal.path,
+        issued_at: '2027-01-01T00:00:00Z',
+        issuer: RECEIPT_ISSUER,
+      });
+      const stable =
+        again.subject.digest === receipt.subject.digest &&
+        JSON.stringify(again.computation.results) === JSON.stringify(receipt.computation.results);
+      record(
+        'receipts',
+        `issue/${id} [re-issuance stable]`,
+        stable ? 'pass' : 'fail',
+        stable ? undefined : 're-issuance changed the subject digest or the results',
+      );
+    } catch (e) {
+      record('receipts', `issue/${id} [re-issuance stable]`, 'fail', `re-issuance threw: ${e.message}`);
+    }
+  }
+}
+
+async function runReceiptVerify() {
+  for (const { id, dir } of receiptScenarios('verify')) {
+    const deal = receiptDeal(dir);
+    const receiptPath = join(dir, 'receipt.json');
+    const expectedPath = join(dir, 'expected-verdict.json');
+    if (!deal) {
+      record('receipts', `verify/${id}`, 'fail', 'no deal document in scenario');
+      continue;
+    }
+    if (!existsSync(receiptPath) || !existsSync(expectedPath)) {
+      record('receipts', `verify/${id}`, 'fail', 'missing receipt.json or expected-verdict.json');
+      continue;
+    }
+
+    const receipt = JSON.parse(readFileSync(receiptPath, 'utf8'));
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+
+    let result;
+    try {
+      assertUWReceipt(receipt);
+      result = await verifyReceipt(receipt, deal.source, { filename: deal.path });
+    } catch (e) {
+      record('receipts', `verify/${id}`, 'fail', `verification threw: ${e.message}`);
+      continue;
+    }
+
+    if (!['verified', 'failed', 'unverifiable'].includes(result.verdict)) {
+      record('receipts', `verify/${id}`, 'fail', `verdict outside the three-state set: ${result.verdict}`);
+      continue;
+    }
+    if (result.verdict !== expected.verdict) {
+      record('receipts', `verify/${id}`, 'fail', `expected ${expected.verdict}, got ${result.verdict}`);
+      continue;
+    }
+
+    const seen = new Set(result.issues.map((i) => i.code));
+    const missing = (expected.expected_codes ?? []).filter((c) => !seen.has(c));
+    if (missing.length > 0) {
+      const list = [...seen].sort().join(', ') || '(none)';
+      record('receipts', `verify/${id}`, 'fail', `did not surface ${missing.join(', ')} — saw: [${list}]`);
+    } else {
+      record('receipts', `verify/${id}`, 'pass');
+    }
+  }
+}
+
+async function runReceiptRefuse() {
+  for (const { id, dir } of receiptScenarios('refuse')) {
+    const deal = receiptDeal(dir);
+    const expectedPath = join(dir, 'expected.json');
+    if (!deal || !existsSync(expectedPath)) {
+      record('receipts', `refuse/${id}`, 'fail', 'missing deal document or expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+
+    try {
+      await issueReceipt(deal.source, { filename: deal.path, issued_at: RECEIPT_ISSUED_AT });
+      record('receipts', `refuse/${id}`, 'fail', 'issuance succeeded where it must refuse');
+    } catch (e) {
+      if (e.code === expected.expected_code) {
+        record('receipts', `refuse/${id}`, 'pass');
+      } else {
+        record('receipts', `refuse/${id}`, 'fail', `threw ${e.code ?? '(no code)'}, expected ${expected.expected_code}`);
+      }
+    }
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -854,6 +1020,7 @@ const dispatch = {
   '3': async () => { runTier3(); await runTier3Refinement(); },
   '4': async () => { runTier4(); await runTier4Profile(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
+  'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

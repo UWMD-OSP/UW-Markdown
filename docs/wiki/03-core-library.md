@@ -44,6 +44,8 @@ Module | Responsibility | Key exports
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
 `integrity.ts` | content/parent-hash chain + provenance | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`
 `integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
+`receipts.ts` | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
+`version.ts` | Engine identity recorded in receipts | `CORE_PACKAGE_NAME`, `CORE_VERSION`
 `modules.ts` | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
 `calc/` | Tier-3 safe-expression engine | see [04 — Calc engine](04-calc-engine.md)
 `packs/` | Calc packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
@@ -199,6 +201,43 @@ chain; `verifyProvenance(parsed, policies?)` checks actor/policy authority.
 `integrity-canonical.ts` `canonicalize()` defines the canonical form hashed by
 `computeBlockHash`. Both feed the `uwmd verify` command and the Tier-1 malformed
 conformance fixtures (INT-/POL- codes).
+
+## receipts.ts
+
+Implements [`spec/UW_RECEIPT_v1.md`](../../spec/UW_RECEIPT_v1.md) (RFC 0016).
+A **receipt** is a detached JSON document binding a canonical digest of a record
+to the deterministic outputs a named calc pack produced from it, so a recipient
+can confirm offline that the numbers follow from the inputs.
+
+- `issueReceipt(content, options)` — parses, canonicalizes, digests, runs every
+  calc the pack declares, and returns a complete receipt. **Total**: it either
+  returns a receipt or throws a typed `ReceiptError`. It refuses outright for a
+  document with parse errors, an asset class with no registered pack, or a pack
+  calc that fails to evaluate.
+- `verifyReceipt(receipt, content, options)` — always recomputes, never trusts
+  `results_digest`. Returns one of three verdicts and keeps them distinct:
+  `verified`, `failed`, `unverifiable`. Unknown pack, a pack version the
+  verifier does not hold, an unparseable record, or a signature with no backend
+  all yield `unverifiable` — collapsing those into `failed` cries wolf, and
+  collapsing them into `verified` is dangerous.
+- Subject canonicalization dispatches on representation: Lite records bind to
+  the §6 financial canonical form, structured records to the envelope semantic
+  value. Both are semantic, so a receipt survives reformatting and fails only on
+  financial change.
+- Uncomputed outputs carry `computed: false` rather than a value. The calc
+  engine reports "inputs absent" as a successful evaluation to `null`; a receipt
+  must not let that read as a computed number.
+
+Both issuance and verification are browser-safe (SHA-256 via Web Crypto), so the
+web editor can verify client-side. Signature creation and validation stay
+outside core, keeping it free of cryptographic dependencies.
+
+CLI: `uwmd receipt issue <file>` / `uwmd receipt verify <file> <receipt.json>`
+(exit 0 verified, 1 failed, 3 unverifiable). Conformance: `--tier=receipts`.
+
+> A `verified` receipt attests that the record is unchanged and that its stated
+> outputs follow from its contents. It attests **nothing** about whether those
+> inputs are true. Do not surface it as an unqualified checkmark.
 
 ## protocol.ts (the contract surface)
 

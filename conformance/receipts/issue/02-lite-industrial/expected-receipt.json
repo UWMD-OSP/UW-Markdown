@@ -1,0 +1,102 @@
+{
+  "receipt_version": "1.0",
+  "subject": {
+    "representation": "uw-lite-markdown",
+    "representation_version": "1.0",
+    "canonicalization": "uw-lite-financial",
+    "canonicalization_version": "1.0",
+    "digest": "sha256:f930ebf20c9b0cc1159b65cc653f50a728fa07858080be5f6592ab307953d216"
+  },
+  "computation": {
+    "pack": "org.uwmd.pack.industrial",
+    "pack_version": "1.0.0",
+    "engine": "@uwmd/core",
+    "engine_version": "1.1.2",
+    "results": [
+      {
+        "calc_id": "cap_rate",
+        "value": 0.0575,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "cash_on_cash",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "debt_yield",
+        "value": 0.09583333333333334,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "dscr",
+        "value": 1.2824864235841738,
+        "unit": "x",
+        "computed": true
+      },
+      {
+        "calc_id": "expense_ratio",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "expense_recovery_ratio",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "loan_per_sqft",
+        "value": null,
+        "unit": "$",
+        "computed": false
+      },
+      {
+        "calc_id": "ltc",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "ltv",
+        "value": 0.6,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "noi_per_sqft",
+        "value": null,
+        "unit": "$",
+        "computed": false
+      },
+      {
+        "calc_id": "occupancy",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "price_per_sqft",
+        "value": null,
+        "unit": "$",
+        "computed": false
+      }
+    ],
+    "results_digest": "sha256:7796e31001bf6cc6eecf378b832be29f6a993b48d56e099262498b41616ec84b"
+  },
+  "policy": {
+    "policy_set": "builtin",
+    "policy_set_version": "1.0",
+    "validation": {
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "issued_at": "2026-08-09T00:00:00Z",
+  "issuer": "conformance",
+  "signature": null
+}

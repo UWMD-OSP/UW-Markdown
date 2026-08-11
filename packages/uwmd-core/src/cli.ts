@@ -35,6 +35,9 @@ import { rankGaps } from './refinement.js';
 import { resolveValue } from './cascade.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
+import { issueReceipt, verifyReceipt, assertUWReceipt } from './receipts.js';
+import type { UWReceipt } from './receipts.js';
+import { CORE_VERSION } from './version.js';
 import {
   detectUWSourceRepresentation,
   migrateLegacyUWMarkdown,
@@ -506,6 +509,82 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
   writeFileSync(outPath, encoded, 'utf-8');
   console.log(`Converted ${basename(file)} → ${basename(outPath)} (${targetId})`);
 }
+// ─── Receipts (RFC 0016 / spec/UW_RECEIPT_v1.md) ─────────────────────────────
+
+async function cmdReceiptIssue(
+  file: string,
+  flags: Record<string, string | boolean>,
+): Promise<void> {
+  const receipt = await issueReceipt(readFile(file), {
+    filename: file,
+    issuer: `uwmd-cli@${CORE_VERSION}`,
+    ...(typeof flags['issued-at'] === 'string' ? { issued_at: flags['issued-at'] } : {}),
+  });
+  const serialized = `${JSON.stringify(receipt, null, 2)}\n`;
+
+  if (flags['stdout']) {
+    process.stdout.write(serialized);
+    return;
+  }
+  const outPath = flags['output']
+    ? resolve(flags['output'] as string)
+    : resolve(`${file.replace(/\.(uw|uwx)\.md$/i, '')}.receipt.json`);
+  writeFileSync(outPath, serialized, 'utf-8');
+
+  const computed = receipt.computation.results.filter((r) => r.computed).length;
+  console.log(
+    `Issued receipt for ${basename(file)} → ${basename(outPath)} ` +
+      `(${receipt.computation.pack}@${receipt.computation.pack_version}, ` +
+      `${computed}/${receipt.computation.results.length} outputs computed)`,
+  );
+  console.log(
+    'A receipt attests that these outputs follow from this record. It does not attest that the inputs are true.',
+  );
+}
+
+async function cmdReceiptVerify(
+  file: string,
+  receiptPath: string,
+  flags: Record<string, string | boolean>,
+): Promise<void> {
+  let receipt: UWReceipt;
+  try {
+    const raw = JSON.parse(readFileSync(resolve(receiptPath), 'utf-8')) as unknown;
+    assertUWReceipt(raw);
+    receipt = raw;
+  } catch (e) {
+    console.error(`Not a readable receipt: ${e instanceof Error ? e.message : String(e)}`);
+    process.exit(2);
+  }
+
+  const result = await verifyReceipt(receipt, readFile(file), { filename: file });
+
+  if (flags['json']) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(`Verdict: ${result.verdict.toUpperCase()}`);
+    for (const issue of result.issues) {
+      const detail =
+        issue.expected !== undefined || issue.actual !== undefined
+          ? ` (expected ${issue.expected ?? '—'}, got ${issue.actual ?? '—'})`
+          : '';
+      console.log(`  [${issue.code}] ${issue.message}${detail}`);
+    }
+    if (result.verdict === 'verified') {
+      console.log(
+        '\nThis record is unchanged since issuance and its stated outputs follow deterministically\n' +
+          'from its contents. It is NOT a statement that the inputs are true, complete, or approved.',
+      );
+    } else if (result.verdict === 'unverifiable') {
+      console.log('\nThis verifier could not decide. That is not a negative result.');
+    }
+  }
+
+  // 0 verified, 1 failed, 3 unverifiable — so scripts can tell the third state apart.
+  if (result.verdict === 'failed') process.exit(1);
+  if (result.verdict === 'unverifiable') process.exit(3);
+}
+
 function cmdFormats(flags: Record<string, string | boolean>): void {
   const descriptors = [
     UW_LITE_SOURCE_DESCRIPTOR,
@@ -950,6 +1029,21 @@ switch (command) {
     cmdRefine(positional[0], flags);
     break;
 
+  case 'receipt': {
+    const sub = positional[0];
+    if (sub === 'issue') {
+      if (!positional[1]) { console.error('Usage: uwmd receipt issue <file> [--output <file.receipt.json>] [--issued-at <iso>] [--stdout]'); process.exit(1); }
+      await cmdReceiptIssue(positional[1], flags);
+    } else if (sub === 'verify') {
+      if (!positional[1] || !positional[2]) { console.error('Usage: uwmd receipt verify <file> <receipt.json> [--json]'); process.exit(1); }
+      await cmdReceiptVerify(positional[1], positional[2], flags);
+    } else {
+      console.error('Usage: uwmd receipt <issue|verify> ...');
+      process.exit(1);
+    }
+    break;
+  }
+
   default:
     console.log(`
 uwmd — .uw.md underwriting file toolkit
@@ -972,6 +1066,7 @@ Commands:
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
+  receipt  issue|verify         Issue or verify a detached verification receipt (RFC 0016)
   layers                       List Bancroft agent layers
 
 Options:
@@ -984,6 +1079,7 @@ Options:
   --stdout           Write export/convert output to stdout
   --to <format>       Target: lite|uwx|uw-json|uw-xml|uw-csv-bundle (convert)
   --projection-report Write the UWX-to-Lite omission report as JSON (convert)
+  --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

@@ -22,9 +22,10 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # tiers 1,2,3 + lite (default)
-npm run conformance -- --tier=1,2,3,4,lite
+npm run conformance                 # tiers 1,2,3 + lite + receipts (default)
+npm run conformance -- --tier=1,2,3,4,lite,receipts
 npm run conformance -- --tier=lite         # the UW Lite suite alone
+npm run conformance -- --tier=receipts     # the receipts suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -115,10 +116,37 @@ pre-registered by `$id` for cross-file `$ref`s. Keep schemas in lockstep with th
 matching `protocol.ts` types (notably `ModuleManifest` ↔
 `module-manifest.schema.json`).
 
+### Receipts — issuance, verification, refusal
+
+`conformance/receipts/` is likewise **named, not numbered**: a verification
+receipt ([`spec/UW_RECEIPT_v1.md`](../../spec/UW_RECEIPT_v1.md), RFC 0016) is a
+detached artifact, not a protocol tier. It runs by default.
+
+- `issue/<scenario>/` — `deal.uw.md` or `deal.uwx.md` plus
+  `expected-receipt.json`. Issuance is deterministic apart from `issued_at`,
+  which the runner stubs.
+- `verify/<scenario>/` — `deal.*` + `receipt.json` + `expected-verdict.json`
+  declaring one of `verified` / `failed` / `unverifiable` plus the `RCP-NN`
+  codes that must appear. The five scenarios cover a clean verify, a record
+  mutated after issuance, a stated result that disagrees with recomputation, a
+  receipt naming an unknown pack, and a signed receipt with no backend. The last
+  two must be `unverifiable`, **not** `failed` — that is the case
+  implementations are most likely to get wrong.
+- `refuse/<scenario>/` — `deal.*` + `expected.json` naming the `ReceiptError`
+  code. Issuance must throw, never emit a caveated receipt.
+
+Two properties are asserted as **invariants, not baselines**:
+
+1. **Re-issuance stability (§4).** Re-issuing over an unmodified record
+   reproduces the same `subject.digest` and the same `results`; only `issued_at`
+   may differ.
+2. **Three-state verdicts (§5).** Every verification lands on exactly one of
+   `verified` / `failed` / `unverifiable`.
+
 ## What CI runs
 
 `.github/workflows/ci.yml`: lint (Biome) on Node 20, then build + test +
-`run-conformance.mjs --tier=1,2,3,lite` on a Node 20/22 matrix. `release.yml` publishes
+`run-conformance.mjs --tier=1,2,3,lite,receipts` on a Node 20/22 matrix. `release.yml` publishes
 `@uwmd/core` and `uwmd` on `v*` tags. (See [11 — Build, release & governance](11-build-release-governance.md).)
 
 ## Adding fixtures (quick reference)
@@ -137,6 +165,11 @@ matching `protocol.ts` types (notably `ModuleManifest` ↔
   validate your fixture before you freeze anything. For a negative case, add
   `<id>.uw.md` + `<id>.expected.json` under `lite/malformed/` (parse errors) or
   `lite/compile/` (bridge errors); neither needs `--update`.
+- **Receipts:** make `receipts/issue/<scenario>/` with a deal document, then
+  `--tier=receipts --update` to mint `expected-receipt.json`. Verify and refuse
+  scenarios need no `--update`: hand-write `expected-verdict.json` /
+  `expected.json`, and produce `receipt.json` with
+  `uwmd receipt issue <deal> --issued-at 2026-08-09T00:00:00Z --stdout`.
 - Regeneration helper: [`scripts/regen-conformance.mjs`](../../scripts/regen-conformance.mjs).
 
 > `--update` overwrites baselines from current library output — only use it when

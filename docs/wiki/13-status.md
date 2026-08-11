@@ -2,8 +2,10 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-04 (Envelope, JSON, XML, CSV bundle, HTTP/MCP bindings, Protocol 1.2
-discovery, schemas, CLI, package verification, and core tests; release branch).
+**Last verified:** 2026-08-09 (verification receipts landed: `receipts.ts`,
+`spec/UW_RECEIPT_v1.md`, the receipt schema, `uwmd receipt issue|verify`, and the
+`receipts` conformance suite; full build + 443 core tests + 101 conformance
+assertions green).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -33,7 +35,7 @@ not core gaps.
 
 - **Specs:** format (`spec/UW_FORMAT_SPEC_v1.md`, 23 subsections, CC-NN, YAML
   subset Appendix D) + protocol (`spec/UW_PROTOCOL_v1.md`, tiers, calc EBNF,
-  cascade §IX, context profiles §X) + 8 JSON Schemas. See [02](02-uwmd-format.md).
+  cascade §IX, context profiles §X) + 9 JSON Schemas. See [02](02-uwmd-format.md).
 - **Core Tiers 1–3:** parser, validator (CC/FV/DQ/INT/POL families wired to
   `BUILTIN_REMEDIATIONS`), editor (`applyEdit`/`applyEditAsync`, byte-preserving),
   renderer (`json`/`csv`/`chat`/`summary`). See [03](03-core-library.md).
@@ -50,13 +52,23 @@ not core gaps.
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
-- **CLI:** 16 commands (incl. `export` → `.uw.json`). See [08](08-tools.md).
+- **CLI:** 17 commands (incl. `export` → `.uw.json` and `receipt issue|verify`).
+  See [08](08-tools.md).
 - **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uw.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
 - **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** 29 fixtures, 4 tiers, CI gates tiers 1–3. See [09](09-conformance-testing.md).
+- **Conformance:** 29 fixtures, 4 tiers plus the named `lite` and `receipts`
+  suites; CI gates tiers 1–3 + both named suites. See [09](09-conformance-testing.md).
+- **Verification receipts (RFC 0016):** `receipts.ts` issues and verifies
+  detached receipts binding a record's canonical digest to the deterministic
+  outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
+  `uw-receipt.schema.json`; browser-safe; `uwmd receipt issue|verify`;
+  `conformance/receipts/` (11 assertions). Verification is three-state and keeps
+  `unverifiable` distinct from `failed`. **Unsigned only** — signature creation
+  and validation await the RFC 0010 signing package, and a signed receipt
+  correctly reports `unverifiable` until one exists.
 - **Report renderer + PDF pipeline:** `report.ts` in core renders the spec's
   §7.1 Lender Package / §7.2 Credit Memo as deterministic print-ready HTML
   (`renderReportHtml`, browser-safe, `uwmd report` CLI); `@uwmd/report`
@@ -133,7 +145,7 @@ RFC 0017 assigns human-readable Lite to .uw.md and the current structured format
 to .uwx.md; RFC 0016 defines receipts for unchanged signed content and
 deterministic math consistency, not input truth. Both were **accepted
 2026-08-09**. The Lite/UWX split (0017) is implemented; **receipts (0016) are
-specified but not built** — that is the next feature slice. (These were
+now implemented too**, unsigned — see the receipts entry above. (These were
 previously cited as RFCs 0015 and 0016; 0015 belongs to the unrelated
 portfolio-relationships proposal and 0016 did not exist — see the process-failure
 note in RFC 0017.) The first compatibility slice
@@ -154,9 +166,13 @@ projection report; twelve `malformed/` fixtures covering every parse-time
 `LITE_*` code; six `compile/` fixtures covering every `LITE_COMPILE_*` code; and
 two spec invariants asserted without baselines — the §7 canonical-rendering
 round-trip and the §6 display-equivalence digest match. That took the corpus
-from 26 to 90 assertions.
+from 26 to 90 assertions. The `receipts` suite then added 11 more (two issuance
+scenarios each carrying a re-issuance-stability invariant, five verification
+outcomes, two refusals), bringing the corpus to 101.
 
-The structured spec rename and signed verification receipts are in progress.
+The structured spec rename is in progress. Receipt **signing** remains
+unimplemented and is blocked on the RFC 0010 signing package; unsigned issuance
+and verification ship today.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 
@@ -181,21 +197,26 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-1. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
-2. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
+1. **Surface receipts in the tools that need them** — the library and CLI ship;
+   the web editor and docs-site do not yet expose issue/verify, and neither does
+   the VS Code extension. Any UI that does must honour the
+   `UW_RECEIPT_v1.md` §1 assurance boundary rather than showing a bare
+   checkmark. Receipt **signing** stays blocked on the RFC 0010 signing package.
+2. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
+3. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
    five classes have landed end-to-end (pack +
    defaults + worked example + Excel layout). Keep widening coverage. Each is a
    library-only change (no RFC); add a worked example whose operating statement
    foots, and a `WorkbookLayout`. See [05 recipe](05-calc-packs.md), [08](08-tools.md).
-3. **Module loader hardening** — the v1 in-process loader exists; next steps are
+4. **Module loader hardening** — the v1 in-process loader exists; next steps are
    richer schema validation, recorded fixtures, and host UX for loading manifests
    from files (module signing/custom asset-class identifiers stay v2/RFC work).
-4. **Unit tests for validator CC/FV plus untested core helpers** (`compactor.ts`,
+5. **Unit tests for validator CC/FV plus untested core helpers** (`compactor.ts`,
    `init.ts`, `format.ts`, `context.ts`, core `cli.ts`) — largest remaining
    under-tested surfaces; then ratchet the CI coverage floor.
-5. **DOCX path** (or formally scope it out) — PDF landed via `report.ts` +
+6. **DOCX path** (or formally scope it out) — PDF landed via `report.ts` +
    `@uwmd/report`; Word remains the gap for institutions that edit memos.
-6. **Recorded-replay Tier-4 + a second agent backend** — proves the agent contract
+7. **Recorded-replay Tier-4 + a second agent backend** — proves the agent contract
    is actually provider-neutral.
 
 ---

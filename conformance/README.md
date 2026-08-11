@@ -32,7 +32,7 @@ conformance/
 │   ├── fixtures/       <scenario>/{before.uw.md, expected-after-shape.json}
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
-└── lite/               UW Lite representation + deal-summary-v1 bridge
+├── lite/               UW Lite representation + deal-summary-v1 bridge
     ├── fixtures/       Well-formed .uw.md Lite documents that must parse
     │                     cleanly AND compile; each freezes five artifacts in
     │                     expected/ (see below)
@@ -49,11 +49,31 @@ conformance/
                           <id>.compile.json + <id>.uwx.md (deal-summary-v1
                           compilation), <id>.projection.json + <id>.projected.uw.md
                           (UWX→Lite projection with its omission report)
+└── receipts/           Verification receipts (RFC 0016, spec/UW_RECEIPT_v1.md)
+    ├── issue/          <scenario>/{deal.uw.md|deal.uwx.md, expected-receipt.json}
+    │                     Issuance is deterministic apart from issued_at, which
+    │                     the runner stubs
+    ├── verify/         <scenario>/{deal.*, receipt.json, expected-verdict.json}
+    │                     expected-verdict.json declares one of verified /
+    │                     failed / unverifiable plus expected_codes (RCP-NN)
+    └── refuse/         <scenario>/{deal.*, expected.json} — issuance must throw
+                          a typed ReceiptError with expected_code, never emit a
+                          caveated receipt
 ```
 
-The `lite` suite is named rather than numbered because UW Lite is a *source
-representation*, not a protocol conformance tier. It runs by default; select it
-alone with `--tier=lite`.
+The `lite` and `receipts` suites are named rather than numbered: UW Lite is a
+*source representation* and a receipt is a *detached artifact*, neither is a
+protocol conformance tier. Both run by default; select one alone with
+`--tier=lite` or `--tier=receipts`.
+
+Two receipt properties are asserted as invariants rather than baselines:
+
+- **Re-issuance stability (§4).** Re-issuing over an unmodified record must
+  reproduce the same `subject.digest` and the same `results`.
+- **Three-state verdicts (§5).** A verifier must land on exactly one of
+  `verified` / `failed` / `unverifiable`, and must not collapse `unverifiable`
+  into either of the others. `verify/04-unknown-pack` is the case
+  implementations are most likely to get wrong.
 
 Two Lite properties are asserted as invariants rather than baselines, so they
 hold for any conforming implementation regardless of frozen output:
