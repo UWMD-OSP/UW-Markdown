@@ -198,13 +198,14 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-1. **Finish surfacing receipts** — the library, CLI, and **web editor** ship
-   (the editor's Receipt tab issues and verifies client-side, and adds a
-   UI-level `stale` state for post-edit digest mismatches). The **docs-site**
-   and **VS Code extension** still do not expose issue/verify. Any UI that does
-   must honour the `UW_RECEIPT_v1.md` §1 assurance boundary rather than showing
-   a bare checkmark. Receipt **signing** stays blocked on the RFC 0010 signing
-   package.
+1. **Finish surfacing receipts** — the library, CLI, **web editor**, and
+   **docs-site** ship (the editor's Receipt tab issues and verifies
+   client-side with a UI-level `stale` state; the docs-site publishes the
+   normative spec plus a human-facing guide at `/guide/receipts`, sourced from
+   `docs/UW_RECEIPTS.md`). The **VS Code extension** still does not expose
+   issue/verify. Any UI that does must honour the `UW_RECEIPT_v1.md` §1
+   assurance boundary rather than showing a bare checkmark. Receipt **signing**
+   stays blocked on the RFC 0010 signing package.
 2. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
 3. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
    five classes have landed end-to-end (pack +
