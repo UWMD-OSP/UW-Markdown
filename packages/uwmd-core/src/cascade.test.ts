@@ -206,8 +206,14 @@ describe('cascade — asset class selection', () => {
     expect(result.value).toBe(0.28);
   });
 
-  it('returns no asset_class_default for unregistered class (senior_housing)', () => {
+  it('resolves an asset_class_default for senior_housing', () => {
     const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'senior_housing' }));
+    expect(result.step).toBe('asset_class_default');
+    expect(result.value).toBe(0.13);
+  });
+
+  it('returns no asset_class_default for unregistered class (student_housing)', () => {
+    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'student_housing' }));
     expect(result.step).toBe('system_default');
     expect(result.value).toBeUndefined();
   });

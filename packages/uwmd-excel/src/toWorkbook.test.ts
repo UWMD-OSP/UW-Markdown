@@ -24,6 +24,7 @@ import { RETAIL_LAYOUT } from './retail.js';
 import { INDUSTRIAL_LAYOUT } from './industrial.js';
 import { SELF_STORAGE_LAYOUT } from './self-storage.js';
 import { HOSPITALITY_LAYOUT } from './hospitality.js';
+import { SENIOR_HOUSING_LAYOUT } from './senior-housing.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 const EXAMPLES = resolve(__dirname, '../../../examples');
@@ -35,6 +36,7 @@ const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
   { file: 'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md', layout: INDUSTRIAL_LAYOUT },
   { file: 'Sonoran-Self-Storage-Peoria-AZ.uw.md', layout: SELF_STORAGE_LAYOUT },
   { file: 'Saguaro-Select-Hotel-Tempe-AZ.uw.md', layout: HOSPITALITY_LAYOUT },
+  { file: 'Ocotillo-Senior-Living-Chandler-AZ.uw.md', layout: SENIOR_HOUSING_LAYOUT },
 ];
 
 async function roundTrip(file: string): Promise<ExcelJS.Workbook> {
@@ -85,16 +87,17 @@ describe('layout registry', () => {
       'office',
       'retail',
       'self_storage',
+      'senior_housing',
     ]);
   });
 
   it('returns null for an unregistered class', () => {
-    expect(getLayoutForAssetClass('senior_housing')).toBeNull();
+    expect(getLayoutForAssetClass('student_housing')).toBeNull();
   });
 
   it('toWorkbook throws UnsupportedAssetClassError for an unregistered class', async () => {
     const parsed = parseUWFile(
-      ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "senior_housing"', '---', '# X'].join('\n'),
+      ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "student_housing"', '---', '# X'].join('\n'),
     );
     await expect(toWorkbook(parsed)).rejects.toBeInstanceOf(UnsupportedAssetClassError);
   });

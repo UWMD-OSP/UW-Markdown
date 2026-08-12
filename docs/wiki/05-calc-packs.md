@@ -8,7 +8,7 @@ CLI, conformance, refinement) picks it up.
 - **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
   `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
-  `getPackForAssetClass`,
+  `SENIOR_HOUSING_PACK`, `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
 ## File layout
@@ -21,6 +21,7 @@ File | Role
 `packs/industrial.ts` | `INDUSTRIAL_PACK` — the canonical industrial metrics
 `packs/self-storage.ts` | `SELF_STORAGE_PACK` — the canonical self-storage metrics
 `packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
+`packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
 `packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (6 decimals)
@@ -29,6 +30,7 @@ File | Role
 `packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (6 decimals)
 `packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (6 decimals)
 `packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (6 decimals) + operating-statement footing
+`packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing/labor-subtotal reconciliation
 
 ## Selecting a pack by asset class
 
@@ -37,7 +39,7 @@ File | Role
 `defaults.ts`. The CLI's `refine`/`scope` and any consumer should select the pack
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
 Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
-`hospitality`.
+`hospitality`, `senior_housing`.
 
 ## `MULTIFAMILY_PACK`
 
@@ -142,10 +144,43 @@ the FF&E reserve falling below GOP to reach NOI. `RevPAR = ADR × occupancy`
 holds by construction, since all three read the same three primitives. Verified
 against the `Saguaro-Select-Hotel-Tempe-AZ.uw.md` worked example.
 
-These are the **six asset-class packs today** (`multifamily`, `office`,
-`retail`, `industrial`, `self_storage`, `hospitality`). The `AssetClass` type
-union also lists senior_housing/student_housing/mixed_use/land, but no packs are
-defined for them yet. Adding
+## `SENIOR_HOUSING_PACK`
+
+A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+['senior_housing']`) whose `calculations[]` are the **fourteen** senior-housing
+derived metrics. Sizing is per unit (`property.total_units`), as in multifamily,
+so the per-unit metrics are `price_per_unit` / `loan_per_unit` / `noi_per_unit`.
+
+Like hospitality, senior housing is an **operating business rather than a
+lease** — but the thing that makes or breaks the deal is the operator's labor
+model, not the rate. The three class-distinctive metrics say so directly:
+
+id | formula | unit
+---|---|---
+`revpor` | `noi_model.income.effective_gross_income / (rent_roll.occupied_units * 12)` | `$`
+`labor_ratio` | `noi_model.total_labor_expense / noi_model.income.effective_gross_income` | `%`
+`care_revenue_ratio` | `noi_model.income.care_revenue / noi_model.income.effective_gross_income` | `%`
+
+RevPOR is revenue **per occupied unit per month** — the blended rate an
+underwriter compares against market, covering room-and-board plus care fees.
+`care_revenue_ratio` splits that into the share coming from level-of-care fees
+rather than rent, which is what distinguishes memory care from independent
+living. `labor_ratio` is the single most predictive expense metric in the class.
+
+One structural note. `total_labor_expense` is a **model-level subtotal**
+(`noi_model.total_labor_expense`), not an entry inside `noi_model.expenses` —
+the three labor lines (`salaries_wages`, `employee_benefits`, `contract_labor`)
+stay inside `expenses` so the operating statement still foots to
+`total_operating_expenses` without double counting. This mirrors how hospitality
+carries `gross_operating_profit`. `senior-housing.test.ts` asserts both halves:
+the lines foot, and the subtotal reconciles to its three components while
+staying out of the expense map. Verified against the
+`Ocotillo-Senior-Living-Chandler-AZ.uw.md` worked example.
+
+These are the **seven asset-class packs today** (`multifamily`, `office`,
+`retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`). The
+`AssetClass` type union also lists student_housing/mixed_use/land, but no packs
+are defined for them yet. Adding
 another **built-in** pack for an existing enum value is a library-only change
 (follow the recipe below). Letting **third-party modules** declare entirely new
 asset-class identifiers is the separate v2 RFC topic — see
