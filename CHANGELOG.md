@@ -16,6 +16,15 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Fixed
+- **`@uwmd/excel` and `@uwmd/report` were building against published core 1.1.0,
+  not the workspace.** Both pinned `"@uwmd/core": "1.1.0"` exactly while the
+  workspace core was at 1.1.2, so npm could not satisfy the pin from the
+  workspace and installed the *published* 1.1.0 into each package's nested
+  `node_modules`, shadowing the workspace link. Every build and test in those
+  two packages — including the Excel↔calc-engine parity invariant, whose whole
+  point is that one pack drives both — was silently verified against a different
+  core than the repo's. It went unnoticed because 1.1.0 happened to export
+  everything they referenced. Both pins now track the workspace version.
 - **VS Code extension silently passed UW Lite files.** It ran the *structured*
   parser over every `.uw.md`; post-RFC-0017 that extension means UW Lite, where
   the structured parser finds no fenced sections — so it reported zero issues
