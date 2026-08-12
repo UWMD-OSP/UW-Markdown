@@ -5,6 +5,7 @@ import {
   RETAIL_DEFAULTS,
   INDUSTRIAL_DEFAULTS,
   SELF_STORAGE_DEFAULTS,
+  HOSPITALITY_DEFAULTS,
   getAssetClassDefaults,
   getDefaultRange,
   listDefaultedFields,
@@ -258,8 +259,13 @@ describe('defaults — registry helpers', () => {
     expect(t).toBe(SELF_STORAGE_DEFAULTS);
   });
 
+  it('getAssetClassDefaults returns the hospitality table', () => {
+    const t = getAssetClassDefaults('hospitality');
+    expect(t).toBe(HOSPITALITY_DEFAULTS);
+  });
+
   it('getAssetClassDefaults returns null for unregistered classes', () => {
-    expect(getAssetClassDefaults('hospitality')).toBeNull();
+    expect(getAssetClassDefaults('senior_housing')).toBeNull();
     expect(getAssetClassDefaults('not-a-real-class')).toBeNull();
   });
 
@@ -283,11 +289,15 @@ describe('defaults — registry helpers', () => {
     const ss = getDefaultRange('self_storage', 'rent_roll.economic_vacancy_pct');
     expect(ss?.central).toBe(0.15);
     expect(ss?.unit).toBe('percent');
+
+    const hosp = getDefaultRange('hospitality', 'noi_model.gop_margin');
+    expect(hosp?.central).toBe(0.4);
+    expect(hosp?.unit).toBe('ratio');
   });
 
   it('getDefaultRange returns null for unknown field', () => {
     expect(getDefaultRange('multifamily', 'no.such.field')).toBeNull();
-    expect(getDefaultRange('hospitality', 'noi_model.expense_ratio')).toBeNull();
+    expect(getDefaultRange('senior_housing', 'noi_model.expense_ratio')).toBeNull();
   });
 
   it('listDefaultedFields enumerates the table keys', () => {
@@ -311,6 +321,10 @@ describe('defaults — registry helpers', () => {
     expect(selfStoragePaths.length).toBe(Object.keys(SELF_STORAGE_DEFAULTS.fields).length);
     expect(selfStoragePaths).toContain('rent_roll.economic_vacancy_pct');
 
-    expect(listDefaultedFields('hospitality')).toEqual([]);
+    const hospitalityPaths = listDefaultedFields('hospitality');
+    expect(hospitalityPaths.length).toBe(Object.keys(HOSPITALITY_DEFAULTS.fields).length);
+    expect(hospitalityPaths).toContain('noi_model.gop_margin');
+
+    expect(listDefaultedFields('senior_housing')).toEqual([]);
   });
 });

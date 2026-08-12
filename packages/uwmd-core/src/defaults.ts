@@ -623,12 +623,142 @@ export const SELF_STORAGE_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Hospitality asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized, branded select-service and upscale hotels. The
+ * key class-specific inputs are occupancy, ADR, RevPAR, the GOP margin, and the
+ * franchise/management/FF&E load that sits between GOP and NOI. Hotels are
+ * operating businesses, so the expense-ratio and cap-rate bands run materially
+ * wider than for the lease-based classes. Triage grade (scope-stage VOI
+ * ranking), not committee underwriting.
+ */
+export const HOSPITALITY_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'hospitality',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.64,
+      central: 0.72,
+      high: 0.8,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'STR / HOST full-year operating expense ratio bands, select-service hotels',
+    },
+    'noi_model.gop_margin': {
+      low: 0.32,
+      central: 0.4,
+      high: 0.47,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'USALI gross operating profit margin band, branded select-service',
+    },
+    'rent_roll.occupancy': {
+      low: 0.62,
+      central: 0.72,
+      high: 0.8,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'STR trailing-twelve occupancy distribution, US select-service',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.2,
+      central: 0.28,
+      high: 0.38,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Complement of the STR occupancy band',
+    },
+    'noi_model.adr_growth_pct_y1': {
+      low: 0.0,
+      central: 0.025,
+      high: 0.05,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'STR / Tourism Economics ADR growth forecast bands',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.025,
+      central: 0.03,
+      high: 0.04,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Third-party hotel management fee band (% of total revenue)',
+    },
+    'noi_model.franchise_fee_pct': {
+      low: 0.06,
+      central: 0.08,
+      high: 0.11,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Brand royalty plus marketing/reservation fees (% of rooms revenue)',
+    },
+    'noi_model.ffe_reserve_pct': {
+      low: 0.03,
+      central: 0.04,
+      high: 0.05,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Franchise-mandated FF&E reserve band (% of total revenue)',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.07,
+      central: 0.0775,
+      high: 0.0875,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'CMBS / debt-fund hospitality quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 240,
+      central: 300,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Hospitality permanent amortization (20-30 yr; 25 yr most common)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 0,
+      high: 12,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Limited IO availability on stabilized hospitality permanent debt',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.5,
+      central: 0.6,
+      high: 0.68,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Hospitality LTV envelope; lenders size tighter than lease-based classes',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.075,
+      central: 0.0875,
+      high: 0.1,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'RCA / HVS hospitality cap-rate distribution',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.02,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, franchise application)',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
   retail: RETAIL_DEFAULTS,
   industrial: INDUSTRIAL_DEFAULTS,
   self_storage: SELF_STORAGE_DEFAULTS,
+  hospitality: HOSPITALITY_DEFAULTS,
 });
 
 /**

@@ -7,7 +7,8 @@ CLI, conformance, refinement) picks it up.
 
 - **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
-  `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `getPackForAssetClass`,
+  `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
+  `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
 ## File layout
@@ -19,6 +20,7 @@ File | Role
 `packs/retail.ts` | `RETAIL_PACK` — the canonical retail metrics
 `packs/industrial.ts` | `INDUSTRIAL_PACK` — the canonical industrial metrics
 `packs/self-storage.ts` | `SELF_STORAGE_PACK` — the canonical self-storage metrics
+`packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
 `packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (6 decimals)
@@ -26,6 +28,7 @@ File | Role
 `packs/retail.test.ts` | Retail pack integrity + Excel↔evaluator parity (6 decimals)
 `packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (6 decimals)
 `packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (6 decimals)
+`packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (6 decimals) + operating-statement footing
 
 ## Selecting a pack by asset class
 
@@ -33,7 +36,8 @@ File | Role
 (or `null` if none is registered) — mirroring `getAssetClassDefaults` in
 `defaults.ts`. The CLI's `refine`/`scope` and any consumer should select the pack
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
-Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`.
+Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
+`hospitality`.
 
 ## `MULTIFAMILY_PACK`
 
@@ -110,9 +114,37 @@ property packs, but keyed off **net rentable square feet**
 (`property.rentable_units`), and both physical and economic occupancy. Verified
 against the `Sonoran-Self-Storage-Peoria-AZ.uw.md` worked example.
 
-These are the **five asset-class packs today** (`multifamily`, `office`,
-`retail`, `industrial`, `self_storage`). The `AssetClass` type union also lists
-hospitality/senior_housing/student_housing/mixed_use/land, but no packs are
+## `HOSPITALITY_PACK`
+
+A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+['hospitality']`) whose `calculations[]` are the **fourteen** hospitality derived
+metrics. Same cap-rate / LTV / LTC / DSCR / debt-yield core as the other income
+property packs, but hotels size by **keys** (`property.keys`) rather than area,
+so the per-unit metrics are `price_per_key` / `loan_per_key` / `noi_per_key`.
+
+The class-distinctive metrics are the four that make a hotel an operating
+business rather than a lease:
+
+id | formula | unit
+---|---|---
+`occupancy` | `rent_roll.occupied_room_nights / rent_roll.available_room_nights` | `%`
+`adr` | `noi_model.income.rooms_revenue / rent_roll.occupied_room_nights` | `$`
+`revpar` | `noi_model.income.rooms_revenue / rent_roll.available_room_nights` | `$`
+`gop_margin` | `noi_model.gross_operating_profit / noi_model.income.effective_gross_income` | `%`
+
+Two shape notes. Hospitality has **no lease-based rent roll**, so `rent_roll`
+carries the trailing-twelve room-night statistics instead (available room nights
+= keys × 365, occupied room nights from the STR report) — the same way
+self-storage keeps occupied units there. And `noi_model` is **USALI-shaped**: it
+carries a `gross_operating_profit` subtotal struck after departmental and
+undistributed expenses, with the management fee, property taxes, insurance, and
+the FF&E reserve falling below GOP to reach NOI. `RevPAR = ADR × occupancy`
+holds by construction, since all three read the same three primitives. Verified
+against the `Saguaro-Select-Hotel-Tempe-AZ.uw.md` worked example.
+
+These are the **six asset-class packs today** (`multifamily`, `office`,
+`retail`, `industrial`, `self_storage`, `hospitality`). The `AssetClass` type
+union also lists senior_housing/student_housing/mixed_use/land, but no packs are
 defined for them yet. Adding
 another **built-in** pack for an existing enum value is a library-only change
 (follow the recipe below). Letting **third-party modules** declare entirely new

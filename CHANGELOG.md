@@ -16,6 +16,21 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Fixed
+- **`npm run lint` was red locally but green in CI.** Biome linted
+  `tools/docs-site/public/editor/`, the built web-editor bundle vendored into
+  the docs site, producing 7,267 diagnostics from one generated file. The
+  directory is gitignored, so a fresh CI checkout never saw it and CI passed;
+  anyone running the lint script locally got a wall of noise from a file they
+  had not written. Added to the Biome ignore list.
+- **`@uwmd/excel` and `@uwmd/report` were building against published core 1.1.0,
+  not the workspace.** Both pinned `"@uwmd/core": "1.1.0"` exactly while the
+  workspace core was at 1.1.2, so npm could not satisfy the pin from the
+  workspace and installed the *published* 1.1.0 into each package's nested
+  `node_modules`, shadowing the workspace link. Every build and test in those
+  two packages — including the Excel↔calc-engine parity invariant, whose whole
+  point is that one pack drives both — was silently verified against a different
+  core than the repo's. It went unnoticed because 1.1.0 happened to export
+  everything they referenced. Both pins now track the workspace version.
 - **VS Code extension silently passed UW Lite files.** It ran the *structured*
   parser over every `.uw.md`; post-RFC-0017 that extension means UW Lite, where
   the structured parser finds no fenced sections — so it reported zero issues
@@ -30,6 +45,24 @@ protocol, and each package each carry an independent semver).
   bumped to 0.2.0.
 
 ### Added
+- **Hospitality calc pack — the sixth asset class end-to-end.**
+  `HOSPITALITY_PACK` adds fourteen deterministic metrics keyed off keys
+  (`price_per_key`, `loan_per_key`, `noi_per_key`) alongside the shared
+  cap-rate / LTV / LTC / DSCR / debt-yield core, plus the four metrics that make
+  a hotel an operating business rather than a lease: `occupancy`, `adr`,
+  `revpar`, and `gop_margin`. Hospitality has no lease-based rent roll, so
+  `rent_roll` carries trailing-twelve room-night statistics (available room
+  nights = keys × 365, occupied room nights from the STR report); `noi_model` is
+  USALI-shaped, with a `gross_operating_profit` subtotal struck above the
+  management fee, fixed charges, and the FF&E reserve. `RevPAR = ADR ×
+  occupancy` holds by construction — all three read the same primitives.
+  Shipped with `HOSPITALITY_DEFAULTS` (14 triage-grade ranges, wider expense and
+  cap-rate bands than the lease-based classes), the
+  `Saguaro-Select-Hotel-Tempe-AZ.uw.md` worked example, and a
+  `HOSPITALITY_LAYOUT` workbook layout. `getPackForAssetClass`,
+  `getAssetClassDefaults`, and `getLayoutForAssetClass` all resolve
+  `hospitality`; Excel↔evaluator parity is pinned to 6 decimals in both
+  `packs/hospitality.test.ts` and the converter's `toWorkbook.test.ts`.
 - **`.uwx.md` registered in the VS Code extension** — structured records on the
   new extension now get highlighting, folding, outline, and validation, where
   previously they got nothing at all. Structured content still on the legacy
