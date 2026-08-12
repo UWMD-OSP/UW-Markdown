@@ -2,10 +2,9 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-09 (verification receipts landed: `receipts.ts`,
-`spec/UW_RECEIPT_v1.md`, the receipt schema, `uwmd receipt issue|verify`, and the
-`receipts` conformance suite; full build + 443 core tests + 101 conformance
-assertions green).
+**Last verified:** 2026-08-11 (full pass: build green across all workspaces,
+491 tests green — 450 core, 23 excel, 14 cli, 3 report, 1 batch — 101 conformance
+assertions green, 10/10 schemas valid, Biome clean over 250 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -41,12 +40,12 @@ not core gaps.
   renderer (`json`/`csv`/`chat`/`summary`). See [03](03-core-library.md).
 - **Calc engine:** sandboxed parser+evaluator, 17 builtins incl.
   `pmt/fv/pv/nper/irr/npv`, full error taxonomy, property tests. See [04](04-calc-engine.md).
-- **Multifamily + office + retail + industrial + self-storage packs:**
-  `MULTIFAMILY_PACK` (8 metrics), `OFFICE_PACK` (11), `RETAIL_PACK` (12),
-  `INDUSTRIAL_PACK` (12), `SELF_STORAGE_PACK` (12), selectable via
-  `getPackForAssetClass`. The Excel converter has a `WorkbookLayout`
+- **Multifamily + office + retail + industrial + self-storage + hospitality
+  packs:** `MULTIFAMILY_PACK` (8 metrics), `OFFICE_PACK` (11), `RETAIL_PACK` (12),
+  `INDUSTRIAL_PACK` (12), `SELF_STORAGE_PACK` (12), `HOSPITALITY_PACK` (14),
+  selectable via `getPackForAssetClass`. The Excel converter has a `WorkbookLayout`
   per class (selected via `getLayoutForAssetClass`); its `toWorkbook.test.ts`
-  computes parity for all five (operating statement foots; metrics == evaluateCalc
+  computes parity for all six (operating statement foots; metrics == evaluateCalc
   to 6 decimals). Pack-level parity also pinned in each `packs/*.test.ts`. See
   [05](05-calc-packs.md), [08](08-tools.md).
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
@@ -86,12 +85,13 @@ not core gaps.
 
 ## 🟡 Partial — works but needs improvement
 
-- **Asset-class coverage = 5 of 10 classes.** `AssetClass` lists 10 classes;
-  multifamily, office, retail, industrial, and self-storage each have a pack +
-  defaults table + worked example + Excel layout, and `scope`/`refine`/Excel
-  resolve all five off `frontmatter.asset_class`. Hospitality/senior_housing/
-  student_housing/mixed_use/land remain unbuilt — the next packs to add. **A
-  shrinking limiter, but the long tail of classes is still uncovered.**
+- **Asset-class coverage = 6 of 10 classes.** `AssetClass` lists 10 classes;
+  multifamily, office, retail, industrial, self-storage, and hospitality each
+  have a pack + defaults table + worked example + Excel layout, and
+  `scope`/`refine`/Excel resolve all six off `frontmatter.asset_class`.
+  Senior_housing/student_housing/mixed_use/land remain unbuilt — the next packs
+  to add. **A shrinking limiter, but the long tail of classes is still
+  uncovered.**
 - **Module system is declarative-only.** `modules.ts` validates and registers
   in-process `ModuleManifest` objects (shape, formulas, dependency load order,
   tier/protocol/format compatibility), but there is no dynamic import, signing,
@@ -107,8 +107,8 @@ not core gaps.
   component tests for the footed surfaces and inline-remediation wiring, receipt
   issuance/verification incl. the stale-vs-failed distinction and a forced
   Web-Crypto path, and an axe-core a11y smoke check.
-- **Examples = 5 deals** (multifamily, office, retail, industrial, self-storage);
-  other classes/loan types undemonstrated.
+- **Examples = 6 deals** (multifamily, office, retail, industrial, self-storage,
+  hospitality); other classes/loan types undemonstrated.
 - **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
   FAQ/troubleshooting, and a calc "calling-convention" guide are still missing.
 
@@ -209,8 +209,8 @@ bus factor, personal security email, and no public RFC venue.
    on the RFC 0010 signing package — until it exists a signed receipt correctly
    reports `unverifiable`.
 2. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
-3. **More asset-class packs + defaults + Excel layouts** (hospitality next) —
-   five classes have landed end-to-end (pack +
+3. **More asset-class packs + defaults + Excel layouts** (senior_housing next) —
+   six classes have landed end-to-end (pack +
    defaults + worked example + Excel layout). Keep widening coverage. Each is a
    library-only change (no RFC); add a worked example whose operating statement
    foots, and a `WorkbookLayout`. See [05 recipe](05-calc-packs.md), [08](08-tools.md).

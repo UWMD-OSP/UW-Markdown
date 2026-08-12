@@ -45,6 +45,24 @@ protocol, and each package each carry an independent semver).
   bumped to 0.2.0.
 
 ### Added
+- **Hospitality calc pack — the sixth asset class end-to-end.**
+  `HOSPITALITY_PACK` adds fourteen deterministic metrics keyed off keys
+  (`price_per_key`, `loan_per_key`, `noi_per_key`) alongside the shared
+  cap-rate / LTV / LTC / DSCR / debt-yield core, plus the four metrics that make
+  a hotel an operating business rather than a lease: `occupancy`, `adr`,
+  `revpar`, and `gop_margin`. Hospitality has no lease-based rent roll, so
+  `rent_roll` carries trailing-twelve room-night statistics (available room
+  nights = keys × 365, occupied room nights from the STR report); `noi_model` is
+  USALI-shaped, with a `gross_operating_profit` subtotal struck above the
+  management fee, fixed charges, and the FF&E reserve. `RevPAR = ADR ×
+  occupancy` holds by construction — all three read the same primitives.
+  Shipped with `HOSPITALITY_DEFAULTS` (14 triage-grade ranges, wider expense and
+  cap-rate bands than the lease-based classes), the
+  `Saguaro-Select-Hotel-Tempe-AZ.uw.md` worked example, and a
+  `HOSPITALITY_LAYOUT` workbook layout. `getPackForAssetClass`,
+  `getAssetClassDefaults`, and `getLayoutForAssetClass` all resolve
+  `hospitality`; Excel↔evaluator parity is pinned to 6 decimals in both
+  `packs/hospitality.test.ts` and the converter's `toWorkbook.test.ts`.
 - **`.uwx.md` registered in the VS Code extension** — structured records on the
   new extension now get highlighting, folding, outline, and validation, where
   previously they got nothing at all. Structured content still on the legacy

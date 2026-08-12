@@ -209,6 +209,7 @@ export {
   RETAIL_PACK,
   INDUSTRIAL_PACK,
   SELF_STORAGE_PACK,
+  HOSPITALITY_PACK,
   getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
@@ -261,6 +262,7 @@ export {
   RETAIL_DEFAULTS,
   INDUSTRIAL_DEFAULTS,
   SELF_STORAGE_DEFAULTS,
+  HOSPITALITY_DEFAULTS,
 } from './defaults.js';
 export type { AssetClassDefaults, DefaultRange, DefaultUnit } from './defaults.js';
 export { getExprDependencies, extractDependencyGraph } from './calc/dependencies.js';

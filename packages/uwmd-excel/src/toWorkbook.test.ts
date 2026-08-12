@@ -23,6 +23,7 @@ import { OFFICE_LAYOUT } from './office.js';
 import { RETAIL_LAYOUT } from './retail.js';
 import { INDUSTRIAL_LAYOUT } from './industrial.js';
 import { SELF_STORAGE_LAYOUT } from './self-storage.js';
+import { HOSPITALITY_LAYOUT } from './hospitality.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 const EXAMPLES = resolve(__dirname, '../../../examples');
@@ -33,6 +34,7 @@ const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
   { file: 'Cactus-Crossing-Retail-Mesa-AZ.uw.md', layout: RETAIL_LAYOUT },
   { file: 'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md', layout: INDUSTRIAL_LAYOUT },
   { file: 'Sonoran-Self-Storage-Peoria-AZ.uw.md', layout: SELF_STORAGE_LAYOUT },
+  { file: 'Saguaro-Select-Hotel-Tempe-AZ.uw.md', layout: HOSPITALITY_LAYOUT },
 ];
 
 async function roundTrip(file: string): Promise<ExcelJS.Workbook> {
@@ -77,6 +79,7 @@ function rowByLabel(ws: ExcelJS.Worksheet): Map<string, number> {
 describe('layout registry', () => {
   it('supports the registered workbook-layout classes', () => {
     expect([...SUPPORTED_ASSET_CLASSES].sort()).toEqual([
+      'hospitality',
       'industrial',
       'multifamily',
       'office',
@@ -86,12 +89,12 @@ describe('layout registry', () => {
   });
 
   it('returns null for an unregistered class', () => {
-    expect(getLayoutForAssetClass('hospitality')).toBeNull();
+    expect(getLayoutForAssetClass('senior_housing')).toBeNull();
   });
 
   it('toWorkbook throws UnsupportedAssetClassError for an unregistered class', async () => {
     const parsed = parseUWFile(
-      ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "hospitality"', '---', '# X'].join('\n'),
+      ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "senior_housing"', '---', '# X'].join('\n'),
     );
     await expect(toWorkbook(parsed)).rejects.toBeInstanceOf(UnsupportedAssetClassError);
   });
