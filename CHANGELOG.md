@@ -15,7 +15,25 @@ protocol, and each package each carry an independent semver).
   docs-site nav/footer/edit links, the `llms.txt` corpus, and the AI guide were
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
+### Fixed
+- **VS Code extension silently passed UW Lite files.** It ran the *structured*
+  parser over every `.uw.md`; post-RFC-0017 that extension means UW Lite, where
+  the structured parser finds no fenced sections — so it reported zero issues
+  and a `clean` status for a document nothing had parsed. The parser is now
+  chosen from the content via `detectUWSourceRepresentation`: Lite documents get
+  `LITE_*` parse errors plus `LITE_COMPILE_*` bridge errors, UWX documents get
+  the full structured validator. Diagnostics are also anchored to the line they
+  concern instead of all being pinned to line 1. Financial thresholds remain
+  unavailable for Lite by construction — `checkFinancialValidity` reads
+  `frontmatter.quick_metrics`, which the deal-summary bridge does not populate;
+  a toggle for it was prototyped and removed because it did nothing. Extension
+  bumped to 0.2.0.
+
 ### Added
+- **`.uwx.md` registered in the VS Code extension** — structured records on the
+  new extension now get highlighting, folding, outline, and validation, where
+  previously they got nothing at all. Structured content still on the legacy
+  `.uw.md` extension is detected and nudged toward migration.
 - **Receipt verification in the VS Code extension** — a
   `UW Markdown: Verify Receipt for This Deal` command checks the
   `<deal>.receipt.json` sidecar against the open document. Verdicts map to

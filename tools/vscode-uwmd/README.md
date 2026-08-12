@@ -1,7 +1,8 @@
 # UW Markdown — VS Code extension
 
-Syntax highlighting, section folding, document outline, and on-save
-validation for `.uw.md` underwriting files.
+Syntax highlighting, section folding, document outline, on-save
+validation, and receipt verification for `.uw.md` (UW Lite) and
+`.uwx.md` (UWX) underwriting files.
 
 Backed by the same parser and validator as `@uwmd/core`, so what the
 extension flags is exactly what `uwmd validate` flags on the command line
@@ -16,10 +17,12 @@ and what CI gates with.
   any fenced code block.
 - **Document outline** — VS Code's outline panel shows a nested view of
   the file's `##`/`###` sections.
-- **Validation diagnostics** — on save (configurable to on-change), the
-  extension parses the file with `@uwmd/core` and surfaces every
-  validation issue as a diagnostic with the spec reference and
-  remediation copy.
+- **Representation-aware validation** — on save (configurable to
+  on-change), the extension picks the parser from the file's *content*,
+  not its extension. UW Lite documents get Lite parse errors
+  (`LITE_*`) plus deal-summary bridge errors (`LITE_COMPILE_*`);
+  structured UWX documents get the full validator. Diagnostics point at
+  the line they concern.
 - **Verify a receipt** — the **UW Markdown: Verify Receipt for This
   Deal** command checks the `.receipt.json` sidecar beside the open
   deal and reports one of three results, with the full breakdown in the
@@ -53,6 +56,25 @@ are still editing is stale the moment you type again — issue one with
 |---|---|---|
 | `uwmd.validate.onSave` | `true` | Validate the file when it's saved. Turn off to silence diagnostics entirely. |
 | `uwmd.validate.onChange` | `false` | Re-validate while typing. Off by default — parsing every keystroke can flicker on large files. |
+
+## Which files, and which checks
+
+Both `.uw.md` and `.uwx.md` are recognised. The representation is
+decided by content, so a structured record still carrying the legacy
+`.uw.md` extension is handled correctly and gets an informational nudge
+to migrate.
+
+| Representation | Checks |
+|---|---|
+| **UW Lite** (`.uw.md`) | Lite grammar errors (`LITE_*`) and deal-summary bridge errors (`LITE_COMPILE_*` — unsupported units, unknown field paths, non-base scenarios) |
+| **UWX** (`.uwx.md`) | The full structured validator (`CC-*`, `FV-*`, `DQ-*`, `META_*`) |
+
+Financial thresholds (DSCR, LTV, and friends) are **not** reported for
+Lite documents. Those checks read `frontmatter.quick_metrics`, and the
+deal-summary bridge does not populate it — so there is nothing for them
+to read. Computing the metrics here instead would mean the extension
+flags things `uwmd validate` does not, which is a promise this extension
+deliberately keeps. Run the numbers through the CLI or the web editor.
 
 ## Install (development)
 

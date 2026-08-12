@@ -1,8 +1,27 @@
 # vscode-uwmd changelog
 
-## [Unreleased]
+## [0.2.0]
+
+### Fixed
+- **UW Lite files are actually validated now.** The extension ran the
+  *structured* parser over every `.uw.md`. Post-RFC-0017 that extension means
+  UW Lite, where the structured parser finds no fenced sections — so it
+  reported zero issues and a `clean` status for a document nothing had parsed.
+  A silent false pass. The parser is now chosen from the content, the way
+  core's `detectUWSourceRepresentation` does it.
+- **Diagnostics point at the line they concern.** Every diagnostic was pinned
+  to line 1. Lite issues carry source ranges and structured blocks carry
+  `lineStart`, so both are now anchored properly.
 
 ### Added
+- **`.uwx.md` is registered.** Structured records on the new extension get
+  highlighting, folding, outline, and validation; previously they got nothing.
+- Structured content still on the legacy `.uw.md` extension is detected and
+  gets an informational nudge to migrate.
+- Unit tests for the analysis path, including a regression guard on the silent
+  false pass.
+
+### Added (receipts)
 - **`UW Markdown: Verify Receipt for This Deal`** — verifies the
   `<deal>.receipt.json` sidecar beside the open file (RFC 0016). Reports
   `verified` / `failed` / `unverifiable` as an information, error, or warning

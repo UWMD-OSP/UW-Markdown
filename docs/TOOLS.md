@@ -52,6 +52,10 @@ validation diagnostics tied to `BUILTIN_REMEDIATIONS`, and a
 issue — a receipt issued mid-authoring is stale on the next keystroke.
 See [Verification receipts](UW_RECEIPTS.md).
 
+It handles both representations: `.uw.md` Lite summaries and `.uwx.md`
+structured records, choosing the parser from the file's content rather
+than its extension.
+
 Best for: writing `.uw.md` files by hand. Reviewing a teammate's PR
 that touches a deal file. Living in the spec while authoring.
 

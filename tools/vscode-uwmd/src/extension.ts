@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { parseUWFile, validateUWFile } from '@uwmd/core';
-import type { ValidationMessage, ValidationSeverity } from '@uwmd/core';
 import { checkReceipt, formatReport, receiptPathFor, summaryLine } from './receipts.js';
+import { analyzeDocument } from './validate.js';
+import type { UWDiagnostic, UWDiagnosticSeverity } from './validate.js';
 
 const LANGUAGE_ID = 'uwmd';
 const DIAGNOSTIC_SOURCE = 'uwmd';
@@ -109,45 +109,33 @@ function maybeValidate(doc: vscode.TextDocument): void {
     return;
   }
 
-  try {
-    const text = doc.getText();
-    const parsed = parseUWFile(text, { strict: false });
-    const result = validateUWFile(parsed);
-    diagnostics.set(doc.uri, result.issues.map(toDiagnostic));
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    const diag = new vscode.Diagnostic(
-      new vscode.Range(0, 0, 0, 1),
-      `Parse error: ${message}`,
-      vscode.DiagnosticSeverity.Error,
-    );
-    diag.source = DIAGNOSTIC_SOURCE;
-    diag.code = 'PARSE-001';
-    diagnostics.set(doc.uri, [diag]);
-  }
+  // The parser is chosen from the content, not the extension: `.uw.md` is UW
+  // Lite post-RFC-0017, and running the structured parser over it used to
+  // report a clean bill of health for a document nothing had parsed.
+  const result = analyzeDocument(doc.getText(), doc.uri.fsPath);
+  diagnostics.set(doc.uri, result.diagnostics.map((issue) => toDiagnostic(doc, issue)));
 }
 
-function toDiagnostic(msg: ValidationMessage): vscode.Diagnostic {
+function toDiagnostic(doc: vscode.TextDocument, issue: UWDiagnostic): vscode.Diagnostic {
   const diag = new vscode.Diagnostic(
-    new vscode.Range(0, 0, 0, 1),
-    formatMessage(msg),
-    severityToDiagnostic(msg.severity),
+    rangeFor(doc, issue),
+    issue.message,
+    severityToDiagnostic(issue.severity),
   );
   diag.source = DIAGNOSTIC_SOURCE;
-  diag.code = msg.code;
+  diag.code = issue.code;
   return diag;
 }
 
-function formatMessage(msg: ValidationMessage): string {
-  const parts: string[] = [];
-  if (msg.title) parts.push(msg.title);
-  parts.push(msg.message);
-  if (msg.remediation) parts.push(`\n\nRemediation: ${msg.remediation}`);
-  if (msg.spec_ref) parts.push(`(spec: ${msg.spec_ref})`);
-  return parts.join(' ');
+/** Span the reported line, clamped to the document the user actually has. */
+function rangeFor(doc: vscode.TextDocument, issue: UWDiagnostic): vscode.Range {
+  const last = Math.max(0, doc.lineCount - 1);
+  const start = Math.min(Math.max(0, issue.line), last);
+  const end = Math.min(Math.max(start, issue.endLine), last);
+  return new vscode.Range(start, 0, end, doc.lineAt(end).text.length || 1);
 }
 
-function severityToDiagnostic(sev: ValidationSeverity): vscode.DiagnosticSeverity {
+function severityToDiagnostic(sev: UWDiagnosticSeverity): vscode.DiagnosticSeverity {
   switch (sev) {
     case 'error':   return vscode.DiagnosticSeverity.Error;
     case 'warning': return vscode.DiagnosticSeverity.Warning;
