@@ -752,6 +752,143 @@ export const HOSPITALITY_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Senior-housing asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized assisted-living and memory-care communities under
+ * third-party management. Senior housing is an operating business with a heavy
+ * labor load, so the expense-ratio band runs the widest of any class here and
+ * the labor ratio is itself a defaulted input. Independent living sits toward
+ * the low end of the expense and care bands; memory care toward the high end.
+ * Triage grade (scope-stage VOI ranking), not committee underwriting.
+ */
+export const SENIOR_HOUSING_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'senior_housing',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.66,
+      central: 0.75,
+      high: 0.84,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'NIC MAP / state-of-seniors-housing operating expense ratio bands (AL/MC)',
+    },
+    'noi_model.labor_ratio': {
+      low: 0.34,
+      central: 0.42,
+      high: 0.5,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'Labor (wages, benefits, contract) as a share of revenue, NIC MAP AL/MC',
+    },
+    'noi_model.care_revenue_ratio': {
+      low: 0.12,
+      central: 0.2,
+      high: 0.3,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'Level-of-care fees as a share of total revenue; higher for memory care',
+    },
+    'rent_roll.occupancy': {
+      low: 0.8,
+      central: 0.87,
+      high: 0.93,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'NIC MAP stabilized seniors-housing occupancy distribution',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.07,
+      central: 0.13,
+      high: 0.2,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Complement of the NIC MAP occupancy band',
+    },
+    'noi_model.rate_growth_pct_y1': {
+      low: 0.025,
+      central: 0.04,
+      high: 0.06,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'NIC MAP asking-rate growth; senior housing reprices annually at renewal',
+    },
+    'noi_model.wage_growth_pct_y1': {
+      low: 0.03,
+      central: 0.04,
+      high: 0.055,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'BLS healthcare-support wage growth; the dominant expense driver',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.04,
+      central: 0.05,
+      high: 0.06,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Third-party seniors-housing management fee band (% of total revenue)',
+    },
+    'noi_model.replacement_reserve_per_unit_y1': {
+      low: 350,
+      central: 500,
+      high: 750,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'Agency / HUD seniors-housing reserve floors ($/unit/yr)',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.068,
+      central: 0.0745,
+      high: 0.085,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Agency (Fannie/Freddie seniors) and bank quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard seniors-housing amortization (25-30 yr)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 0,
+      high: 24,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Seniors-housing IO availability range on stabilized permanent debt',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.55,
+      central: 0.62,
+      high: 0.7,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Seniors-housing LTV envelope; agency sizes to DSCR and debt yield first',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.07,
+      central: 0.08,
+      high: 0.092,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'RCA / NIC seniors-housing cap-rate distribution (AL/MC)',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.02,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, licensure transfer)',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
@@ -759,6 +896,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   industrial: INDUSTRIAL_DEFAULTS,
   self_storage: SELF_STORAGE_DEFAULTS,
   hospitality: HOSPITALITY_DEFAULTS,
+  senior_housing: SENIOR_HOUSING_DEFAULTS,
 });
 
 /**

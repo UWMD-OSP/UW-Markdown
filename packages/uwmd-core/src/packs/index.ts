@@ -12,6 +12,7 @@ import { RETAIL_PACK } from './retail.js';
 import { INDUSTRIAL_PACK } from './industrial.js';
 import { SELF_STORAGE_PACK } from './self-storage.js';
 import { HOSPITALITY_PACK } from './hospitality.js';
+import { SENIOR_HOUSING_PACK } from './senior-housing.js';
 
 export { MULTIFAMILY_PACK } from './multifamily.js';
 export { OFFICE_PACK } from './office.js';
@@ -19,6 +20,7 @@ export { RETAIL_PACK } from './retail.js';
 export { INDUSTRIAL_PACK } from './industrial.js';
 export { SELF_STORAGE_PACK } from './self-storage.js';
 export { HOSPITALITY_PACK } from './hospitality.js';
+export { SENIOR_HOUSING_PACK } from './senior-housing.js';
 export {
   emitFromAst,
   emitExcelFormula,
@@ -38,6 +40,7 @@ const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
   industrial: INDUSTRIAL_PACK,
   self_storage: SELF_STORAGE_PACK,
   hospitality: HOSPITALITY_PACK,
+  senior_housing: SENIOR_HOUSING_PACK,
 });
 
 /**
