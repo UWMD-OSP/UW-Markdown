@@ -889,6 +889,136 @@ export const SENIOR_HOUSING_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Student-housing asset-class defaults, v1.0.0.
+ *
+ * Calibrated for stabilized purpose-built off-campus product within walking
+ * distance of a large public university. Student housing leases by the bed on
+ * an academic-year cycle, so the two inputs that matter most have no
+ * conventional-multifamily analogue: the pre-lease rate for the coming year,
+ * and the turnover cost of re-leasing nearly the whole property on one date.
+ * The expense ratio runs above conventional multifamily for the same reason.
+ * Triage grade (scope-stage VOI ranking), not committee underwriting.
+ */
+export const STUDENT_HOUSING_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'student_housing',
+  version: '1.0.0',
+  fields: {
+    'noi_model.expense_ratio': {
+      low: 0.42,
+      central: 0.49,
+      high: 0.56,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'NMHC / Yardi student-housing operating expense bands (purpose-built)',
+    },
+    'rent_roll.occupancy': {
+      low: 0.9,
+      central: 0.95,
+      high: 0.98,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Yardi Matrix student-housing in-place occupancy, pedestrian-to-campus assets',
+    },
+    'rent_roll.vacancy_pct': {
+      low: 0.02,
+      central: 0.05,
+      high: 0.1,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Complement of the Yardi Matrix occupancy band',
+    },
+    'rent_roll.pre_lease_rate': {
+      low: 0.88,
+      central: 0.95,
+      high: 0.99,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Yardi Matrix national pre-lease survey, fall term at August measurement',
+    },
+    'noi_model.rent_growth_pct_y1': {
+      low: 0.02,
+      central: 0.035,
+      high: 0.06,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Yardi Matrix student-housing rent-per-bed growth bands',
+    },
+    'noi_model.turnover_cost_per_bed': {
+      low: 300,
+      central: 450,
+      high: 650,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'Make-ready cost per bed for a full August turn (paint, carpet, cleaning, repairs)',
+    },
+    'noi_model.management_fee_pct': {
+      low: 0.03,
+      central: 0.04,
+      high: 0.05,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Third-party student-housing management fee band (% of EGI)',
+    },
+    'noi_model.replacement_reserve_per_bed_y1': {
+      low: 100,
+      central: 150,
+      high: 250,
+      unit: 'currency',
+      source: 'asset_class_default',
+      citation: 'Agency student-housing reserve floors ($/bed/yr)',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.058,
+      central: 0.0635,
+      high: 0.071,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Agency (Fannie/Freddie student) fixed quote band, mid-2026 rate environment',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard agency student-housing amortization (25-30 yr)',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 12,
+      high: 60,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Agency IO availability on student-housing permanent debt (0-5 yr)',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.55,
+      central: 0.63,
+      high: 0.7,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Agency student-housing LTV envelope for stabilized pedestrian assets',
+    },
+    'valuation.exit_cap_rate_pct': {
+      low: 0.052,
+      central: 0.06,
+      high: 0.07,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'RCA / Yardi student-housing cap-rate distribution',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.015,
+      central: 0.025,
+      high: 0.035,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, debt fees, taxes)',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
@@ -897,6 +1027,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   self_storage: SELF_STORAGE_DEFAULTS,
   hospitality: HOSPITALITY_DEFAULTS,
   senior_housing: SENIOR_HOUSING_DEFAULTS,
+  student_housing: STUDENT_HOUSING_DEFAULTS,
 });
 
 /**
