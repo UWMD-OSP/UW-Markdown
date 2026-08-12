@@ -16,6 +16,16 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Fixed
+- **The hospitality defaults table shipped without its invariant tests.** Every
+  asset-class defaults table has a dedicated `describe` block in
+  `defaults.test.ts` asserting `low <= central <= high`, the
+  `asset_class_default` source stamp, a citation and unit on every entry, and
+  the expected field set — except `HOSPITALITY_DEFAULTS`, which was added
+  without one and was therefore covered only by the registry-lookup tests.
+  Blocks added for both hospitality and senior housing, plus two cross-field
+  checks the older tables do not make: that the occupancy and vacancy bands are
+  complementary, and that senior housing's labor band sits inside its
+  expense band.
 - **`npm run lint` was red locally but green in CI.** Biome linted
   `tools/docs-site/public/editor/`, the built web-editor bundle vendored into
   the docs site, producing 7,267 diagnostics from one generated file. The
@@ -45,6 +55,19 @@ protocol, and each package each carry an independent semver).
   bumped to 0.2.0.
 
 ### Added
+- **Senior-housing calc pack — the seventh asset class end-to-end.**
+  `SENIOR_HOUSING_PACK` adds fourteen deterministic metrics. Sizing is per unit
+  as in multifamily; the class-distinctive three are `revpor` (revenue per
+  occupied unit per month), `labor_ratio`, and `care_revenue_ratio` — the
+  numbers that say whether the operator, not the real estate, is carrying the
+  deal. `total_labor_expense` is a model-level subtotal rather than an entry
+  inside `noi_model.expenses`, so the three labor lines stay in the expense map
+  and the operating statement still foots without double counting; the test
+  asserts both halves. Shipped with `SENIOR_HOUSING_DEFAULTS` (15 triage-grade
+  ranges, including a defaulted labor ratio and wage-growth band), the
+  `Ocotillo-Senior-Living-Chandler-AZ.uw.md` worked example, and a
+  `SENIOR_HOUSING_LAYOUT` workbook layout whose income lines carry a signed
+  vacancy-loss row.
 - **Hospitality calc pack — the sixth asset class end-to-end.**
   `HOSPITALITY_PACK` adds fourteen deterministic metrics keyed off keys
   (`price_per_key`, `loan_per_key`, `noi_per_key`) alongside the shared
