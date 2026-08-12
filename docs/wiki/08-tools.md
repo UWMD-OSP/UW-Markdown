@@ -214,11 +214,28 @@ so `src/receipts.test.ts` runs it under plain vitest with no editor harness. CI
 job: **VS Code extension (build + test)** (typecheck + esbuild bundle + vitest);
 before this the extension had no CI coverage at all.
 
-> **Known gap, pre-dating receipts:** the `uwmd` language contribution registers
-> only `.uw.md`, so `.uwx.md` files get no highlighting or on-save validation.
-> The verify command still works on them (VS Code auto-activates on a
-> contributed command), but the language registration should be revisited
-> alongside the RFC 0017 Lite/UWX split.
+**Representation-aware validation** (`src/validate.ts`, also `vscode`-free) —
+the language contribution now covers **both** `.uw.md` and `.uwx.md` under the
+single `uwmd` id, and the parser is chosen from the *content* via
+`detectUWSourceRepresentation` rather than the extension. Lite documents get
+`LITE_*` parse errors plus `LITE_COMPILE_*` bridge errors; UWX documents get the
+full structured validator. Diagnostics are anchored to real lines — Lite issues
+carry source ranges, structured findings map `section` → `block.lineStart`.
+
+> **Why content dispatch, not the extension:** the extension previously ran the
+> *structured* parser over every `.uw.md`. Post-RFC-0017 that means UW Lite, and
+> the structured parser finds no fenced sections in a Lite document — so it
+> reported zero issues and `clean` for a file it had never parsed. A silent
+> false pass, worse than a wrong error. `validate.test.ts` guards the regression.
+
+> **Financial thresholds are not reported for Lite, by construction.**
+> `checkFinancialValidity` reads `frontmatter.quick_metrics`; the deal-summary
+> bridge does not populate it, so the FV family is inert over a compiled Lite
+> record. A setting to "enable" it was prototyped and removed — it did nothing.
+> Synthesizing the metrics inside the extension would break its contract that it
+> flags exactly what `uwmd validate` flags. Whether a compiled Lite record should
+> carry derived metrics is a core/bridge decision (and arguably an RFC one), not
+> a tooling one.
 
 ## Docs site — `tools/docs-site` (VitePress)
 

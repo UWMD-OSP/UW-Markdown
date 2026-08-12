@@ -1,8 +1,8 @@
 {
   "name": "vscode-uwmd",
   "displayName": "UW Markdown",
-  "description": "Syntax highlighting, section folding, and on-save validation for .uw.md underwriting files.",
-  "version": "0.1.0",
+  "description": "Syntax highlighting, section folding, representation-aware validation, and receipt verification for .uw.md (UW Lite) and .uwx.md (UWX) underwriting files.",
+  "version": "0.2.0",
   "publisher": "uwmd",
   "license": "MIT",
   "repository": {
@@ -39,10 +39,12 @@
           "uwmd"
         ],
         "extensions": [
-          ".uw.md"
+          ".uw.md",
+          ".uwx.md"
         ],
         "filenamePatterns": [
-          "*.uw.md"
+          "*.uw.md",
+          "*.uwx.md"
         ],
         "configuration": "./language-configuration.json"
       }
