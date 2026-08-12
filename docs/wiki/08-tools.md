@@ -197,6 +197,29 @@ on-save validation diagnostics tied to `BUILTIN_REMEDIATIONS`. Entry:
 `src/extension.ts`; `activationEvents: onLanguage:uwmd`. Bundled with esbuild
 (`esbuild.mjs`); package with `vsce package`. Not yet on the marketplace.
 
+**Receipt verification** — the `uwmd.verifyReceipt` command ("UW Markdown:
+Verify Receipt for This Deal") checks the `<deal>.receipt.json` sidecar against
+the open document. Verdicts map to notification severity (information / error /
+warning for verified / failed / unverifiable), with the full breakdown in a
+*UW Markdown Receipts* output channel; unsaved editor changes are offered as
+the likely cause of a failure. Per `UW_RECEIPT_v1.md` §1 the verified
+notification states the assurance boundary inline rather than showing a bare
+checkmark.
+
+The extension **verifies but never issues** — a receipt issued mid-authoring is
+stale on the next keystroke, which would teach users that receipts are noise.
+
+The logic lives in `src/receipts.ts`, deliberately free of any `vscode` import,
+so `src/receipts.test.ts` runs it under plain vitest with no editor harness. CI
+job: **VS Code extension (build + test)** (typecheck + esbuild bundle + vitest);
+before this the extension had no CI coverage at all.
+
+> **Known gap, pre-dating receipts:** the `uwmd` language contribution registers
+> only `.uw.md`, so `.uwx.md` files get no highlighting or on-save validation.
+> The verify command still works on them (VS Code auto-activates on a
+> contributed command), but the language registration should be revisited
+> alongside the RFC 0017 Lite/UWX split.
+
 ## Docs site — `tools/docs-site` (VitePress)
 
 The **published, human-facing** documentation site. A prebuild step

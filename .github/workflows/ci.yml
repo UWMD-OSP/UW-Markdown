@@ -83,6 +83,37 @@ jobs:
         run: npm test
         working-directory: tools/web-editor
 
+  vscode-extension:
+    name: VS Code extension (build + test)
+    runs-on: ubuntu-latest
+    # Same reason as the web editor: tools/* are not workspace members, so the
+    # root `npm test` doesn't reach them. The extension's receipt verification
+    # is pure logic behind a `vscode`-free module, so it runs under plain vitest
+    # with no editor harness. It consumes @uwmd/core's built dist, so core must
+    # be built first.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install workspaces
+        run: npm ci
+      - name: Build @uwmd/core (the extension imports its dist)
+        run: npm run build
+      - name: Install extension deps
+        run: npm ci
+        working-directory: tools/vscode-uwmd
+      - name: Typecheck extension
+        run: npx tsc --noEmit
+        working-directory: tools/vscode-uwmd
+      - name: Bundle extension (esbuild)
+        run: npm run build
+        working-directory: tools/vscode-uwmd
+      - name: Test extension
+        run: npm test
+        working-directory: tools/vscode-uwmd
+
   coverage:
     name: Coverage report
     runs-on: ubuntu-latest
