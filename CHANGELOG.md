@@ -16,6 +16,12 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Fixed
+- **`npm run lint` was red locally but green in CI.** Biome linted
+  `tools/docs-site/public/editor/`, the built web-editor bundle vendored into
+  the docs site, producing 7,267 diagnostics from one generated file. The
+  directory is gitignored, so a fresh CI checkout never saw it and CI passed;
+  anyone running the lint script locally got a wall of noise from a file they
+  had not written. Added to the Biome ignore list.
 - **`@uwmd/excel` and `@uwmd/report` were building against published core 1.1.0,
   not the workspace.** Both pinned `"@uwmd/core": "1.1.0"` exactly while the
   workspace core was at 1.1.2, so npm could not satisfy the pin from the
