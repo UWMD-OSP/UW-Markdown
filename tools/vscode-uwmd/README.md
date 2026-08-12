@@ -20,6 +20,32 @@ and what CI gates with.
   extension parses the file with `@uwmd/core` and surfaces every
   validation issue as a diagnostic with the spec reference and
   remediation copy.
+- **Verify a receipt** — the **UW Markdown: Verify Receipt for This
+  Deal** command checks the `.receipt.json` sidecar beside the open
+  deal and reports one of three results, with the full breakdown in the
+  *UW Markdown Receipts* output channel.
+
+## Verifying receipts
+
+Run **UW Markdown: Verify Receipt for This Deal** from the command
+palette with a `.uw.md` or `.uwx.md` file open. The extension looks for
+`<deal>.receipt.json` next to it.
+
+| Result | Meaning |
+|---|---|
+| **Verified** | The record is unchanged since the receipt was issued and its stated outputs recompute. |
+| **Failed** | The digest, a result, or the signature disagrees. If the editor has unsaved changes, that is the likeliest cause — save and re-run. |
+| **Unverifiable** | This build cannot decide: it lacks the pack, the pack version, or a signature backend. **Not a negative result.** |
+
+A verified receipt attests two things: the record's canonical financial
+content is unchanged, and its stated outputs follow deterministically
+from that content under the named pack. It attests **nothing** about
+whether the inputs are true. A deal with a fabricated NOI can carry a
+perfectly valid receipt.
+
+The extension verifies but does not issue. A receipt issued while you
+are still editing is stale the moment you type again — issue one with
+`uwmd receipt issue <deal>` when the deal is finished.
 
 ## Settings
 

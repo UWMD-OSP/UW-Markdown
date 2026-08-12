@@ -76,6 +76,11 @@ the asset class has no registered pack, or when the pack cannot evaluate.
 uwmd receipt verify deal.uwx.md deal.receipt.json
 ```
 
+The editor's **Receipt** tab and the VS Code extension's **Verify Receipt for
+This Deal** command do the same check. The extension only verifies — issuing
+while you are still editing produces a receipt that is stale on the next
+keystroke.
+
 Verification always recomputes. It never trusts the digest recorded inside the
 receipt as a shortcut.
 

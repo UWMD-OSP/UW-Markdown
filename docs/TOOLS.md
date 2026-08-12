@@ -15,6 +15,7 @@ Pick the one that matches what you're trying to do.
 | Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) | 3 (export) |
 | Run an LLM agent over the deal | `runBancroftAgent` from `@uwmd/core` | 4 |
 | Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) | 3 |
+| Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) | 3 |
 
 If you're not sure what conformance tier means, see the
 [protocol spec §II](../spec/UW_PROTOCOL_v1.md) or the
@@ -45,7 +46,11 @@ Under 500 LOC of HTML/CSS/JS. Nothing to install.
 **[`tools/vscode-uwmd/`](../tools/vscode-uwmd/) — authoring extension.**
 
 Syntax highlighting, section folding, document outline, on-save
-validation diagnostics tied to `BUILTIN_REMEDIATIONS`.
+validation diagnostics tied to `BUILTIN_REMEDIATIONS`, and a
+**Verify Receipt for This Deal** command that checks the
+`.receipt.json` sidecar beside the open file. It verifies but does not
+issue — a receipt issued mid-authoring is stale on the next keystroke.
+See [Verification receipts](UW_RECEIPTS.md).
 
 Best for: writing `.uw.md` files by hand. Reviewing a teammate's PR
 that touches a deal file. Living in the spec while authoring.

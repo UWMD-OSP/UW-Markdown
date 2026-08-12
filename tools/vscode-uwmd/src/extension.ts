@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
 import { parseUWFile, validateUWFile } from '@uwmd/core';
 import type { ValidationMessage, ValidationSeverity } from '@uwmd/core';
+import { checkReceipt, formatReport, receiptPathFor, summaryLine } from './receipts.js';
 
 const LANGUAGE_ID = 'uwmd';
 const DIAGNOSTIC_SOURCE = 'uwmd';
 
 let diagnostics: vscode.DiagnosticCollection;
+let receiptOutput: vscode.OutputChannel;
 
 export function activate(context: vscode.ExtensionContext): void {
   diagnostics = vscode.languages.createDiagnosticCollection(LANGUAGE_ID);
@@ -39,11 +41,64 @@ export function activate(context: vscode.ExtensionContext): void {
     }),
   );
 
+  receiptOutput = vscode.window.createOutputChannel('UW Markdown Receipts');
+  context.subscriptions.push(receiptOutput);
+  context.subscriptions.push(
+    vscode.commands.registerCommand('uwmd.verifyReceipt', verifyReceiptCommand),
+  );
+
   for (const doc of vscode.workspace.textDocuments) maybeValidate(doc);
 }
 
 export function deactivate(): void {
   diagnostics?.dispose();
+  receiptOutput?.dispose();
+}
+
+/**
+ * Verify the receipt sitting beside the active deal.
+ *
+ * The extension verifies but never issues: a receipt issued mid-authoring is
+ * stale on the next keystroke. Verification is the operation that fits an
+ * editor — "someone sent me this deal and this receipt; do they agree?"
+ *
+ * Each verdict gets the notification severity it deserves, and per
+ * UW_RECEIPT_v1 §1 the `verified` case is never a bare checkmark: the summary
+ * states the assurance boundary inline, and the full breakdown is one click
+ * away in the output channel.
+ */
+async function verifyReceiptCommand(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    void vscode.window.showWarningMessage('Open a .uw.md or .uwx.md deal first.');
+    return;
+  }
+
+  const doc = editor.document;
+  if (doc.uri.scheme !== 'file') {
+    void vscode.window.showWarningMessage(
+      'Save this deal to disk before verifying — a receipt is a sidecar file.',
+    );
+    return;
+  }
+
+  const dealPath = doc.uri.fsPath;
+  const check = await checkReceipt(dealPath, doc.getText(), receiptPathFor(dealPath));
+
+  receiptOutput.clear();
+  receiptOutput.appendLine(formatReport(check, dealPath));
+
+  const summary = summaryLine(check, { dirty: doc.isDirty });
+  const DETAILS = 'Show details';
+
+  const picked =
+    check.kind === 'checked' && check.verdict === 'verified'
+      ? await vscode.window.showInformationMessage(summary, DETAILS)
+      : check.kind === 'checked' && check.verdict === 'failed'
+        ? await vscode.window.showErrorMessage(summary, DETAILS)
+        : await vscode.window.showWarningMessage(summary, DETAILS);
+
+  if (picked === DETAILS) receiptOutput.show(true);
 }
 
 function maybeValidate(doc: vscode.TextDocument): void {

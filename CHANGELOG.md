@@ -16,6 +16,20 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Added
+- **Receipt verification in the VS Code extension** — a
+  `UW Markdown: Verify Receipt for This Deal` command checks the
+  `<deal>.receipt.json` sidecar against the open document. Verdicts map to
+  notification severity (information / error / warning for verified / failed /
+  unverifiable), with the full breakdown — pack, engine, policy set, digest,
+  every stated result, and the §1 assurance boundary — in a *UW Markdown
+  Receipts* output channel. Unsaved editor changes are offered as the likely
+  cause of a failure. The verified notification states the boundary inline
+  rather than showing a bare checkmark. The extension **verifies but never
+  issues**: a receipt issued mid-authoring is stale on the next keystroke.
+  Verification logic lives in a `vscode`-free module so it unit-tests under
+  plain vitest with no editor harness, and a new **VS Code extension (build +
+  test)** CI job typechecks, bundles, and runs it — the extension previously
+  had no CI coverage at all.
 - **Receipts on the docs-site** — adds `docs/UW_RECEIPTS.md`, published at
   `/guide/receipts`: a human-facing explanation of what a receipt does and does
   not attest, how to issue and verify one, why verification has three outcomes
