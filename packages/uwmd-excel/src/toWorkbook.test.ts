@@ -26,6 +26,7 @@ import { SELF_STORAGE_LAYOUT } from './self-storage.js';
 import { HOSPITALITY_LAYOUT } from './hospitality.js';
 import { SENIOR_HOUSING_LAYOUT } from './senior-housing.js';
 import { STUDENT_HOUSING_LAYOUT } from './student-housing.js';
+import { LAND_LAYOUT } from './land.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 const EXAMPLES = resolve(__dirname, '../../../examples');
@@ -39,6 +40,7 @@ const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
   { file: 'Saguaro-Select-Hotel-Tempe-AZ.uw.md', layout: HOSPITALITY_LAYOUT },
   { file: 'Ocotillo-Senior-Living-Chandler-AZ.uw.md', layout: SENIOR_HOUSING_LAYOUT },
   { file: 'Mill-Ave-Commons-Student-Tempe-AZ.uw.md', layout: STUDENT_HOUSING_LAYOUT },
+  { file: 'Sundance-Ranch-Land-Buckeye-AZ.uw.md', layout: LAND_LAYOUT },
 ];
 
 async function roundTrip(file: string): Promise<ExcelJS.Workbook> {
@@ -85,6 +87,7 @@ describe('layout registry', () => {
     expect([...SUPPORTED_ASSET_CLASSES].sort()).toEqual([
       'hospitality',
       'industrial',
+      'land',
       'multifamily',
       'office',
       'retail',

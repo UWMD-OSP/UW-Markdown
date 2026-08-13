@@ -1019,6 +1019,122 @@ export const STUDENT_HOUSING_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Land asset-class defaults, v1.0.0.
+ *
+ * Calibrated for entitled residential land held for horizontal development and
+ * finished-lot sale. Land is not an income property, so this table carries no
+ * occupancy, expense-ratio, or exit-cap entry — there is nothing to occupy and
+ * no stabilized income to capitalize. What it does carry instead are the inputs
+ * land is actually underwritten on: how much of the gross acreage is usable,
+ * what the annual carry costs as a share of basis, what share of eventual
+ * sellout the land basis represents, and the shorter/pricier/lower-leverage
+ * terms of a land acquisition facility. Triage grade (scope-stage VOI ranking),
+ * not committee underwriting.
+ */
+export const LAND_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'land',
+  version: '1.0.0',
+  fields: {
+    'property.usable_land_ratio': {
+      low: 0.7,
+      central: 0.85,
+      high: 0.95,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'Usable acreage net of washes, drainage, slopes, and open-space dedication',
+    },
+    'valuation.land_to_sellout_ratio': {
+      low: 0.18,
+      central: 0.26,
+      high: 0.33,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'Homebuilder land-basis-to-revenue underwriting band for entitled land',
+    },
+    'valuation.lot_price_growth_pct_y1': {
+      low: 0.0,
+      central: 0.03,
+      high: 0.055,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Finished-lot price growth band; tracks new-home price expectations',
+    },
+    'noi_model.carry_ratio': {
+      low: 0.012,
+      central: 0.018,
+      high: 0.026,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'Annual carry (taxes, assessments, insurance, security) as a share of land basis',
+    },
+    'noi_model.property_tax_rate_pct': {
+      low: 0.006,
+      central: 0.009,
+      high: 0.014,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Effective property tax on entitled but unimproved land',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.085,
+      central: 0.0925,
+      high: 0.11,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Land acquisition facility quote band; prices wide of income-property debt',
+    },
+    'debt_structure.io_months': {
+      low: 24,
+      central: 36,
+      high: 60,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Land loans are interest-only for their full term by construction',
+    },
+    'debt_structure.ltv_pct': {
+      low: 0.35,
+      central: 0.5,
+      high: 0.6,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Land LTV envelope; lenders advance well below income-property leverage',
+    },
+    'debt_structure.release_price_premium_pct': {
+      low: 1.1,
+      central: 1.2,
+      high: 1.35,
+      unit: 'ratio',
+      source: 'asset_class_default',
+      citation: 'Partial-release price as a multiple of pro-rata loan per lot',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.015,
+      central: 0.02,
+      high: 0.03,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Acquisition closing cost band (title, legal, survey, debt fees)',
+    },
+    'sources_uses.due_diligence_pct': {
+      low: 0.005,
+      central: 0.009,
+      high: 0.015,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation: 'Survey, geotech, environmental, and entitlement legal as a share of basis',
+    },
+    'dcf.hold_period_years': {
+      low: 3,
+      central: 4,
+      high: 7,
+      unit: 'count',
+      source: 'asset_class_default',
+      citation: 'Takedown horizon for an entitled residential land position',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
@@ -1028,6 +1144,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   hospitality: HOSPITALITY_DEFAULTS,
   senior_housing: SENIOR_HOUSING_DEFAULTS,
   student_housing: STUDENT_HOUSING_DEFAULTS,
+  land: LAND_DEFAULTS,
 });
 
 /**

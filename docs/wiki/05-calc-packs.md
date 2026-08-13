@@ -8,7 +8,8 @@ CLI, conformance, refinement) picks it up.
 - **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
   `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
-  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `getPackForAssetClass`,
+  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `LAND_PACK`,
+  `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
 ## File layout
@@ -23,6 +24,7 @@ File | Role
 `packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
 `packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
 `packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
+`packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
 `packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (6 decimals)
@@ -33,6 +35,7 @@ File | Role
 `packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (6 decimals) + operating-statement footing
 `packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing/labor-subtotal reconciliation
 `packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing + bed-sizing guard
+`packs/land.test.ts` | Land pack integrity + Excel↔evaluator parity (6 decimals) + carry-model footing + income-metric omission guard
 
 ## Selecting a pack by asset class
 
@@ -41,7 +44,7 @@ File | Role
 `defaults.ts`. The CLI's `refine`/`scope` and any consumer should select the pack
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
 Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
-`hospitality`, `senior_housing`, `student_housing`.
+`hospitality`, `senior_housing`, `student_housing`, `land`.
 
 ## `MULTIFAMILY_PACK`
 
@@ -214,10 +217,60 @@ why the class expense-ratio band sits above multifamily's. Verified against the
 demonstrates honest **negative leverage** — a 5.75% going-in cap against 6.25%
 debt, giving 3.0% year-one cash-on-cash.
 
-These are the **eight asset-class packs today** (`multifamily`, `office`,
+## `LAND_PACK`
+
+A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+['land']`) whose `calculations[]` are the **twelve** land derived metrics. Land
+is the one class here that is **not an income property**, and the pack is shaped
+entirely by that.
+
+**It deliberately omits `cap_rate`, `dscr`, and `debt_yield`.** Every other pack
+is built around those three. Land has no stabilized income: its `noi_model` is a
+*carry model* holding taxes, assessments, insurance, and site security against
+at most incidental interim revenue (grazing, billboard, laydown), so its net
+operating income is normally **negative**. Capitalizing that produces a number
+that is arithmetically valid and financially meaningless — a "−1.6% cap rate"
+reads as a yield when it is a carry burden, and a negative DSCR reads as
+distress when the loan is an interest-only entitlement facility carried out of
+an equity reserve exactly as underwritten. Emitting those metrics would be
+confidently wrong, which is worse than emitting none. `land.test.ts` pins the
+omission, and separately asserts that no land formula reads
+`net_operating_income` at all, so a future contributor cannot restore cap rate
+by pattern-matching the other packs.
+
+What land is underwritten on instead is **basis and density**:
+
+id | formula | unit
+---|---|---
+`price_per_buildable_unit` | `valuation.purchase_price / property.entitled_units` | `$`
+`price_per_usable_acre` | `valuation.purchase_price / property.usable_acres` | `$`
+`usable_land_ratio` | `property.usable_acres / property.gross_acres` | `%`
+`basis_per_buildable_unit` | `sources_uses.uses.total / property.entitled_units` | `$`
+`carry_ratio` | `noi_model.expenses.total_operating_expenses / valuation.purchase_price` | `%`
+`land_to_sellout_ratio` | `valuation.purchase_price / valuation.projected_gross_sellout` | `%`
+
+`usable_land_ratio` matters because gross acreage overstates what can be built —
+washes, drainage easements, slopes, and open-space dedication come out first, and
+every per-acre price should be read against the usable figure.
+`land_to_sellout_ratio` is the homebuilder's test: land basis as a share of
+eventual finished-lot revenue.
+
+`LAND_DEFAULTS` follows the same logic and publishes **no** `rent_roll.*`,
+`noi_model.expense_ratio`, or `valuation.exit_cap_rate_pct` entry — there is
+nothing to occupy and no income to capitalize. A test asserts those absences,
+and another asserts land's LTV band sits at or below every income class, since
+lenders advance well below income-property leverage on dirt. Verified against
+the `Sundance-Ranch-Land-Buckeye-AZ.uw.md` worked example.
+
+> **A note on nulls.** The land example leaves `going_in_cap_rate`,
+> `exit_cap_rate`, `dscr`, and `debt_yield` explicitly `null` rather than `0`.
+> `null` means *does not apply to this asset class*; `0` would mean *measured and
+> found to be zero*. A test pins the distinction, because every downstream reader
+> — renderer, Excel, receipt, agent — depends on it.
+
+These are the **nine asset-class packs today** (`multifamily`, `office`,
 `retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`,
-`student_housing`). The `AssetClass` type union also lists mixed_use/land, but
-no packs are defined for them yet. Adding
+`student_housing`, `land`). Only `mixed_use` remains undefined. Adding
 another **built-in** pack for an existing enum value is a library-only change
 (follow the recipe below). Letting **third-party modules** declare entirely new
 asset-class identifiers is the separate v2 RFC topic — see
