@@ -1,0 +1,7 @@
+{
+  "id": "usable_land_ratio",
+  "label": "Usable Land Ratio",
+  "formula": "property.usable_acres / property.gross_acres",
+  "unit": "%",
+  "deterministic": true
+}
