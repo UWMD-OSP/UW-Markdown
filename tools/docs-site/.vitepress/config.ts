@@ -166,6 +166,7 @@ export default defineConfig({
             { text: '0016 — Verification receipts', link: '/about/rfcs/0016-verification-receipts' },
             { text: '0017 — Lite / Extended source split', link: '/about/rfcs/0017-uw-lite-source-representation' },
             { text: '0018 — Document profiles and deal packages', link: '/about/rfcs/0018-document-profiles-and-deal-packages' },
+            { text: '0019 — Mixed-use composition', link: '/about/rfcs/0019-mixed-use-composition' },
           ],
         },
         {

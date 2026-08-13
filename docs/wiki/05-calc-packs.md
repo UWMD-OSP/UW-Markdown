@@ -270,9 +270,13 @@ the `Sundance-Ranch-Land-Buckeye-AZ.uw.md` worked example.
 
 These are the **nine asset-class packs today** (`multifamily`, `office`,
 `retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`,
-`student_housing`, `land`). Only `mixed_use` remains undefined. Adding
-another **built-in** pack for an existing enum value is a library-only change
-(follow the recipe below). Letting **third-party modules** declare entirely new
+`student_housing`, `land`). Only `mixed_use` remains undefined, and it is the one
+class the recipe below does not fit: it composes other classes rather than
+standing alone. See [RFC 0019](../rfcs/0019-mixed-use-composition.md) — unlike
+the other nine, it needs a normative format change (a `components` section)
+before its pack can be written, because the calc engine cannot iterate over a
+variable-length component list. Adding another **built-in** pack for any other
+existing enum value remains a library-only change (follow the recipe below). Letting **third-party modules** declare entirely new
 asset-class identifiers is the separate v2 RFC topic — see
 `docs/rfcs/0003-module-asset-classes.md`.
 

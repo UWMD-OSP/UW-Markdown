@@ -91,9 +91,14 @@ not core gaps.
   `mixed_use` now has a pack + defaults table + worked example + Excel layout,
   and `scope`/`refine`/Excel resolve all nine off `frontmatter.asset_class`.
   **Effectively closed as a limiter.** `mixed_use` is the genuinely hard one: it
-  *composes* other asset classes rather than standing alone, so the
-  one-pack-per-class assumption may not survive it — worth a design note, and
-  possibly an RFC, before any code.
+  *composes* other asset classes rather than standing alone. Designed in
+  [RFC 0019](../rfcs/0019-mixed-use-composition.md), which concludes that the
+  one-pack-per-class assumption **does** survive — the composition belongs in the
+  document (a bounded set of component slots keyed by class), not in the pack.
+  The deciding constraint is that the Tier-3 calc engine has no iteration or
+  array indexing, so per-component pack evaluation is not expressible without a
+  new primitive in the sandboxed evaluator. RFC is `draft`; not yet accepted, so
+  no code yet.
 
   > **Landmine defused (T12).** `mixed_use` used to be load-bearing for every
   > "no pack / no defaults registered" negative test, because it was the only
