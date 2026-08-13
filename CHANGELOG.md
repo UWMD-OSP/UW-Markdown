@@ -31,6 +31,11 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Fixed
+- **Two accepted RFCs were unreachable from the docs-site nav.** RFC 0016
+  (verification receipts) and RFC 0017 (the Lite/Extended source split) were
+  copied into the site by `prebuild.mjs` and rendered, but the sidebar's RFC
+  list stopped at 0015 — so two *accepted*, shipped RFCs could only be found by
+  guessing the URL. Added both, plus 0018.
 - **`land` was the canonical "no pack registered" example and stopped being one.**
   Registering `LAND_PACK` broke `receipts.test.ts` and the
   `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture, both of which

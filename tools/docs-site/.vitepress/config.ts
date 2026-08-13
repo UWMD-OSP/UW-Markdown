@@ -163,6 +163,9 @@ export default defineConfig({
             { text: '0013 — Corpus retrieval', link: '/about/rfcs/0013-corpus-retrieval' },
             { text: '0014 — Multi-format interchange', link: '/about/rfcs/0014-multi-format-interchange' },
             { text: '0015 — Portfolio relationships', link: '/about/rfcs/0015-portfolio-relationships' },
+            { text: '0016 — Verification receipts', link: '/about/rfcs/0016-verification-receipts' },
+            { text: '0017 — Lite / Extended source split', link: '/about/rfcs/0017-uw-lite-source-representation' },
+            { text: '0018 — Document profiles and deal packages', link: '/about/rfcs/0018-document-profiles-and-deal-packages' },
           ],
         },
         {
