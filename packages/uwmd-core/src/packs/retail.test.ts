@@ -16,7 +16,7 @@ import { emitExcelFormula } from './excel-emit.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 
-const CACTUS = resolve(__dirname, '../../../../examples/Cactus-Crossing-Retail-Mesa-AZ.uw.md');
+const CACTUS = resolve(__dirname, '../../../../examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md');
 
 // Full dotted path → workbook-scope named range. Keys mirror the retail
 // field paths the pack references; values stand in for Excel named ranges.

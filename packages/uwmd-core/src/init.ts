@@ -1,4 +1,4 @@
-// uwmd init — generates a new blank .uw.md file from a template
+// uwmd init — generates a new blank .uwx.md file from a template
 // Spec: UW_FORMAT_SPEC_v1.md §6 toolchain interface
 
 import type { AssetClass, DealStage } from './types.js';

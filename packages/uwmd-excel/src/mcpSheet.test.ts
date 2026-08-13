@@ -18,8 +18,8 @@ import {
 } from './mcpSheet.js';
 
 const EXAMPLES = resolve(__dirname, '../../../examples');
-const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uw.md';
-const SUNDANCE = 'Sundance-Ranch-Land-Buckeye-AZ.uw.md';
+const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
+const SUNDANCE = 'Sundance-Ranch-Land-Buckeye-AZ.uwx.md';
 
 async function parse(file: string) {
   return parseUWFile(await readFile(resolve(EXAMPLES, file), 'utf8'));

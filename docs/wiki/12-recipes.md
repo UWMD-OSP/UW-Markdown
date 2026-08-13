@@ -104,19 +104,19 @@ else unless the change is normative.
 
 ```bash
 npm run build
-npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uw.md --agent L6 --context-only
-npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uw.md --agent L6 --prompt
+npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uwx.md --agent L6 --context-only
+npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uwx.md --agent L6 --prompt
 # live (needs ANTHROPIC_API_KEY):
-npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uw.md --agent L6 --live
+npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uwx.md --agent L6 --live
 ```
 
 ## Scaffold, validate, and inspect a deal
 
 ```bash
 npm run cli -- init --name "Test Deal" --asset-class multifamily
-npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- verify   examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- summary  examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- scope    examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- refine   examples/Parkview-Apts-Glendale-AZ.uw.md --targets dscr,debt_yield
+npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- verify   examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- summary  examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- scope    examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- refine   examples/Parkview-Apts-Glendale-AZ.uwx.md --targets dscr,debt_yield
 ```

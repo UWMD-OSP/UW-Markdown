@@ -31,8 +31,8 @@ function example(file: string): ParsedUWFile {
   return parseUWFile(readFileSync(resolve(EXAMPLES, file), 'utf8'));
 }
 
-const LAND = 'Sundance-Ranch-Land-Buckeye-AZ.uw.md';
-const MULTIFAMILY = 'Parkview-Apts-Glendale-AZ.uw.md';
+const LAND = 'Sundance-Ranch-Land-Buckeye-AZ.uwx.md';
+const MULTIFAMILY = 'Parkview-Apts-Glendale-AZ.uwx.md';
 
 /** The label of every card currently on the strip. */
 function cardLabels(container: HTMLElement): string[] {

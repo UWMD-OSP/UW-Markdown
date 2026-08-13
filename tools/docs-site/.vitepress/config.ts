@@ -167,6 +167,7 @@ export default defineConfig({
             { text: '0017 — Lite / Extended source split', link: '/about/rfcs/0017-uw-lite-source-representation' },
             { text: '0018 — Document profiles and deal packages', link: '/about/rfcs/0018-document-profiles-and-deal-packages' },
             { text: '0019 — Mixed-use composition', link: '/about/rfcs/0019-mixed-use-composition' },
+            { text: '0020 — .uwx.md terminology alignment', link: '/about/rfcs/0020-uwx-terminology-alignment' },
           ],
         },
         {

@@ -16,7 +16,7 @@ import { emitExcelFormula } from './excel-emit.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 
-const RIVERSIDE = resolve(__dirname, '../../../../examples/Riverside-Office-Phoenix-AZ.uw.md');
+const RIVERSIDE = resolve(__dirname, '../../../../examples/Riverside-Office-Phoenix-AZ.uwx.md');
 
 // Full dotted path → workbook-scope named range. Keys mirror the office
 // field paths the pack references; values stand in for Excel named ranges.

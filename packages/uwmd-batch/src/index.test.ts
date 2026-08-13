@@ -47,7 +47,7 @@ describe('indexUWMDDirectory', () => {
 
     try {
       await copyFile(
-        join(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uw.md'),
+        join(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
         join(root, 'parkview.uw.md'),
       );
       await writeFile(join(root, 'broken.uw.md'), '```uwmd json\nnot-json\n```', 'utf8');

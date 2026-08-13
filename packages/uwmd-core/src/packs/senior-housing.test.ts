@@ -10,7 +10,7 @@ import { parseUWFile } from '../parser.js';
 import { emitExcelFormula } from './excel-emit.js';
 import { SENIOR_HOUSING_PACK } from './senior-housing.js';
 
-const EXAMPLE = resolve(__dirname, '../../../../examples/Ocotillo-Senior-Living-Chandler-AZ.uw.md');
+const EXAMPLE = resolve(__dirname, '../../../../examples/Ocotillo-Senior-Living-Chandler-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.net_operating_income', 'noi'],

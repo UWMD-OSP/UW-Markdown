@@ -26,9 +26,9 @@ editor or the Tier-2 `edit` command rather than rebuilding the file as text.
 ## Inspect an existing deal
 
 ```bash
-npm run cli -- summary examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md --json
-npm run cli -- render examples/Parkview-Apts-Glendale-AZ.uw.md --format summary
+npm run cli -- summary examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uwx.md --json
+npm run cli -- render examples/Parkview-Apts-Glendale-AZ.uwx.md --format summary
 ```
 
 `summary` is a quick screen. `validate` reports the structured rule codes and
@@ -40,7 +40,7 @@ changing the source file.
 The calc engine owns financial math. Rates are fractions: `0.0551` means 5.51%.
 
 ```bash
-npm run cli -- calc examples/Parkview-Apts-Glendale-AZ.uw.md "pmt(0.0551 / 12, 360, 1000000)"
+npm run cli -- calc examples/Parkview-Apts-Glendale-AZ.uwx.md "pmt(0.0551 / 12, 360, 1000000)"
 ```
 
 For a named metric, add a `ModuleCalcDecl` to the relevant asset-class pack.
@@ -51,7 +51,7 @@ see [Calc conventions](/guide/calc-conventions).
 
 ```bash
 npm --prefix packages/uwmd-excel run build
-node packages/uwmd-excel/dist/cli.js examples/Parkview-Apts-Glendale-AZ.uw.md -o parkview.xlsx
+node packages/uwmd-excel/dist/cli.js examples/Parkview-Apts-Glendale-AZ.uwx.md -o parkview.xlsx
 ```
 
 The workbook is a live projection: input cells and operating-statement line
@@ -61,8 +61,8 @@ the same pack. Keep the UWX/Markdown source as the canonical record.
 ## Issue and verify a receipt
 
 ```bash
-npm run cli -- receipt issue examples/Parkview-Apts-Glendale-AZ.uw.md --issued-at 2026-08-12T00:00:00Z --output parkview.receipt.json
-npm run cli -- receipt verify examples/Parkview-Apts-Glendale-AZ.uw.md parkview.receipt.json
+npm run cli -- receipt issue examples/Parkview-Apts-Glendale-AZ.uwx.md --issued-at 2026-08-12T00:00:00Z --output parkview.receipt.json
+npm run cli -- receipt verify examples/Parkview-Apts-Glendale-AZ.uwx.md parkview.receipt.json
 ```
 
 A verified receipt proves that the unchanged record produces the stated pack

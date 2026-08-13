@@ -53,7 +53,7 @@ npm --prefix tools/web-editor install
 npm --prefix tools/web-editor run dev
 ```
 
-Open <http://localhost:5173>, then drag `examples/Parkview-Apts-Glendale-AZ.uw.md` onto the page.
+Open <http://localhost:5173>, then drag `examples/Parkview-Apts-Glendale-AZ.uwx.md` onto the page.
 
 ## Build
 

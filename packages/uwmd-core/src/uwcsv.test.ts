@@ -13,7 +13,7 @@ import {
 } from './uwcsv.js';
 
 const source = readFileSync(
-  resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uw.md'),
+  resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
   'utf8',
 );
 const envelope = toUWEnvelope(parseUWFile(source), {

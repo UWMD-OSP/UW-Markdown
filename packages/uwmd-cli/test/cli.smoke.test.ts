@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
-const FIXTURE = resolve(__dirname, '..', '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uw.md');
+const FIXTURE = resolve(__dirname, '..', '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md');
 const LITE_FIXTURE = resolve(
   __dirname,
   '..',
@@ -20,15 +20,15 @@ const LITE_FIXTURE = resolve(
 );
 
 const ASSET_CLASS_FIXTURES = [
-  ['multifamily', 'Parkview-Apts-Glendale-AZ.uw.md'],
-  ['office', 'Riverside-Office-Phoenix-AZ.uw.md'],
-  ['retail', 'Cactus-Crossing-Retail-Mesa-AZ.uw.md'],
-  ['industrial', 'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md'],
-  ['self_storage', 'Sonoran-Self-Storage-Peoria-AZ.uw.md'],
-  ['hospitality', 'Saguaro-Select-Hotel-Tempe-AZ.uw.md'],
-  ['senior_housing', 'Ocotillo-Senior-Living-Chandler-AZ.uw.md'],
-  ['student_housing', 'Mill-Ave-Commons-Student-Tempe-AZ.uw.md'],
-  ['land', 'Sundance-Ranch-Land-Buckeye-AZ.uw.md'],
+  ['multifamily', 'Parkview-Apts-Glendale-AZ.uwx.md'],
+  ['office', 'Riverside-Office-Phoenix-AZ.uwx.md'],
+  ['retail', 'Cactus-Crossing-Retail-Mesa-AZ.uwx.md'],
+  ['industrial', 'Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md'],
+  ['self_storage', 'Sonoran-Self-Storage-Peoria-AZ.uwx.md'],
+  ['hospitality', 'Saguaro-Select-Hotel-Tempe-AZ.uwx.md'],
+  ['senior_housing', 'Ocotillo-Senior-Living-Chandler-AZ.uwx.md'],
+  ['student_housing', 'Mill-Ave-Commons-Student-Tempe-AZ.uwx.md'],
+  ['land', 'Sundance-Ranch-Land-Buckeye-AZ.uwx.md'],
 ] as const;
 
 function exampleFixture(filename: string) {

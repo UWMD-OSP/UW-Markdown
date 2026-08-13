@@ -10,7 +10,7 @@ import { parseUWFile } from '../parser.js';
 import { emitExcelFormula } from './excel-emit.js';
 import { SELF_STORAGE_PACK } from './self-storage.js';
 
-const EXAMPLE = resolve(__dirname, '../../../../examples/Sonoran-Self-Storage-Peoria-AZ.uw.md');
+const EXAMPLE = resolve(__dirname, '../../../../examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.net_operating_income', 'noi'],

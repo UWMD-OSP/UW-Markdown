@@ -40,11 +40,11 @@ npx uwmd init my-deal.uw.md --asset-class office --tier analyst
 
 ## Example deals
 
-- [Multifamily](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
-- [Office](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Riverside-Office-Phoenix-AZ.uw.md)
-- [Retail](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uw.md)
-- [Industrial](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md)
-- [Self-storage](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Sonoran-Self-Storage-Peoria-AZ.uw.md)
+- [Multifamily](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Parkview-Apts-Glendale-AZ.uwx.md)
+- [Office](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Riverside-Office-Phoenix-AZ.uwx.md)
+- [Retail](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md)
+- [Industrial](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md)
+- [Self-storage](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md)
 
 ## AI instruction files
 

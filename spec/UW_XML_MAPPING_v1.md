@@ -119,12 +119,12 @@ decoding use the verified entry point; the general parser permits unsigned XML
 for inspection while still verifying any digest it receives.
 
 ```sh
-uwmd convert deal.uw.md --to uw-xml
+uwmd convert deal.uwx.md --to uw-xml
 uwmd convert deal.uw.xml --to uw-json
 uwmd convert deal.uw.json --to xml --stdout
 uwmd formats --json
 ```
 
-Input representation is detected from `.uw.md`, `.uw.json`, or `.uw.xml`.
+Input representation is detected from `.uwx.md`, `.uw.md`, `.uw.json`, or `.uw.xml`.
 Machine inputs must carry a valid semantic digest. `json` and `xml` are CLI
 aliases for the canonical `uw-json` and `uw-xml` representation IDs.

@@ -65,7 +65,7 @@ export function createReferenceBindings(initialSource) {
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replaceAll('\\', '/')}`).href) {
-  const source = await readFile(new URL('../Parkview-Apts-Glendale-AZ.uw.md', import.meta.url), 'utf8');
+  const source = await readFile(new URL('../Parkview-Apts-Glendale-AZ.uwx.md', import.meta.url), 'utf8');
   const bindings = createReferenceBindings(source);
   console.log(JSON.stringify((await bindings.tools['uwmd.list_representations']()).structuredContent, null, 2));
 }

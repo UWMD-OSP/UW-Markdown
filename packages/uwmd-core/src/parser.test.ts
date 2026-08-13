@@ -1,4 +1,4 @@
-// Parser tests — verified against examples/Parkview-Apts-Glendale-AZ.uw.md
+// Parser tests — verified against examples/Parkview-Apts-Glendale-AZ.uwx.md
 // Run: npm test
 
 import { describe, it, expect } from 'vitest';
@@ -11,7 +11,7 @@ import { compact } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const EXAMPLE_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+const EXAMPLE_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
 function loadExample(): string {
   try {

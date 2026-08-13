@@ -12,8 +12,8 @@ viewer reads the file locally in your browser and presents its deal summary,
 quick metrics, major sections, pipeline state, flags, and supersede history.
 
 <div class="viewer-actions">
-  <a class="viewer-action viewer-action--primary" href="https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md" target="_self">Edit this sample</a>
-  <a class="viewer-action" href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md" target="_blank" rel="noopener">Open viewer full screen</a>
+  <a class="viewer-action viewer-action--primary" href="https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="_self">Edit this sample</a>
+  <a class="viewer-action" href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="_blank" rel="noopener">Open viewer full screen</a>
   <a class="viewer-action" href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download standalone viewer</a>
   <a class="viewer-action" href="/tutorials/your-first-uwmd-file">How the format works</a>
 </div>
@@ -30,11 +30,11 @@ Choose a sample or drop your own file into the viewer. Sample links update the
 embedded viewer without leaving this page.
 
 <nav class="viewer-samples" aria-label="Example UW Markdown files">
-  <a href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md" target="uwmd-reference-viewer">Multifamily</a>
-  <a href="/viewer/app/?sample=/viewer/samples/Riverside-Office-Phoenix-AZ.uw.md" target="uwmd-reference-viewer">Office</a>
-  <a href="/viewer/app/?sample=/viewer/samples/Cactus-Crossing-Retail-Mesa-AZ.uw.md" target="uwmd-reference-viewer">Retail</a>
-  <a href="/viewer/app/?sample=/viewer/samples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md" target="uwmd-reference-viewer">Industrial</a>
-  <a href="/viewer/app/?sample=/viewer/samples/Sonoran-Self-Storage-Peoria-AZ.uw.md" target="uwmd-reference-viewer">Self-storage</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="uwmd-reference-viewer">Multifamily</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Riverside-Office-Phoenix-AZ.uwx.md" target="uwmd-reference-viewer">Office</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md" target="uwmd-reference-viewer">Retail</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md" target="uwmd-reference-viewer">Industrial</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Sonoran-Self-Storage-Peoria-AZ.uwx.md" target="uwmd-reference-viewer">Self-storage</a>
 </nav>
 
 <div class="viewer-frame-shell">
@@ -47,7 +47,7 @@ embedded viewer without leaving this page.
     class="viewer-frame"
     name="uwmd-reference-viewer"
     title="UW Markdown reference web viewer"
-    src="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uw.md"
+    src="/viewer/app/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md"
     sandbox="allow-scripts allow-same-origin allow-downloads"
     loading="eager"
   ></iframe>

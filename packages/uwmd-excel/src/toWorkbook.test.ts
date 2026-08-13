@@ -39,15 +39,15 @@ const UNREGISTERED_CLASS = '__unregistered_test_class__';
 const EXAMPLES = resolve(__dirname, '../../../examples');
 
 const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
-  { file: 'Parkview-Apts-Glendale-AZ.uw.md', layout: MULTIFAMILY_LAYOUT },
-  { file: 'Riverside-Office-Phoenix-AZ.uw.md', layout: OFFICE_LAYOUT },
-  { file: 'Cactus-Crossing-Retail-Mesa-AZ.uw.md', layout: RETAIL_LAYOUT },
-  { file: 'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md', layout: INDUSTRIAL_LAYOUT },
-  { file: 'Sonoran-Self-Storage-Peoria-AZ.uw.md', layout: SELF_STORAGE_LAYOUT },
-  { file: 'Saguaro-Select-Hotel-Tempe-AZ.uw.md', layout: HOSPITALITY_LAYOUT },
-  { file: 'Ocotillo-Senior-Living-Chandler-AZ.uw.md', layout: SENIOR_HOUSING_LAYOUT },
-  { file: 'Mill-Ave-Commons-Student-Tempe-AZ.uw.md', layout: STUDENT_HOUSING_LAYOUT },
-  { file: 'Sundance-Ranch-Land-Buckeye-AZ.uw.md', layout: LAND_LAYOUT },
+  { file: 'Parkview-Apts-Glendale-AZ.uwx.md', layout: MULTIFAMILY_LAYOUT },
+  { file: 'Riverside-Office-Phoenix-AZ.uwx.md', layout: OFFICE_LAYOUT },
+  { file: 'Cactus-Crossing-Retail-Mesa-AZ.uwx.md', layout: RETAIL_LAYOUT },
+  { file: 'Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md', layout: INDUSTRIAL_LAYOUT },
+  { file: 'Sonoran-Self-Storage-Peoria-AZ.uwx.md', layout: SELF_STORAGE_LAYOUT },
+  { file: 'Saguaro-Select-Hotel-Tempe-AZ.uwx.md', layout: HOSPITALITY_LAYOUT },
+  { file: 'Ocotillo-Senior-Living-Chandler-AZ.uwx.md', layout: SENIOR_HOUSING_LAYOUT },
+  { file: 'Mill-Ave-Commons-Student-Tempe-AZ.uwx.md', layout: STUDENT_HOUSING_LAYOUT },
+  { file: 'Sundance-Ranch-Land-Buckeye-AZ.uwx.md', layout: LAND_LAYOUT },
 ];
 
 async function roundTrip(file: string): Promise<ExcelJS.Workbook> {

@@ -25,7 +25,7 @@ import { OFFICE_PACK } from './packs/office.js';
 import { CORE_VERSION } from './version.js';
 import { parseUWFile } from './parser.js';
 
-const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
 /**
  * A deliberately synthetic asset class that is not — and must never become — a

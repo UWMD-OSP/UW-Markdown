@@ -113,7 +113,7 @@ files must be valid UTF-8.
 `UW_CSV_BUNDLE_CODEC`. The shared registry exposes the ZIP codec.
 
 ```sh
-uwmd convert deal.uw.md --to uw-csv-bundle
+uwmd convert deal.uwx.md --to uw-csv-bundle
 uwmd convert deal.uw.csv.zip --to uw-json
 uwmd convert deal.uw.xml --to csv --output deal.uw.csv.zip
 uwmd formats --json

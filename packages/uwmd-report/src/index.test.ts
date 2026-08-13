@@ -9,7 +9,7 @@ import { parseUWFile } from '@uwmd/core';
 import { generateReport, htmlToPdf, BrowserNotFoundError } from './index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PARKVIEW_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+const PARKVIEW_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
 function loadParkview() {
   return parseUWFile(readFileSync(PARKVIEW_PATH, 'utf-8'));

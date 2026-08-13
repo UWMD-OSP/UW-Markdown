@@ -11,7 +11,7 @@ import { parseUWFile } from '../parser.js';
 import { emitExcelFormula } from './excel-emit.js';
 import { LAND_PACK } from './land.js';
 
-const EXAMPLE = resolve(__dirname, '../../../../examples/Sundance-Ranch-Land-Buckeye-AZ.uw.md');
+const EXAMPLE = resolve(__dirname, '../../../../examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
