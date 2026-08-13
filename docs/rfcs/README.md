@@ -42,6 +42,7 @@ and how it gets accepted.
 | [0016](./0016-verification-receipts.md) | Signed deterministic verification receipts | accepted | format, protocol, core, conformance, tooling |
 | [0017](./0017-uw-lite-source-representation.md) | `.uw.md` Lite / `.uwx.md` Extended source split | accepted | format, protocol, core, conformance, tooling |
 | [0018](./0018-document-profiles-and-deal-packages.md) | Composable document profiles and deal packages | draft | format, protocol, core, conformance, tooling |
+| [0019](./0019-mixed-use-composition.md) | Mixed-use composition as a document shape | draft | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
