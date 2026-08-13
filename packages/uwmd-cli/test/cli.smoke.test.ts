@@ -19,6 +19,22 @@ const LITE_FIXTURE = resolve(
   '01-minimal.uw.md',
 );
 
+const ASSET_CLASS_FIXTURES = [
+  ['multifamily', 'Parkview-Apts-Glendale-AZ.uw.md'],
+  ['office', 'Riverside-Office-Phoenix-AZ.uw.md'],
+  ['retail', 'Cactus-Crossing-Retail-Mesa-AZ.uw.md'],
+  ['industrial', 'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md'],
+  ['self_storage', 'Sonoran-Self-Storage-Peoria-AZ.uw.md'],
+  ['hospitality', 'Saguaro-Select-Hotel-Tempe-AZ.uw.md'],
+  ['senior_housing', 'Ocotillo-Senior-Living-Chandler-AZ.uw.md'],
+  ['student_housing', 'Mill-Ave-Commons-Student-Tempe-AZ.uw.md'],
+  ['land', 'Sundance-Ranch-Land-Buckeye-AZ.uw.md'],
+] as const;
+
+function exampleFixture(filename: string) {
+  return resolve(__dirname, '..', '..', '..', 'examples', filename);
+}
+
 function runCli(args: string[]) {
   return spawnSync(process.execPath, [CLI_BIN, ...args], { encoding: 'utf8' });
 }
@@ -112,6 +128,42 @@ describe('uwmd CLI', () => {
     const r = runCli(['validate', FIXTURE]);
     expect(r.status).toBe(0);
   });
+
+  describe.each(ASSET_CLASS_FIXTURES)('%s example', (assetClass, filename) => {
+    const fixture = exampleFixture(filename);
+
+    it('resolves scope with its registered default table', () => {
+      const r = runCli(['scope', fixture, '--json']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout)).toMatchObject({
+        asset_class: assetClass,
+        defaults_table: `${assetClass}@1.0.0`,
+      });
+    });
+
+    it('ranks refinement gaps as JSON', () => {
+      const r = runCli(['refine', fixture, '--json']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout)).toMatchObject({
+        by_voi: expect.any(Array),
+        by_stage_blocking: expect.any(Array),
+        diagnostics: expect.objectContaining({
+          graph_size: expect.any(Number),
+          resolved: expect.any(Number),
+        }),
+      });
+    });
+
+    it('exports a document envelope that retains the asset class', () => {
+      const r = runCli(['export', fixture, '--stdout']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout)).toMatchObject({
+        frontmatter: { asset_class: assetClass },
+        semantic_digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/),
+      });
+    });
+  });
+
   it('exports a digested UW Document Envelope to stdout', () => {
     const r = runCli(['export', FIXTURE, '--stdout']);
     expect(r.status).toBe(0);
