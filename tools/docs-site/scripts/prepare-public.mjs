@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { copyFile, cp, mkdir } from 'node:fs/promises';
+import { copyFile, cp, mkdir, rm } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -35,6 +35,8 @@ for (const [source, destination] of files) {
   console.log(`[public] ${destination}`);
 }
 const editorOutput = join(siteRoot, 'public', 'editor');
-await mkdir(editorOutput, { recursive: true });
+// The web-editor's Vite output uses content-hashed asset names. Replacing the
+// complete published bundle prevents old generations from accumulating here.
+await rm(editorOutput, { recursive: true, force: true });
 await cp(join(repoRoot, 'tools', 'web-editor', 'dist'), editorOutput, { recursive: true });
 console.log('[public] editor/');
