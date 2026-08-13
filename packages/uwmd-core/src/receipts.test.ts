@@ -124,7 +124,7 @@ describe('issueReceipt', () => {
   });
 
   it('refuses when no pack is registered for the asset class', async () => {
-    const raw = (await parkview()).replace('asset_class: "multifamily"', 'asset_class: "land"');
+    const raw = (await parkview()).replace('asset_class: "multifamily"', 'asset_class: "mixed_use"');
     await expect(issueReceipt(raw, { filename: PARKVIEW })).rejects.toThrow(/RCP_PACK_UNRESOLVED/);
   });
 
@@ -133,7 +133,7 @@ describe('issueReceipt', () => {
     const mutations = [
       raw,
       raw.slice(0, Math.floor(raw.length / 2)),
-      raw.replace('asset_class: "multifamily"', 'asset_class: "land"'),
+      raw.replace('asset_class: "multifamily"', 'asset_class: "mixed_use"'),
       raw.replace(/```uwmd/g, '```'),
       '',
       '---\nuw_lite_version: 1.0\n---\n',
