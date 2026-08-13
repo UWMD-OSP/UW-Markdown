@@ -8,7 +8,7 @@ property_address: "410 Cedar Ct"
 city: "Mesa"
 state: "AZ"
 zip: "85201"
-asset_class: mixed_use
+asset_class: __unregistered_test_class__
 deal_stage: full_underwrite
 status: under_review
 recommendation: pending
@@ -27,6 +27,12 @@ A compact structured record carrying exactly the inputs the multifamily pack
 needs, so every one of its eight declared outputs is computed. Every number
 below is a user-supplied input; a receipt over this record attests that the
 outputs follow from these inputs, not that the inputs are true.
+
+The `asset_class` is deliberately synthetic — `__unregistered_test_class__` is
+not a member of the v1 `AssetClass` union and must never become one. Issuance
+must therefore refuse with `RCP_PACK_UNRESOLVED`. Anchoring on a synthetic id
+rather than a real-but-packless class keeps this fixture valid no matter how
+many asset-class packs ship.
 
 ```json uw:section=property source=manual ts=2026-08-09T00:00:00Z v=1 confidence=high
 {

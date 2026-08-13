@@ -342,5 +342,14 @@ needs RFC 0003.
 4. Decide the Excel layout (named inputs/ranges) in a corresponding Excel layout
    module if Excel export is in scope.
 5. Add a parity test analogous to `packs/office.test.ts` (and Tier-3 conformance
-   fixtures if needed). Update any existing tests that assert the class is
-   *unregistered* (e.g. `cascade.test.ts`, `defaults.test.ts`).
+   fixtures if needed).
+
+> **You should not have to touch the "unregistered class" negative tests.** They
+> anchor on the synthetic identifier `__unregistered_test_class__`, not on a real
+> enum member, precisely so that registering a class cannot invalidate them. If
+> you find yourself editing `cascade.test.ts`, `defaults.test.ts`,
+> `toWorkbook.test.ts`, `receipts.test.ts`, or the
+> `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture to make a new
+> pack pass, something is wrong — those tests assert that an *unknown* class
+> resolves to nothing, which stays true no matter how many real classes ship.
+> `__unregistered_test_class__` must never be added to the `AssetClass` union.

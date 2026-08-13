@@ -26,6 +26,14 @@ import { CORE_VERSION } from './version.js';
 import { parseUWFile } from './parser.js';
 
 const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+
+/**
+ * A deliberately synthetic asset class that is not — and must never become — a
+ * member of the `AssetClass` union. Swapping it in is how these tests reach the
+ * "no pack is registered for this class" path without depending on some real
+ * class staying packless.
+ */
+const UNREGISTERED_CLASS = '__unregistered_test_class__';
 const LITE_DEAL = resolve(
   __dirname,
   '../../../conformance/lite/fixtures/02-full-deal-summary.uw.md',
@@ -124,7 +132,7 @@ describe('issueReceipt', () => {
   });
 
   it('refuses when no pack is registered for the asset class', async () => {
-    const raw = (await parkview()).replace('asset_class: "multifamily"', 'asset_class: "mixed_use"');
+    const raw = (await parkview()).replace('asset_class: "multifamily"', `asset_class: "${UNREGISTERED_CLASS}"`);
     await expect(issueReceipt(raw, { filename: PARKVIEW })).rejects.toThrow(/RCP_PACK_UNRESOLVED/);
   });
 
@@ -133,7 +141,7 @@ describe('issueReceipt', () => {
     const mutations = [
       raw,
       raw.slice(0, Math.floor(raw.length / 2)),
-      raw.replace('asset_class: "multifamily"', 'asset_class: "mixed_use"'),
+      raw.replace('asset_class: "multifamily"', `asset_class: "${UNREGISTERED_CLASS}"`),
       raw.replace(/```uwmd/g, '```'),
       '',
       '---\nuw_lite_version: 1.0\n---\n',
