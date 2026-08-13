@@ -8,7 +8,7 @@ property_address: "410 Cedar Ct"
 city: "Mesa"
 state: "AZ"
 zip: "85201"
-asset_class: land
+asset_class: mixed_use
 deal_stage: full_underwrite
 status: under_review
 recommendation: pending

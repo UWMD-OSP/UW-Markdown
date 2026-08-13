@@ -8,6 +8,7 @@ import {
   HOSPITALITY_DEFAULTS,
   SENIOR_HOUSING_DEFAULTS,
   STUDENT_HOUSING_DEFAULTS,
+  LAND_DEFAULTS,
   getAssetClassDefaults,
   getDefaultRange,
   listDefaultedFields,
@@ -398,6 +399,66 @@ describe('defaults — STUDENT_HOUSING_DEFAULTS', () => {
   });
 });
 
+describe('defaults — LAND_DEFAULTS', () => {
+  it('declares asset_class and version', () => {
+    expect(LAND_DEFAULTS.asset_class).toBe('land');
+    expect(LAND_DEFAULTS.version).toBe('1.0.0');
+  });
+
+  it('every entry satisfies low <= central <= high', () => {
+    for (const [path, range] of Object.entries(LAND_DEFAULTS.fields)) {
+      expect(range.low, `${path}.low`).toBeLessThanOrEqual(range.central);
+      expect(range.central, `${path}.central`).toBeLessThanOrEqual(range.high);
+    }
+  });
+
+  it('every entry stamps source = asset_class_default with a citation and unit', () => {
+    for (const [path, range] of Object.entries(LAND_DEFAULTS.fields)) {
+      expect(range.source, `${path}.source`).toBe('asset_class_default');
+      expect(range.citation, `${path}.citation`).toBeTruthy();
+      expect(range.unit, `${path}.unit`).toBeDefined();
+    }
+  });
+
+  it('covers the v1.0 land input set', () => {
+    const expected = [
+      'property.usable_land_ratio',
+      'valuation.land_to_sellout_ratio',
+      'valuation.lot_price_growth_pct_y1',
+      'noi_model.carry_ratio',
+      'noi_model.property_tax_rate_pct',
+      'debt_structure.rate_pct',
+      'debt_structure.io_months',
+      'debt_structure.ltv_pct',
+      'debt_structure.release_price_premium_pct',
+      'sources_uses.closing_costs_pct',
+      'sources_uses.due_diligence_pct',
+      'dcf.hold_period_years',
+    ];
+    for (const path of expected) {
+      expect(LAND_DEFAULTS.fields[path], path).toBeDefined();
+    }
+  });
+
+  // Land is not an income property. Publishing occupancy, expense-ratio, or
+  // exit-cap defaults for it would invite a consumer to treat it as one.
+  it('publishes no income-property defaults', () => {
+    for (const path of Object.keys(LAND_DEFAULTS.fields)) {
+      expect(path.startsWith('rent_roll.'), `${path} should not exist for land`).toBe(false);
+    }
+    expect(LAND_DEFAULTS.fields['noi_model.expense_ratio']).toBeUndefined();
+    expect(LAND_DEFAULTS.fields['valuation.exit_cap_rate_pct']).toBeUndefined();
+  });
+
+  it('land leverage sits below every income class', () => {
+    const land = LAND_DEFAULTS.fields['debt_structure.ltv_pct']!;
+    for (const t of [MULTIFAMILY_DEFAULTS, OFFICE_DEFAULTS, RETAIL_DEFAULTS, INDUSTRIAL_DEFAULTS]) {
+      const other = t.fields['debt_structure.ltv_pct']!;
+      expect(land.central, `${t.asset_class}`).toBeLessThanOrEqual(other.central);
+    }
+  });
+});
+
 describe('defaults — registry helpers', () => {
   it('getAssetClassDefaults returns the multifamily table', () => {
     const t = getAssetClassDefaults('multifamily');
@@ -439,6 +500,11 @@ describe('defaults — registry helpers', () => {
     expect(t).toBe(STUDENT_HOUSING_DEFAULTS);
   });
 
+  it('getAssetClassDefaults returns the land table', () => {
+    const t = getAssetClassDefaults('land');
+    expect(t).toBe(LAND_DEFAULTS);
+  });
+
   it('getAssetClassDefaults returns null for unregistered classes', () => {
     expect(getAssetClassDefaults('mixed_use')).toBeNull();
     expect(getAssetClassDefaults('not-a-real-class')).toBeNull();
@@ -476,6 +542,10 @@ describe('defaults — registry helpers', () => {
     const st = getDefaultRange('student_housing', 'rent_roll.pre_lease_rate');
     expect(st?.central).toBe(0.95);
     expect(st?.unit).toBe('percent');
+
+    const ld = getDefaultRange('land', 'valuation.land_to_sellout_ratio');
+    expect(ld?.central).toBe(0.26);
+    expect(ld?.unit).toBe('ratio');
   });
 
   it('getDefaultRange returns null for unknown field', () => {
@@ -515,6 +585,10 @@ describe('defaults — registry helpers', () => {
     const studentHousingPaths = listDefaultedFields('student_housing');
     expect(studentHousingPaths.length).toBe(Object.keys(STUDENT_HOUSING_DEFAULTS.fields).length);
     expect(studentHousingPaths).toContain('rent_roll.pre_lease_rate');
+
+    const landPaths = listDefaultedFields('land');
+    expect(landPaths.length).toBe(Object.keys(LAND_DEFAULTS.fields).length);
+    expect(landPaths).toContain('valuation.land_to_sellout_ratio');
 
     expect(listDefaultedFields('mixed_use')).toEqual([]);
   });

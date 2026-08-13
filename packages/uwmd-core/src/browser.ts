@@ -212,6 +212,7 @@ export {
   HOSPITALITY_PACK,
   SENIOR_HOUSING_PACK,
   STUDENT_HOUSING_PACK,
+  LAND_PACK,
   getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
@@ -267,6 +268,7 @@ export {
   HOSPITALITY_DEFAULTS,
   SENIOR_HOUSING_DEFAULTS,
   STUDENT_HOUSING_DEFAULTS,
+  LAND_DEFAULTS,
 } from './defaults.js';
 export type { AssetClassDefaults, DefaultRange, DefaultUnit } from './defaults.js';
 export { getExprDependencies, extractDependencyGraph } from './calc/dependencies.js';

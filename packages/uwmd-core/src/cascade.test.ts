@@ -218,6 +218,20 @@ describe('cascade — asset class selection', () => {
     expect(result.value).toBe(0.05);
   });
 
+  it('resolves an asset_class_default for land off a land-specific field', () => {
+    // Land has no rent_roll defaults at all - there is nothing to occupy - so
+    // this asserts against a field the land table actually publishes.
+    const result = resolveValue('debt_structure.ltv_pct', makeFile({ asset_class: 'land' }));
+    expect(result.step).toBe('asset_class_default');
+    expect(result.value).toBe(0.5);
+  });
+
+  it('land publishes no rent_roll defaults', () => {
+    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'land' }));
+    expect(result.step).toBe('system_default');
+    expect(result.value).toBeUndefined();
+  });
+
   it('returns no asset_class_default for unregistered class (mixed_use)', () => {
     const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'mixed_use' }));
     expect(result.step).toBe('system_default');

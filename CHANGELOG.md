@@ -16,6 +16,12 @@ protocol, and each package each carry an independent semver).
   all updated in lockstep. Security reports now go to `team@uwmd.org`.
 
 ### Fixed
+- **`land` was the canonical "no pack registered" example and stopped being one.**
+  Registering `LAND_PACK` broke `receipts.test.ts` and the
+  `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture, both of which
+  used `asset_class: land` to exercise `RCP_PACK_UNRESOLVED`. Both now use
+  `mixed_use`. Note that `mixed_use` is the last unregistered class, so this
+  shuffle cannot be repeated — see the landmine note in `docs/wiki/13-status.md`.
 - **The hospitality defaults table shipped without its invariant tests.** Every
   asset-class defaults table has a dedicated `describe` block in
   `defaults.test.ts` asserting `low <= central <= high`, the
@@ -55,6 +61,22 @@ protocol, and each package each carry an independent semver).
   bumped to 0.2.0.
 
 ### Added
+- **Land calc pack — the ninth asset class, and the first that is not an income
+  property.** `LAND_PACK` adds twelve deterministic metrics and **deliberately
+  omits `cap_rate`, `dscr`, and `debt_yield`**. Land has no stabilized income:
+  its `noi_model` is a *carry model* (taxes, CFD assessments, insurance, site
+  security against incidental interim revenue), so NOI is normally negative.
+  Capitalizing it would emit a "−1.6% cap rate" that reads as a yield when it is
+  a carry burden — confidently wrong output, worse than none. Tests pin the
+  omission and assert no land formula reads `net_operating_income` at all. Land
+  is underwritten instead on basis and density: `price_per_buildable_unit`,
+  `price_per_usable_acre`, `usable_land_ratio`, `basis_per_buildable_unit`,
+  `carry_ratio`, and `land_to_sellout_ratio`. `LAND_DEFAULTS` follows the same
+  logic and publishes no `rent_roll.*`, expense-ratio, or exit-cap entry, with
+  tests asserting those absences and that land's LTV band sits at or below every
+  income class. Ships with the `Sundance-Ranch-Land-Buckeye-AZ.uw.md` worked
+  example (160 acres, 552 platted lots, $30k/lot) and a `LAND_LAYOUT` workbook
+  layout whose operating statement is a carry statement that nets negative.
 - **Student-housing calc pack — the eighth asset class end-to-end.**
   `STUDENT_HOUSING_PACK` adds fourteen deterministic metrics. The class looks
   like multifamily but is not underwritten like it: leases are signed per *bed*,
