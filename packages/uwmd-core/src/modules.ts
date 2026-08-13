@@ -15,26 +15,14 @@ import {
   type ProtocolError,
   type ViewerTier,
 } from './protocol.js';
-import type { AssetClass, DealStage, ValidationSeverity } from './types.js';
+import { ASSET_CLASSES } from './types.js';
+import type { DealStage, ValidationSeverity } from './types.js';
 
 const TIERS: readonly ViewerTier[] = [
   'tier-1-reader',
   'tier-2-editor',
   'tier-3-calc-host',
   'tier-4-agent-host',
-];
-
-const ASSET_CLASSES: readonly AssetClass[] = [
-  'multifamily',
-  'office',
-  'retail',
-  'industrial',
-  'self_storage',
-  'hospitality',
-  'mixed_use',
-  'senior_housing',
-  'student_housing',
-  'land',
 ];
 
 const DEAL_STAGES: readonly DealStage[] = [

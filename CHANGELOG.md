@@ -8,6 +8,22 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+- **`ASSET_CLASSES` — the `AssetClass` union as a runtime list**, exported from
+  `@uwmd/core` and `@uwmd/core/browser`. It is *derived* from a
+  `Record<AssetClass, true>` exhaustiveness anchor rather than written by hand,
+  so adding a member to the union without updating the list is a compile error
+  (`TS2741`) instead of silent drift. `modules.ts`'s private duplicate list was
+  deleted in favour of it. Additive; no signature changes.
+- **`types.test.ts` — a drift guard over the asset-class registries.** Holds the
+  calc-pack registry and the defaults registry to `ASSET_CLASSES`, checks each
+  pack declares the class it is registered under and each defaults table stamps
+  its own class, and pins the `DEFAULT_THRESHOLDS` bands (warning always fires
+  before error). `mixed_use` is carried as one documented exception that fails
+  loudly the moment its pack lands, so the allowance cannot outlive its reason.
+  A matching guard in the web editor's `catalog.test.ts` keeps its own
+  asset-class list in step with the format.
+
 ### Changed
 - **The `@uwmd/core` coverage floor was ratcheted to just under measured.**
   Thresholds had sat at 70 lines / 70 statements / 90 functions / 70 branches

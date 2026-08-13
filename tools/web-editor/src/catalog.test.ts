@@ -13,7 +13,20 @@ import {
   setNumeric,
   fieldsForSection,
   displayName,
+  ASSET_CLASSES,
 } from './catalog.js';
+import { ASSET_CLASSES as CORE_ASSET_CLASSES } from '@uwmd/core/browser';
+
+describe('catalog — asset classes have not drifted from the format', () => {
+  it('offers exactly the asset classes the format defines', () => {
+    // The editor keeps its own ordered list because the dropdown's order is a
+    // presentation choice core has no opinion on. The *set* is not a choice:
+    // an entry missing here silently makes a valid asset class unselectable,
+    // and an extra one offers a class no pack or defaults table can serve.
+    // Compared as sets so the editor stays free to reorder.
+    expect([...ASSET_CLASSES].sort()).toEqual([...CORE_ASSET_CLASSES].sort());
+  });
+});
 
 describe('deepGet', () => {
   const obj = { a: { b: { c: 42 } }, x: 0, n: null };

@@ -297,7 +297,7 @@ export type {
   AssetClass,
 } from './types.js';
 
-export { DEFAULT_THRESHOLDS } from './types.js';
+export { DEFAULT_THRESHOLDS, ASSET_CLASSES } from './types.js';
 
 export {
   formatCurrency,
