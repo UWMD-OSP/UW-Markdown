@@ -62,10 +62,11 @@ Key design: the workbook ships **formulas, not pre-computed values**, so it stay
 in sync with the calc engine by construction. The engine (`toWorkbook.ts`) is
 generic; each asset class supplies a `WorkbookLayout` (`src/layout.ts`) selected
 by `frontmatter.asset_class` via the registry (`src/layouts.ts`,
-`getLayoutForAssetClass`). Supported: **multifamily, office, retail, industrial,
-self-storage** (`MULTIFAMILY_LAYOUT`/`OFFICE_LAYOUT`/`RETAIL_LAYOUT`/
-`INDUSTRIAL_LAYOUT`/`SELF_STORAGE_LAYOUT`); an
-unsupported class throws `UnsupportedAssetClassError`.
+`getLayoutForAssetClass`). Supported: **all nine classes with a pack** —
+multifamily, office, retail, industrial, self-storage, hospitality, senior
+housing, student housing, and land. `SUPPORTED_ASSET_CLASSES` is the live list;
+an unsupported class (today only `mixed_use`) throws
+`UnsupportedAssetClassError`.
 
 Layout:
 - **Underwriting** sheet — header (deal name/address) + an inputs block (each
