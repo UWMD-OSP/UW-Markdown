@@ -333,7 +333,7 @@ function checkCrossSectionConsistency(
     if (rrGPR != null && osGPR != null && osGPR !== 0) {
       const pctDiff = Math.abs(rrGPR - osGPR) / osGPR;
       if (pctDiff > 0.03) {
-        issues.push({ code: 'CC-01', severity: 'warning', section: 'rent_roll', message: `CC-01: Rent roll GPR ($${rrGPR.toLocaleString()}) differs from Operating Statement GPR ($${osGPR.toLocaleString()}) by ${(pctDiff * 100).toFixed(1)}% (threshold: 3%)`, value: pctDiff });
+        issues.push({ code: 'CC-01', severity: 'warning', section: 'rent_roll', field: 'gross_potential_rent', message: `CC-01: Rent roll GPR ($${rrGPR.toLocaleString()}) differs from Operating Statement GPR ($${osGPR.toLocaleString()}) by ${(pctDiff * 100).toFixed(1)}% (threshold: 3%)`, value: pctDiff });
       }
     }
   }
@@ -348,7 +348,7 @@ function checkCrossSectionConsistency(
       const impliedLTV = loanAmt / uwValue;
       const diff = Math.abs(impliedLTV - ltvInDebt);
       if (diff > 0.005) {
-        issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', message: `CC-02: Implied LTV (${(impliedLTV * 100).toFixed(2)}%) from loan/value does not match stated LTV (${(ltvInDebt * 100).toFixed(2)}%) — check valuation.underwritten_value vs debt_structure.ltv`, value: diff });
+        issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', field: 'ltv', message: `CC-02: Implied LTV (${(impliedLTV * 100).toFixed(2)}%) from loan/value does not match stated LTV (${(ltvInDebt * 100).toFixed(2)}%) — check valuation.underwritten_value vs debt_structure.ltv`, value: diff });
       }
     }
   }
@@ -359,7 +359,7 @@ function checkCrossSectionConsistency(
       ?? deepGet(sourcesUses.content, 'sources.debt_proceeds') as number | undefined;
     const dsLoan = deepGet(debtStructure.content, 'loan_amount') as number | undefined;
     if (suLoan != null && dsLoan != null && Math.abs(suLoan - dsLoan) > 100) {
-      issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
+      issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
     }
   }
 
@@ -368,7 +368,7 @@ function checkCrossSectionConsistency(
     const totalSources = deepGet(sourcesUses.content, 'total_sources') as number | undefined;
     const totalUses = deepGet(sourcesUses.content, 'total_uses') as number | undefined;
     if (totalSources != null && totalUses != null && Math.abs(totalSources - totalUses) > 1) {
-      issues.push({ code: 'CC-04', severity: 'error', section: 'sources_uses', message: `CC-04: Sources ($${totalSources.toLocaleString()}) do not equal Uses ($${totalUses.toLocaleString()}) — difference: $${Math.abs(totalSources - totalUses).toLocaleString()}`, value: Math.abs(totalSources - totalUses) });
+      issues.push({ code: 'CC-04', severity: 'error', section: 'sources_uses', field: 'total_sources', message: `CC-04: Sources ($${totalSources.toLocaleString()}) do not equal Uses ($${totalUses.toLocaleString()}) — difference: $${Math.abs(totalSources - totalUses).toLocaleString()}`, value: Math.abs(totalSources - totalUses) });
     }
   }
 
@@ -380,7 +380,7 @@ function checkCrossSectionConsistency(
     if (modelNOI != null && debtNOI != null && modelNOI > 0) {
       const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
       if (pctDiff > 0.01) {
-        issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
+        issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
       }
     }
   }
@@ -393,7 +393,7 @@ function checkCrossSectionConsistency(
     if (modelNOI != null && dcfY1NOI != null && modelNOI > 0) {
       const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
       if (pctDiff > 0.02) {
-        issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
+        issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
       }
     }
   }
@@ -404,7 +404,7 @@ function checkCrossSectionConsistency(
       ?? deepGet(dcf.content, 'exit_cap_rate') as number | undefined;
     const stressExitCap = deepGet(stressTests.content, 'base_case.exit_cap_rate') as number | undefined;
     if (dcfExitCap != null && stressExitCap != null && Math.abs(dcfExitCap - stressExitCap) > 0.005) {
-      issues.push({ code: 'CC-07', severity: 'warning', section: 'stress_tests', message: `CC-07: Exit cap rate in DCF (${(dcfExitCap * 100).toFixed(2)}%) differs from stress test base case (${(stressExitCap * 100).toFixed(2)}%)`, value: Math.abs(dcfExitCap - stressExitCap) });
+      issues.push({ code: 'CC-07', severity: 'warning', section: 'stress_tests', field: 'base_case.exit_cap_rate', message: `CC-07: Exit cap rate in DCF (${(dcfExitCap * 100).toFixed(2)}%) differs from stress test base case (${(stressExitCap * 100).toFixed(2)}%)`, value: Math.abs(dcfExitCap - stressExitCap) });
     }
   }
 
@@ -413,7 +413,7 @@ function checkCrossSectionConsistency(
     const ddAppraisedVal = deepGet(dueDiligence.content, 'appraisal.appraised_value') as number | undefined;
     const valAppraisedVal = deepGet(valuation.content, 'appraised_value') as number | undefined;
     if (ddAppraisedVal != null && valAppraisedVal != null && Math.abs(ddAppraisedVal - valAppraisedVal) > 1000) {
-      issues.push({ code: 'CC-08', severity: 'warning', section: 'due_diligence', message: `CC-08: Appraised value in due_diligence ($${ddAppraisedVal.toLocaleString()}) does not match valuation.appraised_value ($${valAppraisedVal.toLocaleString()})`, value: Math.abs(ddAppraisedVal - valAppraisedVal) });
+      issues.push({ code: 'CC-08', severity: 'warning', section: 'due_diligence', field: 'appraisal.appraised_value', message: `CC-08: Appraised value in due_diligence ($${ddAppraisedVal.toLocaleString()}) does not match valuation.appraised_value ($${valAppraisedVal.toLocaleString()})`, value: Math.abs(ddAppraisedVal - valAppraisedVal) });
     }
   }
 
@@ -422,7 +422,7 @@ function checkCrossSectionConsistency(
     const stressADS = deepGet(stressTests.content, 'base_case.annual_debt_service') as number | undefined;
     const debtADS = deepGet(debtStructure.content, 'annual_debt_service') as number | undefined;
     if (stressADS != null && debtADS != null && Math.abs(stressADS - debtADS) > 500) {
-      issues.push({ code: 'CC-09', severity: 'warning', section: 'stress_tests', message: `CC-09: Annual debt service in stress test base case ($${stressADS.toLocaleString()}) differs from debt_structure ($${debtADS.toLocaleString()}) by $${Math.abs(stressADS - debtADS).toLocaleString()}`, value: Math.abs(stressADS - debtADS) });
+      issues.push({ code: 'CC-09', severity: 'warning', section: 'stress_tests', field: 'base_case.annual_debt_service', message: `CC-09: Annual debt service in stress test base case ($${stressADS.toLocaleString()}) differs from debt_structure ($${debtADS.toLocaleString()}) by $${Math.abs(stressADS - debtADS).toLocaleString()}`, value: Math.abs(stressADS - debtADS) });
     }
   }
 
@@ -431,7 +431,7 @@ function checkCrossSectionConsistency(
     const suPP = deepGet(sourcesUses.content, 'uses.purchase_price') as number | undefined;
     const valPP = deepGet(valuation.content, 'purchase_price') as number | undefined;
     if (suPP != null && valPP != null && Math.abs(suPP - valPP) > 100) {
-      issues.push({ code: 'CC-10', severity: 'error', section: 'sources_uses', message: `CC-10: Purchase price in Sources & Uses ($${suPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(suPP - valPP) });
+      issues.push({ code: 'CC-10', severity: 'error', section: 'sources_uses', field: 'uses.purchase_price', message: `CC-10: Purchase price in Sources & Uses ($${suPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(suPP - valPP) });
     }
   }
 }
