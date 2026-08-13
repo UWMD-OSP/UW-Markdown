@@ -119,10 +119,29 @@ not core gaps.
 - **Refinement VOI is approximate.** Perturbation-only, marginal (not joint) VOI;
   non-monotonic outputs only warn; `refinement.ts` carries an empty v1 placeholder
   for the L0b loop.
-- **Test coverage uneven.** No dedicated unit test for `compactor.ts`, `init.ts`,
-  `format.ts`, `context.ts`, or core `cli.ts`; validator
-  has only `validator.dq.test.ts` (CC/FV mainly via conformance). CI coverage gate
-  is a soft floor (`continue-on-error`). The **web-editor** now has a Vitest suite
+- **Test coverage uneven, but the gate is real.** The backfills landed:
+  `compactor.ts`, `init.ts`, `format.ts`, and `context.ts` all have dedicated
+  tests now, and the validator has four (`validator.cc`, `.consistency`, `.dq`,
+  `.fv`), not just `.dq`. Core `cli.ts` is the remaining module with no sibling
+  unit test.
+
+  The CI coverage gate is **blocking**, not advisory — `continue-on-error` was
+  removed in `13218c4`, and the floor in `packages/uwmd-core/vitest.config.ts`
+  was ratcheted (T17, 2026-08-13) from 70/70/90/70 to **76 lines, 76 statements,
+  95 functions, 74 branches**, roughly a point under measured. Falling through a
+  floor fails CI.
+
+  > **Reading the number honestly.** Measured core coverage is ~77% lines, but
+  > 2,452 of 14,451 lines sit at 0% and most of that is not untested logic:
+  > `index.ts` and `browser.ts` (838 lines) are pure re-export barrels with
+  > nothing to cover; `cli.ts` (1,104 lines) *is* exercised, by the CLI smoke
+  > tests in `packages/uwmd-cli`, which do not count toward this package's
+  > number; `agents/` (510 lines) needs a network and an API key, which is what
+  > T10's recorded-replay Tier-4 would fix. Excluding just the two barrels the
+  > figure is ~82%; excluding barrels and agents, ~85%. Worth deciding whether
+  > the `exclude` list should reflect that — a floor over a denominator padded
+  > with re-export lists is a weaker signal than it looks. Deliberately left out
+  > of T17, which only moved the floor. The **web-editor** now has a Vitest suite
   (56 tests, 7 files): the `runEdit()` chokepoint + catalog helpers (node), jsdom
   component tests for the footed surfaces and inline-remediation wiring, receipt
   issuance/verification incl. the stale-vs-failed distinction and a forced
