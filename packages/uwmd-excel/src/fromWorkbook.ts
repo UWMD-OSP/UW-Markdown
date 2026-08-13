@@ -7,9 +7,15 @@ import type ExcelJS from 'exceljs';
 import type { WorkbookLayout } from './layout.js';
 import { SUBTOTAL_RANGES } from './layout.js';
 import { getLayoutForAssetClass } from './layouts.js';
+import { readWorkbookContract } from './mcpSheet.js';
+import type { WorkbookContract } from './mcpSheet.js';
 
 export class WorkbookImportError extends Error {
-  readonly code: 'WORKBOOK-IMPORT-ASSET-CLASS' | 'WORKBOOK-IMPORT-NAMED-RANGE' | 'WORKBOOK-IMPORT-SUBTOTAL';
+  readonly code:
+    | 'WORKBOOK-IMPORT-ASSET-CLASS'
+    | 'WORKBOOK-IMPORT-NAMED-RANGE'
+    | 'WORKBOOK-IMPORT-SUBTOTAL'
+    | 'WORKBOOK-IMPORT-PACK-MISMATCH';
 
   constructor(
     code: WorkbookImportError['code'],
@@ -22,8 +28,17 @@ export class WorkbookImportError extends Error {
 }
 
 export interface WorkbookImport {
-  /** The layout selected from Underwriting!B3. */
+  /**
+   * The layout that was used. Read from the UW MCP sheet when present, and
+   * only from the positional Underwriting!B3 cell as a fallback.
+   */
   asset_class: string;
+  /**
+   * Identity and provenance of the source record, when the workbook carries a
+   * UW MCP sheet. `null` for workbooks predating it or produced elsewhere —
+   * the import still succeeds, but the caller cannot check staleness.
+   */
+  contract: WorkbookContract | null;
   /**
    * Partial section content suitable for a Tier-2 section edit. _meta and
    * formula-derived totals are intentionally absent.
@@ -152,15 +167,41 @@ function assertSubtotalRows(wb: ExcelJS.Workbook, layout: WorkbookLayout): void 
  * cannot overwrite the pack-owned calc-engine result.
  */
 export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
-  const underwriting = wb.getWorksheet('Underwriting');
-  const assetClass = underwriting?.getCell('B3').value;
+  // Prefer the UW MCP sheet: a stable keyed location that survives layout
+  // changes. Underwriting!B3 is positional and sits next to a human label, so
+  // it is only a fallback for workbooks predating the contract.
+  const contract = readWorkbookContract(wb);
+  const declared = wb.getWorksheet('Underwriting')?.getCell('B3').value;
+
+  // When both carry an asset class they must agree. A disagreement means one of
+  // them was edited and the other was not, so the workbook is internally
+  // inconsistent and neither value can be trusted.
+  if (contract && typeof declared === 'string' && declared !== contract.document.asset_class) {
+    throw new WorkbookImportError(
+      'WORKBOOK-IMPORT-ASSET-CLASS',
+      `Workbook is inconsistent: the UW MCP sheet says "${contract.document.asset_class}" but Underwriting!B3 says "${declared}".`,
+    );
+  }
+
+  const assetClass = contract?.document.asset_class ?? declared;
   if (typeof assetClass !== 'string' || !getLayoutForAssetClass(assetClass)) {
     throw new WorkbookImportError(
       'WORKBOOK-IMPORT-ASSET-CLASS',
-      'Workbook has no supported asset class in Underwriting!B3.',
+      'Workbook has no supported asset class in its UW MCP sheet or Underwriting!B3.',
     );
   }
   const layout = getLayoutForAssetClass(assetClass)!;
+
+  // Row geometry below is derived from the CURRENT layout, and a different pack
+  // may declare a different metric set. Reading an old workbook at new offsets
+  // would silently import the wrong cells, so refuse rather than guess.
+  if (contract && contract.producer.pack_id !== layout.pack.id) {
+    throw new WorkbookImportError(
+      'WORKBOOK-IMPORT-PACK-MISMATCH',
+      `Workbook was produced by pack "${contract.producer.pack_id}" but the registered pack for ${assetClass} is "${layout.pack.id}".`,
+    );
+  }
+
   assertSubtotalRows(wb, layout);
 
   const sections: Record<string, Record<string, unknown>> = {};
@@ -187,5 +228,5 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
     expenseRow++;
   }
 
-  return { asset_class: assetClass, sections };
+  return { asset_class: assetClass, contract: contract ?? null, sections };
 }
