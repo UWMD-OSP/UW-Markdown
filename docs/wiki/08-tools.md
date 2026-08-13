@@ -97,6 +97,55 @@ map to Excel (else `EXCEL-EMIT-FN`).
 > because it only checked formula *text*. Adding a new class's example deal must
 > keep its operating statement footing.)
 
+### The `UW MCP` sheet — machine-readable identity and contract
+
+Every workbook carries a fourth sheet, `UW MCP` (`mcpSheet.ts`). An `.xlsx` is a
+**view** of a `.uw.md`, not the record, and once it leaves the converter it
+otherwise carries no statement of where it came from. The sheet writes that
+statement down: human-legible key/value rows, a metric dictionary, a table of
+sibling representations, and one cell holding the whole thing as canonical JSON
+under the `uw_mcp` named range — so a reader can scan it or parse exactly one
+thing.
+
+It reuses the existing interchange vocabulary rather than inventing a parallel
+one, which is what makes the workbook line up with the JSON/XML/CSV forms:
+envelope semantic digests (`computeEnvelopeDigest`), codec
+`RepresentationDescriptor`s from `CORE_CODEC_REGISTRY`, and the MCP deal
+resource URI (`uwmdDealResourceURI`).
+
+What it carries, and why each part earns its place:
+
+- **Document identity** — `uw_version`, `deal_id`, `deal_name`, `asset_class`,
+  the source **semantic digest** at export time, and the MCP resource URI for
+  the canonical record.
+- **Producer** — the pack id and version, and the converter. Derived metrics are
+  pack-owned, so a reader needs to know *which* pack produced them.
+- **Metric dictionary** — every metric's id, label, unit, and its
+  **calc-engine source formula**, not the Excel translation. An agent handed a
+  bare workbook would otherwise have to reverse-engineer a cell to learn what
+  `debt_yield` means.
+- **Sibling representations** — the codec registry's descriptors, so a reader
+  can discover the JSON/XML/CSV forms of the same record.
+- **Assurance boundary**, stated explicitly. The likeliest agent error with a
+  spreadsheet is treating a cached cell as ground truth and "helpfully"
+  recomputing it. The rows say plainly: this workbook is a view, the canonical
+  record is the `.uw.md`, derived metrics are pack-owned formulas, inputs apply
+  only through the Tier-2 editor, and the digest proves *source identity*, not
+  input truth.
+
+`verifyWorkbookContract(wb, parsed, layout)` returns a **three-state** verdict —
+`verified` / `stale` / `failed` / `unverifiable` — deliberately mirroring
+`receipts.ts`. A workbook with no `UW MCP` sheet is `unverifiable`, **not**
+`failed`: an older export is not evidence of tampering, and reporting it as a
+failure would train users to ignore the result. A pack-version bump or a changed
+source document is `stale`. Only a workbook that carries a contract *and*
+disagrees with the record is `failed`.
+
+`fromWorkbook()` consumes it: identity comes from the sheet rather than the
+positional `Underwriting!B3` cell, a pack-id mismatch is refused with
+`WORKBOOK-IMPORT-PACK-MISMATCH` rather than read at the wrong row offsets, and a
+contract that disagrees with `B3` is refused as internally inconsistent.
+
 Build: `tsc`. Test: `vitest run`.
 
 ## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.1.0)

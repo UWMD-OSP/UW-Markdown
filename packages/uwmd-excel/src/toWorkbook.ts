@@ -22,6 +22,7 @@ import {
   type DerivedMetric,
 } from './layout.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
+import { buildWorkbookContract, writeMcpSheet } from './mcpSheet.js';
 
 /** Thrown when no workbook layout is registered for the deal's asset class. */
 export class UnsupportedAssetClassError extends Error {
@@ -273,6 +274,9 @@ export async function toWorkbook(parsed: ParsedUWFile): Promise<ExcelJS.Workbook
   writeUnderwritingSheet(wb, parsed, layout, derivedMetrics);
   writeOperatingStatementSheet(wb, parsed, layout);
   writePipelineLogSheet(wb, parsed);
+  // Last: the machine-readable contract (identity, producing pack, source
+  // digest, metric dictionary, sibling representations, assurance boundary).
+  writeMcpSheet(wb, await buildWorkbookContract(parsed, layout));
 
   return wb;
 }

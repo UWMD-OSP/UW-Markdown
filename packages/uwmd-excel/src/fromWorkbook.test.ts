@@ -94,10 +94,13 @@ describe('fromWorkbook', () => {
   for (const file of CASES) {
     it(`round-trips editable section fragments for ${file}`, async () => {
       const { wb, parsed, layout } = await workbookFor(file);
-      expect(fromWorkbook(wb)).toEqual({
-        asset_class: layout.assetClass,
-        sections: expectedSections(parsed, layout),
-      });
+      const imported = fromWorkbook(wb);
+      expect(imported.asset_class).toBe(layout.assetClass);
+      expect(imported.sections).toEqual(expectedSections(parsed, layout));
+      // Every workbook this converter writes carries a UW MCP sheet, so the
+      // import surfaces the source identity it was produced from.
+      expect(imported.contract?.producer.pack_id).toBe(layout.pack.id);
+      expect(imported.contract?.document.asset_class).toBe(layout.assetClass);
     });
   }
 
@@ -113,8 +116,20 @@ describe('fromWorkbook', () => {
     expect(imported.sections.noi_model).not.toHaveProperty('_meta');
   });
 
-  it('rejects a workbook with an unknown asset class', async () => {
+  it('rejects a workbook whose declared asset class disagrees with its contract', async () => {
     const { wb } = await workbookFor(CASES[0]);
+    wb.getWorksheet('Underwriting')!.getCell('B3').value = 'unknown_class';
+
+    // The UW MCP sheet still says multifamily. One of the two was edited and
+    // the other was not, so neither can be trusted.
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({
+      code: 'WORKBOOK-IMPORT-ASSET-CLASS',
+    }));
+  });
+
+  it('rejects a contract-less workbook with an unknown asset class', async () => {
+    const { wb } = await workbookFor(CASES[0]);
+    wb.removeWorksheet(wb.getWorksheet('UW MCP')!.id);
     wb.getWorksheet('Underwriting')!.getCell('B3').value = 'unknown_class';
 
     expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({
