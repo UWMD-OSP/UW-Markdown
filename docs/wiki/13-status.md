@@ -95,16 +95,18 @@ not core gaps.
   one-pack-per-class assumption may not survive it — worth a design note, and
   possibly an RFC, before any code.
 
-  > **Landmine for whoever does `mixed_use`.** It is now the *only* unregistered
-  > class, which makes it load-bearing for every "no pack / no defaults
-  > registered" negative test: `cascade.test.ts`, `defaults.test.ts`,
-  > `toWorkbook.test.ts`, `receipts.test.ts`, and the
-  > `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture. Registering
-  > it breaks all five at once. Each pack so far has shuffled that role to the
-  > next unregistered class (hospitality → senior_housing → student_housing →
-  > mixed_use); after `mixed_use` there is no next one, so those tests need to
-  > move to a synthetic non-enum identifier instead. Do that refactor *before*
-  > the pack, not during it.
+  > **Landmine defused (T12).** `mixed_use` used to be load-bearing for every
+  > "no pack / no defaults registered" negative test, because it was the only
+  > unregistered class. Each pack shuffled that role to the next unregistered
+  > class (hospitality → senior_housing → student_housing → mixed_use), and after
+  > `mixed_use` there was no next one — so registering it would have broken five
+  > tests at once. Those tests now anchor on the synthetic identifier
+  > `__unregistered_test_class__`, which is deliberately *not* a member of the
+  > `AssetClass` union and must never become one. `cascade.test.ts`,
+  > `defaults.test.ts`, `toWorkbook.test.ts`, `receipts.test.ts`, and the
+  > `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture no longer
+  > reference `mixed_use` at all, so the `mixed_use` pack can be written without
+  > touching any of them.
 - **Module system is declarative-only.** `modules.ts` validates and registers
   in-process `ModuleManifest` objects (shape, formulas, dependency load order,
   tier/protocol/format compatibility), but there is no dynamic import, signing,

@@ -14,6 +14,14 @@ import {
   listDefaultedFields,
 } from './defaults.js';
 
+/**
+ * A deliberately synthetic asset class that is not — and must never become — a
+ * member of the `AssetClass` union. Negative tests that assert "no defaults are
+ * registered for this class" anchor here rather than borrowing a real enum
+ * member, so that registering the last real class cannot invalidate them.
+ */
+const UNREGISTERED_CLASS = '__unregistered_test_class__';
+
 describe('defaults — MULTIFAMILY_DEFAULTS', () => {
   it('declares asset_class and version', () => {
     expect(MULTIFAMILY_DEFAULTS.asset_class).toBe('multifamily');
@@ -506,7 +514,7 @@ describe('defaults — registry helpers', () => {
   });
 
   it('getAssetClassDefaults returns null for unregistered classes', () => {
-    expect(getAssetClassDefaults('mixed_use')).toBeNull();
+    expect(getAssetClassDefaults(UNREGISTERED_CLASS)).toBeNull();
     expect(getAssetClassDefaults('not-a-real-class')).toBeNull();
   });
 
@@ -550,7 +558,7 @@ describe('defaults — registry helpers', () => {
 
   it('getDefaultRange returns null for unknown field', () => {
     expect(getDefaultRange('multifamily', 'no.such.field')).toBeNull();
-    expect(getDefaultRange('mixed_use', 'noi_model.expense_ratio')).toBeNull();
+    expect(getDefaultRange(UNREGISTERED_CLASS, 'noi_model.expense_ratio')).toBeNull();
   });
 
   it('listDefaultedFields enumerates the table keys', () => {
@@ -590,6 +598,6 @@ describe('defaults — registry helpers', () => {
     expect(landPaths.length).toBe(Object.keys(LAND_DEFAULTS.fields).length);
     expect(landPaths).toContain('valuation.land_to_sellout_ratio');
 
-    expect(listDefaultedFields('mixed_use')).toEqual([]);
+    expect(listDefaultedFields(UNREGISTERED_CLASS)).toEqual([]);
   });
 });

@@ -9,6 +9,21 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Changed
+- **"No pack registered" negative tests no longer borrow a real asset class.**
+  Five tests — in `cascade.test.ts`, `defaults.test.ts`, `toWorkbook.test.ts`,
+  `receipts.test.ts`, and the
+  `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture — asserted
+  that an unregistered class resolves to no pack, no defaults, and no Excel
+  layout by pointing at whichever real `AssetClass` member happened to still be
+  unregistered. Every new pack therefore broke them and had to shuffle the role
+  onward (land → hospitality → senior_housing → student_housing → mixed_use).
+  With `mixed_use` the last one left, the next pack had nowhere to shuffle to.
+  All five now anchor on the synthetic identifier `__unregistered_test_class__`,
+  which is deliberately not a member of the `AssetClass` union and must never
+  become one. No test or fixture references `mixed_use` any more, so the final
+  pack can be written without touching them. Behaviour is unchanged — the
+  public API already accepted `string`, so no casts or signature changes were
+  needed.
 - **Canonical repository moved to the project organization** — every source,
   download, example, raw-content, and clone URL now points at
   `github.com/UWMD-OSP/UW-Markdown`. Package `repository` metadata, the
@@ -19,9 +34,9 @@ protocol, and each package each carry an independent semver).
 - **`land` was the canonical "no pack registered" example and stopped being one.**
   Registering `LAND_PACK` broke `receipts.test.ts` and the
   `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture, both of which
-  used `asset_class: land` to exercise `RCP_PACK_UNRESOLVED`. Both now use
-  `mixed_use`. Note that `mixed_use` is the last unregistered class, so this
-  shuffle cannot be repeated — see the landmine note in `docs/wiki/13-status.md`.
+  used `asset_class: land` to exercise `RCP_PACK_UNRESOLVED`. Both moved to
+  `mixed_use` — since superseded by the synthetic-identifier change below, which
+  ends the shuffle for good.
 - **The hospitality defaults table shipped without its invariant tests.** Every
   asset-class defaults table has a dedicated `describe` block in
   `defaults.test.ts` asserting `low <= central <= high`, the

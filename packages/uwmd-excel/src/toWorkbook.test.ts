@@ -29,6 +29,13 @@ import { STUDENT_HOUSING_LAYOUT } from './student-housing.js';
 import { LAND_LAYOUT } from './land.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
+/**
+ * A deliberately synthetic asset class that is not — and must never become — a
+ * member of the `AssetClass` union, so the "no layout for this class" tests stay
+ * valid once every real class ships a workbook layout.
+ */
+const UNREGISTERED_CLASS = '__unregistered_test_class__';
+
 const EXAMPLES = resolve(__dirname, '../../../examples');
 
 const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
@@ -98,12 +105,20 @@ describe('layout registry', () => {
   });
 
   it('returns null for an unregistered class', () => {
-    expect(getLayoutForAssetClass('mixed_use')).toBeNull();
+    expect(getLayoutForAssetClass(UNREGISTERED_CLASS)).toBeNull();
   });
 
   it('toWorkbook throws UnsupportedAssetClassError for an unregistered class', async () => {
     const parsed = parseUWFile(
-      ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "mixed_use"', '---', '# X'].join('\n'),
+      [
+        '---',
+        'uw_version: "1.1"',
+        'deal_id: "x"',
+        'deal_name: "X"',
+        `asset_class: "${UNREGISTERED_CLASS}"`,
+        '---',
+        '# X',
+      ].join('\n'),
     );
     await expect(toWorkbook(parsed)).rejects.toBeInstanceOf(UnsupportedAssetClassError);
   });

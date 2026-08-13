@@ -2,6 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { resolveValue, type CascadeContext } from './cascade.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 
+/**
+ * A deliberately synthetic asset class that is not — and must never become — a
+ * member of the `AssetClass` union, so this negative test stays valid once every
+ * real class has a registered defaults table.
+ */
+const UNREGISTERED_CLASS = '__unregistered_test_class__';
+
 function makeBlock(sectionId: string, content: unknown, source: UWBlock['meta']['source'] = 'manual'): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
@@ -232,8 +239,8 @@ describe('cascade — asset class selection', () => {
     expect(result.value).toBeUndefined();
   });
 
-  it('returns no asset_class_default for unregistered class (mixed_use)', () => {
-    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'mixed_use' }));
+  it('returns no asset_class_default for an unregistered class', () => {
+    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: UNREGISTERED_CLASS }));
     expect(result.step).toBe('system_default');
     expect(result.value).toBeUndefined();
   });
