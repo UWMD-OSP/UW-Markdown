@@ -211,6 +211,7 @@ export {
   SELF_STORAGE_PACK,
   HOSPITALITY_PACK,
   SENIOR_HOUSING_PACK,
+  STUDENT_HOUSING_PACK,
   getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
@@ -265,6 +266,7 @@ export {
   SELF_STORAGE_DEFAULTS,
   HOSPITALITY_DEFAULTS,
   SENIOR_HOUSING_DEFAULTS,
+  STUDENT_HOUSING_DEFAULTS,
 } from './defaults.js';
 export type { AssetClassDefaults, DefaultRange, DefaultUnit } from './defaults.js';
 export { getExprDependencies, extractDependencyGraph } from './calc/dependencies.js';

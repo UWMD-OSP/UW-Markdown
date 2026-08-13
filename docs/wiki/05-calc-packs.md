@@ -8,7 +8,7 @@ CLI, conformance, refinement) picks it up.
 - **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
   `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
-  `SENIOR_HOUSING_PACK`, `getPackForAssetClass`,
+  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
 ## File layout
@@ -22,6 +22,7 @@ File | Role
 `packs/self-storage.ts` | `SELF_STORAGE_PACK` — the canonical self-storage metrics
 `packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
 `packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
+`packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
 `packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (6 decimals)
@@ -31,6 +32,7 @@ File | Role
 `packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (6 decimals)
 `packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (6 decimals) + operating-statement footing
 `packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing/labor-subtotal reconciliation
+`packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing + bed-sizing guard
 
 ## Selecting a pack by asset class
 
@@ -39,7 +41,7 @@ File | Role
 `defaults.ts`. The CLI's `refine`/`scope` and any consumer should select the pack
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
 Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
-`hospitality`, `senior_housing`.
+`hospitality`, `senior_housing`, `student_housing`.
 
 ## `MULTIFAMILY_PACK`
 
@@ -177,10 +179,45 @@ the lines foot, and the subtotal reconciles to its three components while
 staying out of the expense map. Verified against the
 `Ocotillo-Senior-Living-Chandler-AZ.uw.md` worked example.
 
-These are the **seven asset-class packs today** (`multifamily`, `office`,
-`retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`). The
-`AssetClass` type union also lists student_housing/mixed_use/land, but no packs
-are defined for them yet. Adding
+## `STUDENT_HOUSING_PACK`
+
+A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+['student_housing']`) whose `calculations[]` are the **fourteen** student-housing
+derived metrics. The class looks like multifamily and is not underwritten like
+it: leases are signed **per bed**, not per unit, so every sizing and occupancy
+metric keys off `property.total_beds` — `price_per_bed`, `loan_per_bed`,
+`noi_per_bed`, `revenue_per_bed`, `rent_per_bed_monthly`, and a bed-count
+`occupancy`. A test asserts no metric in the pack reads `property.total_units`,
+so the multifamily habit cannot creep back in.
+
+The defining metric is `pre_lease_rate`:
+
+id | formula | unit
+---|---|---
+`pre_lease_rate` | `rent_roll.preleased_beds / property.total_beds` | `%`
+`occupancy` | `rent_roll.occupied_beds / property.total_beds` | `%`
+`rent_per_bed_monthly` | `noi_model.income.gross_potential_rent / (property.total_beds * 12)` | `$`
+
+Student housing re-leases essentially its entire rent roll on one date, so
+pre-lease velocity is the leading indicator of next year's revenue in a way no
+trailing occupancy figure can be. **`preleased_beds` and `occupied_beds` are
+deliberately separate stored counts, not derived from each other** — they are
+measured on different dates (next academic year vs. in place today), and the
+fixture carries different values for each so the distinction cannot silently
+collapse. A test asserts they differ.
+
+The operating statement also carries `turnover_make_ready` as its own expense
+line: turning nearly the whole property in one August window is a materially
+larger and less smoothable cost than conventional multifamily turnover, which is
+why the class expense-ratio band sits above multifamily's. Verified against the
+`Mill-Ave-Commons-Student-Tempe-AZ.uw.md` worked example, which also
+demonstrates honest **negative leverage** — a 5.75% going-in cap against 6.25%
+debt, giving 3.0% year-one cash-on-cash.
+
+These are the **eight asset-class packs today** (`multifamily`, `office`,
+`retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`,
+`student_housing`). The `AssetClass` type union also lists mixed_use/land, but
+no packs are defined for them yet. Adding
 another **built-in** pack for an existing enum value is a library-only change
 (follow the recipe below). Letting **third-party modules** declare entirely new
 asset-class identifiers is the separate v2 RFC topic — see

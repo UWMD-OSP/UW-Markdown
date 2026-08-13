@@ -7,6 +7,7 @@ import {
   SELF_STORAGE_DEFAULTS,
   HOSPITALITY_DEFAULTS,
   SENIOR_HOUSING_DEFAULTS,
+  STUDENT_HOUSING_DEFAULTS,
   getAssetClassDefaults,
   getDefaultRange,
   listDefaultedFields,
@@ -342,6 +343,61 @@ describe('defaults — SENIOR_HOUSING_DEFAULTS', () => {
   });
 });
 
+describe('defaults — STUDENT_HOUSING_DEFAULTS', () => {
+  it('declares asset_class and version', () => {
+    expect(STUDENT_HOUSING_DEFAULTS.asset_class).toBe('student_housing');
+    expect(STUDENT_HOUSING_DEFAULTS.version).toBe('1.0.0');
+  });
+
+  it('every entry satisfies low <= central <= high', () => {
+    for (const [path, range] of Object.entries(STUDENT_HOUSING_DEFAULTS.fields)) {
+      expect(range.low, `${path}.low`).toBeLessThanOrEqual(range.central);
+      expect(range.central, `${path}.central`).toBeLessThanOrEqual(range.high);
+    }
+  });
+
+  it('every entry stamps source = asset_class_default with a citation and unit', () => {
+    for (const [path, range] of Object.entries(STUDENT_HOUSING_DEFAULTS.fields)) {
+      expect(range.source, `${path}.source`).toBe('asset_class_default');
+      expect(range.citation, `${path}.citation`).toBeTruthy();
+      expect(range.unit, `${path}.unit`).toBeDefined();
+    }
+  });
+
+  it('covers the v1.0 student-housing input set', () => {
+    const expected = [
+      'noi_model.expense_ratio',
+      'rent_roll.occupancy',
+      'rent_roll.vacancy_pct',
+      'rent_roll.pre_lease_rate',
+      'noi_model.rent_growth_pct_y1',
+      'noi_model.turnover_cost_per_bed',
+      'noi_model.management_fee_pct',
+      'noi_model.replacement_reserve_per_bed_y1',
+      'debt_structure.rate_pct',
+      'debt_structure.amortization_months',
+      'debt_structure.io_months',
+      'debt_structure.ltv_pct',
+      'valuation.exit_cap_rate_pct',
+      'sources_uses.closing_costs_pct',
+    ];
+    for (const path of expected) {
+      expect(STUDENT_HOUSING_DEFAULTS.fields[path], path).toBeDefined();
+    }
+  });
+
+  it('occupancy and vacancy bands are complementary', () => {
+    const occ = STUDENT_HOUSING_DEFAULTS.fields['rent_roll.occupancy']!;
+    const vac = STUDENT_HOUSING_DEFAULTS.fields['rent_roll.vacancy_pct']!;
+    expect(occ.central + vac.central).toBeCloseTo(1, 6);
+  });
+
+  it('reserves are quoted per bed, not per unit', () => {
+    expect(STUDENT_HOUSING_DEFAULTS.fields['noi_model.replacement_reserve_per_unit_y1']).toBeUndefined();
+    expect(STUDENT_HOUSING_DEFAULTS.fields['noi_model.replacement_reserve_per_bed_y1']).toBeDefined();
+  });
+});
+
 describe('defaults — registry helpers', () => {
   it('getAssetClassDefaults returns the multifamily table', () => {
     const t = getAssetClassDefaults('multifamily');
@@ -378,8 +434,13 @@ describe('defaults — registry helpers', () => {
     expect(t).toBe(SENIOR_HOUSING_DEFAULTS);
   });
 
+  it('getAssetClassDefaults returns the student-housing table', () => {
+    const t = getAssetClassDefaults('student_housing');
+    expect(t).toBe(STUDENT_HOUSING_DEFAULTS);
+  });
+
   it('getAssetClassDefaults returns null for unregistered classes', () => {
-    expect(getAssetClassDefaults('student_housing')).toBeNull();
+    expect(getAssetClassDefaults('mixed_use')).toBeNull();
     expect(getAssetClassDefaults('not-a-real-class')).toBeNull();
   });
 
@@ -411,11 +472,15 @@ describe('defaults — registry helpers', () => {
     const sh = getDefaultRange('senior_housing', 'noi_model.labor_ratio');
     expect(sh?.central).toBe(0.42);
     expect(sh?.unit).toBe('ratio');
+
+    const st = getDefaultRange('student_housing', 'rent_roll.pre_lease_rate');
+    expect(st?.central).toBe(0.95);
+    expect(st?.unit).toBe('percent');
   });
 
   it('getDefaultRange returns null for unknown field', () => {
     expect(getDefaultRange('multifamily', 'no.such.field')).toBeNull();
-    expect(getDefaultRange('student_housing', 'noi_model.expense_ratio')).toBeNull();
+    expect(getDefaultRange('mixed_use', 'noi_model.expense_ratio')).toBeNull();
   });
 
   it('listDefaultedFields enumerates the table keys', () => {
@@ -447,6 +512,10 @@ describe('defaults — registry helpers', () => {
     expect(seniorHousingPaths.length).toBe(Object.keys(SENIOR_HOUSING_DEFAULTS.fields).length);
     expect(seniorHousingPaths).toContain('noi_model.labor_ratio');
 
-    expect(listDefaultedFields('student_housing')).toEqual([]);
+    const studentHousingPaths = listDefaultedFields('student_housing');
+    expect(studentHousingPaths.length).toBe(Object.keys(STUDENT_HOUSING_DEFAULTS.fields).length);
+    expect(studentHousingPaths).toContain('rent_roll.pre_lease_rate');
+
+    expect(listDefaultedFields('mixed_use')).toEqual([]);
   });
 });

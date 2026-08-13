@@ -55,6 +55,24 @@ protocol, and each package each carry an independent semver).
   bumped to 0.2.0.
 
 ### Added
+- **Student-housing calc pack — the eighth asset class end-to-end.**
+  `STUDENT_HOUSING_PACK` adds fourteen deterministic metrics. The class looks
+  like multifamily but is not underwritten like it: leases are signed per *bed*,
+  so every sizing and occupancy metric keys off `property.total_beds`
+  (`price_per_bed`, `loan_per_bed`, `noi_per_bed`, `revenue_per_bed`,
+  `rent_per_bed_monthly`, bed-count `occupancy`), and a test asserts no metric
+  reads `property.total_units`. The defining metric is `pre_lease_rate` — the
+  share of beds committed for the coming academic year — because student housing
+  re-leases its entire rent roll on one date, making pre-lease velocity the
+  leading revenue indicator. `preleased_beds` and `occupied_beds` are separate
+  stored counts measured on different dates, never derived from each other; a
+  test pins that they differ. Shipped with `STUDENT_HOUSING_DEFAULTS` (14
+  triage-grade ranges including pre-lease rate and per-bed turnover cost, with
+  reserves quoted per bed rather than per unit), the
+  `Mill-Ave-Commons-Student-Tempe-AZ.uw.md` worked example (600 beds; 5.75% cap,
+  1.30x DSCR, and honest negative leverage at 3.0% cash-on-cash), and a
+  `STUDENT_HOUSING_LAYOUT` workbook layout carrying turnover/make-ready as its
+  own expense row.
 - **Senior-housing calc pack — the seventh asset class end-to-end.**
   `SENIOR_HOUSING_PACK` adds fourteen deterministic metrics. Sizing is per unit
   as in multifamily; the class-distinctive three are `revpor` (revenue per
