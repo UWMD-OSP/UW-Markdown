@@ -1,6 +1,8 @@
 // Public API for @uwmd/excel.
 
 export { toWorkbook, UnsupportedAssetClassError } from './toWorkbook.js';
+export { fromWorkbook, WorkbookImportError } from './fromWorkbook.js';
+export type { WorkbookImport } from './fromWorkbook.js';
 
 export {
   buildNamedRangeMap,
