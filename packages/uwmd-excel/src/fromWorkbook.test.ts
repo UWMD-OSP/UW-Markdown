@@ -11,15 +11,15 @@ import { getLayoutForAssetClass } from './layouts.js';
 const EXAMPLES = resolve(__dirname, '../../../examples');
 
 const CASES = [
-  'Parkview-Apts-Glendale-AZ.uw.md',
-  'Riverside-Office-Phoenix-AZ.uw.md',
-  'Cactus-Crossing-Retail-Mesa-AZ.uw.md',
-  'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md',
-  'Sonoran-Self-Storage-Peoria-AZ.uw.md',
-  'Saguaro-Select-Hotel-Tempe-AZ.uw.md',
-  'Ocotillo-Senior-Living-Chandler-AZ.uw.md',
-  'Mill-Ave-Commons-Student-Tempe-AZ.uw.md',
-  'Sundance-Ranch-Land-Buckeye-AZ.uw.md',
+  'Parkview-Apts-Glendale-AZ.uwx.md',
+  'Riverside-Office-Phoenix-AZ.uwx.md',
+  'Cactus-Crossing-Retail-Mesa-AZ.uwx.md',
+  'Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md',
+  'Sonoran-Self-Storage-Peoria-AZ.uwx.md',
+  'Saguaro-Select-Hotel-Tempe-AZ.uwx.md',
+  'Ocotillo-Senior-Living-Chandler-AZ.uwx.md',
+  'Mill-Ave-Commons-Student-Tempe-AZ.uwx.md',
+  'Sundance-Ranch-Land-Buckeye-AZ.uwx.md',
 ] as const;
 
 function valueAt(source: Record<string, unknown>, path: string): unknown {

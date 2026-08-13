@@ -24,7 +24,7 @@ xdg-open tools/web-viewer/index.html   # Linux
 ```
 
 Drop any `.uw.md` file onto the drop zone (try
-[`examples/Parkview-Apts-Glendale-AZ.uw.md`](../../examples/Parkview-Apts-Glendale-AZ.uw.md)).
+[`examples/Parkview-Apts-Glendale-AZ.uwx.md`](../../examples/Parkview-Apts-Glendale-AZ.uwx.md)).
 
 ## What it demonstrates
 

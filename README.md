@@ -6,7 +6,9 @@
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 
-**`.uw.md`** is a canonical underwriting record for commercial real-estate systems. It carries narrative, typed deal facts, deterministic calculations, validation, and append-only provenance in an open format that AI agents, services, editors, viewers, and internal platforms can all load.
+**UW Markdown** is a canonical underwriting record for commercial real-estate systems. It carries narrative, typed deal facts, deterministic calculations, validation, and append-only provenance in an open format that AI agents, services, editors, viewers, and internal platforms can all load.
+
+A deal record is a **`.uwx.md`** file — the complete, lossless underwriting record. Colloquially it is "a UW Markdown document," much as a `.docx` is "a Word document." Its lossy sibling, **UW Lite** (`.uw.md`), is a constrained human-readable summary with its own [specification](spec/UW_LITE_SPEC_v1.md) — not an older version, and not deprecated. UWX is what a deal *is*; Lite is one way of showing it.
 
 This repository is the home of the standard:
 
@@ -15,7 +17,7 @@ This repository is the home of the standard:
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
 - [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned).
-- [`examples/`](examples/) — sample `.uw.md` deal files.
+- [`examples/`](examples/) — sample `.uwx.md` deal files.
 
 ## Why a standard?
 
@@ -24,7 +26,7 @@ opaque to software, AI, and anyone outside the originator's firm. Every shop
 reinvents the wheel. Every analyst rebuilds the same models. AI tools see
 dollar signs as text and cap rates as 0.05.
 
-`.uw.md` is the same kind of move OpenAPI made for APIs and JSON Schema made
+UW Markdown is the same kind of move OpenAPI made for APIs and JSON Schema made
 for data: a published, versioned, vendor-neutral underwriting contract. It lets
 AI agents, calculation services, bank platforms, analyst tools, document
 parsers, and internal credit systems load and exchange the same record without
@@ -36,8 +38,8 @@ constraint.
 **No clone needed** — install the scoped CLI package and scaffold or validate a deal file with:
 
 ```bash
-npx @uwmd/cli init my-deal.uw.md
-npx @uwmd/cli validate my-deal.uw.md
+npx @uwmd/cli init my-deal.uwx.md
+npx @uwmd/cli validate my-deal.uwx.md
 ```
 
 To work from source instead:
@@ -49,14 +51,14 @@ npm install
 npm run build
 
 # Parse and validate the example file
-npm run cli -- parse examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md
-npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uw.md --to uw-xml
+npm run cli -- parse examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uwx.md
+npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uwx.md --to uw-xml
 npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uw.xml --to uw-json
 ```
 
 To open the reference web viewer, point any browser at
-[`tools/web-viewer/index.html`](tools/web-viewer/) and drop in a `.uw.md` file.
+[`tools/web-viewer/index.html`](tools/web-viewer/) and drop in a `.uwx.md` file.
 
 ## What ships in v1
 
@@ -81,7 +83,7 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
 
 ## Who's building on it
 
-- **[underwriter.cc](https://underwriter.cc)** — a customizable modular underwriting model builder, being rebuilt on top of `.uw.md`. *(first public consumer)*
+- **[underwriter.cc](https://underwriter.cc)** — a customizable modular underwriting model builder, being rebuilt on top of UW Markdown. *(first public consumer)*
 
 If you're building a tool on the format, open a PR to add yourself here.
 

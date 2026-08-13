@@ -21,7 +21,7 @@ By the end you'll have a 30-line `.uw.md` file containing:
 
 This is *intentionally* the smallest conformant file, not a realistic
 underwrite. To see a full deal, look at
-[`examples/Parkview-Apts-Glendale-AZ.uw.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
+[`examples/Parkview-Apts-Glendale-AZ.uwx.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uwx.md)
 once you're done here.
 
 ## Step 1 — Create the file

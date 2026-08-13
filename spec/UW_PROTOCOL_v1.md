@@ -1,10 +1,10 @@
 # UW Protocol — v1.2
 
-**Status:** Release candidate  ·  **Format pairing:** `.uw.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Release candidate  ·  **Format pairing:** `.uwx.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
-interoperate with `.uw.md` files.
+interoperate with UW Markdown files.
 
 The format spec defines what bytes are allowed on disk. The protocol
 spec defines what implementations must do with them.
@@ -99,7 +99,7 @@ V2 will introduce a locale negotiation mechanism; the type
 Every conforming implementation SHOULD expose an
 `ImplementationManifest` that documents its tier, capabilities, representations,
 supported asset classes, protocol version, and format version. Hosts
-that load `.uw.md` files from third parties MAY use the manifest to
+that load `.uwx.md` files from third parties MAY use the manifest to
 refuse files that exceed their declared format version.
 
 **Normative schema:** [`spec/schemas/implementation-manifest.schema.json`](schemas/implementation-manifest.schema.json).
@@ -357,7 +357,7 @@ defines the wire shape for every `EditOperation` accepted by a Tier-2 Editor.
 
 ### V.1 Round-trip preservation
 
-A Tier-2 Editor receiving an `.uw.md` and returning an `.uw.md`
+A Tier-2 Editor receiving an `.uwx.md` and returning an `.uwx.md`
 MUST preserve bytes outside the directly-modified region, modulo:
 
 - Line-ending normalization (CRLF → LF is permitted).
@@ -775,7 +775,7 @@ the expected schema and the `pipeline_log` entry was appended.
 
 ### IX.7 Context Profiles
 
-A consumer of a `.uw.md` file SHOULD declare which **context profile**
+A consumer of a `.uwx.md` file SHOULD declare which **context profile**
 it consumes. The profile determines which sections are included,
 whether superseded blocks appear, whether prose is included, and the
 approximate token budget the producer targets when constructing the
@@ -824,7 +824,7 @@ Sections not on this list trail the canonical prefix in
 
 Token estimates use the `chars/4` approximation; producers MUST
 document the approximation and SHOULD validate periodically against
-the true tokenizer cost (typical drift ±5% on `.uw.md` content).
+the true tokenizer cost (typical drift ±5% on `.uwx.md` content).
 
 ### IX.8 Layer-declared profile consumption
 
@@ -941,7 +941,7 @@ required for v1 conformance.
   in Appendix E, serving as the reference module for the module system.
 - **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
   protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
-  and optional HTTP/MCP binding profiles. The `.uw.md` format remains 1.1.
+  and optional HTTP/MCP binding profiles. The UW Markdown format remains 1.1.
 
 Each of these opens as an RFC under `docs/rfcs/` once that process
 is in place.
@@ -1011,7 +1011,7 @@ validations:
 
 ## Appendix F — Glossary
 
-- **Block**: a fenced JSON region inside a `.uw.md` file annotated
+- **Block**: a fenced JSON region inside a `.uwx.md` file annotated
   with `uw:section=…`.
 - **Canonical block**: the most recent, non-superseded block for a
   given section ID (and variant, if applicable).

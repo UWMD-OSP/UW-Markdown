@@ -8,7 +8,7 @@ import { parseUWFile } from './parser.js';
 import { REPORT_CSS, renderReportHtml } from './report.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PARKVIEW_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+const PARKVIEW_PATH = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
 function loadParkview() {
   return parseUWFile(readFileSync(PARKVIEW_PATH, 'utf-8'));

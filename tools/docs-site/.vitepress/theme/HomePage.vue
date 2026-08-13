@@ -43,12 +43,12 @@
           <p class="uw-eyebrow">One canonical record</p>
           <h2 id="example-title">The same underwriting data works everywhere.</h2>
         </div>
-        <a href="https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uw.md">Open complete example <span aria-hidden="true">→</span></a>
+        <a href="https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uwx.md">Open complete example <span aria-hidden="true">→</span></a>
       </header>
 
       <div class="uw-file-window">
         <div class="uw-file-header">
-          <span class="uw-file-name"><span class="uw-file-mini" aria-hidden="true">UW</span> Parkview-Apts-Glendale-AZ.uw.md</span>
+          <span class="uw-file-name"><span class="uw-file-mini" aria-hidden="true">UW</span> Parkview-Apts-Glendale-AZ.uwx.md</span>
           <span class="uw-file-state"><span class="uw-status uw-status-valid">VALID</span><span class="uw-status uw-status-info">COMPUTED</span></span>
         </div>
         <div class="uw-file-views">

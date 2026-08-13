@@ -15,7 +15,7 @@ import { emitExcelFormula, ExcelEmitError, emitFromAst } from './excel-emit.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 
-const PARKVIEW = resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uw.md');
+const PARKVIEW = resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
 describe('MULTIFAMILY_PACK', () => {
   it('declares the eight canonical multifamily metrics', () => {

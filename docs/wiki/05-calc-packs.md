@@ -87,7 +87,7 @@ Office diverges from multifamily on three field shapes: size is **rentable squar
 feet** (`property.rentable_square_feet`, not `total_units`/`total_nra_sqft`),
 sponsor equity is `sources_uses.sources.sponsor_equity` (not `equity_sponsor`),
 and the NOI model nests `income`/`expenses`. Verified against the
-`Riverside-Office-Phoenix-AZ.uw.md` worked example.
+`Riverside-Office-Phoenix-AZ.uwx.md` worked example.
 
 ## `RETAIL_PACK`
 
@@ -99,7 +99,7 @@ and GLA for occupancy (`rent_roll.occupied_gla / rent_roll.total_gla`). The
 retail-distinctive metric is `expense_recovery_ratio` —
 `noi_model.income.expense_reimbursements / noi_model.expenses.total_operating_expenses` —
 the share of operating expenses recovered from tenants under an NNN structure.
-Verified against the `Cactus-Crossing-Retail-Mesa-AZ.uw.md` worked example.
+Verified against the `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` worked example.
 
 ## `INDUSTRIAL_PACK`
 
@@ -108,7 +108,7 @@ A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
 metrics. Same shape as the retail pack — including the NNN `expense_recovery_ratio`
 — but keyed off **rentable building area** (`property.rentable_square_feet`) and
 SF-based occupancy (`rent_roll.occupied_sf / rent_roll.total_rentable_sf`), like
-office. Verified against the `Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md`
+office. Verified against the `Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md`
 worked example.
 
 ## `SELF_STORAGE_PACK`
@@ -119,7 +119,7 @@ metrics. Same cap-rate / LTV / LTC / DSCR / debt-yield core as the other income
 property packs, but keyed off **net rentable square feet**
 (`property.net_rentable_square_feet`), rentable units
 (`property.rentable_units`), and both physical and economic occupancy. Verified
-against the `Sonoran-Self-Storage-Peoria-AZ.uw.md` worked example.
+against the `Sonoran-Self-Storage-Peoria-AZ.uwx.md` worked example.
 
 ## `HOSPITALITY_PACK`
 
@@ -147,7 +147,7 @@ carries a `gross_operating_profit` subtotal struck after departmental and
 undistributed expenses, with the management fee, property taxes, insurance, and
 the FF&E reserve falling below GOP to reach NOI. `RevPAR = ADR × occupancy`
 holds by construction, since all three read the same three primitives. Verified
-against the `Saguaro-Select-Hotel-Tempe-AZ.uw.md` worked example.
+against the `Saguaro-Select-Hotel-Tempe-AZ.uwx.md` worked example.
 
 ## `SENIOR_HOUSING_PACK`
 
@@ -180,7 +180,7 @@ stay inside `expenses` so the operating statement still foots to
 carries `gross_operating_profit`. `senior-housing.test.ts` asserts both halves:
 the lines foot, and the subtotal reconciles to its three components while
 staying out of the expense map. Verified against the
-`Ocotillo-Senior-Living-Chandler-AZ.uw.md` worked example.
+`Ocotillo-Senior-Living-Chandler-AZ.uwx.md` worked example.
 
 ## `STUDENT_HOUSING_PACK`
 
@@ -213,7 +213,7 @@ The operating statement also carries `turnover_make_ready` as its own expense
 line: turning nearly the whole property in one August window is a materially
 larger and less smoothable cost than conventional multifamily turnover, which is
 why the class expense-ratio band sits above multifamily's. Verified against the
-`Mill-Ave-Commons-Student-Tempe-AZ.uw.md` worked example, which also
+`Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` worked example, which also
 demonstrates honest **negative leverage** — a 5.75% going-in cap against 6.25%
 debt, giving 3.0% year-one cash-on-cash.
 
@@ -260,7 +260,7 @@ eventual finished-lot revenue.
 nothing to occupy and no income to capitalize. A test asserts those absences,
 and another asserts land's LTV band sits at or below every income class, since
 lenders advance well below income-property leverage on dirt. Verified against
-the `Sundance-Ranch-Land-Buckeye-AZ.uw.md` worked example.
+the `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` worked example.
 
 > **A note on nulls.** The land example leaves `going_in_cap_rate`,
 > `exit_cap_rate`, `dscr`, and `debt_yield` explicitly `null` rather than `0`.

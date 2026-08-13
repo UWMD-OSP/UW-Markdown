@@ -89,6 +89,7 @@ const COPIES = [
   { from: 'docs/rfcs/0017-uw-lite-source-representation.md', to: 'about/rfcs/0017-uw-lite-source-representation.md' },
   { from: 'docs/rfcs/0018-document-profiles-and-deal-packages.md', to: 'about/rfcs/0018-document-profiles-and-deal-packages.md' },
   { from: 'docs/rfcs/0019-mixed-use-composition.md', to: 'about/rfcs/0019-mixed-use-composition.md' },
+  { from: 'docs/rfcs/0020-uwx-terminology-alignment.md', to: 'about/rfcs/0020-uwx-terminology-alignment.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 

@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const PARKVIEW = readFileSync(
-  resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uw.md'),
+  resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uwx.md'),
   'utf-8',
 );
 

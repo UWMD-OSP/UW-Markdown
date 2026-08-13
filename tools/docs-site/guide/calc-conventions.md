@@ -73,7 +73,7 @@ Excel-safe logic.
 ## Verify a formula from the command line
 
 ```bash
-npm run cli -- calc examples/Parkview-Apts-Glendale-AZ.uw.md "npv(0.1, -100, 60, 60)"
+npm run cli -- calc examples/Parkview-Apts-Glendale-AZ.uwx.md "npv(0.1, -100, 60, 60)"
 ```
 
 The result is deterministic and has no network or model dependency. For error

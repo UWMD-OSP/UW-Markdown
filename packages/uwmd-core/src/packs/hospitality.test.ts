@@ -10,7 +10,7 @@ import { parseUWFile } from '../parser.js';
 import { emitExcelFormula } from './excel-emit.js';
 import { HOSPITALITY_PACK } from './hospitality.js';
 
-const EXAMPLE = resolve(__dirname, '../../../../examples/Saguaro-Select-Hotel-Tempe-AZ.uw.md');
+const EXAMPLE = resolve(__dirname, '../../../../examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.net_operating_income', 'noi'],

@@ -1,9 +1,34 @@
-# .uw.md — Underwriting Markdown Format Specification
+# .uwx.md — UW Markdown Extended Format Specification
 ## Version 1.1 | April 2026
 
 ---
 
-> A `.uw.md` file is the canonical, lossless, human- and machine-readable representation of a CRE deal underwriting. It is simultaneously a document (readable by a lender), a data file (parseable by tools), a pipeline artifact (written to by agents in sequence), and a context bundle (dropped into an AI assistant for instant deal literacy). It replaces the Excel underwriting model as the source of truth, and replaces the Word credit memo as the human-readable output — by being both at once.
+> A `.uwx.md` file is the canonical, lossless, human- and machine-readable representation of a CRE deal underwriting. It is simultaneously a document (readable by a lender), a data file (parseable by tools), a pipeline artifact (written to by agents in sequence), and a context bundle (dropped into an AI assistant for instant deal literacy). It replaces the Excel underwriting model as the source of truth, and replaces the Word credit memo as the human-readable output — by being both at once.
+
+---
+
+### Naming: "UW Markdown" the format, `.uwx.md` the file
+
+The standard is called **UW Markdown**, and a deal record is colloquially "a UW
+Markdown document" — the same way people say "a Word document" while the file on
+disk is `.docx`. The precision matters when it matters:
+
+| Term | Means |
+|---|---|
+| **UW Markdown** | The standard as a whole — this spec, the protocol, and the representations below. Use it in prose. |
+| **UWX** / `.uwx.md` | **The complete underwriting record**, specified by this document: full section model, append-only provenance, calc inputs. Lossless. |
+| **UW Lite** / `.uw.md` | A constrained, human-readable *summary*, specified separately in [`UW_LITE_SPEC_v1.md`](UW_LITE_SPEC_v1.md). Semantics come from `<!-- uw:path -->` anchors. Explicitly lossy. |
+
+Where the Word analogy stops: `.doc` is a superseded predecessor, whereas **UW
+Lite is neither older nor deprecated**. It is a current, deliberately lossy
+*view* of a deal, with its own specification and its own job. UWX is what a deal
+*is*; Lite is one way of showing it. The projection UWX → Lite MUST report every
+path it omits ([RFC 0017](../docs/rfcs/0017-uw-lite-source-representation.md)).
+
+Structured content carrying the legacy `.uw.md` extension predates this split.
+It remains readable — detected by sniffing rather than by extension — but
+**extension no longer implies structure**, and a byte-identical `.uwx.md`
+sibling is the migration output. Do not write new structured files as `.uw.md`.
 
 ---
 
@@ -32,7 +57,7 @@ sections" they mean § 4.0 through § 4.20.
 
 An Excel underwriting model is a calculation engine with no portability. You cannot drop it into a terminal. An AI tool cannot read it without preprocessing. It has no provenance — you cannot tell who changed a cell, when, or why. It cannot be validated programmatically. It cannot render itself into a lender package.
 
-A `.uw.md` file solves this by being structured enough for machines while staying readable enough for humans. The format is the deal. Everything that lives in Excel, Word, and a banker's email thread lives in one file.
+A `.uwx.md` file solves this by being structured enough for machines while staying readable enough for humans. The format is the deal. Everything that lives in Excel, Word, and a banker's email thread lives in one file.
 
 ### 1.2 Design Principles
 
@@ -46,13 +71,13 @@ A `.uw.md` file solves this by being structured enough for machines while stayin
 
 **Source-tagged assumptions.** Every assumption carries a `source` tag: `scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed`. Users and reviewers always know whether a number came from AI, from market data, or from their own input.
 
-**Pipeline-stateful.** The frontmatter tracks which pipeline stages have run. A tool reading a `.uw.md` knows immediately what work has been done, what is pending, and what is blocked.
+**Pipeline-stateful.** The frontmatter tracks which pipeline stages have run. A tool reading a `.uwx.md` knows immediately what work has been done, what is pending, and what is blocked.
 
 **Toolchain-agnostic.** The format is plain Markdown + fenced JSON. It can be read by any text editor, any Markdown renderer, any JSON parser. No proprietary tooling is required to read it. Proprietary tooling (Bancroft agents, uwmd CLI) is required to *generate* sections correctly, but not to read them.
 
 ### 1.3 Relationship to the Bancroft Agent Suite
 
-Each Bancroft layer corresponds to one or more `.uw.md` sections it is responsible for:
+Each Bancroft layer corresponds to one or more `.uwx.md` sections it is responsible for:
 
 | Bancroft Layer | Writes Sections |
 |---|---|
@@ -77,7 +102,7 @@ Users and AI assistants write: `deal_context` (narrative), `custom_calculations`
 
 ### 2.1 File Structure
 
-A `.uw.md` file is a UTF-8 encoded plain text file with the extension `.uw.md`. Its structure, top to bottom:
+A `.uwx.md` file is a UTF-8 encoded plain text file with the extension `.uwx.md`. Its structure, top to bottom:
 
 ```
 [1] YAML Frontmatter          ← delimited by --- / ---
@@ -2246,7 +2271,7 @@ The `uwmd` command-line tool is the reference implementation. Other tools (AI ag
 
 ### 6.1 `uwmd parse <file>`
 
-Reads a `.uw.md` file and outputs a structured JSON object containing:
+Reads a `.uwx.md` file and outputs a structured JSON object containing:
 - Frontmatter (as-is)
 - All non-superseded data blocks, keyed by section ID and variant
 - Pipeline log entries
@@ -2317,11 +2342,11 @@ Removes all blocks where `_meta.superseded === true`. Preserves the pipeline log
 
 ### 6.6 `uwmd diff <file_a> <file_b>`
 
-Compares two `.uw.md` files (or two versions of the same file at different timestamps) and outputs a structured diff showing which sections changed, what values changed, and which source produced the change.
+Compares two `.uwx.md` files (or two versions of the same file at different timestamps) and outputs a structured diff showing which sections changed, what values changed, and which source produced the change.
 
 ### 6.7 `uwmd init --scenario <scenario> --address <address>`
 
-Creates a new `.uw.md` file with:
+Creates a new `.uwx.md` file with:
 - Populated frontmatter
 - All section headers in canonical order
 - Empty data block stubs (all fields null) for each section
@@ -2329,7 +2354,7 @@ Creates a new `.uw.md` file with:
 
 ### 6.8 Agent Contract
 
-Any Bancroft agent writing to a `.uw.md` file MUST:
+Any Bancroft agent writing to a `.uwx.md` file MUST:
 
 1. Read the current state of its input sections before running
 2. Produce a single data block JSON object matching the section schema exactly
@@ -2387,17 +2412,17 @@ Target token count: < 8,000 tokens for Tier 1 deal, < 16,000 for full Tier 2 dea
 ## Appendix A — File Naming Convention
 
 ```
-{deal_id}_{address_slug}_{YYYYMMDD}.uw.md
+{deal_id}_{address_slug}_{YYYYMMDD}.uwx.md
 ```
 
 Example:
 ```
-uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424.uw.md
+uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424.uwx.md
 ```
 
 Versioned snapshots (before compact):
 ```
-uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uw.md
+uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uwx.md
 ```
 
 ---
@@ -2459,7 +2484,7 @@ Any `source` string not in the defined list (§2.6) is treated as `"custom"` by 
 
 ### C.6 — Custom Validation Thresholds
 
-The `.uw.institution.json` sidecar file (same directory as the `.uw.md` file) can override the default validation thresholds from §5.2 on a per-institution or per-user basis:
+The `.uw.institution.json` sidecar file (same directory as the `.uwx.md` file) can override the default validation thresholds from §5.2 on a per-institution or per-user basis:
 
 ```json
 {
@@ -2490,7 +2515,7 @@ Promoted sections are assigned a section number in the next minor version of the
 
 ## Appendix D — YAML Subset (Frontmatter)
 
-The `.uw.md` frontmatter (between the opening and closing `---` markers) is parsed against a strict YAML **subset**, not full YAML 1.2. Conforming readers MUST reject frontmatter that uses any feature outside this subset with the validator code `UNSUPPORTED_YAML_FEATURE`.
+The `.uwx.md` frontmatter (between the opening and closing `---` markers) is parsed against a strict YAML **subset**, not full YAML 1.2. Conforming readers MUST reject frontmatter that uses any feature outside this subset with the validator code `UNSUPPORTED_YAML_FEATURE`.
 
 ### D.1 — Supported
 
@@ -2518,7 +2543,7 @@ The following YAML features are NOT part of the subset and MUST cause the parser
 | Explicit tags (`!!str`, `!!int`, `!Custom`) | Type coercion is governed by the spec's field schemas, not YAML tag dispatch. |
 | Block scalars (`\|`, `>`) | Multi-line literal scalars create ambiguous indentation rules and cause silent data loss when concatenated. |
 | Flow-style mappings or non-empty sequences (`{a: 1}`, `[1, 2, 3]`) | The on-disk representation is meant to be diff-friendly and one-value-per-line. The empty inline sequence `[]` is the lone exception, since it is unambiguous. |
-| Complex keys (`?` indicator) | Mapping keys must be simple scalars in `.uw.md`. |
+| Complex keys (`?` indicator) | Mapping keys must be simple scalars in `.uwx.md`. |
 | Directives (`%YAML`, `%TAG`) | The format pins a single YAML dialect (this subset). |
 
 ### D.3 — Rationale
@@ -2531,4 +2556,4 @@ If you need long-form prose in a section, put it in the markdown body (between f
 
 *Specification version 1.1 | underwriter.cc | April 2026*  
 *v1.0 → v1.1: Added §4.0 (Deal Context), §4.19 (Custom Calculations), §4.20 (Custom Scenarios), §4.21 (Extension Sections); expanded Appendix C; added universal `_notes` field and reference path notation.*  
-*This document is itself a reference artifact. The canonical format for a deal is a `.uw.md` file. This spec defines what valid means.*
+*This document is itself a reference artifact. The canonical format for a deal is a `.uwx.md` file. This spec defines what valid means.*

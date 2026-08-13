@@ -57,7 +57,7 @@ source_documents:
 > **Deal ID:** uw_2026_b8c2d4 | **Scenario:** Value-Add Bridge | **Status:** In Progress  
 > **42,500 SF** | **1998 Vintage** | **$5,000,000 Purchase** | **$117/SF** | **6.0% Cap Rate (in-place)**
 
-This file is a **second worked example** in the conformance corpus. It exists to show that the `.uw.md` format is not multifamily-only: every concept in `Parkview-Apts-Glendale-AZ.uw.md` has an analogue here for a different asset class (suburban office) and a different debt instrument (bridge loan with interest reserve).
+This file is a **second worked example** in the conformance corpus. It exists to show that the `.uw.md` format is not multifamily-only: every concept in `Parkview-Apts-Glendale-AZ.uwx.md` has an analogue here for a different asset class (suburban office) and a different debt instrument (bridge loan with interest reserve).
 
 ---
 

@@ -5,7 +5,7 @@ import { parseUWFile } from './parser.js';
 import { buildContext, estimateTokens } from './context-profiles.js';
 
 const PARKVIEW = readFileSync(
-  resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uw.md'),
+  resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md'),
   'utf-8',
 );
 const PARSED = parseUWFile(PARKVIEW);

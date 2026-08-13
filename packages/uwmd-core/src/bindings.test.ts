@@ -21,7 +21,7 @@ import { decodeUWCSVZip, UW_CSV_BUNDLE_MEDIA_TYPE } from './uwcsv.js';
 import { UW_XML_MEDIA_TYPE } from './uwxml.js';
 
 const source = readFileSync(
-  resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uw.md'),
+  resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
   'utf8',
 );
 const envelope = toUWEnvelope(parseUWFile(source), {

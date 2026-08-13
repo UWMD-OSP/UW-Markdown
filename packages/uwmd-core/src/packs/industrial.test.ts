@@ -18,7 +18,7 @@ import type { CalcEvaluationContext } from '../protocol.js';
 
 const IRONWOOD = resolve(
   __dirname,
-  '../../../../examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md',
+  '../../../../examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md',
 );
 
 // Full dotted path → workbook-scope named range. Keys mirror the industrial
