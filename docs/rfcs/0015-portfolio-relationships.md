@@ -46,6 +46,8 @@ The protocol's new Portfolio Relationships section will contain these normative 
 - The initial entity types are `property`, `deal`, `borrower`, `loan`, and `document`. Each entity MUST have `id` and `type`; `display_name` is optional. A `property` or `deal` entity MAY carry `deal_id`, which MUST exactly equal the canonical UW frontmatter `deal_id` when the referenced deal is available.
 - Every edge MUST have `id`, `type`, `from`, `to`, and a non-empty `provenance` array. `from` and `to` MUST resolve to entity IDs in the same profile. Each provenance entry MUST contain a stable `source` identifier and MAY contain a `locator`, `retrieved_at`, or `note`.
 - The initial standard edge types are `owns`, `borrows_against`, `secures`, `guarantees`, `supports`, and `related_to`. Producers MAY emit extension edge types. Consumers MUST preserve unknown entity fields and unknown edge types; they MAY report that they cannot interpret them.
+
+  > **One registry, two layers.** [RFC 0018 §5](./0018-document-profiles-and-deal-packages.md) reconciles this list with the typed links between package members, so that `guarantees` and `supports` — which appear in both — remain one type observed at two layers rather than two competing registries. The combined registry is owned by the protocol spec; whichever RFC is accepted first establishes that section and the second amends it. If this RFC is accepted after 0018, the edge list above is superseded by that section: same tokens, same meanings, one home.
 - A profile update MUST append provenance evidence or replace the affected sidecar as a new version. It MUST NOT silently remove provenance from an existing edge. This is an append-only evidence rule, not a requirement for a database or a revision-control system.
 
 Hosts MAY store, query, index, or enrich profiles however they choose. The profile MUST NOT define SQL tables, graph traversal semantics, aggregate financial calculations, or ownership of host `_meta` fields.
@@ -84,7 +86,7 @@ No calc packs, formulas, validators for individual deal files, or Tier-4 agent p
 
 ## Unresolved questions
 
-The final edge-type registry, cross-profile identity collision policy, document locator vocabulary, signature/permission model, and a transport representation for a portfolio bundle are intentionally deferred to acceptance and follow-up RFCs. This RFC also does not decide whether a future portfolio rollup may expose only deterministic aggregate metrics or must remain purely descriptive.
+The cross-profile identity collision policy, document locator vocabulary, and signature/permission model are intentionally deferred to acceptance and follow-up RFCs. Two items previously listed here have since been addressed by [RFC 0018](./0018-document-profiles-and-deal-packages.md): the shape of the edge-type registry (§5, one registry with an entity layer and a member layer) and a transport representation for a bundle (§3, the UW Deal Package). Neither is binding on this RFC until one of the two is accepted. This RFC also does not decide whether a future portfolio rollup may expose only deterministic aggregate metrics or must remain purely descriptive.
 
 ## Prior art
 
