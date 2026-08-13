@@ -1,0 +1,7 @@
+{
+  "id": "revpar",
+  "label": "RevPAR",
+  "formula": "noi_model.income.rooms_revenue / rent_roll.available_room_nights",
+  "unit": "$",
+  "deterministic": true
+}

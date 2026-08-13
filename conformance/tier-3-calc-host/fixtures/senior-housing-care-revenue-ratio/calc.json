@@ -1,0 +1,7 @@
+{
+  "id": "care_revenue_ratio",
+  "label": "Care Revenue Ratio",
+  "formula": "noi_model.income.care_revenue / noi_model.income.effective_gross_income",
+  "unit": "%",
+  "deterministic": true
+}
