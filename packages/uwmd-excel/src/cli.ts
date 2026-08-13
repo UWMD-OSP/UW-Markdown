@@ -10,8 +10,10 @@
 
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname, basename, extname, join } from 'node:path';
+import ExcelJS from 'exceljs';
 import { parseUWFile } from '@uwmd/core';
 import { toWorkbook } from './toWorkbook.js';
+import { fromWorkbook } from './fromWorkbook.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 interface ParsedArgs {
@@ -19,7 +21,17 @@ interface ParsedArgs {
   output: string;
 }
 
-function parseArgs(argv: readonly string[]): ParsedArgs | { error: string } {
+interface ImportArgs {
+  import: string;
+}
+
+function parseArgs(argv: readonly string[]): ParsedArgs | ImportArgs | { error: string } {
+  if (argv[0] === '--import') {
+    const input = argv[1];
+    if (!input || input.startsWith('-')) return { error: '--import requires a workbook path' };
+    if (argv.length > 2) return { error: `unexpected argument: ${argv[2]}` };
+    return { import: resolve(input) };
+  }
   let input: string | undefined;
   let output: string | undefined;
   for (let i = 0; i < argv.length; i++) {
@@ -62,9 +74,11 @@ function printHelp(): void {
       '',
       'Usage:',
       '  uwmd-excel <input.uw.md> [-o output.xlsx]',
+      '  uwmd-excel --import <input.xlsx>',
       '',
       'Options:',
       '  -o, --output <path>   Output .xlsx path (defaults next to input)',
+      '  --import <path>       Print editable section payloads from a converter workbook',
       '  -h, --help            Show this help',
       '',
     ].join('\n'),
@@ -81,6 +95,15 @@ export async function main(argv: readonly string[]): Promise<number> {
     process.stderr.write(`uwmd-excel: ${args.error}\n`);
     printHelp();
     return 2;
+  }
+
+  if ('import' in args) {
+    const wb = new ExcelJS.Workbook();
+    // exceljs's Buffer declaration is pinned to an older @types/node shape.
+    const bytes = Buffer.from(await readFile(args.import));
+    await wb.xlsx.load(bytes as unknown as Parameters<typeof wb.xlsx.load>[0]);
+    process.stdout.write(`${JSON.stringify(fromWorkbook(wb), null, 2)}\n`);
+    return 0;
   }
 
   const raw = await readFile(args.input, 'utf8');

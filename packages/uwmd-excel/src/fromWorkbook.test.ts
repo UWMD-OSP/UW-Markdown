@@ -1,0 +1,145 @@
+import { describe, expect, it } from 'vitest';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import ExcelJS from 'exceljs';
+import { parseUWFile } from '@uwmd/core';
+import type { WorkbookLayout } from './layout.js';
+import { fromWorkbook, WorkbookImportError } from './fromWorkbook.js';
+import { toWorkbook } from './toWorkbook.js';
+import { getLayoutForAssetClass } from './layouts.js';
+
+const EXAMPLES = resolve(__dirname, '../../../examples');
+
+const CASES = [
+  'Parkview-Apts-Glendale-AZ.uw.md',
+  'Riverside-Office-Phoenix-AZ.uw.md',
+  'Cactus-Crossing-Retail-Mesa-AZ.uw.md',
+  'Ironwood-Logistics-Industrial-Tolleson-AZ.uw.md',
+  'Sonoran-Self-Storage-Peoria-AZ.uw.md',
+  'Saguaro-Select-Hotel-Tempe-AZ.uw.md',
+  'Ocotillo-Senior-Living-Chandler-AZ.uw.md',
+  'Mill-Ave-Commons-Student-Tempe-AZ.uw.md',
+  'Sundance-Ranch-Land-Buckeye-AZ.uw.md',
+] as const;
+
+function valueAt(source: Record<string, unknown>, path: string): unknown {
+  return path.split('.').reduce<unknown>(
+    (value, segment) => (value && typeof value === 'object' ? (value as Record<string, unknown>)[segment] : undefined),
+    source,
+  );
+}
+
+function setPath(target: Record<string, unknown>, path: string, value: unknown): void {
+  const segments = path.split('.');
+  let current = target;
+  for (const segment of segments.slice(0, -1)) {
+    let next = current[segment];
+    if (!next || typeof next !== 'object' || Array.isArray(next)) {
+      next = {};
+      current[segment] = next;
+    }
+    current = next as Record<string, unknown>;
+  }
+  current[segments[segments.length - 1]] = value;
+}
+
+function sectionFor(
+  sections: Record<string, Record<string, unknown>>,
+  sectionId: string,
+): Record<string, unknown> {
+  let section = sections[sectionId];
+  if (!section) {
+    section = {};
+    sections[sectionId] = section;
+  }
+  return section;
+}
+
+function expectedSections(parsed: ReturnType<typeof parseUWFile>, layout: WorkbookLayout): Record<string, Record<string, unknown>> {
+  const sections: Record<string, Record<string, unknown>> = {};
+  for (const input of layout.namedInputs) {
+    const target = sectionFor(sections, input.source.section);
+    const source = parsed.sections[input.source.section]?.content as Record<string, unknown>;
+    setPath(target, input.source.path, valueAt(source, input.source.path));
+  }
+  const noi = parsed.sections.noi_model!.content as Record<string, unknown>;
+  const noiTarget = sectionFor(sections, 'noi_model');
+  for (const line of layout.incomeLines) {
+    setPath(noiTarget, `income.${line.path}`, valueAt(noi, `income.${line.path}`));
+  }
+  for (const line of layout.expenseLines) {
+    setPath(noiTarget, `expenses.${line.path}`, valueAt(noi, `expenses.${line.path}`));
+  }
+  return sections;
+}
+
+async function workbookFor(file: string): Promise<{ wb: ExcelJS.Workbook; parsed: ReturnType<typeof parseUWFile>; layout: WorkbookLayout }> {
+  const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
+  const parsed = parseUWFile(raw);
+  const layout = getLayoutForAssetClass(String(parsed.frontmatter.asset_class));
+  if (!layout) {
+    throw new WorkbookImportError(
+      'WORKBOOK-IMPORT-ASSET-CLASS',
+      `Missing layout for ${file}`,
+    );
+  }
+  const generated = await toWorkbook(parsed);
+  const buf = await generated.xlsx.writeBuffer();
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buf as ArrayBuffer);
+  return { wb, parsed, layout };
+}
+
+describe('fromWorkbook', () => {
+  for (const file of CASES) {
+    it(`round-trips editable section fragments for ${file}`, async () => {
+      const { wb, parsed, layout } = await workbookFor(file);
+      expect(fromWorkbook(wb)).toEqual({
+        asset_class: layout.assetClass,
+        sections: expectedSections(parsed, layout),
+      });
+    });
+  }
+
+  it('discards formula-derived metrics even when a cached cell is altered', async () => {
+    const { wb, parsed, layout } = await workbookFor(CASES[0]);
+    const derivedMetricStart = 10 + layout.namedInputs.length;
+    wb.getWorksheet('Underwriting')!.getCell(`B${derivedMetricStart}`).value = 999_999_999;
+
+    const imported = fromWorkbook(wb);
+    expect(imported.sections).toEqual(expectedSections(parsed, layout));
+    expect(JSON.stringify(imported)).not.toContain('999999999');
+    expect(imported.sections.noi_model).not.toHaveProperty('net_operating_income');
+    expect(imported.sections.noi_model).not.toHaveProperty('_meta');
+  });
+
+  it('rejects a workbook with an unknown asset class', async () => {
+    const { wb } = await workbookFor(CASES[0]);
+    wb.getWorksheet('Underwriting')!.getCell('B3').value = 'unknown_class';
+
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({
+      code: 'WORKBOOK-IMPORT-ASSET-CLASS',
+    }));
+  });
+
+  it('rejects a workbook missing a required named range', async () => {
+    const { wb, layout } = await workbookFor(CASES[0]);
+    const name = layout.namedInputs[0].name;
+    const range = wb.definedNames.getRanges(name).ranges[0];
+    wb.definedNames.remove(range, name);
+
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({
+      code: 'WORKBOOK-IMPORT-NAMED-RANGE',
+    }));
+  });
+
+  it('rejects a workbook with a tampered subtotal formula', async () => {
+    const { wb, layout } = await workbookFor(CASES[0]);
+    const egiRow = 2 + layout.incomeLines.length;
+    wb.getWorksheet('Operating Statement')!.getCell(`B${egiRow}`).value = { formula: '1+1' };
+
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({
+      code: 'WORKBOOK-IMPORT-SUBTOTAL',
+    }));
+  });
+});
