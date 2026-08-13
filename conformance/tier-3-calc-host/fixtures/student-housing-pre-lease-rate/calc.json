@@ -1,0 +1,7 @@
+{
+  "id": "pre_lease_rate",
+  "label": "Pre-Lease Rate",
+  "formula": "rent_roll.preleased_beds / property.total_beds",
+  "unit": "%",
+  "deterministic": true
+}
