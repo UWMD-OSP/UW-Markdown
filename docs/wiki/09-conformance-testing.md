@@ -7,10 +7,17 @@ this one — runs to prove behavior). CI runs both.
 ## Unit tests (Vitest)
 
 - Nearly every `src/*.ts` has a sibling `src/*.test.ts`. In `@uwmd/core` the
-  exceptions are `index.ts` and `browser.ts` (re-export barrels), `cli.ts`
-  (covered by the smoke tests in `packages/uwmd-cli` instead), and `types.ts`
-  (T16). Run from a package with `vitest run`; from the root `npm test` runs all
-  workspaces.
+  exceptions are `index.ts` and `browser.ts` (re-export barrels) and `cli.ts`
+  (covered by the smoke tests in `packages/uwmd-cli` instead). Run from a
+  package with `vitest run`; from the root `npm test` runs all workspaces.
+
+> **Test files are not typechecked.** `tsconfig.json` excludes
+> `src/**/*.test.ts`, and Vitest transpiles with esbuild, which strips types
+> without checking them. A type error in a test is invisible to both `npm run
+> build` and `npm test`. The practical consequence: a compile-time assertion
+> (an exhaustiveness `Record`, a `satisfies`, an expect-error helper) written
+> *in a test file* is inert and proves nothing. Put it in a source file, where
+> `tsc` actually sees it — `ASSET_CLASSES` in `types.ts` is the worked example.
 - Coverage: `npm run test:coverage` (root) → `@uwmd/core` with
   `@vitest/coverage-v8`. **Thresholds are enforced**, not reported: the floor
   lives in `packages/uwmd-core/vitest.config.ts` (76 lines / 76 statements / 95

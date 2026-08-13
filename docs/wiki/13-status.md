@@ -100,6 +100,17 @@ not core gaps.
   new primitive in the sandboxed evaluator. RFC is `draft`; not yet accepted, so
   no code yet.
 
+  > **Drift is now caught automatically (T16).** `AssetClass` had four
+  > hand-maintained runtime mirrors — `modules.ts`, `PACK_REGISTRY`,
+  > the defaults `REGISTRY`, and the web editor's catalog — and a type union is
+  > erased at runtime, so nothing stopped a member being added to the union
+  > while one of those lists was forgotten. `types.ts` now derives an exported
+  > `ASSET_CLASSES` from a `Record<AssetClass, true>` that `tsc` checks, so the
+  > list cannot drift from the union; `modules.ts`'s duplicate was deleted in
+  > favour of it, and `types.test.ts` holds the pack and defaults registries to
+  > that list. `mixed_use` is carried as a single documented exception that
+  > fails loudly the moment its pack lands.
+  >
   > **Landmine defused (T12).** `mixed_use` used to be load-bearing for every
   > "no pack / no defaults registered" negative test, because it was the only
   > unregistered class. Each pack shuffled that role to the next unregistered

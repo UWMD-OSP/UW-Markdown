@@ -50,6 +50,44 @@ export type AssetClass =
   | 'student_housing'
   | 'land';
 
+/**
+ * Exhaustiveness anchor for {@link AssetClass}.
+ *
+ * A type union is erased at runtime, so every runtime list of asset classes is
+ * a hand-maintained copy that can silently fall out of step with the union.
+ * `Record<AssetClass, true>` closes that gap at compile time: add a member to
+ * the union without adding it here and `tsc` fails with a missing property;
+ * leave a stale key behind and that fails too. `ASSET_CLASSES` is then derived
+ * rather than written, so it cannot drift.
+ *
+ * Keep this immediately below the union — the two are one declaration in two
+ * halves. Consumers should use `ASSET_CLASSES`; this record is the mechanism.
+ */
+const ASSET_CLASS_MEMBERS: Record<AssetClass, true> = {
+  multifamily: true,
+  office: true,
+  retail: true,
+  industrial: true,
+  self_storage: true,
+  hospitality: true,
+  mixed_use: true,
+  senior_housing: true,
+  student_housing: true,
+  land: true,
+};
+
+/**
+ * Every v1 asset class, as a runtime list. Derived from {@link AssetClass} via
+ * {@link ASSET_CLASS_MEMBERS}, so it is exactly the union — no more, no less.
+ *
+ * Adding an asset class is a normative format change (see RFC 0003 for
+ * module-declared classes); this list is the library's mirror of the enum in
+ * `spec/UW_FORMAT_SPEC_v1.md` and `spec/schemas/`, not an independent registry.
+ */
+export const ASSET_CLASSES: readonly AssetClass[] = Object.freeze(
+  Object.keys(ASSET_CLASS_MEMBERS) as AssetClass[],
+);
+
 // ─── Provenance ───────────────────────────────────────────────────────────────
 
 export interface UWFieldOverride {
