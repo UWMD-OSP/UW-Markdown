@@ -9,6 +9,18 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Changed
+- **The `@uwmd/core` coverage floor was ratcheted to just under measured.**
+  Thresholds had sat at 70 lines / 70 statements / 90 functions / 70 branches
+  while actual coverage was ~77 / ~77 / 96.7 / ~75.5 — five to seven points of
+  headroom in which coverage could erode without CI noticing. Raised to
+  **76 / 76 / 95 / 74**. The gate itself was already blocking:
+  `continue-on-error` was removed from the coverage job in `13218c4`, contrary
+  to the internal status doc, which still described it as a soft floor. Verified
+  the gate actually fails by breaching it deliberately (exit 1) rather than
+  assuming it. The remaining ~1 point of margin is sized against real jitter —
+  `calc.property.test.ts` runs fast-check with no fixed seed, so coverage varies
+  by ~0.2 points between identical runs and a floor set flush to a measured
+  figure would fail at random.
 - **"No pack registered" negative tests no longer borrow a real asset class.**
   Five tests — in `cascade.test.ts`, `defaults.test.ts`, `toWorkbook.test.ts`,
   `receipts.test.ts`, and the

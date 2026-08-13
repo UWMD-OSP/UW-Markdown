@@ -6,10 +6,17 @@ this one — runs to prove behavior). CI runs both.
 
 ## Unit tests (Vitest)
 
-- Every `src/*.ts` has a sibling `src/*.test.ts`. Run from a package with
-  `vitest run`; from the root `npm test` runs all workspaces.
+- Nearly every `src/*.ts` has a sibling `src/*.test.ts`. In `@uwmd/core` the
+  exceptions are `index.ts` and `browser.ts` (re-export barrels), `cli.ts`
+  (covered by the smoke tests in `packages/uwmd-cli` instead), and `types.ts`
+  (T16). Run from a package with `vitest run`; from the root `npm test` runs all
+  workspaces.
 - Coverage: `npm run test:coverage` (root) → `@uwmd/core` with
-  `@vitest/coverage-v8`.
+  `@vitest/coverage-v8`. **Thresholds are enforced**, not reported: the floor
+  lives in `packages/uwmd-core/vitest.config.ts` (76 lines / 76 statements / 95
+  functions / 74 branches) and the CI `coverage` job has no `continue-on-error`,
+  so dropping below it fails the build. Raise the floor when coverage rises;
+  lowering one should be argued for in the PR description.
 - Property tests use `fast-check`: `calc/calc.property.test.ts` asserts calc
   *totality* (any input parses or throws a typed `CalcError`) and Excel↔evaluator
   parity. `packs/packs.test.ts` asserts every pack metric evaluates against the
