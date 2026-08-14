@@ -198,6 +198,93 @@ export {
 } from './modules.js';
 export type { ModuleRegistry, LoadModuleOptions, CreateModuleRegistryOptions } from './modules.js';
 
+// ─── RFC 0018: document profiles, lease abstracts, deal packages ─────────────
+// All browser-safe: no I/O, no network, no hashing implementation imported.
+export {
+  BUILTIN_DOCUMENT_PROFILES,
+  DEAL_UNDERWRITING_PROFILE,
+  LEASE_ABSTRACT_PROFILE,
+  SOURCE_NOTE_PROFILE,
+  DOCUMENT_PROFILE_PATTERN,
+  lookupDocumentProfile,
+  BUILTIN_EDGE_TYPES,
+  lookupEdgeType,
+  isEdgeTypeValidOnLayer,
+} from './protocol.js';
+export type { DocumentProfile, UWEdgeLayer, UWEdgeEndpointKind, UWEdgeTypeDef } from './protocol.js';
+export {
+  UW_PACKAGE_VERSION,
+  UW_PACKAGE_ZIP_CODEC,
+  UW_PACKAGE_ZIP_MEDIA_TYPE,
+  UW_PACKAGE_CONTEXT_CODEC,
+  UW_PACKAGE_CONTEXT_MEDIA_TYPE,
+  CONTEXT_INLINABLE_ROLES,
+  UWPackageError,
+  isSafeMemberPath,
+  validateUWDealPackageManifest,
+  assertUWDealPackageManifest,
+  projectPackageLinksToEntityEdges,
+  edgeTypesForLayer,
+} from './deal-package.js';
+export type {
+  UWDealPackageManifest,
+  UWPackageMember,
+  UWPackageLink,
+  UWMemberRole,
+  UWSourceReference,
+  UWEntityEdge,
+} from './deal-package.js';
+export {
+  projectUWDealPackageContext,
+  validateUWDealPackageContext,
+  verifyContextContentDigests,
+} from './deal-package-context.js';
+export type {
+  UWDealPackageContext,
+  UWContextContent,
+  UWSourceEvidenceDescriptor,
+  ProjectContextOptions,
+} from './deal-package-context.js';
+export {
+  LEASE_ABSTRACT_PROFILE_ID,
+  LEASE_ABSTRACT_GROUPS,
+  LEASE_TERM_STATUSES,
+  LEASE_ARTIFACT_KINDS,
+  LeaseAbstractError,
+  validateLeaseAbstract,
+  assertLeaseAbstract,
+  projectLeaseAbstractToRentRoll,
+} from './lease-abstract.js';
+export type {
+  LeaseAbstract,
+  LeaseAbstractGroup,
+  LeaseTermValue,
+  LeaseTermStatus,
+  LeaseArtifactKind,
+  SourceRef,
+  RentRollProjectionRow,
+  RentRollProjectionReport,
+  RentRollProjectionResult,
+} from './lease-abstract.js';
+export {
+  PACKAGE_MANIFEST_PATH,
+  encodeUWDealPackageZip,
+  decodeUWDealPackageZip,
+  verifyUWDealPackage,
+} from './deal-package-zip.js';
+export type {
+  UWDealPackageInput,
+  UWDealPackageDecoded,
+  UWPackageDecodeOptions,
+  PackageVerification,
+  PackageVerificationStatus,
+} from './deal-package-zip.js';
+export { inspectZipSafety, isSafeZipPath } from './zip-safety.js';
+export type { ZipSafetyLimits, ZipSafetyViolation } from './zip-safety.js';
+export { sha256BytesHex } from './integrity.js';
+
+
+
 export {
   buildAgentContext,
   buildAgentPrompt,

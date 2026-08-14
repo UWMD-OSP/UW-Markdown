@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-009"
+  ],
+  "why": "Traversal is rejected in the manifest, before any archive is opened."
+}

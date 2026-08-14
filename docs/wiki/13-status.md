@@ -2,10 +2,10 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 at `4b69903`+ (full pass: build green across all
-workspaces; **755 tests** — 626 core, 69 excel, 53 cli, 4 batch, 3 report — plus
-**63 web-editor**; **129 conformance** assertions including the Tier-4 replay and
-module suites; 10/10 schemas valid; Biome clean over 304 files).
+**Last verified:** 2026-08-13 at `e809df6`+ (full pass: build green across all
+workspaces; **797 tests** — 664 core, 69 excel, 57 cli, 4 batch, 3 report — plus
+**63 web-editor**; **147 conformance** assertions including the Tier-4 replay,
+module, and package suites; 11/11 schemas valid; Biome clean over 331 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -61,8 +61,8 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **129 assertions** across 4 tiers plus the named `lite`,
-  `receipts`, `4-replay`, and `modules` suites. CI now runs the runner's
+- **Conformance:** **147 assertions** across 4 tiers plus the named `lite`,
+  `receipts`, `4-replay`, `modules`, and `packages` suites. CI now runs the runner's
   **default** suite list rather than a pinned `--tier=`, which is what the
   earlier claim of replay coverage assumed but did not have: `ci.yml` pinned
   `1,2,3,lite,receipts`, so `4-replay` had never actually gated a pull request.
@@ -113,6 +113,34 @@ not core gaps.
   random. Replay is strict, so a cassette doubles as a **prompt-drift
   detector** — see `conformance/tier-4-agent-host/replay/README.md`, including
   its note on what recorded replay does *not* prove.
+- **Document profiles and deal packages (RFC 0018):** the canonical two-layer
+  **edge registry** lives in `protocol.ts` as `BUILTIN_EDGE_TYPES` — one table,
+  with `guarantees` and `supports` declared valid on both layers rather than
+  duplicated per layer. Unknown types are preserved; a *known* type used on the
+  wrong layer is refused. Three document profiles are registered
+  (`deal-underwriting-v1`, `lease-abstract-v1`, `source-note-v1`) and unknown
+  profiles are preserved rather than reinterpreted.
+
+  `lease-abstract.ts` enforces the two rules that make an abstract worth
+  trusting: every asserted term carries a `source_ref` with a locator, and a
+  null term must state *why* it is null (`not_stated` / `ambiguous` /
+  `not_reviewed`). The second matters most — a bare null from an extractor that
+  could not find a term is indistinguishable from an assertion that the lease
+  has no such term. `projectLeaseAbstractToRentRoll` is deliberately narrow: it
+  never computes a rent figure it was not given, and separates ambiguous
+  conflicts from plain omissions.
+
+  `deal-package.ts` / `-zip.ts` / `-context.ts` implement UW Deal Package 1.0 —
+  manifest validation, a deterministic `.uwpkg.zip` codec, three-state
+  verification (`unverifiable` kept distinct from `failed`), and the JSON
+  context view whose central rule is that **source-evidence bytes are never
+  inlined**, only described by identity and digest.
+  `projectPackageLinksToEntityEdges` synthesizes provenance naming the package
+  and member ids, and has no inverse by design.
+
+  CLI: `uwmd lease validate|project` and
+  `uwmd package create|verify|list|to-context|validate-context|edges`.
+  Conformance: `conformance/packages/` (18 assertions).
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 
@@ -389,19 +417,9 @@ bus factor, personal security email, and no public RFC venue.
    new package as `pdf` already does. Scoping it out is a legitimate outcome and
    should be recorded as one rather than left ambiguous.
 
-2. **Implement RFC 0018 — document profiles and deal packages.** Accepted
-   2026-08-13 and now the largest actionable item, because it is the substrate
-   for both new drafts. Delivers `lease-abstract-v1` and `source-note-v1`, the
-   `.uwpkg.zip` codec with its manifest and digests, the connector JSON context
-   view, the canonical two-layer edge registry in `protocol.ts`, and a named
-   `packages` conformance suite. The RFC's own reference-implementation section
-   lists the API surface. Note the ordering constraint: the edge registry should
-   land early, since RFC 0015 and RFC 0021 both reference it and the whole point
-   of §5 is that there is exactly one of it.
-
 ### Medium
 
-3. **Market-data reference implementation — now scoped as
+2. **Market-data reference implementation — now scoped as
    [RFC 0022](../rfcs/0022-market-data-documents.md) (draft).** Interface-only
    today, so the top two cascade steps have no worked example. Scoping found the
    real gap is *attribution*, not the missing resolver: a market-derived value
@@ -412,7 +430,7 @@ bus factor, personal security email, and no public RFC venue.
    distinguishable from a diligenced value (`market_data_accepted`, never
    `user_input`). Investor profiles are deliberately excluded. **Accepted 2026-08-13 and now
    implementable** — 0018 supplies the profile mechanism.
-4. **Batch workflow expansion — now scoped as
+3. **Batch workflow expansion — now scoped as
    [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
    filters/summaries/queue projections in `@uwmd/batch` are built; the expansion
    worth having is *composition*, not more read models. 0021 defines section
@@ -428,7 +446,7 @@ bus factor, personal security email, and no public RFC venue.
    over named child digests using a fixed, non-extensible `fn` vocabulary. No
    change to the calc engine. **Accepted 2026-08-13 and now
    implementable** — 0018 supplies the package manifest and edge registry.
-5. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
+4. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The
    metric strip is already class-aware and pinned (T14); this is the input side.
@@ -437,7 +455,7 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-6. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
+5. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
    percent display as `Number(x) / 100`, so `5.51%` becomes
    `0.055099999999999996` rather than `0.0551`. It is deterministic, so nothing
    is *broken*, but the value flows into the RFC 8785 canonical form and
@@ -450,18 +468,18 @@ bus factor, personal security email, and no public RFC venue.
    divide). **Treat as normative:** it changes canonical digests for affected
    documents, so it needs a deliberate decision and probably a spec note, not a
    drive-by patch.
-7. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
+6. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
    of re-export barrels; excluding them the figure is ~85%. A floor over a
    padded denominator is a weaker signal than it looks.
-8. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+7. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
    transition path with no expiry, and RFC 0020 declined to set one. Worth
    settling before 1.0 rather than letting it drift into permanence.
 
 ### Ongoing
 
-9. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
+8. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
     "calling-convention" guide are still missing.
-10. **Operational launch gates** — single-maintainer bus factor, personal
+9. **Operational launch gates** — single-maintainer bus factor, personal
     security email, and no public RFC venue remain review-flagged. The Excel
     add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
     or formally risk-accepted.

@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-012"
+  ],
+  "why": "A digest is the member identity and must be well formed."
+}

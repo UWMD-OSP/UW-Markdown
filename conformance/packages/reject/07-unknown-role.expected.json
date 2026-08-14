@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-011"
+  ],
+  "why": "An unrecognized role would leave a member outside every rule."
+}

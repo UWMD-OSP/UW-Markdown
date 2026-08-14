@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uw-deal-package-manifest.schema.json",
+  "title": "UW Deal Package Manifest 1.0",
+  "description": "Authoritative inventory of a UW Deal Package (RFC 0018 §3). Members are content-addressed by digest; ZIP entry order and timestamps are not semantic. Mirrors UWDealPackageManifest in @uwmd/core/deal-package.ts.",
+  "type": "object",
+  "required": ["package_version", "package_id", "members"],
+  "additionalProperties": true,
+  "properties": {
+    "package_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "package_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque, stable package identifier (e.g. 'pkg:parkview:2026-08-11')."
+    },
+    "members": {
+      "type": "array",
+      "description": "Every declared member MUST exist in the archive and match its byte digest.",
+      "items": { "$ref": "#/$defs/member" }
+    },
+    "links": {
+      "type": "array",
+      "description": "Typed, directed references between member ids. Types come from the canonical edge registry (RFC 0018 §5); a package MUST NOT define a parallel registry.",
+      "items": { "$ref": "#/$defs/link" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "member": {
+      "type": "object",
+      "required": ["id", "path", "role", "media_type", "sha256"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Relative POSIX path resolving to exactly one non-symlink entry. Absolute paths, drive letters, backslashes, and traversal components are forbidden. Deliberately not expressed as a regex here: the rule is enforced by isSafeMemberPath() and the shared safe-ZIP inspector, where it is tested against real archives. A lookahead pattern duplicating it would be a second, weaker copy."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["underwriting", "lease_abstract", "source_note", "source_evidence", "model_encoding"]
+        },
+        "media_type": { "type": "string", "minLength": 1 },
+        "sha256": {
+          "$ref": "#/$defs/digest",
+          "description": "Byte digest. This is the member's identity — never a reference handle."
+        },
+        "semantic_digest": {
+          "$ref": "#/$defs/digest",
+          "description": "Present for UW documents. A member whose representation an implementation cannot canonicalize is unverifiable, not invalid."
+        },
+        "document_profile": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Opaque profile token. Unknown profiles MUST be preserved and MUST NOT be interpreted as a deal-underwriting document."
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "required": ["type", "from", "to"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A canonical member-layer type (abstracts, amends, supersedes, contributes_to, guarantees, supports) or a preserved extension type."
+        },
+        "from": { "type": "string", "minLength": 1 },
+        "to": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-016"
+  ],
+  "why": "A link endpoint that does not resolve makes the graph lie."
+}

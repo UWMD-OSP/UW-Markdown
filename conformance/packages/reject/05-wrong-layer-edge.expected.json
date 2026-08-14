@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-017"
+  ],
+  "why": "A known entity-layer type used on the member layer is a claim the registry says cannot be true."
+}
