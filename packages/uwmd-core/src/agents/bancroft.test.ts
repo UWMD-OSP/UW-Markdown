@@ -184,6 +184,44 @@ describe('bancroft — streaming', () => {
   });
 });
 
+describe('bancroft — an injected clock makes a run reproducible', () => {
+  // Without this, recorded replay cannot assert on a document at all: every run
+  // differs in _meta.timestamp, duration_ms, and the random log-entry suffix.
+  const FROZEN = Date.parse('2026-08-13T00:00:00.000Z');
+
+  it('produces byte-identical output across runs', async () => {
+    const run = () =>
+      runBancroftAgent(deal(), 'L6-01', {
+        provider: fakeProvider(sectionCompletion('risk_assessment', { overall_risk_rating: 'moderate' })),
+        now: () => FROZEN,
+      });
+
+    const [first, second] = [await run(), await run()];
+    expect(first.updatedContent).toBe(second.updatedContent);
+    expect(first.logEntryIds).toEqual(second.logEntryIds);
+  });
+
+  it('freezes the stamp and collapses the duration', async () => {
+    const result = await runBancroftAgent(deal(), 'L6-01', {
+      provider: fakeProvider(sectionCompletion('risk_assessment', { overall_risk_rating: 'moderate' })),
+      now: () => FROZEN,
+    });
+
+    const block = parseUWFile(result.updatedContent).sections['risk_assessment'];
+    expect((block as { meta: Record<string, unknown> }).meta['timestamp']).toBe('2026-08-13T00:00:00.000Z');
+    expect(result.durationMs).toBe(0);
+  });
+
+  it('leaves real runs non-frozen', async () => {
+    // The default path must keep its random log-entry suffix, which is what
+    // stops two runs in the same millisecond from colliding.
+    const result = await runBancroftAgent(deal(), 'L6-01', {
+      provider: fakeProvider(sectionCompletion('risk_assessment', { overall_risk_rating: 'moderate' })),
+    });
+    expect(result.logEntryIds[0]).toMatch(/^log_\d+_[a-z0-9]{4}$/);
+  });
+});
+
 describe('bancroft — the host owns _meta', () => {
   it('strips any _meta and _notes the model tries to write', async () => {
     // Invariant 5: the host owns provenance. A model that returns its own _meta

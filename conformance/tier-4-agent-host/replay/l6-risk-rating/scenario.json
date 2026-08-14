@@ -1,0 +1,6 @@
+{
+  "agent_id": "L6-01",
+  "layer": "L6",
+  "description": "L6 Risk Rating writes a single risk_assessment section from a recorded exchange. Replaying cassette.json against before.uwx.md must reproduce after.uwx.md byte for byte.",
+  "sections_written": ["risk_assessment"]
+}

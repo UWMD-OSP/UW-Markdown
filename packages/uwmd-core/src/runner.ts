@@ -39,6 +39,17 @@ export interface RunOptions {
   notes?: string;
   updatePipelineState?: Partial<Record<string, PipelineStatus>>;
   updateQuickMetrics?: Partial<Record<string, number | null>>;
+  /**
+   * Freeze the wall-clock stamp on the block and its log entry. Defaults to
+   * now. Supplying it is what lets a recorded-replay run reproduce a document
+   * byte-for-byte — without it every run differs in `_meta.timestamp`.
+   */
+  timestamp?: string;
+  /**
+   * Freeze the pipeline-log entry id. Defaults to `log_<epoch>_<random>`, which
+   * is fine for a real run and fatal for a reproducible one.
+   */
+  logEntryId?: string;
 }
 
 export interface RunResult {
@@ -61,7 +72,7 @@ export function writeAgentBlock(
   opts: RunOptions = {},
 ): RunResult {
   const { sectionId, variant } = output;
-  const now = new Date().toISOString();
+  const now = opts.timestamp ?? new Date().toISOString();
   const agentId = opts.agentId ?? 'user';
   const _actor = opts.actor ?? 'system';
 
@@ -101,7 +112,8 @@ export function writeAgentBlock(
   const afterInsert = lines.join('\n');
   const reparsedForLog = parseUWFileForLog(afterInsert);
 
-  const logEntryId = `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  const logEntryId =
+    opts.logEntryId ?? `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
   lines = appendPipelineLogEntry(afterInsert.split('\n'), reparsedForLog, {
     entry_id: logEntryId,
     timestamp: now,
@@ -355,8 +367,8 @@ export function writeErrorEntry(
   errorMessage: string,
   opts: Omit<RunOptions, 'updatePipelineState' | 'updateQuickMetrics'> = {},
 ): string {
-  const now = new Date().toISOString();
-  const logEntryId = `log_${Date.now()}_err`;
+  const now = opts.timestamp ?? new Date().toISOString();
+  const logEntryId = opts.logEntryId ?? `log_${Date.now()}_err`;
 
   const lines = appendPipelineLogEntry(fileContent.split('\n'), parsed, {
     entry_id: logEntryId,
@@ -395,6 +407,8 @@ export function buildMeta(
     flags?: string[];
     inputHash?: string;
     notes?: string;
+    /** Freeze the stamp; defaults to now. See RunOptions.timestamp. */
+    timestamp?: string;
   },
 ): UWMeta {
   return {
@@ -405,7 +419,7 @@ export function buildMeta(
     agent_id: opts.agentId ?? null,
     agent_version: opts.agentVersion ?? null,
     actor: opts.actor ?? 'system',
-    timestamp: new Date().toISOString(),
+    timestamp: opts.timestamp ?? new Date().toISOString(),
     confidence: opts.confidence ?? 'medium',
     human_review_required: opts.humanReviewRequired ?? false,
     flags: opts.flags ?? [],

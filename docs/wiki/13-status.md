@@ -2,10 +2,10 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 at `20542dc`+ (full pass: build green across all
-workspaces; **699 tests** — 577 core, 69 excel, 46 cli, 4 batch, 3 report — plus
-**63 web-editor**; **105 conformance** assertions; 10/10 schemas valid; Biome
-clean over 275 files; docs site builds with no dead links).
+**Last verified:** 2026-08-13 at `30bfe60`+ (full pass: build green across all
+workspaces; **737 tests** — 615 core, 69 excel, 46 cli, 4 batch, 3 report — plus
+**63 web-editor**; **107 conformance** assertions including the Tier-4 replay
+suite; 10/10 schemas valid; Biome clean over 284 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -61,9 +61,9 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **105 assertions** across 4 tiers plus the named `lite` and
-  `receipts` suites; CI gates tiers 1–3 + both named suites. See
-  [09](09-conformance-testing.md).
+- **Conformance:** **107 assertions** across 4 tiers plus the named `lite`,
+  `receipts`, and `4-replay` suites. CI gates tiers 1–3, both named suites, and
+  the deterministic Tier-4 replay suite. See [09](09-conformance-testing.md).
 - **Verification receipts (RFC 0016):** `receipts.ts` issues and verifies
   detached receipts binding a record's canonical digest to the deterministic
   outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
@@ -91,6 +91,25 @@ not core gaps.
   functions, hand-overrides via `_meta.field_overrides`), VS Code ext, docs-site
   (the docs-site is the public text-first docs/download hub, publishes the Tier-1
   reference viewer, and hosts the calc-aware web editor as a public preview).
+- **Provider-neutral Tier-4 host (T9):** `agents/provider.ts` defines
+  `AgentProvider` — `complete()`, optional `stream()`, and neutral request /
+  completion types — and imports no vendor SDK.
+  `agents/providers/anthropic.ts` is the **only** file in the library that
+  imports `@anthropic-ai/sdk`, and `bancroft.ts` reaches it through a *dynamic*
+  import, so a host supplying its own provider never loads the SDK at all. A
+  test asserts the absence of a static import. `BancroftRunOptions` gained
+  `provider` (and `apiKey` became optional); supplying neither is a typed
+  `AgentProviderError`.
+- **Recorded-replay Tier-4 conformance (T10):** `agents/providers/replay.ts`
+  supplies `createRecordingProvider` / `createReplayProvider`, and
+  `conformance/tier-4-agent-host/replay/` replays a cassette through the real
+  runner, comparing the resulting document **byte for byte**. Runs in CI by
+  default — no network, no API key. Determinism comes from
+  `BancroftRunOptions.now`: a constant clock freezes `_meta.timestamp`,
+  collapses `duration_ms`, and makes the log-entry id derivable rather than
+  random. Replay is strict, so a cassette doubles as a **prompt-drift
+  detector** — see `conformance/tier-4-agent-host/replay/README.md`, including
+  its note on what recorded replay does *not* prove.
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 
@@ -151,14 +170,13 @@ not core gaps.
   95 functions, 74 branches**, roughly a point under measured. Falling through a
   floor fails CI.
 
-  > **Reading the number honestly.** Measured core coverage is ~77% lines, but
-  > 2,452 of 14,451 lines sit at 0% and most of that is not untested logic:
-  > `index.ts` and `browser.ts` (838 lines) are pure re-export barrels with
-  > nothing to cover; `cli.ts` (1,104 lines) *is* exercised, by the CLI smoke
-  > tests in `packages/uwmd-cli`, which do not count toward this package's
-  > number; `agents/` (510 lines) needs a network and an API key, which is what
-  > T10's recorded-replay Tier-4 would fix. Excluding just the two barrels the
-  > figure is ~82%; excluding barrels and agents, ~85%. Worth deciding whether
+  > **Reading the number honestly.** Measured core coverage is **~80% lines**,
+  > up from ~77% once T9's provider seam made `agents/` testable at all. What
+  > remains at 0% is mostly not untested logic: `index.ts` and `browser.ts`
+  > (838 lines) are pure re-export barrels with nothing to cover, and `cli.ts`
+  > (1,104 lines) *is* exercised — by the CLI smoke tests in
+  > `packages/uwmd-cli`, which do not count toward this package's number.
+  > Excluding just the two barrels the figure is ~85%. Worth deciding whether
   > the `exclude` list should reflect that — a floor over a denominator padded
   > with re-export lists is a weaker signal than it looks. Deliberately left out
   > of T17, which only moved the floor.
@@ -196,14 +214,6 @@ not core gaps.
   instead of returning an apparently successful empty document. PDF is built via
   `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
   that package.
-- **Provider-neutral agent host** — `agents/bancroft.ts` is hard-coupled to
-  `@anthropic-ai/sdk`; no second backend despite the provider-neutral §IX claim.
-  **Highest-risk remaining item:** the SDK may be imported only from code
-  reachable via `index.ts`, never from anything `browser.ts` re-exports, so a
-  careless refactor here breaks the browser boundary.
-- **Tier-4 conformance** — shape/lint-only; no live-LLM or recorded-replay gate.
-  Pairs naturally with the agent-host work above, and would also close the
-  largest coverage hole (`agents/`, 510 lines at 0%).
 - **Market-data / investor-profile** — interface-only; no reference implementation.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
   RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
@@ -304,16 +314,7 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Large
 
-1. **Provider-neutral agent host + recorded-replay Tier-4.** Take these as a
-   pair: they share the agent contract, and neither is provable without the
-   other. `agents/bancroft.ts` is hard-coupled to `@anthropic-ai/sdk` despite the
-   protocol's provider-neutral §IX claim, and Tier-4 conformance is shape/lint
-   only, so nothing today demonstrates the contract holds for a second backend.
-   Record real exchanges once, replay them deterministically with no network and
-   no API key. Also closes the largest coverage hole (`agents/`, 510 lines at 0%).
-   **Watch the browser boundary:** the SDK may be imported only from code
-   reachable via `index.ts`, never from anything `browser.ts` re-exports.
-2. **DOCX path — or formally scope it out.** PDF landed via `report.ts` +
+1. **DOCX path — or formally scope it out.** PDF landed via `report.ts` +
    `@uwmd/report`; Word remains the gap for institutions that edit memos. If it
    is built, reuse `report.ts`'s deterministic model rather than forking the
    renderer, and keep core's typed `UnsupportedRenderFormatError` pointing at the
@@ -322,16 +323,16 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Medium
 
-3. **Module loader hardening.** The v1 in-process loader exists; next steps are
+2. **Module loader hardening.** The v1 in-process loader exists; next steps are
    richer schema validation, recorded fixtures, and host UX for loading manifests
    from files. Module signing (RFC 0002) and custom asset-class identifiers
    (RFC 0003) stay v2/RFC work and are explicitly out of scope.
-4. **Market-data / investor-profile reference implementation.** Interface-only
+3. **Market-data / investor-profile reference implementation.** Interface-only
    today, so the top two cascade steps have no worked example.
-5. **Batch workflow expansion.** Deterministic filters, summaries, and
+4. **Batch workflow expansion.** Deterministic filters, summaries, and
    underwriting-queue projections over the collection index. `.uwx.md` remains
    the canonical source; shared storage semantics only through a future RFC.
-6. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
+5. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The
    metric strip is already class-aware and pinned (T14); this is the input side.
@@ -340,21 +341,21 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-7. **A UW Lite worked example.** Lite is normatively specified and has zero
+6. **A UW Lite worked example.** Lite is normatively specified and has zero
    instances in `examples/`. Cheapest item here and it removes the root cause of
    the Lite/UWX documentation drift RFC 0020 had to correct.
-8. **Decide the coverage `exclude` list.** Measured 77% is padded by 838 lines of
-   re-export barrels; excluding them the figure is ~82%, and ~85% without
-   `agents/`. A floor over a padded denominator is a weaker signal than it looks.
-9. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+7. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
+   of re-export barrels; excluding them the figure is ~85%. A floor over a
+   padded denominator is a weaker signal than it looks.
+8. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
    transition path with no expiry, and RFC 0020 declined to set one. Worth
    settling before 1.0 rather than letting it drift into permanence.
 
 ### Ongoing
 
-10. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
+9. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
     "calling-convention" guide are still missing.
-11. **Operational launch gates** — single-maintainer bus factor, personal
+10. **Operational launch gates** — single-maintainer bus factor, personal
     security email, and no public RFC venue remain review-flagged. The Excel
     add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
     or formally risk-accepted.

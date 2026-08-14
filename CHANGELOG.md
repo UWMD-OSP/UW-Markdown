@@ -49,6 +49,35 @@ protocol, and each package each carry an independent semver).
   byte-identical; 41 referencing files were updated by path only.
 
 ### Added
+- **The Tier-4 agent host is provider-neutral (T9).** Protocol §IX has always
+  described it that way, but `agents/bancroft.ts` constructed an Anthropic
+  client on every run and typed its internals against the SDK — so the claim
+  could not be demonstrated, and `agents/` sat at 0% coverage because exercising
+  it needed a network call and an API key. New `AgentProvider` contract
+  (`complete()`, optional `stream()`, neutral request/completion types) with no
+  vendor import; `agents/providers/anthropic.ts` is now the only file importing
+  `@anthropic-ai/sdk`, reached through a **dynamic** import so a host bringing
+  its own provider never loads it. `BancroftRunOptions` gains `provider` and
+  `apiKey` becomes optional — additive; existing callers are unaffected.
+  Streaming falls back to `complete()` for providers that cannot stream.
+- **Recorded-replay Tier-4 conformance (T10).** Tier-4 was shape-and-lint only:
+  fixtures were parsed and nothing ran, so nothing checked that a host writes
+  what the protocol says it writes. The `l6-risk-rating` fixture was in fact
+  **un-runnable** — it carries only a `property` section while L6 requires
+  `noi_model`, `valuation`, and `debt_structure`. New `createRecordingProvider`
+  / `createReplayProvider` plus a `4-replay` conformance suite that replays a
+  cassette through the real runner and compares the document **byte for byte**.
+  It runs in CI by default because it needs no network and no key. Replay is
+  strict — a request that no longer matches its recording is a typed error
+  naming the changed field — so a cassette doubles as a prompt-drift detector.
+  What it does not prove, and says so in its README, is that any particular
+  model produces the recorded answer.
+- **`RunOptions.timestamp` / `RunOptions.logEntryId` and `BancroftRunOptions.now`.**
+  Agent output was previously non-reproducible: `_meta.timestamp`, `duration_ms`,
+  and a random log-entry suffix differed every run, which is why replay could not
+  assert on a document at all. A constant clock now freezes all three. Real runs
+  leave `now` unset and keep the random suffix that stops same-millisecond
+  collisions.
 - **`ASSET_CLASSES` — the `AssetClass` union as a runtime list**, exported from
   `@uwmd/core` and `@uwmd/core/browser`. It is *derived* from a
   `Record<AssetClass, true>` exhaustiveness anchor rather than written by hand,

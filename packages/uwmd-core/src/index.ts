@@ -225,6 +225,14 @@ export type {
 } from './agents/provider.js';
 export { createAnthropicProvider } from './agents/providers/anthropic.js';
 export type { AnthropicProviderOptions } from './agents/providers/anthropic.js';
+export {
+  createReplayProvider,
+  createRecordingProvider,
+  parseAgentCassette,
+  agentRequestFingerprint,
+  CASSETTE_VERSION,
+} from './agents/providers/replay.js';
+export type { AgentCassette, RecordedExchange, RecordingProvider } from './agents/providers/replay.js';
 export { generateBlankUWFile } from './init.js';
 
 // ─── Section footing (line items → section totals) ────────────────────────────

@@ -5,7 +5,7 @@
 // Usage:
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
-//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,lite,receipts.
+//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,receipts.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -47,6 +47,9 @@ import {
   issueReceipt,
   verifyReceipt,
   assertUWReceipt,
+  runBancroftAgent,
+  createReplayProvider,
+  parseAgentCassette,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -61,7 +64,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,lite,receipts').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -588,6 +591,104 @@ function runTier4() {
   }
 }
 
+// ─── Tier 4 replay: deterministic agent runs from a recorded cassette ────────
+// Unlike the shape-only fixtures above, these actually run the Tier-4 write
+// path. A cassette supplies the model's side of the conversation, so the run
+// needs no network and no API key and can gate CI.
+//
+// Each scenario freezes an expected output document and is compared BYTE FOR
+// BYTE — not by shape. That is what makes it a real conformance assertion: it
+// pins supersede semantics, `_meta` ownership, pipeline-log append, and
+// frontmatter updates all at once. Determinism comes from injecting a constant
+// clock, which freezes `_meta.timestamp`, collapses `duration_ms` to 0, and
+// makes the log entry id derivable instead of random.
+
+const REPLAY_CLOCK = Date.parse('2026-08-13T00:00:00.000Z');
+
+async function runTier4Replay() {
+  const baseDir = join(CONFORMANCE_DIR, 'tier-4-agent-host', 'replay');
+  if (!existsSync(baseDir)) {
+    record('4-replay', '(none)', 'pass', 'no replay scenarios');
+    return;
+  }
+  const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
+
+  for (const scenario of scenarios) {
+    const dir = join(baseDir, scenario);
+    const meta = JSON.parse(readFileSync(join(dir, 'scenario.json'), 'utf8'));
+    const before = readFileSync(join(dir, 'before.uwx.md'), 'utf8');
+    const expectedPath = join(dir, 'after.uwx.md');
+
+    let result;
+    try {
+      const cassette = parseAgentCassette(readFileSync(join(dir, 'cassette.json'), 'utf8'));
+      result = await runBancroftAgent(before, meta.agent_id, {
+        provider: createReplayProvider(cassette),
+        now: () => REPLAY_CLOCK,
+      });
+    } catch (e) {
+      record('4-replay', `${scenario}/run`, 'fail', e.message);
+      continue;
+    }
+
+    if (!result.success) {
+      record('4-replay', `${scenario}/run`, 'fail', `run failed: ${result.error}`);
+      continue;
+    }
+
+    // The sections the layer claims to have written.
+    const expectedSections = meta.sections_written ?? [];
+    if (JSON.stringify(result.sectionsWritten) !== JSON.stringify(expectedSections)) {
+      record(
+        '4-replay',
+        `${scenario}/sections`,
+        'fail',
+        `wrote [${result.sectionsWritten}] expected [${expectedSections}]`,
+      );
+    } else {
+      record('4-replay', `${scenario}/sections`, 'pass', `wrote ${expectedSections.join(', ')}`);
+    }
+
+    baselineCompare('4-replay', `${scenario}/document`, expectedPath, result.updatedContent);
+  }
+}
+
+// A replayed run must reproduce the frozen document exactly. `--update`
+// refreshes the baseline the same way every other suite does.
+function baselineCompare(tier, name, expectedPath, actual) {
+  if (!existsSync(expectedPath)) {
+    if (UPDATE) {
+      writeFileSync(expectedPath, actual, 'utf8');
+      record(tier, name, 'updated', 'baseline created');
+    } else {
+      record(tier, name, 'fail', `missing baseline: ${basename(expectedPath)}`);
+    }
+    return;
+  }
+  const expected = readFileSync(expectedPath, 'utf8');
+  if (expected === actual) {
+    record(tier, name, 'pass', 'byte-identical to baseline');
+    return;
+  }
+  if (UPDATE) {
+    writeFileSync(expectedPath, actual, 'utf8');
+    record(tier, name, 'updated', 'baseline refreshed');
+    return;
+  }
+  record(tier, name, 'fail', firstDifference(expected, actual));
+}
+
+function firstDifference(expected, actual) {
+  const e = expected.split('\n');
+  const a = actual.split('\n');
+  for (let i = 0; i < Math.max(e.length, a.length); i++) {
+    if (e[i] !== a[i]) {
+      return `line ${i + 1}: expected ${JSON.stringify(e[i] ?? '<eof>')} got ${JSON.stringify(a[i] ?? '<eof>')}`;
+    }
+  }
+  return 'documents differ but no line-level difference found';
+}
+
 // ─── Lite: parse → canonicalize → render → compile → project ─────────────────
 // UW Lite (`spec/UW_LITE_SPEC_v1.md`) is a source representation rather than a
 // protocol tier, so it runs under the name `lite`. Each fixture in `fixtures/`
@@ -1019,6 +1120,8 @@ const dispatch = {
   '2': async () => { await runTier2(); },
   '3': async () => { runTier3(); await runTier3Refinement(); },
   '4': async () => { runTier4(); await runTier4Profile(); },
+  // Runs by default: deterministic, no network, no API key.
+  '4-replay': async () => { await runTier4Replay(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
 };

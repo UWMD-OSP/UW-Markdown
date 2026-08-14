@@ -44,9 +44,11 @@ npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
 
-Exit code 0 = all pass, 1 = at least one failure. **Tier 4 is gated behind an
-explicit `--tier=4`** because it requires a live LLM or a replay store (not in
-CI); the in-repo tier-4 check is shape/lint-only plus the profile contract.
+Exit code 0 = all pass, 1 = at least one failure. The **`4-replay`** suite runs
+by default — it is deterministic and needs no network or API key. The numbered
+**tier 4** suite stays gated behind an explicit `--tier=4`, because it is
+shape/lint-only plus the profile contract and assumes an operator-driven live
+run.
 
 ### Tier 1 — Reader
 
@@ -81,9 +83,28 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 ### Tier 4 — Agent Host
 
 `conformance/tier-4-agent-host/`:
-- `fixtures/<scenario>/`: `before.uw.md` + `expected-after-shape.json` — currently
-  **lint-only** (parse + JSON-validate; live runs are operator-driven, replay
-  store deferred to v2).
+- `replay/<scenario>/` — **the real gate, and it runs by default.**
+  `before.uwx.md` + `cassette.json` + a frozen `after.uwx.md`. The cassette
+  supplies the model's side of the conversation, so the run needs no network and
+  no key, and the resulting document is compared **byte for byte**. That single
+  comparison pins context assembly, tool-call extraction, supersede semantics,
+  `_meta` ownership, the pipeline-log append, and the frontmatter update at once.
+
+  Determinism comes from `BancroftRunOptions.now`: a constant clock freezes
+  `_meta.timestamp`, collapses `duration_ms`, and makes the log-entry id
+  derivable instead of random.
+
+  Replay is **strict** — each exchange records the request it answered, and a
+  mismatch is a typed error naming the changed field, so a cassette doubles as a
+  prompt-drift detector. Matching is sequential rather than keyed, because a
+  keyed cassette would happily serve a reordered run and hide a change in call
+  order. See `conformance/tier-4-agent-host/replay/README.md`, including its
+  note on what recorded replay does *not* prove.
+- `fixtures/<scenario>/`: `before.uw.md` + `expected-after-shape.json` —
+  **lint-only** (parse + JSON-validate), retained for operator-driven live runs.
+  Note the `l6-risk-rating` fixture is not runnable as written: it carries only
+  a `property` section while L6 requires `noi_model`, `valuation`, and
+  `debt_structure`. The replay scenario uses its own input for that reason.
 - `profile/<scenario>/expected-layer-profiles.json` — asserts the `layer →
   consumed_profile` map from `BANCROFT_LAYERS` matches the baseline.
 
