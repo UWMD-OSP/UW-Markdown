@@ -1,0 +1,113 @@
+{
+  "cassette_version": "1.0",
+  "recorded_from": "scripted",
+  "recorded_at": "2026-08-13T00:00:00.000Z",
+  "exchanges": [
+    {
+      "request": {
+        "model": "claude-sonnet-4-6",
+        "max_tokens": 4096,
+        "temperature": 0.1,
+        "system": "You are L6 — Risk Rating — a specialized agent in the Bancroft CRE underwriting pipeline.\n\nYour role: You produce the risk rating — aggregate all section inputs into a scored assessment, stress test the structure, and make a recommendation.\n\n## Your Output Contract\n\nYou must return a single JSON object that will be written as a .uw.md section block. The object must:\n- Begin with a \"_meta\" object (see spec §2.5)\n- Include all required fields for the section(s) you write: risk_assessment\n- Set confidence to \"high\" / \"medium\" / \"low\" based on available data quality\n- Set human_review_required: true if any field is uncertain, estimated, or depends on missing inputs\n- Never calculate financial figures — report what the data shows; the deterministic engine owns the math\n- Set flags[] for any anomalies, policy concerns, or data quality issues you observe\n\n## Available Input Sections\n- property\n- noi_model\n- valuation\n- debt_structure\n\n\n## Blocking Flags\nNone — pipeline is clear to proceed",
+        "messages": [
+          {
+            "role": "user",
+            "content": "# CRE DEAL CONTEXT — L6 Risk Rating Replay Fixture\nFILE FORMAT: .uw.md v1.1 | DEAL ID: TEST-T4-REPLAY-001\nADDRESS: 410 Cedar Ct, Mesa AZ 85201\nASSET CLASS: multifamily | STAGE: credit_approval | STATUS: under_review\nRECOMMENDATION: pending\nLAST MODIFIED: 2026-08-09T00:00:00Z\n\n## KEY METRICS\nPurchase Price: $24,000,000 | Loan: $15,600,000 | Equity: n/a\nNOI (UW): n/a | DSCR: n/ax | LTV: n/a\nCap Rate: n/a | Debt Yield: n/a | IRR (levered): n/a\n\n## PROPERTY\nUnits: n/a | Built: n/a | Renovated: n/a\nClass: n/a | Condition: n/a | Subtype: n/a\nNRA: n/a sqft | Land: n/a acres | Stories: n/a\nParking: n/a spaces (n/a) | Zoning: n/a\nDeferred Maintenance Est: n/a\nAmenities: n/a\n\n## NOI MODEL (high confidence)\nGPR: n/a\nVacancy Loss: n/a (n/a)\nOther Income: n/a\nEGI: n/a\nTotal OpEx: n/a\nNOI: n/a\nOpEx Ratio: n/a\n\n## DEBT STRUCTURE\nLoan: n/a | Type: n/a\nRate: n/a | Term: n/ayr | Am: n/ayr\nIO Period: n/a months | Recourse: n/a\nDSCR (IO): n/a | DSCR (amortizing): n/a\nLTV: n/a | Debt Yield: n/a\nAnnual DS: n/a | Monthly DS: n/a\n\n## VALUATION\nPurchase Price: n/a\nUW Value: n/a\nAppraised Value: n/a (n/a)\nGoing-in Cap: n/a\nPrice/Unit: n/a | Price/SF: n/a\n\n## SOURCES & USES\nTotal Sources: n/a | Total Uses: n/a\nLoan: n/a | Equity: n/a\nPurchase: n/a | Closing Costs: n/a | Reserves: n/a\n\n## VALIDATION ISSUES\n[WARNING] META_FIELD_MISSING_SECTION (property): Section property _meta is missing required field: section\n[WARNING] META_FIELD_MISSING_SECTION (valuation): Section valuation _meta is missing required field: section\n[WARNING] META_FIELD_MISSING_SECTION (noi_model): Section noi_model _meta is missing required field: section\n[WARNING] META_FIELD_MISSING_SECTION (debt_structure): Section debt_structure _meta is missing required field: section\n[WARNING] META_FIELD_MISSING_SECTION (sources_uses): Section sources_uses _meta is missing required field: section\n\n---\nDeal ID: TEST-T4-REPLAY-001 | .uw.md format v1.1 | This file is the canonical underwriting record for this deal.\n\n---\n\nReturn your output as a single JSON block for section(s): risk_assessment"
+          }
+        ],
+        "tools": [
+          {
+            "name": "write_uw_section",
+            "description": "Write the analyzed section data back to the .uw.md deal file. Call this exactly once with your complete output. Do not call it multiple times.",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "section_id": {
+                  "type": "string",
+                  "description": "The section ID being written (e.g. \"screening\", \"noi_model\", \"risk_assessment\"). Must match one of the sections you are responsible for writing."
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "medium",
+                    "low"
+                  ],
+                  "description": "Confidence in your output. high = deterministic/directly sourced, medium = inferred/estimated, low = insufficient data."
+                },
+                "human_review_required": {
+                  "type": "boolean",
+                  "description": "Set true if any output field is uncertain, estimated, or depends on missing inputs. This gates the pipeline."
+                },
+                "flags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Machine-readable flag strings for anomalies, policy concerns, or data quality issues. Use snake_case. Examples: dscr_below_threshold, management_fee_above_market, ofac_match_required."
+                },
+                "section_data": {
+                  "type": "object",
+                  "description": "All field values for this section. Include every required field. Use null for unknown values — do not omit fields."
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Optional human-readable explanation of uncertainties, assumptions made, or instructions for the next reviewer."
+                }
+              },
+              "required": [
+                "section_id",
+                "confidence",
+                "human_review_required",
+                "flags",
+                "section_data"
+              ]
+            }
+          }
+        ],
+        "tool_choice": "any"
+      },
+      "completion": {
+        "tool_calls": [
+          {
+            "name": "write_uw_section",
+            "input": {
+              "section_id": "risk_assessment",
+              "confidence": "medium",
+              "human_review_required": true,
+              "flags": [
+                "dscr_below_threshold",
+                "concentration_single_tenant"
+              ],
+              "section_data": {
+                "overall_risk_rating": "moderate",
+                "risk_factors": [
+                  {
+                    "factor": "debt_service_coverage",
+                    "severity": "high",
+                    "note": "DSCR of 1.12x sits below the 1.20x policy floor."
+                  },
+                  {
+                    "factor": "market_concentration",
+                    "severity": "medium",
+                    "note": "Submarket absorption has slowed for three consecutive quarters."
+                  }
+                ],
+                "mitigants": [
+                  "Sponsor has committed a 12-month interest reserve.",
+                  "In-place rents are 8% below comparable properties, leaving headroom."
+                ],
+                "recommendation": "proceed_with_conditions"
+              },
+              "notes": "DSCR is the binding constraint. Recommend conditioning approval on the interest reserve being funded at close."
+            }
+          }
+        ],
+        "usage": {
+          "input_tokens": 3184,
+          "output_tokens": 412
+        }
+      }
+    }
+  ]
+}

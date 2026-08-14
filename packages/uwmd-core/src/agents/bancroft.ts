@@ -56,6 +56,16 @@ export interface BancroftRunOptions {
   userInstructions?: string;
   /** Called on each status update during the run */
   onProgress?: (event: ProgressEvent) => void;
+  /**
+   * Injectable clock, defaulting to `Date.now`. Supplying a **constant** clock
+   * makes a run byte-reproducible: `_meta.timestamp` freezes, `duration_ms`
+   * collapses to 0, and the pipeline-log entry id becomes derivable instead of
+   * random. That is what lets a replayed run be compared against a frozen
+   * expected document (see `providers/replay.ts`).
+   *
+   * Real runs should leave it unset.
+   */
+  now?: () => number;
 }
 
 /**
@@ -118,7 +128,7 @@ export async function runBancroftAgent(
   agentId: string,
   opts: BancroftRunOptions,
 ): Promise<BancroftRunResult> {
-  const startMs = Date.now();
+  const startMs = (opts.now ?? Date.now)();
   const model = opts.model ?? 'claude-sonnet-4-6';
   const maxRetries = opts.maxRetries ?? 2;
   const emit = opts.onProgress ?? (() => undefined);
@@ -144,7 +154,7 @@ export async function runBancroftAgent(
       updatedContent: fileContent,
       sectionsWritten: [],
       tokensUsed: { input: 0, output: 0 },
-      durationMs: Date.now() - startMs,
+      durationMs: (opts.now ?? Date.now)() - startMs,
       logEntryIds: [],
       error: `Context not ready — ${reason}`,
       retries: 0,
@@ -203,7 +213,7 @@ export async function runBancroftAgent(
       updatedContent: currentContent,
       sectionsWritten: [],
       tokensUsed: { input: totalInput, output: totalOutput },
-      durationMs: Date.now() - startMs,
+      durationMs: (opts.now ?? Date.now)() - startMs,
       logEntryIds: [],
       error: lastError,
       retries,
@@ -219,6 +229,7 @@ export async function runBancroftAgent(
     ctx.layer.reads,
     startMs,
     emit,
+    opts.now,
   );
   currentContent = finalContent;
 
@@ -229,7 +240,7 @@ export async function runBancroftAgent(
     updatedContent: currentContent,
     sectionsWritten,
     tokensUsed: { input: totalInput, output: totalOutput },
-    durationMs: Date.now() - startMs,
+    durationMs: (opts.now ?? Date.now)() - startMs,
     logEntryIds,
     retries,
   };
@@ -276,7 +287,7 @@ export async function runBancroftAgentStreaming(
   agentId: string,
   opts: BancroftRunOptions,
 ): Promise<BancroftRunResult> {
-  const startMs = Date.now();
+  const startMs = (opts.now ?? Date.now)();
   const model = opts.model ?? 'claude-sonnet-4-6';
   const emit = opts.onProgress ?? (() => undefined);
 
@@ -297,7 +308,7 @@ export async function runBancroftAgentStreaming(
       updatedContent: fileContent,
       sectionsWritten: [],
       tokensUsed: { input: 0, output: 0 },
-      durationMs: Date.now() - startMs,
+      durationMs: (opts.now ?? Date.now)() - startMs,
       logEntryIds: [],
       error: reason,
       retries: 0,
@@ -330,7 +341,7 @@ export async function runBancroftAgentStreaming(
       updatedContent: fileContent,
       sectionsWritten: [],
       tokensUsed: { input: totalInput, output: totalOutput },
-      durationMs: Date.now() - startMs,
+      durationMs: (opts.now ?? Date.now)() - startMs,
       logEntryIds: [],
       error,
       retries: 0,
@@ -343,7 +354,7 @@ export async function runBancroftAgentStreaming(
       updatedContent: fileContent,
       sectionsWritten: [],
       tokensUsed: { input: totalInput, output: totalOutput },
-      durationMs: Date.now() - startMs,
+      durationMs: (opts.now ?? Date.now)() - startMs,
       logEntryIds: [],
       error: 'The model did not call the write tool',
       retries: 0,
@@ -359,6 +370,7 @@ export async function runBancroftAgentStreaming(
     ctx.layer.reads,
     startMs,
     emit,
+    opts.now,
   );
 
   emit({ stage: 'complete', agentId, message: `Wrote ${sectionsWritten.join(', ')} — ${totalInput + totalOutput} tokens` });
@@ -368,7 +380,7 @@ export async function runBancroftAgentStreaming(
     updatedContent: finalContent,
     sectionsWritten,
     tokensUsed: { input: totalInput, output: totalOutput },
-    durationMs: Date.now() - startMs,
+    durationMs: (opts.now ?? Date.now)() - startMs,
     logEntryIds,
     retries: 0,
   };
@@ -386,7 +398,14 @@ function writeSectionOutputs(
   inputSections: string[],
   startMs: number,
   emit: (e: ProgressEvent) => void,
+  clock?: () => number,
 ): { content: string; logEntryIds: string[]; sectionsWritten: string[] } {
+  const nowMs = clock ?? Date.now;
+  // Only freeze the stamps when a clock was injected. A real run keeps its
+  // random log-entry suffix, which is what stops two runs in the same
+  // millisecond from colliding.
+  const frozen = clock !== undefined;
+  const timestamp = frozen ? new Date(nowMs()).toISOString() : undefined;
   const layer = BANCROFT_LAYERS.find(l => l.id === layerPrefix);
   const pipelineStateUpdate = layer
     ? { [layer.pipelineStateKey]: 'complete' as const }
@@ -395,6 +414,7 @@ function writeSectionOutputs(
   let currentContent = fileContent;
   const logEntryIds: string[] = [];
   const sectionsWritten: string[] = [];
+  let sectionIndex = 0;
 
   for (const toolOut of toolOutputs) {
     emit({ stage: 'writing_block', agentId, sectionId: toolOut.section_id, message: `Writing ${toolOut.section_id}` });
@@ -417,6 +437,7 @@ function writeSectionOutputs(
       humanReviewRequired: toolOut.human_review_required,
       flags: toolOut.flags,
       notes: toolOut.notes,
+      ...(timestamp ? { timestamp } : {}),
     });
 
     // Strip any _meta/_notes Claude included in section_data — we own those fields.
@@ -435,16 +456,21 @@ function writeSectionOutputs(
       {
         agentId,
         agentVersion: '1.0.0',
-        durationMs: Date.now() - startMs,
+        durationMs: nowMs() - startMs,
         flagsRaised: toolOut.flags,
         inputSections,
         updatePipelineState: pipelineStateUpdate,
+        ...(timestamp ? { timestamp } : {}),
+        // Derived from the frozen clock plus the section's position, so a
+        // replayed multi-section run still gets distinct, stable ids.
+        ...(frozen ? { logEntryId: `log_${nowMs()}_${agentId}_${sectionIndex}` } : {}),
       },
     );
 
     currentContent = runResult.content;
     logEntryIds.push(runResult.logEntryId);
     sectionsWritten.push(toolOut.section_id);
+    sectionIndex++;
   }
 
   return { content: currentContent, logEntryIds, sectionsWritten };

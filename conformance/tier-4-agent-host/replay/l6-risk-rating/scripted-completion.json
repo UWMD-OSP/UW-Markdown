@@ -1,0 +1,38 @@
+{
+  "tool_calls": [
+    {
+      "name": "write_uw_section",
+      "input": {
+        "section_id": "risk_assessment",
+        "confidence": "medium",
+        "human_review_required": true,
+        "flags": ["dscr_below_threshold", "concentration_single_tenant"],
+        "section_data": {
+          "overall_risk_rating": "moderate",
+          "risk_factors": [
+            {
+              "factor": "debt_service_coverage",
+              "severity": "high",
+              "note": "DSCR of 1.12x sits below the 1.20x policy floor."
+            },
+            {
+              "factor": "market_concentration",
+              "severity": "medium",
+              "note": "Submarket absorption has slowed for three consecutive quarters."
+            }
+          ],
+          "mitigants": [
+            "Sponsor has committed a 12-month interest reserve.",
+            "In-place rents are 8% below comparable properties, leaving headroom."
+          ],
+          "recommendation": "proceed_with_conditions"
+        },
+        "notes": "DSCR is the binding constraint. Recommend conditioning approval on the interest reserve being funded at close."
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 3184,
+    "output_tokens": 412
+  }
+}
