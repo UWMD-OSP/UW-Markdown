@@ -2,8 +2,8 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 at `ea2c3b7` (full pass: build green across all
-workspaces; **694 tests** — 577 core, 69 excel, 41 cli, 4 batch, 3 report — plus
+**Last verified:** 2026-08-13 at `20542dc`+ (full pass: build green across all
+workspaces; **699 tests** — 577 core, 69 excel, 46 cli, 4 batch, 3 report — plus
 **63 web-editor**; **105 conformance** assertions; 10/10 schemas valid; Biome
 clean over 275 files; docs site builds with no dead links).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
@@ -196,16 +196,6 @@ not core gaps.
   instead of returning an apparently successful empty document. PDF is built via
   `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
   that package.
-- **`uwmd init` still writes `.uw.md` by default** — a live defect surfaced by
-  RFC 0020, not fixed by it. `cli.ts` derives the default output filename as
-  `new-deal.uw.md` (or `<name>.uw.md`), while `generateBlankUWFile()` emits
-  `uw_version` and fenced `uw:section=` blocks — structured UWX content. So the
-  CLI creates exactly the file the format spec now says not to create, and which
-  `detectUWSourceRepresentation()` flags as legacy on the next load. The help
-  text and header were corrected; **the default filename is a behaviour change to
-  a published CLI and was deliberately left for a separate decision.** The other
-  extension-derived paths in `cli.ts` (export, report, convert suffix handling)
-  should be reviewed in the same pass.
 - **Provider-neutral agent host** — `agents/bancroft.ts` is hard-coupled to
   `@anthropic-ai/sdk`; no second backend despite the provider-neutral §IX claim.
   **Highest-risk remaining item:** the SDK may be imported only from code
@@ -350,27 +340,21 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-7. **Fix `uwmd init`'s default output extension.** It writes structured UWX
-   content to `new-deal.uw.md`, which the format spec now forbids and the
-   library's own detector flags as legacy. A behaviour change to a published
-   CLI, so it wants a deliberate decision and a CHANGELOG line — but it is small,
-   and every deal a newcomer scaffolds is currently born legacy. Review the other
-   extension-derived paths in `cli.ts` at the same time.
-8. **A UW Lite worked example.** Lite is normatively specified and has zero
+7. **A UW Lite worked example.** Lite is normatively specified and has zero
    instances in `examples/`. Cheapest item here and it removes the root cause of
    the Lite/UWX documentation drift RFC 0020 had to correct.
-9. **Decide the coverage `exclude` list.** Measured 77% is padded by 838 lines of
+8. **Decide the coverage `exclude` list.** Measured 77% is padded by 838 lines of
    re-export barrels; excluding them the figure is ~82%, and ~85% without
    `agents/`. A floor over a padded denominator is a weaker signal than it looks.
-10. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+9. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
    transition path with no expiry, and RFC 0020 declined to set one. Worth
    settling before 1.0 rather than letting it drift into permanence.
 
 ### Ongoing
 
-11. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
+10. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
     "calling-convention" guide are still missing.
-12. **Operational launch gates** — single-maintainer bus factor, personal
+11. **Operational launch gates** — single-maintainer bus factor, personal
     security email, and no public RFC venue remain review-flagged. The Excel
     add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
     or formally risk-accepted.
