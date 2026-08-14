@@ -24,11 +24,14 @@ export default defineConfig({
       //
       // Policy: when coverage rises durably, raise these. Lowering one is a
       // deliberate act that belongs in a PR description, not a quiet edit.
+      // Ratcheted 2026-08-13 (T9): the provider seam made agents/ testable, so
+      // measured coverage moved 76.98% -> 80.05% lines/statements and
+      // 75.4% -> 76.47% branches. Raising the floor with it is the policy above.
       thresholds: {
-        lines: 76,
-        statements: 76,
-        functions: 95,
-        branches: 74,
+        lines: 79,
+        statements: 79,
+        functions: 96,
+        branches: 75,
       },
       exclude: [
         'src/**/*.test.ts',

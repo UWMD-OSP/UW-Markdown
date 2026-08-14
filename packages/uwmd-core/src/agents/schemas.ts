@@ -2,14 +2,14 @@
 // Each Bancroft layer uses the write_uw_section tool to return structured output.
 // Claude fills in section_data; we wrap it with _meta in bancroft.ts.
 
-import type Anthropic from '@anthropic-ai/sdk';
+import type { AgentToolSchema } from './provider.js';
 
 // ─── Universal write tool ─────────────────────────────────────────────────────
 // All layers use the same tool; section_data content varies by layer.
 // Using a single flexible schema rather than per-layer schemas keeps prompts
 // shorter and avoids schema drift — the system prompt describes the expected fields.
 
-export const WRITE_UW_SECTION_TOOL: Anthropic.Tool = {
+export const WRITE_UW_SECTION_TOOL: AgentToolSchema = {
   name: 'write_uw_section',
   description: 'Write the analyzed section data back to the .uw.md deal file. Call this exactly once with your complete output. Do not call it multiple times.',
   input_schema: {
@@ -49,7 +49,7 @@ export const WRITE_UW_SECTION_TOOL: Anthropic.Tool = {
 // ─── Multi-section write tool ─────────────────────────────────────────────────
 // L0 and L4 write multiple sections in one pass. They use this tool instead.
 
-export const WRITE_MULTIPLE_SECTIONS_TOOL: Anthropic.Tool = {
+export const WRITE_MULTIPLE_SECTIONS_TOOL: AgentToolSchema = {
   name: 'write_multiple_uw_sections',
   description: 'Write multiple sections to the .uw.md deal file in a single call. Use when your layer is responsible for more than one section.',
   input_schema: {

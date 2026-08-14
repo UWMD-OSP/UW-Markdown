@@ -211,6 +211,20 @@ export { runBancroftAgent, runBancroftAgentStreaming } from './agents/bancroft.j
 export type { BancroftRunOptions, BancroftRunResult, ProgressEvent } from './agents/bancroft.js';
 export { WRITE_UW_SECTION_TOOL, WRITE_MULTIPLE_SECTIONS_TOOL, MULTI_SECTION_LAYERS } from './agents/schemas.js';
 export type { ToolOutput } from './agents/schemas.js';
+// The provider seam (RFC-free, additive). Deliberately NOT re-exported from
+// browser.ts: `createAnthropicProvider` reaches `@anthropic-ai/sdk`, and the
+// browser entry must never pull it in.
+export { AgentProviderError } from './agents/provider.js';
+export type {
+  AgentProvider,
+  AgentRequest,
+  AgentCompletion,
+  AgentToolCall,
+  AgentToolSchema,
+  AgentMessage,
+} from './agents/provider.js';
+export { createAnthropicProvider } from './agents/providers/anthropic.js';
+export type { AnthropicProviderOptions } from './agents/providers/anthropic.js';
 export { generateBlankUWFile } from './init.js';
 
 // ─── Section footing (line items → section totals) ────────────────────────────
