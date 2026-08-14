@@ -17,7 +17,9 @@ This repository is the home of the standard:
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
 - [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned).
-- [`examples/`](examples/) — sample `.uwx.md` deal files.
+- [`examples/`](examples/) — sample deal files: nine complete `.uwx.md` records
+  (one per asset class) plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`
+  exists in **both** representations, so the two can be read side by side.
 
 ## Why a standard?
 
@@ -55,6 +57,10 @@ npm run cli -- parse examples/Parkview-Apts-Glendale-AZ.uwx.md
 npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uwx.md
 npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uwx.md --to uw-xml
 npm run cli -- convert examples/Parkview-Apts-Glendale-AZ.uw.xml --to uw-json
+
+# The same deal as a UW Lite summary, and what compiling it costs you
+npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md
+npm run cli -- convert  examples/Parkview-Apts-Glendale-AZ.uw.md --to uwx --stdout
 ```
 
 To open the reference web viewer, point any browser at

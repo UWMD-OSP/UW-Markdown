@@ -8,6 +8,27 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+- **A UW Lite worked example — the first one the repo has ever shipped (T11).**
+  `spec/UW_LITE_SPEC_v1.md` has specified UW Lite normatively since RFC 0017
+  while `examples/` contained zero instances of it, which RFC 0020 identified as
+  a plausible root cause of the Lite/UWX drift it had to go back and correct.
+  `examples/Parkview-Apts-Glendale-AZ.uw.md` closes the gap deliberately as a
+  **twin** of the existing record: same deal, same deal id, same base name, both
+  extensions adjacent in the directory listing, so the distinction is visible
+  before either file is opened. The numbers are the record's own — including the
+  underwritten NOI of $396,635 rather than the $412,096 trailing-twelve actual,
+  a distinction the example calls out because it is exactly what a bare
+  spreadsheet cell leaves ambiguous.
+
+  The example states no DSCR and no LTV. Both are derived, and the prose says so
+  and quotes what the multifamily pack computes (DSCR 1.1091, LTV 0.7000, cap
+  rate 0.0551, debt yield 0.0787). Those four values were evaluated through the
+  pack, not asserted, and three CLI smoke tests now pin them — an example whose
+  prose quotes numbers nothing checks is an example that rots. Projecting the
+  complete record back down to Lite reports **7 projected paths against 1,215
+  omitted**, which is the most concrete statement of the split available.
+
 ### Fixed
 - **`uwmd init` wrote structured UWX content to a `.uw.md` file.**
   `generateBlankUWFile()` emits `uw_version` and fenced `uw:section=` blocks, but
