@@ -355,18 +355,22 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-> **Blocked on acceptance, not on code.** Five RFCs are drafted and awaiting the
-> owner's decision; nothing should be implemented against them until then.
-> [0018](../rfcs/0018-document-profiles-and-deal-packages.md) is now the
-> **keystone**: both [0021](../rfcs/0021-composable-documents.md) (composition)
-> and [0022](../rfcs/0022-market-data-documents.md) (market data) depend on its
-> profile mechanism and package manifest, so accepting or rejecting it decides
-> the shape of the next two medium items.
-> [0018](../rfcs/0018-document-profiles-and-deal-packages.md) (document profiles
-> and deal packages), [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use`
-> composition — gates the last asset class), and
-> [0020](../rfcs/0020-uwx-terminology-alignment.md) (the `.uwx.md` terminology
-> correction, whose prose has already landed), plus the two new drafts above.
+> **[RFC 0018 was accepted 2026-08-13.](../rfcs/0018-document-profiles-and-deal-packages.md)**
+> Document profiles, the UW Deal Package (`.uwpkg.zip` + manifest + typed links),
+> the connector JSON context, and `lease-abstract-v1` are now approved for
+> implementation. Acceptance also settled edge-registry ownership under its own
+> §5 rule: the canonical registry belongs to the protocol spec as 0018 defines
+> it, and RFC 0015's edge list is superseded by that section rather than
+> competing with it.
+>
+> **Still blocked on acceptance, not on code.** Four RFCs remain drafted and
+> awaiting the owner's decision; nothing should be implemented against them until
+> then: [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition —
+> gates the last asset class), [0020](../rfcs/0020-uwx-terminology-alignment.md)
+> (the `.uwx.md` terminology correction, whose prose has already landed),
+> [0021](../rfcs/0021-composable-documents.md) (composition), and
+> [0022](../rfcs/0022-market-data-documents.md) (market data). The two new drafts
+> are unblocked *architecturally* by 0018 but still need their own acceptance.
 
 ### Large
 
@@ -377,9 +381,19 @@ bus factor, personal security email, and no public RFC venue.
    new package as `pdf` already does. Scoping it out is a legitimate outcome and
    should be recorded as one rather than left ambiguous.
 
+2. **Implement RFC 0018 — document profiles and deal packages.** Accepted
+   2026-08-13 and now the largest actionable item, because it is the substrate
+   for both new drafts. Delivers `lease-abstract-v1` and `source-note-v1`, the
+   `.uwpkg.zip` codec with its manifest and digests, the connector JSON context
+   view, the canonical two-layer edge registry in `protocol.ts`, and a named
+   `packages` conformance suite. The RFC's own reference-implementation section
+   lists the API surface. Note the ordering constraint: the edge registry should
+   land early, since RFC 0015 and RFC 0021 both reference it and the whole point
+   of §5 is that there is exactly one of it.
+
 ### Medium
 
-2. **Market-data reference implementation — now scoped as
+3. **Market-data reference implementation — now scoped as
    [RFC 0022](../rfcs/0022-market-data-documents.md) (draft).** Interface-only
    today, so the top two cascade steps have no worked example. Scoping found the
    real gap is *attribution*, not the missing resolver: a market-derived value
@@ -388,9 +402,10 @@ bus factor, personal security email, and no public RFC venue.
    with required `as_of`/`provider`/`basis`, pins its digest in receipts, and
    adds an explicit promotion path that keeps an accepted observation
    distinguishable from a diligenced value (`market_data_accepted`, never
-   `user_input`). Investor profiles are deliberately excluded. **Blocked on
-   accepting 0018** (profile mechanism) and on 0022 itself.
-3. **Batch workflow expansion — now scoped as
+   `user_input`). Investor profiles are deliberately excluded. 0018 is accepted,
+   so the profile mechanism is available; **blocked only on accepting 0022**
+   itself.
+4. **Batch workflow expansion — now scoped as
    [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
    filters/summaries/queue projections in `@uwmd/batch` are built; the expansion
    worth having is *composition*, not more read models. 0021 defines section
@@ -404,9 +419,10 @@ bus factor, personal security email, and no public RFC venue.
    receipts sidestep the wall RFC 0019 hit — the Tier-3 sandbox has no iteration,
    so a composite *states* aggregates and the receipt verifier recomputes them
    over named child digests using a fixed, non-extensible `fn` vocabulary. No
-   change to the calc engine. **Blocked on accepting 0018**, whose package
-   manifest and edge registry it builds on directly.
-4. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
+   change to the calc engine. 0018 is accepted, so the package manifest and
+   edge registry it builds on are available; **blocked only on accepting 0021**
+   itself.
+5. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The
    metric strip is already class-aware and pinned (T14); this is the input side.
@@ -415,7 +431,7 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-5. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
+6. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
    percent display as `Number(x) / 100`, so `5.51%` becomes
    `0.055099999999999996` rather than `0.0551`. It is deterministic, so nothing
    is *broken*, but the value flows into the RFC 8785 canonical form and
@@ -428,18 +444,18 @@ bus factor, personal security email, and no public RFC venue.
    divide). **Treat as normative:** it changes canonical digests for affected
    documents, so it needs a deliberate decision and probably a spec note, not a
    drive-by patch.
-6. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
+7. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
    of re-export barrels; excluding them the figure is ~85%. A floor over a
    padded denominator is a weaker signal than it looks.
-7. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+8. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
    transition path with no expiry, and RFC 0020 declined to set one. Worth
    settling before 1.0 rather than letting it drift into permanence.
 
 ### Ongoing
 
-8. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
+9. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
     "calling-convention" guide are still missing.
-9. **Operational launch gates** — single-maintainer bus factor, personal
+10. **Operational launch gates** — single-maintainer bus factor, personal
     security email, and no public RFC venue remain review-flagged. The Excel
     add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
     or formally risk-accepted.

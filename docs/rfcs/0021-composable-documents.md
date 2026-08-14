@@ -56,10 +56,16 @@ rules — and stops at whole documents. This RFC supplies composition *within* a
 
 ## Prerequisite
 
-**This RFC depends on RFC 0018 being accepted.** It reuses the package manifest,
-member identity, the two-layer edge registry (§5), the safe-ZIP restrictions, and
-the reference-handle rules. It does not restate them and must not be implemented
-against a private copy of them.
+**RFC 0018 was accepted on 2026-08-13, so this dependency is satisfied.** This
+RFC builds directly on it, reusing the package manifest, member identity, the
+two-layer edge registry (§5), the safe-ZIP restrictions, and the reference-handle
+rules. It does not restate any of them, and it must not be implemented against a
+private copy of them.
+
+Note that 0018's acceptance also settled registry ownership under its own §5
+rule: the canonical edge registry now belongs to the protocol spec as 0018
+defines it, and RFC 0015's edge list is superseded by that section rather than
+competing with it.
 
 ## Proposed change
 

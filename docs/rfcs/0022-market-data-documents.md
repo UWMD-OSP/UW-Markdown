@@ -52,8 +52,8 @@ give it a profile, an identity, and a digest. Market data is exactly that shape.
 
 ## Prerequisite
 
-Depends on **RFC 0018** for the document-profile mechanism, member identity, and
-package membership. A market-data document is a package member like any other.
+Depends on **RFC 0018**, accepted 2026-08-13, for the document-profile mechanism,
+member identity, and package membership. A market-data document is a package member like any other.
 
 ## Proposed change
 

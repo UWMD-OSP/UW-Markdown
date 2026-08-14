@@ -1,9 +1,10 @@
 ---
 rfc: 0018
 title: Define composable document profiles and deal packages
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-11
+accepted: 2026-08-13
 affects:
   - format-spec
   - protocol-spec
