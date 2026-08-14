@@ -21,7 +21,7 @@
     "prepublishOnly": "npm --prefix ../uwmd-core run build && npm --prefix ../.. test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
   },
   "dependencies": {
-    "@uwmd/core": "1.1.2"
+    "@uwmd/core": "1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
