@@ -95,6 +95,7 @@ const COPIES = [
   // but missing here is a dead link and VitePress fails the build.
   { from: 'docs/rfcs/0021-composable-documents.md', to: 'about/rfcs/0021-composable-documents.md' },
   { from: 'docs/rfcs/0022-market-data-documents.md', to: 'about/rfcs/0022-market-data-documents.md' },
+  { from: 'docs/rfcs/0023-numeric-determinism.md', to: 'about/rfcs/0023-numeric-determinism.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
