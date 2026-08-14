@@ -248,4 +248,87 @@ describe('uwmd CLI', () => {
     const r = runCli(['parse', resolve(__dirname, 'this-file-does-not-exist.uw.md')]);
     expect(r.status).not.toBe(0);
   });
+
+  // Default output paths were entirely untested, which is how all three of the
+  // bugs below survived the .uwx.md migration. They are user-visible filenames,
+  // so they are worth pinning.
+  describe('default output paths use .uwx.md', () => {
+    it('init writes .uwx.md, not the legacy .uw.md', () => {
+      // `generateBlankUWFile()` emits structured UWX content. Writing it to
+      // .uw.md created exactly the file the format spec forbids — and every
+      // deal a newcomer scaffolded was born legacy.
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-'));
+      try {
+        const r = spawnSync(process.execPath, [CLI_BIN, 'init'], { encoding: 'utf8', cwd: temp });
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain('new-deal.uwx.md');
+        expect(r.stdout).not.toMatch(/new-deal\.uw\.md/);
+        // The generated file must actually parse as UWX.
+        const written = readFileSync(resolve(temp, 'new-deal.uwx.md'), 'utf8');
+        expect(written).toContain('uw_version:');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('init --name derives a .uwx.md filename', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-name-'));
+      try {
+        const r = spawnSync(process.execPath, [CLI_BIN, 'init', '--name', 'Cedar Court'], {
+          encoding: 'utf8',
+          cwd: temp,
+        });
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain('cedar-court.uwx.md');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('export replaces the .uwx.md suffix rather than appending to it', () => {
+      // Regression: `replaceUWExtension` did not list .uwx.md, so a UWX input
+      // fell through to the append branch and produced deal.uwx.md.uw.json.
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-export-'));
+      try {
+        const dealPath = resolve(temp, 'deal.uwx.md');
+        writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
+        const r = runCli(['export', dealPath]);
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain('deal.uw.json');
+        expect(r.stdout).not.toContain('deal.uwx.md.uw.json');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('report replaces the .uwx.md suffix rather than appending to it', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-report-'));
+      try {
+        const dealPath = resolve(temp, 'deal.uwx.md');
+        writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
+        const r = runCli(['report', dealPath]);
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain('deal.report.html');
+        expect(r.stdout).not.toContain('deal.uwx.md.report.html');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('still resolves output paths for a legacy structured .uw.md input', () => {
+      // RFC 0017 keeps legacy structured .uw.md readable. Fixing the UWX case
+      // must not break the path it replaced.
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-legacy-'));
+      try {
+        const dealPath = resolve(temp, 'legacy.uw.md');
+        writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
+        const r = runCli(['export', dealPath]);
+        expect(r.status).toBe(0);
+        expect(r.stdout).toContain('legacy.uw.json');
+        expect(r.stdout).not.toContain('legacy.uw.md.uw.json');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+  });
 });

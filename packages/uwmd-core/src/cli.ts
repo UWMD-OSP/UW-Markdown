@@ -334,8 +334,13 @@ function cmdInit(flags: Record<string, string | boolean>): void {
     tier: (flags['tier'] as 'screener' | 'analyst' | undefined) ?? 'screener',
   });
 
+  // generateBlankUWFile() emits structured UWX content, so the default filename
+  // must be .uwx.md. Writing it as .uw.md produced a file the format spec
+  // forbids and detectUWSourceRepresentation() flags as legacy on the next load.
   const filename = (flags['output'] as string | undefined)
-    ?? (flags['name'] ? `${(flags['name'] as string).replace(/\s+/g, '-').toLowerCase()}.uw.md` : 'new-deal.uw.md');
+    ?? (flags['name']
+      ? `${(flags['name'] as string).replace(/\s+/g, '-').toLowerCase()}${UWX_EXTENSION}`
+      : `new-deal${UWX_EXTENSION}`);
 
   const outPath = resolve(filename);
   writeFileSync(outPath, content, 'utf-8');
@@ -446,9 +451,17 @@ async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
   return sourceCodec.decode(input);
 }
 
+/**
+ * Swap a known UW source extension for `extension`, appending if none matches.
+ *
+ * `.uwx.md` must be in this list. Without it a UWX input fell through to the
+ * append branch, so `uwmd export deal.uwx.md` wrote `deal.uwx.md.uw.json`
+ * rather than `deal.uw.json`. (`.uw.md` does not match a `.uwx.md` filename —
+ * the suffixes genuinely differ — so it was silently a no-op, not a mis-match.)
+ */
 function replaceUWExtension(file: string, extension: string): string {
   const lower = file.toLowerCase();
-  for (const suffix of ['.uw.csv.zip', '.uw.md', '.uw.json', '.uw.xml']) {
+  for (const suffix of [UWX_EXTENSION, '.uw.csv.zip', '.uw.md', '.uw.json', '.uw.xml']) {
     if (lower.endsWith(suffix)) return `${file.slice(0, -suffix.length)}${extension}`;
   }
   return `${file}${extension}`;
@@ -610,10 +623,12 @@ function cmdReport(file: string, flags: Record<string, string | boolean>): void 
     preparedBy: flags['prepared-by'] as string | undefined,
   });
 
-  // Default output path: swap the .uw.md suffix for .report.html.
+  // Default output path: swap the source extension for .report.html. Routed
+  // through replaceUWExtension so every UW source extension is handled in one
+  // place — the inline .uw.md check this replaced missed .uwx.md entirely.
   const outPath = flags['output']
     ? resolve(flags['output'] as string)
-    : resolve(file.endsWith('.uw.md') ? `${file.slice(0, -'.uw.md'.length)}.report.html` : `${file}.report.html`);
+    : resolve(replaceUWExtension(file, '.report.html'));
 
   if (flags['stdout']) {
     process.stdout.write(result.html);

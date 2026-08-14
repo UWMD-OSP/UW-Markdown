@@ -8,6 +8,26 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+- **`uwmd init` wrote structured UWX content to a `.uw.md` file.**
+  `generateBlankUWFile()` emits `uw_version` and fenced `uw:section=` blocks, but
+  the default output filename was `new-deal.uw.md` (or `<name>.uw.md`), so the
+  CLI produced exactly the file the format spec forbids and
+  `detectUWSourceRepresentation()` flags as legacy on the next load — every deal
+  a newcomer scaffolded was born legacy. Now `.uwx.md`.
+- **`uwmd export` and `uwmd report` appended to a `.uwx.md` name instead of
+  replacing it.** `replaceUWExtension()` did not list `.uwx.md`, so a UWX input
+  fell through to the append branch: `uwmd export deal.uwx.md` wrote
+  `deal.uwx.md.uw.json` rather than `deal.uw.json`, and `report` likewise emitted
+  `deal.uwx.md.report.html`. (`.uw.md` never matched a `.uwx.md` filename — the
+  suffixes genuinely differ — so it failed silently rather than mis-matching.)
+  `report` now routes through the same helper instead of its own inline check,
+  so every UW source extension is handled in one place. Legacy `.uw.md` inputs
+  resolve exactly as before.
+- These three had **no test coverage at all**, which is how they survived the
+  `.uwx.md` migration. Five CLI smoke tests now pin the default output paths,
+  including a regression case for legacy `.uw.md` input.
+
 ### Changed
 - **The format spec now describes `.uwx.md`, the extension it has specified
   since RFC 0017.** `spec/UW_FORMAT_SPEC_v1.md` still called itself the `.uw.md`
