@@ -8,6 +8,26 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Governance
+- **RFC 0018 accepted (2026-08-13)** — document profiles and deal packages.
+  Approves `lease-abstract-v1` and `source-note-v1`, the UW Deal Package
+  (`.uwpkg.zip` with a manifest carrying per-member `sha256` and
+  `semantic_digest`), the source-file-free connector JSON context view, and the
+  canonical two-layer edge registry. Both of its previously blocking questions
+  were resolved in the text before acceptance; the remaining open items (legal
+  vocabulary, amendment consolidation, package signing, OCR profile) are
+  explicitly deferred rather than blocking. No code has shipped against it yet.
+
+  Acceptance settled edge-registry ownership under 0018's own §5 rule: **whichever
+  of 0018/0015 was accepted first owns the registry**, so the canonical
+  entity-plus-member edge vocabulary now belongs to the protocol spec as 0018
+  defines it, and RFC 0015's edge list is superseded by that section. A later
+  acceptance of 0015 amends that section rather than starting a second table —
+  which was the entire point of writing §5.
+
+  This unblocks RFC 0021 (composition) and RFC 0022 (market data)
+  architecturally; both still require their own acceptance.
+
 ### Added
 - **Module loader hardening, and a conformance suite that keeps it honest (T13).**
   `modules.ts` validated `calculations` and `validations` and stopped —
