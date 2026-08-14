@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-008"
+  ],
+  "why": "Two members sharing an id make lookup ambiguous."
+}

@@ -8,6 +8,53 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+- **RFC 0018 implemented — document profiles and deal packages.** The edge
+  registry landed first, per the ordering constraint: `BUILTIN_EDGE_TYPES` in
+  `protocol.ts` is the single canonical two-layer vocabulary, with `guarantees`
+  and `supports` declared valid on both layers rather than duplicated. Unknown
+  types are preserved; a *known* type used on the wrong layer is refused,
+  because that is a claim the registry says cannot be true.
+
+  Three document profiles are registered, and an unknown profile is preserved
+  rather than reinterpreted as a deal.
+
+  **Lease abstracts** (`lease-abstract.ts`) enforce the two rules the profile
+  exists for: every asserted term carries a `source_ref` with a locator, and a
+  null term must state why it is null. `projectLeaseAbstractToRentRoll` refuses
+  to project anything but an executed lease, never computes a figure it was not
+  given, and separates ambiguous conflicts from plain omissions.
+
+  **Deal packages** (`deal-package.ts`, `-zip.ts`, `-context.ts`) implement
+  manifest validation, a deterministic `.uwpkg.zip` codec, three-state
+  verification keeping `unverifiable` distinct from `failed`, and the JSON
+  context view whose central rule is that source-evidence bytes are never
+  inlined — only described by identity and digest.
+  `projectPackageLinksToEntityEdges` synthesizes provenance naming the package
+  and member ids; there is deliberately no inverse.
+
+  New CLI: `uwmd lease validate|project`,
+  `uwmd package create|verify|list|to-context|validate-context|edges`.
+  New schema: `uw-deal-package-manifest.schema.json`.
+  New conformance suite: `conformance/packages/` (18 assertions).
+
+### Fixed
+- **`sha256TextHex` could not correctly digest binary content.** It encodes its
+  argument with `TextEncoder`, so hashing bytes round-tripped through a latin1
+  string re-encoded every byte above 0x7F as multi-byte UTF-8 and digested
+  different bytes than the ones on disk. Harmless while everything hashed was
+  text; a real defect the moment a package carries a PDF. Added
+  `sha256BytesHex`, and a conformance invariant asserts a binary member survives
+  a package round trip byte for byte.
+
+### Changed
+- **Safe-ZIP inspection extracted to `zip-safety.ts`.** RFC 0018 §3 requires
+  deal packages to apply the restrictions the CSV bundle already established;
+  reimplementing them would have produced two subtly different copies of
+  security-relevant code. Callers map a semantic violation to their own code, so
+  the CSV bundle's `CSV_*` codes are reproduced exactly and its tests pass
+  unchanged.
+
 ### Governance
 - **RFC 0021 and RFC 0022 accepted (2026-08-13).** With 0018, the arc
   0018 → 0021 → 0022 is approved end to end.

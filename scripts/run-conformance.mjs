@@ -51,6 +51,14 @@ import {
   createReplayProvider,
   parseAgentCassette,
   loadModuleManifest,
+  validateUWDealPackageManifest,
+  encodeUWDealPackageZip,
+  decodeUWDealPackageZip,
+  verifyUWDealPackage,
+  projectUWDealPackageContext,
+  validateUWDealPackageContext,
+  projectPackageLinksToEntityEdges,
+  sha256BytesHex,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -65,7 +73,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,modules').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,modules,packages').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1236,6 +1244,137 @@ async function runModules() {
   }
 }
 
+
+// ─── Packages suite (RFC 0018) ───────────────────────────────────────────────
+//
+// Manifest fixtures checked against the validator AND the normative schema, on
+// the same reasoning as the modules suite: `@uwmd/core` cannot carry a JSON
+// Schema validator, so the hand-written one needs an external referee.
+//
+// Parity here is asserted in ONE direction. The schema is deliberately more
+// permissive — it cannot express dangling-link or wrong-layer rules — so the
+// invariant is: anything the validator accepts, the schema must also accept.
+
+const PACKAGES_DIR = join(CONFORMANCE_DIR, 'packages');
+
+async function runPackages() {
+  if (!existsSync(PACKAGES_DIR)) {
+    record('packages', '(none)', 'pass', 'no package fixtures');
+    return;
+  }
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
+  const schema = JSON.parse(
+    readFileSync(join(ROOT, 'spec', 'schemas', 'uw-deal-package-manifest.schema.json'), 'utf8'),
+  );
+  const schemaCheck = new Ajv2020({ strict: false }).compile(schema);
+
+  const read = (kind) => {
+    const dir = join(PACKAGES_DIR, kind);
+    if (!existsSync(dir)) return [];
+    return readdirSync(dir)
+      .filter((f) => f.endsWith('.manifest.json'))
+      .sort()
+      .map((f) => {
+        const id = basename(f, '.manifest.json');
+        const expectedPath = join(dir, `${id}.expected.json`);
+        return {
+          id,
+          manifest: JSON.parse(readFileSync(join(dir, f), 'utf8')),
+          expected: existsSync(expectedPath) ? JSON.parse(readFileSync(expectedPath, 'utf8')) : null,
+        };
+      });
+  };
+
+  for (const { id, manifest } of read('accept')) {
+    const errors = validateUWDealPackageManifest(manifest);
+    if (errors.length === 0) {
+      record('packages', `accept/${id}`, 'pass');
+    } else {
+      record('packages', `accept/${id}`, 'fail', `expected acceptance, got ${errors.map((e) => e.code).join(', ')}`);
+    }
+    if (errors.length === 0 && !schemaCheck(manifest)) {
+      record('packages', `accept/${id} [schema]`, 'fail',
+        (schemaCheck.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join('; '));
+    } else {
+      record('packages', `accept/${id} [schema]`, 'pass');
+    }
+  }
+
+  for (const { id, manifest, expected } of read('reject')) {
+    if (!expected) { record('packages', `reject/${id}`, 'fail', 'missing .expected.json'); continue; }
+    const errors = validateUWDealPackageManifest(manifest);
+    if (errors.length === 0) {
+      record('packages', `reject/${id}`, 'fail', 'expected refusal, manifest validated');
+      continue;
+    }
+    const emitted = new Set(errors.map((e) => e.code));
+    const missing = expected.expected_codes.filter((c) => !emitted.has(c));
+    if (missing.length > 0) {
+      record('packages', `reject/${id}`, 'fail',
+        `refused without ${missing.join(', ')} (got ${[...emitted].join(', ')})`);
+    } else {
+      record('packages', `reject/${id}`, 'pass', expected.expected_codes.join(', '));
+    }
+  }
+
+  // Invariants, asserted without baselines so they bind any implementation.
+  const encoder = new TextEncoder();
+  const dealText = '---\nuw_version: "1.1"\ndeal_id: rt\n---\n';
+  const pdf = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0xff, 0xfe, 0x00, 0x80]);
+  try {
+    const manifest = {
+      package_version: '1.0',
+      package_id: 'pkg:roundtrip:1',
+      members: [
+        { id: 'deal:rt', path: 'records/rt.uwx.md', role: 'underwriting',
+          media_type: 'text/vnd.uwmd.extended+markdown',
+          sha256: `sha256:${await sha256BytesHex(encoder.encode(dealText))}` },
+        { id: 'src:rt', path: 'sources/rt.pdf', role: 'source_evidence',
+          media_type: 'application/pdf',
+          sha256: `sha256:${await sha256BytesHex(pdf)}` },
+      ],
+      links: [{ type: 'abstracts', from: 'deal:rt', to: 'src:rt' }],
+    };
+    const payloads = { 'records/rt.uwx.md': encoder.encode(dealText), 'sources/rt.pdf': pdf };
+
+    const a = await encodeUWDealPackageZip({ manifest, payloads });
+    const b = await encodeUWDealPackageZip({ manifest, payloads });
+    const identical = a.length === b.length && a.every((v, i) => v === b[i]);
+    record('packages', 'invariant/deterministic-encoding', identical ? 'pass' : 'fail',
+      identical ? undefined : 'two encodings of one package differ');
+
+    const decoded = decodeUWDealPackageZip(a);
+    const back = decoded.payloads['sources/rt.pdf'];
+    const binaryOk = back.length === pdf.length && back.every((v, i) => v === pdf[i]);
+    record('packages', 'invariant/binary-roundtrip', binaryOk ? 'pass' : 'fail',
+      binaryOk ? 'high bytes preserved' : 'binary member corrupted');
+
+    const verified = await verifyUWDealPackage(decoded);
+    record('packages', 'invariant/verify-clean', verified.status === 'verified' ? 'pass' : 'fail', verified.status);
+
+    decoded.payloads['records/rt.uwx.md'] = encoder.encode('tampered\n');
+    const tampered = await verifyUWDealPackage(decoded);
+    record('packages', 'invariant/verify-tampered', tampered.status === 'failed' ? 'pass' : 'fail', tampered.status);
+
+    const ctx = projectUWDealPackageContext(manifest, {
+      contents: { 'deal:rt': dealText, 'src:rt': 'MUST NOT APPEAR' },
+    });
+    const clean = !JSON.stringify(ctx).includes('MUST NOT APPEAR') && ctx.contents['src:rt'] === undefined;
+    record('packages', 'invariant/context-omits-source-bytes', clean ? 'pass' : 'fail',
+      clean ? 'source evidence described, never embedded' : 'source bytes leaked into the context view');
+
+    const ctxErrors = validateUWDealPackageContext(ctx);
+    record('packages', 'invariant/context-valid', ctxErrors.length === 0 ? 'pass' : 'fail',
+      ctxErrors.map((e) => e.code).join(', '));
+
+    const edges = projectPackageLinksToEntityEdges(manifest);
+    record('packages', 'invariant/no-member-only-projection', edges.length === 0 ? 'pass' : 'fail',
+      edges.length === 0 ? 'abstracts correctly has no entity-layer meaning' : 'member-only type projected');
+  } catch (e) {
+    record('packages', 'invariant/(setup)', 'fail', e.message);
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -1248,6 +1387,7 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'modules': async () => { await runModules(); },
+  'packages': async () => { await runPackages(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

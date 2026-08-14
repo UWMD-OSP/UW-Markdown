@@ -36,11 +36,12 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + modules
+npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + modules + packages
 npm run conformance -- --tier=1,2,3,4,lite,receipts,modules
 npm run conformance -- --tier=lite         # the UW Lite suite alone
 npm run conformance -- --tier=receipts     # the receipts suite alone
 npm run conformance -- --tier=modules      # the module manifest suite alone
+npm run conformance -- --tier=packages     # the deal package suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -202,6 +203,26 @@ loader accepts, schema refuses — is always a bug and has no opt-out.
 Registry-level behavior (dependency order, version ranges, duplicate module ids)
 lives in `packages/uwmd-core/src/modules.test.ts` instead, since a fixture file
 holds one manifest.
+
+### Packages — manifests, archives, and the context boundary
+
+`conformance/packages/` covers RFC 0018 deal packages. Manifest fixtures assert
+validator verdicts and `PKG-` codes; a set of baseline-free invariants assert
+deterministic encoding, binary round-trip (a member with bytes above 0x7F must
+survive exactly — packages carry PDFs), three-state verification, and the rule
+the JSON context view exists for: **source-evidence bytes are never inlined**,
+even when a caller passes them in explicitly.
+
+Schema parity here is asserted in **one direction only** — anything the
+validator accepts, the normative schema must accept. Full parity is impossible:
+JSON Schema cannot express the dangling-link check (it needs to cross-reference
+`members` from `links`) or the wrong-layer edge rule (it needs the edge
+registry). Claiming two-way parity would be claiming a guarantee that does not
+exist. The `modules` suite *can* achieve two-way parity, and does.
+
+Archive-level negatives (traversal, symlinks, encryption, ZIP64, ratio bombs)
+are not duplicated here: both this codec and the CSV bundle route through
+`zip-safety.ts`, so testing them twice would test one implementation twice.
 
 ## What CI runs
 

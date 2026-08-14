@@ -25,6 +25,16 @@ import type { IntegrityResult } from './integrity.js';
 import type { EditContext } from './editor.js';
 import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
+import {
+  cmdLeaseValidate,
+  cmdLeaseProject,
+  cmdPackageCreate,
+  cmdPackageVerify,
+  cmdPackageList,
+  cmdPackageToContext,
+  cmdPackageContextValidate,
+  cmdPackageEdges,
+} from './cli-packages.js';
 import { evaluateCalc } from './calc/index.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
@@ -1153,6 +1163,49 @@ switch (command) {
     cmdRefine(positional[0], flags);
     break;
 
+  case 'lease': {
+    const sub = positional[0];
+    if (sub === 'validate') {
+      if (!positional[1]) { console.error('Usage: uwmd lease validate <abstract.json> [--json]'); process.exit(1); }
+      cmdLeaseValidate(positional[1], flags);
+    } else if (sub === 'project') {
+      if (!positional[1]) { console.error('Usage: uwmd lease project <abstract.json> [--compact]'); process.exit(1); }
+      cmdLeaseProject(positional[1], flags);
+    } else {
+      console.error('Usage: uwmd lease <validate|project> <abstract.json>');
+      process.exit(1);
+    }
+    break;
+  }
+
+  case 'package': {
+    const sub = positional[0];
+    const target = positional[1];
+    if (sub === 'create') {
+      if (!target) { console.error('Usage: uwmd package create <manifest.json> [--output <file.uwpkg.zip>]'); process.exit(1); }
+      await cmdPackageCreate(target, flags);
+    } else if (sub === 'verify') {
+      if (!target) { console.error('Usage: uwmd package verify <file.uwpkg.zip> [--json]'); process.exit(1); }
+      await cmdPackageVerify(target, flags);
+    } else if (sub === 'list') {
+      if (!target) { console.error('Usage: uwmd package list <file.uwpkg.zip> [--json]'); process.exit(1); }
+      cmdPackageList(target, flags);
+    } else if (sub === 'to-context') {
+      if (!target) { console.error('Usage: uwmd package to-context <file.uwpkg.zip> [--output <file.json>] [--stdout]'); process.exit(1); }
+      cmdPackageToContext(target, flags);
+    } else if (sub === 'validate-context') {
+      if (!target) { console.error('Usage: uwmd package validate-context <file.uwpkg.context.json> [--json]'); process.exit(1); }
+      cmdPackageContextValidate(target, flags);
+    } else if (sub === 'edges') {
+      if (!target) { console.error('Usage: uwmd package edges <file.uwpkg.zip>'); process.exit(1); }
+      cmdPackageEdges(target);
+    } else {
+      console.error('Usage: uwmd package <create|verify|list|to-context|validate-context|edges> ...');
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'modules': {
     const sub = positional[0];
     const files = positional.slice(1);
@@ -1208,6 +1261,8 @@ Commands:
   refine   <file>              Rank gaps by value-of-information for stated calc targets
   receipt  issue|verify         Issue or verify a detached verification receipt (RFC 0016)
   modules  validate|list        Validate module manifest files, or list the registry they form
+  lease    validate|project     Validate a lease abstract, or project it to a rent-roll row (RFC 0018)
+  package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
   layers                       List Bancroft agent layers
 
 Options:

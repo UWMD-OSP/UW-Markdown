@@ -1,0 +1,36 @@
+{
+  "package_version": "1.0",
+  "package_id": "pkg:conformance:1",
+  "members": [
+    {
+      "id": "deal:d",
+      "path": "records/deal.uwx.md",
+      "role": "underwriting",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:9ffb37114a0b18f710cff1028e65dc414fe71b7fa7d20e90ad570da7b1395b94",
+      "document_profile": "deal-underwriting-v1"
+    },
+    {
+      "id": "note:n",
+      "path": "notes/note.uwx.md",
+      "role": "source_note",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:2e8322a749ca433dea9589f9b5097c2f04ea4841de17cb975713242fa84f24cd",
+      "document_profile": "source-note-v1"
+    },
+    {
+      "id": "src:pdf",
+      "path": "sources/lease.pdf",
+      "role": "source_evidence",
+      "media_type": "application/pdf",
+      "sha256": "sha256:83d40e60c499a02179e970db4fa0caa836a109dfbfcdbae0298f2652a75c2954"
+    }
+  ],
+  "links": [
+    {
+      "type": "owns",
+      "from": "note:n",
+      "to": "deal:d"
+    }
+  ]
+}

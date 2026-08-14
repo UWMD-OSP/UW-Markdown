@@ -241,6 +241,104 @@ describe('uwmd CLI', () => {
     });
   });
 
+  describe('deal packages (RFC 0018)', () => {
+    const buildPackage = (temp: string) => {
+      const { createHash } = require('node:crypto') as typeof import('node:crypto');
+      const { mkdirSync } = require('node:fs') as typeof import('node:fs');
+      mkdirSync(resolve(temp, 'records'), { recursive: true });
+      mkdirSync(resolve(temp, 'sources'), { recursive: true });
+      const dealText = readFileSync(FIXTURE, 'utf8');
+      writeFileSync(resolve(temp, 'records', 'deal.uwx.md'), dealText, 'utf8');
+      // Deliberately binary, with bytes above 0x7F.
+      const pdf = Buffer.from([0x25, 0x50, 0x44, 0x46, 0xff, 0xfe, 0x00, 0x80]);
+      writeFileSync(resolve(temp, 'sources', 'lease.pdf'), pdf);
+      const sha = (b: Buffer) => `sha256:${createHash('sha256').update(b).digest('hex')}`;
+      const manifest = {
+        package_version: '1.0',
+        package_id: 'pkg:smoke:1',
+        members: [
+          {
+            id: 'deal:smoke', path: 'records/deal.uwx.md', role: 'underwriting',
+            media_type: 'text/vnd.uwmd.extended+markdown',
+            sha256: sha(Buffer.from(dealText, 'utf8')),
+            document_profile: 'deal-underwriting-v1',
+          },
+          {
+            id: 'source:lease', path: 'sources/lease.pdf', role: 'source_evidence',
+            media_type: 'application/pdf', sha256: sha(pdf),
+          },
+        ],
+        links: [{ type: 'guarantees', from: 'source:lease', to: 'deal:smoke' }],
+      };
+      const manifestPath = resolve(temp, 'manifest.json');
+      writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+      const zipPath = resolve(temp, 'smoke.uwpkg.zip');
+      expect(runCli(['package', 'create', manifestPath, '--output', zipPath]).status).toBe(0);
+      return { manifestPath, zipPath };
+    };
+
+    it('creates, lists, and verifies a package', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
+      try {
+        const { zipPath } = buildPackage(temp);
+        const list = runCli(['package', 'list', zipPath, '--json']);
+        expect(list.status).toBe(0);
+        expect(JSON.parse(list.stdout).members).toHaveLength(2);
+
+        const verify = runCli(['package', 'verify', zipPath, '--json']);
+        expect(verify.status).toBe(0);
+        expect(JSON.parse(verify.stdout).status).toBe('verified');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    // The rule the context view exists to enforce.
+    it('never inlines source-evidence bytes into a context view', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
+      try {
+        const { zipPath } = buildPackage(temp);
+        const ctx = runCli(['package', 'to-context', zipPath, '--stdout']);
+        expect(ctx.status).toBe(0);
+        const parsed = JSON.parse(ctx.stdout);
+        expect(Object.keys(parsed.contents)).toEqual(['deal:smoke']);
+        expect(parsed.source_evidence['source:lease']).toEqual({ status: 'not_transferred' });
+        expect(parsed.incomplete_evidence_context).toBe(true);
+        // Belt and braces: the PDF signature must not appear anywhere.
+        expect(ctx.stdout).not.toContain('%PDF');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('projects only entity-layer links, with synthesized provenance', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
+      try {
+        const { zipPath } = buildPackage(temp);
+        const edges = JSON.parse(runCli(['package', 'edges', zipPath]).stdout);
+        expect(edges).toHaveLength(1);
+        expect(edges[0].type).toBe('guarantees');
+        expect(edges[0].provenance[0].source).toBe('pkg:smoke:1');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it('exits non-zero when a member no longer matches the manifest', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
+      try {
+        const { manifestPath, zipPath } = buildPackage(temp);
+        // Change the payload after the manifest was written: encoding must refuse.
+        writeFileSync(resolve(temp, 'records', 'deal.uwx.md'), 'tampered\n', 'utf8');
+        const rebuilt = runCli(['package', 'create', manifestPath, '--output', zipPath]);
+        expect(rebuilt.status).toBe(1);
+        expect(rebuilt.stderr).toContain('digest does not match');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+  });
+
   it('validates the bundled fixture without errors', () => {
     const r = runCli(['validate', FIXTURE]);
     expect(r.status).toBe(0);

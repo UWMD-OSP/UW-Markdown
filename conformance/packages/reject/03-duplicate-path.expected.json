@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PKG-010"
+  ],
+  "why": "Two members claiming one archive entry."
+}
