@@ -2,8 +2,8 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 at `ea4ec00`+ (full pass: build green across all
-workspaces; **752 tests** — 626 core, 69 excel, 50 cli, 4 batch, 3 report — plus
+**Last verified:** 2026-08-13 at `4b69903`+ (full pass: build green across all
+workspaces; **755 tests** — 626 core, 69 excel, 53 cli, 4 batch, 3 report — plus
 **63 web-editor**; **129 conformance** assertions including the Tier-4 replay and
 module suites; 10/10 schemas valid; Biome clean over 304 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
