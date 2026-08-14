@@ -363,14 +363,22 @@ bus factor, personal security email, and no public RFC venue.
 > it, and RFC 0015's edge list is superseded by that section rather than
 > competing with it.
 >
-> **Still blocked on acceptance, not on code.** Four RFCs remain drafted and
-> awaiting the owner's decision; nothing should be implemented against them until
-> then: [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition —
-> gates the last asset class), [0020](../rfcs/0020-uwx-terminology-alignment.md)
-> (the `.uwx.md` terminology correction, whose prose has already landed),
-> [0021](../rfcs/0021-composable-documents.md) (composition), and
-> [0022](../rfcs/0022-market-data-documents.md) (market data). The two new drafts
-> are unblocked *architecturally* by 0018 but still need their own acceptance.
+> **[RFC 0021](../rfcs/0021-composable-documents.md) (composition) and
+> [RFC 0022](../rfcs/0022-market-data-documents.md) (market data) were also
+> accepted 2026-08-13**, so the three-RFC arc 0018 → 0021 → 0022 is now approved
+> end to end and the next two medium roadmap items are implementable.
+>
+> Both amend the receipt format that RFC 0016 owns — 0021 adds rollup
+> verification, 0022 adds `inputs_provenance`. Each records the same ownership
+> rule 0018 §5 established for the edge registry: the amendments live in
+> `UW_RECEIPT_v1.md` and `uw-receipt.schema.json`, whichever implements first
+> establishes the extension section, and **`receipt_version` bumps once** to
+> cover both.
+>
+> **Still blocked on acceptance, not on code.** Two RFCs remain drafted:
+> [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition — gates
+> the last asset class) and [0020](../rfcs/0020-uwx-terminology-alignment.md)
+> (the `.uwx.md` terminology correction, whose prose has already landed).
 
 ### Large
 
@@ -402,9 +410,8 @@ bus factor, personal security email, and no public RFC venue.
    with required `as_of`/`provider`/`basis`, pins its digest in receipts, and
    adds an explicit promotion path that keeps an accepted observation
    distinguishable from a diligenced value (`market_data_accepted`, never
-   `user_input`). Investor profiles are deliberately excluded. 0018 is accepted,
-   so the profile mechanism is available; **blocked only on accepting 0022**
-   itself.
+   `user_input`). Investor profiles are deliberately excluded. **Accepted 2026-08-13 and now
+   implementable** — 0018 supplies the profile mechanism.
 4. **Batch workflow expansion — now scoped as
    [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
    filters/summaries/queue projections in `@uwmd/batch` are built; the expansion
@@ -419,9 +426,8 @@ bus factor, personal security email, and no public RFC venue.
    receipts sidestep the wall RFC 0019 hit — the Tier-3 sandbox has no iteration,
    so a composite *states* aggregates and the receipt verifier recomputes them
    over named child digests using a fixed, non-extensible `fn` vocabulary. No
-   change to the calc engine. 0018 is accepted, so the package manifest and
-   edge registry it builds on are available; **blocked only on accepting 0021**
-   itself.
+   change to the calc engine. **Accepted 2026-08-13 and now
+   implementable** — 0018 supplies the package manifest and edge registry.
 5. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The

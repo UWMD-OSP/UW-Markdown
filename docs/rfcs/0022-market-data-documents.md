@@ -1,9 +1,10 @@
 ---
 rfc: 0022
 title: Market data as an attributable UW document
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-13
+accepted: 2026-08-13
 depends_on:
   - 0018
 affects:
@@ -153,6 +154,15 @@ follow deterministically from these inputs, and these particular observations
 were the ones used. It does **not** mean the observations are accurate, current,
 representative, or that the provider is competent.
 
+**Shared receipt surface.** This section amends the receipt format defined by
+RFC 0016, and so does [RFC 0021 §6](./0021-composable-documents.md) (which adds
+rollup verification). The two amendments are additive and do not collide on field
+names, but per the discipline RFC 0018 §5 established for the edge registry:
+**RFC 0016 owns the receipt format**, both amendments live in `UW_RECEIPT_v1.md`
+and `uw-receipt.schema.json`, and whichever is implemented first establishes the
+extension section while the second amends it rather than forking. `receipt_version`
+is bumped **once** to cover both.
+
 ### 4. Promotion to an input of record
 
 An analyst who accepts a market observation as the underwritten value promotes
@@ -269,6 +279,9 @@ A new named `market-data` suite:
 5. **Fold in investor profiles.** See §5.
 
 ## Unresolved questions
+
+None of the following blocks acceptance; each is deferred to implementation or
+to a later RFC.
 
 - Whether `basis` should become structured (sample size, method, geography
   radius) rather than free text. Free text is honest about what providers
