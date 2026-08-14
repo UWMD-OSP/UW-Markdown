@@ -62,7 +62,7 @@ member identity, and package membership. A market-data document is a package mem
 A market-data document is a UW document whose profile is `market-data-v1`. It
 carries observations, not conclusions.
 
-```markdown
+````markdown
 ---
 uw_version: "1.1"
 document_profile: market-data-v1
@@ -87,7 +87,7 @@ asset_class: multifamily
   ]
 }
 ```
-```
+````
 
 Rules:
 

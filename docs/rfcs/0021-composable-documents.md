@@ -109,7 +109,7 @@ deal. A distinct extension means detection never guesses — the project has
 already paid once for extension ambiguity, and the legacy `.uw.md` sniffing
 introduced by RFC 0017 still has no expiry.
 
-```markdown
+````markdown
 ---
 uwpart_version: "1.0"
 part_id: lease-suite-210
@@ -120,7 +120,7 @@ collection_member: true
 ```json uw:section=rent_roll confidence=high source=document/lease ts=... v=1
 { "unit_id": "210", "tenant": "Anchor Tenant LLC", "base_rent_annual": 184800 }
 ```
-```
+````
 
 Rules:
 
