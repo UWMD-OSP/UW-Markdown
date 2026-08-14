@@ -355,13 +355,18 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-> **Blocked on acceptance, not on code.** Three RFCs are drafted and awaiting the
-> owner's decision; nothing should be implemented against them until then:
+> **Blocked on acceptance, not on code.** Five RFCs are drafted and awaiting the
+> owner's decision; nothing should be implemented against them until then.
+> [0018](../rfcs/0018-document-profiles-and-deal-packages.md) is now the
+> **keystone**: both [0021](../rfcs/0021-composable-documents.md) (composition)
+> and [0022](../rfcs/0022-market-data-documents.md) (market data) depend on its
+> profile mechanism and package manifest, so accepting or rejecting it decides
+> the shape of the next two medium items.
 > [0018](../rfcs/0018-document-profiles-and-deal-packages.md) (document profiles
 > and deal packages), [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use`
 > composition — gates the last asset class), and
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) (the `.uwx.md` terminology
-> correction, whose prose has already landed).
+> correction, whose prose has already landed), plus the two new drafts above.
 
 ### Large
 
@@ -374,11 +379,33 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Medium
 
-2. **Market-data / investor-profile reference implementation.** Interface-only
-   today, so the top two cascade steps have no worked example.
-3. **Batch workflow expansion.** Deterministic filters, summaries, and
-   underwriting-queue projections over the collection index. `.uwx.md` remains
-   the canonical source; shared storage semantics only through a future RFC.
+2. **Market-data reference implementation — now scoped as
+   [RFC 0022](../rfcs/0022-market-data-documents.md) (draft).** Interface-only
+   today, so the top two cascade steps have no worked example. Scoping found the
+   real gap is *attribution*, not the missing resolver: a market-derived value
+   records no trace of which observation set produced it, so a receipt over that
+   deal cannot be reproduced. 0022 defines a `market-data-v1` document profile
+   with required `as_of`/`provider`/`basis`, pins its digest in receipts, and
+   adds an explicit promotion path that keeps an accepted observation
+   distinguishable from a diligenced value (`market_data_accepted`, never
+   `user_input`). Investor profiles are deliberately excluded. **Blocked on
+   accepting 0018** (profile mechanism) and on 0022 itself.
+3. **Batch workflow expansion — now scoped as
+   [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
+   filters/summaries/queue projections in `@uwmd/batch` are built; the expansion
+   worth having is *composition*, not more read models. 0021 defines section
+   externalization into `.uwpart.md` fragments, recursive composites
+   (portfolio → deals → rent rolls), shared assumptions inherited along the
+   composition DAG, and rollup receipts.
+
+   Two things make it tractable. First, one invariant carries the design:
+   **an externalized record and its inline equivalent have the same semantic
+   digest**, so composition is packaging rather than modelling. Second, rollup
+   receipts sidestep the wall RFC 0019 hit — the Tier-3 sandbox has no iteration,
+   so a composite *states* aggregates and the receipt verifier recomputes them
+   over named child digests using a fixed, non-extensible `fn` vocabulary. No
+   change to the calc engine. **Blocked on accepting 0018**, whose package
+   manifest and edge registry it builds on directly.
 4. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The
