@@ -18,6 +18,17 @@ const LITE_FIXTURE = resolve(
   'fixtures',
   '01-minimal.uw.md',
 );
+// The shipped UW Lite worked example (T11). Distinct from LITE_FIXTURE: this one
+// is user-facing documentation, and its prose quotes derived metrics. An example
+// nothing exercises is an example that rots.
+const LITE_EXAMPLE = resolve(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  'examples',
+  'Parkview-Apts-Glendale-AZ.uw.md',
+);
 
 const ASSET_CLASS_FIXTURES = [
   ['multifamily', 'Parkview-Apts-Glendale-AZ.uwx.md'],
@@ -95,6 +106,58 @@ describe('uwmd CLI', () => {
     expect(r.stdout).toContain('```json uw:section=valuation');
     expect(r.stdout).toContain('"purchase_price": 12500000');
     expect(r.stdout).toContain('```json uw:section=x_uw_lite_source');
+  });
+
+  describe('the shipped UW Lite example', () => {
+    it('validates clean', () => {
+      const r = runCli(['validate', LITE_EXAMPLE, '--json']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout)).toMatchObject({
+        representation: 'uw-lite-markdown',
+        overall_status: 'clean',
+        issues: [],
+      });
+    });
+
+    it('carries the same inputs as its .uwx.md twin', () => {
+      const r = runCli(['convert', LITE_EXAMPLE, '--to', 'uwx', '--stdout']);
+      expect(r.status).toBe(0);
+      expect(r.stdout).toContain('"purchase_price": 7200000');
+      expect(r.stdout).toContain('"net_operating_income": 396635');
+      expect(r.stdout).toContain('"loan_amount": 5040000');
+      expect(r.stdout).toContain('"annual_debt_service": 357612');
+      // The complete Lite source is retained, not discarded on compile.
+      expect(r.stdout).toContain('```json uw:section=x_uw_lite_source');
+    });
+
+    // The example's prose states these four numbers. They are derived, never
+    // stored, so this pins the claim to what the pack actually computes.
+    it('derives the metrics its prose quotes', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-lite-example-'));
+      try {
+        const compiled = resolve(temp, 'compiled.uwx.md');
+        expect(
+          runCli(['convert', LITE_EXAMPLE, '--to', 'uwx', '--output', compiled]).status,
+        ).toBe(0);
+
+        const cases: Array<[string, string]> = [
+          ['noi_model.net_operating_income / debt_structure.annual_debt_service', '1.1091'],
+          ['debt_structure.loan_amount / valuation.purchase_price', '0.7000'],
+          ['noi_model.net_operating_income / valuation.purchase_price', '0.0551'],
+          ['noi_model.net_operating_income / debt_structure.loan_amount', '0.0787'],
+        ];
+
+        for (const [formula, expected] of cases) {
+          const calcPath = resolve(temp, 'calc.json');
+          writeFileSync(calcPath, JSON.stringify({ formula }));
+          const r = runCli(['calc', compiled, calcPath]);
+          expect(r.status).toBe(0);
+          expect(r.stdout).toContain(expected);
+        }
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
   });
 
   it('writes an explicit omission report for lossy UWX-to-Lite projection', () => {

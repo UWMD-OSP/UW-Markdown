@@ -2,8 +2,8 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 at `30bfe60`+ (full pass: build green across all
-workspaces; **737 tests** — 615 core, 69 excel, 46 cli, 4 batch, 3 report — plus
+**Last verified:** 2026-08-13 at `ea4ec00`+ (full pass: build green across all
+workspaces; **740 tests** — 615 core, 69 excel, 49 cli, 4 batch, 3 report — plus
 **63 web-editor**; **107 conformance** assertions including the Tier-4 replay
 suite; 10/10 schemas valid; Biome clean over 284 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
@@ -198,12 +198,20 @@ not core gaps.
   hospitality, senior housing, student housing, land) plus `parkview-after-L6`;
   other loan types undemonstrated. All are `.uwx.md` as of RFC 0020 — they were
   structured records on the legacy `.uw.md` extension, which the project's own
-  detector flagged on every load.
+  detector flagged on every load. One UW Lite `.uw.md` example now ships
+  alongside them (T11).
 
-  > **No UW Lite example exists.** The repo specifies Lite normatively in
-  > `spec/UW_LITE_SPEC_v1.md` and ships zero instances of it. That gap is
-  > plausibly *why* the two representations blurred together in the docs for so
-  > long. Small, cheap, and worth doing to stop the confusion recurring.
+  > **A UW Lite example now exists (T11).** `spec/UW_LITE_SPEC_v1.md` specified
+  > Lite normatively while the repo shipped zero instances of it — plausibly
+  > *why* the two representations blurred together in the docs for so long.
+  > `examples/Parkview-Apts-Glendale-AZ.uw.md` closes it, deliberately as a
+  > **twin** of the existing `.uwx.md` record: same deal, same base name, both
+  > extensions adjacent in the directory listing. Its numbers are the record's
+  > own, and the derived metrics quoted in its prose (DSCR 1.1091, LTV 0.7000,
+  > cap rate 0.0551, debt yield 0.0787) were evaluated through the multifamily
+  > pack rather than asserted. Projecting the full record back to Lite reports
+  > **7 projected paths against 1,215 omitted**, which is the most concrete
+  > statement of the split the repo can make.
 - **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
   FAQ/troubleshooting, and a calc "calling-convention" guide are still missing.
 
@@ -341,9 +349,19 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-6. **A UW Lite worked example.** Lite is normatively specified and has zero
-   instances in `examples/`. Cheapest item here and it removes the root cause of
-   the Lite/UWX documentation drift RFC 0020 had to correct.
+6. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
+   percent display as `Number(x) / 100`, so `5.51%` becomes
+   `0.055099999999999996` rather than `0.0551`. It is deterministic, so nothing
+   is *broken*, but the value flows into the RFC 8785 canonical form and
+   therefore the SHA-256 digest — meaning a Lite-compiled `5.51%` and a
+   hand-authored UWX `0.0551` are different doubles and will not compare equal
+   under semantic equivalence or an RFC 0016 receipt. Every existing fixture uses
+   5.50%/5.75%/6.25%, which all divide cleanly, which is why the conformance
+   suite never caught it; the T11 example is the first document to use a rate
+   that doesn't. The fix is decimal-string scaling (shift the point, don't
+   divide). **Treat as normative:** it changes canonical digests for affected
+   documents, so it needs a deliberate decision and probably a spec note, not a
+   drive-by patch.
 7. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
    of re-export barrels; excluding them the figure is ~85%. A floor over a
    padded denominator is a weaker signal than it looks.
