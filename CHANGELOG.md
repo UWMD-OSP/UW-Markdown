@@ -9,6 +9,31 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **Module loader hardening, and a conformance suite that keeps it honest (T13).**
+  `modules.ts` validated `calculations` and `validations` and stopped —
+  `sections`, `view_models`, and `agent_layers` were constrained by
+  `spec/schemas/module-manifest.schema.json` and validated **nowhere**. Running
+  identical manifests through ajv and the loader disagreed on **seven of eight**
+  probes. `agent_layers` was the one that mattered most: it carries
+  `prompt_template`, making it Tier-4 prompt surface, and it accepted
+  `prompt_template: 42`.
+
+  The loader is now schema-complete — all three constructs validated, unknown
+  keys refused at every level (`additionalProperties: false`), `depends_on`
+  shape-checked, length bounds enforced — with pointer-level error codes
+  (`PROTO-MOD-033` … `PROTO-MOD-066`).
+
+  New `conformance/modules/` suite (22 assertions, runs by default, no network):
+  every fixture is checked against both the loader **and** ajv, and the suite
+  fails when the two disagree. `@uwmd/core` cannot depend on a JSON Schema
+  validator under the layering invariant, so the hand-written mirror needed an
+  external referee. Two deliberate divergences — requiring `deterministic: true`,
+  and parsing the safe-expression grammar, neither expressible in JSON Schema —
+  are declared per fixture with a stated reason; the reverse direction has no
+  opt-out.
+
+  New `uwmd modules validate|list` for module authors, reporting the exact
+  failing declaration rather than a bare refusal.
 - **A UW Lite worked example — the first one the repo has ever shipped (T11).**
   `spec/UW_LITE_SPEC_v1.md` has specified UW Lite normatively since RFC 0017
   while `examples/` contained zero instances of it, which RFC 0020 identified as
@@ -30,6 +55,28 @@ protocol, and each package each carry an independent semver).
   omitted**, which is the most concrete statement of the split available.
 
 ### Fixed
+- **Duplicate module ids silently shadowed each other.** Two manifests sharing an
+  id both loaded and `byId` returned whichever came last, so a registry lookup
+  resolved to the wrong module. Now refused with `PROTO-MOD-066`.
+- **A typo'd construct name discarded a module's work in silence.**
+  `calculationz: [...]` loaded clean and contributed nothing, with no error.
+- **`requires_protocol: "^1"` was silently unsatisfiable.** Only `X.Y` was padded
+  to full semver, so a bare major failed to parse and every range containing one
+  failed to match — while the schema's own description documents `^1` as valid.
+- **A malformed `depends_on` misreported itself.** `depends_on: ["other"]` was
+  iterated character by character and surfaced as
+  `Missing module dependency: undefined`.
+- **CI never ran the Tier-4 replay suite on pull requests.** `ci.yml` pinned
+  `--tier=1,2,3,lite,receipts`, so the `4-replay` suite added in T10 ran only in
+  `release.yml`. Both CI steps now call `npm run conformance` and take the
+  runner's default list, so adding a suite to the default is enough to gate PRs.
+
+### Changed
+- **Errata: `module-manifest.schema.json` was missing the `scope` deal stage.**
+  `DealStage` in `types.ts` has carried `scope` since the v1.1 train, so a
+  manifest the loader accepted was invalid against the normative schema. Treated
+  as errata rather than an RFC because it aligns a stale mirror to an
+  already-accepted decision rather than making a new one.
 - **`uwmd init` wrote structured UWX content to a `.uw.md` file.**
   `generateBlankUWFile()` emits `uw_version` and fenced `uw:section=` blocks, but
   the default output filename was `new-deal.uw.md` (or `<name>.uw.md`), so the

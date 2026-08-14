@@ -89,7 +89,7 @@
       "items": {
         "type": "string",
         "enum": [
-          "screening", "term_sheet", "full_underwrite",
+          "scope", "screening", "term_sheet", "full_underwrite",
           "credit_approval", "closing", "monitoring"
         ]
       },

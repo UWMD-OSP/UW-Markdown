@@ -1,0 +1,8 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-057",
+    "PROTO-MOD-059",
+    "PROTO-MOD-060"
+  ],
+  "why": "agent_layers carry prompt_template, so a malformed layer is Tier-4 prompt surface. Previously unvalidated entirely."
+}

@@ -5,7 +5,7 @@
 // Usage:
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
-//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,receipts.
+//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,receipts,modules.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -50,6 +50,7 @@ import {
   runBancroftAgent,
   createReplayProvider,
   parseAgentCassette,
+  loadModuleManifest,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -64,7 +65,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,modules').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1113,6 +1114,128 @@ async function runReceiptRefuse() {
   }
 }
 
+// ─── Modules suite ───────────────────────────────────────────────────────────
+//
+// Two assertions per fixture:
+//
+//   1. the loader's verdict matches the fixture's declared expectation, and for
+//      reject fixtures every listed PROTO-MOD code is actually emitted; and
+//   2. the loader agrees with `spec/schemas/module-manifest.schema.json`.
+//
+// (2) is the drift guard. `@uwmd/core` cannot depend on a JSON Schema validator
+// — the layering invariant admits only the Anthropic SDK — so the loader is
+// hand-written and had silently diverged from the normative schema on seven of
+// eight probes before this suite existed. ajv is a root devDependency and this
+// runner is a root script, so the cross-check costs nothing at runtime.
+//
+// A reject fixture may declare `schema_divergence` when the loader is
+// deliberately stricter than JSON Schema can express (requiring
+// `deterministic: true`, parsing the safe-expression grammar). Those are the
+// only permitted disagreements, and each one has to say why in the fixture.
+
+const MODULES_DIR = join(CONFORMANCE_DIR, 'modules');
+
+async function runModules() {
+  if (!existsSync(MODULES_DIR)) {
+    record('modules', '(none)', 'pass', 'no module fixtures');
+    return;
+  }
+
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
+  const schema = JSON.parse(
+    readFileSync(join(ROOT, 'spec', 'schemas', 'module-manifest.schema.json'), 'utf8'),
+  );
+  const schemaCheck = new Ajv2020({ strict: false }).compile(schema);
+
+  const readFixtures = (kind) => {
+    const dir = join(MODULES_DIR, kind);
+    if (!existsSync(dir)) return [];
+    return readdirSync(dir)
+      .filter((f) => f.endsWith('.module.json'))
+      .sort()
+      .map((f) => ({
+        id: basename(f, '.module.json'),
+        manifest: JSON.parse(readFileSync(join(dir, f), 'utf8')),
+        expectedPath: join(dir, `${basename(f, '.module.json')}.expected.json`),
+      }));
+  };
+
+  const parity = (id, manifest, loaderOk, divergence) => {
+    const schemaOk = schemaCheck(manifest);
+    if (schemaOk === loaderOk) {
+      record('modules', `${id} [schema-parity]`, 'pass');
+    } else if (divergence && loaderOk === false && schemaOk === true) {
+      record('modules', `${id} [schema-parity]`, 'pass', `declared divergence: ${divergence}`);
+    } else {
+      record(
+        'modules',
+        `${id} [schema-parity]`,
+        'fail',
+        `loader ${loaderOk ? 'accepts' : 'rejects'} but schema ${schemaOk ? 'accepts' : 'rejects'}` +
+          `${schemaOk ? '' : ` (${(schemaCheck.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join('; ')})`}`,
+      );
+    }
+  };
+
+  // Accept fixtures load against the maximal host, so they assert manifest
+  // validity rather than host capability. Tier gating has its own reject
+  // fixture and unit tests.
+  const MAX_HOST = { hostTier: 'tier-4-agent-host' };
+
+  for (const { id, manifest } of readFixtures('accept')) {
+    let result;
+    try {
+      result = loadModuleManifest(manifest, MAX_HOST);
+    } catch (e) {
+      record('modules', `accept/${id}`, 'fail', `loader threw: ${e.message}`);
+      continue;
+    }
+    if (result.ok) {
+      record('modules', `accept/${id}`, 'pass');
+    } else {
+      record(
+        'modules',
+        `accept/${id}`,
+        'fail',
+        `expected acceptance, got: ${result.errors.map((e) => e.code).join(', ')}`,
+      );
+    }
+    parity(`accept/${id}`, manifest, result.ok, null);
+  }
+
+  for (const { id, manifest, expectedPath } of readFixtures('reject')) {
+    if (!existsSync(expectedPath)) {
+      record('modules', `reject/${id}`, 'fail', 'missing .expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    let result;
+    try {
+      result = loadModuleManifest(manifest);
+    } catch (e) {
+      record('modules', `reject/${id}`, 'fail', `loader threw instead of reporting: ${e.message}`);
+      continue;
+    }
+    if (result.ok) {
+      record('modules', `reject/${id}`, 'fail', 'expected refusal, manifest loaded');
+    } else {
+      const emitted = new Set(result.errors.map((e) => e.code));
+      const missing = expected.expected_codes.filter((c) => !emitted.has(c));
+      if (missing.length > 0) {
+        record(
+          'modules',
+          `reject/${id}`,
+          'fail',
+          `refused, but without ${missing.join(', ')} (emitted ${[...emitted].join(', ')})`,
+        );
+      } else {
+        record('modules', `reject/${id}`, 'pass', expected.expected_codes.join(', '));
+      }
+    }
+    parity(`reject/${id}`, manifest, result.ok, expected.schema_divergence ?? null);
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -1124,6 +1247,7 @@ const dispatch = {
   '4-replay': async () => { await runTier4Replay(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
+  'modules': async () => { await runModules(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

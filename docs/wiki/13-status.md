@@ -3,9 +3,9 @@
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
 **Last verified:** 2026-08-13 at `ea4ec00`+ (full pass: build green across all
-workspaces; **740 tests** — 615 core, 69 excel, 49 cli, 4 batch, 3 report — plus
-**63 web-editor**; **107 conformance** assertions including the Tier-4 replay
-suite; 10/10 schemas valid; Biome clean over 284 files).
+workspaces; **752 tests** — 626 core, 69 excel, 50 cli, 4 batch, 3 report — plus
+**63 web-editor**; **129 conformance** assertions including the Tier-4 replay and
+module suites; 10/10 schemas valid; Biome clean over 304 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -61,9 +61,12 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **107 assertions** across 4 tiers plus the named `lite`,
-  `receipts`, and `4-replay` suites. CI gates tiers 1–3, both named suites, and
-  the deterministic Tier-4 replay suite. See [09](09-conformance-testing.md).
+- **Conformance:** **129 assertions** across 4 tiers plus the named `lite`,
+  `receipts`, `4-replay`, and `modules` suites. CI now runs the runner's
+  **default** suite list rather than a pinned `--tier=`, which is what the
+  earlier claim of replay coverage assumed but did not have: `ci.yml` pinned
+  `1,2,3,lite,receipts`, so `4-replay` had never actually gated a pull request.
+  See [09](09-conformance-testing.md).
 - **Verification receipts (RFC 0016):** `receipts.ts` issues and verifies
   detached receipts binding a record's canonical digest to the deterministic
   outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
@@ -151,10 +154,50 @@ not core gaps.
   > `conformance/receipts/refuse/02-no-pack-for-asset-class` fixture no longer
   > reference `mixed_use` at all, so the `mixed_use` pack can be written without
   > touching any of them.
-- **Module system is declarative-only.** `modules.ts` validates and registers
-  in-process `ModuleManifest` objects (shape, formulas, dependency load order,
-  tier/protocol/format compatibility), but there is no dynamic import, signing,
-  or custom asset-class declaration support.
+- **Module system is declarative-only** — by design — **but the loader is now
+  hardened (T13).** `modules.ts` validates and registers in-process
+  `ModuleManifest` objects; there is still no dynamic import, signing, or
+  custom asset-class declaration, and those stay v2/RFC work (0002, 0003).
+
+  What changed is that the loader now actually enforces the normative schema.
+  It previously validated `calculations` and `validations` and stopped:
+  `sections`, `view_models`, and `agent_layers` were declared in
+  `module-manifest.schema.json` and validated **nowhere**, unknown keys were
+  accepted at every level, and `id` ignored the schema's minimum length. Probing
+  identical manifests through ajv and the loader disagreed on **seven of eight**
+  cases. `agent_layers` was the worst of them — it carries `prompt_template`, so
+  it is Tier-4 prompt surface, and it would accept `prompt_template: 42`.
+
+  Three defects fell out of writing the fixtures:
+
+  - **Duplicate module ids silently shadowed.** Two manifests sharing an id both
+    loaded and `byId` returned whichever came last, so a registry lookup
+    resolved to the wrong module. Now `PROTO-MOD-066`.
+  - **A typo discarded a module's work.** `calculationz:` loaded clean and
+    contributed nothing, with no error.
+  - **`requires_protocol: "^1"` never matched.** Only `X.Y` was padded to full
+    semver, so a bare major failed to parse and every range containing one was
+    silently unsatisfiable — while the schema's own description documents `^1`
+    as a valid spelling.
+
+  Drift is now **checked rather than requested**: the `modules` conformance
+  suite runs every fixture through both ajv and the loader and fails when the
+  verdicts disagree. Core cannot carry a JSON Schema validator (layering
+  invariant), so the hand-written mirror needed an external referee; ajv is a
+  root devDependency and the runner is a root script, so nothing enters the
+  package's dependency graph. Two deliberate divergences — requiring
+  `deterministic: true`, and parsing the safe-expression grammar — are declared
+  per fixture with a stated reason; the opposite direction has no opt-out.
+
+  `uwmd modules validate|list` gives module authors a host-side surface, with
+  pointer-level errors (`agent_layers[0].prompt_template`) rather than a bare
+  refusal.
+
+  > **The schema's `deal_stages` enum had gone stale in the other direction**,
+  > omitting the `scope` stage that shipped in the v1.1 train — so a manifest
+  > the loader accepted was invalid against the normative document. Corrected as
+  > errata rather than by RFC, on the grounds that it aligns a stale mirror to an
+  > already-accepted decision instead of making a new one.
 - **Refinement VOI is approximate.** Perturbation-only, marginal (not joint) VOI;
   non-monotonic outputs only warn; `refinement.ts` carries an empty v1 placeholder
   for the L0b loop.
@@ -331,16 +374,12 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Medium
 
-2. **Module loader hardening.** The v1 in-process loader exists; next steps are
-   richer schema validation, recorded fixtures, and host UX for loading manifests
-   from files. Module signing (RFC 0002) and custom asset-class identifiers
-   (RFC 0003) stay v2/RFC work and are explicitly out of scope.
-3. **Market-data / investor-profile reference implementation.** Interface-only
+2. **Market-data / investor-profile reference implementation.** Interface-only
    today, so the top two cascade steps have no worked example.
-4. **Batch workflow expansion.** Deterministic filters, summaries, and
+3. **Batch workflow expansion.** Deterministic filters, summaries, and
    underwriting-queue projections over the collection index. `.uwx.md` remains
    the canonical source; shared storage semantics only through a future RFC.
-5. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
+4. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The
    metric strip is already class-aware and pinned (T14); this is the input side.
@@ -349,7 +388,7 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-6. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
+5. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
    percent display as `Number(x) / 100`, so `5.51%` becomes
    `0.055099999999999996` rather than `0.0551`. It is deterministic, so nothing
    is *broken*, but the value flows into the RFC 8785 canonical form and
@@ -362,18 +401,18 @@ bus factor, personal security email, and no public RFC venue.
    divide). **Treat as normative:** it changes canonical digests for affected
    documents, so it needs a deliberate decision and probably a spec note, not a
    drive-by patch.
-7. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
+6. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
    of re-export barrels; excluding them the figure is ~85%. A floor over a
    padded denominator is a weaker signal than it looks.
-8. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+7. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
    transition path with no expiry, and RFC 0020 declined to set one. Worth
    settling before 1.0 rather than letting it drift into permanence.
 
 ### Ongoing
 
-9. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
+8. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
     "calling-convention" guide are still missing.
-10. **Operational launch gates** — single-maintainer bus factor, personal
+9. **Operational launch gates** — single-maintainer bus factor, personal
     security email, and no public RFC venue remain review-flagged. The Excel
     add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
     or formally risk-accepted.

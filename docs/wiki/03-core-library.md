@@ -261,6 +261,18 @@ tables every conforming tool references:
 
 > **Keep `protocol.ts` and `spec/schemas/*.schema.json` in lockstep.** The
 > `ModuleManifest` interface explicitly mirrors `module-manifest.schema.json`.
+>
+> For modules that lockstep is now **checked**, not merely requested. Core
+> cannot carry a JSON Schema validator — the layering invariant admits only the
+> Anthropic SDK — so `modules.ts` re-implements the schema by hand, and a
+> hand-written mirror drifts. It had: `sections`, `view_models`, and
+> `agent_layers` were declared in the schema and validated nowhere, unknown keys
+> were accepted at every level, and the schema's `deal_stages` enum had gone
+> stale in the other direction by omitting `scope`. The `modules` conformance
+> suite now runs every fixture through both ajv and the loader and fails if the
+> verdicts disagree. See [09](09-conformance-testing.md) and
+> `conformance/modules/README.md` for the two permitted, individually justified
+> exceptions.
 
 ## Where to start, by task
 

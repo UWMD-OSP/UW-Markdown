@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-065"
+  ],
+  "why": "The schema sets id minLength 3; the loader regex alone accepted a single character."
+}
