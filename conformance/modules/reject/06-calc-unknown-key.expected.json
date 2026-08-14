@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-064"
+  ],
+  "why": "additionalProperties: false applies to nested declarations too, not only the manifest root."
+}

@@ -1,0 +1,76 @@
+{
+  "manifest_version": "1",
+  "id": "org.uwmd.full-surface",
+  "name": "Full Surface Module",
+  "version": "2.1.0-beta.1+build.7",
+  "description": "Exercises every construct a v1 manifest may declare, so the accept path is pinned across all of them rather than only the required fields.",
+  "authors": ["UW Markdown contributors", "A Second Author"],
+  "license": "Apache-2.0",
+  "requires_protocol": ">=1.0.0 <2.0.0",
+  "requires_format": "^1",
+  "requires_tier": "tier-4-agent-host",
+  "asset_classes": ["multifamily", "student_housing"],
+  "deal_stages": ["scope", "screening", "full_underwrite"],
+  "sections": [
+    {
+      "id": "x_mod_concession_analysis",
+      "display_name": "Concession Analysis",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "months_free": { "type": "number" }
+        }
+      },
+      "required": false
+    }
+  ],
+  "calculations": [
+    {
+      "id": "effective_rent_after_concessions",
+      "label": "Effective Rent After Concessions",
+      "formula": "rent_roll.gross_potential_rent * (1 - x_mod_concession_analysis.months_free / 12)",
+      "unit": "$",
+      "deterministic": true
+    }
+  ],
+  "validations": [
+    {
+      "code": "CC-MOD-CONC-01",
+      "severity": "warning",
+      "message": "Concession months exceed one year of free rent.",
+      "rule": "x_mod_concession_analysis.months_free <= 12"
+    }
+  ],
+  "thresholds": {
+    "min_dscr": 1.2,
+    "max_ltv": 0.75
+  },
+  "view_models": [
+    {
+      "section_id": "x_mod_concession_analysis",
+      "display_name": "Concession Analysis",
+      "display_order": 21,
+      "description": "Free rent and other concessions offered to reach stabilized occupancy.",
+      "primary_fields": [
+        { "path": "months_free", "label": "Months Free", "kind": "count", "primary": true, "unit": "mo", "decimals": 1 }
+      ],
+      "detail_fields": [
+        { "path": "concession_type", "label": "Type", "kind": "enum", "enum": ["free_rent", "reduced_deposit"] }
+      ],
+      "multi_variant": false
+    }
+  ],
+  "ui": {
+    "icon": "percent",
+    "host_specific_hint": { "collapsed_by_default": true }
+  },
+  "agent_layers": [
+    {
+      "id": "L7_concessions",
+      "reads": ["rent_roll", "market_analysis"],
+      "writes": ["x_mod_concession_analysis"],
+      "prompt_template": "Extract concession terms from the offering memorandum. Report months free and concession type. Do not compute effective rent."
+    }
+  ],
+  "depends_on": []
+}

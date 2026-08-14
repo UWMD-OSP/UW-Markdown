@@ -1,0 +1,29 @@
+{
+  "manifest_version": "1",
+  "id": "org.uwmd.reject",
+  "name": "Reject Fixture",
+  "version": "1.0.0",
+  "description": "A manifest a conforming host must refuse.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-3-calc-host",
+  "view_models": [
+    {
+      "section_id": "",
+      "display_name": "X",
+      "display_order": -1,
+      "description": "d",
+      "primary_fields": [
+        {
+          "path": "a",
+          "label": "A",
+          "kind": "moneys"
+        }
+      ]
+    }
+  ]
+}

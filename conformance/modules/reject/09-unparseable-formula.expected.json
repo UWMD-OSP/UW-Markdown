@@ -1,0 +1,7 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-018"
+  ],
+  "why": "A formula that does not parse must be refused at load, not at evaluation.",
+  "schema_divergence": "JSON Schema cannot parse the safe-expression grammar. The loader is deliberately stricter."
+}

@@ -37,6 +37,47 @@ const DEAL_STAGES: readonly DealStage[] = [
 
 const SEVERITIES: readonly ValidationSeverity[] = ['error', 'warning', 'info'];
 
+const FIELD_VIEW_KINDS: readonly string[] = [
+  'currency',
+  'percent',
+  'ratio',
+  'count',
+  'date',
+  'string',
+  'enum',
+  'list',
+];
+
+// Key sets mirror `additionalProperties: false` in
+// spec/schemas/module-manifest.schema.json. An unknown key is a typo far more
+// often than it is a forward-compatible extension, and a typo'd `calculationz`
+// silently contributes nothing — `manifest_version` is the forward-compat lever.
+const MANIFEST_KEYS: readonly string[] = [
+  'manifest_version', 'id', 'name', 'version', 'description', 'authors', 'license',
+  'requires_protocol', 'requires_format', 'requires_tier', 'asset_classes',
+  'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
+  'view_models', 'ui', 'agent_layers', 'depends_on',
+];
+const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
+const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'deterministic'];
+const VALIDATION_KEYS: readonly string[] = ['code', 'severity', 'message', 'rule'];
+const VIEW_MODEL_KEYS: readonly string[] = [
+  'section_id', 'display_name', 'display_order', 'description',
+  'primary_fields', 'detail_fields', 'multi_variant',
+];
+const FIELD_HINT_KEYS: readonly string[] = [
+  'path', 'label', 'kind', 'primary', 'unit', 'decimals', 'enum',
+];
+const AGENT_LAYER_KEYS: readonly string[] = ['id', 'reads', 'writes', 'prompt_template'];
+const DEPENDS_ON_KEYS: readonly string[] = ['id', 'version'];
+
+// Length caps mirror the schema's minLength/maxLength constraints.
+const ID_MIN_LENGTH = 3;
+const ID_MAX_LENGTH = 128;
+const NAME_MAX_LENGTH = 200;
+const DESCRIPTION_MAX_LENGTH = 2000;
+const AGENT_LAYER_ID_PATTERN = /^L\d+(?:_[a-z_]+)?$/;
+
 export interface ModuleRegistry {
   modules: readonly ModuleManifest[];
   byId: ReadonlyMap<string, ModuleManifest>;
@@ -80,9 +121,22 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
   const loaded: ModuleManifest[] = [];
   const errors: ProtocolError[] = [];
 
+  const seenIds = new Set<string>();
   for (const candidate of opts.modules) {
     const result = loadModuleManifest(candidate, { ...opts, alreadyLoaded: loaded });
     if (result.ok && result.manifest) {
+      // Two manifests sharing an id used to both load, with `byId` silently
+      // resolving to whichever came last — a registry lookup returning the
+      // wrong module. Refuse rather than pick.
+      if (seenIds.has(result.manifest.id)) {
+        errors.push(moduleError(
+          'PROTO-MOD-066',
+          `Duplicate module id in registry: ${result.manifest.id}`,
+          'id',
+        ));
+        continue;
+      }
+      seenIds.add(result.manifest.id);
       loaded.push(result.manifest);
     } else {
       errors.push(...result.errors);
@@ -161,6 +215,11 @@ function validateModuleManifest(
     errors.push(moduleError('PROTO-MOD-006', 'Module requires_tier is not a valid viewer tier.', 'requires_tier'));
   }
 
+  rejectUnknownKeys(errors, manifest, MANIFEST_KEYS, '');
+  boundLength(errors, manifest.id, 'id', ID_MIN_LENGTH, ID_MAX_LENGTH);
+  boundLength(errors, manifest.name, 'name', 1, NAME_MAX_LENGTH);
+  boundLength(errors, manifest.description, 'description', 1, DESCRIPTION_MAX_LENGTH);
+
   if (manifest.asset_classes !== undefined) {
     if (!Array.isArray(manifest.asset_classes)) {
       errors.push(moduleError('PROTO-MOD-007', 'asset_classes must be an array.', 'asset_classes'));
@@ -188,11 +247,223 @@ function validateModuleManifest(
     }
   }
 
+  validateSections(errors, manifest);
   validateCalculations(errors, manifest);
   validateValidations(errors, manifest);
+  validateThresholds(errors, manifest);
+  validateViewModels(errors, manifest);
+  validateAgentLayers(errors, manifest);
+  validateDependsOnShape(errors, manifest);
   validateDependencies(errors, manifest, opts.alreadyLoaded ?? []);
   validateCompatibility(errors, manifest, opts);
   return errors;
+}
+
+function validateSections(errors: ProtocolError[], manifest: ModuleManifest): void {
+  if (manifest.sections === undefined) return;
+  if (!Array.isArray(manifest.sections)) {
+    errors.push(moduleError('PROTO-MOD-033', 'sections must be an array.', 'sections'));
+    return;
+  }
+  const ids = new Set<string>();
+  for (const [idx, section] of manifest.sections.entries()) {
+    const pointer = `sections[${idx}]`;
+    if (!isRecord(section)) {
+      errors.push(moduleError('PROTO-MOD-034', 'Section declaration must be an object.', pointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, section, SECTION_KEYS, pointer);
+    if (typeof section.id !== 'string' || section.id.length === 0) {
+      errors.push(moduleError('PROTO-MOD-035', 'Section id is required.', `${pointer}.id`));
+    } else if (ids.has(section.id)) {
+      errors.push(moduleError('PROTO-MOD-036', `Duplicate section id: ${section.id}`, `${pointer}.id`));
+    } else {
+      ids.add(section.id);
+    }
+    if (typeof section.display_name !== 'string' || section.display_name.length === 0) {
+      errors.push(moduleError('PROTO-MOD-037', 'Section display_name is required.', `${pointer}.display_name`));
+    }
+    // The schema fragment is not itself compiled here — core carries no JSON
+    // Schema validator by design (the layering invariant permits only the
+    // Anthropic SDK as a runtime dependency). Shape is checked; semantics are
+    // the host's to enforce with whatever validator it already has.
+    if (!isRecord(section.schema)) {
+      errors.push(moduleError('PROTO-MOD-038', 'Section schema must be a JSON Schema object.', `${pointer}.schema`));
+    }
+    if (section.required !== undefined && typeof section.required !== 'boolean') {
+      errors.push(moduleError('PROTO-MOD-039', 'Section required must be a boolean.', `${pointer}.required`));
+    }
+  }
+}
+
+function validateThresholds(errors: ProtocolError[], manifest: ModuleManifest): void {
+  if (manifest.thresholds === undefined) return;
+  if (!isRecord(manifest.thresholds)) {
+    errors.push(moduleError('PROTO-MOD-040', 'thresholds must be an object.', 'thresholds'));
+    return;
+  }
+  for (const [key, value] of Object.entries(manifest.thresholds)) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      errors.push(moduleError(
+        'PROTO-MOD-041',
+        `Threshold override ${key} must be a finite number.`,
+        `thresholds.${key}`,
+      ));
+    }
+  }
+}
+
+function validateViewModels(errors: ProtocolError[], manifest: ModuleManifest): void {
+  if (manifest.view_models === undefined) return;
+  if (!Array.isArray(manifest.view_models)) {
+    errors.push(moduleError('PROTO-MOD-042', 'view_models must be an array.', 'view_models'));
+    return;
+  }
+  for (const [idx, vm] of manifest.view_models.entries()) {
+    const pointer = `view_models[${idx}]`;
+    if (!isRecord(vm)) {
+      errors.push(moduleError('PROTO-MOD-043', 'View model declaration must be an object.', pointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, vm, VIEW_MODEL_KEYS, pointer);
+    for (const key of ['section_id', 'display_name', 'description'] as const) {
+      if (typeof vm[key] !== 'string' || (vm[key] as string).length === 0) {
+        errors.push(moduleError('PROTO-MOD-044', `View model ${key} is required.`, `${pointer}.${key}`));
+      }
+    }
+    if (typeof vm.display_order !== 'number' || !Number.isInteger(vm.display_order) || vm.display_order < 0) {
+      errors.push(moduleError(
+        'PROTO-MOD-045',
+        'View model display_order must be a non-negative integer.',
+        `${pointer}.display_order`,
+      ));
+    }
+    validateFieldHints(errors, vm.primary_fields, `${pointer}.primary_fields`, true);
+    validateFieldHints(errors, vm.detail_fields, `${pointer}.detail_fields`, false);
+    if (vm.multi_variant !== undefined && typeof vm.multi_variant !== 'boolean') {
+      errors.push(moduleError('PROTO-MOD-046', 'View model multi_variant must be a boolean.', `${pointer}.multi_variant`));
+    }
+  }
+}
+
+function validateFieldHints(
+  errors: ProtocolError[],
+  hints: unknown,
+  pointer: string,
+  required: boolean,
+): void {
+  if (hints === undefined) {
+    if (required) errors.push(moduleError('PROTO-MOD-047', 'primary_fields is required.', pointer));
+    return;
+  }
+  if (!Array.isArray(hints)) {
+    errors.push(moduleError('PROTO-MOD-048', 'Field hint list must be an array.', pointer));
+    return;
+  }
+  for (const [idx, hint] of hints.entries()) {
+    const hintPointer = `${pointer}[${idx}]`;
+    if (!isRecord(hint)) {
+      errors.push(moduleError('PROTO-MOD-049', 'Field view hint must be an object.', hintPointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, hint, FIELD_HINT_KEYS, hintPointer);
+    for (const key of ['path', 'label'] as const) {
+      if (typeof hint[key] !== 'string' || (hint[key] as string).length === 0) {
+        errors.push(moduleError('PROTO-MOD-050', `Field view hint ${key} is required.`, `${hintPointer}.${key}`));
+      }
+    }
+    if (typeof hint.kind !== 'string' || !FIELD_VIEW_KINDS.includes(hint.kind)) {
+      errors.push(moduleError(
+        'PROTO-MOD-051',
+        `Field view hint kind must be one of: ${FIELD_VIEW_KINDS.join(', ')}.`,
+        `${hintPointer}.kind`,
+      ));
+    }
+    if (hint.decimals !== undefined) {
+      if (typeof hint.decimals !== 'number' || !Number.isInteger(hint.decimals) || hint.decimals < 0 || hint.decimals > 10) {
+        errors.push(moduleError(
+          'PROTO-MOD-052',
+          'Field view hint decimals must be an integer between 0 and 10.',
+          `${hintPointer}.decimals`,
+        ));
+      }
+    }
+    if (hint.primary !== undefined && typeof hint.primary !== 'boolean') {
+      errors.push(moduleError('PROTO-MOD-053', 'Field view hint primary must be a boolean.', `${hintPointer}.primary`));
+    }
+    if (hint.enum !== undefined && (!Array.isArray(hint.enum) || !hint.enum.every((v) => typeof v === 'string'))) {
+      errors.push(moduleError('PROTO-MOD-054', 'Field view hint enum must be a string array.', `${hintPointer}.enum`));
+    }
+  }
+}
+
+// Agent layers carry `prompt_template`, so a malformed one is a Tier-4 prompt
+// surface defect, not just a shape error. This is the construct with the widest
+// blast radius and it previously had no validation at all.
+function validateAgentLayers(errors: ProtocolError[], manifest: ModuleManifest): void {
+  if (manifest.agent_layers === undefined) return;
+  if (!Array.isArray(manifest.agent_layers)) {
+    errors.push(moduleError('PROTO-MOD-055', 'agent_layers must be an array.', 'agent_layers'));
+    return;
+  }
+  const ids = new Set<string>();
+  for (const [idx, layer] of manifest.agent_layers.entries()) {
+    const pointer = `agent_layers[${idx}]`;
+    if (!isRecord(layer)) {
+      errors.push(moduleError('PROTO-MOD-056', 'Agent layer declaration must be an object.', pointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, layer, AGENT_LAYER_KEYS, pointer);
+    if (typeof layer.id !== 'string' || !AGENT_LAYER_ID_PATTERN.test(layer.id)) {
+      errors.push(moduleError(
+        'PROTO-MOD-057',
+        'Agent layer id must match ^L\\d+(?:_[a-z_]+)?$.',
+        `${pointer}.id`,
+      ));
+    } else if (ids.has(layer.id)) {
+      errors.push(moduleError('PROTO-MOD-058', `Duplicate agent layer id: ${layer.id}`, `${pointer}.id`));
+    } else {
+      ids.add(layer.id);
+    }
+    for (const key of ['reads', 'writes'] as const) {
+      const value = layer[key];
+      if (!Array.isArray(value) || !value.every((v) => typeof v === 'string' && v.length > 0)) {
+        errors.push(moduleError(
+          'PROTO-MOD-059',
+          `Agent layer ${key} must be an array of non-empty strings.`,
+          `${pointer}.${key}`,
+        ));
+      }
+    }
+    if (typeof layer.prompt_template !== 'string' || layer.prompt_template.length === 0) {
+      errors.push(moduleError(
+        'PROTO-MOD-060',
+        'Agent layer prompt_template must be a non-empty string.',
+        `${pointer}.prompt_template`,
+      ));
+    }
+  }
+}
+
+function validateDependsOnShape(errors: ProtocolError[], manifest: ModuleManifest): void {
+  if (manifest.depends_on === undefined) return;
+  if (!Array.isArray(manifest.depends_on)) {
+    errors.push(moduleError('PROTO-MOD-061', 'depends_on must be an array.', 'depends_on'));
+    return;
+  }
+  for (const [idx, dep] of manifest.depends_on.entries()) {
+    const pointer = `depends_on[${idx}]`;
+    if (!isRecord(dep)) {
+      errors.push(moduleError('PROTO-MOD-062', 'Dependency declaration must be an object.', pointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, dep, DEPENDS_ON_KEYS, pointer);
+    for (const key of ['id', 'version'] as const) {
+      if (typeof dep[key] !== 'string' || (dep[key] as string).length === 0) {
+        errors.push(moduleError('PROTO-MOD-063', `Dependency ${key} is required.`, `${pointer}.${key}`));
+      }
+    }
+  }
 }
 
 function validateCalculations(errors: ProtocolError[], manifest: ModuleManifest): void {
@@ -208,6 +479,7 @@ function validateCalculations(errors: ProtocolError[], manifest: ModuleManifest)
       errors.push(moduleError('PROTO-MOD-013', 'Calculation declaration must be an object.', pointer));
       continue;
     }
+    rejectUnknownKeys(errors, calc, CALC_KEYS, pointer);
     if (typeof calc.id !== 'string' || !/^[a-z][a-z0-9_]*$/.test(calc.id)) {
       errors.push(moduleError('PROTO-MOD-014', 'Calculation id must match ^[a-z][a-z0-9_]*$.', `${pointer}.id`));
     }
@@ -249,6 +521,7 @@ function validateValidations(errors: ProtocolError[], manifest: ModuleManifest):
       errors.push(moduleError('PROTO-MOD-021', 'Validation declaration must be an object.', pointer));
       continue;
     }
+    rejectUnknownKeys(errors, rule, VALIDATION_KEYS, pointer);
     if (typeof rule.code !== 'string' || !/^[A-Z]{2,8}-[A-Z0-9-]+$/.test(rule.code)) {
       errors.push(moduleError('PROTO-MOD-022', 'Validation code must match the module-code pattern.', `${pointer}.code`));
     }
@@ -279,8 +552,12 @@ function validateDependencies(
   manifest: ModuleManifest,
   alreadyLoaded: readonly ModuleManifest[],
 ): void {
+  // Shape is validated separately; skip resolution entirely if it is malformed
+  // so a `depends_on: "other"` string is not iterated character by character.
+  if (manifest.depends_on !== undefined && !Array.isArray(manifest.depends_on)) return;
   const loaded = new Map(alreadyLoaded.map((m) => [m.id, m]));
   for (const dep of manifest.depends_on ?? []) {
+    if (!isRecord(dep) || typeof dep.id !== 'string' || typeof dep.version !== 'string') continue;
     const dependency = loaded.get(dep.id);
     if (!dependency) {
       errors.push(moduleError('PROTO-MOD-027', `Missing module dependency: ${dep.id}`, 'depends_on'));
@@ -355,8 +632,15 @@ function versionSatisfies(version: string, range: string): boolean {
   });
 }
 
+// Partial versions are padded to full semver before comparison. The schema
+// documents `^1` as a valid requires_protocol spelling, but only `X.Y` was
+// padded, so a bare major failed to parse and every range containing one was
+// silently unsatisfiable.
 function normalizeFormatVersion(version: string): string {
-  return /^\d+\.\d+$/.test(version) ? `${version}.0` : version;
+  const trimmed = version.trim();
+  if (/^\d+$/.test(trimmed)) return `${trimmed}.0.0`;
+  if (/^\d+\.\d+$/.test(trimmed)) return `${trimmed}.0`;
+  return trimmed;
 }
 
 function parseSemver(version: string): { major: number; minor: number; patch: number } | null {
@@ -378,6 +662,39 @@ function requireString(
 ): void {
   if (typeof manifest[key] !== 'string' || (manifest[key] as string).length === 0) {
     errors.push(moduleError('PROTO-MOD-032', `Required string field missing: ${key}`, key));
+  }
+}
+
+function rejectUnknownKeys(
+  errors: ProtocolError[],
+  value: Record<string, unknown>,
+  allowed: readonly string[],
+  pointer: string,
+): void {
+  for (const key of Object.keys(value)) {
+    if (allowed.includes(key)) continue;
+    errors.push(moduleError(
+      'PROTO-MOD-064',
+      `Unknown key: ${key}`,
+      pointer ? `${pointer}.${key}` : key,
+    ));
+  }
+}
+
+function boundLength(
+  errors: ProtocolError[],
+  value: unknown,
+  key: string,
+  min: number,
+  max: number,
+): void {
+  if (typeof value !== 'string') return; // requireString already reported it
+  if (value.length < min || value.length > max) {
+    errors.push(moduleError(
+      'PROTO-MOD-065',
+      `${key} must be between ${min} and ${max} characters (got ${value.length}).`,
+      key,
+    ));
   }
 }
 

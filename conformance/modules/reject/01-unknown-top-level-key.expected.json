@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-064"
+  ],
+  "why": "A typo in a construct name silently contributed nothing before the loader rejected unknown keys."
+}

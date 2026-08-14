@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-062"
+  ],
+  "why": "A bare string dependency used to resolve as id `undefined` and report a confusing missing-dependency error."
+}

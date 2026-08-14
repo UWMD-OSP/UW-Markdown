@@ -187,6 +187,60 @@ describe('uwmd CLI', () => {
     }
   });
 
+  describe('modules', () => {
+    const moduleFixture = (kind: string, name: string) =>
+      resolve(__dirname, '..', '..', '..', 'conformance', 'modules', kind, name);
+
+    it('validates conforming manifests and exits 0', () => {
+      const r = runCli([
+        'modules', 'validate',
+        moduleFixture('accept', '01-minimal.module.json'),
+        moduleFixture('accept', '02-full-surface.module.json'),
+        '--tier', 'tier-4-agent-host',
+      ]);
+      expect(r.status).toBe(0);
+      expect(r.stdout).toContain('2/2 manifest(s) loaded');
+    });
+
+    it('exits non-zero and points at the failing declaration', () => {
+      const r = runCli([
+        'modules', 'validate',
+        moduleFixture('reject', '02-agent-layer-malformed.module.json'),
+      ]);
+      expect(r.status).toBe(1);
+      // The pointer is what makes the output actionable.
+      expect(r.stdout).toContain('agent_layers[0].prompt_template');
+      expect(r.stdout).toContain('PROTO-MOD-060');
+    });
+
+    it('lists the registry that a set of manifests forms', () => {
+      const r = runCli([
+        'modules', 'list',
+        moduleFixture('accept', '02-full-surface.module.json'),
+        '--tier', 'tier-4-agent-host',
+        '--json',
+      ]);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout).modules).toEqual([
+        expect.objectContaining({
+          id: 'org.uwmd.full-surface',
+          calculations: 1,
+          agent_layers: 1,
+          asset_classes: ['multifamily', 'student_housing'],
+        }),
+      ]);
+    });
+
+    it('refuses to list a registry it could not build', () => {
+      const r = runCli([
+        'modules', 'list',
+        moduleFixture('reject', '01-unknown-top-level-key.module.json'),
+      ]);
+      expect(r.status).toBe(1);
+      expect(r.stderr).toContain('Registry refused to load');
+    });
+  });
+
   it('validates the bundled fixture without errors', () => {
     const r = runCli(['validate', FIXTURE]);
     expect(r.status).toBe(0);

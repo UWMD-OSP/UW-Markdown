@@ -23,7 +23,8 @@ import { applyEdit } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
 import type { IntegrityResult } from './integrity.js';
 import type { EditContext } from './editor.js';
-import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
+import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
+import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import { evaluateCalc } from './calc/index.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
@@ -555,6 +556,114 @@ async function cmdReceiptIssue(
   );
 }
 
+// ─── Modules ──────────────────────────────────────────────────────────────────
+
+function readManifestFile(path: string): { ok: true; manifest: unknown } | { ok: false; message: string } {
+  try {
+    return { ok: true, manifest: JSON.parse(readFileSync(resolve(path), 'utf-8')) as unknown };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+function hostTierFlag(flags: Record<string, string | boolean>): ViewerTier | undefined {
+  const tier = flags['tier'];
+  return typeof tier === 'string' ? (tier as ViewerTier) : undefined;
+}
+
+function cmdModulesValidate(files: string[], flags: Record<string, string | boolean>): void {
+  const hostTier = hostTierFlag(flags);
+  const reports = files.map((file) => {
+    const read = readManifestFile(file);
+    if (!read.ok) {
+      return { file, ok: false, errors: [{ category: 'module', code: 'CLI-MOD-READ', message: read.message }] };
+    }
+    const result = loadModuleManifest(read.manifest, hostTier ? { hostTier } : {});
+    return { file, ok: result.ok, errors: result.errors };
+  });
+
+  if (flags['json']) {
+    console.log(JSON.stringify({ modules: reports }, null, 2));
+    process.exit(reports.every((r) => r.ok) ? 0 : 1);
+  }
+
+  for (const report of reports) {
+    if (report.ok) {
+      console.log(`\nOK - ${basename(report.file)}`);
+      continue;
+    }
+    console.log(`\nERRORS - ${basename(report.file)}`);
+    for (const error of report.errors) {
+      // The pointer is what makes this actionable: it names the exact
+      // declaration that failed, not just the manifest.
+      const at = 'pointer' in error && error.pointer ? ` [${error.pointer}]` : '';
+      console.log(`  ${error.code}${at} ${error.message}`);
+    }
+  }
+  const failed = reports.filter((r) => !r.ok).length;
+  console.log(
+    `\n${reports.length - failed}/${reports.length} manifest(s) loaded${hostTier ? ` against ${hostTier}` : ''}.\n`,
+  );
+  process.exit(failed > 0 ? 1 : 0);
+}
+
+function cmdModulesList(files: string[], flags: Record<string, string | boolean>): void {
+  const hostTier = hostTierFlag(flags);
+  const manifests: unknown[] = [];
+  for (const file of files) {
+    const read = readManifestFile(file);
+    if (!read.ok) {
+      console.error(`Cannot read ${basename(file)}: ${read.message}`);
+      process.exit(1);
+    }
+    manifests.push(read.manifest);
+  }
+
+  let registry: ReturnType<typeof createModuleRegistry>;
+  try {
+    registry = createModuleRegistry({ modules: manifests as never, ...(hostTier ? { hostTier } : {}) });
+  } catch (e) {
+    // Registry construction is all-or-nothing: a bad manifest means there is no
+    // registry to list, so report why rather than printing a partial one.
+    if (e instanceof ModuleRegistryError) {
+      console.error('Registry refused to load:');
+      for (const error of e.errors) console.error(`  ${error.code} ${error.message}`);
+    } else {
+      console.error(e instanceof Error ? e.message : String(e));
+    }
+    process.exit(1);
+  }
+
+  const rows = registry.modules.map((m) => ({
+    id: m.id,
+    name: m.name,
+    version: m.version,
+    requires_tier: m.requires_tier,
+    asset_classes: m.asset_classes ?? [],
+    calculations: (m.calculations ?? []).length,
+    validations: (m.validations ?? []).length,
+    sections: (m.sections ?? []).length,
+    agent_layers: (m.agent_layers ?? []).length,
+  }));
+
+  if (flags['json']) {
+    console.log(JSON.stringify({ modules: rows }, null, 2));
+    return;
+  }
+
+  console.log(`\n${rows.length} module(s) loaded\n`);
+  for (const row of rows) {
+    console.log(`  ${row.id}@${row.version} — ${row.name}`);
+    console.log(`    tier: ${row.requires_tier}`);
+    console.log(`    asset classes: ${row.asset_classes.length ? row.asset_classes.join(', ') : 'class-agnostic'}`);
+    console.log(
+      `    contributes: ${row.calculations} calc, ${row.validations} validation, ` +
+        `${row.sections} section, ${row.agent_layers} agent layer`,
+    );
+  }
+  console.log('');
+}
+
 async function cmdReceiptVerify(
   file: string,
   receiptPath: string,
@@ -1044,6 +1153,22 @@ switch (command) {
     cmdRefine(positional[0], flags);
     break;
 
+  case 'modules': {
+    const sub = positional[0];
+    const files = positional.slice(1);
+    if (sub === 'validate') {
+      if (files.length === 0) { console.error('Usage: uwmd modules validate <manifest.json...> [--tier <viewer-tier>] [--json]'); process.exit(1); }
+      cmdModulesValidate(files, flags);
+    } else if (sub === 'list') {
+      if (files.length === 0) { console.error('Usage: uwmd modules list <manifest.json...> [--tier <viewer-tier>] [--json]'); process.exit(1); }
+      cmdModulesList(files, flags);
+    } else {
+      console.error('Usage: uwmd modules <validate|list> <manifest.json...>');
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'receipt': {
     const sub = positional[0];
     if (sub === 'issue') {
@@ -1082,6 +1207,7 @@ Commands:
   scope    <file>              Resolve every required input via the fallback cascade and emit a triage view
   refine   <file>              Rank gaps by value-of-information for stated calc targets
   receipt  issue|verify         Issue or verify a detached verification receipt (RFC 0016)
+  modules  validate|list        Validate module manifest files, or list the registry they form
   layers                       List Bancroft agent layers
 
 Options:
@@ -1095,6 +1221,7 @@ Options:
   --to <format>       Target: lite|uwx|uw-json|uw-xml|uw-csv-bundle (convert)
   --projection-report Write the UWX-to-Lite omission report as JSON (convert)
   --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
+  --tier <tier>      Host viewer tier to load modules against (modules)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

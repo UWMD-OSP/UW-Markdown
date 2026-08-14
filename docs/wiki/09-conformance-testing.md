@@ -36,10 +36,11 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # tiers 1,2,3 + lite + receipts (default)
-npm run conformance -- --tier=1,2,3,4,lite,receipts
+npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + modules
+npm run conformance -- --tier=1,2,3,4,lite,receipts,modules
 npm run conformance -- --tier=lite         # the UW Lite suite alone
 npm run conformance -- --tier=receipts     # the receipts suite alone
+npm run conformance -- --tier=modules      # the module manifest suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -178,10 +179,38 @@ Two properties are asserted as **invariants, not baselines**:
 2. **Three-state verdicts (§5).** Every verification lands on exactly one of
    `verified` / `failed` / `unverifiable`.
 
+### Modules — manifest verdicts and schema parity
+
+`conformance/modules/` holds single-manifest fixtures for the declarative v1
+module loader. It runs by default and needs no network. Each fixture is asserted
+twice: the loader's verdict must match the fixture (`accept/` loads; `reject/`
+refuses and emits every listed `PROTO-MOD` code), and the loader must **agree
+with the normative schema**, validated with ajv.
+
+Parity is the reason the suite exists. `@uwmd/core` cannot depend on a JSON
+Schema validator, so `modules.ts` re-implements
+`spec/schemas/module-manifest.schema.json` by hand — and a hand-written mirror
+drifts silently. It had, on seven of eight probes. Codes are matched rather than
+messages, so wording can improve without touching fixtures.
+
+A `reject/` fixture may declare `schema_divergence` when the loader is
+deliberately stricter than JSON Schema can express — requiring
+`deterministic: true`, or parsing the safe-expression grammar. Those are the only
+permitted disagreements and each must state its reason. The opposite direction —
+loader accepts, schema refuses — is always a bug and has no opt-out.
+
+Registry-level behavior (dependency order, version ranges, duplicate module ids)
+lives in `packages/uwmd-core/src/modules.test.ts` instead, since a fixture file
+holds one manifest.
+
 ## What CI runs
 
 `.github/workflows/ci.yml`: lint (Biome) on Node 20, then build + test +
-`run-conformance.mjs --tier=1,2,3,lite,receipts` on a Node 20/22 matrix. `release.yml` publishes
+`npm run conformance` on a Node 20/22 matrix — the runner's **default** suite
+list, deliberately not a pinned `--tier=`. CI used to pin `1,2,3,lite,receipts`,
+which silently excluded the `4-replay` suite once it landed: a suite could be
+added to the default and never gate a pull request. Adding a suite to the
+default list is now enough to make CI enforce it. `release.yml` publishes
 `@uwmd/core` and `uwmd` on `v*` tags. (See [11 — Build, release & governance](11-build-release-governance.md).)
 
 ## Adding fixtures (quick reference)

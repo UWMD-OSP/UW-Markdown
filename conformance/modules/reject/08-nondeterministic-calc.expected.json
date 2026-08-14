@@ -1,0 +1,7 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-019"
+  ],
+  "why": "v1 calculations must be deterministic.",
+  "schema_divergence": "JSON Schema can only type `deterministic` as boolean; it cannot require the value true. The loader is deliberately stricter."
+}
