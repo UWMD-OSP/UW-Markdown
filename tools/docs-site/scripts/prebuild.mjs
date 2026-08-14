@@ -90,6 +90,11 @@ const COPIES = [
   { from: 'docs/rfcs/0018-document-profiles-and-deal-packages.md', to: 'about/rfcs/0018-document-profiles-and-deal-packages.md' },
   { from: 'docs/rfcs/0019-mixed-use-composition.md', to: 'about/rfcs/0019-mixed-use-composition.md' },
   { from: 'docs/rfcs/0020-uwx-terminology-alignment.md', to: 'about/rfcs/0020-uwx-terminology-alignment.md' },
+  // Keep in step with the index table in docs/rfcs/README.md — that file is
+  // copied to about/rfcs/index.md and links every row, so an RFC listed there
+  // but missing here is a dead link and VitePress fails the build.
+  { from: 'docs/rfcs/0021-composable-documents.md', to: 'about/rfcs/0021-composable-documents.md' },
+  { from: 'docs/rfcs/0022-market-data-documents.md', to: 'about/rfcs/0022-market-data-documents.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
