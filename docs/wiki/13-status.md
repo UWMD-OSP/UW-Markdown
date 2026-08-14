@@ -2,9 +2,10 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 (full pass: build green across all workspaces,
-622 tests green — 565 core, 39 excel, 14 cli, 3 report, 1 batch — 101 conformance
-assertions green, 10/10 schemas valid, Biome clean over 269 files).
+**Last verified:** 2026-08-13 at `ea2c3b7` (full pass: build green across all
+workspaces; **694 tests** — 577 core, 69 excel, 41 cli, 4 batch, 3 report — plus
+**63 web-editor**; **105 conformance** assertions; 10/10 schemas valid; Biome
+clean over 275 files; docs site builds with no dead links).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -34,7 +35,7 @@ not core gaps.
 
 - **Specs:** format (`spec/UW_FORMAT_SPEC_v1.md`, 23 subsections, CC-NN, YAML
   subset Appendix D) + protocol (`spec/UW_PROTOCOL_v1.md`, tiers, calc EBNF,
-  cascade §IX, context profiles §X) + 9 JSON Schemas. See [02](02-uwmd-format.md).
+  cascade §IX, context profiles §X) + 10 JSON Schemas. See [02](02-uwmd-format.md).
 - **Core Tiers 1–3:** parser, validator (CC/FV/DQ/INT/POL families wired to
   `BUILTIN_REMEDIATIONS`), editor (`applyEdit`/`applyEditAsync`, byte-preserving),
   renderer (`json`/`csv`/`chat`/`summary`). See [03](03-core-library.md).
@@ -53,15 +54,16 @@ not core gaps.
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
-- **CLI:** 17 commands (incl. `export` → `.uw.json` and `receipt issue|verify`).
+- **CLI:** 19 commands (incl. `export` → `.uw.json` and `receipt issue|verify`).
   See [08](08-tools.md).
-- **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uw.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
+- **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uwx.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
 - **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** 29 fixtures, 4 tiers plus the named `lite` and `receipts`
-  suites; CI gates tiers 1–3 + both named suites. See [09](09-conformance-testing.md).
+- **Conformance:** **105 assertions** across 4 tiers plus the named `lite` and
+  `receipts` suites; CI gates tiers 1–3 + both named suites. See
+  [09](09-conformance-testing.md).
 - **Verification receipts (RFC 0016):** `receipts.ts` issues and verifies
   detached receipts binding a record's canonical digest to the deterministic
   outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
@@ -70,6 +72,13 @@ not core gaps.
   `unverifiable` distinct from `failed`. **Unsigned only** — signature creation
   and validation await the RFC 0010 signing package, and a signed receipt
   correctly reports `unverifiable` until one exists.
+- **Excel round-trip:** `.uwx.md → .xlsx` via `toWorkbook.ts`, and **reverse
+  import** `.xlsx → section fragments` via `fromWorkbook.ts` (shipped 2026-08-13).
+  Every workbook also carries a **`UW MCP` sheet** (`mcpSheet.ts`) — machine-readable
+  identity, producing pack, source semantic digest, a metric dictionary in
+  calc-engine source form, and an explicit assurance boundary.
+  `verifyWorkbookContract()` is three-state; `unverifiable` is kept distinct from
+  `failed`, because an older export is not evidence of tampering.
 - **Report renderer + PDF pipeline:** `report.ts` in core renders the spec's
   §7.1 Lender Package / §7.2 Credit Memo as deterministic print-ready HTML
   (`renderReportHtml`, browser-safe, `uwmd report` CLI); `@uwmd/report`
@@ -152,14 +161,31 @@ not core gaps.
   > figure is ~82%; excluding barrels and agents, ~85%. Worth deciding whether
   > the `exclude` list should reflect that — a floor over a denominator padded
   > with re-export lists is a weaker signal than it looks. Deliberately left out
-  > of T17, which only moved the floor. The **web-editor** now has a Vitest suite
-  (56 tests, 7 files): the `runEdit()` chokepoint + catalog helpers (node), jsdom
-  component tests for the footed surfaces and inline-remediation wiring, receipt
-  issuance/verification incl. the stale-vs-failed distinction and a forced
-  Web-Crypto path, and an axe-core a11y smoke check.
+  > of T17, which only moved the floor.
+
+  The **web-editor** has its own Vitest suite (63 tests, 8 files): the
+  `runEdit()` chokepoint + catalog helpers (node), jsdom component tests for the
+  footed surfaces and inline-remediation wiring, receipt issuance/verification
+  incl. the stale-vs-failed distinction and a forced Web-Crypto path, an
+  axe-core a11y smoke check, and the metric strip's asset-class awareness (T14).
+
+  > **Test files are not typechecked.** `tsconfig.json` excludes
+  > `src/**/*.test.ts` and Vitest transpiles with esbuild, so a type error in a
+  > test is invisible to both `npm run build` and `npm test`. Any compile-time
+  > assertion written in a test file — an exhaustiveness `Record`, a `satisfies`,
+  > an expect-error helper — is therefore **inert**. Put it in a source file
+  > where `tsc` sees it; `ASSET_CLASSES` in `types.ts` is the worked example.
+  > This cost real time during T16 before it was noticed.
 - **Examples = 9 deals** (multifamily, office, retail, industrial, self-storage,
-  hospitality, senior housing, student housing, land); other loan types
-  undemonstrated.
+  hospitality, senior housing, student housing, land) plus `parkview-after-L6`;
+  other loan types undemonstrated. All are `.uwx.md` as of RFC 0020 — they were
+  structured records on the legacy `.uw.md` extension, which the project's own
+  detector flagged on every load.
+
+  > **No UW Lite example exists.** The repo specifies Lite normatively in
+  > `spec/UW_LITE_SPEC_v1.md` and ships zero instances of it. That gap is
+  > plausibly *why* the two representations blurred together in the docs for so
+  > long. Small, cheap, and worth doing to stop the confusion recurring.
 - **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
   FAQ/troubleshooting, and a calc "calling-convention" guide are still missing.
 
@@ -170,10 +196,24 @@ not core gaps.
   instead of returning an apparently successful empty document. PDF is built via
   `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
   that package.
-- **Reverse Excel (`.xlsx → .uw.md`)** — not built; converter is one-way.
+- **`uwmd init` still writes `.uw.md` by default** — a live defect surfaced by
+  RFC 0020, not fixed by it. `cli.ts` derives the default output filename as
+  `new-deal.uw.md` (or `<name>.uw.md`), while `generateBlankUWFile()` emits
+  `uw_version` and fenced `uw:section=` blocks — structured UWX content. So the
+  CLI creates exactly the file the format spec now says not to create, and which
+  `detectUWSourceRepresentation()` flags as legacy on the next load. The help
+  text and header were corrected; **the default filename is a behaviour change to
+  a published CLI and was deliberately left for a separate decision.** The other
+  extension-derived paths in `cli.ts` (export, report, convert suffix handling)
+  should be reviewed in the same pass.
 - **Provider-neutral agent host** — `agents/bancroft.ts` is hard-coupled to
   `@anthropic-ai/sdk`; no second backend despite the provider-neutral §IX claim.
+  **Highest-risk remaining item:** the SDK may be imported only from code
+  reachable via `index.ts`, never from anything `browser.ts` re-exports, so a
+  careless refactor here breaks the browser boundary.
 - **Tier-4 conformance** — shape/lint-only; no live-LLM or recorded-replay gate.
+  Pairs naturally with the agent-host work above, and would also close the
+  largest coverage hole (`agents/`, 510 lines at 0%).
 - **Market-data / investor-profile** — interface-only; no reference implementation.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
   RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
@@ -220,11 +260,26 @@ two spec invariants asserted without baselines — the §7 canonical-rendering
 round-trip and the §6 display-equivalence digest match. That took the corpus
 from 26 to 90 assertions. The `receipts` suite then added 11 more (two issuance
 scenarios each carrying a re-issuance-stability invariant, five verification
-outcomes, two refusals), bringing the corpus to 101.
+outcomes, two refusals), bringing the corpus to 101; Tier-3 fixtures for the four
+newest asset classes brought it to **105**.
 
-The structured spec rename is in progress. Receipt **signing** remains
-unimplemented and is blocked on the RFC 0010 signing package; unsigned issuance
-and verification ship today.
+**The terminology alignment is done** ([RFC 0020](../rfcs/0020-uwx-terminology-alignment.md),
+2026-08-13). `UW_FORMAT_SPEC_v1.md` had never been updated for the split — it
+contained zero occurrences of `.uwx.md` while describing the full section model,
+and since the docs site renders the spec directly, uwmd.org repeated that to
+every visitor. The format, protocol, XML, and CSV specs and `README.md` are now
+aligned, the format spec carries a **Naming** section fixing the vocabulary
+(*UW Markdown* the standard, `.uwx.md` the lossless record, `.uw.md` UW Lite),
+and all ten examples were renamed to `.uwx.md`. The library never had the bug —
+`source-representation.ts` already carried `UWX_EXTENSION` and the legacy
+warning, which every example was tripping.
+
+> **Legacy `.uw.md` sniffing has no expiry.** RFC 0017 introduced it as a
+> transition path and RFC 0020 deliberately declined to schedule its end. That
+> decision should be made before 1.0 rather than drifting into permanence.
+
+Receipt **signing** remains unimplemented and is blocked on the RFC 0010 signing
+package; unsigned issuance and verification ship today.
 
 ## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
 
@@ -249,34 +304,76 @@ bus factor, personal security email, and no public RFC venue.
 
 ## Suggested priority order
 
-1. **Finish surfacing receipts** — the library, CLI, **web editor**, and
-   **docs-site** ship (the editor's Receipt tab issues and verifies
-   client-side with a UI-level `stale` state; the docs-site publishes the
-   normative spec plus a human-facing guide at `/guide/receipts`, sourced from
-   `docs/UW_RECEIPTS.md`), and the **VS Code extension** verifies the sidecar
-   beside an open deal (`uwmd.verifyReceipt`; it deliberately does not issue).
-   Every surface honours the `UW_RECEIPT_v1.md` §1 assurance boundary rather
-   than showing a bare checkmark. What remains is receipt **signing**, blocked
-   on the RFC 0010 signing package — until it exists a signed receipt correctly
-   reports `unverifiable`.
-2. **Batch workflow expansion** — build deterministic filters, summaries, and underwriting queue projections over the collection index; retain `.uw.md` as the canonical source and add any shared storage semantics only through a future RFC.
-3. **`mixed_use` — the last class, and a design question before a pack** —
-   nine classes have landed end-to-end (pack +
-   defaults + worked example + Excel layout). Keep widening coverage. Each is a
-   library-only change (no RFC); add a worked example whose operating statement
-   foots, and a `WorkbookLayout`. See [05 recipe](05-calc-packs.md), [08](08-tools.md).
-4. **Module loader hardening** — the v1 in-process loader exists; next steps are
-   richer schema validation, recorded fixtures, and host UX for loading manifests
-   from files (module signing/custom asset-class identifiers stay v2/RFC work).
-5. **Unit tests for validator CC/FV plus untested core helpers** (`compactor.ts`,
-   `init.ts`, `format.ts`, `context.ts`, core `cli.ts`) — largest remaining
-   under-tested surfaces; then ratchet the CI coverage floor.
-6. **DOCX path** (or formally scope it out) — PDF landed via `report.ts` +
-   `@uwmd/report`; Word remains the gap for institutions that edit memos.
-7. **Recorded-replay Tier-4 + a second agent backend** — proves the agent contract
-   is actually provider-neutral.
+> **Blocked on acceptance, not on code.** Three RFCs are drafted and awaiting the
+> owner's decision; nothing should be implemented against them until then:
+> [0018](../rfcs/0018-document-profiles-and-deal-packages.md) (document profiles
+> and deal packages), [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use`
+> composition — gates the last asset class), and
+> [0020](../rfcs/0020-uwx-terminology-alignment.md) (the `.uwx.md` terminology
+> correction, whose prose has already landed).
 
----
+### Large
+
+1. **Provider-neutral agent host + recorded-replay Tier-4.** Take these as a
+   pair: they share the agent contract, and neither is provable without the
+   other. `agents/bancroft.ts` is hard-coupled to `@anthropic-ai/sdk` despite the
+   protocol's provider-neutral §IX claim, and Tier-4 conformance is shape/lint
+   only, so nothing today demonstrates the contract holds for a second backend.
+   Record real exchanges once, replay them deterministically with no network and
+   no API key. Also closes the largest coverage hole (`agents/`, 510 lines at 0%).
+   **Watch the browser boundary:** the SDK may be imported only from code
+   reachable via `index.ts`, never from anything `browser.ts` re-exports.
+2. **DOCX path — or formally scope it out.** PDF landed via `report.ts` +
+   `@uwmd/report`; Word remains the gap for institutions that edit memos. If it
+   is built, reuse `report.ts`'s deterministic model rather than forking the
+   renderer, and keep core's typed `UnsupportedRenderFormatError` pointing at the
+   new package as `pdf` already does. Scoping it out is a legitimate outcome and
+   should be recorded as one rather than left ambiguous.
+
+### Medium
+
+3. **Module loader hardening.** The v1 in-process loader exists; next steps are
+   richer schema validation, recorded fixtures, and host UX for loading manifests
+   from files. Module signing (RFC 0002) and custom asset-class identifiers
+   (RFC 0003) stay v2/RFC work and are explicitly out of scope.
+4. **Market-data / investor-profile reference implementation.** Interface-only
+   today, so the top two cascade steps have no worked example.
+5. **Batch workflow expansion.** Deterministic filters, summaries, and
+   underwriting-queue projections over the collection index. `.uwx.md` remains
+   the canonical source; shared storage semantics only through a future RFC.
+6. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
+   filters by `section_id` only, so a land deal is offered a "Total units" input
+   and a student-housing deal gets one too, though that class sizes per bed. The
+   metric strip is already class-aware and pinned (T14); this is the input side.
+   Needs the per-class field mapping decided first — hiding a field users need is
+   worse than showing a spare one, so default to opt-out.
+
+### Small, unblocked, high value per hour
+
+7. **Fix `uwmd init`'s default output extension.** It writes structured UWX
+   content to `new-deal.uw.md`, which the format spec now forbids and the
+   library's own detector flags as legacy. A behaviour change to a published
+   CLI, so it wants a deliberate decision and a CHANGELOG line — but it is small,
+   and every deal a newcomer scaffolds is currently born legacy. Review the other
+   extension-derived paths in `cli.ts` at the same time.
+8. **A UW Lite worked example.** Lite is normatively specified and has zero
+   instances in `examples/`. Cheapest item here and it removes the root cause of
+   the Lite/UWX documentation drift RFC 0020 had to correct.
+9. **Decide the coverage `exclude` list.** Measured 77% is padded by 838 lines of
+   re-export barrels; excluding them the figure is ~82%, and ~85% without
+   `agents/`. A floor over a padded denominator is a weaker signal than it looks.
+10. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+   transition path with no expiry, and RFC 0020 declined to set one. Worth
+   settling before 1.0 rather than letting it drift into permanence.
+
+### Ongoing
+
+11. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
+    "calling-convention" guide are still missing.
+12. **Operational launch gates** — single-maintainer bus factor, personal
+    security email, and no public RFC venue remain review-flagged. The Excel
+    add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
+    or formally risk-accepted.
 
 ## How to keep this current
 

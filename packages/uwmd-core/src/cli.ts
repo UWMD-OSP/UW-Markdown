@@ -1046,7 +1046,7 @@ switch (command) {
 
   default:
     console.log(`
-uwmd — .uw.md underwriting file toolkit
+uwmd — UW Markdown underwriting file toolkit
 
 Commands:
   parse    <file>              Parse file and output JSON
@@ -1058,7 +1058,7 @@ Commands:
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
-  init                         Generate a blank .uw.md file
+  init                         Generate a blank .uwx.md file
   summary  <file>              Print quick metrics to terminal
   export   <file>              Export a digested UW JSON 1.0 document
   formats                       List registered machine representations
