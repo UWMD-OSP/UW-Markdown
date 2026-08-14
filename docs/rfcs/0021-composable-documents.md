@@ -1,9 +1,10 @@
 ---
 rfc: 0021
 title: Composable UWX documents — section externalization, composites, and rollup receipts
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-13
+accepted: 2026-08-13
 depends_on:
   - 0018
 affects:
@@ -291,6 +292,17 @@ the stated total follows deterministically from those child records as they
 stand. It does not mean the children are complete, that the portfolio contains
 every asset it should, or that any input is true.
 
+**Shared receipt surface.** This section amends the receipt format defined by
+RFC 0016, and so does [RFC 0022 §3](./0022-market-data-documents.md) (which adds
+`inputs_provenance`). The two amendments are additive and do not collide on field
+names, but the same discipline RFC 0018 §5 applied to the edge registry applies
+here: **RFC 0016 owns the receipt format**, both amendments live in
+`UW_RECEIPT_v1.md` and `uw-receipt.schema.json`, and whichever is implemented
+first establishes the extension section while the second amends it rather than
+forking a parallel one. `receipt_version` is bumped **once** to cover both; two
+independent bumps for two simultaneously-accepted RFCs would make the version
+meaningless.
+
 ### 7. Error codes
 
 | Code | Meaning |
@@ -381,6 +393,9 @@ A new named `composition` suite:
 5. **Put composition in Lite as well.** Rejected; see §3.
 
 ## Unresolved questions
+
+None of the following blocks acceptance; each is deferred to implementation or
+to a later RFC, and none changes the invariance rule the design rests on.
 
 - Whether a fragment may itself externalize (fragments containing fragments).
   Currently forbidden by omission; the depth bound would cover it if allowed.

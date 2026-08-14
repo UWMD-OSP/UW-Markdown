@@ -44,8 +44,8 @@ and how it gets accepted.
 | [0018](./0018-document-profiles-and-deal-packages.md) | Composable document profiles and deal packages | accepted | format, protocol, core, conformance, tooling |
 | [0019](./0019-mixed-use-composition.md) | Mixed-use composition as a document shape | draft | format, protocol, core, conformance, tooling |
 | [0020](./0020-uwx-terminology-alignment.md) | Align the format spec and examples with `.uwx.md` | draft | format, protocol, conformance, tooling |
-| [0021](./0021-composable-documents.md) | Composable UWX documents — externalization, composites, rollup receipts | draft | format, protocol, core, conformance, tooling |
-| [0022](./0022-market-data-documents.md) | Market data as an attributable UW document | draft | format, protocol, core, conformance, tooling |
+| [0021](./0021-composable-documents.md) | Composable UWX documents — externalization, composites, rollup receipts | accepted | format, protocol, core, conformance, tooling |
+| [0022](./0022-market-data-documents.md) | Market data as an attributable UW document | accepted | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

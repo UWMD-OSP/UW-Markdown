@@ -9,6 +9,36 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Governance
+- **RFC 0021 and RFC 0022 accepted (2026-08-13).** With 0018, the arc
+  0018 → 0021 → 0022 is approved end to end.
+
+  **0021 — composable UWX documents.** Section externalization into `.uwpart.md`
+  fragments, recursive composites, shared assumptions inherited along the
+  composition DAG, and rollup receipts. The design rests on one invariant:
+  an externalized record and its inline equivalent have the same semantic
+  digest, so composition is packaging rather than modelling. Rollup receipts
+  deliberately avoid the wall RFC 0019 hit — the Tier-3 sandbox has no iteration,
+  so a composite states aggregates and the receipt verifier recomputes them over
+  named child digests using a fixed, non-extensible `fn` vocabulary. **No calc
+  engine change.**
+
+  **0022 — market data as an attributable UW document.** `market-data-v1` with
+  required `as_of`, `provider`, and `basis`; receipts pin the observation set's
+  semantic digest, with an absent set reported `unverifiable` rather than
+  `failed`; and promotion to an input of record is explicit and tagged
+  `market_data_accepted` rather than being rewritten to `user_input`, so a value
+  accepted for lack of evidence stays distinguishable from one established by
+  diligence.
+
+  **Shared receipt surface.** Both amend the receipt format RFC 0016 owns — 0021
+  adds rollup verification, 0022 adds `inputs_provenance`. The amendments are
+  additive and do not collide, and both RFCs now carry the ownership rule
+  0018 §5 established for the edge registry: the amendments live in
+  `UW_RECEIPT_v1.md` and `uw-receipt.schema.json`, whichever is implemented first
+  establishes the extension section, and `receipt_version` bumps **once** to
+  cover both rather than twice for two simultaneously-accepted RFCs.
+
+  No code ships against either yet.
 - **RFC 0018 accepted (2026-08-13)** — document profiles and deal packages.
   Approves `lease-abstract-v1` and `source-note-v1`, the UW Deal Package
   (`.uwpkg.zip` with a manifest carrying per-member `sha256` and
