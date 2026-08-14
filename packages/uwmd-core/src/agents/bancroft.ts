@@ -1,17 +1,23 @@
-// Bancroft agent runner — calls Claude API and writes output back to .uw.md
+// Bancroft agent runner — asks a model for structured section output and writes
+// it back to the deal file.
 //
 // Flow:
 //   1. Build curated context for the requested agent layer
-//   2. Call Claude with the context + structured output tool
-//   3. Parse the tool_use response into section content
+//   2. Ask the provider for a completion, with the structured-output tool
+//   3. Parse the tool call into section content
 //   4. Write each output section via writeAgentBlock (supersedes prior versions)
 //   5. Return the updated file content + run metadata
 //
-// Uses Claude's tool_use mechanism for guaranteed JSON output. Claude must call
+// Uses tool calling for guaranteed JSON output. The model must call
 // write_uw_section (or write_multiple_uw_sections for multi-section layers);
 // if it doesn't, we retry up to maxRetries before writing an error log entry.
+//
+// **This module does not import a vendor SDK.** The default Anthropic provider
+// is loaded through a dynamic import only when no `provider` is supplied, so a
+// host that brings its own never pulls the SDK into its graph. `bancroft.test.ts`
+// asserts the absence of a static import, because "provider-neutral" is a claim
+// worth testing rather than trusting.
 
-import Anthropic from '@anthropic-ai/sdk';
 import type { ParsedUWFile } from '../types.js';
 import { parseUWFile } from '../parser.js';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from '../runner.js';
@@ -22,11 +28,27 @@ import {
   MULTI_SECTION_LAYERS,
   type ToolOutput,
 } from './schemas.js';
+import {
+  AgentProviderError,
+  type AgentCompletion,
+  type AgentProvider,
+  type AgentRequest,
+} from './provider.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
 export interface BancroftRunOptions {
-  apiKey: string;
+  /**
+   * API key for the built-in Anthropic provider. Ignored when `provider` is
+   * supplied. Optional so a host can run entirely on its own backend — but one
+   * of the two MUST be present.
+   */
+  apiKey?: string;
+  /**
+   * Bring your own backend: another vendor, a local model, a gateway, or a
+   * recorded cassette. When set, no vendor SDK is loaded.
+   */
+  provider?: AgentProvider;
   model?: string;
   maxRetries?: number;
   maxTokens?: number;
@@ -34,6 +56,41 @@ export interface BancroftRunOptions {
   userInstructions?: string;
   /** Called on each status update during the run */
   onProgress?: (event: ProgressEvent) => void;
+}
+
+/**
+ * Resolve the provider for a run: an explicit one wins, otherwise the built-in
+ * Anthropic provider is loaded lazily from an API key.
+ */
+async function resolveProvider(opts: BancroftRunOptions): Promise<AgentProvider> {
+  if (opts.provider) return opts.provider;
+  if (!opts.apiKey) {
+    throw new AgentProviderError(
+      'AGENT_PROVIDER_MISSING',
+      'runBancroftAgent requires either `provider` or `apiKey`.',
+    );
+  }
+  const { createAnthropicProvider } = await import('./providers/anthropic.js');
+  return createAnthropicProvider({ apiKey: opts.apiKey });
+}
+
+/** Assemble the neutral request shared by the buffered and streaming paths. */
+function buildRequest(
+  opts: BancroftRunOptions,
+  model: string,
+  systemPrompt: string,
+  userMessage: string,
+  isMultiSection: boolean,
+): AgentRequest {
+  return {
+    model,
+    max_tokens: opts.maxTokens ?? 4096,
+    temperature: opts.temperature ?? 0.1,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userMessage }],
+    tools: isMultiSection ? [WRITE_MULTIPLE_SECTIONS_TOOL] : [WRITE_UW_SECTION_TOOL],
+    tool_choice: 'any',
+  };
 }
 
 export interface ProgressEvent {
@@ -66,12 +123,9 @@ export async function runBancroftAgent(
   const maxRetries = opts.maxRetries ?? 2;
   const emit = opts.onProgress ?? (() => undefined);
 
-  const client = new Anthropic({ apiKey: opts.apiKey });
+  const provider = await resolveProvider(opts);
   const layerPrefix = agentId.match(/^(L\d+)/)?.[1] ?? 'L7';
   const isMultiSection = MULTI_SECTION_LAYERS.has(layerPrefix);
-  const tools: Anthropic.Tool[] = isMultiSection
-    ? [WRITE_MULTIPLE_SECTIONS_TOOL]
-    : [WRITE_UW_SECTION_TOOL];
   const toolName = isMultiSection ? 'write_multiple_uw_sections' : 'write_uw_section';
 
   let currentContent = fileContent;
@@ -104,29 +158,21 @@ export async function runBancroftAgent(
   let totalInput = 0;
   let totalOutput = 0;
   let toolOutputs: ToolOutput[] = [];
-  let rawResponse: Anthropic.Message | null = null;
+  const request = buildRequest(opts, model, systemPrompt, userMessage, isMultiSection);
 
   while (retries <= maxRetries) {
-    emit({ stage: 'calling_claude', agentId, message: `Calling ${model} (attempt ${retries + 1}/${maxRetries + 1})` });
+    emit({ stage: 'calling_claude', agentId, message: `Calling ${model} via ${provider.id} (attempt ${retries + 1}/${maxRetries + 1})` });
 
     try {
-      rawResponse = await client.messages.create({
-        model,
-        max_tokens: opts.maxTokens ?? 4096,
-        temperature: opts.temperature ?? 0.1,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMessage }],
-        tools,
-        tool_choice: { type: 'any' },
-      });
+      const completion = await provider.complete(request);
 
-      totalInput += rawResponse.usage.input_tokens;
-      totalOutput += rawResponse.usage.output_tokens;
+      totalInput += completion.usage.input_tokens;
+      totalOutput += completion.usage.output_tokens;
 
-      toolOutputs = extractToolOutputs(rawResponse, toolName);
+      toolOutputs = extractToolOutputs(completion, toolName);
 
       if (toolOutputs.length === 0) {
-        lastError = `Claude did not call the ${toolName} tool`;
+        lastError = `The model did not call the ${toolName} tool`;
         retries++;
         continue;
       }
@@ -189,19 +235,17 @@ export async function runBancroftAgent(
   };
 }
 
-// ─── Parse Claude's tool_use response ────────────────────────────────────────
+// ─── Parse the provider's tool calls ─────────────────────────────────────────
 
-function extractToolOutputs(response: Anthropic.Message, toolName: string): ToolOutput[] {
-  const toolUseBlocks = response.content.filter(
-    (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use' && b.name === toolName,
-  );
+function extractToolOutputs(completion: AgentCompletion, toolName: string): ToolOutput[] {
+  const toolUseBlocks = completion.tool_calls.filter((call) => call.name === toolName);
 
   if (toolUseBlocks.length === 0) return [];
 
   const results: ToolOutput[] = [];
 
   for (const block of toolUseBlocks) {
-    const input = block.input as Record<string, unknown>;
+    const input = block.input;
 
     if (toolName === 'write_multiple_uw_sections') {
       // Multi-section tool: input.sections is an array of section outputs
@@ -236,12 +280,9 @@ export async function runBancroftAgentStreaming(
   const model = opts.model ?? 'claude-sonnet-4-6';
   const emit = opts.onProgress ?? (() => undefined);
 
-  const client = new Anthropic({ apiKey: opts.apiKey });
+  const provider = await resolveProvider(opts);
   const layerPrefix = agentId.match(/^(L\d+)/)?.[1] ?? 'L7';
   const isMultiSection = MULTI_SECTION_LAYERS.has(layerPrefix);
-  const tools: Anthropic.Tool[] = isMultiSection
-    ? [WRITE_MULTIPLE_SECTIONS_TOOL]
-    : [WRITE_UW_SECTION_TOOL];
   const toolName = isMultiSection ? 'write_multiple_uw_sections' : 'write_uw_section';
 
   const currentParsed = parseUWFile(fileContent);
@@ -264,29 +305,24 @@ export async function runBancroftAgentStreaming(
   }
 
   const { systemPrompt, userMessage } = buildAgentPrompt(ctx, opts.userInstructions);
+  const request = buildRequest(opts, model, systemPrompt, userMessage, isMultiSection);
 
-  emit({ stage: 'calling_claude', agentId, message: `Streaming ${model}` });
+  emit({ stage: 'calling_claude', agentId, message: `Streaming ${model} via ${provider.id}` });
 
   let totalInput = 0;
   let totalOutput = 0;
   let toolOutputs: ToolOutput[] = [];
 
   try {
-    // Collect the full streamed response before processing
-    const stream = await client.messages.stream({
-      model,
-      max_tokens: opts.maxTokens ?? 4096,
-      temperature: opts.temperature ?? 0.1,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
-      tools,
-      tool_choice: { type: 'any' },
-    });
+    // A provider that cannot stream falls back to the buffered path. Streaming
+    // is a latency optimisation; refusing the run over it would be wrong.
+    const completion = provider.stream
+      ? await provider.stream(request)
+      : await provider.complete(request);
 
-    const response = await stream.finalMessage();
-    totalInput = response.usage.input_tokens;
-    totalOutput = response.usage.output_tokens;
-    toolOutputs = extractToolOutputs(response, toolName);
+    totalInput = completion.usage.input_tokens;
+    totalOutput = completion.usage.output_tokens;
+    toolOutputs = extractToolOutputs(completion, toolName);
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
     return {
@@ -309,7 +345,7 @@ export async function runBancroftAgentStreaming(
       tokensUsed: { input: totalInput, output: totalOutput },
       durationMs: Date.now() - startMs,
       logEntryIds: [],
-      error: 'Claude did not call the write tool',
+      error: 'The model did not call the write tool',
       retries: 0,
     };
   }
