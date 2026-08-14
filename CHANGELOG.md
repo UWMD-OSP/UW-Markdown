@@ -9,6 +9,47 @@ protocol, and each package each carry an independent semver).
 ## [Unreleased]
 
 ### Added
+- **RFC 0023 implemented — a numeric model and a single quantization boundary
+  (protocol §VIII.5).** The spec now states how precise a number is. Evaluation
+  runs in unrounded IEEE 754 binary64; a calculation's *reported* value is
+  quantized half away from zero at exactly one place, `evaluateCalc()`, to its
+  effective decimal places. `ModuleCalcDecl` gains an optional `round_to`
+  (integer `[0, 12]`), defaulted from `unit` by a normative table (`$`→2,
+  `%`→6, `x`→4, otherwise 6) that is deliberately total — an unspecified
+  precision is an unspecified interoperability contract.
+
+  New `calc/quantize.ts` exports `quantizeDecimal`, `resolveRoundTo`,
+  `MAX_ROUND_TO`, `DEFAULT_ROUND_TO`, and `DEFAULT_ROUND_TO_BY_UNIT` from both
+  `index.ts` and `browser.ts`. `CalcResult` echoes the effective `round_to`.
+  New loader code `PROTO-MOD-067` refuses a malformed one. Corpus 147 → 153.
+
+### Fixed
+- **A receipt could report a clean record as corrupted.** `receipts.ts` ran two
+  checks over the same numbers that could not both be right:
+  `RECEIPT_RESULT_TOLERANCE` compared stated against recomputed at `1e-6`, while
+  `results_digest` hashed those same raw doubles bit-exactly. A last-ULP
+  difference passed the tolerant check and failed the exact one, surfacing as
+  `RCP-04` — corruption. Quantized results leave no tail for the two to disagree
+  about. Receipts issued before this degrade to `unverifiable` rather than
+  `failed`, via the existing `RCP-07` engine-version rule.
+- **`round(num, dec)` diverged from its own documented contract.** It scaled by
+  `10 ** dec`, which reintroduces the artifact it exists to remove:
+  `1.005 * 100` is `100.49999999999999`, so `round(1.005, 2)` returned `1.00`
+  where spreadsheet `ROUND` returns `1.01`. §VIII.3 already specified
+  half-away-from-zero, so this is errata, not a behavior change.
+
+### Changed
+- **Excel↔evaluator parity is now asserted as exact equality**, replacing
+  agreement to six decimals, across all nine asset classes. Formulas are emitted
+  through the new `emitCalcExcelFormula`, which wraps them in
+  `ROUND(expr, round_to)` so the workbook cell quantizes exactly as
+  `evaluateCalc` does. `emitExcelFormula` still emits the bare expression;
+  converters should prefer the new function.
+- `@uwmd/core` **1.1.2 → 1.2.0**. The bump is load-bearing: it is what makes
+  `RCP-07` classify a pre-quantization receipt as indeterminate rather than
+  failed.
+
+### Added
 - **RFC 0018 implemented — document profiles and deal packages.** The edge
   registry landed first, per the ordering constraint: `BUILTIN_EDGE_TYPES` in
   `protocol.ts` is the single canonical two-layer vocabulary, with `guarantees`

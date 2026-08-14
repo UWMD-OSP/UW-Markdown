@@ -704,9 +704,65 @@ Identifiers and dot-paths resolve against the
 Calc hosts MUST be deterministic across runs and platforms. No
 function in the standard library may consult system time, environment
 variables, or randomness. Floating-point operations MUST follow IEEE
-754 double precision.
+754 double precision. Determinism of the *reported* value additionally
+requires the quantization rule in §VIII.5.
 
-### VIII.5 CalcError taxonomy
+### VIII.5 Numeric model
+
+Evaluation and reporting are separate concerns, and this section fixes
+the boundary between them. Without it, two conforming hosts agree on
+every arithmetic step and still disagree in the last unit in the last
+place — which is invisible to a tolerant comparison and fatal to a
+digest. UW Receipts (`UW_RECEIPT_v1.md`) hash calc outputs, so an
+unstated precision is an unstated interoperability contract.
+
+**Evaluation.** A host MUST evaluate expressions in IEEE 754 binary64
+and MUST NOT round intermediate values. Rounding inside an expression
+happens only where the author asked for it with `round(num, dec)`.
+
+**Reporting.** The `value` a host reports for a calculation MUST be
+quantized to that calculation's *effective decimal places*, using
+**half away from zero** — the same rule `round()` implements and the
+same rule spreadsheet `ROUND` implements, which is what makes the two
+comparable. `-2.5` at 0 places is `-3`, not `-2`.
+
+**Effective decimal places** are the declaration's `round_to` when it
+states one; otherwise the default for its `unit`:
+
+| `unit` | Default `round_to` | Rationale |
+|---|---|---|
+| `$` | 2 | Money is quantized to cents. |
+| `%` | 6 | Rates are fractions (`0.0551`), so six places on the fraction is four on the percentage a reader sees. |
+| `x` | 4 | The precision lender term sheets quote ratios such as DSCR at. |
+| absent, or any other value | 6 | Residual case; matches the rate default rather than introducing a second convention. |
+
+There is deliberately no "unspecified precision" mode: the table is
+total, so every declaration has an effective precision whether or not
+its author thought about one.
+
+`round_to` MUST be an integer in `[0, 12]`. Past roughly fifteen
+significant decimal digits a binary64 carries no fractional
+information left to quantize, so a larger value would state a
+precision the representation cannot hold.
+
+**Quantization is not display.** A host's `display` string is a
+presentation concern and MAY apply its own locale, symbol, and
+precision (§ `DEFAULT_NUMBER_FORMAT`). Digests, equality checks, and
+Excel parity are defined over `value`, never over `display`.
+
+**Digests.** Any digest taken over calc outputs — a receipt's
+`results_digest` in particular — MUST be taken over quantized values.
+A host that hashes unquantized results produces digests that do not
+reproduce across platforms.
+
+> **Implementation note.** Quantizing by multiplying by `10 ** dec`
+> reintroduces the artifact it is meant to remove: `1.005 * 100` is
+> `100.49999999999999`, so that formulation yields `1.00` where
+> spreadsheet `ROUND` yields `1.01`. Shifting through a decimal string
+> (`Number("1.005e2")` → `100.5`) is correctly rounded and agrees.
+> See `packages/uwmd-core/src/calc/quantize.ts`.
+
+### VIII.6 CalcError taxonomy
 
 | Code | Meaning |
 |---|---|

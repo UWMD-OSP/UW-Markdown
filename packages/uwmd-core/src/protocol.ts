@@ -522,9 +522,19 @@ export interface CalcEvaluationContext {
 export interface CalcResult {
   calc_id: string;
   ok: boolean;
+  /**
+   * The result. A numeric value is **quantized** per §VIII.5 — the reported
+   * value is the one a digest covers, so it carries no unquantized tail.
+   */
   value: number | string | boolean | null;
   /** Unit string from the calc declaration (e.g. "%", "$", "x"). */
   unit?: string;
+  /**
+   * Decimal places `value` was quantized to. Echoed rather than left implicit so
+   * a consumer can see the precision contract it actually got, including when
+   * the declaration relied on the unit default.
+   */
+  round_to?: number;
   /** Formatted display string per DEFAULT_NUMBER_FORMAT. */
   display?: string;
   error?: ProtocolError;
@@ -582,6 +592,13 @@ export interface ModuleCalcDecl {
   label: string;
   formula: string;                  // safe-expression string
   unit?: string;
+  /**
+   * Decimal places the reported value is quantized to, half away from zero
+   * (§VIII.5). Integer in [0, 12]. Omitted means "use the normative default for
+   * `unit`" — see `resolveRoundTo` in `calc/quantize.ts`. This is a precision
+   * *contract*, not a display hint; `display` remains separate.
+   */
+  round_to?: number;
   /** True if the formula has no side effects and same inputs → same output. */
   deterministic: boolean;
 }

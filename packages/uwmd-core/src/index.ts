@@ -172,6 +172,16 @@ export type { EditContext, EditResult, EditOptions } from './editor.js';
 
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
+// The §VIII.5 quantization boundary. Exported because a host that reports its
+// own derived numbers alongside pack results must quantize them the same way, or
+// its receipt digest will not reproduce.
+export {
+  quantizeDecimal,
+  resolveRoundTo,
+  DEFAULT_ROUND_TO,
+  DEFAULT_ROUND_TO_BY_UNIT,
+  MAX_ROUND_TO,
+} from './calc/index.js';
 
 export {
   MULTIFAMILY_PACK,
@@ -186,6 +196,7 @@ export {
   getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
+  emitCalcExcelFormula,
   ExcelEmitError,
 } from './packs/index.js';
 export type { ExcelEmitOptions } from './packs/index.js';

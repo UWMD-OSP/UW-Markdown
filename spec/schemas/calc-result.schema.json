@@ -18,11 +18,17 @@
     },
     "value": {
       "type": ["number", "string", "boolean", "null"],
-      "description": "Result of the expression. Null when an input was null (per the null-propagation rule §VIII.2) or when ok=false."
+      "description": "Result of the expression. A numeric value is quantized to `round_to` decimal places, half away from zero, per §VIII.5 — it carries no unquantized tail, and it is this value that a receipt digest covers. Null when an input was null (per the null-propagation rule §VIII.2) or when ok=false."
     },
     "unit": {
       "type": "string",
       "description": "Unit string copied from the calc declaration (e.g. '%', '$', 'x', 'units'). Renderers use this to pick a number formatter."
+    },
+    "round_to": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 12,
+      "description": "Decimal places `value` was quantized to — the declaration's `round_to` when it stated one, otherwise the §VIII.5 default for `unit`. Echoed so a consumer can see the precision contract it received rather than having to re-derive it."
     },
     "display": {
       "type": "string",
@@ -39,13 +45,15 @@
       "ok": true,
       "value": 104.76,
       "unit": "$",
+      "round_to": 2,
       "display": "$104.76"
     },
     {
       "calc_id": "implied_dscr",
       "ok": true,
-      "value": 1.3895781637717122,
+      "value": 1.3896,
       "unit": "x",
+      "round_to": 4,
       "display": "1.390x"
     },
     {

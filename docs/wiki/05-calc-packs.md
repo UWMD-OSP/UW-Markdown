@@ -27,15 +27,15 @@ File | Role
 `packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
 `packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
-`packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (6 decimals)
-`packs/office.test.ts` | Office pack integrity + Excel↔evaluator parity (6 decimals)
-`packs/retail.test.ts` | Retail pack integrity + Excel↔evaluator parity (6 decimals)
-`packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (6 decimals)
-`packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (6 decimals)
-`packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (6 decimals) + operating-statement footing
-`packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing/labor-subtotal reconciliation
-`packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (6 decimals) + footing + bed-sizing guard
-`packs/land.test.ts` | Land pack integrity + Excel↔evaluator parity (6 decimals) + carry-model footing + income-metric omission guard
+`packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (exact)
+`packs/office.test.ts` | Office pack integrity + Excel↔evaluator parity (exact)
+`packs/retail.test.ts` | Retail pack integrity + Excel↔evaluator parity (exact)
+`packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (exact)
+`packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (exact)
+`packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (exact) + operating-statement footing
+`packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (exact) + footing/labor-subtotal reconciliation
+`packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (exact) + footing + bed-sizing guard
+`packs/land.test.ts` | Land pack integrity + Excel↔evaluator parity (exact) + carry-model footing + income-metric omission guard
 
 ## Selecting a pack by asset class
 

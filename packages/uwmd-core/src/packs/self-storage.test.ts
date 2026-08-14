@@ -8,6 +8,7 @@ import { evaluateCalc } from '../calc/index.js';
 import { parseExpression } from '../calc/parser.js';
 import { parseUWFile } from '../parser.js';
 import { emitExcelFormula } from './excel-emit.js';
+import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { SELF_STORAGE_PACK } from './self-storage.js';
 
 const EXAMPLE = resolve(__dirname, '../../../../examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md');
@@ -99,7 +100,12 @@ describe('SELF_STORAGE_PACK', () => {
       expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = new Function(`return (${formula});`)() as number;
-      expect(excelLike, c.id).toBeCloseTo(direct.value as number, 6);
+      // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
+      // (§VIII.5), so the simulated result is quantized the same way. Parity is
+      // then *exact* rather than approximate: one identical rounding rule on both
+      // sides, which is the whole point of having a quantization boundary.
+      const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));
+      expect(excelCell, c.id).toBe(direct.value as number);
     }
   });
 });

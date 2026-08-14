@@ -26,6 +26,7 @@
 //     (`coalesce`, `avg` with null handling) raise EXCEL-EMIT-FN.
 
 import { parseExpression, type Expr } from '../calc/parser.js';
+import { resolveRoundTo } from '../calc/quantize.js';
 
 export interface ExcelEmitOptions {
   /**
@@ -147,7 +148,27 @@ export function emitFromAst(expr: Expr, opts: ExcelEmitOptions): string {
   }
 }
 
-/** Convenience: parse + emit in one call. */
+/** Convenience: parse + emit in one call. Emits the expression only. */
 export function emitExcelFormula(formula: string, opts: ExcelEmitOptions): string {
   return emitFromAst(parseExpression(formula), opts);
+}
+
+/**
+ * Emit the formula for a calculation *declaration*, wrapped in `ROUND` at the
+ * declaration's effective `round_to` (§VIII.5).
+ *
+ * This is what converters should call. `emitExcelFormula` emits the bare
+ * expression, which leaves the cell holding Excel's own unquantized double
+ * while `evaluateCalc` reports a quantized one — the two then agree only to
+ * within a tolerance. Applying the same quantization on both sides makes the
+ * Excel↔evaluator invariant an *exact* equality instead of an approximate one,
+ * because Excel's `ROUND` is half-away-from-zero, the same rule
+ * `quantizeDecimal` implements.
+ */
+export function emitCalcExcelFormula(
+  decl: { formula: string; unit?: string; round_to?: number },
+  opts: ExcelEmitOptions,
+): string {
+  const inner = emitFromAst(parseExpression(decl.formula), opts);
+  return `ROUND(${inner},${resolveRoundTo(decl)})`;
 }

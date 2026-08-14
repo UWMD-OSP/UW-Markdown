@@ -93,7 +93,7 @@ map to Excel (else `EXCEL-EMIT-FN`).
 > deal's workbook, asserts the operating statement **foots** (signed income →
 > stored EGI, expenses → stored opex, EGI − opex → stored NOI), and evaluates
 > every derived-metric formula against the workbook's named-range values,
-> comparing to `evaluateCalc()` to 6 decimals. (An earlier converter summed
+> comparing to `evaluateCalc()` exactly. (An earlier converter summed
 > income without signs — double-counting vacancy — and the old test missed it
 > because it only checked formula *text*. Adding a new class's example deal must
 > keep its operating statement footing.)

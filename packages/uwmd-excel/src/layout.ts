@@ -12,7 +12,7 @@
 // `EGI = SUM(signed income lines)` and `NOI = EGI − total opex` both foot to the
 // stored `effective_gross_income` / `net_operating_income`.
 
-import { emitExcelFormula } from '@uwmd/core';
+import { emitCalcExcelFormula } from '@uwmd/core';
 import type { ModuleManifest, ModuleCalcDecl } from '@uwmd/core';
 
 /** An operating-statement income line. */
@@ -120,7 +120,9 @@ export function buildDerivedMetrics(layout: WorkbookLayout): DerivedMetric[] {
   return (layout.pack.calculations ?? []).map((decl: ModuleCalcDecl) => ({
     id: decl.id,
     label: decl.label,
-    formula: `=${emitExcelFormula(decl.formula, { namedRanges })}`,
+    // ROUND-wrapped at the declaration's effective round_to, so the cell holds
+    // the same quantized number `evaluateCalc` reports (§VIII.5).
+    formula: `=${emitCalcExcelFormula(decl, { namedRanges })}`,
     format: excelFormatFor(decl.unit),
   }));
 }

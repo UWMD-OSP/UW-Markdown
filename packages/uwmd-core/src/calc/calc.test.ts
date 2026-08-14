@@ -402,3 +402,59 @@ describe('evaluateCalc', () => {
     expect(r.display).toMatch(/x$/);
   });
 });
+
+// §VIII.5. `evaluateCalc` is the one place a double becomes a *reported* value,
+// so these assert the boundary is actually applied there rather than left to
+// each consumer — which is what let a receipt's tolerant check and its
+// bit-exact digest disagree about the same number.
+describe('evaluateCalc — the quantization boundary', () => {
+  it('quantizes a dollar result to cents', () => {
+    const r = evaluateCalc(decl('revpar', '145.50 * 0.72', '$'), makeCtx());
+    expect(145.5 * 0.72).toBe(104.75999999999999); // what the engine computes
+    expect(r.value).toBe(104.76); // what it reports
+    expect(r.round_to).toBe(2);
+  });
+
+  it('quantizes a ratio to four places and a rate to six', () => {
+    const ratio = evaluateCalc(decl('dscr', '1 / 3', 'x'), makeCtx());
+    expect(ratio.value).toBe(0.3333);
+    expect(ratio.round_to).toBe(4);
+
+    const rate = evaluateCalc(decl('cap_rate', '1 / 3', '%'), makeCtx());
+    expect(rate.value).toBe(0.333333);
+    expect(rate.round_to).toBe(6);
+  });
+
+  it('honours an explicit round_to over the unit default', () => {
+    const r = evaluateCalc(
+      { ...decl('whole_dollars', '1234.567', '$'), round_to: 0 },
+      makeCtx(),
+    );
+    expect(r.value).toBe(1235);
+    expect(r.round_to).toBe(0);
+  });
+
+  it('echoes the effective round_to even when the declaration omitted it', () => {
+    expect(evaluateCalc(decl('bare', '1 / 3'), makeCtx()).round_to).toBe(6);
+    expect(evaluateCalc(decl('bad', '1 / 0'), makeCtx()).round_to).toBe(6);
+  });
+
+  it('leaves intermediate arithmetic unrounded — only the result is quantized', () => {
+    // Quantizing each step would give (0.33 + 0.33 + 0.33) = 0.99. Quantizing
+    // only the reported value gives 1, which is the arithmetically correct answer.
+    const r = evaluateCalc(decl('thirds', '1/3 + 1/3 + 1/3', 'x'), makeCtx());
+    expect(r.value).toBe(1);
+  });
+
+  it('passes non-numeric and null results through untouched', () => {
+    expect(evaluateCalc(decl('str', "'hello'"), makeCtx()).value).toBe('hello');
+    expect(evaluateCalc(decl('bool', '1 < 2'), makeCtx()).value).toBe(true);
+    expect(evaluateCalc(decl('nul', 'missing_section.field'), makeCtx()).value).toBe(null);
+  });
+
+  it('is idempotent — re-evaluating reproduces the value exactly', () => {
+    // Re-issuance stability for receipts rests on this being exact, not close.
+    const d = decl('dscr', 'noi.noi / (pmt(0.06 / 12, 360, 3500000) * 12)', 'x');
+    expect(evaluateCalc(d, makeCtx()).value).toBe(evaluateCalc(d, makeCtx()).value);
+  });
+});

@@ -1,5 +1,5 @@
 // Tier-3 Calc Host — error factory
-// Codes per UW_PROTOCOL_v1.md §VIII.5.
+// Codes per UW_PROTOCOL_v1.md §VIII.6.
 
 import type { ProtocolError } from '../protocol.js';
 

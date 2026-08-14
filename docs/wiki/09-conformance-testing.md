@@ -27,7 +27,7 @@ this one — runs to prove behavior). CI runs both.
 - Property tests use `fast-check`: `calc/calc.property.test.ts` asserts calc
   *totality* (any input parses or throws a typed `CalcError`) and Excel↔evaluator
   parity. `packs/packs.test.ts` asserts every pack metric evaluates against the
-  Parkview fixture and that the Excel emission matches to 6 decimals.
+  Parkview fixture and that the Excel emission matches exactly.
 
 ## Conformance corpus (`conformance/`)
 

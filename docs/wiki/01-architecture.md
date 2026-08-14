@@ -103,7 +103,7 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
 4. **Derived metrics** (cap rate, DSCR, LTV, …) are computed **deterministically**
    by the calc engine from the multifamily pack — same formulas, every tool.
 5. The same formulas are **emitted as Excel** by `@uwmd/excel` so a workbook
-   stays in lock-step with the calc engine (parity tested to 6 decimals).
+   stays in lock-step with the calc engine (parity tested as exact equality).
 6. Edits go through the **Tier-2 editor** which supersedes (append-only) or
    replaces blocks while preserving bytes outside the edited region.
 
@@ -114,6 +114,7 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
 - **Deterministic calc boundary** — AI never does financial math.
 - **Layering** — spec→∅, core→SDK only (excluded from browser), tools→core only.
 - **Byte preservation** — Tier-2 edits don't reflow unrelated regions.
-- **Excel ↔ evaluator parity** — both paths agree to 6 decimals (one pack).
+- **Excel ↔ evaluator parity** — both paths agree exactly (one pack; both
+  quantize at the same `round_to`, §VIII.5).
 - **Append-only provenance** — supersede, don't destroy; every block carries `_meta`.
 - **Semver-per-surface** — format, protocol, and each package version independently.

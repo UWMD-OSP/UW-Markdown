@@ -1,0 +1,43 @@
+{
+  "manifest_version": "1",
+  "id": "org.uwmd.roundto",
+  "name": "Round-To Fixture",
+  "version": "1.0.0",
+  "description": "Exercises the §VIII.5 round_to precision contract: stated at both ends of the permitted band, at zero, and omitted so the unit default applies.",
+  "authors": ["UW Markdown contributors"],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-3-calc-host",
+  "calculations": [
+    {
+      "id": "stated_zero",
+      "label": "Stated Zero",
+      "formula": "1 + 1",
+      "unit": "$",
+      "round_to": 0,
+      "deterministic": true
+    },
+    {
+      "id": "stated_max",
+      "label": "Stated Max",
+      "formula": "1 / 3",
+      "unit": "%",
+      "round_to": 12,
+      "deterministic": true
+    },
+    {
+      "id": "omitted_takes_unit_default",
+      "label": "Omitted Takes Unit Default",
+      "formula": "3 / 2",
+      "unit": "x",
+      "deterministic": true
+    },
+    {
+      "id": "omitted_no_unit",
+      "label": "Omitted With No Unit",
+      "formula": "3 / 2",
+      "deterministic": true
+    }
+  ]
+}

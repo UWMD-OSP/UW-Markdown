@@ -13,7 +13,13 @@ import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import ExcelJS from 'exceljs';
-import { parseUWFile, evaluateCalc, emitExcelFormula } from '@uwmd/core';
+import {
+  parseUWFile,
+  evaluateCalc,
+  emitExcelFormula,
+  quantizeDecimal,
+  resolveRoundTo,
+} from '@uwmd/core';
 import type { CalcEvaluationContext } from '@uwmd/core';
 import { toWorkbook, UnsupportedAssetClassError } from './toWorkbook.js';
 import { buildNamedRangeMap, SUBTOTAL_RANGES } from './layout.js';
@@ -181,7 +187,7 @@ for (const { file, layout } of CASES) {
       expect(storedEGI - storedOpex).toBeCloseTo(storedNOI, 6);
     });
 
-    it('every derived metric matches evaluateCalc (Excel↔evaluator parity to 6 decimals)', async () => {
+    it('every derived metric matches evaluateCalc exactly (Excel↔evaluator parity)', async () => {
       const wb = await roundTrip(file);
       const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
       const parsed = parseUWFile(raw);
@@ -222,7 +228,12 @@ for (const { file, layout } of CASES) {
         expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
         // eslint-disable-next-line no-new-func
         const excelLike = new Function(`return (${formula});`)() as number;
-        expect(excelLike, `${decl.id}`).toBeCloseTo(direct.value as number, 6);
+        // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
+        // (§VIII.5), so the simulated result is quantized the same way. Parity is
+        // then *exact* rather than approximate: one identical rounding rule on
+        // both sides, which is the whole point of having a quantization boundary.
+        const excelCell = quantizeDecimal(excelLike, resolveRoundTo(decl));
+        expect(excelCell, decl.id).toBe(direct.value as number);
       }
     });
 

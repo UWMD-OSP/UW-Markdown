@@ -134,7 +134,13 @@
           },
           "unit": {
             "type": "string",
-            "description": "Display unit (e.g. '%', '$', 'x')."
+            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted — see UW_PROTOCOL_v1.md §VIII.5."
+          },
+          "round_to": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12,
+            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL_v1.md §VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
           },
           "deterministic": {
             "type": "boolean",

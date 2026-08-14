@@ -55,6 +55,31 @@ describe('loadModuleManifest', () => {
     );
   });
 
+  // §VIII.5. `round_to` is the precision contract a receipt digest depends on,
+  // so a malformed one is refused rather than clamped or quietly replaced by
+  // the unit default — two hosts must not derive different digests from one
+  // manifest.
+  it('accepts round_to across the permitted band, including zero', () => {
+    for (const round_to of [0, 2, 6, 12]) {
+      const result = loadModuleManifest({
+        ...BASE,
+        calculations: [{ ...BASE.calculations![0], round_to }],
+      });
+      expect(result.ok, `round_to: ${round_to}`).toBe(true);
+    }
+  });
+
+  it('rejects a round_to that is out of range or not a whole number', () => {
+    for (const round_to of [-1, 13, 2.5, '2' as unknown as number]) {
+      const result = loadModuleManifest({
+        ...BASE,
+        calculations: [{ ...BASE.calculations![0], round_to }],
+      });
+      expect(result.ok, `round_to: ${String(round_to)}`).toBe(false);
+      expect(result.errors.map((e) => e.code)).toContain('PROTO-MOD-067');
+    }
+  });
+
   it('rejects asset classes outside the v1 enum', () => {
     const result = loadModuleManifest({ ...BASE, asset_classes: ['marina'] });
 

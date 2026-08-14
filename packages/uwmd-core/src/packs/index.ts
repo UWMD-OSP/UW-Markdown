@@ -28,6 +28,7 @@ export { LAND_PACK } from './land.js';
 export {
   emitFromAst,
   emitExcelFormula,
+  emitCalcExcelFormula,
   ExcelEmitError,
   type ExcelEmitOptions,
 } from './excel-emit.js';

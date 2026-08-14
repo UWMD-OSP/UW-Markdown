@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-067"
+  ],
+  "why": "round_to is the precision contract a receipt digest depends on, so a value outside [0, 12] is refused rather than clamped. Past ~15 significant decimal digits a binary64 has no fractional information left to quantize."
+}

@@ -18,6 +18,7 @@ File | Role
 `calc/evaluator.ts` | AST walker; variable resolution + null propagation
 `calc/builtins.ts` | The `BUILTINS` function table (math + financial)
 `calc/errors.ts` | `CalcError` class + `CalcErrorCode` taxonomy
+`calc/quantize.ts` | The §VIII.5 quantization boundary: `quantizeDecimal`, `resolveRoundTo`
 `calc/dependencies.ts` | Walk an AST → input field paths (feeds refinement/VOI)
 
 ## The public call: `evaluateCalc`
@@ -26,12 +27,44 @@ File | Role
 evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): CalcResult
 ```
 
-- `ModuleCalcDecl` = `{ id, label, formula, unit?, deterministic }`.
+- `ModuleCalcDecl` = `{ id, label, formula, unit?, round_to?, deterministic }`.
 - `CalcEvaluationContext` = `{ parsed: ParsedUWFile, prior_results, locale: 'en-US' }`.
 - **Never throws.** Engine exceptions are captured into `CalcResult.error`
   (a `ProtocolError`); `ok` is `false` and `value` is `null` on failure.
-- On success, returns `{ calc_id, ok: true, value, unit?, display }` where
-  `display` is formatted per the `unit` (`%`→percent, `$`→currency, `x`→ratio).
+- On success, returns `{ calc_id, ok: true, value, unit?, round_to, display }`
+  where `display` is formatted per the `unit` (`%`→percent, `$`→currency,
+  `x`→ratio).
+- **This is the quantization boundary** — see the next section. `value` is
+  already rounded when you get it.
+
+## Quantization (§VIII.5, `calc/quantize.ts`)
+
+Evaluation runs in unrounded binary64. The *reported* value is quantized once,
+here, half away from zero — the rule `round()` uses and the rule Excel's `ROUND`
+uses, which is what makes the two comparable.
+
+Effective decimal places come from `resolveRoundTo(decl)`: the declaration's
+`round_to` when stated, otherwise the normative default for its `unit`
+(`$`→2, `%`→6, `x`→4, anything else→6). The table is total on purpose —
+there is no "unspecified precision" mode, because an unspecified precision is an
+unspecified interoperability contract.
+
+**Why one boundary and not several.** Before [RFC 0023](../rfcs/0023-numeric-determinism.md)
+there was none, and `receipts.ts` ran two checks over the same numbers that
+could not both be right: a 1e-6 tolerance comparison *and* a bit-exact
+`results_digest`. A last-ULP difference passed the first and failed the second,
+and the verdict said *corruption*. Quantized results have no tail for the two to
+disagree about.
+
+**Do not quantize by scaling.** `Math.floor(n * 10 ** d + 0.5) / 10 ** d`
+reintroduces the artifact it removes: `1.005 * 100` is `100.49999999999999`, so
+that form gives `1.00` where Excel gives `1.01`. `quantizeDecimal` shifts through
+a decimal string (`Number('1.005e2')` → `100.5`) instead. If you need to round a
+number anywhere in this repo, call `quantizeDecimal` rather than writing it
+again.
+
+**Quantization is not display.** `display` is presentation and may round
+differently. Digests, equality, and Excel parity are defined over `value`.
 
 ## The grammar (recursive descent)
 
@@ -118,6 +151,7 @@ Code | Meaning
 `CALC-DIV-ZERO` | Division or modulo by zero
 `CALC-IRR-DIVERGE` | `irr` found no root / failed to converge
 `CALC-LIMIT-001` | Input exceeded length or AST-node cap
+`CALC-TYPE-001` | (also) `round_to` outside `[-12, 12]`, or non-finite input to `quantizeDecimal`
 
 `CalcError` (in `errors.ts`) wraps a `ProtocolError` (`category: 'calc'`) on its
 `.proto` field, so engine errors flow cleanly into `CalcResult.error`.
