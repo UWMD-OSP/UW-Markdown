@@ -606,6 +606,179 @@ export interface ModuleLoadResult {
   errors: ProtocolError[];
 }
 
+// ─── Document profiles (RFC 0018 §1) ──────────────────────────────────────────
+
+/**
+ * A profile is a versioned contract for the *purpose and permitted sections* of
+ * one document. It is not a filename extension, an asset class, a pipeline
+ * stage, or a calculation pack. A document without a profile remains the
+ * existing full underwriting record.
+ */
+export interface DocumentProfile {
+  id: string;
+  purpose: string;
+  /** Frontmatter keys the profile requires beyond the format's own. */
+  required_identity: readonly string[];
+  /** Whether deterministic packs apply to this document's contents. */
+  financial_role: 'underwriting' | 'descriptive' | 'evidence';
+}
+
+export const DEAL_UNDERWRITING_PROFILE = 'deal-underwriting-v1' as const;
+export const LEASE_ABSTRACT_PROFILE = 'lease-abstract-v1' as const;
+export const SOURCE_NOTE_PROFILE = 'source-note-v1' as const;
+
+export const BUILTIN_DOCUMENT_PROFILES: readonly DocumentProfile[] = Object.freeze([
+  Object.freeze({
+    id: DEAL_UNDERWRITING_PROFILE,
+    purpose: 'Complete or partial underwriting record.',
+    required_identity: Object.freeze(['deal_id']),
+    financial_role: 'underwriting',
+  }),
+  Object.freeze({
+    id: LEASE_ABSTRACT_PROFILE,
+    purpose: 'One executed lease and its amendments.',
+    required_identity: Object.freeze(['document_id', 'lease_id']),
+    financial_role: 'descriptive',
+  }),
+  Object.freeze({
+    id: SOURCE_NOTE_PROFILE,
+    purpose: 'Attributable transcription, summary, or diligence note.',
+    required_identity: Object.freeze(['document_id']),
+    financial_role: 'evidence',
+  }),
+]) as readonly DocumentProfile[];
+
+const PROFILE_BY_ID = new Map(BUILTIN_DOCUMENT_PROFILES.map((p) => [p.id, p]));
+
+/**
+ * Profile identifiers are opaque lowercase ASCII tokens. An unknown profile is
+ * *preserved*, never reinterpreted — returning undefined means "not one we
+ * implement", which is different from "invalid".
+ */
+export function lookupDocumentProfile(id: string): DocumentProfile | undefined {
+  return PROFILE_BY_ID.get(id);
+}
+
+export const DOCUMENT_PROFILE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+// ─── Canonical edge registry (RFC 0018 §5) ────────────────────────────────────
+//
+// ONE registry, TWO layers. RFC 0015 relates business *entities*; RFC 0018
+// relates *documents inside a package*. Left as two tables they would both
+// contain `guarantees` and `supports` and drift until the same token meant two
+// different things depending on which document a reader happened to hold.
+//
+// RFC 0018 was accepted first, so this table is the canonical home. A future
+// implementation of RFC 0015 amends it rather than starting a second one.
+
+export type UWEdgeLayer = 'entity' | 'member';
+
+/** Endpoint kinds an edge may connect. `any` accepts every kind on that layer. */
+export type UWEdgeEndpointKind =
+  | 'any'
+  | 'borrower'
+  | 'property'
+  | 'loan'
+  | 'deal'
+  | 'document'
+  | 'uw_document'
+  | 'source_evidence'
+  | 'underwriting_document';
+
+export interface UWEdgeTypeDef {
+  type: string;
+  /** Layers this type is valid on. Two types are valid on both. */
+  layers: readonly UWEdgeLayer[];
+  from: readonly UWEdgeEndpointKind[];
+  to: readonly UWEdgeEndpointKind[];
+  /**
+   * `required` — the edge must carry a non-empty provenance array (entity
+   * layer). `manifest` — the package manifest *is* the provenance, because
+   * every member is content-addressed by digest (member layer).
+   */
+  provenance: 'required' | 'manifest';
+  meaning: string;
+}
+
+export const BUILTIN_EDGE_TYPES: readonly UWEdgeTypeDef[] = Object.freeze([
+  Object.freeze({
+    type: 'owns', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['borrower'] as const), to: Object.freeze(['property'] as const),
+    provenance: 'required', meaning: 'Ownership of the asset.',
+  }),
+  Object.freeze({
+    type: 'borrows_against', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['borrower'] as const), to: Object.freeze(['property'] as const),
+    provenance: 'required', meaning: 'Borrowing secured by the asset.',
+  }),
+  Object.freeze({
+    type: 'secures', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['property'] as const), to: Object.freeze(['loan'] as const),
+    provenance: 'required', meaning: 'The asset secures the loan.',
+  }),
+  Object.freeze({
+    type: 'related_to', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['any'] as const), to: Object.freeze(['any'] as const),
+    provenance: 'required', meaning: 'Untyped association; the fallback.',
+  }),
+  Object.freeze({
+    type: 'abstracts', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['uw_document'] as const), to: Object.freeze(['source_evidence'] as const),
+    provenance: 'manifest', meaning: 'This document is an extraction of that source.',
+  }),
+  Object.freeze({
+    type: 'amends', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['document', 'uw_document'] as const),
+    to: Object.freeze(['document', 'uw_document'] as const),
+    provenance: 'manifest', meaning: 'Modifies the terms of the target.',
+  }),
+  Object.freeze({
+    // NOT the block-level `_meta.superseded`, which is append-only within a
+    // single document and untouched by this registry. This relates two whole
+    // documents in a package.
+    type: 'supersedes', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['document', 'uw_document'] as const),
+    to: Object.freeze(['document', 'uw_document'] as const),
+    provenance: 'manifest', meaning: 'Replaces the target wholesale.',
+  }),
+  Object.freeze({
+    type: 'contributes_to', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['document', 'uw_document'] as const),
+    to: Object.freeze(['underwriting_document'] as const),
+    provenance: 'manifest', meaning: 'Feeds the target underwriting record.',
+  }),
+  Object.freeze({
+    // Shared. A guaranty *document* is the member-layer evidence for the
+    // entity-layer fact that a borrower guarantees a loan — one relation
+    // observed at two layers, not a collision to be renamed apart.
+    type: 'guarantees', layers: Object.freeze(['entity', 'member'] as const),
+    from: Object.freeze(['borrower', 'document', 'uw_document'] as const),
+    to: Object.freeze(['loan', 'document', 'uw_document'] as const),
+    provenance: 'required', meaning: 'Credit support for the target.',
+  }),
+  Object.freeze({
+    type: 'supports', layers: Object.freeze(['entity', 'member'] as const),
+    from: Object.freeze(['any'] as const), to: Object.freeze(['any'] as const),
+    provenance: 'required', meaning: 'Evidentiary support, weaker than `abstracts`.',
+  }),
+]) as readonly UWEdgeTypeDef[];
+
+const EDGE_TYPE_BY_NAME = new Map(BUILTIN_EDGE_TYPES.map((e) => [e.type, e]));
+
+/**
+ * Extension types are permitted at both layers and MUST be preserved by
+ * consumers that cannot interpret them, so `undefined` means "not built in",
+ * not "invalid".
+ */
+export function lookupEdgeType(type: string): UWEdgeTypeDef | undefined {
+  return EDGE_TYPE_BY_NAME.get(type);
+}
+
+export function isEdgeTypeValidOnLayer(type: string, layer: UWEdgeLayer): boolean {
+  const def = EDGE_TYPE_BY_NAME.get(type);
+  return def ? def.layers.includes(layer) : true; // unknown → preserved, not rejected
+}
+
 // ─── Error taxonomy (Part XI) ─────────────────────────────────────────────────
 
 export type ProtocolErrorCategory =
@@ -616,7 +789,8 @@ export type ProtocolErrorCategory =
   | 'calc'
   | 'agent'
   | 'module'
-  | 'version';
+  | 'version'
+  | 'package';
 
 export interface ProtocolError {
   category: ProtocolErrorCategory;

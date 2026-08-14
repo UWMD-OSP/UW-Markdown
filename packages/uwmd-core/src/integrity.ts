@@ -27,8 +27,18 @@ export async function sha256Hex(value: unknown): Promise<string> {
 
 /** SHA-256 of an exact UTF-8 string, without JSON canonicalization. */
 export async function sha256TextHex(text: string): Promise<string> {
-  const bytes = new TextEncoder().encode(text);
+  return sha256BytesHex(new TextEncoder().encode(text));
+}
 
+/**
+ * SHA-256 of exact bytes.
+ *
+ * Required for binary payloads (a PDF in a deal package). Routing those through
+ * `sha256TextHex` would be wrong: any byte above 0x7F would be re-encoded as
+ * multi-byte UTF-8 and produce a digest for different bytes than the ones on
+ * disk.
+ */
+export async function sha256BytesHex(bytes: Uint8Array): Promise<string> {
   // Prefer Node's synchronous crypto when available; falls back to Web Crypto.
   // Both produce identical output for identical input bytes.
   type NodeCrypto = { createHash(alg: string): { update(buf: Uint8Array): { digest(enc: string): string } } };
@@ -42,8 +52,8 @@ export async function sha256TextHex(text: string): Promise<string> {
     return mod.createHash('sha256').update(bytes).digest('hex');
   }
   const subtle = g.crypto?.subtle;
-  if (!subtle) throw new Error('integrity.sha256TextHex: no crypto provider available.');
-  const digest = await subtle.digest('SHA-256', bytes);
+  if (!subtle) throw new Error('integrity.sha256BytesHex: no crypto provider available.');
+  const digest = await subtle.digest('SHA-256', bytes as unknown as BufferSource);
   return bytesToHex(new Uint8Array(digest));
 }
 
