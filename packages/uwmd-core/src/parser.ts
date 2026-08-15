@@ -125,6 +125,11 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
 
     if (!key || key.startsWith('#')) { i++; continue; }
 
+    // A blocked key is still parsed like any other — including the indented
+    // lines beneath it — and only dropped at assignment. Skipping it outright
+    // would leave its nested lines to be read as top-level keys.
+    const keep = !isBlockedSegment(key);
+
     // Array: next lines are "  - value" items (check BEFORE nested object)
     if (rawVal === '' && i + 1 < lines.length && lines[i + 1].trim().startsWith('- ')) {
       const arr: unknown[] = [];
@@ -133,7 +138,7 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
         arr.push(parseScalar(lines[i].trim().slice(2)));
         i++;
       }
-      result[key] = arr;
+      if (keep) result[key] = arr;
     } else if (rawVal === '' && i + 1 < lines.length && lines[i + 1].startsWith('  ') && !lines[i + 1].trim().startsWith('- ')) {
       // Nested object: next lines are indented key: value pairs (not array items)
       const nested: Record<string, unknown> = {};
@@ -146,12 +151,12 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
         if (nColon === -1) { i++; continue; }
         const nKey = nLine.slice(0, nColon).trim();
         const nRaw = nLine.slice(nColon + 1).trim();
-        nested[nKey] = parseScalar(nRaw);
+        if (!isBlockedSegment(nKey)) nested[nKey] = parseScalar(nRaw);
         i++;
       }
-      result[key] = nested;
+      if (keep) result[key] = nested;
     } else {
-      result[key] = parseScalar(rawVal);
+      if (keep) result[key] = parseScalar(rawVal);
       i++;
     }
   }
@@ -196,7 +201,7 @@ function parseFenceAnnotation(sectionId: string, rest: string): UWFenceAnnotatio
         annotation.confidence = value as ConfidenceLevel;
         break;
       default:
-        annotation[key] = value;
+        if (!isBlockedSegment(key)) annotation[key] = value;
     }
     match = KV_RE.exec(rest);
   }
@@ -460,6 +465,32 @@ export function getSectionVariant(
   return (entry as { [v: string]: UWBlock })[variant] ?? null;
 }
 
+// ─── Path segment safety ─────────────────────────────────────────────────────
+// Paths and keys in a `.uw.md` file are document-authored: a path can name any
+// segment the author types. These three are the doors from a plain property
+// lookup back onto JS internals, so navigation never follows them and key
+// writes never create them.
+
+const BLOCKED_SEGMENTS = new Set(['__proto__', 'constructor', 'prototype']);
+
+/** True if `segment` must not be read from or written to a document object. */
+export function isBlockedSegment(segment: string): boolean {
+  return BLOCKED_SEGMENTS.has(segment);
+}
+
+/**
+ * One step of path navigation, own-properties only. A blocked segment or an
+ * inherited member resolves to `undefined` — the same answer a missing path
+ * gives, which callers already handle (protocol §VIII.2: a missing path
+ * resolves to null, not an error).
+ */
+export function getPathSegment(current: unknown, segment: string): unknown {
+  if (current === null || current === undefined) return undefined;
+  if (isBlockedSegment(segment)) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(current, segment)) return undefined;
+  return (current as Record<string, unknown>)[segment];
+}
+
 // ─── Deep get utility (for cross-section checks) ─────────────────────────────
 // Resolves dot-path notation: "noi_model.net_operating_income"
 // Array indices: "dcf.annual_cash_flows[0].net_cash_flow_levered"
@@ -469,7 +500,7 @@ export function deepGet(obj: unknown, path: string): unknown {
   let current = obj;
   for (const part of parts) {
     if (current === null || current === undefined) return undefined;
-    current = (current as Record<string, unknown>)[part];
+    current = getPathSegment(current, part);
   }
   return current;
 }

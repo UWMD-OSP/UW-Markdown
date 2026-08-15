@@ -33,6 +33,23 @@ describe('UW XML 1.0', () => {
     expect(decoded.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
   });
 
+  it('restores a __proto__ member as an own key without touching the prototype', async () => {
+    // §4 forbids key sanitization, so the key must survive the round trip —
+    // as data on the envelope, never as a mutation of Object.prototype.
+    const hostile = { ...envelope };
+    Object.defineProperty(hostile, '__proto__', {
+      value: { polluted: true },
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+    const decoded = await parseUWXml(await stringifyUWXml(hostile));
+    expect(Object.hasOwn(decoded, '__proto__')).toBe(true);
+    expect((decoded as Record<string, unknown>).__proto__).toEqual({ polluted: true });
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    expect(Object.getPrototypeOf(decoded)).toBe(Object.prototype);
+  });
+
   it('matches UW JSON semantic identity across the bundled golden deal', async () => {
     const source = readFileSync(
       resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),

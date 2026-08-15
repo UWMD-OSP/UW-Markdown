@@ -45,6 +45,22 @@ describe('parseUWLite', () => {
     );
   });
 
+  it('rejects reserved frontmatter keys rather than assigning them', () => {
+    const source = SOURCE.replace('deal_name: Parkview', 'deal_name: Parkview\n__proto__: polluted');
+    const parsed = parseUWLite(source);
+    expect(parsed.issues).toContainEqual(
+      expect.objectContaining({ code: 'LITE_FRONTMATTER_KEY_RESERVED', severity: 'error' }),
+    );
+    expect(Object.hasOwn(parsed.frontmatter, '__proto__')).toBe(false);
+  });
+
+  it('rejects reserved field attributes', () => {
+    const source = `${SOURCE}\n- Price: $1 <!-- uw:acquisition.other constructor=x -->`;
+    expect(parseUWLite(source).issues).toContainEqual(
+      expect.objectContaining({ code: 'LITE_ATTRIBUTE_KEY_RESERVED', severity: 'error' }),
+    );
+  });
+
   it('preserves malformed anchored lines as opaque content', () => {
     const malformed = `${SOURCE}\nPurchase price $1 <!-- uw:acquisition.price -->`;
     const parsed = parseUWLite(malformed);
