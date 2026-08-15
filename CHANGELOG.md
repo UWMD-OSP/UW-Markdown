@@ -48,6 +48,14 @@ protocol, and each package each carry an independent semver).
   which npm resolves locally, so nothing notices until publish.
 
 ### Fixed
+- **CI ran no jobs at all on a stacked pull request.** `ci.yml`'s
+  `pull_request.branches: [main]` filter matches the *base* of a PR, not its
+  head, so a PR opened against another feature branch triggered nothing. The
+  failure had the same shape as the one above: it did not fail, it reported
+  nothing, and an absent check list sits next to whatever external checks do run
+  and reads as green. The filter is removed — every pull request gets the suite,
+  whatever it targets. The `push` trigger stays pinned to `main`, so branch
+  pushes still do not double up with the PR run.
 - **`sha256TextHex` could not correctly digest binary content.** It encodes its
   argument with `TextEncoder`, so hashing bytes round-tripped through a latin1
   string re-encoded every byte above 0x7F as multi-byte UTF-8 and digested
