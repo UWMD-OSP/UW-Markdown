@@ -37,8 +37,25 @@ protocol, and each package each carry an independent semver).
   `uwmd package create|verify|list|to-context|validate-context|edges`.
   New schema: `uw-deal-package-manifest.schema.json`.
   New conformance suite: `conformance/packages/` (18 assertions).
+- **`npm run verify-lockfile`, gating CI**, asserts that every `@uwmd/*` entry in
+  all three lockfiles is a workspace link rather than a registry tarball, and
+  that each cross-package pin names the version its workspace actually declares.
+  The failure it guards against is silent in the worst way: a lockfile that
+  resolved `@uwmd/core` from the registry would let the whole suite pass against
+  the last *published* library, so green CI would mean "the previous release
+  still works" rather than "this commit does." The pin check catches the other
+  half — a dependent left pinned to a version the workspace has moved past,
+  which npm resolves locally, so nothing notices until publish.
 
 ### Fixed
+- **CI ran no jobs at all on a stacked pull request.** `ci.yml`'s
+  `pull_request.branches: [main]` filter matches the *base* of a PR, not its
+  head, so a PR opened against another feature branch triggered nothing. The
+  failure had the same shape as the one above: it did not fail, it reported
+  nothing, and an absent check list sits next to whatever external checks do run
+  and reads as green. The filter is removed — every pull request gets the suite,
+  whatever it targets. The `push` trigger stays pinned to `main`, so branch
+  pushes still do not double up with the PR run.
 - **Document-authored keys and paths could reach the JS prototype chain.** Path
   navigation walked with a bare property lookup, so a Tier-3 formula segment or
   a `deepGet` path naming `__proto__`, `constructor`, or `prototype` resolved

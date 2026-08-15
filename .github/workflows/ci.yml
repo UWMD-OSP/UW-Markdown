@@ -3,13 +3,30 @@ name: CI
 on:
   push:
     branches: [main]
+  # Deliberately unfiltered. A `branches:` filter here matches the *base* of the
+  # pull request, not its head, so `[main]` silently gave a stacked PR — one
+  # opened against another feature branch — no CI at all. It did not fail; it
+  # reported nothing, which reads as green next to whatever external checks do
+  # run. Every pull request gets the suite, whatever it targets.
   pull_request:
-    branches: [main]
   # Manual trigger, so CI can be re-run without inventing a commit — useful
   # when a run failed for an infrastructure reason rather than a code one.
   workflow_dispatch:
 
 jobs:
+  verify-lockfile:
+    name: Verify workspace lockfile pins
+    runs-on: ubuntu-latest
+    # No `npm ci` on purpose: this job reads the lockfiles as data, and the
+    # thing it guards against is precisely an install resolving @uwmd/* from the
+    # registry. Running it before any install keeps it honest and fast.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm run verify-lockfile
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

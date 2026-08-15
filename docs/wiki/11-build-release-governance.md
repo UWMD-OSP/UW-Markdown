@@ -20,6 +20,8 @@ Script | Does
 `npm run cli -- <cmd>` | Run the CLI from source (`packages/uwmd-cli/bin/uwmd.mjs`)
 `npm run conformance` | `scripts/run-conformance.mjs` (tiers 1,2,3 + `lite` by default)
 `npm run validate-schemas` | `scripts/validate-schemas.mjs`
+`npm run verify-packages` | `scripts/verify-packages.mjs` — what `npm pack` would actually ship
+`npm run verify-lockfile` | `scripts/verify-lockfile.mjs` — every `@uwmd/*` reference links to this tree, and cross-package pins match declared versions
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run
@@ -32,7 +34,9 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
 - **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.2.0).
 - **Packages** — each `package.json` (`@uwmd/core` 1.1.0, `uwmd` 1.1.0,
-  `@uwmd/excel` 0.1.0).
+  `@uwmd/excel` 0.1.0). Dependents pin `@uwmd/*` to an exact version, so a core
+  bump is a repin of all of them in the same change — `npm run verify-lockfile`
+  fails if one is forgotten.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,

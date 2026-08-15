@@ -15,6 +15,7 @@
     "conformance": "node scripts/run-conformance.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
     "verify-packages": "node scripts/verify-packages.mjs",
+  "verify-lockfile": "node scripts/verify-lockfile.mjs",
     "lint": "biome lint .",
     "format": "biome format --write ."
   },
