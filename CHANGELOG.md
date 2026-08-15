@@ -54,8 +54,8 @@ protocol, and each package each carry an independent semver).
   `CALC-IRR-DIVERGE`. The note now describes the code and states that
   consequence outright, along with the seed-dependent root selection
   (`irr(-100, 230, -132)` → `0.1`, with `0.2` equally a root). Still
-  non-normative; no engine behavior changes in this release, and pinning the
-  algorithm remains deferred to a follow-up RFC.
+  non-normative; no engine behavior changes in this release. Pinning the
+  algorithm is proposed in **RFC 0024** (draft).
 - **A receipt could report a clean record as corrupted.** `receipts.ts` ran two
   checks over the same numbers that could not both be right:
   `RECEIPT_RESULT_TOLERANCE` compared stated against recomputed at `1e-6`, while
