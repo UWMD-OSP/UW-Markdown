@@ -24,7 +24,7 @@ same protocol version.
 |---|---|---|
 | `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
 | UW Protocol | **1.3.0** | format ≥ 1.0 |
-| `@uwmd/core` | **1.2.0** | format 1.1, protocol 1.2.0 |
+| `@uwmd/core` | **1.2.0** | format 1.1, protocol 1.3.0 |
 | `@uwmd/cli` (CLI) | **1.2.0** | `@uwmd/core` 1.2.0 |
 | `@uwmd/excel` | **0.2.0** | `@uwmd/core` 1.2.x, format 1.1 multifamily pack |
 | `@uwmd/report` | **0.2.0** | `@uwmd/core` 1.2.x, format spec §7.1/§7.2 |

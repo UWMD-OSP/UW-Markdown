@@ -31,8 +31,8 @@ Script | Does
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
 - **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.3.0).
-- **Packages** — each `package.json` (`@uwmd/core` 1.1.0, `uwmd` 1.1.0,
-  `@uwmd/excel` 0.1.0).
+- **Packages** — each `package.json` (`@uwmd/core` 1.2.0, `@uwmd/cli` 1.2.0,
+  `@uwmd/excel` 0.2.0, `@uwmd/report` 0.2.0, `@uwmd/batch` 0.1.0).
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
