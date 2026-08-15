@@ -48,16 +48,22 @@ protocol, and each package each carry an independent semver).
 - `@uwmd/core` **1.1.2 → 1.2.0**. The bump is load-bearing: it is what makes
   `RCP-07` classify a pre-quantization receipt as indeterminate rather than
   failed.
-- `@uwmd/cli` **1.1.3 → 1.2.0**, `@uwmd/excel` **0.1.0 → 0.2.0**,
-  `@uwmd/report` **0.1.0 → 0.2.0**. All three emit different bytes than before
-  — the CLI's `calc`, `receipt`, and `summary` output carries quantized values,
-  every workbook formula is now `ROUND`-wrapped, and the rendered credit memo
-  and lender package quote figures that come off the calc engine — so a patch
-  bump would have understated the change. None removes or renames a flag, an
-  export, or a sheet, so none is breaking. `@uwmd/batch` is deliberately
-  unchanged: its semantic digests cover document inputs, not calc outputs.
-  The four packages that depend on `@uwmd/core` pin it exactly, so they were
-  repinned to `1.2.0`; nothing depends on the three bumped packages.
+- `@uwmd/cli` **1.1.3 → 1.2.0** and `@uwmd/excel` **0.1.0 → 0.2.0** emit
+  different bytes than before — the CLI's `calc`, `receipt`, and `summary`
+  output carries quantized values, and every workbook formula is now
+  `ROUND`-wrapped — so a patch bump would have understated the change. Neither
+  removes or renames a flag, an export, or a sheet, so neither is breaking.
+- `@uwmd/report` **0.1.0 → 0.2.0** as a **coordinated repin only**. Its output
+  is unchanged: `report.ts` reads every figure out of stored section data with
+  `deepGet` and never calls `evaluateCalc` or resolves a pack, so quantization
+  does not reach it. The bump keeps the workspace on one core version rather
+  than recording a behavior change. Worth knowing for a different reason — a
+  credit memo quotes DSCR and LTV that nothing in the pipeline recomputes, so
+  those figures are only as good as whatever wrote them into the document.
+- `@uwmd/batch` is deliberately left at 0.1.0: its semantic digests cover
+  document inputs, not calc outputs.
+- The four packages that depend on `@uwmd/core` pin it exactly, so all were
+  repinned to `1.2.0`; nothing depends on the bumped packages themselves.
 - `VERSIONS.md`'s "current matrix" gained rows for `@uwmd/report` and
   `@uwmd/batch`, which it had omitted while describing itself as current.
 
