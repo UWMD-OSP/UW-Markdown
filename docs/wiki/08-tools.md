@@ -53,7 +53,7 @@ npx @uwmd/batch deals --out batch-output
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
-## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.1.0)
+## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.2.0)
 
 `.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:
 `uwmd-excel <input.uw.md> [-o output.xlsx]`.

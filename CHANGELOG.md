@@ -48,6 +48,13 @@ protocol, and each package each carry an independent semver).
 - `@uwmd/core` **1.1.2 → 1.2.0**. The bump is load-bearing: it is what makes
   `RCP-07` classify a pre-quantization receipt as indeterminate rather than
   failed.
+- `@uwmd/cli` **1.1.3 → 1.2.0**, `@uwmd/excel` **0.1.0 → 0.2.0**. Both emit
+  different bytes than before — the CLI's `calc`, `receipt`, and `summary`
+  output carries quantized values, and every workbook formula is now
+  `ROUND`-wrapped — so a patch bump would have understated the change. Neither
+  removes or renames a flag, an export, or a sheet, so neither is breaking.
+  The four packages that depend on `@uwmd/core` pin it exactly, so they were
+  repinned to `1.2.0`; nothing depends on `@uwmd/cli` or `@uwmd/excel`.
 
 ### Added
 - **RFC 0018 implemented — document profiles and deal packages.** The edge

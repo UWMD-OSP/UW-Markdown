@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/excel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Excel converter for UW Markdown — emit a live multifamily underwriting workbook from a .uw.md file. Derived metrics ship as formulas (not pre-computed values) so Excel and the @uwmd/core calc engine stay in sync by construction.",
   "repository": {
     "type": "git",

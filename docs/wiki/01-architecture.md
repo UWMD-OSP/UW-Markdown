@@ -64,7 +64,7 @@ spec/                      Normative specs + JSON Schemas + XML XSD
 packages/
   uwmd-core/   (@uwmd/core 1.1.0)  The reference library — see 03-core-library.md
   uwmd-cli/    (uwmd 1.1.0)        Thin npx wrapper over @uwmd/core's cli.ts
-  uwmd-excel/  (@uwmd/excel 0.1.0) .uw.md → .xlsx workbook (formulas, not values)
+  uwmd-excel/  (@uwmd/excel 0.2.0) .uw.md → .xlsx workbook (formulas, not values)
 
 tools/
   web-viewer/   Single-file (<500 LOC) drag-drop Tier-1 reader, no build
