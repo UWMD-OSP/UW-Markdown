@@ -48,13 +48,18 @@ protocol, and each package each carry an independent semver).
 - `@uwmd/core` **1.1.2 → 1.2.0**. The bump is load-bearing: it is what makes
   `RCP-07` classify a pre-quantization receipt as indeterminate rather than
   failed.
-- `@uwmd/cli` **1.1.3 → 1.2.0**, `@uwmd/excel` **0.1.0 → 0.2.0**. Both emit
-  different bytes than before — the CLI's `calc`, `receipt`, and `summary`
-  output carries quantized values, and every workbook formula is now
-  `ROUND`-wrapped — so a patch bump would have understated the change. Neither
-  removes or renames a flag, an export, or a sheet, so neither is breaking.
+- `@uwmd/cli` **1.1.3 → 1.2.0**, `@uwmd/excel` **0.1.0 → 0.2.0**,
+  `@uwmd/report` **0.1.0 → 0.2.0**. All three emit different bytes than before
+  — the CLI's `calc`, `receipt`, and `summary` output carries quantized values,
+  every workbook formula is now `ROUND`-wrapped, and the rendered credit memo
+  and lender package quote figures that come off the calc engine — so a patch
+  bump would have understated the change. None removes or renames a flag, an
+  export, or a sheet, so none is breaking. `@uwmd/batch` is deliberately
+  unchanged: its semantic digests cover document inputs, not calc outputs.
   The four packages that depend on `@uwmd/core` pin it exactly, so they were
-  repinned to `1.2.0`; nothing depends on `@uwmd/cli` or `@uwmd/excel`.
+  repinned to `1.2.0`; nothing depends on the three bumped packages.
+- `VERSIONS.md`'s "current matrix" gained rows for `@uwmd/report` and
+  `@uwmd/batch`, which it had omitted while describing itself as current.
 
 ### Added
 - **RFC 0018 implemented — document profiles and deal packages.** The edge

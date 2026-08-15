@@ -27,6 +27,8 @@ same protocol version.
 | `@uwmd/core` | **1.2.0** | format 1.1, protocol 1.2.0 |
 | `@uwmd/cli` (CLI) | **1.2.0** | `@uwmd/core` 1.2.0 |
 | `@uwmd/excel` | **0.2.0** | `@uwmd/core` 1.2.x, format 1.1 multifamily pack |
+| `@uwmd/report` | **0.2.0** | `@uwmd/core` 1.2.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.1.0** | `@uwmd/core` 1.2.x, `.uwx.md` collections |
 | `tools/web-editor` | **0.5.0** (private) | `@uwmd/core` 1.2.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.1.0** | format 1.1 |

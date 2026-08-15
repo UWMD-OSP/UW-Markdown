@@ -149,7 +149,7 @@ contract that disagrees with `B3` is refused as internally inconsistent.
 
 Build: `tsc`. Test: `vitest run`.
 
-## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.1.0)
+## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.2.0)
 
 `.uw.md → .pdf` for the lender package / credit memo. The HTML is produced by
 `@uwmd/core`'s `renderReportHtml` (deterministic, §7.1/§7.2); this package only
