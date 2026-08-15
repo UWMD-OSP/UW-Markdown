@@ -699,16 +699,27 @@ Identifiers and dot-paths resolve against the
 | `npv(rate, ...flows)` | Net present value. |
 | `irr(...flows)` | Internal rate of return; null if no real root. See the convergence note below. |
 
-**`irr` convergence.** The reference implementation brackets the root on
-`[-0.999, 10.0]` (i.e. -99.9% to 1000%), refines with Newton's method, falls
-back to bisection, and caps iteration at 200; failing to bracket or converge
-raises `CALC-IRR-DIVERGE`. These parameters are **documented, not yet
-normative**: two conforming hosts using different brackets or seeds may return
-different roots for the same cash flows, and §VIII.5 quantization will not
-reveal the difference — it will simply produce two different receipt digests.
-Pinning them, along with `xirr` and day-count conventions, is deferred to a
-follow-up RFC. Implementers targeting digest-level agreement with the reference
-implementation SHOULD match these values.
+**`irr` convergence.** The reference implementation runs Newton's method first,
+seeded at `0.1` and capped at 100 iterations, and falls back to bisection over
+`[-0.999, 10.0]` (i.e. -99.9% to 1000%) capped at 200 iterations; failing to
+bracket or converge raises `CALC-IRR-DIVERGE`. These parameters are
+**documented, not yet normative**, and two consequences follow that an
+implementer must not read past:
+
+- The bracket constrains only the fallback, not the answer. Newton may converge
+  outside it and that root is returned — `irr(-1, 20)` yields `≈19.0`, a 1900%
+  return from a search documented as reaching 1000%. An implementation that
+  brackets first raises `CALC-IRR-DIVERGE` for the same input.
+- Where a cash flow has several real roots, the seed selects which one is
+  returned: `irr(-100, 230, -132)` yields `0.1`, though `0.2` is equally a root.
+
+So two conforming hosts may return different roots — or one a root and the other
+an error — for the same cash flows, and §VIII.5 quantization will not reveal the
+difference; it will simply produce two different receipt digests. Pinning the
+algorithm is deferred to a follow-up RFC; `xirr` and day-count conventions
+remain deferred to v2. Implementers targeting digest-level agreement with the
+reference implementation SHOULD match these values *and* should expect them to
+change when the algorithm is pinned.
 
 ### VIII.4 Determinism
 

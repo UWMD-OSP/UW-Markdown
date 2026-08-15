@@ -44,6 +44,18 @@ protocol, and each package each carry an independent semver).
   New loader code `PROTO-MOD-067` refuses a malformed one. Corpus 147 → 153.
 
 ### Fixed
+- **The §VIII.3 `irr` convergence note misdescribed the implementation it
+  documents.** It said the engine brackets on `[-0.999, 10.0]` and refines with
+  Newton; `calc/builtins.ts` runs Newton first from a seed of `0.1`, capped at
+  100 iterations, and uses the bracket only as a fallback. The difference is not
+  academic: the bracket therefore constrains no answer, and `irr(-1, 20)`
+  returns ≈`19.0` — a 1900% return out of a search documented as reaching 1000%
+  — where an implementer who bracketed first, as the note described, would raise
+  `CALC-IRR-DIVERGE`. The note now describes the code and states that
+  consequence outright, along with the seed-dependent root selection
+  (`irr(-100, 230, -132)` → `0.1`, with `0.2` equally a root). Still
+  non-normative; no engine behavior changes in this release, and pinning the
+  algorithm remains deferred to a follow-up RFC.
 - **A receipt could report a clean record as corrupted.** `receipts.ts` ran two
   checks over the same numbers that could not both be right:
   `RECEIPT_RESULT_TOLERANCE` compared stated against recomputed at `1e-6`, while
