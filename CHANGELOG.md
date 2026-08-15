@@ -37,6 +37,15 @@ protocol, and each package each carry an independent semver).
   `uwmd package create|verify|list|to-context|validate-context|edges`.
   New schema: `uw-deal-package-manifest.schema.json`.
   New conformance suite: `conformance/packages/` (18 assertions).
+- **`npm run verify-lockfile`, gating CI**, asserts that every `@uwmd/*` entry in
+  all three lockfiles is a workspace link rather than a registry tarball, and
+  that each cross-package pin names the version its workspace actually declares.
+  The failure it guards against is silent in the worst way: a lockfile that
+  resolved `@uwmd/core` from the registry would let the whole suite pass against
+  the last *published* library, so green CI would mean "the previous release
+  still works" rather than "this commit does." The pin check catches the other
+  half — a dependent left pinned to a version the workspace has moved past,
+  which npm resolves locally, so nothing notices until publish.
 
 ### Fixed
 - **`sha256TextHex` could not correctly digest binary content.** It encodes its

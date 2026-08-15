@@ -10,6 +10,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  verify-lockfile:
+    name: Verify workspace lockfile pins
+    runs-on: ubuntu-latest
+    # No `npm ci` on purpose: this job reads the lockfiles as data, and the
+    # thing it guards against is precisely an install resolving @uwmd/* from the
+    # registry. Running it before any install keeps it honest and fast.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm run verify-lockfile
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
