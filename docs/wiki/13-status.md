@@ -166,10 +166,18 @@ not core gaps.
   so both sides apply one identical rule. That `toBe` replacing `toBeCloseTo`
   is the strongest single signal the boundary is real.
 
+  **Protocol 1.2.0 → 1.3.0.** §VIII.5 adds normative `MUST` requirements, which
+  `VERSIONS.md` rule 2 puts at a minor bump; leaving it would have left two
+  documents both calling themselves 1.2.0.
+
   Pre-quantization receipts degrade to `unverifiable`, not `failed` — `RCP-07`
   ("results disagree *and* the engine version differs") already covered it, so
   bumping `@uwmd/core` to **1.2.0** was the whole migration. No new verification
   state was needed; the three-state design already had the right answer.
+  Receipts also gained an optional `computation.protocol_version`, because an
+  engine version only means something to a reader who knows that engine's
+  release history — not the position a verifier is in when handed a third-party
+  receipt. Absence means *unstated*, not *non-conforming*.
 
   The packs deliberately carry **no** explicit `round_to`: every pack
   calculation uses `$`, `%`, or `x`, so the normative defaults already give each

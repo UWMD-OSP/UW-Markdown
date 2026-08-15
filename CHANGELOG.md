@@ -8,6 +8,26 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+> ### ⚠️ Read before upgrading — computed numbers change
+>
+> RFC 0023 quantizes every reported calc value (protocol §VIII.5). Three
+> consequences a caller can observe:
+>
+> 1. **`round(num, dec)` returns different answers at exact-half boundaries.**
+>    `round(1.005, 2)` was `1.00` and is now `1.01`. §VIII.3 always specified
+>    half-away-from-zero, so this is errata rather than a redefinition — but a
+>    module whose formulas were tuned against the old behavior will move.
+> 2. **Every derived metric is quantized.** DSCR reports 4 decimals, dollars 2,
+>    rates 6. If you diff CLI output, receipt values, or workbook cells against
+>    stored expectations, they will differ in the tail.
+> 3. **Receipts issued before this release no longer verify as `verified`.**
+>    They return `unverifiable` via `RCP-07`, not `failed` — the disagreement is
+>    attributed to the engine change, not to your record. Re-issue to get a
+>    clean `verified`.
+>
+> Protocol moves **1.2.0 → 1.3.0** accordingly: §VIII.5 adds normative `MUST`
+> requirements, which under `VERSIONS.md` rule 2 is a minor bump.
+
 ### Added
 - **RFC 0023 implemented — a numeric model and a single quantization boundary
   (protocol §VIII.5).** The spec now states how precise a number is. Evaluation

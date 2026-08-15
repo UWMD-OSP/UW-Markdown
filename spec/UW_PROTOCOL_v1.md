@@ -1,4 +1,4 @@
-# UW Protocol — v1.2
+# UW Protocol — v1.3
 
 **Status:** Release candidate  ·  **Format pairing:** `.uwx.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.2.0`) — the
+- **Protocol version** (this document, currently `1.3.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -697,7 +697,18 @@ Identifiers and dot-paths resolve against the
 | `pv(rate, n, pmt[, fv])` | Present value of a series of equal payments + future value. |
 | `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. |
 | `npv(rate, ...flows)` | Net present value. |
-| `irr(...flows)` | Internal rate of return; null if no real root. |
+| `irr(...flows)` | Internal rate of return; null if no real root. See the convergence note below. |
+
+**`irr` convergence.** The reference implementation brackets the root on
+`[-0.999, 10.0]` (i.e. -99.9% to 1000%), refines with Newton's method, falls
+back to bisection, and caps iteration at 200; failing to bracket or converge
+raises `CALC-IRR-DIVERGE`. These parameters are **documented, not yet
+normative**: two conforming hosts using different brackets or seeds may return
+different roots for the same cash flows, and §VIII.5 quantization will not
+reveal the difference — it will simply produce two different receipt digests.
+Pinning them, along with `xirr` and day-count conventions, is deferred to a
+follow-up RFC. Implementers targeting digest-level agreement with the reference
+implementation SHOULD match these values.
 
 ### VIII.4 Determinism
 

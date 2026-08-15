@@ -58,6 +58,13 @@ where spreadsheet `ROUND` returns `1.01`. §VIII.3 documents the function as
 
 ### Spec — `UW_PROTOCOL_v1.md` §VIII.5 (new), taxonomy renumbered to §VIII.6
 
+**Protocol 1.2.0 → 1.3.0.** §VIII.5 adds normative `MUST` requirements, and
+`VERSIONS.md` compatibility rule 2 puts strengthened requirements at a minor
+bump. Leaving it at 1.2.0 would mean two different documents both calling
+themselves protocol 1.2.0 — precisely the drift the spec/schema/protocol
+lockstep invariant exists to prevent. A Tier-3 host conforming to 1.2.0 as
+previously published does not conform to §VIII.5.
+
 - A host **MUST** evaluate in IEEE 754 binary64 and **MUST NOT** round
   intermediate values. Rounding inside an expression happens only where the
   author wrote `round(num, dec)`.
@@ -119,6 +126,18 @@ where spreadsheet `ROUND` returns `1.01`. §VIII.3 documents the function as
   `subject.canonicalization_version` would have been wrong: that field names how
   the *document* was canonicalized, and the document canonicalization did not
   change.
+
+  **`computation.protocol_version` (new, optional).** Relying on the engine
+  version to signal quantization only works for receipts this engine issued —
+  an engine version means nothing to a reader who does not know that engine's
+  release history, which is exactly the position a verifier is in when handed a
+  third-party receipt. A receipt now states the protocol version it computed
+  under, so "are these values quantized per §VIII.5?" is answerable from the
+  receipt alone. It is **optional**: a receipt issued before the field existed
+  cannot retroactively claim a version, so absence means *unstated*, not
+  *non-conforming*, and a verifier must not treat it as a failure. Pinned by
+  test, and by `conformance/receipts/verify/01-clean`, whose receipt
+  deliberately omits the field and still verifies.
 
 ## Conformance impact
 
@@ -194,11 +213,13 @@ from it. The packs stay on the defaults; `packs.test.ts` covers the resolution.
 
 Deliberately out of scope, raised and deferred:
 
-- **Pinning `irr()` normatively.** Its bracket, seed, tolerance, and iteration
-  cap are implementation details today, so two conforming hosts can disagree on
-  an IRR by more than quantization hides. `xirr` and day-count conventions do
-  not exist at all. This wants its own RFC; the quantization boundary is a
-  prerequisite for it, not a substitute.
+- **Pinning `irr()` normatively.** §VIII.3 now *documents* the reference
+  bracket (`[-0.999, 10.0]`), the Newton-then-bisection strategy, and the
+  200-iteration cap, explicitly marked non-normative. Making them binding —
+  along with `xirr` and day-count conventions, which do not exist at all — is
+  deferred to a follow-up RFC. Worth stating plainly: quantization made receipts
+  reproducible *for a given engine*, not *across engines*, and for iterative
+  functions it hides the disagreement rather than resolving it.
 - **Whether `%` should carry a distinct `bps` unit.** Six places on a fraction
   is adequate for rates, but basis-point spreads on large balances may want
   more. Deferred until a pack actually needs it.

@@ -21,6 +21,7 @@ import {
   type UWReceipt,
 } from './receipts.js';
 import { quantizeDecimal, resolveRoundTo } from './calc/quantize.js';
+import { PROTOCOL_VERSION } from './protocol.js';
 import { MULTIFAMILY_PACK } from './packs/multifamily.js';
 import { OFFICE_PACK } from './packs/office.js';
 import { CORE_VERSION } from './version.js';
@@ -407,6 +408,34 @@ describe('computeReceiptResults', () => {
       expect(decimals, `${decl.id} has ${decimals} decimals, contract is ${places}`)
         .toBeLessThanOrEqual(places);
     }
+  });
+
+  // §VIII.5 / receipt spec §5.2.1. `engine_version` only means something to a
+  // reader who knows that engine's release history, which a third-party
+  // issuer's verifier does not have. `protocol_version` is the identifier every
+  // conforming issuer shares.
+  it('states the protocol version it computed under', async () => {
+    const receipt = await issueReceipt(await parkview(), {
+      filename: PARKVIEW,
+      issued_at: ISSUED_AT,
+    });
+    expect(receipt.computation.protocol_version).toBe(PROTOCOL_VERSION);
+  });
+
+  it('treats an absent protocol_version as unstated, not as a failure', async () => {
+    // A receipt issued before the field existed cannot retroactively claim a
+    // version. Verification must not punish it for that — otherwise adding the
+    // field would have retroactively invalidated every receipt in the wild.
+    const receipt = await issueReceipt(await parkview(), {
+      filename: PARKVIEW,
+      issued_at: ISSUED_AT,
+    });
+    const legacy = clone(receipt);
+    delete (legacy.computation as { protocol_version?: string }).protocol_version;
+
+    const verdict = await verifyReceipt(legacy, await parkview(), { filename: PARKVIEW });
+    expect(verdict.verdict).toBe('verified');
+    expect(verdict.issues).toHaveLength(0);
   });
 
   it('reproduces results_digest bit-for-bit across issuances', async () => {

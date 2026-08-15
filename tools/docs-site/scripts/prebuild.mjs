@@ -32,7 +32,7 @@ if (process.argv.includes('--clean')) {
 const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.2)' },
+  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.3)' },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
   { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },

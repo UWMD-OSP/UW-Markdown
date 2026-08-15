@@ -61,7 +61,7 @@
     },
     "requires_protocol": {
       "type": "string",
-      "description": "Semver range against the UW Protocol version (e.g. '>=1.0.0 <2.0.0' or '^1')."
+      "description": "Semver range against the UW Protocol version (e.g. '>=1.0.0 <2.0.0' or '^1'). Protocol 1.3.0 adds the numeric model in section VIII.5; a module whose calculations depend on a declared round_to being honoured should require '>=1.3.0'."
     },
     "requires_format": {
       "type": "string",

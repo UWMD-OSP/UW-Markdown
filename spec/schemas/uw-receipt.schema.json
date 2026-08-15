@@ -70,6 +70,11 @@
           "type": "string",
           "minLength": 1
         },
+        "protocol_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "UW Protocol version the issuer computed under. Optional: a receipt issued before this field existed cannot retroactively claim one, so absence means 'unstated' rather than 'non-conforming'. When present it answers whether the stated values are quantized per §VIII.5 without requiring the reader to know the issuing engine's release history — which is exactly what a third-party issuer's engine_version cannot convey."
+        },
         "results": {
           "type": "array",
           "minItems": 1,
