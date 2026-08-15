@@ -20,10 +20,15 @@ figures."* Agents may write an *input* a formula reads (e.g.
 
 ### 2. Dependency layering
 - Spec depends on nothing (changes need an RFC).
-- `@uwmd/core` depends only on `@anthropic-ai/sdk` at runtime — **and that SDK is
-  excluded from the `@uwmd/core/browser` entry.** Anything imported by code that
-  must run in a browser (parser, validator, calc, packs) must not transitively
-  pull in the SDK. Web tools import from `@uwmd/core/browser`.
+- `@uwmd/core` takes no vendor SDK as a hard dependency. `@anthropic-ai/sdk` is an
+  **optional peer dependency**, reached only through a dynamic import in
+  `agents/providers/anthropic.ts` — so importing `@uwmd/core` never loads it, and
+  a consumer who does not install it gets a typed `AGENT_PROVIDER_SDK_MISSING`
+  on the first provider request rather than a resolution failure at import.
+  **The SDK is also excluded from the `@uwmd/core/browser` entry.** Anything
+  imported by code that must run in a browser (parser, validator, calc, packs)
+  must not transitively pull in the SDK. Web tools import from
+  `@uwmd/core/browser`.
 - Tools depend on `@uwmd/core` + their own stack. **Tools never import other tools.**
 - Conformance fixtures depend on nothing (pure data).
 

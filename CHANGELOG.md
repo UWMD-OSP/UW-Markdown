@@ -48,6 +48,28 @@ protocol, and each package each carry an independent semver).
   a package round trip byte for byte.
 
 ### Changed
+- **`@anthropic-ai/sdk` is now an optional peer dependency of `@uwmd/core`, not a
+  runtime dependency.** A parser, a validator, and a calc engine should not
+  oblige anyone to install a vendor SDK. The Tier-4 host was already
+  provider-neutral in design — `bancroft.ts` reaches the default provider by
+  dynamic import — but `index.ts` re-exports `createAnthropicProvider`
+  statically, and that module imported the SDK statically, so `import
+  '@uwmd/core'` loaded the vendor SDK for every consumer regardless. The import
+  is now dynamic and deferred to the first request; the SDK's types are reached
+  by an erased `import type`.
+
+  `createAnthropicProvider()` keeps its signature and stays synchronous — client
+  construction moved behind the first `complete()`/`stream()` call, so an
+  invalid API key now surfaces on that call rather than at construction. A
+  consumer who has not installed the SDK gets a typed
+  `AGENT_PROVIDER_SDK_MISSING` naming the fix, instead of a module-resolution
+  stack trace; `AgentProviderError`'s `code` union widens by that one member,
+  and transport wrapping no longer relabels it. Hosts that supply their own
+  `provider`, and everything Tier-1 through Tier-3, need no change.
+
+  **Requires a `@uwmd/core` minor bump at release**: the calling shape is
+  unchanged, but what `npm install` puts on disk is not, so a patch would
+  understate it.
 - **Safe-ZIP inspection extracted to `zip-safety.ts`.** RFC 0018 §3 requires
   deal packages to apply the restrictions the CSV bundle already established;
   reimplementing them would have produced two subtly different copies of

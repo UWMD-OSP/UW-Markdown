@@ -98,9 +98,13 @@ not core gaps.
   `AgentProvider` — `complete()`, optional `stream()`, and neutral request /
   completion types — and imports no vendor SDK.
   `agents/providers/anthropic.ts` is the **only** file in the library that
-  imports `@anthropic-ai/sdk`, and `bancroft.ts` reaches it through a *dynamic*
-  import, so a host supplying its own provider never loads the SDK at all. A
-  test asserts the absence of a static import. `BancroftRunOptions` gained
+  touches `@anthropic-ai/sdk`, and it touches it only at runtime: the SDK is an
+  optional peer dependency loaded by dynamic import on the first request, and
+  `bancroft.ts` reaches the provider the same way. So no consumer loads the SDK
+  by importing `@uwmd/core`, and a host that never sends a request need not
+  install it — a missing SDK surfaces as `AGENT_PROVIDER_SDK_MISSING`, not a
+  module-resolution error. Tests assert the absence of a static import in both
+  files and that the factory constructs without the SDK present. `BancroftRunOptions` gained
   `provider` (and `apiKey` became optional); supplying neither is a typed
   `AgentProviderError`.
 - **Recorded-replay Tier-4 conformance (T10):** `agents/providers/replay.ts`
