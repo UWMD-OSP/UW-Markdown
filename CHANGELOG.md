@@ -8,6 +8,56 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+> ### ⚠️ Read before upgrading — Lite percent digests move (RFC 0025, draft)
+>
+> UW Lite normalized a percent display by dividing by 100. That is exact for
+> most rates and not for others: `Number('5.51') / 100` is
+> `0.055099999999999996`, one ULP off the `0.0551` the literal denotes. Because
+> the normalized value enters the RFC 8785 canonical form, a Lite-compiled
+> `5.51%` and a hand-authored UWX `0.0551` were **different doubles with
+> different digests**, and did not compare equal under semantic equivalence or
+> an RFC 0016 receipt — though both spell the same rate.
+>
+> Scaling is now exact decimal-point movement (`UW_LITE_SPEC_v1.md` §4.1), and
+> the Lite canonicalization version moves **1.0 → 1.1**. The Lite *grammar* is
+> unchanged: `5.51%` parsed before and parses now, and **no document needs
+> editing**.
+>
+> **Affected documents are narrower than it sounds.** Only a Lite document
+> containing a percent that does not divide exactly changes digest. Every
+> fixture in `conformance/lite/` uses 5.50%/5.75%/6.25%/5.00%/-1.50%, all of
+> which divide cleanly, so all 90 assertions passed untouched — the one affected
+> document in this repo is `examples/Parkview-Apts-Glendale-AZ.uw.md`.
+>
+> **Pre-existing receipts degrade to `unverifiable`, not `failed`.** New
+> `RCP-10` fires when digests disagree *and* the canonicalization version
+> disagrees, so a stale receipt is reported as undecidable rather than as
+> evidence the record was tampered with. Re-issue receipts over affected
+> documents.
+
+### Added
+
+- **`RCP-10`** (`UW_RECEIPT_v1.md` §5.5) — digest mismatch is no longer decisive
+  when the canonicalization version also differs. Same carve-out shape as the
+  §5.3 engine-identity rule, one step earlier in the precedence.
+- **`UW_LITE_CANONICALIZATION_VERSION`** and **`UWX_CANONICALIZATION_VERSION`**
+  exported from `@uwmd/core` (and `@uwmd/core/browser`).
+- Conformance scenario
+  `receipts/verify/06-lite-canonicalization-superseded` — a `5.51%` Lite deal
+  with a receipt stamped `1.0` carrying the genuine pre-fix digest, expecting
+  `unverifiable` + `RCP-10`. Corpus: 158 → 159 assertions.
+
+### Fixed
+
+- **Lite percent normalization loses decimal exactness** — `lite.ts` now shifts
+  the decimal point through the digit string rather than dividing, so the value
+  matches the double a hand-authored UWX fraction produces.
+- **Lite issuance conflated two version fields** — `canonicalization_version`
+  was stamped from `UW_LITE_REPRESENTATION_VERSION`. UWX already kept them
+  separate, so Lite was the odd one out; had this not been split first, bumping
+  the canonicalization version would have falsely claimed the Lite *grammar*
+  changed.
+
 ## [1.3.0] - 2026-08-15
 
 > ### ⚠️ Read before upgrading — `irr` can now refuse where it used to answer

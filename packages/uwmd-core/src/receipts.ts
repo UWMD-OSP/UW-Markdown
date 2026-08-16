@@ -49,6 +49,19 @@ export const UW_RECEIPT_VERSION = '1.0' as const;
 
 /** Canonicalization used for the Lite representation (UW_LITE_SPEC §6). */
 export const UW_LITE_CANONICALIZATION = 'uw-lite-financial' as const;
+
+/**
+ * Version of the *canonicalization rules*, which is not the version of the Lite
+ * *grammar* — the two move independently, and this field previously carried
+ * `UW_LITE_REPRESENTATION_VERSION`, which conflated them. RFC 0025 changed how a
+ * percent display normalizes without changing a single production of the
+ * grammar: `5.51%` parsed before and parses now, it just canonicalizes to a
+ * different double. Stamping the grammar version would have claimed a source
+ * change that did not happen, and left the change that *did* happen unstamped.
+ * `UWX_CANONICALIZATION_VERSION` is separate for the same reason.
+ */
+export const UW_LITE_CANONICALIZATION_VERSION = '1.1' as const;
+export const UWX_CANONICALIZATION_VERSION = '1.0' as const;
 /** Canonicalization used for structured records (Document Envelope 1.0). */
 export const UWX_CANONICALIZATION = 'uw-envelope-semantic' as const;
 
@@ -186,7 +199,9 @@ export type UWReceiptIssueCode =
   /** A signature is present and this verifier has no signature backend. */
   | 'RCP-08'
   /** The document could not be canonicalized (parse or compile failure). */
-  | 'RCP-09';
+  | 'RCP-09'
+  /** Digests disagree and the canonicalization version also differs. */
+  | 'RCP-10';
 
 export interface UWReceiptIssue {
   code: UWReceiptIssueCode;
@@ -269,7 +284,7 @@ export async function resolveReceiptSubject(
         representation: UW_LITE_REPRESENTATION_ID,
         representation_version: UW_LITE_REPRESENTATION_VERSION,
         canonicalization: UW_LITE_CANONICALIZATION,
-        canonicalization_version: UW_LITE_REPRESENTATION_VERSION,
+        canonicalization_version: UW_LITE_CANONICALIZATION_VERSION,
         digest: await digestOf(canonical),
       },
       canonical,
@@ -296,7 +311,7 @@ export async function resolveReceiptSubject(
       representation: UWX_REPRESENTATION_ID,
       representation_version: UWX_REPRESENTATION_VERSION,
       canonicalization: UWX_CANONICALIZATION,
-      canonicalization_version: '1.0',
+      canonicalization_version: UWX_CANONICALIZATION_VERSION,
       digest: await digestOf(canonical),
     },
     canonical,
@@ -465,7 +480,14 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  * Reports exactly one of three verdicts and never collapses `unverifiable` into
  * either of the others. Precedence:
  *
- *   1. A digest mismatch is decisive — the record changed. `failed`.
+ *   1. A digest mismatch is decisive — the record changed. `failed` — unless the
+ *      receipt was canonicalized under different rules than this verifier
+ *      applies, in which case the two digests were never comparable and the
+ *      disagreement is attributable to the rules rather than to the record:
+ *      `unverifiable` (RCP-10). This mirrors the engine-identity carve-out at
+ *      step 3, and exists for the same reason RFC 0023 gave — a verifier must
+ *      not report corruption when the only thing that changed is its own
+ *      arithmetic. See RFC 0025.
  *   2. Otherwise, anything this verifier cannot decide (unknown pack, pack
  *      version it does not hold, a signature with no backend) → `unverifiable`.
  *   3. Otherwise, recomputation disagreement → `failed`, unless the issuing
@@ -509,8 +531,24 @@ export async function verifyReceipt(
     };
   }
 
-  // 1 — digest. Decisive on mismatch.
+  // 1 — digest. Decisive on mismatch, but only between comparable digests: two
+  // canonicalization versions can disagree about a document neither side
+  // touched, so the version is checked before the mismatch is attributed.
   if (resolved.subject.digest !== receipt.subject.digest) {
+    if (resolved.subject.canonicalization_version !== receipt.subject.canonicalization_version) {
+      return {
+        verdict: 'unverifiable',
+        issues: [
+          {
+            code: 'RCP-10',
+            severity: 'indeterminate',
+            message: `The receipt was canonicalized under '${receipt.subject.canonicalization}' version ${receipt.subject.canonicalization_version}; this verifier applies version ${resolved.subject.canonicalization_version}. The digests are not comparable, so this is not evidence the record changed.`,
+            expected: receipt.subject.digest,
+            actual: resolved.subject.digest,
+          },
+        ],
+      };
+    }
     return {
       verdict: 'failed',
       issues: [

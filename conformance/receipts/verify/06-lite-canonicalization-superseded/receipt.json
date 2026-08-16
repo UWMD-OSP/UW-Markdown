@@ -4,14 +4,14 @@
     "representation": "uw-lite-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-lite-financial",
-    "canonicalization_version": "1.1",
-    "digest": "sha256:f930ebf20c9b0cc1159b65cc653f50a728fa07858080be5f6592ab307953d216"
+    "canonicalization_version": "1.0",
+    "digest": "sha256:43bf13a1a51f25f1af6d26e3cc4548cb66069d3fd6f0ad07d37e8d5a90804988"
   },
   "computation": {
     "pack": "org.uwmd.pack.industrial",
     "pack_version": "1.0.0",
     "engine": "@uwmd/core",
-    "engine_version": "1.3.0",
+    "engine_version": "1.2.0",
     "protocol_version": "1.4.0",
     "results": [
       {

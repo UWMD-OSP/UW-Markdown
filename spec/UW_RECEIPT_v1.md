@@ -165,9 +165,11 @@ Verifiers **MUST** apply these in order:
 
 1. **Record not canonicalizable** (parse errors, undetectable representation) →
    `unverifiable` (`RCP-09`). There is nothing to compare against.
-2. **Digest mismatch** → `failed` (`RCP-01`). This is decisive: the record's
-   financial content changed after issuance, and no later check can rehabilitate
-   it.
+2. **Digest mismatch** → `failed` (`RCP-01`), *unless* the receipt's
+   `canonicalization_version` also differs from the one this verifier applies,
+   in which case → `unverifiable` (`RCP-10`); see §5.5. Absent that, the
+   mismatch is decisive: the record's financial content changed after issuance,
+   and no later check can rehabilitate it.
 3. **Verifier cannot decide** → `unverifiable`: unknown pack (`RCP-05`), a
    different version of the named pack (`RCP-06`), or a signature with no
    available backend (`RCP-08`). A verifier without a signing backend **MUST NOT**
@@ -240,6 +242,40 @@ would train users to ignore the state.
 | `RCP-07` | unverifiable | Results disagree and the engine identity also differs |
 | `RCP-08` | unverifiable | A signature is present and no backend is available |
 | `RCP-09` | unverifiable | The record could not be canonicalized for comparison |
+| `RCP-10` | unverifiable | Digests disagree and the canonicalization version also differs |
+
+### 5.5 Canonicalization-version mismatch
+
+*Added by RFC 0025.* A digest is only evidence about a record when both sides
+computed it under the same rules. If the subject digests disagree **and**
+`subject.canonicalization_version` differs from the version this verifier
+applies for that canonicalization, the verdict is `unverifiable` with `RCP-10`,
+not `failed`.
+
+This is the same carve-out §5.3 makes for engine identity, one step earlier in
+the precedence and for the same reason: a verifier must not report that a
+document was tampered with when the only thing that changed is its own
+arithmetic. The concrete case is UW Lite canonicalization `1.1`, which fixed
+percent scaling (`UW_LITE_SPEC_v1.md` §4.1) and so moved the digest of every
+Lite document containing a percent that does not divide exactly — while the
+documents themselves stayed byte-identical.
+
+Two limits keep the carve-out narrow. It applies **only** when the digests
+already disagree: a version difference with matching digests is not an issue at
+all, and verification proceeds normally, which is the common case since most
+documents are unaffected by any given rules change. And it is keyed on the
+version *differing*, not on it being older — a verifier cannot assume it holds
+the newer rules, and **MUST NOT** attempt to re-canonicalize under the
+receipt's version unless it actually implements it.
+
+A verifier that implements multiple canonicalization versions **MAY** recompute
+under the receipt's stated version and, if that digest matches, continue to the
+remaining checks rather than stopping at `RCP-10`.
+
+`canonicalization_version` is versioned independently of
+`representation_version`: the rules for producing canonical bytes can change
+without the source grammar changing, and an implementation **MUST NOT** stamp
+one field from the other.
 
 ## 6. Staleness
 

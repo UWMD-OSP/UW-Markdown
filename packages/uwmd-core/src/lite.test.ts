@@ -19,6 +19,66 @@ const SOURCE = [
   'This narrative is preserved.',
 ].join('\n');
 
+describe('percent normalization (RFC 0025)', () => {
+  const parseRate = (display: string): number => {
+    const parsed = parseUWLite(
+      [
+        '---',
+        'uw_lite_version: 1.0',
+        'deal_name: Rate',
+        '---',
+        `- Rate: ${display} <!-- uw:valuation.going_in_cap_rate -->`,
+      ].join('\n'),
+    );
+    expect(parsed.issues).toEqual([]);
+    return parsed.fields[0].value as number;
+  };
+
+  it('scales by moving the decimal point, not by dividing', () => {
+    // The regression: `Number('5.51') / 100` is 0.055099999999999996, one ULP
+    // off. `toBe` is the whole point here — `toBeCloseTo` would pass either way.
+    expect(parseRate('5.51%')).toBe(0.0551);
+    expect(parseRate('5.51%')).not.toBe(5.51 / 100);
+  });
+
+  it('agrees with the double a hand-authored UWX fraction produces', () => {
+    // This equality is what makes a Lite-compiled rate and a UWX-authored rate
+    // compare equal under semantic equivalence and under an RFC 0016 receipt.
+    for (const [display, fraction] of [
+      ['5.51%', '0.0551'],
+      ['7.03%', '0.0703'],
+      ['0.07%', '0.0007'],
+      ['12.34%', '0.1234'],
+    ] as const) {
+      expect(parseRate(display)).toBe(Number(fraction));
+    }
+  });
+
+  it('handles the shapes the grammar admits: signs, no point, bare fraction', () => {
+    expect(parseRate('0%')).toBe(0);
+    expect(parseRate('100%')).toBe(1);
+    expect(parseRate('-1.50%')).toBe(-0.015);
+    expect(parseRate('.5%')).toBe(0.005);
+    expect(parseRate('6.2500%')).toBe(0.0625);
+    // Fewer integer digits than the shift needs — the padding path.
+    expect(parseRate('1.5%')).toBe(0.015);
+  });
+
+  it('leaves rates that already divide cleanly untouched', () => {
+    // The reason no conformance baseline moved: every existing fixture rate
+    // divides exactly, so the fix is invisible to them.
+    for (const [display, expected] of [
+      ['5.50%', 0.055],
+      ['5.75%', 0.0575],
+      ['6.25%', 0.0625],
+      ['5.00%', 0.05],
+    ] as const) {
+      expect(parseRate(display)).toBe(expected);
+      expect(parseRate(display)).toBe(Number(display.slice(0, -1)) / 100);
+    }
+  });
+});
+
 describe('parseUWLite', () => {
   it('parses anchored typed fields and preserves source nodes', () => {
     const parsed = parseUWLite(SOURCE);
