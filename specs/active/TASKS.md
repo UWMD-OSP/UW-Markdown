@@ -57,8 +57,12 @@ it moved to its own follow-up because the merge was already green without it.
   - Its first run found **12 type errors across 5 files** — none failing at
     runtime, all places the compiler had nothing to say. Fixed in the same
     commit. Biome now parses `tsconfig*.json` as JSONC.
-  - Scope note: `@uwmd/core` only. The cli/excel/report/batch workspaces' tests
-    are still unchecked — worth a follow-up.
+  - Extended to all five workspaces in `6bae5b8`. No further type errors, but
+    the sweep found that **`@uwmd/excel` was publishing its own test suite** —
+    its tsconfig had no `exclude`, so the build compiled tests into `dist/`,
+    and its `files` field carries none of core's `!dist/**/*.test.*` guards.
+    `verify-packages` had no entry for excel or report at all; it covers all
+    five publishable workspaces now.
 - [x] **Task 3.3: Exclude re-export barrels from coverage** — `ce13e55`
   - `src/index.ts` and `src/browser.ts` excluded in `vitest.config.ts`.
   - **The coverage gate was already red on `main`:** measured 77.88% against a
