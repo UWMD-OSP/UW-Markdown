@@ -487,6 +487,7 @@ export type { InitOptions } from './init.js';
 export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
 export {
   UW_RECEIPT_VERSION,
+  SUPPORTED_RECEIPT_VERSIONS,
   UW_LITE_CANONICALIZATION,
   UW_LITE_CANONICALIZATION_VERSION,
   UWX_CANONICALIZATION,
@@ -515,6 +516,9 @@ export type {
   UWReceiptIssue,
   UWReceiptIssueCode,
   UWReceiptVerification,
+  UWReceiptInputProvenance,
+  UWReceiptInputSource,
+  UWReceiptInputResolver,
   ReceiptErrorCode,
   ReceiptSignatureVerifier,
   ReceiptSubjectOptions,

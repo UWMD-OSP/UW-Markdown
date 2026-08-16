@@ -91,7 +91,7 @@ describe('issueReceipt', () => {
       issued_at: ISSUED_AT,
     });
 
-    expect(receipt.receipt_version).toBe('1.0');
+    expect(receipt.receipt_version).toBe('1.1');
     expect(receipt.computation.pack).toBe(MULTIFAMILY_PACK.id);
     expect(receipt.computation.pack_version).toBe(MULTIFAMILY_PACK.version);
     expect(receipt.computation.engine_version).toBe(CORE_VERSION);
@@ -210,6 +210,132 @@ describe('verifyReceipt', () => {
     const result = await verifyReceipt(receipt, mutated, { filename: LITE_DEAL });
     expect(result.verdict).toBe('failed');
     expect(result.issues.map((i) => i.code)).toContain('RCP-01');
+  });
+
+  it('is unverifiable when it cannot resolve a referenced input (RCP-11)', async () => {
+    // The reference names an observation set this verifier does not hold. It
+    // has not checked something the receipt says the computation depended on,
+    // so it may not say `verified` — and an absent set is not tampering, so it
+    // may not say `failed` either.
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, {
+      filename: LITE_DEAL,
+      issued_at: ISSUED_AT,
+      inputs_provenance: [
+        {
+          source: 'market_data',
+          document_id: 'md:phx-multifamily:2026-Q2',
+          as_of: '2026-06-30',
+          digest: `sha256:${'a'.repeat(64)}`,
+        },
+      ],
+    });
+    expect(receipt.receipt_version).toBe('1.1');
+
+    const result = await verifyReceipt(receipt, raw, { filename: LITE_DEAL });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map((i) => i.code)).toContain('RCP-11');
+  });
+
+  it('verifies when the referenced input resolves and matches', async () => {
+    const raw = await liteDeal();
+    const digest = `sha256:${'a'.repeat(64)}`;
+    const receipt = await issueReceipt(raw, {
+      filename: LITE_DEAL,
+      issued_at: ISSUED_AT,
+      inputs_provenance: [
+        { source: 'market_data', document_id: 'md:phx', as_of: '2026-06-30', digest },
+      ],
+    });
+
+    const result = await verifyReceipt(receipt, raw, {
+      filename: LITE_DEAL,
+      inputs: { 'md:phx': digest },
+    });
+    expect(result.verdict).toBe('verified');
+    expect(result.issues).toEqual([]);
+  });
+
+  it('fails when a referenced input resolved but changed (RCP-12)', async () => {
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, {
+      filename: LITE_DEAL,
+      issued_at: ISSUED_AT,
+      inputs_provenance: [
+        {
+          source: 'market_data',
+          document_id: 'md:phx',
+          as_of: '2026-06-30',
+          digest: `sha256:${'a'.repeat(64)}`,
+        },
+      ],
+    });
+
+    const result = await verifyReceipt(receipt, raw, {
+      filename: LITE_DEAL,
+      inputs: { 'md:phx': `sha256:${'b'.repeat(64)}` },
+    });
+    expect(result.verdict).toBe('failed');
+    expect(result.issues.map((i) => i.code)).toContain('RCP-12');
+  });
+
+  it('does not let a missing reference mask a mutated one', async () => {
+    // RCP-12 is checked across all held references before any RCP-11 is
+    // recorded, so an unrelated absent set cannot downgrade a real mismatch
+    // from `failed` to `unverifiable`.
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, {
+      filename: LITE_DEAL,
+      issued_at: ISSUED_AT,
+      inputs_provenance: [
+        { source: 'market_data', document_id: 'md:absent', digest: `sha256:${'a'.repeat(64)}` },
+        { source: 'market_data', document_id: 'md:mutated', digest: `sha256:${'b'.repeat(64)}` },
+      ],
+    });
+
+    const result = await verifyReceipt(receipt, raw, {
+      filename: LITE_DEAL,
+      inputs: { 'md:mutated': `sha256:${'c'.repeat(64)}` },
+    });
+    expect(result.verdict).toBe('failed');
+    expect(result.issues.map((i) => i.code)).toContain('RCP-12');
+  });
+
+  it('emits provenance sorted by document_id so re-issuance is stable', async () => {
+    const raw = await liteDeal();
+    const entries = [
+      { source: 'market_data' as const, document_id: 'md:zulu', digest: `sha256:${'a'.repeat(64)}` },
+      { source: 'market_data' as const, document_id: 'md:alpha', digest: `sha256:${'b'.repeat(64)}` },
+    ];
+    const first = await issueReceipt(raw, {
+      filename: LITE_DEAL,
+      issued_at: ISSUED_AT,
+      inputs_provenance: entries,
+    });
+    const second = await issueReceipt(raw, {
+      filename: LITE_DEAL,
+      issued_at: ISSUED_AT,
+      inputs_provenance: [...entries].reverse(),
+    });
+
+    expect(first.inputs_provenance!.map((e) => e.document_id)).toEqual(['md:alpha', 'md:zulu']);
+    expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+  });
+
+  it('omits the section entirely when there is no external input', async () => {
+    // What keeps a 1.0 receipt readable: every 1.1 addition is optional.
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, { filename: LITE_DEAL, issued_at: ISSUED_AT });
+    expect(receipt.inputs_provenance).toBeUndefined();
+    expect('inputs_provenance' in receipt).toBe(false);
+  });
+
+  it('still reads a 1.0 receipt', async () => {
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, { filename: LITE_DEAL, issued_at: ISSUED_AT });
+    const legacy = clone(receipt);
+    legacy.receipt_version = '1.0';
+    expect(() => assertUWReceipt(legacy)).not.toThrow();
   });
 
   it('fails when a stated result does not follow from the record', async () => {
@@ -380,6 +506,16 @@ describe('verifyReceipt', () => {
       (r: UWReceipt) => {
         r.computation.engine_version = 'other';
       },
+      (r: UWReceipt) => {
+        r.inputs_provenance = [
+          { source: 'market_data', document_id: 'md:x', digest: `sha256:${'9'.repeat(64)}` },
+        ];
+      },
+      (r: UWReceipt) => {
+        r.inputs_provenance = [
+          { source: 'some_future_source', document_id: 'md:y', digest: `sha256:${'8'.repeat(64)}` },
+        ];
+      },
     ]) {
       const variant = clone(receipt);
       mutate(variant);
@@ -417,6 +553,59 @@ describe('assertUWReceipt', () => {
     const bad = clone(receipt);
     bad.computation.results[0] = { calc_id: 'x', value: 1, computed: false };
     expect(() => assertUWReceipt(bad)).toThrow(/uncomputed but carries a value/);
+  });
+
+  describe('inputs_provenance', () => {
+    const withProvenance = async (entries: unknown): Promise<unknown> => {
+      const receipt = await issueReceipt(await parkview(), {
+        filename: PARKVIEW,
+        issued_at: ISSUED_AT,
+      });
+      const copy = clone(receipt) as unknown as Record<string, unknown>;
+      copy['inputs_provenance'] = entries;
+      return copy;
+    };
+
+    it('accepts a well-formed entry', async () => {
+      const ok = await withProvenance([
+        { source: 'market_data', document_id: 'md:x', as_of: '2026-06-30', digest: `sha256:${'a'.repeat(64)}` },
+      ]);
+      expect(() => assertUWReceipt(ok)).not.toThrow();
+    });
+
+    it('accepts an unregistered source — the union is open by design', async () => {
+      const ok = await withProvenance([
+        { source: 'child_record', document_id: 'deal:child-1', digest: `sha256:${'a'.repeat(64)}` },
+      ]);
+      expect(() => assertUWReceipt(ok)).not.toThrow();
+    });
+
+    it('rejects a malformed digest rather than carrying an uncheckable reference', async () => {
+      const bad = await withProvenance([
+        { source: 'market_data', document_id: 'md:x', digest: 'nope' },
+      ]);
+      expect(() => assertUWReceipt(bad)).toThrow(/digest/);
+    });
+
+    it('rejects a duplicate document_id', async () => {
+      const digest = `sha256:${'a'.repeat(64)}`;
+      const bad = await withProvenance([
+        { source: 'market_data', document_id: 'md:x', digest },
+        { source: 'market_data', document_id: 'md:x', digest },
+      ]);
+      expect(() => assertUWReceipt(bad)).toThrow(/more than once/);
+    });
+
+    it('rejects a missing required key', async () => {
+      const bad = await withProvenance([{ source: 'market_data', digest: `sha256:${'a'.repeat(64)}` }]);
+      expect(() => assertUWReceipt(bad)).toThrow(/document_id/);
+    });
+
+    it('rejects a non-array', async () => {
+      expect(() => assertUWReceipt(withProvenance)).toThrow(ReceiptError);
+      const bad = await withProvenance({ source: 'market_data' });
+      expect(() => assertUWReceipt(bad)).toThrow(/must be an array/);
+    });
   });
 });
 

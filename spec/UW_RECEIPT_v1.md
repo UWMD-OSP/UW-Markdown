@@ -170,10 +170,16 @@ Verifiers **MUST** apply these in order:
    in which case → `unverifiable` (`RCP-10`); see §5.5. Absent that, the
    mismatch is decisive: the record's financial content changed after issuance,
    and no later check can rehabilitate it.
+2a. **A referenced input resolved and its digest disagrees** → `failed`
+   (`RCP-12`); see §10. Checked here, above the indeterminate group, because a
+   reference the verifier holds and can compare is real evidence, and ordering
+   it later would let an unknown pack mask a mutated observation set.
 3. **Verifier cannot decide** → `unverifiable`: unknown pack (`RCP-05`), a
-   different version of the named pack (`RCP-06`), or a signature with no
-   available backend (`RCP-08`). A verifier without a signing backend **MUST NOT**
-   silently ignore a signature.
+   different version of the named pack (`RCP-06`), a signature with no
+   available backend (`RCP-08`), or a referenced input the verifier does not
+   hold (`RCP-11`). A verifier without a signing backend **MUST NOT**
+   silently ignore a signature, and one without a referenced input **MUST NOT**
+   silently ignore the reference.
 4. **Signature present and invalid** → `failed`.
 5. **Recomputation disagreement** → `failed` (`RCP-02` coverage, `RCP-03` value),
    *unless* the issuing engine identity also differs, in which case →
@@ -243,6 +249,8 @@ would train users to ignore the state.
 | `RCP-08` | unverifiable | A signature is present and no backend is available |
 | `RCP-09` | unverifiable | The record could not be canonicalized for comparison |
 | `RCP-10` | unverifiable | Digests disagree and the canonicalization version also differs |
+| `RCP-11` | unverifiable | A referenced input is not available to this verifier |
+| `RCP-12` | failed | A referenced input resolved, but its digest disagrees |
 
 ### 5.5 Canonicalization-version mismatch
 
@@ -315,3 +323,94 @@ free of cryptographic dependencies; a verifier without a backend returns
 `unverifiable` for a signed receipt.
 
 CLI: `uwmd receipt issue <file>` and `uwmd receipt verify <file> <receipt.json>`.
+
+## 10. Input provenance (format 1.1)
+
+*Established by [RFC 0022](../docs/rfcs/0022-market-data-documents.md) §3;
+amended by [RFC 0021](../docs/rfcs/0021-composable-documents.md) §6.*
+
+### 10.1 Why one section rather than two
+
+A receipt attests that stated outputs follow from stated inputs. When an input
+is not in the subject record — a market-data observation set, or a child record
+inside a composite — the receipt must name it, or the computation is not
+reproducible against the inputs actually used.
+
+RFC 0021 and RFC 0022 were accepted the same day and both needed this. They
+share **one** section with a `source` discriminator rather than two parallel
+lists, because the verifier's handling is identical in both cases: resolve the
+reference, compare the digest, and keep "I cannot find it" distinct from "it
+does not match". That distinction is the reason this is a normative structure
+and not a comment field.
+
+### 10.2 Shape
+
+```json
+{
+  "inputs_provenance": [
+    {
+      "source": "market_data",
+      "document_id": "md:phx-multifamily:2026-Q2",
+      "as_of": "2026-06-30",
+      "digest": "sha256:<64 lowercase hex>"
+    }
+  ]
+}
+```
+
+- `inputs_provenance` is OPTIONAL. A receipt over a record that consumed no
+  external input omits it entirely. This is what keeps a 1.0 receipt readable
+  under 1.1: every addition is optional, so absence means *the issuer stated
+  nothing*, never *non-conforming*.
+- `source`, `document_id`, and `digest` are REQUIRED on each entry. `digest`
+  MUST match `sha256:[0-9a-f]{64}`.
+- `as_of` is OPTIONAL at this layer, because not every source has a vintage. A
+  `market_data` entry always carries one in practice: `market-data-v1` refuses
+  to parse without `as_of`, so an entry lacking one could not have been produced
+  from a conforming observation set.
+- `document_id` MUST be unique within the array. Two entries for one id would
+  make the digest comparison depend on iteration order.
+- `source` is an **open** union. `market_data` (RFC 0022) and `child_record`
+  (RFC 0021) are registered; an implementation encountering an unrecognized
+  source MUST carry it and report it as unresolvable (`RCP-11`) rather than
+  rejecting the receipt or ignoring the entry.
+- An issuer MUST NOT derive these entries by guessing what a record might have
+  used. The host supplies them, because only the host knows what it resolved
+  against; a fabricated entry would make a receipt claim an input it never used.
+- An issuer SHOULD emit entries sorted by `document_id`, so re-issuance over an
+  unchanged record reproduces identical bytes regardless of the order the host
+  listed them in (§7's re-issuance invariant).
+
+### 10.3 Verification
+
+A verifier holds some set of referenced artifacts. For each entry:
+
+| Verifier state | Verdict contribution |
+|---|---|
+| Holds it, digest matches | no issue; continue |
+| Holds it, digest differs | `failed` (`RCP-12`) |
+| Does not hold it | `unverifiable` (`RCP-11`) |
+
+A verifier that holds none of the named references reports `unverifiable`. It
+MUST NOT report `verified`, because it has not checked something the receipt
+says the computation depended on — and it MUST NOT report `failed`, because an
+absent reference set is not evidence of tampering. This is the same three-state
+discipline §5 already applies to unknown packs and to signed receipts with no
+backend.
+
+A verified receipt over a record that consumed market data means: the stated
+outputs follow deterministically from these inputs, and **these particular
+observations** were the ones used. It does not mean the observations are
+accurate, current, representative, or that the provider is competent.
+
+### 10.4 Versioning
+
+This section takes `receipt_version` from `1.0` to **`1.1`**, and that bump
+covers **both** RFC 0021 and RFC 0022. RFC 0021's rollup entries are additive
+within this section — `source: "child_record"` — and MUST NOT bump the version
+again. Two independent bumps for two simultaneously-accepted RFCs would make the
+version meaningless, so the discipline RFC 0018 §5 established for the edge
+registry applies here: RFC 0016 owns this format, and later amendments extend
+this section rather than forking a parallel one.
+
+A verifier MUST accept both `1.0` and `1.1`.

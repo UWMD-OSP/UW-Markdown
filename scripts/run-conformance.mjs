@@ -1070,10 +1070,22 @@ async function runReceiptVerify() {
     const receipt = JSON.parse(readFileSync(receiptPath, 'utf8'));
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
 
+    // Optional sibling inputs.json — the referenced-input digests this verifier
+    // is meant to hold (receipt format 1.1, UW_RECEIPT_v1 §10). Absent means
+    // "holds none", which is the market-data-absent scenario rather than a
+    // fixture defect, so its absence is deliberately not an error.
+    const inputsPath = join(dir, 'inputs.json');
+    const inputs = existsSync(inputsPath)
+      ? JSON.parse(readFileSync(inputsPath, 'utf8'))
+      : undefined;
+
     let result;
     try {
       assertUWReceipt(receipt);
-      result = await verifyReceipt(receipt, deal.source, { filename: deal.path });
+      result = await verifyReceipt(receipt, deal.source, {
+        filename: deal.path,
+        ...(inputs ? { inputs } : {}),
+      });
     } catch (e) {
       record('receipts', `verify/${id}`, 'fail', `verification threw: ${e.message}`);
       continue;

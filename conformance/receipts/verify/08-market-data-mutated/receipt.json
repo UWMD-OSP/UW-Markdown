@@ -97,7 +97,15 @@
       "warnings": 0
     }
   },
-  "issued_at": "2026-08-09T00:00:00Z",
+  "inputs_provenance": [
+    {
+      "source": "market_data",
+      "document_id": "md:phx-multifamily:2026-Q2",
+      "as_of": "2026-06-30",
+      "digest": "sha256:00848aa690deccdd916e64e0d6cb57e1d149bb6751d69a8e624ad9b1df2e336e"
+    }
+  ],
+  "issued_at": "2026-08-16T00:00:00Z",
   "issuer": "conformance",
   "signature": null
 }
