@@ -69,7 +69,23 @@ post-v1.0 plan is
   (Node 20 & 22 matrix) that installs, builds, tests, and runs conformance
   tiers 1–3. Tier 4 is excluded (non-deterministic / operator-driven).
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
-  `@uwmd/core` and `@uwmd/cli` (npm provenance via `id-token: write`).
+  `@uwmd/core` and `@uwmd/cli`. Authentication is **npm trusted publishing
+  (OIDC)** — no `NPM_TOKEN`, no secret of any kind. The runner trades the
+  `id-token: write` permission for a short-lived token scoped to this repo and
+  workflow, and provenance is attached automatically.
+
+  It needs a trusted publisher configured **per package** on npmjs.com (org
+  `UWMD-OSP`, repo `UW-Markdown`, workflow `release.yml`). npm allows only one
+  per package, which is the reason `publish-cli-recovery.yml` needs the
+  temporary repoint documented in its header. Node stays pinned at 22.14.0
+  because that is npm's documented minimum for OIDC, and the job upgrades npm
+  to 11.5.1 for the same reason — the bundled 10.x cannot do it.
+
+  Before this, the job used a long-lived `NPM_TOKEN` secret. The 1.3.0 release
+  is what exposed the cost: the token had expired, the tag-triggered publish
+  died at `ENEEDAUTH` after passing every gate, and the release went out by
+  hand instead. A credential that expires silently between releases is one that
+  is always broken exactly when it is needed.
 - **`CODEOWNERS`** routes spec / schema / reference-library paths to the BDFL.
 
 ## Governance & RFCs
