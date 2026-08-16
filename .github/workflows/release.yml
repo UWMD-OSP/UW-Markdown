@@ -4,17 +4,37 @@ name: Release
 # version tag (v*) is pushed. Both packages share a single tag — they
 # version in lockstep because the CLI re-exposes the library's CLI module.
 #
-# Prerequisites (one-time setup before the first tag):
-# 1. Register the @uwmd organization on npmjs.com.
-# 2. Reserve the unscoped `uwmd` package name on npm (publish 1.0.0 by hand
-#    once, or use `npm owner add` after the first automated publish).
-# 3. Create an npm granular access token with publish scope for both packages.
-# 4. Add it to this repo's secrets as NPM_TOKEN.
-# 5. Verify `repository.url` and `homepage` in both packages match the
-#    canonical repo URL.
+# Authentication is npm trusted publishing (OIDC) — there is no NPM_TOKEN and
+# no secret of any kind. The runner exchanges its `id-token` for a short-lived
+# token scoped to this repo and workflow, which is why `permissions: id-token:
+# write` below is load-bearing rather than decoration.
+#
+# Prerequisites (one-time, on npmjs.com — nothing to configure in this repo):
+#   For EACH of @uwmd/core and @uwmd/cli: package page -> Settings ->
+#   Trusted publisher -> GitHub Actions, with
+#     Organization or user: UWMD-OSP
+#     Repository:           UW-Markdown
+#     Workflow filename:    release.yml     (filename only, no path, with .yml)
+#     Allowed actions:      publish
+#     Environment:          (leave blank)
+#
+# Both are required. Configure one and the run fails partway, publishing core
+# and not cli — recoverable, but it leaves a version live that its sibling does
+# not match. A missing or mismatched trusted publisher surfaces as ENEEDAUTH,
+# exactly as a missing token used to.
+#
+# npm allows ONE trusted publisher per package, which is why
+# publish-cli-recovery.yml cannot authenticate without a temporary repoint —
+# see the note in that file before reaching for it.
+#
+# The `uwmd` unscoped name is NOT used by this workflow; the CLI publishes as
+# @uwmd/cli. An earlier version of this note said otherwise.
+#
+# Node is pinned at 22.14.0 because that is npm's documented minimum for
+# trusted publishing; do not lower it.
 #
 # Tag and ship a release:
-#   git tag v1.1.2 && git push origin v1.1.2
+#   git tag v1.3.1 && git push origin v1.3.1
 
 on:
   push:
@@ -38,6 +58,15 @@ jobs:
           node-version: 22.14.0
           cache: npm
           registry-url: 'https://registry.npmjs.org'
+
+      # Node 22.14.0 bundles npm 10.x, which has no OIDC support and would fall
+      # back to looking for a token that no longer exists. Pinned rather than
+      # `@latest` so a release is not at the mercy of whatever npm shipped this
+      # morning — the whole point of this job is reproducibility.
+      - name: Upgrade npm for trusted publishing (OIDC needs >= 11.5.1)
+        run: |
+          npm install -g npm@11.5.1
+          npm --version
 
       - name: Install dependencies
         run: npm ci
@@ -78,14 +107,21 @@ jobs:
             exit 1
           fi
 
+      # No NODE_AUTH_TOKEN on either publish: authentication is npm trusted
+      # publishing (OIDC). The runner exchanges the `id-token: write` credential
+      # above for a short-lived npm token scoped to this repo and workflow, so
+      # there is no long-lived secret to store, rotate, or leak. Provenance is
+      # attached automatically under OIDC; `--provenance` stays explicit so the
+      # intent survives a future edit.
+      #
+      # This requires a trusted publisher configured on npmjs.com for BOTH
+      # packages, naming org `UWMD-OSP`, repo `UW-Markdown`, workflow
+      # `release.yml`. Without it the publish fails with ENEEDAUTH, the same way
+      # a missing token did.
       - name: Publish @uwmd/core to npm with provenance
         working-directory: packages/uwmd-core
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @uwmd/cli to npm with provenance
         working-directory: packages/uwmd-cli
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -26,6 +26,16 @@ jobs:
           cache: npm
           registry-url: https://registry.npmjs.org
 
+      # Same reason as release.yml: Node 22.14.0 bundles npm 10.x, which cannot
+      # do OIDC. This workflow exists for the case where release.yml published
+      # core and not cli, so it has to authenticate the same way release.yml
+      # does — a recovery path that needs a secret the main path no longer uses
+      # is a recovery path that fails when it is finally needed.
+      - name: Upgrade npm for trusted publishing (OIDC needs >= 11.5.1)
+        run: |
+          npm install -g npm@11.5.1
+          npm --version
+
       - name: Install dependencies
         run: npm ci
 
@@ -63,8 +73,23 @@ jobs:
             exit 1
           fi
 
+      # No NODE_AUTH_TOKEN — npm trusted publishing (OIDC), authenticated by the
+      # `id-token: write` permission above.
+      #
+      # READ THIS BEFORE RUNNING. npm allows exactly one trusted publisher per
+      # package, and @uwmd/cli's names `release.yml`. So this workflow cannot
+      # authenticate as configured: it will fail with ENEEDAUTH until you
+      # temporarily repoint it.
+      #
+      #   1. npmjs.com -> @uwmd/cli -> Settings -> Trusted publisher
+      #   2. Change Workflow filename to `publish-cli-recovery.yml`
+      #   3. Run this workflow
+      #   4. Change it back to `release.yml`
+      #
+      # Step 4 is not optional. Leaving it pointed here means the next tag
+      # cannot publish the CLI, which is the same outage this workflow exists to
+      # repair. The swap is deliberate friction on a path that should be rare;
+      # if it stops being rare, that is the signal to fix release.yml instead.
       - name: Publish @uwmd/cli with provenance
         working-directory: packages/uwmd-cli
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
