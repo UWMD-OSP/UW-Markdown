@@ -311,6 +311,27 @@ export type {
   RentRollProjectionResult,
 } from './lease-abstract.js';
 export {
+  UWPART_EXTENSION,
+  UWPART_MEDIA_TYPE,
+  UWPART_REPRESENTATION_ID,
+  UWPART_VERSION,
+  EXTERNAL_ANNOTATION_KEY,
+  CompositionError,
+  parseUWPart,
+  readExternalDirective,
+  validateExternalDirective,
+  resolveComposition,
+} from './composition.js';
+export type {
+  UWPart,
+  ParseUWPartOptions,
+  ExternalSectionDirective,
+  CompositionErrorCode,
+  CompositionStatus,
+  CompositionResolution,
+  ResolveCompositionOptions,
+} from './composition.js';
+export {
   MARKET_DATA_PROFILE_ID,
   MARKET_OBSERVATIONS_SECTION,
   DEFAULT_MARKET_DATA_STALENESS_SECONDS,
