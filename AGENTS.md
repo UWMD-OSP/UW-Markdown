@@ -68,3 +68,85 @@ Run `npm run build && npm test && npm run conformance`. If you changed behavior 
 wiki page describes, update that page in the same change. Anything touching
 `spec/` or `spec/schemas/` is **normative and needs an RFC**
 (`docs/rfcs/`) — see `docs/wiki/11`.
+
+---
+
+# Agent Orchestration Protocol
+
+Everything above orients *one* agent in the repo. This section governs how
+several of them work together without stepping on each other.
+
+## Role division
+
+| Role | Who | Owns |
+|---|---|---|
+| **Context hub & planner** | Gemini / ChatGPT | Ingests broad repo context, plans architectural changes, drafts `specs/active/SPEC.md`, reviews PRs adversarially. |
+| **Lead builder** | Claude Code / terminal agent | Executes `specs/active/TASKS.md` one item at a time, writes tests, runs the deterministic gates locally. |
+| **Human partner** | Jared | Resolves ambiguous business logic, approves schema changes, merges PRs once the gates are green. |
+
+The planner writes specs; the builder writes code. A builder that finds itself
+redesigning the contract has hit an escalation trigger, not a coding problem.
+
+## The spec/task contract
+
+- `specs/active/SPEC.md` — the current feature contract: scope, technical
+  decisions, and a definition of done. One active spec at a time.
+- `specs/active/TASKS.md` — the ordered task matrix derived from that spec.
+  Exactly one unchecked item is in flight at a time; the builder checks it off
+  only after the gates pass and the change is committed.
+- Completed specs move to `specs/archive/<name>.md` when their task matrix is
+  fully checked off.
+
+**Reconcile before you build.** Task matrices are written from a snapshot and go
+stale — branches land, PRs merge. Before starting a stage, verify each item
+against the working tree and check off what is already true rather than redoing
+it. Reconciliation is cheap; a duplicate protocol bump is not.
+
+## Deterministic verification gates
+
+Run every gate before checking off a task:
+
+```bash
+npm ci                   # only after dependency or lockfile changes
+npm run build            # tsc across workspaces — conformance imports dist/
+npm test                 # vitest across workspaces
+npm run conformance      # every default suite, all tiers
+npm run validate-schemas # ajv compile of spec/schemas/
+npm run lint             # biome, lint-only
+npm run verify-lockfile  # no @uwmd/* resolving to a registry tarball
+npm run verify-packages  # publishable package contents
+npm --prefix tools/docs-site run build   # docs build, when docs/ or spec/ changed
+```
+
+`npm ci` on every task is wasteful on a warm tree — run it when `package.json`,
+`package-lock.json`, or workspace links changed, and otherwise trust the build.
+
+## Escalation triggers — halt and ask
+
+1. **Loop failure.** Any test, schema, or conformance check fails twice
+   consecutively on the same fix attempt.
+2. **Interface or schema drift.** The task needs a change to exported types in
+   `packages/uwmd-core/src/protocol.ts` or to `spec/schemas/` that the active
+   spec does not explicitly authorize. Normative changes need an RFC.
+3. **Dependency alteration.** The task needs a new external npm dependency or an
+   edit to workspace linking.
+4. **Financial ambiguity.** A formula, convergence criterion, root bracket, or
+   precision tolerance is not pinned by the spec. Never guess at numerics —
+   see invariant 1.
+
+Halting means: stop, leave the tree in a committed or cleanly-stashed state,
+and state precisely what decision is needed.
+
+## Cross-agent invariants
+
+- **Zero-drift triad.** `protocol.ts`, `spec/schemas/`, and
+  `spec/UW_PROTOCOL_v1.md` change in the same commit or not at all.
+- **Deterministic quantization.** Math runs unrounded in IEEE-754 `binary64`;
+  quantization happens once, at the `evaluateCalc` boundary, half-away-from-zero.
+- **Workspace isolation.** `@uwmd/*` always resolves through local workspace
+  links, never a registry tarball.
+- **Clean provider seam.** AI SDK orchestration stays out of document mechanics
+  and out of the `browser.ts` bundle.
+- **Worktree separation.** Codex works in `../uwmd-codex` on `codex/work`; the
+  primary checkout belongs to the lead builder. Two agents in one worktree is a
+  merge conflict waiting to happen.
