@@ -56,6 +56,33 @@ protocol, and each package each carry an independent semver).
   and reads as green. The filter is removed — every pull request gets the suite,
   whatever it targets. The `push` trigger stays pinned to `main`, so branch
   pushes still do not double up with the PR run.
+- **Document-authored keys and paths could reach the JS prototype chain.** Path
+  navigation walked with a bare property lookup, so a Tier-3 formula segment or
+  a `deepGet` path naming `__proto__`, `constructor`, or `prototype` resolved
+  onto internals the sandbox exists to keep out of reach — `MAX_NODES` and the
+  grammar bound what a formula can *do*, but bounded nothing about what it could
+  *name*. Navigation is now own-property-only and refuses those three segments,
+  resolving them to `null`/`undefined` like any missing path (`getPathSegment`
+  in `parser.ts`, shared by `deepGet` and the Tier-3 evaluator). An array's own
+  `length` still resolves; inherited members no longer do.
+
+  The matching write paths are closed too: frontmatter and fence-annotation keys
+  matching those three names are parsed and then dropped rather than assigned
+  (dropping the key line alone would have left its indented block to be read as
+  top-level keys); UW Lite reports `LITE_FRONTMATTER_KEY_RESERVED` /
+  `LITE_ATTRIBUTE_KEY_RESERVED`; and the Lite bridge rejects a mapping whose
+  `target_path` contains one, as `LITE_MAPPING_INVALID`.
+
+  XML decoding is the exception that could not simply reject: `UW_XML_MAPPING_v1`
+  §4 forbids key sanitization and requires a `uw:member` name to be restored
+  verbatim. Top-level members are now restored with `Object.defineProperty`, so a
+  member named `__proto__` round-trips as an own data property instead of
+  invoking the setter and mutating the envelope's prototype. Its duplicate check
+  moved from `in` to `Object.hasOwn`, which had reported inherited names as
+  duplicates.
+
+  No spec text changes: every blocked segment resolves to the value protocol
+  §VIII.2 already assigns to a missing path.
 - **`sha256TextHex` could not correctly digest binary content.** It encodes its
   argument with `TextEncoder`, so hashing bytes round-tripped through a latin1
   string re-encoded every byte above 0x7F as multi-byte UTF-8 and digested

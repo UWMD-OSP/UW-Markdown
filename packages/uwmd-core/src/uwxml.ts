@@ -113,10 +113,18 @@ export async function parseUWXml(
     format_version: requiredAttribute(root, 'format-version'),
   };
   for (const [key, value] of decodeObjectMembers(root, 'document', 0, options.maxDepth ?? DEFAULT_MAX_DEPTH)) {
-    if (key in envelope) {
+    if (Object.hasOwn(envelope, key)) {
       throw new UWXmlError('XML_DUPLICATE_MEMBER', `Duplicate document member "${key}".`);
     }
-    envelope[key] = value;
+    // §4 forbids key sanitization, so a member named `__proto__` must survive
+    // as a key. `defineProperty` restores it as an own data property; plain
+    // assignment would invoke the setter and mutate the prototype instead.
+    Object.defineProperty(envelope, key, {
+      value,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
   }
   assertUWEnvelope(envelope);
   if (envelope.semantic_digest) {

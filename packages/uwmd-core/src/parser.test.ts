@@ -254,6 +254,57 @@ describe('deepGet', () => {
   it('returns undefined for missing paths', () => {
     expect(deepGet({}, 'a.b.c')).toBeUndefined();
   });
+
+  it('does not navigate onto the prototype chain', () => {
+    expect(deepGet({}, '__proto__')).toBeUndefined();
+    expect(deepGet({}, 'constructor')).toBeUndefined();
+    expect(deepGet({ a: {} }, 'a.constructor.prototype')).toBeUndefined();
+    expect(deepGet({ a: {} }, 'a.__proto__.polluted')).toBeUndefined();
+  });
+
+  it('does not resolve inherited properties', () => {
+    // A `toString` the author did not write is not theirs to read.
+    expect(deepGet({}, 'toString')).toBeUndefined();
+    expect(deepGet({ items: [1, 2] }, 'items.map')).toBeUndefined();
+    // Own properties still resolve, including an array's own `length`.
+    expect(deepGet({ toString: 'mine' }, 'toString')).toBe('mine');
+    expect(deepGet({ items: [1, 2] }, 'items.length')).toBe(2);
+  });
+});
+
+// ─── Prototype-pollution hardening ───────────────────────────────────────────
+
+describe('document-authored keys never reach the prototype', () => {
+  const wrap = (frontmatter: string) => `---
+uw_version: "1.1"
+deal_id: "d"
+deal_name: "d"
+created: "2026-01-01"
+last_modified: "2026-01-01"
+asset_class: "multifamily"
+${frontmatter}
+---
+
+# Deal
+`;
+
+  it('drops a __proto__ frontmatter key instead of setting a prototype', () => {
+    const parsed = parseUWFile(wrap('__proto__:\n  polluted: "yes"'));
+    expect(Object.hasOwn(parsed.frontmatter, '__proto__')).toBe(false);
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    expect((parsed.frontmatter as Record<string, unknown>).polluted).toBeUndefined();
+  });
+
+  it('drops a constructor frontmatter key', () => {
+    const parsed = parseUWFile(wrap('constructor: "hijacked"'));
+    expect((parsed.frontmatter as Record<string, unknown>).constructor).toBe(Object);
+  });
+
+  it('drops blocked keys nested under a frontmatter object', () => {
+    const parsed = parseUWFile(wrap('meta:\n  __proto__: "x"\n  kept: "y"'));
+    const meta = (parsed.frontmatter as Record<string, unknown>).meta as Record<string, unknown>;
+    expect(meta).toEqual({ kept: 'y' });
+  });
 });
 
 // ─── compact ─────────────────────────────────────────────────────────────────
