@@ -8,6 +8,19 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`RCP-07` now compares engine identity, not the version string alone.**
+  `verifyReceipt` treated a receipt as same-engine whenever the version matched,
+  so a disagreement between two *different* engines that happened to share a
+  version number was reported as `failed` — blaming the record for a
+  cross-engine difference, which is exactly what `RCP-07` exists to prevent.
+  Identity is now the pair `(engine, engine_version)`, and
+  `ReceiptVerificationOptions` gains an optional `engine` alongside
+  `engine_version` so a third-party verifier can declare its own name. The
+  issue's `expected`/`actual` now carry `engine@version` rather than bare
+  versions. Receipt spec §5.3 restated to match (`UW_RECEIPT_v1.md`).
+
 ## [1.2.0] - 2026-08-15
 
 > ### ⚠️ Read before upgrading — computed numbers change

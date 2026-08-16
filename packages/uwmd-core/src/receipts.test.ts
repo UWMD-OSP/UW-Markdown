@@ -259,6 +259,44 @@ describe('verifyReceipt', () => {
     expect(result.issues.map((i) => i.code)).toContain('RCP-07');
   });
 
+  it('attributes a disagreement to the engine when only the engine name differs', async () => {
+    // The version strings are identical here on purpose. Comparing versions
+    // alone would read that as "same engine, so blame the record" — but these
+    // are two unrelated implementations that both happen to be at CORE_VERSION.
+    const raw = await parkview();
+    const receipt = await issueReceipt(raw, {
+      filename: PARKVIEW,
+      issued_at: ISSUED_AT,
+      engine: 'other-vendor-engine',
+    });
+    expect(receipt.computation.engine_version).toBe(CORE_VERSION);
+    const tampered = clone(receipt);
+    tampered.computation.results.find((r) => r.calc_id === 'ltv')!.value = 0.42;
+
+    const result = await verifyReceipt(tampered, raw, { filename: PARKVIEW });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map((i) => i.code)).toContain('RCP-07');
+  });
+
+  it('holds the record responsible when the full engine identity matches', async () => {
+    const raw = await parkview();
+    const receipt = await issueReceipt(raw, {
+      filename: PARKVIEW,
+      issued_at: ISSUED_AT,
+      engine: 'other-vendor-engine',
+    });
+    const tampered = clone(receipt);
+    tampered.computation.results.find((r) => r.calc_id === 'ltv')!.value = 0.42;
+
+    // Same verifier identity as the issuer: nothing else can explain the gap.
+    const result = await verifyReceipt(tampered, raw, {
+      filename: PARKVIEW,
+      engine: 'other-vendor-engine',
+    });
+    expect(result.verdict).toBe('failed');
+    expect(result.issues.map((i) => i.code)).not.toContain('RCP-07');
+  });
+
   it('flags a corrupted results_digest even when the numbers agree', async () => {
     const raw = await parkview();
     const receipt = await issueReceipt(raw, { filename: PARKVIEW, issued_at: ISSUED_AT });
