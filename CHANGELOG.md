@@ -10,6 +10,16 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- **RFC 0024 accepted** (iterative-function determinism). `irr` will be pinned
+  to bracket-then-bisect with no Newton polish, a root outside `[-0.999, 10.0]`
+  becomes `CALC-IRR-DIVERGE` rather than an answer, and the change lands as
+  protocol **1.4.0**. Accepted, not shipped: `calc/builtins.ts` still runs
+  Newton first, and the §VIII.3 note says so. Three checks ran before
+  acceptance — the iteration audit the RFC asked for came back clean (`irr` is
+  the only builtin that converges; `nper` is closed-form), and no built-in pack
+  declares an `irr` metric, which both narrows the exposure to third-party
+  modules and makes the Excel-parity question the draft called blocking
+  unreachable today.
 - **Security reports now go to `security@uwmd.org`** (`SECURITY.md`), replacing
   the general `team@uwmd.org` address. A dedicated alias keeps a vulnerability
   report off the same triage path as ordinary project mail. The 1.0.0 entry

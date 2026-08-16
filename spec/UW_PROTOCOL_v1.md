@@ -715,11 +715,17 @@ implementer must not read past:
 
 So two conforming hosts may return different roots — or one a root and the other
 an error — for the same cash flows, and §VIII.5 quantization will not reveal the
-difference; it will simply produce two different receipt digests. Pinning the
-algorithm is proposed in **RFC 0024**, which supersedes this note on acceptance;
-`xirr` and day-count conventions remain deferred to v2. Implementers targeting
-digest-level agreement with the reference implementation SHOULD match these
-values *and* should expect them to change under RFC 0024.
+difference; it will simply produce two different receipt digests.
+
+**RFC 0024 is accepted (2026-08-15) and replaces this note, but has not shipped
+yet.** It pins the algorithm to bracket-then-bisect with no Newton polish, makes
+a root outside `[-0.999, 10.0]` an error rather than an answer, and lands as
+protocol **1.4.0**. Until it ships, the paragraphs above describe what the
+reference implementation does and remain non-normative — this note is a record
+of a known divergence, not a licence to rely on it. Implementers targeting
+digest-level agreement SHOULD build against RFC 0024 rather than against these
+values, which will change. `xirr` and day-count conventions remain deferred to
+v2.
 
 ### VIII.4 Determinism
 

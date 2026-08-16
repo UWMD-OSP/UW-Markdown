@@ -188,6 +188,29 @@ not core gaps.
   one the precision it wants, and restating that 109 times would duplicate the
   table into a second place that can drift from it.
 
+- **Iterative determinism ([RFC 0024](../rfcs/0024-iterative-function-determinism.md),
+  accepted 2026-08-15) — accepted, not shipped.** RFC 0023 made a *reported*
+  number reproducible; it did not make a *searched* one reproducible, and `irr`
+  is the one builtin that searches. 0024 pins it to bracket-then-bisect with no
+  Newton polish, makes a root outside `[-0.999, 10.0]` a `CALC-IRR-DIVERGE`
+  rather than an answer, and lands as protocol **1.4.0**.
+
+  Nothing is implemented yet: `calc/builtins.ts` still runs Newton first from a
+  seed of `0.1`, which is why `irr(-1, 20)` returns `18.999…` — 1900%, from a
+  search the spec describes as stopping at 1000%. The §VIII.3 note records that
+  divergence rather than blessing it.
+
+  Three checks ran before acceptance, and all three shrank the change. The
+  iteration audit the RFC asked for came back **clean** — `irr` is the only
+  builtin that converges; `nper` is the closed-form logarithm, and `pmt`/`fv`/
+  `pv` are closed-form, so every other loop is a bounded walk over arguments.
+  **No built-in pack declares an `irr` metric**, so today's exposure is
+  third-party modules rather than "any deal with a DCF" as the draft claimed —
+  and that also makes the Excel-parity question the draft called its blocker
+  unreachable, since parity is asserted over pack metrics and none emits an
+  `IRR` formula. Implementation is the open work: the `irr` rewrite, five
+  conformance fixtures, the property test, and the 1.4.0 bump.
+
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 
