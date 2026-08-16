@@ -1,0 +1,26 @@
+{
+  // @uwmd/cli has no build of its own — it ships `bin/uwmd.mjs`, a thin wrapper
+  // that shells into core's compiled CLI — so it has no tsconfig.json to extend
+  // and nothing ever read `test/cli.smoke.test.ts` as TypeScript. This config
+  // exists only to type-check that suite. It emits nothing.
+  //
+  // Options mirror the other workspaces rather than the core package, which is
+  // the one with a rootDir/outDir pair worth inheriting.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true
+  },
+  "include": ["test/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -6,7 +6,21 @@ import {
   stringifyUWX,
   UW_LITE_SOURCE_EXTENSION,
 } from './lite-bridge.js';
+import type { UWEnvelopeBlock, UWEnvelopeSectionEntry } from './envelope.js';
 import { getSection, parseUWFile } from './parser.js';
+
+/**
+ * Narrow a section entry to a single block.
+ *
+ * `'content' in entry` does not narrow this union on its own: the other arm is
+ * the multi-variant map `Record<string, UWEnvelopeBlock>`, and a string index
+ * signature means TypeScript cannot rule out a `content` key on it. So the
+ * check is a runtime one and the cast is explicit, in one place.
+ */
+function singleBlock(entry: UWEnvelopeSectionEntry | undefined): UWEnvelopeBlock {
+  if (!entry || !('annotation' in entry)) throw new Error('expected a single block');
+  return entry as UWEnvelopeBlock;
+}
 
 const LITE = [
   '---',
@@ -103,8 +117,7 @@ describe('UWX bridge rendering and Lite projection', () => {
     const result = compileUWLite(parseUWLite(LITE));
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    const valuation = result.envelope.sections['valuation'];
-    if (!valuation || !('content' in valuation)) throw new Error('expected valuation');
+    const valuation = singleBlock(result.envelope.sections['valuation']);
     const prior = structuredClone(valuation);
     prior.annotation.superseded = true;
     prior.annotation.v = 0;
@@ -124,8 +137,7 @@ describe('UWX bridge rendering and Lite projection', () => {
     const result = compileUWLite(parseUWLite(LITE));
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    const valuation = result.envelope.sections['valuation'];
-    if (!valuation || !('content' in valuation)) throw new Error('expected valuation');
+    const valuation = singleBlock(result.envelope.sections['valuation']);
     valuation.content['advanced_only'] = 42;
     const projection = projectUWEnvelopeToLite(result.envelope);
     expect(parseUWLite(projection.content).issues).toEqual([]);

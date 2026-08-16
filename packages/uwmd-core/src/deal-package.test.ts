@@ -273,7 +273,9 @@ describe('JSON context view', () => {
 
   it('requires the incomplete-evidence declaration', async () => {
     const ctx = projectUWDealPackageContext(await buildManifest());
-    (ctx as Record<string, unknown>)['incomplete_evidence_context'] = false;
+    // Deliberately writing a value the type forbids — the point of the test is
+    // that the runtime validator catches what a caller in plain JS could do.
+    (ctx as unknown as Record<string, unknown>)['incomplete_evidence_context'] = false;
     expect(validateUWDealPackageContext(ctx).some((e) => e.code === 'PKGCTX-004')).toBe(true);
   });
 });
