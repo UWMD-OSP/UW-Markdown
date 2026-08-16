@@ -716,10 +716,10 @@ implementer must not read past:
 So two conforming hosts may return different roots — or one a root and the other
 an error — for the same cash flows, and §VIII.5 quantization will not reveal the
 difference; it will simply produce two different receipt digests. Pinning the
-algorithm is deferred to a follow-up RFC; `xirr` and day-count conventions
-remain deferred to v2. Implementers targeting digest-level agreement with the
-reference implementation SHOULD match these values *and* should expect them to
-change when the algorithm is pinned.
+algorithm is proposed in **RFC 0024**, which supersedes this note on acceptance;
+`xirr` and day-count conventions remain deferred to v2. Implementers targeting
+digest-level agreement with the reference implementation SHOULD match these
+values *and* should expect them to change under RFC 0024.
 
 ### VIII.4 Determinism
 

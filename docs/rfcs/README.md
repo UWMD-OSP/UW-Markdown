@@ -47,6 +47,7 @@ and how it gets accepted.
 | [0021](./0021-composable-documents.md) | Composable UWX documents — externalization, composites, rollup receipts | accepted | format, protocol, core, conformance, tooling |
 | [0022](./0022-market-data-documents.md) | Market data as an attributable UW document | accepted | format, protocol, core, conformance, tooling |
 | [0023](./0023-numeric-determinism.md) | A numeric model and a single quantization boundary | implemented | protocol, core, conformance, tooling |
+| [0024](./0024-iterative-function-determinism.md) | Pin the iterative solvers so two engines agree on a root | draft | protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
