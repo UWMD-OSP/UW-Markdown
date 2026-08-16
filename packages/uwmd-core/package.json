@@ -40,6 +40,7 @@
     "prepublishOnly": "npm run build && npm test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.91.1",
     "@types/node": "^20.0.0",
     "@vitest/coverage-v8": "^3.2.6",
     "fast-check": "^3.23.0",
@@ -51,8 +52,15 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.91.1",
     "fast-xml-parser": "^5.10.1",
     "fflate": "^0.8.3"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": "^0.91.1"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    }
   }
 }

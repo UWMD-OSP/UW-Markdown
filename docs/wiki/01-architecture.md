@@ -84,8 +84,10 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
 
 1. **Spec depends on nothing.** Any spec change requires an RFC (`docs/rfcs/`).
 2. **`@uwmd/core` keeps transport logic dependency-light.** Runtime dependencies
-   are `@anthropic-ai/sdk` (excluded from `@uwmd/core/browser`),
-   `fast-xml-parser`, and `fflate`; HTTP/MCP adapters add no server SDK.
+   are `fast-xml-parser` and `fflate`. `@anthropic-ai/sdk` is an **optional peer
+   dependency** — needed only by the reference Anthropic provider, loaded
+   dynamically on the first request, and excluded from `@uwmd/core/browser`.
+   HTTP/MCP adapters add no server SDK.
 3. **Tools depend on `@uwmd/core`** (browser entry where applicable) plus their
    own UI/runtime stack. **Tools MUST NOT reach into other tools' code.**
 4. **Conformance fixtures depend on nothing.** They are pure data, versioned

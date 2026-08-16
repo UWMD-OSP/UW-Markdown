@@ -223,6 +223,34 @@ describe('variable resolution', () => {
   });
 });
 
+// ─── Sandbox: the prototype chain is not reachable ────────────────────────────
+
+describe('path navigation cannot escape onto the prototype chain', () => {
+  // A formula is document-authored input. These would be the first two steps
+  // of reaching a constructor from inside the sandbox; both dead-end at null,
+  // the same answer §VIII.2 already gives for a missing path.
+  const escapes = [
+    'quick_metrics.__proto__',
+    'quick_metrics.constructor',
+    'quick_metrics.constructor.prototype',
+    "quick_metrics['__proto__']",
+    "quick_metrics['constructor']['name']",
+    'noi.__proto__.polluted',
+    '__proto__',
+    'constructor',
+  ];
+
+  for (const formula of escapes) {
+    it(`resolves ${formula} to null`, () => {
+      expect(evaluate(parseExpression(formula), makeCtx())).toBe(null);
+    });
+  }
+
+  it('does not reach inherited members', () => {
+    expect(evaluate(parseExpression('quick_metrics.toString'), makeCtx())).toBe(null);
+  });
+});
+
 // ─── Built-in functions ───────────────────────────────────────────────────────
 
 describe('builtins', () => {

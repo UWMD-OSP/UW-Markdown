@@ -6,6 +6,7 @@
 //
 // The client is injected, so nothing here opens a socket or needs an API key.
 
+import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import type Anthropic from '@anthropic-ai/sdk';
 import { createAnthropicProvider } from './anthropic.js';
@@ -110,6 +111,41 @@ describe('createAnthropicProvider', () => {
 
     expect(completion?.tool_calls).toHaveLength(1);
     expect(completion?.usage).toEqual({ input_tokens: 42, output_tokens: 7 });
+  });
+
+  it('does not load the vendor SDK until a request is sent', async () => {
+    // The SDK is an optional peer dependency, so a host that supplies its own
+    // client must be able to construct this provider in a process where
+    // @anthropic-ai/sdk is not installed at all. Constructing it must therefore
+    // touch neither the module registry nor the constructor.
+    const source = readFileSync(new URL('./anthropic.ts', import.meta.url), 'utf8');
+    const staticImport = /^\s*import\s+(?!type\b)[^;]*from\s+['"]@anthropic-ai\/sdk['"]/m;
+    expect(
+      staticImport.test(source),
+      'anthropic.ts must import the vendor SDK dynamically, or a type-only import',
+    ).toBe(false);
+
+    // …and index.ts re-exports this factory statically, so a static import here
+    // would pull the SDK in on `import '@uwmd/core'` for every consumer.
+    const index = readFileSync(new URL('../../index.ts', import.meta.url), 'utf8');
+    expect(index).toContain("export { createAnthropicProvider } from './agents/providers/anthropic.js'");
+  });
+
+  it('reports a missing SDK as a packaging error, not a transport failure', async () => {
+    // No `client`, so the first request must resolve the SDK. The import is
+    // stubbed to fail the way an uninstalled optional peer dependency does.
+    vi.doMock('@anthropic-ai/sdk', () => {
+      throw new Error("Cannot find package '@anthropic-ai/sdk'");
+    });
+    vi.resetModules();
+    const { createAnthropicProvider: freshFactory } = await import('./anthropic.js');
+    const provider = freshFactory({ apiKey: 'k' });
+
+    await expect(provider.complete(REQUEST)).rejects.toMatchObject({
+      code: 'AGENT_PROVIDER_SDK_MISSING',
+    });
+    vi.doUnmock('@anthropic-ai/sdk');
+    vi.resetModules();
   });
 
   it('wraps a streaming failure in the same typed error', async () => {

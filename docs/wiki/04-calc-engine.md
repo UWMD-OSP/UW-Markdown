@@ -116,6 +116,17 @@ termination. Property tests (`calc.property.test.ts`) assert *totality*: any
 input either parses to a valid AST or throws a typed `CalcError` — never a generic
 `Error`, never a hang.
 
+**The prototype chain is not reachable.** A formula names its own path segments,
+and both `a.b` and `a['b']` reach the same walker, so navigation resolves *own
+properties only* and refuses the three segments that lead back to JS internals:
+`__proto__`, `constructor`, and `prototype`. A blocked or inherited segment
+resolves to `null` — the answer §VIII.2 already gives for a missing path — so
+`quick_metrics.constructor.prototype` dead-ends rather than handing a formula a
+function object. The guard lives in `parser.ts` (`getPathSegment`,
+`isBlockedSegment`) and is shared with `deepGet`, which every path-addressed
+consumer (cascade, gaps, context, renderer, view models) resolves through. An
+array's own `length` still resolves; an inherited `map` does not.
+
 ## Built-in functions (`BUILTINS`)
 
 `type Builtin = (args: CalcValue[]) => CalcValue` where

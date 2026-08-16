@@ -1,21 +1,51 @@
 // The Anthropic provider — the reference implementation of `AgentProvider`.
 //
-// **This is the only file in the library that imports `@anthropic-ai/sdk`.**
-// Keeping the dependency here is what makes the Tier-4 host provider-neutral in
-// fact rather than in claim: `bancroft.ts` reaches this module through a
-// dynamic import, so a host that supplies its own provider never loads the SDK
-// at all. `agents/bancroft.test.ts` asserts that property directly.
+// **This is the only file in the library that touches `@anthropic-ai/sdk`, and
+// it touches it only at runtime.** The SDK is an optional peer dependency: a
+// host that brings its own provider, or uses none, must not be made to install
+// a vendor SDK to get a parser. So the import here is dynamic and deferred to
+// the first request — `index.ts` re-exports this module's factory statically,
+// and a static SDK import would make merely importing `@uwmd/core` load the
+// vendor SDK, defeating the dynamic import in `bancroft.ts`.
+//
+// The type import below is erased at compile time and costs a consumer nothing
+// at runtime.
 //
 // The layering rule from CLAUDE.md still applies: nothing re-exported by
 // `browser.ts` may reach this file.
 
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
 import {
   AgentProviderError,
   type AgentCompletion,
   type AgentProvider,
   type AgentRequest,
 } from '../provider.js';
+
+type AnthropicConstructor = typeof import('@anthropic-ai/sdk').default;
+
+/**
+ * Load the vendor SDK, once, on demand. An absent SDK is a packaging problem
+ * with a one-line fix, so it gets its own code and says so — rather than
+ * surfacing as a module-resolution stack trace from inside a provider call.
+ */
+let sdk: Promise<AnthropicConstructor> | undefined;
+async function loadSdk(): Promise<AnthropicConstructor> {
+  sdk ??= import('@anthropic-ai/sdk')
+    .then((mod) => mod.default)
+    .catch((err) => {
+      // Do not cache the failure: an install can fix it without a restart.
+      sdk = undefined;
+      throw new AgentProviderError(
+        'AGENT_PROVIDER_SDK_MISSING',
+        'The Anthropic provider requires the optional peer dependency ' +
+          '@anthropic-ai/sdk. Install it, or pass your own `provider` ' +
+          'implementing AgentProvider.',
+        err,
+      );
+    });
+  return sdk;
+}
 
 export interface AnthropicProviderOptions {
   apiKey: string;
@@ -35,7 +65,15 @@ export interface AnthropicProviderOptions {
  * message shape surfaces here and nowhere else.
  */
 export function createAnthropicProvider(opts: AnthropicProviderOptions): AgentProvider {
-  const client = opts.client ?? new Anthropic({ apiKey: opts.apiKey });
+  // Constructing the client is what needs the SDK, so it happens on the first
+  // request rather than here. `createAnthropicProvider()` stays synchronous and
+  // stays callable in a process that never sends one.
+  let pending: Promise<Anthropic> | undefined;
+  const getClient = async (): Promise<Anthropic> => {
+    if (opts.client) return opts.client;
+    pending ??= loadSdk().then((Ctor) => new Ctor({ apiKey: opts.apiKey }));
+    return pending;
+  };
 
   const toSdkRequest = (request: AgentRequest) => ({
     model: request.model,
@@ -63,8 +101,12 @@ export function createAnthropicProvider(opts: AnthropicProviderOptions): AgentPr
 
     async complete(request) {
       try {
+        const client = await getClient();
         return fromSdkMessage(await client.messages.create(toSdkRequest(request)));
       } catch (err) {
+        // A missing SDK is not a transport failure and must not be relabelled
+        // as one — the fix is an install, not a retry.
+        if (err instanceof AgentProviderError) throw err;
         throw new AgentProviderError(
           'AGENT_PROVIDER_TRANSPORT',
           err instanceof Error ? err.message : String(err),
@@ -75,9 +117,13 @@ export function createAnthropicProvider(opts: AnthropicProviderOptions): AgentPr
 
     async stream(request) {
       try {
+        const client = await getClient();
         const stream = client.messages.stream(toSdkRequest(request));
         return fromSdkMessage(await stream.finalMessage());
       } catch (err) {
+        // A missing SDK is not a transport failure and must not be relabelled
+        // as one — the fix is an install, not a retry.
+        if (err instanceof AgentProviderError) throw err;
         throw new AgentProviderError(
           'AGENT_PROVIDER_TRANSPORT',
           err instanceof Error ? err.message : String(err),

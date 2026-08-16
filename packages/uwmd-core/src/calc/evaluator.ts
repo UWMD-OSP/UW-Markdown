@@ -1,7 +1,7 @@
 // Tier-3 Calc Host — AST evaluator.
 // Variable resolution per §VIII.2; null propagation per §VIII.2.
 
-import { deepGet, getSection } from '../parser.js';
+import { deepGet, getPathSegment, getSection, isBlockedSegment } from '../parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
@@ -36,7 +36,7 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       let cur: unknown = head;
       for (const seg of expr.segments) {
         if (cur === null || cur === undefined) return null;
-        cur = (cur as Record<string, unknown>)[seg];
+        cur = getPathSegment(cur, seg);
       }
       return coerceCalcValue(cur);
     }
@@ -102,6 +102,10 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
 // ─── Variable resolution ──────────────────────────────────────────────────────
 
 function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue {
+  // A blocked head is unresolvable for the same reason a blocked segment is:
+  // no document-authored name may reach the prototype chain.
+  if (isBlockedSegment(name)) return null;
+
   const fm = ctx.parsed.frontmatter as unknown as Record<string, unknown>;
   if (fm && Object.prototype.hasOwnProperty.call(fm, name)) {
     return coerceCalcValue(fm[name]);

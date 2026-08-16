@@ -41,7 +41,8 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
 ## The fastest possible orientation
 
 - **One package matters most:** `packages/uwmd-core` (`@uwmd/core`). Everything
-  else depends on it; its runtime dependencies are `@anthropic-ai/sdk`, `fast-xml-parser`, and `fflate`.
+  else depends on it; its runtime dependencies are `fast-xml-parser` and `fflate`,
+  with `@anthropic-ai/sdk` an optional peer dependency for the Anthropic provider.
 - **The public API is a single file:** [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts).
   If a symbol isn't exported there, tools can't use it.
 - **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC_v1.md`](../../spec/UW_FORMAT_SPEC_v1.md)

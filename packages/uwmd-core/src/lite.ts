@@ -1,4 +1,5 @@
 import { canonicalizeExact } from './integrity-canonical.js';
+import { isBlockedSegment } from './parser.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 
 export type UWLiteScalar = string | number | boolean | null;
@@ -321,6 +322,15 @@ function parseLiteFrontmatter(
     }
     const key = raw.slice(0, separator).trim();
     const value = raw.slice(separator + 1).trim();
+    if (isBlockedSegment(key)) {
+      issues.push({
+        code: 'LITE_FRONTMATTER_KEY_RESERVED',
+        severity: 'error',
+        message: `Frontmatter key ${key} is reserved and cannot be used.`,
+        line: index + 2,
+      });
+      continue;
+    }
     if (Object.hasOwn(values, key)) {
       issues.push({
         code: 'LITE_FRONTMATTER_DUPLICATE',
@@ -346,6 +356,16 @@ function parseAttributes(
   while (match) {
     const key = match[1];
     const value = unquote(match[2]);
+    if (isBlockedSegment(key)) {
+      issues.push({
+        code: 'LITE_ATTRIBUTE_KEY_RESERVED',
+        severity: 'error',
+        message: `Field attribute ${key} is reserved and cannot be used.`,
+        line,
+      });
+      match = ATTRIBUTE.exec(raw);
+      continue;
+    }
     if (Object.hasOwn(attributes, key)) {
       issues.push({
         code: 'LITE_ATTRIBUTE_DUPLICATE',
