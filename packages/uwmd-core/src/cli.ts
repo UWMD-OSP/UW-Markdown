@@ -44,6 +44,7 @@ import { buildContext } from './context-profiles.js';
 import type { ContextProfile } from './context-profiles.js';
 import { rankGaps } from './refinement.js';
 import { resolveValue } from './cascade.js';
+import { createDocumentMarketData, parseMarketDataDocument } from './market-data.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
 import { issueReceipt, verifyReceipt, assertUWReceipt } from './receipts.js';
@@ -760,6 +761,65 @@ function cmdReport(file: string, flags: Record<string, string | boolean>): void 
   console.log('For PDF output, use @uwmd/report (uwmd-report) or print this HTML from a browser.');
 }
 
+/**
+ * Load `--market-data <file>` into a cascade-ready lookup, or return null when
+ * the flag is absent. Exits with a message rather than throwing, so a bad
+ * observation set is a usage error rather than a stack trace.
+ */
+function loadMarketData(flags: Record<string, string | boolean>): {
+  lookup: ReturnType<typeof createDocumentMarketData>;
+  identity: { document_id: string; as_of: string; provider: string; geo: string };
+} | null {
+  const path = flags['market-data'] as string | undefined;
+  if (!path) return null;
+  try {
+    const doc = parseMarketDataDocument(parseUWFile(readFile(path)));
+    return {
+      lookup: createDocumentMarketData(doc),
+      identity: {
+        document_id: doc.document_id,
+        as_of: doc.as_of,
+        provider: doc.provider,
+        geo: doc.geo,
+      },
+    };
+  } catch (e) {
+    console.error(`Market data: ${e instanceof Error ? e.message : String(e)}`);
+    process.exit(1);
+  }
+}
+
+function cmdMarketDataValidate(file: string, flags: Record<string, string | boolean>): void {
+  const parsed = parseUWFile(readFile(file));
+  try {
+    const doc = parseMarketDataDocument(parsed);
+    if (flags['json']) {
+      process.stdout.write(`${JSON.stringify({ valid: true, ...doc }, null, 2)}\n`);
+    } else {
+      console.log(`OK  ${doc.document_id}`);
+      console.log(`    as of ${doc.as_of} — ${doc.provider}`);
+      console.log(`    ${doc.geo}${doc.asset_class ? ` — ${doc.asset_class}` : ''}`);
+      console.log(`    ${doc.observations.length} observation(s):`);
+      for (const o of doc.observations) {
+        console.log(`      ${o.field_path} = ${String(o.value)} ${o.unit}${o.confidence ? ` (${o.confidence})` : ''}`);
+        console.log(`        basis: ${o.basis}`);
+      }
+      // Restated on every run because it is the thing people forget.
+      console.log('\n    Attributable, not verified: this says the observations');
+      console.log('    are traceable, not that they are accurate or current.');
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    if (flags['json']) {
+      process.stdout.write(`${JSON.stringify({ valid: false, error: message }, null, 2)}\n`);
+    } else {
+      console.error(`INVALID  ${file}`);
+      console.error(`         ${message}`);
+    }
+    process.exit(1);
+  }
+}
+
 function cmdScope(file: string, flags: Record<string, string | boolean>): void {
   const content = readFile(file);
   const parsed = parseUWFile(content);
@@ -774,12 +834,20 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
     process.exit(1);
   }
 
-  const out: Record<string, { value: unknown; step: string; range?: unknown; resolved_from?: string }> = {};
+  const market = loadMarketData(flags);
+
+  const out: Record<string, { value: unknown; step: string; source?: string; range?: unknown; resolved_from?: string }> = {};
   for (const path of Object.keys(table.fields)) {
-    const r = resolveValue(path, parsed);
+    const r = resolveValue(path, parsed, {
+      asset_class: assetClass,
+      ...(market ? { market: market.lookup } : {}),
+    });
     out[path] = {
       value: r.value,
       step: r.step,
+      // Surfaced so a promoted value stays distinguishable in the output: it
+      // resolves at the `user_input` step but is tagged `market_data_accepted`.
+      source: r.source,
       range: r.range,
       resolved_from: r.resolved_from,
     };
@@ -790,6 +858,7 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
     deal_stage_target: 'scope',
     asset_class: assetClass,
     defaults_table: `${assetClass}@${table.version}`,
+    ...(market ? { market_data: market.identity } : {}),
     resolved: out,
   };
   const text = JSON.stringify(payload, null, 2);
@@ -815,7 +884,16 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
     'multifamily';
   const pack = getPackForAssetClass(assetClass) ?? MULTIFAMILY_PACK;
 
-  const result = rankGaps(parsed, { targets, top, packs: [pack] });
+  // With `--market-data`, a field the observation set covers is no longer a
+  // gap the cascade cannot fill, so it drops out of the VOI ranking. That is
+  // the point: the ranking should tell you what is still worth diligencing.
+  const market = loadMarketData(flags);
+  const result = rankGaps(parsed, {
+    targets,
+    top,
+    packs: [pack],
+    ...(market ? { cascadeContext: { asset_class: assetClass, market: market.lookup } } : {}),
+  });
 
   if (flags['json']) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
@@ -1154,14 +1232,26 @@ switch (command) {
     break;
 
   case 'scope':
-    if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--output <file>]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--market-data <file>] [--output <file>]'); process.exit(1); }
     cmdScope(positional[0], flags);
     break;
 
   case 'refine':
-    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--json]'); process.exit(1); }
     cmdRefine(positional[0], flags);
     break;
+
+  case 'market-data': {
+    const sub = positional[0];
+    if (sub === 'validate') {
+      if (!positional[1]) { console.error('Usage: uwmd market-data validate <file> [--json]'); process.exit(1); }
+      cmdMarketDataValidate(positional[1], flags);
+    } else {
+      console.error('Usage: uwmd market-data validate <file> [--json]');
+      process.exit(1);
+    }
+    break;
+  }
 
   case 'lease': {
     const sub = positional[0];

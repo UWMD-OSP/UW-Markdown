@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   createDocumentMarketData,
+  promoteMarketObservation,
   DEFAULT_MARKET_DATA_STALENESS_SECONDS,
   isDealFieldPath,
   isValidAsOf,
@@ -272,6 +273,134 @@ describe('selectCurrentMarketData', () => {
 
   it('raises on an empty list', () => {
     expect(() => selectCurrentMarketData([])).toThrow(MarketDataError);
+  });
+});
+
+describe('promoteMarketObservation', () => {
+  const DIGEST = `sha256:${'a'.repeat(64)}`;
+
+  it('tags the promoted value market_data_accepted, never user_input', () => {
+    // The crux of §4: a value accepted for lack of better evidence and one
+    // established by diligence must not render identically.
+    const promoted = promoteMarketObservation({
+      document: doc(),
+      field_path: 'valuation.going_in_cap_rate',
+      digest: DIGEST,
+      rationale: 'No comparable trades in the immediate submarket.',
+    });
+    expect(promoted.source).toBe('market_data_accepted');
+    expect(promoted.source).not.toBe('user_input');
+    expect(promoted.section).toBe('valuation');
+    expect(promoted.field).toBe('going_in_cap_rate');
+    expect(promoted.value).toBe(0.0545);
+  });
+
+  it('records which observation set, of which vintage, with a digest', () => {
+    const promoted = promoteMarketObservation({
+      document: doc(),
+      field_path: 'valuation.going_in_cap_rate',
+      digest: DIGEST,
+      rationale: 'Accepted pending third-party appraisal.',
+    });
+    expect(promoted.market_data_ref).toEqual({
+      document_id: 'md:phx-multifamily:2026-Q2',
+      as_of: AS_OF,
+      digest: DIGEST,
+      rationale: 'Accepted pending third-party appraisal.',
+    });
+  });
+
+  it('does not upgrade confidence', () => {
+    // Accepting a low-confidence observation leaves it low-confidence evidence.
+    const low = doc();
+    low.observations[0]!.confidence = 'low';
+    const promoted = promoteMarketObservation({
+      document: low,
+      field_path: 'valuation.going_in_cap_rate',
+      digest: DIGEST,
+    });
+    expect(promoted.confidence).toBe('low');
+  });
+
+  it('refuses to promote an observation the set does not carry', () => {
+    expect(() =>
+      promoteMarketObservation({
+        document: doc(),
+        field_path: 'debt_structure.interest_rate',
+        digest: DIGEST,
+      }),
+    ).toThrow(MarketDataError);
+  });
+
+  it('refuses a malformed digest — an uncheckable reference is worse than none', () => {
+    expect(() =>
+      promoteMarketObservation({
+        document: doc(),
+        field_path: 'valuation.going_in_cap_rate',
+        digest: 'not-a-digest',
+      }),
+    ).toThrow(/sha256/);
+  });
+
+  it('resolves at the user_input step while keeping its own source tag', () => {
+    // Promotion makes the value an input of record, so it must outrank a live
+    // market lookup — you accepted one vintage and a newer pull must not
+    // silently replace it — while staying distinguishable from typed input.
+    const deal = parseUWFile(
+      [
+        '---',
+        'uw_version: "1.1"',
+        'deal_id: uw_promoted',
+        'asset_class: multifamily',
+        '---',
+        '',
+        '## Valuation {#valuation}',
+        '',
+        '```json uw:section=valuation v=1',
+        JSON.stringify({
+          _meta: {
+            section: 'valuation',
+            version: 1,
+            superseded: false,
+            source: 'market_data_accepted',
+            agent_id: null,
+            agent_version: null,
+            actor: 'analyst@example.com',
+            ts: '2026-07-01T00:00:00Z',
+            market_data_ref: {
+              document_id: 'md:phx-multifamily:2026-Q2',
+              as_of: AS_OF,
+              digest: DIGEST,
+            },
+          },
+          exit_cap_rate_pct: 0.0595,
+        }),
+        '```',
+      ].join('\n'),
+    );
+
+    // A *different*, fresher observation set is in scope; the promoted value
+    // must still win.
+    const fresher = createDocumentMarketData(
+      doc({
+        document_id: 'md:newer',
+        as_of: '2026-07-31',
+        observations: [
+          {
+            field_path: 'valuation.exit_cap_rate_pct',
+            value: 0.0625,
+            unit: 'fraction',
+            basis: 'later pull',
+          },
+        ],
+      }),
+      { now: new Date('2026-08-01T00:00:00Z') },
+    );
+
+    const resolved = resolveValue('valuation.exit_cap_rate_pct', deal, { market: fresher });
+    expect(resolved.value).toBe(0.0595);
+    expect(resolved.step).toBe('user_input');
+    expect(resolved.source).toBe('market_data_accepted');
   });
 });
 

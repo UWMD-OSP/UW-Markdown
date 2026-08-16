@@ -8,6 +8,75 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — market data as an attributable document (RFC 0022)
+
+`MarketDataLookup` had been interface-only since the v1.1 train, so the top two
+cascade steps had never had a worked example. The deeper gap was **attribution**:
+a market-derived value recorded no trace of *which* observation set produced it,
+so two pulls a week apart were indistinguishable after the fact and a receipt
+over that deal could not be reproduced.
+
+- **`market-data-v1` document profile** — `market-data.ts`, registered as an
+  `evidence` profile (it carries observations, not conclusions; no pack applies).
+  Identity (`document_id`/`as_of`/`provider`/`geo`) and a per-observation `basis`
+  are **refusals, not warnings**: an observation set with no vintage or no named
+  provider is not attributable, and a number with no stated basis is an
+  assertion. A `deal_id` is refused outright. 22-code `MD-*` taxonomy.
+- **`createDocumentMarketData`** — a deterministic resolver that drops into the
+  existing cascade. Staleness runs from `as_of`, not a wall-clock guess, so a
+  stale observation falls through to `asset_class_default` rather than being used
+  past its vintage. `selectCurrentMarketData` takes the most recent `as_of` and
+  **raises on a tie** rather than letting array order decide which of two
+  disagreeing providers is authoritative.
+- **`inputs_provenance`, receipt format 1.0 → 1.1** — see below.
+- **Promotion (`market_data_accepted`)** — `promoteMarketObservation` builds the
+  value and provenance for accepting an observation as the underwritten number.
+  It returns a payload rather than editing a document, because promotion is an
+  explicit Tier-2 edit by a named actor and never a side effect of resolution.
+  The tag is never `user_input`: a value accepted for lack of better evidence
+  and one established by diligence are different claims, and a file that renders
+  them identically has destroyed something a credit reviewer needs. Promotion
+  does not upgrade `confidence`.
+- **`_meta.market_data_ref`** and **`DQ-06`** — the promoted block records which
+  set, of which vintage, with a digest. Enforced as an error: without it, the tag
+  is an unfalsifiable claim.
+- **`STANDARD_SECTION_IDS` / `isStandardSectionId`** — the canonical section list
+  from FORMAT_SPEC Part IV, pinned by a test that parses the spec.
+- **CLI** — `uwmd market-data validate <file>`, and `--market-data <file>` on
+  `scope` and `refine`, so the top cascade steps finally have a runnable example.
+- **`spec/schemas/uw-market-data.schema.json`**, a worked example under
+  `examples/market-data/`, and a `market-data` conformance suite (14 assertions:
+  every attribution requirement proved to *fail* rather than store a blank, plus
+  vintage selection, the tie error, staleness fall-through, and promotion).
+
+### Added — shared receipt extension section
+
+- **`inputs_provenance` (receipt format 1.1)** — artifacts beyond the subject
+  record that a computation depended on. **One** section with a `source`
+  discriminator, shared by RFC 0022 (`market_data`) and RFC 0021
+  (`child_record`), because a verifier handles both identically. The
+  `1.0 → 1.1` bump **covers both RFCs and is not repeated**; 0021's rollup
+  entries are additive here.
+- **`RCP-11`** (`unverifiable`) when a referenced input is unavailable, and
+  **`RCP-12`** (`failed`) when it resolves but its digest disagrees. An absent
+  observation set is not evidence of tampering. RCP-12 is evaluated across all
+  held references before any RCP-11, so an unrelated missing reference cannot
+  downgrade a genuine mismatch.
+- A 1.0 receipt remains valid and readable; the existing verify fixtures still
+  carrying 1.0 receipts now double as the backward-compatibility check.
+
+### Changed
+
+- **`MarketDataLookup.resolve`** may return an optional `source_id`, surfaced as
+  `ResolvedValue.resolved_from`. Additive — hosts returning `{ value, range }`
+  are unaffected.
+- **`market_data_accepted` resolves at the `user_input` cascade step** while
+  keeping its own source tag. Without this a promoted value matched no in-file
+  tag and fell through to `asset_class_default`, silently discarding the
+  analyst's accepted number. It outranks a live market lookup deliberately:
+  accepting one vintage must not be overwritten by a newer pull. `CascadeStep`
+  is unchanged — normatively fixed at seven (protocol §IX).
+
 ## [1.4.0] - 2026-08-16
 
 > ### ⚠️ Read before upgrading — Lite percent digests move (RFC 0025)

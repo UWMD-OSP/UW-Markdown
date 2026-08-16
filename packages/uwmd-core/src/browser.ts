@@ -319,6 +319,7 @@ export {
   parseMarketDataDocument,
   createDocumentMarketData,
   selectCurrentMarketData,
+  promoteMarketObservation,
   isDealFieldPath,
   isValidAsOf,
 } from './market-data.js';
@@ -327,6 +328,8 @@ export type {
   MarketObservation,
   MarketObservationRange,
   DocumentMarketDataOptions,
+  PromoteObservationOptions,
+  PromotedObservation,
 } from './market-data.js';
 export {
   PACKAGE_MANIFEST_PATH,
@@ -398,6 +401,7 @@ export type {
   UWFenceAnnotation,
   UWMeta,
   UWFieldOverride,
+  MarketDataRef,
   UWFrontmatter,
   UWPipelineState,
   UWQuickMetrics,

@@ -2,11 +2,11 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-16 at `9a1f55a`+ (full pass: build green across all
-workspaces; **857 tests** — 724 core, 69 excel, 57 cli, 4 batch, 3 report — plus
-**63 web-editor**; **159 conformance** assertions including the Tier-4 replay,
-module, package, and receipts suites; 11/11 schemas valid; Biome clean over 345
-files; `typecheck:tests` clean across all five workspaces).
+**Last verified:** 2026-08-16 at `d595136`+ (full pass: build green across all
+workspaces; **906 tests** — 773 core, 69 excel, 57 cli, 4 batch, 3 report — plus
+**63 web-editor**; **175 conformance** assertions including the Tier-4 replay,
+module, package, receipts, and market-data suites; 12/12 schemas valid; Biome
+clean over 370 files; `typecheck:tests` clean across all five workspaces).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -56,7 +56,15 @@ not core gaps.
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
-- **CLI:** 19 commands (incl. `export` → `.uw.json` and `receipt issue|verify`).
+- **Market data (RFC 0022, 2026-08-16):** `market-data-v1` profile
+  (`market-data.ts`), a deterministic document resolver that fills the cascade's
+  `market_data` step, receipt `inputs_provenance` pinning the observation set's
+  digest, and an explicit promotion path. Identity and `basis` are refusals, not
+  warnings — an unattributable observation set does not parse. `uwmd market-data
+  validate`; `--market-data` on `scope`/`refine`. See [05](05-calc-packs.md) and
+  the `market-data` conformance suite.
+- **CLI:** 20 commands (incl. `export` → `.uw.json`, `receipt issue|verify`, and
+  `market-data validate`).
   See [08](08-tools.md).
 - **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uwx.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
 - **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON
@@ -387,7 +395,11 @@ not core gaps.
   instead of returning an apparently successful empty document. PDF is built via
   `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
   that package.
-- **Market-data / investor-profile** — interface-only; no reference implementation.
+- **Investor-profile** — interface-only; no reference implementation. Market data
+  is now built (see ✅ above); `InvestorProfile` was deliberately excluded from
+  RFC 0022 §5 as an institution-private preference set nobody has yet asked to
+  exchange, and portfolio-level shared assumptions belong to RFC 0021's
+  `inherited_assumption` instead.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
   RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
   reference implementation exists.
@@ -517,17 +529,23 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Medium
 
-2. **Market-data reference implementation — now scoped as
-   [RFC 0022](../rfcs/0022-market-data-documents.md) (draft).** Interface-only
-   today, so the top two cascade steps have no worked example. Scoping found the
-   real gap is *attribution*, not the missing resolver: a market-derived value
-   records no trace of which observation set produced it, so a receipt over that
-   deal cannot be reproduced. 0022 defines a `market-data-v1` document profile
-   with required `as_of`/`provider`/`basis`, pins its digest in receipts, and
-   adds an explicit promotion path that keeps an accepted observation
-   distinguishable from a diligenced value (`market_data_accepted`, never
-   `user_input`). Investor profiles are deliberately excluded. **Accepted 2026-08-13 and now
-   implementable** — 0018 supplies the profile mechanism.
+2. ~~**Market-data reference implementation.**~~ **Implemented 2026-08-16 —
+   [RFC 0022](../rfcs/0022-market-data-documents.md) is `implemented`.** The
+   `market-data-v1` profile, a deterministic document resolver, receipt
+   `inputs_provenance`, and the promotion path all ship; the top two cascade
+   steps now have a runnable example (`uwmd scope --market-data <file>`) and a
+   worked document under `examples/market-data/`. New `market-data` conformance
+   suite (14 assertions); corpus 159 → 175.
+
+   > **Two things the RFC did not anticipate, both found by building it.**
+   > §2 claimed the resolver needed no cascade change; true for *resolution*,
+   > but attribution — the entire point — needed an optional `source_id` channel
+   > so a value can say which set produced it. And §4's promotion would have
+   > silently discarded the analyst's number: `resolveValue` recognized no
+   > in-file `market_data_accepted` tag, so a promoted value fell through to
+   > `asset_class_default`. It now resolves at the `user_input` step while
+   > keeping its own tag, which also makes it correctly outrank a fresher live
+   > pull. `CascadeStep` is untouched — normatively fixed at seven.
 3. **Batch workflow expansion — now scoped as
    [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
    filters/summaries/queue projections in `@uwmd/batch` are built; the expansion

@@ -59,6 +59,11 @@ import {
   validateUWDealPackageContext,
   projectPackageLinksToEntityEdges,
   sha256BytesHex,
+  parseMarketDataDocument,
+  createDocumentMarketData,
+  selectCurrentMarketData,
+  promoteMarketObservation,
+  resolveValue,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -73,7 +78,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,modules,packages').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1134,6 +1139,169 @@ async function runReceiptRefuse() {
   }
 }
 
+// ─── Market-data suite (RFC 0022) ────────────────────────────────────────────
+//
+//   valid/<scenario>/     doc.uwx.md + expected.json (identity + observations)
+//   reject/<scenario>/    doc.uwx.md + expected.json naming the MD-* code
+//   resolve/<scenario>/   docs/*.uwx.md + case.json + expected.json
+//   promote/<scenario>/   doc.uwx.md + case.json + expected.json
+//
+// The attribution requirements are each proved to *fail* rather than store a
+// blank, because the failure mode this profile exists to prevent is a number
+// sitting in a file that nothing can trace.
+
+const MARKET_DATA_DIR = join(CONFORMANCE_DIR, 'market-data');
+
+function readMarketDoc(path) {
+  return parseMarketDataDocument(parseUWFile(readFileSync(path, 'utf8'), { filename: path }));
+}
+
+function marketScenarios(kind) {
+  const dir = join(MARKET_DATA_DIR, kind);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(dir, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+async function runMarketData() {
+  if (!existsSync(MARKET_DATA_DIR)) {
+    record('market-data', '(none)', 'pass', 'no market-data fixtures');
+    return;
+  }
+
+  for (const { id, dir } of marketScenarios('valid')) {
+    const expected = JSON.parse(readFileSync(join(dir, 'expected.json'), 'utf8'));
+    try {
+      const doc = readMarketDoc(join(dir, 'doc.uwx.md'));
+      const actual = {
+        document_id: doc.document_id,
+        as_of: doc.as_of,
+        provider: doc.provider,
+        geo: doc.geo,
+        observation_count: doc.observations.length,
+      };
+      const diff = Object.entries(expected).find(([k, v]) => JSON.stringify(actual[k]) !== JSON.stringify(v));
+      if (diff) {
+        record('market-data', `valid/${id}`, 'fail', `${diff[0]}: expected ${JSON.stringify(diff[1])}, got ${JSON.stringify(actual[diff[0]])}`);
+      } else {
+        record('market-data', `valid/${id}`, 'pass');
+      }
+    } catch (e) {
+      record('market-data', `valid/${id}`, 'fail', `parse threw: ${e.message}`);
+    }
+  }
+
+  for (const { id, dir } of marketScenarios('reject')) {
+    const expected = JSON.parse(readFileSync(join(dir, 'expected.json'), 'utf8'));
+    try {
+      readMarketDoc(join(dir, 'doc.uwx.md'));
+      record('market-data', `reject/${id}`, 'fail', 'parsed where it must refuse');
+    } catch (e) {
+      if (e.code === expected.expected_code) {
+        record('market-data', `reject/${id}`, 'pass', `${e.code}`);
+      } else {
+        record('market-data', `reject/${id}`, 'fail', `threw ${e.code ?? '(no code)'}, expected ${expected.expected_code}`);
+      }
+    }
+  }
+
+  for (const { id, dir } of marketScenarios('resolve')) {
+    const testCase = JSON.parse(readFileSync(join(dir, 'case.json'), 'utf8'));
+    const expected = JSON.parse(readFileSync(join(dir, 'expected.json'), 'utf8'));
+    const docsDir = join(dir, 'docs');
+    const docs = readdirSync(docsDir)
+      .filter((f) => f.endsWith('.uwx.md'))
+      .sort()
+      .map((f) => readMarketDoc(join(docsDir, f)));
+
+    // `now` is pinned per fixture: a staleness assertion that depended on the
+    // wall clock would pass today and fail in three months.
+    const now = new Date(testCase.now);
+
+    let selected;
+    try {
+      selected = selectCurrentMarketData(docs);
+    } catch (e) {
+      if (expected.expected_code && e.code === expected.expected_code) {
+        record('market-data', `resolve/${id}`, 'pass', `${e.code}`);
+      } else {
+        record('market-data', `resolve/${id}`, 'fail', `selection threw ${e.code ?? e.message}`);
+      }
+      continue;
+    }
+    if (expected.expected_code) {
+      record('market-data', `resolve/${id}`, 'fail', `expected ${expected.expected_code}, selection succeeded`);
+      continue;
+    }
+
+    if (expected.selected_document_id && selected.document_id !== expected.selected_document_id) {
+      record('market-data', `resolve/${id}`, 'fail', `selected ${selected.document_id}, expected ${expected.selected_document_id}`);
+      continue;
+    }
+
+    const deal = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+    const resolved = resolveValue(testCase.field_path, deal, {
+      market: createDocumentMarketData(selected, { now }),
+    });
+    if (resolved.step !== expected.step) {
+      record('market-data', `resolve/${id}`, 'fail', `step ${resolved.step}, expected ${expected.step}`);
+      continue;
+    }
+    if ('value' in expected && JSON.stringify(resolved.value) !== JSON.stringify(expected.value)) {
+      record('market-data', `resolve/${id}`, 'fail', `value ${JSON.stringify(resolved.value)}, expected ${JSON.stringify(expected.value)}`);
+      continue;
+    }
+    record('market-data', `resolve/${id}`, 'pass', `${resolved.step}`);
+  }
+
+  for (const { id, dir } of marketScenarios('promote')) {
+    const testCase = JSON.parse(readFileSync(join(dir, 'case.json'), 'utf8'));
+    const expected = JSON.parse(readFileSync(join(dir, 'expected.json'), 'utf8'));
+    const doc = readMarketDoc(join(dir, 'doc.uwx.md'));
+
+    let promoted;
+    try {
+      promoted = promoteMarketObservation({
+        document: doc,
+        field_path: testCase.field_path,
+        digest: testCase.digest,
+        ...(testCase.rationale ? { rationale: testCase.rationale } : {}),
+      });
+    } catch (e) {
+      record('market-data', `promote/${id}`, 'fail', `promotion threw: ${e.message}`);
+      continue;
+    }
+
+    // The load-bearing assertion of §4: never user_input.
+    if (promoted.source !== 'market_data_accepted') {
+      record('market-data', `promote/${id}`, 'fail', `source ${promoted.source}, expected market_data_accepted`);
+      continue;
+    }
+    if (promoted.market_data_ref.document_id !== doc.document_id ||
+        promoted.market_data_ref.as_of !== doc.as_of ||
+        promoted.market_data_ref.digest !== testCase.digest) {
+      record('market-data', `promote/${id}`, 'fail', 'market_data_ref does not name the observation set, vintage, and digest');
+      continue;
+    }
+    if (expected.confidence !== undefined && promoted.confidence !== expected.confidence) {
+      record('market-data', `promote/${id}`, 'fail', `confidence ${promoted.confidence}, expected ${expected.confidence} (promotion must not upgrade it)`);
+      continue;
+    }
+    record('market-data', `promote/${id}`, 'pass');
+
+    // A promoted field leaves the gap ranking while keeping its origin tag.
+    if (expected.resolves_from_document) {
+      const deal = parseUWFile(readFileSync(join(dir, 'deal-after-promotion.uwx.md'), 'utf8'));
+      const resolved = resolveValue(testCase.field_path, deal);
+      const ok = resolved.source === 'market_data_accepted' && resolved.step === 'user_input';
+      record('market-data', `promote/${id} [resolves as input of record]`, ok ? 'pass' : 'fail',
+        ok ? 'market_data_accepted @ user_input' : `got ${resolved.source} @ ${resolved.step}`);
+    }
+  }
+}
+
 // ─── Modules suite ───────────────────────────────────────────────────────────
 //
 // Two assertions per fixture:
@@ -1398,6 +1566,7 @@ const dispatch = {
   '4-replay': async () => { await runTier4Replay(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
+  'market-data': async () => { await runMarketData(); },
   'modules': async () => { await runModules(); },
   'packages': async () => { await runPackages(); },
 };

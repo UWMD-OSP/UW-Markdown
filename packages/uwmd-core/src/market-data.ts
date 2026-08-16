@@ -27,7 +27,7 @@ import {
   MARKET_DATA_PROFILE,
   type ProtocolError,
 } from './protocol.js';
-import type { ConfidenceLevel, ParsedUWFile } from './types.js';
+import type { ConfidenceLevel, MarketDataRef, ParsedUWFile } from './types.js';
 
 export const MARKET_DATA_PROFILE_ID = MARKET_DATA_PROFILE;
 
@@ -311,6 +311,88 @@ export function createDocumentMarketData(
         ...(observation.range ? { range: observation.range } : {}),
         source_id: doc.document_id,
       };
+    },
+  };
+}
+
+// ─── Promotion (RFC 0022 §4) ─────────────────────────────────────────────────
+
+export interface PromoteObservationOptions {
+  /** The observation set being accepted from. */
+  document: MarketDataDocument;
+  /** Which observation. Must exist in the set. */
+  field_path: string;
+  /** Digest of the observation set, `sha256:<64 lowercase hex>`. */
+  digest: string;
+  /** Why this was accepted as the underwritten value. */
+  rationale?: string;
+}
+
+export interface PromotedObservation {
+  /** Section the value belongs in, e.g. `valuation`. */
+  section: string;
+  /** Path relative to the section root, e.g. `going_in_cap_rate`. */
+  field: string;
+  value: unknown;
+  unit: string;
+  /** Always `market_data_accepted` — never `user_input`. */
+  source: 'market_data_accepted';
+  /**
+   * The observation's confidence, carried through unchanged. Promotion does not
+   * upgrade it: accepting a `low`-confidence observation for lack of better
+   * evidence leaves it low-confidence evidence.
+   */
+  confidence?: ConfidenceLevel;
+  market_data_ref: MarketDataRef;
+}
+
+const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/;
+
+/**
+ * Build the value and provenance for promoting one observation to an input of
+ * record.
+ *
+ * This deliberately returns a payload rather than editing a document. Promotion
+ * is an explicit Tier-2 edit by a named actor, never automatic and never a side
+ * effect of resolution — so the host applies it through `applyEdit` with its own
+ * actor and timestamp, and this function cannot promote anything by itself.
+ *
+ * The result is always tagged `market_data_accepted`, never `user_input`. That
+ * is the crux of §4: a value accepted for lack of better evidence and a value
+ * established by diligence are different claims, and a file that renders them
+ * identically has destroyed something a credit reviewer needs.
+ */
+export function promoteMarketObservation(opts: PromoteObservationOptions): PromotedObservation {
+  const { document, field_path, digest, rationale } = opts;
+
+  if (!DIGEST_PATTERN.test(digest)) {
+    throw new MarketDataError(
+      'MD-021',
+      `Promotion requires the observation set's digest as 'sha256:<64 lowercase hex>'; got '${digest}'.`,
+    );
+  }
+
+  const observation = document.observations.find((o) => o.field_path === field_path);
+  if (!observation) {
+    throw new MarketDataError(
+      'MD-022',
+      `Observation set '${document.document_id}' carries no observation for '${field_path}'.`,
+    );
+  }
+
+  const dot = field_path.indexOf('.');
+  return {
+    section: field_path.slice(0, dot),
+    field: field_path.slice(dot + 1),
+    value: observation.value,
+    unit: observation.unit,
+    source: 'market_data_accepted',
+    ...(observation.confidence ? { confidence: observation.confidence } : {}),
+    market_data_ref: {
+      document_id: document.document_id,
+      as_of: document.as_of,
+      digest,
+      ...(rationale ? { rationale } : {}),
     },
   };
 }
