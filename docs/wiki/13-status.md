@@ -447,9 +447,13 @@ and all ten examples were renamed to `.uwx.md`. The library never had the bug �
 `source-representation.ts` already carried `UWX_EXTENSION` and the legacy
 warning, which every example was tripping.
 
-> **Legacy `.uw.md` sniffing has no expiry.** RFC 0017 introduced it as a
-> transition path and RFC 0020 deliberately declined to schedule its end. That
-> decision should be made before 1.0 rather than drifting into permanence.
+> **Legacy `.uw.md` sniffing sunsets at Protocol 2.0** (decided 2026-08-16 with
+> [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md)). RFC 0017
+> introduced it as a transition path and RFC 0020 declined to schedule its end.
+> RFC 0025 would have opened a *second* open-ended transition — Lite
+> canonicalization 1.0 — so both were given one shared boundary instead. For all
+> of 1.x, sniffing stays and a `1.0` receipt degrades to `RCP-10`; at Protocol
+> 2.0 both obligations end.
 
 Receipt **signing** remains unimplemented and is blocked on the RFC 0010 signing
 package; unsigned issuance and verification ship today.
@@ -549,9 +553,10 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-5. ~~**Lite percent normalization loses decimal exactness.**~~ **Implemented
-   2026-08-16 as [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md)
-   (draft — awaiting owner acceptance).** `lite.ts` now shifts the decimal point
+5. ~~**Lite percent normalization loses decimal exactness.**~~ **Accepted and
+   implemented 2026-08-16 as
+   [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md); shipped in
+   `@uwmd/core` 1.4.0.** `lite.ts` now shifts the decimal point
    through the digit string instead of dividing, so `5.51%` normalizes to
    `0.0551` and equals the double a hand-authored UWX fraction produces. Lite
    canonicalization **1.0 → 1.1**; the grammar is untouched and no document needs
@@ -573,9 +578,12 @@ bus factor, personal security email, and no public RFC venue.
    > diff there is the absence of evidence, not evidence of correctness; the
    > proof is the unit tests asserting `toBe(0.0551)` (where `toBeCloseTo` would
    > pass either way) and the new `receipts/verify/06-*` scenario.
-6. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
-   transition path with no expiry, and RFC 0020 declined to set one. Worth
-   settling before 1.0 rather than letting it drift into permanence.
+6. ~~**Decide when legacy `.uw.md` sniffing ends.**~~ **Decided 2026-08-16:
+   sunsets at Protocol 2.0**, together with Lite canonicalization `1.0`, via
+   [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md). Both are 1.x
+   compatibility bridges and now share one boundary instead of accumulating
+   separately. Nothing to build for 1.x; the work is to *remove* both at 2.0,
+   which belongs on the 2.0 checklist rather than here.
 
 ### Ongoing
 

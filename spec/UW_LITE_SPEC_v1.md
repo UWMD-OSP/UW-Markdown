@@ -150,6 +150,13 @@ comparable** to one computed under this version. A verifier that observes both a
 digest disagreement and a canonicalization-version disagreement **MUST NOT**
 report that the record changed; see `UW_RECEIPT_v1.md` §5 (`RCP-10`).
 
+For the whole 1.x line, a verifier **MUST** continue to recognize
+`canonicalization_version: "1.0"` and degrade to `RCP-10` rather than reporting
+a failure. Version `1.0` is **sunset at Protocol 2.0**, together with legacy
+structured `.uw.md` sniffing (RFC 0017); the two are 1.x compatibility bridges
+and share one boundary. A Protocol 2.0 verifier is not obliged to distinguish a
+`1.0` receipt from a corrupted one.
+
 ## 7. Canonical rendering
 
 A canonical renderer normalizes line endings, heading spacing, anchored field

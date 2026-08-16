@@ -8,7 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-> ### ⚠️ Read before upgrading — Lite percent digests move (RFC 0025, draft)
+## [1.4.0] - 2026-08-16
+
+> ### ⚠️ Read before upgrading — Lite percent digests move (RFC 0025)
 >
 > UW Lite normalized a percent display by dividing by 100. That is exact for
 > most rates and not for others: `Number('5.51') / 100` is
@@ -57,6 +59,25 @@ protocol, and each package each carry an independent semver).
   separate, so Lite was the odd one out; had this not been split first, bumping
   the canonicalization version would have falsely claimed the Lite *grammar*
   changed.
+
+### Decided
+
+- **Lite canonicalization `1.0` and legacy `.uw.md` sniffing now have an
+  expiry: both sunset at Protocol 2.0.** RFC 0017 introduced legacy sniffing as
+  a transition with no end date and RFC 0020 declined to set one; RFC 0025 would
+  have opened a second such transition. Both are 1.x compatibility bridges, so
+  they share one boundary rather than accumulating separately. For all of 1.x a
+  verifier **MUST** keep recognizing `canonicalization_version: "1.0"` and
+  degrade to `RCP-10`; at Protocol 2.0 that obligation ends.
+
+### Released
+
+- `@uwmd/core` **1.4.0**, `@uwmd/cli` **1.4.0** (lockstep), with coordinated
+  `@uwmd/core` repins in `@uwmd/excel` 0.3.0, `@uwmd/report` 0.3.0, and
+  `@uwmd/batch` 0.2.0. Minor rather than major: the change corrects an IEEE 754
+  artifact to match what `UW_LITE_SPEC_v1.md` §4 already specified, the grammar
+  is unchanged so no document needs editing, and `RCP-10` keeps legacy receipts
+  reporting `unverifiable` instead of failing.
 
 ## [1.3.0] - 2026-08-15
 

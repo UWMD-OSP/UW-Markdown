@@ -1,9 +1,10 @@
 ---
 rfc: 0025
 title: Scale percent displays by moving the point, not by dividing
-status: draft
+status: accepted
 author: uwmd-core
 created: 2026-08-16
+accepted: 2026-08-16
 affects:
   - format-spec
   - core-library
@@ -241,10 +242,23 @@ outside the digest boundary — but a symmetric decimal shift there would be
 tidier, and RFC 0023's `%` default of six decimals on the *fraction* means the
 display cap is nominally two digits shy.
 
-**When does canonicalization `1.0` stop being supported?** This RFC does not set
-an expiry, and deliberately notes that it is repeating the open-ended-transition
-choice `docs/wiki/13-status.md` already flags for legacy `.uw.md` sniffing.
-Worth settling for both at once before 1.0.
+~~**When does canonicalization `1.0` stop being supported?**~~ **Resolved at
+acceptance (2026-08-16): Lite canonicalization `1.0` and legacy `.uw.md`
+sniffing sunset together at Protocol 2.0.**
+
+The draft raised this as an open question because leaving it unanswered would
+have made a second open-ended transition alongside the one RFC 0017 opened and
+RFC 0020 declined to close. Both are 1.x compatibility bridges, and the owner's
+reasoning at acceptance was that they should share one boundary rather than
+accumulate separately: an explicit Protocol 2.0 sunset keeps 1.x stable while
+preventing legacy drift into permanence.
+
+Concretely, for the whole 1.x line a verifier **MUST** continue to recognize
+`canonicalization_version: "1.0"` and report `RCP-10` per `UW_RECEIPT_v1.md`
+§5.5 rather than `failed`. At Protocol 2.0 that recognition may be dropped; a
+2.0 verifier is not obliged to distinguish a `1.0` receipt from a corrupted one.
+This also retires the standing note in `docs/wiki/13-status.md` that legacy
+sniffing has no expiry — it now has one, and it is shared.
 
 ## Prior art
 
