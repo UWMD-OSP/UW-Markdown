@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed
+
+- **Security reports now go to `security@uwmd.org`** (`SECURITY.md`), replacing
+  the general `team@uwmd.org` address. A dedicated alias keeps a vulnerability
+  report off the same triage path as ordinary project mail. The 1.0.0 entry
+  below still names the old address; it is a record of what was true then.
+
 ### Fixed
 
 - **`RCP-07` now compares engine identity, not the version string alone.**
