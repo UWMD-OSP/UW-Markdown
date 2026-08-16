@@ -48,6 +48,12 @@
       }
     }
   },
+  "overrides": [
+    {
+      "include": ["**/tsconfig*.json"],
+      "json": { "parser": { "allowComments": true } }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "single",

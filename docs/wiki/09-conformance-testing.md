@@ -11,19 +11,34 @@ this one — runs to prove behavior). CI runs both.
   (covered by the smoke tests in `packages/uwmd-cli` instead). Run from a
   package with `vitest run`; from the root `npm test` runs all workspaces.
 
-> **Test files are not typechecked.** `tsconfig.json` excludes
-> `src/**/*.test.ts`, and Vitest transpiles with esbuild, which strips types
-> without checking them. A type error in a test is invisible to both `npm run
-> build` and `npm test`. The practical consequence: a compile-time assertion
-> (an exhaustiveness `Record`, a `satisfies`, an expect-error helper) written
-> *in a test file* is inert and proves nothing. Put it in a source file, where
-> `tsc` actually sees it — `ASSET_CLASSES` in `types.ts` is the worked example.
+> **Type-check tests separately: `npm run typecheck:tests`.** Neither `npm run
+> build` nor `npm test` reads a test file as TypeScript — `tsconfig.json`
+> excludes `src/**/*.test.ts` from the build, and Vitest transpiles with
+> esbuild, which strips types without checking them. Every workspace carries a
+> `tsconfig.test.json` to close that hole: same compiler options, `noEmit`,
+> tests included. The root script fans out across all five
+> (`--workspaces --if-present`) and runs in CI on the Node 20 leg of
+> `build-and-test`. `@uwmd/cli` is the odd one — it has no build of its own,
+> so its config stands alone rather than extending anything, and covers
+> `test/**` rather than `src/**`.
+>
+> Run it after touching a test. Twelve type errors were sitting in the suite
+> the first time it ran — none of them failing tests, but each one a place
+> where the compiler had nothing to say about code that claimed to assert
+> something. Compile-time assertions (an exhaustiveness `Record`, a
+> `satisfies`, an expect-error helper) now do work in a test file, though a
+> guard that protects *production* callers still belongs in a source file
+> where the build itself enforces it — `ASSET_CLASSES` in `types.ts` is the
+> worked example.
 - Coverage: `npm run test:coverage` (root) → `@uwmd/core` with
   `@vitest/coverage-v8`. **Thresholds are enforced**, not reported: the floor
-  lives in `packages/uwmd-core/vitest.config.ts` (76 lines / 76 statements / 95
-  functions / 74 branches) and the CI `coverage` job has no `continue-on-error`,
+  lives in `packages/uwmd-core/vitest.config.ts` (82 lines / 82 statements / 97
+  functions / 76 branches) and the CI `coverage` job has no `continue-on-error`,
   so dropping below it fails the build. Raise the floor when coverage rises;
-  lowering one should be argued for in the PR description.
+  lowering one should be argued for in the PR description. The re-export
+  barrels `index.ts` and `browser.ts` are excluded — ~1,050 lines of `export
+  {}` that no test imports, which measured 0% and moved the total by four
+  points without saying anything about what is tested.
 - Property tests use `fast-check`: `calc/calc.property.test.ts` asserts calc
   *totality* (any input parses or throws a typed `CalcError`) and Excel↔evaluator
   parity. `packs/packs.test.ts` asserts every pack metric evaluates against the

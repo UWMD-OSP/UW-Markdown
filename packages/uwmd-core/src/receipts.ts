@@ -455,6 +455,7 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
   /** Supplied by a signing package. Absent → a signed receipt is `unverifiable`. */
   signatureVerifier?: ReceiptSignatureVerifier;
   /** Engine identity of this verifier. Defaults to this package. */
+  engine?: string;
   engine_version?: string;
 }
 
@@ -467,10 +468,11 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *   1. A digest mismatch is decisive — the record changed. `failed`.
  *   2. Otherwise, anything this verifier cannot decide (unknown pack, pack
  *      version it does not hold, a signature with no backend) → `unverifiable`.
- *   3. Otherwise, recomputation disagreement → `failed`, unless the engine
- *      version also differs, in which case the disagreement is attributable to
- *      the engine and the verdict is `unverifiable` (RFC 0016 open question,
- *      resolved in `spec/UW_RECEIPT_v1.md` §5).
+ *   3. Otherwise, recomputation disagreement → `failed`, unless the issuing
+ *      engine identity (name *and* version) differs from this verifier's, in
+ *      which case the disagreement is attributable to the engine and the
+ *      verdict is `unverifiable` (RFC 0016 open question, resolved in
+ *      `spec/UW_RECEIPT_v1.md` §5).
  *   4. Otherwise `verified`.
  *
  * The verifier always recomputes; `results_digest` is checked only as a cheap
@@ -576,8 +578,16 @@ export async function verifyReceipt(
     };
   }
 
+  // Engine identity is the pair, not the version alone. A version string only
+  // means something within one engine's release history: `2.1.0` of some other
+  // vendor's engine is not a later or earlier build of this one, it is an
+  // unrelated implementation that happens to have reached the same number. So a
+  // disagreement is attributable to the record only when both halves match.
+  const verifierEngine = options.engine ?? CORE_PACKAGE_NAME;
+  const verifierEngineVersion = options.engine_version ?? CORE_VERSION;
   const engineMatches =
-    receipt.computation.engine_version === (options.engine_version ?? CORE_VERSION);
+    receipt.computation.engine === verifierEngine &&
+    receipt.computation.engine_version === verifierEngineVersion;
 
   if (receipt.signature && options.signatureVerifier) {
     const valid = await options.signatureVerifier.verify(receipt, receiptSigningPayload(receipt));
@@ -605,9 +615,9 @@ export async function verifyReceipt(
           {
             code: 'RCP-07',
             severity: 'indeterminate',
-            message: `Results disagree, but the receipt was issued by engine ${receipt.computation.engine}@${receipt.computation.engine_version} and this verifier runs ${options.engine_version ?? CORE_VERSION}. The disagreement cannot be attributed to the record.`,
-            expected: receipt.computation.engine_version,
-            actual: options.engine_version ?? CORE_VERSION,
+            message: `Results disagree, but the receipt was issued by engine ${receipt.computation.engine}@${receipt.computation.engine_version} and this verifier runs ${verifierEngine}@${verifierEngineVersion}. The disagreement cannot be attributed to the record.`,
+            expected: `${receipt.computation.engine}@${receipt.computation.engine_version}`,
+            actual: `${verifierEngine}@${verifierEngineVersion}`,
           },
           ...disagreements,
         ],

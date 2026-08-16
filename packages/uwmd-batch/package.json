@@ -8,7 +8,11 @@
   "exports": { ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" } },
   "bin": { "uwmd-batch": "bin/uwmd-batch.mjs" },
   "files": ["bin", "dist", "README.md"],
-  "scripts": { "build": "tsc", "test": "vitest run" },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json"
+  },
   "dependencies": { "@uwmd/core": "1.2.0" },
   "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
   "engines": { "node": ">=18.0.0" },

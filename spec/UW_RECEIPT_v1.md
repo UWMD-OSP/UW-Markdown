@@ -174,8 +174,8 @@ Verifiers **MUST** apply these in order:
    silently ignore a signature.
 4. **Signature present and invalid** → `failed`.
 5. **Recomputation disagreement** → `failed` (`RCP-02` coverage, `RCP-03` value),
-   *unless* the engine version also differs, in which case → `unverifiable`
-   (`RCP-07`); see §5.3.
+   *unless* the issuing engine identity also differs, in which case →
+   `unverifiable` (`RCP-07`); see §5.3.
 6. **`results_digest` does not recompute** → `failed` (`RCP-04`).
 7. Otherwise → `verified`.
 
@@ -207,17 +207,25 @@ Absence means **unstated**, not non-conforming: a receipt issued before the
 field existed cannot retroactively claim a version. A verifier **MUST NOT**
 treat absence as a failure.
 
-### 5.3 Engine-version mismatch
+### 5.3 Engine-identity mismatch
 
 *Resolves the open question in RFC 0016.* If recomputation disagrees and the
-verifier's engine version differs from `computation.engine_version`, the verdict
-is `unverifiable` with `RCP-07`, not `failed`. The disagreement cannot be
+verifier's engine identity differs from the receipt's, the verdict is
+`unverifiable` with `RCP-07`, not `failed`. The disagreement cannot be
 attributed to the record, and reporting it as a failure would blame a document
-for an engine upgrade. If the engine versions match, a disagreement is `failed`.
+for an engine upgrade. If the engine identities match, a disagreement is
+`failed`.
 
-An engine-version difference alone, with results agreeing, is **not** an issue:
-determinism across versions is the expected case, and reporting it would train
-users to ignore the state.
+Engine identity is the pair `(computation.engine, computation.engine_version)`,
+and a verifier **MUST** compare both. A version string is only ordered within
+one engine's release history: `2.1.0` of an unrelated implementation is not a
+build of this engine that happens to be newer, so treating a bare version match
+across two different `engine` values as "same engine" would report a genuine
+cross-engine disagreement as `failed` and blame the record for it.
+
+An engine-identity difference alone, with results agreeing, is **not** an issue:
+determinism across engines and versions is the expected case, and reporting it
+would train users to ignore the state.
 
 ### 5.4 Issue codes
 
@@ -229,7 +237,7 @@ users to ignore the state.
 | `RCP-04` | failed | `results_digest` does not recompute over the stated results |
 | `RCP-05` | unverifiable | The named pack is unknown to this verifier |
 | `RCP-06` | unverifiable | The verifier holds a different version of the named pack |
-| `RCP-07` | unverifiable | Results disagree and the engine version also differs |
+| `RCP-07` | unverifiable | Results disagree and the engine identity also differs |
 | `RCP-08` | unverifiable | A signature is present and no backend is available |
 | `RCP-09` | unverifiable | The record could not be canonicalized for comparison |
 

@@ -7,7 +7,21 @@ import {
   toUWEnvelope,
   verifyEnvelopeDigest,
 } from './envelope.js';
+import type { UWEnvelopeBlock, UWEnvelopeSectionEntry } from './envelope.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
+
+/**
+ * Narrow a section entry to a single block.
+ *
+ * `'content' in entry` does not narrow this union on its own: the other arm is
+ * the multi-variant map `Record<string, UWEnvelopeBlock>`, and a string index
+ * signature means TypeScript cannot rule out a `content` key on it. So the
+ * check is a runtime one and the cast is explicit, in one place.
+ */
+function singleBlock(entry: UWEnvelopeSectionEntry | undefined): UWEnvelopeBlock {
+  if (!entry || !('annotation' in entry)) throw new Error('expected a single block');
+  return entry as UWEnvelopeBlock;
+}
 
 function block(value: number): UWBlock {
   const meta: UWBlock['meta'] = {
@@ -79,8 +93,7 @@ describe('UW Document Envelope', () => {
   it('includes block integrity values in the envelope digest', async () => {
     const first = toUWEnvelope(document());
     const second = structuredClone(first);
-    const property = second.sections['property'];
-    if (!('content' in property)) throw new Error('expected property block');
+    const property = singleBlock(second.sections['property']);
     (property.content['_meta'] as Record<string, unknown>)['content_hash'] = 'sha256:changed';
     expect(await computeEnvelopeDigest(first)).not.toBe(await computeEnvelopeDigest(second));
   });
