@@ -32,7 +32,7 @@ if (process.argv.includes('--clean')) {
 const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.2)' },
+  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.3)' },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
   { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
@@ -95,6 +95,7 @@ const COPIES = [
   // but missing here is a dead link and VitePress fails the build.
   { from: 'docs/rfcs/0021-composable-documents.md', to: 'about/rfcs/0021-composable-documents.md' },
   { from: 'docs/rfcs/0022-market-data-documents.md', to: 'about/rfcs/0022-market-data-documents.md' },
+  { from: 'docs/rfcs/0023-numeric-determinism.md', to: 'about/rfcs/0023-numeric-determinism.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 

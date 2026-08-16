@@ -2,10 +2,10 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-13 at `e809df6`+ (full pass: build green across all
-workspaces; **797 tests** — 664 core, 69 excel, 57 cli, 4 batch, 3 report — plus
-**63 web-editor**; **147 conformance** assertions including the Tier-4 replay,
-module, and package suites; 11/11 schemas valid; Biome clean over 331 files).
+**Last verified:** 2026-08-14 at `5e5deb9`+ (full pass: build green across all
+workspaces; **821 tests** — 688 core, 69 excel, 57 cli, 4 batch, 3 report — plus
+**63 web-editor**; **153 conformance** assertions including the Tier-4 replay,
+module, and package suites; 11/11 schemas valid; Biome clean over 337 files).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -40,7 +40,8 @@ not core gaps.
   `BUILTIN_REMEDIATIONS`), editor (`applyEdit`/`applyEditAsync`, byte-preserving),
   renderer (`json`/`csv`/`chat`/`summary`). See [03](03-core-library.md).
 - **Calc engine:** sandboxed parser+evaluator, 17 builtins incl.
-  `pmt/fv/pv/nper/irr/npv`, full error taxonomy, property tests. See [04](04-calc-engine.md).
+  `pmt/fv/pv/nper/irr/npv`, full error taxonomy, property tests, and a normative
+  **numeric model** (§VIII.5). See [04](04-calc-engine.md).
 - **Nine asset-class packs:** `MULTIFAMILY_PACK` (8 metrics), `OFFICE_PACK` (11),
   `RETAIL_PACK` (12), `INDUSTRIAL_PACK` (12), `SELF_STORAGE_PACK` (12),
   `HOSPITALITY_PACK` (14), `SENIOR_HOUSING_PACK` (14), `STUDENT_HOUSING_PACK` (14),
@@ -49,7 +50,7 @@ not core gaps.
   has a `WorkbookLayout` per class (selected via `getLayoutForAssetClass`); its
   `toWorkbook.test.ts` computes parity for all nine (operating statement foots —
   for land a carry statement that nets negative; metrics == evaluateCalc
-  to 6 decimals). Pack-level parity also pinned in each `packs/*.test.ts`. See
+  exactly). Pack-level parity also pinned in each `packs/*.test.ts`. See
   [05](05-calc-packs.md), [08](08-tools.md).
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
@@ -145,6 +146,48 @@ not core gaps.
   CLI: `uwmd lease validate|project` and
   `uwmd package create|verify|list|to-context|validate-context|edges`.
   Conformance: `conformance/packages/` (18 assertions).
+- **Numeric determinism ([RFC 0023](../rfcs/0023-numeric-determinism.md), 2026-08-14):**
+  the protocol now states how precise a number is. `calc/quantize.ts` is the one
+  boundary where an evaluated double becomes a *reported* value, quantized half
+  away from zero to the declaration's `round_to` — stated, or defaulted from
+  `unit` by a normative table (`$`→2, `%`→6, `x`→4, else 6) that is total by
+  design.
+
+  The defect it closes was in `receipts.ts`, which ran two checks over the same
+  numbers that could not both be right: `RECEIPT_RESULT_TOLERANCE` compared
+  stated against recomputed at 1e-6 while `results_digest` hashed them
+  bit-exactly. A last-ULP difference passed the tolerant check, failed the exact
+  one, and was reported as **corruption** — verification blaming the record when
+  the record was fine. Quantized results carry no tail for the two to disagree
+  about.
+
+  Two things fell out of it. `round()` had diverged from its own documented
+  contract: it scaled by `10 ** dec`, so `round(1.005, 2)` returned `1.00` where
+  Excel's `ROUND` returns `1.01` — fixed as errata, since §VIII.3 already said
+  half-away-from-zero. And **Excel parity is now asserted as exact equality**
+  rather than agreement to six decimals, across all nine asset classes:
+  `emitCalcExcelFormula` wraps each emitted formula in `ROUND(expr, round_to)`,
+  so both sides apply one identical rule. That `toBe` replacing `toBeCloseTo`
+  is the strongest single signal the boundary is real.
+
+  **Protocol 1.2.0 → 1.3.0.** §VIII.5 adds normative `MUST` requirements, which
+  `VERSIONS.md` rule 2 puts at a minor bump; leaving it would have left two
+  documents both calling themselves 1.2.0.
+
+  Pre-quantization receipts degrade to `unverifiable`, not `failed` — `RCP-07`
+  ("results disagree *and* the engine version differs") already covered it, so
+  bumping `@uwmd/core` to **1.2.0** was the whole migration. No new verification
+  state was needed; the three-state design already had the right answer.
+  Receipts also gained an optional `computation.protocol_version`, because an
+  engine version only means something to a reader who knows that engine's
+  release history — not the position a verifier is in when handed a third-party
+  receipt. Absence means *unstated*, not *non-conforming*.
+
+  The packs deliberately carry **no** explicit `round_to`: every pack
+  calculation uses `$`, `%`, or `x`, so the normative defaults already give each
+  one the precision it wants, and restating that 109 times would duplicate the
+  table into a second place that can drift from it.
+
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 

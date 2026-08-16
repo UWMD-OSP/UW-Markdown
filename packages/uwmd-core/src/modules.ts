@@ -7,6 +7,7 @@
 // asset-class identifiers; those remain v2/RFC concerns.
 
 import { parseExpression } from './calc/parser.js';
+import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
   FORMAT_VERSION,
   PROTOCOL_VERSION,
@@ -59,7 +60,7 @@ const MANIFEST_KEYS: readonly string[] = [
   'view_models', 'ui', 'agent_layers', 'depends_on',
 ];
 const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
-const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'deterministic'];
+const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'round_to', 'deterministic'];
 const VALIDATION_KEYS: readonly string[] = ['code', 'severity', 'message', 'rule'];
 const VIEW_MODEL_KEYS: readonly string[] = [
   'section_id', 'display_name', 'display_order', 'description',
@@ -505,6 +506,22 @@ function validateCalculations(errors: ProtocolError[], manifest: ModuleManifest)
     }
     if (calc.deterministic !== true) {
       errors.push(moduleError('PROTO-MOD-019', 'v1 calculations must declare deterministic: true.', `${pointer}.deterministic`));
+    }
+    // §VIII.5: round_to is the precision contract a receipt digest depends on, so
+    // a malformed one is refused rather than silently replaced by the unit default.
+    if (calc.round_to !== undefined) {
+      if (
+        typeof calc.round_to !== 'number'
+        || !Number.isInteger(calc.round_to)
+        || calc.round_to < 0
+        || calc.round_to > MAX_ROUND_TO
+      ) {
+        errors.push(moduleError(
+          'PROTO-MOD-067',
+          `Calculation round_to must be an integer in [0, ${MAX_ROUND_TO}].`,
+          `${pointer}.round_to`,
+        ));
+      }
     }
   }
 }

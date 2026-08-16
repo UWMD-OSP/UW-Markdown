@@ -11,7 +11,8 @@
     "pack": "org.uwmd.pack.multifamily",
     "pack_version": "1.0.0",
     "engine": "@uwmd/core",
-    "engine_version": "1.1.2",
+    "engine_version": "1.2.0",
+    "protocol_version": "1.3.0",
     "results": [
       {
         "calc_id": "cap_rate",
@@ -21,25 +22,25 @@
       },
       {
         "calc_id": "cash_on_cash",
-        "value": 0.03130434782608696,
+        "value": 0.031304,
         "unit": "%",
         "computed": true
       },
       {
         "calc_id": "debt_yield",
-        "value": 0.08846153846153847,
+        "value": 0.088462,
         "unit": "%",
         "computed": true
       },
       {
         "calc_id": "dscr",
-        "value": 1.2637362637362637,
+        "value": 1.2637,
         "unit": "x",
         "computed": true
       },
       {
         "calc_id": "loan_per_sqft",
-        "value": 109.85915492957747,
+        "value": 109.86,
         "unit": "$",
         "computed": true
       },
@@ -62,7 +63,7 @@
         "computed": true
       }
     ],
-    "results_digest": "sha256:bb2ac735377b510c5a6337ae34d241f4d229e4560af5d378b6b35218c8dee338"
+    "results_digest": "sha256:acd7d621846a448196409c6a5e241ccfed91162943c170e1ec7e0623b3ff26e6"
   },
   "policy": {
     "policy_set": "builtin",

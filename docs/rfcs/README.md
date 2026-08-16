@@ -46,6 +46,7 @@ and how it gets accepted.
 | [0020](./0020-uwx-terminology-alignment.md) | Align the format spec and examples with `.uwx.md` | draft | format, protocol, conformance, tooling |
 | [0021](./0021-composable-documents.md) | Composable UWX documents — externalization, composites, rollup receipts | accepted | format, protocol, core, conformance, tooling |
 | [0022](./0022-market-data-documents.md) | Market data as an attributable UW document | accepted | format, protocol, core, conformance, tooling |
+| [0023](./0023-numeric-determinism.md) | A numeric model and a single quantization boundary | implemented | protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

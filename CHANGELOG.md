@@ -8,6 +8,97 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+> ### ⚠️ Read before upgrading — computed numbers change
+>
+> RFC 0023 quantizes every reported calc value (protocol §VIII.5). Three
+> consequences a caller can observe:
+>
+> 1. **`round(num, dec)` returns different answers at exact-half boundaries.**
+>    `round(1.005, 2)` was `1.00` and is now `1.01`. §VIII.3 always specified
+>    half-away-from-zero, so this is errata rather than a redefinition — but a
+>    module whose formulas were tuned against the old behavior will move.
+> 2. **Every derived metric is quantized.** DSCR reports 4 decimals, dollars 2,
+>    rates 6. If you diff CLI output, receipt values, or workbook cells against
+>    stored expectations, they will differ in the tail.
+> 3. **Receipts issued before this release no longer verify as `verified`.**
+>    They return `unverifiable` via `RCP-07`, not `failed` — the disagreement is
+>    attributed to the engine change, not to your record. Re-issue to get a
+>    clean `verified`.
+>
+> Protocol moves **1.2.0 → 1.3.0** accordingly: §VIII.5 adds normative `MUST`
+> requirements, which under `VERSIONS.md` rule 2 is a minor bump.
+
+### Added
+- **RFC 0023 implemented — a numeric model and a single quantization boundary
+  (protocol §VIII.5).** The spec now states how precise a number is. Evaluation
+  runs in unrounded IEEE 754 binary64; a calculation's *reported* value is
+  quantized half away from zero at exactly one place, `evaluateCalc()`, to its
+  effective decimal places. `ModuleCalcDecl` gains an optional `round_to`
+  (integer `[0, 12]`), defaulted from `unit` by a normative table (`$`→2,
+  `%`→6, `x`→4, otherwise 6) that is deliberately total — an unspecified
+  precision is an unspecified interoperability contract.
+
+  New `calc/quantize.ts` exports `quantizeDecimal`, `resolveRoundTo`,
+  `MAX_ROUND_TO`, `DEFAULT_ROUND_TO`, and `DEFAULT_ROUND_TO_BY_UNIT` from both
+  `index.ts` and `browser.ts`. `CalcResult` echoes the effective `round_to`.
+  New loader code `PROTO-MOD-067` refuses a malformed one. Corpus 147 → 153.
+
+### Fixed
+- **The §VIII.3 `irr` convergence note misdescribed the implementation it
+  documents.** It said the engine brackets on `[-0.999, 10.0]` and refines with
+  Newton; `calc/builtins.ts` runs Newton first from a seed of `0.1`, capped at
+  100 iterations, and uses the bracket only as a fallback. The difference is not
+  academic: the bracket therefore constrains no answer, and `irr(-1, 20)`
+  returns ≈`19.0` — a 1900% return out of a search documented as reaching 1000%
+  — where an implementer who bracketed first, as the note described, would raise
+  `CALC-IRR-DIVERGE`. The note now describes the code and states that
+  consequence outright, along with the seed-dependent root selection
+  (`irr(-100, 230, -132)` → `0.1`, with `0.2` equally a root). Still
+  non-normative; no engine behavior changes in this release, and pinning the
+  algorithm remains deferred to a follow-up RFC.
+- **A receipt could report a clean record as corrupted.** `receipts.ts` ran two
+  checks over the same numbers that could not both be right:
+  `RECEIPT_RESULT_TOLERANCE` compared stated against recomputed at `1e-6`, while
+  `results_digest` hashed those same raw doubles bit-exactly. A last-ULP
+  difference passed the tolerant check and failed the exact one, surfacing as
+  `RCP-04` — corruption. Quantized results leave no tail for the two to disagree
+  about. Receipts issued before this degrade to `unverifiable` rather than
+  `failed`, via the existing `RCP-07` engine-version rule.
+- **`round(num, dec)` diverged from its own documented contract.** It scaled by
+  `10 ** dec`, which reintroduces the artifact it exists to remove:
+  `1.005 * 100` is `100.49999999999999`, so `round(1.005, 2)` returned `1.00`
+  where spreadsheet `ROUND` returns `1.01`. §VIII.3 already specified
+  half-away-from-zero, so this is errata, not a behavior change.
+
+### Changed
+- **Excel↔evaluator parity is now asserted as exact equality**, replacing
+  agreement to six decimals, across all nine asset classes. Formulas are emitted
+  through the new `emitCalcExcelFormula`, which wraps them in
+  `ROUND(expr, round_to)` so the workbook cell quantizes exactly as
+  `evaluateCalc` does. `emitExcelFormula` still emits the bare expression;
+  converters should prefer the new function.
+- `@uwmd/core` **1.1.2 → 1.2.0**. The bump is load-bearing: it is what makes
+  `RCP-07` classify a pre-quantization receipt as indeterminate rather than
+  failed.
+- `@uwmd/cli` **1.1.3 → 1.2.0** and `@uwmd/excel` **0.1.0 → 0.2.0** emit
+  different bytes than before — the CLI's `calc`, `receipt`, and `summary`
+  output carries quantized values, and every workbook formula is now
+  `ROUND`-wrapped — so a patch bump would have understated the change. Neither
+  removes or renames a flag, an export, or a sheet, so neither is breaking.
+- `@uwmd/report` **0.1.0 → 0.2.0** as a **coordinated repin only**. Its output
+  is unchanged: `report.ts` reads every figure out of stored section data with
+  `deepGet` and never calls `evaluateCalc` or resolves a pack, so quantization
+  does not reach it. The bump keeps the workspace on one core version rather
+  than recording a behavior change. Worth knowing for a different reason — a
+  credit memo quotes DSCR and LTV that nothing in the pipeline recomputes, so
+  those figures are only as good as whatever wrote them into the document.
+- `@uwmd/batch` is deliberately left at 0.1.0: its semantic digests cover
+  document inputs, not calc outputs.
+- The four packages that depend on `@uwmd/core` pin it exactly, so all were
+  repinned to `1.2.0`; nothing depends on the bumped packages themselves.
+- `VERSIONS.md`'s "current matrix" gained rows for `@uwmd/report` and
+  `@uwmd/batch`, which it had omitted while describing itself as current.
+
 ### Added
 - **RFC 0018 implemented — document profiles and deal packages.** The edge
   registry landed first, per the ordering constraint: `BUILTIN_EDGE_TYPES` in

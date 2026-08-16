@@ -39,7 +39,8 @@ or re-serialize the whole file on an edit.
 
 ### 4. Excel ↔ evaluator parity
 The calc engine and the Excel emitter are two renderings of one AST. For every
-metric, both must produce the same number to 6 decimals (`packs/packs.test.ts`).
+metric, both must produce the same number *exactly* — both sides quantize at
+the declaration's `round_to` per protocol §VIII.5 (`packs/packs.test.ts`).
 If you add a metric, keep both paths in agreement; if a builtin has no Excel
 equivalent, don't use it in a pack formula.
 

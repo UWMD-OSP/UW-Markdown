@@ -53,7 +53,7 @@ npx @uwmd/batch deals --out batch-output
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
-## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.1.0)
+## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.2.0)
 
 `.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:
 `uwmd-excel <input.uw.md> [-o output.xlsx]`.
@@ -93,7 +93,7 @@ map to Excel (else `EXCEL-EMIT-FN`).
 > deal's workbook, asserts the operating statement **foots** (signed income →
 > stored EGI, expenses → stored opex, EGI − opex → stored NOI), and evaluates
 > every derived-metric formula against the workbook's named-range values,
-> comparing to `evaluateCalc()` to 6 decimals. (An earlier converter summed
+> comparing to `evaluateCalc()` exactly. (An earlier converter summed
 > income without signs — double-counting vacancy — and the old test missed it
 > because it only checked formula *text*. Adding a new class's example deal must
 > keep its operating statement footing.)
@@ -149,7 +149,7 @@ contract that disagrees with `B3` is refused as internally inconsistent.
 
 Build: `tsc`. Test: `vitest run`.
 
-## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.1.0)
+## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.2.0)
 
 `.uw.md → .pdf` for the lender package / credit memo. The HTML is produced by
 `@uwmd/core`'s `renderReportHtml` (deterministic, §7.1/§7.2); this package only

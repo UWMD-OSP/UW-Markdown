@@ -61,7 +61,7 @@
     },
     "requires_protocol": {
       "type": "string",
-      "description": "Semver range against the UW Protocol version (e.g. '>=1.0.0 <2.0.0' or '^1')."
+      "description": "Semver range against the UW Protocol version (e.g. '>=1.0.0 <2.0.0' or '^1'). Protocol 1.3.0 adds the numeric model in section VIII.5; a module whose calculations depend on a declared round_to being honoured should require '>=1.3.0'."
     },
     "requires_format": {
       "type": "string",
@@ -134,7 +134,13 @@
           },
           "unit": {
             "type": "string",
-            "description": "Display unit (e.g. '%', '$', 'x')."
+            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted — see UW_PROTOCOL_v1.md §VIII.5."
+          },
+          "round_to": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12,
+            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL_v1.md §VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
           },
           "deterministic": {
             "type": "boolean",

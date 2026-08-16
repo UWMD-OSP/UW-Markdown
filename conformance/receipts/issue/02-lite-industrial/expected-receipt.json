@@ -11,7 +11,8 @@
     "pack": "org.uwmd.pack.industrial",
     "pack_version": "1.0.0",
     "engine": "@uwmd/core",
-    "engine_version": "1.1.2",
+    "engine_version": "1.2.0",
+    "protocol_version": "1.3.0",
     "results": [
       {
         "calc_id": "cap_rate",
@@ -27,13 +28,13 @@
       },
       {
         "calc_id": "debt_yield",
-        "value": 0.09583333333333334,
+        "value": 0.095833,
         "unit": "%",
         "computed": true
       },
       {
         "calc_id": "dscr",
-        "value": 1.2824864235841738,
+        "value": 1.2825,
         "unit": "x",
         "computed": true
       },
@@ -86,7 +87,7 @@
         "computed": false
       }
     ],
-    "results_digest": "sha256:7796e31001bf6cc6eecf378b832be29f6a993b48d56e099262498b41616ec84b"
+    "results_digest": "sha256:82d6aec9f7a54924ea1cdc18b53072cd13ecf04c59e34d7a771a0b74277dda47"
   },
   "policy": {
     "policy_set": "builtin",

@@ -72,6 +72,6 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — representation discovery', () => {
   it('publishes protocol 1.2 for representation capabilities', () => {
-    expect(PROTOCOL_VERSION).toBe('1.2.0');
+    expect(PROTOCOL_VERSION).toBe('1.3.0');
   });
 });

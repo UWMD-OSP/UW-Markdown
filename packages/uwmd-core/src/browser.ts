@@ -202,6 +202,15 @@ export type { DCFDerivation } from './dcf.js';
 
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
+// The §VIII.5 quantization boundary — browser-safe, and the web editor needs it
+// to quantize hand-overridden fields the same way pack results are quantized.
+export {
+  quantizeDecimal,
+  resolveRoundTo,
+  DEFAULT_ROUND_TO,
+  DEFAULT_ROUND_TO_BY_UNIT,
+  MAX_ROUND_TO,
+} from './calc/index.js';
 
 export {
   MULTIFAMILY_PACK,
@@ -216,6 +225,7 @@ export {
   getPackForAssetClass,
   emitFromAst,
   emitExcelFormula,
+  emitCalcExcelFormula,
   ExcelEmitError,
 } from './packs/index.js';
 export type { ExcelEmitOptions } from './packs/index.js';

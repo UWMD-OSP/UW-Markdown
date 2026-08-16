@@ -39,7 +39,8 @@ features land.
    an optional peer reached only by dynamic import, and excluded from the
    `@uwmd/core/browser` entry); tools→core only, never other tools.
 3. **Tier-2 edits preserve bytes** outside the edited region.
-4. **Excel ↔ calc-engine parity** to 6 decimals (one pack drives both).
+4. **Excel ↔ calc-engine parity** is *exact* (one pack drives both; both sides
+   quantize at the same `round_to` — protocol §VIII.5).
 5. **Append-only provenance:** supersede, don't destroy; the host owns `_meta`.
 6. **Semver-per-surface:** format, protocol, and each package version independently.
 7. **Spec/schema/protocol stay in lockstep.**

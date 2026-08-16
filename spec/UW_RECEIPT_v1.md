@@ -61,7 +61,8 @@ conventional sidecar spelling is `<record>.receipt.json`.
     "pack": "org.uwmd.pack.multifamily",
     "pack_version": "1.0.0",
     "engine": "@uwmd/core",
-    "engine_version": "1.1.2",
+    "engine_version": "1.2.0",
+    "protocol_version": "1.3.0",
     "results": [
       { "calc_id": "dscr", "value": 1.2824864235841738, "unit": "x", "computed": true },
       { "calc_id": "ltv", "value": 0.6, "unit": "%", "computed": true },
@@ -189,6 +190,22 @@ Numeric results agree when
 This is the repo's six-decimal calc/Excel parity bound expressed so it does not
 become vacuous for values in the millions. Non-numeric results compare by strict
 equality. A stated and recomputed result **MUST** also agree on `computed`.
+
+### 5.2.1 Protocol version
+
+`computation.protocol_version` is OPTIONAL and states the UW Protocol version
+the issuer computed under. An issuer conforming to 1.3.0 or later **SHOULD**
+populate it.
+
+It exists because `engine_version` cannot answer the question a verifier
+actually has — "are these values quantized per §VIII.5?" An engine version only
+means something to a reader who knows that engine's release history, and a
+third-party issuer's history is exactly what a verifier does not have. A
+protocol version is the one identifier every conforming issuer shares.
+
+Absence means **unstated**, not non-conforming: a receipt issued before the
+field existed cannot retroactively claim a version. A verifier **MUST NOT**
+treat absence as a failure.
 
 ### 5.3 Engine-version mismatch
 

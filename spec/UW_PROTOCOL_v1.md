@@ -1,4 +1,4 @@
-# UW Protocol — v1.2
+# UW Protocol — v1.3
 
 **Status:** Release candidate  ·  **Format pairing:** `.uwx.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.2.0`) — the
+- **Protocol version** (this document, currently `1.3.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -697,16 +697,94 @@ Identifiers and dot-paths resolve against the
 | `pv(rate, n, pmt[, fv])` | Present value of a series of equal payments + future value. |
 | `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. |
 | `npv(rate, ...flows)` | Net present value. |
-| `irr(...flows)` | Internal rate of return; null if no real root. |
+| `irr(...flows)` | Internal rate of return; null if no real root. See the convergence note below. |
+
+**`irr` convergence.** The reference implementation runs Newton's method first,
+seeded at `0.1` and capped at 100 iterations, and falls back to bisection over
+`[-0.999, 10.0]` (i.e. -99.9% to 1000%) capped at 200 iterations; failing to
+bracket or converge raises `CALC-IRR-DIVERGE`. These parameters are
+**documented, not yet normative**, and two consequences follow that an
+implementer must not read past:
+
+- The bracket constrains only the fallback, not the answer. Newton may converge
+  outside it and that root is returned — `irr(-1, 20)` yields `≈19.0`, a 1900%
+  return from a search documented as reaching 1000%. An implementation that
+  brackets first raises `CALC-IRR-DIVERGE` for the same input.
+- Where a cash flow has several real roots, the seed selects which one is
+  returned: `irr(-100, 230, -132)` yields `0.1`, though `0.2` is equally a root.
+
+So two conforming hosts may return different roots — or one a root and the other
+an error — for the same cash flows, and §VIII.5 quantization will not reveal the
+difference; it will simply produce two different receipt digests. Pinning the
+algorithm is deferred to a follow-up RFC; `xirr` and day-count conventions
+remain deferred to v2. Implementers targeting digest-level agreement with the
+reference implementation SHOULD match these values *and* should expect them to
+change when the algorithm is pinned.
 
 ### VIII.4 Determinism
 
 Calc hosts MUST be deterministic across runs and platforms. No
 function in the standard library may consult system time, environment
 variables, or randomness. Floating-point operations MUST follow IEEE
-754 double precision.
+754 double precision. Determinism of the *reported* value additionally
+requires the quantization rule in §VIII.5.
 
-### VIII.5 CalcError taxonomy
+### VIII.5 Numeric model
+
+Evaluation and reporting are separate concerns, and this section fixes
+the boundary between them. Without it, two conforming hosts agree on
+every arithmetic step and still disagree in the last unit in the last
+place — which is invisible to a tolerant comparison and fatal to a
+digest. UW Receipts (`UW_RECEIPT_v1.md`) hash calc outputs, so an
+unstated precision is an unstated interoperability contract.
+
+**Evaluation.** A host MUST evaluate expressions in IEEE 754 binary64
+and MUST NOT round intermediate values. Rounding inside an expression
+happens only where the author asked for it with `round(num, dec)`.
+
+**Reporting.** The `value` a host reports for a calculation MUST be
+quantized to that calculation's *effective decimal places*, using
+**half away from zero** — the same rule `round()` implements and the
+same rule spreadsheet `ROUND` implements, which is what makes the two
+comparable. `-2.5` at 0 places is `-3`, not `-2`.
+
+**Effective decimal places** are the declaration's `round_to` when it
+states one; otherwise the default for its `unit`:
+
+| `unit` | Default `round_to` | Rationale |
+|---|---|---|
+| `$` | 2 | Money is quantized to cents. |
+| `%` | 6 | Rates are fractions (`0.0551`), so six places on the fraction is four on the percentage a reader sees. |
+| `x` | 4 | The precision lender term sheets quote ratios such as DSCR at. |
+| absent, or any other value | 6 | Residual case; matches the rate default rather than introducing a second convention. |
+
+There is deliberately no "unspecified precision" mode: the table is
+total, so every declaration has an effective precision whether or not
+its author thought about one.
+
+`round_to` MUST be an integer in `[0, 12]`. Past roughly fifteen
+significant decimal digits a binary64 carries no fractional
+information left to quantize, so a larger value would state a
+precision the representation cannot hold.
+
+**Quantization is not display.** A host's `display` string is a
+presentation concern and MAY apply its own locale, symbol, and
+precision (§ `DEFAULT_NUMBER_FORMAT`). Digests, equality checks, and
+Excel parity are defined over `value`, never over `display`.
+
+**Digests.** Any digest taken over calc outputs — a receipt's
+`results_digest` in particular — MUST be taken over quantized values.
+A host that hashes unquantized results produces digests that do not
+reproduce across platforms.
+
+> **Implementation note.** Quantizing by multiplying by `10 ** dec`
+> reintroduces the artifact it is meant to remove: `1.005 * 100` is
+> `100.49999999999999`, so that formulation yields `1.00` where
+> spreadsheet `ROUND` yields `1.01`. Shifting through a decimal string
+> (`Number("1.005e2")` → `100.5`) is correctly rounded and agrees.
+> See `packages/uwmd-core/src/calc/quantize.ts`.
+
+### VIII.6 CalcError taxonomy
 
 | Code | Meaning |
 |---|---|

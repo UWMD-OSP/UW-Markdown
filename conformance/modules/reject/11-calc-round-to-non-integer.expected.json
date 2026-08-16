@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-067"
+  ],
+  "why": "Decimal places are a count. A fractional round_to has no meaning, and silently truncating it would give two hosts different digests from the same manifest."
+}

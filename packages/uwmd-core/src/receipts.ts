@@ -29,6 +29,7 @@ import { canonicalizeUWLiteFinancial, parseUWLite } from './lite.js';
 import { compileUWLite } from './lite-bridge.js';
 import { getPackForAssetClass } from './packs/index.js';
 import { parseUWFile } from './parser.js';
+import { PROTOCOL_VERSION } from './protocol.js';
 import type { CalcEvaluationContext, ModuleManifest } from './protocol.js';
 import {
   detectUWSourceRepresentation,
@@ -53,9 +54,13 @@ export const UWX_CANONICALIZATION = 'uw-envelope-semantic' as const;
 
 /**
  * Tolerance for comparing a stated numeric result against recomputation.
- * Relative for large magnitudes, absolute near zero — the repo's Excel/calc
- * parity invariant is six decimals, and this is that bound expressed as a
- * comparison that does not become vacuous for values in the millions.
+ * Relative for large magnitudes, absolute near zero.
+ *
+ * Since §VIII.5, a *conforming* issuer can never need this: both sides quantize
+ * before comparison, so they agree exactly or disagree materially. It is kept as
+ * defence-in-depth against a third-party issuer running an alternate precision
+ * routine — that lands as a clean `RCP-03` naming the calc rather than an
+ * `RCP-04` digest mismatch that reads as corruption.
  */
 export const RECEIPT_RESULT_TOLERANCE = 1e-6;
 
@@ -97,6 +102,18 @@ export interface UWReceiptComputation {
   pack_version: string;
   engine: string;
   engine_version: string;
+  /**
+   * The UW Protocol version the issuer computed under. Optional, because a
+   * receipt issued before this field existed cannot retroactively claim one —
+   * absence means "unstated", not "non-conforming".
+   *
+   * It exists so the question "are these numbers quantized per §VIII.5?" is
+   * answerable from the receipt alone. `engine_version` cannot answer it: it
+   * only means something to a reader who knows this engine's release history,
+   * which is precisely the reader a third-party issuer does not have. A
+   * protocol version is the one identifier every conforming issuer shares.
+   */
+  protocol_version?: string;
   results: UWReceiptResult[];
   /** Cheap corruption check. A verifier MUST recompute rather than trust this. */
   results_digest: string;
@@ -361,6 +378,8 @@ export interface ReceiptIssuanceOptions extends ReceiptSubjectOptions {
   policy_set_version?: string;
   engine?: string;
   engine_version?: string;
+  /** Protocol version to state. Defaults to the `PROTOCOL_VERSION` this build targets. */
+  protocol_version?: string;
 }
 
 /**
@@ -384,6 +403,7 @@ export async function issueReceipt(
       pack_version: pack.version,
       engine: options.engine ?? CORE_PACKAGE_NAME,
       engine_version: options.engine_version ?? CORE_VERSION,
+      protocol_version: options.protocol_version ?? PROTOCOL_VERSION,
       results,
       results_digest: await computeResultsDigest(results),
     },

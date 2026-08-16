@@ -1,0 +1,24 @@
+{
+  "manifest_version": "1",
+  "id": "org.uwmd.reject",
+  "name": "Reject Fixture",
+  "version": "1.0.0",
+  "description": "A manifest a conforming host must refuse.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-3-calc-host",
+  "calculations": [
+    {
+      "id": "fractional_precision",
+      "label": "Fractional Precision",
+      "formula": "1 / 3",
+      "unit": "%",
+      "round_to": 2.5,
+      "deterministic": true
+    }
+  ]
+}

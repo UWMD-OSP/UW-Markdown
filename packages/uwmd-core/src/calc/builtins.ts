@@ -2,6 +2,7 @@
 // Signatures and semantics per UW_PROTOCOL_v1.md §VIII.3.
 
 import { CalcError } from './errors.js';
+import { quantizeDecimal } from './quantize.js';
 
 export type CalcValue = number | string | boolean | null;
 
@@ -78,7 +79,11 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     return cond ? args[1]! : args[2]!;
   },
 
-  // round(num, dec) — half-away-from-zero.
+  // round(num, dec) — half-away-from-zero, delegated to the single quantization
+  // rule in quantize.ts so the builtin, the reported-value boundary, and the
+  // Excel emitter cannot drift apart. This previously scaled by `10 ** d`, which
+  // reintroduced the binary artifact it was meant to remove: `round(1.005, 2)`
+  // returned 1.00 while Excel's ROUND gives 1.01. See RFC 0023.
   round(args) {
     if (args.length !== 2) {
       throw new CalcError('CALC-TYPE-001', `round: expected 2 arguments, got ${args.length}.`);
@@ -91,10 +96,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     if (!Number.isInteger(d)) {
       throw new CalcError('CALC-TYPE-001', `round: decimals must be integer, got ${d}.`);
     }
-    const factor = 10 ** d;
-    // Half-away-from-zero (Math.round in JS is half-up for positives, half-down for negatives).
-    const sign = n < 0 ? -1 : 1;
-    return sign * Math.floor(Math.abs(n) * factor + 0.5) / factor;
+    return quantizeDecimal(n, d);
   },
 
   // pmt(rate, n, pv) — standard mortgage payment formula.

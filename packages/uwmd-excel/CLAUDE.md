@@ -28,7 +28,10 @@ Statement** (income/expense, NOI as the `noi` named range), **Pipeline Log**.
 ## Invariants
 
 - **Parity:** the Excel formula and the calc-engine value for each metric must
-  agree to **6 decimals** (test in `@uwmd/core`'s `packs/packs.test.ts` and here).
+  agree **exactly** (test in `@uwmd/core`'s `packs/packs.test.ts` and here).
+  Formulas are emitted via `emitCalcExcelFormula`, which wraps them in
+  `ROUND(expr, round_to)` so the cell quantizes the same way `evaluateCalc`
+  does (protocol §VIII.5). Use it, not the bare `emitExcelFormula`.
 - Adding a metric is a one-place change in `@uwmd/core`'s `packs/multifamily.ts`.
   It surfaces here automatically **only if** every input path has a named range
   (else `EXCEL-EMIT-PATH`) and its builtins map to Excel (else `EXCEL-EMIT-FN`).
