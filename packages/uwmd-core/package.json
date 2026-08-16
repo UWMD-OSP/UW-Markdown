@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/core",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Reference implementation of the UW Markdown standard — parser, validator, renderer, and CLI for .uw.md underwriting files.",
   "repository": {
     "type": "git",
