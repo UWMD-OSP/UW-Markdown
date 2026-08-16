@@ -53,10 +53,12 @@ true and what remains; treat the matrix, not this section, as the state of play.
 - [x] Forbidden prototype segments throw explicit AST evaluation errors.
 - [x] All 11 JSON schemas validate and conformance passes (153 assertions, target ≥147).
 - [x] `npm run verify-lockfile` reports zero registry leaks.
-- [ ] `npm run typecheck:tests` passes and gates CI.
-- [ ] Coverage excludes the re-export barrels.
-- [ ] RFC 0024 exists in `docs/rfcs/` with its numerics pinned.
-- [ ] Security contact is `security@uwmd.org`.
+- [x] `npm run typecheck:tests` passes and gates CI.
+- [x] Coverage excludes the re-export barrels, and the floor is green again.
+- [x] RFC 0024 exists in `docs/rfcs/` with its numerics pinned (acceptance is a
+      separate governance step).
+- [ ] Security contact is `security@uwmd.org` — blocked on confirming the alias
+      is live and routed.
 
 ## 5. Verification gate
 

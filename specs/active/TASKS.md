@@ -15,14 +15,14 @@ it moved to its own follow-up because the merge was already green without it.
 - [x] **Task 1.1: Bump protocol version** — `d174014`
   - `PROTOCOL_VERSION = '1.3.0'` in `packages/uwmd-core/src/protocol.ts:29`.
   - Synced in `spec/schemas/module-manifest.schema.json` and `VERSIONS.md`.
-- [ ] **Task 1.2: Receipt computation metadata**
-  - [x] `protocol_version: PROTOCOL_VERSION` on the `computation` object in
-        `packages/uwmd-core/src/receipts.ts`.
-  - [ ] `verifyReceipt` (`RCP-07`) compares `receipt.computation.engine` against
-        the verifier's engine name before treating version drift as an
-        explanation. Today `engineMatches` compares `engine_version` alone, so
-        two different engines that share a version string are reported as
-        `failed` instead of `unverifiable`.
+- [x] **Task 1.2: Receipt computation metadata** — `d174014`, `41eeaef`
+  - `protocol_version: PROTOCOL_VERSION` on the `computation` object in
+    `packages/uwmd-core/src/receipts.ts`.
+  - `verifyReceipt` (`RCP-07`) now compares the pair `(engine, engine_version)`.
+    `engineMatches` had compared `engine_version` alone, so two different
+    engines sharing a version string came back `failed` instead of
+    `unverifiable`. Receipt spec §5.1/§5.3/§5.4 restated to match.
+    On `fix/receipt-engine-identity`, awaiting PR.
 - [x] **Task 1.3: Normative spec & errata documentation** — `d174014`, `1d40011`
   - IRR bracket `[-0.999, 10.0]` documented in `spec/UW_PROTOCOL_v1.md` §VIII.3.
   - `CHANGELOG.md` carries the `round(1.005, 2)` half-away-from-zero errata note.
@@ -50,30 +50,43 @@ it moved to its own follow-up because the merge was already green without it.
   - Landed as `npm run verify-lockfile` (`scripts/verify-lockfile.mjs`), not
     `check:lockfile`; it also cross-checks workspace pins. Wired into
     `.github/workflows/ci.yml` as its own pre-install job.
-- [ ] **Task 3.2: Test type-checking**
-  - `packages/uwmd-core/tsconfig.json` excludes `src/**/*.test.ts` and vitest's
-    esbuild transform does not type-check, so compile-time assertions in tests
-    are inert today.
-  - Add `packages/uwmd-core/tsconfig.test.json` covering `src/**/*.test.ts`
-    (`noEmit`, extending the package tsconfig).
-  - Add `npm run typecheck:tests` and a CI step that runs it.
-- [ ] **Task 3.3: Exclude re-export barrels from coverage**
-  - Add `src/index.ts` and `src/browser.ts` to `coverage.exclude` in
-    `packages/uwmd-core/vitest.config.ts`.
-  - Re-measure and adjust the coverage floor in the same commit, documenting the
-    new figures in the comment block per the ratchet policy already written there.
+- [x] **Task 3.2: Test type-checking** — `10bbc2d` (on `chore/typecheck-tests`)
+  - `packages/uwmd-core/tsconfig.test.json` (`noEmit`, extends the package
+    tsconfig, includes the tests); `npm run typecheck:tests` at both levels;
+    CI step on the Node 20 leg of `build-and-test`.
+  - Its first run found **12 type errors across 5 files** — none failing at
+    runtime, all places the compiler had nothing to say. Fixed in the same
+    commit. Biome now parses `tsconfig*.json` as JSONC.
+  - Scope note: `@uwmd/core` only. The cli/excel/report/batch workspaces' tests
+    are still unchecked — worth a follow-up.
+- [x] **Task 3.3: Exclude re-export barrels from coverage** — `ce13e55`
+  - `src/index.ts` and `src/browser.ts` excluded in `vitest.config.ts`.
+  - **The coverage gate was already red on `main`:** measured 77.88% against a
+    79% floor, and the CI `coverage` job has no `continue-on-error`. RFC 0018
+    had grown the two barrels to ~1,050 uncovered lines; nothing got less
+    tested. With them excluded, measured 83.30% lines, 76.8% branches, 97.5%
+    functions; floor re-ratcheted to 82/82/97/76.
+  - Closes open decision 6 in `docs/wiki/13-status.md`.
 
 ---
 
 ## Stage 4: Governance & specification updates
 
-- [ ] **Task 4.1: Draft RFC 0024**
-  - `docs/rfcs/0024-irr-convergence-determinism.md` pinning the Newton-Raphson
-    seed (0.1), convergence tolerance (1e-7), and iteration cap (200).
-  - A draft exists on the `rfc/0024-iterative-solvers` branch (`72d1fdb`,
-    "open RFC 0024 — pin the iterative solvers"). Reconcile with that branch
-    rather than writing a second draft; confirm the pinned constants match
-    `calc/functions.ts` before publishing.
+- [x] **Task 4.1: Draft RFC 0024** — `72d1fdb` (on `rfc/0024-iterative-solvers`)
+  - The draft already existed and is more complete than this task asked for:
+    `docs/rfcs/0024-iterative-function-determinism.md` (295 lines), plus the
+    §VIII.3 spec change, a CHANGELOG entry, the RFC index, and the docs-site
+    prebuild copy list. Not the filename this matrix guessed at.
+  - Verified 2026-08-15: merges cleanly onto current `main`, and the merged tree
+    passes build, tests, conformance 153/153, schemas 11/11, and lint.
+  - It also corrects a factual error in §VIII.3's convergence note as errata:
+    the note claims the engine brackets first and refines with Newton, while
+    `calc/builtins.ts` runs Newton first from a seed of `0.1` capped at 100
+    iterations, with the bracket and its 200-iteration bisection as *fallback*.
+    That is why `irr(-1, 20)` returns `18.999…` — 1900%, from an engine whose
+    spec says it searches to 1000%.
+  - **Remaining is governance, not authorship:** open the PR and accept it. An
+    RFC is accepted by a human, not merged by a builder.
 - [ ] **Task 4.2: Update security alias**
   - `SECURITY.md:5` currently reads `team@uwmd.org`; change to
     `security@uwmd.org`. Check `CONTRIBUTING.md`, `GOVERNANCE.md`,
