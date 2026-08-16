@@ -30,6 +30,15 @@ export type SourceTag =
   | 'manual'
   | 'investor_profile'
   | 'market_data'
+  /**
+   * A market observation an analyst explicitly accepted as the underwritten
+   * value (RFC 0022 §4). Deliberately distinct from `user_input`: a value
+   * accepted for lack of better evidence and a value established by diligence
+   * are different claims, and a file that renders them identically has
+   * destroyed something a credit reviewer needs. Consumers that do not
+   * recognize this tag MUST NOT rewrite it to `user_input`.
+   */
+  | 'market_data_accepted'
   | 'ai_extracted'
   | 'agent_computed'
   | 'asset_class_default'
@@ -149,6 +158,31 @@ export interface UWMeta {
    * in that chain MUST.
    */
   parent_hash?: string | null;
+
+  /**
+   * Which observation set a `market_data_accepted` value was promoted from
+   * (RFC 0022 §4). REQUIRED whenever `source` is `market_data_accepted`, and
+   * meaningless otherwise.
+   *
+   * Without it, "accepted from market data" is an unfalsifiable claim: a
+   * reviewer could see the tag but never recover *which* observations, of which
+   * vintage, were accepted — the exact gap RFC 0022 exists to close.
+   */
+  market_data_ref?: MarketDataRef;
+}
+
+/**
+ * Identity, vintage, and digest of the observation set a value was promoted
+ * from. The digest is what makes it checkable rather than merely stated.
+ */
+export interface MarketDataRef {
+  document_id: string;
+  /** ISO `YYYY-MM-DD`, copied from the observation set. */
+  as_of: string;
+  /** `sha256:<64 lowercase hex>` over the observation set's canonical form. */
+  digest: string;
+  /** Why this observation was accepted as the underwritten value. */
+  rationale?: string;
 }
 
 // ─── Fence annotation (parsed from the opening ``` line) ─────────────────────

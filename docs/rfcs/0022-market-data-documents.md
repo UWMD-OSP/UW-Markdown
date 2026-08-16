@@ -1,10 +1,11 @@
 ---
 rfc: 0022
 title: Market data as an attributable UW document
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-08-13
 accepted: 2026-08-13
+implemented: 2026-08-16
 depends_on:
   - 0018
 affects:
@@ -277,6 +278,46 @@ A new named `market-data` suite:
    feel they are doing. Rejected: it erases the distinction between a value
    accepted for lack of evidence and one established by diligence.
 5. **Fold in investor profiles.** See §5.
+
+## Implementation notes (2026-08-16)
+
+Four things the implementation settled that the RFC left open or did not
+anticipate.
+
+**The cascade needed one change after all.** §2 says the resolver "drops into
+the existing cascade with no change to `resolveValue`", and as written that is
+true — but attribution is the point of this RFC, and without a channel for
+document identity a market-derived value still could not say *which* set
+produced it. `MarketDataLookup.resolve` gained an **optional** `source_id`,
+threaded to `ResolvedValue.resolved_from`. Hosts returning the original
+`{ value, range }` shape are unaffected.
+
+**Promotion forced a second cascade change, and this one was load-bearing.**
+§4 says a promoted value stops being ranked as a gap because it is present in
+the document. It would not have been: `resolveValue` recognized in-file
+`user_input`/`manual`/`market_data` tags, so a `market_data_accepted` value
+matched nothing and fell through to `asset_class_default` — silently discarding
+the analyst's accepted number. It now resolves at the **`user_input` step while
+keeping its own `source` tag**. That placement is deliberate twice over: it
+outranks a live market lookup, so accepting one vintage is not silently
+overwritten by a newer pull; and `CascadeStep` is normatively fixed at seven
+(protocol §IX), so a promoted value is a distinctly tagged value at an existing
+step, never a new step.
+
+**`_meta.market_data_ref` and `DQ-06`.** §4 requires the promoted block's
+`_meta` to record the document, vintage, and digest, but there was no field for
+it. `UWMeta` gained an optional `market_data_ref`, and the validator enforces it
+as an **error**: a `market_data_accepted` value with no reference is an
+unfalsifiable claim, which is worse than a plainly-tagged value, since a
+reviewer can see that something was accepted but never recover what.
+
+**A canonical section list had to be established first.** The §1 rule that a
+`field_path` "MUST be a path a deal record could carry" needs a definition of
+which sections exist, and the library had none — `BUILTIN_VIEW_MODELS` claimed
+to be that list while omitting eight standard sections and adding eight the
+format spec never registers. `STANDARD_SECTION_IDS` now reads from
+FORMAT_SPEC Part IV, with a test that parses the spec so it cannot drift.
+Reconciling the other two lists is tracked separately.
 
 ## Unresolved questions
 

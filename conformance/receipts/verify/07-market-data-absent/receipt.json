@@ -1,0 +1,111 @@
+{
+  "receipt_version": "1.1",
+  "subject": {
+    "representation": "uw-lite-markdown",
+    "representation_version": "1.0",
+    "canonicalization": "uw-lite-financial",
+    "canonicalization_version": "1.1",
+    "digest": "sha256:f930ebf20c9b0cc1159b65cc653f50a728fa07858080be5f6592ab307953d216"
+  },
+  "computation": {
+    "pack": "org.uwmd.pack.industrial",
+    "pack_version": "1.0.0",
+    "engine": "@uwmd/core",
+    "engine_version": "1.4.0",
+    "protocol_version": "1.4.0",
+    "results": [
+      {
+        "calc_id": "cap_rate",
+        "value": 0.0575,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "cash_on_cash",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "debt_yield",
+        "value": 0.095833,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "dscr",
+        "value": 1.2825,
+        "unit": "x",
+        "computed": true
+      },
+      {
+        "calc_id": "expense_ratio",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "expense_recovery_ratio",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "loan_per_sqft",
+        "value": null,
+        "unit": "$",
+        "computed": false
+      },
+      {
+        "calc_id": "ltc",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "ltv",
+        "value": 0.6,
+        "unit": "%",
+        "computed": true
+      },
+      {
+        "calc_id": "noi_per_sqft",
+        "value": null,
+        "unit": "$",
+        "computed": false
+      },
+      {
+        "calc_id": "occupancy",
+        "value": null,
+        "unit": "%",
+        "computed": false
+      },
+      {
+        "calc_id": "price_per_sqft",
+        "value": null,
+        "unit": "$",
+        "computed": false
+      }
+    ],
+    "results_digest": "sha256:82d6aec9f7a54924ea1cdc18b53072cd13ecf04c59e34d7a771a0b74277dda47"
+  },
+  "policy": {
+    "policy_set": "builtin",
+    "policy_set_version": "1.0",
+    "validation": {
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "inputs_provenance": [
+    {
+      "source": "market_data",
+      "document_id": "md:phx-multifamily:2026-Q2",
+      "as_of": "2026-06-30",
+      "digest": "sha256:00848aa690deccdd916e64e0d6cb57e1d149bb6751d69a8e624ad9b1df2e336e"
+    }
+  ],
+  "issued_at": "2026-08-16T00:00:00Z",
+  "issuer": "conformance",
+  "signature": null
+}

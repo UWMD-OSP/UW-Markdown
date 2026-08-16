@@ -628,6 +628,24 @@ export function checkDataQuality(
           message: `Block ${sectionId} is marked partial but has no field_overrides[] enumeration.`,
         });
       }
+
+      // DQ-06: a promoted market observation that cannot be traced back to the
+      // observation set it came from (RFC 0022 §4). An error, not a warning:
+      // without the reference the `market_data_accepted` tag is an
+      // unfalsifiable claim, and a reviewer can see that *something* was
+      // accepted but never recover which observations, of which vintage. That
+      // is precisely the gap the profile exists to close, so a block asserting
+      // the tag without the reference is worse than one tagged plainly.
+      const promoted = m.source === 'market_data_accepted' ||
+        m.field_overrides?.some((o) => o.source === 'market_data_accepted');
+      if (promoted && !m.market_data_ref) {
+        issues.push({
+          code: 'DQ-06',
+          severity: 'error',
+          section: sectionId,
+          message: `Block ${sectionId} carries a market_data_accepted value but no _meta.market_data_ref naming the observation set, vintage, and digest it was promoted from.`,
+        });
+      }
     }
   }
 

@@ -22,7 +22,18 @@ export interface MarketDataLookup {
   resolve(
     field_path: string,
     context: { asset_class: string; geo?: string },
-  ): { value: unknown; range?: { low: number; central: number; high: number } } | null;
+  ): {
+    value: unknown;
+    range?: { low: number; central: number; high: number };
+    /**
+     * Optional identity of the observation set this value came from, surfaced
+     * as `ResolvedValue.resolved_from`. Added by RFC 0022 so a market-derived
+     * value can say *which* set produced it — the gap that made receipts over
+     * market data irreproducible. Optional, so a host returning the original
+     * `{ value, range }` shape is unaffected.
+     */
+    source_id?: string;
+  } | null;
   /** How long an observation remains usable, for staleness checks downstream. */
   staleness_seconds: number;
 }
@@ -170,8 +181,20 @@ export function resolveValue(
     return { value: override.value, source: 'user_override', step: 'user_override' };
   }
 
-  // Step 2: user_input (also accept 'manual' as a synonym for typed-in values)
-  const input = findBySource(parsed, field_path, ['user_input', 'manual']);
+  // Step 2: user_input ('manual' is a synonym for typed-in values).
+  //
+  // `market_data_accepted` resolves here too (RFC 0022 §4). It is an in-file
+  // value of record, not a fallback: the analyst accepted one observation of
+  // one vintage, and a later live lookup MUST NOT silently replace it. Placing
+  // it here rather than at step 4 is what makes promotion stop the field being
+  // ranked as an unresolved gap.
+  //
+  // The returned `source` is the tag found, so `market_data_accepted` survives
+  // resolution rather than being flattened into `user_input`. Only the *step*
+  // is shared — `CascadeStep` is normatively fixed at seven and must not be
+  // reordered or extended (protocol §IX), so a promoted value is a distinctly
+  // tagged value resolved at an existing step, not a new step.
+  const input = findBySource(parsed, field_path, ['user_input', 'manual', 'market_data_accepted']);
   if (input) {
     return { value: input.value, source: input.source, step: 'user_input' };
   }
@@ -199,6 +222,7 @@ export function resolveValue(
         source: 'market_data',
         step: 'market_data',
         range: hit.range,
+        ...(hit.source_id ? { resolved_from: hit.source_id } : {}),
       };
     }
   }

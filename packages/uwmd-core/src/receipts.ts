@@ -45,7 +45,26 @@ import { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-export const UW_RECEIPT_VERSION = '1.0' as const;
+/**
+ * Receipt format version.
+ *
+ * **1.1 covers two RFCs, and bumps only once.** RFC 0021 (rollup verification)
+ * and RFC 0022 (`inputs_provenance`) were accepted the same day and both amend
+ * the format RFC 0016 owns. Each RFC records the same rule — whichever is
+ * implemented first establishes the extension section, the second amends it —
+ * because two independent bumps for two simultaneously-accepted RFCs would make
+ * the version number meaningless. RFC 0022 landed first; RFC 0021's rollup
+ * entries are additive within the section established here and MUST NOT bump
+ * this again. See `UW_RECEIPT_v1.md` §10.
+ */
+export const UW_RECEIPT_VERSION = '1.1' as const;
+
+/**
+ * Receipt versions this verifier can read. A 1.0 receipt is still valid: every
+ * 1.1 addition is optional, so absence means "the issuer stated nothing", not
+ * "non-conforming".
+ */
+export const SUPPORTED_RECEIPT_VERSIONS: readonly string[] = Object.freeze(['1.0', '1.1']);
 
 /** Canonicalization used for the Lite representation (UW_LITE_SPEC §6). */
 export const UW_LITE_CANONICALIZATION = 'uw-lite-financial' as const;
@@ -80,6 +99,9 @@ export const RECEIPT_RESULT_TOLERANCE = 1e-6;
 /** The policy set a receipt names when the host applies core's built-in rules. */
 export const BUILTIN_POLICY_SET = 'builtin' as const;
 export const BUILTIN_POLICY_SET_VERSION = '1.0' as const;
+
+/** `sha256:<64 lowercase hex>` — the only digest spelling a receipt may carry. */
+const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/;
 
 // ─── Receipt shape ───────────────────────────────────────────────────────────
 
@@ -145,11 +167,59 @@ export interface UWReceiptSignature {
   value: string;
 }
 
+// ─── Input provenance (receipt format 1.1) ───────────────────────────────────
+//
+// The extension section shared by RFC 0022 and RFC 0021. Both needed to say the
+// same thing: *this receipt's validity depends on an artifact that is not the
+// subject record*. RFC 0022 means a market-data observation set; RFC 0021 means
+// a child record inside a composite.
+//
+// One section with a `source` discriminator, rather than two parallel lists,
+// because the verifier's handling is identical in both cases and worth writing
+// once: resolve the reference, compare the digest, and — crucially — report
+// `unverifiable` rather than `failed` when the reference cannot be resolved at
+// all. That distinction is the whole reason this is not just a comment field.
+
+/**
+ * What kind of artifact an entry refers to. Deliberately an open union: RFC
+ * 0021 adds `child_record` without a format bump, and an unrecognized source is
+ * carried and reported as unresolvable rather than rejected.
+ */
+export type UWReceiptInputSource = 'market_data' | 'child_record' | (string & {});
+
+export interface UWReceiptInputProvenance {
+  source: UWReceiptInputSource;
+  /** Identity of the referenced artifact, e.g. a market-data `document_id`. */
+  document_id: string;
+  /**
+   * Vintage of the referenced artifact, when it has one. Required in practice
+   * for `market_data` (an unattributable observation set is refused at parse),
+   * meaningless for some other sources, so optional at this layer.
+   */
+  as_of?: string;
+  /** `sha256:<64 lowercase hex>` over the referenced artifact's canonical form. */
+  digest: string;
+}
+
+/**
+ * References a verifier may hold, keyed by `document_id`. Absence of a key is
+ * "I do not have it" — reported as `unverifiable`. A present key whose digest
+ * disagrees is a genuine mismatch, reported as `failed`.
+ */
+export type UWReceiptInputResolver = Readonly<Record<string, string>>;
+
 export interface UWReceipt {
-  receipt_version: typeof UW_RECEIPT_VERSION;
+  receipt_version: string;
   subject: UWReceiptSubject;
   computation: UWReceiptComputation;
   policy: UWReceiptPolicy;
+  /**
+   * Artifacts beyond the subject record that the computation depended on
+   * (receipt format 1.1). Optional and additive: a receipt over a deal that
+   * consumed no market data and is not a composite omits it entirely, which is
+   * why a 1.0 receipt stays readable.
+   */
+  inputs_provenance?: UWReceiptInputProvenance[];
   issued_at: string;
   issuer: string;
   signature: UWReceiptSignature | null;
@@ -201,7 +271,11 @@ export type UWReceiptIssueCode =
   /** The document could not be canonicalized (parse or compile failure). */
   | 'RCP-09'
   /** Digests disagree and the canonicalization version also differs. */
-  | 'RCP-10';
+  | 'RCP-10'
+  /** A referenced input is not available to this verifier. */
+  | 'RCP-11'
+  /** A referenced input resolved, but its digest disagrees. */
+  | 'RCP-12';
 
 export interface UWReceiptIssue {
   code: UWReceiptIssueCode;
@@ -395,6 +469,17 @@ export interface ReceiptIssuanceOptions extends ReceiptSubjectOptions {
   engine_version?: string;
   /** Protocol version to state. Defaults to the `PROTOCOL_VERSION` this build targets. */
   protocol_version?: string;
+  /**
+   * Artifacts beyond this record that the computation depended on — a
+   * market-data observation set, a composite's child records (receipt format
+   * 1.1).
+   *
+   * The host supplies these rather than the issuer deriving them, because only
+   * the host knows what it actually resolved against. Deriving them here would
+   * mean guessing, and a guessed provenance entry is worse than none: it would
+   * make a receipt claim an input it never used.
+   */
+  inputs_provenance?: readonly UWReceiptInputProvenance[];
 }
 
 /**
@@ -430,6 +515,16 @@ export async function issueReceipt(
         warnings: validation.warnings.length,
       },
     },
+    // Sorted by document_id so re-issuance over an unchanged record reproduces
+    // byte-identical bytes regardless of the order the host listed them in —
+    // the re-issuance-stability invariant the conformance suite asserts.
+    ...(options.inputs_provenance && options.inputs_provenance.length > 0
+      ? {
+          inputs_provenance: [...options.inputs_provenance].sort((a, b) =>
+            a.document_id < b.document_id ? -1 : a.document_id > b.document_id ? 1 : 0,
+          ),
+        }
+      : {}),
     issued_at: options.issued_at ?? new Date().toISOString(),
     issuer: options.issuer ?? `${CORE_PACKAGE_NAME}@${CORE_VERSION}`,
     signature: null,
@@ -472,6 +567,16 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
   /** Engine identity of this verifier. Defaults to this package. */
   engine?: string;
   engine_version?: string;
+  /**
+   * Digests of referenced inputs this verifier holds, keyed by `document_id`
+   * (receipt format 1.1). A reference absent from this map is one the verifier
+   * cannot check, which is `unverifiable` — not evidence of tampering.
+   *
+   * Omitting the option entirely means "I hold none of them", so a receipt with
+   * `inputs_provenance` verifies as `unverifiable` rather than silently
+   * ignoring the references it names.
+   */
+  inputs?: UWReceiptInputResolver;
 }
 
 /**
@@ -488,14 +593,20 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *      step 3, and exists for the same reason RFC 0023 gave — a verifier must
  *      not report corruption when the only thing that changed is its own
  *      arithmetic. See RFC 0025.
- *   2. Otherwise, anything this verifier cannot decide (unknown pack, pack
- *      version it does not hold, a signature with no backend) → `unverifiable`.
- *   3. Otherwise, recomputation disagreement → `failed`, unless the issuing
+ *   2. A referenced input that resolves but whose digest disagrees is also
+ *      decisive — the observation set or child record changed after issuance.
+ *      `failed` (RCP-12). Placed here, above the indeterminate group, because a
+ *      reference the verifier *does* hold and *can* compare is real evidence,
+ *      and burying it under a later step would let an unknown pack mask it.
+ *   3. Otherwise, anything this verifier cannot decide (unknown pack, pack
+ *      version it does not hold, a signature with no backend, or a referenced
+ *      input it does not hold — RCP-11) → `unverifiable`.
+ *   4. Otherwise, recomputation disagreement → `failed`, unless the issuing
  *      engine identity (name *and* version) differs from this verifier's, in
  *      which case the disagreement is attributable to the engine and the
  *      verdict is `unverifiable` (RFC 0016 open question, resolved in
  *      `spec/UW_RECEIPT_v1.md` §5).
- *   4. Otherwise `verified`.
+ *   5. Otherwise `verified`.
  *
  * The verifier always recomputes; `results_digest` is checked only as a cheap
  * corruption signal and never authorizes skipping the recomputation.
@@ -564,7 +675,48 @@ export async function verifyReceipt(
     };
   }
 
-  // 2 — can this verifier decide at all?
+  // 2 — referenced inputs (receipt format 1.1). A reference we hold and can
+  // compare is decisive; one we do not hold is indeterminate, and the two must
+  // not be collapsed. Held references are checked first so a mutated
+  // observation set is not masked by an unrelated missing one.
+  const references = receipt.inputs_provenance ?? [];
+  const held = options.inputs ?? {};
+  const unresolved: UWReceiptInputProvenance[] = [];
+  for (const reference of references) {
+    const actual = held[reference.document_id];
+    if (actual === undefined) {
+      unresolved.push(reference);
+      continue;
+    }
+    if (actual !== reference.digest) {
+      return {
+        verdict: 'failed',
+        issues: [
+          {
+            code: 'RCP-12',
+            severity: 'failure',
+            message: `The ${reference.source} input '${reference.document_id}'${
+              reference.as_of ? ` (as of ${reference.as_of})` : ''
+            } has changed since the receipt was issued, so the stated results no longer follow from the inputs named.`,
+            expected: reference.digest,
+            actual,
+          },
+        ],
+      };
+    }
+  }
+  for (const reference of unresolved) {
+    issues.push({
+      code: 'RCP-11',
+      severity: 'indeterminate',
+      message: `This verifier does not hold the ${reference.source} input '${reference.document_id}'${
+        reference.as_of ? ` (as of ${reference.as_of})` : ''
+      }, so it cannot confirm the inputs the computation used. This is not evidence the record changed.`,
+      expected: reference.digest,
+    });
+  }
+
+  // 3 — can this verifier decide at all?
   const pack = lookupPack(receipt.computation.pack, options.packs);
   if (!pack) {
     issues.push({
@@ -595,7 +747,7 @@ export async function verifyReceipt(
     return { verdict: 'unverifiable', issues };
   }
 
-  // 3 — recompute. `pack` is non-null here: a null pack produced RCP-05 above.
+  // 4 — recompute. `pack` is non-null here: a null pack produced RCP-05 above.
   const resolvedPack = pack as ModuleManifest;
   let recomputed: UWReceiptResult[];
   try {
@@ -783,8 +935,16 @@ export function assertUWReceipt(value: unknown): asserts value is UWReceipt {
   if (typeof value !== 'object' || value === null) fail('A receipt must be an object.');
   const receipt = value as Record<string, unknown>;
 
-  if (receipt['receipt_version'] !== UW_RECEIPT_VERSION) {
-    fail(`Unsupported receipt_version '${String(receipt['receipt_version'])}'.`);
+  // Accepts every supported version, not just the current one: each 1.1
+  // addition is optional, so a 1.0 receipt is still a valid receipt and
+  // refusing to read it would strand every receipt issued before this release.
+  if (
+    typeof receipt['receipt_version'] !== 'string' ||
+    !SUPPORTED_RECEIPT_VERSIONS.includes(receipt['receipt_version'])
+  ) {
+    fail(
+      `Unsupported receipt_version '${String(receipt['receipt_version'])}' (supported: ${SUPPORTED_RECEIPT_VERSIONS.join(', ')}).`,
+    );
   }
 
   const subject = receipt['subject'];
@@ -799,7 +959,7 @@ export function assertUWReceipt(value: unknown): asserts value is UWReceipt {
   ]) {
     if (typeof s[key] !== 'string') fail(`receipt.subject.${key} must be a string.`);
   }
-  if (!/^sha256:[0-9a-f]{64}$/.test(s['digest'] as string)) {
+  if (!DIGEST_PATTERN.test(s['digest'] as string)) {
     fail('receipt.subject.digest must be sha256 followed by 64 lowercase hex characters.');
   }
 
@@ -842,6 +1002,36 @@ export function assertUWReceipt(value: unknown): asserts value is UWReceipt {
   for (const key of ['errors', 'warnings']) {
     if (typeof v[key] !== 'number' || !Number.isInteger(v[key])) {
       fail(`receipt.policy.validation.${key} must be an integer.`);
+    }
+  }
+
+  // inputs_provenance (1.1). Optional, but malformed-if-present: a reference
+  // with no digest cannot be checked, and silently dropping it would turn an
+  // unverifiable receipt into an apparently clean one.
+  const provenance = receipt['inputs_provenance'];
+  if (provenance !== undefined) {
+    if (!Array.isArray(provenance)) fail('receipt.inputs_provenance must be an array.');
+    const seen = new Set<string>();
+    for (const [i, raw] of (provenance as unknown[]).entries()) {
+      if (typeof raw !== 'object' || raw === null) {
+        fail(`receipt.inputs_provenance[${i}] must be an object.`);
+      }
+      const ref = raw as Record<string, unknown>;
+      for (const key of ['source', 'document_id', 'digest']) {
+        if (typeof ref[key] !== 'string' || (ref[key] as string).length === 0) {
+          fail(`receipt.inputs_provenance[${i}].${key} must be a non-empty string.`);
+        }
+      }
+      if (!DIGEST_PATTERN.test(ref['digest'] as string)) {
+        fail(`receipt.inputs_provenance[${i}].digest must be 'sha256:<64 lowercase hex>'.`);
+      }
+      if (ref['as_of'] !== undefined && typeof ref['as_of'] !== 'string') {
+        fail(`receipt.inputs_provenance[${i}].as_of must be a string when present.`);
+      }
+      // Two entries for one id would make the digest check order-dependent.
+      const id = ref['document_id'] as string;
+      if (seen.has(id)) fail(`receipt.inputs_provenance names '${id}' more than once.`);
+      seen.add(id);
     }
   }
 

@@ -1,15 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/uw-receipt.schema.json",
-  "title": "UW Verification Receipt 1.0",
+  "title": "UW Verification Receipt 1.1",
   "description": "A detached JSON document binding a canonical digest of an underwriting record to the deterministic outputs a named calc pack produced from it. Normative definition: UW_RECEIPT_v1.md (RFC 0016). A receipt attests that the stated outputs follow from the record's canonical financial content — it attests nothing about whether that content is true.",
   "type": "object",
   "required": ["receipt_version", "subject", "computation", "policy", "issued_at", "issuer"],
   "additionalProperties": false,
   "properties": {
     "receipt_version": {
-      "const": "1.0",
-      "description": "Receipt document version. Independent of format, protocol, and package versions."
+      "enum": ["1.0", "1.1"],
+      "description": "Receipt document version. Independent of format, protocol, and package versions. 1.1 adds the optional `inputs_provenance` section (UW_RECEIPT_v1 §10); every 1.1 addition is optional, so a 1.0 receipt remains valid and a verifier MUST accept both. The 1.0 → 1.1 bump covers RFC 0021 and RFC 0022 together and is not repeated for the second of them."
     },
     "subject": {
       "type": "object",
@@ -104,6 +104,36 @@
           "properties": {
             "errors": { "type": "integer", "minimum": 0 },
             "warnings": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "inputs_provenance": {
+      "type": "array",
+      "description": "Artifacts beyond the subject record that the computation depended on (format 1.1, UW_RECEIPT_v1 §10). One section shared by RFC 0022 (market-data observation sets) and RFC 0021 (composite child records), discriminated by `source`, because a verifier handles both identically: resolve, compare digest, and keep 'cannot find it' (RCP-11, unverifiable) distinct from 'does not match' (RCP-12, failed). Optional — a record that consumed no external input omits it.",
+      "items": {
+        "type": "object",
+        "required": ["source", "document_id", "digest"],
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Kind of referenced artifact. `market_data` (RFC 0022) and `child_record` (RFC 0021) are registered; the union is deliberately open, and an implementation MUST carry an unrecognized source and report it as unresolvable rather than rejecting the receipt."
+          },
+          "document_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Identity of the referenced artifact. MUST be unique within this array — two entries for one id would make the digest comparison order-dependent."
+          },
+          "as_of": {
+            "type": "string",
+            "description": "Vintage of the referenced artifact. Optional here because not every source has one; a `market_data` entry always carries it in practice, since market-data-v1 refuses to parse without `as_of`."
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "description": "SHA-256 over the referenced artifact's canonical form."
           }
         }
       }

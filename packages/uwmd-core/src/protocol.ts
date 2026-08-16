@@ -623,6 +623,63 @@ export interface ModuleLoadResult {
   errors: ProtocolError[];
 }
 
+// ─── Standard section registry (FORMAT_SPEC Part IV) ─────────────────────────
+
+/**
+ * The section ids the format registers in `UW_FORMAT_SPEC_v1.md` Part IV: the
+ * 21 standard data sections (§ 4.0 – § 4.20) plus `gaps` (§ 4.22). Each entry is
+ * the `**ID:**` that subsection declares. § 4.21 is the `x_` extension
+ * meta-spec, which registers a namespace rather than a section, so it has no id
+ * here.
+ *
+ * This exists because "is this a section the format knows about?" had no single
+ * answer in the library. `BUILTIN_VIEW_MODELS` claims to be that list and is
+ * not — it omits eight of these (including `operating_statement`) and adds
+ * eight ids Part IV never registers — and `lite-bridge.ts` keeps a third,
+ * different list. Rather than pick one of two wrong answers, RFC 0022 reads the
+ * spec, which is the authority. Reconciling the other two is tracked separately;
+ * `protocol.test.ts` pins this list so it cannot drift from Part IV silently.
+ *
+ * Extension sections (`x_`-prefixed, § 4.21) are valid but deliberately absent:
+ * they are institution-defined, so membership here would be a category error.
+ * Use `isStandardSectionId` for registry membership and check the `x_` prefix
+ * separately when extensions are permitted.
+ */
+export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
+  'deal_context',
+  'property',
+  'ownership',
+  'rent_roll',
+  'operating_statement',
+  'noi_model',
+  'valuation',
+  'debt_structure',
+  'sources_uses',
+  'dcf',
+  'stress_tests',
+  'market_analysis',
+  'borrower_sponsor',
+  'due_diligence',
+  'risk_assessment',
+  'compliance',
+  'assumptions',
+  'validation',
+  'pipeline_log',
+  'custom_calculations',
+  'custom_scenarios',
+  'gaps',
+]);
+
+const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
+
+/** True when `id` is a section registered by FORMAT_SPEC Part IV. */
+export function isStandardSectionId(id: string): boolean {
+  return STANDARD_SECTION_ID_SET.has(id);
+}
+
+/** The `x_` namespace FORMAT_SPEC § 4.21 reserves for non-standard content. */
+export const EXTENSION_SECTION_PREFIX = 'x_' as const;
+
 // ─── Document profiles (RFC 0018 §1) ──────────────────────────────────────────
 
 /**
@@ -643,6 +700,7 @@ export interface DocumentProfile {
 export const DEAL_UNDERWRITING_PROFILE = 'deal-underwriting-v1' as const;
 export const LEASE_ABSTRACT_PROFILE = 'lease-abstract-v1' as const;
 export const SOURCE_NOTE_PROFILE = 'source-note-v1' as const;
+export const MARKET_DATA_PROFILE = 'market-data-v1' as const;
 
 export const BUILTIN_DOCUMENT_PROFILES: readonly DocumentProfile[] = Object.freeze([
   Object.freeze({
@@ -661,6 +719,15 @@ export const BUILTIN_DOCUMENT_PROFILES: readonly DocumentProfile[] = Object.free
     id: SOURCE_NOTE_PROFILE,
     purpose: 'Attributable transcription, summary, or diligence note.',
     required_identity: Object.freeze(['document_id']),
+    financial_role: 'evidence',
+  }),
+  Object.freeze({
+    // RFC 0022. `evidence`, not `underwriting`: a market-data document carries
+    // observations, contains no calculations, and no pack applies to it. It has
+    // no `deal_id` and must never be read as an underwriting record.
+    id: MARKET_DATA_PROFILE,
+    purpose: 'Dated, attributable market observations for one geography and asset class.',
+    required_identity: Object.freeze(['document_id', 'as_of', 'provider', 'geo']),
     financial_role: 'evidence',
   }),
 ]) as readonly DocumentProfile[];
