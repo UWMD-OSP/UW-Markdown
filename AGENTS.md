@@ -137,6 +137,39 @@ npm --prefix tools/docs-site run build   # docs build, when docs/ or spec/ chang
 Halting means: stop, leave the tree in a committed or cleanly-stashed state,
 and state precisely what decision is needed.
 
+## Human handoffs — write a file, don't bury it in chat
+
+Some steps an agent cannot do and should not try: entering credentials,
+changing account settings on an external service, approving a purchase,
+clicking through a provider's console. These are **handoffs**, and the failure
+mode is not that the agent attempts them — it is that the agent mentions them
+in the middle of a long reply, keeps working, and the human scrolls past.
+That happened twice in one session on 2026-08-16 (an expired `NPM_TOKEN`, then
+the npm trusted-publisher setup), and each time the loop closed late.
+
+When a task needs a human-only action:
+
+1. **Write it to a standalone Markdown file.** One file, one handoff,
+   self-contained — it will be read outside this session, with none of this
+   context available.
+2. **Contents, in this order:** what needs doing and why in two sentences; the
+   exact click path or command, field by field, with literal values; what
+   "done" looks like; and what to bring back.
+3. **Say plainly that work is paused**, and that the file should be finished
+   before returning with results. Do not continue past a handoff into work that
+   assumes it succeeded.
+4. **Verify on return.** Ask for the output or check the external state
+   directly. "I think I set it up" is a starting point for verification, not a
+   conclusion — and say so without turning it into an interrogation.
+
+Handoff files are transient: write them to the session scratchpad, not the
+repo, unless the steps are worth keeping (in which case they belong in
+`docs/wiki/` as a procedure, not as a handoff).
+
+The point is a hard stop with an artifact attached, not a politer paragraph.
+A handoff that lives only in a chat message is one the human is entitled to
+miss.
+
 ## Cross-agent invariants
 
 - **Zero-drift triad.** `protocol.ts`, `spec/schemas/`, and
