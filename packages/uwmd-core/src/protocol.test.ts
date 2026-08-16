@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   BUILTIN_INCOMPLETE_DATA_POLICIES,
   CASCADE_ORDER,
@@ -70,8 +72,18 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
   });
 });
 
-describe('protocol — representation discovery', () => {
-  it('publishes protocol 1.2 for representation capabilities', () => {
-    expect(PROTOCOL_VERSION).toBe('1.3.0');
+describe('protocol — version', () => {
+  it('publishes the current protocol version', () => {
+    expect(PROTOCOL_VERSION).toBe('1.4.0');
+  });
+
+  it('agrees with the compatibility matrix in VERSIONS.md', () => {
+    // Invariant 7 is that spec, schema, and protocol move in lockstep, and a
+    // bare pin above does not enforce it — the pin's own name said "1.2" while
+    // it asserted "1.3.0", which is exactly the drift it was meant to catch.
+    // VERSIONS.md is the authoritative matrix, so read it.
+    const versions = readFileSync(resolve(__dirname, '../../../VERSIONS.md'), 'utf8');
+    const row = versions.match(/^\|\s*UW Protocol\s*\|\s*\*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*/m);
+    expect(row?.[1]).toBe(PROTOCOL_VERSION);
   });
 });

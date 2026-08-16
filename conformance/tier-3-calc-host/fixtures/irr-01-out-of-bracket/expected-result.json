@@ -1,0 +1,10 @@
+{
+  "calc_id": "irr_out_of_bracket",
+  "ok": false,
+  "value": null,
+  "unit": "%",
+  "error": {
+    "code": "CALC-IRR-DIVERGE",
+    "category": "calc"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "id": "irr_out_of_bracket",
+  "label": "IRR whose root lies above the 1000% bracket",
+  "formula": "irr(-1, 20)",
+  "unit": "%",
+  "deterministic": true
+}

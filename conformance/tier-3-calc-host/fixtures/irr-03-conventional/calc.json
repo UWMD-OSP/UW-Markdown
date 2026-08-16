@@ -1,0 +1,7 @@
+{
+  "id": "irr_conventional",
+  "label": "IRR of a conventional cash flow",
+  "formula": "irr(-1000, 500, 500, 500)",
+  "unit": "%",
+  "deterministic": true
+}

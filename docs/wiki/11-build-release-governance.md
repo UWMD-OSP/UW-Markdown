@@ -32,7 +32,9 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.3.0).
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.4.0). A test in
+  `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
+  two cannot drift apart silently.
 - **Packages** — each `package.json` (`@uwmd/core` 1.2.0, `@uwmd/cli` 1.2.0,
   `@uwmd/excel` 0.2.0, `@uwmd/report` 0.2.0, `@uwmd/batch` 0.1.0). Dependents pin
   `@uwmd/*` to an exact version, so a core bump is a repin of all of them in the

@@ -1,0 +1,7 @@
+{
+  "id": "irr_endpoint_root",
+  "label": "IRR whose root sits exactly on the 1000% endpoint",
+  "formula": "irr(-1, 11)",
+  "unit": "%",
+  "deterministic": true
+}
