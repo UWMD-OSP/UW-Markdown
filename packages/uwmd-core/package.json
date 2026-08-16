@@ -32,6 +32,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "parse": "node dist/cli.js parse",

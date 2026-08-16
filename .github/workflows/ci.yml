@@ -67,6 +67,16 @@ jobs:
         run: npm run verify-packages
 
 
+      - name: Type-check the test suite
+        # `npm test` does not type-check: vitest transforms through esbuild,
+        # which strips types without reading them, and the package tsconfig
+        # excludes *.test.ts from the build. So a compile-time assertion inside
+        # a test was inert, and a test could reference a symbol that no longer
+        # exists and still report green. This step is the only thing that reads
+        # those files as TypeScript.
+        if: matrix.node == 20
+        run: npm run typecheck:tests
+
       - name: Test
         run: npm test
 

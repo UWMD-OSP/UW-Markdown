@@ -11,13 +11,21 @@ this one — runs to prove behavior). CI runs both.
   (covered by the smoke tests in `packages/uwmd-cli` instead). Run from a
   package with `vitest run`; from the root `npm test` runs all workspaces.
 
-> **Test files are not typechecked.** `tsconfig.json` excludes
-> `src/**/*.test.ts`, and Vitest transpiles with esbuild, which strips types
-> without checking them. A type error in a test is invisible to both `npm run
-> build` and `npm test`. The practical consequence: a compile-time assertion
-> (an exhaustiveness `Record`, a `satisfies`, an expect-error helper) written
-> *in a test file* is inert and proves nothing. Put it in a source file, where
-> `tsc` actually sees it — `ASSET_CLASSES` in `types.ts` is the worked example.
+> **Type-check tests separately: `npm run typecheck:tests`.** Neither `npm run
+> build` nor `npm test` reads a test file as TypeScript — `tsconfig.json`
+> excludes `src/**/*.test.ts` from the build, and Vitest transpiles with
+> esbuild, which strips types without checking them. `tsconfig.test.json`
+> exists to close that hole: same compiler options, `noEmit`, tests included.
+> It runs in CI on the Node 20 leg of `build-and-test`.
+>
+> Run it after touching a test. Twelve type errors were sitting in the suite
+> the first time it ran — none of them failing tests, but each one a place
+> where the compiler had nothing to say about code that claimed to assert
+> something. Compile-time assertions (an exhaustiveness `Record`, a
+> `satisfies`, an expect-error helper) now do work in a test file, though a
+> guard that protects *production* callers still belongs in a source file
+> where the build itself enforces it — `ASSET_CLASSES` in `types.ts` is the
+> worked example.
 - Coverage: `npm run test:coverage` (root) → `@uwmd/core` with
   `@vitest/coverage-v8`. **Thresholds are enforced**, not reported: the floor
   lives in `packages/uwmd-core/vitest.config.ts` (76 lines / 76 statements / 95

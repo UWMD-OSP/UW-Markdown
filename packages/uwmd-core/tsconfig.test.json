@@ -1,0 +1,19 @@
+{
+  // The package tsconfig excludes *.test.ts, because tests are not part of the
+  // published build. The side effect was that nothing type-checked them at all:
+  // vitest transforms through esbuild, which strips types without checking
+  // them. Compile-time assertions written in a test — `satisfies`, deliberate
+  // @ts-expect-error, a type-level guard against a union widening — were inert,
+  // and a test could reference a symbol that no longer exists and still pass.
+  //
+  // This config exists only to type-check. It emits nothing.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

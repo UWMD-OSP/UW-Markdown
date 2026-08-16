@@ -305,12 +305,13 @@ not core gaps.
   incl. the stale-vs-failed distinction and a forced Web-Crypto path, an
   axe-core a11y smoke check, and the metric strip's asset-class awareness (T14).
 
-  > **Test files are not typechecked.** `tsconfig.json` excludes
-  > `src/**/*.test.ts` and Vitest transpiles with esbuild, so a type error in a
-  > test is invisible to both `npm run build` and `npm test`. Any compile-time
-  > assertion written in a test file — an exhaustiveness `Record`, a `satisfies`,
-  > an expect-error helper — is therefore **inert**. Put it in a source file
-  > where `tsc` sees it; `ASSET_CLASSES` in `types.ts` is the worked example.
+  > **Tests are type-checked by `npm run typecheck:tests`, not by the build.**
+  > `tsconfig.json` still excludes `src/**/*.test.ts` and Vitest still
+  > transpiles with esbuild, so neither `npm run build` nor `npm test` reads a
+  > test as TypeScript. `packages/uwmd-core/tsconfig.test.json` closes that
+  > hole and runs in CI. Its first run found 12 type errors across 5 files —
+  > all in test-side navigation of union types, none failing at runtime.
+  > `@uwmd/core` only; the other workspaces' tests are still unchecked.
   > This cost real time during T16 before it was noticed.
 - **Examples = 9 deals** (multifamily, office, retail, industrial, self-storage,
   hospitality, senior housing, student housing, land) plus `parkview-after-L6`;

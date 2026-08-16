@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { runBancroftAgent, runBancroftAgentStreaming } from './bancroft.js';
 import { AgentProviderError, type AgentCompletion, type AgentProvider, type AgentRequest } from './provider.js';
-import { parseUWFile } from '../parser.js';
+import { getSection, parseUWFile } from '../parser.js';
 
 const PARKVIEW = resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 const deal = () => readFileSync(PARKVIEW, 'utf8');
@@ -207,8 +207,8 @@ describe('bancroft — an injected clock makes a run reproducible', () => {
       now: () => FROZEN,
     });
 
-    const block = parseUWFile(result.updatedContent).sections['risk_assessment'];
-    expect((block as { meta: Record<string, unknown> }).meta['timestamp']).toBe('2026-08-13T00:00:00.000Z');
+    const block = getSection(parseUWFile(result.updatedContent), 'risk_assessment');
+    expect(block?.meta['timestamp']).toBe('2026-08-13T00:00:00.000Z');
     expect(result.durationMs).toBe(0);
   });
 
@@ -235,8 +235,11 @@ describe('bancroft — the host owns _meta', () => {
     );
 
     const result = await runBancroftAgent(deal(), 'L6-01', { provider });
-    const block = parseUWFile(result.updatedContent).sections['risk_assessment'];
-    const meta = (block as { meta: Record<string, unknown> }).meta;
+    const block = getSection(parseUWFile(result.updatedContent), 'risk_assessment');
+    if (!block) throw new Error('expected a risk_assessment block');
+    // Typed as UWMeta rather than a bag of unknowns, so a misspelled key here
+    // fails to compile instead of quietly asserting against undefined.
+    const meta = block.meta;
 
     expect(meta['actor']).not.toBe('impostor');
     expect(meta['version']).not.toBe(99);

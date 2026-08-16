@@ -15,7 +15,8 @@
     "conformance": "node scripts/run-conformance.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
     "verify-packages": "node scripts/verify-packages.mjs",
-  "verify-lockfile": "node scripts/verify-lockfile.mjs",
+    "verify-lockfile": "node scripts/verify-lockfile.mjs",
+    "typecheck:tests": "npm --prefix packages/uwmd-core run typecheck:tests",
     "lint": "biome lint .",
     "format": "biome format --write ."
   },

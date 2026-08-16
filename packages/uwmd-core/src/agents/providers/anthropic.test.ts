@@ -30,11 +30,16 @@ const REQUEST: AgentRequest = {
 
 /** A stand-in for the SDK client, typed loosely at the boundary. */
 function fakeClient(message: unknown, opts: { throwOn?: 'create' | 'stream' } = {}) {
-  const create = vi.fn(async () => {
+  // The `body` parameters are declared but unused: they give `mock.calls` a
+  // tuple type with an element at index 0, which is what the assertions below
+  // read. A zero-arity `vi.fn` types its calls as `[]`, so `calls[0][0]` is an
+  // out-of-range index — invisible to vitest's esbuild transform, caught by
+  // `npm run typecheck:tests`.
+  const create = vi.fn(async (_body: unknown) => {
     if (opts.throwOn === 'create') throw new Error('network down');
     return message;
   });
-  const stream = vi.fn(() => {
+  const stream = vi.fn((_body: unknown) => {
     if (opts.throwOn === 'stream') throw new Error('stream broke');
     return { finalMessage: async () => message };
   });
