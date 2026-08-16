@@ -20,5 +20,10 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"]
+  // Tests are type-checked by tsconfig.test.json, not built. Without this
+  // exclude they compiled into dist/ and shipped: `files` here is a bare
+  // ["bin", "dist", "README.md"] with none of the `!dist/**/*.test.*` guards
+  // @uwmd/core carries, and verify-packages did not cover this workspace.
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
 }

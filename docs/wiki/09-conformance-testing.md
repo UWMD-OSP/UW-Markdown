@@ -14,9 +14,13 @@ this one — runs to prove behavior). CI runs both.
 > **Type-check tests separately: `npm run typecheck:tests`.** Neither `npm run
 > build` nor `npm test` reads a test file as TypeScript — `tsconfig.json`
 > excludes `src/**/*.test.ts` from the build, and Vitest transpiles with
-> esbuild, which strips types without checking them. `tsconfig.test.json`
-> exists to close that hole: same compiler options, `noEmit`, tests included.
-> It runs in CI on the Node 20 leg of `build-and-test`.
+> esbuild, which strips types without checking them. Every workspace carries a
+> `tsconfig.test.json` to close that hole: same compiler options, `noEmit`,
+> tests included. The root script fans out across all five
+> (`--workspaces --if-present`) and runs in CI on the Node 20 leg of
+> `build-and-test`. `@uwmd/cli` is the odd one — it has no build of its own,
+> so its config stands alone rather than extending anything, and covers
+> `test/**` rather than `src/**`.
 >
 > Run it after touching a test. Twelve type errors were sitting in the suite
 > the first time it ran — none of them failing tests, but each one a place

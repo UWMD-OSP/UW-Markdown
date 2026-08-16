@@ -311,7 +311,12 @@ not core gaps.
   > test as TypeScript. `packages/uwmd-core/tsconfig.test.json` closes that
   > hole and runs in CI. Its first run found 12 type errors across 5 files —
   > all in test-side navigation of union types, none failing at runtime.
-  > `@uwmd/core` only; the other workspaces' tests are still unchecked.
+  > All five workspaces carry one now. Extending it to cli/excel/report/batch
+  > found no further type errors, but did surface that `@uwmd/excel` was
+  > compiling its tests into `dist/` and **publishing them** — its tsconfig had
+  > no `exclude`, its `files` field none of core's `!dist/**/*.test.*` guards,
+  > and `verify-packages` did not cover the workspace at all. Fixed, and
+  > verify-packages now covers excel and report too.
   > This cost real time during T16 before it was noticed.
 - **Examples = 9 deals** (multifamily, office, retail, industrial, self-storage,
   hospitality, senior housing, student housing, land) plus `parkview-after-L6`;
