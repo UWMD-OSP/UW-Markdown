@@ -222,9 +222,11 @@ not core gaps.
   covered). A worked reminder that an accepted RFC is a proposal until something
   runs it.
 
-  Remaining: `@uwmd/core` needs a version bump and release cut before publish —
-  the matrix in `VERSIONS.md` marks the published 1.2.0 as pairing with protocol
-  1.3.0 while the working tree implements 1.4.0.
+  Released as `@uwmd/core` **1.3.0** (with `@uwmd/cli` 1.3.0 and coordinated
+  repins of excel 0.3.0, report 0.3.0, batch 0.2.0). A minor rather than a
+  major even though `irr` can now throw where it returned: the removed
+  behavior is a value from outside the domain the spec claims to search, so no
+  correct code depends on it.
 
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.

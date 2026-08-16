@@ -35,10 +35,26 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.4.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently.
-- **Packages** — each `package.json` (`@uwmd/core` 1.2.0, `@uwmd/cli` 1.2.0,
-  `@uwmd/excel` 0.2.0, `@uwmd/report` 0.2.0, `@uwmd/batch` 0.1.0). Dependents pin
+- **Packages** — each `package.json` (`@uwmd/core` 1.3.0, `@uwmd/cli` 1.3.0,
+  `@uwmd/excel` 0.3.0, `@uwmd/report` 0.3.0, `@uwmd/batch` 0.2.0). Dependents pin
   `@uwmd/*` to an exact version, so a core bump is a repin of all of them in the
-  same change — `npm run verify-lockfile` fails if one is forgotten.
+  same change — `npm run verify-lockfile` fails if one is forgotten. Because the
+  pin is exact, every dependent must also take its own version bump: a
+  republished `0.2.0` carrying a different pin is not something npm allows, so
+  leaving one behind means its repin never ships.
+
+**Cutting a `@uwmd/core` release** touches four things beyond `package.json`,
+each with a guard that fails loudly if you miss it:
+
+1. `CORE_VERSION` in `src/version.ts` — a literal, so the browser bundle has it.
+   `version.test.ts` asserts it matches the manifest.
+2. The dependents' pins and their own versions (above). `verify-lockfile`.
+3. The two `conformance/receipts/issue/` baselines, which record the issuing
+   engine — regenerate with `--tier=receipts --update`.
+4. `conformance/receipts/verify/03-result-disagrees/receipt.json`, whose
+   `engine_version` must be the **new** one or `RCP-07` reclassifies the
+   scenario from `failed` to `unverifiable`. See
+   [09](09-conformance-testing.md#conformance-corpus-conformance).
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,

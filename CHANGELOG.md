@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-15
+
 > ### ⚠️ Read before upgrading — `irr` can now refuse where it used to answer
 >
 > RFC 0024 makes the `irr` search procedure normative (protocol §VIII.3), and
@@ -65,6 +67,28 @@ protocol, and each package each carry an independent semver).
   expected a root exactly at `-0.999` to be found: `1.0 + (-0.999)` is
   `0.001000000000000001` in binary64, so that root is not a well-defined
   quantity at the low endpoint. Both are now specified as they actually behave.
+- `@uwmd/core` **1.2.0 → 1.3.0**. A minor, and the call deserves stating,
+  because `irr` can now throw where it returned a number — normally a major.
+  The behavior being removed is a value returned from *outside the domain the
+  specification claims to search*, so there is no correct code depending on it:
+  reading `19.0` out of `irr(-1, 20)` is relying on the spec being wrong. A
+  deprecation window would have preserved the divergence between engines for
+  the length of the window, which is the thing RFC 0024 exists to close.
+  Callers who do depend on the old value should pin `1.2.x` and read
+  §VIII.3.
+- `@uwmd/cli` **1.2.0 → 1.3.0**. `calc`, `receipt`, and `summary` over a module
+  declaring an `irr` calculation can now report an error where they reported a
+  number. No flag, command, or output shape changes.
+- `@uwmd/excel` **0.2.0 → 0.3.0**, `@uwmd/report` **0.2.0 → 0.3.0**, and
+  `@uwmd/batch` **0.1.0 → 0.2.0** as **coordinated repins only** — none of their
+  output changes. Excel maps `irr → IRR` but no pack declares an `irr` metric,
+  so no emitted workbook formula is affected; `report.ts` reads stored section
+  data and never evaluates; batch digests document inputs, not calc outputs.
+  All four dependents pin `@uwmd/core` exactly, so all four had to move: a
+  republished `0.2.0` carrying a different pin is not a thing npm allows, and
+  leaving them behind would mean the repin never ships. `@uwmd/batch` was held
+  back at the 1.2.0 cut for the same reasoning that does not apply here — that
+  release did not change its pin.
 - **Security reports now go to `security@uwmd.org`** (`SECURITY.md`), replacing
   the general `team@uwmd.org` address. A dedicated alias keeps a vulnerability
   report off the same triage path as ordinary project mail. The 1.0.0 entry
@@ -1120,5 +1144,6 @@ protocol, and each package each carry an independent semver).
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.1.3...v1.2.0
