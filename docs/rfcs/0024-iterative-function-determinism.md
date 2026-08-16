@@ -1,9 +1,10 @@
 ---
 rfc: 0024
 title: Pin the iterative solvers so two engines agree on a root
-status: draft
+status: accepted
 author: UW Markdown Working Group
 created: 2026-08-15
+accepted: 2026-08-15
 affects:
   - protocol-spec
   - core-library
@@ -239,12 +240,20 @@ while claiming to be canonical.
 
 ## Unresolved questions
 
+> **Resolved at acceptance (2026-08-15).** The two questions this section named
+> as blocking were checked against the tree rather than reasoned about, and
+> neither survived. See [Findings at acceptance](#findings-at-acceptance).
+
 - **Excel parity for multi-root inputs.** Excel's `IRR` takes a `guess` and
   will return a different root than pinned bisection. Invariant 4
   (Excel↔calc-engine parity is exact) may need a documented exception for
   `irr` on non-conventional cash flows, or the emit path may need to write a
   literal rather than a formula. Resolving this may change the shape of the
   proposal and is the main reason this RFC is `draft` rather than `active`.
+  **Not reachable today** — no built-in pack declares an `irr` metric, so the
+  parity invariant, which is asserted over pack metrics, never exercises the
+  Excel `IRR` mapping. The question becomes live the first time a pack uses
+  `irr`, and belongs to that change.
 - **Should a multi-sign-change cash flow warn?** The spec text above says a host
   `SHOULD` surface it as a modeling problem, without saying how. A validation
   code (`CALC-IRR-AMBIGUOUS`, or a validator finding) would make it actionable.
@@ -253,7 +262,44 @@ while claiming to be canonical.
   implementation uses the closed-form logarithm, so it is not affected — but the
   spec does not say it must, and an implementer who solves it numerically has
   the same class of problem. Worth an audit of every builtin for hidden
-  iteration before this RFC is accepted.
+  iteration before this RFC is accepted. **Audit done at acceptance — clean.**
+  `irr` is the only builtin that converges. The point stands as a *spec* gap
+  rather than an implementation one: nothing requires `nper` to be closed-form,
+  so an implementer who solves it numerically inherits this problem. Folded into
+  the implementation of this RFC as a one-line normative note, not a blocker.
+
+## Findings at acceptance
+
+Three checks were run against the tree before accepting. All three make the
+change smaller than the draft assumed; none argues against making it.
+
+1. **Iteration audit — clean.** Every loop in `calc/builtins.ts` was read.
+   `irr` is the only builtin that iterates to convergence: a Newton loop
+   (`MAX_ITER`, seeded `0.1`) and a 200-step bisection fallback. Every other
+   loop is a bounded walk over arguments — `sum`/`avg`/`min`/`max`/`coalesce`
+   over their variadic list, and `npv`'s summation over `t`. `nper` is the
+   closed-form `log(num/den) / log(1 + rate)`; `pmt`, `fv`, and `pv` are
+   closed-form. So the proposal's surface is exactly one function.
+
+2. **No pack declares an `irr` metric.** The motivation above says `irr`
+   "appears in the multifamily and every other asset-class pack, so it reaches
+   any deal with a DCF." That is wrong, and the correction matters in both
+   directions. `excel-emit.ts` maps `irr → IRR`, but no pack formula calls it,
+   so today the exposure is limited to third-party modules that declare an
+   `irr` calc — narrower than the draft claims. It also means the *reason* the
+   draft withheld itself from `active` (Excel parity on multi-root inputs) is
+   currently unreachable: parity is asserted over pack metrics, and no pack
+   metric emits an `IRR` formula.
+
+3. **The blast radius is a spec-versus-code divergence, not a wrong number on
+   a live deal.** Combined, 1 and 2 say this RFC changes what a *module author*
+   gets from `irr`, and changes nothing any built-in pack computes. Fixture 03
+   remains the load-bearing one at implementation time.
+
+None of this weakens the case for pinning the solver — an engine that answers
+`18.999…` for a search documented to stop at 1000% is wrong whether or not a
+pack calls it. It does mean the implementation can proceed without first
+resolving an Excel-parity question that nothing currently reaches.
 
 ## Out of scope
 
