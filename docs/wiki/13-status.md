@@ -284,20 +284,20 @@ not core gaps.
 
   The CI coverage gate is **blocking**, not advisory — `continue-on-error` was
   removed in `13218c4`, and the floor in `packages/uwmd-core/vitest.config.ts`
-  was ratcheted (T17, 2026-08-13) from 70/70/90/70 to **76 lines, 76 statements,
-  95 functions, 74 branches**, roughly a point under measured. Falling through a
-  floor fails CI.
+  has been ratcheted twice since: to 76/76/95/74 (T17, 2026-08-13), then to
+  **82 lines, 82 statements, 97 functions, 76 branches** (2026-08-15), roughly
+  a point under measured. Falling through a floor fails CI.
 
-  > **Reading the number honestly.** Measured core coverage is **~80% lines**,
-  > up from ~77% once T9's provider seam made `agents/` testable at all. What
-  > remains at 0% is mostly not untested logic: `index.ts` and `browser.ts`
-  > (838 lines) are pure re-export barrels with nothing to cover, and `cli.ts`
-  > (1,104 lines) *is* exercised — by the CLI smoke tests in
-  > `packages/uwmd-cli`, which do not count toward this package's number.
-  > Excluding just the two barrels the figure is ~85%. Worth deciding whether
-  > the `exclude` list should reflect that — a floor over a denominator padded
-  > with re-export lists is a weaker signal than it looks. Deliberately left out
-  > of T17, which only moved the floor.
+  > **Reading the number honestly.** The open question here — whether the
+  > `exclude` list should drop the re-export barrels — is now decided: it
+  > does. `index.ts` and `browser.ts` had grown to ~1,050 lines of pure
+  > re-export that no test imports, and the 79% floor they were dragging on
+  > had actually gone red (measured 77.88%) before anyone noticed, because
+  > RFC 0018 enlarged the barrels rather than because anything got less
+  > tested. With them excluded, measured core coverage is **~83% lines**. What
+  > still reads as 0% and is not untested logic: `cli.ts` (1,104 lines) *is*
+  > exercised, by the CLI smoke tests in `packages/uwmd-cli`, which do not
+  > count toward this package's number.
 
   The **web-editor** has its own Vitest suite (63 tests, 8 files): the
   `runEdit()` chokepoint + catalog helpers (node), jsdom component tests for the
@@ -516,10 +516,7 @@ bus factor, personal security email, and no public RFC venue.
    divide). **Treat as normative:** it changes canonical digests for affected
    documents, so it needs a deliberate decision and probably a spec note, not a
    drive-by patch.
-6. **Decide the coverage `exclude` list.** Measured ~80% is padded by 838 lines
-   of re-export barrels; excluding them the figure is ~85%. A floor over a
-   padded denominator is a weaker signal than it looks.
-7. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
+6. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
    transition path with no expiry, and RFC 0020 declined to set one. Worth
    settling before 1.0 rather than letting it drift into permanence.
 

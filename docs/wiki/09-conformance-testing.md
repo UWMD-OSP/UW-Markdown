@@ -28,10 +28,13 @@ this one — runs to prove behavior). CI runs both.
 > worked example.
 - Coverage: `npm run test:coverage` (root) → `@uwmd/core` with
   `@vitest/coverage-v8`. **Thresholds are enforced**, not reported: the floor
-  lives in `packages/uwmd-core/vitest.config.ts` (76 lines / 76 statements / 95
-  functions / 74 branches) and the CI `coverage` job has no `continue-on-error`,
+  lives in `packages/uwmd-core/vitest.config.ts` (82 lines / 82 statements / 97
+  functions / 76 branches) and the CI `coverage` job has no `continue-on-error`,
   so dropping below it fails the build. Raise the floor when coverage rises;
-  lowering one should be argued for in the PR description.
+  lowering one should be argued for in the PR description. The re-export
+  barrels `index.ts` and `browser.ts` are excluded — ~1,050 lines of `export
+  {}` that no test imports, which measured 0% and moved the total by four
+  points without saying anything about what is tested.
 - Property tests use `fast-check`: `calc/calc.property.test.ts` asserts calc
   *totality* (any input parses or throws a typed `CalcError`) and Excel↔evaluator
   parity. `packs/packs.test.ts` asserts every pack metric evaluates against the
