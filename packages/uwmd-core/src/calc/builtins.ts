@@ -19,6 +19,20 @@ function asNumber(v: CalcValue, fnName: string): number {
   throw new CalcError('CALC-TYPE-001', `${fnName}: expected number, got ${v === null ? 'null' : typeof v}.`);
 }
 
+// `irr` search parameters — normative, protocol §VIII.3 (RFC 0024). These are
+// not tuning knobs: two engines return the same root only if both use these
+// exact values in this exact order. Changing one is a protocol change.
+/** Low end of the IRR search interval: -99.9%. */
+export const IRR_BRACKET_LO = -0.999;
+/** High end of the IRR search interval: 1000%. */
+export const IRR_BRACKET_HI = 10.0;
+/** Stop when the NPV at the midpoint is this close to zero. */
+export const IRR_VALUE_TOL = 1e-9;
+/** Stop when the remaining half-interval is this narrow. */
+export const IRR_INTERVAL_TOL = 1e-12;
+/** Hard iteration cap; exhausting it raises `CALC-IRR-DIVERGE`. */
+export const IRR_MAX_ITER = 200;
+
 export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
   // sum(...nums) — nulls treated as 0.
   sum(args) {
@@ -276,55 +290,80 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     return Math.log(num / den) / Math.log(1 + rate);
   },
 
-  // irr(...flows) — bisection + Newton fallback. Null if no real root.
+  // irr(...flows) — bracket, then bisect. Protocol §VIII.3 (RFC 0024).
+  //
+  // Bisection only, deliberately. The procedure is normative because two
+  // conforming engines must return the *same* root, and bisection is the part
+  // of this that is bit-reproducible: every step is `(lo + hi) / 2` and a
+  // comparison of products, operations IEEE 754 requires to be correctly
+  // rounded, in an order the spec fixes. Newton is not — its iterates depend on
+  // the association order of a derivative sum that no document pins, and each
+  // iterate feeds the next, so a last-ULP difference moves the returned root by
+  // more than the tolerance.
+  //
+  // The Newton pass this replaced also searched outside the bracket it claimed:
+  // `irr(-1, 20)` returned ~19.0, a 1900% return from a search documented as
+  // reaching 1000%. That is now CALC-IRR-DIVERGE, per step 5.
   irr(args) {
     if (args.length < 2) {
       throw new CalcError('CALC-TYPE-001', 'irr: requires at least 2 cash flows.');
     }
     const flows = args.map((a, _i) => asNumber(a!, 'irr'));
 
-    // Newton-Raphson starting at 0.1.
     const npvAt = (r: number): number => {
       let acc = 0;
       for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
       return acc;
     };
-    const dnpvAt = (r: number): number => {
-      let acc = 0;
-      for (let t = 1; t < flows.length; t++) acc += -t * flows[t]! / (1 + r) ** (t + 1);
-      return acc;
-    };
 
-    let r = 0.1;
-    const MAX_ITER = 100;
-    const TOL = 1e-9;
-    for (let i = 0; i < MAX_ITER; i++) {
-      const f = npvAt(r);
-      if (!Number.isFinite(f)) break;
-      if (Math.abs(f) < TOL) return r;
-      const df = dnpvAt(r);
-      if (df === 0 || !Number.isFinite(df)) break;
-      const next = r - f / df;
-      if (!Number.isFinite(next) || next <= -1) break;
-      if (Math.abs(next - r) < TOL) return next;
-      r = next;
-    }
-
-    // Fallback: bisection over [-0.999, 10].
-    let lo = -0.999;
-    let hi = 10;
+    // 1. Domain. A root outside this interval is not reported.
+    let lo = IRR_BRACKET_LO;
+    let hi = IRR_BRACKET_HI;
     let flo = npvAt(lo);
-    let fhi = npvAt(hi);
+    const fhi = npvAt(hi);
+
+    // 2. Bracket.
     if (!Number.isFinite(flo) || !Number.isFinite(fhi) || flo * fhi > 0) {
-      throw new CalcError('CALC-IRR-DIVERGE', 'irr: no root in [-99.9%, 1000%] bracket.');
+      throw new CalcError(
+        'CALC-IRR-DIVERGE',
+        `irr: no sign change over the [${IRR_BRACKET_LO}, ${IRR_BRACKET_HI}] bracket (-99.9% to 1000%), so no root is reported.`,
+      );
     }
-    for (let i = 0; i < 200; i++) {
+
+    // 2a. A root sitting exactly on an endpoint is the answer, and must be
+    // returned before bisecting. Bisection cannot get there: the retention test
+    // is `flo * fmid < 0`, and a `flo` of exactly zero makes that product zero
+    // for every `mid`, so the loop would walk the endpoint away from the very
+    // root it brackets and then diverge. This is the one step §VIII.3's
+    // procedure leaves implicit; see the note there.
+    //
+    // Reachable at `hi` — `1 + 10` is exact, so `npv(10)` can be exactly zero.
+    // Effectively unreachable at `lo`: `1 + (-0.999)` is `0.001000000000000001`
+    // in binary64, so `npv(lo)` for a cash flow whose true root is -99.9% lands
+    // a few ULP either side of zero rather than on it, and its sign decides
+    // whether the bracket holds at all. That is a property of the interval, not
+    // of this code — a root "exactly at -0.999" is not a well-defined binary64
+    // quantity.
+    if (flo === 0) return lo;
+    if (fhi === 0) return hi;
+
+    // 3. Bisection. 4. No polish — the bisection result is the answer.
+    for (let i = 0; i < IRR_MAX_ITER; i++) {
       const mid = (lo + hi) / 2;
       const fmid = npvAt(mid);
-      if (Math.abs(fmid) < TOL || (hi - lo) / 2 < TOL) return mid;
-      if (flo * fmid < 0) { hi = mid; fhi = fmid; }
-      else { lo = mid; flo = fmid; }
+      if (Math.abs(fmid) < IRR_VALUE_TOL || (hi - lo) / 2 < IRR_INTERVAL_TOL) return mid;
+      if (flo * fmid < 0) {
+        hi = mid;
+      } else {
+        lo = mid;
+        flo = fmid;
+      }
     }
-    throw new CalcError('CALC-IRR-DIVERGE', 'irr: failed to converge after 200 iterations.');
+
+    // 5. Failure.
+    throw new CalcError(
+      'CALC-IRR-DIVERGE',
+      `irr: bisection did not meet a stopping condition within ${IRR_MAX_ITER} iterations.`,
+    );
   },
 });

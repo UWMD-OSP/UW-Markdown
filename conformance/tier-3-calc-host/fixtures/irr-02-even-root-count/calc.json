@@ -1,0 +1,7 @@
+{
+  "id": "irr_even_root_count",
+  "label": "IRR of a cash flow zeroed at both 10% and 20%",
+  "formula": "irr(-100, 230, -132)",
+  "unit": "%",
+  "deterministic": true
+}

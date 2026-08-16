@@ -8,18 +8,63 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+> ### ⚠️ Read before upgrading — `irr` can now refuse where it used to answer
+>
+> RFC 0024 makes the `irr` search procedure normative (protocol §VIII.3), and
+> the reference implementation changes to match. Two inputs that returned a
+> number now raise `CALC-IRR-DIVERGE`:
+>
+> 1. **A root above 1000% or below -99.9%.** `irr(-1, 20)` returned
+>    `18.999999999994728` — a 1900% return, from a search the spec documents as
+>    reaching 1000%. The old Newton pass was free to converge outside the
+>    bracket it claimed to search. There is no correct code depending on this:
+>    reading `19.0` out of it means relying on the spec being wrong.
+> 2. **A cash flow with an even number of roots in the bracket.**
+>    `irr(-100, 230, -132)` returned `0.1`, though `0.2` zeroes the same NPV
+>    equally well — the answer was an artifact of Newton's `0.1` seed. Such a
+>    cash flow has no single internal rate of return, and the engine now says so
+>    instead of picking one.
+>
+> **Conventional cash flows are unaffected**, which is the load-bearing claim
+> here. One sign change means a unique root, and bisection agrees with the old
+> Newton pass to ~5e-13 — orders of magnitude below the six-decimal quantum
+> §VIII.5 reports a rate at. No pack metric uses `irr`, so no built-in
+> calculation on any asset class moves.
+>
+> Receipts issued before this release over a document whose IRR changes verify
+> as `unverifiable` via `RCP-07`, not `failed` — the same path RFC 0023 used.
+
 ### Changed
 
-- **RFC 0024 accepted** (iterative-function determinism). `irr` will be pinned
-  to bracket-then-bisect with no Newton polish, a root outside `[-0.999, 10.0]`
-  becomes `CALC-IRR-DIVERGE` rather than an answer, and the change lands as
-  protocol **1.4.0**. Accepted, not shipped: `calc/builtins.ts` still runs
-  Newton first, and the §VIII.3 note says so. Three checks ran before
-  acceptance — the iteration audit the RFC asked for came back clean (`irr` is
-  the only builtin that converges; `nper` is closed-form), and no built-in pack
-  declares an `irr` metric, which both narrows the exposure to third-party
-  modules and makes the Excel-parity question the draft called blocking
-  unreachable today.
+- **`irr` is pinned to bracket-then-bisect — protocol 1.3.0 → 1.4.0.**
+  ([RFC 0024](docs/rfcs/0024-iterative-function-determinism.md)) §VIII.3 gains a
+  normative six-step procedure: bracket over `[-0.999, 10.0]`, return an exact
+  endpoint root, bisect to `|npv| < 1e-9` or a half-interval under `1e-12`
+  capped at 200 iterations, and **no Newton polish**. Bisection is the part that
+  is bit-reproducible — every step is `(lo + hi) / 2` and a comparison of
+  products, which IEEE 754 requires to be correctly rounded, in an order the
+  spec now fixes. Newton's iterates depend on the association order of a
+  derivative sum no document pins. Under `VERSIONS.md` rule 2 this is a
+  monotonic strengthening of requirements, so a minor bump.
+- **`pmt`, `fv`, `pv`, and `nper` MUST be closed-form** (§VIII.3). `nper` is
+  solved iteratively in some formulations, and an implementation that does so
+  inherits the reproducibility problem the `irr` procedure exists to remove.
+  `irr` is now the only builtin permitted to iterate.
+- **RFC 0024 accepted and implemented** (iterative-function determinism). Three
+  checks ran before acceptance: the iteration audit the RFC asked for came back
+  clean (`irr` is the only builtin that converges; `nper` is closed-form), and
+  no built-in pack declares an `irr` metric — which narrows the exposure to
+  third-party modules and makes the Excel-parity question the draft called
+  blocking unreachable today.
+
+  Implementation then found two of the RFC's five stated fixtures to be
+  impossible under its own normative procedure, and the RFC now records both as
+  errata. Fixture 02 expected a multi-root cash flow to "return the bisection
+  root, pinned exactly": it cannot: an even number of roots means `npv` shares
+  a sign at both endpoints, so no bracket exists and step 2 raises. Fixture 04
+  expected a root exactly at `-0.999` to be found: `1.0 + (-0.999)` is
+  `0.001000000000000001` in binary64, so that root is not a well-defined
+  quantity at the low endpoint. Both are now specified as they actually behave.
 - **Security reports now go to `security@uwmd.org`** (`SECURITY.md`), replacing
   the general `team@uwmd.org` address. A dedicated alias keeps a vulnerability
   report off the same triage path as ordinary project mail. The 1.0.0 entry

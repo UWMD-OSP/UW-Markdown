@@ -695,37 +695,63 @@ Identifiers and dot-paths resolve against the
 | `pmt(rate, n, pv)` | Standard mortgage payment formula. |
 | `fv(rate, n, pmt[, pv])` | Future value of a series of equal payments + initial pv. |
 | `pv(rate, n, pmt[, fv])` | Present value of a series of equal payments + future value. |
-| `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. |
+| `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. Closed-form; see the note below. |
 | `npv(rate, ...flows)` | Net present value. |
 | `irr(...flows)` | Internal rate of return; null if no real root. See the convergence note below. |
 
-**`irr` convergence.** The reference implementation runs Newton's method first,
-seeded at `0.1` and capped at 100 iterations, and falls back to bisection over
-`[-0.999, 10.0]` (i.e. -99.9% to 1000%) capped at 200 iterations; failing to
-bracket or converge raises `CALC-IRR-DIVERGE`. These parameters are
-**documented, not yet normative**, and two consequences follow that an
-implementer must not read past:
+**Closed-form functions (normative).** `pmt`, `fv`, `pv`, and `nper` **MUST** be
+evaluated in closed form — `nper` as
+`log((pmt - fv·rate) / (pmt - pv·rate)) / log(1 + rate)`, and the others by the
+formulas in §VIII.3's table. `nper` in particular is solved iteratively in some
+formulations, and an implementation that does so inherits exactly the
+reproducibility problem the `irr` procedure below exists to remove. `irr` is the
+only builtin permitted to iterate.
 
-- The bracket constrains only the fallback, not the answer. Newton may converge
-  outside it and that root is returned — `irr(-1, 20)` yields `≈19.0`, a 1900%
-  return from a search documented as reaching 1000%. An implementation that
-  brackets first raises `CALC-IRR-DIVERGE` for the same input.
-- Where a cash flow has several real roots, the seed selects which one is
-  returned: `irr(-100, 230, -132)` yields `0.1`, though `0.2` is equally a root.
+**`irr` convergence (normative).** `irr(...flows)` **MUST** return the root
+computed by the following procedure, which is defined so that any implementation
+using IEEE 754 `binary64` arithmetic in the stated order produces bit-identical
+results. Introduced by [RFC 0024](../docs/rfcs/0024-iterative-function-determinism.md)
+in protocol 1.4.0.
 
-So two conforming hosts may return different roots — or one a root and the other
-an error — for the same cash flows, and §VIII.5 quantization will not reveal the
-difference; it will simply produce two different receipt digests.
+Let `npv(r) = Σ flows[t] / (1 + r)^t` for `t = 0 … n-1`.
 
-**RFC 0024 is accepted (2026-08-15) and replaces this note, but has not shipped
-yet.** It pins the algorithm to bracket-then-bisect with no Newton polish, makes
-a root outside `[-0.999, 10.0]` an error rather than an answer, and lands as
-protocol **1.4.0**. Until it ships, the paragraphs above describe what the
-reference implementation does and remain non-normative — this note is a record
-of a known divergence, not a licence to rely on it. Implementers targeting
-digest-level agreement SHOULD build against RFC 0024 rather than against these
-values, which will change. `xirr` and day-count conventions remain deferred to
-v2.
+1. **Domain.** The search interval is `lo = -0.999`, `hi = 10.0` (i.e. -99.9% to
+   1000%). A root outside it is not reported; see step 5.
+2. **Bracket.** Evaluate `npv` at `lo` and `hi`. If either is non-finite, or if
+   `npv(lo) * npv(hi) > 0`, the procedure fails — see step 5.
+3. **Endpoint root.** If `npv(lo)` is exactly `0`, return `lo`; if `npv(hi)` is
+   exactly `0`, return `hi`. This precedes step 4 because bisection cannot
+   reach it: the retention test in step 4 is a product with the endpoint value,
+   and an endpoint value of zero makes that product zero for every midpoint.
+4. **Bisection.** Bisect for at most 200 iterations, stopping when
+   `|npv(mid)| < 1e-9` or `(hi - lo) / 2 < 1e-12`, whichever comes first, with
+   `mid = (lo + hi) / 2` evaluated in `binary64`. Retain the half whose
+   endpoints bracket the sign change, comparing `npv(lo) * npv(mid) < 0`. The
+   midpoint at which a stopping condition is met is the result.
+5. **No polish.** The bisection result is the answer. An implementation **MUST
+   NOT** refine it with Newton's method or any other step: Newton's iterates
+   depend on a derivative evaluation order this document does not pin, and the
+   refinement it buys is below the quantization boundary of §VIII.5.
+6. **Failure.** If step 2 fails to bracket, or step 4 exhausts its iterations
+   without meeting a stopping condition, raise `CALC-IRR-DIVERGE`. An engine
+   **MUST NOT** substitute a root found outside `[lo, hi]`.
+
+Two consequences an implementer must not read past:
+
+- **A cash flow with an even number of roots in `[lo, hi]` raises**, rather than
+  returning one of them. `npv` has the same sign at both endpoints in that case,
+  so step 2 finds no bracket: `irr(-100, 230, -132)` raises `CALC-IRR-DIVERGE`
+  even though `0.1` and `0.2` are both roots. This is intended. A cash flow with
+  several sign changes has no single internal rate of return, and a host
+  **SHOULD** surface that as a modeling problem rather than a number.
+- **A root exactly at `lo` is not a well-defined `binary64` quantity.** `1.0 +
+  (-0.999)` is `0.001000000000000001`, not `0.001`, so `npv(lo)` for a cash flow
+  whose exact root is -99.9% lands a few ULP either side of zero, and its sign
+  decides whether step 2 brackets at all. Step 3 is therefore reachable at `hi`,
+  where `1.0 + 10.0` is exact, and effectively unreachable at `lo`. Callers
+  **SHOULD NOT** build on behavior at the low endpoint.
+
+`xirr` and day-count conventions remain deferred to v2.
 
 ### VIII.4 Determinism
 

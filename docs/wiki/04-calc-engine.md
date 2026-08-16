@@ -146,8 +146,30 @@ array's own `length` still resolves; an inherited `map` does not.
 - `fv(rate, n, pmt, pv?)` — future value of a payment series + initial pv.
 - `pv(rate, n, pmt, fv?)` — present value (inverse of `fv`).
 - `nper(rate, pmt, pv, fv?)` — periods to amortize; throws if no real solution.
-- `irr(...flows)` — Newton-Raphson from 0.1, fallback bisection over
-  `[-0.999, 10]`; `CALC-IRR-DIVERGE` if no root / no convergence (200 iters).
+  Closed-form, and **normatively so** since protocol 1.4.0: some formulations
+  solve it numerically, which would reintroduce exactly the reproducibility
+  problem `irr` was pinned to remove.
+- `irr(...flows)` — **bracket, then bisect. No Newton polish.** Protocol §VIII.3
+  is normative here as of 1.4.0 ([RFC 0024](../rfcs/0024-iterative-function-determinism.md)),
+  so the procedure is not an implementation detail: bracket over `[-0.999, 10]`
+  (-99.9% to 1000%), return an exact endpoint root, then bisect to
+  `|npv| < 1e-9` or a half-interval below `1e-12`, capped at 200 iterations.
+  Anything else raises `CALC-IRR-DIVERGE`.
+
+> **`irr` refuses in two cases where it used to answer.** A root outside the
+> bracket is an error, not a result — `irr(-1, 20)` was `18.999…`, a 1900%
+> return from a search documented as stopping at 1000%. And a cash flow with an
+> *even* number of roots inside the bracket raises, because `npv` then shares a
+> sign at both endpoints and no bracket exists: `irr(-100, 230, -132)` was `0.1`
+> purely because Newton's seed was `0.1`, while `0.2` zeroes the same NPV.
+> Neither is a regression. A cash flow with several sign changes has no single
+> internal rate of return, and an error says so where a number does not.
+>
+> Bisection is the whole point: its steps are `(lo + hi) / 2` and comparisons of
+> products, which IEEE 754 requires to be correctly rounded, in an order the
+> spec fixes — so two conforming engines return the same `binary64` root and the
+> same receipt digest. Newton's iterates depend on the association order of a
+> derivative sum no document pins.
 
 > Argument counts are validated; type mismatches raise `CALC-TYPE-001`. See
 > `calc/builtins.ts` for exact per-function rules.
@@ -160,7 +182,7 @@ Code | Meaning
 `CALC-RESOLVE-001` | Unknown function name
 `CALC-TYPE-001` | Type/arity error in an operator or builtin
 `CALC-DIV-ZERO` | Division or modulo by zero
-`CALC-IRR-DIVERGE` | `irr` found no root / failed to converge
+`CALC-IRR-DIVERGE` | `irr` found no sign-change bracket in `[-0.999, 10]` (including a root outside it, and any even number of roots inside it), or bisection hit 200 iterations
 `CALC-LIMIT-001` | Input exceeded length or AST-node cap
 `CALC-TYPE-001` | (also) `round_to` outside `[-12, 12]`, or non-finite input to `quantizeDecimal`
 

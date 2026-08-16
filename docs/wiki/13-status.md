@@ -189,27 +189,42 @@ not core gaps.
   table into a second place that can drift from it.
 
 - **Iterative determinism ([RFC 0024](../rfcs/0024-iterative-function-determinism.md),
-  accepted 2026-08-15) — accepted, not shipped.** RFC 0023 made a *reported*
-  number reproducible; it did not make a *searched* one reproducible, and `irr`
-  is the one builtin that searches. 0024 pins it to bracket-then-bisect with no
-  Newton polish, makes a root outside `[-0.999, 10.0]` a `CALC-IRR-DIVERGE`
-  rather than an answer, and lands as protocol **1.4.0**.
+  accepted and implemented 2026-08-15) — protocol 1.3.0 → 1.4.0.** RFC 0023 made
+  a *reported* number reproducible; it did not make a *searched* one
+  reproducible, and `irr` is the one builtin that searches. §VIII.3 is now a
+  normative six-step procedure — bracket over `[-0.999, 10.0]`, return an exact
+  endpoint root, bisect to `|npv| < 1e-9` or a half-interval under `1e-12`
+  capped at 200 iterations, **no Newton polish** — and `calc/builtins.ts`
+  implements exactly it. `pmt`/`fv`/`pv`/`nper` are normatively closed-form;
+  `irr` is the only builtin permitted to iterate.
 
-  Nothing is implemented yet: `calc/builtins.ts` still runs Newton first from a
-  seed of `0.1`, which is why `irr(-1, 20)` returns `18.999…` — 1900%, from a
-  search the spec describes as stopping at 1000%. The §VIII.3 note records that
-  divergence rather than blessing it.
+  **`irr` now refuses in two cases where it answered.** A root outside the
+  bracket: `irr(-1, 20)` was `18.999…`, a 1900% return from a search documented
+  as stopping at 1000%. And an even number of roots inside it:
+  `irr(-100, 230, -132)` was `0.1`, an artifact of Newton's seed, though `0.2`
+  zeroes the same NPV. Conventional cash flows do not move — bisection and the
+  old Newton pass agree to ~5e-13, far below the six-decimal quantum — and no
+  pack declares an `irr` metric, so no built-in calculation on any asset class
+  changed. Five Tier-3 fixtures (`irr-01`…`irr-05`) and a property test that the
+  returned value actually zeroes the NPV, not merely reproducibly.
 
-  Three checks ran before acceptance, and all three shrank the change. The
-  iteration audit the RFC asked for came back **clean** — `irr` is the only
-  builtin that converges; `nper` is the closed-form logarithm, and `pmt`/`fv`/
-  `pv` are closed-form, so every other loop is a bounded walk over arguments.
-  **No built-in pack declares an `irr` metric**, so today's exposure is
-  third-party modules rather than "any deal with a DCF" as the draft claimed —
-  and that also makes the Excel-parity question the draft called its blocker
-  unreachable, since parity is asserted over pack metrics and none emits an
-  `IRR` formula. Implementation is the open work: the `irr` rewrite, five
-  conformance fixtures, the property test, and the 1.4.0 bump.
+  Three checks ran before acceptance and all three shrank the change: the
+  iteration audit came back clean, no pack uses `irr`, and the Excel-parity
+  question the draft called its blocker is therefore unreachable today.
+
+  **Implementation then found two of the RFC's five stated fixtures impossible
+  under its own procedure**, both now recorded as errata in the RFC. Fixture 02
+  wanted a multi-root cash flow to return a pinned root — but an even root count
+  means no sign change across the bracket, so bisection cannot locate it and the
+  procedure raises. Fixture 04 wanted a root exactly at `-0.999` — but
+  `1.0 + (-0.999)` is `0.001000000000000001` in binary64, so that root is not a
+  well-defined quantity at the low endpoint (the high endpoint is exact and is
+  covered). A worked reminder that an accepted RFC is a proposal until something
+  runs it.
+
+  Remaining: `@uwmd/core` needs a version bump and release cut before publish —
+  the matrix in `VERSIONS.md` marks the published 1.2.0 as pairing with protocol
+  1.3.0 while the working tree implements 1.4.0.
 
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.

@@ -114,6 +114,14 @@ Replace the non-normative note in §VIII.3 with a normative algorithm.
 > has no single internal rate of return, and a host SHOULD surface that as a
 > modeling problem rather than a number.
 
+> **Superseded on implementation.** The paragraph directly above is wrong, and
+> the shipped §VIII.3 says the opposite: an even number of roots in `[lo, hi]`
+> means `npv` shares a sign at both endpoints, so step 2 finds no bracket and
+> the procedure *raises* rather than selecting one. The shipped text also adds
+> an endpoint-root step between 2 and 3. See
+> [Errata](#corrections-found-while-implementing-2026-08-15); `spec/UW_PROTOCOL_v1.md`
+> §VIII.3 is authoritative.
+
 Bisection alone is bit-reproducible in a way Newton is not. Its iterates are
 `(lo + hi) / 2` and comparisons of products — every step a `binary64` operation
 IEEE 754 requires to be correctly rounded, in an order the text fixes. Newton
@@ -176,11 +184,11 @@ bisection and Newton both find to within the §VIII.5 quantum.
 
 | Path | Asserts |
 |---|---|
-| `conformance/calc/irr/01-out-of-bracket` | `irr(-1, 20)` raises `CALC-IRR-DIVERGE`, not `19.0` |
-| `conformance/calc/irr/02-multi-root` | `irr(-100, 230, -132)` returns the bisection root, pinned exactly |
-| `conformance/calc/irr/03-conventional` | A normal DCF's IRR is unchanged from the pre-RFC value |
-| `conformance/calc/irr/04-boundary` | Roots at exactly `-0.999` and `10.0` are found, not rejected |
-| `conformance/calc/irr/05-degenerate` | All-positive and all-negative flows raise, rather than returning a bracket endpoint |
+| `tier-3-calc-host/fixtures/irr-01-out-of-bracket` | `irr(-1, 20)` raises `CALC-IRR-DIVERGE`, not `19.0` |
+| `tier-3-calc-host/fixtures/irr-02-even-root-count` | `irr(-100, 230, -132)` returns the bisection root, pinned exactly — **superseded, see [Errata](#corrections-found-while-implementing-2026-08-15): it raises** |
+| `tier-3-calc-host/fixtures/irr-03-conventional` | A normal DCF's IRR is unchanged from the pre-RFC value |
+| `tier-3-calc-host/fixtures/irr-04-endpoint-root` | Roots at exactly `-0.999` and `10.0` are found, not rejected — **superseded: only `10.0` is well defined** |
+| `tier-3-calc-host/fixtures/irr-05-degenerate` | All-positive and all-negative flows raise, rather than returning a bracket endpoint |
 
 Fixture 03 is the load-bearing one: it is what proves this RFC does not move the
 numbers on real deals.
@@ -311,6 +319,47 @@ before the regular one is pinned would compound the divergence rather than
 resolve it.
 
 ## Errata
+
+### Corrections found while implementing (2026-08-15)
+
+Two of the five fixtures in [Conformance impact](#conformance-impact) above
+describe outcomes the normative procedure cannot produce. The procedure is
+right; the fixture table was written from intuition about what bisection would
+do. Both are corrected here rather than in place, so the reasoning survives.
+
+**Fixture 02 — a multi-root cash flow raises; it does not return a root.** The
+table says `irr(-100, 230, -132)` "returns the bisection root, pinned exactly,"
+and the prose under the spec block says the procedure "selects one of them
+deterministically." Neither is achievable. Roots at `0.10` and `0.20` are an
+*even* number of crossings inside the interval, so `npv` carries the same sign
+at both ends — `npv(-0.999) ≈ -1.32e8` and `npv(10) ≈ -80.18`, both negative —
+and step 2 finds no bracket. Bisection can only locate an odd number of roots
+in an interval; that is inherent to the method, not a detail of this
+implementation.
+
+The correct outcome is the one the procedure produces: `CALC-IRR-DIVERGE`. It
+is also the better outcome, and the RFC argues for it three paragraphs later —
+"a cash flow with multiple sign changes has no single internal rate of return,
+and a host SHOULD surface that as a modeling problem rather than a number." An
+error surfaces it; a silently-chosen root does not. The spec text in §VIII.3
+now states this consequence explicitly instead of implying the opposite.
+
+**Fixture 04 — only the high endpoint is reachable.** The table asks that roots
+"at exactly `-0.999` and `10.0`" be found. At `hi` this is well defined:
+`1.0 + 10.0` is exact, so `npv(10)` can be exactly zero, and §VIII.3 step 3
+returns it. At `lo` it is not: `1.0 + (-0.999)` is `0.001000000000000001` in
+binary64, so for a cash flow whose exact root is -99.9%, `npv(lo)` lands a few
+ULP either side of zero and its *sign* decides whether step 2 brackets at all.
+A root "exactly at `-0.999`" is not a well-defined binary64 quantity. The
+fixture covers the high endpoint, and §VIII.3 documents the low one as
+unreliable rather than pretending otherwise.
+
+Neither correction changes the proposal's substance: `irr(-1, 20)` still stops
+being an answer, conventional cash flows still do not move, and the procedure
+is still bit-reproducible. Both make the specification describe something an
+independent implementer can actually build.
+
+### The 1.3.0 note
 
 The §VIII.3 note added in protocol 1.3.0 describes the reference implementation
 as bracketing first, refining with Newton, and falling back to bisection at 200

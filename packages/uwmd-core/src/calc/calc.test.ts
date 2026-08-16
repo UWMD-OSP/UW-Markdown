@@ -308,6 +308,43 @@ describe('builtins', () => {
     expect(() => evaluate(parseExpression('irr(100, 200, 300)'), makeCtx())).toThrow(/CALC-IRR-DIVERGE/);
   });
 
+  it('irr does not return a root outside the bracket (RFC 0024)', () => {
+    // The regression this RFC exists for. Newton-first converged to ~18.999 —
+    // a 1900% return, from a search the spec documents as reaching 1000%.
+    expect(() => evaluate(parseExpression('irr(-1, 20)'), makeCtx())).toThrow(/CALC-IRR-DIVERGE/);
+  });
+
+  it('irr raises on an even number of roots rather than picking one', () => {
+    // 0.1 and 0.2 both zero this NPV, so npv() has the same sign at both ends
+    // of [-0.999, 10] and no sign-change bracket exists. Raising is the
+    // intended answer: a cash flow with several sign changes has no single
+    // internal rate of return. Newton-first used to return 0.1, an artifact of
+    // the seed rather than of the cash flows.
+    expect(() => evaluate(parseExpression('irr(-100, 230, -132)'), makeCtx())).toThrow(
+      /CALC-IRR-DIVERGE/,
+    );
+  });
+
+  it('irr returns an exact root sitting on the high endpoint', () => {
+    // npv(10) is exactly 0 here, and bisection cannot reach it — the retention
+    // test multiplies by the endpoint value. Step 3 of §VIII.3 handles it.
+    expect(evaluate(parseExpression('irr(-1, 11)'), makeCtx())).toBe(10);
+  });
+
+  it('irr is unchanged on conventional cash flows', () => {
+    // The load-bearing case: RFC 0024 must not move the numbers on real deals.
+    // Bisection and the old Newton pass agree to ~5e-13 here, far below the
+    // six-decimal quantum §VIII.5 reports a rate at.
+    const v = evaluate(parseExpression('irr(-1000, 500, 500, 500)'), makeCtx()) as number;
+    expect(v).toBeCloseTo(0.233752, 6);
+  });
+
+  it('irr rejects degenerate flows rather than returning a bracket endpoint', () => {
+    for (const expr of ['irr(100, 200)', 'irr(-100, -200)']) {
+      expect(() => evaluate(parseExpression(expr), makeCtx())).toThrow(/CALC-IRR-DIVERGE/);
+    }
+  });
+
   it('unknown function → CALC-RESOLVE-001', () => {
     expect(() => evaluate(parseExpression('frobulate(1, 2)'), makeCtx())).toThrow(/CALC-RESOLVE/);
   });

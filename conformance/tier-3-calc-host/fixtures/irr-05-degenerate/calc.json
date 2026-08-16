@@ -1,0 +1,7 @@
+{
+  "id": "irr_degenerate",
+  "label": "IRR of all-positive flows",
+  "formula": "irr(100, 200, 300)",
+  "unit": "%",
+  "deterministic": true
+}

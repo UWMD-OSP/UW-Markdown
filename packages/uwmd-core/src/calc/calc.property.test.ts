@@ -204,3 +204,47 @@ describe('Excel emitter — grammar parity', () => {
     );
   });
 });
+
+// ─── Property 4: irr returns a root, not merely a reproducible number ────────
+//
+// Pinning an algorithm buys reproducibility, which is not the same as
+// correctness: an engine that always returned 0.42 would be perfectly
+// reproducible. This asserts the other half — for a conventional cash flow
+// (exactly one sign change) with a root inside the bracket, the value `irr`
+// returns actually zeroes the NPV. Protocol §VIII.3 / RFC 0024.
+
+describe('irr — the returned value is a root', () => {
+  const npvAt = (flows: number[], r: number): number => {
+    let acc = 0;
+    for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
+    return acc;
+  };
+
+  it('zeroes the NPV for conventional cash flows', () => {
+    fc.assert(
+      fc.property(
+        // One negative outlay at t=0, then positive inflows: exactly one sign
+        // change, so the root is unique where it exists.
+        fc.integer({ min: 1, max: 1_000_000 }),
+        fc.array(fc.integer({ min: 1, max: 1_000_000 }), { minLength: 2, maxLength: 12 }),
+        (outlay, inflows) => {
+          const flows = [-outlay, ...inflows];
+          let root: number;
+          try {
+            root = evaluate(parseExpression(`irr(${flows.join(', ')})`), EMPTY_CTX) as number;
+          } catch (e) {
+            // A root outside [-0.999, 10] is a documented refusal, not a
+            // failure — that is the whole point of the bracket.
+            return e instanceof CalcError && /CALC-IRR-DIVERGE/.test(e.message);
+          }
+          if (root < -0.999 || root > 10) return false;
+          // Scale-relative: NPV is denominated in the same units as the flows,
+          // so a fixed 1e-9 would be unreachable for million-dollar outlays.
+          const scale = Math.max(1, ...flows.map((f) => Math.abs(f)));
+          return Math.abs(npvAt(flows, root)) <= 1e-9 * scale;
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
+});
