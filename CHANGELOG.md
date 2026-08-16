@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-15
+
 > ### ⚠️ Read before upgrading — computed numbers change
 >
 > RFC 0023 quantizes every reported calc value (protocol §VIII.5). Three
@@ -1043,4 +1045,5 @@ protocol, and each package each carry an independent semver).
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.1.3...v1.2.0
