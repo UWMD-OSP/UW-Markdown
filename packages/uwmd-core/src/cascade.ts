@@ -22,7 +22,18 @@ export interface MarketDataLookup {
   resolve(
     field_path: string,
     context: { asset_class: string; geo?: string },
-  ): { value: unknown; range?: { low: number; central: number; high: number } } | null;
+  ): {
+    value: unknown;
+    range?: { low: number; central: number; high: number };
+    /**
+     * Optional identity of the observation set this value came from, surfaced
+     * as `ResolvedValue.resolved_from`. Added by RFC 0022 so a market-derived
+     * value can say *which* set produced it — the gap that made receipts over
+     * market data irreproducible. Optional, so a host returning the original
+     * `{ value, range }` shape is unaffected.
+     */
+    source_id?: string;
+  } | null;
   /** How long an observation remains usable, for staleness checks downstream. */
   staleness_seconds: number;
 }
@@ -199,6 +210,7 @@ export function resolveValue(
         source: 'market_data',
         step: 'market_data',
         range: hit.range,
+        ...(hit.source_id ? { resolved_from: hit.source_id } : {}),
       };
     }
   }

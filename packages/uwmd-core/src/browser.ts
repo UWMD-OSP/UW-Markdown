@@ -245,8 +245,12 @@ export {
   DEAL_UNDERWRITING_PROFILE,
   LEASE_ABSTRACT_PROFILE,
   SOURCE_NOTE_PROFILE,
+  MARKET_DATA_PROFILE,
   DOCUMENT_PROFILE_PATTERN,
   lookupDocumentProfile,
+  STANDARD_SECTION_IDS,
+  isStandardSectionId,
+  EXTENSION_SECTION_PREFIX,
   BUILTIN_EDGE_TYPES,
   lookupEdgeType,
   isEdgeTypeValidOnLayer,
@@ -306,6 +310,24 @@ export type {
   RentRollProjectionReport,
   RentRollProjectionResult,
 } from './lease-abstract.js';
+export {
+  MARKET_DATA_PROFILE_ID,
+  MARKET_OBSERVATIONS_SECTION,
+  DEFAULT_MARKET_DATA_STALENESS_SECONDS,
+  MarketDataError,
+  validateMarketDataDocument,
+  parseMarketDataDocument,
+  createDocumentMarketData,
+  selectCurrentMarketData,
+  isDealFieldPath,
+  isValidAsOf,
+} from './market-data.js';
+export type {
+  MarketDataDocument,
+  MarketObservation,
+  MarketObservationRange,
+  DocumentMarketDataOptions,
+} from './market-data.js';
 export {
   PACKAGE_MANIFEST_PATH,
   encodeUWDealPackageZip,

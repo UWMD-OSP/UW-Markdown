@@ -30,6 +30,15 @@ export type SourceTag =
   | 'manual'
   | 'investor_profile'
   | 'market_data'
+  /**
+   * A market observation an analyst explicitly accepted as the underwritten
+   * value (RFC 0022 §4). Deliberately distinct from `user_input`: a value
+   * accepted for lack of better evidence and a value established by diligence
+   * are different claims, and a file that renders them identically has
+   * destroyed something a credit reviewer needs. Consumers that do not
+   * recognize this tag MUST NOT rewrite it to `user_input`.
+   */
+  | 'market_data_accepted'
   | 'ai_extracted'
   | 'agent_computed'
   | 'asset_class_default'
