@@ -182,6 +182,36 @@ describe('verifyReceipt', () => {
     expect(result.issues.map((i) => i.code)).toContain('RCP-01');
   });
 
+  it('is unverifiable, not failed, when the canonicalization version differs (RCP-10)', async () => {
+    // A receipt issued before RFC 0025 carries a digest computed under rules
+    // this verifier no longer applies. The record is untouched, so reporting
+    // `failed` would accuse it of a change that never happened.
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, { filename: LITE_DEAL, issued_at: ISSUED_AT });
+    const stale = clone(receipt);
+    stale.subject.canonicalization_version = '1.0';
+    stale.subject.digest = `sha256:${'0'.repeat(64)}`;
+
+    const result = await verifyReceipt(stale, raw, { filename: LITE_DEAL });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map((i) => i.code)).toContain('RCP-10');
+    expect(result.issues.map((i) => i.code)).not.toContain('RCP-01');
+  });
+
+  it('still fails a genuine mutation when the canonicalization version matches', async () => {
+    // The carve-out above must not become a way to launder a real change: same
+    // version, different digest, still decisive.
+    const raw = await liteDeal();
+    const receipt = await issueReceipt(raw, { filename: LITE_DEAL, issued_at: ISSUED_AT });
+    expect(receipt.subject.canonicalization_version).toBe('1.1');
+    const mutated = raw.replace('$1,653,125', '$1,700,000');
+    expect(mutated).not.toBe(raw);
+
+    const result = await verifyReceipt(receipt, mutated, { filename: LITE_DEAL });
+    expect(result.verdict).toBe('failed');
+    expect(result.issues.map((i) => i.code)).toContain('RCP-01');
+  });
+
   it('fails when a stated result does not follow from the record', async () => {
     const raw = await parkview();
     const receipt = await issueReceipt(raw, { filename: PARKVIEW, issued_at: ISSUED_AT });

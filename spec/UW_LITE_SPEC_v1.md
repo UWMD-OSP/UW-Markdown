@@ -77,6 +77,29 @@ The optional `unit` attribute overrides the default unit label but does not
 change numeric scaling. `period` and `scenario` qualify field identity.
 Other attributes are preserved and participate in financial canonicalization.
 
+### 4.1 Percent scaling is exact
+
+A percent display denotes the decimal number obtained by moving its decimal
+point two places to the left. An implementation **MUST** produce the value that
+decimal literal denotes, and **MUST NOT** compute it by dividing the displayed
+number by 100.
+
+The two are not the same value. In binary64, `5.51 / 100` is
+`0.055099999999999996`, one ULP away from the `0.0551` that the literal
+`0.0551` denotes. Since the normalized value enters the RFC 8785 canonical form
+of §6, a division-based reader assigns `5.51%` a different canonical form — and
+therefore a different SHA-256 digest and a different §9 receipt — than a reader
+that follows this rule, and than the digest of a UWX record whose author wrote
+`0.0551` directly. Displays whose value happens to divide exactly, such as
+`5.50%`, are unaffected; the requirement is what makes the remainder
+interoperable.
+
+Moving the point is exact for every display the grammar admits, because it
+re-reads the same decimal digits and leaves the single unavoidable rounding to
+decimal-to-binary conversion, which is correctly rounded. Implementations
+**SHOULD** apply the same rule to any future scaled display form rather than
+introducing a second division site.
+
 The tuple `(field-path, period, scenario)` must be unique. Duplicate identities
 are errors. Implementations must report unknown field paths during compilation;
 the parser itself preserves them.
@@ -97,7 +120,7 @@ trusted verification receipt.
 The Lite financial canonical form is RFC 8785 canonical JSON containing:
 
 - canonicalization ID `uw-lite-financial`;
-- canonicalization version `1.0`; and
+- canonicalization version `1.1`; and
 - fields sorted by path, period, and scenario, with normalized value, unit,
   qualifiers, and sorted additional attributes.
 
@@ -109,6 +132,30 @@ included.
 Canonicalization must fail when the parsed document has an error. SHA-256
 digests over the exact canonical UTF-8 bytes use the form
 `sha256:<lowercase hex>`.
+
+### 6.1 The canonicalization version is not the representation version
+
+The canonicalization version tracks the rules that turn a parsed document into
+canonical bytes. It is versioned **independently of the Lite grammar**, and an
+implementation **MUST NOT** stamp one in place of the other.
+
+Version `1.1` is the first version to require §4.1 exact percent scaling.
+Nothing in the grammar changed: `5.51%` parsed under `1.0` and parses under
+`1.1`, and no document needs editing. What changed is the double it normalizes
+to, and therefore the digest of any Lite document containing a percent that
+does not divide exactly.
+
+A digest computed under a different canonicalization version is **not
+comparable** to one computed under this version. A verifier that observes both a
+digest disagreement and a canonicalization-version disagreement **MUST NOT**
+report that the record changed; see `UW_RECEIPT_v1.md` §5 (`RCP-10`).
+
+For the whole 1.x line, a verifier **MUST** continue to recognize
+`canonicalization_version: "1.0"` and degrade to `RCP-10` rather than reporting
+a failure. Version `1.0` is **sunset at Protocol 2.0**, together with legacy
+structured `.uw.md` sniffing (RFC 0017); the two are 1.x compatibility bridges
+and share one boundary. A Protocol 2.0 verifier is not obliged to distinguish a
+`1.0` receipt from a corrupted one.
 
 ## 7. Canonical rendering
 

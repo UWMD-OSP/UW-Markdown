@@ -389,6 +389,41 @@ function parseAttributes(
   return attributes;
 }
 
+/**
+ * Scale a decimal literal by `10 ** -places` by moving the point through the
+ * digit string, never by dividing.
+ *
+ * `Number('5.51') / 100` is `0.055099999999999996` — one ULP away from the
+ * `0.0551` that `Number('0.0551')` yields, which is what an author writing the
+ * same rate by hand in UWX gets. Two spellings of one rate therefore produced
+ * two different doubles, two different RFC 8785 canonical forms, and two
+ * different SHA-256 digests, so a Lite-compiled `5.51%` and a hand-authored
+ * UWX `0.0551` compared unequal under semantic equivalence and under an
+ * RFC 0016 receipt. Shifting the point is exact for every literal the grammar
+ * admits: it reads the same decimal digits back out and defers the single
+ * rounding to `Number`, which is correctly rounded.
+ *
+ * Spec: `UW_LITE_SPEC_v1.md` §4. See RFC 0025.
+ */
+function scaleDecimalLiteral(literal: string, places: number): number {
+  const negative = literal.startsWith('-');
+  const unsigned = negative ? literal.slice(1) : literal;
+  const dot = unsigned.indexOf('.');
+  const digits = dot === -1 ? unsigned : unsigned.slice(0, dot) + unsigned.slice(dot + 1);
+  // Where the point lands once shifted `places` to the left, as an index into
+  // `digits`. Outside `[0, digits.length]` the literal needs padding zeros.
+  const pointAt = (dot === -1 ? unsigned.length : dot) - places;
+  let shifted: string;
+  if (pointAt <= 0) {
+    shifted = `0.${'0'.repeat(-pointAt)}${digits}`;
+  } else if (pointAt >= digits.length) {
+    shifted = digits + '0'.repeat(pointAt - digits.length);
+  } else {
+    shifted = `${digits.slice(0, pointAt)}.${digits.slice(pointAt)}`;
+  }
+  return Number(negative ? `-${shifted}` : shifted);
+}
+
 type ParsedDisplayValue =
   | { ok: true; value: UWLiteScalar; unit?: string }
   | { ok: false; value: string; message: string };
@@ -409,7 +444,7 @@ function parseLiteDisplayValue(display: string, explicitUnit?: string): ParsedDi
   }
   const percent = /^(-?(?:\d+(?:\.\d+)?|\.\d+))%$/.exec(value);
   if (percent) {
-    return { ok: true, value: Number(percent[1]) / 100, unit: explicitUnit ?? 'fraction' };
+    return { ok: true, value: scaleDecimalLiteral(percent[1], 2), unit: explicitUnit ?? 'fraction' };
   }
   const ratio = /^(-?(?:\d+(?:\.\d+)?|\.\d+))[xX]$/.exec(value);
   if (ratio) {

@@ -2,10 +2,11 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-14 at `5e5deb9`+ (full pass: build green across all
-workspaces; **821 tests** — 688 core, 69 excel, 57 cli, 4 batch, 3 report — plus
-**63 web-editor**; **153 conformance** assertions including the Tier-4 replay,
-module, and package suites; 11/11 schemas valid; Biome clean over 337 files).
+**Last verified:** 2026-08-16 at `9a1f55a`+ (full pass: build green across all
+workspaces; **857 tests** — 724 core, 69 excel, 57 cli, 4 batch, 3 report — plus
+**63 web-editor**; **159 conformance** assertions including the Tier-4 replay,
+module, package, and receipts suites; 11/11 schemas valid; Biome clean over 345
+files; `typecheck:tests` clean across all five workspaces).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -446,9 +447,13 @@ and all ten examples were renamed to `.uwx.md`. The library never had the bug �
 `source-representation.ts` already carried `UWX_EXTENSION` and the legacy
 warning, which every example was tripping.
 
-> **Legacy `.uw.md` sniffing has no expiry.** RFC 0017 introduced it as a
-> transition path and RFC 0020 deliberately declined to schedule its end. That
-> decision should be made before 1.0 rather than drifting into permanence.
+> **Legacy `.uw.md` sniffing sunsets at Protocol 2.0** (decided 2026-08-16 with
+> [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md)). RFC 0017
+> introduced it as a transition path and RFC 0020 declined to schedule its end.
+> RFC 0025 would have opened a *second* open-ended transition — Lite
+> canonicalization 1.0 — so both were given one shared boundary instead. For all
+> of 1.x, sniffing stays and a `1.0` receipt degrades to `RCP-10`; at Protocol
+> 2.0 both obligations end.
 
 Receipt **signing** remains unimplemented and is blocked on the RFC 0010 signing
 package; unsigned issuance and verification ship today.
@@ -548,22 +553,37 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-5. **Lite percent normalization loses decimal exactness.** `lite.ts` normalizes a
-   percent display as `Number(x) / 100`, so `5.51%` becomes
-   `0.055099999999999996` rather than `0.0551`. It is deterministic, so nothing
-   is *broken*, but the value flows into the RFC 8785 canonical form and
-   therefore the SHA-256 digest — meaning a Lite-compiled `5.51%` and a
-   hand-authored UWX `0.0551` are different doubles and will not compare equal
-   under semantic equivalence or an RFC 0016 receipt. Every existing fixture uses
-   5.50%/5.75%/6.25%, which all divide cleanly, which is why the conformance
-   suite never caught it; the T11 example is the first document to use a rate
-   that doesn't. The fix is decimal-string scaling (shift the point, don't
-   divide). **Treat as normative:** it changes canonical digests for affected
-   documents, so it needs a deliberate decision and probably a spec note, not a
-   drive-by patch.
-6. **Decide when legacy `.uw.md` sniffing ends.** RFC 0017 introduced it as a
-   transition path with no expiry, and RFC 0020 declined to set one. Worth
-   settling before 1.0 rather than letting it drift into permanence.
+5. ~~**Lite percent normalization loses decimal exactness.**~~ **Accepted and
+   implemented 2026-08-16 as
+   [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md); shipped in
+   `@uwmd/core` 1.4.0.** `lite.ts` now shifts the decimal point
+   through the digit string instead of dividing, so `5.51%` normalizes to
+   `0.0551` and equals the double a hand-authored UWX fraction produces. Lite
+   canonicalization **1.0 → 1.1**; the grammar is untouched and no document needs
+   editing.
+
+   Two things came out of implementing it. Lite issuance had been stamping
+   `canonicalization_version` from `UW_LITE_REPRESENTATION_VERSION`, conflating
+   the canonical-bytes rules with the source grammar — UWX already kept them
+   separate, so Lite was the odd one out, and bumping without splitting them
+   first would have claimed a grammar change that never happened. And a digest
+   mismatch was decisive at precedence step 2, so every pre-existing receipt over
+   an affected document would have reported **`failed`** — a tampering accusation
+   against a byte-identical record. New **`RCP-10`** degrades that to
+   `unverifiable`, mirroring the §5.3 engine-identity carve-out.
+
+   > **The corpus could not have caught this, and still can't.** Every
+   > `conformance/lite/` fixture uses 5.50%/5.75%/6.25%/5.00%/-1.50% — all divide
+   > cleanly — so all 90 assertions passed *unchanged* through the fix. An empty
+   > diff there is the absence of evidence, not evidence of correctness; the
+   > proof is the unit tests asserting `toBe(0.0551)` (where `toBeCloseTo` would
+   > pass either way) and the new `receipts/verify/06-*` scenario.
+6. ~~**Decide when legacy `.uw.md` sniffing ends.**~~ **Decided 2026-08-16:
+   sunsets at Protocol 2.0**, together with Lite canonicalization `1.0`, via
+   [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md). Both are 1.x
+   compatibility bridges and now share one boundary instead of accumulating
+   separately. Nothing to build for 1.x; the work is to *remove* both at 2.0,
+   which belongs on the 2.0 checklist rather than here.
 
 ### Ongoing
 

@@ -37,7 +37,8 @@
         },
         "canonicalization_version": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Version of the canonicalization rules, versioned independently of `representation_version` — the rules for producing canonical bytes can change without the source grammar changing, so an implementation MUST NOT stamp one from the other. Digests computed under different versions are not comparable; see UW_RECEIPT_v1 §5.5 (`RCP-10`)."
         },
         "digest": {
           "type": "string",
