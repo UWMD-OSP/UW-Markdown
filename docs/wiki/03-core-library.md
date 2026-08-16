@@ -1,14 +1,18 @@
 # 03 — Core library (`@uwmd/core`)
 
 `packages/uwmd-core` is the reference implementation and the heart of the repo.
-Everything else depends on it. Its runtime dependencies are `@anthropic-ai/sdk`
-(excluded from the browser entry), `fast-xml-parser`, and `fflate`.
+Everything else depends on it. Its runtime dependencies are `fast-xml-parser` and
+`fflate`. `@anthropic-ai/sdk` is an **optional peer dependency**: only the
+reference Anthropic provider needs it, it is loaded dynamically on the first
+request, and it is excluded from the browser entry. A host that brings its own
+`AgentProvider` — or never runs a Tier-4 agent — does not install it, and
+importing `@uwmd/core` works without it.
 
 - **Package:** `@uwmd/core` 1.1.0 release candidate, ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
 - **Public API:** [`src/index.ts`](../../packages/uwmd-core/src/index.ts) — the
   single source of truth for what's exported. If it isn't there, tools can't import it.
 - **Entry points (`package.json` `exports`):**
-  - `.` → `dist/index.js` (full library, includes the Anthropic SDK agent host)
+  - `.` → `dist/index.js` (full library, including the Tier-4 agent host)
   - `./browser` → `dist/browser.js` (everything **except** `@anthropic-ai/sdk` — for web bundling)
   - `./cli` → `dist/cli.js` (the CLI program; `uwmd-cli` just imports this)
 - **Build:** `tsc` (per-package). **Test:** `vitest run`. Coverage:

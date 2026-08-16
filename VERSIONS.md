@@ -77,7 +77,7 @@ corresponding release entry in `CHANGELOG.md`. See the
 | A read-only viewer | format ≥ 1.0, protocol ≥ 1.0, `@uwmd/core@^1` |
 | An editor | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1` |
 | A calc host | format = 1.1, protocol = 1.1, `@uwmd/core@^1.0`, multifamily pack 1.x |
-| An agent host | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1`, plus an LLM SDK of your choice |
+| An agent host | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1`, plus an LLM SDK of your choice — `@anthropic-ai/sdk` is an optional peer, installed only if you use the bundled Anthropic provider |
 | A CLI script that calls `uwmd` | `@uwmd/cli@^1` |
 
 ## Release coordination

@@ -76,7 +76,11 @@ export interface AgentProvider {
 /** Typed error for provider selection and transport failures. */
 export class AgentProviderError extends Error {
   constructor(
-    readonly code: 'AGENT_PROVIDER_MISSING' | 'AGENT_PROVIDER_TRANSPORT' | 'AGENT_PROVIDER_REPLAY',
+    readonly code:
+      | 'AGENT_PROVIDER_MISSING'
+      | 'AGENT_PROVIDER_SDK_MISSING'
+      | 'AGENT_PROVIDER_TRANSPORT'
+      | 'AGENT_PROVIDER_REPLAY',
     message: string,
     override readonly cause?: unknown,
   ) {

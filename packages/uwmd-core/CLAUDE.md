@@ -28,8 +28,11 @@ root [`CLAUDE.md`](../../CLAUDE.md).
 ## Local invariants
 
 - **AI never computes financials** — that's `calc/` + `packs/`, deterministically.
-- **Browser boundary:** `@anthropic-ai/sdk` may be imported only by code reachable
-  from `index.ts`, never from anything `browser.ts` re-exports.
+- **Browser boundary:** `@anthropic-ai/sdk` may be reached only by code reachable
+  from `index.ts`, never from anything `browser.ts` re-exports. It is an optional
+  peer dependency: `agents/providers/anthropic.ts` must load it by *dynamic*
+  import only — a static import there would make `import '@uwmd/core'` pull the
+  vendor SDK in for every consumer, since `index.ts` re-exports the factory.
 - **Tier-2 byte preservation**, **append-only supersede**, **the host owns
   `_meta`** (strip any `_meta`/`_notes` from agent `section_data`).
 - Relative imports carry the `.js` extension (NodeNext).
