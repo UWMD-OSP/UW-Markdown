@@ -4,6 +4,7 @@ import type {
   UWEnvelopeSectionEntry,
 } from './envelope.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
+import { isBlockedSegment } from './parser.js';
 import { FORMAT_VERSION } from './protocol.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter, UWMeta } from './types.js';
@@ -216,7 +217,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     }
 
     const [section, ...path] = mapping.target_path.split('.');
-    if (!section || path.length === 0) {
+    if (!section || path.length === 0 || [section, ...path].some(isBlockedSegment)) {
       throw new UWLiteBridgeError(
         'LITE_MAPPING_INVALID',
         `Invalid target mapping ${mapping.target_path}.`,

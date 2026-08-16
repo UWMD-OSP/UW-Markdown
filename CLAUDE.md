@@ -14,7 +14,8 @@ standard.
 ## Where things live
 
 - `packages/uwmd-core` — `@uwmd/core`, the library and the heart of the repo.
-  Everything depends on it; it depends only on `@anthropic-ai/sdk`.
+  Everything depends on it; it takes no vendor SDK as a hard dependency
+  (`@anthropic-ai/sdk` is an optional peer, loaded dynamically).
 - `packages/uwmd-cli` — the `uwmd` CLI (thin wrapper over core's `cli.ts`).
 - `packages/uwmd-excel` — `.uw.md → .xlsx` converter.
 - `tools/` — web-viewer, web-editor, vscode-uwmd, docs-site.
@@ -34,8 +35,9 @@ features land.
 
 1. **AI never does financial math.** Agents extract data and write narrative; all
    NOI/DSCR/LTV/IRR/DCF math is deterministic in `calc/` + `packs/`.
-2. **Layering:** spec→nothing; `@uwmd/core`→`@anthropic-ai/sdk` only (and excluded
-   from the `@uwmd/core/browser` entry); tools→core only, never other tools.
+2. **Layering:** spec→nothing; `@uwmd/core`→no vendor SDK (`@anthropic-ai/sdk` is
+   an optional peer reached only by dynamic import, and excluded from the
+   `@uwmd/core/browser` entry); tools→core only, never other tools.
 3. **Tier-2 edits preserve bytes** outside the edited region.
 4. **Excel ↔ calc-engine parity** is *exact* (one pack drives both; both sides
    quantize at the same `round_to` — protocol §VIII.5).
