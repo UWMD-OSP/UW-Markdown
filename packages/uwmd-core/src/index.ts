@@ -292,6 +292,9 @@ export {
   readExternalDirective,
   validateExternalDirective,
   resolveComposition,
+  resolveComposite,
+  DEFAULT_MAX_COMPOSITION_DEPTH,
+  DEFAULT_MAX_COMPOSITION_MEMBERS,
 } from './composition.js';
 export type {
   UWPart,
@@ -301,6 +304,11 @@ export type {
   CompositionStatus,
   CompositionResolution,
   ResolveCompositionOptions,
+  CompositeStatus,
+  CompositeResolution,
+  CompositeLink,
+  ResolveCompositeOptions,
+  StaleMember,
 } from './composition.js';
 export {
   MARKET_DATA_PROFILE_ID,

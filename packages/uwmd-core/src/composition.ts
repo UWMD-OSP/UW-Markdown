@@ -443,3 +443,195 @@ export function resolveComposition(
     externalized,
   };
 }
+
+// ─── Composites and recursion (RFC 0021 §4) ──────────────────────────────────
+
+/**
+ * Depth and member bounds. These mirror the safe-ZIP limits and exist for the
+ * same reason: a nested-package expansion is a decompression bomb wearing a
+ * different hat.
+ */
+export const DEFAULT_MAX_COMPOSITION_DEPTH = 8;
+export const DEFAULT_MAX_COMPOSITION_MEMBERS = 4096;
+
+/**
+ * `stale` is a third state, deliberately distinct from `failed`.
+ *
+ * Because a parent's resolved digest is a function of its children's digests,
+ * correcting a leaf changes every ancestor. An ancestor whose recorded child
+ * digest no longer matches is not evidence of tampering — it is evidence that a
+ * correction has not been adopted yet. Collapsing "out of date" into "wrong"
+ * trains people to ignore the alarm, which is the same reasoning the receipt
+ * verifier already applies to `unverifiable`.
+ */
+export type CompositeStatus = 'resolved' | 'stale' | 'unresolved';
+
+export interface StaleMember {
+  /** The parent holding an out-of-date record of the child's digest. */
+  parent: string;
+  child: string;
+  recorded: string;
+  actual: string;
+}
+
+export interface CompositeResolution {
+  status: CompositeStatus;
+  /** Members in dependency order, leaves first. Empty when unresolved. */
+  order: string[];
+  /** Deepest path length walked, 1 for a graph of leaves alone. */
+  depth: number;
+  member_count: number;
+  stale: StaleMember[];
+  issues: ProtocolError[];
+}
+
+export interface CompositeLink {
+  /** Child member id. */
+  from: string;
+  /** Parent member id. */
+  to: string;
+}
+
+export interface ResolveCompositeOptions {
+  /** `contributes_to` links, child → parent. */
+  links: readonly CompositeLink[];
+  /** Every member id in the package, so a dangling reference is detectable. */
+  members: readonly string[];
+  /**
+   * Each member's digest as recorded by its parent, keyed `parent::child`.
+   * A recorded digest that disagrees with `actualDigests` makes the parent
+   * `stale`.
+   */
+  recordedDigests?: ReadonlyMap<string, string>;
+  /** Each member's digest as it stands now, keyed by member id. */
+  actualDigests?: ReadonlyMap<string, string>;
+  maxDepth?: number;
+  maxMembers?: number;
+}
+
+/**
+ * Walk the composition DAG, enforcing the normative bounds.
+ *
+ * Resolution performs no network or filesystem access: members resolve from
+ * what the caller already holds. A reference pointing outside the package is
+ * unresolvable, never fetched — that is what keeps a package offline-verifiable
+ * and keeps validation from writing untrusted bytes anywhere.
+ */
+export function resolveComposite(opts: ResolveCompositeOptions): CompositeResolution {
+  const maxDepth = opts.maxDepth ?? DEFAULT_MAX_COMPOSITION_DEPTH;
+  const maxMembers = opts.maxMembers ?? DEFAULT_MAX_COMPOSITION_MEMBERS;
+  const issues: ProtocolError[] = [];
+  const known = new Set(opts.members);
+
+  const childrenOf = new Map<string, string[]>();
+  for (const link of opts.links) {
+    if (!known.has(link.from)) {
+      issues.push(compError('COMP-UNRESOLVED', `Link names child '${link.from}', which is not a member of this package.`));
+      continue;
+    }
+    if (!known.has(link.to)) {
+      issues.push(compError('COMP-UNRESOLVED', `Link names parent '${link.to}', which is not a member of this package.`));
+      continue;
+    }
+    const list = childrenOf.get(link.to) ?? [];
+    list.push(link.from);
+    childrenOf.set(link.to, list);
+  }
+  if (issues.length > 0) {
+    return { status: 'unresolved', order: [], depth: 0, member_count: 0, stale: [], issues };
+  }
+
+  if (known.size > maxMembers) {
+    return {
+      status: 'unresolved',
+      order: [],
+      depth: 0,
+      member_count: known.size,
+      stale: [],
+      issues: [compError('COMP-DEPTH', `Package holds ${known.size} members, above the bound of ${maxMembers}.`)],
+    };
+  }
+
+  // Roots are members nothing contributes to.
+  const isChild = new Set(opts.links.map((l) => l.from));
+  const roots = [...known].filter((id) => !isChild.has(id)).sort();
+
+  const order: string[] = [];
+  const finished = new Set<string>();
+  const onPath = new Set<string>();
+  let deepest = 0;
+  const stale: StaleMember[] = [];
+
+  // Iterative DFS: a recursive walk would blow the JS stack before hitting the
+  // depth bound on a hostile graph, turning a clean COMP-DEPTH into a crash.
+  const walk = (root: string): boolean => {
+    const stack: Array<{ id: string; depth: number; expanded: boolean }> = [
+      { id: root, depth: 1, expanded: false },
+    ];
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1]!;
+      if (frame.expanded) {
+        stack.pop();
+        onPath.delete(frame.id);
+        if (!finished.has(frame.id)) {
+          finished.add(frame.id);
+          order.push(frame.id);
+        }
+        continue;
+      }
+      frame.expanded = true;
+      deepest = Math.max(deepest, frame.depth);
+
+      if (frame.depth > maxDepth) {
+        issues.push(compError('COMP-DEPTH', `Composition depth ${frame.depth} at '${frame.id}' exceeds the bound of ${maxDepth}.`));
+        return false;
+      }
+      if (onPath.has(frame.id)) {
+        issues.push(compError('COMP-CYCLE', `Composition cycle reaches '${frame.id}' again.`));
+        return false;
+      }
+      onPath.add(frame.id);
+
+      for (const child of (childrenOf.get(frame.id) ?? []).slice().sort()) {
+        if (onPath.has(child)) {
+          issues.push(compError('COMP-CYCLE', `Composition cycle: '${frame.id}' and '${child}' are mutually reachable.`));
+          return false;
+        }
+        // Staleness is checked on the edge, because the recorded digest belongs
+        // to the parent's view of the child, not to the child.
+        const recorded = opts.recordedDigests?.get(`${frame.id}::${child}`);
+        const actual = opts.actualDigests?.get(child);
+        if (recorded !== undefined && actual !== undefined && recorded !== actual) {
+          stale.push({ parent: frame.id, child, recorded, actual });
+        }
+        if (!finished.has(child)) {
+          stack.push({ id: child, depth: frame.depth + 1, expanded: false });
+        }
+      }
+    }
+    return true;
+  };
+
+  for (const root of roots) {
+    if (!walk(root)) {
+      return { status: 'unresolved', order: [], depth: deepest, member_count: known.size, stale, issues };
+    }
+  }
+
+  // Any member never reached from a root sits in a cycle: it has a parent, but
+  // no root leads to it.
+  if (finished.size !== known.size) {
+    const unreached = [...known].filter((id) => !finished.has(id)).sort();
+    issues.push(compError('COMP-CYCLE', `Members unreachable from any root, indicating a cycle: ${unreached.join(', ')}.`));
+    return { status: 'unresolved', order: [], depth: deepest, member_count: known.size, stale, issues };
+  }
+
+  return {
+    status: stale.length > 0 ? 'stale' : 'resolved',
+    order,
+    depth: deepest,
+    member_count: known.size,
+    stale,
+    issues,
+  };
+}

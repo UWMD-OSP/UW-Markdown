@@ -3,6 +3,7 @@ import {
   CompositionError,
   parseUWPart,
   resolveComposition,
+  resolveComposite,
   validateExternalDirective,
   type UWPart,
 } from './composition.js';
@@ -219,6 +220,128 @@ describe('merge semantics', () => {
     const block = resolved.document.sections['rent_roll'] as { content: Record<string, unknown> };
     expect(block.content['units']).toBeUndefined();
     expect(block.content['external']).toBeDefined();
+  });
+});
+
+describe('resolveComposite', () => {
+  // portfolio ← deal-a ← rr-a
+  //           ← deal-b
+  const PORTFOLIO = {
+    members: ['portfolio', 'deal-a', 'deal-b', 'rr-a'],
+    links: [
+      { from: 'deal-a', to: 'portfolio' },
+      { from: 'deal-b', to: 'portfolio' },
+      { from: 'rr-a', to: 'deal-a' },
+    ],
+  };
+
+  it('walks a nested composite leaves-first and reports depth', () => {
+    const r = resolveComposite(PORTFOLIO);
+    expect(r.status).toBe('resolved');
+    expect(r.member_count).toBe(4);
+    expect(r.depth).toBe(3);
+    // Leaves precede their parents, and the root comes last.
+    expect(r.order.indexOf('rr-a')).toBeLessThan(r.order.indexOf('deal-a'));
+    expect(r.order.indexOf('deal-a')).toBeLessThan(r.order.indexOf('portfolio'));
+    expect(r.order.at(-1)).toBe('portfolio');
+  });
+
+  it('detects a direct cycle rather than recursing', () => {
+    const r = resolveComposite({
+      members: ['a', 'b'],
+      links: [{ from: 'a', to: 'b' }, { from: 'b', to: 'a' }],
+    });
+    expect(r.status).toBe('unresolved');
+    expect(r.issues.map((i) => i.code)).toContain('COMP-CYCLE');
+  });
+
+  it('detects a longer cycle with no root', () => {
+    const r = resolveComposite({
+      members: ['a', 'b', 'c'],
+      links: [{ from: 'a', to: 'b' }, { from: 'b', to: 'c' }, { from: 'c', to: 'a' }],
+    });
+    expect(r.status).toBe('unresolved');
+    expect(r.issues.map((i) => i.code)).toContain('COMP-CYCLE');
+  });
+
+  it('enforces the depth bound', () => {
+    const members = ['m0', 'm1', 'm2', 'm3'];
+    const links = [
+      { from: 'm3', to: 'm2' },
+      { from: 'm2', to: 'm1' },
+      { from: 'm1', to: 'm0' },
+    ];
+    expect(resolveComposite({ members, links, maxDepth: 4 }).status).toBe('resolved');
+    const r = resolveComposite({ members, links, maxDepth: 2 });
+    expect(r.status).toBe('unresolved');
+    expect(r.issues.map((i) => i.code)).toContain('COMP-DEPTH');
+  });
+
+  it('enforces the member bound', () => {
+    const r = resolveComposite({ members: ['a', 'b', 'c'], links: [], maxMembers: 2 });
+    expect(r.status).toBe('unresolved');
+    expect(r.issues.map((i) => i.code)).toContain('COMP-DEPTH');
+  });
+
+  it('reports a dangling reference as unresolved, not as a cycle', () => {
+    const r = resolveComposite({
+      members: ['portfolio'],
+      links: [{ from: 'ghost-deal', to: 'portfolio' }],
+    });
+    expect(r.status).toBe('unresolved');
+    expect(r.issues.map((i) => i.code)).toContain('COMP-UNRESOLVED');
+  });
+
+  it('reports a corrected leaf as stale, not failed', () => {
+    // The parent recorded one digest for its child; the child has since been
+    // corrected. That is an unadopted correction, not tampering.
+    const r = resolveComposite({
+      ...PORTFOLIO,
+      recordedDigests: new Map([['deal-a::rr-a', `sha256:${'1'.repeat(64)}`]]),
+      actualDigests: new Map([['rr-a', `sha256:${'2'.repeat(64)}`]]),
+    });
+    expect(r.status).toBe('stale');
+    expect(r.stale).toHaveLength(1);
+    expect(r.stale[0]).toMatchObject({ parent: 'deal-a', child: 'rr-a' });
+    // Staleness is not an error: the graph still resolved.
+    expect(r.issues).toEqual([]);
+    expect(r.order.at(-1)).toBe('portfolio');
+  });
+
+  it('clears staleness once the parent adopts the new digest', () => {
+    const digest = `sha256:${'2'.repeat(64)}`;
+    const r = resolveComposite({
+      ...PORTFOLIO,
+      recordedDigests: new Map([['deal-a::rr-a', digest]]),
+      actualDigests: new Map([['rr-a', digest]]),
+    });
+    expect(r.status).toBe('resolved');
+    expect(r.stale).toEqual([]);
+  });
+
+  it('is order-independent across shuffled links', () => {
+    const forward = resolveComposite(PORTFOLIO);
+    const shuffled = resolveComposite({
+      members: [...PORTFOLIO.members].reverse(),
+      links: [...PORTFOLIO.links].reverse(),
+    });
+    expect(shuffled.order).toEqual(forward.order);
+    expect(shuffled.depth).toBe(forward.depth);
+  });
+
+  it('handles a diamond without visiting the shared child twice', () => {
+    const r = resolveComposite({
+      members: ['top', 'left', 'right', 'shared'],
+      links: [
+        { from: 'left', to: 'top' },
+        { from: 'right', to: 'top' },
+        { from: 'shared', to: 'left' },
+        { from: 'shared', to: 'right' },
+      ],
+    });
+    expect(r.status).toBe('resolved');
+    expect(r.order.filter((id) => id === 'shared')).toHaveLength(1);
+    expect(r.order.indexOf('shared')).toBeLessThan(r.order.indexOf('left'));
   });
 });
 
