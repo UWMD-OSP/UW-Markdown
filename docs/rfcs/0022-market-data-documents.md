@@ -300,9 +300,15 @@ matched nothing and fell through to `asset_class_default` — silently discardin
 the analyst's accepted number. It now resolves at the **`user_input` step while
 keeping its own `source` tag**. That placement is deliberate twice over: it
 outranks a live market lookup, so accepting one vintage is not silently
-overwritten by a newer pull; and `CascadeStep` is normatively fixed at seven
-(protocol §IX), so a promoted value is a distinctly tagged value at an existing
-step, never a new step.
+overwritten by a newer pull; and the cascade is normatively ordered with
+reordering forbidden (protocol §IX), so a promoted value is a distinctly tagged
+value at an existing step, never a new step.
+
+> **Erratum (2026-08-16).** This note originally said the cascade was "fixed at
+> seven steps". Extending it is a protocol change rather than an impossibility,
+> and RFC 0021 §5 made one — `inherited_assumption` took it to eight at protocol
+> 1.5.0. The reasoning above is unaffected: `market_data_accepted` still needs no
+> step of its own, and RFC 0022 still required no cascade extension.
 
 **`_meta.market_data_ref` and `DQ-06`.** §4 requires the promoted block's
 `_meta` to record the document, vintage, and digest, but there was no field for

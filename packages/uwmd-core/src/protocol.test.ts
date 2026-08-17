@@ -8,12 +8,20 @@ import {
   lookupIncompleteDataPolicy,
   PROTOCOL_VERSION,
 } from './protocol.js';
+import { CORE_VERSION } from './version.js';
 
 describe('protocol — CASCADE_ORDER', () => {
-  it('lists exactly the seven cascade steps in the documented order', () => {
+  it('lists exactly the eight cascade steps in the documented order', () => {
+    // Seven until RFC 0021 §5 inserted `inherited_assumption` at protocol
+    // 1.5.0. Its position is load-bearing in both directions: below
+    // `user_input`, so a value entered on the deal always beats an inherited
+    // default; above `investor_profile`, because a named ancestor in this
+    // deal's composition DAG is more specific than an institution-wide
+    // preference set.
     expect([...CASCADE_ORDER]).toEqual([
       'user_override',
       'user_input',
+      'inherited_assumption',
       'investor_profile',
       'market_data',
       'asset_class_default',
@@ -74,7 +82,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — version', () => {
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('1.4.0');
+    expect(PROTOCOL_VERSION).toBe('1.5.0');
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {
@@ -85,5 +93,14 @@ describe('protocol — version', () => {
     const versions = readFileSync(resolve(__dirname, '../../../VERSIONS.md'), 'utf8');
     const row = versions.match(/^\|\s*UW Protocol\s*\|\s*\*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*/m);
     expect(row?.[1]).toBe(PROTOCOL_VERSION);
+  });
+
+  it('agrees with the @uwmd/core row in VERSIONS.md too', () => {
+    // The protocol pin above did not cover this row, and it silently went stale
+    // through the 1.4.0 release: the matrix still read 1.3.0 while the package
+    // manifest said 1.4.0. Same lockstep invariant, so same treatment.
+    const versions = readFileSync(resolve(__dirname, '../../../VERSIONS.md'), 'utf8');
+    const row = versions.match(/^\|\s*`@uwmd\/core`\s*\|\s*\*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*/m);
+    expect(row?.[1]).toBe(CORE_VERSION);
   });
 });

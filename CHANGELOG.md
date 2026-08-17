@@ -75,7 +75,10 @@ over that deal could not be reproduced.
   tag and fell through to `asset_class_default`, silently discarding the
   analyst's accepted number. It outranks a live market lookup deliberately:
   accepting one vintage must not be overwritten by a newer pull. `CascadeStep`
-  is unchanged — normatively fixed at seven (protocol §IX).
+  is unchanged; the cascade is normatively ordered and a producer must not
+  reorder it (protocol §IX). Extending it is a protocol change, which RFC 0021
+  §5 subsequently made — `inherited_assumption` takes it to eight at protocol
+  1.5.0 — but RFC 0022 needed no such extension.
 
 ### Changed — RFC status corrections (no behaviour change)
 

@@ -429,11 +429,17 @@ produced the value.
 |---:|---|---|
 | 1 | `user_override` | An explicit user-entered correction. |
 | 2 | `user_input` | An explicit user-entered initial value. |
-| 3 | `investor_profile` | Values declared in the active investor profile (e.g. preferred rate spread). |
-| 4 | `market_data` | A market-data lookup at the time of resolution. |
-| 5 | `asset_class_default` | The published default for the deal's asset class. See §V.8. |
-| 6 | `global_default` | The published global default. |
-| 7 | `system_default` | A hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
+| 3 | `inherited_assumption` | An assumption declared by an ancestor in the composition DAG. See §V.7.1. |
+| 4 | `investor_profile` | Values declared in the active investor profile (e.g. preferred rate spread). |
+| 5 | `market_data` | A market-data lookup at the time of resolution. |
+| 6 | `asset_class_default` | The published default for the deal's asset class. See §V.8. |
+| 7 | `global_default` | The published global default. |
+| 8 | `system_default` | A hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
+
+`market_data_accepted` (RFC 0022 §4) is **not** a cascade step. It is an in-file
+value of record that resolves at step 2 while retaining its own source tag,
+because a market observation an analyst accepted for lack of better evidence
+must stay distinguishable from a value someone entered from diligence.
 
 A producer MAY skip steps that are not available (e.g. no investor
 profile attached). A producer MUST NOT reorder the cascade. The
@@ -444,9 +450,38 @@ array.
 A producer that resolves a value via a step at or below
 `asset_class_default` (i.e. not from observed user or document data)
 SHOULD also stamp the resulting block with `_meta.provisional: true`
-unless the value originated from `investor_profile` or fresher
-`market_data`. This signals the refinement engine that the field is
-a candidate for value-of-information ranking.
+unless the value originated from `inherited_assumption`,
+`investor_profile`, or fresher `market_data`. This signals the
+refinement engine that the field is a candidate for
+value-of-information ranking.
+
+#### V.7.1 Inherited assumptions
+
+*Added at protocol 1.5.0 by [RFC 0021](../docs/rfcs/0021-composable-documents.md)
+§5, taking the cascade from seven steps to eight.*
+
+A composite record MAY declare assumptions its descendants inherit. Resolution
+of `inherited_assumption` is subject to four normative rules:
+
+1. **Composition-scoped only.** Inheritance resolves along the composition DAG.
+   A document not reachable as an ancestor contributes nothing, and there is no
+   ambient or global assumption scope. A standalone record therefore can never
+   resolve at this step, which is why introducing it moves no existing digest.
+2. **Nearest ancestor wins.** Where several ancestors assert one field, the one
+   fewest hops away supplies the value.
+3. **Equidistant ancestors are an error** (`COMP-AMBIGUOUS-INHERIT`), never a
+   silent pick. Diamond inheritance resolves explicitly or not at all: choosing
+   by traversal order would make the answer depend on how the graph was walked.
+4. **The value is traceable.** An inherited value MUST record the asserting
+   ancestor's `document_id` and digest in `_meta.inherited_from`. An inherited
+   value with no named ancestor is indistinguishable from an ambient default,
+   which rule 1 forbids.
+
+Step 3's position is normative in both directions. It sits **below**
+`user_input`, so a value entered on the deal always wins — inheritance supplies
+defaults, it never overrides. It sits **above** `investor_profile`, because an
+assumption asserted by a named ancestor of this specific deal is more specific
+than an institution-wide preference set.
 
 When the resolved value carries an associated range (e.g.
 asset-class defaults publish `{low, central, high}`), the producer

@@ -546,7 +546,9 @@ bus factor, personal security email, and no public RFC venue.
    > in-file `market_data_accepted` tag, so a promoted value fell through to
    > `asset_class_default`. It now resolves at the `user_input` step while
    > keeping its own tag, which also makes it correctly outrank a fresher live
-   > pull. `CascadeStep` is untouched — normatively fixed at seven.
+   > pull. `CascadeStep` was untouched by 0022; RFC 0021 §5 later extended it to
+   > eight steps at protocol 1.5.0, which is a protocol change rather than a
+   > reordering.
 3. **Batch workflow expansion — now scoped as
    [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
    filters/summaries/queue projections in `@uwmd/batch` are built; the expansion

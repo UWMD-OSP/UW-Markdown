@@ -325,6 +325,8 @@ export {
   DEFAULT_MAX_COMPOSITION_DEPTH,
   DEFAULT_MAX_COMPOSITION_MEMBERS,
 } from './composition.js';
+export { AmbiguousInheritanceError, selectInheritedAssumption } from './cascade.js';
+export type { InheritedAssumptions } from './cascade.js';
 export type {
   UWPart,
   ParseUWPartOptions,
