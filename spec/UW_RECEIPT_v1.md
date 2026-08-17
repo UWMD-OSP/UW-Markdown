@@ -251,6 +251,7 @@ would train users to ignore the state.
 | `RCP-10` | unverifiable | Digests disagree and the canonicalization version also differs |
 | `RCP-11` | unverifiable | A referenced input is not available to this verifier |
 | `RCP-12` | failed | A referenced input resolved, but its digest disagrees |
+| `COMP-ROLLUP-DISAGREES` | failed | A stated composite aggregate disagrees with recomputation (§11) |
 
 ### 5.5 Canonicalization-version mismatch
 
@@ -414,3 +415,92 @@ registry applies here: RFC 0016 owns this format, and later amendments extend
 this section rather than forking a parallel one.
 
 A verifier MUST accept both `1.0` and `1.1`.
+
+## 11. Rollup receipts
+
+*Added by [RFC 0021](../docs/rfcs/0021-composable-documents.md) §6. Amends §10
+rather than forking a parallel section, and does **not** bump
+`receipt_version` again — see §10.4.*
+
+### 11.1 What a rollup receipt is
+
+A composite record states aggregate figures over its children. It does not
+compute them in the calc engine: the Tier-3 sandbox has no iteration and no
+array indexing, and RFC 0019 reached exactly that wall for `mixed_use`
+components. A portfolio total over N assets is the same problem at a different
+scale.
+
+Instead the verifier evaluates a **fixed, closed, non-extensible** aggregation
+vocabulary over the named children. Nothing here lets a module or a document
+author introduce a new aggregation, and nothing here makes the Tier-3 evaluator
+iterate. If a general aggregation primitive ever lands, it supersedes this
+section rather than sitting beside it.
+
+```json uw:section=portfolio_rollup v=1
+{
+  "aggregates": [
+    {
+      "id": "portfolio_noi",
+      "fn": "sum",
+      "over": "noi_model.net_operating_income",
+      "members": ["deal:parkview", "deal:riverside"],
+      "value": 1049823
+    }
+  ]
+}
+```
+
+The permitted `fn` values are exactly `sum`, `count`, `min`, `max`, and
+`weighted_average`. `weight_by` is REQUIRED for `weighted_average` and MUST NOT
+appear otherwise. `members` MUST NOT name a member twice — a member counted
+twice inflates a sum, and a portfolio total is exactly the figure nobody
+re-checks by hand.
+
+### 11.2 Two-stage verification
+
+1. **Child stage.** Each named member's own receipt is verified — its record
+   digest is unchanged and its pack outputs recompute. This is existing §5
+   behaviour applied per child.
+2. **Parent stage.** Each aggregate is recomputed by applying `fn` to the `over`
+   path of exactly the members it names, and compared to the stated `value`.
+
+Verdict precedence:
+
+| Condition | Verdict |
+|---|---|
+| Any child `failed` | `failed` |
+| Any child `unverifiable`, or a named member's value unavailable | `unverifiable` |
+| A stated aggregate disagrees with recomputation | `failed` (`COMP-ROLLUP-DISAGREES`) |
+| Otherwise | `verified` |
+
+The child stage is decided **before** any arithmetic. A total computed over a
+child whose own receipt failed must not be reported as agreeing, even when the
+numbers happen to add up.
+
+A member whose value cannot be read is **unevaluable, never zero**. Summing what
+is present would produce a confident portfolio figure over a portfolio the
+verifier never saw, which is the failure mode this section exists to prevent.
+`count` is not exempt: counting members whose values could not be read would
+report a count over a set the verifier did not actually see.
+
+A `weighted_average` whose weights sum to zero is `failed`, not `unverifiable`.
+The verifier holds every value it needs; weights summing to zero make the stated
+average an assertion that cannot be well-defined, which is a defect in the
+record rather than a gap in the verifier.
+
+### 11.3 Relationship to §10
+
+A rollup receipt SHOULD also record each child in `inputs_provenance` with
+`source: "child_record"`. The two mechanisms answer different questions and
+compose: §10 detects that a child *changed* since issuance (`RCP-12`), while
+§11 recomputes whether the stated aggregate *follows* from the children. A
+receipt carrying both catches a mutated child cheaply, by digest, before any
+aggregate arithmetic runs.
+
+### 11.4 Assurance boundary
+
+Restated because a portfolio figure is exactly the kind of number people
+over-trust. A verified rollup means the stated total follows deterministically
+from those child records **as they stand**. It does not mean the children are
+complete, that the portfolio contains every asset it should, that the members
+named are the right members, or that any input is true.

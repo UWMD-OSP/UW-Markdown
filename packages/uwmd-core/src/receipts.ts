@@ -30,7 +30,7 @@ import { compileUWLite } from './lite-bridge.js';
 import { getPackForAssetClass } from './packs/index.js';
 import { parseUWFile } from './parser.js';
 import { PROTOCOL_VERSION } from './protocol.js';
-import type { CalcEvaluationContext, ModuleManifest } from './protocol.js';
+import type { CalcEvaluationContext, ModuleManifest, ProtocolError } from './protocol.js';
 import {
   detectUWSourceRepresentation,
   UW_LITE_REPRESENTATION_ID,
@@ -275,7 +275,14 @@ export type UWReceiptIssueCode =
   /** A referenced input is not available to this verifier. */
   | 'RCP-11'
   /** A referenced input resolved, but its digest disagrees. */
-  | 'RCP-12';
+  | 'RCP-12'
+  /**
+   * A stated composite aggregate disagrees with recomputation (RFC 0021 §6).
+   * Keeps its `COMP-` prefix rather than taking an `RCP-` number: the failure
+   * is a composition claim, and a reader tracing it should land in
+   * `UW_COMPOSITION_v1.md`, not in the receipt spec's own taxonomy.
+   */
+  | 'COMP-ROLLUP-DISAGREES';
 
 export interface UWReceiptIssue {
   code: UWReceiptIssueCode;
@@ -926,6 +933,277 @@ function valuesAgree(stated: unknown, actual: unknown): boolean {
 }
 
 // ─── Shape validation ────────────────────────────────────────────────────────
+
+// ─── Rollup receipts (RFC 0021 §6) ───────────────────────────────────────────
+//
+// A composite states aggregate figures. It does not compute them in the calc
+// engine, because the Tier-3 sandbox has no iteration and no array indexing —
+// RFC 0019 hit exactly this wall for `mixed_use` components, and a portfolio
+// total over N assets is the same problem at a different scale.
+//
+// Rather than change the sandbox, the verifier evaluates a fixed, tiny,
+// non-extensible aggregation vocabulary over the named children. Nothing here
+// lets a module or a document author introduce a new aggregation, and nothing
+// here makes the Tier-3 evaluator iterate. If a general aggregation primitive
+// ever lands, it supersedes this rather than sitting beside it.
+
+/** The complete permitted set. Deliberately closed. */
+export const ROLLUP_FUNCTIONS = Object.freeze([
+  'sum',
+  'count',
+  'min',
+  'max',
+  'weighted_average',
+] as const);
+
+export type RollupFn = (typeof ROLLUP_FUNCTIONS)[number];
+
+export interface UWRollupAggregate {
+  id: string;
+  fn: RollupFn;
+  /** Field path read from each member record, e.g. `noi_model.net_operating_income`. */
+  over: string;
+  /** Exactly the members this aggregate covers. */
+  members: string[];
+  value: number;
+  /** Field path supplying weights. Required for `weighted_average`, forbidden otherwise. */
+  weight_by?: string;
+}
+
+/** The section a composite carries its stated aggregates in. */
+export const PORTFOLIO_ROLLUP_SECTION = 'portfolio_rollup' as const;
+
+export function validateRollupAggregate(candidate: unknown): ProtocolError[] {
+  const errors: ProtocolError[] = [];
+  if (typeof candidate !== 'object' || candidate === null || Array.isArray(candidate)) {
+    return [{ category: 'validate', code: 'COMP-ROLLUP-DISAGREES', message: 'Aggregate must be an object.' }];
+  }
+  const a = candidate as Partial<UWRollupAggregate> & Record<string, unknown>;
+  const fail = (message: string, pointer?: string): void => {
+    errors.push({ category: 'validate', code: 'COMP-ROLLUP-DISAGREES', message, ...(pointer ? { pointer } : {}) });
+  };
+
+  if (typeof a.id !== 'string' || a.id.length === 0) fail('Aggregate requires an id.', 'id');
+  if (!ROLLUP_FUNCTIONS.includes(a.fn as RollupFn)) {
+    fail(`fn must be one of ${ROLLUP_FUNCTIONS.join(', ')}; got '${String(a.fn)}'.`, 'fn');
+  }
+  if (typeof a.over !== 'string' || a.over.length === 0) fail('Aggregate requires an over path.', 'over');
+  if (!Array.isArray(a.members) || a.members.length === 0) {
+    fail('Aggregate requires a non-empty members array.', 'members');
+  } else if (new Set(a.members).size !== a.members.length) {
+    // A member counted twice would inflate a sum, and a portfolio total is
+    // exactly the number nobody re-checks by hand.
+    fail('Aggregate names a member more than once.', 'members');
+  }
+  if (typeof a.value !== 'number' || !Number.isFinite(a.value)) {
+    fail('Aggregate requires a finite stated value.', 'value');
+  }
+  if (a.fn === 'weighted_average') {
+    if (typeof a.weight_by !== 'string' || a.weight_by.length === 0) {
+      fail('weighted_average requires weight_by.', 'weight_by');
+    }
+  } else if (a.weight_by !== undefined) {
+    fail(`weight_by is only meaningful for weighted_average, not '${String(a.fn)}'.`, 'weight_by');
+  }
+  return errors;
+}
+
+/**
+ * Evaluate one aggregate over member values.
+ *
+ * Returns `null` when it cannot be evaluated — a missing member or a
+ * non-numeric value. Null is *not* zero: a portfolio NOI that silently treats
+ * an unreadable child as contributing nothing is the failure this whole design
+ * exists to prevent.
+ */
+export function evaluateRollup(
+  aggregate: UWRollupAggregate,
+  values: ReadonlyMap<string, number>,
+  weights?: ReadonlyMap<string, number>,
+): number | null {
+  const xs: number[] = [];
+  for (const member of aggregate.members) {
+    const v = values.get(member);
+    if (v === undefined || !Number.isFinite(v)) {
+      // `count` is not exempt: counting members whose value could not be read
+      // would report a count over a set the verifier never actually saw.
+      return null;
+    }
+    xs.push(v);
+  }
+  if (xs.length === 0) return null;
+
+  switch (aggregate.fn) {
+    case 'sum':
+      return xs.reduce((acc, x) => acc + x, 0);
+    case 'count':
+      return xs.length;
+    case 'min':
+      return Math.min(...xs);
+    case 'max':
+      return Math.max(...xs);
+    case 'weighted_average': {
+      if (!weights) return null;
+      let numerator = 0;
+      let denominator = 0;
+      for (const [i, member] of aggregate.members.entries()) {
+        const w = weights.get(member);
+        if (w === undefined || !Number.isFinite(w)) return null;
+        numerator += xs[i]! * w;
+        denominator += w;
+      }
+      // Zero total weight has no meaningful average; refuse rather than divide.
+      if (denominator === 0) return null;
+      return numerator / denominator;
+    }
+  }
+}
+
+export interface RollupMember {
+  document_id: string;
+  /** Value at the aggregate's `over` path in this member's record. */
+  value: number | null;
+  /** Value at `weight_by`, when the aggregate is a weighted average. */
+  weight?: number | null;
+  /**
+   * Verdict from verifying this member's own receipt (stage 1). A member with
+   * no receipt of its own is `unverifiable`, never assumed good.
+   */
+  verdict: UWReceiptVerdict;
+}
+
+export interface RollupAggregateResult {
+  id: string;
+  stated: number;
+  recomputed: number | null;
+  agrees: boolean;
+}
+
+export interface RollupVerification {
+  verdict: UWReceiptVerdict;
+  issues: UWReceiptIssue[];
+  aggregates: RollupAggregateResult[];
+}
+
+/**
+ * Stage 2 of rollup verification: recompute each stated aggregate over exactly
+ * the members it names.
+ *
+ * Stage 1 — verifying each child's own receipt — is existing behaviour applied
+ * per child, so the caller performs it and passes the verdicts in. Splitting it
+ * this way keeps this function synchronous and free of I/O, and lets a host
+ * that already verified its children reuse that work.
+ *
+ * Verdict precedence mirrors `verifyReceipt`, and for the same reasons:
+ *
+ *   - any child `failed`            → `failed` (the parent's total rests on it)
+ *   - any child `unverifiable`,
+ *     or a named member absent      → `unverifiable`
+ *   - a stated aggregate disagrees  → `failed` (`COMP-ROLLUP-DISAGREES`)
+ *   - otherwise                     → `verified`
+ *
+ * A verified rollup means the stated total follows deterministically from those
+ * child records as they stand. It does **not** mean the children are complete,
+ * that the portfolio contains every asset it should, or that any input is true.
+ */
+export function verifyRollup(
+  aggregates: readonly UWRollupAggregate[],
+  members: readonly RollupMember[],
+): RollupVerification {
+  const issues: UWReceiptIssue[] = [];
+  const results: RollupAggregateResult[] = [];
+  const byId = new Map(members.map((m) => [m.document_id, m]));
+
+  for (const aggregate of aggregates) {
+    const structural = validateRollupAggregate(aggregate);
+    if (structural.length > 0) {
+      issues.push({
+        code: 'RCP-02',
+        severity: 'failure',
+        message: `Aggregate '${String(aggregate.id)}' is malformed: ${structural.map((e) => e.message).join('; ')}`,
+      });
+      continue;
+    }
+  }
+  if (issues.length > 0) return { verdict: 'failed', issues, aggregates: results };
+
+  // Stage 1 verdicts, decided before any arithmetic: a total computed over a
+  // child whose own receipt failed is not worth reporting as agreeing.
+  let sawUnverifiable = false;
+  for (const member of members) {
+    if (member.verdict === 'failed') {
+      return {
+        verdict: 'failed',
+        issues: [{
+          code: 'RCP-03',
+          severity: 'failure',
+          message: `Child record '${member.document_id}' failed its own receipt verification, so no aggregate over it can be trusted.`,
+        }],
+        aggregates: results,
+      };
+    }
+    if (member.verdict === 'unverifiable') sawUnverifiable = true;
+  }
+
+  for (const aggregate of aggregates) {
+    const values = new Map<string, number>();
+    const weights = new Map<string, number>();
+    let missing: string | null = null;
+    for (const id of aggregate.members) {
+      const member = byId.get(id);
+      if (!member || member.value === null || member.value === undefined) {
+        missing = id;
+        break;
+      }
+      values.set(id, member.value);
+      if (aggregate.fn === 'weighted_average') {
+        if (member.weight === null || member.weight === undefined) {
+          missing = id;
+          break;
+        }
+        weights.set(id, member.weight);
+      }
+    }
+
+    if (missing !== null) {
+      issues.push({
+        code: 'RCP-11',
+        severity: 'indeterminate',
+        message: `Aggregate '${aggregate.id}' names member '${missing}', whose value at '${aggregate.over}' is not available to this verifier.`,
+      });
+      results.push({ id: aggregate.id, stated: aggregate.value, recomputed: null, agrees: false });
+      continue;
+    }
+
+    const recomputed = evaluateRollup(aggregate, values, weights);
+    const agrees = recomputed !== null && valuesAgree(aggregate.value, recomputed);
+    results.push({ id: aggregate.id, stated: aggregate.value, recomputed, agrees });
+    if (!agrees) {
+      issues.push({
+        code: 'COMP-ROLLUP-DISAGREES',
+        severity: 'failure',
+        message: `Aggregate '${aggregate.id}' states ${aggregate.value} but ${aggregate.fn} over ${aggregate.members.length} member(s) at '${aggregate.over}' recomputes to ${recomputed === null ? 'nothing evaluable' : recomputed}.`,
+        expected: String(aggregate.value),
+        actual: recomputed === null ? 'unevaluable' : String(recomputed),
+      });
+    }
+  }
+
+  if (issues.some((i) => i.severity === 'failure')) {
+    return { verdict: 'failed', issues, aggregates: results };
+  }
+  if (sawUnverifiable || issues.some((i) => i.severity === 'indeterminate')) {
+    if (!issues.some((i) => i.severity === 'indeterminate')) {
+      issues.push({
+        code: 'RCP-11',
+        severity: 'indeterminate',
+        message: 'At least one child record could not be verified, so the rollup over it is undecided.',
+      });
+    }
+    return { verdict: 'unverifiable', issues, aggregates: results };
+  }
+  return { verdict: 'verified', issues, aggregates: results };
+}
 
 /** Structural check mirroring `spec/schemas/uw-receipt.schema.json`. */
 export function assertUWReceipt(value: unknown): asserts value is UWReceipt {

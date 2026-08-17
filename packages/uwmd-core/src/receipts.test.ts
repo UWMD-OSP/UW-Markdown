@@ -18,7 +18,14 @@ import {
   UW_LITE_CANONICALIZATION,
   UWX_CANONICALIZATION,
   verifyReceipt,
+  verifyRollup,
+  validateRollupAggregate,
+  ROLLUP_FUNCTIONS,
   type UWReceipt,
+  type UWReceiptVerdict,
+  type UWRollupAggregate,
+  type RollupFn,
+  type RollupMember,
 } from './receipts.js';
 import { quantizeDecimal, resolveRoundTo } from './calc/quantize.js';
 import { PROTOCOL_VERSION } from './protocol.js';
@@ -525,6 +532,145 @@ describe('verifyReceipt', () => {
       const result = await verifyReceipt(variant, raw, { filename: PARKVIEW });
       expect(['verified', 'failed', 'unverifiable']).toContain(result.verdict);
     }
+  });
+});
+
+describe('rollup receipts (RFC 0021 §6)', () => {
+  const NOI = 'noi_model.net_operating_income';
+  const agg = (over: Partial<UWRollupAggregate> = {}): UWRollupAggregate => ({
+    id: 'portfolio_noi',
+    fn: 'sum',
+    over: NOI,
+    members: ['deal:parkview', 'deal:riverside'],
+    value: 1_049_823,
+    ...over,
+  });
+  const member = (
+    document_id: string,
+    value: number | null,
+    verdict: UWReceiptVerdict = 'verified',
+    weight?: number | null,
+  ): RollupMember => ({ document_id, value, verdict, ...(weight === undefined ? {} : { weight }) });
+
+  it('verifies a stated sum over its named children', () => {
+    const r = verifyRollup(
+      [agg()],
+      [member('deal:parkview', 612_400), member('deal:riverside', 437_423)],
+    );
+    expect(r.verdict).toBe('verified');
+    expect(r.aggregates[0]).toMatchObject({ stated: 1_049_823, recomputed: 1_049_823, agrees: true });
+  });
+
+  it('fails when the stated total disagrees with recomputation', () => {
+    const r = verifyRollup(
+      [agg({ value: 1_200_000 })],
+      [member('deal:parkview', 612_400), member('deal:riverside', 437_423)],
+    );
+    expect(r.verdict).toBe('failed');
+    expect(r.issues.map((i) => i.code)).toContain('COMP-ROLLUP-DISAGREES');
+  });
+
+  it('fails the parent when a child failed its own receipt', () => {
+    // Stage 1 decides before any arithmetic: a total over a failed child is not
+    // worth reporting as agreeing even when the numbers happen to add up.
+    const r = verifyRollup(
+      [agg()],
+      [member('deal:parkview', 612_400, 'failed'), member('deal:riverside', 437_423)],
+    );
+    expect(r.verdict).toBe('failed');
+    expect(r.aggregates).toEqual([]);
+  });
+
+  it('is unverifiable when a child is unverifiable, even if the sum agrees', () => {
+    const r = verifyRollup(
+      [agg()],
+      [member('deal:parkview', 612_400, 'unverifiable'), member('deal:riverside', 437_423)],
+    );
+    expect(r.verdict).toBe('unverifiable');
+  });
+
+  it('is unverifiable when a named member is absent, never a smaller total', () => {
+    // The dangerous alternative: summing what is present would produce a
+    // confident portfolio figure over a portfolio the verifier never saw.
+    const r = verifyRollup([agg()], [member('deal:parkview', 612_400)]);
+    expect(r.verdict).toBe('unverifiable');
+    expect(r.issues.map((i) => i.code)).toContain('RCP-11');
+    expect(r.aggregates[0]!.recomputed).toBeNull();
+  });
+
+  it('treats an unreadable member value as unevaluable, not as zero', () => {
+    const r = verifyRollup(
+      [agg()],
+      [member('deal:parkview', 612_400), member('deal:riverside', null)],
+    );
+    expect(r.verdict).toBe('unverifiable');
+    expect(r.aggregates[0]!.recomputed).toBeNull();
+  });
+
+  it('does not exempt count from the missing-member rule', () => {
+    // A count over members whose values could not be read would report a count
+    // over a set the verifier never actually saw.
+    const r = verifyRollup(
+      [agg({ id: 'deal_count', fn: 'count', value: 2 })],
+      [member('deal:parkview', 612_400), member('deal:riverside', null)],
+    );
+    expect(r.verdict).toBe('unverifiable');
+  });
+
+  it('evaluates min, max, and count', () => {
+    const members = [member('deal:parkview', 612_400), member('deal:riverside', 437_423)];
+    expect(verifyRollup([agg({ id: 'a', fn: 'min', value: 437_423 })], members).verdict).toBe('verified');
+    expect(verifyRollup([agg({ id: 'b', fn: 'max', value: 612_400 })], members).verdict).toBe('verified');
+    expect(verifyRollup([agg({ id: 'c', fn: 'count', value: 2 })], members).verdict).toBe('verified');
+  });
+
+  it('evaluates a weighted average', () => {
+    const r = verifyRollup(
+      [agg({ id: 'wa', fn: 'weighted_average', weight_by: 'property.total_units', value: 0.055 })],
+      [
+        member('deal:parkview', 0.05, 'verified', 100),
+        member('deal:riverside', 0.06, 'verified', 100),
+      ],
+    );
+    expect(r.verdict).toBe('verified');
+  });
+
+  it('refuses a weighted average with zero total weight rather than dividing', () => {
+    // `failed`, not `unverifiable`, and the distinction is the point: the
+    // verifier holds every value it needs. Weights summing to zero make the
+    // stated average an assertion that cannot be well-defined, which is a
+    // defect in the record rather than a gap in the verifier. Contrast the
+    // absent-member case above, where the verifier genuinely cannot see.
+    const r = verifyRollup(
+      [agg({ id: 'wa', fn: 'weighted_average', weight_by: 'property.total_units', value: 0 })],
+      [member('deal:parkview', 0.05, 'verified', 0), member('deal:riverside', 0.06, 'verified', 0)],
+    );
+    expect(r.verdict).toBe('failed');
+    expect(r.aggregates[0]!.recomputed).toBeNull();
+    expect(r.issues.map((i) => i.code)).toContain('COMP-ROLLUP-DISAGREES');
+  });
+
+  it('rejects an fn outside the fixed vocabulary', () => {
+    // The vocabulary is closed by design: nothing lets a document author
+    // introduce a new aggregation, and nothing makes the Tier-3 engine iterate.
+    const r = verifyRollup([agg({ fn: 'median' as RollupFn })], []);
+    expect(r.verdict).toBe('failed');
+  });
+
+  it('rejects a member named twice, which would inflate a sum', () => {
+    const errors = validateRollupAggregate(
+      agg({ members: ['deal:parkview', 'deal:parkview'] }),
+    );
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('requires weight_by for weighted_average and forbids it elsewhere', () => {
+    expect(validateRollupAggregate(agg({ fn: 'weighted_average' })).length).toBeGreaterThan(0);
+    expect(validateRollupAggregate(agg({ fn: 'sum', weight_by: 'x' })).length).toBeGreaterThan(0);
+  });
+
+  it('exposes exactly the five permitted functions', () => {
+    expect([...ROLLUP_FUNCTIONS]).toEqual(['sum', 'count', 'min', 'max', 'weighted_average']);
   });
 });
 
