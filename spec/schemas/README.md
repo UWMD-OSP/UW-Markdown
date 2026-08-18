@@ -21,6 +21,9 @@ files live in this directory pending publication on `uwmd.org`.
 | [`issue-remediation.schema.json`](issue-remediation.schema.json) | `IssueRemediation` | Protocol §III.6 |
 | [`module-manifest.schema.json`](module-manifest.schema.json) | `ModuleManifest` | Protocol §X |
 | [`uw-receipt.schema.json`](uw-receipt.schema.json) | `UWReceipt` | [UW Receipt 1.0](../UW_RECEIPT_v1.md) / RFC 0016 |
+| [`section-gaps.schema.json`](section-gaps.schema.json) | `SectionGaps` | Protocol §VII |
+| [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
+| [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |
 
 ## Validating a schema
 
@@ -42,3 +45,7 @@ If you add a new schema:
 2. Use the `https://uwmd.org/schemas/<thing>.schema.json` `$id`.
 3. Add a row to the table above.
 4. CI picks it up automatically — no workflow change needed.
+
+Step 3 is enforced: `npm run verify-indexes` fails when a schema is on disk
+without a row, or a row links a file that is not. Three schemas had drifted out
+of this table before that check existed, which is why it does now.
