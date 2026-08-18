@@ -22,6 +22,7 @@ Script | Does
 `npm run validate-schemas` | `scripts/validate-schemas.mjs`
 `npm run verify-packages` | `scripts/verify-packages.mjs` — what `npm pack` would actually ship
 `npm run verify-lockfile` | `scripts/verify-lockfile.mjs` — every `@uwmd/*` reference links to this tree, and cross-package pins match declared versions
+`npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest and the `protocol.ts` constants
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run
@@ -34,8 +35,10 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
 - **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.4.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
-  two cannot drift apart silently.
-- **Packages** — each `package.json` (`@uwmd/core` 1.3.0, `@uwmd/cli` 1.3.0,
+  two cannot drift apart silently. That test covered *only* the protocol row,
+  which is why the protocol row stayed correct while the package rows went
+  stale through the 1.4.0 release; `verify-versions` now covers every row.
+- **Packages** — each `package.json` (`@uwmd/core` 1.4.0, `@uwmd/cli` 1.4.0,
   `@uwmd/excel` 0.3.0, `@uwmd/report` 0.3.0, `@uwmd/batch` 0.2.0). Dependents pin
   `@uwmd/*` to an exact version, so a core bump is a repin of all of them in the
   same change — `npm run verify-lockfile` fails if one is forgotten. Because the
@@ -43,7 +46,7 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
 
-**Cutting a `@uwmd/core` release** touches four things beyond `package.json`,
+**Cutting a `@uwmd/core` release** touches five things beyond `package.json`,
 each with a guard that fails loudly if you miss it:
 
 1. `CORE_VERSION` in `src/version.ts` — a literal, so the browser bundle has it.
@@ -55,6 +58,10 @@ each with a guard that fails loudly if you miss it:
    `engine_version` must be the **new** one or `RCP-07` reclassifies the
    scenario from `failed` to `unverifiable`. See
    [09](09-conformance-testing.md#conformance-corpus-conformance).
+5. The `Current matrix` rows in [`VERSIONS.md`](../../VERSIONS.md) — both the
+   version cell and the "pairs with `@uwmd/core` 1.x" notes. `verify-versions`.
+   This was the unguarded one: the 1.4.0 release left the matrix advertising
+   1.3.0, and nothing went red until it was found by hand.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,

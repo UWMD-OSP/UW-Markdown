@@ -27,6 +27,18 @@ jobs:
           node-version: 20
       - run: npm run verify-lockfile
 
+  verify-versions:
+    name: Verify version matrix
+    runs-on: ubuntu-latest
+    # Same rationale as the lockfile job: this reads VERSIONS.md, the package
+    # manifests, and protocol.ts as data, so it needs no install and no build.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm run verify-versions
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
