@@ -5,9 +5,12 @@ import {
   resolveComposition,
   resolveComposite,
   validateExternalDirective,
+  externalizeSection,
+  stringifyUWPart,
   type UWPart,
 } from './composition.js';
 import { parseUWFile } from './parser.js';
+import type { UWBlock } from './types.js';
 import {
   AmbiguousInheritanceError,
   resolveValue,
@@ -555,5 +558,106 @@ describe('parseUWPart', () => {
   it('refuses a fragment with no blocks', () => {
     const empty = ['---', 'uwpart_version: "1.0"', 'part_id: p1', 'section: rent_roll', '---', ''].join('\n');
     expect(() => parseUWPart(parseUWFile(empty))).toThrow(/carries no block/);
+  });
+});
+
+describe('externalizeSection — I-1 read backwards', () => {
+  it('round-trips: externalizing then resolving reproduces the inline canonical form', () => {
+    const inline = parseUWFile(inlineRecord(ROWS));
+    const { document, parts } = externalizeSection(inline, {
+      section: 'rent_roll',
+      collectionKey: 'unit_id',
+      collectionPath: 'units',
+      partIdPrefix: 'lease-suite',
+    });
+
+    // The record now carries a directive rather than rows.
+    const block = document.sections['rent_roll'] as unknown as UWBlock;
+    expect((block.content as Record<string, unknown>)['units']).toBeUndefined();
+    expect((block.content as Record<string, unknown>)['external']).toMatchObject({
+      collection_key: 'unit_id',
+      collection_path: 'units',
+      part_count: 3,
+    });
+
+    const resolved = resolveComposition(document, { parts: partsMap(parts) });
+    expect(resolved.status).toBe('resolved');
+    expect(resolved.issues).toEqual([]);
+
+    // The whole point: a packaging decision must not move the digest.
+    expect(canonicalizeUWEnvelope(toUWEnvelope(resolved.document))).toBe(
+      canonicalizeUWEnvelope(toUWEnvelope(inline)),
+    );
+  });
+
+  it('emits fragments that parse standalone', () => {
+    const inline = parseUWFile(inlineRecord(ROWS));
+    const { parts } = externalizeSection(inline, {
+      section: 'rent_roll',
+      collectionKey: 'unit_id',
+      collectionPath: 'units',
+      partIdPrefix: 'lease-suite',
+    });
+
+    // "Parses correctly and hashes properly" is a hard requirement: a fragment
+    // only readable beside its parent is not independently reviewable.
+    for (const part of parts) {
+      const reparsed = parseUWPart(parseUWFile(stringifyUWPart(part)));
+      expect(reparsed.part_id).toBe(part.part_id);
+      expect(reparsed.section).toBe('rent_roll');
+      expect(reparsed.collection_member).toBe(true);
+    }
+  });
+
+  it('round-trips through serialized fragments, not just in-memory ones', () => {
+    const inline = parseUWFile(inlineRecord(ROWS));
+    const { document, parts } = externalizeSection(inline, {
+      section: 'rent_roll',
+      collectionKey: 'unit_id',
+      collectionPath: 'units',
+      partIdPrefix: 'lease-suite',
+    });
+
+    // Through the text form, which is what the CLI actually writes to disk.
+    const reloaded = parts.map((p) => parseUWPart(parseUWFile(stringifyUWPart(p))));
+    const resolved = resolveComposition(document, { parts: partsMap(reloaded) });
+
+    expect(resolved.status).toBe('resolved');
+    expect(canonicalizeUWEnvelope(toUWEnvelope(resolved.document))).toBe(
+      canonicalizeUWEnvelope(toUWEnvelope(inline)),
+    );
+  });
+
+  it('refuses a section that is already externalized', () => {
+    const parsed = parseUWFile(externalRecord(['lease-suite-210']));
+    expect(() =>
+      externalizeSection(parsed, {
+        section: 'rent_roll',
+        collectionKey: 'unit_id',
+        collectionPath: 'units',
+      }),
+    ).toThrow(CompositionError);
+  });
+
+  it('refuses a row with no usable collection key', () => {
+    const inline = parseUWFile(inlineRecord([{ tenant_name: 'No Unit LLC', monthly_rent: 1 }]));
+    expect(() =>
+      externalizeSection(inline, {
+        section: 'rent_roll',
+        collectionKey: 'unit_id',
+        collectionPath: 'units',
+      }),
+    ).toThrow(/no usable 'unit_id'/);
+  });
+
+  it('refuses a section that is absent', () => {
+    const inline = parseUWFile(inlineRecord(ROWS));
+    expect(() =>
+      externalizeSection(inline, {
+        section: 'debt',
+        collectionKey: 'id',
+        collectionPath: 'tranches',
+      }),
+    ).toThrow(/no section 'debt'/);
   });
 });

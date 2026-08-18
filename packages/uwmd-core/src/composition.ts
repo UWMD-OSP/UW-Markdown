@@ -635,3 +635,171 @@ export function resolveComposite(opts: ResolveCompositeOptions): CompositeResolu
     issues,
   };
 }
+
+// ─── Externalization (the inverse of §3 resolution) ──────────────────────────
+
+export interface ExternalizeSectionOptions {
+  /** The section to split out. */
+  section: string;
+  /** Field uniquely identifying a row, e.g. `unit_id`. */
+  collectionKey: string;
+  /** Field the rows currently occupy, e.g. `units`. */
+  collectionPath: string;
+  /** `part_id` prefix; defaults to the section id. */
+  partIdPrefix?: string;
+}
+
+export interface ExternalizationResult {
+  /** The record with the section replaced by a directive. */
+  document: ParsedUWFile;
+  /** The fragments carrying the rows, ordered by collection key. */
+  parts: UWPart[];
+}
+
+/**
+ * Split a collection section into fragments, leaving a directive behind.
+ *
+ * This is the inverse of `resolveComposition`, and the pair is what makes
+ * externalizing a packaging decision rather than a modelling one: resolving the
+ * output of this function MUST reproduce the input's canonical form. That is
+ * I-1 read backwards, and it is asserted as a round-trip rather than assumed.
+ */
+export function externalizeSection(
+  parsed: ParsedUWFile,
+  opts: ExternalizeSectionOptions,
+): ExternalizationResult {
+  const entry = (parsed.sections as Record<string, unknown>)[opts.section];
+  if (entry === undefined) {
+    throw new CompositionError(
+      'COMP-SECTION-MISMATCH',
+      `Record has no section '${opts.section}' to externalize.`,
+    );
+  }
+  const blocks = sectionBlocks(entry);
+  if (blocks.length !== 1) {
+    throw new CompositionError(
+      'COMP-SECTION-MISMATCH',
+      `Section '${opts.section}' holds ${blocks.length} blocks; externalization expects exactly one.`,
+    );
+  }
+  const block = blocks[0]!;
+  const content = block.content as Record<string, unknown>;
+
+  if (content['external'] !== undefined) {
+    throw new CompositionError(
+      'COMP-DIRECTIVE-MALFORMED',
+      `Section '${opts.section}' is already externalized.`,
+    );
+  }
+
+  const rows = content[opts.collectionPath];
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new CompositionError(
+      'COMP-DIRECTIVE-MALFORMED',
+      `Section '${opts.section}' has no non-empty collection at '${opts.collectionPath}'.`,
+    );
+  }
+
+  const prefix = opts.partIdPrefix ?? opts.section;
+  const parts: UWPart[] = [];
+  const seen = new Set<string>();
+
+  for (const row of rows) {
+    if (!isRecord(row)) {
+      throw new CompositionError(
+        'COMP-DIRECTIVE-MALFORMED',
+        `Collection '${opts.collectionPath}' holds a non-object row.`,
+      );
+    }
+    const key = row[opts.collectionKey];
+    if (!nonEmptyString(key)) {
+      throw new CompositionError(
+        'COMP-DIRECTIVE-MALFORMED',
+        `A row has no usable '${opts.collectionKey}' value, so it cannot be addressed as a fragment.`,
+      );
+    }
+    if (seen.has(key)) {
+      throw new CompositionError(
+        'COMP-DUP-KEY',
+        `Two rows claim ${opts.collectionKey} '${key}'; the source collection is already inconsistent.`,
+      );
+    }
+    seen.add(key);
+
+    parts.push({
+      part_id: `${prefix}-${key}`,
+      section: opts.section,
+      collection_member: true,
+      blocks: [
+        {
+          ...block,
+          annotation: inlineAnnotation(block.annotation),
+          // The fragment is independently reviewable, so it carries the
+          // section's provenance. Resolution drops it again (§3.7): inline
+          // rows are plain objects, and I-1 requires the merge to match them.
+          content: { _meta: content['_meta'], ...row } as Record<string, unknown>,
+        } as UWBlock,
+      ],
+    });
+  }
+
+  // Byte-wise on the key, matching resolution's merge order, so the directive
+  // lists parts in the order they will come back.
+  parts.sort((a, b) => byteCompare(a.part_id, b.part_id));
+
+  const { [opts.collectionPath]: _rows, ...restContent } = content;
+  const directive: ExternalSectionDirective = {
+    parts: parts.map((p) => p.part_id),
+    collection_key: opts.collectionKey,
+    collection_path: opts.collectionPath,
+    part_count: parts.length,
+  };
+
+  const sections: Record<string, unknown> = { ...parsed.sections };
+  sections[opts.section] = {
+    ...block,
+    annotation: { ...block.annotation, [EXTERNAL_ANNOTATION_KEY]: true } as UWFenceAnnotation,
+    content: { ...restContent, external: directive },
+  } satisfies UWBlock;
+
+  return {
+    document: { ...parsed, sections: sections as ParsedUWFile['sections'] },
+    parts,
+  };
+}
+
+/** Section id → a readable heading, e.g. `rent_roll` → `Rent Roll`. */
+function sectionHeading(section: string): string {
+  return section
+    .split('_')
+    .map((w) => (w.length > 0 ? w[0]!.toUpperCase() + w.slice(1) : w))
+    .join(' ');
+}
+
+/**
+ * Serialize a fragment to `.uwpart.md` source.
+ *
+ * A fragment must parse standalone, so this emits the frontmatter and a single
+ * section block — everything `parseUWPart` needs and nothing that would make
+ * the file readable only in the context of its parent.
+ */
+export function stringifyUWPart(part: UWPart): string {
+  const lines = [
+    '---',
+    `uwpart_version: "${UWPART_VERSION}"`,
+    `part_id: ${part.part_id}`,
+    `section: ${part.section}`,
+    ...(part.collection_member ? ['collection_member: true'] : []),
+    '---',
+    '',
+    `## ${sectionHeading(part.section)} {#${part.section}}`,
+    '',
+  ];
+  for (const block of part.blocks) {
+    lines.push(`\`\`\`json uw:section=${part.section} v=1`);
+    lines.push(JSON.stringify(block.content, null, 2));
+    lines.push('```');
+    lines.push('');
+  }
+  return lines.join('\n');
+}

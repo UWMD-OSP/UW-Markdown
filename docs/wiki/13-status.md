@@ -63,8 +63,8 @@ not core gaps.
   warnings — an unattributable observation set does not parse. `uwmd market-data
   validate`; `--market-data` on `scope`/`refine`. See [05](05-calc-packs.md) and
   the `market-data` conformance suite.
-- **CLI:** 20 commands (incl. `export` → `.uw.json`, `receipt issue|verify`, and
-  `market-data validate`).
+- **CLI:** 25 commands (incl. `export` → `.uw.json`, `receipt issue|verify`,
+  `market-data validate`, and `compose`/`resolve` for RFC 0021 composition).
   See [08](08-tools.md).
 - **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uwx.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
 - **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON

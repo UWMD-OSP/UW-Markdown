@@ -295,6 +295,8 @@ export {
   resolveComposite,
   DEFAULT_MAX_COMPOSITION_DEPTH,
   DEFAULT_MAX_COMPOSITION_MEMBERS,
+  externalizeSection,
+  stringifyUWPart,
 } from './composition.js';
 export { AmbiguousInheritanceError, selectInheritedAssumption } from './cascade.js';
 export type { InheritedAssumptions } from './cascade.js';
@@ -311,6 +313,8 @@ export type {
   CompositeLink,
   ResolveCompositeOptions,
   StaleMember,
+  ExternalizeSectionOptions,
+  ExternalizationResult,
 } from './composition.js';
 export {
   MARKET_DATA_PROFILE_ID,
