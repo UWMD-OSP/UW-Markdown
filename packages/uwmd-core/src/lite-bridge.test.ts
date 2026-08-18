@@ -148,5 +148,62 @@ describe('UWX bridge rendering and Lite projection', () => {
       lossy: true,
       omitted_paths: expect.arrayContaining(['valuation.advanced_only']),
     });
+    expect(projection.report.externalized_sections).toEqual([]);
+  });
+
+  // RFC 0021 §3: projection is UWX→Lite only and never resolves fragments, so a
+  // section whose rows live in `.uwpart.md` files is invisible to the envelope.
+  // Naming it is the only complete account of the loss available.
+  describe('externalized sections (RFC 0021 §3)', () => {
+    function compiled() {
+      const result = compileUWLite(parseUWLite(LITE));
+      if (!result.ok) throw new Error('fixture must compile');
+      return result.envelope;
+    }
+
+    it('names an externalized section and stays lossy', () => {
+      const envelope = compiled();
+      const valuation = singleBlock(envelope.sections['valuation']);
+      valuation.content['external'] = {
+        parts: ['comp-a', 'comp-b'],
+        collection_key: 'comp_id',
+        collection_path: 'comps',
+        part_count: 2,
+      };
+      const projection = projectUWEnvelopeToLite(envelope);
+
+      expect(projection.report.externalized_sections).toEqual(['valuation']);
+      expect(projection.report.lossy).toBe(true);
+      expect(projection.report.warnings.join(' ')).toContain('valuation');
+    });
+
+    // The regression that motivated the field. Reporting the directive's own
+    // keys as omitted content made an externalized record look *less* lossy
+    // than its inline twin — the wrapper standing in for the contents.
+    it('never reports the directive keys as omitted content', () => {
+      const envelope = compiled();
+      singleBlock(envelope.sections['valuation']).content['external'] = {
+        parts: ['comp-a'],
+        collection_key: 'comp_id',
+        collection_path: 'comps',
+        part_count: 1,
+      };
+      const omitted = projectUWEnvelopeToLite(envelope).report.omitted_paths;
+
+      expect(omitted.filter((p) => p.includes('.external.'))).toEqual([]);
+      expect(omitted).not.toContain('valuation.external.part_count');
+    });
+
+    // Validity is composition's business. A projection that threw here would
+    // deny a reader the one report telling them what the document is missing.
+    it('does not throw on a malformed directive', () => {
+      const envelope = compiled();
+      singleBlock(envelope.sections['valuation']).content['external'] = { parts: 'not-an-array' };
+
+      expect(() => projectUWEnvelopeToLite(envelope)).not.toThrow();
+      expect(projectUWEnvelopeToLite(envelope).report.externalized_sections).toEqual([
+        'valuation',
+      ]);
+    });
   });
 });

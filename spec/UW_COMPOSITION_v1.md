@@ -303,6 +303,20 @@ The UWX-to-Lite projection MUST report every externalized section in its
 omission report rather than silently flattening or dropping it, so the
 projection report stays a complete account of what was lost.
 
+Concretely, the report carries `externalized_sections`, naming each such section,
+and is `lossy` whenever that list is non-empty — a record whose only loss is an
+externalized section omits no *paths*, so path count alone cannot carry the
+signal. The directive's own keys (`parts`, `part_count`, `collection_key`,
+`collection_path`) MUST NOT appear in `omitted_paths`: they describe the
+packaging, not the underwriting data, and listing them reports the wrapper in
+place of the contents it stands for. Doing so is worse than silence, because it
+makes an externalized record appear to omit *fewer* paths than its inline twin
+while it is in fact missing an entire section.
+
+The projected Lite document itself is unchanged by externalization — packaging,
+not modelling, the same principle as I-1 — so the report is the only place the
+difference may show.
+
 ## 6. Error codes
 
 | Code | Meaning |

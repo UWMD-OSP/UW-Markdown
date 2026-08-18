@@ -512,9 +512,17 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
     const projection = projectUWEnvelopeToLite(envelope);
     encoded = projection.content;
     extension = '.uw.md';
-    if (projection.report.lossy) {
+    // Two independent losses, reported separately. A record whose only loss is
+    // an externalized section omits zero *paths*, so folding these together
+    // would print "omitted 0 advanced path(s)" over a missing rent roll.
+    if (projection.report.omitted_paths.length > 0) {
       console.warn(
         `Warning: Lite projection omitted ${projection.report.omitted_paths.length} advanced path(s).`,
+      );
+    }
+    if (projection.report.externalized_sections.length > 0) {
+      console.warn(
+        `Warning: Lite projection omitted ${projection.report.externalized_sections.length} externalized section(s), unresolved here: ${projection.report.externalized_sections.join(', ')}.`,
       );
     }
     if (typeof flags['projection-report'] === 'string') {

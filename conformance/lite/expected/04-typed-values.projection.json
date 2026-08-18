@@ -12,6 +12,7 @@
     "market_analysis.tier",
     "risk_assessment.sponsor_rating"
   ],
+  "externalized_sections": [],
   "warnings": [
     "Projection omits data that is not represented by the selected Lite profile."
   ],

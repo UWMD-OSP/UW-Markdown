@@ -3,6 +3,7 @@ import type {
   UWEnvelopeBlock,
   UWEnvelopeSectionEntry,
 } from './envelope.js';
+import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
 import { FORMAT_VERSION } from './protocol.js';
@@ -56,6 +57,15 @@ export interface UWLiteProjectionReport {
   profile: typeof UW_LITE_BRIDGE_PROFILE;
   projected_paths: string[];
   omitted_paths: string[];
+  /**
+   * Sections the source record externalized into `.uwpart.md` fragments
+   * (RFC 0021 §3), in envelope order. Projection is UWX→Lite only and never
+   * resolves fragments, so the content of these sections is absent from the
+   * projection *and* absent from `omitted_paths` — nothing in the envelope
+   * enumerates rows the record does not carry. Naming the section is the only
+   * complete account available, and §3 requires it.
+   */
+  externalized_sections: string[];
   warnings: string[];
   lossy: boolean;
 }
@@ -309,6 +319,8 @@ export function projectUWEnvelopeToLite(
     lines.push(`# ${headingLabel(section)}`, '', ...fields, '');
   }
 
+  const externalizedSections = collectExternalizedSections(envelope);
+
   const allPaths = collectEnvelopeLeafPaths(envelope);
   const ignored = new Set([
     ...projectedPaths,
@@ -318,8 +330,26 @@ export function projectUWEnvelopeToLite(
     (path) =>
       !ignored.has(path) &&
       !path.includes('._meta.') &&
-      !path.startsWith(`extensions.${UW_LITE_SOURCE_EXTENSION}.`),
+      !path.startsWith(`extensions.${UW_LITE_SOURCE_EXTENSION}.`) &&
+      // The directive's own keys — `parts`, `part_count`, `collection_key` —
+      // are packaging, not underwriting data. Listing them here would report
+      // the wrapper in place of the contents it stands for, which is worse
+      // than silence: an externalized record would appear to omit *fewer*
+      // paths than its inline twin. The section is named instead.
+      !externalizedSections.some((section) =>
+        path.startsWith(`${section}.${EXTERNAL_ANNOTATION_KEY}.`),
+      ),
   );
+
+  const warnings: string[] = [];
+  if (omittedPaths.length > 0) {
+    warnings.push('Projection omits data that is not represented by the selected Lite profile.');
+  }
+  if (externalizedSections.length > 0) {
+    warnings.push(
+      `Projection omits ${externalizedSections.length} externalized section(s) whose contents live in fragments this projection does not resolve: ${externalizedSections.join(', ')}.`,
+    );
+  }
 
   return {
     content: lines.join('\n').replace(/\n+$/g, '\n'),
@@ -327,13 +357,37 @@ export function projectUWEnvelopeToLite(
       profile: UW_LITE_BRIDGE_PROFILE,
       projected_paths: projectedPaths.sort(),
       omitted_paths: omittedPaths.sort(),
-      warnings:
-        omittedPaths.length > 0
-          ? ['Projection omits data that is not represented by the selected Lite profile.']
-          : [],
-      lossy: omittedPaths.length > 0,
+      externalized_sections: externalizedSections,
+      warnings,
+      lossy: omittedPaths.length > 0 || externalizedSections.length > 0,
     },
   };
+}
+
+/**
+ * Sections carrying an RFC 0021 externalization directive, named by the same
+ * path prefix `collectEnvelopeLeafPaths` uses so the two agree on what to drop.
+ *
+ * Presence of the key is the whole test — whether the directive is *well-formed*
+ * is composition's business (`readExternalDirective` throws on a bad one). A
+ * projection must not throw over a malformed directive, and a section pointing
+ * at fragments is externalized either way.
+ */
+function collectExternalizedSections(envelope: UWDocumentEnvelope): string[] {
+  const sections: string[] = [];
+  const isExternal = (block: UWEnvelopeBlock): boolean =>
+    isRecord(block.content) && EXTERNAL_ANNOTATION_KEY in block.content;
+
+  for (const [section, entry] of Object.entries(envelope.sections)) {
+    if (isEnvelopeBlock(entry)) {
+      if (isExternal(entry)) sections.push(section);
+      continue;
+    }
+    for (const [variant, block] of Object.entries(entry)) {
+      if (isExternal(block)) sections.push(`${section}.${variant}`);
+    }
+  }
+  return sections;
 }
 
 export function stringifyUWX(envelope: UWDocumentEnvelope): string {

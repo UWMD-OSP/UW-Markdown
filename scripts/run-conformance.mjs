@@ -1822,6 +1822,51 @@ async function runComposition() {
     }
     record('composition', `rollup/${id}`, 'pass', expected.verdict);
   }
+
+  // ── lite-projection/ — §3: the projection names what it could not see ──────
+  for (const { id, dir } of compositionScenarios('lite-projection')) {
+    const expected = readCase(dir, 'expected.json');
+    const scenario = `lite-projection/${id}`;
+    const projection = projectUWEnvelopeToLite(
+      toUWEnvelope(parseUWFile(readFileSync(join(dir, 'record.uwx.md'), 'utf8'))),
+    );
+    const report = projection.report;
+
+    if (JSON.stringify(report.externalized_sections) !== JSON.stringify(expected.externalized_sections)) {
+      record('composition', scenario, 'fail', `externalized_sections ${JSON.stringify(report.externalized_sections)}, expected ${JSON.stringify(expected.externalized_sections)}`);
+      continue;
+    }
+    if (expected.lossy !== undefined && report.lossy !== expected.lossy) {
+      record('composition', scenario, 'fail', `lossy ${report.lossy}, expected ${expected.lossy}`);
+      continue;
+    }
+
+    // The regression this suite exists to hold: the directive's own keys must
+    // never stand in for the contents they point at. Reporting `external.parts`
+    // as omitted data made an externalized record look *less* lossy than its
+    // inline twin.
+    if (expected.omits_no_directive_paths) {
+      const leaked = report.omitted_paths.filter((p) => p.includes('.external.'));
+      if (leaked.length > 0) {
+        record('composition', scenario, 'fail', `directive keys leaked into omitted_paths: ${leaked.join(', ')}`);
+        continue;
+      }
+    }
+
+    // I-1, one layer up: externalization is packaging, so the projected Lite
+    // document is unchanged by it. Only the report may differ.
+    if (expected.matches_inline_projection) {
+      const inline = projectUWEnvelopeToLite(
+        toUWEnvelope(parseUWFile(readFileSync(join(dir, 'inline.uwx.md'), 'utf8'))),
+      );
+      if (projection.content !== inline.content) {
+        record('composition', `${scenario} [content]`, 'fail', 'projected Lite document differs from the inline twin');
+        continue;
+      }
+      record('composition', `${scenario} [content]`, 'pass');
+    }
+    record('composition', scenario, 'pass', report.externalized_sections.join(', '));
+  }
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────

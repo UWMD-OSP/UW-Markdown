@@ -49,6 +49,32 @@ over that deal could not be reproduced.
   every attribution requirement proved to *fail* rather than store a blank, plus
   vintage selection, the tie error, staleness fall-through, and promotion).
 
+### Added — the Lite projection accounts for externalized sections (RFC 0021 §3)
+
+- **`UWLiteProjectionReport.externalized_sections`** — sections the record stores
+  in `.uwpart.md` fragments. Projection is UWX→Lite only and never resolves
+  fragments, so those rows are absent from the envelope and cannot appear in
+  `omitted_paths`; naming the section is the only complete account available, and
+  §3 requires it. A record whose only loss is an externalized section is now
+  `lossy` even though it omits no *paths*. **A new required field on the report
+  type** — additive for anything reading the report, a compile change for
+  anything constructing one.
+- **The directive's own keys no longer stand in for the contents they point at.**
+  `external.parts[0]`, `part_count`, and `collection_key` had been reported as
+  omitted data. That is worse than silence: an externalized record listed *seven*
+  omitted paths where its inline twin listed *ten*, so a consumer comparing the
+  two would conclude the externalized record lost less, while it was in fact
+  missing an entire rent roll. The keys are packaging and are now excluded.
+- Detection is key-presence, deliberately not validity: a projection MUST NOT
+  throw over a malformed directive, since the report is exactly what tells a
+  reader what the document is missing. Validity stays composition's business.
+- `uwmd convert` warns on the two losses separately — folding them together
+  printed `omitted 0 advanced path(s)` over a missing section.
+- New conformance scenario `composition/lite-projection/externalized/`
+  (2 assertions), including that the projected Lite document is byte-identical to
+  its inline twin: externalization is packaging, so the report is the only place
+  the difference may show. Corpus 193 → 195.
+
 ### Added — shared receipt extension section
 
 - **`inputs_provenance` (receipt format 1.1)** — artifacts beyond the subject
