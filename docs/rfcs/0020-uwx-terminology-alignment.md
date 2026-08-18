@@ -1,7 +1,7 @@
 ---
 rfc: 0020
 title: Align the format spec and examples with the .uwx.md extension
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-08-13
 affects:

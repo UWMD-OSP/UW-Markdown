@@ -1,7 +1,7 @@
 ---
 rfc: 0024
 title: Pin the iterative solvers so two engines agree on a root
-status: accepted
+status: implemented
 author: UW Markdown Working Group
 created: 2026-08-15
 accepted: 2026-08-15

@@ -2,7 +2,7 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-16 at `d595136`+ (full pass: build green across all
+**Last verified:** 2026-08-17 at `90711f0` (full pass: build green across all
 workspaces; **906 tests** — 773 core, 69 excel, 57 cli, 4 batch, 3 report — plus
 **63 web-editor**; **175 conformance** assertions including the Tier-4 replay,
 module, package, receipts, and market-data suites; 12/12 schemas valid; Biome
@@ -71,7 +71,7 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **147 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **175 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, and `packages` suites. CI now runs the runner's
   **default** suite list rather than a pinned `--tier=`, which is what the
   earlier claim of replay coverage assumed but did not have: `ci.yml` pinned
@@ -385,8 +385,8 @@ not core gaps.
   > pack rather than asserted. Projecting the full record back to Lite reports
   > **7 projected paths against 1,215 omitted**, which is the most concrete
   > statement of the split the repo can make.
-- **Docs on-ramps partial.** Tutorial/glossary/tools-comparison exist; cookbook,
-  FAQ/troubleshooting, and a calc "calling-convention" guide are still missing.
+- **Docs on-ramps.** Tutorial, glossary, tools-comparison, cookbook, FAQ, and the
+  calc "calling-convention" guide all ship on the docs site (`tools/docs-site/guide/`).
 
 ## 🔴 Stubs / not implemented
 
@@ -513,10 +513,11 @@ bus factor, personal security email, and no public RFC venue.
 > establishes the extension section, and **`receipt_version` bumps once** to
 > cover both.
 >
-> **Still blocked on acceptance, not on code.** Two RFCs remain drafted:
+> **Still blocked on acceptance, not on code.** One RFC remains drafted:
 > [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition — gates
-> the last asset class) and [0020](../rfcs/0020-uwx-terminology-alignment.md)
-> (the `.uwx.md` terminology correction, whose prose has already landed).
+> the last asset class). [0020](../rfcs/0020-uwx-terminology-alignment.md) was
+> flipped to `implemented` 2026-08-17: its prose had already landed in the specs
+> and examples, so `draft` was recording a gap that no longer existed.
 
 ### Large
 
@@ -605,8 +606,9 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Ongoing
 
-8. **Docs on-ramps.** Cookbook, FAQ/troubleshooting, and a calc
-    "calling-convention" guide are still missing.
+8. ~~**Docs on-ramps.**~~ **Shipped.** `cookbook.md`, `faq.md`, and
+    `calc-conventions.md` are live under `tools/docs-site/guide/`; the remaining
+    docs work is upkeep, not a gap.
 9. **Operational launch gates** — single-maintainer bus factor, personal
     security email, and no public RFC venue remain review-flagged. The Excel
     add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
