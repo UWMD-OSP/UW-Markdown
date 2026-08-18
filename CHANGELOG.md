@@ -77,6 +77,25 @@ over that deal could not be reproduced.
   accepting one vintage must not be overwritten by a newer pull. `CascadeStep`
   is unchanged — normatively fixed at seven (protocol §IX).
 
+### Changed — RFC status corrections (no behaviour change)
+
+Four RFCs were recording a status the repository had already outgrown. Nothing
+in the code, specs, or corpus changes; the index now matches what shipped.
+
+- **0017** (Lite/UWX source split), **0020** (`.uwx.md` terminology alignment),
+  **0024** (iterative-function determinism), and **0025** (Lite percent decimal
+  exactness) move to **`implemented`**. Each meets the bar the RFC process sets
+  for that status — shipped in a release, with a CHANGELOG entry already present
+  above or in 1.3.0/1.4.0.
+- **0020 was the misleading one.** It sat at `draft` while its entire content —
+  the format/protocol/XML/CSV spec realignment and the ten worked examples — had
+  already landed, so the roadmap listed it as blocking work that was in fact
+  finished. `spec/UW_FORMAT_SPEC_v1.md` now carries 20 `.uwx.md` references.
+- **0014 and 0016 deliberately stay `accepted`.** Both are genuinely partial:
+  0014 has package publication outstanding, and 0016 ships unsigned-only
+  receipts pending the RFC 0010 signing package. Marking them `implemented`
+  would overstate them.
+
 ## [1.4.0] - 2026-08-16
 
 > ### ⚠️ Read before upgrading — Lite percent digests move (RFC 0025)
