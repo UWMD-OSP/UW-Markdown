@@ -1,10 +1,11 @@
 ---
 rfc: 0021
 title: Composable UWX documents — section externalization, composites, and rollup receipts
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-08-13
 accepted: 2026-08-13
+implemented: 2026-08-18
 depends_on:
   - 0018
 affects:
@@ -406,3 +407,66 @@ to a later RFC, and none changes the invariance rule the design rests on.
   from v1 because it complicates I-1 considerably for unclear benefit.
 - Interaction with RFC 0010 signed blocks: whether a signature over a resolved
   form is meaningful when the parts are individually signed.
+
+## Errata
+
+### Accepted 2026-08-18, found while implementing
+
+Three gaps in this RFC as accepted, all found by building it. None changes the
+design or the invariance rule; each is something the RFC left unsaid that an
+implementation cannot leave unsaid. Recorded here rather than edited into the
+sections above, so the reasoning survives — the same argument RFC 0017 makes in
+its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
+section. Where this RFC and
+[`spec/UW_COMPOSITION_v1.md`](../../spec/UW_COMPOSITION_v1.md) disagree, the
+spec is normative; it already carries all three.
+
+**1. The directive needs `collection_path`, and §3 does not have it.** The
+directive in §3 declares `collection_key`, which says which field *identifies* a
+row. It never says which field the merged rows *occupy*, and I-1 cannot hold
+without that: the resolved content has to equal the inline content exactly, and
+`units` and `rows` are different documents. §3's merge semantics say "each part
+contributes its rows" and stop one step short of where the rows land.
+
+The alternative was a section-to-collection-field table held in the library.
+That is precisely the hand-maintained mirror that has already drifted for
+section ids, so the answer is declared in the document instead. `collection_path`
+is REQUIRED alongside `collection_key` and forbidden without it. See spec §3.2.
+
+**2. §7 has no code for a structurally invalid input.** The table above covers
+every *semantic* failure — a duplicate key, a bad count, a cycle — and none of
+the structural ones every parser needs first. `COMP-PART-MALFORMED` (a fragment
+missing required frontmatter, carrying a `deal_id`, or declaring an unregistered
+section) and `COMP-DIRECTIVE-MALFORMED` (a directive that is not well-formed,
+mixes part kinds, or omits `collection_key`/`collection_path` for a collection)
+are added. See spec §6.
+
+**3. Per-row `_meta` is dropped on merge, and §2 does not say so.** §2 gives each
+fragment its own `_meta`, and it keeps it — as provenance for the fragment as an
+independently reviewable artifact. What the RFC never says is what becomes of
+that `_meta` when the fragment becomes a *row*. I-1 settles it: in the inline
+twin a collection's rows are plain objects and the section's `_meta` sits on the
+section block, so a merge carrying per-row `_meta` into the rows would produce
+content the inline form never has. See spec §3.7.
+
+## Implementation notes (2026-08-18)
+
+Beyond the errata, two things the implementation settled.
+
+**The cascade went from seven steps to eight, and position was the whole
+question.** §5 asks for `inherited_assumption` "between `user_input` and
+`market_data`" and its diagram omits `investor_profile` entirely, so it does not
+actually say where the step lands relative to a profile. Resolved on the merits:
+below `user_input`, so a value entered on this deal always beats an inherited
+one; above `investor_profile`, because an assumption from a named ancestor of
+*this* deal is more specific than an institution-wide preference set. Recorded in
+protocol §V.7.1 rather than left to be re-derived. Protocol 1.4.0 → 1.5.0.
+
+**§3's Lite rule was violated in a way that read as compliance.** The projection
+did report *something* for an externalized section — the directive's own keys,
+`external.parts[0]` and `part_count` and `collection_key`. So an externalized
+record listed seven omitted paths where its inline twin listed ten, and a
+consumer comparing the two would conclude the externalized record had lost
+*less*, while it was in fact missing an entire rent roll. The report now names
+the sections in `externalized_sections` and excludes the directive keys as
+packaging. See spec §5.

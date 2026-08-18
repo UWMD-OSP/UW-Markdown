@@ -144,7 +144,8 @@ The alternative was a section-to-collection-field table held in the library.
 That is precisely the hand-maintained mirror that has already drifted for
 section ids, so the answer is declared in the document instead.
 
-`collection_path` is **not** in RFC 0021 as accepted; see Appendix A.
+`collection_path` was not in RFC 0021 as originally accepted. It was added to
+the RFC by erratum on 2026-08-18 and is normative here; see Appendix A.
 
 ### 3.3 Whole-section externalization
 
@@ -374,7 +375,13 @@ constants, and the error taxonomy. Browser-safe: it performs no I/O.
 
 Recorded rather than quietly absorbed, per the process argument in RFC 0017's
 own [Process failure](../docs/rfcs/0017-uw-lite-source-representation.md#process-failure)
-section. Neither item changes the design; both are gaps found by building it.
+section. None changes the design; all three are gaps found by building it.
+
+**All three were accepted into RFC 0021 on 2026-08-18** and appear in its
+[Errata](../docs/rfcs/0021-composable-documents.md#errata) section. They are
+listed here as well because this document is the normative one: a reader
+holding only the spec should not have to consult the RFC to learn that its
+§3 directive is incomplete.
 
 1. **`collection_path` is required and is not in the RFC.** RFC 0021 §3
    declares `collection_key` but never says which field the merged rows occupy.

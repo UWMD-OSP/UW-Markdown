@@ -34,7 +34,7 @@
     "collection_path": {
       "type": "string",
       "minLength": 1,
-      "description": "Field within the section content where merged rows land, e.g. `units`. Required alongside `collection_key`. Digest invariance (I-1) cannot hold without it: the resolved content must equal the inline content exactly, and `units` and `rows` are different documents. Not present in RFC 0021 as accepted — recorded as erratum in UW Composition 1.0 Appendix A."
+      "description": "Field within the section content where merged rows land, e.g. `units`. Required alongside `collection_key`. Digest invariance (I-1) cannot hold without it: the resolved content must equal the inline content exactly, and `units` and `rows` are different documents. Not present in RFC 0021 as originally accepted; added to the RFC by erratum on 2026-08-18 and recorded in UW Composition 1.0 Appendix A."
     }
   }
 }

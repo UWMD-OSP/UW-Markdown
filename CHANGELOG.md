@@ -8,6 +8,116 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — composable UWX documents (RFC 0021) ⚠️ protocol 1.4.0 → 1.5.0
+
+A record can hold a section in separate `.uwpart.md` **fragments**, reference
+whole child records to form a composite, inherit assumptions along that graph,
+and state aggregates a verifier recomputes. One invariant carries the design and
+everything else follows from it:
+
+> **I-1.** An externalized record, resolved, has the same semantic digest as the
+> byte-identical inline record it expands to.
+
+That is what makes composition **packaging rather than modelling**:
+externalizing a section is not a semantic change, does not alter identity, and
+does not invalidate a receipt issued over the resolved form.
+
+- **`spec/UW_COMPOSITION_v1.md`** — normative fragment grammar, the
+  externalization directive, resolution, merge order, and bounds. Three schemas:
+  `uwpart`, `uw-external-section`, `uw-rollup`. Schema corpus 12 → 15.
+- **`composition.ts`** — `parseUWPart`, `resolveComposition`, `resolveComposite`,
+  `externalizeSection`, `stringifyUWPart`, bounds, and a 9-code `COMP-*`
+  taxonomy. Browser-safe; performs no I/O.
+- **Refusals, not degradations.** A missing fragment leaves the section
+  externalized and reports `COMP-UNRESOLVED` — never a smaller collection. This
+  is the most dangerous failure the design admits: a rent roll missing four
+  tenants still totals, still validates, and still produces a confident DSCR.
+  `part_count` is redundant with `parts.length` on purpose, so a truncated array
+  is detectable rather than silently smaller.
+- **Merge order is byte-wise on UTF-8, not `localeCompare`** — a locale-dependent
+  order would make the canonical form, and therefore the digest, vary by machine.
+- **`stale` is a third state, distinct from `failed`.** An ancestor whose
+  recorded child digest no longer matches has an unadopted correction, not
+  evidence of tampering. Checked on the **edge**: a recorded digest is the
+  parent's view of the child, so the same child can be current for one parent and
+  stale for another.
+- **The DFS is iterative on purpose.** A recursive walk would blow the JS stack
+  before reaching the depth bound on a hostile graph, turning a clean
+  `COMP-DEPTH` refusal into a crash. Two cycle paths are covered: one reachable
+  from a root, caught during the walk, and one with *no* root, caught by a
+  reachability check afterwards — without the second, a fully-cyclic graph would
+  report a clean resolve over zero members.
+- **The cascade goes from seven steps to eight** (`inherited_assumption`), which
+  is why the protocol minor-bumps. Position is normative in both directions:
+  below `user_input`, so a value entered on the deal always beats an inherited
+  one; above `investor_profile`, because an assumption from a named ancestor of
+  *this* deal is more specific than an institution-wide preference set. The RFC
+  says only "between `user_input` and `market_data`" and its diagram omits
+  `investor_profile`, so it does not actually say — resolved on the merits and
+  recorded in protocol §V.7.1.
+- **Rollup receipts** sidestep the wall RFC 0019 hit. The Tier-3 sandbox has no
+  iteration, so a composite *states* its aggregates and the verifier recomputes
+  them over named child digests using a fixed, non-extensible `fn` vocabulary. No
+  change to the calc engine. A failed child short-circuits **before** any
+  arithmetic runs, so a total over an unverified child is never reported as
+  agreeing even when the numbers happen to add up.
+- **CLI, 20 → 25 commands** — `uwmd resolve`, `uwmd compose --externalize`
+  (non-destructive by default; `--in-place` and `--dry-run` available), and
+  `--resolved` on `verify` and `export`. Without `--resolved` an externalized
+  record verifies as a *directive* and exports a rent roll that is a list of
+  filenames, neither of which is the document anyone means.
+- **`composition` conformance suite, 20 assertions.** Corpus 175 → 195. I-1 is
+  asserted on the canonical form *and* the digest, never on source bytes (those
+  differ by construction — that is the point), and again against a shuffled
+  `parts` array. The two I-1 assertions were verified by breaking them: mutating
+  a fragment's rent, and reordering the inline twin's rows. Each produced exactly
+  one failure in exactly the expected fixture.
+
+**Three errata against RFC 0021 as accepted, all found by building it and all
+accepted into the RFC on 2026-08-18.** None changes the design. (1) The directive
+needs `collection_path`: `collection_key` says which field *identifies* a row and
+never says which field the rows *occupy*, and I-1 cannot hold without it —
+`units` and `rows` are different documents. The alternative was a
+section-to-collection-field table in the library, which is precisely the
+hand-maintained mirror that has already drifted for section ids. (2) §7's table
+had a code for every *semantic* failure and none for a structurally invalid
+input: `COMP-PART-MALFORMED` and `COMP-DIRECTIVE-MALFORMED` are added. (3) The
+RFC gives each fragment its own `_meta` but never says what becomes of it when
+the fragment becomes a *row*; I-1 settles it — dropped, since the inline twin's
+rows are plain objects.
+
+RFC 0021 moves to **`implemented`**. Two questions it left open stay open and are
+deliberately not answered here: whether a fragment may itself externalize
+(forbidden by omission in the RFC, now stated explicitly in spec §2.3), and
+whether a section may be *partially* externalized, which complicates I-1
+considerably for unclear benefit.
+
+### Added — the Lite projection accounts for externalized sections (RFC 0021 §3)
+
+- **`UWLiteProjectionReport.externalized_sections`** — sections the record stores
+  in `.uwpart.md` fragments. Projection is UWX→Lite only and never resolves
+  fragments, so those rows are absent from the envelope and cannot appear in
+  `omitted_paths`; naming the section is the only complete account available, and
+  §3 requires it. A record whose only loss is an externalized section is now
+  `lossy` even though it omits no *paths*. **A new required field on the report
+  type** — additive for anything reading the report, a compile change for
+  anything constructing one.
+- **The directive's own keys no longer stand in for the contents they point at.**
+  `external.parts[0]`, `part_count`, and `collection_key` had been reported as
+  omitted data. That is worse than silence: an externalized record listed *seven*
+  omitted paths where its inline twin listed *ten*, so a consumer comparing the
+  two would conclude the externalized record lost less, while it was in fact
+  missing an entire rent roll. The keys are packaging and are now excluded.
+- Detection is key-presence, deliberately not validity: a projection MUST NOT
+  throw over a malformed directive, since the report is exactly what tells a
+  reader what the document is missing. Validity stays composition's business.
+- `uwmd convert` warns on the two losses separately — folding them together
+  printed `omitted 0 advanced path(s)` over a missing section.
+- New conformance scenario `composition/lite-projection/externalized/`
+  (2 assertions), including that the projected Lite document is byte-identical to
+  its inline twin: externalization is packaging, so the report is the only place
+  the difference may show. Corpus 193 → 195.
+
 ### Added — market data as an attributable document (RFC 0022)
 
 `MarketDataLookup` had been interface-only since the v1.1 train, so the top two
@@ -48,32 +158,6 @@ over that deal could not be reproduced.
   `examples/market-data/`, and a `market-data` conformance suite (14 assertions:
   every attribution requirement proved to *fail* rather than store a blank, plus
   vintage selection, the tie error, staleness fall-through, and promotion).
-
-### Added — the Lite projection accounts for externalized sections (RFC 0021 §3)
-
-- **`UWLiteProjectionReport.externalized_sections`** — sections the record stores
-  in `.uwpart.md` fragments. Projection is UWX→Lite only and never resolves
-  fragments, so those rows are absent from the envelope and cannot appear in
-  `omitted_paths`; naming the section is the only complete account available, and
-  §3 requires it. A record whose only loss is an externalized section is now
-  `lossy` even though it omits no *paths*. **A new required field on the report
-  type** — additive for anything reading the report, a compile change for
-  anything constructing one.
-- **The directive's own keys no longer stand in for the contents they point at.**
-  `external.parts[0]`, `part_count`, and `collection_key` had been reported as
-  omitted data. That is worse than silence: an externalized record listed *seven*
-  omitted paths where its inline twin listed *ten*, so a consumer comparing the
-  two would conclude the externalized record lost less, while it was in fact
-  missing an entire rent roll. The keys are packaging and are now excluded.
-- Detection is key-presence, deliberately not validity: a projection MUST NOT
-  throw over a malformed directive, since the report is exactly what tells a
-  reader what the document is missing. Validity stays composition's business.
-- `uwmd convert` warns on the two losses separately — folding them together
-  printed `omitted 0 advanced path(s)` over a missing section.
-- New conformance scenario `composition/lite-projection/externalized/`
-  (2 assertions), including that the projected Lite document is byte-identical to
-  its inline twin: externalization is packaging, so the report is the only place
-  the difference may show. Corpus 193 → 195.
 
 ### Added — shared receipt extension section
 
