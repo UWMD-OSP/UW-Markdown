@@ -96,6 +96,27 @@ in the code, specs, or corpus changes; the index now matches what shipped.
   receipts pending the RFC 0010 signing package. Marking them `implemented`
   would overstate them.
 
+### Added — `verify-versions`, a guard over the compatibility matrix
+
+`VERSIONS.md` calls itself the authoritative compatibility matrix, and nothing
+enforced that. It drifted twice without anything going red: the 1.4.0 release
+bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
+`tools/vscode-uwmd` sat at 0.1.0 while the extension had moved to 0.2.0.
+
+- **`npm run verify-versions`** (`scripts/verify-versions.mjs`) checks every
+  `Current matrix` row against its `package.json`, the `UW Protocol` and
+  `.uw.md format spec` rows against `PROTOCOL_VERSION` / `FORMAT_VERSION` in
+  `protocol.ts`, and every "pairs with `@uwmd/core` 1.x" note against core's
+  actual series. It reads files as data, so it needs no install and no build,
+  and runs as its own CI job alongside the lockfile check.
+- **Scoped to `Current matrix` only.** The `Planned` tables below it name
+  candidate versions that are *supposed* to differ from what ships.
+- **Why the gap existed.** `protocol.test.ts` already asserted the `UW Protocol`
+  row matched `PROTOCOL_VERSION` — which is exactly why that row never drifted
+  while the package rows did. The guard generalizes that one check to every row.
+- Cutting a `@uwmd/core` release now has five guarded steps rather than four;
+  `VERSIONS.md` was the unguarded one.
+
 ## [1.4.0] - 2026-08-16
 
 > ### ⚠️ Read before upgrading — Lite percent digests move (RFC 0025)
