@@ -5,7 +5,8 @@
 // Usage:
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
-//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,receipts,modules.
+//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
+//                receipts,market-data,modules,packages,composition.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -13,7 +14,8 @@
 //                canonicalization, rendering, and the deal-summary-v1 bridge)
 //                and `receipts` is an artifact-level suite (RFC 0016 issuance,
 //                verification, and refusal) — neither is a protocol tier, so
-//                both are named rather than numbered.
+//                both are named rather than numbered. `market-data`,
+//                `packages`, and `composition` are named for the same reason.
 //   --update     Regenerate expected/* files from current library output.
 //                Use carefully — this overwrites the baseline.
 //   --json       Emit machine-readable JSON summary to stdout.
@@ -64,6 +66,14 @@ import {
   selectCurrentMarketData,
   promoteMarketObservation,
   resolveValue,
+  parseUWPart,
+  resolveComposition,
+  resolveComposite,
+  selectInheritedAssumption,
+  verifyRollup,
+  toUWEnvelope,
+  canonicalizeUWEnvelope,
+  computeEnvelopeDigest,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -78,7 +88,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1555,6 +1565,265 @@ async function runPackages() {
   }
 }
 
+// ─── Composition (RFC 0021) ──────────────────────────────────────────────────
+// I-1 is the assertion this suite exists to prove: an externalized record and
+// its inline twin must produce identical canonical forms and identical semantic
+// digests. Everything else here guards a way that can silently stop being true.
+
+const COMPOSITION_DIR = join(CONFORMANCE_DIR, 'composition');
+
+function compositionScenarios(kind) {
+  const dir = join(COMPOSITION_DIR, kind);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(dir, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * Load a scenario's fragments. Returns `{ parts }` or `{ error }` — a fragment
+ * that refuses to parse is a result, not a crash: several reject fixtures are
+ * refused at exactly this point.
+ */
+function loadParts(dir) {
+  const partsDir = join(dir, 'parts');
+  const parts = new Map();
+  if (!existsSync(partsDir)) return { parts };
+  for (const file of readdirSync(partsDir).filter((f) => f.endsWith('.uwpart.md')).sort()) {
+    const path = join(partsDir, file);
+    try {
+      const part = parseUWPart(parseUWFile(readFileSync(path, 'utf8'), { filename: path }), { filename: file });
+      parts.set(part.part_id, part);
+    } catch (e) {
+      return { parts, error: e };
+    }
+  }
+  return { parts };
+}
+
+const readCase = (dir, name) => JSON.parse(readFileSync(join(dir, name), 'utf8'));
+
+/** Every issue code a resolution reported, for matching against a fixture. */
+const issueCodes = (resolution) => resolution.issues.map((i) => i.code);
+
+async function runComposition() {
+  if (!existsSync(COMPOSITION_DIR)) {
+    record('composition', '(none)', 'pass', 'no composition fixtures');
+    return;
+  }
+
+  // ── resolve/ — I-1 itself ──────────────────────────────────────────────────
+  for (const { id, dir } of compositionScenarios('resolve')) {
+    const expected = readCase(dir, 'expected.json');
+    const { parts, error } = loadParts(dir);
+    if (error) {
+      record('composition', `resolve/${id}`, 'fail', `fragment failed to parse: ${error.message}`);
+      continue;
+    }
+    const parsed = parseUWFile(readFileSync(join(dir, 'record.uwx.md'), 'utf8'));
+    const resolution = resolveComposition(parsed, { parts });
+
+    if (resolution.status !== expected.status) {
+      record('composition', `resolve/${id}`, 'fail', `status ${resolution.status}, expected ${expected.status}: ${issueCodes(resolution).join(', ')}`);
+      continue;
+    }
+    if (expected.externalized && JSON.stringify(resolution.externalized) !== JSON.stringify(expected.externalized)) {
+      record('composition', `resolve/${id}`, 'fail', `externalized ${JSON.stringify(resolution.externalized)}, expected ${JSON.stringify(expected.externalized)}`);
+      continue;
+    }
+
+    if (expected.matches_inline) {
+      const inline = parseUWFile(readFileSync(join(dir, 'inline.uwx.md'), 'utf8'));
+      // Compared on the canonical form and the digest, never on source bytes:
+      // source bytes differ by construction, and that is the point of I-1.
+      const got = canonicalizeUWEnvelope(toUWEnvelope(resolution.document));
+      const want = canonicalizeUWEnvelope(toUWEnvelope(inline));
+      if (got !== want) {
+        record('composition', `resolve/${id} [canonical]`, 'fail', 'resolved canonical form differs from the inline twin');
+        continue;
+      }
+      record('composition', `resolve/${id} [canonical]`, 'pass');
+
+      const gotDigest = await computeEnvelopeDigest(toUWEnvelope(resolution.document));
+      const wantDigest = await computeEnvelopeDigest(toUWEnvelope(inline));
+      if (gotDigest !== wantDigest) {
+        record('composition', `resolve/${id} [digest]`, 'fail', `${gotDigest} != ${wantDigest}`);
+        continue;
+      }
+      record('composition', `resolve/${id} [digest]`, 'pass');
+    } else {
+      record('composition', `resolve/${id}`, 'pass');
+    }
+  }
+
+  // ── reject/ — one fixture per refusal ──────────────────────────────────────
+  for (const { id, dir } of compositionScenarios('reject')) {
+    const expected = readCase(dir, 'expected.json');
+    const { parts, error } = loadParts(dir);
+
+    // A fragment may be refused at parse time (malformed, section mismatch) or
+    // the directive may be refused during resolution. Both are the same result.
+    if (error) {
+      if (error.code === expected.expected_code) {
+        record('composition', `reject/${id}`, 'pass', error.code);
+      } else {
+        record('composition', `reject/${id}`, 'fail', `fragment threw ${error.code ?? error.message}, expected ${expected.expected_code}`);
+      }
+      continue;
+    }
+
+    const parsed = parseUWFile(readFileSync(join(dir, 'record.uwx.md'), 'utf8'));
+    const resolution = resolveComposition(parsed, { parts });
+    const codes = issueCodes(resolution);
+    if (resolution.status === 'resolved') {
+      record('composition', `reject/${id}`, 'fail', 'resolved where it must refuse');
+    } else if (codes.includes(expected.expected_code)) {
+      record('composition', `reject/${id}`, 'pass', expected.expected_code);
+    } else {
+      record('composition', `reject/${id}`, 'fail', `reported ${codes.join(', ') || '(none)'}, expected ${expected.expected_code}`);
+    }
+  }
+
+  // ── unresolved/ — a missing part is never a smaller collection ─────────────
+  for (const { id, dir } of compositionScenarios('unresolved')) {
+    const expected = readCase(dir, 'expected.json');
+    const { parts } = loadParts(dir);
+    const parsed = parseUWFile(readFileSync(join(dir, 'record.uwx.md'), 'utf8'));
+    const resolution = resolveComposition(parsed, { parts });
+
+    if (resolution.status !== expected.status) {
+      record('composition', `unresolved/${id}`, 'fail', `status ${resolution.status}, expected ${expected.status}`);
+      continue;
+    }
+    if (!issueCodes(resolution).includes(expected.expected_code)) {
+      record('composition', `unresolved/${id}`, 'fail', `reported ${issueCodes(resolution).join(', ')}, expected ${expected.expected_code}`);
+      continue;
+    }
+
+    // The assertion that matters: the section must still be externalized, not
+    // silently merged from the parts that happened to resolve.
+    if (expected.section_remains_externalized) {
+      const section = resolution.document.sections[expected.section_remains_externalized];
+      const block = section && 'annotation' in section ? section : Object.values(section ?? {})[0];
+      const stillExternal = Boolean(block?.content?.external);
+      if (!stillExternal) {
+        record('composition', `unresolved/${id}`, 'fail', 'section was partially merged — under-resolution must never produce a smaller collection');
+        continue;
+      }
+    }
+    record('composition', `unresolved/${id}`, 'pass', expected.expected_code);
+  }
+
+  // ── composite/ — graph shape, bounds, staleness ────────────────────────────
+  for (const { id, dir } of compositionScenarios('composite')) {
+    const testCase = readCase(dir, 'case.json');
+    const expected = readCase(dir, 'expected.json');
+    const resolution = resolveComposite({
+      members: testCase.members,
+      links: testCase.links,
+      ...(testCase.maxDepth ? { maxDepth: testCase.maxDepth } : {}),
+      ...(testCase.maxMembers ? { maxMembers: testCase.maxMembers } : {}),
+      ...(testCase.recordedDigests ? { recordedDigests: new Map(Object.entries(testCase.recordedDigests)) } : {}),
+      ...(testCase.actualDigests ? { actualDigests: new Map(Object.entries(testCase.actualDigests)) } : {}),
+    });
+
+    if (resolution.status !== expected.status) {
+      record('composition', `composite/${id}`, 'fail', `status ${resolution.status}, expected ${expected.status}: ${issueCodes(resolution).join(', ')}`);
+      continue;
+    }
+    if (expected.expected_code && !issueCodes(resolution).includes(expected.expected_code)) {
+      record('composition', `composite/${id}`, 'fail', `reported ${issueCodes(resolution).join(', ') || '(none)'}, expected ${expected.expected_code}`);
+      continue;
+    }
+    if (expected.depth !== undefined && resolution.depth !== expected.depth) {
+      record('composition', `composite/${id}`, 'fail', `depth ${resolution.depth}, expected ${expected.depth}`);
+      continue;
+    }
+    if (expected.member_count !== undefined && resolution.member_count !== expected.member_count) {
+      record('composition', `composite/${id}`, 'fail', `member_count ${resolution.member_count}, expected ${expected.member_count}`);
+      continue;
+    }
+    if (expected.order_leaves_first) {
+      // A parent's digest is a function of its children's, so every child must
+      // appear before any parent that names it.
+      const position = new Map(resolution.order.map((memberId, i) => [memberId, i]));
+      const violation = testCase.links.find((l) => position.get(l.from) > position.get(l.to));
+      if (violation) {
+        record('composition', `composite/${id}`, 'fail', `child '${violation.from}' ordered after parent '${violation.to}'`);
+        continue;
+      }
+    }
+    if (expected.stale) {
+      const got = resolution.stale.map((s) => `${s.parent}::${s.child}`).sort();
+      const want = expected.stale.map((s) => `${s.parent}::${s.child}`).sort();
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        record('composition', `composite/${id}`, 'fail', `stale ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
+        continue;
+      }
+    }
+    record('composition', `composite/${id}`, 'pass', expected.expected_code ?? expected.status);
+  }
+
+  // ── inherit/ — nearest ancestor wins; equidistant is an error ──────────────
+  for (const { id, dir } of compositionScenarios('inherit')) {
+    const testCase = readCase(dir, 'case.json');
+    const expected = readCase(dir, 'expected.json');
+    try {
+      const selected = selectInheritedAssumption(testCase.field_path, testCase.inherited);
+      if (expected.expected_error) {
+        record('composition', `inherit/${id}`, 'fail', `selected ${selected?.document_id ?? 'null'} where it must refuse`);
+        continue;
+      }
+      if (selected?.document_id !== expected.document_id) {
+        record('composition', `inherit/${id}`, 'fail', `selected ${selected?.document_id ?? 'null'}, expected ${expected.document_id}`);
+        continue;
+      }
+      if (expected.distance !== undefined && selected.distance !== expected.distance) {
+        record('composition', `inherit/${id}`, 'fail', `distance ${selected.distance}, expected ${expected.distance}`);
+        continue;
+      }
+      if (expected.value !== undefined && selected.values[testCase.field_path] !== expected.value) {
+        record('composition', `inherit/${id}`, 'fail', `value ${selected.values[testCase.field_path]}, expected ${expected.value}`);
+        continue;
+      }
+      record('composition', `inherit/${id}`, 'pass', `${selected.document_id} @ ${selected.distance}`);
+    } catch (e) {
+      if (expected.expected_error && e.constructor.name === expected.expected_error) {
+        record('composition', `inherit/${id}`, 'pass', expected.expected_error);
+      } else {
+        record('composition', `inherit/${id}`, 'fail', `threw ${e.constructor.name}: ${e.message}`);
+      }
+    }
+  }
+
+  // ── rollup/ — two-stage verification ───────────────────────────────────────
+  for (const { id, dir } of compositionScenarios('rollup')) {
+    const testCase = readCase(dir, 'case.json');
+    const expected = readCase(dir, 'expected.json');
+    const verification = verifyRollup(testCase.aggregates, testCase.members);
+
+    if (verification.verdict !== expected.verdict) {
+      record('composition', `rollup/${id}`, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}`);
+      continue;
+    }
+    if (expected.expected_code && !verification.issues.some((i) => i.code === expected.expected_code)) {
+      record('composition', `rollup/${id}`, 'fail', `issues ${verification.issues.map((i) => i.code).join(', ') || '(none)'}, expected ${expected.expected_code}`);
+      continue;
+    }
+    if (expected.decided_before_arithmetic) {
+      // A total over a child that failed its own receipt must not be reported
+      // as agreeing, even when the numbers happen to add up.
+      const arithmetic = verification.aggregates.some((a) => a.recomputed !== null);
+      if (arithmetic) {
+        record('composition', `rollup/${id}`, 'fail', 'aggregates were recomputed despite a failed child');
+        continue;
+      }
+    }
+    record('composition', `rollup/${id}`, 'pass', expected.verdict);
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -1569,6 +1838,7 @@ const dispatch = {
   'market-data': async () => { await runMarketData(); },
   'modules': async () => { await runModules(); },
   'packages': async () => { await runPackages(); },
+  'composition': async () => { await runComposition(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

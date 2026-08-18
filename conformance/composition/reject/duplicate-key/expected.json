@@ -1,0 +1,4 @@
+{
+  "why": "Two fragments claim unit 210. This is a conflict a human resolves, never a last-one-wins merge.",
+  "expected_code": "COMP-DUP-KEY"
+}

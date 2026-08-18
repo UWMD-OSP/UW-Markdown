@@ -1,0 +1,8 @@
+{
+  "why": "parts is listed in shuffled order. Rows are sorted by collection_key under a byte-wise total order, so the canonical form is identical to the in-order fixture and to the inline twin.",
+  "status": "resolved",
+  "externalized": [
+    "rent_roll"
+  ],
+  "matches_inline": true
+}

@@ -51,12 +51,13 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + modules + packages
+npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + market-data + modules + packages + composition
 npm run conformance -- --tier=1,2,3,4,lite,receipts,modules
 npm run conformance -- --tier=lite         # the UW Lite suite alone
 npm run conformance -- --tier=receipts     # the receipts suite alone
 npm run conformance -- --tier=modules      # the module manifest suite alone
 npm run conformance -- --tier=packages     # the deal package suite alone
+npm run conformance -- --tier=composition  # the RFC 0021 composition suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -233,6 +234,41 @@ loader accepts, schema refuses — is always a bug and has no opt-out.
 Registry-level behavior (dependency order, version ranges, duplicate module ids)
 lives in `packages/uwmd-core/src/modules.test.ts` instead, since a fixture file
 holds one manifest.
+
+### Composition — I-1, bounds, staleness, rollups
+
+`conformance/composition/` covers RFC 0021. The suite has one reason to exist:
+**I-1**, the rule that an externalized record and its inline twin produce
+identical canonical forms and identical semantic digests. `resolve/` asserts it
+directly, and `resolve/collection-order/` asserts it survives a shuffled `parts`
+array — the case that fails the moment merge order comes from the document
+rather than from a total order over the collection key.
+
+The rest guard the ways I-1 can silently stop being true, or the ways a
+resolution can look successful while being wrong:
+
+- `reject/` — one fixture per refusal (`COMP-DUP-KEY`, `COMP-COUNT-MISMATCH`,
+  `COMP-SECTION-MISMATCH`, `COMP-PART-MALFORMED`).
+- `unresolved/missing-part/` — the one that matters most operationally. A
+  missing fragment must leave the section externalized, **never** produce a
+  rent roll of the units that happened to resolve. The fixture asserts the
+  section still carries its directive, because a smaller rent roll still
+  totals, still validates, and still produces a confident DSCR.
+- `composite/` — graph shape, the depth bound, cycle detection (including the
+  post-walk unreachability check, which catches a cycle no root leads into),
+  and `stale` as a third status distinct from `failed`.
+- `inherit/` — nearest ancestor wins, equidistant ancestors refuse.
+- `rollup/` — two-stage verification, including that a child which failed its
+  own receipt short-circuits **before** any arithmetic runs.
+
+Fixtures under `composite/`, `inherit/`, and `rollup/` are `case.json` graph and
+member descriptions rather than documents, because what they exercise is the
+resolver and the verifier, not the parser.
+
+**Not yet covered:** the RFC also names a `lite-projection/externalized/`
+fixture, asserting the UWX→Lite projection reports externalized sections in its
+omission report. `lite-bridge.ts` does not implement that yet, so the fixture
+would assert nothing; it lands with the behaviour.
 
 ### Packages — manifests, archives, and the context boundary
 

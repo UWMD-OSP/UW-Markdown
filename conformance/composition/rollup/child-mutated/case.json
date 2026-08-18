@@ -1,0 +1,27 @@
+{
+  "why": "A child failed its own receipt. The child stage is decided before any arithmetic: a total over a failed child must not be reported as agreeing even when the numbers add up.",
+  "aggregates": [
+    {
+      "id": "portfolio_noi",
+      "fn": "sum",
+      "over": "noi_model.net_operating_income",
+      "members": [
+        "deal-a",
+        "deal-b"
+      ],
+      "value": 1049823
+    }
+  ],
+  "members": [
+    {
+      "document_id": "deal-a",
+      "value": 612400,
+      "verdict": "failed"
+    },
+    {
+      "document_id": "deal-b",
+      "value": 437423,
+      "verdict": "verified"
+    }
+  ]
+}

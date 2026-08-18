@@ -1,0 +1,27 @@
+{
+  "why": "The children verify but the stated total does not follow from them.",
+  "aggregates": [
+    {
+      "id": "portfolio_noi",
+      "fn": "sum",
+      "over": "noi_model.net_operating_income",
+      "members": [
+        "deal-a",
+        "deal-b"
+      ],
+      "value": 1100000
+    }
+  ],
+  "members": [
+    {
+      "document_id": "deal-a",
+      "value": 612400,
+      "verdict": "verified"
+    },
+    {
+      "document_id": "deal-b",
+      "value": 437423,
+      "verdict": "verified"
+    }
+  ]
+}

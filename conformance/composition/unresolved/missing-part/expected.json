@@ -1,0 +1,6 @@
+{
+  "why": "lease-suite-220 is absent. The record must resolve to unresolved and the section must stay externalized — never to a rent roll of two units, which would still total, still validate, and still produce a confident DSCR.",
+  "status": "unresolved",
+  "expected_code": "COMP-UNRESOLVED",
+  "section_remains_externalized": "rent_roll"
+}

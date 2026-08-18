@@ -1,0 +1,22 @@
+{
+  "why": "Two ancestors assert the same field. The nearer one supplies the value, and the result names the ancestor it came from.",
+  "field_path": "assumptions.exit_cap_rate_spread",
+  "inherited": [
+    {
+      "document_id": "portfolio",
+      "digest": "sha256:aaaa",
+      "distance": 2,
+      "values": {
+        "assumptions.exit_cap_rate_spread": 0.0075
+      }
+    },
+    {
+      "document_id": "fund-ii",
+      "digest": "sha256:bbbb",
+      "distance": 1,
+      "values": {
+        "assumptions.exit_cap_rate_spread": 0.005
+      }
+    }
+  ]
+}
