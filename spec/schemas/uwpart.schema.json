@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uwpart.schema.json",
+  "title": "UW Fragment Frontmatter 1.0",
+  "description": "Frontmatter of a `.uwpart.md` fragment — one section's content held outside the record that references it (UW Composition 1.0, RFC 0021). This schema covers the YAML frontmatter object only; the fragment's blocks are ordinary UW blocks and validate against `uwmd-block.schema.json` plus their section's own schema. A fragment is NOT an underwriting record: validating against this schema establishes that the fragment is identifiable and independently reviewable, and establishes nothing about whether the section it carries is complete or correct.",
+  "type": "object",
+  "required": ["uwpart_version", "part_id", "section"],
+  "properties": {
+    "uwpart_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Fragment format version. `1.0` for this specification."
+    },
+    "part_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identity of this fragment, unique within its package. Named by the referencing record's `external.parts` array; a duplicate id makes resolution ambiguous and is refused."
+    },
+    "section": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "The single section every block in this fragment targets. Standard sections use the IDs registered in UW_FORMAT_SPEC_v1.md §4; extension sections MUST start with 'x_'. A fragment carrying a block for any other section is refused (`COMP-SECTION-MISMATCH`) — contributing to two sections is what two fragments are for."
+    },
+    "collection_member": {
+      "type": "boolean",
+      "description": "`true` marks this fragment as one row of a collection section, merged with its siblings under the referencing directive's `collection_key`. Absent or `false` means this fragment supplies the whole section, in which case exactly one fragment may do so."
+    },
+    "deal_id": {
+      "not": {},
+      "description": "MUST NOT be present. A fragment is not an underwriting record, and carrying a deal identifier is the cheapest way for one to be presented as a deal. Refused as `COMP-PART-MALFORMED` rather than warned about."
+    }
+  }
+}

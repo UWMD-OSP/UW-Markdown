@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uw-rollup.schema.json",
+  "title": "UW Rollup Aggregates 1.0",
+  "description": "The `portfolio_rollup` section payload: aggregate figures a composite states over its children, recomputed by an RFC 0016 receipt verifier (UW Receipt 1.0 §11, RFC 0021 §6). The `fn` vocabulary is fixed, closed, and non-extensible — nothing here lets a module or document author introduce a new aggregation, and nothing here makes the Tier-3 calc engine iterate. A verified rollup means the stated total follows deterministically from those child records as they stand; it does not mean the children are complete, that the portfolio holds every asset it should, or that the members named are the right members.",
+  "type": "object",
+  "required": ["aggregates"],
+  "additionalProperties": false,
+  "properties": {
+    "aggregates": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The stated aggregates. Each is recomputed independently against exactly the members it names.",
+      "items": { "$ref": "#/$defs/aggregate" }
+    }
+  },
+  "$defs": {
+    "aggregate": {
+      "type": "object",
+      "required": ["id", "fn", "over", "members", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identity of this aggregate within the section, e.g. `portfolio_noi`."
+        },
+        "fn": {
+          "type": "string",
+          "enum": ["sum", "count", "min", "max", "weighted_average"],
+          "description": "The aggregation applied. Fixed and non-extensible: this is a verifier vocabulary, not an extension of the calc expression language."
+        },
+        "over": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Field path read from each member record, e.g. `noi_model.net_operating_income`. A member whose value at this path cannot be read is unevaluable, never zero — summing what is present would report a confident total over a portfolio the verifier never saw."
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Exactly the members this aggregate covers. A member named twice is refused: it would inflate a sum, and a portfolio total is precisely the figure nobody re-checks by hand.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "value": {
+          "type": "number",
+          "description": "The stated result. A verifier recomputes `fn` over the named members and compares; disagreement is `COMP-ROLLUP-DISAGREES` and the receipt is `failed`, decided only after every child's own receipt has been checked."
+        },
+        "weight_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Field path supplying weights. REQUIRED for `weighted_average` and MUST NOT appear otherwise. Weights summing to zero is `failed` rather than `unverifiable`: the verifier holds every value it needs, so the stated average is an assertion that cannot be well-defined — a defect in the record, not a gap in the verifier."
+        }
+      },
+      "if": {
+        "properties": { "fn": { "const": "weighted_average" } },
+        "required": ["fn"]
+      },
+      "then": { "required": ["weight_by"] },
+      "else": { "not": { "required": ["weight_by"] } }
+    }
+  }
+}

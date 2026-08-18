@@ -24,6 +24,9 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-gaps.schema.json`](section-gaps.schema.json) | `SectionGaps` | Protocol §VII |
 | [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
 | [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |
+| [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §2 / RFC 0021 |
+| [`uw-external-section.schema.json`](uw-external-section.schema.json) | `external` section directive | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §3 / RFC 0021 |
+| [`uw-rollup.schema.json`](uw-rollup.schema.json) | `portfolio_rollup` payload | [UW Receipt 1.0](../UW_RECEIPT_v1.md) §11 / RFC 0021 §6 |
 
 ## Validating a schema
 
