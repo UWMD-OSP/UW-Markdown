@@ -1122,7 +1122,6 @@ export function verifyRollup(
         severity: 'failure',
         message: `Aggregate '${String(aggregate.id)}' is malformed: ${structural.map((e) => e.message).join('; ')}`,
       });
-      continue;
     }
   }
   if (issues.length > 0) return { verdict: 'failed', issues, aggregates: results };
