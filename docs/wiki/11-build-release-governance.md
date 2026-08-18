@@ -23,6 +23,7 @@ Script | Does
 `npm run verify-packages` | `scripts/verify-packages.mjs` — what `npm pack` would actually ship
 `npm run verify-lockfile` | `scripts/verify-lockfile.mjs` — every `@uwmd/*` reference links to this tree, and cross-package pins match declared versions
 `npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest and the `protocol.ts` constants
+`npm run verify-indexes` | `scripts/verify-indexes.mjs` — the schema table and the RFC copy list match the files on disk
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run

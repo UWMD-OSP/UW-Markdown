@@ -17,6 +17,7 @@
     "verify-packages": "node scripts/verify-packages.mjs",
     "verify-lockfile": "node scripts/verify-lockfile.mjs",
     "verify-versions": "node scripts/verify-versions.mjs",
+    "verify-indexes": "node scripts/verify-indexes.mjs",
     "typecheck:tests": "npm run typecheck:tests --workspaces --if-present",
     "lint": "biome lint .",
     "format": "biome format --write ."

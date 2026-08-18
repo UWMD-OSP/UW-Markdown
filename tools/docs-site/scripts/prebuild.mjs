@@ -93,6 +93,8 @@ const COPIES = [
   // Keep in step with the index table in docs/rfcs/README.md — that file is
   // copied to about/rfcs/index.md and links every row, so an RFC listed there
   // but missing here is a dead link and VitePress fails the build.
+  // `npm run verify-indexes` now enforces this; RFC 0025 broke main's deploys
+  // for three merges before it did.
   { from: 'docs/rfcs/0021-composable-documents.md', to: 'about/rfcs/0021-composable-documents.md' },
   { from: 'docs/rfcs/0022-market-data-documents.md', to: 'about/rfcs/0022-market-data-documents.md' },
   { from: 'docs/rfcs/0023-numeric-determinism.md', to: 'about/rfcs/0023-numeric-determinism.md' },

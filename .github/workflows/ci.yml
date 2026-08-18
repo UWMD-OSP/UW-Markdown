@@ -39,6 +39,18 @@ jobs:
           node-version: 20
       - run: npm run verify-versions
 
+  verify-indexes:
+    name: Verify hand-maintained indexes
+    runs-on: ubuntu-latest
+    # Reads the schema README, the RFC index, and the prebuild copy list as
+    # data — no install, no build, same rationale as the two guards above.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm run verify-indexes
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
