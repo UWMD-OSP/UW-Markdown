@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-components.schema.json",
+  "title": "UW Markdown Components Section",
+  "description": "Content payload for the `components` section (UW_FORMAT_SPEC_v1.md §4.23), used only when frontmatter.asset_class is `mixed_use` (RFC 0019). A bounded map keyed by the component's own asset class; each entry states that use's own income so property NOI foots as the sum of the components. `land` is excluded by construction (its NOI model nets negative). This schema enforces the structural rules — admissible keys, key equals component_class, required NOI, no component-level debt. The cross-field rules the validator adds are: at least two components present, allocation_pct summing to 1.0, the section appearing only under mixed_use (CC-11), and property NOI equalling the component NOI sum (CC-12).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "description": "Standard block provenance envelope (§2.5). Not constrained here."
+    },
+    "_notes": {
+      "type": ["string", "null"],
+      "description": "Optional free-text annotation (§4 universal field)."
+    },
+    "multifamily": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "multifamily" } } }
+      ]
+    },
+    "retail": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "retail" } } }
+      ]
+    },
+    "office": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "office" } } }
+      ]
+    },
+    "industrial": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "industrial" } } }
+      ]
+    },
+    "self_storage": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "self_storage" } } }
+      ]
+    },
+    "hospitality": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "hospitality" } } }
+      ]
+    },
+    "senior_housing": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "senior_housing" } } }
+      ]
+    },
+    "student_housing": {
+      "allOf": [
+        { "$ref": "#/$defs/componentBreakdown" },
+        { "properties": { "component_class": { "const": "student_housing" } } }
+      ]
+    }
+  },
+  "$defs": {
+    "componentBreakdown": {
+      "type": "object",
+      "description": "One use type's own income and denominators. Duplicate uses in the property roll up into one component.",
+      "required": ["component_class", "net_operating_income"],
+      "additionalProperties": false,
+      "properties": {
+        "component_class": {
+          "enum": [
+            "multifamily",
+            "retail",
+            "office",
+            "industrial",
+            "self_storage",
+            "hospitality",
+            "senior_housing",
+            "student_housing"
+          ],
+          "description": "This component's asset class. MUST equal the key it is filed under. `land` is intentionally not admissible."
+        },
+        "net_operating_income": {
+          "type": "number",
+          "description": "This use's NOI on the standard EGI − total_operating_expenses basis. Required on every present component: the property NOI foots as the sum of these (CC-12), so an omitted value is an incomplete document, not zero income."
+        },
+        "effective_gross_income": {
+          "type": ["number", "null"],
+          "description": "This use's effective gross income. Supports the component NOI share and expense context."
+        },
+        "operating_expenses": {
+          "type": ["number", "null"],
+          "description": "This use's total operating expenses."
+        },
+        "allocation_pct": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "User-supplied share of the single purchase price and loan attributable to this use. Never derived, never populated by an agent. Present components' values MUST sum to 1.0 within 0.0001 (validator). When absent, use-level intensive metrics evaluate to null rather than an area- or income-share guess."
+        },
+        "nra_sqft": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Net rentable area for this use, for per-square-foot intensive metrics."
+        },
+        "total_units": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Residential unit count (multifamily / senior housing), for price-per-unit intensive metrics."
+        },
+        "total_beds": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Bed count (student housing / senior housing), which those classes size against rather than units."
+        },
+        "gross_operating_profit": {
+          "type": ["number", "null"],
+          "description": "Operating-business intermediate above NOI (hospitality, USALI GOP). Surfaced per component; never blended into a synthesized property-level intermediate. A property GOP memo sums only components that declare this."
+        },
+        "total_labor_expense": {
+          "type": ["number", "null"],
+          "description": "Operating-business intermediate above NOI (senior housing labor subtotal). A different waterfall layer from GOP; MUST NOT be added into a property GOP memo."
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "multifamily": {
+        "component_class": "multifamily",
+        "effective_gross_income": 2180000,
+        "operating_expenses": 880000,
+        "net_operating_income": 1300000,
+        "total_units": 120,
+        "nra_sqft": 96000,
+        "allocation_pct": 0.78
+      },
+      "retail": {
+        "component_class": "retail",
+        "effective_gross_income": 520000,
+        "operating_expenses": 148000,
+        "net_operating_income": 372000,
+        "nra_sqft": 18000,
+        "allocation_pct": 0.22
+      }
+    }
+  ]
+}
