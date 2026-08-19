@@ -34,13 +34,13 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.4.0). A test in
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.5.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
   stale through the 1.4.0 release; `verify-versions` now covers every row.
-- **Packages** — each `package.json` (`@uwmd/core` 1.4.0, `@uwmd/cli` 1.4.0,
-  `@uwmd/excel` 0.3.0, `@uwmd/report` 0.3.0, `@uwmd/batch` 0.2.0). Dependents pin
+- **Packages** — each `package.json` (`@uwmd/core` 1.5.0, `@uwmd/cli` 1.5.0,
+  `@uwmd/excel` 0.4.0, `@uwmd/report` 0.4.0, `@uwmd/batch` 0.3.0). Dependents pin
   `@uwmd/*` to an exact version, so a core bump is a repin of all of them in the
   same change — `npm run verify-lockfile` fails if one is forgotten. Because the
   pin is exact, every dependent must also take its own version bump: a
@@ -63,6 +63,20 @@ each with a guard that fails loudly if you miss it:
    version cell and the "pairs with `@uwmd/core` 1.x" notes. `verify-versions`.
    This was the unguarded one: the 1.4.0 release left the matrix advertising
    1.3.0, and nothing went red until it was found by hand.
+6. **Push the `v<version>` tag.** This is the step that actually ships:
+   `release.yml` triggers on `v*` and on nothing else. `verify-release`.
+
+**1.4.0 is why step 6 is written down.** Steps 1–5 were all done for it and the
+tag never was, so the publish job never ran — npm went from 1.3.0 to 1.5.0 and no
+1.4.0 of any package exists. Nothing caught it, and nothing could have: the three
+existing guards compare repo files to each other, and all of them agreed on a
+version nobody had published. `verify-release` closes that by comparing every
+CHANGELOG section marked `### Released` against the git tags, exempting only the
+version currently in the core manifest, whose tag is pushed after merge.
+
+Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
+both `@uwmd/core` and `@uwmd/cli`** (below). The tag is the trigger, so a missing
+publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
