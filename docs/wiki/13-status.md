@@ -2,11 +2,12 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-17 at `90711f0` (full pass: build green across all
-workspaces; **906 tests** — 773 core, 69 excel, 57 cli, 4 batch, 3 report — plus
-**63 web-editor**; **175 conformance** assertions including the Tier-4 replay,
-module, package, receipts, and market-data suites; 12/12 schemas valid; Biome
-clean over 370 files; `typecheck:tests` clean across all five workspaces).
+**Last verified:** 2026-08-18 at `f72eeeb` (the `v1.5.0` release commit; full
+pass: build green across all workspaces; **970 tests** — 832 core, 69 excel, 62
+cli, 4 batch, 3 report — plus **63 web-editor**; **195 conformance** assertions
+including the Tier-4 replay, module, package, receipts, market-data, and
+composition suites; 15/15 schemas valid; Biome clean over 401 files;
+`typecheck:tests` clean across all five workspaces).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
