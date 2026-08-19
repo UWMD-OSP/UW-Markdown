@@ -15,6 +15,7 @@ import { HOSPITALITY_PACK } from './hospitality.js';
 import { SENIOR_HOUSING_PACK } from './senior-housing.js';
 import { STUDENT_HOUSING_PACK } from './student-housing.js';
 import { LAND_PACK } from './land.js';
+import { MIXED_USE_PACK } from './mixed-use.js';
 
 export { MULTIFAMILY_PACK } from './multifamily.js';
 export { OFFICE_PACK } from './office.js';
@@ -25,6 +26,7 @@ export { HOSPITALITY_PACK } from './hospitality.js';
 export { SENIOR_HOUSING_PACK } from './senior-housing.js';
 export { STUDENT_HOUSING_PACK } from './student-housing.js';
 export { LAND_PACK } from './land.js';
+export { MIXED_USE_PACK } from './mixed-use.js';
 export {
   emitFromAst,
   emitExcelFormula,
@@ -48,6 +50,7 @@ const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
   senior_housing: SENIOR_HOUSING_PACK,
   student_housing: STUDENT_HOUSING_PACK,
   land: LAND_PACK,
+  mixed_use: MIXED_USE_PACK,
 });
 
 /**

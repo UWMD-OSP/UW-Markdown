@@ -35,18 +35,18 @@ const ALL_ASSET_CLASSES = ASSET_CLASSES;
  * Asset classes that are members of the union but deliberately carry no calc
  * pack and no defaults table.
  *
- * `mixed_use` is the only one. It composes other asset classes rather than
- * standing alone, so it needs a normative format change (a `components`
- * section) before a pack can be written — see RFC 0019. Until that is accepted
- * and implemented, it is a known, documented hole rather than an oversight.
+ * **Now empty.** `mixed_use` was the last member of this set — it composes other
+ * asset classes rather than standing alone, so it needed a normative format
+ * change (the `components` section, UW_FORMAT_SPEC §4.23) before a pack could be
+ * written. RFC 0019 was accepted 2026-08-18 and the `MIXED_USE_PACK` +
+ * `MIXED_USE_DEFAULTS` landed with it, so the union now has full pack + defaults
+ * coverage with no exceptions.
  *
- * **This set is a forcing function, not a permanent allowance.** When the
- * `mixed_use` pack lands, `registers nothing at all` below starts failing and
- * tells you to empty this set; the registry tests then hold the union to full
- * coverage with no exceptions. Adding a *new* unregistered class here should
- * take an equally deliberate act.
+ * **This set is a forcing function.** Adding a *new* unregistered class here
+ * should take an equally deliberate act, and the registry tests below will hold
+ * whatever remains to exact coverage.
  */
-const INTENTIONALLY_UNREGISTERED: ReadonlySet<AssetClass> = new Set<AssetClass>(['mixed_use']);
+const INTENTIONALLY_UNREGISTERED: ReadonlySet<AssetClass> = new Set<AssetClass>([]);
 
 const REGISTERED = ALL_ASSET_CLASSES.filter((c) => !INTENTIONALLY_UNREGISTERED.has(c));
 

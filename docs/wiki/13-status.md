@@ -44,16 +44,21 @@ not core gaps.
 - **Calc engine:** sandboxed parser+evaluator, 17 builtins incl.
   `pmt/fv/pv/nper/irr/npv`, full error taxonomy, property tests, and a normative
   **numeric model** (§VIII.5). See [04](04-calc-engine.md).
-- **Nine asset-class packs:** `MULTIFAMILY_PACK` (8 metrics), `OFFICE_PACK` (11),
+- **Ten asset-class packs:** `MULTIFAMILY_PACK` (8 metrics), `OFFICE_PACK` (11),
   `RETAIL_PACK` (12), `INDUSTRIAL_PACK` (12), `SELF_STORAGE_PACK` (12),
   `HOSPITALITY_PACK` (14), `SENIOR_HOUSING_PACK` (14), `STUDENT_HOUSING_PACK` (14),
   `LAND_PACK` (12, and deliberately no cap rate / DSCR / debt yield — land is not
-  an income property), selectable via `getPackForAssetClass`. The Excel converter
-  has a `WorkbookLayout` per class (selected via `getLayoutForAssetClass`); its
-  `toWorkbook.test.ts` computes parity for all nine (operating statement foots —
+  an income property), and `MIXED_USE_PACK` (21 metrics — property cap rate / LTV
+  / DSCR / debt yield / cash-on-cash, a NOI share per component use, allocation-
+  gated price per unit / psf / bed, and per-component operating intermediates;
+  deliberately no property price/unit, loan/unit, or blended cap rate; RFC 0019).
+  Selectable via `getPackForAssetClass`. The Excel converter has a
+  `WorkbookLayout` per class (selected via `getLayoutForAssetClass`) for **nine**
+  of them — the `mixed_use` layout is the remaining implementation step; its
+  `toWorkbook.test.ts` computes parity for the nine (operating statement foots —
   for land a carry statement that nets negative; metrics == evaluateCalc
-  exactly). Pack-level parity also pinned in each `packs/*.test.ts`. See
-  [05](05-calc-packs.md), [08](08-tools.md).
+  exactly). Pack-level parity also pinned in each `packs/*.test.ts`, including
+  `mixed-use.test.ts`. See [05](05-calc-packs.md), [08](08-tools.md).
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
@@ -243,25 +248,33 @@ not core gaps.
 
 ## 🟡 Partial — works but needs improvement
 
-- **Asset-class coverage = 9 of 10 classes.** Every class in `AssetClass` except
-  `mixed_use` now has a pack + defaults table + worked example + Excel layout,
-  and `scope`/`refine`/Excel resolve all nine off `frontmatter.asset_class`.
-  **Effectively closed as a limiter.** `mixed_use` is the genuinely hard one: it
-  *composes* other asset classes rather than standing alone. Designed in
-  [RFC 0019](../rfcs/0019-mixed-use-composition.md), which concludes that the
-  one-pack-per-class assumption **does** survive — the composition belongs in the
-  document (a bounded set of component slots keyed by class), not in the pack.
-  The deciding constraint is that the Tier-3 calc engine has no iteration or
-  array indexing, so per-component pack evaluation is not expressible without a
-  new primitive in the sandboxed evaluator. RFC is **`accepted` (2026-08-18)** —
-  design-complete, implementation pending, no code yet. **Its three open design
-  questions were resolved 2026-08-18**: all
-  nine income classes are admissible components on an NOI-additivity rule (not
-  just hospitality); `MIXED_USE_DEFAULTS` is kept for mix-independent financing
-  terms; and component-level debt is deferred to the new
-  [RFC 0026](../rfcs/0026-capital-stack.md) (a typed capital stack — tranches,
-  preferred equity, stack-aware sizing), spun out because a cap stack is an
-  asset-class-independent primitive, not a `mixed_use` sub-feature.
+- **Asset-class coverage = 10 of 10 classes have a pack; `mixed_use` finishing.**
+  Every class in `AssetClass` now has a calc pack + defaults table. Nine also
+  have a worked example + Excel layout and resolve end-to-end off
+  `frontmatter.asset_class`; `mixed_use` — the genuinely hard one, which
+  *composes* other asset classes rather than standing alone — has now landed its
+  **format section (§4.23), schema, pack, and defaults** and is finishing.
+  Designed in [RFC 0019](../rfcs/0019-mixed-use-composition.md) (accepted
+  2026-08-18), which concludes that the one-pack-per-class assumption **does**
+  survive — the composition belongs in the document (a bounded set of component
+  slots keyed by class), not in the pack, because the Tier-3 calc engine has no
+  iteration or array indexing. The three open design questions were resolved
+  2026-08-18: all nine income classes are admissible components on an
+  NOI-additivity rule (not just hospitality); `MIXED_USE_DEFAULTS` is kept for
+  mix-independent financing terms; and component-level debt is deferred to
+  [RFC 0026](../rfcs/0026-capital-stack.md) (a typed capital stack), spun out
+  because a cap stack is an asset-class-independent primitive, not a `mixed_use`
+  sub-feature.
+
+  > **Shipped so far (RFC 0019 implementation):** the `components` section +
+  > `section-components.schema.json` (format spec §4.23, `CC-11`/`CC-12`);
+  > `MIXED_USE_PACK` (21 metrics) + `MIXED_USE_DEFAULTS`, both registered and
+  > wired through `types.test.ts` (the `INTENTIONALLY_UNREGISTERED` guard is now
+  > empty). **Remaining:** the validator's section-internal typed errors (≥2
+  > components, allocation sums to 1.0, present-but-unmeasured, the `CC-11`/
+  > `CC-12` checks), the Excel `WorkbookLayout` + parity, a worked
+  > `examples/*.uwx.md`, and the conformance fixtures. Until those land, RFC 0019
+  > stays `accepted`, not `implemented`.
 
   > **Drift is now caught automatically (T16).** `AssetClass` had four
   > hand-maintained runtime mirrors — `modules.ts`, `PACK_REGISTRY`,
