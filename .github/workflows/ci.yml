@@ -51,6 +51,25 @@ jobs:
           node-version: 20
       - run: npm run verify-indexes
 
+  verify-release:
+    name: Verify release record
+    runs-on: ubuntu-latest
+    # Compares every version the CHANGELOG calls released against the git tags,
+    # because the tag is what triggers `release.yml` and 1.4.0 never got one.
+    # `fetch-tags` is load-bearing: without it the checkout has no tags, the
+    # guard has nothing to compare against, and it would pass vacuously — which
+    # is the failure it exists to prevent. It fails loudly on an empty tag list
+    # rather than trusting the checkout.
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm run verify-release
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

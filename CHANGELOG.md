@@ -8,6 +8,24 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.5.0] - 2026-08-19
+
+### Released
+
+- `@uwmd/core` **1.5.0**, `@uwmd/cli` **1.5.0** (lockstep), with coordinated
+  `@uwmd/core` repins in `@uwmd/excel` **0.4.0**, `@uwmd/report` **0.4.0**, and
+  `@uwmd/batch` **0.3.0**. Carries everything prepared for 1.4.0 (RFC 0025's
+  Lite percent decimal exactness, never published — see below) plus RFC 0021 and
+  RFC 0022.
+- **Protocol 1.4.0 → 1.5.0**, the one change that makes this a minor rather than
+  a patch: the cascade goes from seven steps to eight. Documents are unaffected;
+  a host that hard-codes the step list is not.
+- Minor rather than major across the board. Every addition is additive to the
+  format — an externalized section is a new *packaging* of a document, not a new
+  document, which is the whole point of I-1 — and no existing `.uwx.md` or
+  `.uw.md` file needs editing to keep working.
 ### Added — composable UWX documents (RFC 0021) ⚠️ protocol 1.4.0 → 1.5.0
 
 A record can hold a section in separate `.uwpart.md` **fragments**, reference
@@ -292,14 +310,32 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
   verifier **MUST** keep recognizing `canonicalization_version: "1.0"` and
   degrade to `RCP-10`; at Protocol 2.0 that obligation ends.
 
-### Released
+### Not released — superseded by 1.5.0
 
-- `@uwmd/core` **1.4.0**, `@uwmd/cli` **1.4.0** (lockstep), with coordinated
-  `@uwmd/core` repins in `@uwmd/excel` 0.3.0, `@uwmd/report` 0.3.0, and
-  `@uwmd/batch` 0.2.0. Minor rather than major: the change corrects an IEEE 754
-  artifact to match what `UW_LITE_SPEC_v1.md` §4 already specified, the grammar
-  is unchanged so no document needs editing, and `RCP-10` keeps legacy receipts
-  reporting `unverifiable` instead of failing.
+> **1.4.0 was prepared but never published.** The manifests, `CORE_VERSION`, and
+> this entry were all written for it, but the `v1.4.0` tag was never pushed, and
+> `release.yml` triggers on `v*` only — so the publish job never ran. npm went
+> from 1.3.0 straight to 1.5.0 and **no 1.4.0 of any package exists**. Nothing
+> was broken for installers: every published package pins `@uwmd/core` 1.3.0,
+> which does exist. Everything below shipped in **1.5.0** instead.
+>
+> The version numbers are burned rather than reused, because `@uwmd/excel`
+> 0.3.0, `@uwmd/report` 0.3.0, and `@uwmd/batch` 0.2.0 *were* published — at
+> 1.3.0 pins. Republishing those numbers carrying a 1.5.0 pin is not something
+> npm allows, so the dependents move to 0.4.0/0.4.0/0.3.0.
+>
+> No guard covered this. `verify-versions` compares `VERSIONS.md` to the
+> manifests and `verify-lockfile` compares pins to declared versions; all three
+> agreed at 1.4.0, and agreeing on a version nobody published is exactly the
+> state they were built to permit. `verify-release` (below) is the missing
+> check.
+
+- Prepared as `@uwmd/core` **1.4.0**, `@uwmd/cli` **1.4.0** (lockstep), with
+  coordinated `@uwmd/core` repins in `@uwmd/excel` 0.3.0, `@uwmd/report` 0.3.0,
+  and `@uwmd/batch` 0.2.0. Minor rather than major: the change corrects an IEEE
+  754 artifact to match what `UW_LITE_SPEC_v1.md` §4 already specified, the
+  grammar is unchanged so no document needs editing, and `RCP-10` keeps legacy
+  receipts reporting `unverifiable` instead of failing.
 
 ## [1.3.0] - 2026-08-15
 
