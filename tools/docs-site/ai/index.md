@@ -52,4 +52,4 @@ The MCP profile defines `uwmd.get_document`, `uwmd.validate`, `uwmd.convert`,
 - Repository: <https://github.com/UWMD-OSP/UW-Markdown>
 - License: MIT
 - Format: UW Format 1.1
-- Protocol: UW Protocol 1.2
+- Protocol: UW Protocol 1.5

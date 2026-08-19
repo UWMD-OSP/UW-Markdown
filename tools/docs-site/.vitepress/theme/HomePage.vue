@@ -20,12 +20,12 @@
         </div>
         <dl>
           <div><dt>Format</dt><dd><code>v1.1</code></dd></div>
-          <div><dt>Protocol</dt><dd><code>v1.2.0</code></dd></div>
-          <div><dt>Core</dt><dd><code>v1.1.0-rc</code></dd></div>
+          <div><dt>Protocol</dt><dd><code>v1.5.0</code></dd></div>
+          <div><dt>Core</dt><dd><code>v1.5.0</code></dd></div>
           <div><dt>License</dt><dd>MIT</dd></div>
-          <div><dt>Updated</dt><dd><time datetime="2026-07-28">2026-07-28</time></dd></div>
+          <div><dt>Updated</dt><dd><time datetime="2026-08-18">2026-08-18</time></dd></div>
         </dl>
-        <p>Source is public. The first npm release is pending.</p>
+        <p>Source is public. The core library and CLI are published on npm.</p>
         <a href="/about/versions">Version matrix</a>
       </aside>
     </section>
@@ -150,9 +150,9 @@ fees use the new agreement at 5.5% of EGI.
       </div>
       <div class="uw-link-list">
         <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a .uw.md file</small></span><code>v1.1</code></a>
-        <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calc hosts, and agents</small></span><code>v1.2.0</code></a>
-        <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixtures that prove implementation behavior</small></span><code>29 fixtures</code></a>
-        <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, convert, and render</small></span><code>source release</code></a>
+        <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calc hosts, and agents</small></span><code>v1.5.0</code></a>
+        <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixtures that prove implementation behavior</small></span><code>195 assertions</code></a>
+        <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, convert, and render</small></span><code>v1.5.0 · npm</code></a>
         <a href="/viewer/"><span><strong>Reference viewer</strong><small>Read a file locally in a browser</small></span><code>Tier 1</code></a>
         <a href="https://www.uwmd.org/editor/"><span><strong>Reference editor</strong><small>Edit, validate, calculate, diff, and export</small></span><code>public preview</code></a>
       </div>
