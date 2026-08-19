@@ -43,11 +43,12 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **23 numbered subsections (§ 4.0 – § 4.22)**:
-21 standard data sections (§ 4.0 – § 4.20) plus the extension-section
+Part IV registers **24 numbered subsections (§ 4.0 – § 4.23)**:
+21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
-content. When this and the protocol document refer to "the 21 standard
-sections" they mean § 4.0 through § 4.20.
+content, the `gaps` inventory (§ 4.22), and the mixed-use `components`
+section (§ 4.23). When this and the protocol document refer to "the 21
+standard sections" they mean § 4.0 through § 4.20.
 
 ---
 
@@ -2214,6 +2215,61 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 
 ---
 
+### § 4.23 — Components (Mixed-Use)
+
+**ID:** `components`  
+**Header:** `## Components {#components}`  
+**Purpose:** Decomposes a mixed-use property into its constituent uses, each keyed by its own asset class. A mixed-use property is two or more uses under one purchase price and one loan — apartments over ground-floor retail, an office podium under a hotel — and no single income model or denominator describes it. This section states each use's own income so that property-level figures foot as the sum of the components while use-level metrics stay honest. It is the one section whose presence is gated to a single `asset_class`.  
+**Written by:** `wizard`, `manual`, `agent:L4-*` (component subtotals only — an agent MUST NOT populate `allocation_pct`; see Allocation below)  
+**Required for pipeline stage:** Full underwriting, and only when `asset_class` is `mixed_use`  
+**Dependencies:** `valuation`, `noi_model` (the property-level figures the components foot into)  
+**Schema:** [`spec/schemas/section-components.schema.json`](schemas/section-components.schema.json)  
+**Introduced by:** RFC 0019 (mixed-use composition).
+
+The section is a **bounded map keyed by the component's own asset class**, not a variable-length array, so that every field path a calc pack reads stays static (e.g. `components.retail.net_operating_income`). Each entry is one *use type*, not one tenant: a property with two retail suites has a single `retail` component.
+
+**Normative rules (RFC 2119):**
+
+- The `components` section MAY appear **only** when `frontmatter.asset_class` is `mixed_use`. A document with any other asset class carrying a `components` section MUST be rejected (`CC-11`). This keeps the section from becoming a general-purpose escape hatch.
+- Each key MUST be one of `multifamily`, `retail`, `office`, `industrial`, `self_storage`, `hospitality`, `senior_housing`, or `student_housing`, and each entry's `component_class` MUST equal its key. These are exactly the asset classes whose `net_operating_income` is computed on the standard `effective_gross_income − total_operating_expenses` basis. `land` MUST NOT be a component — its NOI model nets negative by design, and admitting it would let a carry burden silently reduce property income.
+- At least **two** components MUST be present. A single-component document is not mixed use and MUST declare that component's own asset class instead, where a real calc pack and defaults table already apply.
+- Each **present** component MUST state `net_operating_income`. A present component that omits a figure a property rollup consumes is an incomplete document, not a use with no income, and MUST raise a typed validation error rather than resolve to zero. An **absent** component — a class simply not listed — contributes nothing to any rollup.
+- A component MUST NOT carry its own `debt_structure`. This section models one property-level loan; component-level financing (for example a separately-financed commercial condo) is refused here and specified by RFC 0026 (Capital Stack).
+
+**Footing.** Property `noi_model.net_operating_income` MUST equal the sum of the component `net_operating_income` figures (`CC-12`). Because every admitted class computes NOI on the same basis, this sum is well-defined with no special case.
+
+**Operating-business components.** `hospitality`, `senior_housing`, and `student_housing` are operating businesses. Where a component's own calc pack strikes a model-level intermediate subtotal above NOI — `gross_operating_profit` for `hospitality`, `total_labor_expense` for `senior_housing` — that subtotal MAY be carried in the component and is surfaced per component. These subtotals sit at different points in their respective waterfalls and MUST NOT be blended into a single synthesized property-level intermediate. A property-level `gross_operating_profit` MAY be reported only as a memo summing the components that declare one; a component that has none contributes N/A, never `0`.
+
+**Allocation.** One purchase price and one loan cover the whole property, so use-level intensive metrics (price per apartment, loan per retail square foot) require splitting those single figures across components. There is no deterministic way to derive that split — income share, area share, and appraised-value share all disagree, and the choice is an underwriter's judgment. Therefore `allocation_pct` is an **input**, never a derivation: it is user-supplied, MUST sum to `1.0` across present components within `0.0001`, and an agent MUST NOT populate it. When `allocation_pct` is absent, every use-level intensive metric MUST evaluate to `null` rather than fall back to an area- or income-share guess.
+
+```json uw:section=components source=manual ts=ISO8601 v=1 confidence=high
+{
+  "_meta": { "...": "see §2.5" },
+  "_notes": null,
+  "multifamily": {
+    "component_class": "multifamily",
+    "effective_gross_income": 2180000,
+    "operating_expenses": 880000,
+    "net_operating_income": 1300000,
+    "total_units": 120,
+    "nra_sqft": 96000,
+    "allocation_pct": 0.78
+  },
+  "retail": {
+    "component_class": "retail",
+    "effective_gross_income": 520000,
+    "operating_expenses": 148000,
+    "net_operating_income": 372000,
+    "nra_sqft": 18000,
+    "allocation_pct": 0.22
+  }
+}
+```
+
+In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.net_operating_income` MUST equal, and the allocations sum to `1.0`.
+
+---
+
 ## Part V — Validation Rules
 
 ### 5.1 Pipeline Stage Completeness Requirements
@@ -2262,6 +2318,8 @@ Tools MUST run these after each section write:
 | `CC-08` | Appraised value in `due_diligence.appraisal` must match `valuation.appraised_value` | `due_diligence`, `valuation` |
 | `CC-09` | Annual debt service in `stress_tests` base case must match `debt_structure.annual_debt_service` | `stress_tests`, `debt_structure` |
 | `CC-10` | Purchase price in `sources_uses.uses` must match `valuation.purchase_price` | `sources_uses`, `valuation` |
+| `CC-11` | A `components` section may appear only when `asset_class` is `mixed_use` (RFC 0019) | `components`, frontmatter |
+| `CC-12` | Property `noi_model.net_operating_income` must equal the sum of component `net_operating_income` (mixed-use) | `components`, `noi_model` |
 
 ---
 
