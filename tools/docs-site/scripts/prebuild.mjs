@@ -101,6 +101,7 @@ const COPIES = [
   { from: 'docs/rfcs/0023-numeric-determinism.md', to: 'about/rfcs/0023-numeric-determinism.md' },
   { from: 'docs/rfcs/0024-iterative-function-determinism.md', to: 'about/rfcs/0024-iterative-function-determinism.md' },
   { from: 'docs/rfcs/0025-lite-percent-decimal-exactness.md', to: 'about/rfcs/0025-lite-percent-decimal-exactness.md' },
+  { from: 'docs/rfcs/0026-capital-stack.md', to: 'about/rfcs/0026-capital-stack.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
