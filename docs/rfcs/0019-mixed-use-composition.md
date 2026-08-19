@@ -28,6 +28,40 @@ property-level metrics normally, computes component-level intensive metrics only
 from an explicit user-supplied allocation, and deliberately omits metrics that
 cannot be computed honestly across a blend.
 
+## Decisions (2026-08-18)
+
+Three questions the earlier draft left open are now resolved. Each is reflected
+in the section named; the "Unresolved questions" section records what remains.
+
+1. **All income classes are admissible components, on one principle** (§2, §3).
+   The earlier draft admitted `hospitality` but excluded `senior_housing` and
+   `student_housing`, and called that "not obviously stable." It was: the line
+   was drawn at which pack happened to be built, not at a property of the model.
+   The verified fact that settles it is that **every class computes
+   `net_operating_income` identically — `EGI − total_operating_expenses` — so
+   component NOIs are already directly additive.** The admissibility rule is
+   therefore exactly that additivity: all nine income classes qualify, `land`
+   does not (its `noi_model` nets negative). Operating businesses are admitted by
+   *surfacing* their own intermediate subtotal per component and footing the
+   property on NOI — not by blending a property-level intermediate (§3).
+
+2. **`MIXED_USE_DEFAULTS` is kept, scoped to mix-independent financing fields**
+   (§5). The registry has no base/shared defaults table; the only class-agnostic
+   fallback is the cascade's host-supplied `global_default`/`system_default`,
+   which carry no ranges and no citations. Omitting the table would give
+   mixed-use property-level financing terms strictly weaker provenance than every
+   other class. The table is kept, covers only mix-independent fields (LTV, rate,
+   amortization, IO), and MUST ship with the `defaults.test.ts` range/citation
+   block.
+
+3. **Component-level debt is out of scope here and moves to RFC 0026** (§2, §4).
+   A capital stack — senior + mezzanine/tertiary tranches, preferred equity with
+   return and accrual, bridge mechanics, and stack-aware DSCR/debt-yield — is an
+   **asset-class-independent** primitive, not a mixed-use sub-feature, and is
+   larger than this RFC. This RFC keeps one property-level loan and **refuses**,
+   with a typed error, a component that carries its own `debt_structure`.
+   Component-level debt falls out of RFC 0026 once it lands.
+
 ## Motivation
 
 Nine asset classes have shipped and the add-a-pack recipe in the internal
@@ -124,16 +158,27 @@ Normative rules (RFC 2119):
   document with any other asset class carrying a `components` section MUST be
   rejected. This keeps the section from becoming a general-purpose escape hatch.
 - Each key MUST equal its entry's `component_class`, and `component_class` MUST
-  be one of `multifamily`, `retail`, `office`, `industrial`, `self_storage`, or
-  `hospitality`. Duplicate uses roll up into one component: a property with two
-  retail suites has one `retail` component, because underwriting a mixed-use
+  be one of `multifamily`, `retail`, `office`, `industrial`, `self_storage`,
+  `hospitality`, `senior_housing`, or `student_housing` — **every income class
+  whose `noi_model.net_operating_income` is computed on the standard
+  `EGI − total_operating_expenses` basis**, which is all nine asset classes
+  except `land`. The admissibility rule is exactly that: **a class is a valid
+  component if and only if its NOI is directly additive with the others on the
+  same basis** (§3). Duplicate uses roll up into one component: a property with
+  two retail suites has one `retail` component, because underwriting a mixed-use
   property rolls up by *use type*, not by tenancy.
 - At least **two** components MUST be present. A single-component document is
   not mixed use and MUST use that component's own asset class, where a real pack
   and a real defaults table already apply.
 - `land` MUST NOT be a component. Its `noi_model` is a carry model that nets
   negative by design; admitting it into an NOI rollup would let a carry burden
-  silently reduce a property's income.
+  silently reduce a property's income. It is the one income-property class the
+  additivity rule above excludes.
+- A component MUST NOT carry its own `debt_structure`. This RFC models one
+  property-level loan (§4); a component that states component-level financing
+  MUST be refused with a typed error rather than silently folded into the single
+  loan, which would destroy the per-tranche DSCR that motivated the split.
+  Component-level debt is deferred to **RFC 0026 (Capital Stack v1)**.
 
 ### 3. Absent versus unmeasured
 
@@ -153,6 +198,43 @@ Therefore:
   *not yet measured*, and never *the extractor found nothing*. This is the same
   `null`-versus-`0` rule the `land` pack already pins a test on, and the same
   distinction RFC 0018 draws for unstated lease terms.
+
+### 3a. The rollup foots on NOI; operating-business intermediates stay per-component
+
+Every admitted class computes `net_operating_income` as
+`EGI − total_operating_expenses`, where `total_operating_expenses` is the sum of
+the line items inside `noi_model.expenses`. Because that definition is uniform,
+**property NOI is the plain sum of component NOIs**, and the footing invariant
+
+> Σ component `net_operating_income` == property `noi_model.net_operating_income`
+
+holds for *all* admitted classes with no special case — including the operating
+businesses. This is the finding that makes admitting them safe: the rollup does
+not need to understand a hotel's cost structure to add its NOI honestly.
+
+Operating-business packs additionally carry a **model-level intermediate
+subtotal** as a sibling of `net_operating_income`, *outside* `noi_model.expenses`
+so it never enters `total_operating_expenses` and never double-counts:
+`hospitality` → `noi_model.gross_operating_profit`; `senior_housing` →
+`noi_model.total_labor_expense`; `student_housing` → none. These are **not the
+same layer** — a hotel's GOP and a senior facility's labor subtotal sit at
+different points in their respective waterfalls — so the property level MUST NOT
+blend them into a single synthesized intermediate. Instead:
+
+- **Per-component detail is preserved.** Each component's own intermediate
+  subtotal is surfaced in that component's breakdown exactly as its pack computes
+  it. This is where "GOP lives as a line between revenue and NOI" — at the
+  component, where it is defined.
+- **The property level MAY emit a `gross_operating_profit` memo**, defined
+  *only* as the sum of `noi_model.gross_operating_profit` over components that
+  declare one. It is a **partial memo, not a foot**: a component without a GOP
+  (every pure-RE class, and `student_housing`) contributes **N/A, never `0`** —
+  the §3 absent-versus-present-zero rule applies with full force, because a
+  displayed `0` would read as "this use earned no operating profit." The memo
+  MUST NOT fold in `senior_housing.total_labor_expense`; it is a different
+  quantity.
+- No property-level metric may be *derived from* the partial GOP memo. It is
+  disclosure, not an input to cap rate, DSCR, or any capitalized figure.
 
 ### 4. Allocation, and the metrics that depend on it
 
@@ -180,6 +262,8 @@ The pack's metrics are then:
 | `cap_rate` | property | `noi_model.net_operating_income / valuation.purchase_price`. Legitimate: one NOI, one price. |
 | `ltv`, `dscr`, `debt_yield`, `cash_on_cash` | property | Unchanged from the multifamily pack. One loan, one debt service. |
 | `<class>_noi_share` | component | Component NOI ÷ property NOI. Needs no allocation. |
+| `<class>_gross_operating_profit` | component | Pass-through of the component's own model-level intermediate (`hospitality.gross_operating_profit`; `senior_housing.total_labor_expense`). Surfaced as the component computes it, never synthesized. `null` where the class defines none (§3a). |
+| `gross_operating_profit` (memo) | property | Partial sum of component GOPs *where declared*; absent components contribute N/A, never `0` (§3a). Disclosure only — no property metric derives from it. |
 | `price_per_residential_unit` | component | `(purchase_price × multifamily.allocation_pct) / multifamily.total_units`. `null` without allocation. |
 | `<class>_price_psf` | component | `(purchase_price × <class>.allocation_pct) / <class>.nra_sqft`. `null` without allocation. |
 
@@ -214,8 +298,23 @@ use an existing mechanism**, not a new one:
   component's `component_class` as `ctx.asset_class`, so the component resolves
   against the real `retail` or `multifamily` defaults table.
 - `MIXED_USE_DEFAULTS` covers only **mix-independent** fields — financing terms
-  such as `debt_structure.ltv_pct`, which attach to the property and the loan
-  rather than to a use.
+  (`debt_structure.ltv_pct`, `debt_structure.rate_pct`,
+  `debt_structure.amortization_months`, `debt_structure.io_months`) which attach
+  to the property and the loan rather than to a use. Mix-*dependent* fields
+  (vacancy, expense ratio, exit cap) are deliberately absent from this table and
+  resolve at component scope per the rule above.
+
+  This table is **kept, not optional** (Decision 2). The alternative — no
+  `mixed_use` table, letting `getAssetClassDefaults('mixed_use')` return null —
+  was rejected on a verified fact about the cascade: the defaults registry has
+  **no base or shared table**, and the only class-agnostic fallback below
+  `asset_class_default` is the host-supplied `global_default`/`system_default`,
+  which carry no ranges and no citations. Omitting the table would therefore give
+  mixed-use financing terms strictly weaker provenance than all nine other
+  classes and would emit no `resolved_from` stamp a reader could audit.
+  `MIXED_USE_DEFAULTS` MUST ship with the same `defaults.test.ts` `describe`
+  block every other table carries — `low <= central <= high`, units, and
+  citations — the check `hospitality` shipped without and must not repeat.
 - The `resolved_from` stamp already emitted by the cascade
   (`` `${table.asset_class}@${table.version}` ``) makes the provenance visible:
   a reader can see that a component's vacancy came from `retail@1.0.0`, not from
@@ -287,6 +386,13 @@ New fixtures:
 - `conformance/tier3/mixed-use-land-component/` — a `land` component; rejected.
 - `conformance/tier3/mixed-use-components-on-other-class/` — a `components`
   section on an `office` document; rejected.
+- `conformance/tier3/mixed-use-operating-business-component/` — a hospitality +
+  retail property. Property NOI MUST equal the sum of the two component NOIs
+  (§3a footing). The property `gross_operating_profit` memo MUST equal the
+  hospitality component's GOP alone; the retail component MUST contribute N/A,
+  **not** `0`. This is the fixture that pins Decision 1.
+- `conformance/tier3/mixed-use-component-debt-refused/` — a component carrying
+  its own `debt_structure`; rejected with the typed error (Decision 3).
 - A defaults-cascade case proving a component field resolves from its own class
   table with `resolved_from` naming that table, not a mixed-use one.
 
@@ -358,20 +464,25 @@ New fixtures:
 
 ## Unresolved questions
 
-- **Operating-business components.** `hospitality` is admitted as a component,
-  but its pack carries model-level subtotals (`gross_operating_profit`) *outside*
-  `noi_model.expenses` so its statement foots without double counting.
-  `senior_housing` and `student_housing` do the same and are **excluded** here
-  pending a decision on how an operating business's GOP layer participates in a
-  real-estate NOI rollup. Admitting hospitality but not the other two is
-  deliberate but not obviously stable.
-- **Whether `MIXED_USE_DEFAULTS` should exist at all**, versus resolving every
-  field at component scope and leaving `getAssetClassDefaults('mixed_use')`
-  null. The proposal keeps a minimal table for financing terms; a reviewer may
-  reasonably prefer none.
-- **Component-level debt.** Some mixed-use deals carry separate financing on a
-  commercial condo component. This RFC assumes one property-level loan and
-  defers component-level debt structures.
+Three questions the earlier draft raised here are **resolved** above and moved to
+"Decisions (2026-08-18)":
+
+- ~~Operating-business components.~~ **Resolved (Decision 1, §2/§3a):** all nine
+  income classes are admissible on the NOI-additivity rule; operating-business
+  intermediates are surfaced per-component, not blended at the property level.
+- ~~Whether `MIXED_USE_DEFAULTS` should exist.~~ **Resolved (Decision 2, §5):**
+  kept, scoped to mix-independent financing fields, with the mandatory test block.
+- ~~Component-level debt.~~ **Resolved (Decision 3, §2/§4):** out of scope; a
+  component carrying its own `debt_structure` is refused. Deferred to RFC 0026.
+
+Genuinely open:
+
+- **Operating-business components in an Excel operating statement.** The parity
+  invariant demands the mixed-use workbook emit a footing operating statement per
+  component. A hospitality component's statement carries the GOP layer; a
+  multifamily one does not. Whether the consolidation block shows the partial GOP
+  memo, or omits it to avoid a column most components leave blank, is a layout
+  question the reference implementation will settle.
 - Whether the web editor should render one metric strip per component or a
   single consolidated strip is a presentation question deferred to T14.
 

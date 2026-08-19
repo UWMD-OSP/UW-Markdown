@@ -254,7 +254,13 @@ not core gaps.
   The deciding constraint is that the Tier-3 calc engine has no iteration or
   array indexing, so per-component pack evaluation is not expressible without a
   new primitive in the sandboxed evaluator. RFC is `draft`; not yet accepted, so
-  no code yet.
+  no code yet. **Its three open design questions were resolved 2026-08-18**: all
+  nine income classes are admissible components on an NOI-additivity rule (not
+  just hospitality); `MIXED_USE_DEFAULTS` is kept for mix-independent financing
+  terms; and component-level debt is deferred to the new
+  [RFC 0026](../rfcs/0026-capital-stack.md) (a typed capital stack — tranches,
+  preferred equity, stack-aware sizing), spun out because a cap stack is an
+  asset-class-independent primitive, not a `mixed_use` sub-feature.
 
   > **Drift is now caught automatically (T16).** `AssetClass` had four
   > hand-maintained runtime mirrors — `modules.ts`, `PACK_REGISTRY`,
@@ -514,9 +520,14 @@ bus factor, personal security email, and no public RFC venue.
 > establishes the extension section, and **`receipt_version` bumps once** to
 > cover both.
 >
-> **Still blocked on acceptance, not on code.** One RFC remains drafted:
+> **Still blocked on acceptance, not on code.** Two RFCs are drafted:
 > [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition — gates
-> the last asset class). [0020](../rfcs/0020-uwx-terminology-alignment.md) was
+> the last asset class; its three open design questions were resolved 2026-08-18,
+> so it is now design-complete and awaiting only acceptance) and the newly spun-out
+> [0026](../rfcs/0026-capital-stack.md) (typed capital stack — senior/mezz/pref
+> tranches and stack-aware DSCR/debt-yield; asset-class-independent, and the
+> primitive 0019's component-level debt will build on).
+> [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.
 
