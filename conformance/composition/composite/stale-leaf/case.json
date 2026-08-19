@@ -1,0 +1,19 @@
+{
+  "why": "A corrected leaf makes its ancestor stale, not failed. A stale ancestor is evidence a correction has not been adopted, not evidence of tampering.",
+  "members": [
+    "deal-a",
+    "roll-a1"
+  ],
+  "links": [
+    {
+      "from": "roll-a1",
+      "to": "deal-a"
+    }
+  ],
+  "recordedDigests": {
+    "deal-a::roll-a1": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "actualDigests": {
+    "roll-a1": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  }
+}

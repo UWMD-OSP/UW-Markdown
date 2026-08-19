@@ -34,6 +34,8 @@ Command | Purpose
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
 `receipt issue <file>` | Issue a detached verification receipt (`--output`, `--issued-at`, `--stdout`)
 `receipt verify <file> <receipt.json>` | Verify a receipt (`--json`; exits 0 verified, 1 failed, 3 unverifiable)
+`compose <file> --externalize <s>` | Split a collection section into `.uwpart.md` fragments (`--collection-key`, `--collection-path`, `--out-dir`, `--in-place`, `--dry-run`)
+`resolve <file>` | Reassemble externalized sections from a parts directory (`--parts`, `--output`, `--json`; exits 1 unresolved)
 `layers` | List Bancroft agent layers
 
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the

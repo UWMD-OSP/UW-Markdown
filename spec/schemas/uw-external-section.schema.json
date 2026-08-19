@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uw-external-section.schema.json",
+  "title": "UW External Section Directive 1.0",
+  "description": "The `external` object replacing a section's payload when that section is held in `.uwpart.md` fragments (UW Composition 1.0 §3, RFC 0021). It names the parts, states how many there are, and — for collection sections — declares which field identifies a row and which field the merged rows occupy. Two constraints this schema cannot express are enforced by the resolver: `part_count` MUST equal `parts.length` (`COMP-COUNT-MISMATCH`), and `collection_key`/`collection_path` are REQUIRED when the named parts are collection members and forbidden otherwise, which depends on the parts rather than on this object.",
+  "type": "object",
+  "required": ["parts", "part_count"],
+  "additionalProperties": false,
+  "dependentRequired": {
+    "collection_key": ["collection_path"],
+    "collection_path": ["collection_key"]
+  },
+  "properties": {
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "The `part_id`s composing this section, each resolving to a fragment in the same package. Order is not significant: merged rows are sorted by `collection_key` under a byte-wise total order, which is what lets an externalized record digest identically to its inline twin. A repeated id is refused (`COMP-DUP-KEY`).",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "part_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "How many parts compose this section. Redundant against `parts.length` on purpose: without it a truncated `parts` array is undetectable, and a rent roll missing four tenants still totals, still validates, and still produces a confident DSCR. A disagreement is `COMP-COUNT-MISMATCH`."
+    },
+    "collection_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Field uniquely identifying a row, e.g. `unit_id`. Required when the parts are collection members. Two fragments claiming the same value is `COMP-DUP-KEY`, never a last-one-wins merge — it is a conflict a human resolves, not an ordering question."
+    },
+    "collection_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Field within the section content where merged rows land, e.g. `units`. Required alongside `collection_key`. Digest invariance (I-1) cannot hold without it: the resolved content must equal the inline content exactly, and `units` and `rows` are different documents. Not present in RFC 0021 as originally accepted; added to the RFC by erratum on 2026-08-18 and recorded in UW Composition 1.0 Appendix A."
+    }
+  }
+}

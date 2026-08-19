@@ -1,0 +1,9 @@
+{
+  "status": "stale",
+  "stale": [
+    {
+      "parent": "deal-a",
+      "child": "roll-a1"
+    }
+  ]
+}

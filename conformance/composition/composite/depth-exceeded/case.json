@@ -1,0 +1,29 @@
+{
+  "why": "A chain deeper than the bound. A nested-package expansion is a decompression bomb wearing a different hat.",
+  "members": [
+    "m0",
+    "m1",
+    "m2",
+    "m3",
+    "m4"
+  ],
+  "links": [
+    {
+      "from": "m1",
+      "to": "m0"
+    },
+    {
+      "from": "m2",
+      "to": "m1"
+    },
+    {
+      "from": "m3",
+      "to": "m2"
+    },
+    {
+      "from": "m4",
+      "to": "m3"
+    }
+  ],
+  "maxDepth": 3
+}

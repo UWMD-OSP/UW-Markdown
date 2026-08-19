@@ -5,6 +5,7 @@
     "valuation.purchase_price"
   ],
   "omitted_paths": [],
+  "externalized_sections": [],
   "warnings": [],
   "lossy": false
 }

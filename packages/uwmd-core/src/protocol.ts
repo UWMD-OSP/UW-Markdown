@@ -26,7 +26,7 @@ import type {
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.4.0' as const;
+export const PROTOCOL_VERSION = '1.5.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -212,12 +212,31 @@ export type ViewModelRegistry = Readonly<Record<string, SectionViewModel>>;
  * Step 0 (`user_override`) and step 1 (`user_input`) are detected by
  * walking the parsed file for an existing block at the field path
  * whose `_meta.source` matches; the remaining steps are looked up in
- * external tables (investor profile, market data) or built-in tables
- * (asset class, global, system).
+ * external tables (inherited assumptions, investor profile, market data)
+ * or built-in tables (asset class, global, system).
+ *
+ * **`inherited_assumption` was added by RFC 0021 §5 (protocol 1.5.0),**
+ * taking the cascade from seven steps to eight. It sits directly below
+ * `user_input`, so a value someone entered on the deal always beats one
+ * inherited from an ancestor — inheritance supplies defaults, it never
+ * overrides.
+ *
+ * It sits *above* `investor_profile`, which the RFC's own diagram is silent
+ * on because that diagram omits `investor_profile` entirely. Resolved on the
+ * merits: an inherited assumption comes from a named ancestor in this deal's
+ * composition DAG, so it is more specific to this deal than an
+ * institution-wide preference set, and the more specific source should win.
+ *
+ * Inheritance resolves along the composition DAG **only**. A document not
+ * reachable as an ancestor contributes nothing, and there is no ambient or
+ * global assumption scope — so a standalone record, which is every record
+ * that existed before RFC 0021, can never resolve at this step and no
+ * existing digest moves.
  */
 export type CascadeStep =
   | 'user_override'
   | 'user_input'
+  | 'inherited_assumption'
   | 'investor_profile'
   | 'market_data'
   | 'asset_class_default'
@@ -228,6 +247,7 @@ export type CascadeStep =
 export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
   'user_override',
   'user_input',
+  'inherited_assumption',
   'investor_profile',
   'market_data',
   'asset_class_default',
@@ -237,9 +257,14 @@ export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
 
 /**
  * The full set of canonical short-form source tags producers stamp into
- * `_meta.source`. The first seven values match `CascadeStep` 1:1; the
- * remaining four are non-cascade tags retained from v1.0 for back-compat
- * (`manual`, `ai_extracted`, `agent_computed`, `scenario_default`).
+ * `_meta.source`. Eight of these match `CascadeStep` 1:1; the rest are
+ * non-cascade tags — `manual`, `ai_extracted`, `agent_computed`,
+ * `scenario_default`, and `market_data_accepted`.
+ *
+ * `market_data_accepted` (RFC 0022 §4) is deliberately *not* a cascade step:
+ * it is an in-file value of record that resolves at the `user_input` step
+ * while keeping its own tag, because a value accepted for lack of better
+ * evidence must stay distinguishable from one someone typed in.
  *
  * `scenario_default` is retained but its meaning is sharpened to mean
  * "value derived from a named scenario in the file or institution
@@ -254,8 +279,10 @@ export const SOURCE_TAGS = Object.freeze([
   'user_input',
   'user_override',
   'manual',
+  'inherited_assumption',
   'investor_profile',
   'market_data',
+  'market_data_accepted',
   'ai_extracted',
   'agent_computed',
   'asset_class_default',

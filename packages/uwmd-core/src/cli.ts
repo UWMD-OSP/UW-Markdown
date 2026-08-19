@@ -3,8 +3,8 @@
 // Commands: parse, validate, compact, diff, init, summary, render
 // Usage: uwmd <command> <file> [options]
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { resolve, basename } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
+import { resolve, basename, dirname } from 'node:path';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
@@ -44,6 +44,15 @@ import { buildContext } from './context-profiles.js';
 import type { ContextProfile } from './context-profiles.js';
 import { rankGaps } from './refinement.js';
 import { resolveValue } from './cascade.js';
+import {
+  parseUWPart,
+  resolveComposition,
+  externalizeSection,
+  stringifyUWPart,
+  UWPART_EXTENSION,
+} from './composition.js';
+import type { UWPart, ExternalizationResult } from './composition.js';
+import type { ParsedUWFile } from './types.js';
 import { createDocumentMarketData, parseMarketDataDocument } from './market-data.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
@@ -223,7 +232,9 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
 
 async function cmdVerify(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
-  const parsed = parseUWFile(content);
+  // --resolved verifies the assembled record. Without it an externalized
+  // section verifies as a directive, which is not the document anyone means.
+  const parsed = withResolved(parseUWFile(content), file, flags);
 
   // No flag set → run all three.
   const onlyValidate = flags['validate'] === true;
@@ -400,7 +411,11 @@ function cmdSummary(file: string): void {
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const includeSuperseded = !(flags['no-superseded'] === true || flags['compact'] === true);
-  const loaded = await loadEnvelope(file);
+  // --resolved exports the assembled record. Exporting the directive instead
+  // would ship a document whose rent roll is a list of filenames.
+  const loaded = flags['resolved']
+    ? toUWEnvelope(withResolved(parseUWFile(readFile(file)), file, flags))
+    : await loadEnvelope(file);
   const envelope = includeSuperseded ? loaded : { ...loaded, superseded: {} };
   const text = stringifyUWEnvelope(await stampEnvelopeDigest(envelope));
 
@@ -497,9 +512,17 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
     const projection = projectUWEnvelopeToLite(envelope);
     encoded = projection.content;
     extension = '.uw.md';
-    if (projection.report.lossy) {
+    // Two independent losses, reported separately. A record whose only loss is
+    // an externalized section omits zero *paths*, so folding these together
+    // would print "omitted 0 advanced path(s)" over a missing rent roll.
+    if (projection.report.omitted_paths.length > 0) {
       console.warn(
         `Warning: Lite projection omitted ${projection.report.omitted_paths.length} advanced path(s).`,
+      );
+    }
+    if (projection.report.externalized_sections.length > 0) {
+      console.warn(
+        `Warning: Lite projection omitted ${projection.report.externalized_sections.length} externalized section(s), unresolved here: ${projection.report.externalized_sections.join(', ')}.`,
       );
     }
     if (typeof flags['projection-report'] === 'string') {
@@ -931,6 +954,154 @@ for (let _i = 0; _i < args.length; _i++) {
   positional.push(a);
 }
 
+
+// ─── Composition (RFC 0021) ──────────────────────────────────────────────────
+
+/** Load every `.uwpart.md` in a directory, keyed by `part_id`. */
+function loadPartsDir(dir: string): Map<string, UWPart> {
+  const parts = new Map<string, UWPart>();
+  if (!existsSync(dir)) return parts;
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(UWPART_EXTENSION)).sort()) {
+    const path = resolve(dir, file);
+    const part = parseUWPart(parseUWFile(readFileSync(path, 'utf-8')), { filename: file });
+    if (parts.has(part.part_id)) {
+      console.error(`Duplicate part_id '${part.part_id}' in ${dir}`);
+      process.exit(1);
+    }
+    parts.set(part.part_id, part);
+  }
+  return parts;
+}
+
+/** Where fragments live for a record, unless told otherwise. */
+function defaultPartsDir(file: string): string {
+  return resolve(dirname(resolve(file)), 'parts');
+}
+
+function cmdCompose(file: string, flags: Record<string, string | boolean>): void {
+  const section = flags['externalize'];
+  if (typeof section !== 'string') {
+    console.error('Usage: uwmd compose <file> --externalize <section> [--collection-key <k>] [--collection-path <p>]');
+    process.exit(1);
+  }
+  const collectionKey = (flags['collection-key'] as string) ?? 'unit_id';
+  const collectionPath = (flags['collection-path'] as string) ?? 'units';
+
+  const parsed = parseUWFile(readFile(file));
+  let result: ExternalizationResult;
+  try {
+    result = externalizeSection(parsed, {
+      section,
+      collectionKey,
+      collectionPath,
+      ...(flags['part-prefix'] ? { partIdPrefix: flags['part-prefix'] as string } : {}),
+    });
+  } catch (e) {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  }
+
+  const outDir = flags['out-dir'] ? resolve(flags['out-dir'] as string) : defaultPartsDir(file);
+  const recordPath = flags['in-place']
+    ? resolve(file)
+    : flags['output']
+      ? resolve(flags['output'] as string)
+      : resolve(replaceUWExtension(file, '.externalized.uwx.md'));
+
+  const recordText = stringifyUWX(toUWEnvelope(result.document));
+
+  if (flags['dry-run']) {
+    console.log(`Would write ${result.parts.length} fragment(s) to ${outDir}:`);
+    for (const part of result.parts) console.log(`  ${part.part_id}${UWPART_EXTENSION}`);
+    console.log(`Would write the record to ${recordPath}`);
+    return;
+  }
+
+  mkdirSync(outDir, { recursive: true });
+  for (const part of result.parts) {
+    writeFileSync(resolve(outDir, `${part.part_id}${UWPART_EXTENSION}`), stringifyUWPart(part), 'utf-8');
+  }
+  writeFileSync(recordPath, recordText, 'utf-8');
+
+  console.log(`Externalized ${section} → ${result.parts.length} fragment(s) in ${basename(outDir)}/`);
+  console.log(`Record written to ${basename(recordPath)}`);
+  // Externalizing is a packaging decision, not a model change — worth saying,
+  // because the file looks dramatically different afterwards.
+  console.log('The resolved record has the same semantic digest as the original.');
+}
+
+function cmdResolve(file: string, flags: Record<string, string | boolean>): void {
+  const partsDir = flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file);
+  const parsed = parseUWFile(readFile(file));
+  let parts: Map<string, UWPart>;
+  try {
+    parts = loadPartsDir(partsDir);
+  } catch (e) {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  }
+  const resolution = resolveComposition(parsed, { parts });
+
+  if (flags['json']) {
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          status: resolution.status,
+          externalized: resolution.externalized,
+          parts_available: parts.size,
+          issues: resolution.issues,
+        },
+        null,
+        2,
+      )}\n`,
+    );
+  } else {
+    console.log(`${resolution.status === 'resolved' ? 'RESOLVED' : 'UNRESOLVED'}  ${basename(file)}`);
+    console.log(`    ${parts.size} fragment(s) available in ${basename(partsDir)}/`);
+    console.log(`    externalized section(s): ${resolution.externalized.join(', ') || '(none)'}`);
+    for (const issue of resolution.issues) {
+      console.log(`    [${issue.code}] ${issue.message}`);
+    }
+    if (resolution.status === 'unresolved') {
+      // The rule worth restating: under-resolution is never a smaller answer.
+      console.log('\n    Sections stay externalized rather than resolving partially —');
+      console.log('    a collection missing rows would still total and still validate.');
+    }
+  }
+
+  if (flags['output'] && resolution.status === 'resolved') {
+    const outPath = resolve(flags['output'] as string);
+    writeFileSync(outPath, stringifyUWX(toUWEnvelope(resolution.document)), 'utf-8');
+    if (!flags['json']) console.log(`    resolved record → ${basename(outPath)}`);
+  }
+
+  if (resolution.status !== 'resolved') process.exit(1);
+}
+
+/**
+ * Resolve a record's externalized sections before another command reads it.
+ *
+ * Returns the record unchanged when `--resolved` was not requested, so callers
+ * can apply it unconditionally. Exits when resolution fails: verifying or
+ * exporting a partially-resolved record would report on a document that does
+ * not exist.
+ */
+function withResolved(
+  parsed: ParsedUWFile,
+  file: string,
+  flags: Record<string, string | boolean>,
+): ParsedUWFile {
+  if (!flags['resolved']) return parsed;
+  const partsDir = flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file);
+  const resolution = resolveComposition(parsed, { parts: loadPartsDir(partsDir) });
+  if (resolution.status !== 'resolved') {
+    console.error(`Cannot resolve ${basename(file)} against ${basename(partsDir)}/:`);
+    for (const issue of resolution.issues) console.error(`  [${issue.code}] ${issue.message}`);
+    process.exit(1);
+  }
+  return resolution.document;
+}
+
 // Top-level async wrapper so `run --live` can use await
 (async () => {
 switch (command) {
@@ -945,7 +1116,7 @@ switch (command) {
     break;
 
   case 'verify':
-    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--resolved] [--json]'); process.exit(1); }
     await cmdVerify(positional[0], flags);
     break;
 
@@ -1214,7 +1385,7 @@ switch (command) {
     break;
 
   case 'export':
-    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--stdout]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--resolved] [--stdout]'); process.exit(1); }
     await cmdExport(positional[0], flags);
     break;
 
@@ -1239,6 +1410,16 @@ switch (command) {
   case 'refine':
     if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--json]'); process.exit(1); }
     cmdRefine(positional[0], flags);
+    break;
+
+  case 'compose':
+    if (!positional[0]) { console.error('Usage: uwmd compose <file> --externalize <section> [--collection-key <k>] [--collection-path <p>] [--out-dir <dir>] [--in-place] [--dry-run]'); process.exit(1); }
+    cmdCompose(positional[0], flags);
+    break;
+
+  case 'resolve':
+    if (!positional[0]) { console.error('Usage: uwmd resolve <file> [--parts <dir>] [--output <file>] [--json]'); process.exit(1); }
+    cmdResolve(positional[0], flags);
     break;
 
   case 'market-data': {
@@ -1344,6 +1525,8 @@ Commands:
   init                         Generate a blank .uwx.md file
   summary  <file>              Print quick metrics to terminal
   export   <file>              Export a digested UW JSON 1.0 document
+  compose  <file>              Externalize a section into .uwpart.md fragments (RFC 0021)
+  resolve  <file>              Resolve externalized sections from a parts directory (RFC 0021)
   formats                       List registered machine representations
   convert  <file>              Convert Lite/UWX/JSON/XML/CSV bundle representations
   report   <file>              Render the lender package / credit memo HTML (§7.1/§7.2)
@@ -1362,6 +1545,12 @@ Options:
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
+  --resolved         Resolve externalized sections first (verify, export)
+  --parts <dir>      Fragment directory (compose, resolve, --resolved; default: ./parts)
+  --externalize <s>  Section to split into fragments (compose)
+  --collection-key <k>  Row identity field (compose, default: unit_id)
+  --collection-path <p> Field the rows occupy (compose, default: units)
+  --in-place         Overwrite the input record (compose)
   --stdout           Write export/convert output to stdout
   --to <format>       Target: lite|uwx|uw-json|uw-xml|uw-csv-bundle (convert)
   --projection-report Write the UWX-to-Lite omission report as JSON (convert)

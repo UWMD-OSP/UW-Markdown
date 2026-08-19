@@ -1,0 +1,17 @@
+{
+  "why": "A cycle with no entry point from any root. Detecting it requires the post-walk unreachability check, not only the on-path check.",
+  "members": [
+    "deal-a",
+    "deal-b"
+  ],
+  "links": [
+    {
+      "from": "deal-a",
+      "to": "deal-b"
+    },
+    {
+      "from": "deal-b",
+      "to": "deal-a"
+    }
+  ]
+}

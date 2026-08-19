@@ -1,0 +1,4 @@
+{
+  "why": "part_count is 4 but parts lists 3. The redundancy exists so a truncated parts array is detectable rather than a silently smaller rent roll.",
+  "expected_code": "COMP-COUNT-MISMATCH"
+}

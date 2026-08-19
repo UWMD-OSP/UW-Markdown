@@ -1,0 +1,28 @@
+{
+  "why": "A portfolio of deals of rent rolls: recursion and depth accounting.",
+  "members": [
+    "portfolio",
+    "deal-a",
+    "deal-b",
+    "roll-a1",
+    "roll-b1"
+  ],
+  "links": [
+    {
+      "from": "deal-a",
+      "to": "portfolio"
+    },
+    {
+      "from": "deal-b",
+      "to": "portfolio"
+    },
+    {
+      "from": "roll-a1",
+      "to": "deal-a"
+    },
+    {
+      "from": "roll-b1",
+      "to": "deal-b"
+    }
+  ]
+}

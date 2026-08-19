@@ -1,6 +1,7 @@
 // Fallback cascade resolver — Protocol §V.7
 //
-// Walks the seven cascade steps in order; first hit wins. The producer that
+// Walks the eight cascade steps in order (seven before RFC 0021 §5 added
+// `inherited_assumption` at protocol 1.5.0); first hit wins. The producer that
 // uses this stamps the resulting `_meta.source` with the cascade step that
 // produced the value. See FORMAT_SPEC §3.4 (provisional flag) and §2.6
 // (source tags).
@@ -38,6 +39,77 @@ export interface MarketDataLookup {
   staleness_seconds: number;
 }
 
+/**
+ * Assumptions one ancestor asserts for its descendants (RFC 0021 §5).
+ *
+ * Callers build these by walking the composition DAG; this module does not
+ * discover them, because there is deliberately no ambient assumption scope —
+ * a document not reachable as an ancestor contributes nothing.
+ */
+export interface InheritedAssumptions {
+  /** The ancestor asserting these values. */
+  document_id: string;
+  /** `sha256:<64 lowercase hex>` over the ancestor's canonical form. */
+  digest: string;
+  /** Hops up the DAG from the resolving document; 1 is the immediate parent. */
+  distance: number;
+  /** Field-path → value. */
+  values: Record<string, unknown>;
+}
+
+/**
+ * Raised when two equidistant ancestors assert the same field. Diamond
+ * inheritance resolves explicitly or not at all — silently picking one would
+ * make the answer depend on graph traversal order, which is the class of bug
+ * this whole RFC is written to avoid.
+ */
+export class AmbiguousInheritanceError extends Error {
+  readonly code = 'COMP-AMBIGUOUS-INHERIT' as const;
+  readonly field_path: string;
+  readonly ancestors: string[];
+
+  constructor(field_path: string, ancestors: string[]) {
+    super(
+      `[COMP-AMBIGUOUS-INHERIT] Equidistant ancestors ${ancestors
+        .map((a) => `'${a}'`)
+        .join(' and ')} both assert '${field_path}'. Resolve which is authoritative rather than letting traversal order decide.`,
+    );
+    this.name = 'AmbiguousInheritanceError';
+    this.field_path = field_path;
+    this.ancestors = ancestors;
+  }
+}
+
+/**
+ * Select the inherited value for `field_path`: the nearest ancestor wins.
+ *
+ * Exported because a host often needs the winning ancestor's identity to stamp
+ * `_meta.inherited_from`, not merely the value.
+ */
+export function selectInheritedAssumption(
+  field_path: string,
+  inherited: readonly InheritedAssumptions[],
+): InheritedAssumptions | null {
+  const holders = inherited.filter((a) => Object.hasOwn(a.values, field_path));
+  if (holders.length === 0) return null;
+
+  let nearest = holders[0]!;
+  for (const candidate of holders.slice(1)) {
+    if (candidate.distance < nearest.distance) nearest = candidate;
+  }
+
+  const tied = holders.filter(
+    (a) => a.distance === nearest.distance && a.document_id !== nearest.document_id,
+  );
+  if (tied.length > 0) {
+    throw new AmbiguousInheritanceError(
+      field_path,
+      [nearest, ...tied].map((a) => a.document_id).sort(),
+    );
+  }
+  return nearest;
+}
+
 export interface InvestorProfile {
   /** Field-path → preferred value map. */
   values: Record<string, unknown>;
@@ -62,6 +134,12 @@ export interface CascadeContext {
   /** Optional geography hint passed to the market-data resolver. */
   geo?: string;
   profile?: InvestorProfile;
+  /**
+   * Assumptions from ancestors in the composition DAG (RFC 0021 §5). Supplied
+   * by the caller after resolving the graph; absent for a standalone record,
+   * which is why no pre-0021 document can resolve at this step.
+   */
+  inherited?: readonly InheritedAssumptions[];
   market?: MarketDataLookup;
   global?: GlobalDefaults;
   system?: SystemDefaults;
@@ -159,12 +237,16 @@ function findBySource(
  *
  * Cascade order:
  *   1. user_override (in-file, source-tag match)
- *   2. user_input (in-file, source-tag match)
- *   3. investor_profile (ctx.profile)
- *   4. market_data (ctx.market)
- *   5. asset_class_default (defaults registry)
- *   6. global_default (ctx.global)
- *   7. system_default (ctx.system)
+ *   2. user_input (in-file, source-tag match; also market_data_accepted)
+ *   3. inherited_assumption (ctx.inherited — composition DAG only)
+ *   4. investor_profile (ctx.profile)
+ *   5. market_data (ctx.market)
+ *   6. asset_class_default (defaults registry)
+ *   7. global_default (ctx.global)
+ *   8. system_default (ctx.system)
+ *
+ * Throws `AmbiguousInheritanceError` when two equidistant ancestors assert the
+ * same field — the one case where resolution refuses rather than choosing.
  *
  * Returns `undefined` value with step='system_default' as a sentinel only when
  * every step misses; callers SHOULD treat that as an unresolvable input and
@@ -191,15 +273,37 @@ export function resolveValue(
   //
   // The returned `source` is the tag found, so `market_data_accepted` survives
   // resolution rather than being flattened into `user_input`. Only the *step*
-  // is shared — `CascadeStep` is normatively fixed at seven and must not be
-  // reordered or extended (protocol §IX), so a promoted value is a distinctly
-  // tagged value resolved at an existing step, not a new step.
+  // is shared — the cascade is normatively ordered and a producer must not
+  // reorder it (protocol §IX), so a promoted value is a distinctly tagged value
+  // resolved at an existing step rather than a step of its own. Extending the
+  // cascade is a protocol change, which is what RFC 0021 §5 did for
+  // `inherited_assumption`; RFC 0022 deliberately did not need one.
   const input = findBySource(parsed, field_path, ['user_input', 'manual', 'market_data_accepted']);
   if (input) {
     return { value: input.value, source: input.source, step: 'user_input' };
   }
 
-  // Step 3: investor_profile
+  // Step 3: inherited_assumption (RFC 0021 §5).
+  //
+  // Below `user_input`, so a value entered on the deal always wins —
+  // inheritance supplies defaults, never overrides. Above `investor_profile`,
+  // because a named ancestor in this deal's own composition DAG is more
+  // specific than an institution-wide preference set.
+  if (ctx.inherited && ctx.inherited.length > 0) {
+    // Throws on equidistant ancestors rather than picking one. Deliberate: a
+    // silent pick would make the answer depend on traversal order.
+    const ancestor = selectInheritedAssumption(field_path, ctx.inherited);
+    if (ancestor) {
+      return {
+        value: ancestor.values[field_path],
+        source: 'inherited_assumption',
+        step: 'inherited_assumption',
+        resolved_from: ancestor.document_id,
+      };
+    }
+  }
+
+  // Step 4: investor_profile
   if (ctx.profile && field_path in ctx.profile.values) {
     return {
       value: ctx.profile.values[field_path],
@@ -209,7 +313,7 @@ export function resolveValue(
     };
   }
 
-  // Step 4: market_data
+  // Step 5: market_data
   const asset_class =
     ctx.asset_class ??
     (parsed.frontmatter as { asset_class?: string }).asset_class ??
@@ -233,7 +337,7 @@ export function resolveValue(
     return { value: inFileMarket.value, source: 'market_data', step: 'market_data' };
   }
 
-  // Step 5: asset_class_default
+  // Step 6: asset_class_default
   const table = getAssetClassDefaults(asset_class);
   const range: DefaultRange | undefined = table?.fields[field_path];
   if (range) {
@@ -246,7 +350,7 @@ export function resolveValue(
     };
   }
 
-  // Step 6: global_default
+  // Step 7: global_default
   if (ctx.global && field_path in ctx.global.values) {
     return {
       value: ctx.global.values[field_path],
@@ -255,7 +359,7 @@ export function resolveValue(
     };
   }
 
-  // Step 7: system_default
+  // Step 8: system_default
   if (ctx.system && field_path in ctx.system.values) {
     return {
       value: ctx.system.values[field_path],

@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, it, expect } from 'vitest';
 
@@ -545,5 +545,124 @@ describe('uwmd CLI', () => {
         rmSync(temp, { recursive: true, force: true });
       }
     });
+  });
+});
+
+describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
+  const INLINE = resolve(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    'conformance',
+    'composition',
+    'resolve',
+    'inline-vs-external',
+    'inline.uwx.md',
+  );
+
+  /** A scratch copy of the inline record, externalized in place. */
+  function externalized(): { dir: string; record: string } {
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-compose-'));
+    const record = resolve(dir, 'deal.uwx.md');
+    writeFileSync(record, readFileSync(INLINE, 'utf8'), 'utf8');
+    const out = runCli(['compose', record, '--externalize', 'rent_roll', '--part-prefix', 'lease-suite', '--in-place']);
+    expect(out.status).toBe(0);
+    return { dir, record };
+  }
+
+  it('compose splits a section into fragments and leaves a directive', () => {
+    const { dir, record } = externalized();
+    try {
+      const text = readFileSync(record, 'utf8');
+      expect(text).toContain('external=true');
+      expect(text).toContain('"collection_path": "units"');
+      expect(text).toContain('"part_count": 3');
+
+      for (const id of ['210', '215', '220']) {
+        const part = readFileSync(resolve(dir, 'parts', `lease-suite-${id}.uwpart.md`), 'utf8');
+        expect(part).toContain('uwpart_version: "1.0"');
+        expect(part).toContain(`part_id: lease-suite-${id}`);
+        expect(part).toContain('collection_member: true');
+        // A fragment must never look like a deal.
+        expect(part).not.toContain('deal_id');
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('resolve reassembles the record without moving its digest', () => {
+    const { dir, record } = externalized();
+    try {
+      const roundTrip = resolve(dir, 'roundtrip.uwx.md');
+      const out = runCli(['resolve', record, '--output', roundTrip]);
+      expect(out.status).toBe(0);
+      expect(out.stdout).toContain('RESOLVED');
+
+      // The claim `compose` prints to the user, checked rather than asserted.
+      const a = runCli(['export', INLINE, '--stdout']);
+      const b = runCli(['export', roundTrip, '--stdout']);
+      expect(a.status).toBe(0);
+      expect(b.status).toBe(0);
+      expect(JSON.parse(b.stdout).digest).toBe(JSON.parse(a.stdout).digest);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('resolve refuses, and does not under-resolve, when a fragment is missing', () => {
+    const { dir, record } = externalized();
+    try {
+      rmSync(resolve(dir, 'parts', 'lease-suite-220.uwpart.md'));
+      const out = runCli(['resolve', record, '--json']);
+      expect(out.status).toBe(1);
+      const report = JSON.parse(out.stdout);
+      expect(report.status).toBe('unresolved');
+      expect(report.issues.map((i: { code: string }) => i.code)).toContain('COMP-UNRESOLVED');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('export --resolved inlines the rows; without it the directive survives', () => {
+    const { dir, record } = externalized();
+    try {
+      const resolved = runCli(['export', record, '--resolved', '--stdout']);
+      expect(resolved.status).toBe(0);
+      const withRows = JSON.parse(resolved.stdout);
+      const section = withRows.sections.rent_roll.content ?? withRows.sections.rent_roll;
+      expect(Array.isArray(section.units)).toBe(true);
+      expect(section.units).toHaveLength(3);
+      expect(section.external).toBeUndefined();
+
+      const plain = runCli(['export', record, '--stdout']);
+      expect(plain.status).toBe(0);
+      const asStored = JSON.parse(plain.stdout);
+      const stored = asStored.sections.rent_roll.content ?? asStored.sections.rent_roll;
+      expect(stored.external).toBeDefined();
+      expect(stored.units).toBeUndefined();
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('verify --resolved and export --resolved refuse a record they cannot assemble', () => {
+    const { dir, record } = externalized();
+    try {
+      rmSync(resolve(dir, 'parts', 'lease-suite-220.uwpart.md'));
+
+      const verified = runCli(['verify', record, '--resolved']);
+      expect(verified.status).toBe(1);
+      expect(verified.stderr).toContain('COMP-UNRESOLVED');
+
+      const leaked = resolve(dir, 'leaked.uw.json');
+      const exported = runCli(['export', record, '--resolved', '--output', leaked]);
+      expect(exported.status).toBe(1);
+      // Refusing must not leave a half-answer on disk.
+      expect(existsSync(leaked)).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

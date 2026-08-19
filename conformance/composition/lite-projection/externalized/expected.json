@@ -1,0 +1,8 @@
+{
+  "why": "RFC 0021 §3 makes this a MUST: the UWX→Lite projection reports every externalized section in its omission report rather than silently flattening or dropping it. Before this fixture the projection leaked the directive's own keys — external.parts[0], part_count, collection_key — into omitted_paths, reporting the packaging in place of the contents it stands for. An externalized record therefore appeared to omit FEWER paths than its inline twin, which is the opposite of the truth.",
+  "externalized_sections": ["rent_roll"],
+  "lossy": true,
+  "omits_no_directive_paths": true,
+  "matches_inline_projection": true,
+  "matches_inline_note": "Externalization is packaging, not modelling, so the projected Lite document is byte-identical to the inline twin's. The report is the only place the difference is allowed to show — the I-1 invariant, one layer up."
+}

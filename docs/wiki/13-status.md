@@ -63,8 +63,8 @@ not core gaps.
   warnings — an unattributable observation set does not parse. `uwmd market-data
   validate`; `--market-data` on `scope`/`refine`. See [05](05-calc-packs.md) and
   the `market-data` conformance suite.
-- **CLI:** 20 commands (incl. `export` → `.uw.json`, `receipt issue|verify`, and
-  `market-data validate`).
+- **CLI:** 25 commands (incl. `export` → `.uw.json`, `receipt issue|verify`,
+  `market-data validate`, and `compose`/`resolve` for RFC 0021 composition).
   See [08](08-tools.md).
 - **Batch collection indexer:** `@uwmd/batch` provides a deterministic local JSON/CSV read model over a directory of `.uwx.md` files. It validates the required envelope, records semantic digests, and isolates invalid candidates without defining a database protocol. See [08](08-tools.md).
 - **Machine interchange Phases A–E:** Envelope 1.0, normative schemas, UW JSON
@@ -546,23 +546,42 @@ bus factor, personal security email, and no public RFC venue.
    > in-file `market_data_accepted` tag, so a promoted value fell through to
    > `asset_class_default`. It now resolves at the `user_input` step while
    > keeping its own tag, which also makes it correctly outrank a fresher live
-   > pull. `CascadeStep` is untouched — normatively fixed at seven.
-3. **Batch workflow expansion — now scoped as
-   [RFC 0021](../rfcs/0021-composable-documents.md) (draft).** The deterministic
-   filters/summaries/queue projections in `@uwmd/batch` are built; the expansion
-   worth having is *composition*, not more read models. 0021 defines section
-   externalization into `.uwpart.md` fragments, recursive composites
-   (portfolio → deals → rent rolls), shared assumptions inherited along the
-   composition DAG, and rollup receipts.
+   > pull. `CascadeStep` was untouched by 0022; RFC 0021 §5 later extended it to
+   > eight steps at protocol 1.5.0, which is a protocol change rather than a
+   > reordering.
+3. ~~**Batch workflow expansion — composition.**~~ **Accepted 2026-08-13 and
+   implemented 2026-08-18 as
+   [RFC 0021](../rfcs/0021-composable-documents.md).** Section externalization
+   into `.uwpart.md` fragments, recursive composites (portfolio → deals → rent
+   rolls), assumptions inherited along the composition DAG, and rollup receipts.
+   `spec/UW_COMPOSITION_v1.md`, three schemas, `composition.ts`, the
+   `uwmd resolve`/`compose --externalize`/`--resolved` CLI surface, and a
+   `composition` conformance suite (20 assertions) all ship. Protocol
+   **1.4.0 → 1.5.0** — the cascade goes from seven steps to eight.
 
-   Two things make it tractable. First, one invariant carries the design:
-   **an externalized record and its inline equivalent have the same semantic
-   digest**, so composition is packaging rather than modelling. Second, rollup
-   receipts sidestep the wall RFC 0019 hit — the Tier-3 sandbox has no iteration,
-   so a composite *states* aggregates and the receipt verifier recomputes them
-   over named child digests using a fixed, non-extensible `fn` vocabulary. No
-   change to the calc engine. **Accepted 2026-08-13 and now
-   implementable** — 0018 supplies the package manifest and edge registry.
+   One invariant carried the design: **an externalized record and its inline
+   equivalent have the same semantic digest**, so composition is packaging
+   rather than modelling. Rollup receipts sidestepped the wall RFC 0019 hit —
+   the Tier-3 sandbox has no iteration, so a composite *states* aggregates and
+   the verifier recomputes them over named child digests using a fixed
+   `fn` vocabulary. No change to the calc engine.
+
+   > **Three errata against the RFC, all found by building it** and accepted
+   > 2026-08-18. The directive needed a `collection_path`: `collection_key` says
+   > which field *identifies* a row and never says which field the rows
+   > *occupy*, and I-1 cannot hold without it — `units` and `rows` are different
+   > documents. §7's error table had a code for every *semantic* failure and
+   > none for a structurally invalid input, which every parser needs first. And
+   > the RFC gave each fragment its own `_meta` without saying what becomes of
+   > it when the fragment becomes a *row*; I-1 settles it — dropped, since the
+   > inline twin's rows are plain objects.
+   >
+   > A fourth thing was a *violation* that read as compliance. §3 requires the
+   > UWX→Lite projection to report externalized sections, and it did report
+   > something — the directive's own keys. So an externalized record listed
+   > seven omitted paths against its inline twin's ten, and a consumer diffing
+   > the two would conclude it had lost *less* while it was missing an entire
+   > rent roll.
 4. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
    filters by `section_id` only, so a land deal is offered a "Total units" input
    and a student-housing deal gets one too, though that class sizes per bed. The

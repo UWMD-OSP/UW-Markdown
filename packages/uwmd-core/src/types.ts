@@ -28,6 +28,12 @@ export type SourceTag =
   | 'user_input'
   | 'user_override'
   | 'manual'
+  /**
+   * A value inherited from an ancestor in the composition DAG (RFC 0021 §5).
+   * Always carries `_meta.inherited_from` naming the asserting document, so it
+   * is traceable rather than ambient.
+   */
+  | 'inherited_assumption'
   | 'investor_profile'
   | 'market_data'
   /**
@@ -169,6 +175,23 @@ export interface UWMeta {
    * vintage, were accepted — the exact gap RFC 0022 exists to close.
    */
   market_data_ref?: MarketDataRef;
+
+  /**
+   * Which ancestor asserted an `inherited_assumption` value (RFC 0021 §5).
+   * REQUIRED whenever `source` is `inherited_assumption`, and meaningless
+   * otherwise — an inherited value with no named ancestor is indistinguishable
+   * from an ambient default, which is exactly what §5 forbids.
+   */
+  inherited_from?: InheritedFrom;
+}
+
+/** Identity and digest of the ancestor that asserted an inherited value. */
+export interface InheritedFrom {
+  document_id: string;
+  /** `sha256:<64 lowercase hex>` over the ancestor's canonical form. */
+  digest: string;
+  /** Hops up the composition DAG; 1 is the immediate parent. */
+  distance: number;
 }
 
 /**

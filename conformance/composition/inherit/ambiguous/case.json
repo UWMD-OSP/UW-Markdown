@@ -1,0 +1,22 @@
+{
+  "why": "Equidistant ancestors assert the same field. Diamond inheritance resolves explicitly or not at all — choosing by traversal order would make the answer depend on how the graph was walked.",
+  "field_path": "assumptions.exit_cap_rate_spread",
+  "inherited": [
+    {
+      "document_id": "fund-ii",
+      "digest": "sha256:bbbb",
+      "distance": 1,
+      "values": {
+        "assumptions.exit_cap_rate_spread": 0.005
+      }
+    },
+    {
+      "document_id": "jv-partner",
+      "digest": "sha256:cccc",
+      "distance": 1,
+      "values": {
+        "assumptions.exit_cap_rate_spread": 0.006
+      }
+    }
+  ]
+}

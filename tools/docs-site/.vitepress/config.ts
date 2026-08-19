@@ -110,6 +110,7 @@ export default defineConfig({
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
             { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
             { text: 'Verification receipt (v1.0)', link: '/spec/receipt' },
+            { text: 'Composition spec (v1.0)', link: '/spec/composition' },
             { text: 'HTTP binding (v1.0)', link: '/spec/http' },
             { text: 'MCP binding (v1.0)', link: '/spec/mcp' },
             { text: 'OpenAPI 3.1 contract', link: '/spec/UW_HTTP_API_v1.openapi.json' },

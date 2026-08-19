@@ -1,0 +1,8 @@
+{
+  "why": "The suite exists to prove this. An externalized record and its inline twin must produce identical canonical forms and identical semantic digests.",
+  "status": "resolved",
+  "externalized": [
+    "rent_roll"
+  ],
+  "matches_inline": true
+}
