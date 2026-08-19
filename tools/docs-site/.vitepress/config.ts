@@ -105,7 +105,7 @@ export default defineConfig({
           text: 'Specifications',
           items: [
             { text: 'Format spec (v1.1)', link: '/spec/format' },
-            { text: 'Protocol spec (v1.2)', link: '/spec/protocol' },
+            { text: 'Protocol spec (v1.5)', link: '/spec/protocol' },
             { text: 'XML mapping (v1.0)', link: '/spec/xml' },
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
             { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
