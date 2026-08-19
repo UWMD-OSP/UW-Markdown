@@ -253,8 +253,9 @@ not core gaps.
   document (a bounded set of component slots keyed by class), not in the pack.
   The deciding constraint is that the Tier-3 calc engine has no iteration or
   array indexing, so per-component pack evaluation is not expressible without a
-  new primitive in the sandboxed evaluator. RFC is `draft`; not yet accepted, so
-  no code yet. **Its three open design questions were resolved 2026-08-18**: all
+  new primitive in the sandboxed evaluator. RFC is **`accepted` (2026-08-18)** —
+  design-complete, implementation pending, no code yet. **Its three open design
+  questions were resolved 2026-08-18**: all
   nine income classes are admissible components on an NOI-additivity rule (not
   just hospitality); `MIXED_USE_DEFAULTS` is kept for mix-independent financing
   terms; and component-level debt is deferred to the new
@@ -520,13 +521,15 @@ bus factor, personal security email, and no public RFC venue.
 > establishes the extension section, and **`receipt_version` bumps once** to
 > cover both.
 >
-> **Still blocked on acceptance, not on code.** Two RFCs are drafted:
-> [0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition — gates
-> the last asset class; its three open design questions were resolved 2026-08-18,
-> so it is now design-complete and awaiting only acceptance) and the newly spun-out
+> **The next asset-class work is unblocked.**
+> [RFC 0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition —
+> gates the last asset class) was **accepted 2026-08-18** with its three design
+> questions resolved; it is now ready to implement (the `mixed_use` pack,
+> `MIXED_USE_DEFAULTS`, the `components` schema, Excel layout, and conformance
+> fixtures). The newly spun-out
 > [0026](../rfcs/0026-capital-stack.md) (typed capital stack — senior/mezz/pref
 > tranches and stack-aware DSCR/debt-yield; asset-class-independent, and the
-> primitive 0019's component-level debt will build on).
+> primitive 0019's component-level debt will build on) remains `draft`.
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.

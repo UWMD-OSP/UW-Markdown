@@ -1,7 +1,7 @@
 ---
 rfc: 0019
 title: Define mixed-use composition as a document shape, not a pack shape
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-13
 affects:
@@ -13,6 +13,13 @@ affects:
 ---
 
 # RFC 0019: Define mixed-use composition as a document shape, not a pack shape
+
+> **Accepted 2026-08-18** by the project owner under owner-led governance, with
+> the three open design questions resolved the same day (see Decisions below).
+> Status moves to `implemented` when the `mixed_use` pack, `MIXED_USE_DEFAULTS`,
+> the `components` schema, the Excel layout, and the conformance fixtures ship
+> (see Reference implementation). Component-level debt is explicitly out of scope
+> and tracked in RFC 0026.
 
 ## Summary
 
