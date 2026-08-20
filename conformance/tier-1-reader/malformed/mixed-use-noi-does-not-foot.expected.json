@@ -1,0 +1,8 @@
+{
+  "description": "Component NOIs sum to 1,672,000 but the property noi_model states 2,000,000. CC-12: property NOI must equal the sum of component NOIs (§3a footing).",
+  "must_parse": true,
+  "expected_codes": [
+    "CC-12"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §3a"
+}

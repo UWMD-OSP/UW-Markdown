@@ -251,4 +251,30 @@ describe('cascade — asset class selection', () => {
     });
     expect(result.step).toBe('asset_class_default');
   });
+
+  // RFC 0019 §5: a mix-dependent field inside a mixed_use component resolves at
+  // COMPONENT scope — the host passes the component's `component_class` as
+  // `ctx.asset_class`, so the value comes from that use's own defaults table and
+  // `resolved_from` names it, never a mixed_use table that quietly averaged
+  // something. This is the reuse the RFC relies on; it needs no new mechanism.
+  describe('mixed-use component-scoped defaults (RFC 0019 §5)', () => {
+    it('a retail component resolves vacancy from retail@1.0.0, not a mixed_use table', () => {
+      const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'mixed_use' }), {
+        asset_class: 'retail',
+      });
+      expect(result.step).toBe('asset_class_default');
+      expect(result.value).toBe(0.07); // retail vacancy central, not multifamily's 0.06
+      expect(result.resolved_from).toBe('retail@1.0.0');
+    });
+
+    it('the same field on the same document resolves differently per component_class', () => {
+      const file = makeFile({ asset_class: 'mixed_use' });
+      const asMultifamily = resolveValue('rent_roll.vacancy_pct', file, { asset_class: 'multifamily' });
+      const asRetail = resolveValue('rent_roll.vacancy_pct', file, { asset_class: 'retail' });
+      expect(asMultifamily.value).toBe(0.06);
+      expect(asRetail.value).toBe(0.07);
+      expect(asMultifamily.resolved_from).toBe('multifamily@1.0.0');
+      expect(asRetail.resolved_from).toBe('retail@1.0.0');
+    });
+  });
 });

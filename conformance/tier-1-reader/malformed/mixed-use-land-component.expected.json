@@ -1,0 +1,8 @@
+{
+  "description": "A land component. MU-02: land is inadmissible — its noi_model nets negative, so it is not additive with the other component NOIs.",
+  "must_parse": true,
+  "expected_codes": [
+    "MU-02"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §2"
+}
