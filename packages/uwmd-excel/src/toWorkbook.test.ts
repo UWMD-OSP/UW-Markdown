@@ -33,6 +33,12 @@ import { HOSPITALITY_LAYOUT } from './hospitality.js';
 import { SENIOR_HOUSING_LAYOUT } from './senior-housing.js';
 import { STUDENT_HOUSING_LAYOUT } from './student-housing.js';
 import { LAND_LAYOUT } from './land.js';
+import {
+  MIXED_USE_LAYOUT,
+  MIXED_USE_COMPONENT_SPECS,
+  buildMixedUseNamedRangeMap,
+  mixedUseName,
+} from './mixed-use.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 /**
@@ -101,6 +107,7 @@ describe('layout registry', () => {
       'hospitality',
       'industrial',
       'land',
+      'mixed_use',
       'multifamily',
       'office',
       'retail',
@@ -246,3 +253,174 @@ for (const { file, layout } of CASES) {
     });
   });
 }
+
+// ─── Mixed-use (RFC 0019) ────────────────────────────────────────────────────
+//
+// Mixed-use has a different workbook shape — per-component operating statements
+// plus a consolidation block — so it is not part of the single-statement CASES
+// loop above. It gets its own parity/footing suite here. The excel suite gains
+// these tests (RFC 0019 test plan: the count must rise by ≥4); if a mixed-use
+// metric were silently skipped, the present-metric parity test would still hold
+// it to `evaluateCalc`, and the absent-metric test would catch an emitted row.
+
+const MIXED_USE_FILE = 'Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md';
+
+/** Read a dotted field path out of a parsed file's sections, or null. */
+function sectionPathNumber(parsed: ReturnType<typeof parseUWFile>, path: string): number | null {
+  const dot = path.indexOf('.');
+  const section = path.slice(0, dot);
+  const rest = path.slice(dot + 1);
+  const sec = parsed.sections[section] as { content?: Record<string, unknown> } | undefined;
+  let cur: unknown = sec?.content;
+  for (const p of rest.split('.')) {
+    cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[p] : undefined;
+  }
+  return typeof cur === 'number' && Number.isFinite(cur) ? cur : null;
+}
+
+function presentComponents(parsed: ReturnType<typeof parseUWFile>): typeof MIXED_USE_COMPONENT_SPECS {
+  const comps = (parsed.sections['components'] as { content?: Record<string, unknown> } | undefined)
+    ?.content ?? {};
+  return MIXED_USE_COMPONENT_SPECS.filter((s) => comps[s.componentClass] != null);
+}
+
+describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
+  const MIXED_USE_PROPERTY_PATHS = [
+    'valuation.purchase_price',
+    'debt_structure.loan_amount',
+    'debt_structure.annual_debt_service',
+    'sources_uses.sources.equity_sponsor',
+  ];
+
+  it('registers a mixed-use layout carrying the component spec', () => {
+    const layout = getLayoutForAssetClass('mixed_use');
+    expect(layout).toBe(MIXED_USE_LAYOUT);
+    expect(layout?.mixedUse?.components.length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('writes each property input as a named range holding the stored value', async () => {
+    const wb = await roundTrip(MIXED_USE_FILE);
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, MIXED_USE_FILE), 'utf8'));
+    for (const path of MIXED_USE_PROPERTY_PATHS) {
+      const name = mixedUseName(path);
+      expect(namedNumber(wb, name), name).toBe(sectionPathNumber(parsed, path));
+    }
+  });
+
+  it('per-component statements foot and component NOIs sum to the property NOI (§3a)', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, MIXED_USE_FILE), 'utf8'));
+    const present = presentComponents(parsed);
+    expect(present.length).toBeGreaterThanOrEqual(2);
+
+    let noiSum = 0;
+    for (const spec of present) {
+      const base = `components.${spec.componentClass}`;
+      const egi = sectionPathNumber(parsed, `${base}.effective_gross_income`);
+      const opex = sectionPathNumber(parsed, `${base}.operating_expenses`);
+      const noi = sectionPathNumber(parsed, `${base}.net_operating_income`);
+      expect(egi, `${spec.componentClass} EGI`).not.toBeNull();
+      expect(opex, `${spec.componentClass} opex`).not.toBeNull();
+      expect(noi, `${spec.componentClass} NOI`).not.toBeNull();
+      // the component statement foots: EGI − opex = NOI
+      expect((egi as number) - (opex as number)).toBeCloseTo(noi as number, 6);
+      noiSum += noi as number;
+    }
+    // the §3a property foot
+    expect(noiSum).toBeCloseTo(
+      sectionPathNumber(parsed, 'noi_model.net_operating_income') as number,
+      6,
+    );
+  });
+
+  it('the consolidation cell sums exactly the present components as a live formula', async () => {
+    const wb = await roundTrip(MIXED_USE_FILE);
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, MIXED_USE_FILE), 'utf8'));
+    const propName = mixedUseName('noi_model.net_operating_income');
+    const ranges = wb.definedNames.getRanges(propName);
+    expect(ranges.ranges.length, 'property NOI named range exists').toBe(1);
+    const cell = cellAt(wb, ranges.ranges[0]);
+    const formula = (cell?.value as { formula?: string } | undefined)?.formula ?? '';
+    // one term per present component NOI named range, added together
+    const expectedTerms = presentComponents(parsed)
+      .map((s) => mixedUseName(`components.${s.componentClass}.net_operating_income`))
+      .join('+');
+    expect(formula).toBe(expectedTerms);
+  });
+
+  it('every emitted derived metric matches evaluateCalc exactly (Excel↔evaluator parity)', async () => {
+    const wb = await roundTrip(MIXED_USE_FILE);
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, MIXED_USE_FILE), 'utf8'));
+    const map = buildMixedUseNamedRangeMap();
+    const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
+
+    // Every path a mixed-use formula can read, keyed by its workbook-scope name.
+    // Property inputs are read back from the workbook (proving the cells hold the
+    // right values); component + property-NOI subtotals come from the (footing)
+    // stored document, exactly as the single-statement parity test does.
+    const values: Record<string, number> = {};
+    for (const [path, name] of map) {
+      const v =
+        path === 'valuation.purchase_price' ||
+        path === 'debt_structure.loan_amount' ||
+        path === 'debt_structure.annual_debt_service' ||
+        path === 'sources_uses.sources.equity_sponsor'
+          ? namedNumber(wb, name)
+          : sectionPathNumber(parsed, path);
+      if (v !== null) values[name] = v;
+    }
+
+    const underwriting = wb.getWorksheet('Underwriting')!;
+    const labelToRow = rowByLabel(underwriting);
+    let checked = 0;
+
+    for (const decl of MIXED_USE_LAYOUT.pack.calculations ?? []) {
+      const direct = evaluateCalc(decl, ctx);
+      expect(direct.ok, `${decl.id} evaluateCalc`).toBe(true);
+
+      if (direct.value === null) {
+        // absent component / un-allocated intensive → no row emitted
+        expect(labelToRow.has(decl.label), `${decl.id} should be omitted`).toBe(false);
+        continue;
+      }
+
+      // present metric → the workbook has its row, and its formula parities
+      expect(labelToRow.has(decl.label), `${decl.id} should be emitted`).toBe(true);
+      let formula = emitExcelFormula(decl.formula, { namedRanges: map });
+      for (const name of Object.keys(values)) {
+        formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+      }
+      expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
+      // eslint-disable-next-line no-new-func
+      const excelLike = new Function(`return (${formula});`)() as number;
+      const excelCell = quantizeDecimal(excelLike, resolveRoundTo(decl));
+      expect(excelCell, decl.id).toBe(direct.value as number);
+      checked++;
+    }
+    // guard against a vacuous pass: the fixture must exercise real metrics
+    expect(checked).toBeGreaterThanOrEqual(8);
+  });
+
+  it('omits derived-metric rows for absent component classes', async () => {
+    const wb = await roundTrip(MIXED_USE_FILE);
+    const underwriting = wb.getWorksheet('Underwriting')!;
+    const labels = new Set([...rowByLabel(underwriting).keys()]);
+    // office/industrial/self-storage/senior/student are absent from the fixture
+    for (const label of [
+      'Office NOI Share',
+      'Industrial NOI Share',
+      'Self-Storage NOI Share',
+      'Senior Housing NOI Share',
+      'Student Housing NOI Share',
+      'Senior Housing Total Labor Expense',
+    ]) {
+      expect(labels.has(label), label).toBe(false);
+    }
+  });
+
+  it('writes a Pipeline Log sheet with one row per pipeline_log entry', async () => {
+    const wb = await roundTrip(MIXED_USE_FILE);
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, MIXED_USE_FILE), 'utf8'));
+    const ws = wb.getWorksheet('Pipeline Log')!;
+    expect(ws.rowCount).toBe(1 + parsed.pipeline_log.length);
+  });
+});

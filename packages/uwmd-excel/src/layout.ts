@@ -54,6 +54,33 @@ export interface DerivedMetric {
   format: 'percent' | 'ratio' | 'currency' | 'count';
 }
 
+/**
+ * One use's slot in a mixed-use workbook (RFC 0019). Each present component
+ * gets its own footing operating-statement block; `denom` is the intensive
+ * denominator the pack divides by (units / rentable SF / beds) and `intermediate`
+ * is the operating-business subtotal surfaced per component (a hotel's GOP, a
+ * senior facility's labor) — never blended into one property figure (§3a).
+ */
+export interface MixedUseComponentSpec {
+  /** Component asset class; also the `components` map key it reads. */
+  componentClass: string;
+  label: string;
+  /** The use-level intensive denominator, if the pack defines one. */
+  denom?: { field: string; label: string };
+  /** The operating-business intermediate the pack passes through, if any. */
+  intermediate?: { field: string; label: string };
+}
+
+/**
+ * The mixed-use extension of a `WorkbookLayout`. Its presence is what tells the
+ * engine to emit per-component operating statements plus a consolidation block
+ * instead of the single-statement shape every other class uses.
+ */
+export interface MixedUseLayoutSpec {
+  /** Admissible component uses, in display order. */
+  components: readonly MixedUseComponentSpec[];
+}
+
 /** The full per-asset-class workbook layout. */
 export interface WorkbookLayout {
   assetClass: string;
@@ -62,6 +89,12 @@ export interface WorkbookLayout {
   incomeLines: readonly IncomeLine[];
   expenseLines: readonly ExpenseLine[];
   namedInputs: readonly NamedInput[];
+  /**
+   * Present only for `mixed_use`. When set, the engine builds the workbook from
+   * per-component statements + a consolidation block (RFC 0019), and metrics are
+   * emitted per deal (a component absent from the document contributes no rows).
+   */
+  mixedUse?: MixedUseLayoutSpec;
 }
 
 /** Standard named ranges for the operating-statement subtotals. */

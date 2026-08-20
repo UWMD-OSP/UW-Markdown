@@ -14,6 +14,7 @@ import { HOSPITALITY_LAYOUT } from './hospitality.js';
 import { SENIOR_HOUSING_LAYOUT } from './senior-housing.js';
 import { STUDENT_HOUSING_LAYOUT } from './student-housing.js';
 import { LAND_LAYOUT } from './land.js';
+import { MIXED_USE_LAYOUT } from './mixed-use.js';
 
 const LAYOUT_REGISTRY: Readonly<Record<string, WorkbookLayout>> = Object.freeze({
   multifamily: MULTIFAMILY_LAYOUT,
@@ -25,6 +26,7 @@ const LAYOUT_REGISTRY: Readonly<Record<string, WorkbookLayout>> = Object.freeze(
   senior_housing: SENIOR_HOUSING_LAYOUT,
   student_housing: STUDENT_HOUSING_LAYOUT,
   land: LAND_LAYOUT,
+  mixed_use: MIXED_USE_LAYOUT,
 });
 
 /** Asset classes with a workbook layout, for help text and error messages. */

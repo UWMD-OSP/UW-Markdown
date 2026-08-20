@@ -53,12 +53,17 @@ not core gaps.
   gated price per unit / psf / bed, and per-component operating intermediates;
   deliberately no property price/unit, loan/unit, or blended cap rate; RFC 0019).
   Selectable via `getPackForAssetClass`. The Excel converter has a
-  `WorkbookLayout` per class (selected via `getLayoutForAssetClass`) for **nine**
-  of them — the `mixed_use` layout is the remaining implementation step; its
-  `toWorkbook.test.ts` computes parity for the nine (operating statement foots —
-  for land a carry statement that nets negative; metrics == evaluateCalc
-  exactly). Pack-level parity also pinned in each `packs/*.test.ts`, including
-  `mixed-use.test.ts`. See [05](05-calc-packs.md), [08](08-tools.md).
+  `WorkbookLayout` for **all ten** classes (selected via `getLayoutForAssetClass`).
+  `mixed_use` is the one with a different workbook shape — per-component operating
+  statements plus a consolidation block whose SUM of component NOIs is the
+  property NOI (§3a), with metrics emitted per deal (an absent use or an
+  un-allocated intensive contributes no row). `toWorkbook.test.ts` computes parity
+  for every class (operating statement foots — for land a carry statement that
+  nets negative; metrics == evaluateCalc exactly), and a dedicated mixed-use suite
+  covers per-component footing, present-metric parity, and absent-metric omission.
+  Reverse import (`fromWorkbook`) refuses `mixed_use` (`WORKBOOK-IMPORT-UNSUPPORTED-SHAPE`);
+  export is fully supported. Pack-level parity also pinned in each `packs/*.test.ts`,
+  including `mixed-use.test.ts`. See [05](05-calc-packs.md), [08](08-tools.md).
 - **v1.1 train:** integrity (`integrity.ts`, `uwmd verify`), `cascade.ts` +
   `defaults.ts`, `gaps.ts`, `INCOMPLETE_DATA_POLICIES`, `context-profiles.ts`,
   `refinement.ts`, L0a/L0b layers, `scope` stage.
@@ -249,11 +254,13 @@ not core gaps.
 ## 🟡 Partial — works but needs improvement
 
 - **Asset-class coverage = 10 of 10 classes have a pack; `mixed_use` finishing.**
-  Every class in `AssetClass` now has a calc pack + defaults table. Nine also
-  have a worked example + Excel layout and resolve end-to-end off
-  `frontmatter.asset_class`; `mixed_use` — the genuinely hard one, which
+  Every class in `AssetClass` now has a calc pack + defaults table, a worked
+  example, and an Excel layout, and resolves end-to-end off
+  `frontmatter.asset_class`. `mixed_use` — the genuinely hard one, which
   *composes* other asset classes rather than standing alone — has now landed its
-  **format section (§4.23), schema, pack, and defaults** and is finishing.
+  **format section (§4.23), schema, pack, defaults, validator rules, and Excel
+  layout**; only the conformance fixtures remain before RFC 0019 flips to
+  `implemented`.
   Designed in [RFC 0019](../rfcs/0019-mixed-use-composition.md) (accepted
   2026-08-18), which concludes that the one-pack-per-class assumption **does**
   survive — the composition belongs in the document (a bounded set of component
@@ -273,10 +280,13 @@ not core gaps.
   > **validator rules** — `checkComponents` emits `CC-11` (asset-class gate),
   > `CC-12` (property NOI == Σ component NOI), and `MU-01`…`MU-06` (≥2 components,
   > admissible-class, key==class, present-but-unmeasured NOI, allocation sums to
-  > 1.0, no component debt), each with a `BUILTIN_REMEDIATIONS` entry. **Remaining:**
-  > the Excel `WorkbookLayout` + parity, a worked `examples/*.uwx.md`, and the
-  > conformance fixtures. Until those land, RFC 0019 stays `accepted`, not
-  > `implemented`.
+  > 1.0, no component debt), each with a `BUILTIN_REMEDIATIONS` entry; the Excel
+  > `MIXED_USE_LAYOUT` (per-component operating statements + a consolidation block
+  > that foots to the property NOI, deal-aware metric emission, Excel↔evaluator
+  > parity) plus its worked example
+  > (`examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md`). **Remaining:** the
+  > tier-3 conformance fixtures the RFC sketches (§ Conformance impact). Until
+  > those land, RFC 0019 stays `accepted`, not `implemented`.
 
   > **Drift is now caught automatically (T16).** `AssetClass` had four
   > hand-maintained runtime mirrors — `modules.ts`, `PACK_REGISTRY`,
@@ -539,9 +549,10 @@ bus factor, personal security email, and no public RFC venue.
 > **The next asset-class work is unblocked.**
 > [RFC 0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition —
 > gates the last asset class) was **accepted 2026-08-18** with its three design
-> questions resolved; it is now ready to implement (the `mixed_use` pack,
-> `MIXED_USE_DEFAULTS`, the `components` schema, Excel layout, and conformance
-> fixtures). The newly spun-out
+> questions resolved, and its implementation is nearly complete: the `mixed_use`
+> pack, `MIXED_USE_DEFAULTS`, the `components` schema, the validator rules, and
+> the Excel layout + worked example have all landed; only the conformance
+> fixtures remain before it flips to `implemented`. The newly spun-out
 > [0026](../rfcs/0026-capital-stack.md) (typed capital stack — senior/mezz/pref
 > tranches and stack-aware DSCR/debt-yield; asset-class-independent, and the
 > primitive 0019's component-level debt will build on) remains `draft`.

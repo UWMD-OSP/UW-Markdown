@@ -27,6 +27,8 @@ export type {
   ExpenseLine,
   NamedInput,
   DerivedMetric,
+  MixedUseLayoutSpec,
+  MixedUseComponentSpec,
 } from './layout.js';
 
 export { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
@@ -34,3 +36,9 @@ export { MULTIFAMILY_LAYOUT } from './multifamily.js';
 export { OFFICE_LAYOUT } from './office.js';
 export { RETAIL_LAYOUT } from './retail.js';
 export { INDUSTRIAL_LAYOUT } from './industrial.js';
+export {
+  MIXED_USE_LAYOUT,
+  MIXED_USE_COMPONENT_SPECS,
+  buildMixedUseNamedRangeMap,
+  mixedUseName,
+} from './mixed-use.js';

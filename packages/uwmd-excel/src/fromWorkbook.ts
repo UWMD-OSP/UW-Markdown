@@ -15,7 +15,8 @@ export class WorkbookImportError extends Error {
     | 'WORKBOOK-IMPORT-ASSET-CLASS'
     | 'WORKBOOK-IMPORT-NAMED-RANGE'
     | 'WORKBOOK-IMPORT-SUBTOTAL'
-    | 'WORKBOOK-IMPORT-PACK-MISMATCH';
+    | 'WORKBOOK-IMPORT-PACK-MISMATCH'
+    | 'WORKBOOK-IMPORT-UNSUPPORTED-SHAPE';
 
   constructor(
     code: WorkbookImportError['code'],
@@ -191,6 +192,17 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
     );
   }
   const layout = getLayoutForAssetClass(assetClass)!;
+
+  // The reader reconstructs a single operating statement from `layout.incomeLines`
+  // / `expenseLines`. Mixed-use has neither — it emits per-component statements
+  // (RFC 0019) — so reverse import of a mixed-use workbook is refused rather than
+  // silently reconstructing an empty noi_model. (Export is fully supported.)
+  if (layout.mixedUse) {
+    throw new WorkbookImportError(
+      'WORKBOOK-IMPORT-UNSUPPORTED-SHAPE',
+      `Reverse import of a "${assetClass}" workbook is not supported: mixed-use uses per-component statements, not a single operating statement. Export (.uw.md → .xlsx) is supported.`,
+    );
+  }
 
   // Row geometry below is derived from the CURRENT layout, and a different pack
   // may declare a different metric set. Reading an old workbook at new offsets
