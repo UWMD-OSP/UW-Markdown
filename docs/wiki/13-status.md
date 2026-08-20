@@ -267,14 +267,16 @@ not core gaps.
   sub-feature.
 
   > **Shipped so far (RFC 0019 implementation):** the `components` section +
-  > `section-components.schema.json` (format spec §4.23, `CC-11`/`CC-12`);
-  > `MIXED_USE_PACK` (21 metrics) + `MIXED_USE_DEFAULTS`, both registered and
-  > wired through `types.test.ts` (the `INTENTIONALLY_UNREGISTERED` guard is now
-  > empty). **Remaining:** the validator's section-internal typed errors (≥2
-  > components, allocation sums to 1.0, present-but-unmeasured, the `CC-11`/
-  > `CC-12` checks), the Excel `WorkbookLayout` + parity, a worked
-  > `examples/*.uwx.md`, and the conformance fixtures. Until those land, RFC 0019
-  > stays `accepted`, not `implemented`.
+  > `section-components.schema.json` (format spec §4.23); `MIXED_USE_PACK` (21
+  > metrics) + `MIXED_USE_DEFAULTS`, both registered and wired through
+  > `types.test.ts` (the `INTENTIONALLY_UNREGISTERED` guard is now empty); and the
+  > **validator rules** — `checkComponents` emits `CC-11` (asset-class gate),
+  > `CC-12` (property NOI == Σ component NOI), and `MU-01`…`MU-06` (≥2 components,
+  > admissible-class, key==class, present-but-unmeasured NOI, allocation sums to
+  > 1.0, no component debt), each with a `BUILTIN_REMEDIATIONS` entry. **Remaining:**
+  > the Excel `WorkbookLayout` + parity, a worked `examples/*.uwx.md`, and the
+  > conformance fixtures. Until those land, RFC 0019 stays `accepted`, not
+  > `implemented`.
 
   > **Drift is now caught automatically (T16).** `AssetClass` had four
   > hand-maintained runtime mirrors — `modules.ts`, `PACK_REGISTRY`,

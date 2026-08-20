@@ -86,6 +86,12 @@ describe('validateUWFile — CC cross-section consistency', () => {
       code: 'CC-10', severity: 'error', field: 'uses.purchase_price',
       sections: { sources_uses: block('sources_uses', { uses: { purchase_price: 1_000 } }), valuation: block('valuation', { purchase_price: 1_200 }) },
     },
+    {
+      // A components section under the default multifamily frontmatter is a
+      // mis-typed document — CC-11 fires (the asset-class gate).
+      code: 'CC-11', severity: 'error', field: 'asset_class',
+      sections: { components: block('components', { multifamily: { component_class: 'multifamily', net_operating_income: 1 }, retail: { component_class: 'retail', net_operating_income: 1 } }) },
+    },
   ];
 
   for (const testCase of cases) {
