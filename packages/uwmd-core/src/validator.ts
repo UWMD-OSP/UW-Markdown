@@ -141,6 +141,7 @@ export function validateUWFile(
 
   checkFinancialValidity(parsed, thresholds, issues);
   checkCrossSectionConsistency(parsed, issues);
+  checkComponents(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -432,6 +433,128 @@ function checkCrossSectionConsistency(
     const valPP = deepGet(valuation.content, 'purchase_price') as number | undefined;
     if (suPP != null && valPP != null && Math.abs(suPP - valPP) > 100) {
       issues.push({ code: 'CC-10', severity: 'error', section: 'sources_uses', field: 'uses.purchase_price', message: `CC-10: Purchase price in Sources & Uses ($${suPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(suPP - valPP) });
+    }
+  }
+}
+
+// ─── §4.23 Mixed-use components (RFC 0019) ───────────────────────────────────
+
+// The eight income classes admissible as a mixed-use component. `land` is
+// excluded (its NOI model nets negative) and `mixed_use` cannot nest in itself.
+const ADMISSIBLE_COMPONENT_CLASSES: ReadonlySet<string> = new Set([
+  'multifamily', 'retail', 'office', 'industrial', 'self_storage',
+  'hospitality', 'senior_housing', 'student_housing',
+]);
+
+// Validates the `components` section: the CC-11 asset-class gate, the CC-12
+// footing check (property NOI == Σ component NOI), and the section-internal
+// MU-* rules. A no-op for any document without a components section.
+function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const components = getSection(parsed, 'components');
+  if (!components) return;
+
+  const assetClass = parsed.frontmatter.asset_class;
+
+  // CC-11: a components section is only valid under asset_class mixed_use.
+  if (assetClass !== 'mixed_use') {
+    issues.push({
+      code: 'CC-11', severity: 'error', section: 'components', field: 'asset_class',
+      message: `CC-11: a components section is only valid when asset_class is mixed_use (found "${String(assetClass)}")`,
+      value: assetClass,
+    });
+    return; // the mixed-use-specific rules below do not apply to a mis-typed doc
+  }
+
+  // Present components are every key that is not the _meta / _notes envelope.
+  const entries = Object.entries(components.content).filter(([k]) => !k.startsWith('_'));
+  const admissible = entries.filter(([k]) => ADMISSIBLE_COMPONENT_CLASSES.has(k));
+
+  // MU-01: at least two admissible components.
+  if (admissible.length < 2) {
+    issues.push({
+      code: 'MU-01', severity: 'error', section: 'components', field: 'components',
+      message: `MU-01: a mixed-use property must declare at least two components (found ${admissible.length})`,
+      value: admissible.length,
+    });
+  }
+
+  const allocations: number[] = [];
+  for (const [key, raw] of entries) {
+    // MU-02: only the eight income classes are admissible; land and unknowns are not.
+    if (!ADMISSIBLE_COMPONENT_CLASSES.has(key)) {
+      issues.push({
+        code: 'MU-02', severity: 'error', section: 'components', field: key,
+        message: `MU-02: "${key}" is not an admissible component class (land and unknown classes are excluded)`,
+        value: key,
+      });
+      continue;
+    }
+    const comp = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+
+    // MU-03: the key must equal the entry's component_class.
+    if (comp['component_class'] !== key) {
+      issues.push({
+        code: 'MU-03', severity: 'error', section: 'components', field: `${key}.component_class`,
+        message: `MU-03: component "${key}" must declare component_class "${key}" (found "${String(comp['component_class'])}")`,
+        value: comp['component_class'],
+      });
+    }
+
+    // MU-04: a present component must state net_operating_income, never zero-by-omission.
+    const noi = comp['net_operating_income'];
+    if (noi === undefined || noi === null) {
+      issues.push({
+        code: 'MU-04', severity: 'error', section: 'components', field: `${key}.net_operating_income`,
+        message: `MU-04: present component "${key}" omits net_operating_income; a present use with no NOI is an incomplete document, not zero income`,
+      });
+    }
+
+    // MU-06: a component must not carry its own debt_structure (deferred to RFC 0026).
+    if (comp['debt_structure'] !== undefined) {
+      issues.push({
+        code: 'MU-06', severity: 'error', section: 'components', field: `${key}.debt_structure`,
+        message: `MU-06: component "${key}" carries its own debt_structure; component-level debt is out of scope here and specified by RFC 0026 (Capital Stack)`,
+      });
+    }
+
+    const alloc = comp['allocation_pct'];
+    if (typeof alloc === 'number') allocations.push(alloc);
+  }
+
+  // MU-05: when allocation is used at all, it must sum to 1.0 across present components.
+  if (allocations.length > 0) {
+    const sum = allocations.reduce((a, b) => a + b, 0);
+    if (Math.abs(sum - 1) > 0.0001) {
+      issues.push({
+        code: 'MU-05', severity: 'error', section: 'components', field: 'allocation_pct',
+        message: `MU-05: allocation_pct across components must sum to 1.0 within 0.0001 (found ${sum})`,
+        value: sum,
+      });
+    }
+  }
+
+  // CC-12: property NOI must equal the sum of component NOIs. Only assert footing
+  // when every admissible component states a numeric NOI — a missing one is
+  // MU-04's job, not a footing mismatch.
+  const noiModel = getSection(parsed, 'noi_model');
+  if (noiModel) {
+    const propNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
+    const compNOIs = admissible
+      .map(([, raw]) =>
+        raw && typeof raw === 'object'
+          ? (raw as Record<string, unknown>)['net_operating_income']
+          : undefined,
+      )
+      .filter((v): v is number => typeof v === 'number');
+    if (propNOI != null && admissible.length > 0 && compNOIs.length === admissible.length) {
+      const sum = compNOIs.reduce((a, b) => a + b, 0);
+      if (Math.abs(sum - propNOI) > 1) {
+        issues.push({
+          code: 'CC-12', severity: 'error', section: 'noi_model', field: 'net_operating_income',
+          message: `CC-12: property NOI ($${propNOI.toLocaleString()}) must equal the sum of component NOIs ($${sum.toLocaleString()})`,
+          value: Math.abs(sum - propNOI),
+        });
+      }
     }
   }
 }

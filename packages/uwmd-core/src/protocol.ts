@@ -695,6 +695,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'custom_calculations',
   'custom_scenarios',
   'gaps',
+  'components',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -1237,6 +1238,62 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A section\'s _meta.timestamp is older than the file last_modified by more than 30 days.',
     remediation: 'Refresh the section, supersede with a new agent/manual write, or mark deliberate stale.',
     spec_ref: '§5.3 CC-10',
+  },
+  {
+    code: 'CC-11', severity: 'error',
+    title: 'Components section on a non-mixed-use document',
+    description: 'A `components` section is present but frontmatter.asset_class is not `mixed_use`.',
+    remediation: 'Set asset_class to `mixed_use`, or remove the components section and model the deal under its own asset class.',
+    spec_ref: '§5.3 CC-11',
+  },
+  {
+    code: 'CC-12', severity: 'error',
+    title: 'Components do not foot to property NOI',
+    description: 'noi_model.net_operating_income does not equal the sum of the component net_operating_income values.',
+    remediation: 'Reconcile the component NOIs with the property NOI — the property figure MUST equal their sum (RFC 0019 §3a).',
+    spec_ref: '§5.3 CC-12',
+  },
+  {
+    code: 'MU-01', severity: 'error',
+    title: 'Too few components',
+    description: 'A mixed-use property declares fewer than two admissible components.',
+    remediation: 'Declare at least two components; a single-component deal is not mixed use and should use that component\'s own asset class.',
+    spec_ref: '§4.23 MU-01',
+  },
+  {
+    code: 'MU-02', severity: 'error',
+    title: 'Inadmissible component class',
+    description: 'A component key is not one of the eight income classes; `land` and unknown classes are excluded.',
+    remediation: 'Remove the inadmissible component. Only multifamily, retail, office, industrial, self_storage, hospitality, senior_housing, and student_housing may appear.',
+    spec_ref: '§4.23 MU-02',
+  },
+  {
+    code: 'MU-03', severity: 'error',
+    title: 'Component class/key mismatch',
+    description: 'A component\'s component_class does not equal the key it is filed under.',
+    remediation: 'Make component_class equal the key, or move the entry under the key that matches its component_class.',
+    spec_ref: '§4.23 MU-03',
+  },
+  {
+    code: 'MU-04', severity: 'error',
+    title: 'Component missing NOI',
+    description: 'A present component omits net_operating_income, which the property rollup consumes.',
+    remediation: 'State the component\'s net_operating_income. A present use with no NOI is an incomplete document, not zero income.',
+    spec_ref: '§4.23 MU-04',
+  },
+  {
+    code: 'MU-05', severity: 'error',
+    title: 'Component allocation does not sum to 1.0',
+    description: 'allocation_pct across present components does not sum to 1.0 within 0.0001.',
+    remediation: 'Reconcile the allocation split so present components sum to 1.0, or omit allocation_pct entirely (use-level intensive metrics then evaluate to null).',
+    spec_ref: '§4.23 MU-05',
+  },
+  {
+    code: 'MU-06', severity: 'error',
+    title: 'Component-level debt not allowed',
+    description: 'A component carries its own debt_structure; this section models one property-level loan.',
+    remediation: 'Remove the component debt_structure. Component-level financing is specified by RFC 0026 (Capital Stack), not this section.',
+    spec_ref: '§4.23 MU-06',
   },
   {
     code: 'DQ-01', severity: 'warning',
