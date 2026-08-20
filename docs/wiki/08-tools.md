@@ -64,11 +64,21 @@ Key design: the workbook ships **formulas, not pre-computed values**, so it stay
 in sync with the calc engine by construction. The engine (`toWorkbook.ts`) is
 generic; each asset class supplies a `WorkbookLayout` (`src/layout.ts`) selected
 by `frontmatter.asset_class` via the registry (`src/layouts.ts`,
-`getLayoutForAssetClass`). Supported: **all nine classes with a pack** —
-multifamily, office, retail, industrial, self-storage, hospitality, senior
-housing, student housing, and land. `SUPPORTED_ASSET_CLASSES` is the live list;
-an unsupported class (today only `mixed_use`) throws
-`UnsupportedAssetClassError`.
+`getLayoutForAssetClass`). Supported: **all ten classes** — multifamily, office,
+retail, industrial, self-storage, hospitality, senior housing, student housing,
+land, and `mixed_use`. `SUPPORTED_ASSET_CLASSES` is the live list; a class with
+no layout throws `UnsupportedAssetClassError`.
+
+`mixed_use` (RFC 0019) is the one class whose workbook is **not** a single
+operating statement. Its layout carries a `mixedUse` spec (`src/mixed-use.ts`),
+and `toWorkbook` dispatches to a dedicated builder: **one footing operating
+statement per present component** (EGI − opex = NOI) plus a **consolidation
+block** whose SUM of the component NOI named ranges is the property NOI (the §3a
+foot, live in the sheet). Metrics are emitted **per deal** — a metric is written
+only when it evaluates non-null for that document, so a component absent from the
+file, or an intensive lacking its user-supplied `allocation_pct`, simply
+contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) refuses
+`mixed_use` with `WORKBOOK-IMPORT-UNSUPPORTED-SHAPE`; export is fully supported.
 
 Layout:
 - **Underwriting** sheet — header (deal name/address) + an inputs block (each
