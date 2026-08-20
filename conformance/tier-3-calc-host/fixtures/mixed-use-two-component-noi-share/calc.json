@@ -1,0 +1,7 @@
+{
+  "id": "retail_noi_share",
+  "label": "Retail NOI Share",
+  "formula": "components.retail.net_operating_income / noi_model.net_operating_income",
+  "unit": "%",
+  "deterministic": true
+}

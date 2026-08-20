@@ -1,0 +1,7 @@
+{
+  "id": "multifamily_price_per_unit",
+  "label": "Multifamily Price / Unit",
+  "formula": "(valuation.purchase_price * components.multifamily.allocation_pct) / components.multifamily.total_units",
+  "unit": "$",
+  "deterministic": true
+}

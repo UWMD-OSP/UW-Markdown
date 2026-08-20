@@ -1,0 +1,8 @@
+{
+  "description": "A component carrying its own debt_structure. MU-06: this RFC models one property-level loan; component-level debt is refused (deferred to RFC 0026).",
+  "must_parse": true,
+  "expected_codes": [
+    "MU-06"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §2"
+}
