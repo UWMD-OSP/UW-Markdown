@@ -1,0 +1,8 @@
+{
+  "description": "Component allocation_pct values sum to 0.95, not 1.0. MU-05: when allocation is used it must sum to 1.0 within 0.0001.",
+  "must_parse": true,
+  "expected_codes": [
+    "MU-05"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §4"
+}

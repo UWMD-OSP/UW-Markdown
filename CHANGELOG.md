@@ -8,7 +8,32 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-Nothing yet.
+### Added — mixed-use composition (RFC 0019, implemented 2026-08-19)
+
+`mixed_use` — the last `AssetClass` member without a pack — is now fully
+supported, closing asset-class coverage at 10 of 10. Composition lives in the
+**document** as a bounded `components` map keyed by each use's own class, not in
+the pack, so the one-pack-per-class assumption survives (the Tier-3 calc engine
+has no iteration to evaluate per-component packs and aggregate).
+
+- **`components` section** (format spec §4.23 + `section-components.schema.json`):
+  per-use subtotals, `allocation_pct`, and operating-business intermediates.
+- **`MIXED_USE_PACK`** (21 metrics) + **`MIXED_USE_DEFAULTS`** (mix-independent
+  financing terms). Property cap rate / LTV / DSCR / debt yield / cash-on-cash, a
+  NOI share per component use, allocation-gated price per unit / psf / bed, and
+  per-component GOP / labor pass-throughs. Deliberately no property price/unit,
+  loan/unit, or blended market cap rate.
+- **Validator rules** `CC-11` (asset-class gate), `CC-12` (property NOI == Σ
+  component NOI), and `MU-01`…`MU-06`, each with a `BUILTIN_REMEDIATIONS` entry.
+- **Excel `MIXED_USE_LAYOUT`** — per-component operating statements plus a
+  consolidation block that foots to the property NOI, with deal-aware metric
+  emission and exact Excel↔evaluator parity. `fromWorkbook` refuses `mixed_use`
+  (`WORKBOOK-IMPORT-UNSUPPORTED-SHAPE`); export is fully supported.
+- **Conformance:** six Tier-3 calc-host fixtures and seven
+  `tier-1-reader/malformed` rejection fixtures, plus a component-scoped defaults
+  cascade proof.
+
+Component-level debt (a capital stack) is out of scope and tracked in RFC 0026.
 
 ## [1.5.0] - 2026-08-19
 

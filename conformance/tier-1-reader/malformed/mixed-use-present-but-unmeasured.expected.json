@@ -1,0 +1,8 @@
+{
+  "description": "A present retail component that omits net_operating_income. MU-04: a present component missing an NOI its rollup consumes is a typed error, NOT a zero contribution (RFC 0019 §3).",
+  "must_parse": true,
+  "expected_codes": [
+    "MU-04"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §3"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "office_noi_share",
+  "label": "Office NOI Share",
+  "formula": "components.office.net_operating_income / noi_model.net_operating_income",
+  "unit": "%",
+  "deterministic": true
+}

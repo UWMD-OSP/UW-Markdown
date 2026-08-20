@@ -253,14 +253,14 @@ not core gaps.
 
 ## 🟡 Partial — works but needs improvement
 
-- **Asset-class coverage = 10 of 10 classes have a pack; `mixed_use` finishing.**
-  Every class in `AssetClass` now has a calc pack + defaults table, a worked
-  example, and an Excel layout, and resolves end-to-end off
-  `frontmatter.asset_class`. `mixed_use` — the genuinely hard one, which
-  *composes* other asset classes rather than standing alone — has now landed its
-  **format section (§4.23), schema, pack, defaults, validator rules, and Excel
-  layout**; only the conformance fixtures remain before RFC 0019 flips to
-  `implemented`.
+- **Asset-class coverage = 10 of 10 classes fully implemented.**
+  Every class in `AssetClass` has a calc pack + defaults table, a worked example,
+  and an Excel layout, and resolves end-to-end off `frontmatter.asset_class`.
+  `mixed_use` — the genuinely hard one, which *composes* other asset classes
+  rather than standing alone — is now complete: its **format section (§4.23),
+  schema, pack, defaults, validator rules, Excel layout, worked example, and
+  conformance fixtures** have all shipped, and **RFC 0019 is `implemented`**
+  (2026-08-19). This item is done; it remains here only for the design narrative.
   Designed in [RFC 0019](../rfcs/0019-mixed-use-composition.md) (accepted
   2026-08-18), which concludes that the one-pack-per-class assumption **does**
   survive — the composition belongs in the document (a bounded set of component
@@ -284,9 +284,13 @@ not core gaps.
   > `MIXED_USE_LAYOUT` (per-component operating statements + a consolidation block
   > that foots to the property NOI, deal-aware metric emission, Excel↔evaluator
   > parity) plus its worked example
-  > (`examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md`). **Remaining:** the
-  > tier-3 conformance fixtures the RFC sketches (§ Conformance impact). Until
-  > those land, RFC 0019 stays `accepted`, not `implemented`.
+  > (`examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md`); and the **conformance
+  > fixtures** — six tier-3 calc-host cases (two-component cap rate / NOI share /
+  > price-per-unit, absent-component → `null`, allocation-absent → `null`, and the
+  > per-component operating-business GOP) plus seven `tier-1-reader/malformed`
+  > rejection cases (CC-11, CC-12, MU-01, MU-02, MU-04, MU-05, MU-06) and a
+  > cascade proof that a component field resolves from its own class table
+  > (`resolved_from: retail@1.0.0`). **RFC 0019 is `implemented`.**
 
   > **Drift is now caught automatically (T16).** `AssetClass` had four
   > hand-maintained runtime mirrors — `modules.ts`, `PACK_REGISTRY`,
@@ -546,13 +550,12 @@ bus factor, personal security email, and no public RFC venue.
 > establishes the extension section, and **`receipt_version` bumps once** to
 > cover both.
 >
-> **The next asset-class work is unblocked.**
+> **The last asset class is done.**
 > [RFC 0019](../rfcs/0019-mixed-use-composition.md) (`mixed_use` composition —
-> gates the last asset class) was **accepted 2026-08-18** with its three design
-> questions resolved, and its implementation is nearly complete: the `mixed_use`
-> pack, `MIXED_USE_DEFAULTS`, the `components` schema, the validator rules, and
-> the Excel layout + worked example have all landed; only the conformance
-> fixtures remain before it flips to `implemented`. The newly spun-out
+> gated the last asset class) was **accepted 2026-08-18** and is **implemented
+> 2026-08-19**: the `mixed_use` pack, `MIXED_USE_DEFAULTS`, the `components`
+> schema, the validator rules, the Excel layout + worked example, and the
+> conformance fixtures have all landed. The newly spun-out
 > [0026](../rfcs/0026-capital-stack.md) (typed capital stack — senior/mezz/pref
 > tranches and stack-aware DSCR/debt-yield; asset-class-independent, and the
 > primitive 0019's component-level debt will build on) remains `draft`.

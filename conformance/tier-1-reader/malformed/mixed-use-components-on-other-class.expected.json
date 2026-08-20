@@ -1,0 +1,8 @@
+{
+  "description": "A components section on an office document. CC-11: the components section may appear only when asset_class is mixed_use.",
+  "must_parse": true,
+  "expected_codes": [
+    "CC-11"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §2"
+}

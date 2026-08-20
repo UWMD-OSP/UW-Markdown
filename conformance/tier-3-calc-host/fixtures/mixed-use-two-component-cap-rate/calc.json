@@ -1,0 +1,7 @@
+{
+  "id": "cap_rate",
+  "label": "Cap Rate (going-in)",
+  "formula": "noi_model.net_operating_income / valuation.purchase_price",
+  "unit": "%",
+  "deterministic": true
+}

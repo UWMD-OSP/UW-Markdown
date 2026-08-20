@@ -1,0 +1,8 @@
+{
+  "description": "A mixed-use document with a single component. MU-01: at least two components are required — one use is not mixed use.",
+  "must_parse": true,
+  "expected_codes": [
+    "MU-01"
+  ],
+  "spec_ref": "docs/rfcs/0019-mixed-use-composition.md §2"
+}
