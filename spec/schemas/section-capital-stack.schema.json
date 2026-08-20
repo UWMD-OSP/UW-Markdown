@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-capital-stack.schema.json",
+  "title": "UW Markdown Capital Stack Section",
+  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC_v1.md §4.24, RFC 0026). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tranches"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "description": "Standard block provenance envelope (§2.5). Not constrained here."
+    },
+    "_notes": {
+      "type": ["string", "null"],
+      "description": "Optional free-text annotation (§4 universal field)."
+    },
+    "tranches": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The capital tranches, ordered by seniority (`position` 1 = most senior). A single-tranche deal uses `debt_structure`, not this section; the validator enforces stack cardinality.",
+      "items": { "$ref": "#/$defs/tranche" }
+    },
+    "sizing": {
+      "type": "array",
+      "description": "Stated stack-aware sizing figures, each recomputed by `verifyCapitalStack` over the closed `fn` vocabulary and compared to `value`. Disagreement is `failed`, never a silent pass.",
+      "items": { "$ref": "#/$defs/sizingFigure" }
+    }
+  },
+  "$defs": {
+    "tranche": {
+      "type": "object",
+      "description": "One layer of the capital stack.",
+      "required": ["id", "class", "position", "amount"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Document-local identity, unique within the section (e.g. `senior`, `mezz_a`, `mezz_b`). Free-form so two mezzanine notes are two tranches."
+        },
+        "class": {
+          "enum": [
+            "senior_debt",
+            "mezzanine_debt",
+            "preferred_equity",
+            "common_equity",
+            "bridge",
+            "seller_financing",
+            "other_debt"
+          ],
+          "description": "The tranche type. Closed and non-extensible."
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Seniority rank; 1 = most senior. Unique within the stack (validator)."
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Committed dollar amount of this tranche."
+        },
+        "rate": {
+          "type": ["number", "null"],
+          "description": "Coupon (debt) or preferred return (pref), as a fraction (0.0625 = 6.25%). Required for every debt tranche and preferred_equity; MUST NOT appear on common_equity (validator CS-02)."
+        },
+        "accrual": {
+          "enum": ["cash", "accrued"],
+          "description": "`cash` = current-pay, enters cash coverage; `accrued` = PIK, compounds on balance and is excluded from cash coverage. Its balance still counts toward attachment-point debt yield."
+        },
+        "amortization_months": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Amortization period in months (0 = interest-only or non-amortizing). Debt tranches."
+        },
+        "io_months": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Interest-only period in months. Debt tranches."
+        },
+        "term_months": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Term to maturity in months. Debt tranches."
+        }
+      }
+    },
+    "sizingFigure": {
+      "type": "object",
+      "description": "One stated sizing figure. Mirrors uw-rollup.schema.json's aggregate: an id, a closed fn, a selector, and a stated value the verifier recomputes.",
+      "required": ["id", "fn", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identity of this figure within the section (e.g. `senior_dscr`, `combined_dscr`)."
+        },
+        "fn": {
+          "enum": [
+            "coverage",
+            "blended_coverage",
+            "debt_yield_through",
+            "ltc_through",
+            "ltv_through",
+            "weighted_cost"
+          ],
+          "description": "The computation applied. Fixed and non-extensible: a verifier vocabulary, not an extension of the calc expression language."
+        },
+        "over": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Single-tranche selector: a tranche `id`, or `*` for the whole stack (weighted_cost). Used by `coverage` and `weighted_cost`."
+        },
+        "through": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Cumulative selector: a `position`; the figure covers all tranches at or above it. Used by `blended_coverage`, `debt_yield_through`, `ltc_through`, `ltv_through`."
+        },
+        "value": {
+          "type": "number",
+          "description": "The stated result. A verifier recomputes `fn` over the selected tranches and compares; disagreement is CS-SIZING-DISAGREES and the result is `failed`."
+        }
+      },
+      "oneOf": [
+        { "required": ["over"], "not": { "required": ["through"] } },
+        { "required": ["through"], "not": { "required": ["over"] } }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "tranches": [
+        { "id": "senior", "class": "senior_debt", "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "io_months": 24, "term_months": 120, "accrual": "cash" },
+        { "id": "mezz_a", "class": "mezzanine_debt", "position": 2, "amount": 6000000, "rate": 0.11, "amortization_months": 0, "io_months": 120, "term_months": 120, "accrual": "cash" },
+        { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 4000000, "rate": 0.09, "accrual": "accrued" },
+        { "id": "common", "class": "common_equity", "position": 4, "amount": 4000000 }
+      ],
+      "sizing": [
+        { "id": "senior_dscr", "fn": "coverage", "over": "senior", "value": 1.85 },
+        { "id": "combined_dscr", "fn": "blended_coverage", "through": 2, "value": 1.14 },
+        { "id": "mezz_debt_yield", "fn": "debt_yield_through", "through": 2, "value": 0.08 },
+        { "id": "wacc", "fn": "weighted_cost", "over": "*", "value": 0.0731 }
+      ]
+    }
+  ]
+}

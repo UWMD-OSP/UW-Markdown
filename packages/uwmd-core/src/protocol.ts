@@ -696,6 +696,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'custom_scenarios',
   'gaps',
   'components',
+  'capital_stack',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
