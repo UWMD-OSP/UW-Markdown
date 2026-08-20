@@ -1135,6 +1135,73 @@ export const LAND_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * Mixed-use asset-class defaults, v1.0.0.
+ *
+ * Deliberately narrow. A mixed-use property composes other uses (RFC 0019), and
+ * the *mix-dependent* assumptions — vacancy, expense ratio, exit cap — have no
+ * single right value across a blend; those resolve per component against each
+ * component class's own table (RFC 0019 §5). This table therefore carries only
+ * the **mix-independent** terms that attach to the whole property and its single
+ * loan: financing (LTV, rate, amortization, IO) and acquisition closing costs.
+ * They are driven by the debt market and the transaction, not by the use mix.
+ *
+ * The table exists at all — rather than leaving `mixed_use` with no defaults —
+ * because the cascade has no shared/base table below `asset_class_default`; the
+ * only fallback is the host-supplied `global_default`/`system_default`, which
+ * carries no ranges and no citations. Omitting this table would give mixed-use
+ * financing terms strictly weaker provenance than every other class.
+ */
+export const MIXED_USE_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'mixed_use',
+  version: '1.0.0',
+  fields: {
+    'debt_structure.ltv_pct': {
+      low: 0.55,
+      central: 0.63,
+      high: 0.7,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation:
+        'Mixed-use leverage band; sits below stabilized multifamily because the commercial component caps agency-style proceeds',
+    },
+    'debt_structure.rate_pct': {
+      low: 0.062,
+      central: 0.071,
+      high: 0.08,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation:
+        'Bank / debt-fund 5-7yr fixed quote band for mixed-use, mid-2026 rate environment (a touch wide of pure agency multifamily)',
+    },
+    'debt_structure.amortization_months': {
+      low: 300,
+      central: 360,
+      high: 360,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Standard 25-30 yr amortization for stabilized income property',
+    },
+    'debt_structure.io_months': {
+      low: 0,
+      central: 0,
+      high: 36,
+      unit: 'months',
+      source: 'asset_class_default',
+      citation: 'Partial-IO availability on mixed-use bank/debt-fund loans (0-3 yr)',
+    },
+    'sources_uses.closing_costs_pct': {
+      low: 0.018,
+      central: 0.028,
+      high: 0.04,
+      unit: 'percent',
+      source: 'asset_class_default',
+      citation:
+        'Acquisition closing cost band (title, legal, debt fees, taxes); modestly higher for dual-use diligence',
+    },
+  },
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
@@ -1145,6 +1212,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   senior_housing: SENIOR_HOUSING_DEFAULTS,
   student_housing: STUDENT_HOUSING_DEFAULTS,
   land: LAND_DEFAULTS,
+  mixed_use: MIXED_USE_DEFAULTS,
 });
 
 /**
