@@ -1,7 +1,7 @@
 ---
 rfc: 0026
 title: A typed capital stack — tranches, preferred equity, and stack-aware sizing
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-18
 affects:
@@ -14,16 +14,19 @@ affects:
 
 # RFC 0026: A typed capital stack — tranches, preferred equity, and stack-aware sizing
 
-> **Design resolved 2026-08-20** under owner-led governance (see Decisions).
-> The four open questions the stub left are settled, and the scope is
-> deliberately **split**: a buildable **v1** (tranche representation + stack-aware
-> sizing + preferred-equity return/accrual + a placeable bridge slot) and a
-> **documented, deferred Phase 2** (the multi-period distribution waterfall —
-> promote, hurdles, tiers, catch-up). Phase 2 is captured here so its shape is
-> not lost, but it is **not specified in normative detail and not built** by this
-> RFC; it needs a multi-period distribution engine the format does not yet have.
-> Spun out of RFC 0019 (mixed-use composition), which deferred component-level
-> debt here (0019 Decision 3). Status stays `draft` pending owner acceptance.
+> **Accepted 2026-08-20** by the project owner under owner-led governance, with
+> the four open questions the stub left resolved the same day (see Decisions).
+> The scope is deliberately **split**: a buildable **v1** (tranche representation
+> + stack-aware sizing + preferred-equity return/accrual + a placeable bridge
+> slot) and a **documented, deferred Phase 2** (the multi-period distribution
+> waterfall — promote, hurdles, tiers, catch-up). Phase 2 is captured here so its
+> shape is not lost, but it is **not specified in normative detail and not built**
+> by this RFC; it needs a multi-period distribution engine the format does not yet
+> have. Status moves to `implemented` when the `capital_stack` section, its
+> schema, `verifyCapitalStack`, the validator rules, the Excel emission, and the
+> conformance fixtures ship (see Reference implementation). Spun out of RFC 0019
+> (mixed-use composition), which deferred component-level debt here (0019
+> Decision 3).
 
 ## Summary
 

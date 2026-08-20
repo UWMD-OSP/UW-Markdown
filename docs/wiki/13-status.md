@@ -558,14 +558,13 @@ bus factor, personal security email, and no public RFC venue.
 > conformance fixtures have all landed. The newly spun-out
 > [0026](../rfcs/0026-capital-stack.md) (typed capital stack — senior/mezz/pref
 > tranches and stack-aware DSCR/debt-yield; asset-class-independent, and the
-> primitive 0019's component-level debt will build on) has its **design resolved
-> (2026-08-20)** and is `draft` pending owner acceptance. It settled on
-> **state-and-verify** (RFC 0021 §6), which expresses an arbitrary tranche count
-> off the calc engine, and deliberately **splits scope**: a buildable v1
-> (tranches + stack-aware sizing + preferred-equity return/accrual + a placeable
-> bridge slot) with the multi-period **distribution waterfall documented and
-> deferred** to a later phase (it needs a hold-period cash-flow primitive the
-> format lacks).
+> primitive 0019's component-level debt will build on) was **accepted 2026-08-20**
+> and is being implemented. It settled on **state-and-verify** (RFC 0021 §6),
+> which expresses an arbitrary tranche count off the calc engine, and deliberately
+> **splits scope**: a buildable v1 (tranches + stack-aware sizing +
+> preferred-equity return/accrual + a placeable bridge slot) with the multi-period
+> **distribution waterfall documented and deferred** to a later phase (it needs a
+> hold-period cash-flow primitive the format lacks).
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.
