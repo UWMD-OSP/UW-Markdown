@@ -142,6 +142,7 @@ export function validateUWFile(
   checkFinancialValidity(parsed, thresholds, issues);
   checkCrossSectionConsistency(parsed, issues);
   checkComponents(parsed, issues);
+  checkCapitalStack(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -354,13 +355,24 @@ function checkCrossSectionConsistency(
     }
   }
 
-  // CC-03: Loan amount in sources_uses must match debt_structure.loan_amount
-  if (sourcesUses && debtStructure) {
-    const suLoan = deepGet(sourcesUses.content, 'sources.loan_amount') as number | undefined
-      ?? deepGet(sourcesUses.content, 'sources.debt_proceeds') as number | undefined;
-    const dsLoan = deepGet(debtStructure.content, 'loan_amount') as number | undefined;
-    if (suLoan != null && dsLoan != null && Math.abs(suLoan - dsLoan) > 100) {
+  // CC-03: the senior loan reconciles across sources_uses, debt_structure, and
+  // (when present) the capital_stack senior_debt tranche — one senior view stated
+  // once and agreeing everywhere (RFC 0026 §4.24).
+  {
+    const suLoan = (deepGet(sourcesUses?.content ?? {}, 'sources.loan_amount') as number | undefined)
+      ?? (deepGet(sourcesUses?.content ?? {}, 'sources.debt_proceeds') as number | undefined);
+    const dsLoan = deepGet(debtStructure?.content ?? {}, 'loan_amount') as number | undefined;
+    if (sourcesUses && debtStructure && suLoan != null && dsLoan != null && Math.abs(suLoan - dsLoan) > 100) {
       issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
+    }
+
+    const senior = seniorDebtTranche(parsed);
+    if (senior) {
+      const seniorAmount = typeof senior['amount'] === 'number' ? senior['amount'] : undefined;
+      const reference = dsLoan ?? suLoan;
+      if (seniorAmount != null && reference != null && Math.abs(seniorAmount - reference) > 100) {
+        issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+      }
     }
   }
 
@@ -554,6 +566,111 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[]): voi
           message: `CC-12: property NOI ($${propNOI.toLocaleString()}) must equal the sum of component NOIs ($${sum.toLocaleString()})`,
           value: Math.abs(sum - propNOI),
         });
+      }
+    }
+  }
+}
+
+// ─── Capital stack checks (RFC 0026 §4.24) ────────────────────────────────────
+
+const TRANCHE_CLASSES: ReadonlySet<string> = new Set([
+  'senior_debt', 'mezzanine_debt', 'preferred_equity', 'common_equity',
+  'bridge', 'seller_financing', 'other_debt',
+]);
+// Classes that MUST state a rate (a debt coupon or the preferred return).
+const RATE_BEARING_CLASSES: ReadonlySet<string> = new Set([
+  'senior_debt', 'mezzanine_debt', 'preferred_equity', 'bridge', 'seller_financing', 'other_debt',
+]);
+// Section- or tranche-level keys that would encode a distribution waterfall,
+// which is out of scope for this version (RFC 0026 §E).
+const WATERFALL_MARKERS = [
+  'waterfall', 'distribution_waterfall', 'distributions', 'distribution_tiers',
+  'tiers', 'promote', 'hurdle', 'hurdles', 'catch_up', 'carried_interest',
+];
+
+/** The capital_stack `senior_debt` tranche, if the section and tranche exist. */
+function seniorDebtTranche(parsed: ParsedUWFile): Record<string, unknown> | null {
+  const cs = getSection(parsed, 'capital_stack');
+  if (!cs) return null;
+  const tranches = (cs.content as Record<string, unknown>)['tranches'];
+  if (!Array.isArray(tranches)) return null;
+  const senior = tranches.find(
+    (t) => t && typeof t === 'object' && (t as Record<string, unknown>)['class'] === 'senior_debt',
+  );
+  return senior && typeof senior === 'object' ? (senior as Record<string, unknown>) : null;
+}
+
+// Validates the capital_stack section's structure: CS-01 (well-formed, unique
+// tranches), CS-02 (a rate where the class requires one and none where it does
+// not), and CS-WATERFALL-UNSUPPORTED (the deferred distribution waterfall is
+// refused). The senior-loan reconciliation is CC-03. The stated sizing figures
+// are recomputed by `verifyCapitalStack` (capital-stack.ts), not here. A no-op
+// for any document without a capital_stack section.
+function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const cs = getSection(parsed, 'capital_stack');
+  if (!cs) return;
+  const content = cs.content as Record<string, unknown>;
+
+  // CS-WATERFALL-UNSUPPORTED: a distribution waterfall at the section level.
+  for (const key of Object.keys(content)) {
+    if (WATERFALL_MARKERS.includes(key)) {
+      issues.push({
+        code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section: 'capital_stack', field: key,
+        message: `CS-WATERFALL-UNSUPPORTED: the distribution waterfall ("${key}") is out of scope for this version; model it in x_partnership_structure until a later phase adds it (RFC 0026 §E)`,
+      });
+    }
+  }
+
+  const tranches = Array.isArray(content['tranches']) ? content['tranches'] : [];
+  const seenIds = new Set<string>();
+  const seenPositions = new Set<number>();
+
+  for (let i = 0; i < tranches.length; i++) {
+    const raw = tranches[i];
+    const t = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+    const id = t['id'];
+    const cls = t['class'];
+    const position = t['position'];
+    const amount = t['amount'];
+    const label = typeof id === 'string' && id ? id : `tranches[${i}]`;
+
+    // CS-01: structural — id, class, position, amount present and well-typed; id and position unique.
+    if (typeof id !== 'string' || id.length === 0) {
+      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
+    } else if (seenIds.has(id)) {
+      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
+    } else {
+      seenIds.add(id);
+    }
+    if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
+      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
+    }
+    if (typeof position !== 'number' || !Number.isInteger(position)) {
+      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
+    } else if (seenPositions.has(position)) {
+      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
+    } else {
+      seenPositions.add(position);
+    }
+    if (typeof amount !== 'number') {
+      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
+    }
+
+    // CS-02: a rate where the class requires one, and none on common equity.
+    const hasRate = t['rate'] !== undefined && t['rate'] !== null;
+    if (typeof cls === 'string') {
+      if (RATE_BEARING_CLASSES.has(cls) && !hasRate) {
+        issues.push({ code: 'CS-02', severity: 'error', section: 'capital_stack', field: `${label}.rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
+      }
+      if (cls === 'common_equity' && hasRate) {
+        issues.push({ code: 'CS-02', severity: 'error', section: 'capital_stack', field: `${label}.rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
+      }
+    }
+
+    // A waterfall smuggled in at the tranche level (promote/hurdle/catch-up).
+    for (const key of Object.keys(t)) {
+      if (WATERFALL_MARKERS.includes(key)) {
+        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section: 'capital_stack', field: `${label}.${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
       }
     }
   }
