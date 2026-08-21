@@ -23,6 +23,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`uw-receipt.schema.json`](uw-receipt.schema.json) | `UWReceipt` | [UW Receipt 1.0](../UW_RECEIPT_v1.md) / RFC 0016 |
 | [`section-gaps.schema.json`](section-gaps.schema.json) | `SectionGaps` | Protocol §VII |
 | [`section-components.schema.json`](section-components.schema.json) | `components` section (mixed-use) | Format §4.23 / RFC 0019 |
+| [`section-capital-stack.schema.json`](section-capital-stack.schema.json) | `capital_stack` section (tranches + sizing) | Format §4.24 / RFC 0026 |
 | [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
 | [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |
 | [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §2 / RFC 0021 |

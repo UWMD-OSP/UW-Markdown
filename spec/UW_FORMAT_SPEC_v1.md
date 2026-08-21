@@ -43,12 +43,13 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **24 numbered subsections (§ 4.0 – § 4.23)**:
+Part IV registers **25 numbered subsections (§ 4.0 – § 4.24)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
-content, the `gaps` inventory (§ 4.22), and the mixed-use `components`
-section (§ 4.23). When this and the protocol document refer to "the 21
-standard sections" they mean § 4.0 through § 4.20.
+content, the `gaps` inventory (§ 4.22), the mixed-use `components`
+section (§ 4.23), and the `capital_stack` section (§ 4.24). When this and
+the protocol document refer to "the 21 standard sections" they mean
+§ 4.0 through § 4.20.
 
 ---
 
@@ -2270,6 +2271,72 @@ In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.n
 
 ---
 
+### § 4.24 — Capital Stack
+
+**ID:** `capital_stack`  
+**Header:** `## Capital Stack {#capital_stack}`  
+**Purpose:** States a deal's full capital structure as an ordered set of typed tranches — senior debt under mezzanine under preferred equity under common equity, with bridge or seller financing where present — and the stack-aware sizing figures a lender underwrites to. `debt_structure` (§ 4.7) models exactly one loan; this section is where a multi-tranche stack lives, so that per-layer coverage and attachment-point risk are visible rather than collapsed into a single mislabeled DSCR. The stack is **asset-class independent**.  
+**Written by:** `wizard`, `manual`, `agent:L4-*` (tranche amounts and terms are user-supplied capital terms — an agent MUST NOT invent a tranche `rate`, `amount`, or a stated `sizing` value)  
+**Required for pipeline stage:** Optional; used whenever a deal carries more than one capital tranche.  
+**Dependencies:** `debt_structure`, `sources_uses` (the senior tranche reconciles with both — see `CC-03`)  
+**Schema:** [`spec/schemas/section-capital-stack.schema.json`](schemas/section-capital-stack.schema.json)  
+**Introduced by:** RFC 0026 (capital stack).
+
+The section has two parts: an ordered **`tranches`** array and a **`sizing`** array of stated figures a verifier recomputes. Unlike `components` (§ 4.23), which must be a bounded map because a calc pack reads its fields by static path, `capital_stack` is a **state-and-verify** structure (RFC 0021 § 6): the Tier‑3 calc engine never reads it, so a variable-length array is safe. Stated sizing figures are recomputed by a deterministic verifier (`verifyCapitalStack`, a sibling of `verifyRollup`) over a **fixed, closed function vocabulary** — not by a pack formula and not by any calc-engine primitive. This is what lets the stack carry an arbitrary number of tranches (including two mezzanine notes) without the sandbox iterating.
+
+**Tranches.** Each entry is a typed object:
+
+- `id` — document-local, unique within the section, free-form (`senior`, `mezz_a`, `mezz_b`). Two mezzanine notes are simply two tranches.
+- `class` — one of `senior_debt`, `mezzanine_debt`, `preferred_equity`, `common_equity`, `bridge`, `seller_financing`, `other_debt`. Non-extensible.
+- `position` — integer, `1` = most senior. Positions MUST be unique within the stack.
+- `amount` — the committed dollar amount.
+- `rate` — the coupon (debt) or preferred return (pref), as a fraction. REQUIRED for every debt tranche and for `preferred_equity`; MUST NOT appear on `common_equity`.
+- `accrual` — `cash` (current‑pay; enters cash coverage) or `accrued` (PIK; compounds on balance and does **not** enter cash coverage). Applies to `preferred_equity` and MAY apply to debt.
+- `amortization_months`, `io_months`, `term_months` — debt terms, from which the tranche's own annual debt service is derived deterministically.
+
+**Normative rules (RFC 2119):**
+
+- The `capital_stack` section is OPTIONAL and asset-class independent. A document with no `capital_stack` behaves exactly as before this RFC; every single-loan metric is unchanged.
+- Each tranche MUST state `id`, `class`, `position`, and `amount`; `id` and `position` MUST be unique within the section. A malformed or duplicate-keyed tranche MUST be rejected (`CS-01`).
+- Every debt tranche and every `preferred_equity` tranche MUST state a `rate`; a `common_equity` tranche MUST NOT (`CS-02`).
+- When a `capital_stack` is present, its `senior_debt` tranche MUST reconcile with `debt_structure` and the `sources_uses` senior bucket — same amount, same rate. This is the generalized `CC-03`: the senior view is stated once and agrees everywhere.
+- **Sizing is stated and verified, never trusted.** Each `sizing` entry names a closed `fn`, a selector, and a stated `value`; a verifier recomputes `fn` and compares. Disagreement is `CS-SIZING-DISAGREES` and the result is `failed`, never a silent pass. A figure that reads a tranche field the document does not supply is `unverifiable`, never `0`.
+- **The distribution waterfall is out of scope for this version.** A `capital_stack` that attempts to encode distribution tiers, promote, IRR hurdles, or catch-up MUST be refused (`CS-WATERFALL-UNSUPPORTED`) with guidance to `x_partnership_structure`; the multi-period distribution waterfall is deferred (RFC 0026 § E) pending a hold-period cash-flow primitive.
+
+**Sizing vocabulary (closed, non-extensible).** Each figure selects tranches with `over` (a single tranche `id`), `through` (a `position`, cumulative through that layer), or `*` (the whole stack):
+
+| `fn` | selector | recomputation |
+|---|---|---|
+| `coverage` | `over` | `noi_model.net_operating_income` ÷ that tranche's annual debt service |
+| `blended_coverage` | `through` | NOI ÷ Σ **cash-pay** debt service at or above the position (accrued/PIK excluded) |
+| `debt_yield_through` | `through` | NOI ÷ cumulative debt balance through the position — the attachment-point yield |
+| `ltc_through` / `ltv_through` | `through` | cumulative balance through the layer ÷ total cost / value |
+| `weighted_cost` | `*` | amount-weighted average `rate` across the stack |
+
+An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you.
+
+```json uw:section=capital_stack source=manual ts=ISO8601 v=1 confidence=high
+{
+  "_meta": { "...": "see §2.5" },
+  "tranches": [
+    { "id": "senior", "class": "senior_debt",      "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "io_months": 24, "term_months": 120, "accrual": "cash" },
+    { "id": "mezz_a", "class": "mezzanine_debt",    "position": 2, "amount": 6000000,  "rate": 0.11,   "amortization_months": 0,   "io_months": 120, "term_months": 120, "accrual": "cash" },
+    { "id": "pref",   "class": "preferred_equity",  "position": 3, "amount": 4000000,  "rate": 0.09,   "accrual": "accrued" },
+    { "id": "common", "class": "common_equity",     "position": 4, "amount": 4000000 }
+  ],
+  "sizing": [
+    { "id": "senior_dscr",     "fn": "coverage",           "over": "senior",  "value": 1.85 },
+    { "id": "combined_dscr",   "fn": "blended_coverage",   "through": 2,       "value": 1.14 },
+    { "id": "mezz_debt_yield", "fn": "debt_yield_through", "through": 2,       "value": 0.080 },
+    { "id": "wacc",            "fn": "weighted_cost",      "over": "*",        "value": 0.0731 }
+  ]
+}
+```
+
+Here the pref tranche is `accrued`, so it is excluded from `combined_dscr` but its balance is not part of `mezz_debt_yield` (which is a debt-only attachment metric through position 2). The senior tranche's `amount` and `rate` reconcile with `debt_structure` under `CC-03`.
+
+---
+
 ## Part V — Validation Rules
 
 ### 5.1 Pipeline Stage Completeness Requirements
@@ -2310,7 +2377,7 @@ Tools MUST run these after each section write:
 |---|---|---|
 | `CC-01` | Rent roll GPR must match OS GPR within 3% | `rent_roll`, `operating_statement` |
 | `CC-02` | UW value in `valuation` must match value used for LTV in `debt_structure` | `valuation`, `debt_structure` |
-| `CC-03` | Loan amount in `sources_uses` must match `debt_structure.loan_amount` | `sources_uses`, `debt_structure` |
+| `CC-03` | Senior loan reconciles: `sources_uses` senior loan, `debt_structure.loan_amount`, and (when present) the `capital_stack` `senior_debt` tranche must all match | `sources_uses`, `debt_structure`, `capital_stack` |
 | `CC-04` | Sources must equal uses in `sources_uses` | `sources_uses` |
 | `CC-05` | NOI used for DSCR must match `noi_model.net_operating_income` within 1% | `noi_model`, `debt_structure` |
 | `CC-06` | DCF Year 1 NOI must be consistent with `noi_model` projections | `noi_model`, `dcf` |
