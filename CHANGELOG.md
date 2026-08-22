@@ -6,7 +6,18 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [1.6.0] - 2026-08-22
+
+### Released
+
+- `@uwmd/core` **1.6.0**, `@uwmd/cli` **1.6.0** (lockstep), with coordinated
+  `@uwmd/core` repins in `@uwmd/excel` **0.5.0**, `@uwmd/report` **0.5.0**, and
+  `@uwmd/batch` **0.4.0**. Carries RFC 0019 (mixed-use composition) and RFC 0026
+  (typed capital stack), both implemented since 1.5.0.
+- **Format stays 1.1 and protocol stays 1.5.0.** Both RFCs are additive: the
+  `components` (§4.23) and `capital_stack` (§4.24) sections are new and
+  optional, no existing `.uw.md`/`.uwx.md` file changes meaning, and
+  `UW_PROTOCOL_v1.md` is untouched. Minor across the board for the same reason.
 
 ### Added — a typed capital stack (RFC 0026, implemented 2026-08-22)
 
@@ -1537,6 +1548,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...v1.5.0
 [1.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.1.3...v1.2.0
