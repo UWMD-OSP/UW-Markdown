@@ -564,7 +564,15 @@ bus factor, personal security email, and no public RFC venue.
 > **splits scope**: a buildable v1 (tranches + stack-aware sizing +
 > preferred-equity return/accrual + a placeable bridge slot) with the multi-period
 > **distribution waterfall documented and deferred** to a later phase (it needs a
-> hold-period cash-flow primitive the format lacks).
+> hold-period cash-flow primitive the format lacks). **Shipped so far:** the
+> `capital_stack` format section (§4.24) + `section-capital-stack.schema.json`;
+> the core verifier (`capital-stack.ts` — `verifyCapitalStack`, three-state, a
+> sibling of `verifyRollup`) and the validator rules (`CS-01`, `CS-02`,
+> `CS-WATERFALL-UNSUPPORTED`, generalized `CC-03`); and the Excel **Capital
+> Stack sheet** (one row per tranche + live sizing block quantized at the
+> verifier's own `CAPITAL_STACK_SIZING_DECIMALS`, additive for every asset
+> class). Still open: the conformance fixtures, a worked example deal, and
+> 0019's one-line MU-06 relaxation to accept a component-level stack.
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.

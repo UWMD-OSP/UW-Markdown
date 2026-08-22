@@ -23,6 +23,7 @@ import {
   type DerivedMetric,
 } from './layout.js';
 import { buildMixedUseNamedRangeMap, mixedUseName } from './mixed-use.js';
+import { writeCapitalStackSheet } from './capital-stack.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 import { buildWorkbookContract, writeMcpSheet } from './mcpSheet.js';
 
@@ -472,6 +473,9 @@ async function toMixedUseWorkbook(
   const derivedMetrics = buildMixedUseDerivedMetrics(parsed, layout);
   writeMixedUseUnderwritingSheet(wb, parsed, derivedMetrics);
   writeMixedUseOperatingStatement(wb, parsed, layout);
+  // After the operating statement, so the NOI named range its inputs reference
+  // exists. No-op for a document without a `capital_stack` section (RFC 0026).
+  writeCapitalStackSheet(wb, parsed);
   writePipelineLogSheet(wb, parsed);
   writeMcpSheet(wb, await buildWorkbookContract(parsed, layout));
 
@@ -498,6 +502,9 @@ export async function toWorkbook(parsed: ParsedUWFile): Promise<ExcelJS.Workbook
 
   writeUnderwritingSheet(wb, parsed, layout, derivedMetrics);
   writeOperatingStatementSheet(wb, parsed, layout);
+  // After the operating statement, so the NOI named range its inputs reference
+  // exists. No-op for a document without a `capital_stack` section (RFC 0026).
+  writeCapitalStackSheet(wb, parsed);
   writePipelineLogSheet(wb, parsed);
   // Last: the machine-readable contract (identity, producing pack, source
   // digest, metric dictionary, sibling representations, assurance boundary).

@@ -42,3 +42,12 @@ export {
   buildMixedUseNamedRangeMap,
   mixedUseName,
 } from './mixed-use.js';
+
+export {
+  writeCapitalStackSheet,
+  readCapitalStackSection,
+  trancheRangeName,
+  CAPITAL_STACK_SHEET_NAME,
+  CAPITAL_STACK_TOTAL_RANGE,
+  CS_INPUT_RANGES,
+} from './capital-stack.js';
