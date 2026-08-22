@@ -577,3 +577,25 @@ export type {
   ReceiptIssuanceOptions,
   ReceiptVerificationOptions,
 } from './receipts.js';
+
+export {
+  verifyCapitalStack,
+  recomputeSizing,
+  trancheAnnualDebtService,
+  isDebtTranche,
+  capitalStackContext,
+} from './capital-stack.js';
+export type {
+  Tranche,
+  TrancheClass,
+  Accrual,
+  SizingFn,
+  SizingFigure,
+  CapitalStack,
+  CapitalStackContext,
+  CapitalStackVerdict,
+  CapitalStackIssueCode,
+  CapitalStackIssue,
+  SizingResult,
+  CapitalStackVerification,
+} from './capital-stack.js';

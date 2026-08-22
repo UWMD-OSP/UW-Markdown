@@ -1297,6 +1297,27 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: '§4.23 MU-06',
   },
   {
+    code: 'CS-01', severity: 'error',
+    title: 'Malformed capital-stack tranche',
+    description: 'A tranche omits a required field (id, class, position, amount) or repeats an id/position.',
+    remediation: 'Give every tranche a unique id, a valid class, a unique integer position, and a numeric amount.',
+    spec_ref: '§4.24 CS-01',
+  },
+  {
+    code: 'CS-02', severity: 'error',
+    title: 'Tranche rate does not match its class',
+    description: 'A debt or preferred tranche omits its rate, or a common-equity tranche states one.',
+    remediation: 'State a rate on every debt and preferred_equity tranche; remove it from common_equity.',
+    spec_ref: '§4.24 CS-02',
+  },
+  {
+    code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error',
+    title: 'Distribution waterfall is out of scope',
+    description: 'The capital_stack encodes a distribution waterfall (promote, hurdles, tiers, or catch-up), which this version does not model.',
+    remediation: 'Model the waterfall in x_partnership_structure for now; a later phase adds it once a hold-period cash-flow primitive exists (RFC 0026 §E).',
+    spec_ref: '§4.24 CS-WATERFALL-UNSUPPORTED',
+  },
+  {
     code: 'DQ-01', severity: 'warning',
     title: 'Provisional block without gap entry',
     description: 'A block is marked _meta.provisional=true but no entry in the `gaps` section references it.',
