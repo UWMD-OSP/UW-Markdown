@@ -1,0 +1,5 @@
+{
+  "why": "Stack senior_debt present alongside debt_structure: equal is accepted (no CC-03, and no other issue), mismatched fires the generalized CC-03.",
+  "agree_codes": [],
+  "mismatch_codes": ["CC-03"]
+}

@@ -51,13 +51,14 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + market-data + modules + packages + composition
+npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + market-data + modules + packages + composition + capital-stack
 npm run conformance -- --tier=1,2,3,4,lite,receipts,modules
 npm run conformance -- --tier=lite         # the UW Lite suite alone
 npm run conformance -- --tier=receipts     # the receipts suite alone
 npm run conformance -- --tier=modules      # the module manifest suite alone
 npm run conformance -- --tier=packages     # the deal package suite alone
 npm run conformance -- --tier=composition  # the RFC 0021 composition suite alone
+npm run conformance -- --tier=capital-stack  # the RFC 0026 capital-stack suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -269,6 +270,34 @@ resolver and the verifier, not the parser.
 fixture, asserting the UWX→Lite projection reports externalized sections in its
 omission report. `lite-bridge.ts` does not implement that yet, so the fixture
 would assert nothing; it lands with the behaviour.
+
+### Capital stack — state-and-verify sizing (RFC 0026)
+
+`conformance/capital-stack/` covers the seven scenarios RFC 0026 names. Like
+the rollup suite, the verifier scenarios are `case.json` stack + context
+descriptions (they exercise `verifyCapitalStack`, not the parser); the
+validator and regression scenarios are full documents. The runner dispatches
+on which files a scenario directory carries (see `conformance/README.md`).
+
+- `senior-mezz-pref-verified/` — all six sizing `fn`s stated correctly →
+  `verified`.
+- `sizing-disagrees/` — one stated value perturbed → `failed` with
+  `CS-SIZING-DISAGREES`, never a silent pass.
+- `pref-cash-vs-accrued/` — two stacks identical but for the pref `accrual`;
+  cash-pay pref enters `blended_coverage`, accrued does not, and
+  `debt_yield_through` is identical either way (balance counts regardless of
+  accrual).
+- `ab-mezz-notes/` — `mezz_a` + `mezz_b`: the ordered array expresses what
+  fixed slots could not.
+- `senior-reconciles-debt-structure/` — the generalized `CC-03` in both
+  directions: equal senior amounts are clean, mismatched fires.
+- `no-stack-single-loan/` — **the additivity pin.** A document with only
+  `debt_structure` computes every multifamily pack metric exactly as before
+  the RFC and trips no `CS-*` rule. The pinned values are hand-verified in the
+  fixture's `why`, not regenerated.
+- `reject-waterfall-in-v1/` — distribution tiers at the section level and a
+  `promote` smuggled onto a tranche are both refused with
+  `CS-WATERFALL-UNSUPPORTED` (the §E Phase-2 boundary, enforced).
 
 ### Packages — manifests, archives, and the context boundary
 

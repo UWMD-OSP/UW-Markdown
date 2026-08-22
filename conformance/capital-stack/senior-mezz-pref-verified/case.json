@@ -1,0 +1,20 @@
+{
+  "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+  "stack": {
+    "tranches": [
+      { "id": "senior", "class": "senior_debt", "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "accrual": "cash" },
+      { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 6000000, "rate": 0.11, "amortization_months": 0, "accrual": "cash" },
+      { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 4000000, "rate": 0.09, "accrual": "cash" },
+      { "id": "common", "class": "common_equity", "position": 4, "amount": 4000000 }
+    ],
+    "sizing": [
+      { "id": "senior_dscr", "fn": "coverage", "over": "senior", "value": 1.61 },
+      { "id": "combined_dscr", "fn": "blended_coverage", "through": 3, "value": 1.05 },
+      { "id": "debt_yield_thru_mezz", "fn": "debt_yield_through", "through": 2, "value": 0.0969 },
+      { "id": "ltc_thru_mezz", "fn": "ltc_through", "through": 2, "value": 0.8 },
+      { "id": "ltv_thru_mezz", "fn": "ltv_through", "through": 2, "value": 0.7711 },
+      { "id": "wacc", "fn": "weighted_cost", "over": "*", "value": 0.0735 }
+    ]
+  },
+  "context": { "noi": 3100000, "total_cost": 40000000, "total_value": 41500000 }
+}

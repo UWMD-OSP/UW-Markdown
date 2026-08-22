@@ -1,0 +1,30 @@
+{
+  "why": "Two documents identical but for the pref accrual mode. The cash one includes the pref return in blended_coverage (1.05); the accrued one excludes it (1.20). Both agree on debt_yield_through (balance counts regardless of accrual). Each states its own correct figures, so both verify.",
+  "context": { "noi": 3100000, "total_cost": 40000000, "total_value": 41500000 },
+  "variants": {
+    "cash": {
+      "tranches": [
+        { "id": "senior", "class": "senior_debt", "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "accrual": "cash" },
+        { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 6000000, "rate": 0.11, "amortization_months": 0, "accrual": "cash" },
+        { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 4000000, "rate": 0.09, "accrual": "cash" },
+        { "id": "common", "class": "common_equity", "position": 4, "amount": 4000000 }
+      ],
+      "sizing": [
+        { "id": "blended_thru_pref", "fn": "blended_coverage", "through": 3, "value": 1.05 },
+        { "id": "dy_thru_pref", "fn": "debt_yield_through", "through": 3, "value": 0.0969 }
+      ]
+    },
+    "accrued": {
+      "tranches": [
+        { "id": "senior", "class": "senior_debt", "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "accrual": "cash" },
+        { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 6000000, "rate": 0.11, "amortization_months": 0, "accrual": "cash" },
+        { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 4000000, "rate": 0.09, "accrual": "accrued" },
+        { "id": "common", "class": "common_equity", "position": 4, "amount": 4000000 }
+      ],
+      "sizing": [
+        { "id": "blended_thru_pref", "fn": "blended_coverage", "through": 3, "value": 1.2 },
+        { "id": "dy_thru_pref", "fn": "debt_yield_through", "through": 3, "value": 0.0969 }
+      ]
+    }
+  }
+}
