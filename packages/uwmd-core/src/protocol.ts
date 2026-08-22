@@ -1293,7 +1293,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'MU-06', severity: 'error',
     title: 'Component-level debt not allowed',
     description: 'A component carries its own debt_structure; this section models one property-level loan.',
-    remediation: 'Remove the component debt_structure. Component-level financing is specified by RFC 0026 (Capital Stack), not this section.',
+    remediation: 'Remove the component debt_structure. Component-level financing is expressed as a component-level capital_stack (§4.24, RFC 0026), which this section accepts and validates with the CS-* rules.',
     spec_ref: '§4.23 MU-06',
   },
   {

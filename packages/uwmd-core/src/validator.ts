@@ -521,11 +521,13 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[]): voi
       });
     }
 
-    // MU-06: a component must not carry its own debt_structure (deferred to RFC 0026).
+    // MU-06: a component must not carry its own debt_structure. Component
+    // financing is a component-level capital_stack (§4.24, RFC 0026), which
+    // checkCapitalStack accepts and validates with the CS-* rules.
     if (comp['debt_structure'] !== undefined) {
       issues.push({
         code: 'MU-06', severity: 'error', section: 'components', field: `${key}.debt_structure`,
-        message: `MU-06: component "${key}" carries its own debt_structure; component-level debt is out of scope here and specified by RFC 0026 (Capital Stack)`,
+        message: `MU-06: component "${key}" carries its own debt_structure; express component-level financing as a component capital_stack (§4.24, RFC 0026) instead`,
       });
     }
 
@@ -600,22 +602,26 @@ function seniorDebtTranche(parsed: ParsedUWFile): Record<string, unknown> | null
   return senior && typeof senior === 'object' ? (senior as Record<string, unknown>) : null;
 }
 
-// Validates the capital_stack section's structure: CS-01 (well-formed, unique
+// Validates one capital-stack payload's structure: CS-01 (well-formed, unique
 // tranches), CS-02 (a rate where the class requires one and none where it does
 // not), and CS-WATERFALL-UNSUPPORTED (the deferred distribution waterfall is
-// refused). The senior-loan reconciliation is CC-03. The stated sizing figures
-// are recomputed by `verifyCapitalStack` (capital-stack.ts), not here. A no-op
-// for any document without a capital_stack section.
-function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
-  const cs = getSection(parsed, 'capital_stack');
-  if (!cs) return;
-  const content = cs.content as Record<string, unknown>;
-
-  // CS-WATERFALL-UNSUPPORTED: a distribution waterfall at the section level.
+// refused). The senior-loan reconciliation is CC-03 and applies only to the
+// top-level section (a component stack has no property-level debt_structure to
+// reconcile with). The stated sizing figures are recomputed by
+// `verifyCapitalStack` (capital-stack.ts), not here. `section` and `prefix`
+// aim the issue fields: '' for the top-level section, `<key>.capital_stack.`
+// for a mixed-use component's own stack (§4.23, RFC 0026 compatibility).
+function checkStackContent(
+  content: Record<string, unknown>,
+  section: string,
+  prefix: string,
+  issues: ValidationMessage[],
+): void {
+  // CS-WATERFALL-UNSUPPORTED: a distribution waterfall at the stack level.
   for (const key of Object.keys(content)) {
     if (WATERFALL_MARKERS.includes(key)) {
       issues.push({
-        code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section: 'capital_stack', field: key,
+        code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section, field: `${prefix}${key}`,
         message: `CS-WATERFALL-UNSUPPORTED: the distribution waterfall ("${key}") is out of scope for this version; model it in x_partnership_structure until a later phase adds it (RFC 0026 §E)`,
       });
     }
@@ -636,42 +642,60 @@ function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): v
 
     // CS-01: structural — id, class, position, amount present and well-typed; id and position unique.
     if (typeof id !== 'string' || id.length === 0) {
-      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
     } else if (seenIds.has(id)) {
-      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
     } else {
       seenIds.add(id);
     }
     if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
-      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
     }
     if (typeof position !== 'number' || !Number.isInteger(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
     } else if (seenPositions.has(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
     } else {
       seenPositions.add(position);
     }
     if (typeof amount !== 'number') {
-      issues.push({ code: 'CS-01', severity: 'error', section: 'capital_stack', field: `${label}.amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
     }
 
     // CS-02: a rate where the class requires one, and none on common equity.
     const hasRate = t['rate'] !== undefined && t['rate'] !== null;
     if (typeof cls === 'string') {
       if (RATE_BEARING_CLASSES.has(cls) && !hasRate) {
-        issues.push({ code: 'CS-02', severity: 'error', section: 'capital_stack', field: `${label}.rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
+        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
       }
       if (cls === 'common_equity' && hasRate) {
-        issues.push({ code: 'CS-02', severity: 'error', section: 'capital_stack', field: `${label}.rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
+        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
       }
     }
 
     // A waterfall smuggled in at the tranche level (promote/hurdle/catch-up).
     for (const key of Object.keys(t)) {
       if (WATERFALL_MARKERS.includes(key)) {
-        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section: 'capital_stack', field: `${label}.${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
+        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section, field: `${prefix}${label}.${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
       }
+    }
+  }
+}
+
+// The top-level capital_stack section, plus any mixed-use component's own
+// stack (§4.23: a component MAY carry a capital_stack; its bare debt_structure
+// stays refused as MU-06). A no-op for documents carrying neither.
+function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const cs = getSection(parsed, 'capital_stack');
+  if (cs) checkStackContent(cs.content as Record<string, unknown>, 'capital_stack', '', issues);
+
+  const comps = getSection(parsed, 'components');
+  if (!comps) return;
+  for (const [key, raw] of Object.entries(comps.content as Record<string, unknown>)) {
+    if (key.startsWith('_') || !raw || typeof raw !== 'object' || Array.isArray(raw)) continue;
+    const stack = (raw as Record<string, unknown>)['capital_stack'];
+    if (stack && typeof stack === 'object' && !Array.isArray(stack)) {
+      checkStackContent(stack as Record<string, unknown>, 'components', `${key}.capital_stack.`, issues);
     }
   }
 }

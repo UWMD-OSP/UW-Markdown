@@ -174,3 +174,104 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     }
   });
 });
+
+// ─── Component-level stacks (§4.23 relaxation, RFC 0026 compatibility) ────────
+//
+// A mixed-use component MAY carry its own capital_stack, validated by the same
+// CS-* rules with fields prefixed `<key>.capital_stack.`. A bare component
+// debt_structure stays refused (MU-06), and the generalized CC-03 stays
+// top-level-only: a component stack has no property-level counterpart.
+
+function mixedUseFile(components: Record<string, unknown>, propertyNoi: number): ParsedUWFile {
+  return {
+    frontmatter: { asset_class: 'mixed_use' } as ParsedUWFile['frontmatter'],
+    sections: {
+      components: block('components', components),
+      noi_model: block('noi_model', { net_operating_income: propertyNoi }),
+    },
+    prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
+    extensions: {}, superseded: {}, raw: '',
+  };
+}
+
+const componentStack = (extra: Record<string, unknown> = {}) => ({
+  tranches: [
+    { id: 'condo_senior', class: 'senior_debt', position: 1, amount: 8_000_000, rate: 0.07 },
+    { id: 'condo_common', class: 'common_equity', position: 2, amount: 2_000_000 },
+  ],
+  ...extra,
+});
+
+describe('validateUWFile — component-level capital stacks (§4.23)', () => {
+  it('a component carrying a well-formed capital_stack trips neither MU-06 nor any CS rule', () => {
+    const parsed = mixedUseFile({
+      multifamily: { component_class: 'multifamily', net_operating_income: 1_300_000 },
+      retail: { component_class: 'retail', net_operating_income: 372_000, capital_stack: componentStack() },
+    }, 1_672_000);
+    const emitted = codes(parsed);
+    for (const c of ['MU-06', 'CS-01', 'CS-02', 'CS-WATERFALL-UNSUPPORTED', 'CC-03']) {
+      expect(emitted, c).not.toContain(c);
+    }
+  });
+
+  it('a malformed component stack fires CS-01 with the component-prefixed field', () => {
+    const parsed = mixedUseFile({
+      multifamily: { component_class: 'multifamily', net_operating_income: 1_300_000 },
+      retail: {
+        component_class: 'retail', net_operating_income: 372_000,
+        capital_stack: {
+          tranches: [
+            { id: 'a', class: 'senior_debt', position: 1, amount: 1, rate: 0.05 },
+            { id: 'b', class: 'mezzanine_debt', position: 1, amount: 1, rate: 0.1 }, // dup position
+          ],
+        },
+      },
+    }, 1_672_000);
+    const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-01');
+    expect(issue).toBeDefined();
+    expect(issue!.section).toBe('components');
+    expect(issue!.field).toBe('retail.capital_stack.b.position');
+  });
+
+  it('a waterfall in a component stack is refused like a top-level one', () => {
+    const parsed = mixedUseFile({
+      multifamily: { component_class: 'multifamily', net_operating_income: 1_300_000 },
+      retail: {
+        component_class: 'retail', net_operating_income: 372_000,
+        capital_stack: componentStack({ waterfall: { tiers: [] } }),
+      },
+    }, 1_672_000);
+    const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-WATERFALL-UNSUPPORTED');
+    expect(issue).toBeDefined();
+    expect(issue!.field).toBe('retail.capital_stack.waterfall');
+  });
+
+  it('a bare component debt_structure is still MU-06, and its remediation points at the stack', () => {
+    const parsed = mixedUseFile({
+      multifamily: { component_class: 'multifamily', net_operating_income: 1_300_000 },
+      retail: { component_class: 'retail', net_operating_income: 372_000, debt_structure: { loan_amount: 9 } },
+    }, 1_672_000);
+    const issue = validateUWFile(parsed).issues.find((i) => i.code === 'MU-06');
+    expect(issue).toBeDefined();
+    expect(issue!.message).toContain('capital_stack');
+  });
+
+  it('a component stack does not trigger the top-level CC-03 senior reconciliation', () => {
+    // The component senior (8M) deliberately disagrees with the property loan
+    // (20M): CC-03 must not compare across that boundary.
+    const parsed: ParsedUWFile = {
+      frontmatter: { asset_class: 'mixed_use' } as ParsedUWFile['frontmatter'],
+      sections: {
+        components: block('components', {
+          multifamily: { component_class: 'multifamily', net_operating_income: 1_300_000 },
+          retail: { component_class: 'retail', net_operating_income: 372_000, capital_stack: componentStack() },
+        }),
+        noi_model: block('noi_model', { net_operating_income: 1_672_000 }),
+        debt_structure: block('debt_structure', { loan_amount: 20_000_000 }),
+      },
+      prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
+      extensions: {}, superseded: {}, raw: '',
+    };
+    expect(codes(parsed)).not.toContain('CC-03');
+  });
+});
