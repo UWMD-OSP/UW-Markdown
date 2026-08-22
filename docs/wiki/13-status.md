@@ -571,8 +571,11 @@ bus factor, personal security email, and no public RFC venue.
 > `CS-WATERFALL-UNSUPPORTED`, generalized `CC-03`); and the Excel **Capital
 > Stack sheet** (one row per tranche + live sizing block quantized at the
 > verifier's own `CAPITAL_STACK_SIZING_DECIMALS`, additive for every asset
-> class). Still open: the conformance fixtures, a worked example deal, and
-> 0019's one-line MU-06 relaxation to accept a component-level stack.
+> class); and the **conformance fixtures** — the seven scenarios the RFC names
+> under `conformance/capital-stack/`, including the no-stack single-loan
+> additivity pin and the enforced §E waterfall refusal. Still open: a worked
+> example deal and 0019's one-line MU-06 relaxation to accept a
+> component-level stack.
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.

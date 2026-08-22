@@ -59,6 +59,18 @@ conformance/
     └── refuse/         <scenario>/{deal.*, expected.json} — issuance must throw
                           a typed ReceiptError with expected_code, never emit a
                           caveated receipt
+└── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
+                          Scenario kind is dispatched by the files a directory
+                          carries: {case.json, expected.json} exercises
+                          verifyCapitalStack's three-state verdict (a "variants"
+                          key contrasts pref cash-vs-accrued); {agree.uw.md,
+                          mismatch.uw.md, expected.json} exercises the
+                          generalized CC-03 in both directions; {deal.uw.md,
+                          expected.json} asserts a typed validator refusal
+                          (CS-WATERFALL-UNSUPPORTED); and {deal.uw.md,
+                          expected-metrics.json} is the no-stack single-loan
+                          regression pin — every pack metric must equal its
+                          pre-RFC value exactly
 ```
 
 The `lite` and `receipts` suites are named rather than numbered: UW Lite is a

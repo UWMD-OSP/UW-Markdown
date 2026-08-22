@@ -6,7 +6,7 @@
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
-//                receipts,market-data,modules,packages,composition.
+//                receipts,market-data,modules,packages,composition,capital-stack.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -71,6 +71,8 @@ import {
   resolveComposite,
   selectInheritedAssumption,
   verifyRollup,
+  verifyCapitalStack,
+  MULTIFAMILY_PACK,
   toUWEnvelope,
   canonicalizeUWEnvelope,
   computeEnvelopeDigest,
@@ -88,7 +90,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1869,6 +1871,136 @@ async function runComposition() {
   }
 }
 
+// ─── Capital stack (RFC 0026) ────────────────────────────────────────────────
+//
+// Scenario kind is dispatched by the files a directory carries, not by its id:
+//   case.json + expected.json ("verdict")      → verifyCapitalStack three-state
+//   case.json with "variants"                  → the pref cash-vs-accrued contrast
+//   agree.uw.md + mismatch.uw.md               → generalized CC-03, both directions
+//   deal.uw.md + expected.json                 → validator refusal (typed codes)
+//   deal.uw.md + expected-metrics.json         → the no-stack single-loan pin
+
+const CAPITAL_STACK_DIR = join(CONFORMANCE_DIR, 'capital-stack');
+
+async function runCapitalStack() {
+  if (!existsSync(CAPITAL_STACK_DIR)) {
+    record('capital-stack', '(none)', 'pass', 'no capital-stack fixtures');
+    return;
+  }
+  const scenarios = readdirSync(CAPITAL_STACK_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(CAPITAL_STACK_DIR, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  const validatorCodes = (path) =>
+    validateUWFile(parseUWFile(readFileSync(path, 'utf8'))).issues.map((i) => i.code);
+
+  for (const { id, dir } of scenarios) {
+    // ── The no-stack single-loan pin ─────────────────────────────────────────
+    if (existsSync(join(dir, 'expected-metrics.json'))) {
+      const expected = readCase(dir, 'expected-metrics.json');
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+      const codes = validateUWFile(parsed).issues.map((i) => i.code);
+      const tripped = codes.filter((c) =>
+        (expected.no_codes_with_prefix ?? []).some((p) => c.startsWith(p)));
+      if (tripped.length) {
+        record('capital-stack', id, 'fail', `stack rules fired on a stack-less document: ${tripped.join(', ')}`);
+        continue;
+      }
+      const ctx = { parsed, prior_results: {}, locale: 'en-US' };
+      let bad = null;
+      for (const [metricId, want] of Object.entries(expected.metrics)) {
+        const decl = (MULTIFAMILY_PACK.calculations ?? []).find((d) => d.id === metricId);
+        const r = decl ? evaluateCalc(decl, ctx) : null;
+        if (!decl || !r.ok || r.value !== want) {
+          bad = `${metricId} = ${r?.ok ? r.value : 'error'}, pinned ${want}`;
+          break;
+        }
+      }
+      if (bad) {
+        record('capital-stack', id, 'fail', `single-loan metric drifted: ${bad}`);
+        continue;
+      }
+      record('capital-stack', id, 'pass', `${Object.keys(expected.metrics).length} metrics pinned`);
+      continue;
+    }
+
+    // ── Generalized CC-03, both directions ───────────────────────────────────
+    if (existsSync(join(dir, 'agree.uw.md'))) {
+      const expected = readCase(dir, 'expected.json');
+      const agree = validatorCodes(join(dir, 'agree.uw.md'));
+      const mismatch = validatorCodes(join(dir, 'mismatch.uw.md'));
+      if (agree.length !== (expected.agree_codes ?? []).length ||
+          !(expected.agree_codes ?? []).every((c) => agree.includes(c))) {
+        record('capital-stack', id, 'fail', `agree document emitted [${agree.join(', ')}], expected [${(expected.agree_codes ?? []).join(', ')}]`);
+        continue;
+      }
+      const missing = (expected.mismatch_codes ?? []).filter((c) => !mismatch.includes(c));
+      if (missing.length) {
+        record('capital-stack', id, 'fail', `mismatch document emitted [${mismatch.join(', ')}], missing ${missing.join(', ')}`);
+        continue;
+      }
+      record('capital-stack', id, 'pass', `agree clean, mismatch ${expected.mismatch_codes.join(', ')}`);
+      continue;
+    }
+
+    // ── Validator refusal (typed codes on a full document) ───────────────────
+    if (existsSync(join(dir, 'deal.uw.md'))) {
+      const expected = readCase(dir, 'expected.json');
+      const codes = validatorCodes(join(dir, 'deal.uw.md'));
+      const minOccurrences = expected.min_occurrences ?? 1;
+      const short = (expected.expected_codes ?? []).filter(
+        (c) => codes.filter((x) => x === c).length < minOccurrences);
+      if (short.length) {
+        record('capital-stack', id, 'fail', `emitted [${codes.join(', ')}], expected ${short.join(', ')} ×${minOccurrences}`);
+        continue;
+      }
+      record('capital-stack', id, 'pass', expected.expected_codes.join(', '));
+      continue;
+    }
+
+    const testCase = readCase(dir, 'case.json');
+    const expected = readCase(dir, 'expected.json');
+
+    // ── The pref cash-vs-accrued contrast ────────────────────────────────────
+    if (testCase.variants) {
+      const cash = verifyCapitalStack(testCase.variants.cash, testCase.context);
+      const accrued = verifyCapitalStack(testCase.variants.accrued, testCase.context);
+      if (cash.verdict !== expected.both_verdicts || accrued.verdict !== expected.both_verdicts) {
+        record('capital-stack', id, 'fail', `verdicts ${cash.verdict}/${accrued.verdict}, expected both ${expected.both_verdicts}`);
+        continue;
+      }
+      const sizingOf = (v, figId) => v.sizing.find((s) => s.id === figId);
+      const blendedCash = sizingOf(cash, expected.blended_figure_id)?.recomputed;
+      const blendedAccrued = sizingOf(accrued, expected.blended_figure_id)?.recomputed;
+      if (expected.blended_direction === 'accrued_higher' && !(blendedAccrued > blendedCash)) {
+        record('capital-stack', id, 'fail', `blended coverage ${blendedAccrued} (accrued) is not above ${blendedCash} (cash)`);
+        continue;
+      }
+      const dyCash = sizingOf(cash, expected.debt_yield_figure_id)?.recomputed;
+      const dyAccrued = sizingOf(accrued, expected.debt_yield_figure_id)?.recomputed;
+      if (expected.debt_yield_equal && dyCash !== dyAccrued) {
+        record('capital-stack', id, 'fail', `debt yield ${dyCash} (cash) != ${dyAccrued} (accrued); balance must count regardless of accrual`);
+        continue;
+      }
+      record('capital-stack', id, 'pass', `blended ${blendedCash} → ${blendedAccrued}, debt yield stable`);
+      continue;
+    }
+
+    // ── verifyCapitalStack three-state ───────────────────────────────────────
+    const verification = verifyCapitalStack(testCase.stack, testCase.context);
+    if (verification.verdict !== expected.verdict) {
+      record('capital-stack', id, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}: ${verification.issues.map((i) => i.code).join(', ') || '(none)'}`);
+      continue;
+    }
+    if (expected.expected_code && !verification.issues.some((i) => i.code === expected.expected_code)) {
+      record('capital-stack', id, 'fail', `issues ${verification.issues.map((i) => i.code).join(', ') || '(none)'}, expected ${expected.expected_code}`);
+      continue;
+    }
+    record('capital-stack', id, 'pass', expected.verdict);
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -1884,6 +2016,7 @@ const dispatch = {
   'modules': async () => { await runModules(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
+  'capital-stack': async () => { await runCapitalStack(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

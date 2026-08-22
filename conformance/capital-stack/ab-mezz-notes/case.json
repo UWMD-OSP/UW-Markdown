@@ -1,0 +1,17 @@
+{
+  "why": "A stack with mezz_a and mezz_b notes — two tranches of the same class, which fixed slots could not express. The ordered array does: blended coverage and debt yield through mezz_b cover both notes, and the weighted cost spans all four rate-bearing amounts.",
+  "stack": {
+    "tranches": [
+      { "id": "senior", "class": "senior_debt", "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "accrual": "cash" },
+      { "id": "mezz_a", "class": "mezzanine_debt", "position": 2, "amount": 4000000, "rate": 0.1, "amortization_months": 0, "accrual": "cash" },
+      { "id": "mezz_b", "class": "mezzanine_debt", "position": 3, "amount": 2000000, "rate": 0.13, "amortization_months": 0, "accrual": "cash" },
+      { "id": "common", "class": "common_equity", "position": 4, "amount": 8000000 }
+    ],
+    "sizing": [
+      { "id": "blended_thru_b", "fn": "blended_coverage", "through": 3, "value": 1.2 },
+      { "id": "dy_thru_b", "fn": "debt_yield_through", "through": 3, "value": 0.0969 },
+      { "id": "wacc", "fn": "weighted_cost", "over": "*", "value": 0.0714 }
+    ]
+  },
+  "context": { "noi": 3100000, "total_cost": 40000000, "total_value": 41500000 }
+}
