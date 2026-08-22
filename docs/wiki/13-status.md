@@ -2,12 +2,14 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-18 at `f72eeeb` (the `v1.5.0` release commit; full
-pass: build green across all workspaces; **970 tests** — 832 core, 69 excel, 62
-cli, 4 batch, 3 report — plus **63 web-editor**; **195 conformance** assertions
-including the Tier-4 replay, module, package, receipts, market-data, and
-composition suites; 15/15 schemas valid; Biome clean over 401 files;
-`typecheck:tests` clean across all five workspaces).
+**Last verified:** 2026-08-22 at `94c99f9` (the `v1.6.0` release commit; full
+pass: build green across all workspaces; **1,057 tests** — 894 core, 94 excel,
+62 cli, 4 batch, 3 report — plus **63 web-editor**; **215 conformance**
+assertions including the Tier-4 replay, module, package, receipts, market-data,
+composition, and capital-stack suites; 17/17 schemas valid; Biome clean over
+428 files; `typecheck:tests` clean across all five workspaces; `@uwmd/core`
+and `@uwmd/cli` **1.6.0 published to npm** by the tag-triggered OIDC job,
+provenance attached).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
