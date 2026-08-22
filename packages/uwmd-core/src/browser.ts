@@ -584,6 +584,7 @@ export {
   trancheAnnualDebtService,
   isDebtTranche,
   capitalStackContext,
+  CAPITAL_STACK_SIZING_DECIMALS,
 } from './capital-stack.js';
 export type {
   Tranche,

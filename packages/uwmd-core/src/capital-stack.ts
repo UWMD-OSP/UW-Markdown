@@ -157,10 +157,15 @@ export function trancheAnnualDebtService(t: Tranche): number | null {
 
 // ─── Sizing recomputation ────────────────────────────────────────────────────
 
-// Each figure is compared at a fixed decimal quantum, so an author who states a
-// correctly-rounded value verifies and a materially wrong one does not. Coverage
-// ratios are stated to 2 places (a DSCR reads as 1.85); rates and yields to 4.
-const SIZING_DECIMALS: Record<SizingFn, number> = {
+/**
+ * The decimal quantum each sizing figure is compared at, keyed by `fn`. Coverage
+ * ratios are stated to 2 places (a DSCR reads as 1.85); rates and yields to 4.
+ * An author who states a correctly-rounded value verifies and a materially wrong
+ * one does not. Exported so an emitting surface (the Excel workbook's sizing
+ * block) quantizes at the same boundary this verifier does, rather than keeping
+ * its own copy of the table.
+ */
+export const CAPITAL_STACK_SIZING_DECIMALS: Readonly<Record<SizingFn, number>> = {
   coverage: 2,
   blended_coverage: 2,
   debt_yield_through: 4,
@@ -175,7 +180,7 @@ function roundTo(value: number, decimals: number): number {
 }
 
 function agrees(stated: number, recomputed: number, fn: SizingFn): boolean {
-  const dp = SIZING_DECIMALS[fn];
+  const dp = CAPITAL_STACK_SIZING_DECIMALS[fn];
   return roundTo(stated, dp) === roundTo(recomputed, dp);
 }
 

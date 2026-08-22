@@ -20,6 +20,10 @@ calc engine by construction. Depends on `@uwmd/core` + `exceljs`. CLI:
   emitting Excel for every `MULTIFAMILY_PACK` calc — **metrics are defined in
   `@uwmd/core`'s pack, not here.**
 - `toWorkbook.ts` — the generic ExcelJS writer.
+- `capital-stack.ts` — the additive **Capital Stack** sheet (RFC 0026): emitted
+  for any asset class when the document carries a `capital_stack` section; live
+  per-tranche debt-service + sizing formulas quantized at core's
+  `CAPITAL_STACK_SIZING_DECIMALS` (imported, never copied).
 - `cli.ts` / `index.ts` — entry points.
 
 Sheets: **Underwriting** (header + inputs + derived metrics), **Operating

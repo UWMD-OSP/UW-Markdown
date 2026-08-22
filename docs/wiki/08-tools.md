@@ -90,6 +90,20 @@ Layout:
   `NOI = EGI − total opex` foots to the stored `net_operating_income`. EGI, total
   opex, and NOI are exposed as the `effective_gross_income`,
   `total_operating_expenses`, and `noi` named ranges.
+- **Capital Stack** sheet (`src/capital-stack.ts`, RFC 0026) — present **only
+  when the document carries a `capital_stack` section**, for any asset class; a
+  single-loan document produces exactly the workbook it produced before. One row
+  per tranche (ordered by seniority) with a **live annual-debt-service formula**
+  mirroring `trancheAnnualDebtService` branch for branch, a native-`SUM`
+  total-capitalization row (named `capital_stack_total`), the property-level
+  sizing inputs (`cs_noi` references the workbook's live `noi` named range when
+  one exists), and a sizing block that recomputes every stated figure as a live
+  formula beside its stated value. The agree/disagree cells `ROUND` both sides
+  at `CAPITAL_STACK_SIZING_DECIMALS[fn]` — imported from `@uwmd/core`, not
+  copied — and a live verdict cell applies the verifier's precedence
+  (`failed` → `unverifiable` → `verified`). A figure the verifier reports
+  `unverifiable` is written as literal text, never as a formula over blank
+  cells (a blank SUMs to 0 — the misleading zero the verifier refuses).
 - **Pipeline Log** sheet — flat audit table of `pipeline_log` entries.
 
 A `WorkbookLayout` is just `{ assetClass, pack, incomeLines, expenseLines,
