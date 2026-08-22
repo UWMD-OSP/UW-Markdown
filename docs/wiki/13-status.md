@@ -573,9 +573,12 @@ bus factor, personal security email, and no public RFC venue.
 > verifier's own `CAPITAL_STACK_SIZING_DECIMALS`, additive for every asset
 > class); and the **conformance fixtures** — the seven scenarios the RFC names
 > under `conformance/capital-stack/`, including the no-stack single-loan
-> additivity pin and the enforced §E waterfall refusal. Still open: a worked
-> example deal and 0019's one-line MU-06 relaxation to accept a
-> component-level stack.
+> additivity pin and the enforced §E waterfall refusal; and the **MU-06
+> relaxation** — §4.23 now accepts a component-level `capital_stack` (same
+> `CS-*` validation, fields prefixed `<key>.capital_stack.`; bare component
+> `debt_structure` stays refused, and the generalized `CC-03` stays
+> top-level-only). Still open: a worked example deal, then flip the RFC to
+> `implemented`.
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.

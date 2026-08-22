@@ -95,6 +95,10 @@
           "type": ["number", "null"],
           "description": "This use's total operating expenses."
         },
+        "capital_stack": {
+          "$ref": "https://uwmd.org/schemas/section-capital-stack.schema.json",
+          "description": "This component's own financing as a typed capital stack (§4.24, RFC 0026) — the shape RFC 0019 deferred component-level debt to. Same structure and CS-* validation as the top-level section; the senior-reconciliation rule (generalized CC-03) applies only to the top-level stack. A bare component debt_structure remains refused (MU-06)."
+        },
         "allocation_pct": {
           "type": ["number", "null"],
           "minimum": 0,
