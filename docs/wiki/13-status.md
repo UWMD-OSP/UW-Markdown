@@ -558,27 +558,29 @@ bus factor, personal security email, and no public RFC venue.
 > conformance fixtures have all landed. The newly spun-out
 > [0026](../rfcs/0026-capital-stack.md) (typed capital stack — senior/mezz/pref
 > tranches and stack-aware DSCR/debt-yield; asset-class-independent, and the
-> primitive 0019's component-level debt will build on) was **accepted 2026-08-20**
-> and is being implemented. It settled on **state-and-verify** (RFC 0021 §6),
-> which expresses an arbitrary tranche count off the calc engine, and deliberately
-> **splits scope**: a buildable v1 (tranches + stack-aware sizing +
+> primitive 0019's component-level debt builds on) was **accepted 2026-08-20**
+> and is **implemented 2026-08-22**. It settled on **state-and-verify** (RFC
+> 0021 §6), which expresses an arbitrary tranche count off the calc engine, and
+> deliberately **splits scope**: a buildable v1 (tranches + stack-aware sizing +
 > preferred-equity return/accrual + a placeable bridge slot) with the multi-period
 > **distribution waterfall documented and deferred** to a later phase (it needs a
-> hold-period cash-flow primitive the format lacks). **Shipped so far:** the
-> `capital_stack` format section (§4.24) + `section-capital-stack.schema.json`;
-> the core verifier (`capital-stack.ts` — `verifyCapitalStack`, three-state, a
-> sibling of `verifyRollup`) and the validator rules (`CS-01`, `CS-02`,
-> `CS-WATERFALL-UNSUPPORTED`, generalized `CC-03`); and the Excel **Capital
-> Stack sheet** (one row per tranche + live sizing block quantized at the
-> verifier's own `CAPITAL_STACK_SIZING_DECIMALS`, additive for every asset
-> class); and the **conformance fixtures** — the seven scenarios the RFC names
-> under `conformance/capital-stack/`, including the no-stack single-loan
-> additivity pin and the enforced §E waterfall refusal; and the **MU-06
-> relaxation** — §4.23 now accepts a component-level `capital_stack` (same
-> `CS-*` validation, fields prefixed `<key>.capital_stack.`; bare component
-> `debt_structure` stays refused, and the generalized `CC-03` stays
-> top-level-only). Still open: a worked example deal, then flip the RFC to
-> `implemented`.
+> hold-period cash-flow primitive the format lacks; its boundary is enforced by
+> `CS-WATERFALL-UNSUPPORTED`). **Everything shipped:** the `capital_stack`
+> format section (§4.24) + `section-capital-stack.schema.json`; the core
+> verifier (`capital-stack.ts` — `verifyCapitalStack`, three-state, a sibling
+> of `verifyRollup`) and the validator rules (`CS-01`, `CS-02`,
+> `CS-WATERFALL-UNSUPPORTED`, generalized `CC-03`); the Excel **Capital Stack
+> sheet** (one row per tranche + live sizing block quantized at the verifier's
+> own `CAPITAL_STACK_SIZING_DECIMALS`, additive for every asset class); the
+> **conformance fixtures** — the seven scenarios the RFC names under
+> `conformance/capital-stack/`, including the no-stack single-loan additivity
+> pin and the enforced §E waterfall refusal; the **MU-06 relaxation** — §4.23
+> accepts a component-level `capital_stack` (same `CS-*` validation, fields
+> prefixed `<key>.capital_stack.`; bare component `debt_structure` stays
+> refused, and the generalized `CC-03` stays top-level-only); and the **worked
+> example** (`examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md`) — a
+> senior + mezz + pref + common multifamily deal whose stack foots to its
+> sources and uses and whose six stated sizing figures all verify.
 > [0020](../rfcs/0020-uwx-terminology-alignment.md) was
 > flipped to `implemented` 2026-08-17: its prose had already landed in the specs
 > and examples, so `draft` was recording a gap that no longer existed.
