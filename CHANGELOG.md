@@ -8,6 +8,45 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — a typed capital stack (RFC 0026, implemented 2026-08-22)
+
+A deal can state its full financing as an ordered array of typed **tranches**
+(senior / mezzanine / preferred equity / common / bridge / seller / other) plus
+stack-aware **sizing** figures a deterministic verifier recomputes —
+**state-and-verify** (RFC 0021 §6), so an arbitrary tranche count (two
+mezzanine notes included) lives entirely off the iteration-free Tier-3 calc
+engine. The ten packs and every single-loan metric are untouched: a document
+without a `capital_stack` behaves byte-for-byte as before (pinned by a
+conformance fixture).
+
+- **`capital_stack` section** (format spec §4.24 + `section-capital-stack.schema.json`):
+  tranches ordered by seniority and a closed sizing vocabulary — `coverage`,
+  `blended_coverage`, `debt_yield_through`, `ltc_through`, `ltv_through`,
+  `weighted_cost`. Preferred equity carries `accrual`: current-pay enters cash
+  coverage, PIK does not, and balances count toward attachment-point debt yield
+  either way.
+- **`verifyCapitalStack`** (`@uwmd/core`) — three-state (`verified` / `failed` /
+  `unverifiable`), a sibling of `verifyRollup`; per-tranche cash debt service
+  (`trancheAnnualDebtService`) and figure recomputation at a fixed per-fn
+  quantum (`CAPITAL_STACK_SIZING_DECIMALS`, exported).
+- **Validator rules** `CS-01`, `CS-02`, `CS-WATERFALL-UNSUPPORTED` (the Phase-2
+  distribution-waterfall boundary, refused at both section and tranche level),
+  and the **generalized `CC-03`** — the senior tranche must reconcile with
+  `debt_structure` and the `sources_uses` senior bucket.
+- **Excel: the Capital Stack sheet** (`@uwmd/excel`) — additive for every asset
+  class; one row per tranche with live debt-service formulas, a native-SUM
+  total-capitalization row, and a sizing block whose agree/verdict cells
+  quantize at the verifier's own table. `unverifiable` figures render as text,
+  never as formulas over blank cells.
+- **§4.23 relaxation (MU-06):** a mixed-use component MAY carry its own
+  `capital_stack`, validated by the same `CS-*` rules; a bare component
+  `debt_structure` stays refused, and `CC-03` stays top-level-only.
+- **Conformance:** the seven-scenario `capital-stack` group (215 total), and the
+  worked example `examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md`.
+
+The multi-period distribution waterfall (promote, hurdles, tiers, catch-up) is
+documented and deferred to a later phase (RFC 0026 §E).
+
 ### Added — mixed-use composition (RFC 0019, implemented 2026-08-19)
 
 `mixed_use` — the last `AssetClass` member without a pack — is now fully

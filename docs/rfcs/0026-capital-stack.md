@@ -1,7 +1,7 @@
 ---
 rfc: 0026
 title: A typed capital stack — tranches, preferred equity, and stack-aware sizing
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-08-18
 affects:
@@ -22,11 +22,20 @@ affects:
 > waterfall — promote, hurdles, tiers, catch-up). Phase 2 is captured here so its
 > shape is not lost, but it is **not specified in normative detail and not built**
 > by this RFC; it needs a multi-period distribution engine the format does not yet
-> have. Status moves to `implemented` when the `capital_stack` section, its
-> schema, `verifyCapitalStack`, the validator rules, the Excel emission, and the
-> conformance fixtures ship (see Reference implementation). Spun out of RFC 0019
-> (mixed-use composition), which deferred component-level debt here (0019
-> Decision 3).
+> have. Spun out of RFC 0019 (mixed-use composition), which deferred
+> component-level debt here (0019 Decision 3).
+>
+> **Implemented 2026-08-22:** the `capital_stack` format section (§4.24) +
+> `section-capital-stack.schema.json`; `verifyCapitalStack` and the `CS-*`
+> validator rules with the generalized `CC-03`; the Excel **Capital Stack**
+> sheet (per-tranche debt-service and sizing formulas quantized at the
+> verifier's own `CAPITAL_STACK_SIZING_DECIMALS`); the seven conformance
+> scenarios under `conformance/capital-stack/`; the §4.23 MU-06 relaxation
+> (a mixed-use component MAY carry its own stack); and the worked example
+> (`examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md`) whose stack foots and
+> whose sizing verifies. Phase 2 (the distribution waterfall) remains
+> documented and deferred, its boundary enforced by
+> `CS-WATERFALL-UNSUPPORTED`.
 
 ## Summary
 

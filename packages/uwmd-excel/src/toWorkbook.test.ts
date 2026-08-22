@@ -52,6 +52,10 @@ const EXAMPLES = resolve(__dirname, '../../../examples');
 
 const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
   { file: 'Parkview-Apts-Glendale-AZ.uwx.md', layout: MULTIFAMILY_LAYOUT },
+  // The RFC 0026 worked example: a multifamily deal financed by a four-layer
+  // stack. It runs the standard multifamily suite here; its Capital Stack
+  // sheet is asserted separately below.
+  { file: 'Agave-Court-Apts-Scottsdale-AZ.uwx.md', layout: MULTIFAMILY_LAYOUT },
   { file: 'Riverside-Office-Phoenix-AZ.uwx.md', layout: OFFICE_LAYOUT },
   { file: 'Cactus-Crossing-Retail-Mesa-AZ.uwx.md', layout: RETAIL_LAYOUT },
   { file: 'Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md', layout: INDUSTRIAL_LAYOUT },
@@ -253,6 +257,35 @@ for (const { file, layout } of CASES) {
     });
   });
 }
+
+// ─── Capital stack (RFC 0026) — the worked example gains the sheet ───────────
+//
+// The sheet's formula-level behavior is covered by capital-stack.test.ts; this
+// asserts the example deal actually carries it (and that its stack-less peers
+// do not), so the worked example cannot drift away from the feature it exists
+// to demonstrate.
+
+describe('toWorkbook — capital stack on the worked example', () => {
+  it('the RFC 0026 example workbook carries a Capital Stack sheet with a verified-shape verdict', async () => {
+    const wb = await roundTrip('Agave-Court-Apts-Scottsdale-AZ.uwx.md');
+    const ws = wb.getWorksheet('Capital Stack');
+    expect(ws).toBeTruthy();
+    const labels = new Map<string, number>();
+    ws!.eachRow((row, idx) => {
+      const v = row.getCell(1).value;
+      if (typeof v === 'string') labels.set(v, idx);
+    });
+    // one row per tranche, the SUM total, and the live verdict
+    for (const label of ['senior', 'mezz', 'pref', 'common', 'Total Capitalization', 'Verdict']) {
+      expect(labels.has(label), label).toBe(true);
+    }
+  });
+
+  it('a stack-less example produces no Capital Stack sheet', async () => {
+    const wb = await roundTrip('Parkview-Apts-Glendale-AZ.uwx.md');
+    expect(wb.getWorksheet('Capital Stack')).toBeUndefined();
+  });
+});
 
 // ─── Mixed-use (RFC 0019) ────────────────────────────────────────────────────
 //
