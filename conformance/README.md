@@ -33,32 +33,76 @@ conformance/
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
 ├── lite/               UW Lite representation + deal-summary-v1 bridge
-    ├── fixtures/       Well-formed .uw.md Lite documents that must parse
-    │                     cleanly AND compile; each freezes five artifacts in
-    │                     expected/ (see below)
-    ├── malformed/      Parse-time errors (LITE_*) with <id>.expected.json
-    │                     declaring expected_codes; optional "must_parse": false
-    │                     asserts parseUWLite throws instead
-    ├── compile/        Documents that parse cleanly but must FAIL the bridge
-    │                     (LITE_COMPILE_*), same <id>.expected.json shape
-    ├── equivalence.json  Groups of fixtures that differ only along axes
-    │                     UW_LITE_SPEC_v1 §6 excludes; all must share one digest
-    └── expected/       Per fixture: <id>.canonical.json (RFC 8785 financial
-                          canonical form), <id>.digest.txt (sha256 over its exact
-                          UTF-8 bytes), <id>.rendered.uw.md (canonical rendering),
-                          <id>.compile.json + <id>.uwx.md (deal-summary-v1
-                          compilation), <id>.projection.json + <id>.projected.uw.md
-                          (UWX→Lite projection with its omission report)
-└── receipts/           Verification receipts (RFC 0016, spec/UW_RECEIPT_v1.md)
-    ├── issue/          <scenario>/{deal.uw.md|deal.uwx.md, expected-receipt.json}
-    │                     Issuance is deterministic apart from issued_at, which
-    │                     the runner stubs
-    ├── verify/         <scenario>/{deal.*, receipt.json, expected-verdict.json}
-    │                     expected-verdict.json declares one of verified /
-    │                     failed / unverifiable plus expected_codes (RCP-NN)
-    └── refuse/         <scenario>/{deal.*, expected.json} — issuance must throw
-                          a typed ReceiptError with expected_code, never emit a
-                          caveated receipt
+│   ├── fixtures/       Well-formed .uw.md Lite documents that must parse
+│   │                     cleanly AND compile; each freezes five artifacts in
+│   │                     expected/ (see below)
+│   ├── malformed/      Parse-time errors (LITE_*) with <id>.expected.json
+│   │                     declaring expected_codes; optional "must_parse": false
+│   │                     asserts parseUWLite throws instead
+│   ├── compile/        Documents that parse cleanly but must FAIL the bridge
+│   │                     (LITE_COMPILE_*), same <id>.expected.json shape
+│   ├── equivalence.json  Groups of fixtures that differ only along axes
+│   │                     UW_LITE_SPEC_v1 §6 excludes; all must share one digest
+│   └── expected/       Per fixture: <id>.canonical.json (RFC 8785 financial
+│                         canonical form), <id>.digest.txt (sha256 over its exact
+│                         UTF-8 bytes), <id>.rendered.uw.md (canonical rendering),
+│                         <id>.compile.json + <id>.uwx.md (deal-summary-v1
+│                         compilation), <id>.projection.json + <id>.projected.uw.md
+│                         (UWX→Lite projection with its omission report)
+├── receipts/           Verification receipts (RFC 0016, spec/UW_RECEIPT_v1.md)
+│   ├── issue/          <scenario>/{deal.uw.md|deal.uwx.md, expected-receipt.json}
+│   │                     Issuance is deterministic apart from issued_at, which
+│   │                     the runner stubs
+│   ├── verify/         <scenario>/{deal.*, receipt.json, expected-verdict.json}
+│   │                     expected-verdict.json declares one of verified /
+│   │                     failed / unverifiable plus expected_codes (RCP-NN)
+│   └── refuse/         <scenario>/{deal.*, expected.json} — issuance must throw
+│                         a typed ReceiptError with expected_code, never emit a
+│                         caveated receipt
+├── market-data/        Market data as an attributable UW document (RFC 0022)
+│   ├── valid/          <scenario>/{doc.uwx.md, expected.json} — a market-data
+│   │                     document parses to the expected identity/observations
+│   ├── reject/         <scenario>/{doc.uwx.md, expected.json} — parse must
+│   │                     refuse with the expected typed code (a market doc
+│   │                     carrying a deal_id, duplicate field paths, …)
+│   ├── resolve/        <scenario>/{case.json, deal.uwx.md, docs/, expected.json}
+│   │                     — selectCurrentMarketData over several documents:
+│   │                     most-recent as_of wins, ambiguity refuses, staleness
+│   │                     is reported rather than silently served
+│   └── promote/        <scenario>/{case.json, doc.uwx.md, expected.json} —
+│                         promoteMarketObservation writes an observation into a
+│                         deal with provenance and confidence preserved
+├── modules/            Declarative module manifests (see modules/README.md)
+│   ├── accept/         <id>.module.json — loadModuleManifest accepts the full
+│   │                     declared surface (calcs, agent layers, round_to, …)
+│   └── reject/         <id>.module.json + <id>.expected.json — malformed
+│                         manifests refuse with the expected typed code
+├── packages/           UW Deal Packages, RFC 0018 (see packages/README.md)
+│   ├── accept/         <id>.manifest.json + <id>.expected.json — manifest
+│   │                     validation accepts, including extension link types
+│   └── reject/         <id>.manifest.json + <id>.expected.json — dangling
+│                         links, duplicate member ids, … refuse with the
+│                         expected code; archive/zip invariants are asserted by
+│                         the runner without baselines
+├── composition/        Composable UWX documents (RFC 0021). The suite exists
+│   │                     to prove I-1: an externalized record and its inline
+│   │                     twin share one canonical form and one digest
+│   ├── resolve/        <scenario>/{record.uwx.md, parts/, inline.uwx.md,
+│   │                     expected.json} — resolution matches the inline twin
+│   │                     on canonical form + digest, never on source bytes
+│   ├── unresolved/     A missing fragment leaves the section externalized —
+│   │                     never a partial rent roll that still totals
+│   ├── reject/         One fixture per COMP-* refusal (dup key, count
+│   │                     mismatch, section mismatch, malformed part)
+│   ├── composite/      <scenario>/{case.json, expected.json} — graph shape,
+│   │                     depth bound, cycle detection, stale-vs-failed
+│   ├── inherit/        <scenario>/{case.json, expected.json} — nearest
+│   │                     ancestor wins; equidistant ancestors refuse
+│   ├── rollup/         <scenario>/{case.json, expected.json} — verifyRollup's
+│   │                     three-state verdict; a failed child short-circuits
+│   │                     before any arithmetic runs
+│   └── lite-projection/  The UWX→Lite projection names externalized sections
+│                         in its omission report and matches the inline twin
 └── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
@@ -73,10 +117,13 @@ conformance/
                           pre-RFC value exactly
 ```
 
-The `lite` and `receipts` suites are named rather than numbered: UW Lite is a
-*source representation* and a receipt is a *detached artifact*, neither is a
-protocol conformance tier. Both run by default; select one alone with
-`--tier=lite` or `--tier=receipts`.
+The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
+and `capital-stack` suites are named rather than numbered: UW Lite is a
+*source representation*, a receipt is a *detached artifact*, market data and
+deal packages are *companion document kinds*, module manifests and composition
+are *protocol machinery*, and the capital stack is a *verified section* — none
+is itself a protocol conformance tier. All run by default; select one alone
+with `--tier=<name>` (e.g. `--tier=lite`, `--tier=capital-stack`).
 
 Two receipt properties are asserted as invariants rather than baselines:
 
