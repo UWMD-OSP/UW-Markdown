@@ -116,8 +116,9 @@ where you need a script, not a UI.
 
 Skip it for: interactive editing.
 
-Thin wrapper over `@uwmd/core`. Not yet on npm — until it is, run it
-from a clone with `npm run cli -- <cmd>`.
+Thin wrapper over `@uwmd/core`. Published on npm as `@uwmd/cli` —
+`npx uwmd <cmd>` works with no clone; from a clone,
+`npm run cli -- <cmd>` runs it from source.
 
 ---
 
@@ -137,9 +138,13 @@ Skip it for: storing your data in. The `.uw.md` file remains the
 source of truth — the workbook is an export, not a roundtrip target
 in v1.
 
-Supports multifamily, office, retail, and industrial (the asset
-classes with a registered workbook layout); other classes land
-alongside their calc packs.
+Supports all ten asset classes. Mixed-use gets its own workbook shape
+— one footing operating statement per component plus a consolidation
+block that sums to the property NOI. A deal that states a
+`capital_stack` section gains a Capital Stack sheet: one row per
+tranche with live debt-service formulas, and a sizing block that
+recomputes every stated figure beside its stated value at the same
+quantum the core verifier compares at.
 
 ---
 

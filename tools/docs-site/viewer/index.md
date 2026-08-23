@@ -35,6 +35,8 @@ embedded viewer without leaving this page.
   <a href="/viewer/app/?sample=/viewer/samples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md" target="uwmd-reference-viewer">Retail</a>
   <a href="/viewer/app/?sample=/viewer/samples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md" target="uwmd-reference-viewer">Industrial</a>
   <a href="/viewer/app/?sample=/viewer/samples/Sonoran-Self-Storage-Peoria-AZ.uwx.md" target="uwmd-reference-viewer">Self-storage</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md" target="uwmd-reference-viewer">Mixed-use</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Agave-Court-Apts-Scottsdale-AZ.uwx.md" target="uwmd-reference-viewer">Capital stack</a>
 </nav>
 
 <div class="viewer-frame-shell">
