@@ -16,6 +16,8 @@ const files = [
   ['examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md', 'viewer/samples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md'],
   ['examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md', 'viewer/samples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md'],
   ['examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md', 'viewer/samples/Sonoran-Self-Storage-Peoria-AZ.uwx.md'],
+  ['examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md', 'viewer/samples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md'],
+  ['examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md', 'viewer/samples/Agave-Court-Apts-Scottsdale-AZ.uwx.md'],
   ['docs/downloads/templates/blank-screener.uw.md', 'downloads/templates/blank-screener.uw.md'],
   ['docs/downloads/templates/blank-analyst.uw.md', 'downloads/templates/blank-analyst.uw.md'],
   ['tools/web-viewer/index.html', 'downloads/programs/uwmd-viewer.html'],

@@ -45,6 +45,8 @@ npx uwmd init my-deal.uw.md --asset-class office --tier analyst
 - [Retail](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md)
 - [Industrial](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md)
 - [Self-storage](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md)
+- [Mixed-use (RFC 0019 components)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md)
+- [Capital stack (RFC 0026 senior + mezz + pref)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md)
 
 ## AI instruction files
 
