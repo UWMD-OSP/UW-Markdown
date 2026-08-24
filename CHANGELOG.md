@@ -41,8 +41,11 @@ and every schema are untouched.
 `total_nra_sqft`, and `land_area_*`. The nine other classes' size intensives are
 read by their calc packs and carried by their worked examples but are
 normatively undeclared, so every tool needing them re-derives the vocabulary
-from the packs. Closing it amends §4.1 and therefore needs an RFC; recorded
-under "Stubs / not implemented" in `docs/wiki/13-status.md`.
+from the packs. Written up as **RFC 0027** (`draft`), which proposes declaring
+the fields in §4.1 plus a normative per-class selection table in the protocol.
+Drafting it found three further consumers that never re-derived the mapping and
+are wrong today — the one-row `csv` read model, the §7.1 report cover, and the
+UW Lite bridge — all recorded in the RFC and in `docs/wiki/13-status.md`.
 
 ## [1.6.0] - 2026-08-22
 
