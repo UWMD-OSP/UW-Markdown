@@ -720,6 +720,27 @@ bus factor, personal security email, and no public RFC venue.
    compatibility hazard is the `csv` column contract, handled by appending
    `size_basis`/`size_quantity` rather than renaming `total_units`.
 
+   > **The `CC-13` severity question is settled (scanned 2026-08-24, Appendix
+   > A of the RFC): keep it a warning, and the reason is not the one expected.**
+   > Escalating to error at `full_underwrite` would newly refuse 6 corpus
+   > documents, all conformance fixtures, all because they have no property
+   > section at all. Add the precondition that `CC-13` fires only when a
+   > property section exists and the escalation refuses nothing — so the
+   > *applicability preconditions* decide this, not the severity. The scan also
+   > showed `deal_stage` cannot carry the gate: `full_underwrite` is boilerplate
+   > in minimal fixtures, not a completeness claim. All eleven UWX worked
+   > examples already state their primary size field; 37 of 67 in-scope
+   > documents that don't are conformance fixtures, none of them examples.
+   >
+   > Two spin-offs. **Nothing enforces that the property section exists** —
+   > §4.1 says it is required at all stages, and 22 in-scope corpus documents
+   > omit it and still validate `clean`/`warnings`. That wants its own rule and
+   > probably its own RFC; `CC-13` deliberately does not absorb it. And
+   > **conformance would not have caught the escalation**: Tier-1 `malformed`
+   > matches expected codes as a subset and Tier-1 valid fixtures assert nothing
+   > about validation, so a new error code would flip `uwmd validate` to exit 1
+   > on six fixtures with the suite still green.
+
 5. ~~**Lite percent normalization loses decimal exactness.**~~ **Accepted and
    implemented 2026-08-16 as
    [RFC 0025](../rfcs/0025-lite-percent-decimal-exactness.md); shipped in
