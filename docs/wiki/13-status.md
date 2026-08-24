@@ -387,11 +387,13 @@ not core gaps.
   > exercised, by the CLI smoke tests in `packages/uwmd-cli`, which do not
   > count toward this package's number.
 
-  The **web-editor** has its own Vitest suite (63 tests, 8 files): the
+  The **web-editor** has its own Vitest suite (69 tests, 8 files): the
   `runEdit()` chokepoint + catalog helpers (node), jsdom component tests for the
   footed surfaces and inline-remediation wiring, receipt issuance/verification
   incl. the stale-vs-failed distinction and a forced Web-Crypto path, an
-  axe-core a11y smoke check, and the metric strip's asset-class awareness (T14).
+  axe-core a11y smoke check, and asset-class awareness on **both** the metric
+  strip (T14) and the input side — the quick-edit field grid, pinned against
+  each pack's `property.*` reads.
 
   > **Tests are type-checked by `npm run typecheck:tests`, not by the build.**
   > `tsconfig.json` still excludes `src/**/*.test.ts` and Vitest still
@@ -439,6 +441,18 @@ not core gaps.
   RFC 0022 §5 as an institution-private preference set nobody has yet asked to
   exchange, and portfolio-level shared assumptions belong to RFC 0021's
   `inherited_assumption` instead.
+- **Format spec §4.1 names only multifamily's size intensives.** The property
+  payload lists `total_units`, `total_nra_sqft`, `land_area_sqft`, and
+  `land_area_acres`. The nine other classes' denominators —
+  `rentable_square_feet` (office, industrial), `gross_leasable_area` (retail),
+  `net_rentable_square_feet` + `rentable_units` (self-storage), `keys`
+  (hospitality), `total_beds` (student, senior), and
+  `gross_acres`/`usable_acres`/`entitled_units` (land) — are read by their calc
+  packs and carried by their worked examples but are **normatively undeclared**.
+  Every tool that has needed them has re-derived the vocabulary from the packs
+  (the Excel layouts, and now the web editor's field catalog), which is exactly
+  the drift the spec exists to prevent. Closing it is an RFC: it amends §4.1.
+  Found 2026-08-23 while making the editor's field grid class-aware.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
   RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
   reference implementation exists.
@@ -650,12 +664,41 @@ bus factor, personal security email, and no public RFC venue.
    > seven omitted paths against its inline twin's ten, and a consumer diffing
    > the two would conclude it had lost *less* while it was missing an entire
    > rent roll.
-4. **Web-editor field catalog asset-class awareness.** `fieldsForSection()`
-   filters by `section_id` only, so a land deal is offered a "Total units" input
-   and a student-housing deal gets one too, though that class sizes per bed. The
-   metric strip is already class-aware and pinned (T14); this is the input side.
-   Needs the per-class field mapping decided first — hiding a field users need is
-   worse than showing a spare one, so default to opt-out.
+4. ~~**Web-editor field catalog asset-class awareness.**~~ **Done 2026-08-23.**
+   `fieldsForSection(section_id, asset_class)` now narrows the quick-edit grid,
+   and the catalog carries the size intensive for every class rather than
+   multifamily's alone — the bug had two halves, and only one of them was the
+   one written down here. A land deal was indeed offered "Total units"; the
+   *other* half is that an office, retail, industrial, self-storage,
+   hospitality, or land deal had been offered **no** size input at all, because
+   `rentable_square_feet` / `gross_leasable_area` / `net_rentable_square_feet` /
+   `keys` / `gross_acres` were never in the catalog. The denominator of every
+   per-unit metric on the strip was reachable only through the collapsed
+   generic all-fields editor.
+
+   The filter is **opt-out**, as this item asked: a field is dropped only when
+   the class is known *and* the field names other classes, so an unset or
+   unrecognized `asset_class` sees everything, class-independent fields
+   (`year_built`, `parking_spaces`) are never scoped, and `mixed_use` is
+   deliberately unfiltered — a mixed-use record may carry any use's intensive,
+   and its per-component figures live in the `components` section anyway.
+   Nothing became unreachable: `GenericFieldEditor` still surfaces every scalar
+   leaf.
+
+   > **The pin is a coverage direction, not an equality.** `catalog.test.ts`
+   > walks each pack's formulas for `property.*` reads and asserts the grid
+   > offers every one of them to that class — the grid must never omit an input
+   > the metric strip divides by. Equality would be wrong: senior housing
+   > states `total_beds` alongside the `total_units` its pack actually uses. The
+   > assertion also counts what it checked and fails at zero, because a
+   > formula-scanning loop that matches nothing passes silently.
+   >
+   > A second thing surfaced: `spec/UW_FORMAT_SPEC_v1.md` §4.1's property
+   > payload names only `total_units` / `total_nra_sqft` / `land_area_*`. Every
+   > other class intensive is established by the packs and the worked examples
+   > and appears nowhere in the normative section. That is a spec gap, not a
+   > code one, and closing it is normative work — see the note under
+   > "Stubs / not implemented".
 
 ### Small, unblocked, high value per hour
 

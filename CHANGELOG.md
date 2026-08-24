@@ -6,6 +6,44 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Fixed — the web editor's quick-edit grid is asset-class aware
+
+`fieldsForSection()` in `tools/web-editor` filtered by `section_id` alone, and
+the catalog carried only multifamily's size intensives. Two consequences: a land
+parcel was offered a "Total units" input, and an office, retail, industrial,
+self-storage, hospitality, or land deal was offered **no** size input at all —
+the denominator of every per-unit metric on the strip was reachable only through
+the collapsed generic all-fields editor.
+
+- The catalog now carries the size intensive for all ten classes
+  (`rentable_square_feet`, `gross_leasable_area`, `net_rentable_square_feet` +
+  `rentable_units`, `keys`, `total_beds`, `gross_acres` / `usable_acres` /
+  `entitled_units`, `total_units`, `total_nra_sqft`), each scoped to the classes
+  whose packs and worked examples use it.
+- `fieldsForSection(section_id, asset_class)` narrows the grid **opt-out**: a
+  field is dropped only when the class is known *and* the field names other
+  classes, so an unset or unrecognized class sees everything,
+  class-independent fields (`year_built`, `parking_spaces`) are never scoped,
+  and `mixed_use` is unfiltered by design. Nothing became unreachable —
+  `GenericFieldEditor` still surfaces every scalar leaf.
+- Pinned by a coverage assertion, not an equality: every `property.*` path a
+  class's calc pack reads must be offered to that class. Web-editor suite
+  63 → 69 tests.
+
+No published package changes; `tools/web-editor` is private. Format, protocol,
+and every schema are untouched.
+
+### Known gap — surfaced by the above
+
+`spec/UW_FORMAT_SPEC_v1.md` §4.1's property payload names only `total_units`,
+`total_nra_sqft`, and `land_area_*`. The nine other classes' size intensives are
+read by their calc packs and carried by their worked examples but are
+normatively undeclared, so every tool needing them re-derives the vocabulary
+from the packs. Closing it amends §4.1 and therefore needs an RFC; recorded
+under "Stubs / not implemented" in `docs/wiki/13-status.md`.
+
 ## [1.6.0] - 2026-08-22
 
 ### Released

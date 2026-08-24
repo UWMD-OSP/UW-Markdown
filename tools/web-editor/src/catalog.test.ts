@@ -14,8 +14,12 @@ import {
   fieldsForSection,
   displayName,
   ASSET_CLASSES,
+  NUMERIC_SECTION_FIELDS,
 } from './catalog.js';
-import { ASSET_CLASSES as CORE_ASSET_CLASSES } from '@uwmd/core/browser';
+import {
+  ASSET_CLASSES as CORE_ASSET_CLASSES,
+  getPackForAssetClass,
+} from '@uwmd/core/browser';
 
 describe('catalog — asset classes have not drifted from the format', () => {
   it('offers exactly the asset classes the format defines', () => {
@@ -127,6 +131,69 @@ describe('fieldsForSection / displayName', () => {
 
   it('returns an empty list for a section with no editable numeric fields', () => {
     expect(fieldsForSection('no_such_section')).toEqual([]);
+  });
+
+  it('offers each class its own size intensive and not another class’s', () => {
+    const paths = (id: string, cls: string) => fieldsForSection(id, cls).map((f) => f.path);
+
+    expect(paths('property', 'office')).toContain('rentable_square_feet');
+    expect(paths('property', 'office')).not.toContain('total_units');
+    expect(paths('property', 'land')).toEqual(
+      expect.arrayContaining(['gross_acres', 'usable_acres', 'entitled_units']),
+    );
+    expect(paths('property', 'land')).not.toContain('total_units');
+    expect(paths('property', 'hospitality')).toContain('keys');
+    expect(paths('property', 'student_housing')).toContain('total_beds');
+    expect(paths('property', 'self_storage')).toEqual(
+      expect.arrayContaining(['net_rentable_square_feet', 'rentable_units']),
+    );
+    expect(paths('property', 'retail')).toContain('gross_leasable_area');
+  });
+
+  it('keeps class-independent fields in every class’s grid', () => {
+    for (const cls of ASSET_CLASSES) {
+      const paths = fieldsForSection('property', cls).map((f) => f.path);
+      expect(paths).toContain('year_built');
+      expect(paths).toContain('parking_spaces');
+    }
+  });
+
+  it('falls back to the full list when the class is unset, unknown, or mixed', () => {
+    // Opt-out by design: showing a spare input is a smaller harm than hiding
+    // one the analyst needs, and a mixed-use record may carry any use's
+    // intensive. Anything filtered out is still reachable in the generic
+    // all-fields editor.
+    const all = fieldsForSection('property').map((f) => f.path);
+    expect(all.length).toBe(NUMERIC_SECTION_FIELDS.filter((f) => f.section_id === 'property').length);
+    expect(fieldsForSection('property', '').map((f) => f.path)).toEqual(all);
+    expect(fieldsForSection('property', 'spaceport').map((f) => f.path)).toEqual(all);
+    expect(fieldsForSection('property', 'mixed_use').map((f) => f.path)).toEqual(all);
+  });
+
+  it('offers every property field its class’s calc pack actually reads', () => {
+    // The invariant that matters: the quick-edit grid must never omit an input
+    // the metric strip divides by. (The converse is not required — senior
+    // housing states beds alongside the units its pack uses.)
+    let checked = 0;
+    for (const cls of ASSET_CLASSES) {
+      const pack = getPackForAssetClass(cls);
+      if (!pack) continue;
+      const read = new Set<string>();
+      for (const calc of pack.calculations ?? []) {
+        for (const m of calc.formula.matchAll(/\bproperty\.([a-z_]+)/g)) read.add(m[1]);
+      }
+      const offered = new Set(fieldsForSection('property', cls).map((f) => f.path));
+      for (const path of read) {
+        expect(
+          offered.has(path),
+          `${cls}: pack reads property.${path} but the ${cls} field grid does not offer it`,
+        ).toBe(true);
+        checked += 1;
+      }
+    }
+    // Guards the loop against passing vacuously if the packs stop naming
+    // property paths (or the formula scan silently stops matching).
+    expect(checked).toBeGreaterThanOrEqual(8);
   });
 
   it('maps known section ids to display names and falls back to the id', () => {

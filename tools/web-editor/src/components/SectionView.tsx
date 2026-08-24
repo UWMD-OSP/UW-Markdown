@@ -80,6 +80,10 @@ export function SectionView(props: {
   // never re-authored), so a fix is one glance from the offending field.
   const sectionIssues = validation.issues.filter((i) => i.section === activeId);
 
+  // The quick-edit grid is class-aware: an office deal is offered rentable
+  // square feet, a land parcel acres, and neither is offered the other's.
+  const assetClass = String((parsed.frontmatter as { asset_class?: string }).asset_class ?? '');
+
   return (
     <div className="max-w-3xl">
       <h2 className="font-display text-xl text-accent">{displayName(activeId)}</h2>
@@ -89,6 +93,7 @@ export function SectionView(props: {
         <BlockView
           key={variant ?? 'default'}
           sectionId={activeId}
+          assetClass={assetClass}
           variant={variant}
           block={block}
           dispatch={dispatch}
@@ -172,15 +177,16 @@ function ProseView({ prose }: { prose: string | undefined }) {
 
 function BlockView(props: {
   sectionId: string;
+  assetClass: string;
   variant: string | undefined;
   block: UWBlock;
   dispatch: Dispatch;
   issues: ValidationMessage[];
 }) {
-  const { sectionId, variant, block, dispatch, issues } = props;
+  const { sectionId, assetClass, variant, block, dispatch, issues } = props;
   const [showJson, setShowJson] = useState(false);
   const meta = block.meta;
-  const fields = fieldsForSection(sectionId);
+  const fields = fieldsForSection(sectionId, assetClass);
   // Paths a section model foots automatically — lock them out of the generic
   // scalar editor so each total has exactly one editing path.
   const lockedPaths = DERIVED_PATHS[sectionId]?.(block);

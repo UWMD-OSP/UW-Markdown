@@ -60,6 +60,9 @@ export const ASSET_CLASSES = [
   'land',
 ] as const;
 
+/** The asset classes this editor knows — mirrors the packs' `asset_classes`. */
+export type AssetClass = (typeof ASSET_CLASSES)[number];
+
 export const DEAL_STAGES = [
   'screening',
   'term_sheet',
@@ -111,11 +114,104 @@ export interface NumericSectionField {
   path: string; // dot-path inside block.content
   label: string;
   kind: NumericFieldKind;
+  /** Asset classes this field belongs to. Omitted means "every class" — the
+   *  field is class-independent (year built, parking) and is always offered.
+   *  When present, the field is offered only to a deal of one of these classes,
+   *  to an unrecognized/unset class, and to `mixed_use` (see
+   *  `fieldsForSection`). `catalog.test.ts` pins the coverage direction that
+   *  matters: every `property.*` path a class's calc pack reads is offered to
+   *  that class, so the quick-edit grid can never omit an input the metric
+   *  strip needs. The reverse is not required — a class may also carry a size
+   *  figure no metric divides by (senior housing states beds alongside units).
+   */
+  asset_classes?: readonly AssetClass[];
 }
 
 export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
-  { section_id: 'property', path: 'total_units', label: 'Total units', kind: 'count' },
-  { section_id: 'property', path: 'total_nra_sqft', label: 'Total NRA (sqft)', kind: 'count' },
+  // The size intensive — the denominator of every per-unit metric — is named
+  // differently by each asset class, so each one is scoped. Before this was
+  // class-aware a land deal was offered "Total units" and an office deal was
+  // offered nothing at all (its `rentable_square_feet` fell through to the
+  // generic escape hatch).
+  {
+    section_id: 'property',
+    path: 'total_units',
+    label: 'Total units',
+    kind: 'count',
+    asset_classes: ['multifamily', 'senior_housing', 'student_housing'],
+  },
+  {
+    section_id: 'property',
+    path: 'total_nra_sqft',
+    label: 'Total NRA (sqft)',
+    kind: 'count',
+    asset_classes: ['multifamily'],
+  },
+  {
+    section_id: 'property',
+    path: 'rentable_square_feet',
+    label: 'Rentable area (sqft)',
+    kind: 'count',
+    asset_classes: ['office', 'industrial'],
+  },
+  {
+    section_id: 'property',
+    path: 'gross_leasable_area',
+    label: 'Gross leasable area (sqft)',
+    kind: 'count',
+    asset_classes: ['retail'],
+  },
+  {
+    section_id: 'property',
+    path: 'net_rentable_square_feet',
+    label: 'Net rentable area (sqft)',
+    kind: 'count',
+    asset_classes: ['self_storage'],
+  },
+  {
+    section_id: 'property',
+    path: 'rentable_units',
+    label: 'Rentable units',
+    kind: 'count',
+    asset_classes: ['self_storage'],
+  },
+  {
+    section_id: 'property',
+    path: 'keys',
+    label: 'Keys',
+    kind: 'count',
+    asset_classes: ['hospitality'],
+  },
+  {
+    section_id: 'property',
+    path: 'total_beds',
+    label: 'Total beds',
+    kind: 'count',
+    asset_classes: ['student_housing', 'senior_housing'],
+  },
+  {
+    section_id: 'property',
+    path: 'gross_acres',
+    label: 'Gross acres',
+    kind: 'number',
+    asset_classes: ['land'],
+  },
+  {
+    section_id: 'property',
+    path: 'usable_acres',
+    label: 'Usable acres',
+    kind: 'number',
+    asset_classes: ['land'],
+  },
+  {
+    section_id: 'property',
+    path: 'entitled_units',
+    label: 'Entitled units',
+    kind: 'count',
+    asset_classes: ['land'],
+  },
+  // Class-independent: every class may carry these, land included (a parcel can
+  // hold an improvement slated for demolition), so neither is scoped.
   { section_id: 'property', path: 'year_built', label: 'Year built', kind: 'count' },
   { section_id: 'property', path: 'parking_spaces', label: 'Parking spaces', kind: 'count' },
   // rent_roll totals (GPR, in-place rent, occupancy) are footed from line items
@@ -133,8 +229,30 @@ export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   // are owned by the OperatingStatementModel surface — see that component.
 ];
 
-export function fieldsForSection(id: string): readonly NumericSectionField[] {
-  return NUMERIC_SECTION_FIELDS.filter((f) => f.section_id === id);
+/** The editable numeric fields for a section, narrowed to an asset class.
+ *
+ *  The filter is deliberately **opt-out**: showing a spare input is a smaller
+ *  harm than hiding one the analyst needs, so a field is dropped only when the
+ *  class is known *and* the field explicitly names other classes. Three cases
+ *  therefore see the full list — an unset `asset_class`, one this build does
+ *  not recognize, and `mixed_use`, whose record may legitimately carry any
+ *  use's intensive (its per-component figures live in the `components` section
+ *  and are edited there).
+ *
+ *  Nothing is unreachable either way: `GenericFieldEditor` still surfaces every
+ *  scalar leaf in the block, so this only governs the curated quick-edit grid.
+ */
+export function fieldsForSection(
+  id: string,
+  assetClass?: string,
+): readonly NumericSectionField[] {
+  const inSection = NUMERIC_SECTION_FIELDS.filter((f) => f.section_id === id);
+  if (!isKnownAssetClass(assetClass) || assetClass === 'mixed_use') return inSection;
+  return inSection.filter((f) => !f.asset_classes || f.asset_classes.includes(assetClass));
+}
+
+function isKnownAssetClass(value: string | undefined): value is AssetClass {
+  return value !== undefined && (ASSET_CLASSES as readonly string[]).includes(value);
 }
 
 // ─── Tiny path helpers (UI-side only; edits go through applyEdit) ────────────

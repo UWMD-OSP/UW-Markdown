@@ -17,8 +17,11 @@ import { SectionView } from './SectionView.js';
 
 afterEach(cleanup);
 
-function setup(extraIssues: ValidationMessage[]) {
-  const parsed = parseUWFile(generateBlankUWFile({ assetClass: 'multifamily' }), { strict: false });
+function setup(
+  extraIssues: ValidationMessage[],
+  assetClass: 'multifamily' | 'office' | 'land' = 'multifamily',
+) {
+  const parsed = parseUWFile(generateBlankUWFile({ assetClass }), { strict: false });
   const validation = validateUWFile(parsed);
   validation.issues.push(...extraIssues);
   return { parsed, validation };
@@ -67,5 +70,42 @@ describe('SectionView — inline validation', () => {
     );
 
     expect(queryByText(new RegExp(REMEDIATION))).toBeNull();
+  });
+});
+
+describe('SectionView — the quick-edit grid is asset-class aware', () => {
+  it('offers a multifamily deal units and an office deal rentable area', () => {
+    const mf = setup([]);
+    const { getByLabelText, queryByLabelText } = render(
+      <SectionView parsed={mf.parsed} activeId="property" dispatch={vi.fn()} validation={mf.validation} />,
+    );
+    expect(getByLabelText('Total units')).toBeTruthy();
+    expect(queryByLabelText('Rentable area (sqft)')).toBeNull();
+
+    cleanup();
+
+    const office = setup([], 'office');
+    const rendered = render(
+      <SectionView
+        parsed={office.parsed}
+        activeId="property"
+        dispatch={vi.fn()}
+        validation={office.validation}
+      />,
+    );
+    expect(rendered.getByLabelText('Rentable area (sqft)')).toBeTruthy();
+    expect(rendered.queryByLabelText('Total units')).toBeNull();
+    // Class-independent fields stay in every grid.
+    expect(rendered.getByLabelText('Year built')).toBeTruthy();
+  });
+
+  it('offers a land parcel acres rather than a unit count', () => {
+    const { parsed, validation } = setup([], 'land');
+    const { getByLabelText, queryByLabelText } = render(
+      <SectionView parsed={parsed} activeId="property" dispatch={vi.fn()} validation={validation} />,
+    );
+    expect(getByLabelText('Gross acres')).toBeTruthy();
+    expect(getByLabelText('Entitled units')).toBeTruthy();
+    expect(queryByLabelText('Total units')).toBeNull();
   });
 });
