@@ -220,8 +220,26 @@ field would have forced a wrong answer here.
 **Severity: warning, not error.** A screening-stage deal legitimately does not
 know its RSF yet, and the `gaps` / provisional machinery (§III.6a) already owns
 "we don't know this yet". An error here would refuse documents the cascade is
-designed to accept. `CC-13` does not fire for `mixed_use` (§XI.2) or for an
-unrecognized asset class (§XI.3).
+designed to accept.
+
+**Applicability.** `CC-13` fires only when all of the following hold. The corpus
+scan in Appendix A produced this list: the first two conditions were in the
+original draft, the last three were not, and without them the rule fires on
+documents it has no business judging.
+
+1. The source is a **UWX record**, not a UW Lite summary. Lite states size in
+   its own grammar (`- Total units: 48`), and 46 of the 149 corpus documents are
+   Lite.
+2. The document's profile is a **deal record**. Market-data documents (RFC 0022)
+   and the other non-deal profiles have no property section by construction —
+   20 corpus documents.
+3. The asset class is **recognized** (§XI.3) and is **not `mixed_use`** (§XI.2).
+4. The document **has a property section**. If it does not, that is a different
+   defect with a different remedy, and `CC-13` would give the wrong diagnostic —
+   "state your RSF" when the answer is "there is no property block". See
+   Unresolved question 5.
+5. The property section is **not externalized** (RFC 0021). The directive is not
+   the section; the resolved record is where the field lives.
 
 `CC-13` joins the cross-section family rather than `FV-*` because it is keyed on
 `frontmatter.asset_class`, exactly as `CC-11` is.
@@ -401,13 +419,24 @@ underwriting format cannot resolve a denominator by search order.
 
 ## Unresolved questions
 
-1. **Should `CC-13` ever be an error?** It is proposed as a warning because the
-   cascade accepts incomplete early-stage documents. But a deal at
-   `deal_stage: credit_approval` with no stated size is arguably not a deal.
-   Tying severity to `deal_stage` — warning before `full_underwrite`, error at
-   and after — is the obvious refinement, and `DQ-04` already reads `deal_stage`
-   for exactly this kind of readiness gate. Deferred because it needs a corpus
-   scan to confirm nothing real would newly refuse.
+1. **Should `CC-13` ever be an error?** ~~Deferred pending a corpus scan.~~
+   **Scanned 2026-08-24 — see Appendix A.** The answer is *keep it a warning*,
+   but the scan changed the question. Escalating to error at `full_underwrite`
+   would newly refuse **6** corpus documents — all conformance fixtures, and all
+   for the same reason: they have no property section at all, so they would be
+   caught by the wrong rule rather than by a real completeness failure. Add
+   applicability condition 4 (§C — fire only when a property section exists) and
+   the escalation newly refuses **nothing**.
+
+   Which is the actual finding: **the applicability preconditions decide this,
+   not the severity.** With them in place the `deal_stage` escalation is
+   demonstrably safe against the corpus — and, for the same reason, unsupported
+   by it. The corpus contains no real late-stage deal that omits its size, so
+   the scan can only say the escalation would break nothing today, not that it
+   is right. That makes it a policy call rather than an evidence-backed one, and
+   this RFC declines to make it: the rule ships as a warning, and an institution
+   wanting a hard gate already has `INCOMPLETE_DATA_POLICIES`, which expresses
+   exactly this without spending a severity level on it.
 2. **Does `land` need `land_area_acres` deprecated, or just disambiguated?**
    This RFC disambiguates. Deprecating is cleaner but affects improved
    properties that legitimately use it, so it is left alone pending evidence
@@ -421,6 +450,13 @@ underwriting format cannot resolve a denominator by search order.
    Reading through `resolveValue` would let a class default supply a size. That
    seems wrong — a deal's size is a fact about the asset, never a default — but
    it deserves an explicit decision rather than an implicit one.
+5. **Nothing enforces that the property section exists.** §4.1 says the section
+   is required for all pipeline stages. The scan found **22** in-scope corpus
+   documents with no property section at all, validating `clean` or `warnings`.
+   That is a real gap, it is not this RFC's gap, and `CC-13` deliberately does
+   not absorb it (§C condition 4): a rule that reports a missing size field when
+   the whole section is absent sends the reader to the wrong place. It wants its
+   own rule, and probably its own RFC.
 
 ## Prior art
 
@@ -440,3 +476,61 @@ mapping be explicit.
 **IANA-style registries** are the model for §XI.3's closure rule: the table is
 closed for 1.x and extended by a documented process (RFC 0003), rather than by
 implementations inventing entries and hoping they agree.
+
+## Appendix A — Corpus scan (2026-08-24)
+
+Run against every `.uwx.md` / `.uw.md` under `examples/` and `conformance/` on
+`main` at `3d8e599`. Each document's primary size field was resolved through the
+§XI table, and each was re-validated through `validateUWFile` to record whether
+it is *already* at `errors` — in which case an error-severity `CC-13` changes
+nothing for it.
+
+**Population: 149 files.** 82 are out of scope for `CC-13`, and the reasons are
+what produced §C's applicability list: 46 UW Lite sources, 16 non-deal-record
+profiles, 13 `mixed_use`, 4 market-data documents, 2 with no `asset_class`, 1
+with an unrecognized class. **67 in scope** — 30 state their primary size field,
+37 do not.
+
+| Policy | Newly warned | Newly refused |
+|---|---|---|
+| Warning always (as drafted) | 37 | 0 |
+| Error at `deal_stage >= full_underwrite` | 37 | **6** |
+| Warning always, **+ §C condition 4** | 15 | 0 |
+| Error at the gate, **+ §C condition 4** | 15 | **0** |
+
+**All 37 are conformance fixtures. Not one worked example fires.** All eleven
+UWX example deal records state their primary size field — multifamily 48 units,
+retail 95,000 GLA, industrial 220,000 RSF, student housing 600 beds, senior
+housing 120 units, office 42,500 RSF, hospitality 142 keys, self-storage 82,000
+NRSF, land 160 gross acres. The corpus already obeys the rule; the spec is what
+fails to declare it.
+
+**The six that would newly refuse** without condition 4 are
+`capital-stack/senior-reconciles-debt-structure/agree`,
+`tier-2-editor/section-supersede-risk-rating/{before,after}`, and
+`tier-3-calc-host/{dscr-from-section,hospitality-revpar,senior-housing-care-revenue-ratio}`.
+Every one has **no property section at all** — they are minimal fixtures
+carrying only the sections their assertion needs. Their
+`deal_stage: full_underwrite` is boilerplate, not a claim of completeness, and
+that is the strongest argument against reading severity off `deal_stage`: in
+this corpus, that field does not mean what the escalation would need it to mean.
+
+Three further notes from the scan, none blocking:
+
+- **Conformance would not have caught the escalation.** Tier-1 `malformed`
+  matches expected codes as a *subset*, so extra codes pass, and Tier-1 valid
+  fixtures compare parsed JSON and rendered output while asserting nothing about
+  validation. A new error code would have flipped `uwmd validate` to exit 1 on
+  six fixtures with the suite still green. Any implementation of `CC-13` should
+  pin overall status, not just codes.
+- **Some fixtures double-wrap their fence body,** writing
+  `{section_id, _meta, content}` where the parser expects the content, so the
+  payload lands at `content.content`. A first pass that did not unwrap reported
+  14 false "missing" hits, including a land fixture that plainly states
+  `gross_acres: 160`. Worth knowing before anyone writes a linter over the
+  corpus.
+- **`examples/Parkview-Apts-Glendale-AZ.uw.md`** is a Lite summary that
+  `detectUWSourceRepresentation` correctly reports as `uw-lite-markdown`. A scan
+  keying on the `.uw.md` extension rather than on detection scores it as a
+  structured record with no property section. `CC-13` must key on detection —
+  condition 1.
