@@ -11,7 +11,9 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy } from './protocol.js';
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE } from './protocol.js';
+import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
+import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps.js';
 
@@ -143,6 +145,7 @@ export function validateUWFile(
   checkCrossSectionConsistency(parsed, issues);
   checkComponents(parsed, issues);
   checkCapitalStack(parsed, issues);
+  checkSizeIntensive(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -685,6 +688,63 @@ function checkStackContent(
 // The top-level capital_stack section, plus any mixed-use component's own
 // stack (§4.23: a component MAY carry a capital_stack; its bare debt_structure
 // stays refused as MU-06). A no-op for documents carrying neither.
+// ─── §5.3 CC-13 — the primary size field (RFC 0027) ──────────────────────────
+
+// CC-13 warns when the property section omits the class's primary size field
+// (Protocol §XIII.1) — always a warning, never an error: a screening-stage
+// deal legitimately does not know its RSF yet, and an institution wanting a
+// hard gate has INCOMPLETE_DATA_POLICIES. The five applicability
+// preconditions are normative (§5.3): each guards against the rule judging a
+// document whose missing size is some *other* rule's diagnosis.
+function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  // 1. UWX record, not a compiled UW Lite summary — Lite states size in its
+  //    own grammar, and its compiled envelope carries the x_uw_lite_source
+  //    extension (surfaced under `extensions` by fromUWEnvelope, under
+  //    `sections` by a re-parse of the serialized UWX).
+  if (parsed.sections[UW_LITE_SOURCE_EXTENSION] || parsed.extensions?.[UW_LITE_SOURCE_EXTENSION]) return;
+
+  // 2. Deal-record profile only. An absent profile is the plain underwriting
+  //    record; any other declared profile has no property section by design.
+  const profile = (parsed.frontmatter as Record<string, unknown>)['document_profile'];
+  if (profile != null && profile !== DEAL_UNDERWRITING_PROFILE) return;
+
+  // 3. Recognized class with a primary size field (not mixed_use, §XIII.2;
+  //    not an unrecognized class, §XIII.3).
+  const assetClass = parsed.frontmatter.asset_class;
+  if (typeof assetClass !== 'string') return;
+  const intensive = getSizeIntensive(assetClass);
+  if (!intensive) return;
+
+  // 4. A property section exists — a missing section is a different defect
+  //    with a different remedy (RFC 0027, unresolved question 5).
+  const property =
+    getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
+  if (!property) return;
+
+  // 5. Not externalized (RFC 0021) — the directive is not the section.
+  //    Presence of the key is the whole test, as in the Lite projection.
+  if (
+    EXTERNAL_ANNOTATION_KEY in (property.annotation as Record<string, unknown>) ||
+    EXTERNAL_ANNOTATION_KEY in property.content
+  ) return;
+
+  // §VIII.2's unwrap rule, exactly as the calc evaluator applies it: a block
+  // storing the envelope shape keeps its payload one level down at `content`.
+  // CC-13 judges the payload the pack divides by — never the wrapper.
+  const payload =
+    'content' in property.content
+      ? (property.content as Record<string, unknown>)['content']
+      : property.content;
+  const value = deepGet(payload, intensive.path);
+  if (typeof value === 'number' && Number.isFinite(value)) return;
+
+  issues.push({
+    code: 'CC-13', severity: 'warning', section: 'property', field: intensive.path,
+    message: `CC-13: the property section does not state ${assetClass}'s primary size field "${intensive.path}" (Protocol §XIII.1)`,
+    value: value ?? null,
+  });
+}
+
 function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const cs = getSection(parsed, 'capital_stack');
   if (cs) checkStackContent(cs.content as Record<string, unknown>, 'capital_stack', '', issues);

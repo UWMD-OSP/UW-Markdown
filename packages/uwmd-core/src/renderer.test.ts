@@ -124,3 +124,68 @@ asset_class: multifamily
     }
   });
 });
+
+// ─── RFC 0027 — the class's own size in every read model ─────────────────────
+
+const officeDoc = `---
+uw_version: "1.1"
+deal_id: "uw_2026_OFFICE"
+deal_name: "Office Size Fixture"
+created: "2026-08-25T00:00:00Z"
+last_modified: "2026-08-25T00:00:00Z"
+property_address: "42 Camelback Rd"
+city: "Phoenix"
+state: "AZ"
+zip: "85012"
+asset_class: office
+---
+
+\`\`\`json uw:section=property source=manual ts=2026-08-25T00:00:00Z v=1 confidence=high
+{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-08-25T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "rentable_square_feet": 42500, "year_built": 1998 }
+\`\`\`
+`;
+
+describe('render — size intensives (RFC 0027)', () => {
+  it('csv appends size_basis/size_quantity and keeps total_units in place', () => {
+    const parsed = parseUWFile(officeDoc);
+    const [headerLine, rowLine] = render(parsed, { format: 'csv' }).content.split('\n');
+
+    expect(headerLine!.endsWith('recommendation,size_basis,size_quantity')).toBe(true);
+    expect(rowLine!.endsWith(',rentable_square_feet,42500')).toBe(true);
+    // total_units keeps its column, empty for a class that has none
+    const headers = headerLine!.split(',');
+    const cells = rowLine!.split(',');
+    expect(cells[headers.indexOf('total_units')]).toBe('');
+  });
+
+  it('csv states the multifamily size as total_units, value unchanged', () => {
+    const parsed = parseUWFile(officeDoc.replace('asset_class: office', 'asset_class: multifamily')
+      .replace('"rentable_square_feet": 42500', '"total_units": 48'));
+    const [headerLine, rowLine] = render(parsed, { format: 'csv' }).content.split('\n');
+    const headers = headerLine!.split(',');
+    const cells = rowLine!.split(',');
+    expect(cells[headers.indexOf('size_basis')]).toBe('total_units');
+    expect(cells[headers.indexOf('size_quantity')]).toBe(cells[headers.indexOf('total_units')]);
+  });
+
+  it('summary header states a non-multifamily class\'s size', () => {
+    const content = render(parseUWFile(officeDoc), { format: 'summary' }).content;
+    expect(content).toContain('· 42,500 RSF');
+  });
+
+  it('chat property block states a non-multifamily class\'s size', () => {
+    const content = render(parseUWFile(officeDoc), { format: 'chat' }).content;
+    expect(content).toContain('Size: 42,500 RSF (rentable_square_feet)');
+  });
+
+  it('no drift: multifamily summary and chat carry no separate size term', () => {
+    // Multifamily's primary is total_units, which these renderings already
+    // state — RFC 0027 must not change a single multifamily byte.
+    const parsed = loadFixture();
+    const summary = render(parsed, { format: 'summary' }).content;
+    const chat = render(parsed, { format: 'chat' }).content;
+    expect(summary).not.toContain('RSF');
+    expect(summary).not.toMatch(/·\s+\d[\d,]*\s+Units/);
+    expect(chat).not.toContain('Size:');
+  });
+});

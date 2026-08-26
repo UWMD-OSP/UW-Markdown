@@ -10,6 +10,7 @@
 
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
+import { resolveDealSize } from './protocol.js';
 import { validateUWFile } from './validator.js';
 import type { RenderTier } from './renderer.js';
 import {
@@ -247,8 +248,19 @@ function coverPage(ctx: Ctx): string {
   const preparedBy = opts.preparedBy ?? (fm.created_by as string | undefined);
   const docName = tier === 'analyst' ? 'Credit Memorandum' : 'Lender Package';
 
+  // RFC 0027: the cover states the class's own size (Protocol §XIII.1). The
+  // multifamily/senior primary is `total_units`, already the Units fact below,
+  // so the extra fact appears only for the other classes — the multifamily
+  // cover is byte-identical to before.
+  const size = resolveDealSize(ctx.parsed);
+  const sizeFact: Array<[string, string]> =
+    size && size.basis !== 'total_units'
+      ? [[size.label, size.quantity.toLocaleString('en-US')]]
+      : [];
+
   const factPairs: Array<[string, string]> = [
     ['Asset class', [fm.asset_subtype, fm.asset_class].filter(has).map(String).map(prettyToken).join(' · ')],
+    ...sizeFact,
     ['Units', has(units) ? val(units) : 'n/a'],
     ['NRA', has(sqft) ? `${Number(sqft).toLocaleString('en-US')} SF` : 'n/a'],
     ['Vintage', has(yearBuilt) ? val(yearBuilt) : 'n/a'],
@@ -343,7 +355,16 @@ function propertyOverview(ctx: Ctx): string | null {
     ['Stories', val(deepGet(c, 'stories'))],
     ['Condition', has(deepGet(c, 'condition')) ? prettyToken(String(deepGet(c, 'condition'))) : 'n/a'],
   ]);
+  // RFC 0027: lead the physical column with the class's own size when its
+  // primary is not `total_units` (which the Units row below already states).
+  const size = resolveDealSize(ctx.parsed);
+  const sizeRows: Array<[string, string]> =
+    size && size.basis !== 'total_units'
+      ? [[size.label, size.quantity.toLocaleString('en-US')]]
+      : [];
+
   const right = kvTable([
+    ...sizeRows,
     ['Units', val(deepGet(c, 'total_units'))],
     ['NRA (SF)', has(deepGet(c, 'total_nra_sqft')) ? Number(deepGet(c, 'total_nra_sqft')).toLocaleString('en-US') : 'n/a'],
     ['Land area', has(deepGet(c, 'land_area_acres')) ? `${val(deepGet(c, 'land_area_acres'))} acres` : 'n/a'],

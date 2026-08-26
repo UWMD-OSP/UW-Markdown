@@ -158,3 +158,31 @@ describe('renderReportHtml', () => {
     expect(result.html).toContain('User Override');
   });
 });
+
+// ─── RFC 0027 — the cover and property table state the class's own size ──────
+
+describe('renderReportHtml — size intensives (RFC 0027)', () => {
+  const OFFICE_PATH = resolve(__dirname, '../../../examples/Riverside-Office-Phoenix-AZ.uwx.md');
+  const HOTEL_PATH = resolve(__dirname, '../../../examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md');
+
+  it('the office cover and property table carry RSF 42,500', () => {
+    const parsed = parseUWFile(readFileSync(OFFICE_PATH, 'utf-8'));
+    const { html } = renderReportHtml(parsed, { tier: 'screener' });
+    expect(html).toContain('<span>RSF</span><strong>42,500</strong>');
+    expect(html).toContain('RSF');
+  });
+
+  it('the hotel cover carries Keys 142', () => {
+    const parsed = parseUWFile(readFileSync(HOTEL_PATH, 'utf-8'));
+    const { html } = renderReportHtml(parsed, { tier: 'screener' });
+    expect(html).toContain('<span>Keys</span><strong>142</strong>');
+  });
+
+  it('no drift: the multifamily cover gains no size fact', () => {
+    const { html } = renderReportHtml(loadParkview(), { tier: 'screener' });
+    expect(html).not.toContain('<span>RSF</span>');
+    expect(html).not.toContain('<span>Keys</span>');
+    // its size is the Units fact it always had
+    expect(html).toContain('<span>Units</span>');
+  });
+});
