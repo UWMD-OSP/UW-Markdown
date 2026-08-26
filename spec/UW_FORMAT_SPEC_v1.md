@@ -575,6 +575,15 @@ The `ai_synthesis` sub-object is populated by `agent:L7-01` after the full under
   "year_renovated": null,
   "total_units": null,
   "total_nra_sqft": null,
+  "rentable_square_feet": null,
+  "gross_leasable_area": null,
+  "net_rentable_square_feet": null,
+  "rentable_units": null,
+  "keys": null,
+  "total_beds": null,
+  "gross_acres": null,
+  "usable_acres": null,
+  "entitled_units": null,
   "land_area_sqft": null,
   "land_area_acres": null,
   "stories": null,
@@ -595,6 +604,36 @@ The `ai_synthesis` sub-object is populated by `agent:L7-01` after the full under
   "environmental_concerns_noted": false
 }
 ```
+
+**Size intensives (RFC 0027).** A property block MUST state the size intensive
+its asset class uses (the **primary size field**, per Protocol §XIII.1). It MAY
+state any of the others. A field that does not apply to the asset class SHOULD
+be `null` or absent rather than zero, because zero is a quantity and a
+denominator, not an absence. Validated by `CC-13` (§5.3) as a warning.
+
+Field notes:
+
+- `rentable_square_feet` — rentable area (RSF); the primary size field for
+  `office` and `industrial`.
+- `gross_leasable_area` — GLA in square feet; the primary size field for
+  `retail`.
+- `net_rentable_square_feet` — NRSF; the primary size field for
+  `self_storage`.
+- `rentable_units` — the storage-unit count; a self-storage secondary.
+- `keys` — the room count; the primary size field for `hospitality`.
+- `total_beds` — the bed count; the primary size field for `student_housing`
+  and a secondary for `senior_housing`.
+- `gross_acres` / `usable_acres` — the deal's own size for a `land` deal;
+  `usable_acres` nets out what cannot be built on. **Not synonyms for the
+  existing `land_area_acres`**, which is the parcel a *building* sits on — a
+  detail field on an improved property. A land deal SHOULD state
+  `gross_acres` / `usable_acres` and SHOULD NOT restate them as
+  `land_area_acres`.
+- `entitled_units` — units the entitlement permits; a `land` secondary.
+- `total_units` on senior and student housing: both classes carry two counts.
+  Senior housing sizes per unit and also states beds; student housing sizes
+  per bed and also states units. Both figures are legitimate; Protocol §XIII.1
+  says which one is the denominator.
 
 ---
 
@@ -2387,6 +2426,26 @@ Tools MUST run these after each section write:
 | `CC-10` | Purchase price in `sources_uses.uses` must match `valuation.purchase_price` | `sources_uses`, `valuation` |
 | `CC-11` | A `components` section may appear only when `asset_class` is `mixed_use` (RFC 0019) | `components`, frontmatter |
 | `CC-12` | Property `noi_model.net_operating_income` must equal the sum of component `net_operating_income` (mixed-use) | `components`, `noi_model` |
+| `CC-13` | The property section must state the primary size field for `frontmatter.asset_class` (Protocol §XIII.1) (RFC 0027) | `property`, frontmatter |
+
+**`CC-13` severity and applicability.** `CC-13` is a **warning**, never an
+error: a screening-stage deal legitimately does not know its RSF yet, and the
+`gaps` / provisional machinery already owns "we don't know this yet". An
+institution wanting a hard gate expresses it through
+`INCOMPLETE_DATA_POLICIES`. The rule fires only when **all** of the following
+hold:
+
+1. The source is a UWX record, not a UW Lite summary (Lite states size in its
+   own grammar).
+2. The document's profile is a deal record (market-data and other non-deal
+   profiles have no property section by construction).
+3. The asset class is recognized (Protocol §XIII.3) and is not `mixed_use`
+   (Protocol §XIII.2).
+4. The document has a property section. A missing section is a different
+   defect with a different remedy, and `CC-13` would give the wrong
+   diagnostic.
+5. The property section is not externalized (RFC 0021); the resolved record is
+   where the field lives.
 
 ---
 
