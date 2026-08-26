@@ -11,6 +11,7 @@
 // effective_gross_income (they are stored as positive magnitudes in the .uw.md).
 
 import { MULTIFAMILY_PACK } from '@uwmd/core';
+import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
@@ -39,8 +40,7 @@ const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',      label: 'Purchase Price',      source: { section: 'valuation',      path: 'purchase_price' },          format: 'currency' },
   { name: 'loan_amount',         label: 'Loan Amount',         source: { section: 'debt_structure', path: 'loan_amount' },             format: 'currency' },
   { name: 'annual_debt_service', label: 'Annual Debt Service', source: { section: 'debt_structure', path: 'annual_debt_service' },     format: 'currency' },
-  { name: 'total_units',         label: 'Total Units',         source: { section: 'property',       path: 'total_units' },             format: 'count' },
-  { name: 'total_nra_sqft',      label: 'Total NRA (sqft)',    source: { section: 'property',       path: 'total_nra_sqft' },          format: 'count' },
+  ...sizeNamedInputs('multifamily', { total_units: 'Total Units', total_nra_sqft: 'Total NRA (sqft)' }),
   { name: 'equity_sponsor',      label: 'Sponsor Equity',      source: { section: 'sources_uses',   path: 'sources.equity_sponsor' },  format: 'currency' },
 ];
 

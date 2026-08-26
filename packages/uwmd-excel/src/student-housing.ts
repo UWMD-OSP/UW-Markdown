@@ -6,6 +6,7 @@
 // the property turns nearly its entire rent roll on one August date.
 
 import { STUDENT_HOUSING_PACK } from '@uwmd/core';
+import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
@@ -35,7 +36,7 @@ const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',      label: 'Purchase Price',      source: { section: 'valuation',      path: 'purchase_price' },         format: 'currency' },
   { name: 'loan_amount',         label: 'Loan Amount',         source: { section: 'debt_structure', path: 'loan_amount' },            format: 'currency' },
   { name: 'annual_debt_service', label: 'Annual Debt Service', source: { section: 'debt_structure', path: 'annual_debt_service' },    format: 'currency' },
-  { name: 'total_beds',          label: 'Total Beds',          source: { section: 'property',       path: 'total_beds' },             format: 'count' },
+  ...sizeNamedInputs('student_housing', { total_beds: 'Total Beds' }),
   { name: 'sponsor_equity',      label: 'Sponsor Equity',      source: { section: 'sources_uses',   path: 'sources.sponsor_equity' }, format: 'currency' },
   { name: 'total_uses',          label: 'Total Project Cost',  source: { section: 'sources_uses',   path: 'uses.total' },             format: 'currency' },
   { name: 'occupied_beds',       label: 'Occupied Beds',       source: { section: 'rent_roll',      path: 'occupied_beds' },          format: 'count' },

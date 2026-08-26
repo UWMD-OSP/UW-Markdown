@@ -201,3 +201,29 @@ describe('fieldsForSection / displayName', () => {
     expect(displayName('totally_unknown')).toBe('totally_unknown');
   });
 });
+
+describe('catalog — the size grid derives from the Protocol §XIII registry (RFC 0027)', () => {
+  it('offers each size path to exactly the classes whose registry entry names it', async () => {
+    const { SIZE_INTENSIVES } = await import('@uwmd/core/browser');
+    for (const [cls, entry] of Object.entries(SIZE_INTENSIVES)) {
+      for (const path of [entry.path, ...entry.secondary]) {
+        const field = NUMERIC_SECTION_FIELDS.find(
+          (f) => f.section_id === 'property' && f.path === path,
+        );
+        expect(field, `${cls}: property.${path}`).toBeDefined();
+        expect(field!.asset_classes, `${cls}: property.${path}`).toContain(cls);
+      }
+    }
+  });
+
+  it('gives every registry path a curated label, never the raw-path fallback', async () => {
+    const { SIZE_INTENSIVES } = await import('@uwmd/core/browser');
+    const paths = new Set(
+      Object.values(SIZE_INTENSIVES).flatMap((e) => [e.path, ...e.secondary]),
+    );
+    for (const path of paths) {
+      const field = NUMERIC_SECTION_FIELDS.find((f) => f.path === path);
+      expect(field!.label, path).not.toBe(path);
+    }
+  });
+});

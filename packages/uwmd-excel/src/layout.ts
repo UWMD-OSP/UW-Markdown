@@ -12,7 +12,7 @@
 // `EGI = SUM(signed income lines)` and `NOI = EGI − total opex` both foot to the
 // stored `effective_gross_income` / `net_operating_income`.
 
-import { emitCalcExcelFormula } from '@uwmd/core';
+import { emitCalcExcelFormula, getSizeIntensive } from '@uwmd/core';
 import type { ModuleManifest, ModuleCalcDecl } from '@uwmd/core';
 
 /** An operating-statement income line. */
@@ -43,6 +43,30 @@ export interface NamedInput {
   /** Source field path on the parsed UW file. */
   source: { section: string; path: string };
   format: 'currency' | 'count';
+}
+
+/**
+ * The size-intensive named inputs for one asset class, selected through the
+ * Protocol §XIII registry (RFC 0027) instead of hard-coded per layout. The
+ * label map is the layout's only local knowledge: a path appears in the sheet
+ * exactly when the layout names it (student and senior housing each omit the
+ * secondary count their pack never reads), in registry order — primary first.
+ * `mixed_use` has no entry (§XIII.2) and contributes no inputs.
+ */
+export function sizeNamedInputs(
+  assetClass: string,
+  labels: Readonly<Record<string, string>>,
+): NamedInput[] {
+  const entry = getSizeIntensive(assetClass);
+  if (!entry) return [];
+  return [entry.path, ...entry.secondary]
+    .filter((path) => path in labels)
+    .map((path) => ({
+      name: path,
+      label: labels[path]!,
+      source: { section: 'property', path },
+      format: 'count' as const,
+    }));
 }
 
 /** A derived metric, resolved from the calc pack at build time. */
