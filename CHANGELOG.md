@@ -1707,7 +1707,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...v1.5.0
 [1.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.2.0...v1.3.0
