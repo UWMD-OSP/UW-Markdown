@@ -51,6 +51,7 @@ and how it gets accepted.
 | [0025](./0025-lite-percent-decimal-exactness.md) | Scale percent displays by moving the point, not by dividing | implemented | format, core, conformance |
 | [0026](./0026-capital-stack.md) | A typed capital stack — tranches, preferred equity, and stack-aware sizing | implemented | format, protocol, core, conformance, tooling |
 | [0027](./0027-asset-class-size-intensives.md) | Declare every asset class's size intensive, once | implemented | format, protocol, core, conformance, tooling |
+| [0028](./0028-reportable-section-readiness.md) | Make a missing required section a reportable defect | accepted | format, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
