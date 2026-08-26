@@ -212,6 +212,39 @@ function runTier1() {
       }
     }
 
+    // Validation verdict. Valid fixtures used to assert nothing about
+    // validation, so a rule escalation (warning → error) could flip
+    // `uwmd validate` to exit 1 on a fixture with the suite still green —
+    // the gap RFC 0027 Appendix A documented. The baseline freezes the
+    // overall status and every (code, severity) pair, so both a new code
+    // and a severity flip on an existing one are visible diffs.
+    let validation;
+    try {
+      validation = validateUWFile(parsed);
+    } catch (e) {
+      record('1', `${id} [validate]`, 'fail', `validateUWFile threw: ${e.message}`);
+      continue;
+    }
+    const issuePairs = [...new Map(
+      (validation.issues ?? []).map((i) => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }])
+    ).values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity));
+    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, issues: issuePairs }, null, 2)}\n`;
+    const expectedValidationPath = join(expectedDir, `${id}.validation.json`);
+
+    if (UPDATE) {
+      writeFileSync(expectedValidationPath, actualValidationStr);
+      record('1', `${id} [validate]`, 'updated');
+    } else if (!existsSync(expectedValidationPath)) {
+      record('1', `${id} [validate]`, 'fail', `missing baseline: ${basename(expectedValidationPath)}`);
+    } else {
+      const expected = readFileSync(expectedValidationPath, 'utf8');
+      if (normalize(expected) === normalize(actualValidationStr)) {
+        record('1', `${id} [validate]`, 'pass');
+      } else {
+        record('1', `${id} [validate]`, 'fail', firstDifference(normalize(expected), normalize(actualValidationStr)));
+      }
+    }
+
     // Render comparisons (chat + summary).
     for (const fmt of ['chat', 'summary']) {
       let rendered;

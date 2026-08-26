@@ -1,0 +1,17 @@
+{
+  "overall_status": "warnings",
+  "issues": [
+    {
+      "code": "CC-13",
+      "severity": "warning"
+    },
+    {
+      "code": "DQ-05",
+      "severity": "info"
+    },
+    {
+      "code": "META_LOW_CONFIDENCE_NO_REVIEW_FLAG",
+      "severity": "info"
+    }
+  ]
+}

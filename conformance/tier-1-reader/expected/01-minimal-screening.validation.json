@@ -1,0 +1,9 @@
+{
+  "overall_status": "warnings",
+  "issues": [
+    {
+      "code": "META_FIELD_MISSING_SECTION",
+      "severity": "warning"
+    }
+  ]
+}
