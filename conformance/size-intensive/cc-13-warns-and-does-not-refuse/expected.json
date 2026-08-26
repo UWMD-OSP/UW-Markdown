@@ -1,0 +1,8 @@
+{
+  "description": "CC-13 fires exactly once, as a warning on property.rentable_square_feet, and refuses nothing: overall status stays at warnings (never errors) and the office pack's cap_rate — which does not divide by RSF — still evaluates to its pinned value (690000 / 12000000, quantized at the pack's round_to).",
+  "expected_code": "CC-13",
+  "severity": "warning",
+  "field": "rentable_square_feet",
+  "overall_status_not": "errors",
+  "calc_still_computes": { "pack": "office", "calc_id": "cap_rate", "value": 0.0575 }
+}

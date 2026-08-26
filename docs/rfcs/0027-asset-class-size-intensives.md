@@ -1,7 +1,7 @@
 ---
 rfc: 0027
 title: Declare every asset class's size intensive, once
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-08-23
 affects:

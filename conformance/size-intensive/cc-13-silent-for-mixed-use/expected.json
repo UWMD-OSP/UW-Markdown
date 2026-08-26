@@ -1,0 +1,5 @@
+{
+  "description": "A mixed_use document with no property-level size produces no CC-13 (§XIII.2), and resolveDealSize returns null rather than a synthesized cross-use total.",
+  "absent_codes": ["CC-13"],
+  "resolve_deal_size": null
+}

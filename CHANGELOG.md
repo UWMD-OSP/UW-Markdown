@@ -8,6 +8,32 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — the `size-intensive` conformance group; RFC 0027 is implemented (part 4)
+
+The seven scenarios the RFC specified, closing the arc (corpus **215 → 222**;
+RFC 0027 flipped to `implemented`):
+
+- `registry-covers-every-class` — §XIII.1/2/3 pinned against the shipped
+  table: nine primaries, `mixed_use` and unrecognized classes null, no
+  unpinned class in the registry.
+- `pack-agreement` — coverage in both directions: each primary appears in its
+  pack's formulas, and every `property.*` path a pack reads is registry-known.
+- `csv-exports-size-for-every-class` — all ten worked examples (plus
+  Parkview): `size_basis`/`size_quantity` non-empty for nine classes, empty
+  for `mixed_use`, and `total_units` keeps its value everywhere — the
+  compatibility pin.
+- `report-cover-states-size` — the office cover carries `RSF 42,500`, the
+  hotel's `Keys 142`, and the multifamily cover gains no size fact.
+- `lite-round-trip-non-multifamily` — the office example projects to Lite
+  with its RSF anchor and compiles back to the same value.
+- `cc-13-warns-and-does-not-refuse` — CC-13 fires once as a warning and the
+  office pack's `cap_rate` still evaluates; a warning must never refuse.
+- `cc-13-silent-for-mixed-use` — no CC-13 and `resolveDealSize` null, by
+  design (§XIII.2).
+
+Also: the conformance README corpus tree gains the group, and
+`docs/wiki/13-status.md` records the arc (including the §XI → §XIII errata).
+
 ### Changed — Excel layouts and the web-editor grid read the registry (RFC 0027, part 3)
 
 The two remaining hand-maintained copies of "which field is this class's size"

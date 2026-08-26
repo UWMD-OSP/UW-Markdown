@@ -103,7 +103,7 @@ conformance/
 │   │                     before any arithmetic runs
 │   └── lite-projection/  The UWX→Lite projection names externalized sections
 │                         in its omission report and matches the inline twin
-└── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
+├── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
                           verifyCapitalStack's three-state verdict (a "variants"
@@ -115,15 +115,27 @@ conformance/
                           expected-metrics.json} is the no-stack single-loan
                           regression pin — every pack metric must equal its
                           pre-RFC value exactly
+└── size-intensive/     The Protocol §XIII size-intensive registry (RFC 0027).
+                          Seven named scenarios: the registry pins (§XIII.1–3
+                          against the shipped table; primary-in-pack and
+                          pack-paths-in-registry coverage in both directions),
+                          the consumer pins (csv size_basis/size_quantity for
+                          all ten worked examples with the total_units
+                          compatibility column; the report cover's RSF/Keys
+                          facts; the office Lite round-trip), and the CC-13
+                          behavior pair (warns-and-does-not-refuse on a
+                          size-less office; silent for mixed_use, whose
+                          resolveDealSize is null by design)
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-and `capital-stack` suites are named rather than numbered: UW Lite is a
-*source representation*, a receipt is a *detached artifact*, market data and
-deal packages are *companion document kinds*, module manifests and composition
-are *protocol machinery*, and the capital stack is a *verified section* — none
-is itself a protocol conformance tier. All run by default; select one alone
-with `--tier=<name>` (e.g. `--tier=lite`, `--tier=capital-stack`).
+`capital-stack`, and `size-intensive` suites are named rather than numbered:
+UW Lite is a *source representation*, a receipt is a *detached artifact*,
+market data and deal packages are *companion document kinds*, module manifests
+and composition are *protocol machinery*, and the capital stack and
+size-intensive registry are *verified protocol surfaces* — none is itself a
+protocol conformance tier. All run by default; select one alone with
+`--tier=<name>` (e.g. `--tier=lite`, `--tier=size-intensive`).
 
 Two receipt properties are asserted as invariants rather than baselines:
 

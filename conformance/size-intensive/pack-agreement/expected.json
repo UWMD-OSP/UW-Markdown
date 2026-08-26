@@ -1,0 +1,4 @@
+{
+  "description": "§XIII.1 defines the primary size field as the denominator the class's calc pack uses, so the registry may never drift from the packs. Coverage in both directions: each class's primary path appears in its pack's formulas, and every property.* path a pack reads is that class's primary or a declared secondary. A coverage assertion, not an equality — senior and student housing each state a secondary count their pack never divides by.",
+  "directions": ["primary-in-pack", "pack-paths-in-registry"]
+}

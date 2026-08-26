@@ -1,0 +1,15 @@
+{
+  "description": "Pins Protocol §XIII.1 and §XIII.2 against the shipped SIZE_INTENSIVES table: every class with a property-level size names its primary field, mixed_use deliberately has none, and the table carries no class this file does not list (§XIII.3 closure).",
+  "primaries": {
+    "multifamily": "total_units",
+    "office": "rentable_square_feet",
+    "industrial": "rentable_square_feet",
+    "retail": "gross_leasable_area",
+    "self_storage": "net_rentable_square_feet",
+    "hospitality": "keys",
+    "student_housing": "total_beds",
+    "senior_housing": "total_units",
+    "land": "gross_acres"
+  },
+  "no_primary": ["mixed_use", "unrecognized_class"]
+}
