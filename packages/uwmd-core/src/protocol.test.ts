@@ -82,7 +82,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — version', () => {
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('1.5.0');
+    expect(PROTOCOL_VERSION).toBe('1.6.0');
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {

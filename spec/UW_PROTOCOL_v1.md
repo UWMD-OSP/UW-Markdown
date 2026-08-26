@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.3.0`) — the
+- **Protocol version** (this document, currently `1.6.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1069,8 +1069,9 @@ Every asset class's calc pack divides by a **size intensive** — the denominato
 of its per-unit value metrics. This section is the single normative answer to
 "how big is this deal, and what do I call it?" for consumers that display,
 export, or index a deal's size. It is mirrored executably by `SIZE_INTENSIVES`
-/ `getSizeIntensive()` in `@uwmd/core`'s `protocol.ts`. (RFC 0027; the RFC text
-refers to this section as §XI — see the errata note there.)
+/ `getSizeIntensive()` in `@uwmd/core`'s `protocol.ts`. (Added at protocol
+1.6.0 by RFC 0027; the RFC text refers to this section as §XI — see the errata
+note there.)
 
 | Asset class | Primary | Label | Unit | Secondary |
 |---|---|---|---|---|

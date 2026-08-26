@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/report",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "PDF report pipeline for UW Markdown — render the lender package / credit memo HTML from @uwmd/core to PDF via headless Chromium (system Chrome/Edge through playwright-core).",
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@uwmd/core": "1.6.0",
+    "@uwmd/core": "1.7.0",
     "playwright-core": "^1.49.0"
   },
   "devDependencies": {
