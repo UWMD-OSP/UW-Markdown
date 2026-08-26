@@ -212,8 +212,21 @@ issuance/verification). Six tabs:
   bar** (`EditModeBar`) controlling what gets stamped on `_meta`
   (actor/source/confidence/notes/human-review) and whether section edits
   **replace in place or append a superseding version**; frontmatter form;
-  per-section numeric inputs (curated allow-list in `src/catalog.ts`, ~30
-  fields); **editable rent-roll tables** with add/remove rows (unit-mix or
+  per-section numeric inputs (curated allow-list in `src/catalog.ts`, now down to
+  the fields no footed-model surface owns — most totals moved into
+  RentRoll/OperatingStatement/Debt/SourcesUses/Valuation/Dcf models). The grid is
+  **asset-class aware**: `fieldsForSection(section_id, asset_class)` offers each
+  class its own size intensive (`rentable_square_feet` for office/industrial,
+  `gross_leasable_area` for retail, `net_rentable_square_feet` + `rentable_units`
+  for self-storage, `keys` for hospitality, `total_beds` for student/senior,
+  `gross_acres`/`usable_acres`/`entitled_units` for land, `total_units` for
+  multifamily/senior/student) and not another class's. The filter is
+  deliberately **opt-out** — an unset, unrecognized, or `mixed_use` class sees
+  the full list, class-independent fields (`year_built`, `parking_spaces`) are
+  never filtered, and anything hidden is still reachable in the generic
+  all-fields editor. `catalog.test.ts` pins the direction that matters: every
+  `property.*` path a class's calc pack reads is offered to that class, so the
+  grid cannot omit an input the metric strip divides by; **editable rent-roll tables** with add/remove rows (unit-mix or
   tenant); an **NOI line-item editor** (wrapper-aware `{value,…}` editing via
   `setNumeric`); an **assumptions editor** that captures override rationale
   (flips `is_overridden`, records `original_value`); a **generic field editor**
