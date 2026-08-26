@@ -8,6 +8,36 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — the size-intensive registry lands in the specs (RFC 0027, part 1)
+
+RFC 0027 was accepted 2026-08-25; this is the spec half of its implementation.
+
+- **Format spec §4.1** — the property payload now declares every asset class's
+  size intensive (`rentable_square_feet`, `gross_leasable_area`,
+  `net_rentable_square_feet`, `rentable_units`, `keys`, `total_beds`,
+  `gross_acres`, `usable_acres`, `entitled_units`), all optional and `null` by
+  default, with field notes — including the `gross_acres` vs `land_area_acres`
+  disambiguation and the two-count note for senior/student housing. New
+  normative language: a property block MUST state its class's primary size
+  field and SHOULD use `null`/absence, never zero, for inapplicable fields.
+- **Format spec §5.3** — new `CC-13`: the property section must state the
+  primary size field for `frontmatter.asset_class`. A **warning**, never an
+  error, with five normative applicability preconditions (UWX only, deal-record
+  profile only, recognized non-mixed-use class, property section present and
+  not externalized).
+- **Protocol spec §XIII (new)** — the per-class size-intensive selection
+  registry: primary field, label, unit, and secondaries for all ten classes;
+  `mixed_use` deliberately has no property-level size (§XIII.2); the table is
+  closed for protocol 1.x (§XIII.3). "Future work" renumbered §XIII → §XIV.
+  The RFC text called this section §XI, which the protocol already used for
+  the Error Taxonomy — recorded as RFC 0027 errata.
+- **Lite spec §8** — the `deal-summary-v1` bridge mapping table gains a row per
+  intensive, so a Lite summary can state any class's size, not only
+  multifamily's.
+
+Spec text only; the executable mirrors (`protocol.ts` registry, `CC-13` in the
+validator, the renderer/report/lite-bridge consumers) follow in the next PR.
+
 ### Fixed — the web editor's quick-edit grid is asset-class aware
 
 `fieldsForSection()` in `tools/web-editor` filtered by `section_id` alone, and
@@ -41,7 +71,7 @@ and every schema are untouched.
 `total_nra_sqft`, and `land_area_*`. The nine other classes' size intensives are
 read by their calc packs and carried by their worked examples but are
 normatively undeclared, so every tool needing them re-derives the vocabulary
-from the packs. Written up as **RFC 0027** (`draft`), which proposes declaring
+from the packs. Written up as **RFC 0027** (since accepted), which declares
 the fields in §4.1 plus a normative per-class selection table in the protocol.
 Drafting it found three further consumers that never re-derived the mapping and
 are wrong today — the one-row `csv` read model, the §7.1 report cover, and the

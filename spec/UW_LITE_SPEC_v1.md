@@ -184,6 +184,18 @@ The reference `deal-summary-v1` bridge maps these aliases:
 | `debt.annual_debt_service` | `debt_structure.annual_debt_service` | `USD` |
 | `property.total_units` | same | absent |
 | `property.total_nra_sqft` | same | absent |
+| `property.rentable_square_feet` | same | absent |
+| `property.gross_leasable_area` | same | absent |
+| `property.net_rentable_square_feet` | same | absent |
+| `property.rentable_units` | same | absent |
+| `property.keys` | same | absent |
+| `property.total_beds` | same | absent |
+| `property.gross_acres` | same | absent |
+| `property.usable_acres` | same | absent |
+| `property.entitled_units` | same | absent |
+
+The size-intensive rows exist so a Lite summary can state any asset class's
+primary size field (Protocol §XIII, RFC 0027), not only multifamily's.
 
 Direct paths under registered UW sections are also accepted. Period-qualified
 and non-base-scenario fields require later versioned profiles and are rejected

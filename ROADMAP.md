@@ -1,7 +1,7 @@
 # Roadmap
 
 The single source of truth for what's planned for UW Markdown. Work in
-the README "Planned" list and the protocol spec's §XIII "Future work"
+the README "Planned" list and the protocol spec's §XIV "Future work"
 both feed back to this document.
 
 This roadmap is **directional**, not contractual. Items move, get cut,
@@ -81,7 +81,7 @@ protocol, the format, or both. RFCs are `draft` until the project owner accepts.
 The 14-day comment window applies after collaborative governance activates; see
 [`GOVERNANCE.md`](./GOVERNANCE.md).
 
-Mirrored in `spec/UW_PROTOCOL_v1.md` §XIII so spec readers see them in
+Mirrored in `spec/UW_PROTOCOL_v1.md` §XIV so spec readers see them in
 context. This list is the maintainable copy.
 
 | RFC | Item | Why it matters |

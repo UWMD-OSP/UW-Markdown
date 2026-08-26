@@ -458,6 +458,20 @@ underwriting format cannot resolve a denominator by search order.
    the whole section is absent sends the reader to the wrong place. It wants its
    own rule, and probably its own RFC.
 
+## Errata
+
+### Corrections found while implementing (2026-08-25)
+
+**The registry is Protocol §XIII, not §XI.** This RFC's [Proposed change](#proposed-change)
+calls the registry "protocol spec §XI (new)", but `UW_PROTOCOL_v1.md` already
+numbers its sections through §XIII: §XI is the Error Taxonomy (referenced
+normatively by `protocol-error.schema.json`), §XII is Versioning, and §XIII was
+"Future work". Renumbering the Error Taxonomy to make room would have broken
+standing references for a cosmetic gain, so the registry landed as a new
+**§XIII** and the non-normative "Future work" section moved to §XIV. Every
+`§XI.n` reference in this document reads as `§XIII.n` in the shipped spec; the
+rules themselves are unchanged.
+
 ## Prior art
 
 **Schema.org** faces the same shape with `QuantitativeValue`: a `value` plus a
