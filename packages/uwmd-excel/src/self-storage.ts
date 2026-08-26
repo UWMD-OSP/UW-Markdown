@@ -6,6 +6,7 @@
 // admin fees, tenant insurance, and truck/retail income.
 
 import { SELF_STORAGE_PACK } from '@uwmd/core';
+import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
@@ -31,8 +32,7 @@ const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',              label: 'Purchase Price',       source: { section: 'valuation',      path: 'purchase_price' },              format: 'currency' },
   { name: 'loan_amount',                 label: 'Loan Amount',          source: { section: 'debt_structure', path: 'loan_amount' },                 format: 'currency' },
   { name: 'annual_debt_service',         label: 'Annual Debt Service',  source: { section: 'debt_structure', path: 'annual_debt_service' },         format: 'currency' },
-  { name: 'net_rentable_square_feet',    label: 'Net Rentable SF',      source: { section: 'property',       path: 'net_rentable_square_feet' },    format: 'count' },
-  { name: 'rentable_units',              label: 'Rentable Units',       source: { section: 'property',       path: 'rentable_units' },              format: 'count' },
+  ...sizeNamedInputs('self_storage', { net_rentable_square_feet: 'Net Rentable SF', rentable_units: 'Rentable Units' }),
   { name: 'sponsor_equity',              label: 'Sponsor Equity',       source: { section: 'sources_uses',   path: 'sources.sponsor_equity' },      format: 'currency' },
   { name: 'total_uses',                  label: 'Total Project Cost',   source: { section: 'sources_uses',   path: 'uses.total' },                  format: 'currency' },
   { name: 'occupied_units',              label: 'Occupied Units',       source: { section: 'rent_roll',      path: 'occupied_units' },              format: 'count' },

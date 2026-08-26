@@ -7,6 +7,7 @@
 // so the `expense_recovery_ratio` metric can reference it.
 
 import { INDUSTRIAL_PACK } from '@uwmd/core';
+import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
@@ -30,7 +31,7 @@ const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',       label: 'Purchase Price',       source: { section: 'valuation',      path: 'purchase_price' },         format: 'currency' },
   { name: 'loan_amount',          label: 'Loan Amount',          source: { section: 'debt_structure', path: 'loan_amount' },            format: 'currency' },
   { name: 'annual_debt_service',  label: 'Annual Debt Service',  source: { section: 'debt_structure', path: 'annual_debt_service' },    format: 'currency' },
-  { name: 'rentable_square_feet', label: 'Rentable SF',          source: { section: 'property',       path: 'rentable_square_feet' },   format: 'count' },
+  ...sizeNamedInputs('industrial', { rentable_square_feet: 'Rentable SF' }),
   { name: 'sponsor_equity',       label: 'Sponsor Equity',       source: { section: 'sources_uses',   path: 'sources.sponsor_equity' }, format: 'currency' },
   { name: 'total_uses',           label: 'Total Project Cost',   source: { section: 'sources_uses',   path: 'uses.total' },             format: 'currency' },
   { name: 'occupied_sf',          label: 'Occupied SF',          source: { section: 'rent_roll',      path: 'occupied_sf' },            format: 'count' },

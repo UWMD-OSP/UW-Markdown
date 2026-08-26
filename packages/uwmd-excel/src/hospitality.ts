@@ -7,6 +7,7 @@
 // reserve that sit below gross operating profit.
 
 import { HOSPITALITY_PACK } from '@uwmd/core';
+import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
@@ -35,7 +36,7 @@ const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',         label: 'Purchase Price',          source: { section: 'valuation',      path: 'purchase_price' },          format: 'currency' },
   { name: 'loan_amount',            label: 'Loan Amount',             source: { section: 'debt_structure', path: 'loan_amount' },             format: 'currency' },
   { name: 'annual_debt_service',    label: 'Annual Debt Service',     source: { section: 'debt_structure', path: 'annual_debt_service' },     format: 'currency' },
-  { name: 'keys',                   label: 'Keys',                    source: { section: 'property',       path: 'keys' },                    format: 'count' },
+  ...sizeNamedInputs('hospitality', { keys: 'Keys' }),
   { name: 'sponsor_equity',         label: 'Sponsor Equity',          source: { section: 'sources_uses',   path: 'sources.sponsor_equity' },  format: 'currency' },
   { name: 'total_uses',             label: 'Total Project Cost',      source: { section: 'sources_uses',   path: 'uses.total' },              format: 'currency' },
   { name: 'available_room_nights',  label: 'Available Room Nights',   source: { section: 'rent_roll',      path: 'available_room_nights' },   format: 'count' },

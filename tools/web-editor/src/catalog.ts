@@ -7,6 +7,8 @@
 // hints (FieldViewHint); until that surface exists, an allow-list is the safe
 // default.
 
+import { SIZE_INTENSIVES } from '@uwmd/core/browser';
+
 export const SECTION_DISPLAY_NAMES: Record<string, string> = {
   deal_context: 'Deal Context',
   property: 'Property',
@@ -127,89 +129,43 @@ export interface NumericSectionField {
   asset_classes?: readonly AssetClass[];
 }
 
+// The size intensive — the denominator of every per-unit metric — is named
+// differently by each asset class, so each one is scoped. The scoping now
+// derives from the Protocol §XIII registry (RFC 0027): a path is offered to
+// exactly the classes whose registry entry names it as primary or secondary,
+// so the grid can never drift from the table the packs divide by. Only the
+// display label and input kind are the editor's own knowledge.
+const SIZE_FIELD_DISPLAY: Record<string, { label: string; kind: NumericFieldKind }> = {
+  total_units: { label: 'Total units', kind: 'count' },
+  total_nra_sqft: { label: 'Total NRA (sqft)', kind: 'count' },
+  rentable_square_feet: { label: 'Rentable area (sqft)', kind: 'count' },
+  gross_leasable_area: { label: 'Gross leasable area (sqft)', kind: 'count' },
+  net_rentable_square_feet: { label: 'Net rentable area (sqft)', kind: 'count' },
+  rentable_units: { label: 'Rentable units', kind: 'count' },
+  keys: { label: 'Keys', kind: 'count' },
+  total_beds: { label: 'Total beds', kind: 'count' },
+  gross_acres: { label: 'Gross acres', kind: 'number' },
+  usable_acres: { label: 'Usable acres', kind: 'number' },
+  entitled_units: { label: 'Entitled units', kind: 'count' },
+};
+
+function sizeIntensiveFields(): NumericSectionField[] {
+  const classesByPath = new Map<string, AssetClass[]>();
+  for (const [cls, entry] of Object.entries(SIZE_INTENSIVES)) {
+    for (const path of [entry.path, ...entry.secondary]) {
+      const list = classesByPath.get(path);
+      if (list) list.push(cls as AssetClass);
+      else classesByPath.set(path, [cls as AssetClass]);
+    }
+  }
+  return [...classesByPath].map(([path, asset_classes]) => {
+    const display = SIZE_FIELD_DISPLAY[path] ?? { label: path, kind: 'count' as const };
+    return { section_id: 'property', path, label: display.label, kind: display.kind, asset_classes };
+  });
+}
+
 export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
-  // The size intensive — the denominator of every per-unit metric — is named
-  // differently by each asset class, so each one is scoped. Before this was
-  // class-aware a land deal was offered "Total units" and an office deal was
-  // offered nothing at all (its `rentable_square_feet` fell through to the
-  // generic escape hatch).
-  {
-    section_id: 'property',
-    path: 'total_units',
-    label: 'Total units',
-    kind: 'count',
-    asset_classes: ['multifamily', 'senior_housing', 'student_housing'],
-  },
-  {
-    section_id: 'property',
-    path: 'total_nra_sqft',
-    label: 'Total NRA (sqft)',
-    kind: 'count',
-    asset_classes: ['multifamily'],
-  },
-  {
-    section_id: 'property',
-    path: 'rentable_square_feet',
-    label: 'Rentable area (sqft)',
-    kind: 'count',
-    asset_classes: ['office', 'industrial'],
-  },
-  {
-    section_id: 'property',
-    path: 'gross_leasable_area',
-    label: 'Gross leasable area (sqft)',
-    kind: 'count',
-    asset_classes: ['retail'],
-  },
-  {
-    section_id: 'property',
-    path: 'net_rentable_square_feet',
-    label: 'Net rentable area (sqft)',
-    kind: 'count',
-    asset_classes: ['self_storage'],
-  },
-  {
-    section_id: 'property',
-    path: 'rentable_units',
-    label: 'Rentable units',
-    kind: 'count',
-    asset_classes: ['self_storage'],
-  },
-  {
-    section_id: 'property',
-    path: 'keys',
-    label: 'Keys',
-    kind: 'count',
-    asset_classes: ['hospitality'],
-  },
-  {
-    section_id: 'property',
-    path: 'total_beds',
-    label: 'Total beds',
-    kind: 'count',
-    asset_classes: ['student_housing', 'senior_housing'],
-  },
-  {
-    section_id: 'property',
-    path: 'gross_acres',
-    label: 'Gross acres',
-    kind: 'number',
-    asset_classes: ['land'],
-  },
-  {
-    section_id: 'property',
-    path: 'usable_acres',
-    label: 'Usable acres',
-    kind: 'number',
-    asset_classes: ['land'],
-  },
-  {
-    section_id: 'property',
-    path: 'entitled_units',
-    label: 'Entitled units',
-    kind: 'count',
-    asset_classes: ['land'],
-  },
+  ...sizeIntensiveFields(),
   // Class-independent: every class may carry these, land included (a parcel can
   // hold an improvement slated for demolition), so neither is scoped.
   { section_id: 'property', path: 'year_built', label: 'Year built', kind: 'count' },

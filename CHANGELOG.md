@@ -8,6 +8,22 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed — Excel layouts and the web-editor grid read the registry (RFC 0027, part 3)
+
+The two remaining hand-maintained copies of "which field is this class's size"
+now derive from Protocol §XIII. Behavior is unchanged in both tools — this is
+the duplication-removal half of the RFC.
+
+- **`@uwmd/excel`** — a new `sizeNamedInputs(assetClass, labels)` helper in
+  `layout.ts` selects each layout's property-size named inputs through the
+  registry (primary first, then the secondaries the layout labels); the nine
+  per-class layouts drop their hard-coded rows. Labels and sheet positions are
+  untouched, so every workbook byte and parity assertion holds.
+- **`tools/web-editor`** — the quick-edit grid's per-class size scoping is
+  generated from `SIZE_INTENSIVES`: a path is offered to exactly the classes
+  whose registry entry names it, with only the label and input kind remaining
+  editor-local. Two new tests pin the derivation (71 total).
+
 ### Added — the size-intensive registry lands in `@uwmd/core` (RFC 0027, part 2)
 
 The executable half of the Protocol §XIII registry. New browser-safe exports:
