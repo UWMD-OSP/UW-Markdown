@@ -755,12 +755,22 @@ bus factor, personal security email, and no public RFC venue.
    > was the fossil of the lost requirement). `CC-13` deliberately does not
    > absorb it — one defect, one diagnostic.
    >
-   > **Follow-up (open):** all twelve worked examples declare
-   > `full_underwrite` but miss 4–5 of its required sections (modal gap:
-   > `validation`, `borrower_sponsor`, `preliminary_sizing`,
-   > `market_analysis`), so each now truthfully carries `DQ-06` info notes.
-   > Bring the examples to stage-honesty — add the sections or restage
-   > them — and only then revisit `DQ-06`'s severity in a future RFC. And
+   > **Follow-up (closed 2026-08-26): all twelve worked examples are
+   > stage-honest** — zero `DQ-06` notes across the corpus. Seven class
+   > examples (retail, industrial, student, senior, office, hotel, storage)
+   > gained the five missing sections (`operating_statement` reconciled to
+   > the NOI model, `preliminary_sizing` against the three standard
+   > constraints, `borrower_sponsor`, `market_analysis`, `validation`), with
+   > numbers derived from each file's own sections so CC-01/CC-05 hold. The
+   > Parkview twins gained `preliminary_sizing` — truthfully recording that
+   > the proposed loan *exceeds* the DSCR and debt-yield sizings, the same
+   > tension their FV-04 warning already carries. The three feature-focused
+   > examples (Agave/capital-stack, Roosevelt/mixed-use, Sundance/land)
+   > restaged to `screening` + `validation` instead: a property-level
+   > `rent_roll` is wrong for land and mixed-use, which is itself a finding —
+   > **stage requirements are class-agnostic**, and a class-aware §5.1 is a
+   > candidate future refinement. `DQ-06` severity can now be revisited by a
+   > future RFC on an honest corpus. And
    > **conformance would not have caught the escalation**: Tier-1 `malformed`
    > matches expected codes as a subset and Tier-1 valid fixtures asserted
    > nothing about validation, so a new error code would flip `uwmd validate`

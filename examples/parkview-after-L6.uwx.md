@@ -2242,3 +2242,56 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
 
 *uw_2026_a3f9b1 | Parkview Apartments — Glendale, AZ | v1.1 format | Generated 2026-04-24*  
 *Pipeline status: L0–L4 complete, L5 in progress, L6–L7 pending. Not ready for credit submission.*
+
+## Preliminary Sizing
+
+Sizing against the three standard constraints. The proposed $5.04M loan fits the LTV test but exceeds the DSCR and debt-yield sizings — the same tension the validation section flags as FV-04. The lender accepted the structure on the strength of the loss-to-lease story and the 12-month IO period.
+
+```json uw:section=preliminary_sizing source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "preliminary_sizing",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [
+      "proposed_loan_exceeds_conservative_sizing"
+    ],
+    "input_hash": null,
+    "notes": "Proposed loan clears the 75% LTV test but exceeds the 1.25x DSCR and 9% debt-yield sizings — consistent with the FV-04 DSCR warning this file already carries."
+  },
+  "sizing_basis": {
+    "noi_underwritten": 396635,
+    "value_basis": 7200000,
+    "annual_debt_constant": 0.071
+  },
+  "constraints": [
+    {
+      "test": "max_ltv",
+      "limit": 0.75,
+      "max_loan": 5400000
+    },
+    {
+      "test": "min_dscr",
+      "limit": 1.25,
+      "max_loan": 4471976
+    },
+    {
+      "test": "min_debt_yield",
+      "limit": 0.09,
+      "max_loan": 4407056
+    }
+  ],
+  "max_supportable_loan": 4407056,
+  "governing_constraint": "debt_yield",
+  "proposed_loan": 5040000,
+  "proposed_within_constraints": false,
+  "shortfall": 632944
+}
+```

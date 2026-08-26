@@ -24,7 +24,7 @@ pipeline_state:
   L7_assembly:     "pending"
 
 status: "in_progress"
-deal_stage: "full_underwrite"
+deal_stage: "screening"
 recommendation: "pending"
 
 quick_metrics:
@@ -351,5 +351,61 @@ same senior loan for single-loan consumers.
       "notes": "Capital stack entered; sizing figures stated and verified"
     }
   ]
+}
+```
+
+## Validation
+
+Financial-validity engine run over the capital stack and operating sections above.
+
+```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "validation",
+    "version": 1,
+    "superseded": false,
+    "source": "engine:financialValidityChecker",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "system",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Senior-only metrics; stack-aware coverage is stated and verified in the capital_stack section."
+  },
+  "overall_status": "clean",
+  "financial_validity": [
+    {
+      "flag_id": "FV-001",
+      "metric": "dscr",
+      "value": 1.5139,
+      "threshold": {
+        "type": "min",
+        "min": 1.2,
+        "max": null
+      },
+      "severity": "pass",
+      "message": "DSCR (1.5139x) clears the 1.20x warning threshold.",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-002",
+      "metric": "ltv",
+      "value": 0.5,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.75
+      },
+      "severity": "pass",
+      "message": "LTV at 50.0% is within the 75% policy maximum.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
+  ],
+  "completeness": []
 }
 ```

@@ -8,6 +8,34 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed — all twelve worked examples are stage-honest (RFC 0028 follow-up)
+
+Every example now satisfies its declared `deal_stage`'s section list — zero
+`DQ-06` notes across the corpus, so a future RFC can revisit `DQ-06`'s
+severity on honest ground.
+
+- **Seven class examples** (retail, industrial, student, senior, office,
+  hotel, self-storage) gained their five missing sections:
+  `operating_statement` (a T-12 summary reconciled to the NOI model — same
+  revenue, expense, and NOI totals), `preliminary_sizing` (max loan under
+  75% LTV / 1.25x DSCR / 9% debt-yield tests, governing constraint named),
+  `borrower_sponsor`, `market_analysis`, and `validation`, all with numbers
+  derived from each file's own sections so the cross-section checks hold.
+- **The Parkview twins** gained `preliminary_sizing` — truthfully recording
+  that the proposed $5.04M loan fits the LTV test but *exceeds* the DSCR and
+  debt-yield sizings, the same tension their FV-04 warning already states.
+- **The three feature-focused examples restaged to `screening`** (plus a
+  `validation` section) rather than acquiring padding: a property-level
+  `rent_roll` is wrong for land (Sundance) and mixed-use (Roosevelt — its
+  rent data is per-component), and Agave's subject is the capital stack.
+  This surfaced a finding worth keeping: **§5.1's stage requirements are
+  class-agnostic**, and a class-aware refinement is a candidate future RFC.
+
+No code change; examples and docs only. Full suite, conformance (245), and
+lint all green with zero baseline updates — the pins that read these
+examples (size-intensive csv, report cover, Lite round-trip) check specific
+facts, not whole-file shapes, so additive sections pass through them.
+
 ### Added — RFC 0028 implemented: a missing required section is now a reportable defect (corpus 244 → 245)
 
 [RFC 0028](docs/rfcs/0028-reportable-section-readiness.md) (drafted, accepted,

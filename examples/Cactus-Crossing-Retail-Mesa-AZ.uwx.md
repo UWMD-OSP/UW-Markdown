@@ -408,3 +408,244 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   "stabilized_value_estimate": 19800000
 }
 ```
+
+## Operating Statement (T-12)
+
+Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
+
+```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "operating_statement",
+    "version": 1,
+    "superseded": false,
+    "source": "extractor",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+  },
+  "period": "t12",
+  "period_end": "2026-06-30",
+  "statement_basis": "accrual",
+  "income": {
+    "total_revenue": 2053000
+  },
+  "expenses": {
+    "total_operating_expenses": 758000
+  },
+  "net_operating_income": 1295000,
+  "reconciles_to_noi_model": true
+}
+```
+
+## Preliminary Sizing
+
+Loan sizing against the three standard constraints. The governing test is dscr; the proposed loan of $11,470,000 fits inside it.
+
+```json uw:section=preliminary_sizing source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "preliminary_sizing",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "sizing_basis": {
+    "noi_underwritten": 1295000,
+    "value_basis": 18500000,
+    "annual_debt_constant": 0.0778
+  },
+  "constraints": [
+    {
+      "test": "max_ltv",
+      "limit": 0.75,
+      "max_loan": 13875000
+    },
+    {
+      "test": "min_dscr",
+      "limit": 1.25,
+      "max_loan": 13311064
+    },
+    {
+      "test": "min_debt_yield",
+      "limit": 0.09,
+      "max_loan": 14388889
+    }
+  ],
+  "max_supportable_loan": 13311064,
+  "governing_constraint": "dscr",
+  "proposed_loan": 11470000,
+  "proposed_within_constraints": true,
+  "cushion": 1841064
+}
+```
+
+## Borrower / Sponsor
+
+Cactus Crossing Retail Partners LLC — single-principal sponsorship; figures PFS-stated pending CPA verification.
+
+```json uw:section=borrower_sponsor source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "borrower_sponsor",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": true,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+  },
+  "principals": [
+    {
+      "name": "Dana Whitfield",
+      "role": "managing_member",
+      "ownership_pct": 1,
+      "is_guarantor": true,
+      "is_key_man": true,
+      "net_worth_stated": 20646000,
+      "liquid_assets_stated": 1261700,
+      "contingent_liabilities_stated": 0,
+      "years_cre_experience": 15,
+      "pfs_received": true,
+      "tax_returns_received": false,
+      "figures_verified": false,
+      "verification_basis": "pfs_stated"
+    }
+  ],
+  "entity": {
+    "name": "Cactus Crossing Retail Partners LLC",
+    "type": "llc",
+    "state": "AZ"
+  },
+  "financial_summary": {
+    "global_net_worth": 20646000,
+    "global_liquidity": 1261700,
+    "nw_to_loan_ratio": 1.8,
+    "nw_to_loan_policy_min": 1,
+    "liquidity_to_loan_ratio": 0.11,
+    "liquidity_to_loan_policy_min": 0.1,
+    "all_figures_verified": false,
+    "unverified_flag": true
+  }
+}
+```
+
+## Market Analysis
+
+Mesa / East Valley neighborhood retail fundamentals as of 2026-08.
+
+```json uw:section=market_analysis source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "market_analysis",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Broker survey and published market reports; refresh before credit committee."
+  },
+  "market": "Phoenix Metro",
+  "submarket": "Mesa / East Valley",
+  "data_as_of": "2026-08-01",
+  "vacancy": {
+    "current_rate": 0.062,
+    "trend": "stable"
+  },
+  "rents": {
+    "yoy_growth_pct": 0.022,
+    "trend": "flat"
+  },
+  "cap_rates": {
+    "range_low": 0.0675,
+    "range_high": 0.0725,
+    "subject_going_in": 0.07
+  },
+  "supply": {
+    "note": "Limited new unanchored retail supply; grocery-anchored pipeline concentrated in Queen Creek."
+  }
+}
+```
+
+## Validation
+
+Financial-validity engine run over the sections above.
+
+```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "validation",
+    "version": 1,
+    "superseded": false,
+    "source": "engine:financialValidityChecker",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "system",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "overall_status": "clean",
+  "financial_validity": [
+    {
+      "flag_id": "FV-001",
+      "metric": "dscr",
+      "value": 1.4506,
+      "threshold": {
+        "type": "min",
+        "min": 1.2,
+        "max": null
+      },
+      "severity": "pass",
+      "message": "DSCR (1.4506x) clears the 1.20x warning threshold.",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-002",
+      "metric": "ltv",
+      "value": 0.62,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.75
+      },
+      "severity": "pass",
+      "message": "LTV at 62.0% is within the 75% policy maximum.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
+  ],
+  "completeness": []
+}
+```
