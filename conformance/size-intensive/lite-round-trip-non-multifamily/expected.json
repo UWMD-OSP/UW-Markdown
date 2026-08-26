@@ -1,0 +1,6 @@
+{
+  "description": "The office example projects to UW Lite with a Property section carrying its RSF anchor, and that Lite source compiles back to the same value — the bridge can state a non-multifamily class's size in both directions.",
+  "example": "Riverside-Office-Phoenix-AZ.uwx.md",
+  "anchor": "property.rentable_square_feet",
+  "value": 42500
+}

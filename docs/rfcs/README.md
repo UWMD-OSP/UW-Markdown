@@ -50,7 +50,7 @@ and how it gets accepted.
 | [0024](./0024-iterative-function-determinism.md) | Pin the iterative solvers so two engines agree on a root | implemented | protocol, core, conformance |
 | [0025](./0025-lite-percent-decimal-exactness.md) | Scale percent displays by moving the point, not by dividing | implemented | format, core, conformance |
 | [0026](./0026-capital-stack.md) | A typed capital stack — tranches, preferred equity, and stack-aware sizing | implemented | format, protocol, core, conformance, tooling |
-| [0027](./0027-asset-class-size-intensives.md) | Declare every asset class's size intensive, once | accepted | format, protocol, core, conformance, tooling |
+| [0027](./0027-asset-class-size-intensives.md) | Declare every asset class's size intensive, once | implemented | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

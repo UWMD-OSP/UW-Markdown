@@ -6,7 +6,8 @@
 //   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
-//                receipts,market-data,modules,packages,composition,capital-stack.
+//                receipts,market-data,modules,packages,composition,capital-stack,
+//                size-intensive.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -76,6 +77,11 @@ import {
   toUWEnvelope,
   canonicalizeUWEnvelope,
   computeEnvelopeDigest,
+  SIZE_INTENSIVES,
+  getSizeIntensive,
+  resolveDealSize,
+  getPackForAssetClass,
+  renderReportHtml,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -90,7 +96,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2001,6 +2007,159 @@ async function runCapitalStack() {
   }
 }
 
+// ─── Size intensives (RFC 0027, Protocol §XIII) ──────────────────────────────
+
+const SIZE_INTENSIVE_DIR = join(CONFORMANCE_DIR, 'size-intensive');
+const EXAMPLES_DIR = join(CONFORMANCE_DIR, '..', 'examples');
+
+// csv cells contain quoted strings with embedded commas (deal names,
+// addresses), so header-index lookups need a quote-aware split.
+function splitCsvLine(line) {
+  const cells = [];
+  let cur = '';
+  let quoted = false;
+  for (const ch of line) {
+    if (ch === '"') { quoted = !quoted; cur += ch; }
+    else if (ch === ',' && !quoted) { cells.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  cells.push(cur);
+  return cells;
+}
+
+async function runSizeIntensive() {
+  if (!existsSync(SIZE_INTENSIVE_DIR)) {
+    record('size-intensive', '(none)', 'pass', 'no size-intensive fixtures');
+    return;
+  }
+  const parseExample = (name) => parseUWFile(readFileSync(join(EXAMPLES_DIR, name), 'utf8'));
+
+  // ── 1. registry-covers-every-class — pins §XIII.1 / §XIII.2 / §XIII.3 ──────
+  {
+    const expected = readCase(join(SIZE_INTENSIVE_DIR, 'registry-covers-every-class'), 'expected.json');
+    let bad = null;
+    for (const [cls, primary] of Object.entries(expected.primaries)) {
+      const entry = getSizeIntensive(cls);
+      if (entry?.path !== primary) { bad = `${cls}: primary ${entry?.path ?? 'null'}, pinned ${primary}`; break; }
+    }
+    for (const cls of expected.no_primary) {
+      if (!bad && getSizeIntensive(cls) !== null) bad = `${cls}: expected no primary size field`;
+    }
+    const extras = Object.keys(SIZE_INTENSIVES).filter((c) => !(c in expected.primaries));
+    if (!bad && extras.length) bad = `registry carries unpinned classes: ${extras.join(', ')}`;
+    record('size-intensive', 'registry-covers-every-class', bad ? 'fail' : 'pass',
+      bad ?? `${Object.keys(expected.primaries).length} primaries + ${expected.no_primary.length} null pinned`);
+  }
+
+  // ── 2. pack-agreement — the registry may never drift from the packs ────────
+  {
+    let bad = null;
+    for (const [cls, entry] of Object.entries(SIZE_INTENSIVES)) {
+      const source = JSON.stringify(getPackForAssetClass(cls));
+      if (!source.includes(`property.${entry.path}`)) {
+        bad = `${cls}: pack never reads primary property.${entry.path}`; break;
+      }
+      const known = new Set([entry.path, ...entry.secondary]);
+      const packPaths = [...source.matchAll(/property\.([a-z_]+)/g)].map((m) => m[1]);
+      const stray = [...new Set(packPaths)].filter((p) => !known.has(p));
+      if (stray.length) { bad = `${cls}: pack reads property.${stray[0]} missing from the registry entry`; break; }
+    }
+    record('size-intensive', 'pack-agreement', bad ? 'fail' : 'pass',
+      bad ?? 'both coverage directions hold for all nine classes');
+  }
+
+  // ── 3. csv-exports-size-for-every-class — plus the total_units pin ─────────
+  {
+    const expected = readCase(join(SIZE_INTENSIVE_DIR, 'csv-exports-size-for-every-class'), 'expected.json');
+    let bad = null;
+    for (const [example, want] of Object.entries(expected.examples)) {
+      const [header, row] = render(parseExample(example), { format: 'csv' }).content.split('\n');
+      const headers = splitCsvLine(header);
+      const cells = splitCsvLine(row);
+      const got = Object.fromEntries(['size_basis', 'size_quantity', 'total_units']
+        .map((c) => [c, cells[headers.indexOf(c)]]));
+      const off = Object.keys(want).find((k) => got[k] !== want[k]);
+      if (off) { bad = `${example}: ${off} = "${got[off]}", pinned "${want[off]}"`; break; }
+    }
+    record('size-intensive', 'csv-exports-size-for-every-class', bad ? 'fail' : 'pass',
+      bad ?? `${Object.keys(expected.examples).length} examples pinned (nine sized, mixed_use empty)`);
+  }
+
+  // ── 4. report-cover-states-size ────────────────────────────────────────────
+  {
+    const expected = readCase(join(SIZE_INTENSIVE_DIR, 'report-cover-states-size'), 'expected.json');
+    let bad = null;
+    for (const { example, label, value } of expected.covers) {
+      const { html } = renderReportHtml(parseExample(example), { tier: 'screener' });
+      if (!html.includes(`<span>${label}</span><strong>${value}</strong>`)) {
+        bad = `${example}: cover missing ${label} ${value}`; break;
+      }
+    }
+    if (!bad && expected.no_drift) {
+      const { html } = renderReportHtml(parseExample(expected.no_drift.example), { tier: 'screener' });
+      const leaked = expected.no_drift.absent_labels.find((l) => html.includes(`<span>${l}</span>`));
+      if (leaked) bad = `${expected.no_drift.example}: multifamily cover gained a ${leaked} fact`;
+    }
+    record('size-intensive', 'report-cover-states-size', bad ? 'fail' : 'pass',
+      bad ?? expected.covers.map((c) => `${c.label} ${c.value}`).join(', '));
+  }
+
+  // ── 5. lite-round-trip-non-multifamily ─────────────────────────────────────
+  {
+    const expected = readCase(join(SIZE_INTENSIVE_DIR, 'lite-round-trip-non-multifamily'), 'expected.json');
+    let bad = null;
+    const projection = projectUWEnvelopeToLite(toUWEnvelope(parseExample(expected.example)));
+    if (!projection.content.includes(`<!-- uw:${expected.anchor} -->`)) {
+      bad = `projection carries no ${expected.anchor} anchor`;
+    } else {
+      const back = compileUWLite(parseUWLite(projection.content));
+      const value = back.ok
+        ? back.envelope.sections['property']?.content?.[expected.anchor.split('.')[1]]
+        : undefined;
+      if (value !== expected.value) bad = `round-trip value ${value}, pinned ${expected.value}`;
+    }
+    record('size-intensive', 'lite-round-trip-non-multifamily', bad ? 'fail' : 'pass',
+      bad ?? `${expected.anchor} = ${expected.value} both directions`);
+  }
+
+  // ── 6. cc-13-warns-and-does-not-refuse ─────────────────────────────────────
+  {
+    const dir = join(SIZE_INTENSIVE_DIR, 'cc-13-warns-and-does-not-refuse');
+    const expected = readCase(dir, 'expected.json');
+    const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+    const validation = validateUWFile(parsed);
+    const hits = validation.issues.filter((i) => i.code === expected.expected_code);
+    let bad = null;
+    if (hits.length !== 1) bad = `${expected.expected_code} fired ${hits.length} times, expected once`;
+    else if (hits[0].severity !== expected.severity) bad = `severity ${hits[0].severity}, expected ${expected.severity}`;
+    else if (hits[0].field !== expected.field) bad = `field ${hits[0].field}, expected ${expected.field}`;
+    else if (validation.overall_status === expected.overall_status_not) bad = `overall_status is ${validation.overall_status} — CC-13 must never refuse`;
+    else {
+      const spec = expected.calc_still_computes;
+      const decl = (getPackForAssetClass(spec.pack)?.calculations ?? []).find((d) => d.id === spec.calc_id);
+      const r = decl ? evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' }) : null;
+      if (!r?.ok || r.value !== spec.value) bad = `${spec.calc_id} = ${r?.ok ? r.value : 'error'}, pinned ${spec.value}`;
+    }
+    record('size-intensive', 'cc-13-warns-and-does-not-refuse', bad ? 'fail' : 'pass',
+      bad ?? `warning on ${expected.field}, cap_rate still computes`);
+  }
+
+  // ── 7. cc-13-silent-for-mixed-use ──────────────────────────────────────────
+  {
+    const dir = join(SIZE_INTENSIVE_DIR, 'cc-13-silent-for-mixed-use');
+    const expected = readCase(dir, 'expected.json');
+    const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+    const codes = validateUWFile(parsed).issues.map((i) => i.code);
+    const leaked = expected.absent_codes.filter((c) => codes.includes(c));
+    let bad = leaked.length ? `emitted ${leaked.join(', ')} on a mixed_use document` : null;
+    if (!bad && resolveDealSize(parsed) !== expected.resolve_deal_size) {
+      bad = 'resolveDealSize synthesized a size for mixed_use';
+    }
+    record('size-intensive', 'cc-13-silent-for-mixed-use', bad ? 'fail' : 'pass',
+      bad ?? 'no CC-13, resolveDealSize null');
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -2017,6 +2176,7 @@ const dispatch = {
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
+  'size-intensive': async () => { await runSizeIntensive(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

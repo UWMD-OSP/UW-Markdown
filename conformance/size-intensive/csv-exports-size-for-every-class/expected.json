@@ -1,0 +1,16 @@
+{
+  "description": "Renders each of the ten worked examples to csv. size_basis/size_quantity are the appended RFC 0027 columns: non-empty for the nine classes with a property-level size, empty for mixed_use (§XIII.2). total_units is the compatibility pin — it keeps its column, position, and current value for every example.",
+  "examples": {
+    "Agave-Court-Apts-Scottsdale-AZ.uwx.md": { "size_basis": "total_units", "size_quantity": "180", "total_units": "180" },
+    "Cactus-Crossing-Retail-Mesa-AZ.uwx.md": { "size_basis": "gross_leasable_area", "size_quantity": "95000", "total_units": "" },
+    "Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md": { "size_basis": "rentable_square_feet", "size_quantity": "220000", "total_units": "" },
+    "Mill-Ave-Commons-Student-Tempe-AZ.uwx.md": { "size_basis": "total_beds", "size_quantity": "600", "total_units": "180" },
+    "Ocotillo-Senior-Living-Chandler-AZ.uwx.md": { "size_basis": "total_units", "size_quantity": "120", "total_units": "120" },
+    "Parkview-Apts-Glendale-AZ.uwx.md": { "size_basis": "total_units", "size_quantity": "48", "total_units": "48" },
+    "Riverside-Office-Phoenix-AZ.uwx.md": { "size_basis": "rentable_square_feet", "size_quantity": "42500", "total_units": "" },
+    "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md": { "size_basis": "", "size_quantity": "", "total_units": "" },
+    "Saguaro-Select-Hotel-Tempe-AZ.uwx.md": { "size_basis": "keys", "size_quantity": "142", "total_units": "" },
+    "Sonoran-Self-Storage-Peoria-AZ.uwx.md": { "size_basis": "net_rentable_square_feet", "size_quantity": "82000", "total_units": "" },
+    "Sundance-Ranch-Land-Buckeye-AZ.uwx.md": { "size_basis": "gross_acres", "size_quantity": "160", "total_units": "" }
+  }
+}

@@ -441,28 +441,19 @@ not core gaps.
   RFC 0022 §5 as an institution-private preference set nobody has yet asked to
   exchange, and portfolio-level shared assumptions belong to RFC 0021's
   `inherited_assumption` instead.
-- **Format spec §4.1 names only multifamily's size intensives.** The property
-  payload lists `total_units`, `total_nra_sqft`, `land_area_sqft`, and
-  `land_area_acres`. The nine other classes' denominators —
-  `rentable_square_feet` (office, industrial), `gross_leasable_area` (retail),
-  `net_rentable_square_feet` + `rentable_units` (self-storage), `keys`
-  (hospitality), `total_beds` (student, senior), and
-  `gross_acres`/`usable_acres`/`entitled_units` (land) — are read by their calc
-  packs and carried by their worked examples but are **normatively undeclared**.
-  Every tool that has needed them has re-derived the vocabulary from the packs
-  (the Excel layouts, and now the web editor's field catalog), which is exactly
-  the drift the spec exists to prevent. Found 2026-08-23 while making the
-  editor's field grid class-aware, and now written up as
-  [**RFC 0027**](../rfcs/0027-asset-class-size-intensives.md) (`draft`), which
-  proposes declaring the fields in §4.1 *and* adding a normative per-class
-  selection table (protocol §XI) so the ten copies collapse into one.
-  Building the RFC found three more consumers that never re-derived the
-  mapping and are wrong today: the one-row `csv` read model exports an empty
-  `total_units` for a 142-key hotel, the §7.1 Lender Package cover states no
-  size at all for a 42,500 SF office building, and `lite-bridge.ts` anchors
-  only `total_units`/`total_nra_sqft`, so UW Lite cannot express any other
-  class's size. `BUILTIN_VIEW_MODELS.property` labels `total_units` “Units”
-  for all ten classes.
+- ~~**Format spec §4.1 names only multifamily's size intensives.**~~ **Closed
+  2026-08-25 by [RFC 0027](../rfcs/0027-asset-class-size-intensives.md)
+  (implemented).** §4.1 now declares every class's intensive, Protocol §XIII
+  carries the normative selection table (mirrored by `SIZE_INTENSIVES` /
+  `getSizeIntensive()` / `resolveDealSize()` in core), and the three consumers
+  that were wrong are fixed: `csv` exports `size_basis`/`size_quantity` for
+  every class (appended — `total_units` keeps its column), the §7.1 cover
+  states `RSF 42,500` / `Keys 142`, and the Lite bridge anchors all nine
+  intensives. `CC-13` warns (never errors) when the primary size field is
+  unstated. The Excel layouts and the web editor's grid now derive from the
+  registry, and `conformance/size-intensive/` pins the whole surface (corpus
+  215 → 222). Note the RFC's §XI numbering was corrected to §XIII in errata —
+  §XI was already the Error Taxonomy.
 - **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
   RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
   reference implementation exists.
@@ -712,13 +703,19 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Small, unblocked, high value per hour
 
-4a. **Accept or reject [RFC 0027](../rfcs/0027-asset-class-size-intensives.md)
-   (size intensives), then implement it.** Drafted 2026-08-23 out of item 4.
-   Additive across the board and explicitly *no* calc change — every pack
-   formula already reads these paths, so the load-bearing test is that no
-   metric, receipt verdict, or Excel parity assertion moves. The one real
-   compatibility hazard is the `csv` column contract, handled by appending
-   `size_basis`/`size_quantity` rather than renaming `total_units`.
+4a. ~~**Accept or reject [RFC 0027](../rfcs/0027-asset-class-size-intensives.md)
+   (size intensives), then implement it.**~~ **Accepted and implemented
+   2026-08-25** across four PRs: spec (#90 — §4.1 fields + field notes, §5.3
+   `CC-13`, Protocol §XIII registry with Future work renumbered to §XIV, Lite
+   §8 anchor rows), core (#91 — the executable registry + validator +
+   csv/summary/chat/report/lite consumers, 33 new tests), consumers (#92 — the
+   Excel layouts and web-editor grid now derive from the table), and the
+   `conformance/size-intensive/` group (this change, corpus 215 → 222). The
+   load-bearing claim held: no metric, receipt verdict, or Excel parity
+   assertion moved; the only baseline update is `tier-1/04-scope-only`, which
+   states `"units"` — a field no consumer reads — and now truthfully warns.
+   One errata: the RFC said "protocol §XI (new)", but §XI was already the
+   Error Taxonomy, so the registry landed as **§XIII**.
 
    > **The `CC-13` severity question is settled (scanned 2026-08-24, Appendix
    > A of the RFC): keep it a warning, and the reason is not the one expected.**

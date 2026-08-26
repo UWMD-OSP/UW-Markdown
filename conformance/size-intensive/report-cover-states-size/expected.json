@@ -1,0 +1,8 @@
+{
+  "description": "The §7.1 report cover states the class's own size through the registry: the office example's Lender Package cover carries RSF 42,500 and the hotel's carries Keys 142. The multifamily cover gains no size fact — its size is the Units fact it always had.",
+  "covers": [
+    { "example": "Riverside-Office-Phoenix-AZ.uwx.md", "label": "RSF", "value": "42,500" },
+    { "example": "Saguaro-Select-Hotel-Tempe-AZ.uwx.md", "label": "Keys", "value": "142" }
+  ],
+  "no_drift": { "example": "Parkview-Apts-Glendale-AZ.uwx.md", "absent_labels": ["RSF", "Keys"] }
+}
