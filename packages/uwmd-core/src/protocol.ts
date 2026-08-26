@@ -28,7 +28,7 @@ import { deepGet, getSection, getSectionVariant } from './parser.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.5.0' as const;
+export const PROTOCOL_VERSION = '1.6.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;

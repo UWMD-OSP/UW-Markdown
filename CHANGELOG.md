@@ -6,7 +6,22 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [1.7.0] - 2026-08-25
+
+### Released
+
+- `@uwmd/core` **1.7.0**, `@uwmd/cli` **1.7.0** (lockstep), with coordinated
+  `@uwmd/core` repins in `@uwmd/excel` **0.6.0**, `@uwmd/report` **0.6.0**, and
+  `@uwmd/batch` **0.5.0**. Carries RFC 0027 (the size-intensive registry),
+  implemented since 1.6.0.
+- **Format stays 1.1; protocol bumps to 1.6.0.** The format change is additive
+  (nine optional null-default §4.1 fields; `CC-13` is a warning), but
+  `UW_PROTOCOL_v1.md` gained a normative section — §XIII's selection registry,
+  with a MUST on any implementation that displays, exports, or indexes a
+  deal's size — and §0.3's own rule is that the protocol bumps on any
+  normative change to required behavior. ("Future work" is now §XIV.) Also
+  corrected §0.3's stale "currently 1.3.0" prose, which had drifted from
+  `PROTOCOL_VERSION` unguarded.
 
 ### Added — the `size-intensive` conformance group; RFC 0027 is implemented (part 4)
 
