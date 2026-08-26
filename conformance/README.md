@@ -17,7 +17,10 @@ conformance/
 │   │                     (CC-NN, FV-NN, DQ-NN, INT-NN, POL-NN, META_*)
 │   │                     plus optional <id>.policies.json siblings for
 │   │                     POL-* fixtures
-│   └── expected/       Expected JSON parses + display strings + chat-format renders
+│   └── expected/       Expected JSON parses + frozen validation verdicts
+│                         (<id>.validation.json: overall_status + every
+│                         (code, severity) pair) + display strings +
+│                         chat-format renders
 ├── tier-2-editor/      Round-trip writes, supersede semantics
 │   └── fixtures/       <scenario>/{before.uw.md, operation.json, after.uw.md}
 │                         Optional siblings: context.json (EditContext),

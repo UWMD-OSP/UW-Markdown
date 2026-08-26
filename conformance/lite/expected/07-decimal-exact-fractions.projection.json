@@ -1,0 +1,17 @@
+{
+  "profile": "deal-summary-v1",
+  "projected_paths": [
+    "debt_structure.interest_rate",
+    "valuation.going_in_cap_rate",
+    "valuation.purchase_price"
+  ],
+  "omitted_paths": [
+    "assumptions.rent_growth",
+    "assumptions.vacancy.year_1"
+  ],
+  "externalized_sections": [],
+  "warnings": [
+    "Projection omits data that is not represented by the selected Lite profile."
+  ],
+  "lossy": true
+}

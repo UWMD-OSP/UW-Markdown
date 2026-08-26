@@ -1,0 +1,9 @@
+{
+  "overall_status": "warnings",
+  "issues": [
+    {
+      "code": "FV-04",
+      "severity": "warning"
+    }
+  ]
+}

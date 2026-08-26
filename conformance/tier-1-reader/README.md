@@ -46,6 +46,12 @@ For each fixture `<id>.uw.md`, the corresponding `expected/` directory contains:
 
 - `<id>.parsed.json` — the result of `cli parse --json` (the canonical JSON
   shape of `ParsedUWFile`).
+- `<id>.validation.json` — the frozen validation verdict: `overall_status`
+  plus every distinct `(code, severity)` pair from `validateUWFile`, sorted.
+  Valid fixtures previously asserted nothing about validation, so escalating
+  a rule from warning to error could flip `uwmd validate` to exit 1 on a
+  fixture while the suite stayed green (the gap RFC 0027 Appendix A
+  documented). Both a new code and a severity flip are now visible diffs.
 - `<id>.rendered-summary.md` — output of `cli render --format summary`.
 - `<id>.rendered-chat.txt` — output of `cli render --format chat`.
 

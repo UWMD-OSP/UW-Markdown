@@ -6,6 +6,38 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added — two documented conformance blind spots closed (corpus 222 → 244)
+
+Both gaps were already written down when their features shipped; this change
+makes the corpus able to see them.
+
+- **Tier-1 valid fixtures now freeze their validation verdict.** Each fixture
+  gains an `expected/<id>.validation.json` baseline holding `overall_status`
+  plus every distinct `(code, severity)` pair from `validateUWFile`. RFC 0027
+  Appendix A noted that Tier-1 valid fixtures asserted nothing about
+  validation, so escalating a rule from warning to error would flip
+  `uwmd validate` to exit 1 on fixtures with the suite still green. A severity
+  flip and a new code are both visible diffs now. The `04-scope-only` baseline
+  records the `CC-13` warning that fixture truthfully earns, plus its `DQ-05`
+  and `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` info notes.
+- **The RFC 0025 decimal-exactness pin the Lite suite could not carry.** Every
+  existing Lite fixture's percents (5.50 / 5.75 / 6.25 / 5.00 / −1.50) divide
+  cleanly by 100 in binary64, so all 90 assertions passed unchanged through
+  the RFC 0025 fix — the corpus could not distinguish decimal-point-shift
+  normalization from naive division. `06-decimal-exact-percents` states rates
+  only as literals that diverge under division (`5.51 / 100` is
+  `0.055099999999999996`, one ULP off `0.0551`); its twin
+  `07-decimal-exact-fractions` states the same values as bare fractions with
+  `unit=fraction`. A new `equivalence.json` group requires both to share one
+  digest, which holds only under the RFC 0025 rule, and the frozen
+  `canonical.json` pins the exact fractions besides.
+
+No library change; runner + fixtures + baselines only. Docs updated:
+`conformance/README.md`, `conformance/tier-1-reader/README.md`,
+`docs/wiki/09-conformance-testing.md`.
+
 ## [1.7.0] - 2026-08-25
 
 ### Released

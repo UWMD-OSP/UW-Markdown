@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "report": {
+    "profile": "deal-summary-v1",
+    "mappings": [
+      {
+        "lite_path": "assumptions.vacancy.year_1",
+        "target_path": "assumptions.vacancy.year_1"
+      },
+      {
+        "lite_path": "assumptions.rent_growth",
+        "target_path": "assumptions.rent_growth"
+      },
+      {
+        "lite_path": "debt.interest_rate",
+        "target_path": "debt_structure.interest_rate"
+      },
+      {
+        "lite_path": "acquisition.purchase_price",
+        "target_path": "valuation.purchase_price"
+      },
+      {
+        "lite_path": "valuation.going_in_cap_rate",
+        "target_path": "valuation.going_in_cap_rate"
+      }
+    ],
+    "defaults": [
+      {
+        "path": "frontmatter.uw_version",
+        "value": "1.1",
+        "reason": "RFC 0017 keeps UW semantic format 1.1 for the initial bridge."
+      }
+    ],
+    "issues": [],
+    "source_preserved_in": "x_uw_lite_source"
+  }
+}

@@ -75,6 +75,13 @@ run.
 - `fixtures/*.uw.md` parsed and compared (canonical JSON projection) against
   `expected/<id>.parsed.json`; `chat` and `summary` renders compared against
   `expected/<id>.rendered-{chat,summary}.{txt,md}` (whitespace-normalized).
+- `expected/<id>.validation.json` freezes each valid fixture's **validation
+  verdict** — `overall_status` plus every distinct `(code, severity)` pair.
+  Before this baseline existed, valid fixtures asserted nothing about
+  validation, so a rule escalation (warning → error) could flip
+  `uwmd validate` to exit 1 on a fixture with the suite still green — the
+  blind spot RFC 0027 Appendix A documented. A new code *and* a severity
+  flip on an existing one are both visible diffs now.
 - `malformed/<id>.uw.md` + `<id>.expected.json` — negative tests. `expected.json`
   declares `expected_codes[]` the validator MUST surface (extra codes allowed) and
   optional `must_parse`. INT-/POL- expectations also exercise
@@ -145,7 +152,16 @@ representation rather than a protocol conformance tier. It runs by default.
   must be **rejected by the bridge** with `LITE_COMPILE_*`. The runner fails a
   fixture here that has parse errors, to keep the two layers separate.
 - `equivalence.json` — groups of fixtures differing only along axes spec §6
-  excludes; all members must hash to one digest.
+  excludes; all members must hash to one digest. The
+  `decimal-exactness-percent-vs-fraction` group is the **RFC 0025 regression
+  pin**: `06-decimal-exact-percents` states rates only as percent literals
+  whose value under naive division (`Number(p) / 100`) lands one ULP away
+  from the fraction's own double (`5.51 / 100` ≠ `0.0551`), and
+  `07-decimal-exact-fractions` states the same values as bare fractions with
+  `unit=fraction`. Their shared digest holds only under decimal-point-shift
+  normalization — every other Lite fixture's percents divide cleanly and
+  pass unchanged through either implementation, which is why the corpus
+  could not previously detect this (noted when RFC 0025 shipped).
 
 Two properties are asserted as **invariants, not baselines**, so they bind any
 implementation regardless of our frozen output:

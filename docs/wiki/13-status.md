@@ -2,15 +2,15 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-25 at `81aa3b5` (the `v1.7.0` release commit; full
-pass: build green across all workspaces; **1,090 tests** — 927 core, 94 excel,
-62 cli, 4 batch, 3 report — plus **71 web-editor**; **222 conformance**
-assertions including the Tier-4 replay, module, package, receipts, market-data,
-composition, capital-stack, and size-intensive suites; 17/17 schemas valid;
-Biome clean over 437 files; `typecheck:tests` clean across all five
-workspaces; `@uwmd/core` and `@uwmd/cli` **1.7.0 published to npm** by the
-tag-triggered OIDC job, provenance attached — protocol bumped to **1.6.0**
-for §XIII).
+**Last verified:** 2026-08-25, after the conformance blind-spot closures on
+top of `v1.7.0` (`81aa3b5`) — full pass: build green across all workspaces;
+**1,090 tests** — 927 core, 94 excel, 62 cli, 4 batch, 3 report — plus
+**71 web-editor**; **244 conformance** assertions including the Tier-4 replay,
+module, package, receipts, market-data, composition, capital-stack, and
+size-intensive suites, now with Tier-1 validation-verdict baselines and the
+RFC 0025 decimal-exactness pin; Biome clean over 437 files; `@uwmd/core` and
+`@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
+provenance attached — protocol at **1.6.0** for §XIII.
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -85,12 +85,24 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **175 assertions** across 4 tiers plus the named `lite`,
-  `receipts`, `4-replay`, `modules`, and `packages` suites. CI now runs the runner's
+- **Conformance:** **244 assertions** across 4 tiers plus the named `lite`,
+  `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
+  `capital-stack`, and `size-intensive` suites. CI runs the runner's
   **default** suite list rather than a pinned `--tier=`, which is what the
   earlier claim of replay coverage assumed but did not have: `ci.yml` pinned
   `1,2,3,lite,receipts`, so `4-replay` had never actually gated a pull request.
   See [09](09-conformance-testing.md).
+
+  Two documented blind spots were closed 2026-08-25 (corpus 222 → 244):
+  Tier-1 valid fixtures now freeze their **validation verdict**
+  (`expected/<id>.validation.json`, `overall_status` + every
+  `(code, severity)` pair — the gap RFC 0027 Appendix A named, where a
+  warning→error escalation would flip `uwmd validate` to exit 1 with the
+  suite still green), and the Lite suite gained the **RFC 0025
+  decimal-exactness pin** — a fixture pair (`06-decimal-exact-percents` /
+  `07-decimal-exact-fractions`) whose shared equivalence-group digest holds
+  only under decimal-point-shift normalization, since every prior fixture's
+  percents divide cleanly and could not tell the implementations apart.
 - **Verification receipts (RFC 0016):** `receipts.ts` issues and verifies
   detached receipts binding a record's canonical digest to the deterministic
   outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
@@ -735,9 +747,12 @@ bus factor, personal security email, and no public RFC venue.
    > omit it and still validate `clean`/`warnings`. That wants its own rule and
    > probably its own RFC; `CC-13` deliberately does not absorb it. And
    > **conformance would not have caught the escalation**: Tier-1 `malformed`
-   > matches expected codes as a subset and Tier-1 valid fixtures assert nothing
-   > about validation, so a new error code would flip `uwmd validate` to exit 1
-   > on six fixtures with the suite still green.
+   > matches expected codes as a subset and Tier-1 valid fixtures asserted
+   > nothing about validation, so a new error code would flip `uwmd validate`
+   > to exit 1 on six fixtures with the suite still green. *(The valid-fixture
+   > half of this is closed as of 2026-08-25 — each now freezes its validation
+   > verdict, so an escalation is a visible baseline diff; see the Conformance
+   > entry above. The `malformed` subset-matching half is by design.)*
 
 5. ~~**Lite percent normalization loses decimal exactness.**~~ **Accepted and
    implemented 2026-08-16 as
@@ -758,7 +773,9 @@ bus factor, personal security email, and no public RFC venue.
    against a byte-identical record. New **`RCP-10`** degrades that to
    `unverifiable`, mirroring the §5.3 engine-identity carve-out.
 
-   > **The corpus could not have caught this, and still can't.** Every
+   > **The corpus could not have caught this** (closed 2026-08-25 — the
+   > `decimal-exactness-percent-vs-fraction` equivalence group now pins it;
+   > see the Conformance entry above). At the time of the fix: every
    > `conformance/lite/` fixture uses 5.50%/5.75%/6.25%/5.00%/-1.50% — all divide
    > cleanly — so all 90 assertions passed *unchanged* through the fix. An empty
    > diff there is the absence of evidence, not evidence of correctness; the

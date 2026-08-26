@@ -14,6 +14,19 @@
         "equivalent numeric display spellings"
       ],
       "fixtures": ["02-full-deal-summary", "03-display-variants"]
+    },
+    {
+      "id": "decimal-exactness-percent-vs-fraction",
+      "excluded_axes": [
+        "labels",
+        "headings",
+        "prose",
+        "field order",
+        "bullet character",
+        "equivalent numeric display spellings"
+      ],
+      "note": "RFC 0025 regression pin: every percent literal here diverges from its fraction twin under naive division (Number(p)/100 is one ULP off), so this group's shared digest holds only under decimal-point-shift normalization. The other groups' percents divide cleanly and cannot detect the difference.",
+      "fixtures": ["06-decimal-exact-percents", "07-decimal-exact-fractions"]
     }
   ]
 }
