@@ -207,3 +207,55 @@ describe('UWX bridge rendering and Lite projection', () => {
     });
   });
 });
+
+// ─── RFC 0027 — any class's size intensive crosses the bridge ────────────────
+
+describe('size intensives cross the bridge (RFC 0027)', () => {
+  const OFFICE_LITE = [
+    '---',
+    'uw_lite_version: 1.0',
+    'deal_id: uw_lite_office',
+    'deal_name: Lite Office',
+    'created: 2026-08-25T00:00:00Z',
+    'asset_class: office',
+    '---',
+    '',
+    '# Property',
+    '',
+    '- Rentable square feet: 42,500 <!-- uw:property.rentable_square_feet -->',
+  ].join('\n');
+
+  it('a Lite summary can state an office RSF', () => {
+    const result = compileUWLite(parseUWLite(OFFICE_LITE));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.envelope.sections['property']).toMatchObject({
+      content: { rentable_square_feet: 42_500 },
+    });
+  });
+
+  it('round-trips: Lite → envelope → Lite keeps the RSF anchor and value', () => {
+    const result = compileUWLite(parseUWLite(OFFICE_LITE));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const projection = projectUWEnvelopeToLite(result.envelope);
+    expect(projection.content).toContain('<!-- uw:property.rentable_square_feet -->');
+    const back = compileUWLite(parseUWLite(projection.content));
+    expect(back.ok).toBe(true);
+    if (!back.ok) return;
+    expect(back.envelope.sections['property']).toMatchObject({
+      content: { rentable_square_feet: 42_500 },
+    });
+  });
+
+  it('every registered size intensive has a bridge anchor', async () => {
+    const { SIZE_INTENSIVES } = await import('./protocol.js');
+    const { UW_LITE_FIELD_MAPPINGS } = await import('./lite-bridge.js');
+    const litePaths = new Set(UW_LITE_FIELD_MAPPINGS.map((m) => m.lite_path));
+    for (const [cls, entry] of Object.entries(SIZE_INTENSIVES)) {
+      for (const path of [entry.path, ...entry.secondary]) {
+        expect(litePaths.has(`property.${path}`), `${cls}: property.${path}`).toBe(true);
+      }
+    }
+  });
+});

@@ -132,6 +132,53 @@ export const UW_LITE_FIELD_MAPPINGS: readonly UWLiteFieldMapping[] = [
     target_path: 'property.total_nra_sqft',
     label: 'Total NRA',
   },
+  // RFC 0027: one anchor per size intensive (Protocol §XIII), so a Lite
+  // summary can state any asset class's size, not only multifamily's.
+  {
+    lite_path: 'property.rentable_square_feet',
+    target_path: 'property.rentable_square_feet',
+    label: 'Rentable square feet',
+  },
+  {
+    lite_path: 'property.gross_leasable_area',
+    target_path: 'property.gross_leasable_area',
+    label: 'Gross leasable area',
+  },
+  {
+    lite_path: 'property.net_rentable_square_feet',
+    target_path: 'property.net_rentable_square_feet',
+    label: 'Net rentable square feet',
+  },
+  {
+    lite_path: 'property.rentable_units',
+    target_path: 'property.rentable_units',
+    label: 'Rentable units',
+  },
+  {
+    lite_path: 'property.keys',
+    target_path: 'property.keys',
+    label: 'Keys',
+  },
+  {
+    lite_path: 'property.total_beds',
+    target_path: 'property.total_beds',
+    label: 'Total beds',
+  },
+  {
+    lite_path: 'property.gross_acres',
+    target_path: 'property.gross_acres',
+    label: 'Gross acres',
+  },
+  {
+    lite_path: 'property.usable_acres',
+    target_path: 'property.usable_acres',
+    label: 'Usable acres',
+  },
+  {
+    lite_path: 'property.entitled_units',
+    target_path: 'property.entitled_units',
+    label: 'Entitled units',
+  },
 ] as const;
 
 const MAPPING_BY_LITE_PATH = new Map(

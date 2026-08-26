@@ -8,6 +8,37 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — the size-intensive registry lands in `@uwmd/core` (RFC 0027, part 2)
+
+The executable half of the Protocol §XIII registry. New browser-safe exports:
+`SIZE_INTENSIVES`, `getSizeIntensive()`, `resolveDealSize()`, and the
+`SizeIntensive` type.
+
+- **`protocol.ts`** — the §XIII table (nine classes; `mixed_use` deliberately
+  null, unrecognized classes null, never a guess). `resolveDealSize()` reads
+  the raw property section — never the cascade, because a deal's size is a
+  fact about the asset — and applies §VIII.2's envelope-`content` unwrap
+  exactly as the calc evaluator does, so the registry and the packs can never
+  disagree about the same document.
+- **`validator.ts`** — `CC-13` (warning, never error) with the five normative
+  applicability preconditions, plus its `BUILTIN_REMEDIATIONS` entry.
+- **`renderer.ts`** — `csv` appends `size_basis` / `size_quantity` (appended,
+  never inserted: column order is contract; `total_units` keeps its position
+  and meaning). `summary` and `chat` state a non-`total_units` class's size;
+  multifamily and senior-housing renderings are byte-identical to before.
+- **`report.ts`** — the Lender Package / Credit Memo cover and property table
+  state the class's own size (`RSF 42,500`, `Keys 142`); the multifamily
+  cover is unchanged.
+- **`lite-bridge.ts`** — `UW_LITE_FIELD_MAPPINGS` gains one anchor per
+  intensive, mirroring the Lite spec §8 rows from part 1.
+- **Conformance** — `tier-1/04-scope-only` expected chat/summary gain the
+  CC-13 warning line: that fixture states `"units"`, a field no consumer
+  reads, so it truthfully never stated a size at the normative path. No other
+  baseline moved; Tier-3 and Excel parity are untouched.
+- **Tests** — 33 new: the registry/pack agreement suite (both directions),
+  CC-13's severity and every precondition, per-consumer size assertions, the
+  Lite round-trip, and multifamily no-drift pins. Core suite 894 → 927.
+
 ### Added — the size-intensive registry lands in the specs (RFC 0027, part 1)
 
 RFC 0027 was accepted 2026-08-25; this is the spec half of its implementation.

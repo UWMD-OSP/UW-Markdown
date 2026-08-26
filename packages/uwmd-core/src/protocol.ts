@@ -23,6 +23,8 @@ import type {
   ValidationSeverity,
 } from './types.js';
 
+import { deepGet, getSection, getSectionVariant } from './parser.js';
+
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
@@ -709,6 +711,83 @@ export function isStandardSectionId(id: string): boolean {
 /** The `x_` namespace FORMAT_SPEC § 4.21 reserves for non-standard content. */
 export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 
+// ─── Size-intensive registry (PROTOCOL §XIII, RFC 0027) ──────────────────────
+
+/**
+ * One asset class's entry in the Protocol §XIII selection table: which
+ * `property` field is the class's size, what to call it, and what unit it
+ * carries. The primary size field is the denominator that class's calc pack
+ * uses for its per-unit value metrics.
+ */
+export interface SizeIntensive {
+  /** Field path relative to the `property` section, e.g. `'keys'`. */
+  readonly path: string;
+  /** Display label, e.g. `'Keys'`, `'RSF'`. */
+  readonly label: string;
+  /** Unit token, e.g. `'keys'`, `'sqft'`. */
+  readonly unit: string;
+  /** Secondary size fields the class legitimately also states. */
+  readonly secondary: readonly string[];
+}
+
+/**
+ * The Protocol §XIII registry, keyed by asset class. `mixed_use` is
+ * deliberately absent (§XIII.2): its size lives per-component in the
+ * `components` section and MUST NOT be synthesized by summing across uses.
+ * The table is closed for protocol 1.x (§XIII.3) — an unrecognized class has
+ * no primary size field, never a guessed one.
+ */
+export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.freeze({
+  multifamily:     Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_nra_sqft']) }),
+  office:          Object.freeze({ path: 'rentable_square_feet',     label: 'RSF',         unit: 'sqft',  secondary: Object.freeze([]) }),
+  industrial:      Object.freeze({ path: 'rentable_square_feet',     label: 'RSF',         unit: 'sqft',  secondary: Object.freeze([]) }),
+  retail:          Object.freeze({ path: 'gross_leasable_area',      label: 'GLA',         unit: 'sqft',  secondary: Object.freeze([]) }),
+  self_storage:    Object.freeze({ path: 'net_rentable_square_feet', label: 'NRSF',        unit: 'sqft',  secondary: Object.freeze(['rentable_units']) }),
+  hospitality:     Object.freeze({ path: 'keys',                     label: 'Keys',        unit: 'keys',  secondary: Object.freeze([]) }),
+  student_housing: Object.freeze({ path: 'total_beds',               label: 'Beds',        unit: 'beds',  secondary: Object.freeze(['total_units']) }),
+  senior_housing:  Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_beds']) }),
+  land:            Object.freeze({ path: 'gross_acres',              label: 'Gross acres', unit: 'acres', secondary: Object.freeze(['usable_acres', 'entitled_units']) }),
+});
+
+/**
+ * The §XIII selection: `null` for `mixed_use` (§XIII.2) and for any
+ * unrecognized class (§XIII.3) — never a guess.
+ */
+export function getSizeIntensive(assetClass: string): SizeIntensive | null {
+  return SIZE_INTENSIVES[assetClass] ?? null;
+}
+
+/**
+ * The deal's size as `{basis, label, unit, quantity}`, selected through the
+ * §XIII registry and read from the raw `property` section — never through the
+ * cascade, because a deal's size is a fact about the asset, not a default
+ * (RFC 0027, unresolved question 4). `null` when the class has no primary
+ * size field, when there is no property section, or when the document omits
+ * or non-numerically states the field.
+ */
+export function resolveDealSize(
+  parsed: ParsedUWFile,
+): { basis: string; label: string; unit: string; quantity: number } | null {
+  const assetClass = parsed.frontmatter.asset_class;
+  if (typeof assetClass !== 'string') return null;
+  const intensive = getSizeIntensive(assetClass);
+  if (!intensive) return null;
+  const property =
+    getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
+  if (!property) return null;
+  // §VIII.2's unwrap rule, exactly as the calc evaluator applies it: when a
+  // block stores the envelope shape, the user-facing payload lives one level
+  // down at `content`. The registry must read the same payload the pack
+  // divides by, or the two disagree about the same document.
+  const payload =
+    property.content && typeof property.content === 'object' && 'content' in property.content
+      ? (property.content as Record<string, unknown>)['content']
+      : property.content;
+  const raw = deepGet(payload, intensive.path);
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) return null;
+  return { basis: intensive.path, label: intensive.label, unit: intensive.unit, quantity: raw };
+}
+
 // ─── Document profiles (RFC 0018 §1) ──────────────────────────────────────────
 
 /**
@@ -1253,6 +1332,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'noi_model.net_operating_income does not equal the sum of the component net_operating_income values.',
     remediation: 'Reconcile the component NOIs with the property NOI — the property figure MUST equal their sum (RFC 0019 §3a).',
     spec_ref: '§5.3 CC-12',
+  },
+  {
+    code: 'CC-13', severity: 'warning',
+    title: 'Primary size field not stated',
+    description: 'The property section does not state the primary size field for frontmatter.asset_class (Protocol §XIII.1) — the denominator of every per-unit metric.',
+    remediation: 'State the class\'s primary size field in the property section (e.g. keys for hospitality, rentable_square_feet for office); use null, never zero, when it is genuinely unknown.',
+    spec_ref: '§5.3 CC-13',
   },
   {
     code: 'MU-01', severity: 'error',

@@ -6,6 +6,7 @@
 import type { ParsedUWFile, UWBlock, ValidationResult } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
 import { validateUWFile } from './validator.js';
+import { resolveDealSize } from './protocol.js';
 import {
   formatCurrency,
   formatPercent,
@@ -116,7 +117,12 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
     'loan_rate_pct', 'loan_term_years', 'amortization_years', 'io_period_months',
     'exit_cap_rate_pct', 'hold_period_years', 'equity_multiple',
     'flags', 'blocking_flags', 'recommendation',
+    // RFC 0027: appended, never inserted — column order is part of the csv
+    // contract, and `total_units` keeps its position and meaning above.
+    'size_basis', 'size_quantity',
   ];
+
+  const size = resolveDealSize(parsed);
 
   const row = [
     fm.deal_id ?? '',
@@ -147,6 +153,8 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
     `"${(fm.flags ?? []).join('; ')}"`,
     `"${(fm.blocking_flags ?? []).join('; ')}"`,
     fm.recommendation ?? '',
+    size?.basis ?? '',
+    size ? num(size.quantity) : '',
   ];
 
   return {
@@ -177,6 +185,14 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   const assetSubtype = deepGet(property?.content, 'asset_subtype') ?? fm.asset_subtype;
   const buildingClass = deepGet(property?.content, 'building_class');
 
+  // RFC 0027: state the class's own size (Protocol §XIII.1). The multifamily
+  // and senior-housing primary is `total_units`, already rendered by the
+  // `units` term above — skipping it there keeps those renderings byte-stable.
+  const size = resolveDealSize(parsed);
+  const sizeTerm = size && size.basis !== 'total_units'
+    ? ` · ${size.quantity.toLocaleString('en-US')} ${size.label}`
+    : '';
+
   const rate = deepGet(debt?.content, 'interest_rate') ?? deepGet(debt?.content, 'rate');
   const termYears = deepGet(debt?.content, 'loan_term_years') ?? deepGet(debt?.content, 'term_years');
   const amYears = deepGet(debt?.content, 'amortization_years');
@@ -203,7 +219,7 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
     : '- None';
 
   const content = `# ${fm.deal_name ?? 'Deal Summary'}
-> ${fm.property_address ?? ''} · ${fm.city ?? ''}, ${fm.state ?? ''} · ${val(assetSubtype) !== 'n/a' ? `${assetSubtype} ` : ''}${fm.asset_class ?? ''}${units ? ` · ${units} units` : ''}${yearBuilt ? ` · ${yearBuilt} vintage` : ''}
+> ${fm.property_address ?? ''} · ${fm.city ?? ''}, ${fm.state ?? ''} · ${val(assetSubtype) !== 'n/a' ? `${assetSubtype} ` : ''}${fm.asset_class ?? ''}${units ? ` · ${units} units` : ''}${sizeTerm}${yearBuilt ? ` · ${yearBuilt} vintage` : ''}
 
 **Status:** ${fm.deal_stage ?? 'draft'} · **Recommendation:** ${fm.recommendation ?? 'pending'} · **Class:** ${val(buildingClass)}
 
@@ -345,7 +361,13 @@ Blocking: ${(fm.blocking_flags as string[] | undefined)?.join(', ') || 'none'}`)
   const property = getSection(parsed, 'property');
   if (property) {
     const c = property.content;
-    sections.push(`## PROPERTY
+    // RFC 0027: a class whose primary size is not `total_units` states it as
+    // its own line; the multifamily/senior block is byte-identical to before.
+    const size = resolveDealSize(parsed);
+    const sizeLine = size && size.basis !== 'total_units'
+      ? `\nSize: ${size.quantity.toLocaleString('en-US')} ${size.label} (${size.basis})`
+      : '';
+    sections.push(`## PROPERTY${sizeLine}
 Units: ${val(deepGet(c, 'total_units'))} | Built: ${val(deepGet(c, 'year_built'))} | Renovated: ${val(deepGet(c, 'year_renovated'))}
 Class: ${val(deepGet(c, 'building_class'))} | Condition: ${val(deepGet(c, 'condition'))} | Subtype: ${val(deepGet(c, 'asset_subtype'))}
 NRA: ${val(deepGet(c, 'total_nra_sqft'))} sqft | Land: ${val(deepGet(c, 'land_area_acres'))} acres | Stories: ${val(deepGet(c, 'stories'))}

@@ -226,8 +226,12 @@ export {
   BUILTIN_EDGE_TYPES,
   lookupEdgeType,
   isEdgeTypeValidOnLayer,
+  // RFC 0027: the Protocol §XIII size-intensive registry. Browser-safe.
+  SIZE_INTENSIVES,
+  getSizeIntensive,
+  resolveDealSize,
 } from './protocol.js';
-export type { DocumentProfile, UWEdgeLayer, UWEdgeEndpointKind, UWEdgeTypeDef } from './protocol.js';
+export type { DocumentProfile, UWEdgeLayer, UWEdgeEndpointKind, UWEdgeTypeDef, SizeIntensive } from './protocol.js';
 export {
   UW_PACKAGE_VERSION,
   UW_PACKAGE_ZIP_CODEC,
