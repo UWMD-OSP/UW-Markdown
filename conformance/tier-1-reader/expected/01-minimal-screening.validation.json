@@ -2,6 +2,10 @@
   "overall_status": "warnings",
   "issues": [
     {
+      "code": "DQ-06",
+      "severity": "info"
+    },
+    {
       "code": "META_FIELD_MISSING_SECTION",
       "severity": "warning"
     }

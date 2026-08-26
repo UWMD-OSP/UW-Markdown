@@ -8,6 +8,56 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — RFC 0028 implemented: a missing required section is now a reportable defect (corpus 244 → 245)
+
+[RFC 0028](docs/rfcs/0028-reportable-section-readiness.md) (drafted, accepted,
+and implemented 2026-08-26) closes the gap its own Appendix A scan measured:
+format spec §4.1 requires the `property` section at every stage and §5.1 lists
+per-stage required sections, yet 28 in-scope corpus documents omitted
+`property` entirely and validated `clean`/`warnings`, because
+`stage_readiness` was computed but never reported as issues.
+
+- **`CC-14` (warning):** a deal-record UWX document with no `property`
+  section. Preconditions mirror `CC-13`'s (not a compiled Lite summary, deal
+  profile only; an externalized section is present, not missing);
+  unconditional on `deal_stage`. Never coincides with `CC-13` — one defect,
+  one diagnostic.
+- **`DQ-06` (info):** one issue per section the declared `deal_stage`
+  requires but the file lacks — the sectional sibling of `DQ-04` and the
+  issues-stream mirror of `stage_readiness`. Suppresses its `property` entry
+  when `CC-14` fired. Info by design: the scan found all twelve worked
+  examples fail their declared stage's list, so info reports without
+  refusing or nagging.
+- **`operating_statement` re-joins `STAGE_REQUIREMENTS.full_underwrite`**
+  and above (RFC decision (a)): §5.1 always listed it, and the validator's
+  variant-aware `hasSection` case was built for it but no stage list reached
+  it. §5.1 also gains its missing **Scope** row and a presence-vs-freshness
+  split for Monitoring.
+- **Spec:** §5.1 is now machine-checked language; §5.3 gains the `CC-14` row
+  and severity/applicability prose. Format stays 1.1 (additive; both new
+  rules are sub-error).
+- **Conformance:** new Tier-1 `malformed/10-property-section-missing`
+  fixture (`CC-14` + `DQ-06`); the Tier-1 validation-verdict and render
+  baselines absorb the new codes (the baseline system added 2026-08-25 doing
+  its job). The `capital-stack/senior-reconciles-debt-structure` fixtures
+  were made stage-honest (a `property` section added, the boilerplate
+  `full_underwrite` claim dropped) rather than freezing ten noise codes.
+- **Tier-4 replay:** the cassette's prompt-drift detector fired — agent
+  context includes validation output, which now carries the new codes. New
+  `scripts/rerecord-cassettes.mjs` turns the replay README's inline recipe
+  into a runnable tool: it re-records every scenario's cassette from its
+  `scripted-completion.json` through the real recorder, pinned to the replay
+  clock. The cassette diff shows only the request side changed.
+- **Tests:** 15 new unit tests (`validator.section-readiness.test.ts`)
+  covering every `CC-14` precondition, the `CC-13`/`DQ-06` mutual
+  exclusions, and the `operating_statement` requirement through its `t12`
+  variant.
+
+Follow-up tracked in `docs/wiki/13-status.md`: all twelve worked examples
+declare `full_underwrite` but miss 4–5 of its required sections — bring the
+examples to stage-honesty (add the sections or restage them), then a future
+RFC may revisit `DQ-06`'s severity.
+
 ### Added — two documented conformance blind spots closed (corpus 222 → 244)
 
 Both gaps were already written down when their features shipped; this change

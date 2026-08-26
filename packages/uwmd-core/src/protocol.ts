@@ -1341,6 +1341,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: '§5.3 CC-13',
   },
   {
+    code: 'CC-14', severity: 'warning',
+    title: 'Property section missing',
+    description: 'A deal-record document has no property section; format spec §4.1 requires it at every pipeline stage (RFC 0028).',
+    remediation: 'Add a property section stating at least the address and asset class. If the record intentionally has no property (a non-deal profile), declare that profile in document_profile.',
+    spec_ref: '§5.3 CC-14',
+  },
+  {
     code: 'MU-01', severity: 'error',
     title: 'Too few components',
     description: 'A mixed-use property declares fewer than two admissible components.',
@@ -1437,6 +1444,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A `gaps` item has not been re-checked recently and may be obsolete.',
     remediation: 'Re-check the gap and refresh `last_checked`, or close the gap if it has been resolved.',
     spec_ref: 'UW_FORMAT_SPEC_v1.md §4.22',
+  },
+  {
+    code: 'DQ-06', severity: 'info',
+    title: 'Declared-stage section gap',
+    description: 'A section required by the declared deal_stage (format spec §5.1) is missing — the issues-stream mirror of stage_readiness (RFC 0028).',
+    remediation: 'Add the named section, or restate deal_stage to the stage the file actually satisfies; stage_readiness lists what each stage needs.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §5.1',
   },
 
   // ─── Integrity (INT-NN) — content_hash / parent_hash chain checks ──────────
