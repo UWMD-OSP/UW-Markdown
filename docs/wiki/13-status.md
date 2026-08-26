@@ -744,8 +744,13 @@ bus factor, personal security email, and no public RFC venue.
    >
    > Two spin-offs. **Nothing enforces that the property section exists** —
    > §4.1 says it is required at all stages, and 22 in-scope corpus documents
-   > omit it and still validate `clean`/`warnings`. That wants its own rule and
-   > probably its own RFC; `CC-13` deliberately does not absorb it. And
+   > omit it and still validate `clean`/`warnings` (a 2026-08-26 re-scan over
+   > all seven stage tables counts 28). That wants its own rule and
+   > probably its own RFC — now drafted as
+   > [RFC 0028](../rfcs/0028-reportable-section-readiness.md) (`CC-14`
+   > warning for the missing property section, `DQ-06` info mirroring
+   > `stage_readiness` into the issues stream, §5.1 drift corrections);
+   > `CC-13` deliberately does not absorb it. And
    > **conformance would not have caught the escalation**: Tier-1 `malformed`
    > matches expected codes as a subset and Tier-1 valid fixtures asserted
    > nothing about validation, so a new error code would flip `uwmd validate`
