@@ -1,9 +1,10 @@
 ---
 rfc: 0028
 title: Make a missing required section a reportable defect
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-08-26
+accepted: 2026-08-26
 affects:
   - format-spec
   - core-library
@@ -11,6 +12,15 @@ affects:
 ---
 
 # RFC 0028: Make a missing required section a reportable defect
+
+> **Accepted 2026-08-26**, with the three review decisions resolved as
+> follows: the two-rule design and severities stand as proposed;
+> `operating_statement` takes option **(a)** — it joins
+> `STAGE_REQUIREMENTS.full_underwrite` (and the stages above it), reviving
+> the validator's dead variant-aware `hasSection` case rather than striking
+> the spec's claim; and example stage-honesty cleanup is a **tracked
+> follow-up** in `docs/wiki/13-status.md`, not part of this RFC's
+> implementation.
 
 ## Summary
 
