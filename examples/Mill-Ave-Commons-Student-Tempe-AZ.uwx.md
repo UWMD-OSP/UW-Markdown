@@ -359,3 +359,244 @@ pre-lease premium, not on current coupon.
   ]
 }
 ```
+
+## Operating Statement (T-12)
+
+Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
+
+```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "operating_statement",
+    "version": 1,
+    "superseded": false,
+    "source": "extractor",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+  },
+  "period": "t12",
+  "period_end": "2026-06-30",
+  "statement_basis": "accrual",
+  "income": {
+    "total_revenue": 6603600
+  },
+  "expenses": {
+    "total_operating_expenses": 3238144
+  },
+  "net_operating_income": 3365456,
+  "reconciles_to_noi_model": true
+}
+```
+
+## Preliminary Sizing
+
+Loan sizing against the three standard constraints. The governing test is dscr; the proposed loan of $35,100,000 fits inside it.
+
+```json uw:section=preliminary_sizing source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "preliminary_sizing",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "sizing_basis": {
+    "noi_underwritten": 3365456,
+    "value_basis": 58500000,
+    "annual_debt_constant": 0.0739
+  },
+  "constraints": [
+    {
+      "test": "max_ltv",
+      "limit": 0.75,
+      "max_loan": 43875000
+    },
+    {
+      "test": "min_dscr",
+      "limit": 1.25,
+      "max_loan": 36439413
+    },
+    {
+      "test": "min_debt_yield",
+      "limit": 0.09,
+      "max_loan": 37393956
+    }
+  ],
+  "max_supportable_loan": 36439413,
+  "governing_constraint": "dscr",
+  "proposed_loan": 35100000,
+  "proposed_within_constraints": true,
+  "cushion": 1339413
+}
+```
+
+## Borrower / Sponsor
+
+Mill Avenue Student Housing LP — single-principal sponsorship; figures PFS-stated pending CPA verification.
+
+```json uw:section=borrower_sponsor source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "borrower_sponsor",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": true,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+  },
+  "principals": [
+    {
+      "name": "Priya Raman",
+      "role": "managing_member",
+      "ownership_pct": 1,
+      "is_guarantor": true,
+      "is_key_man": true,
+      "net_worth_stated": 63180000,
+      "liquid_assets_stated": 3861000,
+      "contingent_liabilities_stated": 0,
+      "years_cre_experience": 15,
+      "pfs_received": true,
+      "tax_returns_received": false,
+      "figures_verified": false,
+      "verification_basis": "pfs_stated"
+    }
+  ],
+  "entity": {
+    "name": "Mill Avenue Student Housing LP",
+    "type": "llc",
+    "state": "AZ"
+  },
+  "financial_summary": {
+    "global_net_worth": 63180000,
+    "global_liquidity": 3861000,
+    "nw_to_loan_ratio": 1.8,
+    "nw_to_loan_policy_min": 1,
+    "liquidity_to_loan_ratio": 0.11,
+    "liquidity_to_loan_policy_min": 0.1,
+    "all_figures_verified": false,
+    "unverified_flag": true
+  }
+}
+```
+
+## Market Analysis
+
+Tempe / ASU purpose-built student housing fundamentals as of 2026-08.
+
+```json uw:section=market_analysis source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "market_analysis",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Broker survey and published market reports; refresh before credit committee."
+  },
+  "market": "Phoenix Metro",
+  "submarket": "Tempe / ASU",
+  "data_as_of": "2026-08-01",
+  "vacancy": {
+    "current_rate": 0.035,
+    "trend": "stable"
+  },
+  "rents": {
+    "yoy_growth_pct": 0.032,
+    "trend": "moderate"
+  },
+  "cap_rates": {
+    "range_low": 0.055,
+    "range_high": 0.06,
+    "subject_going_in": 0.0575291624
+  },
+  "supply": {
+    "note": "Two towers (1,150 beds) delivering pre-2027 within one mile of campus; ASU enrollment growth continues to absorb."
+  }
+}
+```
+
+## Validation
+
+Financial-validity engine run over the sections above.
+
+```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "validation",
+    "version": 1,
+    "superseded": false,
+    "source": "engine:financialValidityChecker",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "system",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "overall_status": "clean",
+  "financial_validity": [
+    {
+      "flag_id": "FV-001",
+      "metric": "dscr",
+      "value": 1.2977,
+      "threshold": {
+        "type": "min",
+        "min": 1.2,
+        "max": null
+      },
+      "severity": "pass",
+      "message": "DSCR (1.2977x) clears the 1.20x warning threshold.",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-002",
+      "metric": "ltv",
+      "value": 0.6,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.75
+      },
+      "severity": "pass",
+      "message": "LTV at 60.0% is within the 75% policy maximum.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
+  ],
+  "completeness": []
+}
+```

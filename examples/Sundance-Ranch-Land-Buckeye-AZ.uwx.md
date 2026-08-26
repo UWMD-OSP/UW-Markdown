@@ -24,7 +24,7 @@ pipeline_state:
   L7_assembly:     "pending"
 
 status: "in_progress"
-deal_stage: "full_underwrite"
+deal_stage: "screening"
 recommendation: "pending"
 
 quick_metrics:
@@ -322,5 +322,47 @@ finished-lot sellout.
       "notes": null
     }
   ]
+}
+```
+
+## Validation
+
+Financial-validity engine run. Income-property thresholds do not apply to a land carry; the run records the LTC test.
+
+```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "validation",
+    "version": 1,
+    "superseded": false,
+    "source": "engine:financialValidityChecker",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "system",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Land basis: no income-property thresholds (DSCR / debt yield / cap rate) apply — the carry statement nets negative by design. Sizing discipline lives in LTC and the interest reserve."
+  },
+  "overall_status": "clean",
+  "financial_validity": [
+    {
+      "flag_id": "FV-001",
+      "metric": "ltc",
+      "value": 0.5,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.8
+      },
+      "severity": "pass",
+      "message": "LTC at 50.0% is well inside the 80% warning threshold for land.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
+  ],
+  "completeness": []
 }
 ```

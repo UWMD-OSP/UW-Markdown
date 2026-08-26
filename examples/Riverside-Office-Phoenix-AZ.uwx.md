@@ -352,3 +352,244 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   "stabilized_value_estimate": 6300000
 }
 ```
+
+## Operating Statement (T-12)
+
+Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
+
+```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "operating_statement",
+    "version": 1,
+    "superseded": false,
+    "source": "extractor",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+  },
+  "period": "t12",
+  "period_end": "2026-06-30",
+  "statement_basis": "accrual",
+  "income": {
+    "total_revenue": 682550
+  },
+  "expenses": {
+    "total_operating_expenses": 382550
+  },
+  "net_operating_income": 300000,
+  "reconciles_to_noi_model": true
+}
+```
+
+## Preliminary Sizing
+
+Loan sizing against the three standard constraints. The governing test is dscr; the proposed loan of $3,250,000 exceeds it.
+
+```json uw:section=preliminary_sizing source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "preliminary_sizing",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "sizing_basis": {
+    "noi_underwritten": 300000,
+    "value_basis": 5000000,
+    "annual_debt_constant": 0.09
+  },
+  "constraints": [
+    {
+      "test": "max_ltv",
+      "limit": 0.75,
+      "max_loan": 3750000
+    },
+    {
+      "test": "min_dscr",
+      "limit": 1.25,
+      "max_loan": 2666667
+    },
+    {
+      "test": "min_debt_yield",
+      "limit": 0.09,
+      "max_loan": 3333333
+    }
+  ],
+  "max_supportable_loan": 2666667,
+  "governing_constraint": "dscr",
+  "proposed_loan": 3250000,
+  "proposed_within_constraints": false,
+  "cushion": -583333
+}
+```
+
+## Borrower / Sponsor
+
+Riverside Office Investors LLC — single-principal sponsorship; figures PFS-stated pending CPA verification.
+
+```json uw:section=borrower_sponsor source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "borrower_sponsor",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": true,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+  },
+  "principals": [
+    {
+      "name": "Tom Calloway",
+      "role": "managing_member",
+      "ownership_pct": 1,
+      "is_guarantor": true,
+      "is_key_man": true,
+      "net_worth_stated": 5850000,
+      "liquid_assets_stated": 357500,
+      "contingent_liabilities_stated": 0,
+      "years_cre_experience": 15,
+      "pfs_received": true,
+      "tax_returns_received": false,
+      "figures_verified": false,
+      "verification_basis": "pfs_stated"
+    }
+  ],
+  "entity": {
+    "name": "Riverside Office Investors LLC",
+    "type": "llc",
+    "state": "AZ"
+  },
+  "financial_summary": {
+    "global_net_worth": 5850000,
+    "global_liquidity": 357500,
+    "nw_to_loan_ratio": 1.8,
+    "nw_to_loan_policy_min": 1,
+    "liquidity_to_loan_ratio": 0.11,
+    "liquidity_to_loan_policy_min": 0.1,
+    "all_figures_verified": false,
+    "unverified_flag": true
+  }
+}
+```
+
+## Market Analysis
+
+Midtown Phoenix suburban office fundamentals as of 2026-08.
+
+```json uw:section=market_analysis source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "market_analysis",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Broker survey and published market reports; refresh before credit committee."
+  },
+  "market": "Phoenix Metro",
+  "submarket": "Midtown Phoenix",
+  "data_as_of": "2026-08-01",
+  "vacancy": {
+    "current_rate": 0.185,
+    "trend": "stable"
+  },
+  "rents": {
+    "yoy_growth_pct": 0.005,
+    "trend": "flat"
+  },
+  "cap_rates": {
+    "range_low": 0.08,
+    "range_high": 0.095,
+    "subject_going_in": 0.06
+  },
+  "supply": {
+    "note": "No speculative office supply; elevated sublease availability keeps effective rents flat."
+  }
+}
+```
+
+## Validation
+
+Financial-validity engine run over the sections above.
+
+```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "validation",
+    "version": 1,
+    "superseded": false,
+    "source": "engine:financialValidityChecker",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "system",
+    "timestamp": "2026-08-26T09:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "overall_status": "warnings_only",
+  "financial_validity": [
+    {
+      "flag_id": "FV-001",
+      "metric": "dscr",
+      "value": 1.0256,
+      "threshold": {
+        "type": "min",
+        "min": 1.2,
+        "max": null
+      },
+      "severity": "warning",
+      "message": "DSCR (1.0256x) is below the 1.20x warning threshold; passes the 1.0x error floor.",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-002",
+      "metric": "ltv",
+      "value": 0.65,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.75
+      },
+      "severity": "pass",
+      "message": "LTV at 65.0% is within the 75% policy maximum.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
+  ],
+  "completeness": []
+}
+```
