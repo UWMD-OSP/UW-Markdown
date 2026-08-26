@@ -99,10 +99,13 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
   },
   screening:        { required_sections: ['property', 'debt_structure', 'validation'] },
   term_sheet:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'] },
-  full_underwrite:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'] },
-  credit_approval:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'] },
-  closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
-  monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+  // `operating_statement` re-joined full_underwrite and above with RFC 0028
+  // (spec §5.1 always listed it; the variant-aware `hasSection` case below
+  // was built for it but no stage list reached it — decision (a) in the RFC).
+  full_underwrite:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'] },
+  credit_approval:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'] },
+  closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+  monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
 };
 
 /**
@@ -146,6 +149,7 @@ export function validateUWFile(
   checkComponents(parsed, issues);
   checkCapitalStack(parsed, issues);
   checkSizeIntensive(parsed, issues);
+  checkSectionReadiness(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -745,6 +749,55 @@ function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[]): 
   });
 }
 
+// ─── §5.3 CC-14 / §III.6a DQ-06 — section-level readiness (RFC 0028) ─────────
+
+// CC-14 warns when a deal-record UWX document has no property section at all
+// — §4.1 requires it at every stage, and before this rule the only trace of
+// the gap was a stage_readiness boolean nothing downstream reads. Always a
+// warning, never an error: the RFC 0028 Appendix A scan found 28 corpus
+// documents a refusal would invalidate retroactively, and an institution
+// wanting a hard gate has INCOMPLETE_DATA_POLICIES.
+//
+// DQ-06 then names, at info severity, each section the declared deal_stage
+// requires but the file lacks — the sectional sibling of the field-level
+// DQ-04, and the issues-stream mirror of stage_readiness. Info because the
+// same scan shows deal_stage declarations state where a deal is going, not
+// what the file contains (all twelve worked examples fail their declared
+// stage's list); info reports the gap without refusing or nagging.
+function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  // CC-14 preconditions mirror CC-13's 1 and 2 (RFC 0028 §1). Precondition 3
+  // (not externalized) is satisfied structurally: an externalized-but-
+  // unresolved section still parses as a block, so it is present here.
+  const isCompiledLite =
+    !!(parsed.sections[UW_LITE_SOURCE_EXTENSION] || parsed.extensions?.[UW_LITE_SOURCE_EXTENSION]);
+  const profile = (parsed.frontmatter as Record<string, unknown>)['document_profile'];
+  const isDealRecord = profile == null || profile === DEAL_UNDERWRITING_PROFILE;
+
+  const hasProperty = hasStageSection(parsed, 'property');
+  let cc14Fired = false;
+  if (!isCompiledLite && isDealRecord && !hasProperty) {
+    cc14Fired = true;
+    issues.push({
+      code: 'CC-14', severity: 'warning', section: 'property',
+      message: 'CC-14: this deal record has no property section; §4.1 requires it at every stage',
+    });
+  }
+
+  // DQ-06: one issue per missing required section of the declared stage.
+  // No stage declared → no claim to check (same posture as DQ-04). The
+  // property entry is suppressed when CC-14 fired: one defect, one diagnostic.
+  const stage = parsed.frontmatter.deal_stage;
+  if (!stage || !(stage in STAGE_REQUIREMENTS)) return;
+  for (const sectionId of STAGE_REQUIREMENTS[stage].required_sections) {
+    if (sectionId === 'property' && cc14Fired) continue;
+    if (hasStageSection(parsed, sectionId)) continue;
+    issues.push({
+      code: 'DQ-06', severity: 'info', section: sectionId,
+      message: `DQ-06: ${stage} requires ${sectionId}; section is missing.`,
+    });
+  }
+}
+
 function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const cs = getSection(parsed, 'capital_stack');
   if (cs) checkStackContent(cs.content as Record<string, unknown>, 'capital_stack', '', issues);
@@ -797,16 +850,21 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
 
 // ─── Stage readiness ──────────────────────────────────────────────────────────
 
+/**
+ * Variant-aware section presence, as stage readiness defines it: a
+ * multi-variant `operating_statement` counts through its `t12` or `default`
+ * variant. Shared by `computeStageReadiness` and the RFC 0028 checks
+ * (`CC-14`, `DQ-06`) so "present" means one thing.
+ */
+function hasStageSection(parsed: ParsedUWFile, id: string): boolean {
+  if (id === 'operating_statement') {
+    return !!(parsed.sections[id] || getSectionVariant(parsed, id, 't12') || getSectionVariant(parsed, id, 'default'));
+  }
+  return !!parsed.sections[id];
+}
+
 function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
-  const hasSection = (id: string): boolean => {
-    if (id === 'operating_statement') {
-      return !!(parsed.sections[id] || getSectionVariant(parsed, id, 't12') || getSectionVariant(parsed, id, 'default'));
-    }
-    if (id === 'stress_tests' || id === 'due_diligence') {
-      return !!(parsed.sections[id]);
-    }
-    return !!parsed.sections[id];
-  };
+  const hasSection = (id: string): boolean => hasStageSection(parsed, id);
 
   const hasFieldPath = (path: string): boolean => {
     const v = resolveSectionFieldPath(parsed, path);

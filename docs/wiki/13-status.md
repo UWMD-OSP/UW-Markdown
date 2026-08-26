@@ -2,13 +2,14 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-25, after the conformance blind-spot closures on
-top of `v1.7.0` (`81aa3b5`) — full pass: build green across all workspaces;
-**1,090 tests** — 927 core, 94 excel, 62 cli, 4 batch, 3 report — plus
-**71 web-editor**; **244 conformance** assertions including the Tier-4 replay,
-module, package, receipts, market-data, composition, capital-stack, and
-size-intensive suites, now with Tier-1 validation-verdict baselines and the
-RFC 0025 decimal-exactness pin; Biome clean over 437 files; `@uwmd/core` and
+**Last verified:** 2026-08-26, after RFC 0028 (reportable section readiness)
+on top of `v1.7.0` (`81aa3b5`) — full pass: build green across all
+workspaces; **1,105 tests** — 942 core, 94 excel, 62 cli, 4 batch, 3 report —
+plus **71 web-editor**; **245 conformance** assertions including the Tier-4
+replay, module, package, receipts, market-data, composition, capital-stack,
+and size-intensive suites, with Tier-1 validation-verdict baselines, the
+RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome clean;
+`typecheck:tests` clean across all five workspaces; `@uwmd/core` and
 `@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
 provenance attached — protocol at **1.6.0** for §XIII.
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
@@ -745,12 +746,21 @@ bus factor, personal security email, and no public RFC venue.
    > Two spin-offs. **Nothing enforces that the property section exists** —
    > §4.1 says it is required at all stages, and 22 in-scope corpus documents
    > omit it and still validate `clean`/`warnings` (a 2026-08-26 re-scan over
-   > all seven stage tables counts 28). That wants its own rule and
-   > probably its own RFC — now drafted as
-   > [RFC 0028](../rfcs/0028-reportable-section-readiness.md) (`CC-14`
-   > warning for the missing property section, `DQ-06` info mirroring
-   > `stage_readiness` into the issues stream, §5.1 drift corrections);
-   > `CC-13` deliberately does not absorb it. And
+   > all seven stage tables counts 28). **Closed 2026-08-26 by
+   > [RFC 0028](../rfcs/0028-reportable-section-readiness.md) (implemented):**
+   > `CC-14` warns on the missing property section, `DQ-06` (info) mirrors
+   > `stage_readiness` into the issues stream, §5.1 gained its missing scope
+   > row, and `operating_statement` re-joined `STAGE_REQUIREMENTS` at
+   > full_underwrite+ (the validator's dead variant-aware `hasSection` case
+   > was the fossil of the lost requirement). `CC-13` deliberately does not
+   > absorb it — one defect, one diagnostic.
+   >
+   > **Follow-up (open):** all twelve worked examples declare
+   > `full_underwrite` but miss 4–5 of its required sections (modal gap:
+   > `validation`, `borrower_sponsor`, `preliminary_sizing`,
+   > `market_analysis`), so each now truthfully carries `DQ-06` info notes.
+   > Bring the examples to stage-honesty — add the sections or restage
+   > them — and only then revisit `DQ-06`'s severity in a future RFC. And
    > **conformance would not have caught the escalation**: Tier-1 `malformed`
    > matches expected codes as a subset and Tier-1 valid fixtures asserted
    > nothing about validation, so a new error code would flip `uwmd validate`

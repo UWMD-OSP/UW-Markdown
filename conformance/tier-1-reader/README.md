@@ -39,6 +39,7 @@ coverage requires fixture-bound policies).
 | `malformed/07-replace-where-supersede-required` | `POL-02` | `verifyProvenance` |
 | `malformed/08-provisional-without-gap` | `DQ-01` | Validator (data quality) |
 | `malformed/09-partial-without-overrides` | `DQ-03` | Validator (data quality) |
+| `malformed/10-property-section-missing` | `CC-14`, `DQ-06` | Validator (RFC 0028: missing property warns; declared-stage section gaps report at info) |
 
 ## Expected outputs
 

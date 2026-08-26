@@ -2384,12 +2384,23 @@ The following sections must be present (non-null) before advancing to each stage
 
 | Stage | Required Sections |
 |---|---|
-| **Screening** | `property`, `debt_structure` (amounts only), `validation` |
+| **Scope** | `property` (see also the field-level scope requirements, Protocol §III.6a / `DQ-04`) |
+| **Screening** | + `debt_structure` (amounts only), `validation` |
 | **Term Sheet** | + `rent_roll`, `borrower_sponsor` (principals only), `preliminary_sizing` |
 | **Full Underwrite** | + `operating_statement` (T-12), `noi_model`, `valuation`, `sources_uses`, `market_analysis` |
 | **Credit Approval** | + `dcf`, `stress_tests`, `risk_assessment`, `compliance`, `assumptions` |
 | **Closing** | + `due_diligence` (all items cleared), `debt_structure` (final terms) |
-| **Portfolio Monitoring** | + Updated `operating_statement` (annual), `validation` (re-run) |
+| **Portfolio Monitoring** | Same section list as Closing |
+
+This table is machine-checked (RFC 0028): a validator MUST compute
+`stage_readiness` from it, and MUST report each section the *declared*
+`deal_stage` requires but the file lacks as a `DQ-06` **info** issue — a
+declared stage is where the deal is going, so the gap is reportable but not
+refusable. A missing `property` section is `CC-14` (§5.3) instead, at every
+stage. Freshness obligations that earlier revisions listed under Monitoring
+("updated `operating_statement` annually", "re-run `validation`") are not
+expressible as section presence; staleness belongs to the `DQ-05` machinery
+(§4.22) and institution policy.
 
 ### 5.2 Financial Validity Thresholds
 
@@ -2427,6 +2438,7 @@ Tools MUST run these after each section write:
 | `CC-11` | A `components` section may appear only when `asset_class` is `mixed_use` (RFC 0019) | `components`, frontmatter |
 | `CC-12` | Property `noi_model.net_operating_income` must equal the sum of component `net_operating_income` (mixed-use) | `components`, `noi_model` |
 | `CC-13` | The property section must state the primary size field for `frontmatter.asset_class` (Protocol §XIII.1) (RFC 0027) | `property`, frontmatter |
+| `CC-14` | A deal-record document must have a `property` section (§4.1) (RFC 0028) | `property` |
 
 **`CC-13` severity and applicability.** `CC-13` is a **warning**, never an
 error: a screening-stage deal legitimately does not know its RSF yet, and the
@@ -2446,6 +2458,24 @@ hold:
    diagnostic.
 5. The property section is not externalized (RFC 0021); the resolved record is
    where the field lives.
+
+**`CC-14` severity and applicability.** `CC-14` is a **warning**, never an
+error: the RFC 0028 corpus scan found 28 documents a refusal would invalidate
+retroactively, and an institution wanting a hard gate expresses it through
+`INCOMPLETE_DATA_POLICIES`. The rule fires only when **all** of the following
+hold:
+
+1. The source is a UWX record, not a UW Lite summary (Lite states its
+   property facts in its own grammar).
+2. The document's profile is a deal record (market-data and other non-deal
+   profiles have no property section by construction).
+3. The `property` section is not merely externalized (RFC 0021) — an
+   externalized-but-unresolved section is present, not missing.
+
+`CC-14` is unconditional on `deal_stage` — §4.1 requires the section at every
+stage. When `CC-14` fires, `CC-13` must not also fire (its precondition 4
+ensures this), and `DQ-06` must suppress its own `property` entry: one
+defect, one diagnostic.
 
 ---
 

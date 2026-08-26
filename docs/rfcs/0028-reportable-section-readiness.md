@@ -1,10 +1,11 @@
 ---
 rfc: 0028
 title: Make a missing required section a reportable defect
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-08-26
 accepted: 2026-08-26
+implemented: 2026-08-26
 affects:
   - format-spec
   - core-library

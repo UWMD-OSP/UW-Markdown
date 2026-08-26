@@ -1,0 +1,6 @@
+{
+  "description": "Deal record with no property section. Validator must emit CC-14 (warning, RFC 0028) unconditionally on stage, and DQ-06 (info) for the other section the declared screening stage requires but the file lacks (validation).",
+  "must_parse": true,
+  "expected_codes": ["CC-14", "DQ-06"],
+  "spec_ref": "spec/UW_FORMAT_SPEC_v1.md §5.1, §5.3 CC-14 (RFC 0028)"
+}

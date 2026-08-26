@@ -9,7 +9,6 @@ city: "Phoenix"
 state: "AZ"
 zip: "85001"
 asset_class: multifamily
-deal_stage: full_underwrite
 status: under_review
 recommendation: pending
 quick_metrics:
@@ -26,6 +25,20 @@ created_by: "test-fixture"
 The `capital_stack` senior_debt tranche states 24,500,000 where
 `debt_structure.loan_amount` states 26,000,000, so the generalized CC-03
 (RFC 0026 §4.24) must fire: the senior view disagrees across sections.
+
+```json uw:section=property source=manual ts=2026-08-22T10:00:00Z v=1
+{
+  "_meta": {
+    "section": "property",
+    "version": 1,
+    "source": "manual",
+    "timestamp": "2026-08-22T10:00:00Z",
+    "confidence": "high"
+  },
+  "address": "100 Stack Way",
+  "total_units": 180
+}
+```
 
 ```json uw:section=debt_structure source=manual ts=2026-08-22T10:00:00Z v=1 confidence=high
 {
