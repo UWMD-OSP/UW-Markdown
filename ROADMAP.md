@@ -75,6 +75,17 @@ Detailed sequencing and release gates:
 
 ## v2 spec exploration
 
+> **Unfrozen 2026-08-26.** With the v1.x dev queue empty (RFCs 0014–0029 all
+> implemented), the owner moved this train from ❄ frozen to 📋 active. The
+> working priority order is: **(1) the signing chain — RFC 0010 signed
+> blocks, then RFC 0002 module signing, which together unblock receipt
+> signing** (the one advertised receipt feature that ships unimplemented);
+> **(2) RFC 0004 conformance runner v2** (the corpus claims third parties
+> can self-certify, but the runner is TS-only); **(3) RFC 0006 hospitality
+> reference module** (first real consumer of the module system). The rest
+> remain queued behind those. Unfrozen means *actively being taken up*, not
+> accepted — each RFC still goes through its own acceptance.
+
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
 None are required for v1 conformance — they constitute v2 of the
 protocol, the format, or both. RFCs are `draft` until the project owner accepts.
