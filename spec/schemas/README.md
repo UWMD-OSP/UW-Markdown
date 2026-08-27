@@ -20,6 +20,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`calc-result.schema.json`](calc-result.schema.json) | `CalcResult` | Protocol §VIII |
 | [`issue-remediation.schema.json`](issue-remediation.schema.json) | `IssueRemediation` | Protocol §III.6 |
 | [`module-manifest.schema.json`](module-manifest.schema.json) | `ModuleManifest` | Protocol §X |
+| [`module-signature.schema.json`](module-signature.schema.json) | `ModuleSignature` | Protocol §X.1 |
 | [`uw-receipt.schema.json`](uw-receipt.schema.json) | `UWReceipt` | [UW Receipt 1.0](../UW_RECEIPT_v1.md) / RFC 0016 |
 | [`section-gaps.schema.json`](section-gaps.schema.json) | `SectionGaps` | Protocol §VII |
 | [`section-components.schema.json`](section-components.schema.json) | `components` section (mixed-use) | Format §4.23 / RFC 0019 |

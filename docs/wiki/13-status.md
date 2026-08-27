@@ -2,12 +2,14 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-27, after RFC 0010 (signed blocks) on top of
-`v1.7.0` — full pass: build green across all workspaces; **1,203 tests** —
-996 core, 94 excel, 62 cli, 44 signing, 4 batch, 3 report — plus **71
-web-editor**; **263 conformance** assertions including the Tier-4 replay,
+**Last verified:** 2026-08-27, after RFC 0010 (signed blocks) and RFC 0002
+(module signing) on top of `v1.7.0` — full pass: build green across all
+workspaces; **1,240 tests** — 1,015 core, 94 excel, 62 cli, 62 signing, 4
+batch, 3 report — plus **71 web-editor**; **269 conformance** assertions
+including the Tier-4 replay,
 module, package, receipts, market-data, composition, capital-stack,
-size-intensive, and signing suites, with Tier-1 validation-verdict baselines,
+size-intensive, and signing suites (blocks + modules), with Tier-1
+validation-verdict baselines,
 the RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome
 clean; `typecheck:tests` clean across all six workspaces; `@uwmd/core` and
 `@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
@@ -127,6 +129,16 @@ not core gaps.
   no key store reports signatures **present and unchecked**, never valid. Also
   supplies `signReceipt` / `createReceiptSignatureVerifier`, which is what made
   receipt signing real.
+- **Module signatures (RFC 0002, protocol §X.1):** `ModuleManifest.signature`
+  with its own `module-signature.schema.json`, five kept-apart verdicts
+  (`PROTO-MOD-068`–`072`), and three host policies (`ignore` /
+  `verify-if-present` / `require`) on `loadModuleManifestAsync` +
+  `createModuleRegistryAsync`. The scheme is `uwmd-keystore`, **not** Sigstore
+  — a Fulcio root plus a Rekor proof would mean a vendored snapshot that fails
+  closed when stale, or network access inside the module loader; `scheme:
+  "sigstore"` is reserved so adding it stays additive. `identity` is advisory
+  and §X.1.5 says so normatively. `conformance/signing/modules/` runs six
+  scenarios under all three policies.
 - **Excel round-trip:** `.uwx.md → .xlsx` via `toWorkbook.ts`, and **reverse
   import** `.xlsx → section fragments` via `fromWorkbook.ts` (shipped 2026-08-13).
   Every workbook also carries a **`UW MCP` sheet** (`mcpSheet.ts`) — machine-readable
@@ -348,8 +360,9 @@ not core gaps.
   > touching any of them.
 - **Module system is declarative-only** — by design — **but the loader is now
   hardened (T13).** `modules.ts` validates and registers in-process
-  `ModuleManifest` objects; there is still no dynamic import, signing, or
-  custom asset-class declaration, and those stay v2/RFC work (0002, 0003).
+  `ModuleManifest` objects; there is still no dynamic import or custom
+  asset-class declaration, and those stay v2/RFC work (0003). **Signing landed
+  2026-08-27** (RFC 0002, §X.1) — see the Built section.
 
   What changed is that the loader now actually enforces the normative schema.
   It previously validated `calculations` and `validations` and stopped:
@@ -568,6 +581,10 @@ issuance and verification are unchanged and remain the default path.
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
 emptied (RFCs 0014–0029 all implemented).
 
+**✅ The signing chain — shipped 2026-08-27.** RFC 0002 (module signatures,
+protocol §X.1) landed the same day as RFC 0010 and on the same machinery; see
+the Built section above.
+
 **✅ RFC 0010 signed blocks — shipped 2026-08-27.** Protocol §V.11, the
 `@uwmd/signing` package (Ed25519 / ES256 / ES384 over the normative signing
 input, file-backed reference key store), `_meta.signature` in the format spec
@@ -580,12 +597,10 @@ meta-shape test required `section` where every file on disk writes `section_id`.
 
 Remaining priority order:
 
-1. **Module signing** (0002) — the second half of the signing chain, now with
-   block and receipt signing to build on.
-2. **Conformance runner v2** (0004) — language-agnostic self-certification;
+1. **Conformance runner v2** (0004) — language-agnostic self-certification;
    today's runner is TS-only while the corpus claims third parties can
    self-certify against it.
-3. **Hospitality reference module** (0006) — first real consumer of the
+2. **Hospitality reference module** (0006) — first real consumer of the
    module system, which is validated machinery nothing yet exercises.
 
 Queued behind those: range/stochastic calcs (0005), sensitivity-table builtin

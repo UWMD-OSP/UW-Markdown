@@ -85,7 +85,7 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
   lossless JSON, XML, and normalized CSV-bundle codecs, plus HTTP/MCP companion
   bindings, under accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
 - **Next** — additional asset-class calc packs, starting with hospitality.
-- **v2 spec exploration** — locale negotiation, module signing, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/). Signed blocks ([RFC 0010](./docs/rfcs/0010-signed-blocks.md)) shipped 2026-08-27 as protocol §V.11 plus the optional [`@uwmd/signing`](./packages/uwmd-signing/) package; core stays crypto-free.
+- **v2 spec exploration** — locale negotiation, custom asset-class declarations, stochastic calcs, hospitality reference module. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/). The signing chain shipped 2026-08-27: signed blocks ([RFC 0010](./docs/rfcs/0010-signed-blocks.md), protocol §V.11) and module signatures ([RFC 0002](./docs/rfcs/0002-module-signing.md), protocol §X.1), both on the optional [`@uwmd/signing`](./packages/uwmd-signing/) package; core stays crypto-free.
 
 ## Who's building on it
 

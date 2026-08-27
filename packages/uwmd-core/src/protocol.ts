@@ -19,6 +19,7 @@ import type {
   PipelineStatus,
   UWBlock,
   UWMeta,
+  UWSignatureAlgorithm,
   ValidationMessage,
   ValidationSeverity,
 } from './types.js';
@@ -607,6 +608,53 @@ export interface ModuleManifest {
   ui?: Record<string, unknown>;     // free-form, host-specific
   agent_layers?: ModuleAgentLayerDecl[];
   depends_on?: { id: string; version: string }[];
+  /**
+   * Detached signature over the canonical manifest (§X.1, RFC 0002).
+   *
+   * Advisory at the protocol level: what to do with an unsigned module, or one
+   * whose signature fails, is a host-policy decision. What the protocol fixes is
+   * the *surface*, so that two hosts agree on what "signature valid" means.
+   */
+  signature?: ModuleSignature;
+}
+
+/**
+ * A detached signature over a module manifest.
+ *
+ * Deliberately the same shape as `UWMeta.signature` (§V.11) plus a `scheme`
+ * discriminator and an optional identity claim. A module manifest and a block
+ * are different artifacts, but "who signed this, with which key, when" is the
+ * same question, and answering it two different ways would mean two verifiers,
+ * two key-store formats, and two chances to get the canonicalization wrong.
+ */
+export interface ModuleSignature {
+  /**
+   * Signing scheme. `uwmd-keystore` is a detached signature over the canonical
+   * manifest, verified against a key store the host holds — the same machinery
+   * as block signatures.
+   *
+   * `sigstore` is reserved, not implemented: keyless signing needs a Fulcio
+   * trust root and a Rekor inclusion proof, which means a vendored root
+   * snapshot and network verification. Both sit badly with a protocol whose
+   * conformance corpus is offline and deterministic. The discriminator exists
+   * so adding it later is additive rather than a breaking change.
+   */
+  scheme: 'uwmd-keystore';
+  /** Algorithm, from the same closed set as block signatures (§V.11). */
+  alg: UWSignatureAlgorithm;
+  /** Opaque key identifier the host resolves in its own key store. */
+  kid: string;
+  /** Base64url-encoded (unpadded) signature bytes. */
+  sig: string;
+  /** ISO 8601 instant the signature was produced. */
+  signed_at: string;
+  /**
+   * Identity the signer claims (an email, a domain, an org). **Advisory and
+   * unverified by this layer** — it is a hint for humans and for a host's
+   * allow-list policy, and a host that trusts it without checking that the
+   * `kid` actually belongs to that identity has learned nothing.
+   */
+  identity?: string;
 }
 
 export interface ModuleSectionDecl {

@@ -1,0 +1,28 @@
+{
+  "description": "A signature object missing sig and signed_at. Refused under EVERY policy including ignore: declining to verify is not a licence to admit nonsense into a frozen manifest.",
+  "keystore": "../keys/keystore.json",
+  "policies": {
+    "ignore": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-070"
+      ]
+    },
+    "verify-if-present": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-070"
+      ]
+    },
+    "require": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-070"
+      ]
+    }
+  },
+  "verdict": {
+    "ok": false,
+    "reason": "malformed"
+  }
+}

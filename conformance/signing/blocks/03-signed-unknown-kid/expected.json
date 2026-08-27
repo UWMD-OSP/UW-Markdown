@@ -1,6 +1,6 @@
 {
   "description": "A well-formed signature naming a kid the keystore does not hold. INT-06, never INT-07 - 'I cannot check this' and 'this is forged' are different findings and must not be merged.",
-  "keystore": "keys/keystore.json",
+  "keystore": "../keys/keystore.json",
   "ok": false,
   "signatures_present": 1,
   "signatures_verified": 0,

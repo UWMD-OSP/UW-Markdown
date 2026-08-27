@@ -1,0 +1,25 @@
+{
+  "description": "A well-formed signature naming a kid the keystore does not hold. PROTO-MOD-071, never -072: 'I cannot check this' is not 'this is forged'.",
+  "keystore": "../keys/keystore.json",
+  "policies": {
+    "ignore": {
+      "ok": true
+    },
+    "verify-if-present": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-071"
+      ]
+    },
+    "require": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-071"
+      ]
+    }
+  },
+  "verdict": {
+    "ok": false,
+    "reason": "unknown_key"
+  }
+}

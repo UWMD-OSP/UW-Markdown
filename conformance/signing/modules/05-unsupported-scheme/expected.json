@@ -1,0 +1,28 @@
+{
+  "description": "scheme: sigstore - reserved by the spec, unimplemented by this host. Refused as a scheme problem, not as a bad signature.",
+  "keystore": "../keys/keystore.json",
+  "policies": {
+    "ignore": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-069"
+      ]
+    },
+    "verify-if-present": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-069"
+      ]
+    },
+    "require": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-069"
+      ]
+    }
+  },
+  "verdict": {
+    "ok": false,
+    "reason": "unsupported_scheme"
+  }
+}

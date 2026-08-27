@@ -54,6 +54,8 @@ import {
   createReplayProvider,
   parseAgentCassette,
   loadModuleManifest,
+  loadModuleManifestAsync,
+  verifyModuleSignature,
   validateUWDealPackageManifest,
   encodeUWDealPackageZip,
   decodeUWDealPackageZip,
@@ -1381,10 +1383,14 @@ async function runModules() {
   }
 
   const { default: Ajv2020 } = await import('ajv/dist/2020.js');
-  const schema = JSON.parse(
-    readFileSync(join(ROOT, 'spec', 'schemas', 'module-manifest.schema.json'), 'utf8'),
-  );
-  const schemaCheck = new Ajv2020({ strict: false }).compile(schema);
+  const readSchema = (name) =>
+    JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));
+  const ajv = new Ajv2020({ strict: false });
+  // The manifest schema $refs the signature schema by absolute $id (RFC 0002),
+  // so the referenced schema has to be registered before compiling — ajv will
+  // not fetch it, and should not.
+  ajv.addSchema(readSchema('module-signature.schema.json'));
+  const schemaCheck = ajv.compile(readSchema('module-manifest.schema.json'));
 
   const readFixtures = (kind) => {
     const dir = join(MODULES_DIR, kind);
@@ -2200,8 +2206,10 @@ async function runSizeIntensive() {
 // still conformant. It runs by default here because the reference
 // implementation does claim it.
 //
-//   <scenario>/deal.uw.md + expected.json
+//   blocks/<scenario>/deal.uw.md + expected.json
 //     { keystore, ok, signatures_present, signatures_verified, expected_codes }
+//   modules/<scenario>/module.json + expected.json
+//     { keystore, policies: { <policy>: { ok, expected_codes } }, verdict }
 //
 // `keystore: null` means "verify with no signature backend" — the scenario that
 // pins the distinction between a signature that passed and one nobody checked.
@@ -2222,23 +2230,31 @@ async function runSigning() {
     return;
   }
 
-  const scenarios = readdirSync(SIGNING_DIR)
-    .filter((name) => statSync(join(SIGNING_DIR, name)).isDirectory() && name !== 'keys')
+  await runSigningBlocks(signing);
+  await runSigningModules(signing);
+}
+
+async function runSigningBlocks(signing) {
+  const BLOCKS_DIR = join(SIGNING_DIR, 'blocks');
+  if (!existsSync(BLOCKS_DIR)) return;
+
+  const scenarios = readdirSync(BLOCKS_DIR)
+    .filter((name) => statSync(join(BLOCKS_DIR, name)).isDirectory())
     .sort();
 
   for (const id of scenarios) {
-    const dir = join(SIGNING_DIR, id);
+    const dir = join(BLOCKS_DIR, id);
     const dealPath = join(dir, 'deal.uw.md');
     const expectedPath = join(dir, 'expected.json');
     if (!existsSync(dealPath) || !existsSync(expectedPath)) {
-      record('signing', id, 'fail', 'scenario needs deal.uw.md and expected.json');
+      record('signing', `blocks/${id}`, 'fail', 'scenario needs deal.uw.md and expected.json');
       continue;
     }
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
 
     let options = {};
     if (expected.keystore) {
-      const store = await signing.loadKeyStoreFile(join(SIGNING_DIR, expected.keystore));
+      const store = await signing.loadKeyStoreFile(join(BLOCKS_DIR, expected.keystore));
       options = { signatureVerifier: signing.createBlockSignatureVerifier(store) };
     }
 
@@ -2246,7 +2262,7 @@ async function runSigning() {
     try {
       result = await verifyChain(parseUWFile(readFileSync(dealPath, 'utf8')), options);
     } catch (e) {
-      record('signing', id, 'fail', `verifyChain threw: ${e.message}`);
+      record('signing', `blocks/${id}`, 'fail', `verifyChain threw: ${e.message}`);
       continue;
     }
 
@@ -2263,25 +2279,101 @@ async function runSigning() {
     if (codes.join(',') !== wanted.join(',')) {
       mismatches.push(`codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
     }
-    record('signing', id, mismatches.length ? 'fail' : 'pass', mismatches.join('; ') || undefined);
+    record('signing', `blocks/${id}`, mismatches.length ? 'fail' : 'pass', mismatches.join('; ') || undefined);
   }
 
   // Cross-scenario invariant, asserted without a baseline so it binds any
   // implementation: the same bytes verified with and without a backend must
   // agree on how many signatures are *present*. Only `signatures_verified` and
   // the issue list may differ.
-  const withBackend = join(SIGNING_DIR, '01-signed-valid', 'deal.uw.md');
-  const without = join(SIGNING_DIR, '05-signed-no-backend', 'deal.uw.md');
+  const withBackend = join(BLOCKS_DIR, '01-signed-valid', 'deal.uw.md');
+  const without = join(BLOCKS_DIR, '05-signed-no-backend', 'deal.uw.md');
   if (existsSync(withBackend) && existsSync(without)) {
     const a = await verifyChain(parseUWFile(readFileSync(withBackend, 'utf8')));
     const b = await verifyChain(parseUWFile(readFileSync(without, 'utf8')));
     const agrees = a.signatures_present === b.signatures_present;
     record(
       'signing',
-      'present-count is backend-independent',
+      'blocks/present-count is backend-independent',
       agrees ? 'pass' : 'fail',
       agrees ? undefined : `${a.signatures_present} != ${b.signatures_present}`,
     );
+  }
+}
+
+
+/**
+ * Module manifest signatures (RFC 0002, protocol §X.1).
+ *
+ * Every scenario is run under all three host policies, not just the
+ * interesting one. The policy table IS the feature: `04-unsigned` loading under
+ * `verify-if-present` and refusing under `require` is the whole distinction,
+ * and asserting only one half would let the two collapse into each other
+ * unnoticed.
+ */
+async function runSigningModules(signing) {
+  const MODULES_SIG_DIR = join(SIGNING_DIR, 'modules');
+  if (!existsSync(MODULES_SIG_DIR)) return;
+
+  const scenarios = readdirSync(MODULES_SIG_DIR)
+    .filter((name) => statSync(join(MODULES_SIG_DIR, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const dir = join(MODULES_SIG_DIR, id);
+    const manifestPath = join(dir, 'module.json');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(manifestPath) || !existsSync(expectedPath)) {
+      record('signing', `modules/${id}`, 'fail', 'scenario needs module.json and expected.json');
+      continue;
+    }
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const store = await signing.loadKeyStoreFile(join(MODULES_SIG_DIR, expected.keystore));
+    const verifier = signing.createModuleSignatureVerifier(store);
+
+    const problems = [];
+
+    for (const [policy, want] of Object.entries(expected.policies)) {
+      let result;
+      try {
+        result = await loadModuleManifestAsync(manifest, {
+          hostTier: 'tier-4-agent-host',
+          signaturePolicy: policy,
+          signatureVerifier: verifier,
+        });
+      } catch (e) {
+        problems.push(`${policy}: loader threw ${e.message}`);
+        continue;
+      }
+      if (result.ok !== want.ok) {
+        const saw = result.ok ? '' : ` (${result.errors.map((e) => e.code).join(', ')})`;
+        problems.push(`${policy}: ok ${result.ok} != ${want.ok}${saw}`);
+        continue;
+      }
+      const emitted = new Set(result.errors.map((e) => e.code));
+      for (const code of want.expected_codes ?? []) {
+        if (!emitted.has(code)) problems.push(`${policy}: missing ${code}`);
+      }
+    }
+
+    // The verdict is asserted separately from the policies because a host may
+    // want the reason without delegating the decision.
+    const verdict = await verifyModuleSignature(manifest, { verifier });
+    if (verdict.ok !== expected.verdict.ok) {
+      problems.push(`verdict ok ${verdict.ok} != ${expected.verdict.ok}`);
+    } else if (verdict.ok) {
+      if (verdict.kid !== expected.verdict.kid) {
+        problems.push(`verdict kid ${verdict.kid} != ${expected.verdict.kid}`);
+      }
+      if ((verdict.identity ?? null) !== (expected.verdict.identity ?? null)) {
+        problems.push(`verdict identity ${verdict.identity} != ${expected.verdict.identity}`);
+      }
+    } else if (verdict.reason !== expected.verdict.reason) {
+      problems.push(`verdict reason ${verdict.reason} != ${expected.verdict.reason}`);
+    }
+
+    record('signing', `modules/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
   }
 }
 

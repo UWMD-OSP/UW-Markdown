@@ -1,6 +1,6 @@
 {
   "description": "The 01 file with year_built edited after signing. Both the hash and the signature must fail: the hash proves the bytes moved, the signature proves the signer did not authorize the move.",
-  "keystore": "keys/keystore.json",
+  "keystore": "../keys/keystore.json",
   "ok": false,
   "signatures_present": 1,
   "signatures_verified": 0,

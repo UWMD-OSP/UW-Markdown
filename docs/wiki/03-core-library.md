@@ -46,6 +46,7 @@ Module | Responsibility | Key exports
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
+`module-signing.ts` | Module manifest signature contract (RFC 0002) | `moduleSigningPayload`, `verifyModuleSignature`, `checkSignatureShape`
 `integrity.ts` | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
 `integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
 `receipts.ts` | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
@@ -225,6 +226,29 @@ no longer recomputes), and `INT-08` (deprecated algorithm, a warning).
 configuration problem and "this is forged" is a document problem, and they call
 for opposite responses. Note that a drifted hash escalates from `INT-04
 warning` to `INT-07 error` once a block is signed.
+
+## module-signing.ts
+
+Module manifest signatures (RFC 0002, protocol §X.1). Same layering as block
+signatures: core owns `moduleSigningPayload()` (RFC 8785 over the manifest with
+`signature` **removed**, not nulled, so signing and verifying see identical
+bytes), the structural checks, and the verdict taxonomy;
+[`@uwmd/signing`](../../packages/uwmd-signing/README.md) supplies the verifier.
+
+Five verdicts, and three of them must not be merged — `PROTO-MOD-068` missing
+(nothing was claimed → decide a policy), `-071` unknown key (something was
+claimed and this host cannot check it → load a key), `-072` invalid (something
+was claimed and it is false → reject the module). Plus `-069` unsupported
+scheme and `-070` malformed, which is separate from invalid so an author with a
+missing `signed_at` is not sent hunting for tampering.
+
+`loadModuleManifestAsync` / `createModuleRegistryAsync` apply a host policy —
+`ignore` (default), `verify-if-present`, `require`. A malformed signature is
+refused even under `ignore`: declining to verify is not a licence to admit
+nonsense into a frozen manifest. The sync loaders are untouched.
+
+`identity` is advisory. A signature proves the key holder asserted it, never
+that the assertion is true.
 
 ## receipts.ts
 

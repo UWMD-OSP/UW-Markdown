@@ -16,6 +16,11 @@ import {
   type ProtocolError,
   type ViewerTier,
 } from './protocol.js';
+import {
+  checkSignatureShape,
+  verifyModuleSignature,
+  type ModuleSignatureVerifier,
+} from './module-signing.js';
 import { ASSET_CLASSES } from './types.js';
 import type { DealStage, ValidationSeverity } from './types.js';
 
@@ -57,7 +62,7 @@ const MANIFEST_KEYS: readonly string[] = [
   'manifest_version', 'id', 'name', 'version', 'description', 'authors', 'license',
   'requires_protocol', 'requires_format', 'requires_tier', 'asset_classes',
   'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
-  'view_models', 'ui', 'agent_layers', 'depends_on',
+  'view_models', 'ui', 'agent_layers', 'depends_on', 'signature',
 ];
 const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
 const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'round_to', 'deterministic'];
@@ -93,7 +98,37 @@ export interface LoadModuleOptions {
   alreadyLoaded?: readonly ModuleManifest[];
 }
 
+/**
+ * What a host does about module signatures (§X.1.4, RFC 0002).
+ *
+ * - `ignore` — do not look. The default, and what every host did before RFC
+ *   0002; a signature is carried through untouched.
+ * - `verify-if-present` — an unsigned module loads, but a *bad* signature
+ *   refuses. The pragmatic setting during adoption: it never punishes an
+ *   author who has not signed yet, and never lets a broken claim through.
+ * - `require` — an unsigned module refuses too.
+ *
+ * `verify-if-present` and `require` both refuse on `unknown_key`, and that is
+ * deliberate: a host that cannot check a signature has not established the
+ * module is safe, and treating "I have no key for this" as success would make
+ * the whole policy decorative.
+ */
+export type ModuleSignaturePolicy = 'ignore' | 'verify-if-present' | 'require';
+
+export interface LoadModuleAsyncOptions extends LoadModuleOptions {
+  /** Defaults to `ignore`. */
+  signaturePolicy?: ModuleSignaturePolicy;
+  /** Supplied by `@uwmd/signing`. Absent under a checking policy means every signed module refuses. */
+  signatureVerifier?: ModuleSignatureVerifier;
+  /** Optional identity allow-list; see `VerifyModuleSignatureOptions`. */
+  allowedIdentities?: readonly string[];
+}
+
 export interface CreateModuleRegistryOptions extends LoadModuleOptions {
+  modules: readonly ModuleManifest[];
+}
+
+export interface CreateModuleRegistryAsyncOptions extends LoadModuleAsyncOptions {
   modules: readonly ModuleManifest[];
 }
 
@@ -116,6 +151,53 @@ export function loadModuleManifest(
   return errors.length
     ? { ok: false, errors }
     : { ok: true, manifest: freezeManifest(manifest), errors: [] };
+}
+
+/**
+ * `loadModuleManifest` plus a signature-policy gate.
+ *
+ * Separate and async for the same reason `applyEditAsync` is: verification
+ * needs Web Crypto, which is async, and the synchronous loader is on a path
+ * plenty of hosts call where signatures are none of their business. A host that
+ * does not check signatures keeps the sync function and pays nothing.
+ *
+ * Structural validation runs first regardless of policy — a manifest that is
+ * not a valid manifest should say so, not report a signature problem.
+ */
+export async function loadModuleManifestAsync(
+  candidate: unknown,
+  opts: LoadModuleAsyncOptions = {},
+): Promise<ModuleLoadResult> {
+  const base = loadModuleManifest(candidate, opts);
+  if (!base.ok || !base.manifest) return base;
+
+  const policy = opts.signaturePolicy ?? 'ignore';
+  if (policy === 'ignore') return base;
+
+  const manifest = base.manifest;
+  if (manifest.signature === undefined && policy === 'verify-if-present') return base;
+
+  const verdict = await verifyModuleSignature(manifest, {
+    ...(opts.signatureVerifier ? { verifier: opts.signatureVerifier } : {}),
+    ...(opts.allowedIdentities ? { allowedIdentities: opts.allowedIdentities } : {}),
+  });
+  return verdict.ok ? base : { ok: false, errors: [verdict.error] };
+}
+
+/** `createModuleRegistry` with the same signature-policy gate. */
+export async function createModuleRegistryAsync(
+  opts: CreateModuleRegistryAsyncOptions,
+): Promise<ModuleRegistry> {
+  const errors: ProtocolError[] = [];
+  for (const candidate of opts.modules) {
+    const result = await loadModuleManifestAsync(candidate, opts);
+    if (!result.ok) errors.push(...result.errors);
+  }
+  // Refuse before building anything. A registry assembled from a set that
+  // included a module the policy rejects would be a registry the host was told
+  // not to have, whatever it did with the error list afterwards.
+  if (errors.length > 0) throw new ModuleRegistryError(errors);
+  return createModuleRegistry(opts);
 }
 
 export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleRegistry {
@@ -211,6 +293,14 @@ function validateModuleManifest(
   }
   if (!Array.isArray(manifest.authors) || manifest.authors.length === 0 || !manifest.authors.every((a) => typeof a === 'string' && a.length > 0)) {
     errors.push(moduleError('PROTO-MOD-005', 'Module authors must be a non-empty string array.', 'authors'));
+  }
+  // Shape-check `signature` regardless of policy. A host that ignores
+  // signatures still must not accept a manifest carrying a malformed one:
+  // "ignore" is a decision not to *verify*, not a licence to admit nonsense
+  // into a frozen manifest other code will read.
+  if (manifest.signature !== undefined) {
+    const shape = checkSignatureShape(manifest.signature);
+    if (shape) errors.push(shape.error);
   }
   if (!TIERS.includes(manifest.requires_tier)) {
     errors.push(moduleError('PROTO-MOD-006', 'Module requires_tier is not a valid viewer tier.', 'requires_tier'));

@@ -1,7 +1,9 @@
 # @uwmd/signing
 
-Block and receipt signatures for [UW Markdown](https://uwmd.org) — the
-implementation of **protocol §V.11** ([RFC 0010](../../docs/rfcs/0010-signed-blocks.md)).
+Block, receipt, and module-manifest signatures for
+[UW Markdown](https://uwmd.org) — the implementation of **protocol §V.11**
+([RFC 0010](../../docs/rfcs/0010-signed-blocks.md)) and **§X.1**
+([RFC 0002](../../docs/rfcs/0002-module-signing.md)).
 
 ## Why this is a separate package
 
@@ -125,6 +127,36 @@ appearing later as a per-block `INT-07` that reads like tampering.
 loaded". A `kid` names one key and MUST NOT be reused; blocks signed under a
 retired `kid` stay verifiable for as long as the store retains it.
 
+## Module manifests
+
+Module signing (RFC 0002, protocol §X.1) uses the same keys and the same
+verifier. The signed bytes are the RFC 8785 canonical manifest with `signature`
+removed.
+
+```ts
+import { loadModuleManifestAsync } from '@uwmd/core';
+import { createModuleSignatureVerifier, signModule, stampModuleSignature } from '@uwmd/signing';
+
+const signed = stampModuleSignature(
+  manifest,
+  await signModule(manifest, signing, { identity: 'modules@example.org' }),
+);
+
+const result = await loadModuleManifestAsync(signed, {
+  signaturePolicy: 'require',           // or 'verify-if-present' / 'ignore'
+  signatureVerifier: createModuleSignatureVerifier(store),
+});
+```
+
+The three policies are `ignore` (default), `verify-if-present` (an unsigned
+module loads, a broken signature refuses), and `require`. Both checking
+policies refuse when the key store lacks the `kid` — a host that cannot check a
+signature has established nothing about the module.
+
+`identity` is **advisory**. A signature proves the key holder asserted it,
+never that the assertion is true; an `allowedIdentities` allow-list is worth
+only as much as your decision to bind that `kid` to that identity.
+
 ## Receipts
 
 Receipt signing (RFC 0016) uses the same keys:
@@ -150,5 +182,9 @@ Without a verifier, a signed receipt verifies as `unverifiable` with `RCP-08`.
   commitments over fields; the current design has none.
 - **Re-rooting a chain requires re-signing.** `content_hash` covers `_meta`,
   and `parent_hash` lives there — see the erratum in RFC 0010.
+- **No Sigstore.** Keyless signing needs a Fulcio trust root and a Rekor
+  inclusion proof — a vendored snapshot that fails closed when stale, or
+  network access at verify time. `scheme: "sigstore"` is reserved in §X.1.2 so
+  adding it later stays additive.
 
 MIT. Part of the [UW Markdown](https://github.com/UWMD-OSP/UW-Markdown) monorepo.

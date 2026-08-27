@@ -117,7 +117,11 @@ export function stampReceiptSignature(
   return { ...receipt, signature };
 }
 
-async function signPayload(payload: string, key: SigningKey): Promise<string> {
+/**
+ * Sign arbitrary canonical bytes. Shared by blocks, receipts, and module
+ * manifests — the three artifacts differ only in what they canonicalize.
+ */
+export async function signPayload(payload: string, key: SigningKey): Promise<string> {
   const params = algorithmParams(key.alg);
   let bytes: ArrayBuffer;
   try {

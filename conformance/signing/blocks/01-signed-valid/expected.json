@@ -1,6 +1,6 @@
 {
   "description": "A block carrying a valid ed25519 signature over its own content_hash, checked against the suite keystore.",
-  "keystore": "keys/keystore.json",
+  "keystore": "../keys/keystore.json",
   "ok": true,
   "signatures_present": 1,
   "signatures_verified": 1,

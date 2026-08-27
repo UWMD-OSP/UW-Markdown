@@ -19,7 +19,12 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { parseUWFile, computeBlockHash } from '../packages/uwmd-core/dist/index.js';
-import { importPrivateKey, signBlock } from '../packages/uwmd-signing/dist/index.js';
+import {
+  importPrivateKey,
+  signBlock,
+  signModule,
+  stampModuleSignature,
+} from '../packages/uwmd-signing/dist/index.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SUITE = join(ROOT, 'conformance', 'signing');
@@ -33,7 +38,9 @@ const key = {
   privateKey: await importPrivateKey('ed25519', { jwk: privateJwk }),
 };
 
-const BASE = readFileSync(join(SUITE, 'base-deal.uw.md'), 'utf8');
+const BLOCKS = join(SUITE, 'blocks');
+const MODULES = join(SUITE, 'modules');
+const BASE = readFileSync(join(BLOCKS, 'base-deal.uw.md'), 'utf8');
 
 /**
  * Stamp `content_hash` (and optionally `signature`) into the named section's
@@ -85,8 +92,18 @@ function replaceBlockJson(text, sectionId, json) {
 }
 
 function write(scenario, name, body) {
-  mkdirSync(join(SUITE, scenario), { recursive: true });
-  writeFileSync(join(SUITE, scenario, name), body, 'utf8');
+  mkdirSync(join(BLOCKS, scenario), { recursive: true });
+  writeFileSync(join(BLOCKS, scenario, name), body, 'utf8');
+}
+
+function writeModule(scenario, manifest) {
+  mkdirSync(join(MODULES, scenario), { recursive: true });
+  writeFileSync(
+    join(MODULES, scenario, 'module.json'),
+    `${JSON.stringify(manifest, null, 2)}
+`,
+    'utf8',
+  );
 }
 
 // ── 01: a valid signature over a hashed block ────────────────────────────────
@@ -114,4 +131,33 @@ write('04-signed-no-hash', 'deal.uw.md', await stamp(BASE, 'property', { hash: f
 // the verdict must change because the *verifier* changed, not the document.
 write('05-signed-no-backend', 'deal.uw.md', valid);
 
-console.log('conformance/signing: regenerated 5 scenarios.');
+// ── Module manifests (RFC 0002) ─────────────────────────────────────────────
+// Same key, same key store: a host that trusts a signer trusts them for both
+// artifacts, and splitting the corpus across two keys would suggest otherwise.
+
+const BASE_MODULE = JSON.parse(readFileSync(join(MODULES, 'base-module.json'), 'utf8'));
+const moduleSignature = await signModule(BASE_MODULE, key, {
+  signedAt: SIGNED_AT,
+  identity: 'modules@uwmd.org',
+});
+const signedModule = stampModuleSignature(BASE_MODULE, moduleSignature);
+
+writeModule('01-valid', signedModule);
+// Tamper with `description`, which is structurally valid either way, so the
+// only thing that can refuse the manifest is the signature.
+writeModule('02-tampered', { ...signedModule, description: 'Tampered after signing.' });
+writeModule('03-unknown-kid', {
+  ...signedModule,
+  signature: { ...moduleSignature, kid: 'rotated-out-2019' },
+});
+writeModule('04-unsigned', BASE_MODULE);
+writeModule('05-unsupported-scheme', {
+  ...signedModule,
+  signature: { ...moduleSignature, scheme: 'sigstore' },
+});
+writeModule('06-malformed', {
+  ...signedModule,
+  signature: { scheme: 'uwmd-keystore', alg: 'ed25519', kid: 'uwmd-conformance-ed25519' },
+});
+
+console.log('conformance/signing: regenerated 5 block scenarios and 6 module scenarios.');

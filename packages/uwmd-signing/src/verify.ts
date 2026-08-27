@@ -79,7 +79,7 @@ export function createReceiptSignatureVerifier(store: KeyStore): ReceiptSignatur
     async verify(receipt: UWReceipt, signedPayload: string): Promise<boolean> {
       const signature = receipt.signature;
       if (!signature) return false;
-      const verdict = await verifyRaw(signedPayload, signature.algorithm, signature.key_id, signature.value, store);
+      const verdict = await verifyRawSignature(signedPayload, signature.algorithm, signature.key_id, signature.value, store);
       return verdict.ok;
     },
   };
@@ -90,7 +90,7 @@ function verifyDetached(
   signature: UWBlockSignature,
   store: KeyStore,
 ): Promise<BlockSigVerdict> {
-  return verifyRaw(payload, signature.alg, signature.kid, signature.sig, store);
+  return verifyRawSignature(payload, signature.alg, signature.kid, signature.sig, store);
 }
 
 /**
@@ -99,7 +99,7 @@ function verifyDetached(
  * `algorithm`/`key_id`/`value`); flattening them here is what keeps the two
  * surfaces from growing two subtly different verifiers.
  */
-async function verifyRaw(
+export async function verifyRawSignature(
   payload: string,
   alg: string,
   kid: string,

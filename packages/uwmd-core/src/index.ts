@@ -204,11 +204,35 @@ export type { ExcelEmitOptions } from './packs/index.js';
 
 export {
   loadModuleManifest,
+  loadModuleManifestAsync,
   createModuleRegistry,
+  createModuleRegistryAsync,
   getModuleCalculationsForAssetClass,
   ModuleRegistryError,
 } from './modules.js';
-export type { ModuleRegistry, LoadModuleOptions, CreateModuleRegistryOptions } from './modules.js';
+export type {
+  ModuleRegistry,
+  LoadModuleOptions,
+  LoadModuleAsyncOptions,
+  CreateModuleRegistryOptions,
+  CreateModuleRegistryAsyncOptions,
+  ModuleSignaturePolicy,
+} from './modules.js';
+
+// RFC 0002 — module signatures. Crypto-free half only; `@uwmd/signing` supplies
+// the verifier that `verifyModuleSignature` and the async loaders accept.
+export {
+  moduleSigningPayload,
+  verifyModuleSignature,
+  checkSignatureShape,
+  MODULE_SIGNATURE_SCHEME,
+} from './module-signing.js';
+export type {
+  ModuleSignatureFailure,
+  ModuleSignatureVerdict,
+  ModuleSignatureVerifier,
+  VerifyModuleSignatureOptions,
+} from './module-signing.js';
 
 // ─── RFC 0018: document profiles, lease abstracts, deal packages ─────────────
 // All browser-safe: no I/O, no network, no hashing implementation imported.
@@ -636,6 +660,7 @@ export type {
   CalcResult,
   AgentHostCapability,
   ModuleManifest,
+  ModuleSignature,
   ModuleSectionDecl,
   ModuleCalcDecl,
   ModuleValidationDecl,

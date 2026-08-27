@@ -26,7 +26,7 @@ and how it gets accepted.
 | # | Title | Status | Affects |
 |---|---|---|---|
 | [0001](./0001-locale-negotiation.md)    | Locale negotiation                          | draft | format, protocol, core, conformance |
-| [0002](./0002-module-signing.md)        | Module signing                              | draft | protocol, core, conformance |
+| [0002](./0002-module-signing.md)        | Module signing                              | implemented | protocol, core, conformance, tooling |
 | [0003](./0003-module-asset-classes.md)  | Custom asset-class declarations from modules | draft | format, protocol, core, conformance |
 | [0004](./0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | draft | conformance, tooling |
 | [0005](./0005-stochastic-calculations.md) | Stochastic calculations                    | draft | protocol, core, conformance |

@@ -78,19 +78,20 @@ Detailed sequencing and release gates:
 > **Unfrozen 2026-08-26.** With the v1.x dev queue empty (RFCs 0014–0029 all
 > implemented), the owner moved this train from ❄ frozen to 📋 active.
 >
-> **RFC 0010 (signed blocks) landed 2026-08-27** — protocol §V.11, the new
-> `@uwmd/signing` package, `uwmd verify --signing`, and the
-> `conformance/signing/` suite. Receipt signing came with it: `@uwmd/signing`
-> supplies the `signatureVerifier` core has always accepted, so a signed
-> receipt now verifies instead of reporting `unverifiable`.
+> **The signing chain landed 2026-08-27.** RFC 0010 (signed blocks) shipped
+> protocol §V.11, the new `@uwmd/signing` package, `uwmd verify --signing`,
+> and the `conformance/signing/` suite; receipt signing came with it, since
+> `@uwmd/signing` supplies the `signatureVerifier` core has always accepted.
+> RFC 0002 (module signing) followed the same day as protocol §X.1 — a
+> `uwmd-keystore` scheme on the same machinery rather than the Sigstore
+> design the RFC opened with, for reasons recorded in the RFC.
 >
-> Remaining priority order: **(1) RFC 0002 module signing** — the second half
-> of the signing chain, now that block and receipt signing exist to build on;
-> **(2) RFC 0004 conformance runner v2** (the corpus claims third parties can
-> self-certify, but the runner is TS-only); **(3) RFC 0006 hospitality
-> reference module** (first real consumer of the module system). The rest
-> remain queued behind those. Unfrozen means *actively being taken up*, not
-> accepted — each RFC still goes through its own acceptance.
+> Remaining priority order: **(1) RFC 0004 conformance runner v2** (the
+> corpus claims third parties can self-certify, but the runner is TS-only);
+> **(2) RFC 0006 hospitality reference module** (first real consumer of the
+> module system). The rest remain queued behind those. Unfrozen means
+> *actively being taken up*, not accepted — each RFC still goes through its
+> own acceptance.
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
 None are required for v1 conformance — they constitute v2 of the
@@ -105,7 +106,7 @@ context. This list is the maintainable copy.
 |---|---|---|
 | [0010](./docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
 | [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
-| [0002](./docs/rfcs/0002-module-signing.md)        | Module signing                                | Sigstore-style signature on module manifests, verified by host policy. |
+| [0002](./docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
 | [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | `scripts/run-conformance.mjs` is TS-only — non-TS implementers can't self-certify against the same runner. |
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |

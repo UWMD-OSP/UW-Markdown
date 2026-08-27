@@ -49,6 +49,53 @@ on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
   ed25519/es256/es384 round trip, signature-swap and wrong-key rejection, key
   store refusals, and the full issue → sign → verify receipt path.
 
+### Added — RFC 0002 implemented: module manifest signatures (corpus 263 → 269)
+
+[RFC 0002](docs/rfcs/0002-module-signing.md) (drafted 2026-04-26, accepted and
+implemented 2026-08-27), the second half of the signing chain, on RFC 0010's
+machinery. Protocol §X.1; no version bump beyond 1.7.0, which the same day's
+§V.11 already carried.
+
+- **`ModuleManifest.signature`** is normative — protocol §X.1, the new
+  `module-signature.schema.json`, and an additive `$ref` from
+  `module-manifest.schema.json`. A module manifest is executable surface
+  (formulas the calc engine evaluates, validations that decide whether a deal
+  reads as blocking), and a host loading one from npm or a URL had no way to
+  ask whether it was the manifest the author published.
+- **The scheme is `uwmd-keystore`, not Sigstore** — a deliberate departure
+  from the RFC's opening design, recorded in it. Sigstore needs a Fulcio trust
+  root and a Rekor inclusion proof, which means either a vendored snapshot
+  that fails closed when stale or network access inside the module loader.
+  Neither fits a protocol whose conformance corpus is offline and
+  deterministic. `scheme: "sigstore"` is reserved so adding it stays additive.
+- **Five verdicts, kept apart:** `PROTO-MOD-068` missing, `-069` unsupported
+  scheme, `-070` malformed, `-071` unknown key, `-072` invalid. `missing`,
+  `unknown_key`, and `invalid` call for three different responses — decide a
+  policy, load a key, reject the module — and a verifier that reports them as
+  one makes all three indistinguishable where the operator has to act.
+- **Three host policies:** `ignore` (default, what every host did before),
+  `verify-if-present` (unsigned loads, broken refuses), and `require`. Both
+  checking policies refuse on `unknown_key`: a host that cannot check a
+  signature has established nothing, and treating that as success would make
+  the policy decorative. `loadModuleManifestAsync` /
+  `createModuleRegistryAsync` are the async siblings; the sync loaders are
+  untouched and pay nothing.
+- **A malformed signature refuses even under `ignore`.** Declining to *verify*
+  is not a licence to admit a malformed object into a frozen manifest.
+- **`identity` is advisory, and §X.1.5 says so normatively.** A signature
+  proves the key holder asserted an identity, never that the assertion is
+  true; the `allowedIdentities` allow-list is worth only as much as the host's
+  decision to bind that `kid` to that identity.
+- **Conformance:** `conformance/signing/modules/`, six generated scenarios
+  each run under **all three policies** — `04-unsigned` loading under
+  `verify-if-present` and refusing under `require` is the entire policy
+  distinction, and asserting one half would let the two collapse unnoticed.
+  The suite reuses RFC 0010's test key: a host that trusts a signer trusts
+  them for both artifact kinds.
+- **Tests:** 19 new core tests (crypto-free: payload, shape, taxonomy,
+  allow-list) and 18 in `@uwmd/signing` (round trip, tamper, policy matrix,
+  registry refusal).
+
 ### Fixed — §V.9's hash exclusions had never fired on a real file
 
 Surfaced while building the RFC 0010 fixtures. The canonicalizer decided an

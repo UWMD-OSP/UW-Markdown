@@ -1139,6 +1139,127 @@ Required fields: `manifest_version` (always `"1"` in v1), `id`, `name`,
 Optional fields are documented in the schema. The TypeScript mirror
 type `ModuleManifest` in `protocol.ts` is kept in lockstep.
 
+### X.1 Module signatures (RFC 0002)
+
+A module manifest is executable surface. Its `calculations` carry
+formulas the calc engine evaluates, and its `validations` can decide
+whether a deal reads as blocking or advisory. A host that loads one
+from npm, a URL, or a colleague's directory has no built-in way to
+ask whether it is the manifest the author published.
+
+`ModuleManifest.signature` gives it one. The canonical schema is
+[`module-signature.schema.json`](schemas/module-signature.schema.json).
+
+**Advisory by construction.** The protocol does not require anyone to
+sign, or anyone to check. It fixes what "signature valid" *means*, so
+that two conforming hosts reach the same verdict on the same manifest;
+what to *do* about an unsigned or invalid module is host policy
+(§X.1.4).
+
+#### X.1.1 What is signed
+
+The signature input is the RFC 8785 canonical JSON of the manifest
+with `signature` **removed** — removed rather than set to `null`, so
+signing a manifest and verifying it afterwards see byte-identical
+input.
+
+Every other field is covered, including `depends_on`. A module's
+dependencies are part of what its author published, and leaving them
+out would let an attacker redirect a signed module at a different
+dependency without breaking the signature.
+
+#### X.1.2 Wire format
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `scheme` | `"uwmd-keystore"` | yes | Signing scheme. See below. |
+| `alg` | `"ed25519"` \| `"es256"` \| `"es384"` | yes | Same closed set as §V.11. ECDSA is raw `r \|\| s`. |
+| `kid` | string | yes | Key identifier the host resolves in its own key store. |
+| `sig` | string | yes | Signature bytes, base64url, unpadded. |
+| `signed_at` | string | yes | ISO 8601 instant the signature was produced. |
+| `identity` | string | no | Identity the signer claims. **Advisory** — see §X.1.5. |
+
+`uwmd-keystore` is the one scheme protocol 1.x implements: a detached
+signature verified against a key store the host holds, reusing the
+block-signature machinery of §V.11 rather than inventing a second one.
+
+`sigstore` is **reserved and unimplemented**. Keyless signing needs a
+Fulcio trust root and a Rekor inclusion proof, which means either a
+vendored root snapshot with a release-cadence obligation or network
+access at verification time. Neither fits a protocol whose conformance
+corpus is offline and deterministic. The `scheme` discriminator exists
+so that adding it later is additive rather than breaking.
+
+#### X.1.3 Verification verdicts
+
+A host that verifies MUST distinguish these five outcomes. They are
+listed with the error codes the reference implementation emits.
+
+| Code | Reason | Meaning |
+|---|---|---|
+| `PROTO-MOD-068` | `missing` | The manifest carries no `signature`. |
+| `PROTO-MOD-069` | `unsupported_scheme` | `scheme` names something this host does not implement. |
+| `PROTO-MOD-070` | `malformed` | `signature` is present but not a well-formed `ModuleSignature`. |
+| `PROTO-MOD-071` | `unknown_key` | `kid` names a key the host's store does not hold — including the case where the host has no signature backend at all. |
+| `PROTO-MOD-072` | `invalid` | The signature did not validate over the canonical manifest. |
+
+Three of these must not be collapsed into one another, because they
+call for three different responses:
+
+- **`missing`** — nothing was claimed. The host decides a policy.
+- **`unknown_key`** — something was claimed and this host cannot
+  check it. The host loads a key.
+- **`invalid`** — something was claimed and it is false. The host
+  rejects the module.
+
+A verifier that reports all three as "signature failed" makes them
+indistinguishable at exactly the point where the operator has to act.
+
+`malformed` is separate from `invalid` for the same reason: telling an
+author their manifest was tampered with, when the real problem is a
+missing `signed_at`, sends them hunting for an attack that never
+happened. A manifest carrying a malformed `signature` is refused by
+structural validation regardless of policy — declining to *verify* is
+not a licence to admit nonsense.
+
+#### X.1.4 Host policy
+
+A host's policy is one of:
+
+- **`ignore`** — do not look. What every host did before this section
+  existed, and the default.
+- **`verify-if-present`** — an unsigned module loads; a bad signature
+  refuses. The pragmatic adoption setting: it never punishes an author
+  who has not signed yet, and never lets a broken claim through.
+- **`require`** — an unsigned module refuses too.
+
+Both checking policies MUST refuse on `unknown_key`. A host that
+cannot check a signature has not established anything about the
+module, and treating "I hold no key for this" as success would make
+the policy decorative.
+
+> A host that declares the `module-signature-verification` capability
+> in its `ImplementationManifest` MUST produce the verdicts in §X.1.3
+> and MUST NOT load a module that fails verification under its
+> declared policy.
+
+Dependency verification is a host decision, not a protocol
+requirement. The protocol supplies the verifier; whether to walk
+`depends_on` transitively and demand a signature at each hop is
+policy.
+
+#### X.1.5 What a signature does not tell you
+
+`identity` is a claim *inside* the signed bytes. A valid signature
+proves the holder of that key asserted that identity — never that the
+assertion is true. It is worth exactly as much as the host's decision
+to bind that `kid` to that identity in its key store, which is an
+out-of-band act this protocol does not describe.
+
+A host wanting "only modules from `@example.org`" enforces it with an
+allow-list over `identity` *on top of* a trusted key store, and gains
+nothing from the allow-list alone.
+
 ---
 
 ## XI. Error Taxonomy
@@ -1253,8 +1374,6 @@ required for v1 conformance.
 - **Locale negotiation** — v1 freezes formatting to `en-US`. The
   `SupportedLocale` type in `protocol.ts` is the v2 hook; full
   locale negotiation will land via RFC.
-- **Module signing** — Sigstore-style signature on module manifests,
-  verified by the host according to its policy.
 - **Custom asset-class declarations from modules** — the asset-class
   enum is hard-coded in `types.ts` for v1; modules cannot extend it
   without a spec bump.

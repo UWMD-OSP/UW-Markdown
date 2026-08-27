@@ -45,5 +45,8 @@ export {
 } from './verify.js';
 export type { BlockVerification, SigVerifyError } from './verify.js';
 
+export { signModule, stampModuleSignature, createModuleSignatureVerifier } from './modules.js';
+export type { SignModuleOptions } from './modules.js';
+
 export const SIGNING_PACKAGE_NAME = '@uwmd/signing' as const;
 export const SIGNING_VERSION = '0.1.0';
