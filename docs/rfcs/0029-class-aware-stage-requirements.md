@@ -1,9 +1,11 @@
 ---
 rfc: 0029
 title: Make stage requirements class-aware
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-08-26
+accepted: 2026-08-26
+implemented: 2026-08-26
 affects:
   - format-spec
   - core-library
@@ -11,6 +13,13 @@ affects:
 ---
 
 # RFC 0029: Make stage requirements class-aware
+
+> **Accepted and implemented 2026-08-26**, as proposed. The two deferred
+> questions (land-specific `dcf`/`stress_tests` treatment; an author-stated
+> consolidated mixed-use operating statement) remain open for future
+> evidence. The conformance fixtures landed in the Tier-1 valid set as this
+> RFC preferred, pinning the exemption, the substitution, and the office
+> control through the frozen validation verdicts.
 
 ## Summary
 

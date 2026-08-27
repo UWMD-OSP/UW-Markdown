@@ -8,6 +8,41 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — RFC 0029 implemented: stage requirements are class-aware (corpus 245 → 257)
+
+[RFC 0029](docs/rfcs/0029-class-aware-stage-requirements.md) (drafted,
+accepted, and implemented 2026-08-26) closes the finding the RFC 0028
+example cleanup surfaced: §5.1's per-stage section lists were
+class-agnostic, so a land deal could never honestly declare
+`full_underwrite` (a `rent_roll` was required and raw land has no tenants)
+and a mixed-use deal was asked for a property-level `rent_roll` its
+`components` section would wrongly duplicate.
+
+- **§5.1 gains a two-row class-overlay table**, mirrored by
+  `STAGE_SECTION_OVERLAYS` + `requiredSectionsFor()` in `validator.ts` (the
+  RFC 0027 declare-once pattern): `land` is exempt from `rent_roll` and
+  `operating_statement` at every stage; `mixed_use` substitutes `components`
+  for both — checkable (the substitute is required where the replaced
+  sections were, once), and tightening nothing since `MU-01` already
+  requires `components`. All other classes take the base lists verbatim;
+  hospitality's keys/ADR `rent_roll` stays the precedent that section ids
+  are class-neutral containers.
+- **Both consumers resolve through the one function** — `stage_readiness`
+  and `DQ-06` cannot disagree about what a stage requires. `CC-14` is
+  untouched: `property` is never exempt.
+- **Pure relaxation:** no document that validated stops validating; some
+  land/mixed-use `DQ-06` notes disappear and readiness booleans can flip
+  false → true — neither pinned anywhere.
+- **Conformance:** three new Tier-1 valid fixtures whose frozen validation
+  verdicts pin the behavior — a land deal at `full_underwrite` with no
+  `rent_roll`/`operating_statement` validates **clean with zero `DQ-06`**; a
+  mixed-use deal whose `components` foots to the property NOI likewise; and
+  an office control with the same section inventory as the land fixture
+  still carries its `DQ-06` — the overlay is two rows, not a loophole.
+- **Tests:** 9 new unit tests (resolver across all stages × classes, the
+  substitution dedup, readiness/issues agreement, `CC-14` on a
+  property-less land deal).
+
 ### Fixed — CLI flag/positional divergence; `cli.ts` plumbing extracted and tested
 
 `uwmd <cmd> --flag=value <file>` silently dropped the filename and died with

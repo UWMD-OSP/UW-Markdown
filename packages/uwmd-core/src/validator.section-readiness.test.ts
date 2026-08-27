@@ -7,7 +7,12 @@
 
 import { describe, expect, it } from 'vitest';
 import { BUILTIN_REMEDIATIONS } from './protocol.js';
-import { STAGE_REQUIREMENTS, validateUWFile } from './validator.js';
+import {
+  STAGE_REQUIREMENTS,
+  STAGE_SECTION_OVERLAYS,
+  requiredSectionsFor,
+  validateUWFile,
+} from './validator.js';
 import type { ParsedUWFile, UWBlock, ValidationMessage } from './types.js';
 
 function block(section: string, content: Record<string, unknown>, annotation: Record<string, unknown> = {}): UWBlock {
@@ -169,5 +174,95 @@ describe('validateUWFile — DQ-06 declared-stage section gaps (RFC 0028)', () =
     }
     const readiness = validateUWFile(file(sections, { deal_stage: 'full_underwrite' })).stage_readiness;
     expect(readiness.full_underwrite).toBe(false);
+  });
+});
+
+// ─── RFC 0029: class overlays ────────────────────────────────────────────────
+
+describe('requiredSectionsFor — class overlays (RFC 0029)', () => {
+  const STAGES = Object.keys(STAGE_REQUIREMENTS) as (keyof typeof STAGE_REQUIREMENTS)[];
+
+  it('an unlisted or unrecognized class takes the base list verbatim, every stage', () => {
+    for (const stage of STAGES) {
+      const base = STAGE_REQUIREMENTS[stage].required_sections;
+      expect(requiredSectionsFor(stage, 'office')).toEqual(base);
+      expect(requiredSectionsFor(stage, 'data_center')).toEqual(base);
+      expect(requiredSectionsFor(stage)).toEqual(base);
+    }
+  });
+
+  it('land is exempt from rent_roll and operating_statement at every stage, and nothing stands in', () => {
+    for (const stage of STAGES) {
+      const resolved = requiredSectionsFor(stage, 'land');
+      const base = STAGE_REQUIREMENTS[stage].required_sections;
+      expect(resolved).not.toContain('rent_roll');
+      expect(resolved).not.toContain('operating_statement');
+      const exempted: string[] = base.filter((s) => s === 'rent_roll' || s === 'operating_statement');
+      expect(resolved.length).toBe(base.length - exempted.length);
+      expect(resolved).toEqual(base.filter((s) => !exempted.includes(s)));
+    }
+  });
+
+  it('mixed_use substitutes components for both, required once (the dedup)', () => {
+    const resolved = requiredSectionsFor('full_underwrite', 'mixed_use');
+    expect(resolved).not.toContain('rent_roll');
+    expect(resolved).not.toContain('operating_statement');
+    expect(resolved.filter((s) => s === 'components')).toHaveLength(1);
+    // two sections replaced, one substitute added
+    expect(resolved.length).toBe(STAGE_REQUIREMENTS.full_underwrite.required_sections.length - 1);
+  });
+
+  it('a substitution is checkable: components is required where the replaced sections were', () => {
+    // rent_roll enters the base lists at term_sheet, so the substitute must
+    // be required from term_sheet up and absent below it.
+    expect(requiredSectionsFor('screening', 'mixed_use')).not.toContain('components');
+    expect(requiredSectionsFor('term_sheet', 'mixed_use')).toContain('components');
+    expect(requiredSectionsFor('monitoring', 'mixed_use')).toContain('components');
+  });
+
+  it('property is never exempt or substituted for any class in the registry', () => {
+    for (const overlay of Object.values(STAGE_SECTION_OVERLAYS)) {
+      expect(overlay?.exempt ?? []).not.toContain('property');
+      expect(Object.keys(overlay?.substitute ?? {})).not.toContain('property');
+    }
+  });
+});
+
+describe('DQ-06 and stage_readiness respect the overlays (RFC 0029)', () => {
+  const landSections = (): Record<string, UWBlock> => {
+    const sections: Record<string, UWBlock> = {};
+    for (const id of requiredSectionsFor('full_underwrite', 'land')) sections[id] = block(id, {});
+    return sections;
+  };
+
+  it('a land deal reaches full_underwrite without rent_roll or operating_statement', () => {
+    const parsed = file(landSections(), { asset_class: 'land', deal_stage: 'full_underwrite' });
+    expect(codes(parsed, 'DQ-06')).toHaveLength(0);
+    expect(validateUWFile(parsed).stage_readiness.full_underwrite).toBe(true);
+  });
+
+  it('the same sections under an office class still owe rent_roll and operating_statement — no loophole', () => {
+    const parsed = file(landSections(), { asset_class: 'office', deal_stage: 'full_underwrite' });
+    const missing = codes(parsed, 'DQ-06').map((i) => i.section).sort();
+    expect(missing).toEqual(['operating_statement', 'rent_roll']);
+    expect(validateUWFile(parsed).stage_readiness.full_underwrite).toBe(false);
+  });
+
+  it('mixed_use: a present components section satisfies the substitution; an absent one is named', () => {
+    const sections: Record<string, UWBlock> = {};
+    for (const id of requiredSectionsFor('full_underwrite', 'mixed_use')) sections[id] = block(id, {});
+    const satisfied = file(sections, { asset_class: 'mixed_use', deal_stage: 'full_underwrite' });
+    expect(codes(satisfied, 'DQ-06')).toHaveLength(0);
+
+    const { components: _dropped, ...withoutComponents } = sections;
+    const missing = file(withoutComponents, { asset_class: 'mixed_use', deal_stage: 'full_underwrite' });
+    const named = codes(missing, 'DQ-06').map((i) => i.section);
+    expect(named).toEqual(['components']);
+    expect(named).not.toContain('rent_roll');
+  });
+
+  it('CC-14 still fires on a property-less land deal — property is never exempt', () => {
+    const parsed = file({}, { asset_class: 'land', deal_stage: 'scope' });
+    expect(codes(parsed, 'CC-14')).toHaveLength(1);
   });
 });

@@ -2402,6 +2402,27 @@ stage. Freshness obligations that earlier revisions listed under Monitoring
 expressible as section presence; staleness belongs to the `DQ-05` machinery
 (§4.22) and institution policy.
 
+**Class overlays (RFC 0029).** The base lists assume an income property with
+direct tenancy. Two asset classes diverge structurally, and for them a
+validator MUST adjust the requirements as follows — exhaustively; an asset
+class not listed here (including an unrecognized one) takes the base lists
+verbatim:
+
+| `asset_class` | Adjustment |
+|---|---|
+| `land` | `rent_roll` and `operating_statement` are **exempt** at every stage: raw land has no tenancy and no operating statement — its carry lives in `noi_model` and `dcf`, and nothing stands in for the exempted sections. |
+| `mixed_use` | `components` **substitutes** for `rent_roll` and `operating_statement`: wherever a stage's base list requires either, the requirement is satisfied by (and only by) a `components` section, which §4.23 already makes the home of per-component income and operating detail. |
+
+A substitution is checkable — the substitute section is *required* at the
+stage where the replaced section would have been (a substitute replacing two
+sections is required once) — where an exemption simply removes the
+requirement. `stage_readiness` and `DQ-06` MUST resolve through the same
+overlay, and `CC-14` is unaffected: `property` is never exempt for any
+class. Section ids remain class-neutral containers otherwise: hospitality's
+`rent_roll` carries keys/ADR/segmentation, senior housing's carries
+unit/acuity mix, and no overlay entry exists for them because reuse is the
+design, not a gap.
+
 ### 5.2 Financial Validity Thresholds
 
 These are the default thresholds. Institution configs may override.

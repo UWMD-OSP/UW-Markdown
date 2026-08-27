@@ -1,0 +1,398 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-OVERLAY-MU",
+    "deal_name": "Mixed-Use Overlay Fixture",
+    "created": "2026-08-26T12:00:00Z",
+    "last_modified": "2026-08-26T12:00:00Z",
+    "property_address": "700 Mixed Ave",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "mixed_use",
+    "deal_stage": "full_underwrite",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "analyst",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "annotation": {
+        "section": "property",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "property",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "address": "700 Mixed Ave, Phoenix AZ"
+      },
+      "prose": "# Mixed-use overlay fixture (RFC 0029)\n\nA mixed-use deal at full_underwrite whose components section satisfies the\nsubstitution for rent_roll and operating_statement. The frozen validation\nverdict must contain no DQ-06, and the component NOIs foot to the property\nNOI (CC-12).",
+      "lineStart": 27,
+      "lineEnd": 41
+    },
+    "components": {
+      "annotation": {
+        "section": "components",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "components",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "components",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "multifamily": {
+          "component_class": "multifamily",
+          "effective_gross_income": 2180000,
+          "operating_expenses": 880000,
+          "net_operating_income": 1300000,
+          "total_units": 120,
+          "allocation_pct": 0.7
+        },
+        "retail": {
+          "component_class": "retail",
+          "effective_gross_income": 520000,
+          "operating_expenses": 148000,
+          "net_operating_income": 372000,
+          "nra_sqft": 18000,
+          "allocation_pct": 0.3
+        }
+      },
+      "prose": "",
+      "lineStart": 42,
+      "lineEnd": 71
+    },
+    "noi_model": {
+      "annotation": {
+        "section": "noi_model",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "noi_model",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "noi_model",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "net_operating_income": 1672000
+      },
+      "prose": "",
+      "lineStart": 72,
+      "lineEnd": 86
+    },
+    "debt_structure": {
+      "annotation": {
+        "section": "debt_structure",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "debt_structure",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "debt_structure",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 87,
+      "lineEnd": 100
+    },
+    "validation": {
+      "annotation": {
+        "section": "validation",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "validation",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "validation",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 101,
+      "lineEnd": 114
+    },
+    "borrower_sponsor": {
+      "annotation": {
+        "section": "borrower_sponsor",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "borrower_sponsor",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "borrower_sponsor",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 115,
+      "lineEnd": 128
+    },
+    "preliminary_sizing": {
+      "annotation": {
+        "section": "preliminary_sizing",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "preliminary_sizing",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "preliminary_sizing",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 129,
+      "lineEnd": 142
+    },
+    "valuation": {
+      "annotation": {
+        "section": "valuation",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "valuation",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "valuation",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 143,
+      "lineEnd": 156
+    },
+    "sources_uses": {
+      "annotation": {
+        "section": "sources_uses",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "sources_uses",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "sources_uses",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 157,
+      "lineEnd": 170
+    },
+    "market_analysis": {
+      "annotation": {
+        "section": "market_analysis",
+        "source": "manual",
+        "ts": "2026-08-26T12:00:00Z",
+        "v": 1,
+        "confidence": "high"
+      },
+      "meta": {
+        "section": "market_analysis",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-08-26T12:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_meta": {
+          "section": "market_analysis",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-08-26T12:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        }
+      },
+      "prose": "",
+      "lineStart": 171,
+      "lineEnd": 184
+    }
+  },
+  "prose": {
+    "property": "# Mixed-use overlay fixture (RFC 0029)\n\nA mixed-use deal at full_underwrite whose components section satisfies the\nsubstitution for rent_roll and operating_statement. The frozen validation\nverdict must contain no DQ-06, and the component NOIs foot to the property\nNOI (CC-12).",
+    "components": "",
+    "noi_model": "",
+    "debt_structure": "",
+    "validation": "",
+    "borrower_sponsor": "",
+    "preliminary_sizing": "",
+    "valuation": "",
+    "sources_uses": "",
+    "market_analysis": ""
+  },
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}
