@@ -18,7 +18,7 @@ implementations' results cannot be aggregated.
 
 WHAT THIS DRIVER DOES NOT COVER, and why it is not the gate:
 
-    `npm run conformance` remains the CI gate. It runs 269 assertions across
+    `npm run conformance` remains the CI gate. It runs 274 assertions across
     thirteen suites, and a large share of them are not expressible as
     "run a command, compare the output" — receipt re-issuance stability,
     composition DAG resolution, ZIP packaging, cross-fixture invariants
