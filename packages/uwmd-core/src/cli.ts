@@ -75,6 +75,15 @@ import {
 } from './lite-bridge.js';
 import { UW_LITE_REPRESENTATION_ID } from './source-representation.js';
 
+import {
+  parseFlags,
+  extractPositionals,
+  replaceUWExtension,
+  hostTierFlag,
+  defaultPartsDir,
+  readManifestFile,
+} from './cli-args.js';
+
 const [, , command, ...args] = process.argv;
 
 function readFile(path: string): string {
@@ -94,30 +103,6 @@ function loadInstitutionConfig(path: string | undefined): InstitutionConfig | un
     console.error(`Warning: could not load institution config: ${path}`);
     return undefined;
   }
-}
-
-function parseFlags(rawArgs: string[]): Record<string, string | boolean> {
-  const flags: Record<string, string | boolean> = {};
-  for (let i = 0; i < rawArgs.length; i++) {
-    const arg = rawArgs[i];
-    if (arg.startsWith('--')) {
-      const body = arg.slice(2);
-      const eqIdx = body.indexOf('=');
-      if (eqIdx >= 0) {
-        flags[body.slice(0, eqIdx)] = body.slice(eqIdx + 1);
-        continue;
-      }
-      const key = body;
-      const next = rawArgs[i + 1];
-      if (next && !next.startsWith('--')) {
-        flags[key] = next;
-        i++;
-      } else {
-        flags[key] = true;
-      }
-    }
-  }
-  return flags;
 }
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
@@ -486,14 +471,6 @@ async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
  * rather than `deal.uw.json`. (`.uw.md` does not match a `.uwx.md` filename —
  * the suffixes genuinely differ — so it was silently a no-op, not a mis-match.)
  */
-function replaceUWExtension(file: string, extension: string): string {
-  const lower = file.toLowerCase();
-  for (const suffix of [UWX_EXTENSION, '.uw.csv.zip', '.uw.md', '.uw.json', '.uw.xml']) {
-    if (lower.endsWith(suffix)) return `${file.slice(0, -suffix.length)}${extension}`;
-  }
-  return `${file}${extension}`;
-}
-
 async function cmdConvert(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const requested = flags['to'];
   if (typeof requested !== 'string') {
@@ -591,19 +568,6 @@ async function cmdReceiptIssue(
 }
 
 // ─── Modules ──────────────────────────────────────────────────────────────────
-
-function readManifestFile(path: string): { ok: true; manifest: unknown } | { ok: false; message: string } {
-  try {
-    return { ok: true, manifest: JSON.parse(readFileSync(resolve(path), 'utf-8')) as unknown };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : String(e) };
-  }
-}
-
-function hostTierFlag(flags: Record<string, string | boolean>): ViewerTier | undefined {
-  const tier = flags['tier'];
-  return typeof tier === 'string' ? (tier as ViewerTier) : undefined;
-}
 
 function cmdModulesValidate(files: string[], flags: Record<string, string | boolean>): void {
   const hostTier = hostTierFlag(flags);
@@ -946,13 +910,7 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
 // ─── Router ───────────────────────────────────────────────────────────────────
 
 const flags = parseFlags(args);
-// Positional args: non-flag tokens that don't immediately follow a --flag
-const positional: string[] = [];
-for (let _i = 0; _i < args.length; _i++) {
-  const a = args[_i];
-  if (a.startsWith('--')) { _i++; continue; } // skip flag + its value
-  positional.push(a);
-}
+const positional = extractPositionals(args);
 
 
 // ─── Composition (RFC 0021) ──────────────────────────────────────────────────
@@ -971,11 +929,6 @@ function loadPartsDir(dir: string): Map<string, UWPart> {
     parts.set(part.part_id, part);
   }
   return parts;
-}
-
-/** Where fragments live for a record, unless told otherwise. */
-function defaultPartsDir(file: string): string {
-  return resolve(dirname(resolve(file)), 'parts');
 }
 
 function cmdCompose(file: string, flags: Record<string, string | boolean>): void {

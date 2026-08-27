@@ -381,8 +381,16 @@ not core gaps.
 - **Test coverage uneven, but the gate is real.** The backfills landed:
   `compactor.ts`, `init.ts`, `format.ts`, and `context.ts` all have dedicated
   tests now, and the validator has four (`validator.cc`, `.consistency`, `.dq`,
-  `.fv`), not just `.dq`. Core `cli.ts` is the remaining module with no sibling
-  unit test.
+  `.fv`), not just `.dq`. The `cli.ts` note is resolved (2026-08-26): `cli.ts`
+  is a top-level script that runs at import time, which is *why* it never had
+  a sibling unit test — its pure argument/path plumbing now lives in
+  `cli-args.ts` (100% covered by `cli-args.test.ts`, 20 tests), the command
+  surface stays covered by the `@uwmd/cli` smoke tests, and extraction found
+  a real bug: the positional pass skipped the token after *any* `--` token,
+  so `uwmd parse --compact=true file.uwx.md` silently dropped the filename.
+  `cli-packages.ts` (the package subcommands) shares the script shape and is
+  the remaining 0%-in-core surface; it too is exercised by the CLI smoke
+  tests.
 
   The CI coverage gate is **blocking**, not advisory — `continue-on-error` was
   removed in `13218c4`, and the floor in `packages/uwmd-core/vitest.config.ts`
