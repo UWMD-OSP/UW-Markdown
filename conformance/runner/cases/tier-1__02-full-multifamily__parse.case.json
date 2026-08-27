@@ -1,0 +1,13 @@
+{
+  "id": "tier-1/02-full-multifamily/parse",
+  "tier": "1",
+  "command": "parse",
+  "args": [
+    "02-full-multifamily.uw.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/02-full-multifamily.parsed.json"
+  }
+}

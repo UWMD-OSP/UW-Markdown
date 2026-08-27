@@ -1,0 +1,16 @@
+{
+  "id": "tier-3/dscr-from-section",
+  "tier": "3",
+  "command": "calc",
+  "args": [
+    "deal.uw.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/dscr-from-section",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

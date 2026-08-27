@@ -25,6 +25,7 @@ import type {
 } from './types.js';
 
 import { deepGet, getSection, getSectionVariant } from './parser.js';
+import { CORE_VERSION } from './version.js';
 
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
@@ -66,7 +67,11 @@ export type ViewerCapability =
   | 'calc-evaluate'
   | 'calc-deterministic'
   | 'agent-host'
-  | 'module-load';
+  | 'module-load'
+  /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
+  | 'signing'
+  /** Verifies `ModuleManifest.signature` and honors a host policy (§X.1.4, RFC 0002). */
+  | 'module-signature-verification';
 
 export type RepresentationFidelity = 'source' | 'model' | 'view';
 export type RepresentationDirection = 'read' | 'write';
@@ -113,6 +118,47 @@ export interface ImplementationManifest {
   /** Public homepage / docs URL. */
   homepage?: string;
 }
+
+/**
+ * What `@uwmd/core` itself self-certifies to — the answer `uwmd manifest`
+ * returns, and the reference entry in any cross-implementation report.
+ *
+ * A literal rather than something assembled at call time, because the
+ * conformance driver treats it as the identity of the implementation under
+ * test: a manifest that varied with the caller's environment would make two
+ * runs of the same suite incomparable.
+ */
+export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.freeze({
+  id: 'org.uwmd.core',
+  name: '@uwmd/core reference implementation',
+  version: CORE_VERSION,
+  protocol_version: PROTOCOL_VERSION,
+  format_version: FORMAT_VERSION,
+  tier: 'tier-4-agent-host',
+  capabilities: Object.freeze([
+    'parse',
+    'validate',
+    'render-json',
+    'render-csv',
+    'render-summary',
+    'render-chat',
+    'edit-replace',
+    'edit-supersede',
+    'edit-frontmatter',
+    'calc-evaluate',
+    'calc-deterministic',
+    'agent-host',
+    'module-load',
+    // Both are gated on the optional @uwmd/signing package being installed.
+    // Claimed here because the reference *implementation* is the pair: core
+    // defines the contract, signing supplies the algorithms, and an adopter
+    // asking "does this implementation verify signatures" means the pair.
+    'signing',
+    'module-signature-verification',
+  ]) as ViewerCapability[],
+  role: 'library',
+  homepage: 'https://uwmd.org',
+});
 
 // ─── Display conventions (Part III of the spec) ───────────────────────────────
 

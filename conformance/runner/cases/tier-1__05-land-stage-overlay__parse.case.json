@@ -1,0 +1,13 @@
+{
+  "id": "tier-1/05-land-stage-overlay/parse",
+  "tier": "1",
+  "command": "parse",
+  "args": [
+    "05-land-stage-overlay.uw.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/05-land-stage-overlay.parsed.json"
+  }
+}

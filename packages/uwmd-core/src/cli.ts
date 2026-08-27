@@ -28,6 +28,7 @@ import type {
 } from './integrity.js';
 import type { EditContext } from './editor.js';
 import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
   cmdLeaseValidate,
@@ -133,6 +134,15 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content, { strict: flags['strict'] === true });
+  // The whole ParsedUWFile minus `raw` (which is just the input echoed back).
+  // Four fields — custom_calculations, custom_scenarios, extensions, and the
+  // full `superseded` blocks — used to be dropped here, so a caller that
+  // trusted `uwmd parse` to be "the parsed file" silently lost every custom
+  // calculation and every x_* extension in the document.
+  //
+  // `superseded_blocks` is kept alongside `superseded` for compatibility: it
+  // carries only each prior block's `content`, where `superseded` carries the
+  // whole block. New callers should read `superseded`.
   const output = {
     frontmatter: parsed.frontmatter,
     sections: Object.fromEntries(
@@ -140,6 +150,10 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     ),
     prose: parsed.prose,
     pipeline_log: parsed.pipeline_log.map(b => b.content),
+    custom_calculations: parsed.custom_calculations,
+    custom_scenarios: parsed.custom_scenarios,
+    extensions: parsed.extensions,
+    superseded: parsed.superseded,
     superseded_blocks: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(b => b.content)])
     ),
@@ -1330,6 +1344,13 @@ switch (command) {
       confidence: (flags['confidence'] as 'high' | 'medium' | 'low' | undefined) ?? 'medium',
     };
     const result = applyEdit(fileContent, parsedFile, op, ctx);
+    // --json reports the edit instead of performing it: the conformance driver
+    // needs the resulting content, and a driver that rewrote fixtures as a side
+    // effect of reading them would corrupt the corpus it is testing.
+    if (flags['json']) {
+      console.log(JSON.stringify(result, null, 2));
+      process.exit(result.ok ? 0 : 1);
+    }
     if (!result.ok || !result.content) {
       console.error(`Edit rejected: [${result.error?.code}] ${result.error?.message}`);
       if (result.error?.pointer) console.error(`  pointer: ${result.error.pointer}`);
@@ -1371,15 +1392,19 @@ switch (command) {
     };
 
     const results = decls.map((d) => evaluateCalc(d, ctx));
-    for (const r of results) {
-      if (r.ok) {
-        console.log(`${r.calc_id} = ${r.display ?? String(r.value)}`);
-      } else {
-        console.log(`${r.calc_id} ERROR [${r.error?.code}] ${r.error?.message}`);
-      }
-    }
+    // Under --json, stdout is exactly one JSON document — the conformance CLI
+    // protocol (§II.6a) depends on that, and printing the human lines first
+    // would make every calc response unparseable.
     if (flags['json']) {
-      console.log(JSON.stringify(results, null, 2));
+      console.log(JSON.stringify(results.length === 1 ? results[0] : results, null, 2));
+    } else {
+      for (const r of results) {
+        if (r.ok) {
+          console.log(`${r.calc_id} = ${r.display ?? String(r.value)}`);
+        } else {
+          console.log(`${r.calc_id} ERROR [${r.error?.code}] ${r.error?.message}`);
+        }
+      }
     }
     if (results.some((r) => !r.ok)) process.exit(1);
     break;
@@ -1503,6 +1528,12 @@ switch (command) {
     break;
   }
 
+  case 'manifest':
+    // The conformance CLI protocol's identity call (§II.6a). Emitted with no
+    // surrounding prose so a driver can read it without a parser.
+    console.log(JSON.stringify(REFERENCE_IMPLEMENTATION_MANIFEST, null, 2));
+    break;
+
   case 'receipt': {
     const sub = positional[0];
     if (sub === 'issue') {
@@ -1548,12 +1579,13 @@ Commands:
   modules  validate|list        Validate module manifest files, or list the registry they form
   lease    validate|project     Validate a lease abstract, or project it to a rent-roll row (RFC 0018)
   package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
+  manifest                     Print this implementation's ImplementationManifest (conformance protocol)
   layers                       List Bancroft agent layers
 
 Options:
   --output <path>    Output file path (compact, init)
   --dry-run          Show what would change without writing (compact)
-  --json             JSON output (validate)
+  --json             JSON output on stdout, nothing else (validate, calc, edit)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)

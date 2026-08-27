@@ -178,6 +178,44 @@ restatement of the implementation. The whole Lite bridge is deterministic (no
 wall-clock, no randomness — timestamps come from `frontmatter.created`), so
 baselines need no volatile-field stripping.
 
+## The language-agnostic driver (RFC 0004)
+
+`npm run conformance:v2` → [`conformance/runner/runner.py`](../../conformance/runner/README.md)
+runs the tier fixtures against **any** implementation that speaks the CLI
+protocol in protocol §II.6a. It shells out; it knows nothing about TypeScript
+or `@uwmd/core`, so the reference implementation is tested exactly the way a
+Python, Go, or Rust one would be. Python 3.10+, standard library only — a
+driver that needs a package index is one an air-gapped implementer cannot run.
+
+**It is not the gate, and is not meant to be.** `npm run conformance` still
+runs 269 assertions across thirteen suites, and most of what has been added
+since the corpus was four tiers is not "run a command, compare the output":
+receipt re-issuance stability, composition DAG resolution, ZIP packaging,
+signature key stores, invariants asserted with no baseline at all. The v2
+driver gates the **protocol** — that a non-TS implementation *can* self-certify
+— while the v1 runner gates the **corpus**. Replacing one with the other would
+trade breadth for portability.
+
+Output is TAP version 14 plus an optional JSON manifest (`--manifest-out`)
+carrying the implementation's own `ImplementationManifest`, read from its
+`manifest` subcommand. TAP has no standard way to attach that, and without it
+two implementations' results cannot be aggregated. An implementation with no
+`manifest` subcommand still runs, reported as `unidentified` rather than
+assumed to be anything.
+
+The `cases/*.case.json` files are **generated** —
+`npm run gen-conformance-cases`, with `--check` in CI. A case restates what is
+already on disk (which fixture, which command, which baseline), and
+hand-maintaining fifty invites one to go stale silently. The known gaps are
+listed in the runner README rather than hidden: two tier-2 fixtures need
+`applyEditAsync` and a volatile hash the synchronous CLI cannot express, tier 4
+has no CLI surface, and the named suites are TypeScript-only.
+
+Comparison is **subset-by-default**: the baselines are projections, so an
+implementation reporting `round_to` and `display` alongside the four fields a
+calc baseline names is more informative, not wrong. Arrays stay
+length-sensitive — an omitted validation issue is a disagreement, not brevity.
+
 ## Schema validation
 
 `npm run validate-schemas` → [`scripts/validate-schemas.mjs`](../../scripts/validate-schemas.mjs)
@@ -342,7 +380,11 @@ are not duplicated here: both this codec and the CSV bundle route through
 list, deliberately not a pinned `--tier=`. CI used to pin `1,2,3,lite,receipts`,
 which silently excluded the `4-replay` suite once it landed: a suite could be
 added to the default and never gate a pull request. Adding a suite to the
-default list is now enough to make CI enforce it. `release.yml` publishes
+default list is now enough to make CI enforce it. The Node 20 leg additionally
+runs `gen-conformance-cases --check` (a fixture added without regenerating the
+RFC 0004 cases would drop out of v2 coverage while everything still reported
+green) and `conformance:v2`, uploading its JSON manifest as an artifact.
+`release.yml` publishes
 `@uwmd/core` and `uwmd` on `v*` tags. (See [11 — Build, release & governance](11-build-release-governance.md).)
 
 ## Adding fixtures (quick reference)

@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/05-land-stage-overlay/render-chat",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "05-land-stage-overlay.uw.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/05-land-stage-overlay.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

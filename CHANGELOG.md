@@ -49,6 +49,57 @@ on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
   ed25519/es256/es384 round trip, signature-swap and wrong-key rejection, key
   store refusals, and the full issue → sign → verify receipt path.
 
+### Added — RFC 0004 implemented: a language-agnostic conformance driver
+
+[RFC 0004](docs/rfcs/0004-conformance-runner-v2.md) (drafted 2026-04-26,
+accepted and implemented 2026-08-27). The corpus is the project's main lever
+for staying coherent as adopters arrive, and it was runnable only from
+TypeScript — a Python or Rust implementation could "pass the conformance
+tests" only by writing its own runner, and two runners drift.
+
+- **Protocol §II.6a — the conformance CLI protocol.** Six subcommands, exactly
+  one JSON document on stdout (`render` emits text), stderr free for
+  diagnostics, and a three-value exit contract: `0` success, `1` a failure the
+  protocol describes with stdout still parseable, `2` unrecoverable. Also
+  normative: comparison is a **subset** test, because the baselines are
+  projections and an implementation reporting extra fields is more
+  informative, not wrong — while arrays compare length-sensitively, since an
+  omitted validation issue is a disagreement rather than brevity.
+- **`conformance/runner/runner.py`** — the reference driver. Python 3.10+,
+  standard library only, so an air-gapped implementer can run it. TAP version
+  14 on stdout plus an optional JSON manifest carrying the implementation's own
+  `ImplementationManifest`; TAP has no standard way to attach that, and without
+  it two implementations' results cannot be aggregated. 44 cases across tiers
+  1–3, and `npm run conformance:v2`.
+- **The v1 runner is not replaced.** `npm run conformance` remains the gate at
+  269 assertions across thirteen suites, most of which are not a single command
+  with a single output. The v2 driver gates the *protocol*; rewriting receipts,
+  composition, and packaging as CLI calls would have meant deleting coverage to
+  satisfy a migration plan written when the corpus was four tiers.
+- **Cases are generated and CI-checked** —
+  `npm run gen-conformance-cases`, with `--check` in CI. A fixture added
+  without regenerating them would silently drop out of v2 coverage while every
+  suite still reported green.
+- **`uwmd manifest`**, and `--json` on `calc` and `edit`. `edit --json` reports
+  the edit instead of performing it: a driver that rewrote fixtures as a side
+  effect of reading them would corrupt the corpus it is testing.
+
+### Fixed — `uwmd parse` was dropping four fields of the parsed file
+
+`custom_calculations`, `custom_scenarios`, `extensions`, and the full
+`superseded` blocks were omitted, so a caller who trusted `uwmd parse` to be
+"the parsed file" silently lost every custom calculation and every `x_*`
+extension in the document. All four are emitted now; `superseded_blocks` (prior
+blocks' `content` only) stays alongside `superseded` for compatibility, and new
+callers should read the latter. Surfaced by RFC 0004 making the output
+observable against a baseline.
+
+### Fixed — two capabilities the spec promised but the enum did not carry
+
+`ViewerCapability` gained `signing` and `module-signature-verification`.
+Protocol §V.11.5 and §X.1.4 told implementations to declare them the day
+before, while the type they would declare them in had no such members.
+
 ### Added — RFC 0002 implemented: module manifest signatures (corpus 263 → 269)
 
 [RFC 0002](docs/rfcs/0002-module-signing.md) (drafted 2026-04-26, accepted and

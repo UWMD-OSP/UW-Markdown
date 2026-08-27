@@ -213,6 +213,98 @@ To self-certify at a tier, run every fixture in the corresponding
 `conformance/tier-N-*/` directory and verify the output matches.
 Tier 4 uses shape assertions due to LLM nondeterminism (§IX.6).
 
+An implementation in any language can be driven by the shared
+conformance driver instead of writing its own, by exposing the CLI
+protocol in §II.6a. That is strongly RECOMMENDED: two independent
+re-implementations of a test runner drift, and when they do, "passes the
+conformance corpus" stops meaning the same thing for two implementations
+that both say it.
+
+### II.6a Conformance CLI protocol (RFC 0004)
+
+Self-certification (§II.6) is a claim. This section is how an
+implementation makes that claim **checkable by somebody else**, in any
+language, without writing its own test runner.
+
+An implementation that wants to be driven by the shared conformance
+driver exposes a command-line binary supporting the subcommands below.
+The driver shells out to it; nothing about the implementation's
+language, runtime, or packaging is observable across that boundary.
+
+#### II.6a.1 Subcommands
+
+| Invocation | stdout |
+|---|---|
+| `<bin> manifest` | The implementation's `ImplementationManifest`. |
+| `<bin> parse <file>` | The parsed file, keyed as `ParsedUWFile`. |
+| `<bin> validate <file> --json` | A `ValidationResult`. |
+| `<bin> render <file> --format <chat\|summary\|json\|csv>` | The rendered body, as text. |
+| `<bin> edit <file> <operation.json> --json` | `{ ok, content?, error? }`. |
+| `<bin> calc <file> <calc.json> --json` | A `CalcResult`, or an array of them for an array input. |
+
+`edit --json` **MUST NOT** write the edited file. A driver that rewrote
+fixtures as a side effect of reading them would corrupt the corpus it is
+testing.
+
+`render` emits the body rather than a JSON envelope. It is the one
+subcommand whose natural output is text, and wrapping it would gain
+nothing a driver can use.
+
+#### II.6a.2 Stream and exit-code contract
+
+- **stdout** carries exactly one JSON document (or, for `render`, the
+  rendered text), optionally followed by a trailing newline. Nothing
+  else. A log line, a deprecation notice, or a progress bar on stdout
+  makes the response unparseable, and a driver MUST report that as its
+  own distinct failure rather than as a wrong answer.
+- **stderr** is free for diagnostics and is ignored by the driver.
+  Warnings belong here.
+- **Exit `0`** — the operation succeeded.
+- **Exit `1`** — the operation failed in a way the protocol describes: a
+  validation error, a refused edit, a calc that could not evaluate.
+  stdout is still a parseable response.
+- **Exit `2`** — unrecoverable internal error. stdout is not required to
+  be anything.
+
+Implementations SHOULD emit UTF-8 regardless of platform locale.
+
+#### II.6a.3 What the driver may assume about output
+
+The driver compares a response against a frozen baseline. Baselines are
+**projections**, not transcripts: a calc baseline names four fields, and
+a conforming implementation reporting `round_to` and `display` as well is
+more informative, not wrong. So comparison is a **subset** test by
+default — every field the baseline names must be present and equal, and
+extra fields are permitted.
+
+Arrays are exempt from that leniency and compare length-sensitively. An
+implementation that omits one validation issue has not been concise; it
+has disagreed.
+
+Values that differ legitimately between two correct runs —
+`last_modified`, `_meta.timestamp`, the fence `ts=`, and `content_hash`,
+which is computed over a timestamp — are masked before comparison. A
+baseline that pinned any of them would be asserting the clock.
+`parent_hash` is **not** masked: it is stamped from the prior head's
+`content_hash`, which the fixture fixes.
+
+#### II.6a.4 Scope
+
+This protocol covers the **tier** fixtures — the conformance surface a
+tier claim is about. The named suites (receipts, composition, market
+data, packages, signing, and the rest) exercise behavior that is not a
+single command with a single output, and remain driven by an
+implementation's own test suite.
+
+An implementation that passes the tier cases under the shared driver has
+demonstrated its tier claim against the same corpus, executed by the
+same logic, as every other implementation. That is the whole
+proposition: without it, each adopter reimplements the runner, and two
+reimplementations of a runner drift.
+
+The reference driver ships at
+[`conformance/runner/`](../conformance/runner/README.md).
+
 ---
 
 ## III. Display Conventions
@@ -1377,9 +1469,6 @@ required for v1 conformance.
 - **Custom asset-class declarations from modules** — the asset-class
   enum is hard-coded in `types.ts` for v1; modules cannot extend it
   without a spec bump.
-- **Conformance test runner v2** — language-agnostic driver and
-  reporter format so non-TS implementers don't have to write their
-  own runner.
 - **Stochastic calculations** — `deterministic: false` calc declarations
   (Monte Carlo, sensitivity sweeps).
 - **Hospitality module** — full implementation of the example sketched

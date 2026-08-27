@@ -485,6 +485,7 @@ export type {
 export { canonicalize } from './integrity-canonical.js';
 
 export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
+export { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 
 export {
   UW_RECEIPT_VERSION,

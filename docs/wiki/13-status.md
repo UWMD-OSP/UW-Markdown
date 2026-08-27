@@ -2,10 +2,12 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-27, after RFC 0010 (signed blocks) and RFC 0002
-(module signing) on top of `v1.7.0` — full pass: build green across all
-workspaces; **1,240 tests** — 1,015 core, 94 excel, 62 cli, 62 signing, 4
+**Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
+(module signing), and RFC 0004 (language-agnostic conformance driver) on top
+of `v1.7.0` — full pass: build green across all
+workspaces; **1,243 tests** — 1,018 core, 94 excel, 62 cli, 62 signing, 4
 batch, 3 report — plus **71 web-editor**; **269 conformance** assertions
+(and **44** more through the RFC 0004 CLI driver)
 including the Tier-4 replay,
 module, package, receipts, market-data, composition, capital-stack,
 size-intensive, and signing suites (blocks + modules), with Tier-1
@@ -595,12 +597,16 @@ covered transitively (via `content_hash`, contradicting the RFC's rationale),
 and §V.9's hash exclusions had never fired for a parsed block because the
 meta-shape test required `section` where every file on disk writes `section_id`.
 
+**✅ RFC 0004 conformance runner v2 — shipped 2026-08-27.** Protocol §II.6a
+(the CLI protocol), `conformance/runner/runner.py` (TAP14 + JSON manifest,
+Python stdlib only), 44 generated cases across tiers 1–3, `npm run
+conformance:v2`, and a CI `--check` on the case files. The TypeScript runner is
+**not** replaced — it gates the corpus, the driver gates the protocol; most of
+the thirteen suites are not expressible as one command with one output.
+
 Remaining priority order:
 
-1. **Conformance runner v2** (0004) — language-agnostic self-certification;
-   today's runner is TS-only while the corpus claims third parties can
-   self-certify against it.
-2. **Hospitality reference module** (0006) — first real consumer of the
+1. **Hospitality reference module** (0006) — first real consumer of the
    module system, which is validated machinery nothing yet exercises.
 
 Queued behind those: range/stochastic calcs (0005), sensitivity-table builtin

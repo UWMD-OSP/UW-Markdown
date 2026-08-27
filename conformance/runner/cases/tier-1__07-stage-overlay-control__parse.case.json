@@ -1,0 +1,13 @@
+{
+  "id": "tier-1/07-stage-overlay-control/parse",
+  "tier": "1",
+  "command": "parse",
+  "args": [
+    "07-stage-overlay-control.uw.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/07-stage-overlay-control.parsed.json"
+  }
+}

@@ -127,6 +127,7 @@ export default defineConfig({
             { text: 'Tier 2 — Editor', link: '/conformance/tier-2' },
             { text: 'Tier 3 — Calc Host', link: '/conformance/tier-3' },
             { text: 'Tier 4 — Agent Host', link: '/conformance/tier-4' },
+            { text: 'Language-agnostic runner', link: '/conformance/runner' },
           ],
         },
       ],

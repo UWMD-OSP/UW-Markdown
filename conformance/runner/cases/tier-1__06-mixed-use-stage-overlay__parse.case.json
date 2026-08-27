@@ -1,0 +1,13 @@
+{
+  "id": "tier-1/06-mixed-use-stage-overlay/parse",
+  "tier": "1",
+  "command": "parse",
+  "args": [
+    "06-mixed-use-stage-overlay.uw.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/06-mixed-use-stage-overlay.parsed.json"
+  }
+}

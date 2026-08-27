@@ -1,0 +1,20 @@
+{
+  "id": "tier-2/frontmatter-set-recommendation",
+  "tier": "2",
+  "command": "edit",
+  "args": [
+    "before.uw.md",
+    "operation.json",
+    "--json",
+    "--actor",
+    "conformance-runner",
+    "--source",
+    "manual"
+  ],
+  "fixture_dir": "conformance/tier-2-editor/fixtures/frontmatter-set-recommendation",
+  "expect": {
+    "kind": "json-field-text",
+    "field": "content",
+    "file": "after.uw.md"
+  }
+}

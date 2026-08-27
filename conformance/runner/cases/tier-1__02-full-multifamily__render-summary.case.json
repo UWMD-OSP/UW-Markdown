@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/02-full-multifamily/render-summary",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "02-full-multifamily.uw.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/02-full-multifamily.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

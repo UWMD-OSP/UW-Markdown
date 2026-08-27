@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/01-minimal-screening/render-summary",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "01-minimal-screening.uw.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/01-minimal-screening.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/04-scope-only/render-summary",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "04-scope-only.uw.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/04-scope-only.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

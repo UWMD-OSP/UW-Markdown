@@ -86,12 +86,16 @@ Detailed sequencing and release gates:
 > `uwmd-keystore` scheme on the same machinery rather than the Sigstore
 > design the RFC opened with, for reasons recorded in the RFC.
 >
-> Remaining priority order: **(1) RFC 0004 conformance runner v2** (the
-> corpus claims third parties can self-certify, but the runner is TS-only);
-> **(2) RFC 0006 hospitality reference module** (first real consumer of the
-> module system). The rest remain queued behind those. Unfrozen means
-> *actively being taken up*, not accepted — each RFC still goes through its
-> own acceptance.
+> **RFC 0004 (conformance runner v2) landed the same day** — protocol §II.6a
+> defines a CLI protocol any language can implement, and
+> `conformance/runner/runner.py` drives the tier fixtures through it. The
+> TypeScript runner is *not* replaced: it still gates the corpus, while the
+> new driver gates the protocol.
+>
+> Remaining priority order: **(1) RFC 0006 hospitality reference module**
+> (first real consumer of the module system). The rest remain queued behind
+> it. Unfrozen means *actively being taken up*, not accepted — each RFC still
+> goes through its own acceptance.
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
 None are required for v1 conformance — they constitute v2 of the
@@ -108,7 +112,7 @@ context. This list is the maintainable copy.
 | [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
 | [0002](./docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
 | [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |
-| [0004](./docs/rfcs/0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | `scripts/run-conformance.mjs` is TS-only — non-TS implementers can't self-certify against the same runner. |
+| [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | Hospitality reference module                  | First real consumer of the module system. ADR/RevPAR/occupancy + STR-comp validations. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | Portfolio and relationship profiles          | Portable, provenance-backed cross-deal entity and edge sidecars; no storage or aggregate-math contract. |

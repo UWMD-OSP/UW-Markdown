@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/07-stage-overlay-control/render-summary",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "07-stage-overlay-control.uw.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/07-stage-overlay-control.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

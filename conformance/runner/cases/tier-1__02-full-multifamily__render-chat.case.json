@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/02-full-multifamily/render-chat",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "02-full-multifamily.uw.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/02-full-multifamily.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

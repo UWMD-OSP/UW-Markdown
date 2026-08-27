@@ -1,0 +1,13 @@
+{
+  "id": "tier-1/01-minimal-screening/parse",
+  "tier": "1",
+  "command": "parse",
+  "args": [
+    "01-minimal-screening.uw.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/01-minimal-screening.parsed.json"
+  }
+}

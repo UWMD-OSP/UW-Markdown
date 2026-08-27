@@ -1,0 +1,22 @@
+{
+  "id": "tier-2/section-replace-property",
+  "tier": "2",
+  "command": "edit",
+  "args": [
+    "before.uw.md",
+    "operation.json",
+    "--json",
+    "--actor",
+    "analyst-jane",
+    "--source",
+    "manual",
+    "--confidence",
+    "high"
+  ],
+  "fixture_dir": "conformance/tier-2-editor/fixtures/section-replace-property",
+  "expect": {
+    "kind": "json-field-text",
+    "field": "content",
+    "file": "after.uw.md"
+  }
+}

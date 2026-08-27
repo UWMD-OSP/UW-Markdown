@@ -7,6 +7,8 @@ import {
   SOURCE_TAGS,
   lookupIncompleteDataPolicy,
   PROTOCOL_VERSION,
+  FORMAT_VERSION,
+  REFERENCE_IMPLEMENTATION_MANIFEST,
 } from './protocol.js';
 import { CORE_VERSION } from './version.js';
 
@@ -102,5 +104,29 @@ describe('protocol — version', () => {
     const versions = readFileSync(resolve(__dirname, '../../../VERSIONS.md'), 'utf8');
     const row = versions.match(/^\|\s*`@uwmd\/core`\s*\|\s*\*\*([0-9]+\.[0-9]+\.[0-9]+)\*\*/m);
     expect(row?.[1]).toBe(CORE_VERSION);
+  });
+});
+describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
+  it('reports the versions this build actually is', () => {
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.protocol_version).toBe(PROTOCOL_VERSION);
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.format_version).toBe(FORMAT_VERSION);
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.version).toBe(CORE_VERSION);
+  });
+
+  it('claims every capability the spec tells implementations to declare', () => {
+    // §V.11.5 and §X.1.4 name these two by hand. A spec that instructs
+    // implementations to declare a capability, against a type that has no such
+    // member, is a promise nothing can keep.
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toContain('signing');
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toContain(
+      'module-signature-verification',
+    );
+  });
+
+  it('is frozen — the conformance driver treats it as the identity under test', () => {
+    expect(Object.isFrozen(REFERENCE_IMPLEMENTATION_MANIFEST)).toBe(true);
+    expect(() => {
+      (REFERENCE_IMPLEMENTATION_MANIFEST as { id: string }).id = 'something.else';
+    }).toThrow();
   });
 });

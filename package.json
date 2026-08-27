@@ -13,6 +13,8 @@
     "test:coverage": "npm --prefix packages/uwmd-core run test:coverage",
     "cli": "node packages/uwmd-cli/bin/uwmd.mjs",
     "conformance": "node scripts/run-conformance.mjs",
+    "conformance:v2": "python conformance/runner/runner.py",
+    "gen-conformance-cases": "node scripts/gen-conformance-cases.mjs",
     "gen-signing-fixtures": "node scripts/gen-signing-fixtures.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
     "verify-packages": "node scripts/verify-packages.mjs",

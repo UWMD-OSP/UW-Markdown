@@ -129,6 +129,29 @@ jobs:
         # added to the runner's default and never actually gate a pull request.
         run: npm run conformance
 
+      - name: Check the RFC 0004 case files are current
+        # The cases are generated from the fixture directories. A fixture added
+        # without regenerating them would silently drop out of the v2 driver's
+        # coverage while every suite still reported green.
+        if: matrix.node == 20
+        run: npm run gen-conformance-cases -- --check
+
+      - name: Run the language-agnostic driver against the reference CLI
+        # Not a replacement for the suite above: this drives the tier fixtures
+        # through the §II.6a CLI protocol, which is what a non-TypeScript
+        # implementation would use to self-certify. It gates the protocol, not
+        # the corpus.
+        if: matrix.node == 20
+        run: npm run conformance:v2 -- --manifest-out conformance-report.json
+
+      - name: Upload the conformance report
+        if: matrix.node == 20 && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-report
+          path: conformance-report.json
+          if-no-files-found: ignore
+
   web-editor:
     name: Web editor (build + test)
     runs-on: ubuntu-latest
