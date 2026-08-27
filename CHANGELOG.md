@@ -43,6 +43,19 @@ and a mixed-use deal was asked for a property-level `rent_roll` its
   substitution dedup, readiness/issues agreement, `CC-14` on a
   property-less land deal).
 
+### Changed — Sundance and Roosevelt restaged to `full_underwrite` (RFC 0029 follow-through)
+
+The two examples RFC 0029's overlay unblocked climbed the same day: both
+gained `borrower_sponsor`, `preliminary_sizing`, and `market_analysis`
+(numbers derived from each file's own sections) and now declare
+`full_underwrite` honestly — `stage_readiness` true, zero `DQ-06`, no
+warnings. Sundance's sizing is LTC-governed, the only test with meaning
+against a negative land carry; Roosevelt's is the standard three-constraint
+sizing on the consolidated property, with component-level debt left refused
+(MU-06) as designed. Agave deliberately stays at `screening`: it is
+multifamily (no overlay applies), its subject is the capital stack, and a
+rent roll + operating statement would be padding.
+
 ### Added — `cli-packages.ts` test backfill (core suite → 985)
 
 The RFC 0018 CLI command wrappers (lease abstracts, deal packages) gained a

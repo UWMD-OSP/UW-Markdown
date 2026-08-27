@@ -24,7 +24,7 @@ pipeline_state:
   L7_assembly:     "pending"
 
 status: "in_progress"
-deal_stage: "screening"
+deal_stage: "full_underwrite"
 recommendation: "pending"
 
 flags: []
@@ -324,5 +324,156 @@ Financial-validity engine run over the consolidated property figures; per-compon
     }
   ],
   "completeness": []
+}
+```
+
+## Preliminary Sizing
+
+Consolidated-property sizing against the three standard constraints; the governing test is dscr and the proposed loan fits inside it. Component-level debt stays refused (MU-06); a component capital_stack is the sanctioned shape.
+
+```json uw:section=preliminary_sizing source=manual ts=2026-08-26T15:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "preliminary_sizing",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T15:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": null
+  },
+  "sizing_basis": {
+    "noi_underwritten": 2572000,
+    "value_basis": 40000000,
+    "annual_debt_constant": 0.0731
+  },
+  "constraints": [
+    {
+      "test": "max_ltv",
+      "limit": 0.75,
+      "max_loan": 30000000
+    },
+    {
+      "test": "min_dscr",
+      "limit": 1.25,
+      "max_loan": 28156632
+    },
+    {
+      "test": "min_debt_yield",
+      "limit": 0.09,
+      "max_loan": 28577778
+    }
+  ],
+  "max_supportable_loan": 28156632,
+  "governing_constraint": "dscr",
+  "proposed_loan": 26000000,
+  "proposed_within_constraints": true,
+  "cushion": 2156632
+}
+```
+
+## Borrower / Sponsor
+
+Roosevelt Row Mixed-Use Ventures LLC — single-principal sponsorship; figures PFS-stated pending CPA verification.
+
+```json uw:section=borrower_sponsor source=manual ts=2026-08-26T15:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "borrower_sponsor",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T15:00:00Z",
+    "confidence": "medium",
+    "human_review_required": true,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+  },
+  "principals": [
+    {
+      "name": "Alicia Fontaine",
+      "role": "managing_member",
+      "ownership_pct": 1,
+      "is_guarantor": true,
+      "is_key_man": true,
+      "net_worth_stated": 46800000,
+      "liquid_assets_stated": 2860000,
+      "contingent_liabilities_stated": 0,
+      "years_cre_experience": 18,
+      "pfs_received": true,
+      "tax_returns_received": false,
+      "figures_verified": false,
+      "verification_basis": "pfs_stated"
+    }
+  ],
+  "entity": {
+    "name": "Roosevelt Row Mixed-Use Ventures LLC",
+    "type": "llc",
+    "state": "AZ"
+  },
+  "financial_summary": {
+    "global_net_worth": 46800000,
+    "global_liquidity": 2860000,
+    "nw_to_loan_ratio": 1.8,
+    "nw_to_loan_policy_min": 1,
+    "liquidity_to_loan_ratio": 0.11,
+    "liquidity_to_loan_policy_min": 0.1,
+    "all_figures_verified": false,
+    "unverified_flag": true
+  }
+}
+```
+
+## Market Analysis
+
+Roosevelt Row / Downtown Phoenix mixed-use fundamentals as of 2026-08.
+
+```json uw:section=market_analysis source=manual ts=2026-08-26T15:00:00Z v=1 confidence=medium
+{
+  "_meta": {
+    "section": "market_analysis",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "jared",
+    "timestamp": "2026-08-26T15:00:00Z",
+    "confidence": "medium",
+    "human_review_required": false,
+    "flags": [],
+    "input_hash": null,
+    "notes": "Broker survey and published market reports; refresh before credit committee."
+  },
+  "market": "Phoenix Metro",
+  "submarket": "Roosevelt Row / Downtown Phoenix",
+  "data_as_of": "2026-08-01",
+  "vacancy": {
+    "residential_rate": 0.055,
+    "retail_rate": 0.07,
+    "trend": "stable"
+  },
+  "rents": {
+    "residential_yoy_growth_pct": 0.028,
+    "retail_yoy_growth_pct": 0.018,
+    "trend": "moderate"
+  },
+  "cap_rates": {
+    "range_low": 0.06,
+    "range_high": 0.0675
+  },
+  "supply": {
+    "note": "Two mixed-use projects (410 units, 28k SF retail combined) delivering through 2027 within the arts district; hotel supply stable."
+  }
 }
 ```
