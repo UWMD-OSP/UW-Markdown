@@ -8,7 +8,8 @@ would be — which is the point. A corpus that only its own author's language ca
 run is not a shared artifact.
 
 ```bash
-# The reference implementation (also `npm run conformance:v2`)
+# The reference implementation (also `npm run conformance:v2`; on a machine
+# where the interpreter is only on PATH as `python3`, invoke it that way)
 python conformance/runner/runner.py
 
 # Somebody else's

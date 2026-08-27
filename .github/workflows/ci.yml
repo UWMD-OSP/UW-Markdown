@@ -136,17 +136,27 @@ jobs:
         if: matrix.node == 20
         run: npm run gen-conformance-cases -- --check
 
+      - name: Set up Python for the conformance driver
+        if: matrix.node == 20
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
         # through the §II.6a CLI protocol, which is what a non-TypeScript
         # implementation would use to self-certify. It gates the protocol, not
         # the corpus.
+        #
+        # Invoked as `python3` rather than through `npm run conformance:v2`,
+        # whose script says `python` — the name that exists on a developer's
+        # Windows box but is not guaranteed on a runner.
         if: matrix.node == 20
-        run: npm run conformance:v2 -- --manifest-out conformance-report.json
+        run: python3 conformance/runner/runner.py --manifest-out conformance-report.json
 
       - name: Upload the conformance report
         if: matrix.node == 20 && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: conformance-report
           path: conformance-report.json
