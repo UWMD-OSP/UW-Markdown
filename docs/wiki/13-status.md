@@ -784,9 +784,13 @@ bus factor, personal security email, and no public RFC venue.
    > `rent_roll`/`operating_statement`, `mixed_use` substituting
    > `components` for both), mirrored by `STAGE_SECTION_OVERLAYS` /
    > `requiredSectionsFor()` and pinned by three Tier-1 fixtures (corpus
-   > 245 → 257). Sundance and Roosevelt may now restage upward once they
-   > gain the remaining non-exempt sections — optional example authoring,
-   > not protocol work. `DQ-06` severity can still be revisited by a future
+   > 245 → 257). Sundance and Roosevelt restaged upward the same day: both
+   > gained `borrower_sponsor` / `preliminary_sizing` / `market_analysis`
+   > (Sundance's sizing is LTC-governed — the only test with meaning against
+   > a negative carry) and now declare `full_underwrite` with
+   > `stage_readiness` true and zero `DQ-06`. Agave stays `screening` by
+   > choice: it is multifamily (no overlay), its subject is the capital
+   > stack, and a rent roll + operating statement would be padding there. `DQ-06` severity can still be revisited by a future
    > RFC on an honest corpus. And
    > **conformance would not have caught the escalation**: Tier-1 `malformed`
    > matches expected codes as a subset and Tier-1 valid fixtures asserted
