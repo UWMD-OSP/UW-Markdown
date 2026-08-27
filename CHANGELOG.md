@@ -8,6 +8,23 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed — CLI flag/positional divergence; `cli.ts` plumbing extracted and tested
+
+`uwmd <cmd> --flag=value <file>` silently dropped the filename and died with
+a usage error: the positional-extraction pass skipped the token after *any*
+`--` token, while `parseFlags` correctly treats the `=` form as
+self-contained. The two passes now share one consumption rule.
+
+The fix came out of the `cli.ts` test backfill (the last item in wiki 13's
+coverage note): `cli.ts` is a top-level script that runs at import time, so
+it cannot carry a sibling unit test — its pure argument/path plumbing
+(`parseFlags`, `extractPositionals`, `replaceUWExtension`, `hostTierFlag`,
+`defaultPartsDir`, `readManifestFile`) now lives in `cli-args.ts`, imported
+by `cli.ts` and covered at 100% by `cli-args.test.ts` (20 tests, including a
+pin that the two passes mirror each other exactly and a note on the greedy
+space form — flags go after positionals). No public API change; the command
+surface remains covered by the `@uwmd/cli` smoke tests.
+
 ### Changed — all twelve worked examples are stage-honest (RFC 0028 follow-up)
 
 Every example now satisfies its declared `deal_stage`'s section list — zero
