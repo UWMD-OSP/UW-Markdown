@@ -776,11 +776,16 @@ bus factor, personal security email, and no public RFC venue.
    > examples (Agave/capital-stack, Roosevelt/mixed-use, Sundance/land)
    > restaged to `screening` + `validation` instead: a property-level
    > `rent_roll` is wrong for land and mixed-use, which is itself a finding —
-   > **stage requirements are class-agnostic** — now drafted as
-   > [RFC 0029](../rfcs/0029-class-aware-stage-requirements.md) (a two-row
-   > §5.1 overlay: `land` exempt from `rent_roll`/`operating_statement`,
-   > `mixed_use` substituting `components` for both). `DQ-06` severity can
-   > still be revisited by a future RFC on an honest corpus. And
+   > **stage requirements are class-agnostic** — **closed 2026-08-26 by
+   > [RFC 0029](../rfcs/0029-class-aware-stage-requirements.md)
+   > (implemented)**: a two-row §5.1 overlay (`land` exempt from
+   > `rent_roll`/`operating_statement`, `mixed_use` substituting
+   > `components` for both), mirrored by `STAGE_SECTION_OVERLAYS` /
+   > `requiredSectionsFor()` and pinned by three Tier-1 fixtures (corpus
+   > 245 → 257). Sundance and Roosevelt may now restage upward once they
+   > gain the remaining non-exempt sections — optional example authoring,
+   > not protocol work. `DQ-06` severity can still be revisited by a future
+   > RFC on an honest corpus. And
    > **conformance would not have caught the escalation**: Tier-1 `malformed`
    > matches expected codes as a subset and Tier-1 valid fixtures asserted
    > nothing about validation, so a new error code would flip `uwmd validate`

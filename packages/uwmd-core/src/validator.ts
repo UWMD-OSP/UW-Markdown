@@ -7,6 +7,7 @@ import type {
   ValidationResult,
   FinancialThresholds,
   StageReadiness,
+  AssetClass,
   DealStage,
 } from './types.js';
 import { DEFAULT_THRESHOLDS } from './types.js';
@@ -112,10 +113,50 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
  * Legacy helper that returns just the section-list portion of a stage's
  * requirements. Preserved for callers that pre-date the widened
  * `StageRequirement` shape; new code SHOULD consult `STAGE_REQUIREMENTS`
- * directly.
+ * directly (or `requiredSectionsFor` when the asset class is known).
  */
 export function getRequiredSections(stage: DealStage): readonly string[] {
   return STAGE_REQUIREMENTS[stage].required_sections;
+}
+
+/**
+ * Per-class adjustments to the base stage lists (format spec §5.1 class
+ * overlays, RFC 0029). Exhaustive by design: only `land` and `mixed_use`
+ * diverge structurally — every other class reuses the base sections with
+ * class-appropriate payloads (hospitality's `rent_roll` carries
+ * keys/ADR/segmentation), so reuse needs no entry here.
+ *
+ * `exempt` removes a requirement outright; `substitute` replaces it with
+ * another section that is then *required* in its place.
+ */
+export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
+  exempt?: readonly string[];
+  substitute?: Readonly<Record<string, string>>;
+}>> = {
+  land:      { exempt: ['rent_roll', 'operating_statement'] },
+  mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
+};
+
+/**
+ * The sections a declared stage requires of a document of the given asset
+ * class: the base list with the class overlay applied. A substitute that
+ * replaces more than one section appears once. An unrecognized class — or
+ * none — takes the base list verbatim. Both consumers of stage completeness
+ * (`stage_readiness` and `DQ-06`) resolve through this one function, so the
+ * booleans and the issues stream can never disagree about what a stage
+ * requires.
+ */
+export function requiredSectionsFor(stage: DealStage, assetClass?: string): readonly string[] {
+  const base = STAGE_REQUIREMENTS[stage].required_sections;
+  const overlay = assetClass ? STAGE_SECTION_OVERLAYS[assetClass as AssetClass] : undefined;
+  if (!overlay) return base;
+  const out: string[] = [];
+  for (const section of base) {
+    if (overlay.exempt?.includes(section)) continue;
+    const replacement = overlay.substitute?.[section] ?? section;
+    if (!out.includes(replacement)) out.push(replacement);
+  }
+  return out;
 }
 
 /**
@@ -788,7 +829,7 @@ function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]
   // property entry is suppressed when CC-14 fired: one defect, one diagnostic.
   const stage = parsed.frontmatter.deal_stage;
   if (!stage || !(stage in STAGE_REQUIREMENTS)) return;
-  for (const sectionId of STAGE_REQUIREMENTS[stage].required_sections) {
+  for (const sectionId of requiredSectionsFor(stage, parsed.frontmatter.asset_class)) {
     if (sectionId === 'property' && cc14Fired) continue;
     if (hasStageSection(parsed, sectionId)) continue;
     issues.push({
@@ -873,7 +914,10 @@ function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
 
   const stageReady = (stage: DealStage): boolean => {
     const req = STAGE_REQUIREMENTS[stage];
-    if (!req.required_sections.every(s => hasSection(s))) return false;
+    // Class overlays (RFC 0029): resolve through the same function DQ-06
+    // uses, so readiness and the issues stream cannot disagree.
+    const requiredSections = requiredSectionsFor(stage, parsed.frontmatter.asset_class);
+    if (!requiredSections.every(s => hasSection(s))) return false;
     if (req.required_field_paths && !req.required_field_paths.every(hasFieldPath)) return false;
     if (req.required_one_of && !req.required_one_of.every(group => group.some(hasFieldPath))) return false;
     return true;
