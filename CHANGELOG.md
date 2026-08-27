@@ -43,6 +43,17 @@ and a mixed-use deal was asked for a property-level `rent_roll` its
   substitution dedup, readiness/issues agreement, `CC-14` on a
   property-less land deal).
 
+### Added — `cli-packages.ts` test backfill (core suite → 985)
+
+The RFC 0018 CLI command wrappers (lease abstracts, deal packages) gained a
+direct sibling test — they export plain functions, so unlike `cli.ts` no
+extraction was needed; the harness spies console/stdout and replaces
+`process.exit` with a thrower. 14 tests pin the command-level contracts,
+including the encoder's `PKGZIP-002` refusal of a sha-mismatched package
+(which is also why `verify`'s `failed` branch is unreachable through our own
+tooling — it is reserved for hostile archives built elsewhere) and the
+`semantic_digest` → `unverifiable` branch. Coverage 0% → 97.5%.
+
 ### Fixed — CLI flag/positional divergence; `cli.ts` plumbing extracted and tested
 
 `uwmd <cmd> --flag=value <file>` silently dropped the filename and died with

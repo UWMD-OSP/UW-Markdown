@@ -388,9 +388,11 @@ not core gaps.
   surface stays covered by the `@uwmd/cli` smoke tests, and extraction found
   a real bug: the positional pass skipped the token after *any* `--` token,
   so `uwmd parse --compact=true file.uwx.md` silently dropped the filename.
-  `cli-packages.ts` (the package subcommands) shares the script shape and is
-  the remaining 0%-in-core surface; it too is exercised by the CLI smoke
-  tests.
+  `cli-packages.ts` (the package subcommands) turned out *not* to share the
+  script shape — it exports plain functions — and got a direct sibling test
+  2026-08-26 (`cli-packages.test.ts`, 14 tests, 0% → 97.5%; console/exit
+  captured by spies). No 0%-in-core module remains that isn't a run-at-import
+  script.
 
   The CI coverage gate is **blocking**, not advisory — `continue-on-error` was
   removed in `13218c4`, and the floor in `packages/uwmd-core/vitest.config.ts`
