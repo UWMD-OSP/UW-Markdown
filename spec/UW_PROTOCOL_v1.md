@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.6.0`) — the
+- **Protocol version** (this document, currently `1.7.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -519,8 +519,9 @@ The canonical form is **RFC 8785 (JCS — JSON Canonicalization
 Scheme)** with one uw-md addition: the keys `content_hash` and
 `signature` inside any nested `_meta`-shaped object are removed
 before hashing. A `_meta`-shaped object is any object that carries
-the keys `section`, `version`, AND `source` — this catches both the
-top-level `_meta` and any nested provenance (e.g. inside
+`version`, `source`, AND either `section` or `section_id` — this
+catches both the top-level `_meta` (whose on-disk spelling is
+`section_id`) and any nested provenance (e.g. inside
 `field_overrides`).
 
 Implementations MUST produce **byte-identical** canonical output
@@ -588,8 +589,135 @@ trivially defeat integrity by simply not stamping `content_hash`
 need adversarial resistance MUST enforce a "must have hashes" policy
 externally — for example, a CI gate that runs `uwmd verify
 --integrity` and rejects files where `chains_with_hashes <
-chains_with_supersedes`. RFC 0010 (signed blocks) is the right tool
-for stronger guarantees and is deferred from v1.
+chains_with_supersedes`. §V.11 (block signatures) is the stronger
+tool: a signature cannot be omitted quietly, because a verifier that
+requires one reports its absence.
+
+### V.11 Block signatures (RFC 0010)
+
+`_meta.content_hash` is tamper-**evident**, not tamper-**proof**: it
+detects a change only for a reader who already holds a trusted copy
+of the hash. `_meta.signature` closes that gap for the deployments
+that need it — regulated lender data rooms, multi-party deal flow
+where sponsor, lender, and appraiser each sign their own sections,
+and agent-host accountability where a signature proves *which* agent
+instance wrote a block rather than merely what the `actor` field
+claims.
+
+Signed blocks are **not the everyday case**. Reading, validating,
+editing, and computing over `.uw.md` requires no cryptography, and
+the reference library takes no crypto dependency: the wire format and
+the signing input are normative here, while signing and verification
+live in the separate optional `@uwmd/signing` package.
+
+#### V.11.1 Wire format
+
+`_meta.signature` is an object:
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `alg` | `"ed25519"` \| `"es256"` \| `"es384"` | yes | Signature algorithm. Closed set for protocol 1.x. |
+| `kid` | string | yes | Opaque key identifier the verifier resolves in its own key store. |
+| `sig` | string | yes | Signature bytes, base64url (RFC 4648 §5), unpadded. |
+| `signed_at` | string | yes | ISO 8601 instant the signature was produced. MAY differ from `_meta.timestamp` — a block edited offline is signed when re-uploaded. |
+| `v` | string | no | Signing-protocol version. Absent means `"1"`. |
+
+`es256` and `es384` signatures are raw `r || s` (IEEE P1363), the
+JOSE convention and what Web Crypto produces. DER-wrapped ECDSA
+signatures are **not** interchangeable and MUST NOT be emitted.
+
+Like `content_hash`, `signature` is excluded from canonicalization
+(§V.9), so stamping one does not change the hash it commits to.
+
+#### V.11.2 What is signed
+
+The signature input is the RFC 8785 canonical JSON of exactly these
+six fields, and nothing else:
+
+```json
+{
+  "actor": "<_meta.actor>",
+  "content_hash": "<_meta.content_hash>",
+  "kid": "<signature.kid>",
+  "section": "<the block's section id>",
+  "signed_at": "<signature.signed_at>",
+  "timestamp": "<_meta.timestamp>"
+}
+```
+
+The signer commits to the block's `content_hash` rather than to the
+block itself — the hash already covers the content, and re-deriving
+it inside the signature would buy nothing. The other five fields are
+what a verifier needs in order to answer *who* signed *what*, *when*.
+
+The signing input names no `parent_hash` field. RFC 0010 read that as
+a guarantee that re-rooting a supersede chain leaves prior signatures
+intact; **it is not**. `content_hash` is computed over the block's
+`_meta` as well as its content (§V.9), and `parent_hash` lives in
+`_meta`, so a re-rooted block gets a new hash and its signature no
+longer applies. Re-rooting therefore requires re-signing. See the
+[erratum](../docs/rfcs/0010-signed-blocks.md#erratum-parent_hash-is-covered-transitively).
+
+A signature is over one block. A document with several signed blocks
+carries several independent signatures, which is the property
+multi-party deal flow needs: "the sponsor signed the rent roll" and
+"the lender signed the term sheet" must be separately checkable, and
+must stay checkable after either block is superseded.
+
+#### V.11.3 Verification
+
+Verification is **opt-in and capability-gated**. A verifier holding
+no key store treats a signature as opaque metadata: it MUST report
+that signatures were *present and unchecked*, and MUST NOT report the
+document as verified on their account. In the reference library that
+is `IntegrityResult.signatures_present` alongside
+`signatures_verified`.
+
+A conforming signing-aware verifier emits:
+
+| Code | Severity | Trigger | Needs a key store |
+|---|---|---|---|
+| `INT-05` | error | `signature` present with no `content_hash`. The signature commits to nothing. | no |
+| `INT-06` | error | `signature.kid` names a key the store does not hold. | yes |
+| `INT-07` | error | The signature does not verify; or `alg` is outside the admitted set; or the stamped `content_hash` no longer recomputes. | partly |
+| `INT-08` | warning | `alg` is in the verifying deployment's deprecation list. Empty at protocol 1.7. | no |
+
+Three of these distinctions are load-bearing:
+
+- **`INT-06` is not `INT-07`.** "I cannot check this" and "this is
+  forged" call for opposite responses — load a key versus reject the
+  document. A verifier that merges them tells an operator to re-sign
+  when the real fix is to configure their key store.
+- **A drifted hash on a signed block escalates.** The same drift is
+  `INT-04 warning` on an unsigned block and `INT-07 error` on a
+  signed one. On an unsigned block it is a bookkeeping slip; on a
+  signed one it means the content in front of you is not the content
+  anybody signed.
+- **Signatures are checked on every block, not only chain heads.** A
+  signature on a superseded block is exactly the evidence per-block
+  signing exists to preserve.
+
+#### V.11.4 Key distribution
+
+Out of scope, deliberately. A public key that travels inside the
+document it authenticates proves nothing, so keys are distributed out
+of band and a verifier decides which `kid` values it trusts.
+
+**Rotation** is "issue new blocks under a new `kid` and keep the old
+key loaded". A `kid` MUST be unique within a key store and MUST NOT
+be reused for a different key; blocks signed under a retired `kid`
+stay verifiable for as long as the store retains it.
+
+`signed_at` is self-asserted by the signer. Audit-grade
+non-repudiation needs a timestamping authority's countersignature,
+which protocol 1.x does not define.
+
+#### V.11.5 Capability declaration
+
+An implementation that verifies signatures adds `signing` to its
+`ImplementationManifest.capabilities`. The
+`conformance/signing/` suite gates that claim; an implementation that
+does not claim `signing` skips the suite and remains conformant.
 
 ---
 

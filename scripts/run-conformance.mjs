@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                size-intensive.
+//                size-intensive,signing.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -96,7 +96,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2193,6 +2193,99 @@ async function runSizeIntensive() {
   }
 }
 
+// ─── Signing suite (RFC 0010) ────────────────────────────────────────────────
+//
+// Block signatures are an optional capability, so this is a named suite rather
+// than a tier: an implementation that does not claim `signing` skips it and is
+// still conformant. It runs by default here because the reference
+// implementation does claim it.
+//
+//   <scenario>/deal.uw.md + expected.json
+//     { keystore, ok, signatures_present, signatures_verified, expected_codes }
+//
+// `keystore: null` means "verify with no signature backend" — the scenario that
+// pins the distinction between a signature that passed and one nobody checked.
+//
+// The fixtures are generated (`scripts/gen-signing-fixtures.mjs`) because a
+// signature over a hash of the file it lives in cannot be hand-authored.
+
+const SIGNING_DIR = join(CONFORMANCE_DIR, 'signing');
+
+async function runSigning() {
+  if (!existsSync(SIGNING_DIR)) return;
+
+  let signing;
+  try {
+    signing = await import('@uwmd/signing');
+  } catch {
+    record('signing', 'suite', 'fail', '@uwmd/signing is not built — run npm run build first');
+    return;
+  }
+
+  const scenarios = readdirSync(SIGNING_DIR)
+    .filter((name) => statSync(join(SIGNING_DIR, name)).isDirectory() && name !== 'keys')
+    .sort();
+
+  for (const id of scenarios) {
+    const dir = join(SIGNING_DIR, id);
+    const dealPath = join(dir, 'deal.uw.md');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(expectedPath)) {
+      record('signing', id, 'fail', 'scenario needs deal.uw.md and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+
+    let options = {};
+    if (expected.keystore) {
+      const store = await signing.loadKeyStoreFile(join(SIGNING_DIR, expected.keystore));
+      options = { signatureVerifier: signing.createBlockSignatureVerifier(store) };
+    }
+
+    let result;
+    try {
+      result = await verifyChain(parseUWFile(readFileSync(dealPath, 'utf8')), options);
+    } catch (e) {
+      record('signing', id, 'fail', `verifyChain threw: ${e.message}`);
+      continue;
+    }
+
+    const codes = [...new Set(result.issues.map((i) => i.code))].sort();
+    const wanted = [...expected.expected_codes].sort();
+    const mismatches = [];
+    if (result.ok !== expected.ok) mismatches.push(`ok ${result.ok} != ${expected.ok}`);
+    if (result.signatures_present !== expected.signatures_present) {
+      mismatches.push(`signatures_present ${result.signatures_present} != ${expected.signatures_present}`);
+    }
+    if (result.signatures_verified !== expected.signatures_verified) {
+      mismatches.push(`signatures_verified ${result.signatures_verified} != ${expected.signatures_verified}`);
+    }
+    if (codes.join(',') !== wanted.join(',')) {
+      mismatches.push(`codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+    record('signing', id, mismatches.length ? 'fail' : 'pass', mismatches.join('; ') || undefined);
+  }
+
+  // Cross-scenario invariant, asserted without a baseline so it binds any
+  // implementation: the same bytes verified with and without a backend must
+  // agree on how many signatures are *present*. Only `signatures_verified` and
+  // the issue list may differ.
+  const withBackend = join(SIGNING_DIR, '01-signed-valid', 'deal.uw.md');
+  const without = join(SIGNING_DIR, '05-signed-no-backend', 'deal.uw.md');
+  if (existsSync(withBackend) && existsSync(without)) {
+    const a = await verifyChain(parseUWFile(readFileSync(withBackend, 'utf8')));
+    const b = await verifyChain(parseUWFile(readFileSync(without, 'utf8')));
+    const agrees = a.signatures_present === b.signatures_present;
+    record(
+      'signing',
+      'present-count is backend-independent',
+      agrees ? 'pass' : 'fail',
+      agrees ? undefined : `${a.signatures_present} != ${b.signatures_present}`,
+    );
+  }
+}
+
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -2210,6 +2303,7 @@ const dispatch = {
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
   'size-intensive': async () => { await runSizeIntensive(); },
+  'signing': async () => { await runSigning(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

@@ -134,6 +134,37 @@
           "type": ["string", "null"],
           "pattern": "^([0-9a-f]{64})?$",
           "description": "Optional. content_hash of the block this one supersedes; null on a chain root. If any block in a supersede chain has it, all later blocks in that chain MUST."
+        },
+        "signature": {
+          "type": "object",
+          "description": "Optional. Detached signature over the block's signing input (protocol §V.11, RFC 0010). Requires content_hash: a signature with no hash beside it commits to nothing (INT-05).",
+          "required": ["alg", "kid", "sig", "signed_at"],
+          "additionalProperties": false,
+          "properties": {
+            "alg": {
+              "enum": ["ed25519", "es256", "es384"],
+              "description": "Signature algorithm. Closed set for protocol 1.x. ECDSA signatures are raw r||s (IEEE P1363), not DER."
+            },
+            "kid": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Opaque key identifier the verifier resolves in its own key store. Key distribution is out of scope."
+            },
+            "sig": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "description": "Signature bytes, base64url (RFC 4648 §5), unpadded."
+            },
+            "signed_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO 8601 instant the signature was produced. MAY differ from _meta.timestamp."
+            },
+            "v": {
+              "type": "string",
+              "description": "Signing-protocol version. Absent means \"1\"."
+            }
+          }
         }
       }
     }

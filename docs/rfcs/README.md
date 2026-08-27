@@ -34,7 +34,7 @@ and how it gets accepted.
 | [0007](./0007-sensitivity-tables.md)    | Sensitivity tables as a calc primitive      | draft | protocol, core, conformance |
 | [0008](./0008-lease-up-modeling.md)     | Lease-up modeling                           | draft | protocol, core, conformance |
 | [0009](./0009-meta-v2-reorg.md)         | `_meta` v2 sub-object reorganization        | draft | format, protocol, core, conformance |
-| [0010](./0010-signed-blocks.md)         | Signed blocks                               | draft | format, protocol, core, conformance |
+| [0010](./0010-signed-blocks.md)         | Signed blocks                               | implemented | format, protocol, core, conformance, tooling |
 | [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | draft | protocol, core, conformance |
 | [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
 | [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | accepted | format, protocol, core, conformance, tooling |

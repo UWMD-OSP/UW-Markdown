@@ -2,7 +2,8 @@
 // Protocol §V.9 — "Canonical block JSON"
 //
 // Implements RFC 8785 (JCS) with one extension: the keys `content_hash` and
-// `signature` inside any nested `_meta` object are removed before hashing.
+// `signature` inside any nested `_meta` object (spelled `section`/`section_id`)
+// are removed before hashing.
 // This keeps hash computation idempotent across multiple round trips through
 // the cascade.
 //
@@ -49,10 +50,17 @@ function stripExcludedKeys(input: unknown): unknown {
  * meta fields. We strip the excluded keys from every meta-shaped sub-object,
  * not only the top-level `_meta`, so that nested provenance (e.g. inside
  * field_overrides) hashes consistently.
+ *
+ * `section_id` is accepted alongside `section` because it is the spelling every
+ * `.uw.md` on disk actually uses (format spec §3, and the `uwmd-block` schema's
+ * own example). Requiring `section` alone meant this predicate returned false
+ * for every parsed block, so the two exclusions §V.9 mandates silently never
+ * applied outside of hand-built test objects — stamping a `content_hash` then
+ * changed the hash it was a digest of, and INT-04 fired on untouched files.
  */
 function looksLikeMeta(obj: Record<string, unknown>): boolean {
   return (
-    'section' in obj &&
+    ('section' in obj || 'section_id' in obj) &&
     'version' in obj &&
     'source' in obj
   );

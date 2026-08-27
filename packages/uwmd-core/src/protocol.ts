@@ -28,7 +28,7 @@ import { deepGet, getSection, getSectionVariant } from './parser.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.6.0' as const;
+export const PROTOCOL_VERSION = '1.7.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -1481,6 +1481,35 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A block\'s stamped _meta.content_hash does not match the SHA-256 of its current canonicalized content.',
     remediation: 'Either restore the original content or re-stamp content_hash from the current canonicalized form.',
     spec_ref: 'UW_PROTOCOL_v1.md §V.9',
+  },
+
+  {
+    code: 'INT-05', severity: 'error',
+    title: 'Signature without content hash',
+    description: 'A block carries _meta.signature but no _meta.content_hash, so the signature commits to no content.',
+    remediation: 'Stamp content_hash first, then re-sign the block; a signature over an absent hash is structurally void.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+  {
+    code: 'INT-06', severity: 'error',
+    title: 'Unknown signing key',
+    description: 'A block signature names a key id that the supplied key store does not hold.',
+    remediation: 'Add the public key to the key store under that kid, or re-sign with a key the verifier trusts.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+  {
+    code: 'INT-07', severity: 'error',
+    title: 'Block signature does not verify',
+    description: 'A block signature failed to validate against the canonicalized signing input, or declares an algorithm outside the admitted set.',
+    remediation: 'Restore the signed content and provenance fields, or re-sign the block as it now stands.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+  {
+    code: 'INT-08', severity: 'warning',
+    title: 'Deprecated signature algorithm',
+    description: 'A block signature uses an algorithm the verifying deployment has deprecated.',
+    remediation: 'Re-sign the block with a current algorithm before the deprecated one is withdrawn.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
   },
 
   // ─── Provenance / policy (POL-NN) — actor and operation authority ──────────

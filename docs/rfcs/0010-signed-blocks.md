@@ -1,7 +1,7 @@
 ---
 rfc: 0010
 title: Signed blocks
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-27
 affects:
@@ -272,6 +272,70 @@ implementations skip them.
   byte-identical signatures for the same key + payload. ed25519 is
   in both stable APIs as of 2025; ES256 likewise. No issue expected,
   but the test suite gates parity explicitly.
+
+## Erratum: `parent_hash` is covered transitively
+
+The [What is signed](#what-is-signed) section above says the signature
+"does NOT cover `parent_hash`", and [Alternatives
+considered](#alternatives-considered) §4 rests a design decision on
+that: re-rooting a chain after a merge must not invalidate every prior
+signature.
+
+**That reasoning does not hold in this repository.** Protocol §V.9
+computes `content_hash` over the block's content *and* its `_meta`,
+and `parent_hash` lives in `_meta`. So a re-rooted block gets a new
+`content_hash`, and a signature over the old hash no longer applies —
+transitively, through the hash, exactly the coupling §4 set out to
+avoid.
+
+The implementation does not paper over this. Excluding `parent_hash`
+from the canonicalization would be the only way to deliver what §4
+promised, and that trade is clearly worse: it would remove chain
+position from the integrity digest to protect a merge workflow that
+can simply re-stamp and re-sign. So the shipped behavior is
+"re-rooting requires re-signing", it is pinned by a test, and
+protocol §V.11.2 states it as normative text rather than leaving
+adopters to discover it.
+
+Recorded here rather than edited into the design sections above,
+because an RFC that quietly rewrites its own rationale after
+implementation teaches nothing.
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27. Four deliberate departures from the text above:
+
+1. **Spec section is §V.11, not §IX.6.** §IX.6 was already taken
+   ("Shape assertions for tests"), and block integrity lives in §V.9 /
+   §V.10 — signatures belong beside them.
+2. **Conformance fixtures live in `conformance/signing/`**, not
+   `conformance/tier-1-reader/signing-fixtures/`. Every other
+   capability-scoped suite in this corpus is a top-level named
+   directory (`receipts`, `market-data`, `composition`); signing is not
+   a tier and should not be filed under one. Five scenarios, not four:
+   `05-signed-no-backend` pins that a verifier with no key store
+   reports a signature as *present and unchecked* rather than passing
+   it.
+3. **`INT-07` also fires when a signed block's `content_hash` no
+   longer recomputes.** Without this, tampering with a signed block
+   produced only `INT-04 warning` — the signature still verified,
+   because it covers the *stated* hash — and the document verified
+   `ok`. The escalation from warning to error is what makes fixture
+   `02-signed-tampered` report the truth.
+4. **The `KeyStore` seam is split.** `verifyBlockSignature(block,
+   store)` is the whole check including hash recomputation;
+   `createBlockSignatureVerifier(store)` is the narrower
+   `BlockSignatureVerifier` that `verifyChain` injects, because
+   `verifyChain` already recomputes hashes and would otherwise report
+   one tampered block twice under two codes.
+
+A fifth item was a **pre-existing bug this work surfaced**: §V.9's
+"strip `content_hash` and `signature` before hashing" rule tested for
+a `_meta`-shaped object by requiring the key `section`, but every
+`.uw.md` on disk spells it `section_id`. The exclusions had therefore
+never fired for a parsed block, and stamping a `content_hash` changed
+the hash it was a digest of. Fixed in `integrity-canonical.ts`, with
+the spec wording corrected to match.
 
 ## Prior art
 

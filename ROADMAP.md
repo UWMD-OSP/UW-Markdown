@@ -76,12 +76,18 @@ Detailed sequencing and release gates:
 ## v2 spec exploration
 
 > **Unfrozen 2026-08-26.** With the v1.x dev queue empty (RFCs 0014–0029 all
-> implemented), the owner moved this train from ❄ frozen to 📋 active. The
-> working priority order is: **(1) the signing chain — RFC 0010 signed
-> blocks, then RFC 0002 module signing, which together unblock receipt
-> signing** (the one advertised receipt feature that ships unimplemented);
-> **(2) RFC 0004 conformance runner v2** (the corpus claims third parties
-> can self-certify, but the runner is TS-only); **(3) RFC 0006 hospitality
+> implemented), the owner moved this train from ❄ frozen to 📋 active.
+>
+> **RFC 0010 (signed blocks) landed 2026-08-27** — protocol §V.11, the new
+> `@uwmd/signing` package, `uwmd verify --signing`, and the
+> `conformance/signing/` suite. Receipt signing came with it: `@uwmd/signing`
+> supplies the `signatureVerifier` core has always accepted, so a signed
+> receipt now verifies instead of reporting `unverifiable`.
+>
+> Remaining priority order: **(1) RFC 0002 module signing** — the second half
+> of the signing chain, now that block and receipt signing exist to build on;
+> **(2) RFC 0004 conformance runner v2** (the corpus claims third parties can
+> self-certify, but the runner is TS-only); **(3) RFC 0006 hospitality
 > reference module** (first real consumer of the module system). The rest
 > remain queued behind those. Unfrozen means *actively being taken up*, not
 > accepted — each RFC still goes through its own acceptance.
@@ -97,6 +103,7 @@ context. This list is the maintainable copy.
 
 | RFC | Item | Why it matters |
 |---|---|---|
+| [0010](./docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
 | [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
 | [0002](./docs/rfcs/0002-module-signing.md)        | Module signing                                | Sigstore-style signature on module manifests, verified by host policy. |
 | [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |

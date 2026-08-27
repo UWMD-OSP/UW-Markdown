@@ -129,16 +129,37 @@ conformance/
                           behavior pair (warns-and-does-not-refuse on a
                           size-less office; silent for mixed_use, whose
                           resolveDealSize is null by design)
+└── signing/            Block signatures (RFC 0010, Protocol §V.11). Five
+                          <scenario>/{deal.uw.md, expected.json} pairs plus a
+                          shared keys/ directory. `expected.json` names the
+                          keystore to verify against (null = no signature
+                          backend at all), the expected `ok`, the
+                          signatures_present / signatures_verified counts, and
+                          the exact issue codes. Every deal.uw.md is GENERATED
+                          by scripts/gen-signing-fixtures.mjs from base-deal.uw.md
+                          — a signature over a hash of the file it lives in
+                          cannot be hand-edited into a meaningful state
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, and `size-intensive` suites are named rather than numbered:
+`capital-stack`, `size-intensive`, and `signing` suites are named rather than
+numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and
-size-intensive registry are *verified protocol surfaces* — none is itself a
-protocol conformance tier. All run by default; select one alone with
-`--tier=<name>` (e.g. `--tier=lite`, `--tier=size-intensive`).
+size-intensive registry are *verified protocol surfaces*, and signing is an
+*optional capability* — none is itself a protocol conformance tier. All run by
+default; select one alone with `--tier=<name>` (e.g. `--tier=lite`,
+`--tier=signing`).
+
+`signing` is the one suite an implementation may skip and stay conformant: it
+gates the `signing` capability claim in `ImplementationManifest.capabilities`,
+and an implementation that does not claim signing is not asked to pass it. Two
+of its five scenarios exist to pin distinctions rather than happy paths —
+`03-signed-unknown-kid` must report `INT-06` and never `INT-07` ("I cannot
+check this" is not "this is forged"), and `05-signed-no-backend` verifies the
+same bytes as `01-signed-valid` with no key store at all and must report the
+signature as present-and-unchecked rather than passing it.
 
 Two receipt properties are asserted as invariants rather than baselines:
 

@@ -38,6 +38,7 @@ const WORKSPACES = [
   'packages/uwmd-excel',
   'packages/uwmd-report',
   'packages/uwmd-batch',
+  'packages/uwmd-signing',
 ];
 
 const declaredVersion = new Map();

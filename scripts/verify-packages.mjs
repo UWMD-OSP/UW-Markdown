@@ -48,8 +48,13 @@ const reportFiles = packedFiles('@uwmd/report');
 requireFiles('@uwmd/report', reportFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts']);
 rejectSourceOrTests('@uwmd/report', reportFiles);
 
+const signingFiles = packedFiles('@uwmd/signing');
+requireFiles('@uwmd/signing', signingFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/keystore-file.js']);
+rejectSourceOrTests('@uwmd/signing', signingFiles);
+
 console.log(`[PASS] @uwmd/core package: ${coreFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/cli package: ${cliFiles.size} files, CLI wrapper present`);
 console.log(`[PASS] @uwmd/batch package: ${batchFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/excel package: ${excelFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/report package: ${reportFiles.size} files, production artifacts present`);
+console.log(`[PASS] @uwmd/signing package: ${signingFiles.size} files, production artifacts present`);

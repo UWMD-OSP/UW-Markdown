@@ -21,7 +21,11 @@ import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
-import type { IntegrityResult } from './integrity.js';
+import type {
+  BlockSignatureVerifier,
+  IntegrityResult,
+  VerifyChainOptions,
+} from './integrity.js';
 import type { EditContext } from './editor.js';
 import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
@@ -215,6 +219,53 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
   process.exit(result.errors.length > 0 ? 1 : 0);
 }
 
+/**
+ * Build the `verifyChain` options from `--signing --keystore=<path>`.
+ *
+ * `@uwmd/signing` is reached by dynamic import and declared as an optional peer
+ * - the same arrangement `@anthropic-ai/sdk` gets. `@uwmd/core` must not take a
+ * crypto dependency to satisfy a flag most invocations never pass, and the
+ * layering invariant (core depends on no sibling package) forbids a static
+ * import outright.
+ */
+async function signingOptions(
+  flags: Record<string, string | boolean>,
+): Promise<VerifyChainOptions> {
+  if (!flags['signing']) return {};
+  const keystore = flags['keystore'];
+  if (typeof keystore !== 'string' || keystore.length === 0) {
+    console.error('--signing requires --keystore=<path> to a JSON key store.');
+    process.exit(1);
+  }
+
+  // Structurally typed rather than `typeof import('@uwmd/signing')`: a type
+  // import would make core's build depend on signing's declarations, and
+  // signing already depends on core's. That cycle is the layering invariant
+  // reasserting itself, so the seam stays a two-function shape core states
+  // itself and signing satisfies.
+  interface SigningModule {
+    loadKeyStoreFile(path: string): Promise<unknown>;
+    createBlockSignatureVerifier(store: never): BlockSignatureVerifier;
+  }
+  let signing: SigningModule;
+  try {
+    signing = (await import('@uwmd/signing' as string)) as SigningModule;
+  } catch {
+    console.error(
+      '--signing needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.',
+    );
+    process.exit(1);
+  }
+
+  try {
+    const store = await signing.loadKeyStoreFile(resolve(keystore));
+    return { signatureVerifier: signing.createBlockSignatureVerifier(store as never) };
+  } catch (error) {
+    console.error((error as Error).message);
+    process.exit(1);
+  }
+}
+
 async function cmdVerify(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
   // --resolved verifies the assembled record. Without it an externalized
@@ -237,8 +288,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
-  if (runAll || onlyIntegrity) {
-    chain = await verifyChain(parsed);
+  if (runAll || onlyIntegrity || flags['signing']) {
+    chain = await verifyChain(parsed, await signingOptions(flags));
     sections['integrity'] = chain;
     if (!chain.ok) hadError = true;
   }
@@ -263,6 +314,12 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     }
     if (chain) {
       console.log(`\nIntegrity: ${chain.ok ? 'ok' : 'FAIL'} — chains_with_hashes=${chain.chains_with_hashes}, chains_verified=${chain.chains_verified}`);
+      if (chain.signatures_present > 0) {
+        const checked = flags['signing']
+          ? `${chain.signatures_verified} verified`
+          : 'not checked (pass --signing --keystore=<path>)';
+        console.log(`Signatures: ${chain.signatures_present} present, ${checked}`);
+      }
       for (const issue of chain.issues) {
         console.log(`  [${issue.severity.toUpperCase()}] ${issue.code}${issue.section ? ` [${issue.section}]` : ''}: ${issue.message}`);
       }
@@ -1069,7 +1126,7 @@ switch (command) {
     break;
 
   case 'verify':
-    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--resolved] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--resolved] [--json]'); process.exit(1); }
     await cmdVerify(positional[0], flags);
     break;
 
@@ -1469,6 +1526,8 @@ Commands:
   parse    <file>              Parse file and output JSON
   validate <file>              Run all validation checks
   verify   <file>              Validate + verify integrity (hashes) + provenance (actor/policy)
+                               --signing --keystore=<path> also checks block signatures (RFC 0010,
+                               via the optional @uwmd/signing package)
   render   <file>              Render to output format (see --format)
   run      <file>              Invoke a Bancroft agent (see --agent)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
@@ -1499,6 +1558,8 @@ Options:
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
+  --signing          Check _meta.signature on every block (verify; requires --keystore)
+  --keystore <path>  JSON key store mapping kid to public key (verify --signing)
   --parts <dir>      Fragment directory (compose, resolve, --resolved; default: ./parts)
   --externalize <s>  Section to split into fragments (compose)
   --collection-key <k>  Row identity field (compose, default: unit_id)

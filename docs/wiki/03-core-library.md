@@ -46,7 +46,7 @@ Module | Responsibility | Key exports
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
-`integrity.ts` | content/parent-hash chain + provenance | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`
+`integrity.ts` | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
 `integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
 `receipts.ts` | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
 `version.ts` | Engine identity recorded in receipts | `CORE_PACKAGE_NAME`, `CORE_VERSION`
@@ -82,7 +82,7 @@ walks a dot-path into a content object.
 **Validation code families** (all defined with copy in `BUILTIN_REMEDIATIONS`):
 - `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…).
 - `DQ-01..DQ-05` — data quality (provisional/partial blocks, scope readiness, stale gaps).
-- `INT-01..INT-04` — integrity (parent/content hash chain) — surfaced by `integrity.ts`.
+- `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
 - `FV-01..FV-14` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex…).
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.
@@ -200,11 +200,31 @@ and perturbation over the default ranges. Exposed via `uwmd refine`.
 
 ## integrity.ts
 
-`verifyChain(parsed)` (async) checks the `content_hash`/`parent_hash` supersede
-chain; `verifyProvenance(parsed, policies?)` checks actor/policy authority.
-`integrity-canonical.ts` `canonicalize()` defines the canonical form hashed by
-`computeBlockHash`. Both feed the `uwmd verify` command and the Tier-1 malformed
-conformance fixtures (INT-/POL- codes).
+`verifyChain(parsed, options?)` (async) checks the `content_hash`/`parent_hash`
+supersede chain; `verifyProvenance(parsed, policies?)` checks actor/policy
+authority. `integrity-canonical.ts` `canonicalize()` defines the canonical form
+hashed by `computeBlockHash`. Both feed the `uwmd verify` command and the Tier-1
+malformed conformance fixtures (INT-/POL- codes).
+
+**Block signatures (RFC 0010, protocol §V.11).** `_meta.signature` is optional
+and, like `content_hash`, excluded from canonicalization. Core owns only the
+crypto-free half: the wire type `UWBlockSignature`, and
+`canonicalBlockSigningInput()` / `blockSigningPayload()`, which build the exact
+RFC 8785 string a signature covers — six fields (`content_hash`, `section`,
+`actor`, `timestamp`, `kid`, `signed_at`) and nothing else. The algorithms live
+in [`@uwmd/signing`](../../packages/uwmd-signing/README.md) and reach core
+through `VerifyChainOptions.signatureVerifier`.
+
+Without a verifier, `verifyChain` reports `signatures_present` with
+`signatures_verified: 0` — present and *unchecked*, never valid. With one it
+emits `INT-05` (signature with no hash), `INT-06` (kid the store does not
+hold), `INT-07` (does not verify, unadmitted algorithm, or a stamped hash that
+no longer recomputes), and `INT-08` (deprecated algorithm, a warning).
+
+`INT-06` is never folded into `INT-07`: "I cannot check this" is a
+configuration problem and "this is forged" is a document problem, and they call
+for opposite responses. Note that a drifted hash escalates from `INT-04
+warning` to `INT-07 error` once a block is signed.
 
 ## receipts.ts
 
@@ -223,7 +243,9 @@ can confirm offline that the numbers follow from the inputs.
   `verified`, `failed`, `unverifiable`. Unknown pack, a pack version the
   verifier does not hold, an unparseable record, or a signature with no backend
   all yield `unverifiable` — collapsing those into `failed` cries wolf, and
-  collapsing them into `verified` is dangerous.
+  collapsing them into `verified` is dangerous. Supply
+  `createReceiptSignatureVerifier` from `@uwmd/signing` as `signatureVerifier`
+  and a signed receipt verifies for real instead of reporting `RCP-08`.
 - Subject canonicalization dispatches on representation: Lite records bind to
   the §6 financial canonical form, structured records to the envelope semantic
   value. Both are semantic, so a receipt survives reformatting and fails only on

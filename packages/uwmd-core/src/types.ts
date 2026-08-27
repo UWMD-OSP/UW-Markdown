@@ -166,6 +166,17 @@ export interface UWMeta {
   parent_hash?: string | null;
 
   /**
+   * Detached signature over this block's signing input (protocol §V.11,
+   * RFC 0010). Optional and opaque to core: the wire shape is normative here,
+   * but the cryptography lives in `@uwmd/signing` so that the library stays
+   * dependency-free for the overwhelming majority of adopters who never sign.
+   *
+   * Excluded from `content_hash` canonicalization along with `content_hash`
+   * itself, so stamping a signature does not invalidate the hash it covers.
+   */
+  signature?: UWBlockSignature;
+
+  /**
    * Which observation set a `market_data_accepted` value was promoted from
    * (RFC 0022 §4). REQUIRED whenever `source` is `market_data_accepted`, and
    * meaningless otherwise.
@@ -184,6 +195,42 @@ export interface UWMeta {
    */
   inherited_from?: InheritedFrom;
 }
+
+/**
+ * A detached signature over a block's signing input (protocol §V.11).
+ *
+ * What it covers is deliberately narrow — `content_hash`, `section`, `actor`,
+ * `timestamp`, `kid`, `signed_at` — and deliberately excludes `parent_hash`.
+ * Signing is per-block authorship; chain integrity is the separate
+ * `content_hash`/`parent_hash` mechanism. Coupling them would make re-rooting a
+ * chain after a merge invalidate every prior signature, which is a legitimate
+ * edit destroying evidence it has no business touching.
+ */
+export interface UWBlockSignature {
+  /** Algorithm identifier. Closed set at protocol 1.x; see §V.11. */
+  alg: UWSignatureAlgorithm;
+  /** Opaque key identifier the verifier looks up in its own key store. */
+  kid: string;
+  /** Base64url-encoded (unpadded) signature bytes. */
+  sig: string;
+  /**
+   * ISO 8601 instant the signature was produced. MAY differ from
+   * `_meta.timestamp` — a block edited offline is signed when re-uploaded.
+   */
+  signed_at: string;
+  /** Signing-protocol version. Absent means `"1"`. */
+  v?: string;
+}
+
+/** The algorithms protocol 1.x admits for `_meta.signature.alg`. */
+export type UWSignatureAlgorithm = 'ed25519' | 'es256' | 'es384';
+
+/** Runtime mirror of {@link UWSignatureAlgorithm}, for validation. */
+export const UW_SIGNATURE_ALGORITHMS: readonly UWSignatureAlgorithm[] = Object.freeze([
+  'ed25519',
+  'es256',
+  'es384',
+]);
 
 /** Identity and digest of the ancestor that asserted an inherited value. */
 export interface InheritedFrom {

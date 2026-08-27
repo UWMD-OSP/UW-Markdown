@@ -2,16 +2,16 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-26, after RFC 0028 (reportable section readiness)
-on top of `v1.7.0` (`81aa3b5`) — full pass: build green across all
-workspaces; **1,105 tests** — 942 core, 94 excel, 62 cli, 4 batch, 3 report —
-plus **71 web-editor**; **245 conformance** assertions including the Tier-4
-replay, module, package, receipts, market-data, composition, capital-stack,
-and size-intensive suites, with Tier-1 validation-verdict baselines, the
-RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome clean;
-`typecheck:tests` clean across all five workspaces; `@uwmd/core` and
+**Last verified:** 2026-08-27, after RFC 0010 (signed blocks) on top of
+`v1.7.0` — full pass: build green across all workspaces; **1,203 tests** —
+996 core, 94 excel, 62 cli, 44 signing, 4 batch, 3 report — plus **71
+web-editor**; **263 conformance** assertions including the Tier-4 replay,
+module, package, receipts, market-data, composition, capital-stack,
+size-intensive, and signing suites, with Tier-1 validation-verdict baselines,
+the RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome
+clean; `typecheck:tests` clean across all six workspaces; `@uwmd/core` and
 `@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
-provenance attached — protocol at **1.6.0** for §XIII.
+provenance attached — protocol at **1.7.0** for §V.11 (was 1.6.0 for §XIII).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -109,9 +109,24 @@ not core gaps.
   outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
   `uw-receipt.schema.json`; browser-safe; `uwmd receipt issue|verify`;
   `conformance/receipts/` (11 assertions). Verification is three-state and keeps
-  `unverifiable` distinct from `failed`. **Unsigned only** — signature creation
-  and validation await the RFC 0010 signing package, and a signed receipt
-  correctly reports `unverifiable` until one exists.
+  `unverifiable` distinct from `failed`. **Signing landed 2026-08-27** with RFC
+  0010: `@uwmd/signing` supplies `signReceipt` and the
+  `createReceiptSignatureVerifier` backend core has always accepted, so a signed
+  receipt verifies instead of reporting `RCP-08 unverifiable`. Core itself stays
+  crypto-free — a verifier with no backend still reports `unverifiable`, which
+  is the correct answer to "I cannot check this".
+- **Block signatures (RFC 0010, protocol §V.11):** `_meta.signature` is
+  normative in the format spec and the `uwmd-block` schema; the cryptography
+  ships as **`@uwmd/signing` 0.1.0** (ed25519 / es256 / es384 over Web Crypto,
+  file-backed reference key store) so `@uwmd/core` keeps its zero-crypto
+  guarantee. Core owns the crypto-free half — the wire type and
+  `canonicalBlockSigningInput` — and takes a verifier through
+  `verifyChain(parsed, { signatureVerifier })`. `INT-05`–`INT-08`;
+  `uwmd verify --signing --keystore=<path>` (dynamic import, optional peer);
+  `conformance/signing/` (6 assertions, 5 generated scenarios). A verifier with
+  no key store reports signatures **present and unchecked**, never valid. Also
+  supplies `signReceipt` / `createReceiptSignatureVerifier`, which is what made
+  receipt signing real.
 - **Excel round-trip:** `.uwx.md → .xlsx` via `toWorkbook.ts`, and **reverse
   import** `.xlsx → section fragments` via `fromWorkbook.ts` (shipped 2026-08-13).
   Every workbook also carries a **`UW MCP` sheet** (`mcpSheet.ts`) — machine-readable
@@ -545,18 +560,28 @@ warning, which every example was tripping.
 > of 1.x, sniffing stays and a `1.0` receipt degrades to `RCP-10`; at Protocol
 > 2.0 both obligations end.
 
-Receipt **signing** remains unimplemented and is blocked on the RFC 0010 signing
-package; unsigned issuance and verification ship today.
+Receipt **signing** shipped 2026-08-27 with RFC 0010 (`@uwmd/signing`). Unsigned
+issuance and verification are unchanged and remain the default path.
 
-## 📋 v2 RFC train (unfrozen 2026-08-26; drafts exist, none implemented)
+## 📋 v2 RFC train (unfrozen 2026-08-26; 0010 implemented, rest are drafts)
 
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
-emptied (RFCs 0014–0029 all implemented). Working priority order:
+emptied (RFCs 0014–0029 all implemented).
 
-1. **The signing chain** — signed blocks (0010), then module signing (0002);
-   together they unblock **receipt signing**, the one advertised receipt
-   feature that ships unimplemented (receipts are unsigned-only today, and a
-   signed receipt correctly reports `unverifiable`).
+**✅ RFC 0010 signed blocks — shipped 2026-08-27.** Protocol §V.11, the
+`@uwmd/signing` package (Ed25519 / ES256 / ES384 over the normative signing
+input, file-backed reference key store), `_meta.signature` in the format spec
+and block schema, `INT-05`–`INT-08`, `uwmd verify --signing --keystore`, and
+the five-scenario `conformance/signing/` suite. Receipt signing came with it.
+Two findings the work surfaced are recorded in the RFC: `parent_hash` *is*
+covered transitively (via `content_hash`, contradicting the RFC's rationale),
+and §V.9's hash exclusions had never fired for a parsed block because the
+meta-shape test required `section` where every file on disk writes `section_id`.
+
+Remaining priority order:
+
+1. **Module signing** (0002) — the second half of the signing chain, now with
+   block and receipt signing to build on.
 2. **Conformance runner v2** (0004) — language-agnostic self-certification;
    today's runner is TS-only while the corpus claims third parties can
    self-certify against it.

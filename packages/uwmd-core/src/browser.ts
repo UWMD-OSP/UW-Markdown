@@ -386,7 +386,8 @@ export type {
 } from './deal-package-zip.js';
 export { inspectZipSafety, isSafeZipPath } from './zip-safety.js';
 export type { ZipSafetyLimits, ZipSafetyViolation } from './zip-safety.js';
-export { sha256BytesHex } from './integrity.js';
+export { sha256BytesHex, blockSigningPayload, canonicalBlockSigningInput } from './integrity.js';
+export type { BlockSigningInput } from './integrity.js';
 
 
 
@@ -442,6 +443,8 @@ export type {
   UWFenceAnnotation,
   UWMeta,
   UWFieldOverride,
+  UWBlockSignature,
+  UWSignatureAlgorithm,
   MarketDataRef,
   UWFrontmatter,
   UWPipelineState,
@@ -461,7 +464,7 @@ export type {
   AssetClass,
 } from './types.js';
 
-export { DEFAULT_THRESHOLDS, ASSET_CLASSES } from './types.js';
+export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS } from './types.js';
 
 export {
   formatCurrency,

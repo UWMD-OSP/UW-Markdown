@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { computeBlockHash, sha256Hex, verifyChain, verifyProvenance } from './integrity.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import {
+  blockSigningPayload,
+  canonicalBlockSigningInput,
+  computeBlockHash,
+  sha256Hex,
+  verifyChain,
+  verifyProvenance,
+  type BlockSignatureVerifier,
+  type BlockSigVerdict,
+} from './integrity.js';
+import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 
 function makeBlock(
   sectionId: string,
@@ -66,7 +75,8 @@ describe('computeBlockHash', () => {
   it('ignores _meta.content_hash and _meta.signature', async () => {
     const a = makeBlock('property', { x: 1 });
     const b = makeBlock('property', { x: 1 }, { content_hash: 'previous', notes: a.meta.notes });
-    // signature doesn't exist on UWMeta but the canonicalizer strips it from any meta-shaped object
+    // Both excluded keys are stripped by the canonicalizer, so stamping either
+    // one cannot change the hash it is supposed to be a digest of.
     const ha = await computeBlockHash(a);
     const hb = await computeBlockHash(b);
     expect(ha).toBe(hb);
@@ -190,5 +200,142 @@ describe('verifyProvenance', () => {
     const file = makeFile({ rent_roll: head }, { rent_roll: [prior] });
     const r = verifyProvenance(file);
     expect(r.issues.some((i) => i.code === 'POL-02')).toBe(false);
+  });
+});
+
+// ─── Block signatures (protocol §V.11, RFC 0010) ─────────────────────────────
+
+const SIG: UWBlockSignature = {
+  alg: 'ed25519',
+  kid: 'sponsor-2026',
+  sig: 'ZmFrZS1zaWduYXR1cmU',
+  signed_at: '2026-08-27T00:00:00Z',
+};
+
+/** A verifier that answers from a table — core is crypto-free, so tests are too. */
+function stubVerifier(answers: Record<string, BlockSigVerdict>): BlockSignatureVerifier {
+  return {
+    async verify(_payload, signature) {
+      return answers[signature.kid] ?? { ok: false, reason: 'unknown_kid' };
+    },
+  };
+}
+
+async function hashed(block: UWBlock): Promise<UWBlock> {
+  return { ...block, meta: { ...block.meta, content_hash: await computeBlockHash(block) } };
+}
+
+describe('canonicalBlockSigningInput', () => {
+  it('is key-order independent and covers exactly the six normative fields', () => {
+    const payload = canonicalBlockSigningInput({
+      signed_at: 'b',
+      kid: 'k',
+      timestamp: 't',
+      actor: 'a',
+      section: 's',
+      content_hash: 'h',
+    });
+    expect(payload).toBe(
+      '{"actor":"a","content_hash":"h","kid":"k","section":"s","signed_at":"b","timestamp":"t"}',
+    );
+  });
+});
+
+describe('blockSigningPayload', () => {
+  it('returns null when the block is unsigned', async () => {
+    expect(blockSigningPayload(await hashed(makeBlock('property', { x: 1 })))).toBeNull();
+  });
+
+  it('returns null when a signed block has no content_hash', () => {
+    expect(blockSigningPayload(makeBlock('property', { x: 1 }, { signature: SIG }))).toBeNull();
+  });
+
+  // The signing input names no `parent_hash` field, but that buys less than
+  // RFC 0010 assumed: `content_hash` is computed over `_meta` too (§V.9), so a
+  // re-rooted block gets a new hash and the payload changes anyway. The direct
+  // exclusion only means the payload is stable for a *given* stated hash.
+  it('names no parent_hash field, so the payload is fixed by the stated hash', async () => {
+    const base = await hashed(makeBlock('property', { x: 1 }));
+    const signed = { ...base, meta: { ...base.meta, signature: SIG } };
+    const reRooted = { ...signed, meta: { ...signed.meta, parent_hash: 'a'.repeat(64) } };
+    expect(blockSigningPayload(reRooted)).toBe(blockSigningPayload(signed));
+    // ...and the stated hash is exactly what a re-root invalidates.
+    expect(await computeBlockHash(reRooted)).not.toBe(reRooted.meta.content_hash);
+  });
+});
+
+describe('verifyChain signature checks', () => {
+  it('counts signatures without a verifier and never claims they verified', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const r = await verifyChain(makeFile({ property: signed }));
+    expect(r.signatures_present).toBe(1);
+    expect(r.signatures_verified).toBe(0);
+    expect(r.ok).toBe(true);
+    expect(r.issues.filter((i) => i.code.startsWith('INT-0'))).toEqual([]);
+  });
+
+  it('emits INT-05 for a signature with no content_hash', async () => {
+    const signed = makeBlock('property', { x: 1 }, { signature: SIG });
+    const r = await verifyChain(makeFile({ property: signed }));
+    expect(r.issues.map((i) => i.code)).toContain('INT-05');
+    expect(r.ok).toBe(false);
+  });
+
+  it('emits INT-06 when the key store does not hold the kid', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const r = await verifyChain(makeFile({ property: signed }), {
+      signatureVerifier: stubVerifier({}),
+    });
+    expect(r.issues.find((i) => i.code === 'INT-06')?.actual).toBe('sponsor-2026');
+    expect(r.signatures_verified).toBe(0);
+    expect(r.ok).toBe(false);
+  });
+
+  it('emits INT-07 when the signature does not verify', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const r = await verifyChain(makeFile({ property: signed }), {
+      signatureVerifier: stubVerifier({ 'sponsor-2026': { ok: false, reason: 'bad_signature' } }),
+    });
+    expect(r.issues.map((i) => i.code)).toContain('INT-07');
+    expect(r.ok).toBe(false);
+  });
+
+  it('emits INT-07 for an algorithm outside the admitted set, without a verifier', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    const signed = {
+      ...block,
+      meta: { ...block.meta, signature: { ...SIG, alg: 'rs256' as UWBlockSignature['alg'] } },
+    };
+    const r = await verifyChain(makeFile({ property: signed }));
+    expect(r.issues.find((i) => i.code === 'INT-07')?.actual).toBe('rs256');
+  });
+
+  it('emits INT-08 as a warning for a deprecated algorithm and still verifies', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const r = await verifyChain(makeFile({ property: signed }), {
+      deprecatedAlgorithms: ['ed25519'],
+      signatureVerifier: stubVerifier({ 'sponsor-2026': { ok: true } }),
+    });
+    const int08 = r.issues.find((i) => i.code === 'INT-08');
+    expect(int08?.severity).toBe('warning');
+    expect(r.signatures_verified).toBe(1);
+    expect(r.ok).toBe(true);
+  });
+
+  it('checks signatures on superseded blocks, not just chain heads', async () => {
+    const prior = await hashed(makeBlock('rent_roll', { units: [] }, { version: 1, superseded: true }));
+    const signedPrior = { ...prior, meta: { ...prior.meta, signature: SIG } };
+    const head = await hashed(
+      makeBlock('rent_roll', { units: [{ id: 1 }] }, { version: 2, parent_hash: signedPrior.meta.content_hash }),
+    );
+    const r = await verifyChain(makeFile({ rent_roll: head }, { rent_roll: [signedPrior] }), {
+      signatureVerifier: stubVerifier({ 'sponsor-2026': { ok: true } }),
+    });
+    expect(r.signatures_present).toBe(1);
+    expect(r.signatures_verified).toBe(1);
   });
 });

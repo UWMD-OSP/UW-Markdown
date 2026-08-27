@@ -1,0 +1,10 @@
+{
+  "description": "A signature with no content_hash beside it. Structurally void, so INT-05 fires with no key material involved at all.",
+  "keystore": "keys/keystore.json",
+  "ok": false,
+  "signatures_present": 1,
+  "signatures_verified": 0,
+  "expected_codes": [
+    "INT-05"
+  ]
+}

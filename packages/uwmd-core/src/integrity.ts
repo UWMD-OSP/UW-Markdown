@@ -10,8 +10,9 @@
 //     Crypto (`crypto.subtle`). The browser entry point binds the latter via
 //     subpath export when adopters import from `@uwmd/core/browser`.
 
-import { canonicalize } from './integrity-canonical.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import { canonicalize, canonicalizeExact } from './integrity-canonical.js';
+import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
+import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 import type { EditPolicy } from './protocol.js';
 import { BUILTIN_EDIT_POLICIES } from './protocol.js';
 
@@ -80,7 +81,17 @@ export async function computeBlockHash(block: UWBlock): Promise<string> {
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
-export type IntegrityCode = 'INT-01' | 'INT-02' | 'INT-03' | 'INT-04' | 'POL-01' | 'POL-02';
+export type IntegrityCode =
+  | 'INT-01'
+  | 'INT-02'
+  | 'INT-03'
+  | 'INT-04'
+  | 'INT-05'
+  | 'INT-06'
+  | 'INT-07'
+  | 'INT-08'
+  | 'POL-01'
+  | 'POL-02';
 
 export interface IntegrityIssue {
   code: IntegrityCode;
@@ -96,6 +107,112 @@ export interface IntegrityResult {
   issues: IntegrityIssue[];
   chains_verified: number;
   chains_with_hashes: number;
+  /**
+   * How many blocks carry `_meta.signature` (RFC 0010). Reported even when no
+   * verifier was supplied, so a caller can tell "no signatures" apart from
+   * "signatures present but unchecked" — the distinction that makes a
+   * `signatures_verified: 0` result readable.
+   */
+  signatures_present: number;
+  /**
+   * How many signatures cryptographically verified. Always 0 without a
+   * `signatureVerifier`; never inferred from the signature's mere presence.
+   */
+  signatures_verified: number;
+}
+
+// ─── Block signatures (protocol §V.11, RFC 0010) ─────────────────────────────
+
+/**
+ * The canonical JSON a block signature covers.
+ *
+ * Deliberately not the block itself: the signer commits to the block's
+ * `content_hash` (which already covers the content), plus the four provenance
+ * facts a verifier needs in order to say *who* signed *what*, *when*. Signing
+ * the block directly would re-derive the hash for no gain and would drag
+ * `parent_hash` into the commitment — see {@link UWBlockSignature}.
+ */
+export interface BlockSigningInput {
+  content_hash: string;
+  section: string;
+  actor: string;
+  timestamp: string;
+  kid: string;
+  signed_at: string;
+}
+
+/**
+ * Build the exact bytes a signature is computed over: RFC 8785 canonical JSON
+ * of {@link BlockSigningInput}. Crypto-free, so it lives in core — signer and
+ * verifier MUST agree on this string or nothing else matters.
+ *
+ * Returns `null` when the block cannot produce a signing input at all (no
+ * `content_hash`, or no signature to take `kid`/`signed_at` from).
+ */
+export function blockSigningPayload(block: UWBlock): string | null {
+  const sig = block.meta.signature;
+  const hash = block.meta.content_hash;
+  if (!sig || typeof hash !== 'string') return null;
+  return canonicalBlockSigningInput({
+    content_hash: hash,
+    section: block.meta.section,
+    actor: block.meta.actor,
+    timestamp: block.meta.timestamp,
+    kid: sig.kid,
+    signed_at: sig.signed_at,
+  });
+}
+
+/**
+ * Canonicalize an explicit signing input.
+ *
+ * The signer needs this and {@link blockSigningPayload} cannot serve it: at
+ * signing time the block has no `_meta.signature` yet, so there is nowhere to
+ * read `kid` and `signed_at` from. Both paths funnel through this one function
+ * so the two sides cannot drift.
+ */
+export function canonicalBlockSigningInput(input: BlockSigningInput): string {
+  return canonicalizeExact({
+    content_hash: input.content_hash,
+    section: input.section,
+    actor: input.actor,
+    timestamp: input.timestamp,
+    kid: input.kid,
+    signed_at: input.signed_at,
+  } satisfies BlockSigningInput);
+}
+
+/** Why a signature failed to verify. Mirrors RFC 0010's `SigVerifyError`. */
+export type BlockSigFailure =
+  | 'unknown_kid'
+  | 'algorithm_mismatch'
+  | 'bad_signature'
+  | 'malformed';
+
+export type BlockSigVerdict = { ok: true } | { ok: false; reason: BlockSigFailure };
+
+/**
+ * Plugged in by `@uwmd/signing`; absent here so core stays crypto-free (the
+ * same seam `ReceiptSignatureVerifier` uses for receipts).
+ */
+export interface BlockSignatureVerifier {
+  verify(payload: string, signature: UWBlockSignature): Promise<BlockSigVerdict>;
+}
+
+export interface VerifyChainOptions {
+  /**
+   * Supplied by a signing package. Without it, INT-06/INT-07 never fire and a
+   * signed block is treated exactly like an unsigned one — verification is
+   * opt-in, and silently "passing" an unchecked signature is the failure this
+   * design most wants to avoid, which is what `signatures_present` reports.
+   */
+  signatureVerifier?: BlockSignatureVerifier;
+  /**
+   * Algorithms to flag as deprecated (INT-08). Empty at protocol 1.7 — no
+   * admitted algorithm is deprecated yet — but the knob exists so a deployment
+   * can retire one ahead of the spec.
+   */
+  deprecatedAlgorithms?: readonly string[];
 }
 
 // ─── Chain verification ──────────────────────────────────────────────────────
@@ -110,9 +227,23 @@ export interface IntegrityResult {
  *     `content_hash` (else INT-01 error).
  *
  * A chain with no hashes at all yields no findings and is not counted in
- * `chains_verified`.
+ * `chains_verified` — but its blocks are still swept for signatures, because a
+ * signature over a block that has no `content_hash` commits to nothing and is
+ * exactly the case INT-05 exists to catch.
+ *
+ * Signature checks (protocol §V.11) run over every block in the file:
+ *   - INT-05 error   — `signature` present with no `content_hash`.
+ *   - INT-07 error   — the stamped `content_hash` no longer recomputes, so the
+ *     signature covers content that is no longer there (INT-04 reports the same
+ *     drift as a warning; on a signed block it is an error).
+ *   - INT-06 error   — `kid` unknown to the supplied store.
+ *   - INT-07 error   — the signature does not verify.
+ *   - INT-08 warning — the algorithm is in the caller's deprecation list.
  */
-export async function verifyChain(parsed: ParsedUWFile): Promise<IntegrityResult> {
+export async function verifyChain(
+  parsed: ParsedUWFile,
+  options: VerifyChainOptions = {},
+): Promise<IntegrityResult> {
   const issues: IntegrityIssue[] = [];
   let chainsWithHashes = 0;
   let chainsVerified = 0;
@@ -180,13 +311,139 @@ export async function verifyChain(parsed: ParsedUWFile): Promise<IntegrityResult
     if (chainOK) chainsVerified++;
   }
 
+  const sig = await verifySignatures(parsed, issues, options);
+
   const errors = issues.filter((i) => i.severity === 'error').length;
   return {
     ok: errors === 0,
     issues,
     chains_verified: chainsVerified,
     chains_with_hashes: chainsWithHashes,
+    signatures_present: sig.present,
+    signatures_verified: sig.verified,
   };
+}
+
+/**
+ * Sweep every block in the file for `_meta.signature` and append INT-05..08.
+ *
+ * Walks all blocks — heads, superseded priors, and every variant — rather than
+ * the per-section chain heads `verifyChain` walks. A signature on a superseded
+ * block is the whole point of per-block signing: "the sponsor signed *this*
+ * version of the rent roll" must stay checkable after the block is superseded.
+ */
+async function verifySignatures(
+  parsed: ParsedUWFile,
+  issues: IntegrityIssue[],
+  options: VerifyChainOptions,
+): Promise<{ present: number; verified: number }> {
+  const deprecated = options.deprecatedAlgorithms ?? [];
+  let present = 0;
+  let verified = 0;
+
+  for (const [sectionId, block] of everyBlock(parsed)) {
+    const signature = block.meta.signature;
+    if (!signature) continue;
+    present++;
+
+    const where = `Block v${block.meta.version} of '${sectionId}'`;
+
+    if (deprecated.includes(signature.alg)) {
+      issues.push({
+        code: 'INT-08',
+        severity: 'warning',
+        section: sectionId,
+        message: `${where} is signed with deprecated algorithm '${signature.alg}'.`,
+        actual: signature.alg,
+      });
+    }
+
+    // INT-05 needs no key material: a signature over an absent content_hash is
+    // structurally void, so it is reported whether or not a verifier exists.
+    const payload = blockSigningPayload(block);
+    if (payload === null) {
+      issues.push({
+        code: 'INT-05',
+        severity: 'error',
+        section: sectionId,
+        message: `${where} carries a signature but no content_hash, so the signature commits to nothing.`,
+      });
+      continue;
+    }
+
+    // A signed block whose stamped hash no longer recomputes is INT-07 as well
+    // as INT-04, and the escalation from warning to error is the point: on an
+    // unsigned block a drifted hash is a bookkeeping slip, but on a signed one
+    // it means the content in front of you is not the content anybody signed.
+    const recomputed = await computeBlockHash(block);
+    if (recomputed !== block.meta.content_hash) {
+      issues.push({
+        code: 'INT-07',
+        severity: 'error',
+        section: sectionId,
+        message: `${where} was signed over content_hash ${block.meta.content_hash}, but its content now hashes to ${recomputed}.`,
+        expected: recomputed,
+        actual: block.meta.content_hash,
+      });
+      continue;
+    }
+
+    if (!(UW_SIGNATURE_ALGORITHMS as readonly string[]).includes(signature.alg)) {
+      issues.push({
+        code: 'INT-07',
+        severity: 'error',
+        section: sectionId,
+        message: `${where} declares unrecognized signature algorithm '${signature.alg}'.`,
+        expected: UW_SIGNATURE_ALGORITHMS.join('|'),
+        actual: signature.alg,
+      });
+      continue;
+    }
+
+    if (!options.signatureVerifier) continue;
+
+    const verdict = await options.signatureVerifier.verify(payload, signature);
+    if (verdict.ok) {
+      verified++;
+      continue;
+    }
+    if (verdict.reason === 'unknown_kid') {
+      issues.push({
+        code: 'INT-06',
+        severity: 'error',
+        section: sectionId,
+        message: `${where} is signed by key '${signature.kid}', which this verifier's key store does not hold.`,
+        actual: signature.kid,
+      });
+      continue;
+    }
+    issues.push({
+      code: 'INT-07',
+      severity: 'error',
+      section: sectionId,
+      message: `${where} signature did not verify (${verdict.reason}).`,
+      actual: signature.kid,
+    });
+  }
+
+  return { present, verified };
+}
+
+/** Every block in the file, superseded priors and variants included. */
+function* everyBlock(parsed: ParsedUWFile): Generator<[string, UWBlock]> {
+  for (const [sectionId, prior] of Object.entries(parsed.superseded)) {
+    for (const block of prior) yield [sectionId, block];
+  }
+  for (const [sectionId, entry] of Object.entries(parsed.sections)) {
+    if (!entry) continue;
+    if ('annotation' in (entry as object)) {
+      yield [sectionId, entry as UWBlock];
+      continue;
+    }
+    for (const variant of Object.values(entry as Record<string, UWBlock>)) {
+      yield [sectionId, variant];
+    }
+  }
 }
 
 // ─── Provenance verification ─────────────────────────────────────────────────
@@ -244,6 +501,8 @@ export function verifyProvenance(
     issues,
     chains_verified: 0,
     chains_with_hashes: 0,
+    signatures_present: 0,
+    signatures_verified: 0,
   };
 }
 

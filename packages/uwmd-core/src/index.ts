@@ -444,8 +444,19 @@ export {
   computeBlockHash,
   verifyChain,
   verifyProvenance,
+  blockSigningPayload,
+  canonicalBlockSigningInput,
 } from './integrity.js';
-export type { IntegrityCode, IntegrityIssue, IntegrityResult } from './integrity.js';
+export type {
+  IntegrityCode,
+  IntegrityIssue,
+  IntegrityResult,
+  BlockSigningInput,
+  BlockSigFailure,
+  BlockSigVerdict,
+  BlockSignatureVerifier,
+  VerifyChainOptions,
+} from './integrity.js';
 
 export { canonicalize } from './integrity-canonical.js';
 
@@ -542,6 +553,8 @@ export type {
   UWFenceAnnotation,
   UWMeta,
   UWFieldOverride,
+  UWBlockSignature,
+  UWSignatureAlgorithm,
   MarketDataRef,
   UWFrontmatter,
   UWPipelineState,
@@ -564,7 +577,7 @@ export type {
   AssetClass,
 } from './types.js';
 
-export { DEFAULT_THRESHOLDS, ASSET_CLASSES } from './types.js';
+export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS } from './types.js';
 
 // ─── Display formatting ───────────────────────────────────────────────────────
 export {

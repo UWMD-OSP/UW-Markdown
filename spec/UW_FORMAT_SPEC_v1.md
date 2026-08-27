@@ -285,7 +285,7 @@ Every data block MUST contain a `_meta` object as its first key. This is the can
 | `notes` | string | Free-text notes from the agent or user |
 
 Blocks MAY also carry the optional fields `partial`, `provisional`,
-`field_overrides`, `content_hash`, and `parent_hash`. See Part III
+`field_overrides`, `content_hash`, `parent_hash`, and `signature`. See Part III
 §3.4 for their semantics. These fields are additive: a block omitting
 them is well-formed, and validators MUST NOT reject blocks for their
 absence.
@@ -413,6 +413,7 @@ reject blocks for omitting them.
 | `field_overrides` | array | Per-field overrides where the block-level `confidence`, `source`, or annotations do not apply uniformly. Each entry has a dot-notated `path` relative to the block's content root and may carry its own `confidence`, `source`, `reason` (`illegible | missing | overridden | estimated | computed`), and `note`. |
 | `content_hash` | string | The SHA-256 hash of the block's canonicalized JSON content. The canonicalization rule (RFC 8785 JCS, with `_meta.content_hash` and `_meta.signature` removed before hashing) is defined in Protocol §IX.2. Producers MAY emit; consumers MAY ignore. |
 | `parent_hash` | string \| null | The `content_hash` of the block this one supersedes. `null` on a chain root. Required only when participating in an integrity-checked supersede chain — once any block in a supersede chain carries `content_hash`, every later block in that chain MUST carry both `content_hash` and `parent_hash`. |
+| `signature` | object | A detached signature over the block's signing input, for deployments that need cryptographic chain of custody. Fields: `alg` (`ed25519` \| `es256` \| `es384`), `kid`, `sig` (base64url, unpadded), `signed_at` (ISO 8601), optional `v`. Requires `content_hash` — a signature with no hash beside it commits to nothing (`INT-05`). Defined normatively in Protocol §V.11. |
 
 **Precedence with `field_overrides`.** A `field_overrides` entry
 whose `path` matches a field replaces, for that field only, the
@@ -431,6 +432,13 @@ indistinguishable from a pre-integrity file; chain verification is a
 no-op. To benefit from chain verification, a producer SHOULD stamp
 `content_hash` on every block it writes once it adopts the integrity
 path.
+
+**Signing opt-in.** `signature` is optional on top of an optional
+field: it is meaningful only where `content_hash` is already stamped,
+and reading, validating, editing, and computing over a `.uw.md` never
+require cryptography. A consumer with no key store MUST treat a
+signature as opaque metadata and MUST report it as present but
+unchecked rather than as verified. See Protocol §V.11.
 
 ### 3.5 `confidence` vs `human_review_required`
 
