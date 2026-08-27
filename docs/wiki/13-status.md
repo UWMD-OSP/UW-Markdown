@@ -548,13 +548,27 @@ warning, which every example was tripping.
 Receipt **signing** remains unimplemented and is blocked on the RFC 0010 signing
 package; unsigned issuance and verification ship today.
 
-## 🧊 Deferred to v2 (RFC drafts exist, none implemented)
+## 📋 v2 RFC train (unfrozen 2026-08-26; drafts exist, none implemented)
 
-Range/stochastic calcs (0005), sensitivity-table builtin (0007), lease-up modeling
-(0008), custom asset-class declarations from modules (0003), module signing (0002),
-locale/multi-currency (0001), conformance runner v2 (0004), `_meta` v2 reorg
-(0009), signed blocks (0010), capability tokens (0011), and corpus retrieval
-(0013), and portfolio/relationship profiles (0015).
+Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
+emptied (RFCs 0014–0029 all implemented). Working priority order:
+
+1. **The signing chain** — signed blocks (0010), then module signing (0002);
+   together they unblock **receipt signing**, the one advertised receipt
+   feature that ships unimplemented (receipts are unsigned-only today, and a
+   signed receipt correctly reports `unverifiable`).
+2. **Conformance runner v2** (0004) — language-agnostic self-certification;
+   today's runner is TS-only while the corpus claims third parties can
+   self-certify against it.
+3. **Hospitality reference module** (0006) — first real consumer of the
+   module system, which is validated machinery nothing yet exercises.
+
+Queued behind those: range/stochastic calcs (0005), sensitivity-table builtin
+(0007), lease-up modeling (0008), custom asset-class declarations from
+modules (0003), locale/multi-currency (0001), `_meta` v2 reorg (0009),
+capability tokens (0011), corpus retrieval (0013), and portfolio/relationship
+profiles (0015). Unfrozen means actively being taken up, not accepted — each
+RFC still goes through its own acceptance.
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
