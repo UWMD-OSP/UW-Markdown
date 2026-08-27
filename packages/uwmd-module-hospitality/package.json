@@ -1,0 +1,29 @@
+{
+  "name": "@uwmd/module-hospitality",
+  "version": "0.1.0",
+  "description": "Hospitality reference module for UW Markdown (RFC 0006) — hotel operating, brand, and F&B sections, RevPAR/ADR calculations, and STR-comp validations. The reference consumer of the protocol §X module system.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",
+    "directory": "packages/uwmd-module-hospitality"
+  },
+  "homepage": "https://uwmd.org",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./manifest.json": "./dist/manifest.json"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc && node scripts/emit-manifest.mjs",
+    "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": { "@uwmd/core": "1.7.0" },
+  "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
+  "engines": { "node": ">=18.0.0" },
+  "license": "MIT",
+  "keywords": ["uwmd", "underwriting", "commercial-real-estate", "hospitality", "hotel", "revpar", "module"]
+}

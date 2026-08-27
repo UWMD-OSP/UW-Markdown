@@ -1231,6 +1231,37 @@ Required fields: `manifest_version` (always `"1"` in v1), `id`, `name`,
 Optional fields are documented in the schema. The TypeScript mirror
 type `ModuleManifest` in `protocol.ts` is kept in lockstep.
 
+**A registered module must actually run.** Registering a manifest is
+not the same as honoring it, and a host that loads a module and then
+ignores its `calculations`, `validations`, and `sections` has adopted
+nothing. A host that loads modules:
+
+- SHOULD evaluate a module's `calculations` in **declaration order**,
+  threading each result into the next as a prior result. Order is the
+  author's, and a later calc that reads an earlier one depends on it.
+- SHOULD evaluate each `validations[].rule` as a §VIII.1 safe
+  expression. A rule asserts what must be TRUE: it reports an issue when
+  it evaluates to `false`, and **MUST NOT** report one when it evaluates
+  to `null`. `null` is "the inputs are absent" (§VIII.2), and a document
+  that does not carry a section has not violated a rule about it.
+- MUST NOT introduce an evaluation path a module can reach that the calc
+  engine cannot. A rule is a safe expression, evaluated by the same
+  sandbox, or it is a second unsandboxed language reachable from a
+  third-party manifest.
+- SHOULD report a `sections[].required` section that is absent, and
+  SHOULD report a rule or calculation that fails to *evaluate* rather
+  than silently skipping it. A skipped rule is a rule its author believes
+  is protecting them.
+
+Section `schema` fragments are normative JSON Schema. A host holding a
+JSON Schema validator SHOULD apply them; one that does not is still
+conforming, and the reference library is in the second category by
+design (§Layering — `@uwmd/core` takes no validator dependency).
+
+The reference module is
+[`@uwmd/module-hospitality`](../packages/uwmd-module-hospitality/README.md),
+built against the library's published surface and nothing else.
+
 ### X.1 Module signatures (RFC 0002)
 
 A module manifest is executable surface. Its `calculations` carry
@@ -1471,8 +1502,6 @@ required for v1 conformance.
   without a spec bump.
 - **Stochastic calculations** — `deterministic: false` calc declarations
   (Monte Carlo, sensitivity sweeps).
-- **Hospitality module** — full implementation of the example sketched
-  in Appendix E, serving as the reference module for the module system.
 - **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
   protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
   and optional HTTP/MCP binding profiles. The UW Markdown format remains 1.1.

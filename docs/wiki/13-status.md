@@ -3,17 +3,17 @@
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
 **Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
-(module signing), and RFC 0004 (language-agnostic conformance driver) on top
-of `v1.7.0` — full pass: build green across all
-workspaces; **1,243 tests** — 1,018 core, 94 excel, 62 cli, 62 signing, 4
-batch, 3 report — plus **71 web-editor**; **269 conformance** assertions
-(and **44** more through the RFC 0004 CLI driver)
+(module signing), RFC 0004 (language-agnostic conformance driver), and RFC
+0006 (hospitality reference module) on top of `v1.7.0` — full pass: build green across all
+workspaces; **1,270 tests** — 1,030 core, 94 excel, 62 cli, 62 signing, 15
+module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **274
+conformance** assertions (and **44** more through the RFC 0004 CLI driver)
 including the Tier-4 replay,
 module, package, receipts, market-data, composition, capital-stack,
 size-intensive, and signing suites (blocks + modules), with Tier-1
 validation-verdict baselines,
 the RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome
-clean; `typecheck:tests` clean across all six workspaces; `@uwmd/core` and
+clean; `typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
 `@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
 provenance attached — protocol at **1.7.0** for §V.11 (was 1.6.0 for §XIII).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
@@ -141,6 +141,18 @@ not core gaps.
   "sigstore"` is reserved so adding it stays additive. `identity` is advisory
   and §X.1.5 says so normatively. `conformance/signing/modules/` runs six
   scenarios under all three policies.
+- **Module runtime + the reference module (RFC 0006):** `module-runtime.ts`
+  gives the module system the consumer it never had —
+  `evaluateModuleCalculations` (declaration order, results threaded forward),
+  `validateAgainstModules` (rules through the same §VIII.1 sandbox; `null` is
+  *not* `false`), `checkModuleSections`. Failures are reported rather than
+  skipped: `MOD-CALC-ERROR`, `MOD-RULE-ERROR`, `MOD-SECTION-MISSING`.
+  **`@uwmd/module-hospitality` 0.1.0** is the reference consumer — three hotel
+  sections, five calcs, three validations, built against core's published
+  surface only. Protocol §X gained the host obligations a registered module
+  implies. `conformance/modules/runtime/` (5 scenarios). Section `schema`
+  fragments stay normative JSON Schema a host with a validator SHOULD apply;
+  core checks presence and stops, because it takes no validator dependency.
 - **Excel round-trip:** `.uwx.md → .xlsx` via `toWorkbook.ts`, and **reverse
   import** `.xlsx → section fragments` via `fromWorkbook.ts` (shipped 2026-08-13).
   Every workbook also carries a **`UW MCP` sheet** (`mcpSheet.ts`) — machine-readable
@@ -604,12 +616,15 @@ conformance:v2`, and a CI `--check` on the case files. The TypeScript runner is
 **not** replaced — it gates the corpus, the driver gates the protocol; most of
 the thirteen suites are not expressible as one command with one output.
 
-Remaining priority order:
+**✅ RFC 0006 hospitality reference module — shipped 2026-08-27**, closing the
+priority order the owner set when the train unfroze. See the Built section: the
+gap it surfaced was not the loader but the absence of any *consumer* of a
+registered module.
 
-1. **Hospitality reference module** (0006) — first real consumer of the
-   module system, which is validated machinery nothing yet exercises.
+**The stated priority order is complete.** What remains on this train has no
+assigned order yet:
 
-Queued behind those: range/stochastic calcs (0005), sensitivity-table builtin
+Unordered: range/stochastic calcs (0005), sensitivity-table builtin
 (0007), lease-up modeling (0008), custom asset-class declarations from
 modules (0003), locale/multi-currency (0001), `_meta` v2 reorg (0009),
 capability tokens (0011), corpus retrieval (0013), and portfolio/relationship

@@ -55,6 +55,9 @@ import {
   parseAgentCassette,
   loadModuleManifest,
   loadModuleManifestAsync,
+  createModuleRegistry,
+  evaluateModuleCalculations,
+  validateAgainstModules,
   verifyModuleSignature,
   validateUWDealPackageManifest,
   encodeUWDealPackageZip,
@@ -1482,6 +1485,77 @@ async function runModules() {
 }
 
 
+/**
+ * Module runtime (RFC 0006) — the module system with an actual consumer.
+ *
+ * Every other module fixture in this corpus checks that a manifest *loads*.
+ * These check that a loaded module *does something*: its calculations compute,
+ * its validation rules fire and stay silent in the right places, and its
+ * required sections are enforced.
+ *
+ * The module under test is `@uwmd/module-hospitality`, imported the way any
+ * host would import it. If a scenario's `module` names something else, it is
+ * skipped rather than silently passing.
+ */
+async function runModuleRuntime() {
+  const dir = join(MODULES_DIR, 'runtime');
+  if (!existsSync(dir)) return;
+
+  let hospitality;
+  try {
+    hospitality = await import('@uwmd/module-hospitality');
+  } catch {
+    record('modules', 'runtime', 'fail', '@uwmd/module-hospitality is not built — run npm run build first');
+    return;
+  }
+  const registry = createModuleRegistry({
+    modules: [hospitality.HOSPITALITY_MODULE],
+    hostTier: 'tier-4-agent-host',
+  });
+
+  const scenarios = readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const scenarioDir = join(dir, id);
+    const dealPath = join(scenarioDir, 'deal.uwx.md');
+    const expectedPath = join(scenarioDir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(expectedPath)) {
+      record('modules', `runtime/${id}`, 'fail', 'scenario needs deal.uwx.md and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    if (expected.module !== '@uwmd/module-hospitality') {
+      record('modules', `runtime/${id}`, 'fail', `unknown module under test: ${expected.module}`);
+      continue;
+    }
+
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const problems = [];
+
+    const computed = Object.fromEntries(
+      evaluateModuleCalculations(parsed, registry).map(({ result }) => [result.calc_id, result.value]),
+    );
+    for (const [calcId, want] of Object.entries(expected.expected_calcs ?? {})) {
+      if (!(calcId in computed)) {
+        problems.push(`${calcId}: not computed`);
+      } else if (computed[calcId] !== want) {
+        problems.push(`${calcId}: ${computed[calcId]} != ${want}`);
+      }
+    }
+
+    const codes = [...new Set(validateAgainstModules(parsed, registry).map((i) => i.code))].sort();
+    const wanted = [...expected.expected_codes].sort();
+    if (codes.join(',') !== wanted.join(',')) {
+      problems.push(`codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+
+    record('modules', `runtime/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+
 // ─── Packages suite (RFC 0018) ───────────────────────────────────────────────
 //
 // Manifest fixtures checked against the validator AND the normative schema, on
@@ -2390,7 +2464,7 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
-  'modules': async () => { await runModules(); },
+  'modules': async () => { await runModules(); await runModuleRuntime(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },

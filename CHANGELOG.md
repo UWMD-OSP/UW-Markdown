@@ -49,6 +49,58 @@ on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
   ed25519/es256/es384 round trip, signature-swap and wrong-key rejection, key
   store refusals, and the full issue → sign → verify receipt path.
 
+### Added — RFC 0006 implemented: the module system gets a runtime, and a consumer (corpus 269 → 274)
+
+[RFC 0006](docs/rfcs/0006-hospitality-module.md) (drafted 2026-04-26, accepted
+and implemented 2026-08-27), the last item on the priority order the owner set
+when the v2 train unfroze.
+
+- **The gap was not the loader.** The RFC's "loader changes" section was
+  written before `modules.ts` existed; loading, version-checking, and
+  registration have shipped and been hardened since. What building a real
+  module surfaced is that **nothing consumed a registered module**:
+  `calculations` were reachable only by a host that evaluated them itself,
+  `validations` were shape-checked at load and never executed by anything, and
+  `sections` were declared and never looked for. The module system was a
+  registry with no runtime.
+- **`module-runtime.ts`** is the runtime — `evaluateModuleCalculations`,
+  `validateAgainstModules`, `checkModuleSections` — and introduces **no new
+  evaluation machinery**. A validation rule is a safe expression in exactly the
+  §VIII.1 grammar, run through `evaluateCalc` like any other declaration. A
+  module able to evaluate what the calc engine cannot would be a second,
+  unsandboxed language reachable from a third-party manifest.
+- **`null` is not `false`.** A rule asserts what must be true and fires only on
+  `false`. A document carrying no `hotel_brand` has not violated a rule about
+  franchise fees; it has said nothing about them, and treating absence as
+  violation would fire every module rule on every partial file.
+- **Failures are reported, not skipped:** `MOD-CALC-ERROR`, `MOD-RULE-ERROR`,
+  `MOD-SECTION-MISSING`. The first exists because of something the tests
+  found — an unresolved identifier evaluates to `null`, so a calc depending on
+  a broken one *succeeds* with no value and every rule reading it falls silent.
+  One typo in a formula quietly disables everything downstream, and this issue
+  is often its only trace.
+- **Protocol §X gains the host obligations** a registered module implies:
+  declaration-order evaluation, the null rule, no second evaluation path, and
+  report-don't-skip. Section `schema` fragments stay normative JSON Schema that
+  a host with a validator SHOULD apply — `@uwmd/core` deliberately is not such
+  a host, so `checkModuleSections` checks presence and stops rather than
+  shipping a half-implemented subset of JSON Schema.
+- **`@uwmd/module-hospitality` 0.1.0** — the reference module, built against
+  the library's published surface and nothing else, because a reference module
+  that reached inside would demonstrate nothing. Three sections, five
+  calculations, three validations. The manifest's source of truth is
+  TypeScript (a typo in a `kind` or `severity` is a compile error) with
+  `dist/manifest.json` emitted at build for hosts without a TS toolchain.
+- **Occupancy is a fraction**, and `CC-MOD-HOSP-02` is an *error* rather than a
+  warning because `revpar` still computes from a percentage — to a number a
+  hundred times too large. Only the rule catches it.
+- **Conformance:** `conformance/modules/runtime/`, five scenarios derived from
+  one fixture — the fixture itself (both warning branches in one file), no comp
+  set, occupancy as a percentage, the required section removed, and the same
+  file relabelled `office`, where nothing must run at all.
+- **Tests:** 12 new core tests against a toy manifest (core must not depend on
+  a sibling package) and 15 in the module package.
+
 ### Added — RFC 0004 implemented: a language-agnostic conformance driver
 
 [RFC 0004](docs/rfcs/0004-conformance-runner-v2.md) (drafted 2026-04-26,

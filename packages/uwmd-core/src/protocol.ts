@@ -1606,6 +1606,34 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: 'UW_PROTOCOL_v1.md §V.11',
   },
 
+  // ─── Module runtime (MOD-*) — findings a loaded module produced (RFC 0006) ──
+  //
+  // Registered for discoverability. Unlike the families above, these are
+  // emitted by `validateAgainstModules`, which does NOT enrich from this
+  // registry — a module's own finding names the module that made it, and
+  // overwriting that with generic copy would lose the attribution.
+  {
+    code: 'MOD-SECTION-MISSING', severity: 'error',
+    title: 'Required module section missing',
+    description: 'A loaded module declares a section as required and the document does not carry it.',
+    remediation: 'Add the section, or stop loading that module for this document.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X',
+  },
+  {
+    code: 'MOD-CALC-ERROR', severity: 'error',
+    title: 'Module calculation failed to evaluate',
+    description: 'A calculation declared by a loaded module could not be evaluated.',
+    remediation: 'Fix the formula in the module. Any rule reading that calc is silently inconclusive until it is corrected.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X',
+  },
+  {
+    code: 'MOD-RULE-ERROR', severity: 'error',
+    title: 'Module validation rule failed to evaluate',
+    description: 'A validation rule declared by a loaded module could not be evaluated, so it neither passed nor failed.',
+    remediation: 'Fix the rule expression in the module, or stop loading it until it is corrected.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X',
+  },
+
   // ─── Provenance / policy (POL-NN) — actor and operation authority ──────────
   {
     code: 'POL-01', severity: 'error',

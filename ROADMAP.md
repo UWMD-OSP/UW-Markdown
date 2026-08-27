@@ -92,10 +92,17 @@ Detailed sequencing and release gates:
 > TypeScript runner is *not* replaced: it still gates the corpus, while the
 > new driver gates the protocol.
 >
-> Remaining priority order: **(1) RFC 0006 hospitality reference module**
-> (first real consumer of the module system). The rest remain queued behind
-> it. Unfrozen means *actively being taken up*, not accepted — each RFC still
-> goes through its own acceptance.
+> **RFC 0006 (hospitality reference module) landed the same day**, closing
+> the priority order the owner set. Building a real module surfaced that the
+> module system was a registry with no runtime: nothing consumed a registered
+> manifest's calculations, validations, or sections. `module-runtime.ts` and
+> `@uwmd/module-hospitality` fix that together.
+>
+> **The stated priority order is complete.** What remains on this train —
+> locale negotiation (0001), custom asset classes from modules (0003),
+> stochastic calcs (0005), and portfolio relationships (0015) — has no
+> assigned order yet. Unfrozen means *actively being taken up*, not
+> accepted — each RFC still goes through its own acceptance.
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
 None are required for v1 conformance — they constitute v2 of the
@@ -114,7 +121,7 @@ context. This list is the maintainable copy.
 | [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
-| [0006](./docs/rfcs/0006-hospitality-module.md)    | Hospitality reference module                  | First real consumer of the module system. ADR/RevPAR/occupancy + STR-comp validations. |
+| [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | Portfolio and relationship profiles          | Portable, provenance-backed cross-deal entity and edge sidecars; no storage or aggregate-math contract. |
 
 

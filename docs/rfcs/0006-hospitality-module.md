@@ -1,12 +1,13 @@
 ---
 rfc: 0006
 title: Hospitality reference module
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-26
 affects:
   - core-library
   - conformance-corpus
+  - tooling
 ---
 
 # RFC 0006: Hospitality reference module
@@ -207,6 +208,85 @@ The fixture file itself (`boutique-hotel-austin.uw.md`) ships in
   - Conformance fixtures listed above.
 - **API surface:** `loadModule`, `ModuleRegistry`, plus the `@uwmd/module-hospitality` package's exports.
 - **Test plan:** the fixture-driven tests above; plus negative tests (bad manifest, missing section, calc references undeclared section).
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27. The module is
+[`@uwmd/module-hospitality`](../../packages/uwmd-module-hospitality/README.md);
+the runtime that consumes it is `packages/uwmd-core/src/module-runtime.ts`.
+
+**The "Loader changes" section above is stale, and the real gap was
+different.** It was written when `modules.ts` did not exist. The loader
+now validates, version-checks, and registers manifests, and has since
+been hardened twice — so `loadModule` and `ModuleRegistry` were already
+there.
+
+What was *not* there is the thing this RFC actually surfaced: **nothing
+consumed a registered module.** `calculations` were reachable only by a
+host that pulled them out and evaluated them itself; `validations` were
+shape-checked at load and then never executed by anything; `sections`
+were declared and never looked for. The module system was a registry with
+no runtime, which is why building a real module was the right way to find
+out.
+
+So the core change is `module-runtime.ts` — `evaluateModuleCalculations`,
+`validateAgainstModules`, `checkModuleSections` — and it deliberately
+introduces **no new evaluation machinery**. A validation `rule` is a safe
+expression in exactly the §VIII.1 grammar the calc engine already parses,
+so it runs through `evaluateCalc` like any other declaration. A module
+able to evaluate rules the calc engine cannot would be a second,
+unsandboxed expression language reachable from a third-party manifest,
+which is the one thing the module system must never become.
+
+Other departures:
+
+1. **`null` is not `false`.** A rule asserts what must be true and fires
+   only when it evaluates to `false`. A document carrying no
+   `hotel_brand` has not violated a rule about franchise fees; it has
+   said nothing about them. Treating absence as violation would fire
+   every module rule on every partial file, which is most files most of
+   the time. `CC-MOD-HOSP-01`'s `market_revpar == null` guard, which the
+   RFC wrote by instinct, is the same idea made explicit.
+2. **TypeScript is the manifest source of truth, not YAML.** The RFC
+   recommended YAML for readability. That trades a parser dependency and
+   a hand-authored file nothing type-checks against a definition where a
+   typo in a `kind` or a `severity` is a compile error. `dist/manifest.json`
+   is emitted at build time, which also answers the "bundling" question
+   as *both*: the npm package for TS consumers, a standalone JSON artifact
+   for everyone else. The `view_models` question resolves the same way —
+   they are typed `SectionViewModel[]` in `src/view-models.ts`.
+3. **Section schemas are declared but not enforced by core.**
+   `checkModuleSections` checks that a `required: true` section is
+   *present* and stops. Validating contents needs a JSON Schema
+   validator, and `@uwmd/core` takes no such dependency. Core checks what
+   it can check honestly rather than shipping a half-implemented subset
+   of JSON Schema that quietly accepts what a real validator would
+   reject; the schema in the manifest is normative and a host that has a
+   validator SHOULD apply it.
+4. **A failed module calculation is reported, not just skipped.** Found
+   while writing the tests: an unresolved identifier evaluates to `null`
+   (§VIII.2), so a calc that depends on a broken one *succeeds* with no
+   value and every rule reading it falls silent. One typo in a formula
+   quietly disables everything downstream. `MOD-CALC-ERROR` is often the
+   only trace, and `MOD-RULE-ERROR` covers the same hazard for rules.
+   (An unparseable rule never reaches the runtime — the loader refuses
+   the whole manifest at load, `PROTO-MOD-026`.)
+5. **Conformance fixtures live in `conformance/modules/runtime/`**, not
+   under `tier-3-calc-host/`. Module runtime is not a tier-3 concern —
+   `MOD-SECTION-MISSING` and rule evaluation apply to any host that loads
+   modules — and the existing module fixtures all check that a manifest
+   *loads*, so a sibling directory checking that a loaded module *does
+   something* belongs beside them. Five scenarios: the fixture itself, no
+   comp set, occupancy as a percentage, the required section removed, and
+   the same file relabelled `office` (where nothing must run at all).
+6. **No new `examples/` file.** `examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md`
+   already exists as the public hotel example. A second one differing only
+   in carrying module sections would be two files for readers to keep
+   straight; the module's own fixture serves the demonstration.
+7. **The Austin fixture is one file, not two.** The RFC asked for "no
+   errors, two warnings", and that is what it produces: RevPAR below the
+   comp set *and* a fee burden over 13%, so both warning branches are
+   covered by one document rather than one fixture per rule.
 
 ## Alternatives considered
 

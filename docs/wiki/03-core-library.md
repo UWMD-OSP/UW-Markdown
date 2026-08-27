@@ -46,6 +46,7 @@ Module | Responsibility | Key exports
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
+`module-runtime.ts` | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
 `module-signing.ts` | Module manifest signature contract (RFC 0002) | `moduleSigningPayload`, `verifyModuleSignature`, `checkSignatureShape`
 `integrity.ts` | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
 `integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
@@ -226,6 +227,31 @@ no longer recomputes), and `INT-08` (deprecated algorithm, a warning).
 configuration problem and "this is forged" is a document problem, and they call
 for opposite responses. Note that a drifted hash escalates from `INT-04
 warning` to `INT-07 error` once a block is signed.
+
+## module-runtime.ts
+
+The consumer the module system never had (RFC 0006). Registering a manifest is
+not the same as honoring it: before this, `calculations` were reachable only by
+a host that evaluated them itself, `validations` were shape-checked at load and
+never executed, and `sections` were declared and never looked for.
+
+- `evaluateModuleCalculations(parsed, registry)` — every applicable module's
+  calcs in **declaration order**, threading each result into the next as
+  `prior_results`. Order is the author's: `revpar_index` divides `revpar`.
+- `validateAgainstModules(parsed, registry)` — the rules, plus required-section
+  presence. A rule asserts what must be TRUE and fires only on `false`; a rule
+  evaluating to `null` is **silent**, because absence is not violation.
+- `checkModuleSections(parsed, manifest)` — presence only. Validating contents
+  against the declared JSON Schema needs a validator core does not depend on.
+
+No new evaluation machinery: a rule is a §VIII.1 safe expression run through
+`evaluateCalc`. A module able to evaluate what the calc engine cannot would be
+a second unsandboxed language reachable from a third-party manifest.
+
+`MOD-CALC-ERROR` exists because an unresolved identifier evaluates to `null`
+(§VIII.2) — so a calc depending on a broken one *succeeds* with no value and
+every rule reading it falls quiet. One typo silently disables everything
+downstream, and this issue is often the only trace.
 
 ## module-signing.ts
 

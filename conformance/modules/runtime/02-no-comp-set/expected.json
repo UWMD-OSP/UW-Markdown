@@ -1,0 +1,11 @@
+{
+  "description": "No comp set. CC-MOD-HOSP-01 must stay SILENT: a document with no STR report has not underperformed the market, it has said nothing about the market. A rule that fires on null would put a permanent warning on every hotel file without a comp set.",
+  "module": "@uwmd/module-hospitality",
+  "expected_calcs": {
+    "revpar": 129.6,
+    "revpar_index": null
+  },
+  "expected_codes": [
+    "CC-MOD-HOSP-03"
+  ]
+}

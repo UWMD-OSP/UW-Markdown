@@ -55,6 +55,21 @@ npx @uwmd/batch deals --out batch-output
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
+## Hospitality module — `packages/uwmd-module-hospitality` (`@uwmd/module-hospitality` 0.1.0)
+
+The reference consumer of the protocol §X module system (RFC 0006). Three hotel
+sections (`hotel_metrics`, `hotel_brand`, `hotel_food_beverage`), five
+calculations (RevPAR, total room revenue, revenue/key, RevPAR index, F&B
+margin), and three validations — including `CC-MOD-HOSP-02`, an **error** for
+occupancy stored as `72` rather than `0.72`, because RevPAR still computes from
+a percentage, to a number a hundred times too large.
+
+Built against core's published surface only: a reference module that reached
+inside the library would demonstrate nothing about what an external author can
+do. The manifest's source of truth is TypeScript, with `dist/manifest.json`
+emitted at build for hosts without a TS toolchain. **Unpublished**, like the
+other satellites.
+
 ## Signing — `packages/uwmd-signing` (`@uwmd/signing` 0.1.0)
 
 Block and receipt signatures (RFC 0010, protocol §V.11). Separate from

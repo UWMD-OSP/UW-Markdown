@@ -1,0 +1,6 @@
+{
+  "description": "The same hotel file relabelled as office. The module declares asset_classes: [hospitality], so nothing runs - no calcs, no findings. Scope is part of the contract, not a convenience.",
+  "module": "@uwmd/module-hospitality",
+  "expected_calcs": {},
+  "expected_codes": []
+}

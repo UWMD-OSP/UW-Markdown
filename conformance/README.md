@@ -78,8 +78,20 @@ conformance/
 ├── modules/            Declarative module manifests (see modules/README.md)
 │   ├── accept/         <id>.module.json — loadModuleManifest accepts the full
 │   │                     declared surface (calcs, agent layers, round_to, …)
-│   └── reject/         <id>.module.json + <id>.expected.json — malformed
-│                         manifests refuse with the expected typed code
+│   ├── reject/         <id>.module.json + <id>.expected.json — malformed
+│   │                     manifests refuse with the expected typed code
+│   └── runtime/        RFC 0006 — the module system with an actual consumer.
+│                         Everything above checks that a manifest LOADS; these
+│                         check that a loaded module DOES something. Five
+│                         <scenario>/{deal.uwx.md, expected.json} derived from
+│                         one hotel fixture, run against
+│                         @uwmd/module-hospitality: the fixture itself (both
+│                         warning branches in one file), no comp set (the rule
+│                         must stay silent — absence is not violation),
+│                         occupancy as a percentage (an error, because RevPAR
+│                         still computes, to a number 100x too large), the
+│                         required section removed, and the same file
+│                         relabelled office, where nothing must run at all
 ├── packages/           UW Deal Packages, RFC 0018 (see packages/README.md)
 │   ├── accept/         <id>.manifest.json + <id>.expected.json — manifest
 │   │                     validation accepts, including extension link types

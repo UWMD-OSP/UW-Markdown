@@ -248,6 +248,13 @@ export type {
   ModuleSignaturePolicy,
 } from './modules.js';
 
+export {
+  evaluateModuleCalculations,
+  validateAgainstModules,
+  checkModuleSections,
+} from './module-runtime.js';
+export type { ModuleRuntimeOptions, ModuleCalcOutcome } from './module-runtime.js';
+
 // RFC 0002 — module signatures. Crypto-free half only; `@uwmd/signing` supplies
 // the verifier that `verifyModuleSignature` and the async loaders accept.
 export {

@@ -48,6 +48,10 @@ const reportFiles = packedFiles('@uwmd/report');
 requireFiles('@uwmd/report', reportFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts']);
 rejectSourceOrTests('@uwmd/report', reportFiles);
 
+const hospitalityFiles = packedFiles('@uwmd/module-hospitality');
+requireFiles('@uwmd/module-hospitality', hospitalityFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/manifest.json']);
+rejectSourceOrTests('@uwmd/module-hospitality', hospitalityFiles);
+
 const signingFiles = packedFiles('@uwmd/signing');
 requireFiles('@uwmd/signing', signingFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/keystore-file.js']);
 rejectSourceOrTests('@uwmd/signing', signingFiles);
@@ -58,3 +62,4 @@ console.log(`[PASS] @uwmd/batch package: ${batchFiles.size} files, production ar
 console.log(`[PASS] @uwmd/excel package: ${excelFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/report package: ${reportFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/signing package: ${signingFiles.size} files, production artifacts present`);
+console.log(`[PASS] @uwmd/module-hospitality package: ${hospitalityFiles.size} files, manifest.json emitted`);
