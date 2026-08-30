@@ -1,0 +1,25 @@
+{
+  "description": "01 with description edited after signing. Structurally valid either way, so only the signature can refuse it - which is the point.",
+  "keystore": "../keys/keystore.json",
+  "policies": {
+    "ignore": {
+      "ok": true
+    },
+    "verify-if-present": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-072"
+      ]
+    },
+    "require": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-072"
+      ]
+    }
+  },
+  "verdict": {
+    "ok": false,
+    "reason": "invalid"
+  }
+}

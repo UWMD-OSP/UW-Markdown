@@ -1,0 +1,28 @@
+{
+  "manifest_version": "1",
+  "id": "org.uwmd.signed",
+  "name": "Signed Module Fixture",
+  "version": "1.0.0",
+  "description": "The unsigned starting point for the module-signature scenarios. scripts/gen-signing-fixtures.mjs reads this file and writes every module.json beside it - do not edit those by hand.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-3-calc-host",
+  "calculations": [
+    {
+      "id": "signed_module_example",
+      "label": "Example derived value",
+      "formula": "property.total_units * 2",
+      "unit": "count",
+      "deterministic": true
+    }
+  ],
+  "signature": {
+    "scheme": "uwmd-keystore",
+    "alg": "ed25519",
+    "kid": "uwmd-conformance-ed25519"
+  }
+}

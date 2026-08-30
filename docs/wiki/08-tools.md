@@ -55,6 +55,53 @@ npx @uwmd/batch deals --out batch-output
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
+## Hospitality module — `packages/uwmd-module-hospitality` (`@uwmd/module-hospitality` 0.1.0)
+
+The reference consumer of the protocol §X module system (RFC 0006). Three hotel
+sections (`hotel_metrics`, `hotel_brand`, `hotel_food_beverage`), five
+calculations (RevPAR, total room revenue, revenue/key, RevPAR index, F&B
+margin), and three validations — including `CC-MOD-HOSP-02`, an **error** for
+occupancy stored as `72` rather than `0.72`, because RevPAR still computes from
+a percentage, to a number a hundred times too large.
+
+Built against core's published surface only: a reference module that reached
+inside the library would demonstrate nothing about what an external author can
+do. The manifest's source of truth is TypeScript, with `dist/manifest.json`
+emitted at build for hosts without a TS toolchain. **Unpublished**, like the
+other satellites.
+
+## Signing — `packages/uwmd-signing` (`@uwmd/signing` 0.1.0)
+
+Block and receipt signatures (RFC 0010, protocol §V.11). Separate from
+`@uwmd/core` so the library keeps its zero-crypto guarantee: reading,
+validating, editing, and computing over a `.uw.md` never require cryptography,
+and signed blocks are for regulated data rooms and multi-party deal flow, not
+the everyday case.
+
+```ts
+import { verifyChain } from '@uwmd/core';
+import { createBlockSignatureVerifier, loadKeyStoreFile } from '@uwmd/signing';
+
+const store = await loadKeyStoreFile('./keystore.json');
+const result = await verifyChain(parsed, {
+  signatureVerifier: createBlockSignatureVerifier(store),
+});
+```
+
+```bash
+uwmd verify deal.uwx.md --signing --keystore=./keystore.json
+```
+
+`ed25519` / `es256` / `es384` over Web Crypto (Node ≥ 18.4). Also supplies
+`signReceipt` + `createReceiptSignatureVerifier`, which is what made receipt
+signing real. Key distribution is out of scope by design — the JSON key store
+in `keystore-file.ts` is a reference format, and an adopter backing a `KeyStore`
+with an HSM never touches it. **Unpublished**, like excel/report/batch; the
+npm release scope is core + cli only.
+
+The CLI reaches it by dynamic import as an optional peer, so core takes no
+dependency on a sibling package.
+
 ## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.2.0)
 
 `.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:

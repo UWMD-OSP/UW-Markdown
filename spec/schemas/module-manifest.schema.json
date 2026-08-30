@@ -97,7 +97,7 @@
     },
     "sections": {
       "type": "array",
-      "description": "Custom or extended section declarations. v1 cannot declare new asset_class values, but can extend existing standard sections with additional optional fields, or add module-namespaced sections.",
+      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) — this field is about sections.",
       "items": {
         "type": "object",
         "required": ["id", "display_name", "schema"],
@@ -239,6 +239,33 @@
           }
         }
       }
+    },
+    "declares_asset_classes": {
+      "type": "array",
+      "description": "Optional. Custom asset classes this module introduces (§X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
+      "items": {
+        "type": "object",
+        "required": ["id", "display_name"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*){2,}$",
+            "description": "Reverse-DNS, at least three lower-snake-case segments. Ownership is fixed at the identifier, so two hosts can never disagree about whose class this is. A final segment matching a builtin name is refused (INVALID-ASSET-CLASS-002)."
+          },
+          "display_name": { "type": "string", "minLength": 1 },
+          "fallback": {
+            "enum": ["multifamily", "office", "retail", "industrial", "self_storage", "hospitality", "mixed_use", "senior_housing", "student_housing", "land"],
+            "description": "The closest builtin, for readers that do not hold this module. Omitting it is a deliberate choice that no approximation is honest, and costs those readers the document entirely (MOD-MISSING-001 rather than MOD-FALLBACK-001)."
+          },
+          "required_sections": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "optional_sections": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "signature": {
+      "$ref": "https://uwmd.org/schemas/module-signature.schema.json",
+      "description": "Optional. Detached signature over the canonical manifest (§X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
     }
   },
   "$defs": {

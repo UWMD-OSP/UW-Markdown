@@ -1,0 +1,11 @@
+{
+  "description": "hotel_metrics removed. The module declares it required, so MOD-SECTION-MISSING is an error naming the module that asked. The calcs that read it degrade to null rather than throwing. CC-MOD-HOSP-03 still fires: hotel_brand is untouched, and one missing section does not suppress findings about the sections that are present.",
+  "module": "@uwmd/module-hospitality",
+  "expected_calcs": {
+    "revpar": null
+  },
+  "expected_codes": [
+    "CC-MOD-HOSP-03",
+    "MOD-SECTION-MISSING"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@uwmd/signing",
+  "version": "0.1.0",
+  "description": "Block and receipt signing for UW Markdown (RFC 0010) — Ed25519 / ES256 / ES384 over the normative signing inputs, with a file-backed reference key store. Kept out of @uwmd/core so the library stays crypto-free.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",
+    "directory": "packages/uwmd-signing"
+  },
+  "homepage": "https://uwmd.org",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./keystore-file": { "import": "./dist/keystore-file.js", "types": "./dist/keystore-file.d.ts" }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": { "@uwmd/core": "1.7.0" },
+  "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
+  "engines": { "node": ">=18.4.0" },
+  "license": "MIT",
+  "keywords": [
+    "uwmd",
+    "underwriting",
+    "commercial-real-estate",
+    "signing",
+    "ed25519",
+    "provenance"
+  ]
+}

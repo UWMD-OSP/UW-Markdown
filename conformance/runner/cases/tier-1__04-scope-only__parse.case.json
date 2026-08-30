@@ -1,0 +1,13 @@
+{
+  "id": "tier-1/04-scope-only/parse",
+  "tier": "1",
+  "command": "parse",
+  "args": [
+    "04-scope-only.uw.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/04-scope-only.parsed.json"
+  }
+}

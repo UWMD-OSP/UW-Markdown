@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.6.0`) — the
+- **Protocol version** (this document, currently `1.8.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -212,6 +212,98 @@ on `frontmatter` only". Such partial claims are expressed via
 To self-certify at a tier, run every fixture in the corresponding
 `conformance/tier-N-*/` directory and verify the output matches.
 Tier 4 uses shape assertions due to LLM nondeterminism (§IX.6).
+
+An implementation in any language can be driven by the shared
+conformance driver instead of writing its own, by exposing the CLI
+protocol in §II.6a. That is strongly RECOMMENDED: two independent
+re-implementations of a test runner drift, and when they do, "passes the
+conformance corpus" stops meaning the same thing for two implementations
+that both say it.
+
+### II.6a Conformance CLI protocol (RFC 0004)
+
+Self-certification (§II.6) is a claim. This section is how an
+implementation makes that claim **checkable by somebody else**, in any
+language, without writing its own test runner.
+
+An implementation that wants to be driven by the shared conformance
+driver exposes a command-line binary supporting the subcommands below.
+The driver shells out to it; nothing about the implementation's
+language, runtime, or packaging is observable across that boundary.
+
+#### II.6a.1 Subcommands
+
+| Invocation | stdout |
+|---|---|
+| `<bin> manifest` | The implementation's `ImplementationManifest`. |
+| `<bin> parse <file>` | The parsed file, keyed as `ParsedUWFile`. |
+| `<bin> validate <file> --json` | A `ValidationResult`. |
+| `<bin> render <file> --format <chat\|summary\|json\|csv>` | The rendered body, as text. |
+| `<bin> edit <file> <operation.json> --json` | `{ ok, content?, error? }`. |
+| `<bin> calc <file> <calc.json> --json` | A `CalcResult`, or an array of them for an array input. |
+
+`edit --json` **MUST NOT** write the edited file. A driver that rewrote
+fixtures as a side effect of reading them would corrupt the corpus it is
+testing.
+
+`render` emits the body rather than a JSON envelope. It is the one
+subcommand whose natural output is text, and wrapping it would gain
+nothing a driver can use.
+
+#### II.6a.2 Stream and exit-code contract
+
+- **stdout** carries exactly one JSON document (or, for `render`, the
+  rendered text), optionally followed by a trailing newline. Nothing
+  else. A log line, a deprecation notice, or a progress bar on stdout
+  makes the response unparseable, and a driver MUST report that as its
+  own distinct failure rather than as a wrong answer.
+- **stderr** is free for diagnostics and is ignored by the driver.
+  Warnings belong here.
+- **Exit `0`** — the operation succeeded.
+- **Exit `1`** — the operation failed in a way the protocol describes: a
+  validation error, a refused edit, a calc that could not evaluate.
+  stdout is still a parseable response.
+- **Exit `2`** — unrecoverable internal error. stdout is not required to
+  be anything.
+
+Implementations SHOULD emit UTF-8 regardless of platform locale.
+
+#### II.6a.3 What the driver may assume about output
+
+The driver compares a response against a frozen baseline. Baselines are
+**projections**, not transcripts: a calc baseline names four fields, and
+a conforming implementation reporting `round_to` and `display` as well is
+more informative, not wrong. So comparison is a **subset** test by
+default — every field the baseline names must be present and equal, and
+extra fields are permitted.
+
+Arrays are exempt from that leniency and compare length-sensitively. An
+implementation that omits one validation issue has not been concise; it
+has disagreed.
+
+Values that differ legitimately between two correct runs —
+`last_modified`, `_meta.timestamp`, the fence `ts=`, and `content_hash`,
+which is computed over a timestamp — are masked before comparison. A
+baseline that pinned any of them would be asserting the clock.
+`parent_hash` is **not** masked: it is stamped from the prior head's
+`content_hash`, which the fixture fixes.
+
+#### II.6a.4 Scope
+
+This protocol covers the **tier** fixtures — the conformance surface a
+tier claim is about. The named suites (receipts, composition, market
+data, packages, signing, and the rest) exercise behavior that is not a
+single command with a single output, and remain driven by an
+implementation's own test suite.
+
+An implementation that passes the tier cases under the shared driver has
+demonstrated its tier claim against the same corpus, executed by the
+same logic, as every other implementation. That is the whole
+proposition: without it, each adopter reimplements the runner, and two
+reimplementations of a runner drift.
+
+The reference driver ships at
+[`conformance/runner/`](../conformance/runner/README.md).
 
 ---
 
@@ -519,8 +611,9 @@ The canonical form is **RFC 8785 (JCS — JSON Canonicalization
 Scheme)** with one uw-md addition: the keys `content_hash` and
 `signature` inside any nested `_meta`-shaped object are removed
 before hashing. A `_meta`-shaped object is any object that carries
-the keys `section`, `version`, AND `source` — this catches both the
-top-level `_meta` and any nested provenance (e.g. inside
+`version`, `source`, AND either `section` or `section_id` — this
+catches both the top-level `_meta` (whose on-disk spelling is
+`section_id`) and any nested provenance (e.g. inside
 `field_overrides`).
 
 Implementations MUST produce **byte-identical** canonical output
@@ -588,8 +681,135 @@ trivially defeat integrity by simply not stamping `content_hash`
 need adversarial resistance MUST enforce a "must have hashes" policy
 externally — for example, a CI gate that runs `uwmd verify
 --integrity` and rejects files where `chains_with_hashes <
-chains_with_supersedes`. RFC 0010 (signed blocks) is the right tool
-for stronger guarantees and is deferred from v1.
+chains_with_supersedes`. §V.11 (block signatures) is the stronger
+tool: a signature cannot be omitted quietly, because a verifier that
+requires one reports its absence.
+
+### V.11 Block signatures (RFC 0010)
+
+`_meta.content_hash` is tamper-**evident**, not tamper-**proof**: it
+detects a change only for a reader who already holds a trusted copy
+of the hash. `_meta.signature` closes that gap for the deployments
+that need it — regulated lender data rooms, multi-party deal flow
+where sponsor, lender, and appraiser each sign their own sections,
+and agent-host accountability where a signature proves *which* agent
+instance wrote a block rather than merely what the `actor` field
+claims.
+
+Signed blocks are **not the everyday case**. Reading, validating,
+editing, and computing over `.uw.md` requires no cryptography, and
+the reference library takes no crypto dependency: the wire format and
+the signing input are normative here, while signing and verification
+live in the separate optional `@uwmd/signing` package.
+
+#### V.11.1 Wire format
+
+`_meta.signature` is an object:
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `alg` | `"ed25519"` \| `"es256"` \| `"es384"` | yes | Signature algorithm. Closed set for protocol 1.x. |
+| `kid` | string | yes | Opaque key identifier the verifier resolves in its own key store. |
+| `sig` | string | yes | Signature bytes, base64url (RFC 4648 §5), unpadded. |
+| `signed_at` | string | yes | ISO 8601 instant the signature was produced. MAY differ from `_meta.timestamp` — a block edited offline is signed when re-uploaded. |
+| `v` | string | no | Signing-protocol version. Absent means `"1"`. |
+
+`es256` and `es384` signatures are raw `r || s` (IEEE P1363), the
+JOSE convention and what Web Crypto produces. DER-wrapped ECDSA
+signatures are **not** interchangeable and MUST NOT be emitted.
+
+Like `content_hash`, `signature` is excluded from canonicalization
+(§V.9), so stamping one does not change the hash it commits to.
+
+#### V.11.2 What is signed
+
+The signature input is the RFC 8785 canonical JSON of exactly these
+six fields, and nothing else:
+
+```json
+{
+  "actor": "<_meta.actor>",
+  "content_hash": "<_meta.content_hash>",
+  "kid": "<signature.kid>",
+  "section": "<the block's section id>",
+  "signed_at": "<signature.signed_at>",
+  "timestamp": "<_meta.timestamp>"
+}
+```
+
+The signer commits to the block's `content_hash` rather than to the
+block itself — the hash already covers the content, and re-deriving
+it inside the signature would buy nothing. The other five fields are
+what a verifier needs in order to answer *who* signed *what*, *when*.
+
+The signing input names no `parent_hash` field. RFC 0010 read that as
+a guarantee that re-rooting a supersede chain leaves prior signatures
+intact; **it is not**. `content_hash` is computed over the block's
+`_meta` as well as its content (§V.9), and `parent_hash` lives in
+`_meta`, so a re-rooted block gets a new hash and its signature no
+longer applies. Re-rooting therefore requires re-signing. See the
+[erratum](../docs/rfcs/0010-signed-blocks.md#erratum-parent_hash-is-covered-transitively).
+
+A signature is over one block. A document with several signed blocks
+carries several independent signatures, which is the property
+multi-party deal flow needs: "the sponsor signed the rent roll" and
+"the lender signed the term sheet" must be separately checkable, and
+must stay checkable after either block is superseded.
+
+#### V.11.3 Verification
+
+Verification is **opt-in and capability-gated**. A verifier holding
+no key store treats a signature as opaque metadata: it MUST report
+that signatures were *present and unchecked*, and MUST NOT report the
+document as verified on their account. In the reference library that
+is `IntegrityResult.signatures_present` alongside
+`signatures_verified`.
+
+A conforming signing-aware verifier emits:
+
+| Code | Severity | Trigger | Needs a key store |
+|---|---|---|---|
+| `INT-05` | error | `signature` present with no `content_hash`. The signature commits to nothing. | no |
+| `INT-06` | error | `signature.kid` names a key the store does not hold. | yes |
+| `INT-07` | error | The signature does not verify; or `alg` is outside the admitted set; or the stamped `content_hash` no longer recomputes. | partly |
+| `INT-08` | warning | `alg` is in the verifying deployment's deprecation list. Empty at protocol 1.7. | no |
+
+Three of these distinctions are load-bearing:
+
+- **`INT-06` is not `INT-07`.** "I cannot check this" and "this is
+  forged" call for opposite responses — load a key versus reject the
+  document. A verifier that merges them tells an operator to re-sign
+  when the real fix is to configure their key store.
+- **A drifted hash on a signed block escalates.** The same drift is
+  `INT-04 warning` on an unsigned block and `INT-07 error` on a
+  signed one. On an unsigned block it is a bookkeeping slip; on a
+  signed one it means the content in front of you is not the content
+  anybody signed.
+- **Signatures are checked on every block, not only chain heads.** A
+  signature on a superseded block is exactly the evidence per-block
+  signing exists to preserve.
+
+#### V.11.4 Key distribution
+
+Out of scope, deliberately. A public key that travels inside the
+document it authenticates proves nothing, so keys are distributed out
+of band and a verifier decides which `kid` values it trusts.
+
+**Rotation** is "issue new blocks under a new `kid` and keep the old
+key loaded". A `kid` MUST be unique within a key store and MUST NOT
+be reused for a different key; blocks signed under a retired `kid`
+stay verifiable for as long as the store retains it.
+
+`signed_at` is self-asserted by the signer. Audit-grade
+non-repudiation needs a timestamping authority's countersignature,
+which protocol 1.x does not define.
+
+#### V.11.5 Capability declaration
+
+An implementation that verifies signatures adds `signing` to its
+`ImplementationManifest.capabilities`. The
+`conformance/signing/` suite gates that claim; an implementation that
+does not claim `signing` skips the suite and remains conformant.
 
 ---
 
@@ -861,6 +1081,273 @@ reproduce across platforms.
 | `CALC-DIV-ZERO` | Division by zero. |
 | `CALC-IRR-DIVERGE` | IRR did not converge. |
 | `CALC-LIMIT-001` | Expression exceeded host complexity limits. |
+| `CALC-SENS-001` | Sensitivity axis missing or has no variable (§VIII.7.4). |
+| `CALC-SENS-002` | Sensitivity axis has fewer than two values, or a non-finite one. |
+| `CALC-SENS-003` | Sensitivity grid exceeds the cell or per-axis bound. |
+| `CALC-SENS-004` | Both sensitivity axes vary the same variable. |
+| `CALC-SENS-005` | Sensitivity `round_to` is out of range. |
+| `CALC-STOCH-001` | Stochastic declaration has no integer `seed` (§VIII.8.5). |
+| `CALC-STOCH-002` | Stochastic `samples` outside [2, 100000]. |
+| `CALC-STOCH-003` | A stochastic input path or distribution is malformed, or a variable is drawn twice. |
+| `CALC-STOCH-004` | `summarize` is empty or names an unknown statistic. |
+| `CALC-STOCH-005` | Stochastic declaration has no random inputs. |
+| `CALC-STOCH-006` | Stochastic `round_to` is out of range. |
+
+### VIII.7 Sensitivity tables (RFC 0007)
+
+A sensitivity table is one base formula evaluated once per (row,
+column) pair, with the two axis variables overridden. It is the thing
+every underwriter builds by hand in Excel, and the alternative — N×M
+`custom_calculations` blocks, one per cell — bloats the document, hides
+the axis design from any reader, and forces every consumer to re-derive
+the grid's structure from calc-id naming conventions.
+
+#### VIII.7.1 A declaration, not a function
+
+A sensitivity table is declared in JSON, **not** written as a call
+inside the §VIII.1 grammar:
+
+```jsonc
+{
+  "id": "exit_value",
+  "label": "Exit Value",
+  "base_formula": "noi_model.net_operating_income / dcf.exit_cap_rate",
+  "row_axis": { "variable": "dcf.exit_cap_rate", "values": [0.05, 0.06, 0.075] },
+  "col_axis": { "variable": "noi_model.net_operating_income", "values": [600000, 660000] },
+  "unit": "$",
+  "round_to": 2
+}
+```
+
+This is deliberate. A `sensitivity_table(expr, {…}, {…})` builtin would
+need object literals, array literals, and a string argument that is
+executed as a program — three extensions to a grammar whose narrowness
+is the reason it can be evaluated on untrusted input at all. The axis
+data is already JSON one level up, so the grammar buys nothing by
+reaching it.
+
+`base_formula` is an ordinary safe expression. The sandbox is unchanged.
+
+#### VIII.7.2 Overrides
+
+Evaluation uses **overrides**: values keyed by full dotted path, exactly
+as an expression writes them (`dcf.exit_cap_rate`, not
+`exit_cap_rate`), consulted ahead of frontmatter, sections, and prior
+results.
+
+Two properties are normative:
+
+- **Overrides shadow, they never write.** After a sweep, the document
+  reads exactly as it did before. A sweep that mutated the document
+  would silently change the deal.
+- **A `null` override means "treat this path as absent"**, and is
+  distinct from having no override. Collapsing the two would make it
+  impossible to ask what a formula does when an input goes missing.
+
+Overrides are general, not sensitivity-specific: scenario sweeps and
+stress tests need the same mechanism.
+
+#### VIII.7.3 Results
+
+The result is its own type, and **MUST NOT** be carried in
+`CalcResult.value`, which stays `number | string | boolean | null`.
+Receipts pin that union (§VIII.5), the CLI renders it, and the Excel
+emitter emits from it; a grid smuggled through it would break all three
+for a feature none of them asked to carry.
+
+`grid[row][col]` follows the axes' declared order. Each cell is either a
+value or the error that stopped it, never both.
+
+**A failed cell does not fail the table.** A grid where one combination
+divides by zero is still a useful grid, and refusing the whole thing
+would hide the cells that worked. The result reports `failed_cells` so a
+consumer can say how much of the table is real.
+
+#### VIII.7.4 Refusals
+
+A declaration that cannot produce a meaningful grid is refused before
+any cell is evaluated:
+
+| Code | Trigger |
+|---|---|
+| `CALC-SENS-001` | An axis is missing, or its `variable` is empty. |
+| `CALC-SENS-002` | An axis has fewer than two values, or a non-finite one. |
+| `CALC-SENS-003` | The grid exceeds 256 cells, or an axis exceeds 64 values. |
+| `CALC-SENS-004` | Both axes vary the same variable. |
+| `CALC-SENS-005` | `round_to` is outside `[0, 12]` or not an integer. |
+
+Two of these are worth the words:
+
+- **One value is not a sweep** (`CALC-SENS-002`). A degenerate 1×N grid
+  is something every consumer would then have to special-case.
+- **Two axes on one variable** (`CALC-SENS-004`) is not a redundancy but
+  a trap: the second override silently wins for every cell, producing a
+  grid whose rows are identical and whose reader has no way to see why.
+
+The 256-cell bound keeps a host's evaluation cost predictable when the
+declaration comes from a document it did not write. Three-axis (cube)
+tables are out of scope; a follow-up RFC can add them if the case
+appears.
+
+#### VIII.7.5 Host obligations
+
+A Tier-3 host that does not implement sensitivity tables MUST report a
+typed refusal rather than crash or silently skip. A host that does
+implement them MUST produce the same grid as any other host for the same
+document and declaration — the base formula is deterministic, the axes
+are literals, and quantization is §VIII.5, so there is nothing left to
+disagree about.
+
+### VIII.8 Stochastic calculations (RFC 0005)
+
+Underwriting reasons about ranges: "DSCR is 1.45 base case but
+1.20–1.65 across rate paths." Today those numbers are computed
+elsewhere and pasted in as plain values, losing the model behind them,
+or approximated as best/base/worst — which renders nicely and cannot
+answer "what is the probability this underwrites above our minimum
+DSCR?"
+
+A stochastic calculation declares the inputs that vary, the
+distribution each is drawn from, and a seed. The result is a
+distribution summary.
+
+#### VIII.8.1 A declaration, not built-ins
+
+Sampling is **not** a function inside the §VIII.1 grammar. RFC 0005
+proposed `uniform()`, `normal()`, `triangular()`, and
+`monte_carlo(expr, n)`; each is disqualifying on its own terms:
+
+- Every builtin is a pure function of its arguments. A sampling builtin
+  carries PRNG state, and "the calc engine is pure" is what makes a
+  formula auditable.
+- `monte_carlo(expr, n)` needs a *lazy* argument, but arguments are
+  evaluated eagerly — so it becomes either a special-cased builtin or a
+  string executed as a program.
+- A call whose legality depends on the enclosing declaration's
+  `deterministic` flag is a context-sensitive grammar, checked by a
+  deliberately context-free parser.
+
+Instead the inputs are declared, and each draw is an ordinary
+evaluation using the override mechanism of §VIII.7.2. The grammar and
+the built-ins are untouched.
+
+```jsonc
+{
+  "id": "dscr_distribution",
+  "label": "DSCR distribution",
+  "base_formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+  "inputs": [
+    { "variable": "noi_model.net_operating_income",
+      "distribution": { "kind": "uniform", "min": 540000, "max": 660000 } },
+    { "variable": "debt_structure.annual_debt_service",
+      "distribution": { "kind": "normal", "mean": 400000, "stddev": 15000 } }
+  ],
+  "samples": 2000,
+  "seed": 42,
+  "summarize": ["mean", "median", "p10", "p90", "stddev"]
+}
+```
+
+`seed` is **required**. A stochastic calc without one produces a
+different answer every run, which is the opposite of what this format
+exists to guarantee (`CALC-STOCH-001`).
+
+**Input order is part of the contract.** One PRNG stream feeds the
+inputs in declared order, so reordering the list changes every sample.
+The alternative — a stream per input — would make output depend on a
+hidden per-input keying rule instead, which is worse because it is
+invisible.
+
+#### VIII.8.2 The PRNG
+
+Normative: **PCG-XSL-RR-128/64** (`pcg64`), seeded as the reference
+`srandom` does — zero the state, step, add the seed, step again. A host
+that merely assigned the seed to the state would produce a different
+stream from every correct implementation while still being perfectly
+deterministic, and so would pass any self-consistency test.
+
+Uniform doubles take the **top 53 bits** of a draw divided by 2⁵³. Not
+64 bits over 2⁶⁴: that rounds, so two distinct draws can map to one
+double and a third can reach exactly `1.0`.
+
+Specifying the algorithm rather than naming a library is deliberate —
+a library's version would become part of the determinism contract.
+
+#### VIII.8.3 Distributions and exactness
+
+Every distribution is sampled by **inverting its CDF** at a uniform
+draw. This is about determinism, not elegance. IEEE 754 exactly
+specifies `+ − × ÷` and `sqrt`; it does **not** specify `log`, `exp`,
+`sin`, or `cos`, whose last-place results differ between platforms. So
+Box-Muller (`log`, `cos`) and Marsaglia polar (`log`) are unusable:
+they produce samples that agree to fifteen digits across hosts and
+disagree in the sixteenth.
+
+| Kind | Parameters | Cross-host exactness |
+|---|---|---|
+| `uniform` | `min`, `max` | **Exact** — arithmetic only. |
+| `triangular` | `min`, `mode`, `max` | **Exact** — arithmetic and `sqrt`. |
+| `normal` | `mean`, `stddev` | **Not exact in the tails.** |
+
+`normal` uses Acklam's rational inverse-CDF approximation (relative
+error ≈ 1.15 × 10⁻⁹). Its central region — about 95% of draws — is
+arithmetic only and therefore exact; both tails need `log`, so two
+hosts may disagree in the last place there.
+
+That limitation is stated rather than hidden. The alternative was to
+omit the normal distribution, which is worse: it is the one adopters
+reach for. Conformance therefore compares `uniform` and `triangular`
+results **exactly** and normal-derived results at a stated tolerance.
+Naming which distributions are exact is more useful than a blanket
+tolerance that conceals the difference.
+
+`triangular`'s parameters are exactly the `low`/`central`/`high` the
+asset-class default tables already carry, so an adopter can turn
+existing napkin-mode ranges into distributions without inventing any
+numbers.
+
+#### VIII.8.4 Summaries
+
+**Percentiles use nearest-rank, never interpolation.** For `n` sorted
+samples, the `k`-th percentile is `sorted[ceil(k/100 × n) − 1]`. A
+percentile is therefore an observed sample, which makes it exactly
+reproducible whenever the samples are; interpolating between neighbours
+adds an arithmetic step two hosts can round differently, for a number
+nobody reads to that precision.
+
+`stddev` is the **sample** standard deviation (`n − 1`). A single draw
+has no spread, and reporting `0` would claim a certainty the run does
+not have.
+
+A draw whose formula does not evaluate to a finite number is counted in
+`failed_samples` and **excluded** from the summary — not folded in as
+zero, which would drag every statistic toward it. When every draw
+fails, each requested statistic is present and `null`; an absent key
+would be indistinguishable from one the declaration never requested.
+
+Raw samples are withheld unless `return_samples` is set. 100,000
+samples inline would make a document unreadable.
+
+#### VIII.8.5 Refusals and capability
+
+| Code | Trigger |
+|---|---|
+| `CALC-STOCH-001` | `seed` missing or not an integer. |
+| `CALC-STOCH-002` | `samples` outside `[2, 100000]`. |
+| `CALC-STOCH-003` | An input path is empty, drawn twice, or its distribution is malformed. |
+| `CALC-STOCH-004` | `summarize` is empty or names an unknown statistic. |
+| `CALC-STOCH-005` | No random inputs. |
+| `CALC-STOCH-006` | `round_to` out of range. |
+
+Drawing one variable twice (`CALC-STOCH-003`) is refused rather than
+tolerated: the later draw silently wins for every sample while the
+earlier one still consumes the stream, so the distribution is wrong in
+a way no output reveals.
+
+A host that evaluates stochastic declarations declares
+`calc-stochastic` in its `ImplementationManifest.capabilities`. One
+that does not MUST report a typed refusal rather than crash or silently
+return a point estimate.
 
 ---
 
@@ -1011,6 +1498,241 @@ Required fields: `manifest_version` (always `"1"` in v1), `id`, `name`,
 Optional fields are documented in the schema. The TypeScript mirror
 type `ModuleManifest` in `protocol.ts` is kept in lockstep.
 
+**A registered module must actually run.** Registering a manifest is
+not the same as honoring it, and a host that loads a module and then
+ignores its `calculations`, `validations`, and `sections` has adopted
+nothing. A host that loads modules:
+
+- SHOULD evaluate a module's `calculations` in **declaration order**,
+  threading each result into the next as a prior result. Order is the
+  author's, and a later calc that reads an earlier one depends on it.
+- SHOULD evaluate each `validations[].rule` as a §VIII.1 safe
+  expression. A rule asserts what must be TRUE: it reports an issue when
+  it evaluates to `false`, and **MUST NOT** report one when it evaluates
+  to `null`. `null` is "the inputs are absent" (§VIII.2), and a document
+  that does not carry a section has not violated a rule about it.
+- MUST NOT introduce an evaluation path a module can reach that the calc
+  engine cannot. A rule is a safe expression, evaluated by the same
+  sandbox, or it is a second unsandboxed language reachable from a
+  third-party manifest.
+- SHOULD report a `sections[].required` section that is absent, and
+  SHOULD report a rule or calculation that fails to *evaluate* rather
+  than silently skipping it. A skipped rule is a rule its author believes
+  is protecting them.
+
+Section `schema` fragments are normative JSON Schema. A host holding a
+JSON Schema validator SHOULD apply them; one that does not is still
+conforming, and the reference library is in the second category by
+design (§Layering — `@uwmd/core` takes no validator dependency).
+
+The reference module is
+[`@uwmd/module-hospitality`](../packages/uwmd-module-hospitality/README.md),
+built against the library's published surface and nothing else.
+
+### X.1 Module signatures (RFC 0002)
+
+A module manifest is executable surface. Its `calculations` carry
+formulas the calc engine evaluates, and its `validations` can decide
+whether a deal reads as blocking or advisory. A host that loads one
+from npm, a URL, or a colleague's directory has no built-in way to
+ask whether it is the manifest the author published.
+
+`ModuleManifest.signature` gives it one. The canonical schema is
+[`module-signature.schema.json`](schemas/module-signature.schema.json).
+
+**Advisory by construction.** The protocol does not require anyone to
+sign, or anyone to check. It fixes what "signature valid" *means*, so
+that two conforming hosts reach the same verdict on the same manifest;
+what to *do* about an unsigned or invalid module is host policy
+(§X.1.4).
+
+#### X.1.1 What is signed
+
+The signature input is the RFC 8785 canonical JSON of the manifest
+with `signature` **removed** — removed rather than set to `null`, so
+signing a manifest and verifying it afterwards see byte-identical
+input.
+
+Every other field is covered, including `depends_on`. A module's
+dependencies are part of what its author published, and leaving them
+out would let an attacker redirect a signed module at a different
+dependency without breaking the signature.
+
+#### X.1.2 Wire format
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `scheme` | `"uwmd-keystore"` | yes | Signing scheme. See below. |
+| `alg` | `"ed25519"` \| `"es256"` \| `"es384"` | yes | Same closed set as §V.11. ECDSA is raw `r \|\| s`. |
+| `kid` | string | yes | Key identifier the host resolves in its own key store. |
+| `sig` | string | yes | Signature bytes, base64url, unpadded. |
+| `signed_at` | string | yes | ISO 8601 instant the signature was produced. |
+| `identity` | string | no | Identity the signer claims. **Advisory** — see §X.1.5. |
+
+`uwmd-keystore` is the one scheme protocol 1.x implements: a detached
+signature verified against a key store the host holds, reusing the
+block-signature machinery of §V.11 rather than inventing a second one.
+
+`sigstore` is **reserved and unimplemented**. Keyless signing needs a
+Fulcio trust root and a Rekor inclusion proof, which means either a
+vendored root snapshot with a release-cadence obligation or network
+access at verification time. Neither fits a protocol whose conformance
+corpus is offline and deterministic. The `scheme` discriminator exists
+so that adding it later is additive rather than breaking.
+
+#### X.1.3 Verification verdicts
+
+A host that verifies MUST distinguish these five outcomes. They are
+listed with the error codes the reference implementation emits.
+
+| Code | Reason | Meaning |
+|---|---|---|
+| `PROTO-MOD-068` | `missing` | The manifest carries no `signature`. |
+| `PROTO-MOD-069` | `unsupported_scheme` | `scheme` names something this host does not implement. |
+| `PROTO-MOD-070` | `malformed` | `signature` is present but not a well-formed `ModuleSignature`. |
+| `PROTO-MOD-071` | `unknown_key` | `kid` names a key the host's store does not hold — including the case where the host has no signature backend at all. |
+| `PROTO-MOD-072` | `invalid` | The signature did not validate over the canonical manifest. |
+
+Three of these must not be collapsed into one another, because they
+call for three different responses:
+
+- **`missing`** — nothing was claimed. The host decides a policy.
+- **`unknown_key`** — something was claimed and this host cannot
+  check it. The host loads a key.
+- **`invalid`** — something was claimed and it is false. The host
+  rejects the module.
+
+A verifier that reports all three as "signature failed" makes them
+indistinguishable at exactly the point where the operator has to act.
+
+`malformed` is separate from `invalid` for the same reason: telling an
+author their manifest was tampered with, when the real problem is a
+missing `signed_at`, sends them hunting for an attack that never
+happened. A manifest carrying a malformed `signature` is refused by
+structural validation regardless of policy — declining to *verify* is
+not a licence to admit nonsense.
+
+#### X.1.4 Host policy
+
+A host's policy is one of:
+
+- **`ignore`** — do not look. What every host did before this section
+  existed, and the default.
+- **`verify-if-present`** — an unsigned module loads; a bad signature
+  refuses. The pragmatic adoption setting: it never punishes an author
+  who has not signed yet, and never lets a broken claim through.
+- **`require`** — an unsigned module refuses too.
+
+Both checking policies MUST refuse on `unknown_key`. A host that
+cannot check a signature has not established anything about the
+module, and treating "I hold no key for this" as success would make
+the policy decorative.
+
+> A host that declares the `module-signature-verification` capability
+> in its `ImplementationManifest` MUST produce the verdicts in §X.1.3
+> and MUST NOT load a module that fails verification under its
+> declared policy.
+
+Dependency verification is a host decision, not a protocol
+requirement. The protocol supplies the verifier; whether to walk
+`depends_on` transitively and demand a signature at each hop is
+policy.
+
+#### X.1.5 What a signature does not tell you
+
+`identity` is a claim *inside* the signed bytes. A valid signature
+proves the holder of that key asserted that identity — never that the
+assertion is true. It is worth exactly as much as the host's decision
+to bind that `kid` to that identity in its key store, which is an
+out-of-band act this protocol does not describe.
+
+A host wanting "only modules from `@example.org`" enforces it with an
+allow-list over `identity` *on top of* a trusted key store, and gains
+nothing from the allow-list alone.
+
+### X.2 Module-declared asset classes (RFC 0003)
+
+A module may introduce an asset class the standard does not have. The
+identifier grammar is format spec §2.2a; this section is **resolution** —
+what a host does when it meets one.
+
+#### X.2.1 Declaration
+
+`ModuleManifest.declares_asset_classes` is a list of:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `id` | yes | The namespaced identifier (§2.2a). |
+| `display_name` | yes | Human-readable name. |
+| `fallback` | no | The closest **builtin**, for readers without this module. |
+| `required_sections` | no | Sections this class requires beyond the stage baseline. |
+| `optional_sections` | no | Sections this class recognizes but does not require. |
+
+Distinct from `asset_classes`, which names builtin classes a module
+*enhances*. A module may do both — declare `com.example.data_center` and
+also contribute calculations to `industrial`.
+
+A declaration whose `id` is a builtin is refused at load: that is not an
+extension, it is a redefinition, and `asset_classes` is how a module
+enhances a builtin. A `fallback` MUST be a builtin — falling back to
+another custom class moves the problem one hop and can cycle.
+
+#### X.2.2 Resolution
+
+Given a document's `asset_class`, a host resolves it to exactly one of
+three outcomes:
+
+1. **Resolved.** The class is a builtin, or a loaded module declares it.
+   The host reads the document fully.
+2. **Degraded.** No loaded module declares it, but the host holds a
+   declaration carrying a `fallback`. The host MAY render using the
+   fallback's view models, MUST report the result as degraded, and MUST
+   emit `MOD-FALLBACK-001` (warning). It MUST NOT present the result as
+   a full read.
+3. **Unresolved.** Neither. The host emits `MOD-MISSING-001` (error).
+   The document's `modules` list is what lets it say *what to load*
+   rather than only that something is missing.
+
+**Holding a declaration is not holding the module.** A host may know a
+class's display name and fallback from a cached declaration or an
+operator's configuration; that is enough to degrade gracefully and not
+enough to resolve. What "loaded" means is the module's calculations and
+validations, and a host that treated a cached declaration as equivalent
+would run a document through a class whose rules it does not have.
+
+**Determinism is the contract**, and it holds in all three outcomes:
+every host with the module resolves identically, every host without one
+and with a fallback degrades identically, every host with neither fails
+identically. There is no arrangement in which two conforming hosts read
+the same file differently — which is the property that makes opening
+this extension point safe, and the reason the enum could not simply be
+opened to arbitrary strings.
+
+#### X.2.3 Conflicts
+
+Two loaded modules declaring the **same identifier** is
+`MOD-ASSET-CLASS-CONFLICT-001` (error). Reverse-DNS names one owner, so
+two declarations mean one module is squatting; a host MUST NOT pick one
+silently, because that makes resolution depend on load order.
+
+Two declarations sharing a **display name** is `MOD-DISPLAY-CONFLICT-001`
+(info). Two unrelated verticals both calling something "Data Center" is
+confusing for a reader and irrelevant to a machine; a host SHOULD show
+the identifier alongside the name and otherwise carry on.
+
+#### X.2.4 What custom classes do not get
+
+A custom class has no builtin calc pack, no Excel layout, and no entry
+in the §XIII size-intensive registry — those tables are keyed to the
+closed builtin set and stay that way. A module supplies its own
+calculations for the classes it declares (§X, module runtime); anything
+the module does not supply, a custom class does not have.
+
+This is a real limit, not an oversight. Wiring a custom class into the
+size-intensive registry would mean a third party could change what
+`price_per_unit` divides by, and the per-unit metrics are exactly where
+a silent denominator change does the most damage.
+
 ---
 
 ## XI. Error Taxonomy
@@ -1125,18 +1847,6 @@ required for v1 conformance.
 - **Locale negotiation** — v1 freezes formatting to `en-US`. The
   `SupportedLocale` type in `protocol.ts` is the v2 hook; full
   locale negotiation will land via RFC.
-- **Module signing** — Sigstore-style signature on module manifests,
-  verified by the host according to its policy.
-- **Custom asset-class declarations from modules** — the asset-class
-  enum is hard-coded in `types.ts` for v1; modules cannot extend it
-  without a spec bump.
-- **Conformance test runner v2** — language-agnostic driver and
-  reporter format so non-TS implementers don't have to write their
-  own runner.
-- **Stochastic calculations** — `deterministic: false` calc declarations
-  (Monte Carlo, sensitivity sweeps).
-- **Hospitality module** — full implementation of the example sketched
-  in Appendix E, serving as the reference module for the module system.
 - **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
   protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
   and optional HTTP/MCP binding profiles. The UW Markdown format remains 1.1.

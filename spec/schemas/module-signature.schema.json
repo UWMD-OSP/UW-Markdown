@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/module-signature.schema.json",
+  "title": "UW Markdown module signature",
+  "description": "A detached signature over a module manifest (UW_PROTOCOL_v1.md §X.1, RFC 0002). Advisory at the protocol level: the protocol fixes what 'signature valid' means so two hosts agree, and leaves what to do about an unsigned or invalid module to host policy. The signed bytes are the RFC 8785 canonical JSON of the manifest with `signature` removed.",
+  "type": "object",
+  "required": ["scheme", "alg", "kid", "sig", "signed_at"],
+  "additionalProperties": false,
+  "properties": {
+    "scheme": {
+      "const": "uwmd-keystore",
+      "description": "Signing scheme. 'uwmd-keystore' is a detached signature verified against a key store the host holds — the same machinery as block signatures (§V.11). 'sigstore' is reserved but not implemented: keyless signing needs a vendored Fulcio trust root and a networked Rekor inclusion proof, both of which sit badly with an offline, deterministic conformance corpus. The discriminator exists so adding it later is additive."
+    },
+    "alg": {
+      "enum": ["ed25519", "es256", "es384"],
+      "description": "Signature algorithm, from the same closed set as block signatures. ECDSA signatures are raw r||s (IEEE P1363), not DER."
+    },
+    "kid": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque key identifier the host resolves in its own key store. Key distribution is out of scope."
+    },
+    "sig": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Signature bytes, base64url (RFC 4648 §5), unpadded."
+    },
+    "signed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 instant the signature was produced."
+    },
+    "identity": {
+      "type": "string",
+      "description": "Identity the signer claims (an email, a domain, an org). ADVISORY and unverified by the signature layer: a signature proves the key holder asserted this, never that the assertion is true. It is worth only as much as the host's decision to bind that kid to that identity in its key store."
+    }
+  }
+}

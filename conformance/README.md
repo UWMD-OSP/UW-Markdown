@@ -78,8 +78,30 @@ conformance/
 ├── modules/            Declarative module manifests (see modules/README.md)
 │   ├── accept/         <id>.module.json — loadModuleManifest accepts the full
 │   │                     declared surface (calcs, agent layers, round_to, …)
-│   └── reject/         <id>.module.json + <id>.expected.json — malformed
-│                         manifests refuse with the expected typed code
+│   ├── reject/         <id>.module.json + <id>.expected.json — malformed
+│   │                     manifests refuse with the expected typed code
+│   ├── asset-classes/  RFC 0003 — module-declared asset classes. Four
+│   │                     <scenario>/{deal.uwx.md, module.json, expected.json}.
+│   │                     The first THREE share a byte-identical document and
+│   │                     differ only in what the host has loaded: module
+│   │                     present (resolved), absent but the declaration known
+│   │                     (degraded via fallback), neither (unresolved). A
+│   │                     cross-scenario invariant asserts the three files stay
+│   │                     identical — editing one to fix a failure would void
+│   │                     the whole demonstration, which is that the verdict
+│   │                     depends on the reader and never on the document
+│   └── runtime/        RFC 0006 — the module system with an actual consumer.
+│                         Everything above checks that a manifest LOADS; these
+│                         check that a loaded module DOES something. Five
+│                         <scenario>/{deal.uwx.md, expected.json} derived from
+│                         one hotel fixture, run against
+│                         @uwmd/module-hospitality: the fixture itself (both
+│                         warning branches in one file), no comp set (the rule
+│                         must stay silent — absence is not violation),
+│                         occupancy as a percentage (an error, because RevPAR
+│                         still computes, to a number 100x too large), the
+│                         required section removed, and the same file
+│                         relabelled office, where nothing must run at all
 ├── packages/           UW Deal Packages, RFC 0018 (see packages/README.md)
 │   ├── accept/         <id>.manifest.json + <id>.expected.json — manifest
 │   │                     validation accepts, including extension link types
@@ -129,16 +151,78 @@ conformance/
                           behavior pair (warns-and-does-not-refuse on a
                           size-less office; silent for mixed_use, whose
                           resolveDealSize is null by design)
+├── stochastic/         Distributions (RFC 0005, Protocol §VIII.8). Six
+│                         <scenario>/{deal.uwx.md, stochastic.json,
+│                         expected.json}. What is pinned is NOT the shape of a
+│                         distribution - that is a statistics question - but
+│                         that the same seed produces the same numbers.
+│                         Reproducibility is asserted IN-PROCESS with no
+│                         baseline (re-running must return an identical
+│                         summary), so it binds any implementation and not only
+│                         one matching our frozen figures; 02 asserts a
+│                         different seed produces a DIFFERENT summary, since a
+│                         seed that did not change the stream would make
+│                         reproducibility accidental. Each scenario declares its
+│                         own `exactness`: exact for uniform and triangular,
+│                         tolerance for normal, whose inverse-CDF tails call
+│                         log() - a function no standard requires to be
+│                         correctly rounded
+├── sensitivity/        Two-axis grids (RFC 0007, Protocol §VIII.7). Five
+│                         <scenario>/{deal.uwx.md, sensitivity.json,
+│                         expected.json}. Round numbers on purpose - every
+│                         expected cell is checkable by hand, so a failing grid
+│                         points at the implementation and not at arithmetic
+│                         nobody can verify. `expected.grid` is a plain 2-D
+│                         array with null for a failed cell; cell errors are
+│                         asserted separately by coordinate and code.
+│                         03-document-unchanged is the one that matters most:
+│                         it re-reads the swept paths afterwards, because a
+│                         sweep that WROTE instead of shadowing would silently
+│                         change the deal and nothing else would notice
+└── signing/            Signatures, over two artifact kinds, sharing one
+    │                     keys/ directory — a host that trusts a signer trusts
+    │                     them for both. Every fixture is GENERATED by
+    │                     scripts/gen-signing-fixtures.mjs: a signature over a
+    │                     hash of the file it lives in cannot be hand-edited
+    │                     into a meaningful state
+    ├── blocks/         Block signatures (RFC 0010, Protocol §V.11). Five
+    │                     <scenario>/{deal.uw.md, expected.json} pairs.
+    │                     expected.json names the keystore to verify against
+    │                     (null = no signature backend at all), the expected
+    │                     `ok`, the signatures_present / signatures_verified
+    │                     counts, and the exact issue codes
+    └── modules/        Module manifest signatures (RFC 0002, Protocol §X.1).
+                          Six <scenario>/{module.json, expected.json} pairs.
+                          Each scenario is run under ALL THREE host policies
+                          (ignore / verify-if-present / require), not just the
+                          interesting one: 04-unsigned loading under
+                          verify-if-present and refusing under require is the
+                          entire policy distinction
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, and `size-intensive` suites are named rather than numbered:
+`capital-stack`, `size-intensive`, `signing`, `sensitivity`, and `stochastic`
+suites are named rather than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and
-size-intensive registry are *verified protocol surfaces* — none is itself a
-protocol conformance tier. All run by default; select one alone with
-`--tier=<name>` (e.g. `--tier=lite`, `--tier=size-intensive`).
+size-intensive registry are *verified protocol surfaces*, and signing is an
+*optional capability* — none is itself a protocol conformance tier. All run by
+default; select one alone with `--tier=<name>` (e.g. `--tier=lite`,
+`--tier=signing`).
+
+`signing` is the one suite an implementation may skip and stay conformant: it
+gates the `signing` capability claim in `ImplementationManifest.capabilities`,
+and an implementation that does not claim signing is not asked to pass it. Two
+of its five scenarios exist to pin distinctions rather than happy paths —
+`blocks/03-signed-unknown-kid` must report `INT-06` and never `INT-07` ("I
+cannot check this" is not "this is forged"), and `blocks/05-signed-no-backend`
+verifies the same bytes as `blocks/01-signed-valid` with no key store at all
+and must report the signature as present-and-unchecked rather than passing it.
+`modules/` carries the same distinction as `PROTO-MOD-071` vs `-072`, plus
+`modules/06-malformed`, which must refuse under `ignore` too: declining to
+verify is not a licence to admit a malformed signature into a frozen
+manifest.
 
 Two receipt properties are asserted as invariants rather than baselines:
 

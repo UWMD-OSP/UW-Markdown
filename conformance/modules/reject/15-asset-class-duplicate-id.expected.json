@@ -1,0 +1,7 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-075"
+  ],
+  "note": "One module declaring the same identifier twice. Refused rather than last-wins, so resolution never depends on array order.",
+  "schema_divergence": "JSON Schema `uniqueItems` compares whole items, not one field. Two declarations differing only in display_name are distinct items, so the schema cannot see the duplicate id. The loader can."
+}

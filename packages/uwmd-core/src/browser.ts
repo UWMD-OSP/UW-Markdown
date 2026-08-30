@@ -201,6 +201,50 @@ export { deriveDCF } from './dcf.js';
 export type { DCFDerivation } from './dcf.js';
 
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
+
+// RFC 0007 — sensitivity tables. A declaration, not a grammar extension: the
+// §VIII.1 sandbox is unchanged, and the grid never travels through
+// `CalcResult.value`.
+// RFC 0005 — stochastic calculations. Sampling is a declaration plus the §VIII.7
+// override mechanism; the grammar and the builtins are untouched, and the
+// builtins stay pure.
+export {
+  evaluateStochastic,
+  isStochasticDecl,
+  SUMMARY_STATS,
+  MAX_STOCHASTIC_SAMPLES,
+  MIN_STOCHASTIC_SAMPLES,
+} from './calc/stochastic.js';
+export type {
+  StochasticDecl,
+  StochasticInput,
+  StochasticResult,
+  StochasticSummary,
+  DistributionSpec,
+  SummaryStat,
+} from './calc/stochastic.js';
+export {
+  Pcg64,
+  PRNG_ALGORITHM,
+  inverseNormalCdf,
+  sampleUniform,
+  sampleNormal,
+  sampleTriangular,
+} from './calc/prng.js';
+
+export {
+  evaluateSensitivity,
+  isSensitivityDecl,
+  assertSensitivityOk,
+  MAX_SENSITIVITY_CELLS,
+  MAX_SENSITIVITY_AXIS,
+} from './calc/sensitivity.js';
+export type {
+  SensitivityDecl,
+  SensitivityAxis,
+  SensitivityCell,
+  SensitivityResult,
+} from './calc/sensitivity.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 // The §VIII.5 quantization boundary — browser-safe, and the web editor needs it
 // to quantize hand-overridden fields the same way pack results are quantized.
@@ -233,11 +277,59 @@ export type { ExcelEmitOptions } from './packs/index.js';
 
 export {
   loadModuleManifest,
+  loadModuleManifestAsync,
   createModuleRegistry,
+  createModuleRegistryAsync,
   getModuleCalculationsForAssetClass,
   ModuleRegistryError,
 } from './modules.js';
-export type { ModuleRegistry, LoadModuleOptions, CreateModuleRegistryOptions } from './modules.js';
+export type {
+  ModuleRegistry,
+  LoadModuleOptions,
+  LoadModuleAsyncOptions,
+  CreateModuleRegistryOptions,
+  CreateModuleRegistryAsyncOptions,
+  ModuleSignaturePolicy,
+} from './modules.js';
+
+// RFC 0003 — module-declared asset classes. Identifier grammar and resolution
+// are crypto-free and browser-safe; `AssetClass` itself stays a closed union.
+export {
+  parseAssetClass,
+  isCustomAssetClass,
+  resolveAssetClass,
+  declaredAssetClasses,
+  assetClassDeclarationConflicts,
+  declaredModuleDependencies,
+} from './asset-class.js';
+export type {
+  AssetClassKind,
+  AssetClassIdentity,
+  AssetClassResolution,
+  ResolveAssetClassOptions,
+} from './asset-class.js';
+
+export {
+  evaluateModuleCalculations,
+  validateAgainstModules,
+  checkModuleSections,
+} from './module-runtime.js';
+export type { ModuleRuntimeOptions, ModuleCalcOutcome } from './module-runtime.js';
+
+// RFC 0002 — module signatures. Crypto-free half only; `@uwmd/signing` supplies
+// the verifier that `verifyModuleSignature` and the async loaders accept.
+export {
+  moduleSigningPayload,
+  verifyModuleSignature,
+  checkSignatureShape,
+  MODULE_SIGNATURE_SCHEME,
+} from './module-signing.js';
+export type {
+  ModuleSignatureFailure,
+  ModuleSignatureVerdict,
+  ModuleSignatureVerifier,
+  VerifyModuleSignatureOptions,
+} from './module-signing.js';
 
 // ─── RFC 0018: document profiles, lease abstracts, deal packages ─────────────
 // All browser-safe: no I/O, no network, no hashing implementation imported.
@@ -386,7 +478,8 @@ export type {
 } from './deal-package-zip.js';
 export { inspectZipSafety, isSafeZipPath } from './zip-safety.js';
 export type { ZipSafetyLimits, ZipSafetyViolation } from './zip-safety.js';
-export { sha256BytesHex } from './integrity.js';
+export { sha256BytesHex, blockSigningPayload, canonicalBlockSigningInput } from './integrity.js';
+export type { BlockSigningInput } from './integrity.js';
 
 
 
@@ -442,6 +535,8 @@ export type {
   UWFenceAnnotation,
   UWMeta,
   UWFieldOverride,
+  UWBlockSignature,
+  UWSignatureAlgorithm,
   MarketDataRef,
   UWFrontmatter,
   UWPipelineState,
@@ -459,9 +554,10 @@ export type {
   ValidationSeverity,
   DealStage,
   AssetClass,
+  UWAssetClassId,
 } from './types.js';
 
-export { DEFAULT_THRESHOLDS, ASSET_CLASSES } from './types.js';
+export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS } from './types.js';
 
 export {
   formatCurrency,
@@ -514,6 +610,8 @@ export type {
   CalcResult,
   AgentHostCapability,
   ModuleManifest,
+  ModuleSignature,
+  ModuleAssetClassDecl,
   ModuleSectionDecl,
   ModuleCalcDecl,
   ModuleValidationDecl,

@@ -1,0 +1,5 @@
+{
+  "description": "No seed. Refused outright: without one the calc produces a different answer every run, which is the exact opposite of what this format exists to guarantee.",
+  "ok": false,
+  "expected_code": "CALC-STOCH-001"
+}

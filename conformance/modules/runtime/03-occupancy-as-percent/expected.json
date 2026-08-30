@@ -1,0 +1,11 @@
+{
+  "description": "Occupancy stored as 72 instead of 0.72 - the mistake hotel operators make most often, and the reason CC-MOD-HOSP-02 is an error rather than a warning. Note RevPAR still computes, to a number 100x too large; only the rule catches it. CC-MOD-HOSP-03 also fires, because the fixture's flag economics are over the threshold in every scenario derived from it.",
+  "module": "@uwmd/module-hospitality",
+  "expected_calcs": {
+    "revpar": 12960.0
+  },
+  "expected_codes": [
+    "CC-MOD-HOSP-02",
+    "CC-MOD-HOSP-03"
+  ]
+}

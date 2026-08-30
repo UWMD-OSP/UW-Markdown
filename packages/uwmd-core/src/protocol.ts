@@ -19,16 +19,18 @@ import type {
   PipelineStatus,
   UWBlock,
   UWMeta,
+  UWSignatureAlgorithm,
   ValidationMessage,
   ValidationSeverity,
 } from './types.js';
 
 import { deepGet, getSection, getSectionVariant } from './parser.js';
+import { CORE_VERSION } from './version.js';
 
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.6.0' as const;
+export const PROTOCOL_VERSION = '1.8.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -64,8 +66,16 @@ export type ViewerCapability =
   | 'edit-frontmatter'
   | 'calc-evaluate'
   | 'calc-deterministic'
+  /** Evaluates stochastic declarations (§VIII.8, RFC 0005). */
+  | 'calc-stochastic'
+  /** Evaluates sensitivity declarations (§VIII.7, RFC 0007). */
+  | 'calc-sensitivity'
   | 'agent-host'
-  | 'module-load';
+  | 'module-load'
+  /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
+  | 'signing'
+  /** Verifies `ModuleManifest.signature` and honors a host policy (§X.1.4, RFC 0002). */
+  | 'module-signature-verification';
 
 export type RepresentationFidelity = 'source' | 'model' | 'view';
 export type RepresentationDirection = 'read' | 'write';
@@ -112,6 +122,49 @@ export interface ImplementationManifest {
   /** Public homepage / docs URL. */
   homepage?: string;
 }
+
+/**
+ * What `@uwmd/core` itself self-certifies to — the answer `uwmd manifest`
+ * returns, and the reference entry in any cross-implementation report.
+ *
+ * A literal rather than something assembled at call time, because the
+ * conformance driver treats it as the identity of the implementation under
+ * test: a manifest that varied with the caller's environment would make two
+ * runs of the same suite incomparable.
+ */
+export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.freeze({
+  id: 'org.uwmd.core',
+  name: '@uwmd/core reference implementation',
+  version: CORE_VERSION,
+  protocol_version: PROTOCOL_VERSION,
+  format_version: FORMAT_VERSION,
+  tier: 'tier-4-agent-host',
+  capabilities: Object.freeze([
+    'parse',
+    'validate',
+    'render-json',
+    'render-csv',
+    'render-summary',
+    'render-chat',
+    'edit-replace',
+    'edit-supersede',
+    'edit-frontmatter',
+    'calc-evaluate',
+    'calc-deterministic',
+    'calc-stochastic',
+    'calc-sensitivity',
+    'agent-host',
+    'module-load',
+    // Both are gated on the optional @uwmd/signing package being installed.
+    // Claimed here because the reference *implementation* is the pair: core
+    // defines the contract, signing supplies the algorithms, and an adopter
+    // asking "does this implementation verify signatures" means the pair.
+    'signing',
+    'module-signature-verification',
+  ]) as ViewerCapability[],
+  role: 'library',
+  homepage: 'https://uwmd.org',
+});
 
 // ─── Display conventions (Part III of the spec) ───────────────────────────────
 
@@ -544,6 +597,21 @@ export interface CalcEvaluationContext {
   parsed: ParsedUWFile;
   /** Result map of previously-evaluated calculations in the same batch. */
   prior_results: Readonly<Record<string, number | string | boolean | null>>;
+  /**
+   * Values that shadow document lookup, keyed by **full dotted path** exactly
+   * as an expression writes it (`dcf.exit_cap_rate`, not `exit_cap_rate`).
+   *
+   * Consulted before frontmatter, sections, and prior results, so an override
+   * wins over whatever the document says. That is the point: it lets a caller
+   * ask "what would this be if the exit cap were 6.5%" without mutating the
+   * document, which is what sensitivity analysis (§VIII.7), scenario sweeps,
+   * and stress tests all need.
+   *
+   * Keyed by literal path rather than resolved location because the expression
+   * is the contract: a caller that had to know how `dcf.exit_cap_rate` maps to
+   * a block's inner content would be reimplementing §VIII.2.
+   */
+  overrides?: Readonly<Record<string, number | string | boolean | null>>;
   /** Locale for number parsing. v1: must be 'en-US'. */
   locale: SupportedLocale;
 }
@@ -607,6 +675,86 @@ export interface ModuleManifest {
   ui?: Record<string, unknown>;     // free-form, host-specific
   agent_layers?: ModuleAgentLayerDecl[];
   depends_on?: { id: string; version: string }[];
+  /**
+   * Custom asset classes this module introduces (§X.2, RFC 0003).
+   *
+   * Distinct from `asset_classes`, which names builtin classes the module
+   * *enhances*. A module may do both: declare `com.example.data_center` and
+   * also contribute calcs to `industrial`.
+   */
+  declares_asset_classes?: ModuleAssetClassDecl[];
+  /**
+   * Detached signature over the canonical manifest (§X.1, RFC 0002).
+   *
+   * Advisory at the protocol level: what to do with an unsigned module, or one
+   * whose signature fails, is a host-policy decision. What the protocol fixes is
+   * the *surface*, so that two hosts agree on what "signature valid" means.
+   */
+  signature?: ModuleSignature;
+}
+
+/**
+ * A detached signature over a module manifest.
+ *
+ * Deliberately the same shape as `UWMeta.signature` (§V.11) plus a `scheme`
+ * discriminator and an optional identity claim. A module manifest and a block
+ * are different artifacts, but "who signed this, with which key, when" is the
+ * same question, and answering it two different ways would mean two verifiers,
+ * two key-store formats, and two chances to get the canonicalization wrong.
+ */
+export interface ModuleSignature {
+  /**
+   * Signing scheme. `uwmd-keystore` is a detached signature over the canonical
+   * manifest, verified against a key store the host holds — the same machinery
+   * as block signatures.
+   *
+   * `sigstore` is reserved, not implemented: keyless signing needs a Fulcio
+   * trust root and a Rekor inclusion proof, which means a vendored root
+   * snapshot and network verification. Both sit badly with a protocol whose
+   * conformance corpus is offline and deterministic. The discriminator exists
+   * so adding it later is additive rather than a breaking change.
+   */
+  scheme: 'uwmd-keystore';
+  /** Algorithm, from the same closed set as block signatures (§V.11). */
+  alg: UWSignatureAlgorithm;
+  /** Opaque key identifier the host resolves in its own key store. */
+  kid: string;
+  /** Base64url-encoded (unpadded) signature bytes. */
+  sig: string;
+  /** ISO 8601 instant the signature was produced. */
+  signed_at: string;
+  /**
+   * Identity the signer claims (an email, a domain, an org). **Advisory and
+   * unverified by this layer** — it is a hint for humans and for a host's
+   * allow-list policy, and a host that trusts it without checking that the
+   * `kid` actually belongs to that identity has learned nothing.
+   */
+  identity?: string;
+}
+
+/**
+ * A custom asset class a module introduces (§X.2, RFC 0003).
+ *
+ * `fallback` is the field that makes an unknown class survivable. Without one,
+ * a reader lacking the module can only refuse the document; with one, it can
+ * render — degraded, and saying so. That is a strictly better outcome than
+ * either refusing or silently pretending, and it is why the field is worth the
+ * obligation to pick an honest nearest neighbor.
+ */
+export interface ModuleAssetClassDecl {
+  /** Reverse-DNS, at least three lower-snake-case segments. */
+  id: string;
+  display_name: string;
+  /**
+   * The closest builtin, for readers that do not hold this module. Omitting it
+   * is a deliberate choice that no approximation is honest — a life-sciences
+   * building is not really an office — and costs those readers the document.
+   */
+  fallback?: AssetClass;
+  /** Sections this class requires beyond the stage baseline. */
+  required_sections?: string[];
+  /** Sections this class recognizes but does not require. */
+  optional_sections?: string[];
 }
 
 export interface ModuleSectionDecl {
@@ -1481,6 +1629,114 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A block\'s stamped _meta.content_hash does not match the SHA-256 of its current canonicalized content.',
     remediation: 'Either restore the original content or re-stamp content_hash from the current canonicalized form.',
     spec_ref: 'UW_PROTOCOL_v1.md §V.9',
+  },
+
+  {
+    code: 'INT-05', severity: 'error',
+    title: 'Signature without content hash',
+    description: 'A block carries _meta.signature but no _meta.content_hash, so the signature commits to no content.',
+    remediation: 'Stamp content_hash first, then re-sign the block; a signature over an absent hash is structurally void.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+  {
+    code: 'INT-06', severity: 'error',
+    title: 'Unknown signing key',
+    description: 'A block signature names a key id that the supplied key store does not hold.',
+    remediation: 'Add the public key to the key store under that kid, or re-sign with a key the verifier trusts.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+  {
+    code: 'INT-07', severity: 'error',
+    title: 'Block signature does not verify',
+    description: 'A block signature failed to validate against the canonicalized signing input, or declares an algorithm outside the admitted set.',
+    remediation: 'Restore the signed content and provenance fields, or re-sign the block as it now stands.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+  {
+    code: 'INT-08', severity: 'warning',
+    title: 'Deprecated signature algorithm',
+    description: 'A block signature uses an algorithm the verifying deployment has deprecated.',
+    remediation: 'Re-sign the block with a current algorithm before the deprecated one is withdrawn.',
+    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+
+  // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────
+  {
+    code: 'INVALID-ASSET-CLASS-001', severity: 'error',
+    title: 'Malformed asset-class identifier',
+    description: 'frontmatter.asset_class is neither a builtin nor a well-formed namespaced identifier.',
+    remediation: 'Use a builtin, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. com.example.data_center).',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+  },
+  {
+    code: 'INVALID-ASSET-CLASS-002', severity: 'error',
+    title: 'Asset-class identifier shadows a builtin',
+    description: 'A namespaced identifier whose final segment is one of the ten builtin names.',
+    remediation: 'Rename the final segment so it does not shadow a builtin; a suffix such as _specialty both disambiguates and says more.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+  },
+  {
+    code: 'MOD-DEPENDENCY-UNDECLARED', severity: 'warning',
+    title: 'Module-declared asset class with no modules list',
+    description: 'A document with a namespaced asset_class does not name the modules that declare it.',
+    remediation: 'Add a frontmatter `modules` list naming the declaring module, so a reader without it can say what to load rather than only that something is missing.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+  },
+  {
+    code: 'MOD-FALLBACK-001', severity: 'warning',
+    title: 'Asset class rendered via fallback',
+    description: 'The module declaring this asset class is not loaded; the document was rendered with the declared builtin fallback.',
+    remediation: 'Load the declaring module to read the document fully. Values shown come from the fallback view models and may omit what the custom class adds.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.2',
+  },
+  {
+    code: 'MOD-MISSING-001', severity: 'error',
+    title: 'Asset class unresolvable',
+    description: 'The module declaring this asset class is not loaded and no fallback is available.',
+    remediation: 'Load the module named in the frontmatter `modules` list of the document.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.2',
+  },
+  {
+    code: 'MOD-ASSET-CLASS-CONFLICT-001', severity: 'error',
+    title: 'Two modules declare the same asset class',
+    description: 'A reverse-DNS identifier names one owner, so two declarations mean one module is squatting.',
+    remediation: 'Load only one of the two modules, or ask the second to declare an identifier inside its own namespace.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.3',
+  },
+  {
+    code: 'MOD-DISPLAY-CONFLICT-001', severity: 'info',
+    title: 'Two asset classes share a display name',
+    description: 'Confusing for a reader, irrelevant to a machine.',
+    remediation: 'Disambiguate one display name, or show the identifier alongside it.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.3',
+  },
+
+  // ─── Module runtime (MOD-*) — findings a loaded module produced (RFC 0006) ──
+  //
+  // Registered for discoverability. Unlike the families above, these are
+  // emitted by `validateAgainstModules`, which does NOT enrich from this
+  // registry — a module's own finding names the module that made it, and
+  // overwriting that with generic copy would lose the attribution.
+  {
+    code: 'MOD-SECTION-MISSING', severity: 'error',
+    title: 'Required module section missing',
+    description: 'A loaded module declares a section as required and the document does not carry it.',
+    remediation: 'Add the section, or stop loading that module for this document.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X',
+  },
+  {
+    code: 'MOD-CALC-ERROR', severity: 'error',
+    title: 'Module calculation failed to evaluate',
+    description: 'A calculation declared by a loaded module could not be evaluated.',
+    remediation: 'Fix the formula in the module. Any rule reading that calc is silently inconclusive until it is corrected.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X',
+  },
+  {
+    code: 'MOD-RULE-ERROR', severity: 'error',
+    title: 'Module validation rule failed to evaluate',
+    description: 'A validation rule declared by a loaded module could not be evaluated, so it neither passed nor failed.',
+    remediation: 'Fix the rule expression in the module, or stop loading it until it is corrected.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X',
   },
 
   // ─── Provenance / policy (POL-NN) — actor and operation authority ──────────

@@ -46,7 +46,10 @@ Module | Responsibility | Key exports
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
-`integrity.ts` | content/parent-hash chain + provenance | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`
+`asset-class.ts` | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
+`module-runtime.ts` | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
+`module-signing.ts` | Module manifest signature contract (RFC 0002) | `moduleSigningPayload`, `verifyModuleSignature`, `checkSignatureShape`
+`integrity.ts` | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
 `integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
 `receipts.ts` | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
 `version.ts` | Engine identity recorded in receipts | `CORE_PACKAGE_NAME`, `CORE_VERSION`
@@ -82,7 +85,7 @@ walks a dot-path into a content object.
 **Validation code families** (all defined with copy in `BUILTIN_REMEDIATIONS`):
 - `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…).
 - `DQ-01..DQ-05` — data quality (provisional/partial blocks, scope readiness, stale gaps).
-- `INT-01..INT-04` — integrity (parent/content hash chain) — surfaced by `integrity.ts`.
+- `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
 - `FV-01..FV-14` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex…).
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.
@@ -200,11 +203,107 @@ and perturbation over the default ranges. Exposed via `uwmd refine`.
 
 ## integrity.ts
 
-`verifyChain(parsed)` (async) checks the `content_hash`/`parent_hash` supersede
-chain; `verifyProvenance(parsed, policies?)` checks actor/policy authority.
-`integrity-canonical.ts` `canonicalize()` defines the canonical form hashed by
-`computeBlockHash`. Both feed the `uwmd verify` command and the Tier-1 malformed
-conformance fixtures (INT-/POL- codes).
+`verifyChain(parsed, options?)` (async) checks the `content_hash`/`parent_hash`
+supersede chain; `verifyProvenance(parsed, policies?)` checks actor/policy
+authority. `integrity-canonical.ts` `canonicalize()` defines the canonical form
+hashed by `computeBlockHash`. Both feed the `uwmd verify` command and the Tier-1
+malformed conformance fixtures (INT-/POL- codes).
+
+**Block signatures (RFC 0010, protocol §V.11).** `_meta.signature` is optional
+and, like `content_hash`, excluded from canonicalization. Core owns only the
+crypto-free half: the wire type `UWBlockSignature`, and
+`canonicalBlockSigningInput()` / `blockSigningPayload()`, which build the exact
+RFC 8785 string a signature covers — six fields (`content_hash`, `section`,
+`actor`, `timestamp`, `kid`, `signed_at`) and nothing else. The algorithms live
+in [`@uwmd/signing`](../../packages/uwmd-signing/README.md) and reach core
+through `VerifyChainOptions.signatureVerifier`.
+
+Without a verifier, `verifyChain` reports `signatures_present` with
+`signatures_verified: 0` — present and *unchecked*, never valid. With one it
+emits `INT-05` (signature with no hash), `INT-06` (kid the store does not
+hold), `INT-07` (does not verify, unadmitted algorithm, or a stamped hash that
+no longer recomputes), and `INT-08` (deprecated algorithm, a warning).
+
+`INT-06` is never folded into `INT-07`: "I cannot check this" is a
+configuration problem and "this is forged" is a document problem, and they call
+for opposite responses. Note that a drifted hash escalates from `INT-04
+warning` to `INT-07 error` once a block is signed.
+
+## asset-class.ts
+
+Module-declared asset classes (RFC 0003). The ten builtins stay a **closed**
+union; a custom class is reverse-DNS with at least three lower-snake-case
+segments, so ownership is fixed at the identifier.
+
+**`AssetClass` is not widened, and that is load-bearing.** The RFC proposed
+folding custom ids into the union; in TypeScript that collapses to `string` and
+silently disables `ASSET_CLASS_MEMBERS`' exhaustiveness anchor, every
+pack/layout narrowing, and the RFC 0027/0029 class tables. `UWAssetClassId`
+(`AssetClass | (string & {})`) is used only at the boundary — frontmatter and
+module declarations. Anything needing a builtin still asks for `AssetClass`.
+
+`resolveAssetClass(id, registry, options)` returns exactly one of three
+statuses — `resolved`, `degraded` (`MOD-FALLBACK-001`), `unresolved`
+(`MOD-MISSING-001`) — and determinism holds in all three: no two conforming
+hosts read the same file differently.
+
+`knownDeclarations` is separate from the registry on purpose: a cached
+declaration can only ever produce `degraded`, never `resolved`. It gives a
+display name and a fallback; what "loaded" means is the module's calculations
+and validations.
+
+Validation (`INVALID-ASSET-CLASS-001/002`, `MOD-DEPENDENCY-UNDECLARED`) checks
+only what is true for every reader. Resolution findings are *not* validation
+rules — folding them in would make the same file valid or invalid depending on
+who ran it.
+
+## module-runtime.ts
+
+The consumer the module system never had (RFC 0006). Registering a manifest is
+not the same as honoring it: before this, `calculations` were reachable only by
+a host that evaluated them itself, `validations` were shape-checked at load and
+never executed, and `sections` were declared and never looked for.
+
+- `evaluateModuleCalculations(parsed, registry)` — every applicable module's
+  calcs in **declaration order**, threading each result into the next as
+  `prior_results`. Order is the author's: `revpar_index` divides `revpar`.
+- `validateAgainstModules(parsed, registry)` — the rules, plus required-section
+  presence. A rule asserts what must be TRUE and fires only on `false`; a rule
+  evaluating to `null` is **silent**, because absence is not violation.
+- `checkModuleSections(parsed, manifest)` — presence only. Validating contents
+  against the declared JSON Schema needs a validator core does not depend on.
+
+No new evaluation machinery: a rule is a §VIII.1 safe expression run through
+`evaluateCalc`. A module able to evaluate what the calc engine cannot would be
+a second unsandboxed language reachable from a third-party manifest.
+
+`MOD-CALC-ERROR` exists because an unresolved identifier evaluates to `null`
+(§VIII.2) — so a calc depending on a broken one *succeeds* with no value and
+every rule reading it falls quiet. One typo silently disables everything
+downstream, and this issue is often the only trace.
+
+## module-signing.ts
+
+Module manifest signatures (RFC 0002, protocol §X.1). Same layering as block
+signatures: core owns `moduleSigningPayload()` (RFC 8785 over the manifest with
+`signature` **removed**, not nulled, so signing and verifying see identical
+bytes), the structural checks, and the verdict taxonomy;
+[`@uwmd/signing`](../../packages/uwmd-signing/README.md) supplies the verifier.
+
+Five verdicts, and three of them must not be merged — `PROTO-MOD-068` missing
+(nothing was claimed → decide a policy), `-071` unknown key (something was
+claimed and this host cannot check it → load a key), `-072` invalid (something
+was claimed and it is false → reject the module). Plus `-069` unsupported
+scheme and `-070` malformed, which is separate from invalid so an author with a
+missing `signed_at` is not sent hunting for tampering.
+
+`loadModuleManifestAsync` / `createModuleRegistryAsync` apply a host policy —
+`ignore` (default), `verify-if-present`, `require`. A malformed signature is
+refused even under `ignore`: declining to verify is not a licence to admit
+nonsense into a frozen manifest. The sync loaders are untouched.
+
+`identity` is advisory. A signature proves the key holder asserted it, never
+that the assertion is true.
 
 ## receipts.ts
 
@@ -223,7 +322,9 @@ can confirm offline that the numbers follow from the inputs.
   `verified`, `failed`, `unverifiable`. Unknown pack, a pack version the
   verifier does not hold, an unparseable record, or a signature with no backend
   all yield `unverifiable` — collapsing those into `failed` cries wolf, and
-  collapsing them into `verified` is dangerous.
+  collapsing them into `verified` is dangerous. Supply
+  `createReceiptSignatureVerifier` from `@uwmd/signing` as `signatureVerifier`
+  and a signed receipt verifies for real instead of reporting `RCP-08`.
 - Subject canonicalization dispatches on representation: Lite records bind to
   the §6 financial canonical form, structured records to the envelope semantic
   value. Both are semantic, so a receipt survives reformatting and fails only on

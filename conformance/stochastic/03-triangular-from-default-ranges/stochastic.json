@@ -1,0 +1,25 @@
+{
+  "id": "noi_distribution",
+  "label": "NOI",
+  "base_formula": "noi_model.net_operating_income",
+  "inputs": [
+    {
+      "variable": "noi_model.net_operating_income",
+      "distribution": {
+        "kind": "triangular",
+        "min": 540000,
+        "mode": 600000,
+        "max": 690000
+      }
+    }
+  ],
+  "samples": 500,
+  "seed": 7,
+  "summarize": [
+    "mean",
+    "median",
+    "min",
+    "max"
+  ],
+  "round_to": 2
+}

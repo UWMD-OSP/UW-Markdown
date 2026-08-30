@@ -1,7 +1,7 @@
 ---
 rfc: 0007
 title: Sensitivity tables as a first-class calc primitive
-status: draft
+status: implemented
 author: jared
 created: 2026-04-27
 affects:
@@ -90,6 +90,79 @@ New Tier-3 fixtures to add (under `conformance/tier-3-calc-host/fixtures/`):
   - Unit tests for the builtin: axis lookup, cell evaluation, error capture.
   - Property tests: `sensitivity_table(expr, ...)` produces a grid whose dimensions equal `len(row_values) × len(col_values)`.
   - Excel-parity test: emitting a 3×3 table to Excel and reading it back via the existing parity harness produces matching cells.
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27 as protocol §VIII.7. Three substantive departures,
+and one correction to the motivation.
+
+**1. A declaration, not a builtin — the central change.** The proposal
+is `sensitivity_table(base_expr, {variable, values}, {variable, values})`
+inside the §VIII.1 grammar. That grammar has no object literals and no
+array literals, and its `string` production is a value rather than a
+program. Implementing the proposal therefore means three extensions to
+the sandbox, one of which makes a string argument *executable*.
+
+The sandbox's narrowness is the reason it can be evaluated on untrusted
+input at all — and the axis data is already sitting in JSON one level
+up, so the grammar buys nothing by reaching it. What shipped is a JSON
+`SensitivityDecl` (which is where every other calc declaration already
+lives) with an ordinary safe expression as `base_formula`. **The grammar
+is unchanged.**
+
+This is not the RFC's rejected alternative #2 either: that was "a new
+top-level *section* type", rejected for making calc power depend on the
+section registry. A declaration shape alongside `ModuleCalcDecl` depends
+on nothing.
+
+**2. The result never travels through `CalcResult.value`.** The RFC
+proposed extending `evaluateCalc`'s return type to
+`CalcResult | SensitivityResult`, making the value union non-scalar for
+the first time. That union is pinned by RFC 0016 receipts, rendered by
+the CLI, and emitted from by Excel; widening it would break three
+consumers for a feature none of them asked to carry. `SensitivityResult`
+is its own type from `evaluateSensitivity`, and `CalcResult.value` stays
+`number | string | boolean | null`.
+
+**3. Overrides are a general mechanism, and they are the actual
+primitive.** `CalcEvaluationContext.overrides` shadows lookup by full
+dotted path. Two properties turned out to be worth making normative:
+overrides *shadow* and never write (a sweep that mutated the document
+would silently change the deal — pinned by a conformance scenario), and
+a `null` override means "treat this path as absent", distinct from
+having no override. Scenario sweeps and stress tests need the same
+mechanism, so it is not sensitivity-specific.
+
+`CALC-SENS-004` (both axes on one variable) is new beyond the RFC. It is
+not a redundancy but a trap: the second override silently wins for every
+cell, producing a grid whose rows are identical and whose reader has no
+way to see why.
+
+**4. The motivation's claim about existing renderers is not true of this
+codebase.** The RFC says "the existing Excel converter (`@uwmd/excel`)
+and the web editor's calc panel both have ad-hoc grid renderers that
+re-derive the axis structure from the calc IDs." Neither does — there is
+no sensitivity code in either, and never was. The rest of the motivation
+stands on its own (N×M calc blocks bloat the document and hide the axis
+design), but that specific claim should not be repeated.
+
+Consequently the Excel emit work is **deferred**, and deferring it costs
+nothing today: there is no ad-hoc implementation to replace, and the
+RFC's own unresolved question already leaned toward N×M formulas over
+native DATA TABLE. `SensitivityResult` gives an emitter the grid
+structure whenever one is written.
+
+**5. Conformance lives in `conformance/sensitivity/`**, a named suite,
+not under `tier-3-calc-host/fixtures/`. A sensitivity declaration is not
+a `ModuleCalcDecl` and its result is not a `CalcResult`, so filing it
+there would force both the tier-3 runner and the RFC 0004 case generator
+— which read that directory — to branch on fixture shape. Five
+scenarios, including one that asserts the document is unchanged after a
+sweep.
+
+The RFC's remaining unresolved questions: the 256-cell bound is adopted
+as suggested (plus a 64-per-axis bound, so a 1×256 strip is no cheaper
+than a square); cube tables stay out of scope.
 
 ## Alternatives considered
 

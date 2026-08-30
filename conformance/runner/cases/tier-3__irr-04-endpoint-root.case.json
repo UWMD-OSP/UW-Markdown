@@ -1,0 +1,16 @@
+{
+  "id": "tier-3/irr-04-endpoint-root",
+  "tier": "3",
+  "command": "calc",
+  "args": [
+    "deal.uw.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/irr-04-endpoint-root",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "manifest_version": "1",
+  "id": "com.example.badcls",
+  "name": "Minimal Module",
+  "version": "1.0.0",
+  "description": "The smallest manifest a conforming host must accept: required fields only, no contributed constructs.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-1-reader",
+  "declares_asset_classes": [
+    {
+      "id": "com.example.data_center",
+      "display_name": "A"
+    },
+    {
+      "id": "com.example.data_center",
+      "display_name": "B"
+    }
+  ]
+}

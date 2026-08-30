@@ -1,0 +1,23 @@
+{
+  "id": "noi_distribution",
+  "label": "NOI",
+  "base_formula": "noi_model.net_operating_income",
+  "inputs": [
+    {
+      "variable": "noi_model.net_operating_income",
+      "distribution": {
+        "kind": "normal",
+        "mean": 600000,
+        "stddev": 40000
+      }
+    }
+  ],
+  "samples": 1000,
+  "seed": 99,
+  "summarize": [
+    "mean",
+    "median",
+    "stddev"
+  ],
+  "round_to": 2
+}

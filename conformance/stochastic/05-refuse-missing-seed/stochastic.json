@@ -1,0 +1,19 @@
+{
+  "id": "x",
+  "label": "X",
+  "base_formula": "noi_model.net_operating_income",
+  "inputs": [
+    {
+      "variable": "noi_model.net_operating_income",
+      "distribution": {
+        "kind": "uniform",
+        "min": 1,
+        "max": 2
+      }
+    }
+  ],
+  "samples": 100,
+  "summarize": [
+    "mean"
+  ]
+}

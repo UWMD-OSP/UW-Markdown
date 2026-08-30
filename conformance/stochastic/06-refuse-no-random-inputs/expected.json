@@ -1,0 +1,5 @@
+{
+  "description": "No random inputs. Every draw would be the same number and the summary would be a point estimate wearing a distribution's clothes.",
+  "ok": false,
+  "expected_code": "CALC-STOCH-005"
+}

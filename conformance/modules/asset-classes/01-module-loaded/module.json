@@ -1,0 +1,24 @@
+{
+  "manifest_version": "1",
+  "id": "com.example.datacenters",
+  "name": "Data Center Module",
+  "version": "0.1.0",
+  "description": "Declares com.example.data_center with an industrial fallback, so a reader without this module renders degraded rather than refusing.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-1-reader",
+  "declares_asset_classes": [
+    {
+      "id": "com.example.data_center",
+      "display_name": "Data Center",
+      "fallback": "industrial",
+      "required_sections": [
+        "power_capacity"
+      ]
+    }
+  ]
+}

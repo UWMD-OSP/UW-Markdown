@@ -1,0 +1,28 @@
+{
+  "description": "One axis value is zero. The grid still succeeds: a table where one combination divides by zero is a useful table, and failing the whole thing would hide the two cells that worked. The failure is recorded in place with its code.",
+  "ok": true,
+  "failed_cells": 2,
+  "round_to": 2,
+  "grid": [
+    [
+      12000000,
+      13200000
+    ],
+    [
+      null,
+      null
+    ]
+  ],
+  "expected_cell_errors": [
+    {
+      "row": 1,
+      "col": 0,
+      "code": "CALC-DIV-ZERO"
+    },
+    {
+      "row": 1,
+      "col": 1,
+      "code": "CALC-DIV-ZERO"
+    }
+  ]
+}

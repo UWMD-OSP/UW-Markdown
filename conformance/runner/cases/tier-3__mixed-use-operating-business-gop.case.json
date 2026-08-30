@@ -1,0 +1,16 @@
+{
+  "id": "tier-3/mixed-use-operating-business-gop",
+  "tier": "3",
+  "command": "calc",
+  "args": [
+    "deal.uw.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/mixed-use-operating-business-gop",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

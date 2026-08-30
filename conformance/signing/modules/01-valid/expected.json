@@ -1,0 +1,20 @@
+{
+  "description": "A validly signed manifest. Loads under every policy, and the verdict carries the kid and the (advisory) identity claim.",
+  "keystore": "../keys/keystore.json",
+  "policies": {
+    "ignore": {
+      "ok": true
+    },
+    "verify-if-present": {
+      "ok": true
+    },
+    "require": {
+      "ok": true
+    }
+  },
+  "verdict": {
+    "ok": true,
+    "kid": "uwmd-conformance-ed25519",
+    "identity": "modules@uwmd.org"
+  }
+}

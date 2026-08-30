@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                size-intensive.
+//                size-intensive,signing,sensitivity,stochastic.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -33,6 +33,8 @@ import {
   applyEdit,
   applyEditAsync,
   evaluateCalc,
+  evaluateSensitivity,
+  evaluateStochastic,
   render,
   validateUWFile,
   verifyChain,
@@ -54,6 +56,12 @@ import {
   createReplayProvider,
   parseAgentCassette,
   loadModuleManifest,
+  loadModuleManifestAsync,
+  createModuleRegistry,
+  evaluateModuleCalculations,
+  validateAgainstModules,
+  resolveAssetClass,
+  verifyModuleSignature,
   validateUWDealPackageManifest,
   encodeUWDealPackageZip,
   decodeUWDealPackageZip,
@@ -96,7 +104,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity,stochastic').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1381,10 +1389,14 @@ async function runModules() {
   }
 
   const { default: Ajv2020 } = await import('ajv/dist/2020.js');
-  const schema = JSON.parse(
-    readFileSync(join(ROOT, 'spec', 'schemas', 'module-manifest.schema.json'), 'utf8'),
-  );
-  const schemaCheck = new Ajv2020({ strict: false }).compile(schema);
+  const readSchema = (name) =>
+    JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));
+  const ajv = new Ajv2020({ strict: false });
+  // The manifest schema $refs the signature schema by absolute $id (RFC 0002),
+  // so the referenced schema has to be registered before compiling — ajv will
+  // not fetch it, and should not.
+  ajv.addSchema(readSchema('module-signature.schema.json'));
+  const schemaCheck = ajv.compile(readSchema('module-manifest.schema.json'));
 
   const readFixtures = (kind) => {
     const dir = join(MODULES_DIR, kind);
@@ -1472,6 +1484,173 @@ async function runModules() {
       }
     }
     parity(`reject/${id}`, manifest, result.ok, expected.schema_divergence ?? null);
+  }
+}
+
+
+/**
+ * Module runtime (RFC 0006) — the module system with an actual consumer.
+ *
+ * Every other module fixture in this corpus checks that a manifest *loads*.
+ * These check that a loaded module *does something*: its calculations compute,
+ * its validation rules fire and stay silent in the right places, and its
+ * required sections are enforced.
+ *
+ * The module under test is `@uwmd/module-hospitality`, imported the way any
+ * host would import it. If a scenario's `module` names something else, it is
+ * skipped rather than silently passing.
+ */
+async function runModuleRuntime() {
+  const dir = join(MODULES_DIR, 'runtime');
+  if (!existsSync(dir)) return;
+
+  let hospitality;
+  try {
+    hospitality = await import('@uwmd/module-hospitality');
+  } catch {
+    record('modules', 'runtime', 'fail', '@uwmd/module-hospitality is not built — run npm run build first');
+    return;
+  }
+  const registry = createModuleRegistry({
+    modules: [hospitality.HOSPITALITY_MODULE],
+    hostTier: 'tier-4-agent-host',
+  });
+
+  const scenarios = readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const scenarioDir = join(dir, id);
+    const dealPath = join(scenarioDir, 'deal.uwx.md');
+    const expectedPath = join(scenarioDir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(expectedPath)) {
+      record('modules', `runtime/${id}`, 'fail', 'scenario needs deal.uwx.md and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    if (expected.module !== '@uwmd/module-hospitality') {
+      record('modules', `runtime/${id}`, 'fail', `unknown module under test: ${expected.module}`);
+      continue;
+    }
+
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const problems = [];
+
+    const computed = Object.fromEntries(
+      evaluateModuleCalculations(parsed, registry).map(({ result }) => [result.calc_id, result.value]),
+    );
+    for (const [calcId, want] of Object.entries(expected.expected_calcs ?? {})) {
+      if (!(calcId in computed)) {
+        problems.push(`${calcId}: not computed`);
+      } else if (computed[calcId] !== want) {
+        problems.push(`${calcId}: ${computed[calcId]} != ${want}`);
+      }
+    }
+
+    const codes = [...new Set(validateAgainstModules(parsed, registry).map((i) => i.code))].sort();
+    const wanted = [...expected.expected_codes].sort();
+    if (codes.join(',') !== wanted.join(',')) {
+      problems.push(`codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+
+    record('modules', `runtime/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+
+/**
+ * Module-declared asset classes (RFC 0003, protocol §X.2).
+ *
+ * Three of the four scenarios are the SAME BYTES with a different host: module
+ * loaded, module absent but the declaration known, and neither. The verdict
+ * has to change because the *reader* changed, and never because the document
+ * is ambiguous — that is the property that makes an open extension point safe,
+ * and it is not observable from any one scenario alone.
+ */
+async function runAssetClasses() {
+  const dir = join(MODULES_DIR, 'asset-classes');
+  if (!existsSync(dir)) return;
+
+  const scenarios = readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const scenarioDir = join(dir, id);
+    const dealPath = join(scenarioDir, 'deal.uwx.md');
+    const modulePath = join(scenarioDir, 'module.json');
+    const expectedPath = join(scenarioDir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(modulePath) || !existsSync(expectedPath)) {
+      record('modules', `asset-classes/${id}`, 'fail', 'scenario needs deal.uwx.md, module.json and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const manifest = JSON.parse(readFileSync(modulePath, 'utf8'));
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const problems = [];
+
+    // The manifest must load on its own before any scenario means anything.
+    const loaded = loadModuleManifest(manifest, { hostTier: 'tier-4-agent-host' });
+    if (!loaded.ok) {
+      record('modules', `asset-classes/${id}`, 'fail', `fixture module does not load: ${loaded.errors.map((e) => e.code).join(', ')}`);
+      continue;
+    }
+
+    const registry = createModuleRegistry({
+      modules: expected.load_module ? [manifest] : [],
+      hostTier: 'tier-4-agent-host',
+    });
+    const options = expected.known_declarations
+      ? { knownDeclarations: manifest.declares_asset_classes }
+      : {};
+
+    const resolution = resolveAssetClass(parsed.frontmatter.asset_class, registry, options);
+    if (resolution.status !== expected.expected_status) {
+      problems.push(`status ${resolution.status} != ${expected.expected_status}`);
+    }
+    if (expected.expected_kind && resolution.kind !== expected.expected_kind) {
+      problems.push(`kind ${resolution.kind} != ${expected.expected_kind}`);
+    }
+    if (expected.expected_display_name && resolution.declaration?.display_name !== expected.expected_display_name) {
+      problems.push(`display_name ${resolution.declaration?.display_name} != ${expected.expected_display_name}`);
+    }
+    if (expected.expected_fallback && resolution.fallback !== expected.expected_fallback) {
+      problems.push(`fallback ${resolution.fallback} != ${expected.expected_fallback}`);
+    }
+    if (expected.expected_issue_code && resolution.issue?.code !== expected.expected_issue_code) {
+      problems.push(`issue ${resolution.issue?.code} != ${expected.expected_issue_code}`);
+    }
+
+    // Validation is host-independent by construction — it never consults a
+    // registry — so its codes are asserted once, not per scenario.
+    const codes = validateUWFile(parsed)
+      .issues.map((i) => i.code)
+      .filter((c) => c.startsWith('INVALID-ASSET-CLASS') || c === 'MOD-DEPENDENCY-UNDECLARED')
+      .sort();
+    const wanted = [...expected.expected_validation_codes].sort();
+    if (codes.join(',') !== wanted.join(',')) {
+      problems.push(`validation [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+
+    record('modules', `asset-classes/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // Cross-scenario invariant, asserted without a baseline: the three scenarios
+  // that share a document must share its bytes. If someone "fixes" a failing
+  // scenario by editing its deal file, the whole demonstration is void.
+  const bytes = ['01-module-loaded', '02-fallback-degraded', '03-unresolved']
+    .map((s) => join(dir, s, 'deal.uwx.md'))
+    .filter((p) => existsSync(p))
+    .map((p) => readFileSync(p, 'utf8'));
+  if (bytes.length === 3) {
+    const identical = bytes.every((b) => b === bytes[0]);
+    record(
+      'modules',
+      'asset-classes/same-document-across-hosts',
+      identical ? 'pass' : 'fail',
+      identical ? undefined : 'the three resolution scenarios no longer share one document',
+    );
   }
 }
 
@@ -2193,6 +2372,423 @@ async function runSizeIntensive() {
   }
 }
 
+// ─── Signing suite (RFC 0010) ────────────────────────────────────────────────
+//
+// Block signatures are an optional capability, so this is a named suite rather
+// than a tier: an implementation that does not claim `signing` skips it and is
+// still conformant. It runs by default here because the reference
+// implementation does claim it.
+//
+//   blocks/<scenario>/deal.uw.md + expected.json
+//     { keystore, ok, signatures_present, signatures_verified, expected_codes }
+//   modules/<scenario>/module.json + expected.json
+//     { keystore, policies: { <policy>: { ok, expected_codes } }, verdict }
+//
+// `keystore: null` means "verify with no signature backend" — the scenario that
+// pins the distinction between a signature that passed and one nobody checked.
+//
+// The fixtures are generated (`scripts/gen-signing-fixtures.mjs`) because a
+// signature over a hash of the file it lives in cannot be hand-authored.
+
+const SIGNING_DIR = join(CONFORMANCE_DIR, 'signing');
+
+async function runSigning() {
+  if (!existsSync(SIGNING_DIR)) return;
+
+  let signing;
+  try {
+    signing = await import('@uwmd/signing');
+  } catch {
+    record('signing', 'suite', 'fail', '@uwmd/signing is not built — run npm run build first');
+    return;
+  }
+
+  await runSigningBlocks(signing);
+  await runSigningModules(signing);
+}
+
+async function runSigningBlocks(signing) {
+  const BLOCKS_DIR = join(SIGNING_DIR, 'blocks');
+  if (!existsSync(BLOCKS_DIR)) return;
+
+  const scenarios = readdirSync(BLOCKS_DIR)
+    .filter((name) => statSync(join(BLOCKS_DIR, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const dir = join(BLOCKS_DIR, id);
+    const dealPath = join(dir, 'deal.uw.md');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(expectedPath)) {
+      record('signing', `blocks/${id}`, 'fail', 'scenario needs deal.uw.md and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+
+    let options = {};
+    if (expected.keystore) {
+      const store = await signing.loadKeyStoreFile(join(BLOCKS_DIR, expected.keystore));
+      options = { signatureVerifier: signing.createBlockSignatureVerifier(store) };
+    }
+
+    let result;
+    try {
+      result = await verifyChain(parseUWFile(readFileSync(dealPath, 'utf8')), options);
+    } catch (e) {
+      record('signing', `blocks/${id}`, 'fail', `verifyChain threw: ${e.message}`);
+      continue;
+    }
+
+    const codes = [...new Set(result.issues.map((i) => i.code))].sort();
+    const wanted = [...expected.expected_codes].sort();
+    const mismatches = [];
+    if (result.ok !== expected.ok) mismatches.push(`ok ${result.ok} != ${expected.ok}`);
+    if (result.signatures_present !== expected.signatures_present) {
+      mismatches.push(`signatures_present ${result.signatures_present} != ${expected.signatures_present}`);
+    }
+    if (result.signatures_verified !== expected.signatures_verified) {
+      mismatches.push(`signatures_verified ${result.signatures_verified} != ${expected.signatures_verified}`);
+    }
+    if (codes.join(',') !== wanted.join(',')) {
+      mismatches.push(`codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+    record('signing', `blocks/${id}`, mismatches.length ? 'fail' : 'pass', mismatches.join('; ') || undefined);
+  }
+
+  // Cross-scenario invariant, asserted without a baseline so it binds any
+  // implementation: the same bytes verified with and without a backend must
+  // agree on how many signatures are *present*. Only `signatures_verified` and
+  // the issue list may differ.
+  const withBackend = join(BLOCKS_DIR, '01-signed-valid', 'deal.uw.md');
+  const without = join(BLOCKS_DIR, '05-signed-no-backend', 'deal.uw.md');
+  if (existsSync(withBackend) && existsSync(without)) {
+    const a = await verifyChain(parseUWFile(readFileSync(withBackend, 'utf8')));
+    const b = await verifyChain(parseUWFile(readFileSync(without, 'utf8')));
+    const agrees = a.signatures_present === b.signatures_present;
+    record(
+      'signing',
+      'blocks/present-count is backend-independent',
+      agrees ? 'pass' : 'fail',
+      agrees ? undefined : `${a.signatures_present} != ${b.signatures_present}`,
+    );
+  }
+}
+
+
+/**
+ * Module manifest signatures (RFC 0002, protocol §X.1).
+ *
+ * Every scenario is run under all three host policies, not just the
+ * interesting one. The policy table IS the feature: `04-unsigned` loading under
+ * `verify-if-present` and refusing under `require` is the whole distinction,
+ * and asserting only one half would let the two collapse into each other
+ * unnoticed.
+ */
+async function runSigningModules(signing) {
+  const MODULES_SIG_DIR = join(SIGNING_DIR, 'modules');
+  if (!existsSync(MODULES_SIG_DIR)) return;
+
+  const scenarios = readdirSync(MODULES_SIG_DIR)
+    .filter((name) => statSync(join(MODULES_SIG_DIR, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const dir = join(MODULES_SIG_DIR, id);
+    const manifestPath = join(dir, 'module.json');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(manifestPath) || !existsSync(expectedPath)) {
+      record('signing', `modules/${id}`, 'fail', 'scenario needs module.json and expected.json');
+      continue;
+    }
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const store = await signing.loadKeyStoreFile(join(MODULES_SIG_DIR, expected.keystore));
+    const verifier = signing.createModuleSignatureVerifier(store);
+
+    const problems = [];
+
+    for (const [policy, want] of Object.entries(expected.policies)) {
+      let result;
+      try {
+        result = await loadModuleManifestAsync(manifest, {
+          hostTier: 'tier-4-agent-host',
+          signaturePolicy: policy,
+          signatureVerifier: verifier,
+        });
+      } catch (e) {
+        problems.push(`${policy}: loader threw ${e.message}`);
+        continue;
+      }
+      if (result.ok !== want.ok) {
+        const saw = result.ok ? '' : ` (${result.errors.map((e) => e.code).join(', ')})`;
+        problems.push(`${policy}: ok ${result.ok} != ${want.ok}${saw}`);
+        continue;
+      }
+      const emitted = new Set(result.errors.map((e) => e.code));
+      for (const code of want.expected_codes ?? []) {
+        if (!emitted.has(code)) problems.push(`${policy}: missing ${code}`);
+      }
+    }
+
+    // The verdict is asserted separately from the policies because a host may
+    // want the reason without delegating the decision.
+    const verdict = await verifyModuleSignature(manifest, { verifier });
+    if (verdict.ok !== expected.verdict.ok) {
+      problems.push(`verdict ok ${verdict.ok} != ${expected.verdict.ok}`);
+    } else if (verdict.ok) {
+      if (verdict.kid !== expected.verdict.kid) {
+        problems.push(`verdict kid ${verdict.kid} != ${expected.verdict.kid}`);
+      }
+      if ((verdict.identity ?? null) !== (expected.verdict.identity ?? null)) {
+        problems.push(`verdict identity ${verdict.identity} != ${expected.verdict.identity}`);
+      }
+    } else if (verdict.reason !== expected.verdict.reason) {
+      problems.push(`verdict reason ${verdict.reason} != ${expected.verdict.reason}`);
+    }
+
+    record('signing', `modules/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+
+// ─── Sensitivity suite (RFC 0007) ────────────────────────────────────────────
+//
+// A named suite rather than a tier-3 fixture family: a sensitivity declaration
+// is not a `ModuleCalcDecl`, its result is not a `CalcResult`, and filing it
+// under tier-3 would mean the tier-3 runner (and the RFC 0004 case generator
+// that reads the same directory) had to branch on fixture shape.
+//
+//   <scenario>/{deal.uwx.md, sensitivity.json, expected.json}
+//
+// `expected.grid` is a plain 2-D array of values with `null` for a failed
+// cell, which reads far better in a diff than the cell union does. Cell errors
+// are asserted separately, by coordinate and code.
+
+const SENSITIVITY_DIR = join(CONFORMANCE_DIR, 'sensitivity');
+
+async function runSensitivity() {
+  if (!existsSync(SENSITIVITY_DIR)) return;
+
+  const scenarios = readdirSync(SENSITIVITY_DIR)
+    .filter((name) => statSync(join(SENSITIVITY_DIR, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const dir = join(SENSITIVITY_DIR, id);
+    const dealPath = join(dir, 'deal.uwx.md');
+    const declPath = join(dir, 'sensitivity.json');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(declPath) || !existsSync(expectedPath)) {
+      record('sensitivity', id, 'fail', 'scenario needs deal.uwx.md, sensitivity.json and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const decl = JSON.parse(readFileSync(declPath, 'utf8'));
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const ctx = { parsed, prior_results: {}, locale: 'en-US' };
+    const problems = [];
+
+    let result;
+    try {
+      result = evaluateSensitivity(decl, ctx);
+    } catch (e) {
+      record('sensitivity', id, 'fail', `evaluateSensitivity threw: ${e.message}`);
+      continue;
+    }
+
+    if (result.ok !== expected.ok) {
+      problems.push(`ok ${result.ok} != ${expected.ok}${result.ok ? '' : ` (${result.error?.code})`}`);
+    } else if (!expected.ok) {
+      if (result.error?.code !== expected.expected_code) {
+        problems.push(`code ${result.error?.code} != ${expected.expected_code}`);
+      }
+    } else {
+      if (result.failed_cells !== expected.failed_cells) {
+        problems.push(`failed_cells ${result.failed_cells} != ${expected.failed_cells}`);
+      }
+      if (expected.round_to !== undefined && result.round_to !== expected.round_to) {
+        problems.push(`round_to ${result.round_to} != ${expected.round_to}`);
+      }
+      const actualGrid = (result.grid ?? []).map((row) =>
+        row.map((cell) => (cell.ok ? cell.value : null)),
+      );
+      if (JSON.stringify(actualGrid) !== JSON.stringify(expected.grid)) {
+        problems.push(`grid ${JSON.stringify(actualGrid)} != ${JSON.stringify(expected.grid)}`);
+      }
+      for (const want of expected.expected_cell_errors ?? []) {
+        const cell = result.grid?.[want.row]?.[want.col];
+        if (cell?.ok !== false) {
+          problems.push(`cell [${want.row}][${want.col}] did not fail`);
+        } else if (cell.error.code !== want.code) {
+          problems.push(`cell [${want.row}][${want.col}] ${cell.error.code} != ${want.code}`);
+        }
+      }
+      // A sweep that edited the document would silently change the deal, and
+      // nothing else in the suite would notice.
+      for (const [path, value] of Object.entries(expected.assert_unchanged ?? {})) {
+        const after = evaluateCalc(
+          { id: 'probe', label: 'probe', formula: path, deterministic: true },
+          ctx,
+        );
+        if (after.value !== value) {
+          problems.push(`document mutated: ${path} is ${after.value}, expected ${value}`);
+        }
+      }
+    }
+
+    record('sensitivity', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+
+// ─── Stochastic suite (RFC 0005) ─────────────────────────────────────────────
+//
+// What this suite pins is NOT the shape of a distribution — that is a
+// statistics question with no single right answer — but that the same seed
+// produces the same numbers. A stochastic calc two hosts disagree about is not
+// a model, it is a rumor.
+//
+//   <scenario>/{deal.uwx.md, stochastic.json, expected.json}
+//
+// `expected.summary` is the frozen baseline, minted with --update. Scenarios
+// declare their own `exactness`: `exact` for uniform and triangular, which use
+// only arithmetic and sqrt, and `tolerance` for normal, whose inverse-CDF tails
+// call log() — a function no standard requires to be correctly rounded. Saying
+// which is which beats a blanket tolerance that hides the difference.
+
+const STOCHASTIC_DIR = join(CONFORMANCE_DIR, 'stochastic');
+
+function summariesAgree(actual, expected, exactness, relTolerance) {
+  const keys = [...new Set([...Object.keys(actual ?? {}), ...Object.keys(expected ?? {})])];
+  const problems = [];
+  for (const key of keys) {
+    const a = actual?.[key];
+    const b = expected?.[key];
+    if (a === null || b === null || a === undefined || b === undefined) {
+      if (a !== b) problems.push(`${key}: ${a} != ${b}`);
+      continue;
+    }
+    if (exactness === 'exact') {
+      if (a !== b) problems.push(`${key}: ${a} != ${b}`);
+      continue;
+    }
+    const scale = Math.max(Math.abs(a), Math.abs(b), 1);
+    if (Math.abs(a - b) / scale > (relTolerance ?? 1e-9)) {
+      problems.push(`${key}: ${a} != ${b} beyond tolerance`);
+    }
+  }
+  return problems;
+}
+
+async function runStochastic() {
+  if (!existsSync(STOCHASTIC_DIR)) return;
+
+  const scenarios = readdirSync(STOCHASTIC_DIR)
+    .filter((name) => statSync(join(STOCHASTIC_DIR, name)).isDirectory())
+    .sort();
+  const summaries = new Map();
+
+  for (const id of scenarios) {
+    const dir = join(STOCHASTIC_DIR, id);
+    const dealPath = join(dir, 'deal.uwx.md');
+    const declPath = join(dir, 'stochastic.json');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(declPath) || !existsSync(expectedPath)) {
+      record('stochastic', id, 'fail', 'scenario needs deal.uwx.md, stochastic.json and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const decl = JSON.parse(readFileSync(declPath, 'utf8'));
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const ctx = { parsed, prior_results: {}, locale: 'en-US' };
+    const problems = [];
+
+    let result;
+    try {
+      result = evaluateStochastic(decl, ctx);
+    } catch (e) {
+      record('stochastic', id, 'fail', `evaluateStochastic threw: ${e.message}`);
+      continue;
+    }
+
+    if (result.ok !== expected.ok) {
+      problems.push(`ok ${result.ok} != ${expected.ok}${result.ok ? '' : ` (${result.error?.code})`}`);
+      record('stochastic', id, 'fail', problems.join('; '));
+      continue;
+    }
+
+    if (!expected.ok) {
+      if (result.error?.code !== expected.expected_code) {
+        problems.push(`code ${result.error?.code} != ${expected.expected_code}`);
+      }
+      record('stochastic', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+      continue;
+    }
+
+    summaries.set(id, result.summary);
+
+    // Reproducibility is asserted in-process, without any baseline: re-running
+    // must return the identical object. This binds any implementation, not just
+    // one that happens to match our frozen numbers.
+    if (expected.assert_reproducible) {
+      const again = evaluateStochastic(decl, ctx);
+      if (JSON.stringify(again.summary) !== JSON.stringify(result.summary)) {
+        problems.push('re-running the same declaration produced a different summary');
+      }
+    }
+
+    if (expected.expected_sampled) {
+      if (JSON.stringify(result.sampled) !== JSON.stringify(expected.expected_sampled)) {
+        problems.push(`sampled ${JSON.stringify(result.sampled)} != ${JSON.stringify(expected.expected_sampled)}`);
+      }
+    }
+
+    for (const [stat, [lo, hi]] of Object.entries(expected.assert_within ?? {})) {
+      const value = result.summary?.[stat];
+      if (typeof value !== 'number' || value < lo || value > hi) {
+        problems.push(`${stat} ${value} outside [${lo}, ${hi}]`);
+      }
+    }
+
+    if (UPDATE) {
+      expected.summary = result.summary;
+      writeFileSync(expectedPath, `${JSON.stringify(expected, null, 2)}
+`);
+      record('stochastic', id, 'updated');
+      continue;
+    }
+    if (!expected.summary) {
+      record('stochastic', id, 'fail', 'missing frozen summary — run with --update');
+      continue;
+    }
+    problems.push(
+      ...summariesAgree(result.summary, expected.summary, expected.exactness, expected.relative_tolerance),
+    );
+
+    record('stochastic', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // A seed that did not change the stream would make the field decorative and
+  // reproducibility accidental — so a scenario can name one it must differ from.
+  for (const id of scenarios) {
+    const expectedPath = join(STOCHASTIC_DIR, id, 'expected.json');
+    if (!existsSync(expectedPath)) continue;
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    if (!expected.differs_from) continue;
+    const mine = summaries.get(id);
+    const theirs = summaries.get(expected.differs_from);
+    if (mine === undefined || theirs === undefined) continue;
+    const same = JSON.stringify(mine) === JSON.stringify(theirs);
+    record(
+      'stochastic',
+      `${id} [differs from ${expected.differs_from}]`,
+      same ? 'fail' : 'pass',
+      same ? 'a different seed produced an identical summary' : undefined,
+    );
+  }
+}
+
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -2205,11 +2801,14 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
-  'modules': async () => { await runModules(); },
+  'modules': async () => { await runModules(); await runModuleRuntime(); await runAssetClasses(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
   'size-intensive': async () => { await runSizeIntensive(); },
+  'signing': async () => { await runSigning(); },
+  'sensitivity': async () => { await runSensitivity(); },
+  'stochastic': async () => { await runStochastic(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

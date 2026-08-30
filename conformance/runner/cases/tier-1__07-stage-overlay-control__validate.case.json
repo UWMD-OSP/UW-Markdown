@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/07-stage-overlay-control/validate",
+  "tier": "1",
+  "command": "validate",
+  "args": [
+    "07-stage-overlay-control.uw.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/07-stage-overlay-control.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

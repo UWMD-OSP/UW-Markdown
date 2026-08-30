@@ -23,12 +23,14 @@ same protocol version.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
-| UW Protocol | **1.6.0** | format ≥ 1.0 |
-| `@uwmd/core` | **1.7.0** | format 1.1, protocol 1.6.0 |
+| UW Protocol | **1.8.0** | format ≥ 1.0 |
+| `@uwmd/core` | **1.7.0** | format 1.1, protocol 1.8.0 |
 | `@uwmd/cli` (CLI) | **1.7.0** | `@uwmd/core` 1.7.0 |
 | `@uwmd/excel` | **0.6.0** | `@uwmd/core` 1.7.x, format 1.1 multifamily pack |
 | `@uwmd/report` | **0.6.0** | `@uwmd/core` 1.7.x, format spec §7.1/§7.2 |
 | `@uwmd/batch` | **0.5.0** | `@uwmd/core` 1.7.x, `.uwx.md` collections |
+| `@uwmd/signing` | **0.1.0** (unpublished) | `@uwmd/core` 1.7.x, protocol 1.8.0 §V.11 |
+| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 1.7.x, protocol §X module system |
 | `tools/web-editor` | **0.6.0** (private) | `@uwmd/core` 1.7.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |

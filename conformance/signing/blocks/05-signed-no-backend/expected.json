@@ -1,0 +1,8 @@
+{
+  "description": "The 01 file verified with no signature backend. A verifier that cannot check a signature must report it as present and unchecked - not silently pass it, and not fail the document either.",
+  "keystore": null,
+  "ok": true,
+  "signatures_present": 1,
+  "signatures_verified": 0,
+  "expected_codes": []
+}

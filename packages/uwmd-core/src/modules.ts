@@ -16,6 +16,12 @@ import {
   type ProtocolError,
   type ViewerTier,
 } from './protocol.js';
+import { parseAssetClass } from './asset-class.js';
+import {
+  checkSignatureShape,
+  verifyModuleSignature,
+  type ModuleSignatureVerifier,
+} from './module-signing.js';
 import { ASSET_CLASSES } from './types.js';
 import type { DealStage, ValidationSeverity } from './types.js';
 
@@ -57,7 +63,8 @@ const MANIFEST_KEYS: readonly string[] = [
   'manifest_version', 'id', 'name', 'version', 'description', 'authors', 'license',
   'requires_protocol', 'requires_format', 'requires_tier', 'asset_classes',
   'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
-  'view_models', 'ui', 'agent_layers', 'depends_on',
+  'view_models', 'ui', 'agent_layers', 'depends_on', 'signature',
+  'declares_asset_classes',
 ];
 const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
 const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'round_to', 'deterministic'];
@@ -93,7 +100,37 @@ export interface LoadModuleOptions {
   alreadyLoaded?: readonly ModuleManifest[];
 }
 
+/**
+ * What a host does about module signatures (§X.1.4, RFC 0002).
+ *
+ * - `ignore` — do not look. The default, and what every host did before RFC
+ *   0002; a signature is carried through untouched.
+ * - `verify-if-present` — an unsigned module loads, but a *bad* signature
+ *   refuses. The pragmatic setting during adoption: it never punishes an
+ *   author who has not signed yet, and never lets a broken claim through.
+ * - `require` — an unsigned module refuses too.
+ *
+ * `verify-if-present` and `require` both refuse on `unknown_key`, and that is
+ * deliberate: a host that cannot check a signature has not established the
+ * module is safe, and treating "I have no key for this" as success would make
+ * the whole policy decorative.
+ */
+export type ModuleSignaturePolicy = 'ignore' | 'verify-if-present' | 'require';
+
+export interface LoadModuleAsyncOptions extends LoadModuleOptions {
+  /** Defaults to `ignore`. */
+  signaturePolicy?: ModuleSignaturePolicy;
+  /** Supplied by `@uwmd/signing`. Absent under a checking policy means every signed module refuses. */
+  signatureVerifier?: ModuleSignatureVerifier;
+  /** Optional identity allow-list; see `VerifyModuleSignatureOptions`. */
+  allowedIdentities?: readonly string[];
+}
+
 export interface CreateModuleRegistryOptions extends LoadModuleOptions {
+  modules: readonly ModuleManifest[];
+}
+
+export interface CreateModuleRegistryAsyncOptions extends LoadModuleAsyncOptions {
   modules: readonly ModuleManifest[];
 }
 
@@ -116,6 +153,53 @@ export function loadModuleManifest(
   return errors.length
     ? { ok: false, errors }
     : { ok: true, manifest: freezeManifest(manifest), errors: [] };
+}
+
+/**
+ * `loadModuleManifest` plus a signature-policy gate.
+ *
+ * Separate and async for the same reason `applyEditAsync` is: verification
+ * needs Web Crypto, which is async, and the synchronous loader is on a path
+ * plenty of hosts call where signatures are none of their business. A host that
+ * does not check signatures keeps the sync function and pays nothing.
+ *
+ * Structural validation runs first regardless of policy — a manifest that is
+ * not a valid manifest should say so, not report a signature problem.
+ */
+export async function loadModuleManifestAsync(
+  candidate: unknown,
+  opts: LoadModuleAsyncOptions = {},
+): Promise<ModuleLoadResult> {
+  const base = loadModuleManifest(candidate, opts);
+  if (!base.ok || !base.manifest) return base;
+
+  const policy = opts.signaturePolicy ?? 'ignore';
+  if (policy === 'ignore') return base;
+
+  const manifest = base.manifest;
+  if (manifest.signature === undefined && policy === 'verify-if-present') return base;
+
+  const verdict = await verifyModuleSignature(manifest, {
+    ...(opts.signatureVerifier ? { verifier: opts.signatureVerifier } : {}),
+    ...(opts.allowedIdentities ? { allowedIdentities: opts.allowedIdentities } : {}),
+  });
+  return verdict.ok ? base : { ok: false, errors: [verdict.error] };
+}
+
+/** `createModuleRegistry` with the same signature-policy gate. */
+export async function createModuleRegistryAsync(
+  opts: CreateModuleRegistryAsyncOptions,
+): Promise<ModuleRegistry> {
+  const errors: ProtocolError[] = [];
+  for (const candidate of opts.modules) {
+    const result = await loadModuleManifestAsync(candidate, opts);
+    if (!result.ok) errors.push(...result.errors);
+  }
+  // Refuse before building anything. A registry assembled from a set that
+  // included a module the policy rejects would be a registry the host was told
+  // not to have, whatever it did with the error list afterwards.
+  if (errors.length > 0) throw new ModuleRegistryError(errors);
+  return createModuleRegistry(opts);
 }
 
 export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleRegistry {
@@ -212,6 +296,14 @@ function validateModuleManifest(
   if (!Array.isArray(manifest.authors) || manifest.authors.length === 0 || !manifest.authors.every((a) => typeof a === 'string' && a.length > 0)) {
     errors.push(moduleError('PROTO-MOD-005', 'Module authors must be a non-empty string array.', 'authors'));
   }
+  // Shape-check `signature` regardless of policy. A host that ignores
+  // signatures still must not accept a manifest carrying a malformed one:
+  // "ignore" is a decision not to *verify*, not a licence to admit nonsense
+  // into a frozen manifest other code will read.
+  if (manifest.signature !== undefined) {
+    const shape = checkSignatureShape(manifest.signature);
+    if (shape) errors.push(shape.error);
+  }
   if (!TIERS.includes(manifest.requires_tier)) {
     errors.push(moduleError('PROTO-MOD-006', 'Module requires_tier is not a valid viewer tier.', 'requires_tier'));
   }
@@ -235,6 +327,8 @@ function validateModuleManifest(
       }
     }
   }
+
+  validateDeclaredAssetClasses(errors, manifest);
 
   if (manifest.deal_stages !== undefined) {
     if (!Array.isArray(manifest.deal_stages)) {
@@ -715,6 +809,96 @@ function boundLength(
   }
 }
 
+const ASSET_CLASS_DECL_KEYS: readonly string[] = [
+  'id', 'display_name', 'fallback', 'required_sections', 'optional_sections',
+];
+
+/**
+ * Validate `declares_asset_classes` (§X.2, RFC 0003).
+ *
+ * The identifier grammar is enforced here rather than only at document-parse
+ * time, so a module that would introduce an unusable class is refused at load
+ * — before any file references it and produces a confusing failure two layers
+ * away from the cause.
+ */
+function validateDeclaredAssetClasses(errors: ProtocolError[], manifest: ModuleManifest): void {
+  const declarations = manifest.declares_asset_classes;
+  if (declarations === undefined) return;
+  if (!Array.isArray(declarations)) {
+    errors.push(moduleError(
+      'PROTO-MOD-073',
+      'declares_asset_classes must be an array.',
+      'declares_asset_classes',
+    ));
+    return;
+  }
+
+  const seen = new Set<string>();
+  for (const [idx, raw] of declarations.entries()) {
+    const pointer = `declares_asset_classes[${idx}]`;
+    if (!isRecord(raw)) {
+      errors.push(moduleError('PROTO-MOD-073', 'Each declaration must be an object.', pointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, raw, ASSET_CLASS_DECL_KEYS, pointer);
+
+    const id = raw['id'];
+    if (typeof id !== 'string') {
+      errors.push(moduleError('PROTO-MOD-074', 'declaration id must be a string.', `${pointer}.id`));
+    } else {
+      const identity = parseAssetClass(id);
+      if (!identity.ok) {
+        errors.push(moduleError('PROTO-MOD-074', identity.error.message, `${pointer}.id`));
+      } else if (identity.kind === 'builtin') {
+        // Declaring a builtin is not an extension, it is a redefinition. The
+        // `asset_classes` field is how a module *enhances* one.
+        errors.push(moduleError(
+          'PROTO-MOD-074',
+          `'${id}' is a builtin asset class; use asset_classes to enhance it rather than declares_asset_classes to redefine it.`,
+          `${pointer}.id`,
+        ));
+      } else if (seen.has(id)) {
+        errors.push(moduleError(
+          'PROTO-MOD-075',
+          `Asset class '${id}' is declared more than once by this module.`,
+          `${pointer}.id`,
+        ));
+      } else {
+        seen.add(id);
+      }
+    }
+
+    if (typeof raw['display_name'] !== 'string' || (raw['display_name'] as string).length === 0) {
+      errors.push(moduleError(
+        'PROTO-MOD-076',
+        'declaration display_name must be a non-empty string.',
+        `${pointer}.display_name`,
+      ));
+    }
+
+    const fallback = raw['fallback'];
+    if (fallback !== undefined && !(ASSET_CLASSES as readonly string[]).includes(fallback as string)) {
+      errors.push(moduleError(
+        'PROTO-MOD-077',
+        `declaration fallback must be a builtin asset class (got ${JSON.stringify(fallback)}).`,
+        `${pointer}.fallback`,
+      ));
+    }
+
+    for (const key of ['required_sections', 'optional_sections'] as const) {
+      const value = raw[key];
+      if (value === undefined) continue;
+      if (!Array.isArray(value) || !value.every((v) => typeof v === 'string' && v.length > 0)) {
+        errors.push(moduleError(
+          'PROTO-MOD-078',
+          `${key} must be an array of non-empty section ids.`,
+          `${pointer}.${key}`,
+        ));
+      }
+    }
+  }
+}
+
 function freezeManifest(manifest: ModuleManifest): ModuleManifest {
   return Object.freeze({
     ...manifest,
@@ -727,6 +911,9 @@ function freezeManifest(manifest: ModuleManifest): ModuleManifest {
     view_models: manifest.view_models ? Object.freeze([...manifest.view_models]) : undefined,
     agent_layers: manifest.agent_layers ? Object.freeze([...manifest.agent_layers]) : undefined,
     depends_on: manifest.depends_on ? Object.freeze([...manifest.depends_on]) : undefined,
+    declares_asset_classes: manifest.declares_asset_classes
+      ? Object.freeze([...manifest.declares_asset_classes])
+      : undefined,
   }) as unknown as ModuleManifest;
 }
 

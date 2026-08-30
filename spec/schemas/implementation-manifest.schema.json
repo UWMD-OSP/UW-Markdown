@@ -57,8 +57,9 @@
           "parse", "validate",
           "render-json", "render-csv", "render-summary", "render-chat", "render-pdf", "render-docx",
           "edit-replace", "edit-supersede", "edit-frontmatter",
-          "calc-evaluate", "calc-deterministic",
-          "agent-host", "module-load"
+          "calc-evaluate", "calc-deterministic", "calc-stochastic", "calc-sensitivity",
+          "agent-host", "module-load",
+          "signing", "module-signature-verification"
         ]
       },
       "uniqueItems": true,

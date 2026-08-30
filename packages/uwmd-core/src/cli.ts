@@ -21,9 +21,14 @@ import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
-import type { IntegrityResult } from './integrity.js';
+import type {
+  BlockSignatureVerifier,
+  IntegrityResult,
+  VerifyChainOptions,
+} from './integrity.js';
 import type { EditContext } from './editor.js';
 import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
   cmdLeaseValidate,
@@ -129,6 +134,15 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content, { strict: flags['strict'] === true });
+  // The whole ParsedUWFile minus `raw` (which is just the input echoed back).
+  // Four fields — custom_calculations, custom_scenarios, extensions, and the
+  // full `superseded` blocks — used to be dropped here, so a caller that
+  // trusted `uwmd parse` to be "the parsed file" silently lost every custom
+  // calculation and every x_* extension in the document.
+  //
+  // `superseded_blocks` is kept alongside `superseded` for compatibility: it
+  // carries only each prior block's `content`, where `superseded` carries the
+  // whole block. New callers should read `superseded`.
   const output = {
     frontmatter: parsed.frontmatter,
     sections: Object.fromEntries(
@@ -136,6 +150,10 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     ),
     prose: parsed.prose,
     pipeline_log: parsed.pipeline_log.map(b => b.content),
+    custom_calculations: parsed.custom_calculations,
+    custom_scenarios: parsed.custom_scenarios,
+    extensions: parsed.extensions,
+    superseded: parsed.superseded,
     superseded_blocks: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(b => b.content)])
     ),
@@ -215,6 +233,53 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
   process.exit(result.errors.length > 0 ? 1 : 0);
 }
 
+/**
+ * Build the `verifyChain` options from `--signing --keystore=<path>`.
+ *
+ * `@uwmd/signing` is reached by dynamic import and declared as an optional peer
+ * - the same arrangement `@anthropic-ai/sdk` gets. `@uwmd/core` must not take a
+ * crypto dependency to satisfy a flag most invocations never pass, and the
+ * layering invariant (core depends on no sibling package) forbids a static
+ * import outright.
+ */
+async function signingOptions(
+  flags: Record<string, string | boolean>,
+): Promise<VerifyChainOptions> {
+  if (!flags['signing']) return {};
+  const keystore = flags['keystore'];
+  if (typeof keystore !== 'string' || keystore.length === 0) {
+    console.error('--signing requires --keystore=<path> to a JSON key store.');
+    process.exit(1);
+  }
+
+  // Structurally typed rather than `typeof import('@uwmd/signing')`: a type
+  // import would make core's build depend on signing's declarations, and
+  // signing already depends on core's. That cycle is the layering invariant
+  // reasserting itself, so the seam stays a two-function shape core states
+  // itself and signing satisfies.
+  interface SigningModule {
+    loadKeyStoreFile(path: string): Promise<unknown>;
+    createBlockSignatureVerifier(store: never): BlockSignatureVerifier;
+  }
+  let signing: SigningModule;
+  try {
+    signing = (await import('@uwmd/signing' as string)) as SigningModule;
+  } catch {
+    console.error(
+      '--signing needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.',
+    );
+    process.exit(1);
+  }
+
+  try {
+    const store = await signing.loadKeyStoreFile(resolve(keystore));
+    return { signatureVerifier: signing.createBlockSignatureVerifier(store as never) };
+  } catch (error) {
+    console.error((error as Error).message);
+    process.exit(1);
+  }
+}
+
 async function cmdVerify(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
   // --resolved verifies the assembled record. Without it an externalized
@@ -237,8 +302,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
-  if (runAll || onlyIntegrity) {
-    chain = await verifyChain(parsed);
+  if (runAll || onlyIntegrity || flags['signing']) {
+    chain = await verifyChain(parsed, await signingOptions(flags));
     sections['integrity'] = chain;
     if (!chain.ok) hadError = true;
   }
@@ -263,6 +328,12 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     }
     if (chain) {
       console.log(`\nIntegrity: ${chain.ok ? 'ok' : 'FAIL'} — chains_with_hashes=${chain.chains_with_hashes}, chains_verified=${chain.chains_verified}`);
+      if (chain.signatures_present > 0) {
+        const checked = flags['signing']
+          ? `${chain.signatures_verified} verified`
+          : 'not checked (pass --signing --keystore=<path>)';
+        console.log(`Signatures: ${chain.signatures_present} present, ${checked}`);
+      }
       for (const issue of chain.issues) {
         console.log(`  [${issue.severity.toUpperCase()}] ${issue.code}${issue.section ? ` [${issue.section}]` : ''}: ${issue.message}`);
       }
@@ -1069,7 +1140,7 @@ switch (command) {
     break;
 
   case 'verify':
-    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--resolved] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--resolved] [--json]'); process.exit(1); }
     await cmdVerify(positional[0], flags);
     break;
 
@@ -1273,6 +1344,13 @@ switch (command) {
       confidence: (flags['confidence'] as 'high' | 'medium' | 'low' | undefined) ?? 'medium',
     };
     const result = applyEdit(fileContent, parsedFile, op, ctx);
+    // --json reports the edit instead of performing it: the conformance driver
+    // needs the resulting content, and a driver that rewrote fixtures as a side
+    // effect of reading them would corrupt the corpus it is testing.
+    if (flags['json']) {
+      console.log(JSON.stringify(result, null, 2));
+      process.exit(result.ok ? 0 : 1);
+    }
     if (!result.ok || !result.content) {
       console.error(`Edit rejected: [${result.error?.code}] ${result.error?.message}`);
       if (result.error?.pointer) console.error(`  pointer: ${result.error.pointer}`);
@@ -1314,15 +1392,19 @@ switch (command) {
     };
 
     const results = decls.map((d) => evaluateCalc(d, ctx));
-    for (const r of results) {
-      if (r.ok) {
-        console.log(`${r.calc_id} = ${r.display ?? String(r.value)}`);
-      } else {
-        console.log(`${r.calc_id} ERROR [${r.error?.code}] ${r.error?.message}`);
-      }
-    }
+    // Under --json, stdout is exactly one JSON document — the conformance CLI
+    // protocol (§II.6a) depends on that, and printing the human lines first
+    // would make every calc response unparseable.
     if (flags['json']) {
-      console.log(JSON.stringify(results, null, 2));
+      console.log(JSON.stringify(results.length === 1 ? results[0] : results, null, 2));
+    } else {
+      for (const r of results) {
+        if (r.ok) {
+          console.log(`${r.calc_id} = ${r.display ?? String(r.value)}`);
+        } else {
+          console.log(`${r.calc_id} ERROR [${r.error?.code}] ${r.error?.message}`);
+        }
+      }
     }
     if (results.some((r) => !r.ok)) process.exit(1);
     break;
@@ -1446,6 +1528,12 @@ switch (command) {
     break;
   }
 
+  case 'manifest':
+    // The conformance CLI protocol's identity call (§II.6a). Emitted with no
+    // surrounding prose so a driver can read it without a parser.
+    console.log(JSON.stringify(REFERENCE_IMPLEMENTATION_MANIFEST, null, 2));
+    break;
+
   case 'receipt': {
     const sub = positional[0];
     if (sub === 'issue') {
@@ -1469,6 +1557,8 @@ Commands:
   parse    <file>              Parse file and output JSON
   validate <file>              Run all validation checks
   verify   <file>              Validate + verify integrity (hashes) + provenance (actor/policy)
+                               --signing --keystore=<path> also checks block signatures (RFC 0010,
+                               via the optional @uwmd/signing package)
   render   <file>              Render to output format (see --format)
   run      <file>              Invoke a Bancroft agent (see --agent)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
@@ -1489,16 +1579,19 @@ Commands:
   modules  validate|list        Validate module manifest files, or list the registry they form
   lease    validate|project     Validate a lease abstract, or project it to a rent-roll row (RFC 0018)
   package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
+  manifest                     Print this implementation's ImplementationManifest (conformance protocol)
   layers                       List Bancroft agent layers
 
 Options:
   --output <path>    Output file path (compact, init)
   --dry-run          Show what would change without writing (compact)
-  --json             JSON output (validate)
+  --json             JSON output on stdout, nothing else (validate, calc, edit)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
+  --signing          Check _meta.signature on every block (verify; requires --keystore)
+  --keystore <path>  JSON key store mapping kid to public key (verify --signing)
   --parts <dir>      Fragment directory (compose, resolve, --resolved; default: ./parts)
   --externalize <s>  Section to split into fragments (compose)
   --collection-key <k>  Row identity field (compose, default: unit_id)

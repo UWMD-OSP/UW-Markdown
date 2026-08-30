@@ -9,7 +9,25 @@ export type CalcErrorCode =
   | 'CALC-TYPE-001'
   | 'CALC-DIV-ZERO'
   | 'CALC-IRR-DIVERGE'
-  | 'CALC-LIMIT-001';
+  | 'CALC-LIMIT-001'
+  // Sensitivity declarations (§VIII.7.4). Refusals of the DECLARATION, raised
+  // before any cell runs — a cell that fails during the sweep is recorded in
+  // place under whichever ordinary calc code stopped it, and does not fail the
+  // table.
+  | 'CALC-SENS-001'
+  | 'CALC-SENS-002'
+  | 'CALC-SENS-003'
+  | 'CALC-SENS-004'
+  | 'CALC-SENS-005'
+  // Stochastic declarations (§VIII.8.5). Like the sensitivity codes, these
+  // refuse the DECLARATION before any draw; a sample whose formula fails during
+  // the run is counted in `failed_samples` and excluded from the summary.
+  | 'CALC-STOCH-001'
+  | 'CALC-STOCH-002'
+  | 'CALC-STOCH-003'
+  | 'CALC-STOCH-004'
+  | 'CALC-STOCH-005'
+  | 'CALC-STOCH-006';
 
 export function calcError(code: CalcErrorCode, message: string, pointer?: string): ProtocolError {
   return {

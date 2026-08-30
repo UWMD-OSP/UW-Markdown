@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/04-scope-only/validate",
+  "tier": "1",
+  "command": "validate",
+  "args": [
+    "04-scope-only.uw.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/04-scope-only.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

@@ -51,6 +51,7 @@ const COPIES = [
   { from: 'conformance/tier-2-editor/README.md',    to: 'conformance/tier-2.md', title: 'Tier 2 — Editor' },
   { from: 'conformance/tier-3-calc-host/README.md', to: 'conformance/tier-3.md', title: 'Tier 3 — Calc Host' },
   { from: 'conformance/tier-4-agent-host/README.md', to: 'conformance/tier-4.md', title: 'Tier 4 — Agent Host' },
+  { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
 
   // Project documents
   { from: 'ROADMAP.md',          to: 'about/roadmap.md' },
@@ -186,6 +187,8 @@ const NORMALIZED_LINK_MAP = new Map([
   ['conformance/tier-2-editor/README.md', '/conformance/tier-2'],
   ['conformance/tier-3-calc-host/README.md', '/conformance/tier-3'],
   ['conformance/tier-4-agent-host/README.md', '/conformance/tier-4'],
+  ['conformance/runner/README.md', '/conformance/runner'],
+  ['conformance/runner/', '/conformance/runner'],
 ]);
 
 function normalize(path) {
@@ -219,8 +222,11 @@ function rewriteLinks(md) {
       return `](/about/rfcs/${rfcMatch[1]}${frag})`;
     }
 
-    // Paths into source/code dirs → link out to GitHub
-    if (/^(packages|scripts|examples|\.github|tools)\b/.test(norm)) {
+    // Paths into source/code dirs → link out to GitHub. `docs/handoff/` is on
+    // this list rather than the copy list on purpose: those files record an
+    // open action for the maintainer, and publishing them on the documentation
+    // site would present internal to-dos as adopter guidance.
+    if (/^(packages|scripts|examples|\.github|tools|docs\/handoff)\b/.test(norm)) {
       return `](${GITHUB_BLOB}/${norm}${frag})`;
     }
 

@@ -1,0 +1,11 @@
+{
+  "id": "x",
+  "label": "X",
+  "base_formula": "noi_model.net_operating_income",
+  "inputs": [],
+  "samples": 100,
+  "seed": 1,
+  "summarize": [
+    "mean"
+  ]
+}

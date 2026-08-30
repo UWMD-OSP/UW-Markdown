@@ -2,16 +2,22 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-26, after RFC 0028 (reportable section readiness)
-on top of `v1.7.0` (`81aa3b5`) — full pass: build green across all
-workspaces; **1,105 tests** — 942 core, 94 excel, 62 cli, 4 batch, 3 report —
-plus **71 web-editor**; **245 conformance** assertions including the Tier-4
-replay, module, package, receipts, market-data, composition, capital-stack,
-and size-intensive suites, with Tier-1 validation-verdict baselines, the
-RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome clean;
-`typecheck:tests` clean across all five workspaces; `@uwmd/core` and
+**Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
+(module signing), RFC 0004 (language-agnostic conformance driver), RFC 0006
+(hospitality reference module), RFC 0003 (module-declared asset
+classes), RFC 0007 (sensitivity
+tables), and RFC 0005 (stochastic calculations) on top of `v1.7.0` — full pass: build green across all
+workspaces; **1,362 tests** — 1,122 core, 94 excel, 62 cli, 62 signing, 15
+module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **301
+conformance** assertions (and **44** more through the RFC 0004 CLI driver)
+including the Tier-4 replay,
+module, package, receipts, market-data, composition, capital-stack,
+size-intensive, and signing suites (blocks + modules), with Tier-1
+validation-verdict baselines,
+the RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome
+clean; `typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
 `@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
-provenance attached — protocol at **1.6.0** for §XIII.
+provenance attached — protocol at **1.8.0** for §X.2 (1.7.0 added §V.11; 1.6.0 added §XIII).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -109,9 +115,79 @@ not core gaps.
   outputs of a named pack. Normative spec `spec/UW_RECEIPT_v1.md` +
   `uw-receipt.schema.json`; browser-safe; `uwmd receipt issue|verify`;
   `conformance/receipts/` (11 assertions). Verification is three-state and keeps
-  `unverifiable` distinct from `failed`. **Unsigned only** — signature creation
-  and validation await the RFC 0010 signing package, and a signed receipt
-  correctly reports `unverifiable` until one exists.
+  `unverifiable` distinct from `failed`. **Signing landed 2026-08-27** with RFC
+  0010: `@uwmd/signing` supplies `signReceipt` and the
+  `createReceiptSignatureVerifier` backend core has always accepted, so a signed
+  receipt verifies instead of reporting `RCP-08 unverifiable`. Core itself stays
+  crypto-free — a verifier with no backend still reports `unverifiable`, which
+  is the correct answer to "I cannot check this".
+- **Block signatures (RFC 0010, protocol §V.11):** `_meta.signature` is
+  normative in the format spec and the `uwmd-block` schema; the cryptography
+  ships as **`@uwmd/signing` 0.1.0** (ed25519 / es256 / es384 over Web Crypto,
+  file-backed reference key store) so `@uwmd/core` keeps its zero-crypto
+  guarantee. Core owns the crypto-free half — the wire type and
+  `canonicalBlockSigningInput` — and takes a verifier through
+  `verifyChain(parsed, { signatureVerifier })`. `INT-05`–`INT-08`;
+  `uwmd verify --signing --keystore=<path>` (dynamic import, optional peer);
+  `conformance/signing/` (6 assertions, 5 generated scenarios). A verifier with
+  no key store reports signatures **present and unchecked**, never valid. Also
+  supplies `signReceipt` / `createReceiptSignatureVerifier`, which is what made
+  receipt signing real.
+- **Module signatures (RFC 0002, protocol §X.1):** `ModuleManifest.signature`
+  with its own `module-signature.schema.json`, five kept-apart verdicts
+  (`PROTO-MOD-068`–`072`), and three host policies (`ignore` /
+  `verify-if-present` / `require`) on `loadModuleManifestAsync` +
+  `createModuleRegistryAsync`. The scheme is `uwmd-keystore`, **not** Sigstore
+  — a Fulcio root plus a Rekor proof would mean a vendored snapshot that fails
+  closed when stale, or network access inside the module loader; `scheme:
+  "sigstore"` is reserved so adding it stays additive. `identity` is advisory
+  and §X.1.5 says so normatively. `conformance/signing/modules/` runs six
+  scenarios under all three policies.
+- **Stochastic calculations (RFC 0005, protocol §VIII.8):** distributions via a
+  JSON `StochasticDecl` plus the same override mechanism — grammar and built-ins
+  untouched. Normative PCG-XSL-RR-128/64. The finding the RFC did not have:
+  specifying the PRNG is *not sufficient*, because IEEE 754 leaves `log`/`cos`
+  unspecified and both textbook normal samplers depend on them. Everything is
+  inverse-CDF sampled; `uniform` and `triangular` are exact, `normal`'s tails
+  are not and the spec says so. Percentiles are nearest-rank.
+  `CALC-STOCH-001`–`006`; `conformance/stochastic/` (7 assertions), where
+  reproducibility is asserted in-process without a baseline. **Known gap:** the
+  PCG test vector is self-generated and not yet diffed against the reference C
+  implementation — see
+  [`docs/handoff/HUMAN-verify-pcg64-vector.md`](../handoff/HUMAN-verify-pcg64-vector.md).
+- **Sensitivity tables (RFC 0007, protocol §VIII.7):** two-axis grids as a JSON
+  `SensitivityDecl` — **the §VIII.1 grammar is unchanged**, because the RFC's
+  proposed builtin would have needed object literals, array literals, and an
+  executable string argument to reach data already sitting in JSON. The real
+  primitive is `CalcEvaluationContext.overrides` (keyed by full dotted path,
+  shadowing lookup and never writing; `null` means "absent", distinct from no
+  override), which scenario sweeps and stress tests can use too. The grid never
+  travels through `CalcResult.value`. A failed cell does not fail the table.
+  `CALC-SENS-001`–`005`; `conformance/sensitivity/` (5 scenarios). Excel emit
+  deferred — there was no ad-hoc renderer to replace, contrary to the RFC's
+  motivation.
+- **Module-declared asset classes (RFC 0003):** the builtin enum stays
+  **closed** and a namespaced space opens beside it — format spec §2.2a
+  (reverse-DNS, three segments minimum), protocol §X.2 (resolution in exactly
+  three outcomes: resolved / degraded via a declared builtin fallback /
+  unresolved), `ModuleManifest.declares_asset_classes`, and
+  `conformance/modules/asset-classes/`. `AssetClass` is deliberately *not*
+  widened — folding custom ids into it collapses the union to `string` and
+  silently kills every exhaustiveness check downstream — so `UWAssetClassId`
+  carries the wider type at the boundary only. Holding a cached declaration can
+  only ever *degrade*, never resolve.
+- **Module runtime + the reference module (RFC 0006):** `module-runtime.ts`
+  gives the module system the consumer it never had —
+  `evaluateModuleCalculations` (declaration order, results threaded forward),
+  `validateAgainstModules` (rules through the same §VIII.1 sandbox; `null` is
+  *not* `false`), `checkModuleSections`. Failures are reported rather than
+  skipped: `MOD-CALC-ERROR`, `MOD-RULE-ERROR`, `MOD-SECTION-MISSING`.
+  **`@uwmd/module-hospitality` 0.1.0** is the reference consumer — three hotel
+  sections, five calcs, three validations, built against core's published
+  surface only. Protocol §X gained the host obligations a registered module
+  implies. `conformance/modules/runtime/` (5 scenarios). Section `schema`
+  fragments stay normative JSON Schema a host with a validator SHOULD apply;
+  core checks presence and stops, because it takes no validator dependency.
 - **Excel round-trip:** `.uwx.md → .xlsx` via `toWorkbook.ts`, and **reverse
   import** `.xlsx → section fragments` via `fromWorkbook.ts` (shipped 2026-08-13).
   Every workbook also carries a **`UW MCP` sheet** (`mcpSheet.ts`) — machine-readable
@@ -333,8 +409,9 @@ not core gaps.
   > touching any of them.
 - **Module system is declarative-only** — by design — **but the loader is now
   hardened (T13).** `modules.ts` validates and registers in-process
-  `ModuleManifest` objects; there is still no dynamic import, signing, or
-  custom asset-class declaration, and those stay v2/RFC work (0002, 0003).
+  `ModuleManifest` objects; there is still no dynamic import or custom
+  asset-class declaration, and those stay v2/RFC work (0003). **Signing landed
+  2026-08-27** (RFC 0002, §X.1) — see the Built section.
 
   What changed is that the loader now actually enforces the normative schema.
   It previously validated `calculations` and `validations` and stopped:
@@ -545,27 +622,48 @@ warning, which every example was tripping.
 > of 1.x, sniffing stays and a `1.0` receipt degrades to `RCP-10`; at Protocol
 > 2.0 both obligations end.
 
-Receipt **signing** remains unimplemented and is blocked on the RFC 0010 signing
-package; unsigned issuance and verification ship today.
+Receipt **signing** shipped 2026-08-27 with RFC 0010 (`@uwmd/signing`). Unsigned
+issuance and verification are unchanged and remain the default path.
 
-## 📋 v2 RFC train (unfrozen 2026-08-26; drafts exist, none implemented)
+## 📋 v2 RFC train (unfrozen 2026-08-26; 0010 implemented, rest are drafts)
 
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
-emptied (RFCs 0014–0029 all implemented). Working priority order:
+emptied (RFCs 0014–0029 all implemented).
 
-1. **The signing chain** — signed blocks (0010), then module signing (0002);
-   together they unblock **receipt signing**, the one advertised receipt
-   feature that ships unimplemented (receipts are unsigned-only today, and a
-   signed receipt correctly reports `unverifiable`).
-2. **Conformance runner v2** (0004) — language-agnostic self-certification;
-   today's runner is TS-only while the corpus claims third parties can
-   self-certify against it.
-3. **Hospitality reference module** (0006) — first real consumer of the
-   module system, which is validated machinery nothing yet exercises.
+**✅ The signing chain — shipped 2026-08-27.** RFC 0002 (module signatures,
+protocol §X.1) landed the same day as RFC 0010 and on the same machinery; see
+the Built section above.
 
-Queued behind those: range/stochastic calcs (0005), sensitivity-table builtin
-(0007), lease-up modeling (0008), custom asset-class declarations from
-modules (0003), locale/multi-currency (0001), `_meta` v2 reorg (0009),
+**✅ RFC 0010 signed blocks — shipped 2026-08-27.** Protocol §V.11, the
+`@uwmd/signing` package (Ed25519 / ES256 / ES384 over the normative signing
+input, file-backed reference key store), `_meta.signature` in the format spec
+and block schema, `INT-05`–`INT-08`, `uwmd verify --signing --keystore`, and
+the five-scenario `conformance/signing/` suite. Receipt signing came with it.
+Two findings the work surfaced are recorded in the RFC: `parent_hash` *is*
+covered transitively (via `content_hash`, contradicting the RFC's rationale),
+and §V.9's hash exclusions had never fired for a parsed block because the
+meta-shape test required `section` where every file on disk writes `section_id`.
+
+**✅ RFC 0004 conformance runner v2 — shipped 2026-08-27.** Protocol §II.6a
+(the CLI protocol), `conformance/runner/runner.py` (TAP14 + JSON manifest,
+Python stdlib only), 44 generated cases across tiers 1–3, `npm run
+conformance:v2`, and a CI `--check` on the case files. The TypeScript runner is
+**not** replaced — it gates the corpus, the driver gates the protocol; most of
+the thirteen suites are not expressible as one command with one output.
+
+**✅ RFC 0006 hospitality reference module — shipped 2026-08-27**, closing the
+priority order the owner set when the train unfroze. See the Built section: the
+gap it surfaced was not the loader but the absence of any *consumer* of a
+registered module.
+
+**✅ RFC 0003 module-declared asset classes — shipped 2026-08-27**, following
+0006 because a declared class needs a runtime to mean anything.
+
+**The stated priority order is complete.** What remains on this train has no
+assigned order yet:
+
+Unordered: lease-up modeling (0008), locale/multi-currency (0001),
+`_meta` v2 reorg (0009),
 capability tokens (0011), corpus retrieval (0013), and portfolio/relationship
 profiles (0015). Unfrozen means actively being taken up, not accepted — each
 RFC still goes through its own acceptance.

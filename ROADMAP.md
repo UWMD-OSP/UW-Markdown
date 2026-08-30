@@ -76,14 +76,45 @@ Detailed sequencing and release gates:
 ## v2 spec exploration
 
 > **Unfrozen 2026-08-26.** With the v1.x dev queue empty (RFCs 0014–0029 all
-> implemented), the owner moved this train from ❄ frozen to 📋 active. The
-> working priority order is: **(1) the signing chain — RFC 0010 signed
-> blocks, then RFC 0002 module signing, which together unblock receipt
-> signing** (the one advertised receipt feature that ships unimplemented);
-> **(2) RFC 0004 conformance runner v2** (the corpus claims third parties
-> can self-certify, but the runner is TS-only); **(3) RFC 0006 hospitality
-> reference module** (first real consumer of the module system). The rest
-> remain queued behind those. Unfrozen means *actively being taken up*, not
+> implemented), the owner moved this train from ❄ frozen to 📋 active.
+>
+> **The signing chain landed 2026-08-27.** RFC 0010 (signed blocks) shipped
+> protocol §V.11, the new `@uwmd/signing` package, `uwmd verify --signing`,
+> and the `conformance/signing/` suite; receipt signing came with it, since
+> `@uwmd/signing` supplies the `signatureVerifier` core has always accepted.
+> RFC 0002 (module signing) followed the same day as protocol §X.1 — a
+> `uwmd-keystore` scheme on the same machinery rather than the Sigstore
+> design the RFC opened with, for reasons recorded in the RFC.
+>
+> **RFC 0004 (conformance runner v2) landed the same day** — protocol §II.6a
+> defines a CLI protocol any language can implement, and
+> `conformance/runner/runner.py` drives the tier fixtures through it. The
+> TypeScript runner is *not* replaced: it still gates the corpus, while the
+> new driver gates the protocol.
+>
+> **RFC 0006 (hospitality reference module) landed the same day**, closing
+> the priority order the owner set. Building a real module surfaced that the
+> module system was a registry with no runtime: nothing consumed a registered
+> manifest's calculations, validations, or sections. `module-runtime.ts` and
+> `@uwmd/module-hospitality` fix that together.
+>
+> **RFC 0003 (custom asset classes from modules) followed**, since the module
+> runtime 0006 added is what a declared class needs in order to mean anything.
+> Protocol §X.2; the builtin enum stays closed and a second, namespaced space
+> opens beside it.
+>
+> **RFC 0007 (sensitivity tables) followed**, as protocol §VIII.7 — a JSON
+> declaration plus a general path-override mechanism, with the §VIII.1 grammar
+> left exactly as narrow as it was.
+>
+> **RFC 0005 (stochastic calculations) followed** as protocol §VIII.8, reusing
+> the same override mechanism. It carries one known gap: the PCG test vector is
+> self-generated and has not been diffed against the reference C
+> implementation.
+>
+> **The stated priority order is complete.** What remains on this train —
+> locale negotiation (0001), lease-up modeling (0008), and portfolio
+> relationships (0015) — has no assigned order yet. Unfrozen means *actively being taken up*, not
 > accepted — each RFC still goes through its own acceptance.
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
@@ -97,12 +128,13 @@ context. This list is the maintainable copy.
 
 | RFC | Item | Why it matters |
 |---|---|---|
+| [0010](./docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
 | [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
-| [0002](./docs/rfcs/0002-module-signing.md)        | Module signing                                | Sigstore-style signature on module manifests, verified by host policy. |
-| [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |
-| [0004](./docs/rfcs/0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | `scripts/run-conformance.mjs` is TS-only — non-TS implementers can't self-certify against the same runner. |
-| [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
-| [0006](./docs/rfcs/0006-hospitality-module.md)    | Hospitality reference module                  | First real consumer of the module system. ADR/RevPAR/occupancy + STR-comp validations. |
+| [0002](./docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
+| [0003](./docs/rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
+| [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
+| [0005](./docs/rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
+| [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | Portfolio and relationship profiles          | Portable, provenance-backed cross-deal entity and edge sidecars; no storage or aggregate-math contract. |
 
 

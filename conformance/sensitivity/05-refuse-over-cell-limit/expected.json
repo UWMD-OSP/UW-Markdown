@@ -1,0 +1,5 @@
+{
+  "description": "20x20 = 400 cells, over the 256 limit. Bounded so CALC-LIMIT costs stay predictable for a host evaluating untrusted declarations.",
+  "ok": false,
+  "expected_code": "CALC-SENS-003"
+}

@@ -1,0 +1,8 @@
+{
+  "description": "Same bytes again, with neither the module nor any declaration. MOD-MISSING-001, and the frontmatter modules list is what tells the operator WHAT to load.",
+  "load_module": false,
+  "known_declarations": false,
+  "expected_status": "unresolved",
+  "expected_issue_code": "MOD-MISSING-001",
+  "expected_validation_codes": []
+}

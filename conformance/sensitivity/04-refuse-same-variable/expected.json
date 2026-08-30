@@ -1,0 +1,5 @@
+{
+  "description": "Both axes vary one path. The second would silently win for every cell, producing a grid whose rows are identical and whose reader cannot see why. Refused at declaration.",
+  "ok": false,
+  "expected_code": "CALC-SENS-004"
+}

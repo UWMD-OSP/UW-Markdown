@@ -1,0 +1,22 @@
+{
+  "description": "No signature at all. The policy split lives here: verify-if-present loads it, require refuses it. Neither is 'the signature failed'.",
+  "keystore": "../keys/keystore.json",
+  "policies": {
+    "ignore": {
+      "ok": true
+    },
+    "verify-if-present": {
+      "ok": true
+    },
+    "require": {
+      "ok": false,
+      "expected_codes": [
+        "PROTO-MOD-068"
+      ]
+    }
+  },
+  "verdict": {
+    "ok": false,
+    "reason": "missing"
+  }
+}

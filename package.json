@@ -1,7 +1,7 @@
 {
   "name": "uwmd-monorepo",
   "private": true,
-  "description": "UW Markdown — open-source standard for underwriting documents.",
+  "description": "UW Markdown \u2014 open-source standard for underwriting documents.",
   "//workspaces": "Every other package depends on @uwmd/core, and `npm run build --workspaces` runs in this listed order (globs expand alphabetically). uwmd-core MUST stay pinned first or a clean checkout fails: uwmd-batch would build ahead of it and cannot resolve '@uwmd/core'. The trailing glob still picks up new packages automatically; npm de-duplicates the repeated path.",
   "workspaces": [
     "packages/uwmd-core",
@@ -13,6 +13,9 @@
     "test:coverage": "npm --prefix packages/uwmd-core run test:coverage",
     "cli": "node packages/uwmd-cli/bin/uwmd.mjs",
     "conformance": "node scripts/run-conformance.mjs",
+    "conformance:v2": "python conformance/runner/runner.py",
+    "gen-conformance-cases": "node scripts/gen-conformance-cases.mjs",
+    "gen-signing-fixtures": "node scripts/gen-signing-fixtures.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
     "verify-packages": "node scripts/verify-packages.mjs",
     "verify-lockfile": "node scripts/verify-lockfile.mjs",

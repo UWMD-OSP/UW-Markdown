@@ -1,11 +1,13 @@
 ---
 rfc: 0004
 title: Conformance test runner v2 (language-agnostic)
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-26
 affects:
+  - protocol-spec
   - conformance-corpus
+  - core-library
   - tooling
 ---
 
@@ -196,6 +198,88 @@ Existing fixtures need:
 - **Live tier-4 tests.** Tier-4 fixtures invoke the agent host, which talks to an LLM. The runner needs an `--allow-live` flag and an environment-variable contract for the API key.
 - **Floating-point tolerance.** Tier-3 calc fixtures sometimes produce results that differ by 1 ULP across implementations. The case-file format should support `tolerance: { abs: 1e-9, rel: 1e-9 }`. Recommend: add it now to the schema; default tolerance is exact equality.
 - **Reporter pluggability.** TAP14 is the canonical reporter. Should the driver support JUnit XML output (for Jenkins integration) and GitHub Actions annotations? Recommend yes — both are thin transformations of the JSON manifest. Lands as a follow-up.
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27. The CLI protocol is normative as
+[§II.6a](../../spec/UW_PROTOCOL_v1.md); the driver is
+[`conformance/runner/`](../../conformance/runner/README.md); 44 cases run
+across tiers 1–3.
+
+Six departures, three of them substantive.
+
+**1. The v1 runner is NOT replaced, and `npm run conformance` is still
+the gate.** The RFC's migration plan — "the current runner becomes a thin
+wrapper" — was written when the corpus was tiers 1–4. It is now 269
+assertions across thirteen suites, and most of what has been added since
+is not "run a command, compare the output": receipt re-issuance
+stability, composition DAG resolution, ZIP packaging, signature key
+stores, cross-fixture invariants asserted with no baseline at all.
+Rewriting those as CLI calls would either lose them or contort them.
+
+So the two runners coexist. `npm run conformance` gates the corpus;
+`npm run conformance:v2` gates the *protocol*, by driving the tier
+fixtures the way a non-TypeScript implementation would. The RFC's actual
+goal — a Python or Rust implementer can self-certify against the same
+logic we do — is met; its migration plan is not, and pretending otherwise
+would have meant deleting coverage to satisfy a paragraph.
+
+**2. No `runner.go`.** One reference driver, in Python 3.10+ with no
+third-party dependencies. A second implementation of the driver is a
+second thing to keep in sync, and the argument for it — "environments
+without Python" — is weaker than it looks when the alternative is a Go
+toolchain. If an adopter needs one, the case format is 60 lines of JSON
+schema and the TAP output is fixed; porting it is an afternoon.
+
+**3. Case files are JSON, not YAML.** Python's standard library has no
+YAML parser, and the whole point of the driver is that it runs with
+nothing installed. Given the choice between a dependency and a format
+the corpus already uses everywhere, JSON wins.
+
+**4. Cases are generated, not hand-written** —
+`scripts/gen-conformance-cases.mjs`, checked in CI with `--check`. A case
+file restates what is already on disk; hand-maintaining fifty of them
+invites one to go stale silently, pointing at a fixture nobody deletes
+and nobody runs.
+
+**5. Comparison is subset-by-default, with two named escapes.** The RFC
+proposed `diff: canonical-json`, meaning equality. The baselines are
+*projections*: a calc baseline names four fields, and an implementation
+that also reports `round_to` and `display` is more informative, not
+wrong. So the default is a subset test — every field the baseline names
+must match, extras are allowed — with arrays still compared
+length-sensitively, because an omitted validation issue is a
+disagreement, not brevity. Two named escapes handle baselines that are
+not response-shaped at all: `baseline_field` (a render baseline stored as
+the whole `RenderResult` envelope) and `project` (the tier-1 validation
+baselines, which store a deduplicated `(code, severity)` set so a
+reworded message is not a corpus edit). Both must be *named in the case
+file*: the moment the driver infers a baseline's shape, it has reacquired
+the private knowledge this RFC exists to eliminate.
+
+**6. Volatile-value masking is part of the contract**, and §II.6a.3 says
+so. `last_modified`, `_meta.timestamp`, the fence `ts=`, and
+`content_hash` are masked before comparison; a baseline pinning any of
+them would be asserting the clock. `parent_hash` is deliberately not
+masked — the fixture fixes it.
+
+Two unresolved questions from below are answered by what shipped: a batch
+endpoint was not needed (44 spawns run in ~7s), and floating-point
+tolerance was not needed either, because the RFC 0023 numeric model
+already quantizes at a normative boundary — two conforming engines agree
+exactly, or one of them is wrong. Live tier-4 and reporter pluggability
+remain open.
+
+### Loose ends this closed
+
+`ViewerCapability` gained `signing` and `module-signature-verification`,
+which protocol §V.11.5 and §X.1.4 had already promised the day before
+without the enum carrying them. And `uwmd parse` was silently dropping
+four fields of the parsed file — `custom_calculations`,
+`custom_scenarios`, `extensions`, and the full `superseded` blocks — so a
+caller who trusted it to be "the parsed file" lost every custom
+calculation and every `x_*` extension in the document. Both fixed here
+because the CLI protocol made them observable.
 
 ## Prior art
 

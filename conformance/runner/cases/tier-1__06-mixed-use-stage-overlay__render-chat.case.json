@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/06-mixed-use-stage-overlay/render-chat",
+  "tier": "1",
+  "command": "render",
+  "args": [
+    "06-mixed-use-stage-overlay.uw.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/06-mixed-use-stage-overlay.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

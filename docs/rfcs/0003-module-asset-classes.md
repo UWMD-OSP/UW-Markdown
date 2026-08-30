@@ -1,7 +1,7 @@
 ---
 rfc: 0003
 title: Custom asset-class declarations from modules
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-26
 affects:
@@ -9,6 +9,7 @@ affects:
   - protocol-spec
   - core-library
   - conformance-corpus
+  - tooling
 ---
 
 # RFC 0003: Custom asset-class declarations from modules
@@ -159,6 +160,98 @@ Existing fixtures using built-in asset classes pass without modification.
   - `spec/schemas/module-manifest.schema.json` — additive field.
 - **API surface:** `parseAssetClass`, `ModuleRegistry`, plus the new manifest field.
 - **Test plan:** unit tests on `parseAssetClass`. Integration test loads a fixture module manifest, registers a custom asset class, parses a file referencing it, asserts the file's view-model resolution uses the module's declarations.
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27, on top of the module runtime RFC 0006 added the same
+day. Format spec §2.2a is the identifier grammar; protocol §X.2 is
+resolution; protocol goes to **1.8.0**.
+
+**1. `AssetClass` is NOT widened, and this is the important one.** The
+RFC proposed:
+
+```ts
+export type AssetClass = BuiltinAssetClass | CustomAssetClass;  // CustomAssetClass = string
+```
+
+In TypeScript that collapses to `string`. Silently — it compiles, and
+every downstream check that depended on the union being closed simply
+stops doing anything: `ASSET_CLASS_MEMBERS`' exhaustiveness anchor
+(which exists precisely so a new class cannot be added without updating
+the runtime list), every `getPackForAssetClass` / `getLayoutForAssetClass`
+narrowing, and the RFC 0027 size-intensive and RFC 0029 stage-overlay
+tables. Adopting the RFC as written would have traded a whole class of
+compile-time guarantees for a type alias.
+
+So `AssetClass` stays the closed builtin union, and a separate
+`UWAssetClassId = AssetClass | (string & {})` is used at the one boundary
+where a custom class is legal: `UWFrontmatter.asset_class` and module
+declarations. Anything that needs a *builtin* still asks for `AssetClass`
+and still narrows. The `(string & {})` arm keeps editor autocomplete on
+the builtin members.
+
+**2. Three segments minimum, not two.** The RFC's grammar says "at least
+two dots", which its own examples honor but its prose ("at least two
+dots" vs. `{2,}` repetitions) reads ambiguously. Three segments is the
+shipped rule: `com.data_center` reads as a namespace with no owner.
+
+**3. `INVALID-ASSET-CLASS-002` checks the final segment.** The RFC's
+unresolved question asked what stops `com.example.multifamily` and
+recommended checking "the full identifier, not just trailing segment" —
+but a full-identifier check is vacuous, since a builtin never contains a
+dot. The shipped rule refuses a *final segment* matching a builtin, and
+the code comment says plainly that this is stricter than
+collision-avoidance requires: the namespace already prevents collision.
+It is there because such an identifier reintroduces the ambiguity the
+closed enum removes, and because host-side suffix matching is a bug that
+will happen. `com.example.multifamily_senior` remains available.
+
+**4. `modules` is a warning, not an error.** The RFC says a namespaced
+file "MUST declare" its modules. Shipped as `MOD-DEPENDENCY-UNDECLARED`
+(warning): the document is well-formed, and a host that holds the module
+reads it correctly. Making it an error would refuse a document that is
+*readable by the reader in front of it*, which no other rule in this
+format does.
+
+**5. Resolution is not validation, and the two are kept apart.**
+`validateUWFile` checks only what is true for every reader — the syntax
+and the missing-`modules` obligation. Whether a class *resolves* depends
+on the host's loaded modules, and folding that into validation would
+make the same file valid or invalid depending on who ran it.
+`MOD-FALLBACK-001` / `MOD-MISSING-001` come from `resolveAssetClass`, and
+format spec §5 says explicitly that they are not validation rules.
+
+**6. Holding a declaration is not holding the module.** Added because
+the RFC's step 3 ("if the module is unavailable but a `fallback` is
+declared") leaves open where the declaration comes from if the module is
+gone. `resolveAssetClass` takes `knownDeclarations` separately from the
+registry and will only ever *degrade* from them — never resolve. A
+cached declaration gives a display name and a fallback; what "loaded"
+means is the module's calculations and validations.
+
+**7. `MOD-ASSET-CLASS-CONFLICT-001` is new.** The RFC covered display-name
+conflicts (`MOD-DISPLAY-CONFLICT-001`, info) but not two modules
+declaring the same *identifier*, which is the serious case: reverse-DNS
+names one owner, so it means squatting, and picking one silently makes
+resolution depend on load order.
+
+**8. Conformance fixtures live in `conformance/modules/`**, not
+`tier-1-reader/fixtures/`. This is module machinery, and it sits beside
+the other module suites. Four document scenarios plus four manifest
+rejections — and three of the four documents are **byte-identical**, with
+only the host's loaded modules differing. A cross-scenario invariant
+asserts that they stay identical, because the moment someone "fixes" a
+failing scenario by editing its deal file, the demonstration that the
+verdict depends on the reader and not on the document is void.
+
+**9. Custom classes get no builtin pack, layout, or size intensive**, and
+§X.2.4 says so. Wiring one into the §XIII registry would let a third
+party change what `price_per_unit` divides by, which is where a silent
+denominator change does the most damage.
+
+The RFC's remaining unresolved question — whether the corpus should ship
+a reusable fixture custom class — is answered yes, at
+`conformance/modules/asset-classes/*/module.json`.
 
 ## Alternatives considered
 

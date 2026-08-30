@@ -1,16 +1,26 @@
 ---
 rfc: 0002
 title: Module signing
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-26
 affects:
   - protocol-spec
   - core-library
   - conformance-corpus
+  - tooling
 ---
 
 # RFC 0002: Module signing
+
+> **Design change, 2026-08-27 — the shipped scheme is not Sigstore.**
+> Everything below the "Proposed change" heading describes a Sigstore-based
+> design. It is preserved as written, because it is still the right long-term
+> target and the motivation section is unchanged. What shipped is a
+> `uwmd-keystore` scheme built on RFC 0010's machinery, for reasons set out
+> in [Why not Sigstore, yet](#why-not-sigstore-yet). The `scheme`
+> discriminator was added precisely so that adding `sigstore` later is
+> additive rather than breaking.
 
 ## Summary
 
@@ -170,6 +180,89 @@ tier doesn't require verification).
 - **Identity policy.** Hosts likely want to allow only signatures from specific identities (e.g., `*@uwmd.org`). The `VerifyOptions` surface should grow an `allowed_identities: string[]` regex/glob list. Out of scope for this RFC; lands in a follow-up host-policy RFC.
 - **Browser support.** Sigstore verification in the browser is feasible but heavyweight (~500 kB bundle). Recommend deferring browser-side verification until a smaller verifier is available; until then, browser hosts that need verification do it server-side and pass the verdict in.
 - **Module dependency signing.** A module's `depends_on` list points at other modules. Should the host transitively verify all dependencies? Recommend yes, but the policy logic is a host decision; the protocol gives the verifier, not the policy engine.
+
+## Why not Sigstore, yet
+
+RFC 0010 shipped on 2026-08-27, three days before this one, and changed
+what the cheap option is.
+
+Sigstore verification needs a Fulcio trust root and a Rekor inclusion
+proof. That means one of two things, and both are bad here:
+
+1. **A vendored root snapshot.** Sigstore's trust root rotates. A
+   snapshot in `@uwmd/core` is a standing obligation to ship a release
+   on somebody else's cadence, and a stale snapshot fails *closed* —
+   every signed module suddenly unverifiable, for a reason nothing in
+   this repo caused.
+2. **Fetching at verify time.** A protocol whose stated non-goals
+   include network transport (§I.2) would acquire a network dependency
+   in its module loader, and the conformance corpus — offline and
+   deterministic by construction — could not express a single fixture.
+
+Against that, `@uwmd/signing` already existed, with a key store, three
+algorithms, and a canonicalization the whole project shares. Signing a
+manifest with it is the same act as signing a block, over different
+bytes. The result is offline, deterministic, fixture-able, and reuses a
+verifier that already has conformance coverage.
+
+What is genuinely lost is Sigstore's two real advantages: keyless
+signing (no long-lived key for an author to manage or leak) and public
+transparency (a log anyone can audit). Those are worth having, and
+§X.1.2 reserves `scheme: "sigstore"` for them. This RFC's judgment is
+that a working keystore scheme now beats a Sigstore scheme that either
+never ships or ships with a trust-root maintenance burden nobody has
+signed up for.
+
+The other four alternatives below are unaffected — PGP, sidecar `.sig`
+files, OCI-only signing, and JWS are all still rejected, for the reasons
+given.
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27, on top of RFC 0010.
+
+1. **Scheme is `uwmd-keystore`, not `sigstore`** — see above. The
+   `ModuleSignature` shape is correspondingly the §V.11 block-signature
+   shape (`alg` / `kid` / `sig` / `signed_at`) plus `scheme` and an
+   optional `identity`, rather than the certificate / Rekor fields
+   proposed above.
+2. **Error codes continue the `PROTO-MOD-NNN` sequence** —
+   `PROTO-MOD-068` through `072` — rather than opening a `MOD-SIG-*`
+   namespace. Every other module error in this repo is `PROTO-MOD-NNN`,
+   and a second namespace for one feature would be a taxonomy split with
+   nothing behind it. The *distinctions* the RFC asked for all survive,
+   including the one it was most right about: `missing` is its own code,
+   so a host can tell "unsigned" from "bad signature".
+3. **`unknown_key` is one verdict covering two situations** — the host's
+   store lacks the `kid`, *and* the host has no signature backend at
+   all. Both mean "this host cannot establish anything about this
+   module", and both must refuse under a checking policy. Splitting them
+   would offer a distinction no host can act on differently.
+4. **Host policy is a named enum on the loader**, not left entirely to
+   the host: `ignore` / `verify-if-present` / `require`, with
+   `loadModuleManifestAsync` and `createModuleRegistryAsync` as the
+   async siblings (verification needs Web Crypto; the sync loaders are
+   untouched and pay nothing). The RFC's substance is intact — the
+   protocol still mandates no policy — but naming the three that exist
+   in practice keeps two hosts from inventing incompatible spellings of
+   the same three.
+5. **`identity` is explicitly advisory**, with §X.1.5 saying so in
+   normative text. The RFC deferred identity policy to a follow-up; what
+   shipped is the `allowedIdentities` allow-list it sketched, plus the
+   caveat that matters more than the feature: a signature proves the key
+   holder *asserted* an identity, never that the assertion is true.
+6. **Fixtures live in `conformance/signing/modules/`**, not
+   `conformance/tier-3-calc-host/fixtures/`. Module signing is not a
+   tier-3 capability — a Tier-1 reader that loads modules has the same
+   problem — and the fixtures share RFC 0010's test key, because a host
+   that trusts a signer trusts them for both artifact kinds. Six
+   scenarios, each run under **all three policies** rather than only the
+   interesting one: `04-unsigned` loading under `verify-if-present` and
+   refusing under `require` is the entire policy distinction, and
+   asserting one half would let the two collapse unnoticed.
+7. **A malformed signature is refused under `ignore` too.** Declining to
+   *verify* is not a licence to admit a malformed object into a frozen
+   manifest that other code will read.
 
 ## Prior art
 

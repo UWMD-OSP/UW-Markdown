@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/05-land-stage-overlay/validate",
+  "tier": "1",
+  "command": "validate",
+  "args": [
+    "05-land-stage-overlay.uw.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/05-land-stage-overlay.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}
