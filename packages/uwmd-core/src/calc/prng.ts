@@ -25,7 +25,8 @@
 //
 // That check is cheap and has not been done. Until it is, an implementer
 // porting this to another language should port THIS code, not write pcg64 from
-// the paper and assume the two agree. RFC 0005 records the same caveat.
+// the paper and assume the two agree. The steps to close it are in
+// docs/handoff/HUMAN-verify-pcg64-vector.md; RFC 0005 records the same caveat.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MASK_128 = (1n << 128n) - 1n;

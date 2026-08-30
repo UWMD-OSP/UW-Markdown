@@ -153,7 +153,8 @@ not core gaps.
   `CALC-STOCH-001`–`006`; `conformance/stochastic/` (7 assertions), where
   reproducibility is asserted in-process without a baseline. **Known gap:** the
   PCG test vector is self-generated and not yet diffed against the reference C
-  implementation.
+  implementation — see
+  [`docs/handoff/HUMAN-verify-pcg64-vector.md`](../handoff/HUMAN-verify-pcg64-vector.md).
 - **Sensitivity tables (RFC 0007, protocol §VIII.7):** two-axis grids as a JSON
   `SensitivityDecl` — **the §VIII.1 grammar is unchanged**, because the RFC's
   proposed builtin would have needed object literals, array literals, and an

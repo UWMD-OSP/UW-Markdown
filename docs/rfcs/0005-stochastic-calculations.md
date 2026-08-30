@@ -247,7 +247,8 @@ implementation at pcg-random.org, which nobody has diffed against.
 The check is cheap and has not been done. Until it is, an implementer
 porting this to another language should port the TypeScript, not write
 pcg64 from the paper and assume the two agree. This should be closed
-before the RFC is accepted rather than after.
+before the RFC is accepted rather than after — the steps are written up
+in [`docs/handoff/HUMAN-verify-pcg64-vector.md`](../../docs/handoff/HUMAN-verify-pcg64-vector.md).
 
 ### Deferred
 

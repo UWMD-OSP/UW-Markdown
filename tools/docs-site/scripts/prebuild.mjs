@@ -222,8 +222,11 @@ function rewriteLinks(md) {
       return `](/about/rfcs/${rfcMatch[1]}${frag})`;
     }
 
-    // Paths into source/code dirs → link out to GitHub
-    if (/^(packages|scripts|examples|\.github|tools)\b/.test(norm)) {
+    // Paths into source/code dirs → link out to GitHub. `docs/handoff/` is on
+    // this list rather than the copy list on purpose: those files record an
+    // open action for the maintainer, and publishing them on the documentation
+    // site would present internal to-dos as adopter guidance.
+    if (/^(packages|scripts|examples|\.github|tools|docs\/handoff)\b/.test(norm)) {
       return `](${GITHUB_BLOB}/${norm}${frag})`;
     }
 
