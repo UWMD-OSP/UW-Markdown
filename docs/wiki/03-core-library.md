@@ -46,6 +46,7 @@ Module | Responsibility | Key exports
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
+`asset-class.ts` | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
 `module-runtime.ts` | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
 `module-signing.ts` | Module manifest signature contract (RFC 0002) | `moduleSigningPayload`, `verifyModuleSignature`, `checkSignatureShape`
 `integrity.ts` | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
@@ -227,6 +228,34 @@ no longer recomputes), and `INT-08` (deprecated algorithm, a warning).
 configuration problem and "this is forged" is a document problem, and they call
 for opposite responses. Note that a drifted hash escalates from `INT-04
 warning` to `INT-07 error` once a block is signed.
+
+## asset-class.ts
+
+Module-declared asset classes (RFC 0003). The ten builtins stay a **closed**
+union; a custom class is reverse-DNS with at least three lower-snake-case
+segments, so ownership is fixed at the identifier.
+
+**`AssetClass` is not widened, and that is load-bearing.** The RFC proposed
+folding custom ids into the union; in TypeScript that collapses to `string` and
+silently disables `ASSET_CLASS_MEMBERS`' exhaustiveness anchor, every
+pack/layout narrowing, and the RFC 0027/0029 class tables. `UWAssetClassId`
+(`AssetClass | (string & {})`) is used only at the boundary — frontmatter and
+module declarations. Anything needing a builtin still asks for `AssetClass`.
+
+`resolveAssetClass(id, registry, options)` returns exactly one of three
+statuses — `resolved`, `degraded` (`MOD-FALLBACK-001`), `unresolved`
+(`MOD-MISSING-001`) — and determinism holds in all three: no two conforming
+hosts read the same file differently.
+
+`knownDeclarations` is separate from the registry on purpose: a cached
+declaration can only ever produce `degraded`, never `resolved`. It gives a
+display name and a fallback; what "loaded" means is the module's calculations
+and validations.
+
+Validation (`INVALID-ASSET-CLASS-001/002`, `MOD-DEPENDENCY-UNDECLARED`) checks
+only what is true for every reader. Resolution findings are *not* validation
+rules — folding them in would make the same file valid or invalid depending on
+who ran it.
 
 ## module-runtime.ts
 

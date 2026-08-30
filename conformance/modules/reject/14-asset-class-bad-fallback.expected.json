@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-077"
+  ],
+  "note": "A fallback must be a BUILTIN. Falling back to another custom class just moves the problem one hop and can cycle."
+}

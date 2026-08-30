@@ -49,6 +49,55 @@ on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
   ed25519/es256/es384 round trip, signature-swap and wrong-key rejection, key
   store refusals, and the full issue → sign → verify receipt path.
 
+### Added — RFC 0003 implemented: modules can declare asset classes (corpus 274 → 289)
+
+[RFC 0003](docs/rfcs/0003-module-asset-classes.md) (drafted 2026-04-26,
+accepted and implemented 2026-08-27), on top of the module runtime RFC 0006
+landed the same day. Protocol goes to **1.8.0** for the new §X.2; the format
+spec gains §2.2a. `uw_version` stays 1.1 — the grammar addition is additive and
+no 1.1 document changes meaning.
+
+- **Format spec §2.2a — the identifier grammar.** The ten builtins stay a
+  **closed** set; a custom class is reverse-DNS with at least three
+  lower-snake-case segments. Ownership is fixed at the identifier, so two
+  implementations can never disagree about whose `com.example.data_center` this
+  is — which is what makes opening this extension point safe where an open enum
+  would not have been.
+- **Protocol §X.2 — resolution, in exactly three outcomes.** Resolved (builtin,
+  or a loaded module declares it), degraded (`MOD-FALLBACK-001`, rendered via
+  the declared builtin fallback and reported as degraded, never as a full
+  read), or unresolved (`MOD-MISSING-001`). Determinism holds in all three:
+  there is no arrangement in which two conforming hosts read the same file
+  differently.
+- **`AssetClass` is deliberately not widened.** The RFC proposed folding custom
+  ids into the union, which in TypeScript collapses it to `string` — silently
+  disabling `ASSET_CLASS_MEMBERS`' exhaustiveness anchor, every pack and layout
+  lookup's narrowing, and the RFC 0027 / 0029 class tables. A separate
+  `UWAssetClassId` is used at the boundary where a custom class is legal;
+  anything needing a builtin still asks for one and still narrows.
+- **Holding a declaration is not holding the module.** `resolveAssetClass`
+  takes `knownDeclarations` separately from the registry and will only ever
+  *degrade* from them. A cached declaration gives a display name and a
+  fallback; what "loaded" means is the module's calculations and validations.
+- **Resolution is not validation.** `validateUWFile` checks only what is true
+  for every reader — `INVALID-ASSET-CLASS-001/002` and the
+  `MOD-DEPENDENCY-UNDECLARED` warning. Folding resolution in would make the
+  same file valid or invalid depending on who ran it, and §5 of the format spec
+  now says so explicitly.
+- **`MOD-ASSET-CLASS-CONFLICT-001`** is new beyond the RFC: two modules
+  declaring the same identifier is squatting, and picking one silently would
+  make resolution depend on load order. Display-name collisions stay `info`.
+- **Custom classes get no builtin pack, layout, or size intensive** (§X.2.4).
+  Wiring one into the §XIII registry would let a third party change what
+  `price_per_unit` divides by.
+- **Conformance:** four manifest rejections plus
+  `conformance/modules/asset-classes/`, whose first three scenarios are
+  **byte-identical documents** differing only in what the host has loaded — with
+  a cross-scenario invariant asserting they stay identical, since editing one
+  to fix a failure would void the demonstration.
+- **Tests:** 36 new core tests (identifier grammar, the three resolution
+  outcomes, declaration conflicts, the validator's two codes).
+
 ### Added — RFC 0006 implemented: the module system gets a runtime, and a consumer (corpus 269 → 274)
 
 [RFC 0006](docs/rfcs/0006-hospitality-module.md) (drafted 2026-04-26, accepted

@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-074"
+  ],
+  "note": "An unnamespaced identifier. Ownership must be fixed at the identifier, or two hosts can disagree about whose data_center this is."
+}

@@ -66,6 +66,23 @@ export type AssetClass =
   | 'land';
 
 /**
+ * An asset class as it may appear in a document: a builtin, or a
+ * module-declared custom identifier (RFC 0003, protocol §X.2).
+ *
+ * Deliberately separate from {@link AssetClass}, which stays a closed union.
+ * Folding custom ids into `AssetClass` would collapse it to `string` and take
+ * `ASSET_CLASS_MEMBERS`, every pack and layout lookup's narrowing, and the
+ * §XIII / §5.1 class tables down with it. Anything that needs a *builtin*
+ * still asks for `AssetClass`; this type is for the boundary — frontmatter and
+ * module declarations — where a custom class is legal.
+ *
+ * The `(string & {})` arm keeps editor autocomplete on the builtin members
+ * while accepting any identifier; `parseAssetClass` is what actually validates
+ * one.
+ */
+export type UWAssetClassId = AssetClass | (string & {});
+
+/**
  * Exhaustiveness anchor for {@link AssetClass}.
  *
  * A type union is erased at runtime, so every runtime list of asset classes is
@@ -315,7 +332,12 @@ export interface UWFrontmatter {
   city: string;
   state: string;
   zip: string;
-  asset_class: AssetClass;
+  /**
+   * Builtin, or a module-declared custom identifier (RFC 0003). A namespaced
+   * value obliges the file to name its modules in `modules` — see
+   * `declaredModuleDependencies`.
+   */
+  asset_class: UWAssetClassId;
   asset_subtype?: string | null;
   loan_type?: string | null;
   scenario?: string | null;

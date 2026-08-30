@@ -58,6 +58,7 @@ import {
   createModuleRegistry,
   evaluateModuleCalculations,
   validateAgainstModules,
+  resolveAssetClass,
   verifyModuleSignature,
   validateUWDealPackageManifest,
   encodeUWDealPackageZip,
@@ -1556,6 +1557,102 @@ async function runModuleRuntime() {
 }
 
 
+/**
+ * Module-declared asset classes (RFC 0003, protocol §X.2).
+ *
+ * Three of the four scenarios are the SAME BYTES with a different host: module
+ * loaded, module absent but the declaration known, and neither. The verdict
+ * has to change because the *reader* changed, and never because the document
+ * is ambiguous — that is the property that makes an open extension point safe,
+ * and it is not observable from any one scenario alone.
+ */
+async function runAssetClasses() {
+  const dir = join(MODULES_DIR, 'asset-classes');
+  if (!existsSync(dir)) return;
+
+  const scenarios = readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const scenarioDir = join(dir, id);
+    const dealPath = join(scenarioDir, 'deal.uwx.md');
+    const modulePath = join(scenarioDir, 'module.json');
+    const expectedPath = join(scenarioDir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(modulePath) || !existsSync(expectedPath)) {
+      record('modules', `asset-classes/${id}`, 'fail', 'scenario needs deal.uwx.md, module.json and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const manifest = JSON.parse(readFileSync(modulePath, 'utf8'));
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const problems = [];
+
+    // The manifest must load on its own before any scenario means anything.
+    const loaded = loadModuleManifest(manifest, { hostTier: 'tier-4-agent-host' });
+    if (!loaded.ok) {
+      record('modules', `asset-classes/${id}`, 'fail', `fixture module does not load: ${loaded.errors.map((e) => e.code).join(', ')}`);
+      continue;
+    }
+
+    const registry = createModuleRegistry({
+      modules: expected.load_module ? [manifest] : [],
+      hostTier: 'tier-4-agent-host',
+    });
+    const options = expected.known_declarations
+      ? { knownDeclarations: manifest.declares_asset_classes }
+      : {};
+
+    const resolution = resolveAssetClass(parsed.frontmatter.asset_class, registry, options);
+    if (resolution.status !== expected.expected_status) {
+      problems.push(`status ${resolution.status} != ${expected.expected_status}`);
+    }
+    if (expected.expected_kind && resolution.kind !== expected.expected_kind) {
+      problems.push(`kind ${resolution.kind} != ${expected.expected_kind}`);
+    }
+    if (expected.expected_display_name && resolution.declaration?.display_name !== expected.expected_display_name) {
+      problems.push(`display_name ${resolution.declaration?.display_name} != ${expected.expected_display_name}`);
+    }
+    if (expected.expected_fallback && resolution.fallback !== expected.expected_fallback) {
+      problems.push(`fallback ${resolution.fallback} != ${expected.expected_fallback}`);
+    }
+    if (expected.expected_issue_code && resolution.issue?.code !== expected.expected_issue_code) {
+      problems.push(`issue ${resolution.issue?.code} != ${expected.expected_issue_code}`);
+    }
+
+    // Validation is host-independent by construction — it never consults a
+    // registry — so its codes are asserted once, not per scenario.
+    const codes = validateUWFile(parsed)
+      .issues.map((i) => i.code)
+      .filter((c) => c.startsWith('INVALID-ASSET-CLASS') || c === 'MOD-DEPENDENCY-UNDECLARED')
+      .sort();
+    const wanted = [...expected.expected_validation_codes].sort();
+    if (codes.join(',') !== wanted.join(',')) {
+      problems.push(`validation [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+
+    record('modules', `asset-classes/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // Cross-scenario invariant, asserted without a baseline: the three scenarios
+  // that share a document must share its bytes. If someone "fixes" a failing
+  // scenario by editing its deal file, the whole demonstration is void.
+  const bytes = ['01-module-loaded', '02-fallback-degraded', '03-unresolved']
+    .map((s) => join(dir, s, 'deal.uwx.md'))
+    .filter((p) => existsSync(p))
+    .map((p) => readFileSync(p, 'utf8'));
+  if (bytes.length === 3) {
+    const identical = bytes.every((b) => b === bytes[0]);
+    record(
+      'modules',
+      'asset-classes/same-document-across-hosts',
+      identical ? 'pass' : 'fail',
+      identical ? undefined : 'the three resolution scenarios no longer share one document',
+    );
+  }
+}
+
+
 // ─── Packages suite (RFC 0018) ───────────────────────────────────────────────
 //
 // Manifest fixtures checked against the validator AND the normative schema, on
@@ -2464,7 +2561,7 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
-  'modules': async () => { await runModules(); await runModuleRuntime(); },
+  'modules': async () => { await runModules(); await runModuleRuntime(); await runAssetClasses(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },

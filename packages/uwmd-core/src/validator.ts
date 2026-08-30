@@ -17,6 +17,7 @@ import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps.js';
+import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
 //
@@ -191,6 +192,7 @@ export function validateUWFile(
   checkCapitalStack(parsed, issues);
   checkSizeIntensive(parsed, issues);
   checkSectionReadiness(parsed, issues);
+  checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -851,6 +853,52 @@ function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     if (stack && typeof stack === 'object' && !Array.isArray(stack)) {
       checkStackContent(stack as Record<string, unknown>, 'components', `${key}.capital_stack.`, issues);
     }
+  }
+}
+
+// ─── Asset-class identifier (RFC 0003) ───────────────────────────────────────
+
+/**
+ * The identifier itself, independent of whether any module is loaded.
+ *
+ * Deliberately separate from *resolution*: whether a custom class can be read
+ * depends on the host's loaded modules, and a validator that conflated the two
+ * would report the same file as valid or invalid depending on who ran it.
+ * What is checked here is the part that is true everywhere — the syntax, and
+ * the obligation a namespaced class carries to name its modules.
+ */
+function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const raw = parsed.frontmatter?.asset_class;
+  if (typeof raw !== 'string' || raw.length === 0) return;
+
+  const identity = parseAssetClass(raw);
+  if (!identity.ok) {
+    issues.push({
+      code: identity.error.code,
+      severity: 'error',
+      field: 'asset_class',
+      message: identity.error.message,
+      value: raw,
+      ...(identity.error.remediation ? { remediation: identity.error.remediation } : {}),
+    });
+    return;
+  }
+  if (identity.kind === 'builtin') return;
+
+  // A namespaced class with no `modules` list is unreadable by anyone who does
+  // not already happen to hold the right module: the file states a dependency
+  // it never names. Reported as a warning rather than an error because the
+  // document is still well-formed and a host that does hold the module reads
+  // it correctly — the cost falls on everyone else.
+  if (declaredModuleDependencies(parsed.frontmatter as Record<string, unknown>).length === 0) {
+    issues.push({
+      code: 'MOD-DEPENDENCY-UNDECLARED',
+      severity: 'warning',
+      field: 'modules',
+      message: `asset_class '${raw}' is module-declared, but frontmatter names no 'modules' to load.`,
+      value: raw,
+      remediation: `Add a 'modules' list naming the module that declares '${raw}', so a reader without it can say what to load rather than only that something is missing.`,
+    });
   }
 }
 

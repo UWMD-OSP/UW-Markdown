@@ -98,10 +98,14 @@ Detailed sequencing and release gates:
 > manifest's calculations, validations, or sections. `module-runtime.ts` and
 > `@uwmd/module-hospitality` fix that together.
 >
+> **RFC 0003 (custom asset classes from modules) followed**, since the module
+> runtime 0006 added is what a declared class needs in order to mean anything.
+> Protocol §X.2; the builtin enum stays closed and a second, namespaced space
+> opens beside it.
+>
 > **The stated priority order is complete.** What remains on this train —
-> locale negotiation (0001), custom asset classes from modules (0003),
-> stochastic calcs (0005), and portfolio relationships (0015) — has no
-> assigned order yet. Unfrozen means *actively being taken up*, not
+> locale negotiation (0001), stochastic calcs (0005), and portfolio
+> relationships (0015) — has no assigned order yet. Unfrozen means *actively being taken up*, not
 > accepted — each RFC still goes through its own acceptance.
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
@@ -118,7 +122,7 @@ context. This list is the maintainable copy.
 | [0010](./docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
 | [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
 | [0002](./docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
-| [0003](./docs/rfcs/0003-module-asset-classes.md)  | Custom asset-class declarations from modules  | `AssetClass` enum is hard-coded in `types.ts`; modules can't extend it without a spec bump. |
+| [0003](./docs/rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |

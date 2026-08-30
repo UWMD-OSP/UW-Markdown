@@ -1,0 +1,9 @@
+{
+  "description": "The declaring module is loaded. The class resolves as custom, carrying the declaration.",
+  "load_module": true,
+  "known_declarations": false,
+  "expected_status": "resolved",
+  "expected_kind": "custom",
+  "expected_display_name": "Data Center",
+  "expected_validation_codes": []
+}

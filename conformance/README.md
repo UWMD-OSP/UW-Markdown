@@ -80,6 +80,16 @@ conformance/
 │   │                     declared surface (calcs, agent layers, round_to, …)
 │   ├── reject/         <id>.module.json + <id>.expected.json — malformed
 │   │                     manifests refuse with the expected typed code
+│   ├── asset-classes/  RFC 0003 — module-declared asset classes. Four
+│   │                     <scenario>/{deal.uwx.md, module.json, expected.json}.
+│   │                     The first THREE share a byte-identical document and
+│   │                     differ only in what the host has loaded: module
+│   │                     present (resolved), absent but the declaration known
+│   │                     (degraded via fallback), neither (unresolved). A
+│   │                     cross-scenario invariant asserts the three files stay
+│   │                     identical — editing one to fix a failure would void
+│   │                     the whole demonstration, which is that the verdict
+│   │                     depends on the reader and never on the document
 │   └── runtime/        RFC 0006 — the module system with an actual consumer.
 │                         Everything above checks that a manifest LOADS; these
 │                         check that a loaded module DOES something. Five

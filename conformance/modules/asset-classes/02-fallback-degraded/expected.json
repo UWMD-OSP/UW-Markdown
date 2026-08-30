@@ -1,0 +1,9 @@
+{
+  "description": "Same bytes, module NOT loaded, but the host holds the declaration out of band. Renders degraded via the industrial fallback and must say so - never silently, and never as a full read.",
+  "load_module": false,
+  "known_declarations": true,
+  "expected_status": "degraded",
+  "expected_fallback": "industrial",
+  "expected_issue_code": "MOD-FALLBACK-001",
+  "expected_validation_codes": []
+}

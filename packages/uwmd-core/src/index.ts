@@ -219,6 +219,23 @@ export type {
   ModuleSignaturePolicy,
 } from './modules.js';
 
+// RFC 0003 — module-declared asset classes. Identifier grammar and resolution
+// are crypto-free and browser-safe; `AssetClass` itself stays a closed union.
+export {
+  parseAssetClass,
+  isCustomAssetClass,
+  resolveAssetClass,
+  declaredAssetClasses,
+  assetClassDeclarationConflicts,
+  declaredModuleDependencies,
+} from './asset-class.js';
+export type {
+  AssetClassKind,
+  AssetClassIdentity,
+  AssetClassResolution,
+  ResolveAssetClassOptions,
+} from './asset-class.js';
+
 export {
   evaluateModuleCalculations,
   validateAgainstModules,
@@ -607,6 +624,7 @@ export type {
   ValidationSeverity,
   DealStage,
   AssetClass,
+  UWAssetClassId,
 } from './types.js';
 
 export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS } from './types.js';
@@ -669,6 +687,7 @@ export type {
   AgentHostCapability,
   ModuleManifest,
   ModuleSignature,
+  ModuleAssetClassDecl,
   ModuleSectionDecl,
   ModuleCalcDecl,
   ModuleValidationDecl,

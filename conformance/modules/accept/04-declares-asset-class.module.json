@@ -1,0 +1,27 @@
+{
+  "manifest_version": "1",
+  "id": "com.example.datacenters",
+  "name": "Data Center Module",
+  "version": "1.0.0",
+  "description": "Declares a custom asset class with a fallback, so a reader without this module can still render the document degraded rather than refusing it.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^1",
+  "requires_format": "^1",
+  "requires_tier": "tier-1-reader",
+  "declares_asset_classes": [
+    {
+      "id": "com.example.data_center",
+      "display_name": "Data Center",
+      "fallback": "industrial",
+      "required_sections": [
+        "power_capacity"
+      ],
+      "optional_sections": [
+        "cooling"
+      ]
+    }
+  ]
+}

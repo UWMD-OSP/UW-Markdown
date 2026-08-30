@@ -3,10 +3,11 @@
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
 **Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
-(module signing), RFC 0004 (language-agnostic conformance driver), and RFC
-0006 (hospitality reference module) on top of `v1.7.0` — full pass: build green across all
-workspaces; **1,270 tests** — 1,030 core, 94 excel, 62 cli, 62 signing, 15
-module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **274
+(module signing), RFC 0004 (language-agnostic conformance driver), RFC 0006
+(hospitality reference module), and RFC 0003 (module-declared asset classes)
+on top of `v1.7.0` — full pass: build green across all
+workspaces; **1,306 tests** — 1,066 core, 94 excel, 62 cli, 62 signing, 15
+module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **289
 conformance** assertions (and **44** more through the RFC 0004 CLI driver)
 including the Tier-4 replay,
 module, package, receipts, market-data, composition, capital-stack,
@@ -15,7 +16,7 @@ validation-verdict baselines,
 the RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome
 clean; `typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
 `@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
-provenance attached — protocol at **1.7.0** for §V.11 (was 1.6.0 for §XIII).
+provenance attached — protocol at **1.8.0** for §X.2 (1.7.0 added §V.11; 1.6.0 added §XIII).
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -141,6 +142,16 @@ not core gaps.
   "sigstore"` is reserved so adding it stays additive. `identity` is advisory
   and §X.1.5 says so normatively. `conformance/signing/modules/` runs six
   scenarios under all three policies.
+- **Module-declared asset classes (RFC 0003):** the builtin enum stays
+  **closed** and a namespaced space opens beside it — format spec §2.2a
+  (reverse-DNS, three segments minimum), protocol §X.2 (resolution in exactly
+  three outcomes: resolved / degraded via a declared builtin fallback /
+  unresolved), `ModuleManifest.declares_asset_classes`, and
+  `conformance/modules/asset-classes/`. `AssetClass` is deliberately *not*
+  widened — folding custom ids into it collapses the union to `string` and
+  silently kills every exhaustiveness check downstream — so `UWAssetClassId`
+  carries the wider type at the boundary only. Holding a cached declaration can
+  only ever *degrade*, never resolve.
 - **Module runtime + the reference module (RFC 0006):** `module-runtime.ts`
   gives the module system the consumer it never had —
   `evaluateModuleCalculations` (declaration order, results threaded forward),
@@ -621,12 +632,15 @@ priority order the owner set when the train unfroze. See the Built section: the
 gap it surfaced was not the loader but the absence of any *consumer* of a
 registered module.
 
+**✅ RFC 0003 module-declared asset classes — shipped 2026-08-27**, following
+0006 because a declared class needs a runtime to mean anything.
+
 **The stated priority order is complete.** What remains on this train has no
 assigned order yet:
 
 Unordered: range/stochastic calcs (0005), sensitivity-table builtin
-(0007), lease-up modeling (0008), custom asset-class declarations from
-modules (0003), locale/multi-currency (0001), `_meta` v2 reorg (0009),
+(0007), lease-up modeling (0008), locale/multi-currency (0001),
+`_meta` v2 reorg (0009),
 capability tokens (0011), corpus retrieval (0013), and portfolio/relationship
 profiles (0015). Unfrozen means actively being taken up, not accepted — each
 RFC still goes through its own acceptance.

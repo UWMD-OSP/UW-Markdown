@@ -16,6 +16,7 @@ import {
   type ProtocolError,
   type ViewerTier,
 } from './protocol.js';
+import { parseAssetClass } from './asset-class.js';
 import {
   checkSignatureShape,
   verifyModuleSignature,
@@ -63,6 +64,7 @@ const MANIFEST_KEYS: readonly string[] = [
   'requires_protocol', 'requires_format', 'requires_tier', 'asset_classes',
   'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
   'view_models', 'ui', 'agent_layers', 'depends_on', 'signature',
+  'declares_asset_classes',
 ];
 const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
 const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'round_to', 'deterministic'];
@@ -325,6 +327,8 @@ function validateModuleManifest(
       }
     }
   }
+
+  validateDeclaredAssetClasses(errors, manifest);
 
   if (manifest.deal_stages !== undefined) {
     if (!Array.isArray(manifest.deal_stages)) {
@@ -805,6 +809,96 @@ function boundLength(
   }
 }
 
+const ASSET_CLASS_DECL_KEYS: readonly string[] = [
+  'id', 'display_name', 'fallback', 'required_sections', 'optional_sections',
+];
+
+/**
+ * Validate `declares_asset_classes` (§X.2, RFC 0003).
+ *
+ * The identifier grammar is enforced here rather than only at document-parse
+ * time, so a module that would introduce an unusable class is refused at load
+ * — before any file references it and produces a confusing failure two layers
+ * away from the cause.
+ */
+function validateDeclaredAssetClasses(errors: ProtocolError[], manifest: ModuleManifest): void {
+  const declarations = manifest.declares_asset_classes;
+  if (declarations === undefined) return;
+  if (!Array.isArray(declarations)) {
+    errors.push(moduleError(
+      'PROTO-MOD-073',
+      'declares_asset_classes must be an array.',
+      'declares_asset_classes',
+    ));
+    return;
+  }
+
+  const seen = new Set<string>();
+  for (const [idx, raw] of declarations.entries()) {
+    const pointer = `declares_asset_classes[${idx}]`;
+    if (!isRecord(raw)) {
+      errors.push(moduleError('PROTO-MOD-073', 'Each declaration must be an object.', pointer));
+      continue;
+    }
+    rejectUnknownKeys(errors, raw, ASSET_CLASS_DECL_KEYS, pointer);
+
+    const id = raw['id'];
+    if (typeof id !== 'string') {
+      errors.push(moduleError('PROTO-MOD-074', 'declaration id must be a string.', `${pointer}.id`));
+    } else {
+      const identity = parseAssetClass(id);
+      if (!identity.ok) {
+        errors.push(moduleError('PROTO-MOD-074', identity.error.message, `${pointer}.id`));
+      } else if (identity.kind === 'builtin') {
+        // Declaring a builtin is not an extension, it is a redefinition. The
+        // `asset_classes` field is how a module *enhances* one.
+        errors.push(moduleError(
+          'PROTO-MOD-074',
+          `'${id}' is a builtin asset class; use asset_classes to enhance it rather than declares_asset_classes to redefine it.`,
+          `${pointer}.id`,
+        ));
+      } else if (seen.has(id)) {
+        errors.push(moduleError(
+          'PROTO-MOD-075',
+          `Asset class '${id}' is declared more than once by this module.`,
+          `${pointer}.id`,
+        ));
+      } else {
+        seen.add(id);
+      }
+    }
+
+    if (typeof raw['display_name'] !== 'string' || (raw['display_name'] as string).length === 0) {
+      errors.push(moduleError(
+        'PROTO-MOD-076',
+        'declaration display_name must be a non-empty string.',
+        `${pointer}.display_name`,
+      ));
+    }
+
+    const fallback = raw['fallback'];
+    if (fallback !== undefined && !(ASSET_CLASSES as readonly string[]).includes(fallback as string)) {
+      errors.push(moduleError(
+        'PROTO-MOD-077',
+        `declaration fallback must be a builtin asset class (got ${JSON.stringify(fallback)}).`,
+        `${pointer}.fallback`,
+      ));
+    }
+
+    for (const key of ['required_sections', 'optional_sections'] as const) {
+      const value = raw[key];
+      if (value === undefined) continue;
+      if (!Array.isArray(value) || !value.every((v) => typeof v === 'string' && v.length > 0)) {
+        errors.push(moduleError(
+          'PROTO-MOD-078',
+          `${key} must be an array of non-empty section ids.`,
+          `${pointer}.${key}`,
+        ));
+      }
+    }
+  }
+}
+
 function freezeManifest(manifest: ModuleManifest): ModuleManifest {
   return Object.freeze({
     ...manifest,
@@ -817,6 +911,9 @@ function freezeManifest(manifest: ModuleManifest): ModuleManifest {
     view_models: manifest.view_models ? Object.freeze([...manifest.view_models]) : undefined,
     agent_layers: manifest.agent_layers ? Object.freeze([...manifest.agent_layers]) : undefined,
     depends_on: manifest.depends_on ? Object.freeze([...manifest.depends_on]) : undefined,
+    declares_asset_classes: manifest.declares_asset_classes
+      ? Object.freeze([...manifest.declares_asset_classes])
+      : undefined,
   }) as unknown as ModuleManifest;
 }
 

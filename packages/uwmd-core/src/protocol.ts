@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.7.0' as const;
+export const PROTOCOL_VERSION = '1.8.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -655,6 +655,14 @@ export interface ModuleManifest {
   agent_layers?: ModuleAgentLayerDecl[];
   depends_on?: { id: string; version: string }[];
   /**
+   * Custom asset classes this module introduces (§X.2, RFC 0003).
+   *
+   * Distinct from `asset_classes`, which names builtin classes the module
+   * *enhances*. A module may do both: declare `com.example.data_center` and
+   * also contribute calcs to `industrial`.
+   */
+  declares_asset_classes?: ModuleAssetClassDecl[];
+  /**
    * Detached signature over the canonical manifest (§X.1, RFC 0002).
    *
    * Advisory at the protocol level: what to do with an unsigned module, or one
@@ -701,6 +709,31 @@ export interface ModuleSignature {
    * `kid` actually belongs to that identity has learned nothing.
    */
   identity?: string;
+}
+
+/**
+ * A custom asset class a module introduces (§X.2, RFC 0003).
+ *
+ * `fallback` is the field that makes an unknown class survivable. Without one,
+ * a reader lacking the module can only refuse the document; with one, it can
+ * render — degraded, and saying so. That is a strictly better outcome than
+ * either refusing or silently pretending, and it is why the field is worth the
+ * obligation to pick an honest nearest neighbor.
+ */
+export interface ModuleAssetClassDecl {
+  /** Reverse-DNS, at least three lower-snake-case segments. */
+  id: string;
+  display_name: string;
+  /**
+   * The closest builtin, for readers that do not hold this module. Omitting it
+   * is a deliberate choice that no approximation is honest — a life-sciences
+   * building is not really an office — and costs those readers the document.
+   */
+  fallback?: AssetClass;
+  /** Sections this class requires beyond the stage baseline. */
+  required_sections?: string[];
+  /** Sections this class recognizes but does not require. */
+  optional_sections?: string[];
 }
 
 export interface ModuleSectionDecl {
@@ -1604,6 +1637,57 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A block signature uses an algorithm the verifying deployment has deprecated.',
     remediation: 'Re-sign the block with a current algorithm before the deprecated one is withdrawn.',
     spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+  },
+
+  // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────
+  {
+    code: 'INVALID-ASSET-CLASS-001', severity: 'error',
+    title: 'Malformed asset-class identifier',
+    description: 'frontmatter.asset_class is neither a builtin nor a well-formed namespaced identifier.',
+    remediation: 'Use a builtin, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. com.example.data_center).',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+  },
+  {
+    code: 'INVALID-ASSET-CLASS-002', severity: 'error',
+    title: 'Asset-class identifier shadows a builtin',
+    description: 'A namespaced identifier whose final segment is one of the ten builtin names.',
+    remediation: 'Rename the final segment so it does not shadow a builtin; a suffix such as _specialty both disambiguates and says more.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+  },
+  {
+    code: 'MOD-DEPENDENCY-UNDECLARED', severity: 'warning',
+    title: 'Module-declared asset class with no modules list',
+    description: 'A document with a namespaced asset_class does not name the modules that declare it.',
+    remediation: 'Add a frontmatter `modules` list naming the declaring module, so a reader without it can say what to load rather than only that something is missing.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+  },
+  {
+    code: 'MOD-FALLBACK-001', severity: 'warning',
+    title: 'Asset class rendered via fallback',
+    description: 'The module declaring this asset class is not loaded; the document was rendered with the declared builtin fallback.',
+    remediation: 'Load the declaring module to read the document fully. Values shown come from the fallback view models and may omit what the custom class adds.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.2',
+  },
+  {
+    code: 'MOD-MISSING-001', severity: 'error',
+    title: 'Asset class unresolvable',
+    description: 'The module declaring this asset class is not loaded and no fallback is available.',
+    remediation: 'Load the module named in the frontmatter `modules` list of the document.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.2',
+  },
+  {
+    code: 'MOD-ASSET-CLASS-CONFLICT-001', severity: 'error',
+    title: 'Two modules declare the same asset class',
+    description: 'A reverse-DNS identifier names one owner, so two declarations mean one module is squatting.',
+    remediation: 'Load only one of the two modules, or ask the second to declare an identifier inside its own namespace.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.3',
+  },
+  {
+    code: 'MOD-DISPLAY-CONFLICT-001', severity: 'info',
+    title: 'Two asset classes share a display name',
+    description: 'Confusing for a reader, irrelevant to a machine.',
+    remediation: 'Disambiguate one display name, or show the identifier alongside it.',
+    spec_ref: 'UW_PROTOCOL_v1.md §X.2.3',
   },
 
   // ─── Module runtime (MOD-*) — findings a loaded module produced (RFC 0006) ──

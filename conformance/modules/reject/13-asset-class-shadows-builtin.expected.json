@@ -1,0 +1,7 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-074"
+  ],
+  "note": "A final segment matching a builtin. Stricter than collision-avoidance needs, and deliberately so: it removes the ambiguity the closed enum exists to remove, and defeats host-side suffix matching.",
+  "schema_divergence": "JSON Schema cannot express \"the final segment must not be one of the ten builtin names\" without a lookahead that would make the pattern unreadable for the one rule it adds. The loader enforces it (INVALID-ASSET-CLASS-002)."
+}

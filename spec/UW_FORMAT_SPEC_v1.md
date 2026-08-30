@@ -138,7 +138,7 @@ property_address: "string"          # * full street address
 city: "string"
 state: "XX"                         # 2-char state code
 zip: "string"
-asset_class: "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land"
+asset_class: "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land | <namespaced custom identifier, see §2.2a>"
 asset_subtype: "string | null"      # e.g. "garden_style", "strip_center", "warehouse"
 loan_type: "permanent | bridge | construction | value_add | refinance"
 scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up | nnn_single_tenant | lihtc_section8 | house_flip | commercial_flip | property_conversion | build_to_rent | distressed_reo | land_banking"
@@ -204,6 +204,69 @@ filled in from the fallback cascade (see Protocol §IX). Advancing
 past `scope` requires real documents, not better assumptions —
 producers MUST re-stamp defaulted blocks with observed data before
 setting `deal_stage: screening` or later.
+
+### 2.2a Asset-class identifiers (RFC 0003)
+
+`asset_class` is one of the ten builtin values, **or** a
+module-declared custom identifier.
+
+```
+asset_class := builtin | custom
+builtin     := 'multifamily' | 'office' | 'retail' | 'industrial'
+             | 'self_storage' | 'hospitality' | 'mixed_use'
+             | 'senior_housing' | 'student_housing' | 'land'
+custom      := segment ('.' segment){2,}
+segment     := [a-z][a-z0-9_]*
+```
+
+The builtin set stays **closed**. It answers "what does `data_center`
+mean?" by not allowing the question, and that is worth keeping. What
+RFC 0003 adds is a second, namespaced space so that an adopter who
+needs a class the standard does not have is not forced to lobby for a
+spec bump, misuse an existing class (a data center as `industrial`,
+which then fails industrial's validations), or fork.
+
+**Three segments minimum.** `com.data_center` reads as a namespace with
+no owner, and two segments is where squatting on a short prefix starts
+to look attractive. Reverse-DNS fixes ownership at the identifier, so
+two implementations can never disagree about whose
+`com.example.data_center` this is.
+
+An identifier that is neither a builtin nor a well-formed custom
+identifier is `INVALID-ASSET-CLASS-001` (error).
+
+**Builtin names are reserved in the final segment.** A custom
+identifier whose last segment equals a builtin name — say
+`com.example.multifamily` — is `INVALID-ASSET-CLASS-002` (error). The
+namespace already prevents *collision*, so this is stricter than
+correctness requires; it is here because such an identifier reintroduces
+exactly the ambiguity the closed enum removes, and because any host that
+does suffix matching (a host bug, and one that will happen) would
+conflate the two. `com.example.multifamily_senior` remains available and
+says more.
+
+**A namespaced class obliges the file to name its modules.** A document
+whose `asset_class` is custom SHOULD carry a `modules` list naming what
+declares it:
+
+```yaml
+asset_class: com.example.data_center
+modules:
+  - id: com.example.datacenters
+    version: ">=0.1.0 <1.0.0"
+```
+
+Each entry is either a bare module id or an object with `id` and an
+optional semver-range `version`. Omitting the list is
+`MOD-DEPENDENCY-UNDECLARED` (**warning**, not error): the document is
+well-formed, and a host that happens to hold the module reads it
+correctly. The cost falls on every other reader, who can then say only
+that something is missing and not what to load.
+
+Resolution — what a host does when it encounters a custom class — is
+Protocol §X.2. It is deliberately not in this document: the identifier
+is a property of the file, while resolution depends on what a particular
+reader has loaded.
 
 ### 2.3 Section Headers
 
@@ -2468,6 +2531,24 @@ Tools MUST run these after each section write:
 | `CC-12` | Property `noi_model.net_operating_income` must equal the sum of component `net_operating_income` (mixed-use) | `components`, `noi_model` |
 | `CC-13` | The property section must state the primary size field for `frontmatter.asset_class` (Protocol §XIII.1) (RFC 0027) | `property`, frontmatter |
 | `CC-14` | A deal-record document must have a `property` section (§4.1) (RFC 0028) | `property` |
+
+**Asset-class identifier codes (RFC 0003).** These sit outside the
+`CC-NN` sequence deliberately: they are about the *identifier*, not a
+disagreement between two sections, and grouping them with cross-section
+consistency checks would misfile them for anyone filtering by prefix.
+
+| Code | Severity | Rule |
+|---|---|---|
+| `INVALID-ASSET-CLASS-001` | error | `asset_class` is neither a builtin nor a well-formed namespaced identifier (§2.2a). |
+| `INVALID-ASSET-CLASS-002` | error | A namespaced identifier whose final segment shadows a builtin name (§2.2a). |
+| `MOD-DEPENDENCY-UNDECLARED` | warning | A namespaced `asset_class` with no frontmatter `modules` list naming what declares it (§2.2a). |
+
+Resolution-time findings — `MOD-FALLBACK-001`, `MOD-MISSING-001`,
+`MOD-ASSET-CLASS-CONFLICT-001`, `MOD-DISPLAY-CONFLICT-001` — are **not**
+validation rules and do not appear here. They depend on which modules a
+particular host has loaded, so the same document would validate
+differently for different readers; they belong to Protocol §X.2.2 and
+are reported by resolution, not validation.
 
 **`CC-13` severity and applicability.** `CC-13` is a **warning**, never an
 error: a screening-stage deal legitimately does not know its RSF yet, and the

@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.7.0`) — the
+- **Protocol version** (this document, currently `1.8.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1383,6 +1383,89 @@ A host wanting "only modules from `@example.org`" enforces it with an
 allow-list over `identity` *on top of* a trusted key store, and gains
 nothing from the allow-list alone.
 
+### X.2 Module-declared asset classes (RFC 0003)
+
+A module may introduce an asset class the standard does not have. The
+identifier grammar is format spec §2.2a; this section is **resolution** —
+what a host does when it meets one.
+
+#### X.2.1 Declaration
+
+`ModuleManifest.declares_asset_classes` is a list of:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `id` | yes | The namespaced identifier (§2.2a). |
+| `display_name` | yes | Human-readable name. |
+| `fallback` | no | The closest **builtin**, for readers without this module. |
+| `required_sections` | no | Sections this class requires beyond the stage baseline. |
+| `optional_sections` | no | Sections this class recognizes but does not require. |
+
+Distinct from `asset_classes`, which names builtin classes a module
+*enhances*. A module may do both — declare `com.example.data_center` and
+also contribute calculations to `industrial`.
+
+A declaration whose `id` is a builtin is refused at load: that is not an
+extension, it is a redefinition, and `asset_classes` is how a module
+enhances a builtin. A `fallback` MUST be a builtin — falling back to
+another custom class moves the problem one hop and can cycle.
+
+#### X.2.2 Resolution
+
+Given a document's `asset_class`, a host resolves it to exactly one of
+three outcomes:
+
+1. **Resolved.** The class is a builtin, or a loaded module declares it.
+   The host reads the document fully.
+2. **Degraded.** No loaded module declares it, but the host holds a
+   declaration carrying a `fallback`. The host MAY render using the
+   fallback's view models, MUST report the result as degraded, and MUST
+   emit `MOD-FALLBACK-001` (warning). It MUST NOT present the result as
+   a full read.
+3. **Unresolved.** Neither. The host emits `MOD-MISSING-001` (error).
+   The document's `modules` list is what lets it say *what to load*
+   rather than only that something is missing.
+
+**Holding a declaration is not holding the module.** A host may know a
+class's display name and fallback from a cached declaration or an
+operator's configuration; that is enough to degrade gracefully and not
+enough to resolve. What "loaded" means is the module's calculations and
+validations, and a host that treated a cached declaration as equivalent
+would run a document through a class whose rules it does not have.
+
+**Determinism is the contract**, and it holds in all three outcomes:
+every host with the module resolves identically, every host without one
+and with a fallback degrades identically, every host with neither fails
+identically. There is no arrangement in which two conforming hosts read
+the same file differently — which is the property that makes opening
+this extension point safe, and the reason the enum could not simply be
+opened to arbitrary strings.
+
+#### X.2.3 Conflicts
+
+Two loaded modules declaring the **same identifier** is
+`MOD-ASSET-CLASS-CONFLICT-001` (error). Reverse-DNS names one owner, so
+two declarations mean one module is squatting; a host MUST NOT pick one
+silently, because that makes resolution depend on load order.
+
+Two declarations sharing a **display name** is `MOD-DISPLAY-CONFLICT-001`
+(info). Two unrelated verticals both calling something "Data Center" is
+confusing for a reader and irrelevant to a machine; a host SHOULD show
+the identifier alongside the name and otherwise carry on.
+
+#### X.2.4 What custom classes do not get
+
+A custom class has no builtin calc pack, no Excel layout, and no entry
+in the §XIII size-intensive registry — those tables are keyed to the
+closed builtin set and stay that way. A module supplies its own
+calculations for the classes it declares (§X, module runtime); anything
+the module does not supply, a custom class does not have.
+
+This is a real limit, not an oversight. Wiring a custom class into the
+size-intensive registry would mean a third party could change what
+`price_per_unit` divides by, and the per-unit metrics are exactly where
+a silent denominator change does the most damage.
+
 ---
 
 ## XI. Error Taxonomy
@@ -1497,9 +1580,6 @@ required for v1 conformance.
 - **Locale negotiation** — v1 freezes formatting to `en-US`. The
   `SupportedLocale` type in `protocol.ts` is the v2 hook; full
   locale negotiation will land via RFC.
-- **Custom asset-class declarations from modules** — the asset-class
-  enum is hard-coded in `types.ts` for v1; modules cannot extend it
-  without a spec bump.
 - **Stochastic calculations** — `deterministic: false` calc declarations
   (Monte Carlo, sensitivity sweeps).
 - **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:

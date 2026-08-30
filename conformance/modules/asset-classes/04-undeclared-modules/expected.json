@@ -1,0 +1,10 @@
+{
+  "description": "A namespaced class with no modules list. It still resolves when the module happens to be loaded - but the file states a dependency it never names, so validation warns. A warning, not an error: the document is well-formed and the cost falls on every other reader.",
+  "load_module": true,
+  "known_declarations": false,
+  "expected_status": "resolved",
+  "expected_kind": "custom",
+  "expected_validation_codes": [
+    "MOD-DEPENDENCY-UNDECLARED"
+  ]
+}
