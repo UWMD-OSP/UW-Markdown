@@ -591,6 +591,21 @@ export interface CalcEvaluationContext {
   parsed: ParsedUWFile;
   /** Result map of previously-evaluated calculations in the same batch. */
   prior_results: Readonly<Record<string, number | string | boolean | null>>;
+  /**
+   * Values that shadow document lookup, keyed by **full dotted path** exactly
+   * as an expression writes it (`dcf.exit_cap_rate`, not `exit_cap_rate`).
+   *
+   * Consulted before frontmatter, sections, and prior results, so an override
+   * wins over whatever the document says. That is the point: it lets a caller
+   * ask "what would this be if the exit cap were 6.5%" without mutating the
+   * document, which is what sensitivity analysis (§VIII.7), scenario sweeps,
+   * and stress tests all need.
+   *
+   * Keyed by literal path rather than resolved location because the expression
+   * is the contract: a caller that had to know how `dcf.exit_cap_rate` maps to
+   * a block's inner content would be reimplementing §VIII.2.
+   */
+  overrides?: Readonly<Record<string, number | string | boolean | null>>;
   /** Locale for number parsing. v1: must be 'en-US'. */
   locale: SupportedLocale;
 }

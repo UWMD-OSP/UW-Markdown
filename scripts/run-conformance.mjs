@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                size-intensive,signing.
+//                size-intensive,signing,sensitivity.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -33,6 +33,7 @@ import {
   applyEdit,
   applyEditAsync,
   evaluateCalc,
+  evaluateSensitivity,
   render,
   validateUWFile,
   verifyChain,
@@ -102,7 +103,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2549,6 +2550,96 @@ async function runSigningModules(signing) {
 }
 
 
+// ─── Sensitivity suite (RFC 0007) ────────────────────────────────────────────
+//
+// A named suite rather than a tier-3 fixture family: a sensitivity declaration
+// is not a `ModuleCalcDecl`, its result is not a `CalcResult`, and filing it
+// under tier-3 would mean the tier-3 runner (and the RFC 0004 case generator
+// that reads the same directory) had to branch on fixture shape.
+//
+//   <scenario>/{deal.uwx.md, sensitivity.json, expected.json}
+//
+// `expected.grid` is a plain 2-D array of values with `null` for a failed
+// cell, which reads far better in a diff than the cell union does. Cell errors
+// are asserted separately, by coordinate and code.
+
+const SENSITIVITY_DIR = join(CONFORMANCE_DIR, 'sensitivity');
+
+async function runSensitivity() {
+  if (!existsSync(SENSITIVITY_DIR)) return;
+
+  const scenarios = readdirSync(SENSITIVITY_DIR)
+    .filter((name) => statSync(join(SENSITIVITY_DIR, name)).isDirectory())
+    .sort();
+
+  for (const id of scenarios) {
+    const dir = join(SENSITIVITY_DIR, id);
+    const dealPath = join(dir, 'deal.uwx.md');
+    const declPath = join(dir, 'sensitivity.json');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(declPath) || !existsSync(expectedPath)) {
+      record('sensitivity', id, 'fail', 'scenario needs deal.uwx.md, sensitivity.json and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const decl = JSON.parse(readFileSync(declPath, 'utf8'));
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const ctx = { parsed, prior_results: {}, locale: 'en-US' };
+    const problems = [];
+
+    let result;
+    try {
+      result = evaluateSensitivity(decl, ctx);
+    } catch (e) {
+      record('sensitivity', id, 'fail', `evaluateSensitivity threw: ${e.message}`);
+      continue;
+    }
+
+    if (result.ok !== expected.ok) {
+      problems.push(`ok ${result.ok} != ${expected.ok}${result.ok ? '' : ` (${result.error?.code})`}`);
+    } else if (!expected.ok) {
+      if (result.error?.code !== expected.expected_code) {
+        problems.push(`code ${result.error?.code} != ${expected.expected_code}`);
+      }
+    } else {
+      if (result.failed_cells !== expected.failed_cells) {
+        problems.push(`failed_cells ${result.failed_cells} != ${expected.failed_cells}`);
+      }
+      if (expected.round_to !== undefined && result.round_to !== expected.round_to) {
+        problems.push(`round_to ${result.round_to} != ${expected.round_to}`);
+      }
+      const actualGrid = (result.grid ?? []).map((row) =>
+        row.map((cell) => (cell.ok ? cell.value : null)),
+      );
+      if (JSON.stringify(actualGrid) !== JSON.stringify(expected.grid)) {
+        problems.push(`grid ${JSON.stringify(actualGrid)} != ${JSON.stringify(expected.grid)}`);
+      }
+      for (const want of expected.expected_cell_errors ?? []) {
+        const cell = result.grid?.[want.row]?.[want.col];
+        if (cell?.ok !== false) {
+          problems.push(`cell [${want.row}][${want.col}] did not fail`);
+        } else if (cell.error.code !== want.code) {
+          problems.push(`cell [${want.row}][${want.col}] ${cell.error.code} != ${want.code}`);
+        }
+      }
+      // A sweep that edited the document would silently change the deal, and
+      // nothing else in the suite would notice.
+      for (const [path, value] of Object.entries(expected.assert_unchanged ?? {})) {
+        const after = evaluateCalc(
+          { id: 'probe', label: 'probe', formula: path, deterministic: true },
+          ctx,
+        );
+        if (after.value !== value) {
+          problems.push(`document mutated: ${path} is ${after.value}, expected ${value}`);
+        }
+      }
+    }
+
+    record('sensitivity', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -2567,6 +2658,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'size-intensive': async () => { await runSizeIntensive(); },
   'signing': async () => { await runSigning(); },
+  'sensitivity': async () => { await runSensitivity(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

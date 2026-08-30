@@ -4,10 +4,10 @@
 owner-led governance is active.
 **Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
 (module signing), RFC 0004 (language-agnostic conformance driver), RFC 0006
-(hospitality reference module), and RFC 0003 (module-declared asset classes)
-on top of `v1.7.0` — full pass: build green across all
-workspaces; **1,306 tests** — 1,066 core, 94 excel, 62 cli, 62 signing, 15
-module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **289
+(hospitality reference module), RFC 0003 (module-declared asset
+classes), and RFC 0007 (sensitivity tables) on top of `v1.7.0` — full pass: build green across all
+workspaces; **1,328 tests** — 1,088 core, 94 excel, 62 cli, 62 signing, 15
+module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **294
 conformance** assertions (and **44** more through the RFC 0004 CLI driver)
 including the Tier-4 replay,
 module, package, receipts, market-data, composition, capital-stack,
@@ -142,6 +142,17 @@ not core gaps.
   "sigstore"` is reserved so adding it stays additive. `identity` is advisory
   and §X.1.5 says so normatively. `conformance/signing/modules/` runs six
   scenarios under all three policies.
+- **Sensitivity tables (RFC 0007, protocol §VIII.7):** two-axis grids as a JSON
+  `SensitivityDecl` — **the §VIII.1 grammar is unchanged**, because the RFC's
+  proposed builtin would have needed object literals, array literals, and an
+  executable string argument to reach data already sitting in JSON. The real
+  primitive is `CalcEvaluationContext.overrides` (keyed by full dotted path,
+  shadowing lookup and never writing; `null` means "absent", distinct from no
+  override), which scenario sweeps and stress tests can use too. The grid never
+  travels through `CalcResult.value`. A failed cell does not fail the table.
+  `CALC-SENS-001`–`005`; `conformance/sensitivity/` (5 scenarios). Excel emit
+  deferred — there was no ad-hoc renderer to replace, contrary to the RFC's
+  motivation.
 - **Module-declared asset classes (RFC 0003):** the builtin enum stays
   **closed** and a namespaced space opens beside it — format spec §2.2a
   (reverse-DNS, three segments minimum), protocol §X.2 (resolution in exactly
@@ -638,8 +649,8 @@ registered module.
 **The stated priority order is complete.** What remains on this train has no
 assigned order yet:
 
-Unordered: range/stochastic calcs (0005), sensitivity-table builtin
-(0007), lease-up modeling (0008), locale/multi-currency (0001),
+Unordered: range/stochastic calcs (0005), lease-up modeling (0008),
+locale/multi-currency (0001),
 `_meta` v2 reorg (0009),
 capability tokens (0011), corpus retrieval (0013), and portfolio/relationship
 profiles (0015). Unfrozen means actively being taken up, not accepted — each

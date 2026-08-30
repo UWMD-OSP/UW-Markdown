@@ -1,0 +1,24 @@
+{
+  "id": "exit_value",
+  "label": "Exit Value",
+  "base_formula": "noi_model.net_operating_income / dcf.exit_cap_rate",
+  "row_axis": {
+    "variable": "dcf.exit_cap_rate",
+    "values": [
+      0.05,
+      0.06,
+      0.075
+    ],
+    "label": "Exit cap"
+  },
+  "col_axis": {
+    "variable": "noi_model.net_operating_income",
+    "values": [
+      600000,
+      660000
+    ],
+    "label": "NOI"
+  },
+  "unit": "$",
+  "round_to": 2
+}

@@ -1,0 +1,20 @@
+{
+  "description": "A 3x2 grid over exit cap and NOI. Both axes override paths the base formula reads, so every cell is the two axis values and nothing else - 600000/0.05 = 12,000,000 and so on, all checkable by hand.",
+  "ok": true,
+  "failed_cells": 0,
+  "round_to": 2,
+  "grid": [
+    [
+      12000000,
+      13200000
+    ],
+    [
+      10000000,
+      11000000
+    ],
+    [
+      8000000,
+      8800000
+    ]
+  ]
+}

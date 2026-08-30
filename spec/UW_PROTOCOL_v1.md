@@ -1081,6 +1081,116 @@ reproduce across platforms.
 | `CALC-DIV-ZERO` | Division by zero. |
 | `CALC-IRR-DIVERGE` | IRR did not converge. |
 | `CALC-LIMIT-001` | Expression exceeded host complexity limits. |
+| `CALC-SENS-001` | Sensitivity axis missing or has no variable (§VIII.7.4). |
+| `CALC-SENS-002` | Sensitivity axis has fewer than two values, or a non-finite one. |
+| `CALC-SENS-003` | Sensitivity grid exceeds the cell or per-axis bound. |
+| `CALC-SENS-004` | Both sensitivity axes vary the same variable. |
+| `CALC-SENS-005` | Sensitivity `round_to` is out of range. |
+
+### VIII.7 Sensitivity tables (RFC 0007)
+
+A sensitivity table is one base formula evaluated once per (row,
+column) pair, with the two axis variables overridden. It is the thing
+every underwriter builds by hand in Excel, and the alternative — N×M
+`custom_calculations` blocks, one per cell — bloats the document, hides
+the axis design from any reader, and forces every consumer to re-derive
+the grid's structure from calc-id naming conventions.
+
+#### VIII.7.1 A declaration, not a function
+
+A sensitivity table is declared in JSON, **not** written as a call
+inside the §VIII.1 grammar:
+
+```jsonc
+{
+  "id": "exit_value",
+  "label": "Exit Value",
+  "base_formula": "noi_model.net_operating_income / dcf.exit_cap_rate",
+  "row_axis": { "variable": "dcf.exit_cap_rate", "values": [0.05, 0.06, 0.075] },
+  "col_axis": { "variable": "noi_model.net_operating_income", "values": [600000, 660000] },
+  "unit": "$",
+  "round_to": 2
+}
+```
+
+This is deliberate. A `sensitivity_table(expr, {…}, {…})` builtin would
+need object literals, array literals, and a string argument that is
+executed as a program — three extensions to a grammar whose narrowness
+is the reason it can be evaluated on untrusted input at all. The axis
+data is already JSON one level up, so the grammar buys nothing by
+reaching it.
+
+`base_formula` is an ordinary safe expression. The sandbox is unchanged.
+
+#### VIII.7.2 Overrides
+
+Evaluation uses **overrides**: values keyed by full dotted path, exactly
+as an expression writes them (`dcf.exit_cap_rate`, not
+`exit_cap_rate`), consulted ahead of frontmatter, sections, and prior
+results.
+
+Two properties are normative:
+
+- **Overrides shadow, they never write.** After a sweep, the document
+  reads exactly as it did before. A sweep that mutated the document
+  would silently change the deal.
+- **A `null` override means "treat this path as absent"**, and is
+  distinct from having no override. Collapsing the two would make it
+  impossible to ask what a formula does when an input goes missing.
+
+Overrides are general, not sensitivity-specific: scenario sweeps and
+stress tests need the same mechanism.
+
+#### VIII.7.3 Results
+
+The result is its own type, and **MUST NOT** be carried in
+`CalcResult.value`, which stays `number | string | boolean | null`.
+Receipts pin that union (§VIII.5), the CLI renders it, and the Excel
+emitter emits from it; a grid smuggled through it would break all three
+for a feature none of them asked to carry.
+
+`grid[row][col]` follows the axes' declared order. Each cell is either a
+value or the error that stopped it, never both.
+
+**A failed cell does not fail the table.** A grid where one combination
+divides by zero is still a useful grid, and refusing the whole thing
+would hide the cells that worked. The result reports `failed_cells` so a
+consumer can say how much of the table is real.
+
+#### VIII.7.4 Refusals
+
+A declaration that cannot produce a meaningful grid is refused before
+any cell is evaluated:
+
+| Code | Trigger |
+|---|---|
+| `CALC-SENS-001` | An axis is missing, or its `variable` is empty. |
+| `CALC-SENS-002` | An axis has fewer than two values, or a non-finite one. |
+| `CALC-SENS-003` | The grid exceeds 256 cells, or an axis exceeds 64 values. |
+| `CALC-SENS-004` | Both axes vary the same variable. |
+| `CALC-SENS-005` | `round_to` is outside `[0, 12]` or not an integer. |
+
+Two of these are worth the words:
+
+- **One value is not a sweep** (`CALC-SENS-002`). A degenerate 1×N grid
+  is something every consumer would then have to special-case.
+- **Two axes on one variable** (`CALC-SENS-004`) is not a redundancy but
+  a trap: the second override silently wins for every cell, producing a
+  grid whose rows are identical and whose reader has no way to see why.
+
+The 256-cell bound keeps a host's evaluation cost predictable when the
+declaration comes from a document it did not write. Three-axis (cube)
+tables are out of scope; a follow-up RFC can add them if the case
+appears.
+
+#### VIII.7.5 Host obligations
+
+A Tier-3 host that does not implement sensitivity tables MUST report a
+typed refusal rather than crash or silently skip. A host that does
+implement them MUST produce the same grid as any other host for the same
+document and declaration — the base formula is deterministic, the axes
+are literals, and quantization is §VIII.5, so there is nothing left to
+disagree about.
 
 ---
 

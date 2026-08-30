@@ -49,6 +49,51 @@ on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
   ed25519/es256/es384 round trip, signature-swap and wrong-key rejection, key
   store refusals, and the full issue → sign → verify receipt path.
 
+### Added — RFC 0007 implemented: sensitivity tables, without touching the grammar (corpus 289 → 294)
+
+[RFC 0007](docs/rfcs/0007-sensitivity-tables.md) (drafted 2026-04-27, accepted
+and implemented 2026-08-27). Protocol §VIII.7. No version bump beyond 1.8.0,
+which the same day's §X.2 already carried.
+
+- **A declaration, not a builtin.** The RFC proposed
+  `sensitivity_table(expr, {…}, {…})` inside the §VIII.1 grammar — which has no
+  object literals, no array literals, and a `string` production that is a value
+  rather than a program. That is three sandbox extensions, one of which makes a
+  string argument *executable*, to reach axis data already sitting in JSON one
+  level up. What shipped is a JSON `SensitivityDecl` with an ordinary safe
+  expression as `base_formula`. **The grammar is unchanged.**
+- **`CalcEvaluationContext.overrides`** is the actual primitive: values keyed by
+  full dotted path, consulted ahead of frontmatter, sections, and prior
+  results. Two properties are normative — overrides **shadow and never write**
+  (a sweep that mutated the document would silently change the deal), and a
+  `null` override means "treat this path as absent", distinct from having no
+  override. Scenario sweeps and stress tests need the same mechanism.
+- **The grid never travels through `CalcResult.value`**, which stays
+  `number | string | boolean | null`. RFC 0016 receipts pin that union, the CLI
+  renders it, and Excel emits from it; widening it would break three consumers
+  for a feature none of them asked to carry.
+- **A failed cell does not fail the table.** A grid where one combination
+  divides by zero is still useful, and refusing the whole thing would hide the
+  cells that worked. `failed_cells` says how much of the table is real.
+- **`CALC-SENS-001`–`005`.** `CALC-SENS-004` (both axes on one variable) is new
+  beyond the RFC and is a trap rather than a redundancy: the second override
+  silently wins for every cell, producing a grid whose rows are identical and
+  whose reader cannot see why. Bounds are 256 cells and 64 per axis, so a
+  1×256 strip is no cheaper than a square.
+- **Conformance:** `conformance/sensitivity/`, five scenarios with hand-checkable
+  round numbers — including one that asserts the document reads unchanged after
+  a sweep.
+- **Tests:** 22 new core tests covering overrides and the grid.
+
+### Fixed — RFC 0007's motivation described renderers that do not exist
+
+The RFC states that `@uwmd/excel` and the web editor "both have ad-hoc grid
+renderers that re-derive the axis structure from the calc IDs". Neither does,
+and neither ever did. The rest of the motivation stands on its own; that claim
+is corrected in the RFC rather than repeated. Excel emit is deferred
+accordingly — there is no ad-hoc implementation to replace, and
+`SensitivityResult` hands an emitter the grid structure whenever one is written.
+
 ### Added — RFC 0003 implemented: modules can declare asset classes (corpus 274 → 289)
 
 [RFC 0003](docs/rfcs/0003-module-asset-classes.md) (drafted 2026-04-26,

@@ -27,10 +27,20 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
     case 'literal':
       return expr.value;
 
-    case 'ident':
+    case 'ident': {
+      const overridden = lookupOverride(expr.name, ctx);
+      if (overridden !== undefined) return overridden;
       return resolveIdentifier(expr.name, ctx);
+    }
 
     case 'path': {
+      // The whole dotted path is checked first, so `dcf.exit_cap_rate` can be
+      // overridden without shadowing everything else under `dcf`.
+      const overridden = lookupOverride(
+        [expr.head, ...expr.segments].join('.'),
+        ctx,
+      );
+      if (overridden !== undefined) return overridden;
       const head = resolveIdentifier(expr.head, ctx);
       if (head === null || head === undefined) return null;
       let cur: unknown = head;
@@ -100,6 +110,20 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
 }
 
 // ─── Variable resolution ──────────────────────────────────────────────────────
+
+/**
+ * An override for this exact path, or `undefined` when there is none.
+ *
+ * `undefined` rather than `null` is load-bearing: `null` is a legitimate
+ * override value meaning "treat this as absent", and collapsing the two would
+ * make it impossible to ask what a formula does when an input goes missing.
+ */
+function lookupOverride(path: string, ctx: CalcEvaluationContext): CalcValue | undefined {
+  const overrides = ctx.overrides;
+  if (!overrides) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(overrides, path)) return undefined;
+  return overrides[path] ?? null;
+}
 
 function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue {
   // A blocked head is unresolvable for the same reason a blocked segment is:

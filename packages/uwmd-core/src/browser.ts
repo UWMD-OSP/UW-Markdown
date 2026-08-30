@@ -201,6 +201,23 @@ export { deriveDCF } from './dcf.js';
 export type { DCFDerivation } from './dcf.js';
 
 export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
+
+// RFC 0007 — sensitivity tables. A declaration, not a grammar extension: the
+// §VIII.1 sandbox is unchanged, and the grid never travels through
+// `CalcResult.value`.
+export {
+  evaluateSensitivity,
+  isSensitivityDecl,
+  assertSensitivityOk,
+  MAX_SENSITIVITY_CELLS,
+  MAX_SENSITIVITY_AXIS,
+} from './calc/sensitivity.js';
+export type {
+  SensitivityDecl,
+  SensitivityAxis,
+  SensitivityCell,
+  SensitivityResult,
+} from './calc/sensitivity.js';
 export type { CalcValue, Builtin, CalcErrorCode } from './calc/index.js';
 // The §VIII.5 quantization boundary — browser-safe, and the web editor needs it
 // to quantize hand-overridden fields the same way pack results are quantized.

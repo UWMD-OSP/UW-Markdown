@@ -103,6 +103,10 @@ Detailed sequencing and release gates:
 > Protocol §X.2; the builtin enum stays closed and a second, namespaced space
 > opens beside it.
 >
+> **RFC 0007 (sensitivity tables) followed**, as protocol §VIII.7 — a JSON
+> declaration plus a general path-override mechanism, with the §VIII.1 grammar
+> left exactly as narrow as it was.
+>
 > **The stated priority order is complete.** What remains on this train —
 > locale negotiation (0001), stochastic calcs (0005), and portfolio
 > relationships (0015) — has no assigned order yet. Unfrozen means *actively being taken up*, not

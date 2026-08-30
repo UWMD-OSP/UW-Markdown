@@ -206,3 +206,50 @@ formulas as Excel and get the *same* numbers. **Agents may populate the inputs a
 formula reads (e.g. write `annual_debt_service`), but the derived metric itself is
 always computed here, never by an LLM.** See
 [10 — Conventions & invariants](10-conventions-invariants.md).
+
+## Sensitivity tables (RFC 0007, §VIII.7)
+
+Two-axis grids: one base formula, evaluated once per (row, column) pair with
+the two axis variables overridden.
+
+**Declared in JSON, not written in the grammar.** RFC 0007 proposed a
+`sensitivity_table(expr, {…}, {…})` builtin; that would need object literals,
+array literals, and a string argument executed as a program — three extensions
+to a sandbox whose narrowness is why it can run on untrusted input at all. The
+axis data is already JSON one level up. `SensitivityDecl` carries the axes,
+`base_formula` is an ordinary safe expression, and **the grammar is
+unchanged**.
+
+`evaluateSensitivity(decl, ctx)` returns a `SensitivityResult` — its own type,
+never smuggled through `CalcResult.value`, which stays
+`number | string | boolean | null` because receipts pin it, the CLI renders it,
+and Excel emits from it.
+
+### Overrides
+
+`CalcEvaluationContext.overrides` is the underlying primitive and is general —
+scenario sweeps and stress tests want it too. Values are keyed by **full dotted
+path** exactly as an expression writes them (`dcf.exit_cap_rate`, not
+`exit_cap_rate`), consulted ahead of frontmatter, sections, and prior results.
+
+Two properties are normative and both are pinned by tests:
+
+- **Overrides shadow; they never write.** After a sweep the document reads
+  exactly as before. A sweep that mutated it would silently change the deal.
+- **`null` is a value, not an absence.** `undefined` means no override; `null`
+  means "treat this path as absent", which is how you ask what a formula does
+  when an input goes missing.
+
+### Grids and refusals
+
+A failed cell is recorded in place and does **not** fail the table —
+`failed_cells` reports how many. A grid where one combination divides by zero
+is still useful, and refusing the whole thing would hide the cells that worked.
+
+Declarations are refused before any cell runs: `CALC-SENS-001` (missing axis),
+`-002` (fewer than two values, or non-finite), `-003` (over 256 cells or 64 per
+axis), `-004` (both axes on one variable — a trap, since the second silently
+wins for every cell), `-005` (bad `round_to`).
+
+Excel emit is deferred; `SensitivityResult` hands an emitter the grid structure
+whenever one is written.

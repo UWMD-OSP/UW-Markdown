@@ -1,0 +1,20 @@
+{
+  "description": "Same document, a sweep that touches every axis path. Afterwards the underwritten exit cap must still read 0.06 - overrides shadow lookup, they never write. A sweep that edited the document would silently change the deal.",
+  "ok": true,
+  "failed_cells": 0,
+  "round_to": 2,
+  "grid": [
+    [
+      15000000,
+      22500000
+    ],
+    [
+      7500000,
+      11250000
+    ]
+  ],
+  "assert_unchanged": {
+    "dcf.exit_cap_rate": 0.06,
+    "noi_model.net_operating_income": 600000
+  }
+}
