@@ -66,6 +66,10 @@ export type ViewerCapability =
   | 'edit-frontmatter'
   | 'calc-evaluate'
   | 'calc-deterministic'
+  /** Evaluates stochastic declarations (§VIII.8, RFC 0005). */
+  | 'calc-stochastic'
+  /** Evaluates sensitivity declarations (§VIII.7, RFC 0007). */
+  | 'calc-sensitivity'
   | 'agent-host'
   | 'module-load'
   /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
@@ -147,6 +151,8 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'edit-frontmatter',
     'calc-evaluate',
     'calc-deterministic',
+    'calc-stochastic',
+    'calc-sensitivity',
     'agent-host',
     'module-load',
     // Both are gated on the optional @uwmd/signing package being installed.

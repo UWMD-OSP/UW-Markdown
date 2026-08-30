@@ -205,6 +205,33 @@ export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError
 // RFC 0007 — sensitivity tables. A declaration, not a grammar extension: the
 // §VIII.1 sandbox is unchanged, and the grid never travels through
 // `CalcResult.value`.
+// RFC 0005 — stochastic calculations. Sampling is a declaration plus the §VIII.7
+// override mechanism; the grammar and the builtins are untouched, and the
+// builtins stay pure.
+export {
+  evaluateStochastic,
+  isStochasticDecl,
+  SUMMARY_STATS,
+  MAX_STOCHASTIC_SAMPLES,
+  MIN_STOCHASTIC_SAMPLES,
+} from './calc/stochastic.js';
+export type {
+  StochasticDecl,
+  StochasticInput,
+  StochasticResult,
+  StochasticSummary,
+  DistributionSpec,
+  SummaryStat,
+} from './calc/stochastic.js';
+export {
+  Pcg64,
+  PRNG_ALGORITHM,
+  inverseNormalCdf,
+  sampleUniform,
+  sampleNormal,
+  sampleTriangular,
+} from './calc/prng.js';
+
 export {
   evaluateSensitivity,
   isSensitivityDecl,

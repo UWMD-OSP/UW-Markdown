@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                size-intensive,signing,sensitivity.
+//                size-intensive,signing,sensitivity,stochastic.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -34,6 +34,7 @@ import {
   applyEditAsync,
   evaluateCalc,
   evaluateSensitivity,
+  evaluateStochastic,
   render,
   validateUWFile,
   verifyChain,
@@ -103,7 +104,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity,stochastic').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2640,6 +2641,154 @@ async function runSensitivity() {
 }
 
 
+// ─── Stochastic suite (RFC 0005) ─────────────────────────────────────────────
+//
+// What this suite pins is NOT the shape of a distribution — that is a
+// statistics question with no single right answer — but that the same seed
+// produces the same numbers. A stochastic calc two hosts disagree about is not
+// a model, it is a rumor.
+//
+//   <scenario>/{deal.uwx.md, stochastic.json, expected.json}
+//
+// `expected.summary` is the frozen baseline, minted with --update. Scenarios
+// declare their own `exactness`: `exact` for uniform and triangular, which use
+// only arithmetic and sqrt, and `tolerance` for normal, whose inverse-CDF tails
+// call log() — a function no standard requires to be correctly rounded. Saying
+// which is which beats a blanket tolerance that hides the difference.
+
+const STOCHASTIC_DIR = join(CONFORMANCE_DIR, 'stochastic');
+
+function summariesAgree(actual, expected, exactness, relTolerance) {
+  const keys = [...new Set([...Object.keys(actual ?? {}), ...Object.keys(expected ?? {})])];
+  const problems = [];
+  for (const key of keys) {
+    const a = actual?.[key];
+    const b = expected?.[key];
+    if (a === null || b === null || a === undefined || b === undefined) {
+      if (a !== b) problems.push(`${key}: ${a} != ${b}`);
+      continue;
+    }
+    if (exactness === 'exact') {
+      if (a !== b) problems.push(`${key}: ${a} != ${b}`);
+      continue;
+    }
+    const scale = Math.max(Math.abs(a), Math.abs(b), 1);
+    if (Math.abs(a - b) / scale > (relTolerance ?? 1e-9)) {
+      problems.push(`${key}: ${a} != ${b} beyond tolerance`);
+    }
+  }
+  return problems;
+}
+
+async function runStochastic() {
+  if (!existsSync(STOCHASTIC_DIR)) return;
+
+  const scenarios = readdirSync(STOCHASTIC_DIR)
+    .filter((name) => statSync(join(STOCHASTIC_DIR, name)).isDirectory())
+    .sort();
+  const summaries = new Map();
+
+  for (const id of scenarios) {
+    const dir = join(STOCHASTIC_DIR, id);
+    const dealPath = join(dir, 'deal.uwx.md');
+    const declPath = join(dir, 'stochastic.json');
+    const expectedPath = join(dir, 'expected.json');
+    if (!existsSync(dealPath) || !existsSync(declPath) || !existsSync(expectedPath)) {
+      record('stochastic', id, 'fail', 'scenario needs deal.uwx.md, stochastic.json and expected.json');
+      continue;
+    }
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const decl = JSON.parse(readFileSync(declPath, 'utf8'));
+    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
+    const ctx = { parsed, prior_results: {}, locale: 'en-US' };
+    const problems = [];
+
+    let result;
+    try {
+      result = evaluateStochastic(decl, ctx);
+    } catch (e) {
+      record('stochastic', id, 'fail', `evaluateStochastic threw: ${e.message}`);
+      continue;
+    }
+
+    if (result.ok !== expected.ok) {
+      problems.push(`ok ${result.ok} != ${expected.ok}${result.ok ? '' : ` (${result.error?.code})`}`);
+      record('stochastic', id, 'fail', problems.join('; '));
+      continue;
+    }
+
+    if (!expected.ok) {
+      if (result.error?.code !== expected.expected_code) {
+        problems.push(`code ${result.error?.code} != ${expected.expected_code}`);
+      }
+      record('stochastic', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+      continue;
+    }
+
+    summaries.set(id, result.summary);
+
+    // Reproducibility is asserted in-process, without any baseline: re-running
+    // must return the identical object. This binds any implementation, not just
+    // one that happens to match our frozen numbers.
+    if (expected.assert_reproducible) {
+      const again = evaluateStochastic(decl, ctx);
+      if (JSON.stringify(again.summary) !== JSON.stringify(result.summary)) {
+        problems.push('re-running the same declaration produced a different summary');
+      }
+    }
+
+    if (expected.expected_sampled) {
+      if (JSON.stringify(result.sampled) !== JSON.stringify(expected.expected_sampled)) {
+        problems.push(`sampled ${JSON.stringify(result.sampled)} != ${JSON.stringify(expected.expected_sampled)}`);
+      }
+    }
+
+    for (const [stat, [lo, hi]] of Object.entries(expected.assert_within ?? {})) {
+      const value = result.summary?.[stat];
+      if (typeof value !== 'number' || value < lo || value > hi) {
+        problems.push(`${stat} ${value} outside [${lo}, ${hi}]`);
+      }
+    }
+
+    if (UPDATE) {
+      expected.summary = result.summary;
+      writeFileSync(expectedPath, `${JSON.stringify(expected, null, 2)}
+`);
+      record('stochastic', id, 'updated');
+      continue;
+    }
+    if (!expected.summary) {
+      record('stochastic', id, 'fail', 'missing frozen summary — run with --update');
+      continue;
+    }
+    problems.push(
+      ...summariesAgree(result.summary, expected.summary, expected.exactness, expected.relative_tolerance),
+    );
+
+    record('stochastic', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // A seed that did not change the stream would make the field decorative and
+  // reproducibility accidental — so a scenario can name one it must differ from.
+  for (const id of scenarios) {
+    const expectedPath = join(STOCHASTIC_DIR, id, 'expected.json');
+    if (!existsSync(expectedPath)) continue;
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    if (!expected.differs_from) continue;
+    const mine = summaries.get(id);
+    const theirs = summaries.get(expected.differs_from);
+    if (mine === undefined || theirs === undefined) continue;
+    const same = JSON.stringify(mine) === JSON.stringify(theirs);
+    record(
+      'stochastic',
+      `${id} [differs from ${expected.differs_from}]`,
+      same ? 'fail' : 'pass',
+      same ? 'a different seed produced an identical summary' : undefined,
+    );
+  }
+}
+
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -2659,6 +2808,7 @@ const dispatch = {
   'size-intensive': async () => { await runSizeIntensive(); },
   'signing': async () => { await runSigning(); },
   'sensitivity': async () => { await runSensitivity(); },
+  'stochastic': async () => { await runStochastic(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

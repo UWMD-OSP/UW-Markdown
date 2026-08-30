@@ -151,6 +151,22 @@ conformance/
                           behavior pair (warns-and-does-not-refuse on a
                           size-less office; silent for mixed_use, whose
                           resolveDealSize is null by design)
+├── stochastic/         Distributions (RFC 0005, Protocol §VIII.8). Six
+│                         <scenario>/{deal.uwx.md, stochastic.json,
+│                         expected.json}. What is pinned is NOT the shape of a
+│                         distribution - that is a statistics question - but
+│                         that the same seed produces the same numbers.
+│                         Reproducibility is asserted IN-PROCESS with no
+│                         baseline (re-running must return an identical
+│                         summary), so it binds any implementation and not only
+│                         one matching our frozen figures; 02 asserts a
+│                         different seed produces a DIFFERENT summary, since a
+│                         seed that did not change the stream would make
+│                         reproducibility accidental. Each scenario declares its
+│                         own `exactness`: exact for uniform and triangular,
+│                         tolerance for normal, whose inverse-CDF tails call
+│                         log() - a function no standard requires to be
+│                         correctly rounded
 ├── sensitivity/        Two-axis grids (RFC 0007, Protocol §VIII.7). Five
 │                         <scenario>/{deal.uwx.md, sensitivity.json,
 │                         expected.json}. Round numbers on purpose - every
@@ -185,8 +201,8 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `size-intensive`, `signing`, and `sensitivity` suites are
-named rather than numbered:
+`capital-stack`, `size-intensive`, `signing`, `sensitivity`, and `stochastic`
+suites are named rather than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and

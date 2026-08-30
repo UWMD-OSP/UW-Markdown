@@ -1086,6 +1086,12 @@ reproduce across platforms.
 | `CALC-SENS-003` | Sensitivity grid exceeds the cell or per-axis bound. |
 | `CALC-SENS-004` | Both sensitivity axes vary the same variable. |
 | `CALC-SENS-005` | Sensitivity `round_to` is out of range. |
+| `CALC-STOCH-001` | Stochastic declaration has no integer `seed` (§VIII.8.5). |
+| `CALC-STOCH-002` | Stochastic `samples` outside [2, 100000]. |
+| `CALC-STOCH-003` | A stochastic input path or distribution is malformed, or a variable is drawn twice. |
+| `CALC-STOCH-004` | `summarize` is empty or names an unknown statistic. |
+| `CALC-STOCH-005` | Stochastic declaration has no random inputs. |
+| `CALC-STOCH-006` | Stochastic `round_to` is out of range. |
 
 ### VIII.7 Sensitivity tables (RFC 0007)
 
@@ -1191,6 +1197,157 @@ implement them MUST produce the same grid as any other host for the same
 document and declaration — the base formula is deterministic, the axes
 are literals, and quantization is §VIII.5, so there is nothing left to
 disagree about.
+
+### VIII.8 Stochastic calculations (RFC 0005)
+
+Underwriting reasons about ranges: "DSCR is 1.45 base case but
+1.20–1.65 across rate paths." Today those numbers are computed
+elsewhere and pasted in as plain values, losing the model behind them,
+or approximated as best/base/worst — which renders nicely and cannot
+answer "what is the probability this underwrites above our minimum
+DSCR?"
+
+A stochastic calculation declares the inputs that vary, the
+distribution each is drawn from, and a seed. The result is a
+distribution summary.
+
+#### VIII.8.1 A declaration, not built-ins
+
+Sampling is **not** a function inside the §VIII.1 grammar. RFC 0005
+proposed `uniform()`, `normal()`, `triangular()`, and
+`monte_carlo(expr, n)`; each is disqualifying on its own terms:
+
+- Every builtin is a pure function of its arguments. A sampling builtin
+  carries PRNG state, and "the calc engine is pure" is what makes a
+  formula auditable.
+- `monte_carlo(expr, n)` needs a *lazy* argument, but arguments are
+  evaluated eagerly — so it becomes either a special-cased builtin or a
+  string executed as a program.
+- A call whose legality depends on the enclosing declaration's
+  `deterministic` flag is a context-sensitive grammar, checked by a
+  deliberately context-free parser.
+
+Instead the inputs are declared, and each draw is an ordinary
+evaluation using the override mechanism of §VIII.7.2. The grammar and
+the built-ins are untouched.
+
+```jsonc
+{
+  "id": "dscr_distribution",
+  "label": "DSCR distribution",
+  "base_formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+  "inputs": [
+    { "variable": "noi_model.net_operating_income",
+      "distribution": { "kind": "uniform", "min": 540000, "max": 660000 } },
+    { "variable": "debt_structure.annual_debt_service",
+      "distribution": { "kind": "normal", "mean": 400000, "stddev": 15000 } }
+  ],
+  "samples": 2000,
+  "seed": 42,
+  "summarize": ["mean", "median", "p10", "p90", "stddev"]
+}
+```
+
+`seed` is **required**. A stochastic calc without one produces a
+different answer every run, which is the opposite of what this format
+exists to guarantee (`CALC-STOCH-001`).
+
+**Input order is part of the contract.** One PRNG stream feeds the
+inputs in declared order, so reordering the list changes every sample.
+The alternative — a stream per input — would make output depend on a
+hidden per-input keying rule instead, which is worse because it is
+invisible.
+
+#### VIII.8.2 The PRNG
+
+Normative: **PCG-XSL-RR-128/64** (`pcg64`), seeded as the reference
+`srandom` does — zero the state, step, add the seed, step again. A host
+that merely assigned the seed to the state would produce a different
+stream from every correct implementation while still being perfectly
+deterministic, and so would pass any self-consistency test.
+
+Uniform doubles take the **top 53 bits** of a draw divided by 2⁵³. Not
+64 bits over 2⁶⁴: that rounds, so two distinct draws can map to one
+double and a third can reach exactly `1.0`.
+
+Specifying the algorithm rather than naming a library is deliberate —
+a library's version would become part of the determinism contract.
+
+#### VIII.8.3 Distributions and exactness
+
+Every distribution is sampled by **inverting its CDF** at a uniform
+draw. This is about determinism, not elegance. IEEE 754 exactly
+specifies `+ − × ÷` and `sqrt`; it does **not** specify `log`, `exp`,
+`sin`, or `cos`, whose last-place results differ between platforms. So
+Box-Muller (`log`, `cos`) and Marsaglia polar (`log`) are unusable:
+they produce samples that agree to fifteen digits across hosts and
+disagree in the sixteenth.
+
+| Kind | Parameters | Cross-host exactness |
+|---|---|---|
+| `uniform` | `min`, `max` | **Exact** — arithmetic only. |
+| `triangular` | `min`, `mode`, `max` | **Exact** — arithmetic and `sqrt`. |
+| `normal` | `mean`, `stddev` | **Not exact in the tails.** |
+
+`normal` uses Acklam's rational inverse-CDF approximation (relative
+error ≈ 1.15 × 10⁻⁹). Its central region — about 95% of draws — is
+arithmetic only and therefore exact; both tails need `log`, so two
+hosts may disagree in the last place there.
+
+That limitation is stated rather than hidden. The alternative was to
+omit the normal distribution, which is worse: it is the one adopters
+reach for. Conformance therefore compares `uniform` and `triangular`
+results **exactly** and normal-derived results at a stated tolerance.
+Naming which distributions are exact is more useful than a blanket
+tolerance that conceals the difference.
+
+`triangular`'s parameters are exactly the `low`/`central`/`high` the
+asset-class default tables already carry, so an adopter can turn
+existing napkin-mode ranges into distributions without inventing any
+numbers.
+
+#### VIII.8.4 Summaries
+
+**Percentiles use nearest-rank, never interpolation.** For `n` sorted
+samples, the `k`-th percentile is `sorted[ceil(k/100 × n) − 1]`. A
+percentile is therefore an observed sample, which makes it exactly
+reproducible whenever the samples are; interpolating between neighbours
+adds an arithmetic step two hosts can round differently, for a number
+nobody reads to that precision.
+
+`stddev` is the **sample** standard deviation (`n − 1`). A single draw
+has no spread, and reporting `0` would claim a certainty the run does
+not have.
+
+A draw whose formula does not evaluate to a finite number is counted in
+`failed_samples` and **excluded** from the summary — not folded in as
+zero, which would drag every statistic toward it. When every draw
+fails, each requested statistic is present and `null`; an absent key
+would be indistinguishable from one the declaration never requested.
+
+Raw samples are withheld unless `return_samples` is set. 100,000
+samples inline would make a document unreadable.
+
+#### VIII.8.5 Refusals and capability
+
+| Code | Trigger |
+|---|---|
+| `CALC-STOCH-001` | `seed` missing or not an integer. |
+| `CALC-STOCH-002` | `samples` outside `[2, 100000]`. |
+| `CALC-STOCH-003` | An input path is empty, drawn twice, or its distribution is malformed. |
+| `CALC-STOCH-004` | `summarize` is empty or names an unknown statistic. |
+| `CALC-STOCH-005` | No random inputs. |
+| `CALC-STOCH-006` | `round_to` out of range. |
+
+Drawing one variable twice (`CALC-STOCH-003`) is refused rather than
+tolerated: the later draw silently wins for every sample while the
+earlier one still consumes the stream, so the distribution is wrong in
+a way no output reveals.
+
+A host that evaluates stochastic declarations declares
+`calc-stochastic` in its `ImplementationManifest.capabilities`. One
+that does not MUST report a typed refusal rather than crash or silently
+return a point estimate.
 
 ---
 
@@ -1690,8 +1847,6 @@ required for v1 conformance.
 - **Locale negotiation** — v1 freezes formatting to `en-US`. The
   `SupportedLocale` type in `protocol.ts` is the v2 hook; full
   locale negotiation will land via RFC.
-- **Stochastic calculations** — `deterministic: false` calc declarations
-  (Monte Carlo, sensitivity sweeps).
 - **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
   protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
   and optional HTTP/MCP binding profiles. The UW Markdown format remains 1.1.

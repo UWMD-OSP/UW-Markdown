@@ -5,9 +5,10 @@ owner-led governance is active.
 **Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
 (module signing), RFC 0004 (language-agnostic conformance driver), RFC 0006
 (hospitality reference module), RFC 0003 (module-declared asset
-classes), and RFC 0007 (sensitivity tables) on top of `v1.7.0` — full pass: build green across all
-workspaces; **1,328 tests** — 1,088 core, 94 excel, 62 cli, 62 signing, 15
-module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **294
+classes), RFC 0007 (sensitivity
+tables), and RFC 0005 (stochastic calculations) on top of `v1.7.0` — full pass: build green across all
+workspaces; **1,362 tests** — 1,122 core, 94 excel, 62 cli, 62 signing, 15
+module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **301
 conformance** assertions (and **44** more through the RFC 0004 CLI driver)
 including the Tier-4 replay,
 module, package, receipts, market-data, composition, capital-stack,
@@ -142,6 +143,17 @@ not core gaps.
   "sigstore"` is reserved so adding it stays additive. `identity` is advisory
   and §X.1.5 says so normatively. `conformance/signing/modules/` runs six
   scenarios under all three policies.
+- **Stochastic calculations (RFC 0005, protocol §VIII.8):** distributions via a
+  JSON `StochasticDecl` plus the same override mechanism — grammar and built-ins
+  untouched. Normative PCG-XSL-RR-128/64. The finding the RFC did not have:
+  specifying the PRNG is *not sufficient*, because IEEE 754 leaves `log`/`cos`
+  unspecified and both textbook normal samplers depend on them. Everything is
+  inverse-CDF sampled; `uniform` and `triangular` are exact, `normal`'s tails
+  are not and the spec says so. Percentiles are nearest-rank.
+  `CALC-STOCH-001`–`006`; `conformance/stochastic/` (7 assertions), where
+  reproducibility is asserted in-process without a baseline. **Known gap:** the
+  PCG test vector is self-generated and not yet diffed against the reference C
+  implementation.
 - **Sensitivity tables (RFC 0007, protocol §VIII.7):** two-axis grids as a JSON
   `SensitivityDecl` — **the §VIII.1 grammar is unchanged**, because the RFC's
   proposed builtin would have needed object literals, array literals, and an
@@ -649,8 +661,7 @@ registered module.
 **The stated priority order is complete.** What remains on this train has no
 assigned order yet:
 
-Unordered: range/stochastic calcs (0005), lease-up modeling (0008),
-locale/multi-currency (0001),
+Unordered: lease-up modeling (0008), locale/multi-currency (0001),
 `_meta` v2 reorg (0009),
 capability tokens (0011), corpus retrieval (0013), and portfolio/relationship
 profiles (0015). Unfrozen means actively being taken up, not accepted — each

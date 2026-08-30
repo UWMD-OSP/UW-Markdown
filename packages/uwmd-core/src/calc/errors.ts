@@ -18,7 +18,16 @@ export type CalcErrorCode =
   | 'CALC-SENS-002'
   | 'CALC-SENS-003'
   | 'CALC-SENS-004'
-  | 'CALC-SENS-005';
+  | 'CALC-SENS-005'
+  // Stochastic declarations (§VIII.8.5). Like the sensitivity codes, these
+  // refuse the DECLARATION before any draw; a sample whose formula fails during
+  // the run is counted in `failed_samples` and excluded from the summary.
+  | 'CALC-STOCH-001'
+  | 'CALC-STOCH-002'
+  | 'CALC-STOCH-003'
+  | 'CALC-STOCH-004'
+  | 'CALC-STOCH-005'
+  | 'CALC-STOCH-006';
 
 export function calcError(code: CalcErrorCode, message: string, pointer?: string): ProtocolError {
   return {

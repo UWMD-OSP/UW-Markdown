@@ -29,7 +29,7 @@ and how it gets accepted.
 | [0002](./0002-module-signing.md)        | Module signing                              | implemented | protocol, core, conformance, tooling |
 | [0003](./0003-module-asset-classes.md)  | Custom asset-class declarations from modules | implemented | format, protocol, core, conformance, tooling |
 | [0004](./0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | implemented | protocol, core, conformance, tooling |
-| [0005](./0005-stochastic-calculations.md) | Stochastic calculations                    | draft | protocol, core, conformance |
+| [0005](./0005-stochastic-calculations.md) | Stochastic calculations                    | implemented | protocol, core, conformance |
 | [0006](./0006-hospitality-module.md)    | Hospitality reference module                | implemented | core, conformance, tooling |
 | [0007](./0007-sensitivity-tables.md)    | Sensitivity tables as a calc primitive      | implemented | protocol, core, conformance |
 | [0008](./0008-lease-up-modeling.md)     | Lease-up modeling                           | draft | protocol, core, conformance |

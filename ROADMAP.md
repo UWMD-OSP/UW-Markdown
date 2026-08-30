@@ -107,8 +107,13 @@ Detailed sequencing and release gates:
 > declaration plus a general path-override mechanism, with the §VIII.1 grammar
 > left exactly as narrow as it was.
 >
+> **RFC 0005 (stochastic calculations) followed** as protocol §VIII.8, reusing
+> the same override mechanism. It carries one known gap: the PCG test vector is
+> self-generated and has not been diffed against the reference C
+> implementation.
+>
 > **The stated priority order is complete.** What remains on this train —
-> locale negotiation (0001), stochastic calcs (0005), and portfolio
+> locale negotiation (0001), lease-up modeling (0008), and portfolio
 > relationships (0015) — has no assigned order yet. Unfrozen means *actively being taken up*, not
 > accepted — each RFC still goes through its own acceptance.
 
@@ -128,7 +133,7 @@ context. This list is the maintainable copy.
 | [0002](./docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
 | [0003](./docs/rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
-| [0005](./docs/rfcs/0005-stochastic-calculations.md) | Stochastic calculations                      | `deterministic: false` calc declarations (Monte Carlo, sensitivity sweeps), determinism preserved via seeded PRNG. |
+| [0005](./docs/rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | Portfolio and relationship profiles          | Portable, provenance-backed cross-deal entity and edge sidecars; no storage or aggregate-math contract. |
 

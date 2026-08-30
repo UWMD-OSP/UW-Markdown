@@ -1,7 +1,7 @@
 ---
 rfc: 0005
 title: Stochastic calculations
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-26
 affects:
@@ -163,6 +163,105 @@ sequence of 16 outputs (the test vector for PCG-XSL-RR-64).
   - `spec/schemas/calc-result.schema.json` — additive `distribution`.
 - **API surface:** types above; no new public functions beyond what `evaluateCalc` already exposes.
 - **Test plan:** PRNG test vectors, sampling distribution-shape tests (mean/variance within tolerance), determinism tests (same seed → same output), the conformance fixtures above.
+
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-08-27 as protocol §VIII.8, on the override mechanism RFC
+0007 added the same day. Four substantive departures, one of them a
+correctness finding the proposal would have shipped without.
+
+**1. A declaration, not built-ins.** The proposal adds `uniform()`,
+`normal()`, `triangular()`, and `monte_carlo(expr, n)` to the §VIII.1
+grammar. Three separate problems, any one disqualifying:
+
+- Every builtin here is a pure `(CalcValue[]) => CalcValue`. A sampling
+  builtin carries PRNG state, so it is not a function of its arguments —
+  and "the calc engine is pure" is what makes a formula auditable.
+- `monte_carlo(expr, n)` needs a *lazy* argument, but the evaluator
+  evaluates arguments eagerly. Making it lazy means a special-cased
+  builtin or a string executed as a program.
+- A call whose legality depends on the enclosing declaration's
+  `deterministic` flag is a context-sensitive grammar, checked in a
+  parser that is deliberately context-free.
+
+So inputs are declared in JSON and each draw is an ordinary evaluation
+with `overrides` (§VIII.7.2). The grammar and the built-ins are
+untouched. This is the RFC's rejected alternative #3 ("decouple sampling
+from the calc grammar"), and the rejection was reasonable when it was
+written — the override mechanism did not exist yet. With it, decoupling
+is *less* machinery than a grammar extension, not more.
+
+**2. `normal` is not bit-exact across platforms, and the spec now says
+so.** This is the finding, and it is not in the RFC.
+
+The RFC's determinism argument is "specify the PRNG and two hosts
+produce identical distributions". That is necessary and not sufficient.
+IEEE 754 exactly specifies `+ − × ÷` and `sqrt`; it does **not** specify
+`log`, `exp`, `sin`, or `cos`. Both textbook normal samplers depend on
+unspecified functions — Box-Muller on `log` and `cos`, Marsaglia polar
+on `log` — so identical seeds would still yield samples that agree to
+fifteen digits and disagree in the sixteenth. The seed would be
+reproducible and the numbers would not.
+
+Every distribution is therefore sampled by inverse CDF: `uniform`
+(arithmetic only) and `triangular` (arithmetic and `sqrt`) are
+**exact**, and `normal` uses Acklam's rational approximation whose
+central 95% is exact and whose tails still need `log`. Conformance
+compares the first two exactly and the third at a stated tolerance.
+This also settles the RFC's unresolved question about fixture
+comparison, and settles it better than the proposed blanket `rel: 1e-9`:
+naming which distributions are exact is more useful than a tolerance
+that hides the difference.
+
+**3. Percentiles are nearest-rank, never interpolated.** Not specified
+in the RFC. A percentile is thus an observed sample and is exactly
+reproducible whenever the samples are; interpolating between neighbours
+adds an arithmetic step two hosts can round differently, for a number
+nobody reads to that precision.
+
+**4. The distribution never travels through `CalcResult`.** The RFC
+extends `CalcResult` with a `distribution` field and has `value` carry
+"the mean when the consumer requests a single number". `CalcResult.value`
+is pinned by RFC 0016 receipts, rendered by the CLI, and emitted from by
+Excel; a `value` that silently means "the mean of a distribution" in
+some rows is exactly the kind of overload that produces a wrong number
+in a credit memo. `StochasticResult` is its own type, matching how RFC
+0007 handled the same pressure.
+
+Smaller decisions worth recording: input **order** is part of the
+contract (one stream, drawn in declared order) because the alternative
+hides the keying rule; drawing one variable twice is refused, since the
+later draw silently wins while the earlier still consumes the stream;
+a failed draw is excluded from the summary rather than folded in as
+zero; `stddev` is the sample (`n−1`) form, because reporting `0` for a
+single draw claims a certainty the run does not have.
+
+### Verification gap: the PCG test vector is self-generated
+
+`prng.ts` implements PCG-XSL-RR-128/64 from the published algorithm, and
+the test vector in `prng.test.ts` and `conformance/stochastic/` was
+generated **by that implementation**. It proves self-consistency across
+runs and platforms. It does **not** prove agreement with the reference C
+implementation at pcg-random.org, which nobody has diffed against.
+
+The check is cheap and has not been done. Until it is, an implementer
+porting this to another language should port the TypeScript, not write
+pcg64 from the paper and assume the two agree. This should be closed
+before the RFC is accepted rather than after.
+
+### Deferred
+
+The **"Range types and napkin mode"** section — substituting stochastic
+calcs for `refinement.ts`'s interval arithmetic — is not implemented.
+The RFC says an implementation *MAY* substitute, so nothing is
+promised-and-missing, and the substitution rewires VOI ranking (variance
+reduction instead of interval width) which deserves its own change
+rather than riding along. The `triangular` distribution is shipped
+specifically so the existing `low`/`central`/`high` default tables can
+feed it when that work happens.
+
+**Render** (`distribution_band` view models, inline histograms) is also
+deferred; `StochasticResult` gives a renderer everything it needs.
 
 ## Alternatives considered
 

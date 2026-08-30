@@ -1,0 +1,21 @@
+{
+  "description": "The same declaration under a different seed. Its summary must NOT equal scenario 01's - a seed that did not change the stream would make the seed field decorative and reproducibility accidental.",
+  "ok": true,
+  "exactness": "exact",
+  "assert_reproducible": true,
+  "differs_from": "01-uniform-determinism",
+  "expected_sampled": {
+    "count": 1000,
+    "seed": 43,
+    "algorithm": "pcg-xsl-rr-128-64"
+  },
+  "summary": {
+    "mean": 10028375.119710011,
+    "median": 9845866.45,
+    "p10": 8629546.13,
+    "p90": 11622494.36,
+    "min": 7801438.47,
+    "max": 13004159.04,
+    "stddev": 1117013.098257684
+  }
+}

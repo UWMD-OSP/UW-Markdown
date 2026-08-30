@@ -1,0 +1,20 @@
+{
+  "description": "Uniform draws only, so every number here is arithmetic-exact: uniform sampling uses + - * / and nothing else, and nearest-rank percentiles are observed samples rather than interpolations. A conforming host reproduces these EXACTLY. Regenerate with --update only when the algorithm changes on purpose.",
+  "ok": true,
+  "exactness": "exact",
+  "assert_reproducible": true,
+  "expected_sampled": {
+    "count": 1000,
+    "seed": 42,
+    "algorithm": "pcg-xsl-rr-128-64"
+  },
+  "summary": {
+    "mean": 10050735.275310002,
+    "median": 9901827.01,
+    "p10": 8559008.09,
+    "p90": 11705819.3,
+    "min": 7831703.94,
+    "max": 13116997.94,
+    "stddev": 1169107.5606607473
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "description": "Normal draws go through an inverse CDF whose TAILS need log(), which no standard requires to be correctly rounded. So this scenario is compared at a tolerance, not exactly, and says so - naming which distributions are exact is more useful than a blanket tolerance that hides the difference.",
+  "ok": true,
+  "exactness": "tolerance",
+  "relative_tolerance": 1e-9,
+  "assert_reproducible": true,
+  "assert_within": {
+    "mean": [
+      590000,
+      610000
+    ]
+  },
+  "summary": {
+    "mean": 598676.1329799998,
+    "median": 600093.78,
+    "stddev": 40681.18055811519
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "description": "Triangular, whose parameters are exactly the low/central/high the asset-class default tables already carry - an adopter turns napkin ranges into distributions without inventing numbers. Uses sqrt, which IEEE 754 specifies exactly, so this is exact too.",
+  "ok": true,
+  "exactness": "exact",
+  "assert_reproducible": true,
+  "assert_within": {
+    "min": [
+      540000,
+      690000
+    ],
+    "max": [
+      540000,
+      690000
+    ]
+  },
+  "summary": {
+    "mean": 611216.9470200004,
+    "median": 608884.26,
+    "min": 548144.34,
+    "max": 685085.59
+  }
+}
