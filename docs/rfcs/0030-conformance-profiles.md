@@ -1,9 +1,11 @@
 ---
 rfc: 0030
 title: Make partial conformance mechanically checkable
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-08-30
+accepted: 2026-08-30
+implemented: 2026-08-30
 affects:
   - protocol-spec
   - core-library
@@ -282,7 +284,7 @@ retires, and §II.6a exists precisely so nobody has to write that driver.
   prefix registered in §III.6a — the check that keeps the taxonomy from going
   stale a second time.
 
-Corpus: 274 → approximately 285 assertions.
+Corpus: 274 → **301** assertions. (The 274 figure was itself stale, predating PR #106; the profiles suite runs separately via `npm run conformance:profiles`, which needs python3.)
 
 ## Reference implementation
 

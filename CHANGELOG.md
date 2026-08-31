@@ -8,6 +8,51 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — RFC 0030 implemented: partial conformance became checkable (corpus 274 → 301)
+
+[RFC 0030](docs/rfcs/0030-conformance-profiles.md) (drafted, accepted, and
+implemented 2026-08-30). Protocol goes to **1.9.0**. The first external adopter
+to run the corpus end to end reported four divergences; all four were defects
+here, with one root cause — the corpus encoded requirements the spec never
+stated, and the spec offered no way to opt out of the parts that do not apply.
+
+- **Cases declare `requires_capabilities`** and the driver skips what an
+  implementation does not claim. A skip is **never counted as a pass**: it is
+  excluded from `passed`, named in the TAP summary, and carried in the JSON
+  report as `skipped_by_capability`. The tags are derived from the command each
+  case runs — tier-2 reads the operation kind — so there is no table to forget.
+- **An absent or empty `capabilities` list means run everything.** Forgetting to
+  declare fails closed against the claimant rather than exempting it from the
+  corpus. `--no-skip` turns any skip into a failure, and CI runs the reference
+  implementation that way so the mechanism cannot erode its own coverage.
+- **§III.6a was wrong.** It said every issue code belongs to one of three
+  families (`CC-NN`, `FV_*`, `META_*`) while `BUILTIN_REMEDIATIONS` shipped
+  eighteen — `INT-*` and `POL-*` were not legal families, `FV_*` had been
+  renamed `FV-NN` in v1.1, and `META_*` shipped nowhere. Replaced by a registry
+  naming the capability that owns each family, plus a test asserting every code
+  resolves to one. The table went stale by duplicating a list that lives in
+  code; the assertion is the part that cannot.
+- **§II.1.6 is scoped to `validate`.** A Tier-1 Reader that does not claim it
+  owes no validator codes — the requirement previously read as owing `INT-NN`
+  (needs a hash chain) and `POL-NN` (needs an edit engine) to any reader.
+- **The parse baseline is a specified projection** (§II.6a.6), not
+  `@uwmd/core`'s in-memory `ParsedUWFile`. Dropped from the normative set:
+  `annotation`, `lineStart`/`lineEnd`, per-block prose, and optional `_meta`
+  fields the document never carried. The old requirement lived in a corpus
+  README and made a TypeScript interface a protocol surface by accident.
+- **§II.6 no longer self-certifies by directory membership.**
+  `tier-3-calc-host/refinement/` is not required of a calc host: §II.3 lists
+  four requirements and refinement is not among them, and the RFC 0004 driver
+  had always generated zero cases for it. New `refinement` and `integrity`
+  capabilities make that explicit rather than inferred.
+- **New:** `conformance/profiles/` — three stub implementations that delegate
+  every real subcommand to the reference CLI while claiming less than they can
+  do, and `npm run conformance:profiles`, which recomputes the skip set in
+  JavaScript and compares it to the Python driver's. Two independent
+  implementations of one rule; a single one checked against its own output
+  would pass even when the rule is wrong.
+
+
 ### Added — RFC 0010 implemented: signed blocks, and the receipt signing it unblocked (corpus 245 → 263)
 
 [RFC 0010](docs/rfcs/0010-signed-blocks.md) (drafted 2026-04-27, accepted and

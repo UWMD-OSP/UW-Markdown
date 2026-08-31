@@ -91,10 +91,8 @@ for (const profile of PROFILES) {
     failures.push(`${profile.dir}: ${failed} case(s) failed; the stub delegates, so none should`);
   }
   if (passed + skipped !== total) {
-    failures.push(
-      `${profile.dir}: passed(${passed}) + skipped(${skipped}) !== total(${total}) — a skip is ` +
-        'being counted as a pass',
-    );
+    const sums = `passed(${passed}) + skipped(${skipped}) !== total(${total})`;
+    failures.push(`${profile.dir}: ${sums} — a skip is being counted as a pass`);
   }
   if (skipped !== expectedSkips.size) {
     failures.push(`${profile.dir}: reported ${skipped} skips, derived ${expectedSkips.size}`);

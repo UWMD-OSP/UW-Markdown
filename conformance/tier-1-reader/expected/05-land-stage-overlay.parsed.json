@@ -20,13 +20,6 @@
   },
   "sections": {
     "property": {
-      "annotation": {
-        "section": "property",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "property",
         "version": 1,
@@ -50,19 +43,9 @@
         },
         "address": "40 Acres Rd, Phoenix AZ",
         "gross_acres": 40
-      },
-      "prose": "# Land overlay fixture (RFC 0029)\n\nA land deal at full_underwrite with no rent_roll or operating_statement.\nThe frozen validation verdict must contain no DQ-06: the SS 5.1 class overlay\nexempts both sections for land, and everything else the stage requires is\npresent.",
-      "lineStart": 27,
-      "lineEnd": 42
+      }
     },
     "noi_model": {
-      "annotation": {
-        "section": "noi_model",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "noi_model",
         "version": 1,
@@ -85,19 +68,9 @@
           "flags": []
         },
         "net_operating_income": -120000
-      },
-      "prose": "",
-      "lineStart": 43,
-      "lineEnd": 57
+      }
     },
     "debt_structure": {
-      "annotation": {
-        "section": "debt_structure",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "debt_structure",
         "version": 1,
@@ -119,19 +92,9 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 58,
-      "lineEnd": 71
+      }
     },
     "validation": {
-      "annotation": {
-        "section": "validation",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "validation",
         "version": 1,
@@ -153,19 +116,9 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 72,
-      "lineEnd": 85
+      }
     },
     "borrower_sponsor": {
-      "annotation": {
-        "section": "borrower_sponsor",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "borrower_sponsor",
         "version": 1,
@@ -187,19 +140,9 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 86,
-      "lineEnd": 99
+      }
     },
     "preliminary_sizing": {
-      "annotation": {
-        "section": "preliminary_sizing",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "preliminary_sizing",
         "version": 1,
@@ -221,19 +164,9 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 100,
-      "lineEnd": 113
+      }
     },
     "valuation": {
-      "annotation": {
-        "section": "valuation",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "valuation",
         "version": 1,
@@ -255,19 +188,9 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 114,
-      "lineEnd": 127
+      }
     },
     "sources_uses": {
-      "annotation": {
-        "section": "sources_uses",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "sources_uses",
         "version": 1,
@@ -289,19 +212,9 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 128,
-      "lineEnd": 141
+      }
     },
     "market_analysis": {
-      "annotation": {
-        "section": "market_analysis",
-        "source": "manual",
-        "ts": "2026-08-26T12:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "market_analysis",
         "version": 1,
@@ -323,10 +236,7 @@
           "human_review_required": false,
           "flags": []
         }
-      },
-      "prose": "",
-      "lineStart": 142,
-      "lineEnd": 155
+      }
     }
   },
   "prose": {

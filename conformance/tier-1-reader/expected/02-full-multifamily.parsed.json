@@ -51,13 +51,6 @@
   },
   "sections": {
     "deal_context": {
-      "annotation": {
-        "section": "deal_context",
-        "source": "user",
-        "ts": "2026-04-24T09:15:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "deal_context",
         "version": 1,
@@ -151,19 +144,9 @@
           "generated_by": null,
           "generated_at": null
         }
-      },
-      "prose": "# Parkview Apartments — Glendale, AZ\n\n> **Deal ID:** uw_2026_a3f9b1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress — Full Underwrite  \n> **48 Units** | **1987 Vintage** | **$7,200,000 Purchase** | **$150,000/Unit** | **5.51% Cap Rate**\n\n---\n\n## Deal Context {#deal_context}\n\nParkview is a 48-unit garden-style multifamily in the Camelback corridor of Glendale, AZ — a stable, infill westside Phoenix submarket with consistent renter demand driven by proximity to State Farm Stadium, Banner Health campuses, and the Westgate entertainment district. The property has been owner-operated for 14 years with below-market rents and deferred professional management, which is exactly the inefficiency that creates the buy opportunity here.\n\nThe thesis is straightforward: acquire at a realistic in-place yield, replace management, push rents toward market over the first 18 months through natural turnover, and hold for 5 years as the submarket continues to absorb population growth from Phoenix metro expansion. No heavy value-add capital required — this is an income play with a moderate rent-growth kicker, not a repositioning.\n\nThe owner is motivated — estate sale situation, wants a clean close. LOI accepted at $7.2M. 45-day due diligence, 30-day close. We are competing against one other buyer who is likely financing through a local bank.",
-      "lineStart": 69,
-      "lineEnd": 159
+      }
     },
     "property": {
-      "annotation": {
-        "section": "property",
-        "source": "wizard:step_1",
-        "ts": "2026-04-24T09:05:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "property",
         "version": 1,
@@ -238,19 +221,9 @@
         "opportunity_zone": false,
         "hud_qualified_census_tract": false,
         "environmental_concerns_noted": false
-      },
-      "prose": "---\n\n## Property {#property}\n\nParkview Apartments is a two-story, wood-frame garden-style apartment complex comprising 48 units across four buildings on a 1.8-acre parcel. Built in 1987, the property received a common area renovation in 2023 (new leasing office, resurfaced parking, landscaping refresh). Unit interiors are original but functional — no deferred maintenance flagged in the walk-through; appliances aging but operational.\n\nThe Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, with strong renter demand from healthcare workers (Banner Thunderbird Medical Center 1.2 miles), sports/entertainment employees (State Farm Stadium 3 miles), and workforce renters priced out of Scottsdale and Tempe.",
-      "lineStart": 169,
-      "lineEnd": 222
+      }
     },
     "ownership": {
-      "annotation": {
-        "section": "ownership",
-        "source": "wizard",
-        "ts": "2026-04-24T09:08:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "ownership",
         "version": 1,
@@ -306,19 +279,9 @@
         "key_man_identified": true,
         "foreign_ownership_pct": 0,
         "anonymous_ownership_flags": false
-      },
-      "prose": "---\n\n## Ownership & Acquisition {#ownership}\n\nCurrent owner is the Hartwell Family Trust, administered by an out-of-state executor following the death of the original owner in late 2025. Property has been under the same ownership since 2011. No existing debt — property is free and clear, which simplifies the transaction.",
-      "lineStart": 230,
-      "lineEnd": 272
+      }
     },
     "rent_roll": {
-      "annotation": {
-        "section": "rent_roll",
-        "source": "agent:L0-01",
-        "ts": "2026-04-24T10:12:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "rent_roll",
         "version": 1,
@@ -449,21 +412,10 @@
             "pct_of_total_income": 0.047
           }
         ]
-      },
-      "prose": "---\n\n## Rent Roll {#rent_roll}\n\nAs of April 1, 2026. 45 of 48 units occupied (93.75% physical occupancy). Three vacancies: two 1BR units undergoing make-ready, one 2BR on notice. In-place rents are below market across both unit types — average 4.5% loss-to-lease on 1BR, 3.9% on 2BR. Seven units are month-to-month. No concessions currently offered.\n\n| Type | Count | Avg SF | Avg In-Place | Avg Market | Loss-to-Lease | Occupancy |\n|---|---|---|---|---|---|---|\n| 1BR/1BA | 24 | 750 | $1,050 | $1,100 | $50 | 91.7% (22/24) |\n| 2BR/2BA | 24 | 975 | $1,225 | $1,275 | $50 | 95.8% (23/24) |\n| **Total** | **48** | **863** | **$1,138** | **$1,188** | **$50** | **93.8%** |",
-      "lineStart": 286,
-      "lineEnd": 359
+      }
     },
     "operating_statement": {
       "t12": {
-        "annotation": {
-          "section": "operating_statement",
-          "variant": "t12",
-          "source": "agent:L0-02",
-          "ts": "2026-04-24T10:18:00Z",
-          "v": 1,
-          "confidence": "medium"
-        },
         "meta": {
           "section": "operating_statement",
           "version": 1,
@@ -564,20 +516,10 @@
             "management_fee_10pct_of_egi_above_market_benchmark_5.5pct"
           ],
           "non_recurring_items": []
-        },
-        "prose": "---\n\n## Operating Statement {#operating_statement}\n\nT-12 through December 2025. Prepared by property management company, not CPA-certified. Expense audit recommended — management fee is stated at 10% (above market benchmark of 5-6%) and utilities appear understated vs. comparable properties. NOI of $412,000 is treated as a ceiling, not a floor, in underwriting.\n\n| Line Item | T-12 Actual | UW | Variance | Note |\n|---|---|---|---|---|\n| Gross Potential Rent | $655,200 | $655,200 | — | At current asking rent |\n| Vacancy / Credit Loss | ($32,760) | ($45,864) | ($13,104) | UW 7% vs. T-12 5% |\n| Other Income | $18,000 | $21,600 | $3,600 | Add parking income |\n| **EGI** | **$640,440** | **$630,936** | | |\n| Real Estate Taxes | ($52,000) | ($58,000) | ($6,000) | Sale will trigger reassessment |\n| Insurance | ($24,500) | ($28,800) | ($4,300) | Benchmarked to 0.4% |\n| Management Fees | ($64,044) | ($34,701) | $29,343 | 10% → 5.5% on EGI |\n| Payroll & Benefits | ($26,400) | ($28,800) | ($2,400) | Benchmarked |\n| Utilities | ($21,600) | ($24,000) | ($2,400) | Slightly understated |\n| Repairs & Maintenance | ($21,600) | ($24,000) | ($2,400) | Benchmarked |\n| Contract Services | ($8,400) | ($9,600) | ($1,200) | Benchmarked |\n| Administrative | ($6,000) | ($7,200) | ($1,200) | Benchmarked |\n| Professional Fees | ($4,800) | ($4,800) | — | |\n| Replacement Reserves | ($14,400) | ($14,400) | — | $300/unit |\n| **Total OpEx** | **($228,344)** | **($234,301)** | | |\n| **NOI** | **$412,096** | **$396,635** | | |",
-        "lineStart": 386,
-        "lineEnd": 463
+        }
       }
     },
     "noi_model": {
-      "annotation": {
-        "section": "noi_model",
-        "source": "engine:calculations.ts",
-        "ts": "2026-04-24T11:05:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "noi_model",
         "version": 1,
@@ -732,19 +674,9 @@
             "projected_noi": 423197
           }
         }
-      },
-      "prose": "---\n\n## Underwritten NOI {#noi_model}\n\nUnderwriting applies three key adjustments to the T-12: (1) vacancy normalized to 7% reflecting submarket average versus the owner's reported 5%; (2) management fee reduced from 10% to 5.5% EGI, reflecting market rate and the new management agreement in negotiation; (3) real estate taxes reassessed to reflect post-sale value using Maricopa County's transfer reassessment methodology. All other expenses benchmarked to asset class norms — utilities and payroll slightly above T-12 actuals to reflect conservative underwriting.",
-      "lineStart": 471,
-      "lineEnd": 569
+      }
     },
     "valuation": {
-      "annotation": {
-        "section": "valuation",
-        "source": "engine:calculations.ts",
-        "ts": "2026-04-24T11:06:00Z",
-        "v": 1,
-        "confidence": "medium"
-      },
       "meta": {
         "section": "valuation",
         "version": 1,
@@ -816,19 +748,9 @@
         "appraisal_inflation_flag": false,
         "value_used_for_ltv": 7200000,
         "value_used_for_ltv_basis": "purchase_price"
-      },
-      "prose": "---\n\n## Valuation {#valuation}\n\nIncome approach produces a value of $7,198,000 at the underwritten NOI and a 5.51% market cap rate — essentially at purchase price, confirming the deal is priced at market. No appraisal in hand yet; ordered, expected within 20 days of contract execution.",
-      "lineStart": 577,
-      "lineEnd": 627
+      }
     },
     "debt_structure": {
-      "annotation": {
-        "section": "debt_structure",
-        "source": "wizard:step_4",
-        "ts": "2026-04-24T09:45:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "debt_structure",
         "version": 1,
@@ -924,19 +846,9 @@
             "remedy_cascade": "Notice → 60-day cure period"
           }
         ]
-      },
-      "prose": "---\n\n## Debt Structure {#debt_structure}\n\nConventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year term with 30-year amortization and 12 months interest-only. **Key flag:** DSCR at amortizing debt service is 1.109x — below the 1.20x warning threshold. Deal passes the 1.0x error threshold with cushion, but lender conversations should explore 24-month IO as a primary ask.",
-      "lineStart": 635,
-      "lineEnd": 713
+      }
     },
     "sources_uses": {
-      "annotation": {
-        "section": "sources_uses",
-        "source": "engine:calculations.ts",
-        "ts": "2026-04-24T11:07:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "sources_uses",
         "version": 1,
@@ -1014,19 +926,9 @@
           "loan_to_cost": 0.6774
         },
         "sources_uses_balanced": true
-      },
-      "prose": "---\n\n## Sources & Uses {#sources_uses}",
-      "lineStart": 719,
-      "lineEnd": 783
+      }
     },
     "dcf": {
-      "annotation": {
-        "section": "dcf",
-        "source": "engine:dcfEngine.ts",
-        "ts": "2026-04-24T11:10:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "dcf",
         "version": 1,
@@ -1213,20 +1115,10 @@
             ]
           ]
         }
-      },
-      "prose": "---\n\n## DCF & Hold Period {#dcf}\n\n5-year hold. Revenue growth 3%/yr, expenses 2.5%/yr. Exit at 6.0% cap rate (50bps above going-in) applied to year-6 NOI. Levered IRR of ~6.3% reflects the stabilized, income-oriented nature of this investment — this is not a value-add play.\n\n| Year | EGI | OpEx | NOI | Debt Service | Levered CF | CoC |\n|---|---|---|---|---|---|---|\n| 1 (IO) | $630,936 | $234,301 | $396,635 | $296,100 | $100,535 | 4.19% |\n| 2 | $649,864 | $240,159 | $409,705 | $357,612 | $52,093 | 2.17% |\n| 3 | $669,360 | $246,163 | $423,197 | $357,612 | $65,585 | 2.73% |\n| 4 | $689,441 | $252,317 | $437,124 | $357,612 | $79,512 | 3.31% |\n| 5 | $710,124 | $258,625 | $451,499 | $357,612 | $93,887 | 3.91% |\n\n**Exit:** Year-6 NOI $465,044 ÷ 6.0% = $7,750,733 gross. Net proceeds to equity ~$2,845,000.  \n**Levered IRR:** ~6.3% | **Equity Multiple:** ~1.35x",
-      "lineStart": 802,
-      "lineEnd": 873
+      }
     },
     "stress_tests": {
       "default": {
-        "annotation": {
-          "section": "stress_tests",
-          "source": "engine:calculations.ts",
-          "ts": "2026-04-24T11:12:00Z",
-          "v": 1,
-          "confidence": "high"
-        },
         "meta": {
           "section": "stress_tests",
           "version": 1,
@@ -1356,20 +1248,10 @@
             "current_vs_breakeven_rent_cushion_pct": 0.01
           },
           "rate_sensitivity": null
-        },
-        "prose": "---\n\n## Stress Tests {#stress_tests}",
-        "lineStart": 879,
-        "lineEnd": 991
+        }
       }
     },
     "market_analysis": {
-      "annotation": {
-        "section": "market_analysis",
-        "source": "agent:L2-CRE-07",
-        "ts": "2026-04-24T12:30:00Z",
-        "v": 1,
-        "confidence": "medium"
-      },
       "meta": {
         "section": "market_analysis",
         "version": 1,
@@ -1540,19 +1422,9 @@
         ],
         "market_risk_rating": "moderate",
         "market_narrative": "The Glendale/West Phoenix multifamily submarket is a functionally stable, supply-constrained workforce housing corridor. Vacancy at 4.8% is 80bps below the broader Phoenix metro average of 5.6%, supported by strong healthcare and services employment anchors. Rent growth has normalized to 2.9% annually following the post-pandemic correction, with forward projections of 2.5-3.5% annually through 2028. New supply is below 2% of existing stock annually, concentrated in luxury product at higher price points that competes minimally with this asset. Cap rates have stabilized in the 5.25-6.00% range following the 2023-2024 correction from compressed levels. The primary risk is elevated Phoenix metro-wide supply deliveries in 2026-2027 creating headline noise, but the specific Glendale workforce segment is insulated by its price point."
-      },
-      "prose": "---\n\n## Market Analysis {#market_analysis}\n\nThe Glendale/West Phoenix submarket is a supply-constrained, workforce-renter market with vacancy below the Phoenix metro average. Rent growth has moderated from 2021–2022 peaks but remains positive at ~3% annually. New supply pipeline is concentrated in the Scottsdale and Tempe corridors — not meaningful competition at this price point. Cap rates for B-class multifamily in this submarket have stabilized in the 5.25–5.75% range after the 2023–2024 correction.",
-      "lineStart": 999,
-      "lineEnd": 1074
+      }
     },
     "borrower_sponsor": {
-      "annotation": {
-        "section": "borrower_sponsor",
-        "source": "wizard",
-        "ts": "2026-04-24T09:30:00Z",
-        "v": 1,
-        "confidence": "medium"
-      },
       "meta": {
         "section": "borrower_sponsor",
         "version": 1,
@@ -1647,20 +1519,10 @@
         "entity_structure_flags": [],
         "key_man_risk_flag": true,
         "sponsor_narrative": "James Camelback is an experienced Phoenix metro multifamily operator with 14 years in the market and a clean track record across 8 acquisitions. His portfolio is concentrated in B-class garden-style multifamily — the same product as the subject — giving him directly applicable experience. The single-principal LLC structure presents standard key-man risk, mitigated by the stabilized nature of the asset and straightforward operations."
-      },
-      "prose": "---\n\n## Borrower & Sponsor {#borrower_sponsor}\n\nSingle-principal LLC, 14 years of CRE experience, 6 assets under management. Financial strength is adequate — NW-to-loan ratio above policy minimum, liquidity slightly below preferred threshold but within range given 0 existing loan exposure on the subject entity.",
-      "lineStart": 1082,
-      "lineEnd": 1151
+      }
     },
     "due_diligence": {
       "default": {
-        "annotation": {
-          "section": "due_diligence",
-          "source": "user",
-          "ts": "2026-04-24T09:50:00Z",
-          "v": 1,
-          "confidence": "medium"
-        },
         "meta": {
           "section": "due_diligence",
           "version": 1,
@@ -1829,20 +1691,10 @@
             ],
             "ready_to_close": false
           }
-        },
-        "prose": "---\n\n## Due Diligence {#due_diligence}\n\nDue diligence in process. Appraisal and Phase I ordered. Title commitment received — clean. Inspection scheduled for next week.",
-        "lineStart": 1159,
-        "lineEnd": 1274
+        }
       }
     },
     "risk_assessment": {
-      "annotation": {
-        "section": "risk_assessment",
-        "source": "user",
-        "ts": "2026-04-24T14:00:00Z",
-        "v": 1,
-        "confidence": "low"
-      },
       "meta": {
         "section": "risk_assessment",
         "version": 1,
@@ -1968,19 +1820,9 @@
         "approval_authority_required": null,
         "status": "draft",
         "human_review_required": true
-      },
-      "prose": "---\n\n## Risk Assessment {#risk_assessment}\n\n*Pending — L6 agents not yet run. Preliminary assessment below based on analyst review.*\n\nThe deal presents a moderate risk profile. The asset is stabilized with no significant deferred maintenance, in a functionally strong submarket with positive demand fundamentals. The primary structural risk is the tight amortizing DSCR (1.11x) — a 10% revenue decline would breach the 1.0x floor, leaving no debt service coverage cushion in a stress scenario. The management transition risk during the first 6-12 months post-close is the most likely near-term operational challenge.",
-      "lineStart": 1284,
-      "lineEnd": 1333
+      }
     },
     "compliance": {
-      "annotation": {
-        "section": "compliance",
-        "source": "agent:L5-01",
-        "ts": "2026-04-24T13:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "compliance",
         "version": 1,
@@ -2061,19 +1903,9 @@
           "nearest_limit_headroom_pct": null
         },
         "policy_exceptions": []
-      },
-      "prose": "---\n\n## Compliance {#compliance}",
-      "lineStart": 1339,
-      "lineEnd": 1364
+      }
     },
     "assumptions": {
-      "annotation": {
-        "section": "assumptions",
-        "source": "engine:calculations.ts",
-        "ts": "2026-04-24T11:15:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "assumptions",
         "version": 1,
@@ -2267,19 +2099,9 @@
           "low_confidence_count": 0,
           "override_count": 1
         }
-      },
-      "prose": "---\n\n## Assumptions {#assumptions}",
-      "lineStart": 1370,
-      "lineEnd": 1405
+      }
     },
     "validation": {
-      "annotation": {
-        "section": "validation",
-        "source": "engine:financialValidityChecker",
-        "ts": "2026-04-24T11:16:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "validation",
         "version": 1,
@@ -2418,10 +2240,7 @@
           "equity_multiple_warning_below": 1,
           "equity_multiple_warning_above": 5
         }
-      },
-      "prose": "---\n\n## Flags & Validation {#validation}",
-      "lineStart": 1411,
-      "lineEnd": 1458
+      }
     }
   },
   "prose": {
@@ -2719,13 +2538,6 @@
   ],
   "custom_calculations": [
     {
-      "annotation": {
-        "section": "custom_calculations",
-        "source": "user",
-        "ts": "2026-04-24T14:10:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "custom_calculations",
         "version": 1,
@@ -2852,21 +2664,11 @@
             "notes": "Negative leverage is the core structural risk of this deal. Year 2 NOI growth should close the gap."
           }
         ]
-      },
-      "prose": "---\n\n## Custom Calculations {#custom_calculations}\n\nTwo supplemental metrics: true all-in yield (accounts for closing costs and reserves in the denominator) and the loan constant (useful for lender comp conversations).",
-      "lineStart": 1466,
-      "lineEnd": 1535
+      }
     }
   ],
   "custom_scenarios": [
     {
-      "annotation": {
-        "section": "custom_scenarios",
-        "source": "user",
-        "ts": "2026-04-24T14:20:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "custom_scenarios",
         "version": 1,
@@ -2972,21 +2774,11 @@
             "status": "computed"
           }
         ]
-      },
-      "prose": "---\n\n## Custom Scenarios {#custom_scenarios}\n\nScenario: what if the lender grants 24-month IO (instead of 12-month)? Also a sensitivity sweep on exit cap rate against levered IRR.",
-      "lineStart": 1543,
-      "lineEnd": 1623
+      }
     }
   ],
   "extensions": {
     "x_lender_matrix": {
-      "annotation": {
-        "section": "x_lender_matrix",
-        "source": "user",
-        "ts": "2026-04-24T10:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "x_lender_matrix",
         "version": 1,
@@ -3081,10 +2873,7 @@
             }
           ]
         }
-      },
-      "prose": "---\n\n## Lender Outreach {#x_lender_matrix}\n\nTracking lenders contacted, terms quoted, and next steps. Three lenders in conversation.",
-      "lineStart": 1631,
-      "lineEnd": 1710
+      }
     }
   },
   "superseded": {}
