@@ -532,12 +532,12 @@ describe('an unrecognized _meta.source no longer permits a destructive replace',
       kind: 'section_replace',
       section_id: 'property',
       content: { total_units: 999 },
+      meta: {},
     };
     const result = applyEdit(COLON_SOURCED, parsed, op, MANUAL_CTX);
     expect(result.ok).toBe(false);
-    if (result.ok) return;
-    expect(result.error.code).toBe('PROTO-EDIT-004');
-    expect(result.error.message).toContain('supersede');
+    expect(result.error?.code).toBe('PROTO-EDIT-004');
+    expect(result.error?.message).toContain('supersede');
   });
 
   it('still permits the write when reissued as a supersede, preserving the prior block', () => {
@@ -548,6 +548,7 @@ describe('an unrecognized _meta.source no longer permits a destructive replace',
       kind: 'section_supersede',
       section_id: 'property',
       content: { total_units: 999 },
+      meta: {},
     };
     const result = applyEdit(COLON_SOURCED, parsed, op, MANUAL_CTX);
     expect(result.ok).toBe(true);
