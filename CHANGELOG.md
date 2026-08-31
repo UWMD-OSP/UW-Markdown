@@ -52,6 +52,42 @@ stated, and the spec offered no way to opt out of the parts that do not apply.
   implementations of one rule; a single one checked against its own output
   would pass even when the rule is wrong.
 
+### Fixed — an unrecognized `_meta.source` no longer permitted a destructive replace
+
+`resolvePolicy` returned `null` for a source matching no `BUILTIN_EDIT_POLICIES`
+pattern, and the editor read that `null` two ways: `checkAuthority` treated it as
+**permitted**, and `dispatchEdit` treated it as **exempt from
+`supersede_on_edit`**. A block whose source was outside the executable
+vocabulary could therefore be replaced in place, destroying the prior version,
+with `POL-01` and `POL-02` both unable to fire and `verifyChain` silent. That is
+a breach of the append-only provenance invariant.
+
+Measured across all 206 corpus and example files: 613 blocks carry
+`_meta.source`, and **263 of them (43%) resolved to no policy** — including 33
+using canonical `SOURCE_TAGS` (`market_data`, `user_input`, `asset_class_default`,
+`ai_extracted`, `system_default`, `market_data_accepted`) and 20 using the
+`agent:` colon form that format spec §2.6 tells producers to write.
+
+- **`BUILTIN_EDIT_POLICIES` now ends in a terminal `*` catch-all** with
+  `supersede_on_edit: true` and `authority: 'either'`. `matchSource` scores by
+  pattern length, so a one-character glob applies only where nothing else
+  matched. An unrecognized source now **preserves history**; no write that
+  succeeded before starts failing, which is what keeps this a fix rather than a
+  migration.
+- **`checkAuthority` refuses when no policy matches** instead of granting. That
+  is reachable only for a caller supplying a policy list with no catch-all — an
+  incomplete policy, which should not read as authorization.
+- **A totality assertion** pins it: no source resolves to `null` under the
+  builtin policies. It makes this class of bug unrepresentable rather than
+  merely absent.
+
+This is the correctness half of [RFC 0031](docs/rfcs/0031-source-vocabulary.md),
+split out and shipped ahead of it. The vocabulary reconciliation that RFC
+proposes — splitting `_meta.source` into actor and resolution, `SRC-01`/`SRC-02`,
+and the corpus migration — is a design change with real migration cost and is
+still in draft. The unpoliced-write path is a bug, and waiting on that debate to
+fix it was the wrong trade.
+
 
 ### Added — RFC 0010 implemented: signed blocks, and the receipt signing it unblocked (corpus 245 → 263)
 
