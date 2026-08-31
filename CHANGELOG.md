@@ -80,6 +80,17 @@ using canonical `SOURCE_TAGS` (`market_data`, `user_input`, `asset_class_default
 - **A totality assertion** pins it: no source resolves to `null` under the
   builtin policies. It makes this class of bug unrepresentable rather than
   merely absent.
+- **`generateBlankUWFile` was itself emitting unpoliced sources** — `wizard` on
+  every section stub and `engine:uwmd` on the pipeline-log entry, neither
+  matching any pattern. Every freshly created document carried blocks no policy
+  governed, which is why replacing them in place appeared to work; the web
+  editor's suite caught it, since root `npm test` does not cover `tools/`. Stubs
+  now stamp `manual` — deliberately not `system/init`, which resolves to
+  `system/*` and is `system_only`, and these stubs exist to be filled in by a
+  person. The append-only log entry stamps `system/init`. A test asserts no
+  generated block falls through to the catch-all: the catch-all is a safety net
+  for documents in the wild, not a licence for our own writers to skip choosing
+  a policy.
 
 This is the correctness half of [RFC 0031](docs/rfcs/0031-source-vocabulary.md),
 split out and shipped ahead of it. The vocabulary reconciliation that RFC
