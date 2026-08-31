@@ -2,22 +2,27 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-27, after RFC 0010 (signed blocks), RFC 0002
-(module signing), RFC 0004 (language-agnostic conformance driver), RFC 0006
-(hospitality reference module), RFC 0003 (module-declared asset
-classes), RFC 0007 (sensitivity
-tables), and RFC 0005 (stochastic calculations) on top of `v1.7.0` — full pass: build green across all
-workspaces; **1,362 tests** — 1,122 core, 94 excel, 62 cli, 62 signing, 15
-module-hospitality, 4 batch, 3 report — plus **71 web-editor**; **301
-conformance** assertions (and **44** more through the RFC 0004 CLI driver)
-including the Tier-4 replay,
-module, package, receipts, market-data, composition, capital-stack,
-size-intensive, and signing suites (blocks + modules), with Tier-1
-validation-verdict baselines,
-the RFC 0025 decimal-exactness pin, and RFC 0028's `CC-14`/`DQ-06`; Biome
-clean; `typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
-`@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
-provenance attached — protocol at **1.8.0** for §X.2 (1.7.0 added §V.11; 1.6.0 added §XIII).
+**Last verified:** 2026-08-31, after RFC 0030 (conformance profiles) and the
+unpoliced-write fix, on top of the 2026-08-27 batch — RFC 0010 (signed blocks),
+0002 (module signing), 0004 (language-agnostic conformance driver), 0006
+(hospitality reference module), 0003 (module-declared asset classes), 0007
+(sensitivity tables), and 0005 (stochastic calculations). Full pass: build green
+across all workspaces; **1,446 tests** — 1,135 core, 94 excel, 62 cli, 62
+signing, 15 module-hospitality, 4 batch, 3 report — plus **71 web-editor**;
+**301 conformance** assertions (and **44** more through the RFC 0004 CLI driver,
+run under `--no-skip`), plus **3 conformance profiles** via `npm run
+conformance:profiles`; Biome clean; `typecheck:tests` clean across all seven
+workspaces; `@uwmd/core` and `@uwmd/cli` **1.7.0 published to npm** by the
+tag-triggered OIDC job, provenance attached — protocol at **1.9.0** for RFC
+0030's §II.6a.5/§II.6a.6 and the §III.6a rewrite (1.8.0 added §X.2; 1.7.0 added
+§V.11; 1.6.0 added §XIII).
+
+> **The corpus count moved for a reason worth recording.** It read *274* in this
+> file and in two READMEs for several merges after it stopped being true. RFC
+> 0030's implementation re-measured it at **301**. Treat any assertion count
+> quoted from memory as stale — run `npm run conformance` and read the summary
+> line.
+
 **Maintainer action:** this is a *living* doc — update it when a status changes (see
 [How to keep this current](#how-to-keep-this-current) at the bottom). It is a
 *synthesis*, not a source of truth; the authoritative sources are
@@ -92,13 +97,23 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **244 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **301 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, and `size-intensive` suites. CI runs the runner's
-  **default** suite list rather than a pinned `--tier=`, which is what the
-  earlier claim of replay coverage assumed but did not have: `ci.yml` pinned
-  `1,2,3,lite,receipts`, so `4-replay` had never actually gated a pull request.
-  See [09](09-conformance-testing.md).
+  `capital-stack`, `size-intensive`, `signing`, `sensitivity`, and `stochastic`
+  suites. CI runs the runner's **default** suite list rather than a pinned
+  `--tier=`, which is what the earlier claim of replay coverage assumed but did
+  not have: `ci.yml` pinned `1,2,3,lite,receipts`, so `4-replay` had never
+  actually gated a pull request. See [09](09-conformance-testing.md).
+
+  **Every case is capability-tagged** (RFC 0030). `requires_capabilities` is
+  derived from the command a case runs, and the RFC 0004 driver skips what an
+  implementation's manifest does not claim — reported as a TAP skip and counted
+  separately, never folded into `passed`. An absent capability list runs
+  everything, so an implementation cannot exempt itself by omission, and CI runs
+  the reference implementation under `--no-skip`. Three stub implementations in
+  `conformance/profiles/` exercise the mechanism, checked by
+  `npm run conformance:profiles`, which recomputes the skip set in JavaScript
+  and compares it against the Python driver's.
 
   Two documented blind spots were closed 2026-08-25 (corpus 222 → 244):
   Tier-1 valid fixtures now freeze their **validation verdict**
@@ -625,7 +640,7 @@ warning, which every example was tripping.
 Receipt **signing** shipped 2026-08-27 with RFC 0010 (`@uwmd/signing`). Unsigned
 issuance and verification are unchanged and remain the default path.
 
-## 📋 v2 RFC train (unfrozen 2026-08-26; 0010 implemented, rest are drafts)
+## 📋 v2 RFC train (unfrozen 2026-08-26; 0002-0007 + 0010 + 0030 implemented)
 
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
 emptied (RFCs 0014–0029 all implemented).
@@ -659,14 +674,84 @@ registered module.
 **✅ RFC 0003 module-declared asset classes — shipped 2026-08-27**, following
 0006 because a declared class needs a runtime to mean anything.
 
+**✅ RFC 0030 conformance profiles — shipped 2026-08-31.** Not from the v2 train
+list: it came out of the first external adopter running the corpus end to end
+and reporting four divergences, all four of which were defects here. Protocol
+1.9.0.
+
+Cases now carry `requires_capabilities`, derived from the command each runs, and
+the driver skips what an implementation does not claim — visibly, never as a
+pass. An absent capability list runs everything, so forgetting to declare fails
+closed against the claimant, and `--no-skip` (used in CI) makes any skip a
+failure so the mechanism cannot erode its own coverage.
+
+Three defects it fixed, each of the same kind — **the corpus asserting
+requirements the spec never stated**:
+
+- **§III.6a named three code families while eighteen shipped.** `INT-*` and
+  `POL-*` were not legal families, `FV_*` had been renamed `FV-NN` in v1.1, and
+  `META_*` shipped nowhere. Now a registry naming the owning capability per
+  family, plus a test asserting every code resolves to one. It went stale by
+  duplicating a list that lives in code; the assertion is the part that cannot.
+- **§II.1.6 owed every validator family to any Tier-1 reader**, including
+  `INT-NN` (needs a hash chain) and `POL-NN` (needs an edit engine). Now scoped
+  to the `validate` capability.
+- **§II.6 self-certified by directory membership**, which made
+  `tier-3-calc-host/refinement/` read as required though §II.3 never mentions
+  refinement — and the RFC 0004 driver had always generated zero cases for it.
+  Two of our own conformance surfaces disagreed.
+
+§II.6a.6 also replaced the corpus-README sentence that had made `@uwmd/core`'s
+in-memory `ParsedUWFile` a protocol surface by accident, with a specified parse
+projection. The tier-1 baselines shrank by 595 lines.
+
+New: `conformance/profiles/` and `npm run conformance:profiles`, which
+recomputes the skip set in JavaScript and compares it to the Python driver's —
+two independent implementations of one rule, because one checked against its own
+output passes even when the rule is wrong.
+
+**✅ The unpoliced-write path — closed 2026-08-31.** `resolvePolicy` returned
+`null` for a source matching no `BUILTIN_EDIT_POLICIES` pattern, and the editor
+read that `null` as *both* "permitted" and "exempt from `supersede_on_edit`", so
+such a block could be replaced in place, destroying its predecessor, with
+`POL-01` and `POL-02` unable to fire. A terminal `*` catch-all now gives an
+unrecognized source the conservative policy; a totality assertion pins it.
+
+`generateBlankUWFile` turned out to be the worst offender, stamping `wizard` and
+`engine:uwmd` — **every document this project generated carried blocks no policy
+governed**, which is why replacing them in place appeared to work. Caught by the
+web-editor suite, which root `npm test` does not cover by design.
+
+This is the correctness half of RFC 0031, shipped ahead of it. The vocabulary
+reconciliation is still a draft.
+
+**📝 RFC 0031 source vocabulary — drafted 2026-08-30, merged as design
+history.** `_meta.source` carries two orthogonal facts (who wrote the block, how
+its value was resolved) and the specs answer that in six vocabularies of which
+only `BUILTIN_EDIT_POLICIES` is executable; only `manual` means the same thing in
+all six. **Format §3.1 and protocol §V.7 rank the same two sources in opposite
+order** — market data vs investor profile — so two producers each following a
+normative section resolve the same field differently. §V.7 is authoritative.
+160 of 496 blocks carrying `_meta.source` (32%) name a source no pattern
+recognizes; that is the migration cost. **Blocks RFC 0009**, which types the
+nested field as `SourceTag` and would bake one half into `provenance.source` for
+format v2.0.
+
 **The stated priority order is complete.** What remains on this train has no
 assigned order yet:
 
-Unordered: lease-up modeling (0008), locale/multi-currency (0001),
-`_meta` v2 reorg (0009),
-capability tokens (0011), corpus retrieval (0013), and portfolio/relationship
-profiles (0015). Unfrozen means actively being taken up, not accepted — each
-RFC still goes through its own acceptance.
+Unordered: lease-up modeling (0008), locale/multi-currency (0001), capability
+tokens (0011), corpus retrieval (0013), and portfolio/relationship profiles
+(0015). Unfrozen means actively being taken up, not accepted — each RFC still
+goes through its own acceptance.
+
+**Blocked:** `_meta` v2 reorg (0009), behind RFC 0031. It types the nested
+provenance field as `SourceTag` — the *resolution* reading — and accepting it
+first would bake that into `provenance.source` for format v2.0, permanently
+orphaning the *actor* vocabulary the edit engine runs on. Resolve 0031 first.
+Also worth pairing when it is taken up: RFC 0011 (capability tokens) is the
+natural home for the edit-authority questions the catch-all made visible —
+notably whether `institution/*` should keep `system_only`.
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
