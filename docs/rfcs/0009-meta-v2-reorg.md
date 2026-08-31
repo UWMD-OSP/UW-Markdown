@@ -13,6 +13,15 @@ affects:
 
 # RFC 0009: `_meta` v2 sub-object reorganization
 
+> **Blocked by [RFC 0031](./0031-source-vocabulary.md).** The nested shape below
+> types the provenance field as `source: SourceTag` — the short-form
+> *resolution* reading (`user_input`, `ai_extracted`). RFC 0031 finds that
+> `_meta.source` has been carrying two orthogonal facts, that the executable
+> vocabulary (`BUILTIN_EDIT_POLICIES`) keys on the *actor* reading
+> (`agent/L6-01`), and proposes splitting them. Accepting 0009 first would bake
+> one half into `provenance.source` for format v2.0 and permanently orphan the
+> vocabulary the edit engine runs on. Resolve 0031, then revisit the shape here.
+
 ## Summary
 
 The block-level `_meta` object has grown to ~15 fields covering four

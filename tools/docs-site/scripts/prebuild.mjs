@@ -107,6 +107,7 @@ const COPIES = [
   { from: 'docs/rfcs/0028-reportable-section-readiness.md', to: 'about/rfcs/0028-reportable-section-readiness.md' },
   { from: 'docs/rfcs/0029-class-aware-stage-requirements.md', to: 'about/rfcs/0029-class-aware-stage-requirements.md' },
   { from: 'docs/rfcs/0030-conformance-profiles.md', to: 'about/rfcs/0030-conformance-profiles.md' },
+  { from: 'docs/rfcs/0031-source-vocabulary.md', to: 'about/rfcs/0031-source-vocabulary.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
