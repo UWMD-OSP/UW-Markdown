@@ -92,8 +92,8 @@ using canonical `SOURCE_TAGS` (`market_data`, `user_input`, `asset_class_default
   for documents in the wild, not a licence for our own writers to skip choosing
   a policy.
 
-This is the correctness half of [RFC 0031](docs/rfcs/0031-source-vocabulary.md),
-split out and shipped ahead of it. The vocabulary reconciliation that RFC
+This is the correctness half of RFC 0031 (still in draft, and deliberately not
+linked here — it lands in a separate change), split out and shipped ahead of it. The vocabulary reconciliation that RFC
 proposes — splitting `_meta.source` into actor and resolution, `SRC-01`/`SRC-02`,
 and the corpus migration — is a design change with real migration cost and is
 still in draft. The unpoliced-write path is a bug, and waiting on that debate to
