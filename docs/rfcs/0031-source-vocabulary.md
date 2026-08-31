@@ -19,14 +19,18 @@ affects:
 `_meta.source` is asked to carry two unrelated facts at once — *who wrote this
 block* and *how its value was resolved* — and the specification answers that
 question six different times, in six different vocabularies, of which only one
-is executable. The result is not a documentation problem: 43% of the blocks in
-our own corpus resolve to no edit policy at all, and because `checkAuthority`
-treats "no policy" as "permitted", those blocks can be replaced rather than
-superseded, silently destroying prior versions.
+is executable. The result is not a documentation problem: **32% of the blocks in
+our own corpus name a source no policy pattern recognizes.**
+
+Until recently that meant no policy matched at all, and because `checkAuthority`
+read "no policy" as "permitted", those blocks could be replaced rather than
+superseded — silently destroying prior versions. That half has since shipped as
+a bug fix: a terminal catch-all now gives every source the conservative policy,
+so history is preserved. What remains is the vocabulary itself, and the 160
+blocks that reach only that catch-all are its migration cost.
 
 This RFC separates the two facts into two fields, keeps the one vocabulary that
-already has runtime behavior attached, retires the rest, and makes an unmatched
-source fail toward preservation instead of toward permission.
+already has runtime behavior attached, and retires the rest.
 
 ## Motivation
 
@@ -92,24 +96,31 @@ form `agent:L0-01` is classified as a **human** edit.
 
 ### Measured against our own corpus
 
-Parsing all 206 `.uw.md` / `.uwx.md` files in the repository — 613 blocks
-carrying `_meta.source`, 32 distinct values:
+Parsing all 192 tracked `.uw.md` / `.uwx.md` files in the repository — 496
+blocks carrying `_meta.source`, 32 distinct values:
 
 | | Blocks | Share |
 |---|---:|---:|
-| Resolve to an edit policy | 350 | 57% |
-| **Resolve to no policy (fail open)** | **263** | **43%** |
+| Resolve to a specific policy | 336 | 68% |
+| **Reach only the terminal `*` catch-all** | **160** | **32%** |
 
-Of the 263, **33 use canonical `SOURCE_TAGS`** — `market_data` (16),
+Before the catch-all shipped those 160 resolved to **no policy at all**, which
+is what made them replaceable in place. The catch-all closed the data-loss
+half; the vocabulary half is what remains, and these 160 blocks are its
+migration cost.
+
+Of the 160, **33 use canonical `SOURCE_TAGS`** — `market_data` (16),
 `user_input` (10), `asset_class_default` (3), `ai_extracted` (2),
 `system_default` (1), `market_data_accepted` (1). The spec's own canonical tags
-are unpoliced. Another 20 use the `agent:` colon form and are therefore
-classified as human writes. The remainder are values in no vocabulary at all:
-`engine`, `extractor`, `wizard`, `system`, `L6`, `L6-01`, `engine:uwmd`.
+match no policy pattern. Another 12 use the `agent:` colon form and are
+therefore classified as human writes by `isHuman`. The remainder are values in
+no vocabulary at all: `user` (35), `engine:calculations.ts` (25),
+`engine:financialValidityChecker` (13), `extractor`, `engine`, `wizard`,
+`system`, `L6`, `L6-01`, `engine:uwmd`.
 
-The reference corpus cannot satisfy the reference implementation's policy
-engine. That is the strongest available argument that the vocabulary was never
-actually decided.
+The reference corpus cannot name its own provenance in a vocabulary the
+reference implementation recognizes. That is the strongest available argument
+that the vocabulary was never actually decided.
 
 ### This blocks RFC 0009
 
@@ -159,7 +170,7 @@ L6-01 from the asset-class default table is:
 > the `agent:L0-01` regression test, before this RFC was accepted. The
 > unpoliced-write path is a defect, not a design question, and it had no
 > dependency on the vocabulary split; holding a live provenance-destruction bug
-> behind a 263-block migration debate was the wrong trade. What remains open in
+> behind a 160-block migration debate was the wrong trade. What remains open in
 > this RFC is everything else: the field split, `SRC-01`/`SRC-02`, the §3.1
 > precedence contradiction, and the migration itself.
 
@@ -231,8 +242,8 @@ generation path into these schema files.)
 ## Compatibility analysis
 
 **Existing `.uw.md` / `.uwx.md` files** — remain parseable, and every one of the
-613 blocks measured above keeps a correct reading via §4's read-time
-interpretation. 263 of them begin warning under `SRC-01`/`SRC-02`. None become
+496 blocks measured above keeps a correct reading via §4's read-time
+interpretation. 160 of them begin warning under `SRC-01`/`SRC-02`. None become
 invalid at format 1.x.
 
 **Tier-1 Reader** — must apply the read-time interpretation. Additive.
@@ -258,7 +269,7 @@ migration is scriptable rather than editorial.
 
 ## Conformance impact
 
-**Migrated:** the 263 offending blocks across `conformance/` and `examples/`,
+**Migrated:** the 160 offending blocks across `conformance/` and `examples/`,
 via the codemod. Their `_meta.source` moves to `_meta.resolution` where it is a
 canonical tag, becomes `agent/<id>` where it is `agent:<id>`, and is assigned an
 actor where it is one of the unclassifiable values (`extractor`, `wizard`,
@@ -325,7 +336,7 @@ a block written by an agent from a market lookup still cannot say both, and the
 next reader to need the missing half re-opens this RFC.
 
 **Fail closed on an unmatched source immediately.** Rejected as the default: it
-converts 263 blocks in our own corpus from silently-wrong to hard-failing, and
+converts 160 blocks in our own corpus from silently-wrong to hard-failing, and
 an adopter mid-re-vendor would see the corpus refuse its files. The catch-all
 gets the same safety property — history is preserved — without refusing writes.
 
