@@ -30,13 +30,6 @@
   },
   "sections": {
     "property": {
-      "annotation": {
-        "section": "property",
-        "source": "manual",
-        "ts": "2026-01-15T10:00:00Z",
-        "v": 1,
-        "confidence": "medium"
-      },
       "meta": {
         "section_id": "property",
         "version": 1,
@@ -87,10 +80,7 @@
           ]
         },
         "_notes": null
-      },
-      "prose": "# Minimal Screening Fixture\n\nThis is the smallest possible conformant file at the screening stage —\nproperty and quick_metrics only.",
-      "lineStart": 35,
-      "lineEnd": 69
+      }
     }
   },
   "prose": {

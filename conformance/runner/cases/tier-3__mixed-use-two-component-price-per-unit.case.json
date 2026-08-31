@@ -1,6 +1,9 @@
 {
   "id": "tier-3/mixed-use-two-component-price-per-unit",
   "tier": "3",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
   "command": "calc",
   "args": [
     "deal.uw.md",

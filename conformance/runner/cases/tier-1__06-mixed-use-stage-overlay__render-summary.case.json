@@ -1,6 +1,9 @@
 {
   "id": "tier-1/06-mixed-use-stage-overlay/render-summary",
   "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
   "command": "render",
   "args": [
     "06-mixed-use-stage-overlay.uw.md",

@@ -20,13 +20,6 @@
   },
   "sections": {
     "property": {
-      "annotation": {
-        "section": "property",
-        "source": "user_input",
-        "ts": "2026-01-15T10:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "property",
         "version": 1,
@@ -62,19 +55,9 @@
         "asset_class": "multifamily",
         "units": 24,
         "asking_price": 4800000
-      },
-      "prose": "# Scope-only fixture\n\nThis file represents the back-of-napkin entry point: only `property` is\npopulated, and most operating / debt assumptions are provisional defaults\nfilled by the scope agent. The `gaps` section enumerates the open\nunknowns. Validates clean at `deal_stage: scope`.\n\n## Property {#property}",
-      "lineStart": 30,
-      "lineEnd": 52
+      }
     },
     "noi_model": {
-      "annotation": {
-        "section": "noi_model",
-        "source": "asset_class_default",
-        "ts": "2026-01-15T10:00:00Z",
-        "v": 1,
-        "confidence": "low"
-      },
       "meta": {
         "section": "noi_model",
         "version": 1,
@@ -112,19 +95,9 @@
         "rent_growth_pct_y1": 0.03,
         "management_fee_pct": 0.035,
         "replacement_reserve_per_unit_y1": 300
-      },
-      "prose": "## NOI Model {#noi_model}",
-      "lineStart": 56,
-      "lineEnd": 79
+      }
     },
     "debt_structure": {
-      "annotation": {
-        "section": "debt_structure",
-        "source": "asset_class_default",
-        "ts": "2026-01-15T10:00:00Z",
-        "v": 1,
-        "confidence": "low"
-      },
       "meta": {
         "section": "debt_structure",
         "version": 1,
@@ -162,19 +135,9 @@
         "amortization_months": 360,
         "io_months": 0,
         "ltv_pct": 0.65
-      },
-      "prose": "## Debt Structure {#debt_structure}",
-      "lineStart": 83,
-      "lineEnd": 106
+      }
     },
     "gaps": {
-      "annotation": {
-        "section": "gaps",
-        "source": "system_default",
-        "ts": "2026-01-15T10:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "gaps",
         "version": 1,
@@ -239,10 +202,7 @@
           "blocking_current_stage": 0,
           "blocking_next_stage": 2
         }
-      },
-      "prose": "## Gaps {#gaps}",
-      "lineStart": 110,
-      "lineEnd": 161
+      }
     }
   },
   "prose": {

@@ -53,7 +53,7 @@ and how it gets accepted.
 | [0027](./0027-asset-class-size-intensives.md) | Declare every asset class's size intensive, once | implemented | format, protocol, core, conformance, tooling |
 | [0028](./0028-reportable-section-readiness.md) | Make a missing required section a reportable defect | implemented | format, core, conformance |
 | [0029](./0029-class-aware-stage-requirements.md) | Make stage requirements class-aware | implemented | format, core, conformance |
-| [0030](./0030-conformance-profiles.md) | Make partial conformance mechanically checkable | draft | protocol, core, conformance, tooling |
+| [0030](./0030-conformance-profiles.md) | Make partial conformance mechanically checkable | implemented | protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

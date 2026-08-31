@@ -1,6 +1,9 @@
 {
   "id": "tier-1/04-scope-only/render-summary",
   "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
   "command": "render",
   "args": [
     "04-scope-only.uw.md",

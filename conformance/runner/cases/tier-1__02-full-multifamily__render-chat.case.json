@@ -1,6 +1,9 @@
 {
   "id": "tier-1/02-full-multifamily/render-chat",
   "tier": "1",
+  "requires_capabilities": [
+    "render-chat"
+  ],
   "command": "render",
   "args": [
     "02-full-multifamily.uw.md",

@@ -9,6 +9,9 @@ import {
   PROTOCOL_VERSION,
   FORMAT_VERSION,
   REFERENCE_IMPLEMENTATION_MANIFEST,
+  BUILTIN_REMEDIATIONS,
+  VALIDATOR_CODE_FAMILIES,
+  validatorCodeFamily,
 } from './protocol.js';
 import { CORE_VERSION } from './version.js';
 
@@ -84,7 +87,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — version', () => {
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('1.8.0');
+    expect(PROTOCOL_VERSION).toBe('1.9.0');
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {
@@ -128,5 +131,54 @@ describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
     expect(() => {
       (REFERENCE_IMPLEMENTATION_MANIFEST as { id: string }).id = 'something.else';
     }).toThrow();
+  });
+});
+
+
+describe('validator code families (§III.6a, RFC 0030)', () => {
+  it('registers a family for every code in BUILTIN_REMEDIATIONS', () => {
+    // The check that keeps §III.6a from going stale a second time. It once said
+    // every code belonged to one of three families while the registry emitted
+    // eighteen, and nothing noticed because the list lived in prose.
+    const orphans = BUILTIN_REMEDIATIONS.map((r) => r.code).filter(
+      (code) => validatorCodeFamily(code) === null,
+    );
+    expect(orphans).toEqual([]);
+  });
+
+  it('resolves by longest prefix, so a specific family beats a general one', () => {
+    expect(validatorCodeFamily('CS-01')?.prefix).toBe('CS');
+    expect(validatorCodeFamily('CS-WATERFALL-UNSUPPORTED')?.prefix).toBe('CS');
+    expect(validatorCodeFamily('INVALID-ASSET-CLASS-001')?.prefix).toBe('INVALID-ASSET-CLASS');
+  });
+
+  it('matches a bare code with no suffix', () => {
+    // UNSUPPORTED_YAML_FEATURE carries no numeric suffix; prefix-plus-dash
+    // matching alone would orphan it.
+    expect(validatorCodeFamily('UNSUPPORTED_YAML_FEATURE')?.capabilities).toEqual(['parse']);
+  });
+
+  it('does not match a code that merely starts with the same letters', () => {
+    // 'CCX-01' is not a CC code. Without the dash boundary it would be.
+    expect(validatorCodeFamily('CCX-01')).toBeNull();
+  });
+
+  it('names only capabilities that exist on the manifest type', () => {
+    const claimed = new Set(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities ?? []);
+    for (const family of VALIDATOR_CODE_FAMILIES) {
+      for (const capability of family.capabilities) {
+        // The reference implementation claims everything, so any capability a
+        // family names must appear there — a typo would otherwise sit unnoticed
+        // until a host tried to claim the family.
+        expect(claimed).toContain(capability);
+      }
+    }
+  });
+
+  it('owns INT and POL away from a read-only reader', () => {
+    // The two families the first external adopter could not implement. If these
+    // ever become unconditional, a reader-only host stops being conformant.
+    expect(validatorCodeFamily('INT-01')?.capabilities).toEqual(['integrity']);
+    expect(validatorCodeFamily('POL-02')?.capabilities).toEqual(['edit-replace', 'edit-supersede']);
   });
 });

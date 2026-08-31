@@ -1,6 +1,9 @@
 {
   "id": "tier-3/dscr-from-section",
   "tier": "3",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
   "command": "calc",
   "args": [
     "deal.uw.md",

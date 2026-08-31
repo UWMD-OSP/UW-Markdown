@@ -152,16 +152,44 @@ function canonicalParsed(parsed) {
   };
 }
 
+// The **parse conformance projection** (protocol II.6a.6, RFC 0030).
+//
+// Deliberately smaller than `ParsedUWFile`. What is NOT here, and why:
+//
+//   annotation           recoverable from `meta` — it is the fence annotation.
+//   lineStart / lineEnd  byte offsets into one reader's tokenization.
+//   prose (per block)    recoverable from the document.
+//
+// Those four are artifacts of how @uwmd/core reads a file, not facts about the
+// file. Freezing them as a baseline made a TypeScript interface a protocol
+// surface: renaming a field became a breaking protocol change, and an adopter
+// with a different in-memory model had to mimic ours to pass tier 1.
 function projectBlock(b) {
   if (!b) return null;
-  return {
-    annotation: b.annotation,
-    meta: b.meta,
-    content: b.content,
-    prose: b.prose,
-    lineStart: b.lineStart,
-    lineEnd: b.lineEnd,
-  };
+  return { meta: projectMeta(b), content: b.content };
+}
+
+// `_meta` carries only the keys the *document* carried. The parser fills every
+// optional field with null, so projecting `b.meta` wholesale would require an
+// implementation to emit `"agent_id": null` for a document that never mentioned
+// agent_id — asserting a distinction the source does not make. Absent and
+// explicit-null ARE distinguishable in the source, so the original key set is
+// read back from the raw block JSON and used to decide presence; values still
+// come from the parsed meta, which is normalized.
+function projectMeta(b) {
+  if (!b.rawJson) return b.meta;
+  let declared;
+  try {
+    declared = JSON.parse(b.rawJson)?._meta;
+  } catch {
+    return b.meta;
+  }
+  if (!declared || typeof declared !== 'object') return b.meta;
+  const out = {};
+  for (const key of Object.keys(b.meta)) {
+    if (key in declared) out[key] = b.meta[key];
+  }
+  return out;
 }
 
 function isMultiVariant(entry) {
@@ -545,6 +573,13 @@ function runTier3() {
 // `expected-graph.json` declaring the canonical projection of
 // `extractDependencyGraph(parsed)`. Only Map-typed fields are projected (sets
 // become sorted arrays).
+//
+// CAPABILITY: `refinement`. **No tier requires this** — protocol II.3 lists
+// four requirements for a Tier-3 Calc Host and a dependency graph is not among
+// them. These fixtures live under tier-3-calc-host/ for discoverability, and
+// II.6 is explicit that directory membership is not a normative signal: a calc
+// host that does not project a dependency graph is still a conforming calc
+// host. The RFC 0004 driver agrees, generating zero cases here.
 
 async function runTier3Refinement() {
   const baseDir = join(CONFORMANCE_DIR, 'tier-3-calc-host', 'refinement');

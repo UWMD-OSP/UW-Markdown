@@ -1,6 +1,9 @@
 {
   "id": "tier-1/04-scope-only/parse",
   "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
   "command": "parse",
   "args": [
     "04-scope-only.uw.md"

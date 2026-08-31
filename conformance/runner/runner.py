@@ -285,6 +285,29 @@ def read_manifest(impl: list[str], timeout: float) -> dict | None:
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 
+def claimed_capabilities(manifest: dict | None) -> set[str] | None:
+    """Capabilities the implementation claims, or None meaning "claims everything".
+
+    An absent or empty list is deliberately NOT read as "claims nothing" — that
+    would let an implementation skip the entire corpus by omitting a field.
+    Forgetting to declare fails closed against the claimant (§II.6a, RFC 0030).
+    """
+    if not manifest:
+        return None
+    declared = manifest.get("capabilities")
+    if not isinstance(declared, list) or not declared:
+        return None
+    return {str(c) for c in declared}
+
+
+def missing_capabilities(case: dict, claimed: set[str] | None) -> list[str]:
+    """Which of a case's required capabilities the implementation does not claim."""
+    if claimed is None:
+        return []
+    required = case.get("requires_capabilities") or []
+    return sorted(c for c in required if c not in claimed)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument(
@@ -296,6 +319,12 @@ def main() -> int:
     parser.add_argument("--tier", default="", help="Comma-separated tiers to run (default: all).")
     parser.add_argument("--manifest-out", default="", help="Write the JSON manifest here.")
     parser.add_argument("--timeout", type=float, default=60.0, help="Per-case timeout in seconds.")
+    parser.add_argument(
+        "--no-skip",
+        action="store_true",
+        help="Treat a capability skip as a failure. CI runs the reference implementation "
+        "this way so the skip mechanism cannot quietly erode its own coverage.",
+    )
     args = parser.parse_args()
 
     impl = shlex.split(args.impl)
@@ -320,14 +349,43 @@ def main() -> int:
         # itself for aggregation, not a prerequisite for running the corpus.
         print("# implementation: unidentified (no `manifest` subcommand)")
 
+    claimed = claimed_capabilities(manifest)
+
     results = []
     failed = 0
+    skipped = 0
+    skipped_by_capability: dict[str, int] = {}
     for number, case in enumerate(cases, start=1):
+        absent = missing_capabilities(case, claimed)
+        if absent and not args.no_skip:
+            # A skip is a reported outcome, never a pass. "Passes the corpus"
+            # has to be said with the skip count attached or it means nothing.
+            skipped += 1
+            for capability in absent:
+                skipped_by_capability[capability] = skipped_by_capability.get(capability, 0) + 1
+            print(f"ok {number} - {case['id']} # SKIP capability not claimed: {', '.join(absent)}")
+            results.append(
+                {
+                    "id": case["id"],
+                    "tier": case.get("tier"),
+                    "ok": True,
+                    "skipped": True,
+                    "missing_capabilities": absent,
+                    "problems": [],
+                }
+            )
+            continue
         try:
             elapsed, problems = run_case(impl, case, args.timeout)
         except Failure as exc:
             print(f"Bail out! {exc}")
             return 2
+        if absent:
+            # --no-skip: the case ran anyway, and not claiming it is the failure.
+            problems = [
+                f"capability not claimed: {', '.join(absent)} (--no-skip)",
+                *problems,
+            ]
         ok = not problems
         if not ok:
             failed += 1
@@ -339,7 +397,15 @@ def main() -> int:
             if len(problems) > 10:
                 print(f"  - ... and {len(problems) - 10} more")
             print("  ...")
-        results.append({"id": case["id"], "tier": case.get("tier"), "ok": ok, "problems": problems})
+        results.append(
+            {
+                "id": case["id"],
+                "tier": case.get("tier"),
+                "ok": ok,
+                "skipped": False,
+                "problems": problems,
+            }
+        )
 
     report = {
         "implementation": (
@@ -349,15 +415,19 @@ def main() -> int:
         "tiers": sorted({str(c.get("tier")) for c in cases}),
         "summary": {
             "total": len(cases),
-            "passed": len(cases) - failed,
+            "passed": len(cases) - failed - skipped,
             "failed": failed,
-            "skipped": 0,
+            "skipped": skipped,
+            "skipped_by_capability": skipped_by_capability,
         },
         "results": results,
     }
     if args.manifest_out:
         Path(args.manifest_out).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"# {report['summary']['passed']}/{report['summary']['total']} passed")
+    if skipped:
+        detail = ", ".join(f"{cap} x{n}" for cap, n in sorted(skipped_by_capability.items()))
+        print(f"# {skipped} skipped for capabilities not claimed: {detail}")
 
     return 1 if failed else 0
 

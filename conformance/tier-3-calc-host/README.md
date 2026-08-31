@@ -33,6 +33,13 @@ fixtures/<scenario-id>/
 
 ### Refinement scenarios
 
+> **Capability: `refinement`. No tier requires these.** Protocol II.3 lists
+> four requirements for a Tier-3 Calc Host and a dependency graph is not among
+> them; II.6 is explicit that a fixture group's directory is not a normative
+> signal. A calc host that does not project a dependency graph is a conforming
+> calc host, and the RFC 0004 driver generates no cases here.
+
+
 A separate `refinement/` subdirectory exercises the dependency-graph
 extraction used by the v1.1 refinement engine
 (`extractDependencyGraph` from `@uwmd/core/calc/dependencies`):

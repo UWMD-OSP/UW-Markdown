@@ -1,6 +1,9 @@
 {
   "id": "tier-1/02-full-multifamily/parse",
   "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
   "command": "parse",
   "args": [
     "02-full-multifamily.uw.md"

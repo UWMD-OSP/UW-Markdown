@@ -1,6 +1,9 @@
 {
   "id": "tier-1/05-land-stage-overlay/parse",
   "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
   "command": "parse",
   "args": [
     "05-land-stage-overlay.uw.md"

@@ -1,6 +1,9 @@
 {
   "id": "tier-1/05-land-stage-overlay/validate",
   "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
   "command": "validate",
   "args": [
     "05-land-stage-overlay.uw.md",

@@ -57,8 +57,21 @@ For each fixture `<id>.uw.md`, the corresponding `expected/` directory contains:
 - `<id>.rendered-chat.txt` — output of `cli render --format chat`.
 
 A conforming Tier-1 Reader does not need to match the `rendered-*` outputs
-byte-for-byte (different presentations are encouraged), but its parse output
-MUST canonicalize to the same `<id>.parsed.json`.
+byte-for-byte — different presentations are encouraged.
+
+Its parse output MUST contain the **parse conformance projection** recorded in
+`<id>.parsed.json`, and MAY contain more. The projection is specified in
+protocol II.6a.6; it is deliberately smaller than any implementation's
+in-memory model.
+
+This file used to require the parse output to "canonicalize to the same
+`<id>.parsed.json`", which made `@uwmd/core`'s `ParsedUWFile` type a protocol
+surface by accident: `annotation`, `lineStart`/`lineEnd`, and optional `_meta`
+fields serialized as explicit `null` are artifacts of one reader, and II.1
+requires a reader to surface structured data without prescribing a shape. RFC
+0030 replaced the requirement with a specified projection. A conformance
+requirement stated only in a README, and stronger than the specification, was
+the defect.
 
 ## Running
 

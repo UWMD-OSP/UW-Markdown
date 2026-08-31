@@ -22,7 +22,7 @@ that needs a package index is a driver an air-gapped implementer cannot run.
 
 ## What it does not cover
 
-**`npm run conformance` remains the CI gate.** It runs 274 assertions across
+**`npm run conformance` remains the CI gate.** It runs 301 assertions across
 thirteen suites, and most of them are not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, cross-fixture invariants asserted with no baseline at

@@ -24,8 +24,38 @@ const readFileText = (path) => readFileSync(path, 'utf8');
 /** Relative POSIX path from the repo root — case files must be portable. */
 const rel = (abs) => abs.slice(ROOT.length + 1).replaceAll('\\', '/');
 
-function add(id, tier, command, args, fixtureDir, expect) {
-  cases.push({ id, tier, command, args, fixture_dir: rel(fixtureDir), expect });
+/**
+ * `requires_capabilities` (RFC 0030) is *derived*, never hand-listed. A table
+ * mapping fixture to capability is one more thing to forget when a fixture
+ * lands; the command a case runs already says what it exercises.
+ */
+function capabilitiesFor(command, args) {
+  switch (command) {
+    case 'parse':
+      return ['parse'];
+    case 'validate':
+      return ['validate'];
+    case 'calc':
+      return ['calc-evaluate'];
+    case 'render': {
+      const view = args[args.indexOf('--format') + 1];
+      return [`render-${view}`];
+    }
+    default:
+      throw new Error(`capabilitiesFor: no mapping for command '${command}'`);
+  }
+}
+
+function add(id, tier, command, args, fixtureDir, expect, capabilities) {
+  cases.push({
+    id,
+    tier,
+    requires_capabilities: capabilities ?? capabilitiesFor(command, args),
+    command,
+    args,
+    fixture_dir: rel(fixtureDir),
+    expect,
+  });
 }
 
 const dirs = (base) =>
@@ -133,11 +163,25 @@ for (const scenario of dirs(T2)) {
   ]) {
     if (context[key]) flags.push(flag, context[key]);
   }
-  add(`tier-2/${scenario}`, '2', 'edit', ['before.uw.md', 'operation.json', ...flags], dir, {
-    kind: 'json-field-text',
-    field: 'content',
-    file: 'after.uw.md',
-  });
+  // The operation's kind, not the tier, decides which edit capability a host
+  // needs — a frontmatter-only editor is a real and conforming partial claim.
+  const operationKind = JSON.parse(readFileText(join(dir, 'operation.json'))).kind;
+  const EDIT_CAPABILITY = {
+    section_replace: 'edit-replace',
+    section_supersede: 'edit-supersede',
+    frontmatter_set: 'edit-frontmatter',
+  };
+  const editCapability = EDIT_CAPABILITY[operationKind];
+  if (!editCapability) throw new Error(`unmapped edit operation kind '${operationKind}'`);
+  add(
+    `tier-2/${scenario}`,
+    '2',
+    'edit',
+    ['before.uw.md', 'operation.json', ...flags],
+    dir,
+    { kind: 'json-field-text', field: 'content', file: 'after.uw.md' },
+    [editCapability],
+  );
 }
 
 // ── Tier 3: calc ────────────────────────────────────────────────────────────

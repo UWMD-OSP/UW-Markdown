@@ -587,11 +587,14 @@ export {
   BUILTIN_VIEW_MODELS,
   BUILTIN_EDIT_POLICIES,
   BUILTIN_REMEDIATIONS,
+  VALIDATOR_CODE_FAMILIES,
+  validatorCodeFamily,
 } from './protocol.js';
 export type {
   ViewerTier,
   ViewerRole,
   ViewerCapability,
+  ValidatorCodeFamily,
   ImplementationManifest,
   SupportedLocale,
   NumberFormatRules,

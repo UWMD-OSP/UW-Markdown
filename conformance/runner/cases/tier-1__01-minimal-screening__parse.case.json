@@ -1,6 +1,9 @@
 {
   "id": "tier-1/01-minimal-screening/parse",
   "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
   "command": "parse",
   "args": [
     "01-minimal-screening.uw.md"

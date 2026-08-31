@@ -1,6 +1,9 @@
 {
   "id": "tier-1/01-minimal-screening/validate",
   "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
   "command": "validate",
   "args": [
     "01-minimal-screening.uw.md",

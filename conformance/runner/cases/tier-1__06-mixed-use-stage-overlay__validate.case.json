@@ -1,6 +1,9 @@
 {
   "id": "tier-1/06-mixed-use-stage-overlay/validate",
   "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
   "command": "validate",
   "args": [
     "06-mixed-use-stage-overlay.uw.md",

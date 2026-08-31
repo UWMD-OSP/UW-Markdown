@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.8.0`) — the
+- **Protocol version** (this document, currently `1.9.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -155,10 +155,18 @@ A Tier-1 Reader MUST:
    the most recent non-superseded block is canonical (§V.2).
 5. Apply the display conventions in Part III when surfacing any value
    to a human user.
-6. Surface validation issues using the remediation copy from
-   `BUILTIN_REMEDIATIONS`.
+6. If — and only if — it claims the `validate` capability, surface
+   validation issues using the remediation copy from
+   `BUILTIN_REMEDIATIONS`, and emit only codes whose family is
+   registered in §III.6a. A Tier-1 Reader that does not claim
+   `validate` owes no validator codes.
 
 A Tier-1 Reader MUST NOT silently mutate any input bytes.
+
+Parsing and validating are separate capabilities (`parse`, `validate`),
+and requirement 6 previously read as owing every family to any reader —
+including `INT-NN`, which needs a hash chain, and `POL-NN`, which needs
+an edit engine. A read-only reader could not satisfy it.
 
 ### II.2 Tier 2 — Editor
 
@@ -207,11 +215,33 @@ An implementation MAY claim partial conformance — e.g. "Tier 1 + edit
 on `frontmatter` only". Such partial claims are expressed via
 `ViewerCapability` flags rather than tier number.
 
+Tiers are **cumulative**: a Tier-3 Calc Host satisfies all of Tier 2,
+which satisfies all of Tier 1. An implementation with a complete calc
+engine and no edit engine therefore cannot claim Tier 3, and claiming
+Tier 1 would discard a true statement about most of what it does. That
+combination is exactly what capability flags exist to express, and an
+implementation in that position SHOULD publish capabilities and omit a
+tier claim rather than round down.
+
+A partial claim is **checkable**, not merely declarative: conformance
+cases carry the capabilities they require (§II.6a.5), so a claim can be
+run rather than believed.
+
 ### II.6 Self-certification
 
-To self-certify at a tier, run every fixture in the corresponding
-`conformance/tier-N-*/` directory and verify the output matches.
+To self-certify, run every conformance case whose required
+capabilities (§II.6a.5) are a subset of the capabilities the
+implementation claims, and verify the output matches. A
+self-certification claim MUST be published together with the capability
+list it was run against, and with the number of cases skipped; "passes
+the corpus" without that list does not identify what was run.
 Tier 4 uses shape assertions due to LLM nondeterminism (§IX.6).
+
+Directory membership is **not** a normative signal. A fixture group
+under `conformance/tier-N-*/` is not thereby required of a Tier-N
+implementation — `conformance/tier-3-calc-host/refinement/` requires
+the `refinement` capability, which no tier requires (§II.3 lists four
+requirements and refinement is not among them).
 
 An implementation in any language can be driven by the shared
 conformance driver instead of writing its own, by exposing the CLI
@@ -305,6 +335,80 @@ reimplementations of a runner drift.
 The reference driver ships at
 [`conformance/runner/`](../conformance/runner/README.md).
 
+#### II.6a.5 Required capabilities and skips
+
+Each conformance case MAY declare `requires_capabilities`, an array of
+`ViewerCapability` values. A case with no such key is required of every
+implementation.
+
+An implementation driven by the conformance driver **MUST** populate
+`capabilities` in its `manifest` output. An absent or empty list
+**MUST** be treated as claiming every capability: a missing declaration
+is not a licence to skip, and forgetting the field has to fail closed
+against the claimant rather than exempt it from the corpus.
+
+A driver **MUST** report a case whose required capabilities are not all
+claimed as **skipped**, and **MUST NOT** count it as passed. The skip
+count and the capabilities that caused it are part of the result: a
+report stating only a pass count does not distinguish an implementation
+that ran the corpus from one that declined it.
+
+A driver **SHOULD** offer a mode that treats any skip as a failure. The
+reference implementation claims every capability, so it runs that way
+in CI — otherwise a case tagged with a capability nothing claims stops
+being executed and nothing says so.
+
+Example:
+
+```jsonc
+{
+  "id": "tier-2/section-supersede-risk-rating",
+  "tier": "2",
+  "requires_capabilities": ["edit-supersede"],
+  "command": "edit",
+  "args": ["before.uw.md", "operation.json", "--json"]
+}
+```
+
+#### II.6a.6 The parse conformance projection
+
+`uwmd parse --json` output is compared against a baseline as a
+**subset**: every key the baseline names MUST be present and equal, and
+an implementation MAY emit more. The baseline therefore states the
+minimum a conforming reader surfaces, not the shape of its model.
+
+```jsonc
+{
+  "frontmatter": { /* every frontmatter key, verbatim */ },
+  "sections": {
+    "<section_id>": { "meta": { /* _meta */ }, "content": { /* block content */ } }
+  },
+  "superseded": { "<section_id>": [ /* same shape, document order */ ] },
+  "pipeline_log": [], "custom_calculations": [], "custom_scenarios": [],
+  "extensions": {}, "prose": []
+}
+```
+
+A multi-variant section (§2.8) nests one such object per variant key.
+
+`_meta` carries **only the keys the document carried**. A parser that
+fills every optional field with a default MUST NOT project the filled
+value: absent and explicit-`null` are distinguishable in the source, and
+a baseline that demanded `"agent_id": null` from a document never
+mentioning `agent_id` would assert a distinction the source does not
+make.
+
+Not part of the projection, and MUST NOT be required of any
+implementation: fence-annotation echoes recoverable from `_meta`, source
+line numbers, and per-block prose recoverable from the document. These
+are artifacts of a particular reader.
+
+This section exists because the requirement it replaces lived in a
+corpus README and made `@uwmd/core`'s in-memory `ParsedUWFile` a
+protocol surface by accident. §II.1 requires a reader to surface
+structured data; it does not prescribe a shape, and a conformance
+corpus is not the place to add one silently.
+
 ---
 
 ## III. Display Conventions
@@ -378,33 +482,59 @@ format on one tool see the same remediation copy on another.
 
 ### III.6a Validator code taxonomy
 
-Every issue code emitted by a conforming validator MUST belong to one
-of three families. The prefix is part of the contract — adopters can
-filter, group, and route issues by prefix without parsing the message
-text.
+Every issue code emitted by a conforming validator MUST carry a
+**registered family prefix**. The prefix is part of the contract —
+adopters filter, group, and route issues by prefix without parsing the
+message text.
 
-| Prefix | Family | Meaning | Default severity |
+Each family names the **capability that owns it**. An implementation
+MUST NOT be required to emit codes from a family whose owning
+capability it does not claim (§II.5), and conformance cases for those
+codes are tagged accordingly (§II.6a.5). A family with no owning
+capability is unconditional: every implementation owes it.
+
+| Prefix | Family | Owning capability | Default severity |
 |---|---|---|---|
-| `CC-NN` | Cross-section consistency | Two or more sections disagree about the same fact (e.g. loan amount in `sources_uses` ≠ loan amount in `debt_structure`). NN is a two-digit integer registered in this spec. | `warning` or `error` depending on the specific check |
-| `FV_*` | Single-section financial validity | One section's value falls outside a registered plausibility threshold (e.g. vacancy rate well below the asset class's `warning_below`). The suffix names the field and direction. | typically `warning` |
-| `META_*` | `_meta` / provenance integrity | A block's `_meta` object is missing, malformed, or internally inconsistent (e.g. low confidence without `human_review_required: true`). | `info` or `warning` |
+| `CC-NN` | Cross-section consistency — two or more sections disagree about the same fact. NN is a two-digit integer registered in this spec. | `validate` | `warning` or `error` per check |
+| `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. | `validate` | typically `warning` |
+| `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
+| `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
+| `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
+| `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
+| `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |
+| `POL-NN` | Edit policy (§V.3). | `edit-replace` or `edit-supersede` | `error` |
+| `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
+| `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
+| `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (§2.2). | `parse` | `error` |
+| `PROTO-*` | Protocol-level refusal — a malformed request. | *(none)* | `error` |
+| `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
 
-The currently registered `CC-NN` codes are `CC-01` through `CC-10`,
-defined in §VI of the format spec. New `CC-NN` codes are added by RFC
-and MUST extend the integer sequence without renumbering. `FV_*` and
-`META_*` codes are open extension points: the reference validator
-ships an initial set, modules MAY add their own, and adopters MUST
-treat unknown codes within the same family the same way they treat
-known codes (render the message; consult `BUILTIN_REMEDIATIONS` if
-present; fall back to message text otherwise).
+`FV_*` with an underscore was the v1.0 spelling and was renamed to
+`FV-NN` in v1.1. `META_*` is **retired**: it was specified and never
+emitted, and the provenance conditions it described are covered by
+`DQ-NN`.
 
-The reference registry lives in
-[`packages/uwmd-core/src/validator.ts`](../packages/uwmd-core/src/validator.ts);
-remediation copy lives in `BUILTIN_REMEDIATIONS` in the same file.
+`CC-NN`, `FV-NN`, `DQ-NN`, and `MU-NN` are closed sequences extended by
+RFC without renumbering. `MOD-*` and `CS-*` are open extension points:
+modules MAY add their own, and adopters MUST treat an unknown code
+within a registered family the same way they treat a known one (render
+the message; consult `BUILTIN_REMEDIATIONS` if present; fall back to
+message text otherwise).
+
+**This table is not the mechanism that keeps itself current.** It said
+"one of three families" for four minor versions while the reference
+validator emitted eighteen, because a prose list duplicating a list
+that lives in code goes stale silently. The machine-readable registry
+is `VALIDATOR_CODE_FAMILIES` in
+[`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts),
+remediation copy is `BUILTIN_REMEDIATIONS` beside it, and a test
+asserts every code in the latter resolves to a family in the former.
+The spec states the rule; the assertion enforces the list.
+
 Implementations that surface validator output to end users SHOULD use
-the prefix to colorize, group, or filter issues — for example, a UI
-might collapse `META_*` notices behind a "show provenance issues"
-toggle while always surfacing `CC-NN` and `FV_*` inline.
+the prefix to colorize, group, or filter issues — for example,
+collapsing `MOD-*` and `INT-NN` notices behind a "show provenance
+issues" toggle while always surfacing `CC-NN` and `FV-NN` inline.
 
 ---
 

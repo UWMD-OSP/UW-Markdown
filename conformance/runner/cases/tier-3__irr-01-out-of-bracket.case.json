@@ -1,6 +1,9 @@
 {
   "id": "tier-3/irr-01-out-of-bracket",
   "tier": "3",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
   "command": "calc",
   "args": [
     "deal.uw.md",
