@@ -1,6 +1,9 @@
 {
   "id": "tier-1/02-full-multifamily/validate",
   "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
   "command": "validate",
   "args": [
     "02-full-multifamily.uw.md",

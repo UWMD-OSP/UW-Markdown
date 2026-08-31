@@ -1,6 +1,9 @@
 {
   "id": "tier-2/frontmatter-set-recommendation",
   "tier": "2",
+  "requires_capabilities": [
+    "edit-frontmatter"
+  ],
   "command": "edit",
   "args": [
     "before.uw.md",

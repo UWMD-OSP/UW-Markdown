@@ -1,6 +1,9 @@
 {
   "id": "tier-1/07-stage-overlay-control/render-summary",
   "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
   "command": "render",
   "args": [
     "07-stage-overlay-control.uw.md",

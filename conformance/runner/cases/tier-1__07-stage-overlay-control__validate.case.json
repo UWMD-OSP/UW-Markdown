@@ -1,6 +1,9 @@
 {
   "id": "tier-1/07-stage-overlay-control/validate",
   "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
   "command": "validate",
   "args": [
     "07-stage-overlay-control.uw.md",

@@ -1,6 +1,9 @@
 {
   "id": "tier-1/05-land-stage-overlay/render-summary",
   "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
   "command": "render",
   "args": [
     "05-land-stage-overlay.uw.md",

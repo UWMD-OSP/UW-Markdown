@@ -1,6 +1,9 @@
 {
   "id": "tier-2/section-supersede-risk-rating",
   "tier": "2",
+  "requires_capabilities": [
+    "edit-supersede"
+  ],
   "command": "edit",
   "args": [
     "before.uw.md",

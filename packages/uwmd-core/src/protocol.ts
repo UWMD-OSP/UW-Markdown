@@ -75,7 +75,20 @@ export type ViewerCapability =
   /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
   | 'signing'
   /** Verifies `ModuleManifest.signature` and honors a host policy (§X.1.4, RFC 0002). */
-  | 'module-signature-verification';
+  | 'module-signature-verification'
+  /**
+   * Recomputes `content_hash` / `parent_hash` chains (§IX.2). Owns the `INT-NN`
+   * family. Separate from `signing`: a host can verify a hash chain without
+   * verifying signatures over it, though the reverse proves little.
+   */
+  | 'integrity'
+  /**
+   * Projects a calc-expression dependency graph (`extractDependencyGraph`).
+   * **No tier requires this** — §II.3 lists four requirements and refinement is
+   * not among them. It is a capability so its fixtures can be tagged rather
+   * than inferred from a directory name.
+   */
+  | 'refinement';
 
 export type RepresentationFidelity = 'source' | 'model' | 'view';
 export type RepresentationDirection = 'read' | 'write';
@@ -161,6 +174,8 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     // asking "does this implementation verify signatures" means the pair.
     'signing',
     'module-signature-verification',
+    'integrity',
+    'refinement',
   ]) as ViewerCapability[],
   role: 'library',
   homepage: 'https://uwmd.org',
@@ -1389,6 +1404,74 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
   { source_pattern: 'system/*',    authority: 'system_only', supersede_on_edit: false },
   { source_pattern: 'institution/*', authority: 'system_only', supersede_on_edit: false },
 ]);
+
+/**
+ * One registered validator code family (protocol §III.6a, RFC 0030).
+ *
+ * `capabilities` is the set a host must claim **at least one** of before it can
+ * emit codes in this family. An empty list means the family is unconditional —
+ * every implementation owes it regardless of what it claims.
+ */
+export interface ValidatorCodeFamily {
+  /** Matched against a code as an exact hit or as `<prefix>-…`. Longest wins. */
+  prefix: string;
+  description: string;
+  capabilities: readonly ViewerCapability[];
+}
+
+/**
+ * The registered validator code families and the capability that owns each.
+ *
+ * §III.6a used to name three families in prose while the registry below emitted
+ * eighteen, which is the failure mode this constant exists to prevent: the spec
+ * states the *rule*, this states the families, and `protocol.test.ts` asserts
+ * every code in `BUILTIN_REMEDIATIONS` lands in one of them. A duplicated prose
+ * list is what went stale; an assertion cannot.
+ *
+ * Ownership is what makes partial conformance checkable. `INT-01` needs a hash
+ * chain and `POL-01` needs an edit engine, so a read-only reader that claims
+ * neither owes neither — a claim §II.5 always allowed and nothing enforced.
+ */
+export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.freeze([
+  { prefix: 'CC', description: 'Cross-section consistency', capabilities: ['validate'] },
+  { prefix: 'FV', description: 'Single-section financial validity', capabilities: ['validate'] },
+  { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
+  { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
+  { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
+  {
+    prefix: 'INVALID-ASSET-CLASS',
+    description: 'Asset-class identifier syntax',
+    capabilities: ['validate'],
+  },
+  { prefix: 'INT', description: 'Integrity / hash chain', capabilities: ['integrity'] },
+  {
+    prefix: 'POL',
+    description: 'Edit policy',
+    // Either edit capability implies a policy engine; neither means no POL codes.
+    capabilities: ['edit-replace', 'edit-supersede'],
+  },
+  { prefix: 'MOD', description: 'Module runtime', capabilities: ['module-load'] },
+  { prefix: 'CALC', description: 'Calc engine', capabilities: ['calc-evaluate'] },
+  {
+    prefix: 'UNSUPPORTED_YAML_FEATURE',
+    description: 'Frontmatter YAML subset violation',
+    capabilities: ['parse'],
+  },
+  // Protocol-level refusals are owed by every implementation: they report that a
+  // request was malformed, which is not a capability one can decline to have.
+  { prefix: 'PROTO', description: 'Protocol-level refusal', capabilities: [] },
+  { prefix: 'RCP', description: 'Verification receipt', capabilities: [] },
+] as const);
+
+/** Resolve a code to its registered family. Longest matching prefix wins. */
+export function validatorCodeFamily(code: string): ValidatorCodeFamily | null {
+  let best: ValidatorCodeFamily | null = null;
+  for (const family of VALIDATOR_CODE_FAMILIES) {
+    if (code !== family.prefix && !code.startsWith(`${family.prefix}-`)) continue;
+    if (!best || family.prefix.length > best.prefix.length) best = family;
+  }
+  return best;
+}
 
 /**
  * Remediation copy for the cross-cutting consistency checks CC-01..CC-10

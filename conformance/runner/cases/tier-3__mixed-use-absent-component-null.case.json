@@ -1,6 +1,9 @@
 {
   "id": "tier-3/mixed-use-absent-component-null",
   "tier": "3",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
   "command": "calc",
   "args": [
     "deal.uw.md",

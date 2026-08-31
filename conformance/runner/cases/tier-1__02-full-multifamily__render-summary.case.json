@@ -1,6 +1,9 @@
 {
   "id": "tier-1/02-full-multifamily/render-summary",
   "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
   "command": "render",
   "args": [
     "02-full-multifamily.uw.md",

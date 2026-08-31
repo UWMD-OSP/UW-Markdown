@@ -1,6 +1,9 @@
 {
   "id": "tier-1/07-stage-overlay-control/parse",
   "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
   "command": "parse",
   "args": [
     "07-stage-overlay-control.uw.md"

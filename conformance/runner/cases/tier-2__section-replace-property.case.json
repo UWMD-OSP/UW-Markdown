@@ -1,6 +1,9 @@
 {
   "id": "tier-2/section-replace-property",
   "tier": "2",
+  "requires_capabilities": [
+    "edit-replace"
+  ],
   "command": "edit",
   "args": [
     "before.uw.md",

@@ -152,7 +152,18 @@ jobs:
         # whose script says `python` — the name that exists on a developer's
         # Windows box but is not guaranteed on a runner.
         if: matrix.node == 20
-        run: python3 conformance/runner/runner.py --manifest-out conformance-report.json
+        run: python3 conformance/runner/runner.py --manifest-out conformance-report.json --no-skip
+
+      - name: Check the capability-skip mechanism (RFC 0030)
+        # The driver decides skips in Python; this recomputes them in JS from the
+        # case files and compares. One implementation checked against its own
+        # output would pass even when the rule is wrong.
+        #
+        # The step above runs with --no-skip so the reference implementation
+        # cannot quietly stop testing itself: it claims every capability, so any
+        # skip there means a case is tagged with one that does not exist.
+        if: matrix.node == 20
+        run: npm run conformance:profiles
 
       - name: Upload the conformance report
         if: matrix.node == 20 && always()

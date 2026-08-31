@@ -1,6 +1,9 @@
 {
   "id": "tier-1/01-minimal-screening/render-chat",
   "tier": "1",
+  "requires_capabilities": [
+    "render-chat"
+  ],
   "command": "render",
   "args": [
     "01-minimal-screening.uw.md",
