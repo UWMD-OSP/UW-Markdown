@@ -181,8 +181,59 @@ describe('resolvePolicy', () => {
     expect(policy?.source_pattern).toBe('agent/L6');
   });
 
-  it('returns null for unmatched sources', () => {
-    expect(resolvePolicy('alien/xyz')).toBeNull();
+  it('is total under BUILTIN_EDIT_POLICIES — no source resolves to null', () => {
+    // The assertion that makes the unpoliced-write bug unrepresentable.
+    //
+    // resolvePolicy used to return null for an unmatched source, and the editor
+    // read that null as BOTH "permitted" (checkAuthority) and "exempt from
+    // supersede_on_edit" (dispatchEdit) — so a block whose source was outside
+    // the list could be replaced in place, destroying its predecessor, with
+    // POL-01 and POL-02 both unable to fire. 43% of the blocks in the corpus
+    // were in that state, including canonical SOURCE_TAGS like `market_data`
+    // and the `agent:` colon form from format spec 2.6.
+    const sources = [
+      'alien/xyz',
+      'agent:L0-01', // the format spec 2.6 colon form
+      'engine:calculations.ts',
+      'market_data', // a canonical SOURCE_TAG
+      'user_input',
+      'ai_extracted',
+      'wizard',
+      '',
+      'a'.repeat(500),
+    ];
+    for (const source of sources) {
+      expect(resolvePolicy(source), `no policy for '${source}'`).not.toBeNull();
+    }
+  });
+
+  it('gives an unrecognized source the conservative policy, not the permissive one', () => {
+    const policy = resolvePolicy('alien/xyz');
+    // Preserve history: an edit against a block with an unknown source must
+    // supersede rather than replace.
+    expect(policy?.supersede_on_edit).toBe(true);
+    // But do not refuse the write — nothing that succeeded before may start
+    // failing, or this stops being a bug fix and becomes a migration.
+    expect(policy?.authority).toBe('either');
+  });
+
+  it('lets every specific pattern beat the catch-all', () => {
+    // The catch-all is one character long and matchSource scores by length, so
+    // it can only apply where nothing else did.
+    expect(resolvePolicy('manual')?.source_pattern).toBe('manual');
+    expect(resolvePolicy('agent/L6-01')?.source_pattern).toBe('agent/*');
+    expect(resolvePolicy('system/init')?.source_pattern).toBe('system/*');
+    expect(resolvePolicy('institution/x')?.source_pattern).toBe('institution/*');
+    expect(resolvePolicy('document/rent_roll')?.source_pattern).toBe('document/*');
+  });
+
+  it('refuses when a caller supplies a policy list with no catch-all', () => {
+    // A list that does not cover a source is an incomplete policy. Reading that
+    // as authorization is exactly how the hole opened.
+    const partial = [
+      { source_pattern: 'agent/*', authority: 'either' as const, supersede_on_edit: true },
+    ];
+    expect(resolvePolicy('manual', partial)).toBeNull();
   });
 });
 
@@ -461,5 +512,50 @@ describe('applyEdit — round-trip preservation', () => {
     const propBefore = getSection(before, 'property');
     const propAfter = getSection(after, 'property');
     expect(propAfter?.rawJson).toBe(propBefore?.rawJson);
+  });
+});
+
+
+// ─── The unpoliced-write regression ───────────────────────────────────────────
+
+describe('an unrecognized _meta.source no longer permits a destructive replace', () => {
+  // Format spec 2.6 tells producers to write `agent:L0-01`. BUILTIN_EDIT_POLICIES
+  // matches `agent/*`. The delimiter differs, so the source matched nothing, and
+  // an unmatched source used to mean "authorized, and exempt from supersede" —
+  // the prior block was overwritten and neither POL-01 nor POL-02 could fire.
+  const COLON_SOURCED = FILE.replace('"source": "manual"', '"source": "agent:L0-01"');
+
+  it('refuses section_replace against a block whose source matches only the catch-all', () => {
+    expect(COLON_SOURCED).not.toBe(FILE); // the substitution actually happened
+    const parsed = parseUWFile(COLON_SOURCED);
+    const op: EditOperation = {
+      kind: 'section_replace',
+      section_id: 'property',
+      content: { total_units: 999 },
+      meta: {},
+    };
+    const result = applyEdit(COLON_SOURCED, parsed, op, MANUAL_CTX);
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe('PROTO-EDIT-004');
+    expect(result.error?.message).toContain('supersede');
+  });
+
+  it('still permits the write when reissued as a supersede, preserving the prior block', () => {
+    // The fix preserves history; it does not refuse the edit. An unrecognized
+    // source is not an authorization failure.
+    const parsed = parseUWFile(COLON_SOURCED);
+    const op: EditOperation = {
+      kind: 'section_supersede',
+      section_id: 'property',
+      content: { total_units: 999 },
+      meta: {},
+    };
+    const result = applyEdit(COLON_SOURCED, parsed, op, MANUAL_CTX);
+    expect(result.ok).toBe(true);
+    if (!result.ok || !result.content) return;
+    const after = parseUWFile(result.content);
+    // The prior version survives rather than being overwritten.
+    expect(after.superseded.property?.length ?? 0).toBeGreaterThan(0);
+    expect(getSection(after, 'property')?.content.total_units).toBe(999);
   });
 });

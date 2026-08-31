@@ -572,7 +572,17 @@ function checkAuthority(
   actorSource: string,
   policy: EditPolicy | null,
 ): { ok: true } | { ok: false; message: string } {
-  if (!policy) return { ok: true };
+  // No policy means the caller supplied a policy list with no catch-all —
+  // BUILTIN_EDIT_POLICIES always terminates in one. Refuse rather than grant:
+  // a list that does not cover a source is an incomplete policy, and reading
+  // that as authorization is how the unpoliced-write path opened.
+  if (!policy) {
+    const remedy = 'cover every source, or include a catch-all as BUILTIN_EDIT_POLICIES does';
+    return {
+      ok: false,
+      message: `No edit policy matches source '${actorSource}'. The supplied policy list must ${remedy}.`,
+    };
+  }
 
   const isSystem = actorSource.startsWith('system/') || actorSource.startsWith('institution/');
   const isAgent = actorSource.startsWith('agent/');

@@ -1403,6 +1403,22 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
   { source_pattern: 'document/*',  authority: 'either',      supersede_on_edit: true  },
   { source_pattern: 'system/*',    authority: 'system_only', supersede_on_edit: false },
   { source_pattern: 'institution/*', authority: 'system_only', supersede_on_edit: false },
+  // Terminal catch-all. `matchSource` scores by pattern length, so a one-character
+  // glob loses to every specific pattern above and applies only where nothing
+  // else matched.
+  //
+  // Before this existed, `resolvePolicy` returned null for an unrecognized
+  // source and the editor read that null two ways: `checkAuthority` treated it
+  // as *permitted*, and `dispatchEdit` treated it as *exempt from
+  // supersede_on_edit*. So a block whose source was outside this list could be
+  // replaced in place, destroying the prior version, with POL-01 and POL-02 both
+  // unable to fire. 43% of the blocks in the corpus were in that state.
+  //
+  // `supersede_on_edit: true` is the conservative half of the fix: an
+  // unrecognized source now preserves history rather than overwriting it.
+  // `authority: 'either'` is the deliberate other half — no write that succeeded
+  // before starts failing, so this is a bug fix and not a migration.
+  { source_pattern: '*', authority: 'either', supersede_on_edit: true },
 ]);
 
 /**
