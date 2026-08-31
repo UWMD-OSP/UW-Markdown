@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generateBlankUWFile } from './init.js';
 import { parseUWFile } from './parser.js';
+import { resolvePolicy } from './editor.js';
 
 describe('generateBlankUWFile', () => {
   it('honors supplied frontmatter values and produces the standard section scaffold', () => {
@@ -42,5 +43,42 @@ describe('generateBlankUWFile', () => {
     expect(parsed.frontmatter.deal_stage).toBe('screening');
     expect(parsed.frontmatter.tier).toBe('screener');
     expect(parsed.frontmatter.pipeline_state?.L0_ingestion).toBe('pending');
+  });
+});
+
+
+describe('generateBlankUWFile — every stamped source is governed by a policy', () => {
+  // The generator used to stamp `wizard` and `engine:uwmd`, neither of which
+  // matched a BUILTIN_EDIT_POLICIES pattern. Every freshly created document
+  // therefore carried blocks no policy governed, and replacing them in place
+  // silently destroyed the prior version. A catch-all now covers unrecognized
+  // sources, but a generator emitting one is still a bug: it means the document
+  // gets the conservative fallback instead of the policy it actually warrants.
+  const content = generateBlankUWFile({ dealName: 'Policy Check', assetClass: 'multifamily' });
+  const parsed = parseUWFile(content);
+
+  it('never falls through to the catch-all', () => {
+    const blocks = [
+      ...Object.values(parsed.sections),
+      ...(parsed.pipeline_log ?? []),
+    ].flatMap((entry) => {
+      if (!entry || typeof entry !== 'object') return [];
+      return 'meta' in entry ? [entry] : Object.values(entry);
+    });
+    expect(blocks.length).toBeGreaterThan(0);
+    for (const block of blocks) {
+      const source = (block as { meta?: { source?: string } })?.meta?.source;
+      if (!source) continue;
+      const policy = resolvePolicy(source);
+      expect(policy?.source_pattern, `'${source}' fell through to the catch-all`).not.toBe('*');
+    }
+  });
+
+  it('keeps the section stubs editable by a person', () => {
+    // Not `system/init`: that resolves to `system/*`, authority `system_only`,
+    // and these stubs exist to be filled in by a human.
+    const property = parsed.sections.property as { meta?: { source?: string } };
+    expect(property?.meta?.source).toBe('manual');
+    expect(resolvePolicy('manual')?.authority).toBe('either');
   });
 });

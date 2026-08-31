@@ -88,7 +88,17 @@ source_documents: []
       section,
       version: 1,
       superseded: false,
-      source: 'wizard',
+      // `manual`, not `wizard`. A scaffold a person is about to fill in is a
+      // human-authored block, and `manual` is the one token that means the same
+      // thing in every source vocabulary the specs define. `wizard` matched no
+      // BUILTIN_EDIT_POLICIES pattern, so every freshly generated file carried
+      // blocks that no policy governed — which is why replacing them in place
+      // appeared to work.
+      //
+      // Deliberately not `system/init`: that resolves to `system/*`, whose
+      // authority is `system_only`, and these stubs exist precisely to be edited
+      // by a person.
+      source: 'manual',
       agent_id: null,
       agent_version: null,
       actor: 'user',
@@ -143,7 +153,9 @@ ${metaStub(s.id)}
       section: 'pipeline_log',
       version: 1,
       superseded: false,
-      source: 'engine:uwmd',
+      // The initializer writing an append-only log entry. `system/init` matches
+      // `system/*`; `engine:uwmd` matched nothing.
+      source: 'system/init',
       agent_id: null,
       agent_version: '1.0.0',
       actor: 'system',
