@@ -154,6 +154,15 @@ L6-01 from the asset-class default table is:
 
 ### 2. Every source resolves to a policy
 
+> **Shipped ahead of this RFC.** The catch-all and the `checkAuthority`
+> inversion described below landed as a bug fix, with a totality assertion and
+> the `agent:L0-01` regression test, before this RFC was accepted. The
+> unpoliced-write path is a defect, not a design question, and it had no
+> dependency on the vocabulary split; holding a live provenance-destruction bug
+> behind a 263-block migration debate was the wrong trade. What remains open in
+> this RFC is everything else: the field split, `SRC-01`/`SRC-02`, the §3.1
+> precedence contradiction, and the migration itself.
+
 `BUILTIN_EDIT_POLICIES` gains a terminal catch-all:
 
 ```ts
