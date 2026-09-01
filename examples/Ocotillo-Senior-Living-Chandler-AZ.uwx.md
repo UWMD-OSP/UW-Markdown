@@ -319,13 +319,13 @@ cost line and the operator has limited pricing power mid-year.
 
 ## Pipeline Log {#pipeline_log}
 
-```json uw:section=pipeline_log source=engine ts=2026-08-12T09:00:00Z v=1 confidence=high
+```json uw:section=pipeline_log source=system/engine ts=2026-08-12T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "pipeline_log",
     "version": 1,
     "superseded": false,
-    "source": "engine",
+    "source": "system/engine",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",
@@ -363,13 +363,14 @@ cost line and the operator has limited pricing power mid-year.
 
 Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
 
-```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+```json uw:section=operating_statement source=system/extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "operating_statement",
     "version": 1,
     "superseded": false,
-    "source": "extractor",
+    "source": "system/extractor",
+    "resolution": "ai_extracted",
     "agent_id": null,
     "agent_version": null,
     "actor": "jared",
@@ -548,13 +549,13 @@ Chandler / Southeast Valley assisted living fundamentals as of 2026-08.
 
 Financial-validity engine run over the sections above.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",

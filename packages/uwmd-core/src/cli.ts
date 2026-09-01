@@ -8,6 +8,7 @@ import { resolve, basename, dirname } from 'node:path';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
+import { migrateSourceTags } from './migrate-source-tags.js';
 import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
@@ -373,6 +374,29 @@ function cmdCompact(file: string, flags: Record<string, string | boolean>): void
 
   writeFileSync(outPath, compacted, 'utf-8');
   console.log(`Compacted ${totalSuperseded} superseded block(s). Wrote to: ${outPath}`);
+}
+
+function cmdMigrateSourceTags(file: string, flags: Record<string, string | boolean>): void {
+  const content = readFile(file);
+  const result = migrateSourceTags(content);
+
+  for (const source of result.unmapped) {
+    console.error(`[unmapped] _meta.source '${source}' was left in place — rewrite it by hand.`);
+  }
+
+  if (result.changed === 0) {
+    console.log(`No legacy _meta.source values found in ${basename(file)} — nothing to migrate.`);
+    return;
+  }
+
+  if (flags['dry-run']) {
+    console.log(`Would migrate ${result.changed} block(s) in ${basename(file)} (RFC 0031 actor/resolution split).`);
+    return;
+  }
+
+  const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(file);
+  writeFileSync(outPath, result.content, 'utf-8');
+  console.log(`Migrated ${result.changed} block(s). Wrote to: ${outPath}`);
 }
 
 function cmdDiff(fileA: string, fileB: string): void {
@@ -1154,6 +1178,14 @@ switch (command) {
     cmdDiff(positional[0], positional[1]);
     break;
 
+  case 'migrate':
+    if (!positional[0] || !flags['source-tags']) {
+      console.error('Usage: uwmd migrate <file> --source-tags [--output <file>] [--dry-run]');
+      process.exit(1);
+    }
+    cmdMigrateSourceTags(positional[0], flags);
+    break;
+
   case 'render': {
     if (!positional[0]) { console.error('Usage: uwmd render <file> [--format <json|csv|chat|summary>] [--profile <summary|live|compact|full|relevant>] [--sections a,b,c] [--max-tokens 12000] [--no-meta] [--output <file>] [--tier screener|analyst]'); process.exit(1); }
     const content = readFile(positional[0]);
@@ -1564,6 +1596,7 @@ Commands:
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
+  migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uwx.md file
   summary  <file>              Print quick metrics to terminal

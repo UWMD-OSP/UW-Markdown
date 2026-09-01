@@ -285,13 +285,13 @@ finished-lot sellout.
 
 ## Pipeline Log {#pipeline_log}
 
-```json uw:section=pipeline_log source=engine ts=2026-08-13T09:00:00Z v=1 confidence=high
+```json uw:section=pipeline_log source=system/engine ts=2026-08-13T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "pipeline_log",
     "version": 1,
     "superseded": false,
-    "source": "engine",
+    "source": "system/engine",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",
@@ -329,13 +329,13 @@ finished-lot sellout.
 
 Financial-validity engine run. Income-property thresholds do not apply to a land carry; the run records the LTC test.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",

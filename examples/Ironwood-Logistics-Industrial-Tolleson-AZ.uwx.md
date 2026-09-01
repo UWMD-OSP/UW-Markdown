@@ -68,13 +68,13 @@ tenant-level rent roll measured in rentable building area.
 
 Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in the Southwest Valley submarket of metro Phoenix, 96% leased to three credit-oriented logistics and fulfillment tenants on NNN leases. The seller is a merchant developer harvesting a stabilized build. Thesis: acquire modern, functional logistics product at $127/SF (below replacement cost) at a 6.25% in-place cap, hold for durable NNN cash flow on the back of structural e-commerce and nearshoring demand along the I-10 corridor.
 
-```json uw:section=deal_context source=user ts=2026-05-19T08:20:00Z v=1 confidence=high
+```json uw:section=deal_context source=manual ts=2026-05-19T08:20:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "deal_context",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-05-19T08:20:00Z",
     "confidence": "high",
@@ -95,13 +95,13 @@ Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in
 
 ## Property {#property}
 
-```json uw:section=property source=user ts=2026-05-19T08:40:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-05-19T08:40:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-05-19T08:40:00Z",
     "confidence": "high",
@@ -128,13 +128,14 @@ Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in
 
 Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants` array (see Part IV §4) for office, retail, and industrial. Three multi-tenant NNN leases plus one vacant suite.
 
-```json uw:section=rent_roll source=user:upload ts=2026-05-19T09:10:00Z v=1 confidence=high
+```json uw:section=rent_roll source=manual ts=2026-05-19T09:10:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "rent_roll",
     "version": 1,
     "superseded": false,
-    "source": "user:upload",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-05-19T09:10:00Z",
     "confidence": "high",
@@ -155,7 +156,7 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
       "suite": "100",
       "leased_sf": 110000,
       "annual_base_rent": 1045000,
-      "rent_psf": 9.50,
+      "rent_psf": 9.5,
       "lease_start": "2022-01-01",
       "lease_expiration": "2029-12-31",
       "lease_type": "NNN",
@@ -181,7 +182,7 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
       "suite": "300",
       "leased_sf": 36200,
       "annual_base_rent": 398200,
-      "rent_psf": 11.00,
+      "rent_psf": 11,
       "lease_start": "2024-03-01",
       "lease_expiration": "2032-02-29",
       "lease_type": "NNN",
@@ -208,13 +209,13 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=engine:calculations.ts ts=2026-05-19T11:30:00Z v=1 confidence=high
+```json uw:section=noi_model source=system/calculations.ts ts=2026-05-19T11:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-05-19T11:30:00Z",
     "confidence": "high",
@@ -248,13 +249,13 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 
 ## Debt Structure {#debt_structure}
 
-```json uw:section=debt_structure source=user ts=2026-05-19T13:00:00Z v=1 confidence=high
+```json uw:section=debt_structure source=manual ts=2026-05-19T13:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-05-19T13:00:00Z",
     "confidence": "high",
@@ -286,13 +287,13 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 
 ## Sources & Uses {#sources_uses}
 
-```json uw:section=sources_uses source=engine:calculations.ts ts=2026-05-19T13:05:00Z v=1 confidence=high
+```json uw:section=sources_uses source=system/calculations.ts ts=2026-05-19T13:05:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "sources_uses",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-05-19T13:05:00Z",
     "confidence": "high",
@@ -319,13 +320,14 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 
 ## Valuation {#valuation}
 
-```json uw:section=valuation source=user:appraisal ts=2026-05-19T14:30:00Z v=1 confidence=high
+```json uw:section=valuation source=manual ts=2026-05-19T14:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "valuation",
     "version": 1,
     "superseded": false,
-    "source": "user:appraisal",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-05-19T14:30:00Z",
     "confidence": "high",
@@ -347,13 +349,14 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 
 Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
 
-```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+```json uw:section=operating_statement source=system/extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "operating_statement",
     "version": 1,
     "superseded": false,
-    "source": "extractor",
+    "source": "system/extractor",
+    "resolution": "ai_extracted",
     "agent_id": null,
     "agent_version": null,
     "actor": "jared",
@@ -532,13 +535,13 @@ Tolleson / Southwest Valley infill logistics fundamentals as of 2026-08.
 
 Financial-validity engine run over the sections above.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",

@@ -14,7 +14,7 @@ import { canonicalize, canonicalizeExact } from './integrity-canonical.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 import type { EditPolicy } from './protocol.js';
-import { BUILTIN_EDIT_POLICIES } from './protocol.js';
+import { BUILTIN_EDIT_POLICIES, parseActorSource } from './protocol.js';
 
 // ─── Hashing ─────────────────────────────────────────────────────────────────
 
@@ -539,18 +539,34 @@ function globMatch(pattern: string, value: string): boolean {
   return false;
 }
 
-type ActorClass = 'agent' | 'human' | 'system';
+type ActorClass = 'agent' | 'human' | 'system' | 'unknown';
 
+/**
+ * Classify from the parsed actor namespace, not string prefixes (RFC 0031).
+ * A source outside the actor grammar — a legacy colon form, a bare word, a
+ * resolution tag — classifies as `unknown`, never as human by default.
+ * `document/*` is likewise `unknown`: a document is evidence, not an
+ * authority class.
+ */
 function classifyActor(actor: string, source: string): ActorClass {
-  if (source.startsWith('system/') || source.startsWith('institution/')) return 'system';
-  if (source.startsWith('agent/') || actor.startsWith('agent/')) return 'agent';
-  return 'human';
+  const s = parseActorSource(source);
+  if (s.kind === 'namespaced') {
+    if (s.namespace === 'system' || s.namespace === 'institution') return 'system';
+    if (s.namespace === 'agent') return 'agent';
+  }
+  const a = parseActorSource(actor);
+  if (a.kind === 'namespaced' && a.namespace === 'agent') return 'agent';
+  if (s.kind === 'manual') return 'human';
+  return 'unknown';
 }
 
 function authorityAllows(authority: EditPolicy['authority'], actor: ActorClass): boolean {
   switch (authority) {
+    // `unknown` passes `either`: refusing it would turn every legacy source in
+    // the wild into a POL-01, which is a migration, not a bug fix. It can
+    // never satisfy the three restricted classes below.
     case 'either':
-      return actor === 'agent' || actor === 'human';
+      return actor !== 'system';
     case 'agent_only':
       return actor === 'agent';
     case 'human_only':

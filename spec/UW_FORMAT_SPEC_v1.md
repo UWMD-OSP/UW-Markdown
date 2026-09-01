@@ -296,7 +296,7 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 
 | Key | Values | Description |
 |---|---|---|
-| `source` | `wizard`, `agent:L0-01`, `engine`, `user`, etc. | Who wrote this block |
+| `source` | `manual`, `agent/L0-01`, `system/calculations.ts`, etc. | Who wrote this block (actor grammar, §2.6) |
 | `ts` | ISO8601 | Timestamp of this block |
 | `v` | integer | Version number within this section (starts at 1) |
 | `superseded` | `true` | Marks a block that has been replaced by a newer version |
@@ -306,7 +306,7 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 **Full example fence tag:**
 
 ```
-```json uw:section=rent_roll source=agent:L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
+```json uw:section=rent_roll source=agent/L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
 ```
 
 ### 2.5 The `_meta` Object
@@ -318,7 +318,7 @@ Every data block MUST contain a `_meta` object as its first key. This is the can
   "section": "rent_roll",
   "version": 1,
   "superseded": false,
-  "source": "agent:L0-01",
+  "source": "agent/L0-01",
   "agent_id": "L0-01",
   "agent_version": "1.0.0",
   "actor": "system",
@@ -336,7 +336,8 @@ Every data block MUST contain a `_meta` object as its first key. This is the can
 | `section` | string | Section ID |
 | `version` | integer | Monotonically increasing per section per file |
 | `superseded` | boolean | True if a newer version exists in this file |
-| `source` | string | Structured source identifier (see 2.6) |
+| `source` | string | Who wrote the block — actor identifier (see 2.6) |
+| `resolution` | string | *(optional)* How the value was resolved — canonical tag (see 2.6) |
 | `agent_id` | string | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"` |
 | `agent_version` | semver | Version of the agent/tool that produced this block |
 | `actor` | string | `"system"` or user identifier |
@@ -355,40 +356,76 @@ absence.
 
 ### 2.6 Source Identifiers
 
-| Pattern | Meaning |
-|---|---|
-| `wizard` | Entered via the underwriting wizard UI |
-| `wizard:step_N` | Specific wizard step (1–5) |
-| `agent:L0-01` | Specific Bancroft agent |
-| `engine:calculations.ts` | Deterministic calculation engine |
-| `engine:dcfEngine.ts` | DCF engine |
-| `engine:financialValidityChecker` | Validation engine |
-| `user` | Manual user edit |
-| `user:override` | User explicitly overrode a calculated or AI value |
-| `import:filename.pdf` | Parsed from a specific uploaded document |
-| `market:costar` | Market data from CoStar |
-| `market:websearch` | Market data from live web search |
-| `profile:investor` | Sourced from the investor's saved profile / buy box |
-| `scenario:defaults` | Scenario default assumptions |
+*Rewritten by [RFC 0031](../docs/rfcs/0031-source-vocabulary.md).
+`_meta.source` used to be asked to carry two unrelated facts — who wrote
+the block, and how its value was resolved — and this section used to
+answer with two vocabularies that reconciled with neither each other nor
+the executable policy table. The facts now live in two fields.*
 
-The following short-form source tags are normative for cascade
-resolution (see Protocol §IX). Producers stamping a value resolved by
-the fallback cascade MUST use the tag corresponding to the cascade
-step that produced the value.
+**`_meta.source` names the actor** — who wrote the block. It MUST be
+one of:
+
+```
+manual | agent/<id> | document/<id> | system/<id> | institution/<id>
+```
+
+where `<id>` matches `[A-Za-z0-9][A-Za-z0-9._-]*`. The namespace set is
+closed at format 1.x (the runtime registry is `ACTOR_NAMESPACES` in
+`protocol.ts`); `/` is the sole delimiter. These are exactly the
+patterns `BUILTIN_EDIT_POLICIES` matches, so every well-formed source
+resolves a specific edit policy (Protocol §V.3). Examples:
+`agent/L0-01`, `document/om.pdf`, `system/calculations.ts`,
+`institution/threshold-override`.
+
+The colon forms this section previously listed (`agent:L0-01`,
+`engine:calculations.ts`, `user:override`, `import:filename.pdf`, …)
+are **retired**. They differ from the policy patterns only in
+delimiter, which made them a trap: a producer following this section
+literally wrote blocks that resolved no specific policy and whose
+writes were classified incorrectly. A validator reports them as
+`SRC-01` (warning).
+
+**`_meta.resolution` names the resolution method** — how the value was
+produced. It is OPTIONAL and holds one canonical tag from
+`SOURCE_TAGS` (`@uwmd/core`); the cascade tags are normative for
+cascade resolution (Protocol §V.7 — the authoritative table). Producers
+stamping a value resolved by the fallback cascade MUST use the tag of
+the cascade step that produced the value.
 
 | Tag | Meaning |
 |---|---|
 | `user_input` | The user typed the value (initial entry). |
 | `user_override` | The user explicitly overrode a prior value. |
-| `manual` | A human-authored block, source not otherwise classified. |
+| `manual` | A human-authored value, method not otherwise classified. |
+| `inherited_assumption` | Inherited from an ancestor in the composition DAG (Protocol §V.7.1). |
 | `investor_profile` | Resolved from the active investor profile / buy box. |
 | `market_data` | Resolved from a market-data lookup at write time. |
+| `market_data_accepted` | A market observation an analyst explicitly accepted as the underwritten value (RFC 0022 §4). |
 | `ai_extracted` | Extracted from a source document by an AI agent. |
 | `agent_computed` | Computed by an agent from prior agent outputs. |
 | `asset_class_default` | Pulled from the published asset-class default table for the deal's asset class. |
 | `scenario_default` | A value derived from a named scenario in this file or institution config. |
 | `global_default` | Pulled from a non-asset-class fallback table. |
 | `system_default` | Hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
+
+Both fields MAY be present; they answer different questions. A block
+written by agent L6-01 from the asset-class default table is:
+
+```jsonc
+"_meta": { "source": "agent/L6-01", "resolution": "asset_class_default" }
+```
+
+`field_overrides[].source` / `field_overrides[].resolution` carry the
+same split at leaf granularity (§3.4).
+
+**Read-time interpretation (transition).** A reader encountering a
+canonical `SOURCE_TAGS` value in `_meta.source` MUST interpret it as
+`resolution`, and MUST treat the actor as absent rather than inventing
+one — the value can still say *how* it was resolved, but it no longer
+passes for *who* wrote it (in particular it satisfies no authority
+class in Protocol §V.3). Validators report it as `SRC-02` — a warning
+for all of format 1.x, an error at 2.0. `uwmd migrate --source-tags`
+rewrites a file mechanically.
 
 ### 2.7 Update Semantics
 
@@ -413,7 +450,7 @@ Some sections have multiple valid instances at the same time (not superseded, ju
 For multi-variant sections, the fence tag carries a `variant=` key:
 
 ```
-```json uw:section=operating_statement variant=t12 source=agent:L0-02 ts=... v=1
+```json uw:section=operating_statement variant=t12 source=agent/L0-02 ts=... v=1
 ```
 
 Parsers collect all non-superseded variants for multi-variant sections and expose them as an array.
@@ -424,25 +461,25 @@ Parsers collect all non-superseded variants for multi-variant sections and expos
 
 ### 3.1 Assumption Source Hierarchy
 
-When multiple sources provide a value for the same assumption, the hierarchy determines which value wins:
+*Non-normative since [RFC 0031](../docs/rfcs/0031-source-vocabulary.md).*
+The normative precedence for assumption values is the fallback cascade
+in **Protocol §V.7** (`CASCADE_ORDER` in `protocol.ts`): explicit user
+decisions first, then inherited assumptions, then the investor profile,
+then market data, then the default tables. Where an earlier revision of
+this section and §V.7 disagreed — this section ranked market data
+*above* the investor profile, §V.7 the reverse — **§V.7 wins**: a
+standing investor profile is a declared decision, a market lookup is an
+observation, and a declared decision outranks a scraped comp.
 
-```
-user:override          ← highest authority (explicit human decision)
-    ↑
-user (wizard input)
-    ↑
-agent:computed         ← agent ran calculation from prior agent outputs
-    ↑
-market data            ← live market data (CoStar, web search)
-    ↑
-ai_extracted           ← AI read a value from a source document
-    ↑
-investor_profile       ← user's saved buy box / investor preferences
-    ↑
-scenario:defaults      ← lowest authority (fallback when nothing else available)
-```
+This section also used to rank `ai_extracted` and `agent_computed`,
+which are not cascade steps at all — they describe how observed data
+entered the file, not a fallback layer. Those rankings are removed
+rather than reinterpreted.
 
-The `assumptions` section (§ 4.16) records every assumption with its source. The UI displays source badges. The engine always uses the highest-authority available value.
+The `assumptions` section (§ 4.16) records every assumption with its
+resolution method. The UI displays source badges. A producer resolving
+a missing value walks the §V.7 cascade in order and takes the first
+step that yields one.
 
 ### 3.2 Confidence Levels
 
@@ -473,14 +510,15 @@ reject blocks for omitting them.
 |---|---|---|
 | `partial` | boolean | The block is present but at least one field inside it is missing or unknown. When `partial: true`, an enumeration of which paths and why SHOULD be provided in `field_overrides`. |
 | `provisional` | boolean | The entire block is a placeholder, derived from defaults rather than observed data. Stronger signal than `confidence: 'low'`. Downstream consumers SHOULD label outputs derived from provisional blocks accordingly. |
-| `field_overrides` | array | Per-field overrides where the block-level `confidence`, `source`, or annotations do not apply uniformly. Each entry has a dot-notated `path` relative to the block's content root and may carry its own `confidence`, `source`, `reason` (`illegible | missing | overridden | estimated | computed`), and `note`. |
+| `field_overrides` | array | Per-field overrides where the block-level `confidence`, `source`, `resolution`, or annotations do not apply uniformly. Each entry has a dot-notated `path` relative to the block's content root and may carry its own `confidence`, `source` (actor, §2.6 grammar), `resolution` (canonical tag, §2.6), `reason` (`illegible | missing | overridden | estimated | computed`), and `note`. |
 | `content_hash` | string | The SHA-256 hash of the block's canonicalized JSON content. The canonicalization rule (RFC 8785 JCS, with `_meta.content_hash` and `_meta.signature` removed before hashing) is defined in Protocol §IX.2. Producers MAY emit; consumers MAY ignore. |
 | `parent_hash` | string \| null | The `content_hash` of the block this one supersedes. `null` on a chain root. Required only when participating in an integrity-checked supersede chain — once any block in a supersede chain carries `content_hash`, every later block in that chain MUST carry both `content_hash` and `parent_hash`. |
 | `signature` | object | A detached signature over the block's signing input, for deployments that need cryptographic chain of custody. Fields: `alg` (`ed25519` \| `es256` \| `es384`), `kid`, `sig` (base64url, unpadded), `signed_at` (ISO 8601), optional `v`. Requires `content_hash` — a signature with no hash beside it commits to nothing (`INT-05`). Defined normatively in Protocol §V.11. |
 
 **Precedence with `field_overrides`.** A `field_overrides` entry
 whose `path` matches a field replaces, for that field only, the
-block-level `confidence` and `source`. The block-level values still
+block-level `confidence`, `source`, and `resolution` — the leaf wins
+over the block for its path. The block-level values still
 apply to every field not enumerated. This produces two surfaces for
 expressing confidence; the consolidation lives in the v2 `_meta`
 reorganization (RFC 0009).
@@ -535,7 +573,7 @@ Each section entry specifies: ID, canonical header, purpose, who writes it, requ
 **ID:** `deal_context`  
 **Header:** `## Deal Context {#deal_context}`  
 **Purpose:** The narrative layer. Describes the deal in plain language — what it is, why it's being considered, what the goal is, and any special circumstances that a structured underwriting model cannot capture. This section is the first thing an AI assistant reads to orient itself. It is the only section the user is always expected to write in their own voice.  
-**Written by:** `wizard` (structured form fields), `user` (free narrative prose), `agent:L7-01` (AI-synthesized summary — appended as a second block, never replaces user narrative)  
+**Written by:** `wizard` (structured form fields), `user` (free narrative prose), `agent/L7-01` (AI-synthesized summary — appended as a second block, never replaces user narrative)  
 **Required for pipeline stage:** All stages (prose block optional; structured block required for screening+)  
 **Dependencies:** None
 
@@ -545,7 +583,7 @@ The Deal Context section has two distinct layers:
 
 2. **Structured data block** — the machine-readable distillation of that context into typed fields. Tools route on these fields, AI assistants read them to calibrate their analysis, and the render engine uses them to frame the output package.
 
-The `ai_synthesis` sub-object is populated by `agent:L7-01` after the full underwriting runs. It summarizes what the data actually shows in one paragraph, identifies strengths and risks from the model's perspective, and gives an overall impression. It is appended as a separate versioned block — the user's narrative is never touched.
+The `ai_synthesis` sub-object is populated by `agent/L7-01` after the full underwriting runs. It summarizes what the data actually shows in one paragraph, identifies strengths and risks from the model's perspective, and gives an overall impression. It is appended as a separate versioned block — the user's narrative is never touched.
 
 ```json uw:section=deal_context source=user ts=ISO8601 v=1 confidence=high
 {
@@ -623,7 +661,7 @@ The `ai_synthesis` sub-object is populated by `agent:L7-01` after the full under
 **ID:** `property`  
 **Header:** `## Property {#property}`  
 **Purpose:** Physical asset description, identity, and condition.  
-**Written by:** `wizard:step_1`, `wizard:step_2`, `agent:L1-01` (normalizes)  
+**Written by:** `wizard:step_1`, `wizard:step_2`, `agent/L1-01` (normalizes)  
 **Required for pipeline stage:** All stages  
 **Dependencies:** None
 
@@ -713,7 +751,7 @@ Field notes:
 **ID:** `ownership`  
 **Header:** `## Ownership & Acquisition {#ownership}`  
 **Purpose:** Current ownership, acquisition terms, entity structure, existing debt.  
-**Written by:** `wizard`, `agent:L2-CRE-11`  
+**Written by:** `wizard`, `agent/L2-CRE-11`  
 **Required for pipeline stage:** Underwriting and beyond  
 **Dependencies:** None
 
@@ -753,7 +791,7 @@ Field notes:
 **ID:** `rent_roll`  
 **Header:** `## Rent Roll {#rent_roll}`  
 **Purpose:** Full unit-level or tenant-level schedule of leases, rents, occupancy, and concessions.  
-**Written by:** `agent:L0-01`, `wizard:step_3` (simplified version)  
+**Written by:** `agent/L0-01`, `wizard:step_3` (simplified version)  
 **Variants:** `multifamily` (default), `commercial`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `property`
@@ -917,7 +955,7 @@ Field notes:
 **ID:** `operating_statement`  
 **Header:** `## Operating Statement {#operating_statement}`  
 **Purpose:** Historical income and expense data from the property's financial records.  
-**Written by:** `agent:L0-02`  
+**Written by:** `agent/L0-02`  
 **Variants:** `t12` (required), `t3` (preferred), `ytd`, `budget`, `t24`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `property`
@@ -993,7 +1031,7 @@ Field notes:
 **ID:** `noi_model`  
 **Header:** `## Underwritten NOI {#noi_model}`  
 **Purpose:** Analyst-adjusted income and expense model representing the underwritten stabilized cash flow. All calculations here are deterministic engine outputs, not AI outputs.  
-**Written by:** `engine:calculations.ts` (values), `agent:L2-CRE-01` + `agent:L2-CRE-02` (adjustments/rationale)  
+**Written by:** `system/calculations.ts` (values), `agent/L2-CRE-01` + `agent/L2-CRE-02` (adjustments/rationale)  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `rent_roll`, `operating_statement`, `market_analysis`
 
@@ -1125,7 +1163,7 @@ Field notes:
 **ID:** `valuation`  
 **Header:** `## Valuation {#valuation}`  
 **Purpose:** Value conclusions using income approach, with third-party appraisal cross-check.  
-**Written by:** `agent:L2-CRE-04`, `engine:calculations.ts`  
+**Written by:** `agent/L2-CRE-04`, `system/calculations.ts`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `noi_model`, `market_analysis`
 
@@ -1173,7 +1211,7 @@ Field notes:
 **ID:** `debt_structure`  
 **Header:** `## Debt Structure {#debt_structure}`  
 **Purpose:** Complete loan terms, sizing metrics, covenants, and rate sensitivity.  
-**Written by:** `wizard:step_4`, `agent:L4-01`, `agent:L4-04`  
+**Written by:** `wizard:step_4`, `agent/L4-01`, `agent/L4-04`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `valuation`, `noi_model`
 
@@ -1242,7 +1280,7 @@ Field notes:
 **ID:** `sources_uses`  
 **Header:** `## Sources & Uses {#sources_uses}`  
 **Purpose:** Complete capital stack — all equity, debt, and cost components.  
-**Written by:** `wizard:step_4`, `agent:L4-05`  
+**Written by:** `wizard:step_4`, `agent/L4-05`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `debt_structure`, `valuation`
 
@@ -1304,7 +1342,7 @@ Field notes:
 **ID:** `dcf`  
 **Header:** `## DCF & Hold Period {#dcf}`  
 **Purpose:** Multi-year discounted cash flow model, exit analysis, and returns.  
-**Written by:** `engine:dcfEngine.ts`  
+**Written by:** `system/dcfEngine.ts`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `noi_model`, `debt_structure`
 
@@ -1375,7 +1413,7 @@ Field notes:
 **ID:** `stress_tests`  
 **Header:** `## Stress Tests {#stress_tests}`  
 **Purpose:** Scenario analysis showing deal performance under adverse conditions.  
-**Written by:** `engine:calculations.ts`, `agent:L2-CRE-12`  
+**Written by:** `system/calculations.ts`, `agent/L2-CRE-12`  
 **Required for pipeline stage:** Credit approval  
 **Dependencies:** `noi_model`, `debt_structure`
 
@@ -1432,7 +1470,7 @@ Field notes:
 **ID:** `market_analysis`  
 **Header:** `## Market Analysis {#market_analysis}`  
 **Purpose:** Submarket conditions, rent comparables, sales comparables, and demand outlook.  
-**Written by:** `agent:L2-CRE-07`, `agent:L2-CRE-08`  
+**Written by:** `agent/L2-CRE-07`, `agent/L2-CRE-08`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `property`
 
@@ -1522,7 +1560,7 @@ Field notes:
 **ID:** `borrower_sponsor`  
 **Header:** `## Borrower & Sponsor {#borrower_sponsor}`  
 **Purpose:** Borrowing entity, principals, financial strength, and CRE track record.  
-**Written by:** `wizard` (form), `agent:L2-CRE-09`, `agent:L2-CRE-10`, `agent:L2-CRE-11`  
+**Written by:** `wizard` (form), `agent/L2-CRE-09`, `agent/L2-CRE-10`, `agent/L2-CRE-11`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `ownership`
 
@@ -1589,7 +1627,7 @@ Field notes:
 **ID:** `due_diligence`  
 **Header:** `## Due Diligence {#due_diligence}`  
 **Purpose:** Third-party report status, findings, and clearance for all DD items.  
-**Written by:** `agent:L3-01` through `agent:L3-06`  
+**Written by:** `agent/L3-01` through `agent/L3-06`  
 **Required for pipeline stage:** Credit approval and closing  
 **Dependencies:** `property`
 
@@ -1710,7 +1748,7 @@ Field notes:
 **ID:** `risk_assessment`  
 **Header:** `## Risk Assessment {#risk_assessment}`  
 **Purpose:** Component risk scores, composite rating, and credit recommendation.  
-**Written by:** `agent:L6-01` through `agent:L6-06`  
+**Written by:** `agent/L6-01` through `agent/L6-06`  
 **Required for pipeline stage:** Credit approval  
 **Dependencies:** `noi_model`, `valuation`, `market_analysis`, `borrower_sponsor`, `debt_structure`
 
@@ -1803,7 +1841,7 @@ Field notes:
 **ID:** `compliance`  
 **Header:** `## Compliance {#compliance}`  
 **Purpose:** Regulatory classification, AML screening, fair lending, and concentration checks.  
-**Written by:** `agent:L5-01` through `agent:L5-06`  
+**Written by:** `agent/L5-01` through `agent/L5-06`  
 **Required for pipeline stage:** Credit approval  
 **Dependencies:** `debt_structure`, `ownership`, `borrower_sponsor`
 
@@ -1879,7 +1917,7 @@ Field notes:
 **ID:** `assumptions`  
 **Header:** `## Assumptions {#assumptions}`  
 **Purpose:** Complete audit trail of every assumption used in the underwriting, with source and provenance. This is the single source of truth for where every number came from.  
-**Written by:** `engine:calculations.ts` (compiles from all sections)  
+**Written by:** `system/calculations.ts` (compiles from all sections)  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** All financial sections
 
@@ -1894,7 +1932,7 @@ Field notes:
       "category": "income | expense | financing | market | exit | scenario | borrower",
       "value": null,
       "unit": "pct | dollar | dollar_per_unit | dollar_per_sqft | years | months | bps | ratio | count | boolean | string",
-      "source": "scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed | wizard_input",
+      "source": "user_input | user_override | manual | inherited_assumption | investor_profile | market_data | market_data_accepted | ai_extracted | agent_computed | asset_class_default | scenario_default | global_default | system_default",
       "source_detail": null,
       "agent": null,
       "timestamp": "ISO8601",
@@ -1909,19 +1947,28 @@ Field notes:
   "summary": {
     "total_assumptions": 0,
     "by_source": {
-      "scenario_default": 0,
+      "user_input": 0,
+      "user_override": 0,
       "market_data": 0,
       "ai_extracted": 0,
-      "user_override": 0,
-      "investor_profile": 0,
       "agent_computed": 0,
-      "wizard_input": 0
+      "investor_profile": 0,
+      "asset_class_default": 0,
+      "scenario_default": 0
     },
     "low_confidence_count": 0,
     "override_count": 0
   }
 }
 ```
+
+An assumption entry's `source` takes one canonical tag from
+`SOURCE_TAGS` (§2.6 resolution vocabulary — this registry aggregates by
+*method*, which is the question "how much of this underwriting is
+assumed?" needs answered). `wizard_input`, which this section used to
+require and no other vocabulary or line of code recognized, is
+`user_input` (RFC 0031). `summary.by_source` keys follow the same
+vocabulary; the keys shown above are illustrative, not exhaustive.
 
 ---
 
@@ -1930,7 +1977,7 @@ Field notes:
 **ID:** `validation`  
 **Header:** `## Flags & Validation {#validation}`  
 **Purpose:** All warnings, errors, policy flags, and cross-section consistency checks. This section is the machine-readable deal health signal.  
-**Written by:** `engine:financialValidityChecker`  
+**Written by:** `system/financialValidityChecker`  
 **Required for pipeline stage:** All stages  
 **Dependencies:** All sections (reads everything)
 
@@ -2331,7 +2378,7 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 **ID:** `components`  
 **Header:** `## Components {#components}`  
 **Purpose:** Decomposes a mixed-use property into its constituent uses, each keyed by its own asset class. A mixed-use property is two or more uses under one purchase price and one loan — apartments over ground-floor retail, an office podium under a hotel — and no single income model or denominator describes it. This section states each use's own income so that property-level figures foot as the sum of the components while use-level metrics stay honest. It is the one section whose presence is gated to a single `asset_class`.  
-**Written by:** `wizard`, `manual`, `agent:L4-*` (component subtotals only — an agent MUST NOT populate `allocation_pct`; see Allocation below)  
+**Written by:** `wizard`, `manual`, `agent/L4-*` (component subtotals only — an agent MUST NOT populate `allocation_pct`; see Allocation below)  
 **Required for pipeline stage:** Full underwriting, and only when `asset_class` is `mixed_use`  
 **Dependencies:** `valuation`, `noi_model` (the property-level figures the components foot into)  
 **Schema:** [`spec/schemas/section-components.schema.json`](schemas/section-components.schema.json)  
@@ -2386,7 +2433,7 @@ In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.n
 **ID:** `capital_stack`  
 **Header:** `## Capital Stack {#capital_stack}`  
 **Purpose:** States a deal's full capital structure as an ordered set of typed tranches — senior debt under mezzanine under preferred equity under common equity, with bridge or seller financing where present — and the stack-aware sizing figures a lender underwrites to. `debt_structure` (§ 4.7) models exactly one loan; this section is where a multi-tranche stack lives, so that per-layer coverage and attachment-point risk are visible rather than collapsed into a single mislabeled DSCR. The stack is **asset-class independent**.  
-**Written by:** `wizard`, `manual`, `agent:L4-*` (tranche amounts and terms are user-supplied capital terms — an agent MUST NOT invent a tranche `rate`, `amount`, or a stated `sizing` value)  
+**Written by:** `wizard`, `manual`, `agent/L4-*` (tranche amounts and terms are user-supplied capital terms — an agent MUST NOT invent a tranche `rate`, `amount`, or a stated `sizing` value)  
 **Required for pipeline stage:** Optional; used whenever a deal carries more than one capital tranche.  
 **Dependencies:** `debt_structure`, `sources_uses` (the senior tranche reconciles with both — see `CC-03`)  
 **Schema:** [`spec/schemas/section-capital-stack.schema.json`](schemas/section-capital-stack.schema.json)  

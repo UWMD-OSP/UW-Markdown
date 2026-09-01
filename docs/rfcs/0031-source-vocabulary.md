@@ -1,7 +1,7 @@
 ---
 rfc: 0031
 title: Reconcile the source vocabularies and close the unpoliced-write path
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-08-30
 affects:
@@ -13,6 +13,41 @@ affects:
 ---
 
 # RFC 0031: Reconcile the source vocabularies and close the unpoliced-write path
+
+> **Status: accepted and implemented 2026-08-31** (protocol 1.9.0 → 1.10.0).
+> The unpoliced-write half had already shipped as a bug fix (see §2's note);
+> this change landed the rest: the `source`/`resolution` split, `SRC-01`/
+> `SRC-02`, the §2.6/§3.1/§4.16/§V.3/§V.4/§V.7 spec repairs, the schema
+> constraints, `uwmd migrate --source-tags`, the corpus migration (exactly the
+> **160** measured blocks, remeasured at apply time — zero unmapped, zero
+> hashed-chain refusals), and `conformance/source/` (5 scenarios; corpus
+> 301 → 306). Namespace-parsed authority classification now also governs
+> `verifyProvenance`, and the Tier-4 host stamps `agent/<id>` instead of the
+> bare layer id it had been writing.
+>
+> **Errata found by implementing:**
+>
+> 1. **§6's schema pattern rejected the RFC's own §1 example.** The draft
+>    pattern's id charset was lowercase-only (`[a-z0-9][a-z0-9._-]*`), which
+>    refuses `agent/L6-01` — the worked example in §1 — and every Bancroft
+>    layer id in the corpus. Corrected to `[A-Za-z0-9][A-Za-z0-9._-]*`.
+> 2. **Fixture 03's refusal code.** The RFC said a `section_replace` against a
+>    catch-all-governed block "must be refused with `POL-02`", but the live
+>    editor refusal is `PROTO-EDIT-004` (supersede required); `POL-02` is the
+>    *post-hoc* verdict `verifyProvenance` renders over a file where the
+>    replace already happened. The fixture pins both.
+> 3. **The leaf-wins question is now specified**, not "presumed": format §3.4
+>    states that a `field_overrides[].resolution` replaces the block-level
+>    `resolution` for its path, same as `confidence` and `source` always did.
+> 4. **The migration must assign actors, and the RFC left the mapping open.**
+>    `_meta.source` is schema-required, so a tag cannot simply "move" out of
+>    it. The shipped mapping recovers the actor from the block where possible
+>    (`agent_id` for `ai_extracted`/`agent_computed`; `manual` for
+>    `user_input`/`user_override`/`user`/`wizard`; `system/uwmd` for
+>    engine-resolved cascade tags; delimiter swap for colon forms) and refuses
+>    to guess at anything it does not recognize — an unknown source is
+>    reported, never invented. Blocks carrying `content_hash` are likewise
+>    refused rather than silently invalidating an integrity chain.
 
 ## Summary
 

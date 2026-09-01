@@ -196,8 +196,12 @@ function findFieldOverride(block: UWBlock, rest: string): UWFieldOverride | unde
 
 /**
  * Walk the parsed sections looking for a value at `field_path` whose effective
- * source matches one of the wanted tags. Effective source = field_override.source
- * (when present for the path) → block.meta.source.
+ * resolution tag matches one of the wanted tags. Effective tag, per RFC 0031:
+ * field_override.resolution → field_override.source → block.meta.resolution →
+ * block.meta.source, most specific first. The two `source` fallbacks carry the
+ * pre-split spelling (a tag in the actor field), which §2.6 read-time
+ * interpretation keeps meaningful; a properly-split file matches on
+ * `resolution` and its actor never collides with a tag.
  *
  * Used to detect user_override / user_input / market_data values already
  * recorded in the file. Returns the first match; multi-variant sections check
@@ -221,8 +225,9 @@ function findBySource(
     const value = deepGet(block.content, split.rest);
     if (value === undefined) continue;
     const override = findFieldOverride(block, split.rest);
-    const effective = override?.source ?? block.meta.source;
-    if (wanted.includes(effective)) {
+    const effective =
+      override?.resolution ?? override?.source ?? block.meta.resolution ?? block.meta.source;
+    if (effective !== undefined && wanted.includes(effective)) {
       return { block, value, source: effective };
     }
   }

@@ -169,13 +169,13 @@ proceeds. Replaying `cassette.json` against this file MUST reproduce
 ```
 
 
-```json uw:section=risk_assessment source=L6-01 ts=2026-08-13T00:00:00.000Z v=1 confidence=medium
+```json uw:section=risk_assessment source=agent/L6-01 ts=2026-08-13T00:00:00.000Z v=1 confidence=medium
 {
   "_meta": {
     "section": "risk_assessment",
     "version": 1,
     "superseded": false,
-    "source": "L6-01",
+    "source": "agent/L6-01",
     "agent_id": "L6-01",
     "agent_version": "1.0.0",
     "actor": "system",
@@ -212,13 +212,13 @@ proceeds. Replaying `cassette.json` against this file MUST reproduce
 ```
 
 
-```json uw:section=pipeline_log source=engine:uwmd ts=2026-08-13T00:00:00.000Z v=1 confidence=high
+```json uw:section=pipeline_log source=system/uwmd ts=2026-08-13T00:00:00.000Z v=1 confidence=high
 {
   "_meta": {
     "section": "pipeline_log",
     "version": 1,
     "superseded": false,
-    "source": "engine:uwmd",
+    "source": "system/uwmd",
     "agent_id": null,
     "agent_version": "1.0.0",
     "actor": "system",

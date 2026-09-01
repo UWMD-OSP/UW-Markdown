@@ -28,7 +28,8 @@ observations are accurate, current, or representative — see
     "section": "market_observations",
     "version": 1,
     "superseded": false,
-    "source": "market_data",
+    "source": "system/uwmd",
+    "resolution": "market_data",
     "agent_id": null,
     "agent_version": null,
     "actor": "example-research-import",
@@ -39,7 +40,11 @@ observations are accurate, current, or representative — see
       "field_path": "valuation.going_in_cap_rate",
       "value": 0.0545,
       "unit": "fraction",
-      "range": { "low": 0.051, "central": 0.0545, "high": 0.059 },
+      "range": {
+        "low": 0.051,
+        "central": 0.0545,
+        "high": 0.059
+      },
       "basis": "42 closed sales of 100+ unit stabilized assets, trailing 12 months",
       "confidence": "medium"
     },
@@ -47,7 +52,11 @@ observations are accurate, current, or representative — see
       "field_path": "valuation.exit_cap_rate_pct",
       "value": 0.0595,
       "unit": "fraction",
-      "range": { "low": 0.056, "central": 0.0595, "high": 0.064 },
+      "range": {
+        "low": 0.056,
+        "central": 0.0595,
+        "high": 0.064
+      },
       "basis": "Going-in plus 50bps, the spread implied by the same 42 sales against their underwriting at acquisition",
       "confidence": "low"
     },
@@ -55,7 +64,11 @@ observations are accurate, current, or representative — see
       "field_path": "rent_roll.vacancy_pct",
       "value": 0.068,
       "unit": "fraction",
-      "range": { "low": 0.054, "central": 0.068, "high": 0.089 },
+      "range": {
+        "low": 0.054,
+        "central": 0.068,
+        "high": 0.089
+      },
       "basis": "Submarket physical vacancy, 316 surveyed properties, Q2 2026",
       "confidence": "high"
     },
@@ -63,7 +76,11 @@ observations are accurate, current, or representative — see
       "field_path": "noi_model.expense_ratio",
       "value": 0.412,
       "unit": "fraction",
-      "range": { "low": 0.368, "central": 0.412, "high": 0.461 },
+      "range": {
+        "low": 0.368,
+        "central": 0.412,
+        "high": 0.461
+      },
       "basis": "Operating expenses as a share of EGI, 188 properties reporting full-year 2025 actuals",
       "confidence": "medium"
     }

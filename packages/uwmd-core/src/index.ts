@@ -29,6 +29,10 @@ export type {
   UWSourceMigration,
 } from './source-representation.js';
 
+// RFC 0031 source-tag migration (`uwmd migrate --source-tags`)
+export { migrateSourceTags, mapLegacySource } from './migrate-source-tags.js';
+export type { SourceTagMigration } from './migrate-source-tags.js';
+
 export {
   UWLiteError,
   parseUWLite,
@@ -708,6 +712,9 @@ export {
   BUILTIN_INCOMPLETE_DATA_POLICIES,
   CASCADE_ORDER,
   SOURCE_TAGS,
+  ACTOR_NAMESPACES,
+  ACTOR_SOURCE_RE,
+  parseActorSource,
   lookupIncompleteDataPolicy,
 } from './protocol.js';
 export type {
@@ -744,6 +751,8 @@ export type {
   ProtocolErrorCategory,
   CascadeStep,
   CanonicalSourceTag,
+  ActorNamespace,
+  ParsedActorSource,
   GapAction,
   IncompleteDataPolicy,
 } from './protocol.js';

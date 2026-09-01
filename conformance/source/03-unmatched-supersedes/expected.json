@@ -1,0 +1,6 @@
+{
+  "replace_error": "PROTO-EDIT-004",
+  "supersede_ok": true,
+  "prior_preserved": true,
+  "replaced_in_place_codes": ["POL-02"]
+}

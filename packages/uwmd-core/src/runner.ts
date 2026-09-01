@@ -97,7 +97,10 @@ export function writeAgentBlock(
 
   // ── Step 2: Build the new block's annotation and JSON ─────────────────────
   const variantPart = variant ? ` variant=${variant}` : '';
-  const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${agentId} ts=${now} v=${newVersion} confidence=${(output.content['_meta'] as UWMeta | undefined)?.confidence ?? 'medium'}`;
+  // The fence `source=` mirrors the block's _meta.source (the RFC 0031 actor),
+  // falling back to the raw agentId only when the caller supplied no _meta.
+  const outMeta = output.content['_meta'] as UWMeta | undefined;
+  const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${outMeta?.source ?? agentId} ts=${now} v=${newVersion} confidence=${outMeta?.confidence ?? 'medium'}`;
   const blockJson = JSON.stringify(output.content, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
@@ -287,7 +290,10 @@ function buildNewPipelineLogBlock(
       section: 'pipeline_log',
       version: 1,
       superseded: false,
-      source: 'engine:uwmd',
+      // `system/uwmd`, not the retired colon form `engine:uwmd` — the RFC 0031
+      // actor grammar, and it resolves the system/* policy instead of the
+      // catch-all.
+      source: 'system/uwmd',
       agent_id: null,
       agent_version: '1.0.0',
       actor: 'system',
@@ -300,7 +306,7 @@ function buildNewPipelineLogBlock(
     },
     entries: [entry],
   };
-  return `\`\`\`json uw:section=pipeline_log source=engine:uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(content, null, 2)}\n\`\`\``;
+  return `\`\`\`json uw:section=pipeline_log source=system/uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(content, null, 2)}\n\`\`\``;
 }
 
 function buildUpdatedAnnotation(existing: string, version: number, ts: string): string {

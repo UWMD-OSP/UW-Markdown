@@ -11,6 +11,7 @@ import type {
   ParseOptions,
   ConfidenceLevel,
 } from './types.js';
+import { SOURCE_TAGS } from './types.js';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 
@@ -328,7 +329,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       parsed = { _parse_error: String(err), _raw: rawJson };
     }
 
-    const meta = (parsed['_meta'] as UWMeta | undefined) ?? ({} as UWMeta);
+    const meta = interpretMetaSource((parsed['_meta'] as UWMeta | undefined) ?? ({} as UWMeta));
 
     const block: UWBlock = {
       annotation,
@@ -344,6 +345,34 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   }
 
   return result;
+}
+
+// ─── §2.6 read-time source interpretation (RFC 0031) ─────────────────────────
+
+/** Every canonical tag except `manual`, which is a legal actor in its own
+ *  right and never reinterpreted. */
+const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(
+  SOURCE_TAGS.filter((t) => t !== 'manual'),
+);
+
+/**
+ * A canonical `SOURCE_TAGS` value found in `_meta.source` is a resolution
+ * method in the actor field (the pre-RFC-0031 spelling). Readers MUST
+ * interpret it as `resolution` and MUST NOT invent an actor from it — so the
+ * parsed view gains `resolution` while `source` keeps the raw spelling for
+ * diagnostics (`SRC-02` warns on it, and authority classification treats it
+ * as no actor class at all).
+ *
+ * Returns a **clone** when it rewrites: `content._meta` is bytes-derived and
+ * feeds canonicalization/digests, so the interpreted view must never mutate
+ * it. A producer that already stamped its own `resolution` wins — the legacy
+ * spelling is then merely wrong, not information.
+ */
+function interpretMetaSource(meta: UWMeta): UWMeta {
+  const src = meta.source;
+  if (typeof src !== 'string' || !LEGACY_RESOLUTION_TAGS.has(src)) return meta;
+  if (meta.resolution !== undefined) return meta;
+  return { ...meta, resolution: src };
 }
 
 // ─── Block routing ────────────────────────────────────────────────────────────

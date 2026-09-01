@@ -10,9 +10,9 @@ import type {
   AssetClass,
   DealStage,
 } from './types.js';
-import { DEFAULT_THRESHOLDS } from './types.js';
+import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE } from './protocol.js';
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
@@ -194,6 +194,7 @@ export function validateUWFile(
   checkSectionReadiness(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
+  checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
 
@@ -937,6 +938,52 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
   }
 }
 
+// ─── SRC-01 / SRC-02: source vocabulary (RFC 0031) ───────────────────────────
+//
+// `_meta.source` is actor-only: `manual` or `<namespace>/<id>` with a
+// registered namespace. SRC-02 fires when the field holds a canonical
+// SOURCE_TAGS value — a resolution method in the actor field, the pre-split
+// spelling, read-time-interpreted as `resolution` (warning through format
+// 1.x, error at 2.0). SRC-01 fires on everything else outside the grammar
+// (colon forms, bare words). Both are warnings: every such block still
+// parses, and edits against it resolve the conservative catch-all policy.
+
+const NON_MANUAL_SOURCE_TAGS: ReadonlySet<string> = new Set(
+  SOURCE_TAGS.filter((t) => t !== 'manual'),
+);
+
+function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [sectionId, entry] of Object.entries(parsed.sections)) {
+    const blocks = isVariantMap(entry)
+      ? Object.values(entry as Record<string, UWBlock>)
+      : [entry as UWBlock];
+
+    for (const block of blocks) {
+      const src = block.meta?.source;
+      if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
+
+      if (NON_MANUAL_SOURCE_TAGS.has(src)) {
+        issues.push({
+          code: 'SRC-02',
+          severity: 'warning',
+          section: sectionId,
+          message: `Section ${sectionId} _meta.source is '${src}', a resolution tag in the actor field. Move it to _meta.resolution; readers treat the actor as absent.`,
+        });
+        continue;
+      }
+
+      if (parseActorSource(src).kind === 'invalid') {
+        issues.push({
+          code: 'SRC-01',
+          severity: 'warning',
+          section: sectionId,
+          message: `Section ${sectionId} _meta.source '${src}' is not 'manual' or '<namespace>/<id>' with a registered actor namespace (${['agent', 'document', 'system', 'institution'].join(', ')}).`,
+        });
+      }
+    }
+  }
+}
+
 // ─── Stage readiness ──────────────────────────────────────────────────────────
 
 /**
@@ -1110,8 +1157,9 @@ export function checkDataQuality(
       // accepted but never recover which observations, of which vintage. That
       // is precisely the gap the profile exists to close, so a block asserting
       // the tag without the reference is worse than one tagged plainly.
-      const promoted = m.source === 'market_data_accepted' ||
-        m.field_overrides?.some((o) => o.source === 'market_data_accepted');
+      const promotedTag = (o: { source?: string; resolution?: string }): boolean =>
+        o.resolution === 'market_data_accepted' || o.source === 'market_data_accepted';
+      const promoted = promotedTag(m) || m.field_overrides?.some(promotedTag);
       if (promoted && !m.market_data_ref) {
         issues.push({
           code: 'DQ-06',

@@ -1,4 +1,4 @@
-# UW Protocol — v1.3
+# UW Protocol — v1
 
 **Status:** Release candidate  ·  **Format pairing:** `.uwx.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.9.0`) — the
+- **Protocol version** (this document, currently `1.10.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -501,6 +501,7 @@ capability is unconditional: every implementation owes it.
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
+| `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031). | `validate` | `warning` (SRC-02 becomes `error` at format 2.0) |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |
 | `POL-NN` | Edit policy (§V.3). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
@@ -514,7 +515,7 @@ capability is unconditional: every implementation owes it.
 emitted, and the provenance conditions it described are covered by
 `DQ-NN`.
 
-`CC-NN`, `FV-NN`, `DQ-NN`, and `MU-NN` are closed sequences extended by
+`CC-NN`, `FV-NN`, `DQ-NN`, `MU-NN`, and `SRC-NN` are closed sequences extended by
 RFC without renumbering. `MOD-*` and `CS-*` are open extension points:
 modules MAY add their own, and adopters MUST treat an unknown code
 within a registered family the same way they treat a known one (render
@@ -598,6 +599,13 @@ MUST preserve bytes outside the directly-modified region, modulo:
 
 ### V.3 Source authority
 
+`_meta.source` is **actor-only** (RFC 0031): `manual`, or
+`<namespace>/<id>` where the namespace is one of the closed set
+`agent | document | system | institution` (runtime registry
+`ACTOR_NAMESPACES`) and `<id>` matches `[A-Za-z0-9][A-Za-z0-9._-]*`.
+The grammar is normative in format spec §2.6; resolution methods
+belong in `_meta.resolution` (§V.7).
+
 `BUILTIN_EDIT_POLICIES` (`protocol.ts`) establishes the default policy
 for each `_meta.source` pattern:
 
@@ -606,9 +614,33 @@ for each `_meta.source` pattern:
 - `document/*` → `either` authority, `supersede_on_edit: true`.
 - `system/*`, `institution/*` → `system_only` authority,
   `supersede_on_edit: false`.
+- `*` (terminal catch-all) → `either` authority,
+  `supersede_on_edit: true`.
+
+The catch-all is normative: **every source resolves to a policy.** An
+unrecognized source gets the conservative treatment — the prior block
+is preserved by supersede — never the permissive one. (Before it
+existed, an unmatched source was read as *both* authorized and exempt
+from `supersede_on_edit`, so such a block could be replaced in place
+with `POL-01` and `POL-02` unable to fire.) An implementation given a
+caller-supplied policy list that covers no matching pattern for a
+source MUST refuse the write rather than grant it: a list that does
+not cover a source is an incomplete policy, not an authorization.
+
+Authority classification MUST derive from the parsed actor namespace,
+not from string prefix tests: `manual` is human; `agent/*` is agent;
+`system/*` and `institution/*` are system. A source outside the
+grammar — a retired colon form, a bare word, a resolution tag —
+belongs to **no** authority class: it can write where authority is
+`either` and can never satisfy `human_only`, `agent_only`, or
+`system_only`. (The prefix test's negative space used to classify
+`agent:L0-01` as a *human* write.) `document/*` likewise satisfies
+none of the three restricted classes — a document is evidence, not an
+authority class.
 
 A module MAY contribute additional patterns; conflicts resolve in
-favor of the more-specific glob (e.g. `agent/L6` beats `agent/*`).
+favor of the more-specific glob (e.g. `agent/L6` beats `agent/*`), and
+any module pattern is more specific than the catch-all.
 
 ### V.4 _meta authorship
 
@@ -618,7 +650,14 @@ On every write, the host MUST set:
   version (or 1 for a new section).
 - `_meta.superseded` — `false` on the new block; `true` on the prior
   block when superseding.
-- `_meta.source` — derived from the actor (agent ID, "manual", etc.).
+- `_meta.source` — the actor:
+  `manual | agent/<id> | document/<id> | system/<id> | institution/<id>`,
+  with `<id>` matching `[A-Za-z0-9][A-Za-z0-9._-]*` (format spec §2.6;
+  RFC 0031). This is the grammar a producer is bound to — nothing
+  outside it resolves a specific edit policy or an authority class.
+- `_meta.resolution` — OPTIONAL; the canonical `SOURCE_TAGS` tag naming
+  how the value was resolved (e.g. the §V.7 cascade step), when the
+  host knows it.
 - `_meta.timestamp` — current ISO-8601 UTC timestamp.
 - `_meta.actor` — human or system identifier of the writer.
 - `_meta.agent_id`, `_meta.agent_version` — populated for agent
@@ -643,9 +682,12 @@ A producer that needs to assign a value to a field for which no
 explicit user input or document extraction is available MUST resolve
 the value by walking the following ordered cascade. The first step
 that yields a value wins. The producer MUST stamp the resulting
-`_meta.source` (or, when only a subset of fields was resolved this
-way, a `_meta.field_overrides[].source`) with the cascade step that
-produced the value.
+`_meta.resolution` (or, when only a subset of fields was resolved this
+way, a `_meta.field_overrides[].resolution`) with the cascade step
+that produced the value; a leaf-level `resolution` wins over the
+block-level one for its path. (Before RFC 0031 split the field, the
+tag was stamped into `_meta.source`; readers MUST interpret a
+canonical tag found there as `resolution` — format spec §2.6.)
 
 | Step | Source tag | Description |
 |---:|---|---|

@@ -506,3 +506,70 @@ tags:
     expect(() => parseUWFile(content)).not.toThrow();
   });
 });
+
+// ─── §2.6 read-time source interpretation (RFC 0031) ─────────────────────────
+
+describe('read-time interpretation of a legacy tag in _meta.source', () => {
+  const fileWithSource = (source: string): string => `---
+uw_version: "1.1"
+deal_id: "test-interp"
+asset_class: multifamily
+---
+
+# Interp
+
+\`\`\`json uw:section=property source=manual ts=2026-08-31T00:00:00Z v=1
+{
+  "_meta": {
+    "section": "property",
+    "version": 1,
+    "superseded": false,
+    "source": "${source}",
+    "agent_id": null,
+    "agent_version": null,
+    "actor": "test",
+    "timestamp": "2026-08-31T00:00:00Z",
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "total_units": 10
+}
+\`\`\`
+`;
+
+  it('surfaces a canonical tag as meta.resolution while keeping the raw spelling', () => {
+    const parsed = parseUWFile(fileWithSource('market_data'));
+    const block = parsed.sections['property'] as import('./types.js').UWBlock;
+    expect(block.meta.resolution).toBe('market_data');
+    // The raw spelling is preserved for diagnostics (SRC-02 warns on it);
+    // authority classification treats it as no actor at all.
+    expect(block.meta.source).toBe('market_data');
+  });
+
+  it('never mutates content._meta — the bytes-derived object feeds digests', () => {
+    const parsed = parseUWFile(fileWithSource('asset_class_default'));
+    const block = parsed.sections['property'] as import('./types.js').UWBlock;
+    const rawMeta = block.content['_meta'] as Record<string, unknown>;
+    expect(rawMeta['resolution']).toBeUndefined();
+    expect(rawMeta['source']).toBe('asset_class_default');
+  });
+
+  it('leaves manual and proper actors untouched — meta stays the same object', () => {
+    for (const source of ['manual', 'agent/L6-01', 'system/init']) {
+      const parsed = parseUWFile(fileWithSource(source));
+      const block = parsed.sections['property'] as import('./types.js').UWBlock;
+      expect(block.meta.resolution, source).toBeUndefined();
+      expect(block.meta, source).toBe(block.content['_meta']);
+    }
+  });
+
+  it('defers to a resolution the producer already stamped', () => {
+    const file = fileWithSource('market_data').replace(
+      '"source": "market_data",',
+      '"source": "market_data",\n    "resolution": "user_input",',
+    );
+    const parsed = parseUWFile(file);
+    const block = parsed.sections['property'] as import('./types.js').UWBlock;
+    expect(block.meta.resolution).toBe('user_input');
+  });
+});
