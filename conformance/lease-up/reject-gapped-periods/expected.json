@@ -1,0 +1,6 @@
+{
+  "why": "Periods must be strictly increasing and gap-free.",
+  "expected_codes": [
+    "LU-02"
+  ]
+}

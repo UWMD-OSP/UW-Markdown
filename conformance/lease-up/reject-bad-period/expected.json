@@ -1,0 +1,6 @@
+{
+  "why": "Mixed granularity within one schedule is rejected.",
+  "expected_codes": [
+    "LU-01"
+  ]
+}

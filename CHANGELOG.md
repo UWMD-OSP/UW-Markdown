@@ -6,6 +6,42 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added — RFC 0008 implemented: the lease-up schedule section (corpus 306 → 315)
+
+[RFC 0008](docs/rfcs/0008-lease-up-modeling.md) (accepted and implemented
+2026-09-01). Protocol goes to **1.11.0**. The format jumped straight from
+`rent_roll` (a snapshot) to `noi_model` (a stabilized projection) with no
+structured representation of the path between them — the entire thesis of a
+value-add or ground-up deal lived in `_notes`. Format spec **§4.25** now
+registers `lease_up_schedule`: a `model_type` (`natural_turnover` /
+`absorption_curve`), a uniform `YYYY-Qn`/`YYYY-MM` period grammar, the driving
+assumption set (fractions, never percents), the period array, and a
+`stabilized_summary`.
+
+- **State-and-verify, the `capital_stack` precedent.** The schedule is data,
+  not formulas — the Tier-3 calc engine is untouched (no iteration, no time
+  axis, no new builtins), and every stated aggregate is recomputed by the new
+  three-state `verifyLeaseUpSchedule` (per-period `net_cash_flow` from its
+  components; the stabilized summary against the final period, with the
+  occupancy denominator resolved through the Protocol §XIII size-intensive
+  registry — no denominator is `unverifiable`, never a guess).
+- **New `LU-NN` validator family** (registered under `validate` per §III.6a):
+  `LU-01` grammar/granularity, `LU-02` contiguity, `LU-03` empty/inverted
+  schedule, `LU-04` (warning) turnover with no `rent_roll`. Plus **`CC-15`**
+  (warning): the base variant's stabilized NOI agrees with
+  `noi_model.net_operating_income` within the named exported
+  `LEASE_UP_STABILIZED_TOLERANCE` (2%) — tolerance-checked because the
+  trajectory endpoint and the stabilized-year projection are two independent
+  models, and non-base variants are exempt by design.
+- The section is **multi-variant** (base / upside / downside under `variant=`)
+  and optional at every stage; new schema
+  `section-lease-up-schedule.schema.json`; view-model entry; chat/summary
+  renderers gain the period table; new `conformance/lease-up/` suite (9
+  scenarios). Deliberately deferred, per the RFC: Excel emit, `dcf` coupling,
+  defaults-table entries, and any shared period-schedule abstraction.
+
 ## [1.8.0] - 2026-08-31
 
 ### Released

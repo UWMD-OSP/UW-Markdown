@@ -206,6 +206,28 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   const investmentThesis = deepGet(dealCtx?.content, 'investment_thesis') as string | undefined;
   const valueCreation = deepGet(dealCtx?.content, 'value_creation_strategy') as string | undefined;
 
+  // Lease-up trajectory (RFC 0008): the base variant's period table, when present.
+  const leaseUp = getSectionVariant(parsed, 'lease_up_schedule', 'base')
+    ?? getSectionVariant(parsed, 'lease_up_schedule', 'default');
+  let leaseUpBlock = '';
+  if (leaseUp) {
+    const c = leaseUp.content;
+    const rows = (deepGet(c, 'schedule') as Record<string, unknown>[] | undefined) ?? [];
+    const tableRows = rows.map(r =>
+      `| ${val(r['period'])} | ${val(r['occupied_sf'])} | ${pct(r['vacancy_rate'])} | ${money(r['rent_revenue'])} | ${money(r['ti_lc_capex'])} | ${money(r['net_cash_flow'])} |`
+    ).join('\n');
+    leaseUpBlock = `\n## Lease-Up Schedule
+
+**Model:** ${val(deepGet(c, 'model_type'))} (${val(deepGet(c, 'period_granularity'))}) · **Stabilization:** ${val(deepGet(c, 'stabilization_target'))} · **Stab. Occupancy:** ${pct(deepGet(c, 'stabilized_summary.occupancy_rate'))} · **Stab. NOI:** ${money(deepGet(c, 'stabilized_summary.annualized_noi'))}
+
+| Period | Occupied SF | Vacancy | Rent Revenue | TI/LC Capex | Net Cash Flow |
+|---|---|---|---|---|---|
+${tableRows}
+
+---
+`;
+  }
+
   const issueLines = validation.issues.length > 0
     ? validation.issues.map(i => `- **[${i.severity.toUpperCase()}]** ${i.message}`).join('\n')
     : '- No issues found';
@@ -252,7 +274,7 @@ ${units && qm.loan_amount ? `| Loan per Unit | ${money((qm.loan_amount as number
 ${qm.purchase_price && units ? `| Price per Unit | ${money((qm.purchase_price as number) / (units as number))} |` : ''}
 
 ---
-${investmentThesis ? `\n## Investment Thesis\n\n${investmentThesis}\n` : ''}
+${leaseUpBlock}${investmentThesis ? `\n## Investment Thesis\n\n${investmentThesis}\n` : ''}
 ${valueCreation ? `\n## Value Creation Strategy\n\n${valueCreation}\n` : ''}
 ## Validation
 
@@ -524,6 +546,22 @@ Credit Score: ${val(deepGet(c, 'fico_score') ?? deepGet(c, 'credit_score'))}`);
       });
       sections.push(`## STRESS TEST RESULTS\n${stressLines.join('\n')}`);
     }
+  }
+
+  // ── Lease-up schedule (abbreviated, base variant) ────────────────────────
+  const leaseUp = getSectionVariant(parsed, 'lease_up_schedule', 'base')
+    ?? getSectionVariant(parsed, 'lease_up_schedule', 'default');
+  if (leaseUp) {
+    const c = leaseUp.content;
+    const rows = (deepGet(c, 'schedule') as Record<string, unknown>[] | undefined) ?? [];
+    const shown = rows.length > 6 ? [...rows.slice(0, 3), ...rows.slice(-3)] : rows;
+    const elided = rows.length > 6 ? ` (${rows.length - 6} middle periods elided)` : '';
+    const rowLines = shown.map(r =>
+      `${val(r['period'])}: occ_sf=${val(r['occupied_sf'])} rent=${money(r['rent_revenue'])} ncf=${money(r['net_cash_flow'])} vac=${pct(r['vacancy_rate'])}`
+    );
+    sections.push(`## LEASE-UP SCHEDULE (${val(deepGet(c, 'model_type'))}, ${val(deepGet(c, 'period_granularity'))})
+Stabilization Target: ${val(deepGet(c, 'stabilization_target'))} | Stab. Occupancy: ${pct(deepGet(c, 'stabilized_summary.occupancy_rate'))} | Stab. NOI: ${money(deepGet(c, 'stabilized_summary.annualized_noi'))}${elided}
+${rowLines.join('\n')}`);
   }
 
   // ── Risk assessment (abbreviated) ────────────────────────────────────────

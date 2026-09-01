@@ -43,13 +43,14 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **25 numbered subsections (§ 4.0 – § 4.24)**:
+Part IV registers **26 numbered subsections (§ 4.0 – § 4.25)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content, the `gaps` inventory (§ 4.22), the mixed-use `components`
-section (§ 4.23), and the `capital_stack` section (§ 4.24). When this and
-the protocol document refer to "the 21 standard sections" they mean
-§ 4.0 through § 4.20.
+section (§ 4.23), the `capital_stack` section (§ 4.24), and the
+`lease_up_schedule` section (§ 4.25). When this and the protocol
+document refer to "the 21 standard sections" they mean § 4.0 through
+§ 4.20.
 
 ---
 
@@ -2492,6 +2493,67 @@ An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balanc
 
 Here the pref tranche is `accrued`, so it is excluded from `combined_dscr` but its balance is not part of `mezz_debt_yield` (which is a debt-only attachment metric through position 2). The senior tranche's `amount` and `rate` reconcile with `debt_structure` under `CC-03`.
 
+### § 4.25 — Lease-Up Schedule
+
+**ID:** `lease_up_schedule`  
+**Header:** `## Lease-Up Schedule {#lease_up_schedule}`  
+**Purpose:** Models the trajectory from current to stabilized rents over a defined window. `rent_roll` (§ 4.2) is a snapshot in time and `noi_model` (§ 4.4) a stabilized projection; the path between them — turnover pace, market-rent assumption, vacancy during lease-up, TI/LC capital — is the entire thesis of a value-add or ground-up deal, and this section is where that path lives as structure rather than `_notes`. The section is **asset-class independent** and **multi-variant**: base / upside / downside scenarios coexist under `variant=` exactly as `stress_tests` variants do.  
+**Written by:** `wizard`, `manual`, `agent/L4-*` (the assumption set and stated figures are the deal thesis — an agent MAY draft a schedule but the host stamps `agent/<id>` and the figures remain subject to verification)  
+**Required for pipeline stage:** Optional; used whenever the underwriting assumes a lease-up path. Never required — a stabilized acquisition legitimately has no lease-up story.  
+**Dependencies:** `rent_roll` (soft — see `LU-04`), `noi_model` (`CC-15`), `property` (the § XIII size denominator for `occupancy_rate` verification)  
+**Schema:** [`spec/schemas/section-lease-up-schedule.schema.json`](schemas/section-lease-up-schedule.schema.json)  
+**Introduced by:** RFC 0008 (lease-up modeling).
+
+Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier‑3 calc engine never reads the schedule by pack formula, so the variable-length period array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyLeaseUpSchedule`, a sibling of `verifyCapitalStack`) over a **fixed, closed recompute vocabulary**. The schedule is **data, not formulas** — no calc-engine iteration, time axis, or new builtin is involved, and specific cells remain addressable by ordinary path traversal (`lease_up_schedule.schedule[5].rent_revenue`).
+
+**Fields.**
+
+- `model_type` — `natural_turnover` (an occupied asset re-leasing at market through turnover; value-add) or `absorption_curve` (filling vacant or newly-built space; ground-up). Closed. The type gates nothing structurally.
+- `period_granularity` — `monthly` or `quarterly`, uniform per schedule.
+- `stabilization_target` — the period by which the deal is underwritten to stabilize, in the declared grammar.
+- `assumptions` — the driving assumption set (`monthly_turnover_rate`, `market_rent_psf_at_stabilization`, `vacancy_during_lease_up`, `concession_months_per_lease`, `tenant_improvement_psf`, `leasing_commission_rate`). All rates are **fractions** (`0.04`, never `4`). These are the deal thesis, not defaultable background: nothing here enters the cascade tables.
+- `schedule` — one entry per period: `period`, `occupied_sf`, `leased_sf`, `in_place_rent_psf`, `market_rent_psf`, `vacancy_rate`, `rent_revenue`, `concessions` (negative), `ti_lc_capex` (negative), `net_cash_flow`.
+- `stabilized_summary` — the stated endpoint: `occupied_sf`, `occupancy_rate`, `annualized_egi`, `annualized_noi`.
+
+**Normative rules (RFC 2119):**
+
+- The section is OPTIONAL. A document with no `lease_up_schedule` behaves exactly as before this RFC; no pipeline stage requires it (`STAGE_REQUIREMENTS` untouched).
+- **Period grammar (`LU-01`, error).** A `period` is `YYYY-Qn` (quarterly) or `YYYY-MM` (monthly), matching the declared `period_granularity`. One schedule uses one cadence; mixed granularity within a schedule MUST be rejected.
+- **Contiguity (`LU-02`, error).** Periods MUST be strictly increasing and gap-free. A schedule that skips a quarter is asserting something it does not say; a period with no activity states its figures, even when they are zero.
+- **Non-empty, non-inverted (`LU-03`, error).** `schedule` MUST be non-empty, and `stabilization_target` MUST NOT be earlier than the first period.
+- **Turnover needs a starting point (`LU-04`, warning).** `model_type: natural_turnover` with no `rent_roll` present in the document is a warning, not a refusal — a compose-time fragment may carry the schedule without the roll.
+- **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture): each period's `net_cash_flow` = `rent_revenue + concessions + ti_lc_capex` (a period omitting a stated component is `unverifiable` for that row, never `failed`); `stabilized_summary.occupied_sf` against the final period; and `stabilized_summary.occupancy_rate` = final occupied SF ÷ the § XIII size denominator (no resolvable square-foot denominator → `unverifiable`, never a guess).
+- **Endpoint agreement (`CC-15`, warning, § 5.3).** The **base** variant's `stabilized_summary.annualized_noi` MUST agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%, a named exported constant). The tolerance is deliberate, not softness: unlike `CC-01` (one number restated in two places, exact), the trajectory endpoint and the stabilized-year projection are two different models of stabilization, and demanding exact agreement would force producers to hand-tune one to echo the other — destroying the independent-model signal the check exists to read. Non-base variants are exempt: a downside scenario is *supposed* to disagree with stabilized NOI.
+
+```json uw:section=lease_up_schedule variant=base source=manual ts=ISO8601 v=1 confidence=high
+{
+  "_meta": { "...": "see §2.5" },
+  "model_type": "natural_turnover",
+  "period_granularity": "quarterly",
+  "stabilization_target": "2027-Q4",
+  "assumptions": {
+    "monthly_turnover_rate": 0.04,
+    "market_rent_psf_at_stabilization": 22.00,
+    "vacancy_during_lease_up": 0.18,
+    "concession_months_per_lease": 1,
+    "tenant_improvement_psf": 35.00,
+    "leasing_commission_rate": 0.06
+  },
+  "schedule": [
+    { "period": "2026-Q3", "occupied_sf": 31000, "leased_sf": 31000, "in_place_rent_psf": 21.50, "market_rent_psf": 22.00, "vacancy_rate": 0.27, "rent_revenue": 166375, "concessions": -5400, "ti_lc_capex": -42500, "net_cash_flow": 118475 },
+    { "period": "2026-Q4", "occupied_sf": 34000, "leased_sf": 35500, "in_place_rent_psf": 21.65, "market_rent_psf": 22.00, "vacancy_rate": 0.20, "rent_revenue": 184025, "concessions": -8100, "ti_lc_capex": -52500, "net_cash_flow": 123425 }
+  ],
+  "stabilized_summary": {
+    "occupied_sf": 40500,
+    "occupancy_rate": 0.953,
+    "annualized_egi": 858000,
+    "annualized_noi": 478000
+  }
+}
+```
+
+**Deliberately deferred (RFC 0008).** Excel emit of a Lease-Up sheet; a `dcf` coupling (`derive_dcf_from_lease_up`); defaults-table entries; and a shared period-schedule primitive. If a later module (e.g. a hospitality RevPAR ramp) wants a period schedule, it SHOULD reuse this section's period grammar rather than invent a second one — noted so the two cannot drift, but no abstraction is built ahead of the second consumer.
+
 ---
 
 ## Part V — Validation Rules
@@ -2578,6 +2640,7 @@ Tools MUST run these after each section write:
 | `CC-12` | Property `noi_model.net_operating_income` must equal the sum of component `net_operating_income` (mixed-use) | `components`, `noi_model` |
 | `CC-13` | The property section must state the primary size field for `frontmatter.asset_class` (Protocol §XIII.1) (RFC 0027) | `property`, frontmatter |
 | `CC-14` | A deal-record document must have a `property` section (§4.1) (RFC 0028) | `property` |
+| `CC-15` | The lease-up base variant's `stabilized_summary.annualized_noi` must agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%) (RFC 0008) | `lease_up_schedule`, `noi_model` |
 
 **Asset-class identifier codes (RFC 0003).** These sit outside the
 `CC-NN` sequence deliberately: they are about the *identifier*, not a
@@ -2633,6 +2696,18 @@ hold:
 stage. When `CC-14` fires, `CC-13` must not also fire (its precondition 4
 ensures this), and `DQ-06` must suppress its own `property` entry: one
 defect, one diagnostic.
+
+**`CC-15` severity and applicability.** `CC-15` is a **warning**, never an
+error, and is **tolerance-checked**, never exact — see §4.25 for why the 2%
+band is deliberate. It reads only the **base** variant of
+`lease_up_schedule` (falling back to the sole/default variant when no
+`base` exists) and fires only when both `stabilized_summary.annualized_noi`
+and `noi_model.net_operating_income` are stated. Non-base variants are
+exempt by design: a downside scenario is supposed to disagree with
+stabilized NOI. `stabilized_summary.annualized_noi` deliberately does **not**
+also cross-check `quick_metrics.noi_underwritten` — `noi_model` already
+reconciles to `quick_metrics` via `CC-01`, so a second seam would be
+transitive noise.
 
 ---
 

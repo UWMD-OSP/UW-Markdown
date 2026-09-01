@@ -634,6 +634,27 @@ export type {
   CapitalStackVerification,
 } from './capital-stack.js';
 
+export {
+  verifyLeaseUpSchedule,
+  leaseUpContext,
+  leaseUpPeriodOrdinal,
+  LEASE_UP_STABILIZED_TOLERANCE,
+  LEASE_UP_VERIFY_DECIMALS,
+} from './lease-up.js';
+export type {
+  LeaseUpModelType,
+  LeaseUpGranularity,
+  LeaseUpPeriod,
+  LeaseUpAssumptions,
+  LeaseUpStabilizedSummary,
+  LeaseUpSchedule,
+  LeaseUpVerdict,
+  LeaseUpIssueCode,
+  LeaseUpIssue,
+  LeaseUpVerification,
+  LeaseUpContext,
+} from './lease-up.js';
+
 export { resolveValue, readInFile } from './cascade.js';
 export type {
   CascadeContext,

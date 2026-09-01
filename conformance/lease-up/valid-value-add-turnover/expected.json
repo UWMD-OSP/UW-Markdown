@@ -1,0 +1,8 @@
+{
+  "why": "The RFC 0008 worked example: a natural-turnover schedule whose per-period net cash flows, stabilized summary, and CC-15 seam all agree. The downside variant disagrees with noi_model on purpose and must not trip CC-15.",
+  "absent_code_prefixes": [
+    "LU-",
+    "CC-15"
+  ],
+  "verdict": "verified"
+}
