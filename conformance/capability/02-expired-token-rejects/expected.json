@@ -1,0 +1,6 @@
+{
+  "why": "exp is in the past. Short lifetimes are the revocation story, so expiry must actually refuse.",
+  "ok": false,
+  "error_code": "POL-03",
+  "message_contains": "expired"
+}

@@ -15,6 +15,7 @@
 
 import type { ParsedUWFile, UWBlock, UWMeta } from './types.js';
 import type {
+  CapabilityVerifier,
   EditAuthority,
   EditOperation,
   EditPolicy,
@@ -52,6 +53,12 @@ export interface EditContext {
    * the live head triggers INT-02 (concurrent write detected).
    */
   parentHash?: string | null;
+  /**
+   * A capability token authorizing this edit (Protocol §XIV, RFC 0011).
+   * Required whenever the editor is configured with
+   * `EditOptions.capabilityVerifier`; ignored otherwise.
+   */
+  capability_token?: string;
 }
 
 export interface EditResult {
@@ -98,6 +105,17 @@ export interface EditOptions {
    * Only honored by `applyEditAsync` (hashing requires async crypto APIs).
    */
   integrity?: boolean;
+  /**
+   * When supplied, every write MUST present a `capability_token` the verifier
+   * accepts; edits without one, or with a rejected one, fail with POL-03
+   * (Protocol §XIV, RFC 0011). The static §V.3 authority check still runs
+   * first — a token narrows authority, it never overrides a policy refusal.
+   *
+   * Honored by `applyEditAsync` only (verification is async crypto). The sync
+   * `applyEdit` with this option set REFUSES the edit (PROTO-EDIT-008) rather
+   * than silently skipping the check.
+   */
+  capabilityVerifier?: CapabilityVerifier;
 }
 
 export function applyEdit(
@@ -108,6 +126,20 @@ export function applyEdit(
   policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
   options: EditOptions = {},
 ): EditResult {
+  // A configured capability verifier can only be honored on the async path
+  // (verification is Web Crypto). Refusing here is deliberate: silently
+  // skipping the check would turn a mis-wired call site into an authorization
+  // bypass (Protocol §XIV, RFC 0011).
+  if (options.capabilityVerifier) {
+    return {
+      ok: false,
+      error: protoError(
+        'PROTO-EDIT-008',
+        'A capabilityVerifier is configured but applyEdit is synchronous; use applyEditAsync, which performs the (async) token verification.',
+      ),
+    };
+  }
+
   // INT-02: stale parent hash detection (sync portion). When the section head
   // carries content_hash, ctx.parentHash must match it. The async stamping of
   // the new block's content_hash happens in applyEditAsync.
@@ -155,7 +187,49 @@ export async function applyEditAsync(
   policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
   options: EditOptions = {},
 ): Promise<EditResult> {
-  const result = applyEdit(fileContent, parsed, op, ctx, policies, options);
+  // Capability gate (Protocol §XIV, RFC 0011). Runs before the write, after
+  // nothing — but note the static §V.3 authority check inside dispatchEdit
+  // still applies to whatever this gate admits: a token narrows authority,
+  // it never overrides a policy refusal. On success the token's jti is
+  // recorded in the new block's notes as `capability:<jti>`.
+  const { capabilityVerifier, ...restOptions } = options;
+  if (capabilityVerifier) {
+    const section =
+      op.kind === 'frontmatter_set' ? '_frontmatter'
+      : op.kind === 'pipeline_log_append' ? 'pipeline_log'
+      : op.section_id;
+    if (!ctx.capability_token) {
+      return {
+        ok: false,
+        error: protoError(
+          'POL-03',
+          'This editor requires a capability token and the edit presented none.',
+          section,
+        ),
+      };
+    }
+    const verdict = await capabilityVerifier.verify(ctx.capability_token, {
+      deal_id: parsed.frontmatter.deal_id ?? '',
+      section,
+      stage: parsed.frontmatter.deal_stage ?? null,
+      op: op.kind,
+      source: ctx.source,
+    });
+    if (!verdict.ok) {
+      return {
+        ok: false,
+        error: protoError(
+          'POL-03',
+          `Capability token rejected: ${verdict.reason}.`,
+          section,
+        ),
+      };
+    }
+    const jtiNote = `capability:${verdict.jti}`;
+    ctx = { ...ctx, notes: ctx.notes ? `${ctx.notes}; ${jtiNote}` : jtiNote };
+  }
+
+  const result = applyEdit(fileContent, parsed, op, ctx, policies, restOptions);
   if (!result.ok || !result.content || !options.integrity) return result;
   if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return result;
 

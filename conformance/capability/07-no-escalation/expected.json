@@ -1,0 +1,14 @@
+{
+  "why": "The AND rule pinned: a token in scope for the validation section verifies, but validation's head is system/*-sourced and the static SectionV.3 policy (system_only) refuses the agent write regardless. A capability token narrows authority; it never overrides POL-01.",
+  "op": {
+    "kind": "section_replace",
+    "section_id": "validation",
+    "content": {
+      "status": "tampered"
+    },
+    "meta": {}
+  },
+  "ok": false,
+  "error_code": "PROTO-EDIT-001",
+  "message_contains": "system_only"
+}

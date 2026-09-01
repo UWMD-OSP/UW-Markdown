@@ -1,0 +1,7 @@
+{
+  "why": "A verifier is configured and the edit presents no token at all. Enforcement means the default is refusal, not pass-through.",
+  "no_token": true,
+  "ok": false,
+  "error_code": "POL-03",
+  "message_contains": "none"
+}

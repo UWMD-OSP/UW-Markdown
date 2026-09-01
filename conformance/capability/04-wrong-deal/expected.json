@@ -1,0 +1,6 @@
+{
+  "why": "The token binds DEAL-OTHER; the file is DEAL-CAP-01. A token for one deal authorizes nothing on another.",
+  "ok": false,
+  "error_code": "POL-03",
+  "message_contains": "wrong_deal"
+}

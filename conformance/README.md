@@ -134,6 +134,12 @@ conformance/
 │                         verdict; {deal.uw.md, expected.json} pins LU-NN /
 │                         CC-15 validator codes and an optional end-to-end
 │                         verdict. See lease-up/README.md.
+├── capability/         Capability-token write authorization (RFC 0011,
+│                         Protocol §XIV). Each scenario edits the shared
+│                         deal.uw.md under a generated token through the
+│                         @uwmd/signing reference verifier; pins POL-03's
+│                         typed reasons, the jti note, and the never-escalates
+│                         rule. Owed only under `capability-verify`.
 ├── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
@@ -217,8 +223,8 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `lease-up`, `size-intensive`, `signing`, `sensitivity`,
-`stochastic`, and `source` suites are named rather than numbered:
+`capital-stack`, `lease-up`, `capability`, `size-intensive`, `signing`,
+`sensitivity`, `stochastic`, and `source` suites are named rather than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and
