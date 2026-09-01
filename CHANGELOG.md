@@ -42,6 +42,35 @@ assumption set (fractions, never percents), the period array, and a
   scenarios). Deliberately deferred, per the RFC: Excel emit, `dcf` coupling,
   defaults-table entries, and any shared period-schedule abstraction.
 
+### Clarified — RFC 0032: `_meta.provisional` and signing (no version moves)
+
+Answered the adopter question tracked upstream-side as UPSTREAM-002
+(underwriter.cc): § V.7's provisional obligation stays a SHOULD, on purpose.
+`_meta.provisional` is inside canonical block JSON, so stamping it moves
+`content_hash` and any § V.11 signature — and the spec now says plainly that
+cross-producer agreement of hashes or signatures over provenance metadata is a
+**non-goal** (the signing input names `actor`, `timestamp`, `signed_at`, `kid`,
+which differ across producers by construction). Cross-implementation agreement
+guarantees remain where they always were: computed values (§ VIII, RFCs
+0023/0024) and verification receipts (RFC 0016). Two paragraphs added, § V.7
+and § V.11.2; no schema, code, corpus, or version change — the same treatment
+as the § V.9 wording fix.
+
+### Clarified — RFC 0033: `capital_stack` is one point in time (no version moves)
+
+Answered the adopter question tracked upstream-side as UPSTREAM-003
+(underwriter.cc): a ground-up deal's construction loan and its permanent
+takeout are one senior position in time sequence, and § 4.24 as written forced
+the producer to choose between double-counting them as concurrent tranches and
+omitting one. The section now states the scope its own verification semantics
+imply — the stack is the capitalization contemporaneous with the NOI the
+sizing verbs read (for a deal underwritten to stabilization, the stabilized
+stack); temporally disjoint facilities MUST NOT be stated as concurrent
+tranches, and the retired construction facility stays out. `bridge` tranches
+are unaffected. Phased stacks defer with the multi-period spine RFC 0026 § D
+already parked. One normative bullet in § 4.24; no schema, code, corpus, or
+version change.
+
 ## [1.8.0] - 2026-08-31
 
 ### Released
@@ -2474,7 +2503,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...v1.5.0

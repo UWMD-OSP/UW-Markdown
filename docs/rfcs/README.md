@@ -55,6 +55,8 @@ and how it gets accepted.
 | [0029](./0029-class-aware-stage-requirements.md) | Make stage requirements class-aware | implemented | format, core, conformance |
 | [0030](./0030-conformance-profiles.md) | Make partial conformance mechanically checkable | implemented | protocol, core, conformance, tooling |
 | [0031](./0031-source-vocabulary.md) | Reconcile the source vocabularies and close the unpoliced-write path | implemented | format, protocol, core, conformance, tooling |
+| [0032](./0032-provisional-signing-scope.md) | State how `_meta.provisional` interacts with signing | implemented | protocol |
+| [0033](./0033-capital-stack-point-in-time.md) | Scope `capital_stack` to one point in time | implemented | format |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
