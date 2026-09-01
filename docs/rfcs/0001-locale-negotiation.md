@@ -1,7 +1,7 @@
 ---
 rfc: 0001
 title: Locale negotiation
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-26
 revised: 2026-09-01
@@ -13,6 +13,17 @@ affects:
 ---
 
 # RFC 0001: Locale negotiation
+
+> **Implemented 2026-09-01** at protocol **1.13.0** (§III.1a), exactly as
+> revised below. Refinements recorded: the renderer's refusal is a typed
+> `UnsupportedLocaleError` (code `LOC-01`, mirroring the validator);
+> `formatCount` stays locale-agnostic (it never carried separators);
+> `short`/`medium`/`long` date styles remain Intl-based conveniences and are
+> explicitly non-conformance surfaces; and two adjacent fixes rode along —
+> the implementation-manifest schema's capability enum had drifted from the
+> `ViewerCapability` type (missing `integrity`, `refinement`,
+> `capability-verify`) and the reference manifest never claimed
+> `capability-verify` after RFC 0011.
 
 > **Revised 2026-09-01** against everything implemented since the April
 > draft. The mechanism survives — the file declares its locale, readers

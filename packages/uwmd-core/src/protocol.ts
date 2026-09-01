@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.12.0' as const;
+export const PROTOCOL_VERSION = '1.13.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -132,6 +132,13 @@ export interface ImplementationManifest {
   representations?: RepresentationCapability[];
   /** Asset classes the implementation specifically supports (omit = all). */
   asset_classes?: AssetClass[];
+  /**
+   * Display locales the implementation renders (RFC 0001). Absent means
+   * `['en-US']` — every pre-0001 manifest keeps meaning what it meant. A
+   * display render of a file whose declared `locale` is outside this list
+   * is refused with LOC-01, never silently rendered in a different locale.
+   */
+  supported_locales?: SupportedLocale[];
   /** Role / form factor of the implementation. */
   role?: ViewerRole;
   /** Public homepage / docs URL. */
@@ -147,6 +154,29 @@ export interface ImplementationManifest {
  * test: a manifest that varied with the caller's environment would make two
  * runs of the same suite incomparable.
  */
+/**
+ * The registered display locales (RFC 0001). Closed — new locales land via
+ * small additive RFC amendments to the Part III table, never as free-form
+ * tags. Locale governs human display renders (chat/summary/report) ONLY:
+ * canonical JSON content, CSV renders, UW Lite canonical form, digests, and
+ * calc evaluation are locale-free by construction.
+ */
+export const SUPPORTED_LOCALES = Object.freeze([
+  'en-US',
+  'en-GB',
+  'de-DE',
+  'fr-FR',
+  'ja-JP',
+  'zh-CN',
+] as const);
+
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
+/** True when `tag` names a registered display locale (RFC 0001). */
+export function isSupportedLocale(tag: unknown): tag is SupportedLocale {
+  return typeof tag === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(tag);
+}
+
 export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.freeze({
   id: 'org.uwmd.core',
   name: '@uwmd/core reference implementation',
@@ -176,17 +206,22 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     // asking "does this implementation verify signatures" means the pair.
     'signing',
     'module-signature-verification',
+    // Same pairing as 'signing': @uwmd/signing supplies the token verifier
+    // (RFC 0011 §XIV) behind core's injected interface.
+    'capability-verify',
     'integrity',
     'refinement',
   ]) as ViewerCapability[],
+  // RFC 0001: the reference implementation supports the full first wave, so
+  // its own LOC-01 fires only on unregistered tags.
+  supported_locales: [...SUPPORTED_LOCALES],
   role: 'library',
   homepage: 'https://uwmd.org',
 });
 
 // ─── Display conventions (Part III of the spec) ───────────────────────────────
-
-/** Frozen to 'en-US' in v1; field reserved for v2 i18n work. */
-export type SupportedLocale = 'en-US';
+// SUPPORTED_LOCALES / SupportedLocale are declared above the reference
+// manifest (which lists them) to keep module-init order valid.
 
 export interface NumberFormatRules {
   locale: SupportedLocale;
@@ -1552,6 +1587,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
+  { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
   {
     prefix: 'INVALID-ASSET-CLASS',
     description: 'Asset-class identifier syntax',
@@ -1986,6 +2022,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The section\'s policy requires supersede_on_edit but the head version > 1 has no superseded prior versions.',
     remediation: 'Re-issue the edit as section_supersede so the prior version is preserved as a superseded block.',
     spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+  },
+  {
+    code: 'LOC-01', severity: 'error',
+    title: 'Unsupported display locale',
+    description: 'The file declares a `locale` this implementation does not list in `supported_locales` (or an unregistered tag). Display renders are refused — never silently produced in a different locale; parsing, validation, editing, and calc are unaffected (RFC 0001).',
+    remediation: 'Render with an implementation that supports the declared locale, or change the file\'s `locale` to one this implementation supports. Content is canonical and locale-free, so no data conversion is involved.',
+    spec_ref: 'UW_PROTOCOL_v1.md §III.1a',
   },
   {
     code: 'POL-03', severity: 'error',

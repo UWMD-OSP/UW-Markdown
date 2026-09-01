@@ -12,7 +12,7 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource } from './protocol.js';
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
@@ -195,6 +195,7 @@ export function validateUWFile(
   checkLeaseUpSchedule(parsed, issues);
   checkSizeIntensive(parsed, issues);
   checkSectionReadiness(parsed, issues);
+  checkLocale(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkSourceVocabulary(parsed, issues);
@@ -984,6 +985,26 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[])
       });
     }
   }
+}
+
+// ─── Display locale (RFC 0001) ───────────────────────────────────────────────
+//
+// LOC-01 gates DISPLAY renders only: a file declaring a locale this
+// implementation does not support still parses, validates, edits, and calcs
+// — the content is canonical and locale-free. The reference implementation
+// supports the whole first wave, so its own LOC-01 fires only on
+// unregistered tags; a narrower implementation checks against its manifest's
+// `supported_locales`.
+
+function checkLocale(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const declared = parsed.frontmatter.locale;
+  if (declared == null) return; // absent = en-US
+  if (isSupportedLocale(declared)) return;
+  issues.push({
+    code: 'LOC-01', severity: 'error', field: 'locale',
+    message: `LOC-01: locale ${JSON.stringify(declared)} is not a registered display locale; display renders are refused rather than silently produced in a different locale`,
+    value: String(declared),
+  });
 }
 
 // ─── Asset-class identifier (RFC 0003) ───────────────────────────────────────

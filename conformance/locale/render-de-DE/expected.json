@@ -1,0 +1,8 @@
+{
+  "why": "Swapped separators, suffix euro with NBSP, NBSP before the percent sign.",
+  "locale": "de-DE",
+  "summary_contains": [
+    "8.200.000 €",
+    "5,85 %"
+  ]
+}

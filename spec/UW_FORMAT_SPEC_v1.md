@@ -133,6 +133,15 @@ deal_id: "uw_YYYY_[hash8]"          # * globally unique deal identifier
 deal_name: "string"                 # human label, e.g. "Parkview Apts — Phoenix"
 created: "ISO8601"                  # * timestamp of file creation
 last_modified: "ISO8601"            # * updated on every write
+locale: "en-US"                     # display locale (RFC 0001); absent = en-US.
+                                    # Governs chat/summary/report display ONLY —
+                                    # content stays canonical (JSON numbers,
+                                    # ISO dates, fraction rates). Registered
+                                    # values: en-US, en-GB, de-DE, fr-FR,
+                                    # ja-JP, zh-CN (Protocol §III.1a). An
+                                    # unregistered value is LOC-01: display
+                                    # renders are refused, never silently
+                                    # produced in a different locale.
 
 # ── Property Identity ─────────────────────────────────────
 property_address: "string"          # * full street address

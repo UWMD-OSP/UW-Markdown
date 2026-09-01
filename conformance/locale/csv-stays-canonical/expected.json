@@ -1,0 +1,7 @@
+{
+  "why": "CSV is interchange, not display: the csv render of the de-DE file is byte-identical to the en-US file's.",
+  "compare_locales": [
+    "en-US",
+    "de-DE"
+  ]
+}

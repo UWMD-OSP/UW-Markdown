@@ -1,0 +1,5 @@
+{
+  "why": "CalcEvaluationContext.locale is locale-invariant: the same formula over the same document evaluates to the same quantized value under every registered locale.",
+  "formula": "noi_model.net_operating_income / valuation.purchase_price",
+  "expected_value": 0.0585
+}

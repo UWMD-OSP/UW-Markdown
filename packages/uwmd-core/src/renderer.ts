@@ -6,7 +6,9 @@
 import type { ParsedUWFile, UWBlock, ValidationResult } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
 import { validateUWFile } from './validator.js';
-import { resolveDealSize } from './protocol.js';
+import { resolveDealSize, isSupportedLocale, REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
+import type { SupportedLocale } from './protocol.js';
+import { BUILTIN_FORMAT_RULES, formatNumberWithRules } from './format-rules.js';
 import {
   formatCurrency,
   formatPercent,
@@ -45,6 +47,36 @@ export class UnsupportedRenderFormatError extends Error {
     this.name = 'UnsupportedRenderFormatError';
     this.format = format;
   }
+}
+
+/**
+ * RFC 0001: a display render of a file whose declared `locale` this
+ * implementation does not support MUST be refused, never silently produced
+ * in a different locale (LOC-01 is the validator's side of the same rule).
+ */
+export class UnsupportedLocaleError extends Error {
+  readonly code = 'LOC-01';
+  readonly locale: string;
+
+  constructor(locale: string) {
+    super(`This implementation does not support display locale '${locale}' (supported: ${(REFERENCE_IMPLEMENTATION_MANIFEST.supported_locales ?? ['en-US']).join(', ')}). Content is canonical and locale-free; parsing, validation, and calc are unaffected.`);
+    this.name = 'UnsupportedLocaleError';
+    this.locale = locale;
+  }
+}
+
+/** The file's display locale: absent = en-US; unregistered = refusal. */
+function resolveRenderLocale(fm: ParsedUWFile['frontmatter']): SupportedLocale {
+  const declared = fm.locale;
+  if (declared == null) return 'en-US';
+  if (!isSupportedLocale(declared)) throw new UnsupportedLocaleError(String(declared));
+  return declared;
+}
+
+/** Locale-aware thousands grouping for inline integer figures. */
+function groupInt(n: number, locale: SupportedLocale): string {
+  if (locale === 'en-US') return n.toLocaleString('en-US');
+  return formatNumberWithRules(n, BUILTIN_FORMAT_RULES[locale]);
 }
 
 // ─── Router ───────────────────────────────────────────────────────────────────
@@ -175,9 +207,10 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   const dealCtx = getSection(parsed, 'deal_context');
   const validation = validateUWFile(parsed);
 
-  const pct = (v: unknown): string => formatPercent(v);
-  const money = (v: unknown): string => formatCurrency(v);
-  const num = (v: unknown, dec = 3): string => formatRatio(v, { decimals: dec, suffix: '' });
+  const locale = resolveRenderLocale(fm);
+  const pct = (v: unknown): string => formatPercent(v, { locale });
+  const money = (v: unknown): string => formatCurrency(v, { locale });
+  const num = (v: unknown, dec = 3): string => formatRatio(v, { decimals: dec, suffix: '', locale });
   const val = (v: unknown): string => formatValue(v);
 
   const units = deepGet(property?.content, 'total_units');
@@ -190,7 +223,7 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   // `units` term above — skipping it there keeps those renderings byte-stable.
   const size = resolveDealSize(parsed);
   const sizeTerm = size && size.basis !== 'total_units'
-    ? ` · ${size.quantity.toLocaleString('en-US')} ${size.label}`
+    ? ` · ${groupInt(size.quantity, locale)} ${size.label}`
     : '';
 
   const rate = deepGet(debt?.content, 'interest_rate') ?? deepGet(debt?.content, 'rate');
@@ -316,8 +349,9 @@ function renderChat(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
   const fm = parsed.frontmatter;
   const qm = fm.quick_metrics ?? {};
 
-  const pct = (v: unknown): string => formatPercent(v);
-  const money = (v: unknown): string => formatCurrency(v);
+  const locale = resolveRenderLocale(fm);
+  const pct = (v: unknown): string => formatPercent(v, { locale });
+  const money = (v: unknown): string => formatCurrency(v, { locale });
   const val = (v: unknown): string => formatValue(v);
 
   const sections: string[] = [];

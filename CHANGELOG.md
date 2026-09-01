@@ -8,6 +8,39 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — RFC 0001 implemented: display-locale negotiation (corpus 323 → 331)
+
+[RFC 0001](docs/rfcs/0001-locale-negotiation.md) (accepted and implemented
+2026-09-01). Protocol goes to **1.13.0**, adding **§III.1a — Display locales**.
+A file declares the locale it was authored in (`locale` frontmatter, default
+`en-US`); an implementation declares what it renders
+(`ImplementationManifest.supported_locales`, absent = `['en-US']`); a display
+render of an unsupported locale is refused (**`LOC-01`**, new `LOC` family;
+`UnsupportedLocaleError` from the renderer) — never silently produced in a
+different locale.
+
+- **Display-only by construction**: locale touches chat/summary/report
+  renders only. Canonical JSON content, CSV renders, UW Lite canonical form,
+  digests/receipts, and calc evaluation are locale-free —
+  `CalcEvaluationContext.locale` is pinned locale-invariant by conformance.
+- **The registry, not ICU**: non-`en-US` formatting comes from the new
+  curated `BUILTIN_FORMAT_RULES` table (`format-rules.ts`), stated verbatim
+  in §III.1a — never runtime `Intl`, whose output varies across runtimes.
+  `en-US` keeps its historical code path byte-identical; every existing
+  baseline is untouched.
+- First wave: `en-US`, `en-GB`, `de-DE`, `fr-FR`, `ja-JP`, `zh-CN` (NBSP
+  conventions included, self-defended by a charCode test). `formatCurrency`
+  / `formatPercent` / `formatRatio` / `formatDate` gain a `locale` option;
+  the renderers thread `frontmatter.locale` through.
+- New `conformance/locale/` suite (8 scenarios: five per-locale rendering
+  pins, the LOC-01/display refusal, calc invariance across all six locales,
+  CSV byte identity). Also in this change: the implementation-manifest
+  schema's capability enum caught up with the type (`integrity`,
+  `refinement`, `capability-verify` were missing) and the reference manifest
+  now claims `capability-verify` (an RFC 0011 omission).
+- Deferred, per the RFC: currency-code disambiguation (own future RFC),
+  cross-locale conversion, localized message text.
+
 ### Added — RFC 0011 implemented: capability tokens for write authorization (corpus 315 → 323)
 
 [RFC 0011](docs/rfcs/0011-capability-tokens.md) (accepted and implemented

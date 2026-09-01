@@ -134,6 +134,11 @@ conformance/
 │                         verdict; {deal.uw.md, expected.json} pins LU-NN /
 │                         CC-15 validator codes and an optional end-to-end
 │                         verdict. See lease-up/README.md.
+├── locale/             Display-locale negotiation (RFC 0001, Protocol
+│                         §III.1a). Shared deal + injected locale line: the
+│                         per-locale rendering pins (NBSP included), the
+│                         LOC-01 display refusal, calc invariance, and CSV
+│                         byte identity across locales.
 ├── capability/         Capability-token write authorization (RFC 0011,
 │                         Protocol §XIV). Each scenario edits the shared
 │                         deal.uw.md under a generated token through the
@@ -223,8 +228,9 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `lease-up`, `capability`, `size-intensive`, `signing`,
-`sensitivity`, `stochastic`, and `source` suites are named rather than numbered:
+`capital-stack`, `lease-up`, `capability`, `locale`, `size-intensive`,
+`signing`, `sensitivity`, `stochastic`, and `source` suites are named rather
+than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and

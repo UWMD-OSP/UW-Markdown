@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.12.0`) — the
+- **Protocol version** (this document, currently `1.13.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -438,11 +438,61 @@ Implementations MAY override per-call to add fractional digits or
 suppress suffixes (the second-arg options in `format.ts`), but the
 default presentation MUST match the table above.
 
+The table above is the **`en-US`** row of the per-locale registry; see
+§III.1a for the other registered locales.
+
+### III.1a Display locales (RFC 0001)
+
+A file MAY declare the display locale it was authored in
+(`frontmatter.locale`; absent = `en-US`), and an implementation declares
+the locales it renders (`ImplementationManifest.supported_locales`;
+absent = `['en-US']`). Negotiation is support-or-refuse:
+
+> An implementation MUST support `en-US` and MAY support additional
+> registered locales. When producing a **display render** (chat, summary,
+> report) of a file whose `locale` it does not support, it MUST emit
+> `LOC-01` (error, `LOC` family §III.6a) and MUST NOT fall back to a
+> different locale — two readers disagreeing about what `1.234,56` means
+> is the failure this rule prevents. Parsing, validation, editing, and
+> calc of such a file are unaffected.
+
+**The display-only boundary.** `locale` governs human display renders
+ONLY. Canonical JSON content (numbers, ISO dates, fraction rates), the
+CSV renders (interchange, not display), UW Lite's canonical form,
+digests/signatures/receipts, and calc evaluation are locale-free.
+`CalcEvaluationContext.locale` is locale-invariant: evaluation MUST be
+identical whatever locale a context declares.
+
+**The registry, not ICU.** Formatting for every non-`en-US` locale MUST
+be produced from the rules below (`BUILTIN_FORMAT_RULES`,
+`format-rules.ts`) — never from runtime `Intl`/ICU, whose output varies
+across runtimes and versions. The rows are the normative contract; new
+locales land via additive RFC amendments to this table.
+
+| Locale | Decimal | Grouping | Currency | Percent | Date (display) |
+|---|---|---|---|---|---|
+| `en-US` | `.` | `,` | `$` prefix | `5.51%` | ISO passthrough |
+| `en-GB` | `.` | `,` | `£` prefix | `5.51%` | `DD/MM/YYYY` |
+| `de-DE` | `,` | `.` | `€` suffix, NBSP | `5,51 %` (NBSP) | `DD.MM.YYYY` |
+| `fr-FR` | `,` | NBSP | `€` suffix, NBSP | `5,51 %` (NBSP) | `DD/MM/YYYY` |
+| `ja-JP` | `.` | `,` | `¥` prefix | `5.51%` | `YYYY/MM/DD` |
+| `zh-CN` | `.` | `,` | `¥` prefix | `5.51%` | `YYYY-MM-DD` |
+
+NBSP is U+00A0. Currency symbols are the locale's conventional default
+symbol; **currency-code disambiguation is out of scope** (RFC 0001
+defers it to a future data-model RFC — a peso deal authored in `en-US`
+still renders `$` until monetary values carry a `currency_code`).
+Date patterns are applied textually to the ISO source — no timezone
+arithmetic. Example (`de-DE`): `1234567.5` → `1.234.567,5 €`;
+`0.0551` → `5,51 %`; `2026-04-15` → `15.04.2026`.
+
 ### III.2 Date/time
 
-Dates in the file are ISO-8601 strings. The default display style in
-v1 is `iso` — passthrough. Implementations MAY surface `short`,
-`medium`, or `long` styles via `Intl.DateTimeFormat('en-US', ...)`.
+Dates in the file are ISO-8601 strings. The default display style is
+the declared locale's date pattern (§III.1a) — for `en-US`, `iso`
+passthrough. Implementations MAY surface `short`, `medium`, or `long`
+styles via `Intl.DateTimeFormat`; those styles are convenience, not
+conformance surfaces.
 
 ### III.3 Section display hierarchy
 
@@ -501,6 +551,7 @@ capability is unconditional: every implementation owes it.
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
+| `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031). | `validate` | `warning` (SRC-02 becomes `error` at format 2.0) |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |
@@ -2141,9 +2192,6 @@ The following items are deferred beyond v1.0 and consolidated here for
 discoverability. Unless an item says otherwise, it is v2 exploration. None is
 required for v1 conformance.
 
-- **Locale negotiation** — v1 freezes formatting to `en-US`. The
-  `SupportedLocale` type in `protocol.ts` is the v2 hook; full
-  locale negotiation will land via RFC.
 - **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
   protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
   and optional HTTP/MCP binding profiles. The UW Markdown format remains 1.1.

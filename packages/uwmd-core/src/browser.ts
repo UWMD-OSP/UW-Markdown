@@ -15,7 +15,7 @@
 export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
 export { validateUWFile, lookupRemediation } from './validator.js';
 export { compact, diff } from './compactor.js';
-export { render, UnsupportedRenderFormatError } from './renderer.js';
+export { render, UnsupportedRenderFormatError, UnsupportedLocaleError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';
 export {
@@ -574,6 +574,13 @@ export {
   formatPercentCsv,
   formatNumberCsv,
 } from './format.js';
+export {
+  BUILTIN_FORMAT_RULES,
+  formatNumberWithRules,
+  currencyWithRules,
+  dateWithRules,
+} from './format-rules.js';
+export type { LocaleFormatRules } from './format-rules.js';
 export type {
   CurrencyOptions,
   PercentOptions,
@@ -594,6 +601,8 @@ export {
   VALIDATOR_CODE_FAMILIES,
   validatorCodeFamily,
   SOURCE_TAGS,
+  SUPPORTED_LOCALES,
+  isSupportedLocale,
   ACTOR_NAMESPACES,
   ACTOR_SOURCE_RE,
   parseActorSource,
