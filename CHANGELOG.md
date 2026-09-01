@@ -6,6 +6,22 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Clarified — RFC 0032: `_meta.provisional` and signing (no version moves)
+
+Answered the adopter question tracked upstream-side as UPSTREAM-002
+(underwriter.cc): § V.7's provisional obligation stays a SHOULD, on purpose.
+`_meta.provisional` is inside canonical block JSON, so stamping it moves
+`content_hash` and any § V.11 signature — and the spec now says plainly that
+cross-producer agreement of hashes or signatures over provenance metadata is a
+**non-goal** (the signing input names `actor`, `timestamp`, `signed_at`, `kid`,
+which differ across producers by construction). Cross-implementation agreement
+guarantees remain where they always were: computed values (§ VIII, RFCs
+0023/0024) and verification receipts (RFC 0016). Two paragraphs added, § V.7
+and § V.11.2; no schema, code, corpus, or version change — the same treatment
+as the § V.9 wording fix.
+
 ## [1.8.0] - 2026-08-31
 
 ### Released
@@ -2438,7 +2454,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...v1.5.0

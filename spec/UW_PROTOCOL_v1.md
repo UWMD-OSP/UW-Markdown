@@ -719,6 +719,21 @@ unless the value originated from `inherited_assumption`,
 refinement engine that the field is a candidate for
 value-of-information ranking.
 
+This obligation is deliberately a SHOULD, and it is safe to leave as
+one (*stated by [RFC 0032](../docs/rfcs/0032-provisional-signing-scope.md)*):
+`_meta.provisional` sits inside canonical block JSON (§V.9), so
+stamping it moves the block's `content_hash` and therefore any §V.11
+signature — and the protocol accepts that two conforming producers
+may diverge here. Agreement of hashes or signatures across
+independently-produced blocks is **not a protocol goal** and is
+unachievable regardless of this clause, since canonical content
+includes producer-specific fields (`timestamp`, `source`) in every
+block. What the protocol does guarantee across implementations is
+agreement on *computed values* (§VIII; RFCs 0023 and 0024) and on
+*verification verdicts* (RFC 0016 receipts). A signature attests to
+who wrote what, when — it does not attest that every conforming
+producer would have written the same bytes.
+
 #### V.7.1 Inherited assumptions
 
 *Added at protocol 1.5.0 by [RFC 0021](../docs/rfcs/0021-composable-documents.md)
@@ -913,6 +928,20 @@ The signer commits to the block's `content_hash` rather than to the
 block itself — the hash already covers the content, and re-deriving
 it inside the signature would buy nothing. The other five fields are
 what a verifier needs in order to answer *who* signed *what*, *when*.
+
+Four of the six fields (`actor`, `content_hash`, `signed_at`,
+`timestamp` — and in practice `kid`) are specific to the producing
+party, so two conforming producers signing equivalent underwriting
+content produce different signing inputs and different signatures
+**by design** (*stated by
+[RFC 0032](../docs/rfcs/0032-provisional-signing-scope.md)*). A
+verifier MUST NOT treat signature disagreement between
+independently-produced blocks as evidence that either is
+non-conforming; conformance of *values* is the province of §VIII
+determinism and RFC 0016 receipts. This includes divergence
+introduced by optional `_meta` stamps such as `provisional` (§V.7),
+which is covered by `content_hash` like any other `_meta` field
+outside §V.9's two exclusions.
 
 The signing input names no `parent_hash` field. RFC 0010 read that as
 a guarantee that re-rooting a supersede chain leaves prior signatures
