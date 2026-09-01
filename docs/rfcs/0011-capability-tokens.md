@@ -1,7 +1,7 @@
 ---
 rfc: 0011
 title: Capability tokens for write authorization
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-04-27
 revised: 2026-09-01
@@ -12,6 +12,13 @@ affects:
 ---
 
 # RFC 0011: Capability tokens for write authorization
+
+> **Implemented 2026-09-01** at protocol **1.12.0**, exactly as revised below.
+> One refinement recorded: the sync-path refusal got its own typed code,
+> `PROTO-EDIT-008` (the revision named the behavior but not the code). The
+> conformance suite landed as 8 generated scenarios under
+> `conformance/capability/` (`npm run gen-capability-fixtures`), reusing the
+> published signing-suite TEST key as the coordinator key.
 
 > **Revised 2026-09-01** against everything implemented since the April
 > draft. The mechanism survives intact — a short-lived, scope-limited JWT the

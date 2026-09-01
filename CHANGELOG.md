@@ -8,6 +8,36 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — RFC 0011 implemented: capability tokens for write authorization (corpus 315 → 323)
+
+[RFC 0011](docs/rfcs/0011-capability-tokens.md) (accepted and implemented
+2026-09-01). Protocol goes to **1.12.0**, adding **§XIV — Capability tokens
+(optional)** (future work renumbers to §XV). An opt-in second gate on writes
+for orchestrator-bound deployments: a short-lived, scope-limited JWT a
+coordinator signs — "this actor may write these sections at these stages for
+this deal, until this time" — verified by the editor before the write.
+
+- **Tokens narrow, never widen.** The static §V.3 policy check runs
+  regardless; a token cannot override a `POL-01` refusal, and `institution/*`
+  keeps `system_only` — the question RFC 0031's catch-all surfaced, now
+  resolved and pinned by a conformance case.
+- **`sub` binds `_meta.source`** under the RFC 0031 actor grammar (instance
+  identity fits the id charset: `agent/L2.instance-abc-123`); free-text
+  `_meta.actor` takes no part in authorization.
+- **Core stays crypto-free**: `CapabilityVerifier` is injected
+  (`EditOptions.capabilityVerifier`, the RFC 0016 precedent), honored by
+  `applyEditAsync` only — the sync path with a verifier configured refuses
+  (`PROTO-EDIT-008`) rather than silently skipping. Missing or rejected
+  tokens fail **`POL-03`** with a typed reason; an accepted token's `jti`
+  lands in the new block's notes as `capability:<jti>`.
+- **`@uwmd/signing` ships the reference verifier** (`createCapabilityVerifier`
+  over the existing KeyStore, JOSE alg names mapped onto the §V.11
+  shortlist) plus `signCapabilityToken` for coordinators and fixtures.
+- New `capability-verify` viewer capability (RFC 0030 mechanism); `uwmd edit`
+  gains `--capability-token`/`--coord-key` (dynamic-import optional peer,
+  like `--signing`); new generated `conformance/capability/` suite (8
+  scenarios, `npm run gen-capability-fixtures`).
+
 ### Added — RFC 0008 implemented: the lease-up schedule section (corpus 306 → 315)
 
 [RFC 0008](docs/rfcs/0008-lease-up-modeling.md) (accepted and implemented

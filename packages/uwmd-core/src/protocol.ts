@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.11.0' as const;
+export const PROTOCOL_VERSION = '1.12.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -74,6 +74,8 @@ export type ViewerCapability =
   | 'module-load'
   /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
   | 'signing'
+  /** Enforces capability tokens on writes (§XIV, RFC 0011). */
+  | 'capability-verify'
   /** Verifies `ModuleManifest.signature` and honors a host policy (§X.1.4, RFC 0002). */
   | 'module-signature-verification'
   /**
@@ -1460,6 +1462,62 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
   { source_pattern: '*', authority: 'either', supersede_on_edit: true },
 ]);
 
+// ─── Capability tokens (Protocol §XIV, RFC 0011) ─────────────────────────────
+//
+// An optional second gate on writes, for orchestrator-bound deployments: a
+// short-lived, scope-limited JWT the editor verifies before accepting an edit.
+// Core defines only the interface — the crypto lives behind it, in
+// `@uwmd/signing`'s `createCapabilityVerifier` (the RFC 0016
+// ReceiptSignatureVerifier injection precedent). Tokens NARROW authority,
+// never widen it: the §V.3 static policy check runs first and a token cannot
+// override its refusal.
+
+/** Why a capability token was rejected (Protocol §XIV.3). */
+export type CapabilityRejection =
+  | 'expired'
+  | 'not_yet_valid'
+  | 'wrong_audience'
+  | 'wrong_deal'
+  | 'wrong_section'
+  | 'wrong_stage'
+  | 'wrong_op'
+  /** The token's `sub` is not the prospective block's `_meta.source`. */
+  | 'sub_mismatch'
+  | 'bad_signature'
+  | 'unknown_kid'
+  | 'malformed';
+
+/** The edit the verifier is asked to authorize, as the editor sees it. */
+export interface CapabilityVerifyContext {
+  /** The file's frontmatter `deal_id`. */
+  deal_id: string;
+  /**
+   * The target section id. Frontmatter ops use the reserved name
+   * `_frontmatter`; pipeline-log appends use `pipeline_log`.
+   */
+  section: string;
+  /** The file's declared `deal_stage`, or null when none is declared. */
+  stage: string | null;
+  /** The EditOperation kind. */
+  op: string;
+  /** The prospective block's `_meta.source` (the RFC 0031 actor). */
+  source: string;
+}
+
+export type CapabilityVerdict =
+  | { ok: true; sub: string; jti: string }
+  | { ok: false; reason: CapabilityRejection };
+
+/**
+ * Verifies a capability token against the edit it claims to authorize.
+ * Injected into `applyEditAsync` via `EditOptions.capabilityVerifier`; when
+ * one is configured, every write MUST present a token it accepts (POL-03
+ * otherwise). Async because verification is Web Crypto.
+ */
+export interface CapabilityVerifier {
+  verify(token: string, ctx: CapabilityVerifyContext): Promise<CapabilityVerdict>;
+}
+
 /**
  * One registered validator code family (protocol §III.6a, RFC 0030).
  *
@@ -1928,6 +1986,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The section\'s policy requires supersede_on_edit but the head version > 1 has no superseded prior versions.',
     remediation: 'Re-issue the edit as section_supersede so the prior version is preserved as a superseded block.',
     spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+  },
+  {
+    code: 'POL-03', severity: 'error',
+    title: 'Capability token rejected',
+    description: 'The editor is configured with a capability verifier and the write presented no token, or a token the verifier rejected (expired, out of scope, bad signature — the reason travels in the issue detail). RFC 0011.',
+    remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
+    spec_ref: 'UW_PROTOCOL_v1.md §XIV',
   },
   {
     code: 'SRC-01', severity: 'warning',

@@ -1,0 +1,5 @@
+{
+  "why": "An in-scope token: right deal, section, stage, op, and sub. The edit applies and the token's jti is recorded on the new block as capability:<jti> - the file-visible trace of the authorization decision.",
+  "ok": true,
+  "notes_contains": "capability:CAP-01-VALID"
+}

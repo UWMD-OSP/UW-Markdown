@@ -45,6 +45,13 @@ export {
 } from './verify.js';
 export type { BlockVerification, SigVerifyError } from './verify.js';
 
+export {
+  createCapabilityVerifier,
+  signCapabilityToken,
+  CAPABILITY_AUDIENCE,
+} from './capability.js';
+export type { CapabilityTokenClaims, CapabilityVerifierOptions } from './capability.js';
+
 export { signModule, stampModuleSignature, createModuleSignatureVerifier } from './modules.js';
 export type { SignModuleOptions } from './modules.js';
 

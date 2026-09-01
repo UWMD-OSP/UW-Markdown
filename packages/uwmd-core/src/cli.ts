@@ -20,15 +20,15 @@ import {
 } from './envelope.js';
 import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
-import { applyEdit } from './editor.js';
+import { applyEdit, applyEditAsync } from './editor.js';
 import { verifyChain, verifyProvenance } from './integrity.js';
 import type {
   BlockSignatureVerifier,
   IntegrityResult,
   VerifyChainOptions,
 } from './integrity.js';
-import type { EditContext } from './editor.js';
-import type { EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
+import type { EditContext, EditResult } from './editor.js';
+import type { CapabilityVerifier, EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
@@ -1355,7 +1355,7 @@ switch (command) {
 
   case 'edit': {
     if (!positional[0] || !positional[1]) {
-      console.error('Usage: uwmd edit <file> <operation.json> [--actor <name>] [--source <pattern>] [--agent-id <id>] [--agent-version <v>] [--confidence high|medium|low] [--output <file>]');
+      console.error('Usage: uwmd edit <file> <operation.json> [--actor <name>] [--source <pattern>] [--agent-id <id>] [--agent-version <v>] [--confidence high|medium|low] [--output <file>] [--capability-token <jwt> --coord-key <keystore.json>]');
       process.exit(1);
     }
     const fileContent = readFile(positional[0]);
@@ -1375,7 +1375,42 @@ switch (command) {
       agentVersion: (flags['agent-version'] as string | undefined) ?? null,
       confidence: (flags['confidence'] as 'high' | 'medium' | 'low' | undefined) ?? 'medium',
     };
-    const result = applyEdit(fileContent, parsedFile, op, ctx);
+
+    // Capability enforcement (Protocol §XIV, RFC 0011). Same optional-peer
+    // dynamic-import arrangement as `--signing` above: core takes no crypto
+    // dependency to satisfy a flag most invocations never pass.
+    let result: EditResult;
+    const capToken = flags['capability-token'];
+    if (typeof capToken === 'string' && capToken.length > 0) {
+      const coordKey = flags['coord-key'];
+      if (typeof coordKey !== 'string' || coordKey.length === 0) {
+        console.error('--capability-token requires --coord-key=<path> to the coordinator\'s JSON key store.');
+        process.exit(1);
+      }
+      interface CapabilityModule {
+        loadKeyStoreFile(path: string): Promise<unknown>;
+        createCapabilityVerifier(store: never): CapabilityVerifier;
+      }
+      let signing: CapabilityModule;
+      try {
+        signing = (await import('@uwmd/signing' as string)) as CapabilityModule;
+      } catch {
+        console.error('--capability-token needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.');
+        process.exit(1);
+      }
+      try {
+        const store = await signing.loadKeyStoreFile(resolve(coordKey));
+        ctx.capability_token = capToken;
+        result = await applyEditAsync(fileContent, parsedFile, op, ctx, undefined, {
+          capabilityVerifier: signing.createCapabilityVerifier(store as never),
+        });
+      } catch (error) {
+        console.error((error as Error).message);
+        process.exit(1);
+      }
+    } else {
+      result = applyEdit(fileContent, parsedFile, op, ctx);
+    }
     // --json reports the edit instead of performing it: the conformance driver
     // needs the resulting content, and a driver that rewrote fixtures as a side
     // effect of reading them would corrupt the corpus it is testing.

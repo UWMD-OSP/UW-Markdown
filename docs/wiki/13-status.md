@@ -2,15 +2,17 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-01, after **RFC 0008 (lease-up modeling) was
-accepted and implemented** on top of the 1.8.0 release (tag `v1.8.0`,
-2026-08-31, core+cli live on npm). Full pass: build green across all
-workspaces; **1,199 core tests** (1,171 + 28 lease-up); **315 conformance**
-assertions (306 + the 9-scenario `lease-up` suite; **44** more through the
-RFC 0004 CLI driver under `--no-skip`, plus **3 conformance profiles**);
-Biome clean; `typecheck:tests` clean — protocol at **1.11.0** for RFC 0008's
-§4.25, the `LU-NN` family, and `CC-15` (1.10.0 was RFC 0031's `_meta` split;
-1.9.0 RFC 0030; 1.8.0 added §X.2; 1.7.0 added §V.11; 1.6.0 added §XIII).
+**Last verified:** 2026-09-01 (evening), after **RFC 0011 (capability
+tokens) was accepted and implemented** on top of RFC 0008 (same day) and the
+1.8.0 release (tag `v1.8.0`, core+cli live on npm). Full pass: build green
+across all workspaces; **1,208 core tests** + **78 signing tests** (16 new
+capability); **323 conformance** assertions (315 + the 8-scenario generated
+`capability` suite; **44** more through the RFC 0004 CLI driver under
+`--no-skip`, plus **3 conformance profiles**); Biome clean;
+`typecheck:tests` clean; `verify-indexes` clean — protocol at **1.12.0** for
+RFC 0011's §XIV (future work renumbered §XV) after 1.11.0 = RFC 0008's
+§4.25 (1.10.0 RFC 0031; 1.9.0 RFC 0030; 1.8.0 §X.2; 1.7.0 §V.11; 1.6.0
+§XIII).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -92,10 +94,10 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **315 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **323 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, `lease-up`, `size-intensive`, `signing`, `sensitivity`,
-  `stochastic`, and `source` suites. CI runs the runner's **default** suite list rather than a pinned
+  `capital-stack`, `lease-up`, `capability`, `size-intensive`, `signing`,
+  `sensitivity`, `stochastic`, and `source` suites. CI runs the runner's **default** suite list rather than a pinned
   `--tier=`, which is what the earlier claim of replay coverage assumed but did
   not have: `ci.yml` pinned `1,2,3,lite,receipts`, so `4-replay` had never
   actually gated a pull request. See [09](09-conformance-testing.md).
@@ -761,10 +763,28 @@ Deferred by design: Excel emit, `dcf` coupling, defaults entries, and any
 shared period-schedule abstraction (a future hospitality RevPAR ramp should
 reuse §4.25's period grammar, not invent one).
 
-**The 2026-09-01 sprint order for the rest** (owner-confirmed): 0011
-(capability tokens) next, then 0001 (locale/multi-currency); corpus retrieval
-(0013) and portfolio/relationship profiles (0015) deferred. Each RFC still
-goes through its own acceptance.
+**✅ RFC 0011 capability tokens — accepted and implemented 2026-09-01**
+(protocol 1.12.0, new **§XIV**; future work renumbered §XV). An opt-in
+second gate on writes: a scope-limited JWT verified by the editor before
+accepting an edit. The load-bearing rule is **tokens narrow, never widen** —
+the static §V.3 policy runs regardless and a token cannot override its
+refusal, which also resolves the RFC 0031-era question: `institution/*`
+keeps `system_only`. `sub` binds `_meta.source` under the 0031 actor
+grammar (`agent/L2.inst-A`); free-text `actor` takes no part. Core stays
+crypto-free — `CapabilityVerifier` is injected (the RFC 0016 precedent),
+honored by `applyEditAsync` only (sync path refuses with `PROTO-EDIT-008`);
+refusals are `POL-03` with a typed reason; an accepted token's `jti` is
+recorded as `capability:<jti>` in the new block's notes. The reference
+verifier + `signCapabilityToken` live in `@uwmd/signing` over the existing
+KeyStore. `uwmd edit --capability-token --coord-key` (optional-peer dynamic
+import). Generated `conformance/capability/` suite, 8 scenarios including
+the no-escalation pin (corpus 315 → 323), owed only under the new
+`capability-verify` capability.
+
+**The sprint order for the rest** (owner-confirmed): 0001
+(locale/multi-currency) next; corpus retrieval (0013) and
+portfolio/relationship profiles (0015) deferred. Each RFC still goes
+through its own acceptance.
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
 was revised 2026-08-31** to absorb the split: `provenance` now carries both

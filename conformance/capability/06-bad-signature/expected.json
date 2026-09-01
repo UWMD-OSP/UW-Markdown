@@ -1,0 +1,6 @@
+{
+  "why": "Signed by a different key under the coordinator's kid. The store resolves the kid, the bytes do not verify.",
+  "ok": false,
+  "error_code": "POL-03",
+  "message_contains": "bad_signature"
+}

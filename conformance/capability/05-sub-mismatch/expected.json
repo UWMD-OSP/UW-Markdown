@@ -1,0 +1,7 @@
+{
+  "why": "The token authorizes agent/L2.inst-A but the write's _meta.source is agent/L2.inst-B. sub binds to the RFC 0031 actor source, and free-text _meta.actor takes no part in it.",
+  "source": "agent/L2.inst-B",
+  "ok": false,
+  "error_code": "POL-03",
+  "message_contains": "sub_mismatch"
+}

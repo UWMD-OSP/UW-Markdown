@@ -60,6 +60,7 @@ npm run conformance -- --tier=packages     # the deal package suite alone
 npm run conformance -- --tier=composition  # the RFC 0021 composition suite alone
 npm run conformance -- --tier=capital-stack  # the RFC 0026 capital-stack suite alone
 npm run conformance -- --tier=lease-up     # the RFC 0008 lease-up suite alone
+npm run conformance -- --tier=capability   # the RFC 0011 capability-token suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```

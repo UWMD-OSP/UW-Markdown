@@ -1,0 +1,14 @@
+{
+  "why": "The token scopes noi_model; the edit targets risk_assessment. Scope means scope.",
+  "op": {
+    "kind": "section_supersede",
+    "section_id": "risk_assessment",
+    "content": {
+      "overall_rating": "high"
+    },
+    "meta": {}
+  },
+  "ok": false,
+  "error_code": "POL-03",
+  "message_contains": "wrong_section"
+}
