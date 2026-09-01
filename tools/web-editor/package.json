@@ -1,7 +1,7 @@
 {
   "name": "@uwmd/web-editor",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Calc-aware web editor for .uw.md files. Embeds the @uwmd/core parser, validator, Tier-2 dispatcher, Tier-3 calc engine, and the §7.1/§7.2 report renderer in the browser so derived values never drift from inputs and the lender package is always one tab away.",
   "type": "module",
   "scripts": {
