@@ -2,15 +2,18 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-31, after RFC 0031 (source vocabulary — accepted
-and implemented the same day, on top of RFC 0030 and the unpoliced-write fix
-from the same week). Full pass: build green across all workspaces; **1,482
+**Last verified:** 2026-08-31, after the **1.8.0 release** (`0fa148d`, tag
+`v1.8.0`) shipped the whole post-1.7.0 arc — RFC 0031 (source vocabulary,
+accepted and implemented the same day), RFC 0030, the unpoliced-write fix, and
+the 2026-08-27 v2-train batch — and the RFC 0009 draft was revised for the
+source/resolution split. Full pass: build green across all workspaces; **1,482
 tests** — 1,171 core, 94 excel, 62 cli, 62 signing, 15 module-hospitality, 4
 batch, 3 report — plus **71 web-editor**; **306 conformance** assertions (and
 **44** more through the RFC 0004 CLI driver, run under `--no-skip`), plus **3
 conformance profiles** via `npm run conformance:profiles`; Biome clean;
 `typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
-`@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
+`@uwmd/cli` **1.8.0 published to npm** (2026-08-31, tag `v1.8.0`, both
+verified live via `npm view`) by the tag-triggered OIDC job,
 provenance attached — protocol at **1.10.0** for RFC 0031's `_meta` split,
 `SRC-NN`, and the §V.3/§V.7 rewrite (1.9.0 was RFC 0030; 1.8.0 added §X.2;
 1.7.0 added §V.11; 1.6.0 added §XIII).
