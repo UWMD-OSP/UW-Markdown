@@ -22,6 +22,21 @@ guarantees remain where they always were: computed values (§ VIII, RFCs
 and § V.11.2; no schema, code, corpus, or version change — the same treatment
 as the § V.9 wording fix.
 
+### Clarified — RFC 0033: `capital_stack` is one point in time (no version moves)
+
+Answered the adopter question tracked upstream-side as UPSTREAM-003
+(underwriter.cc): a ground-up deal's construction loan and its permanent
+takeout are one senior position in time sequence, and § 4.24 as written forced
+the producer to choose between double-counting them as concurrent tranches and
+omitting one. The section now states the scope its own verification semantics
+imply — the stack is the capitalization contemporaneous with the NOI the
+sizing verbs read (for a deal underwritten to stabilization, the stabilized
+stack); temporally disjoint facilities MUST NOT be stated as concurrent
+tranches, and the retired construction facility stays out. `bridge` tranches
+are unaffected. Phased stacks defer with the multi-period spine RFC 0026 § D
+already parked. One normative bullet in § 4.24; no schema, code, corpus, or
+version change.
+
 ## [1.8.0] - 2026-08-31
 
 ### Released

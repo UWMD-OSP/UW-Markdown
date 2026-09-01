@@ -109,6 +109,7 @@ const COPIES = [
   { from: 'docs/rfcs/0030-conformance-profiles.md', to: 'about/rfcs/0030-conformance-profiles.md' },
   { from: 'docs/rfcs/0031-source-vocabulary.md', to: 'about/rfcs/0031-source-vocabulary.md' },
   { from: 'docs/rfcs/0032-provisional-signing-scope.md', to: 'about/rfcs/0032-provisional-signing-scope.md' },
+  { from: 'docs/rfcs/0033-capital-stack-point-in-time.md', to: 'about/rfcs/0033-capital-stack-point-in-time.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
