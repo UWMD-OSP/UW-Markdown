@@ -1,0 +1,8 @@
+{
+  "why": "Same separators as en-US, sterling symbol, DD/MM/YYYY dates.",
+  "locale": "en-GB",
+  "summary_contains": [
+    "£8,200,000",
+    "5.85%"
+  ]
+}

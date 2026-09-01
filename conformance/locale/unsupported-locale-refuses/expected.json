@@ -1,0 +1,9 @@
+{
+  "why": "An unregistered tag refuses DISPLAY renders (LOC-01, UnsupportedLocaleError) and nothing else: the document still parses, validates otherwise, calcs, and renders json/csv - content is canonical and locale-free.",
+  "locale": "xx-XX",
+  "validator_codes": [
+    "LOC-01"
+  ],
+  "render_refuses": true,
+  "machine_renders_work": true
+}

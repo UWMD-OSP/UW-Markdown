@@ -59,7 +59,8 @@
           "edit-replace", "edit-supersede", "edit-frontmatter",
           "calc-evaluate", "calc-deterministic", "calc-stochastic", "calc-sensitivity",
           "agent-host", "module-load",
-          "signing", "module-signature-verification"
+          "signing", "capability-verify", "module-signature-verification",
+          "integrity", "refinement"
         ]
       },
       "uniqueItems": true,
@@ -70,6 +71,15 @@
       "items": { "$ref": "#/$defs/representationCapability" },
       "uniqueItems": true,
       "description": "Machine-readable representation support (Protocol 1.2+)."
+    },
+    "supported_locales": {
+      "type": "array",
+      "items": {
+        "enum": ["en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "Display locales this implementation renders (RFC 0001). Absent means ['en-US']. A display render of a file whose declared locale is outside this list is refused with LOC-01, never silently rendered in a different locale. Locale governs display only - content is canonical and locale-free."
     },    "asset_classes": {
       "type": "array",
       "items": {

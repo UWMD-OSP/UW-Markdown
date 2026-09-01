@@ -89,6 +89,7 @@ import {
   canonicalizeUWEnvelope,
   computeEnvelopeDigest,
   SIZE_INTENSIVES,
+  SUPPORTED_LOCALES,
   getSizeIntensive,
   resolveDealSize,
   getPackForAssetClass,
@@ -107,7 +108,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,capability,size-intensive,signing,sensitivity,stochastic,source').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,capability,locale,size-intensive,signing,sensitivity,stochastic,source').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2335,6 +2336,100 @@ async function runLeaseUp() {
   }
 }
 
+// ─── Display locales (RFC 0001, Protocol §III.1a) ────────────────────────────
+//
+// All scenarios share deal.uw.md; the runner injects `locale: <tag>` into the
+// frontmatter so canonical content is byte-identical across locales by
+// construction. See conformance/locale/README.md for expected.json fields.
+
+const LOCALE_DIR = join(CONFORMANCE_DIR, 'locale');
+
+async function runLocale() {
+  if (!existsSync(LOCALE_DIR)) {
+    record('locale', '(none)', 'pass', 'no locale fixtures');
+    return;
+  }
+  const base = readFileSync(join(LOCALE_DIR, 'deal.uw.md'), 'utf8');
+  const withLocale = (tag) =>
+    tag === 'en-US' ? base : base.replace('uw_version: "1.1"', `uw_version: "1.1"\nlocale: ${tag}`);
+
+  const scenarios = readdirSync(LOCALE_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(LOCALE_DIR, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  for (const { id, dir } of scenarios) {
+    const expected = readCase(dir, 'expected.json');
+
+    // ── Calc invariance across every registered locale ───────────────────────
+    if (expected.formula) {
+      const parsed = parseUWFile(base);
+      const decl = { id: 'loc-invariant', label: 'loc', formula: expected.formula, deterministic: true };
+      const values = SUPPORTED_LOCALES.map((locale) => {
+        const r = evaluateCalc(decl, { parsed, prior_results: {}, locale });
+        return r.ok ? r.value : `error:${r.error?.code}`;
+      });
+      const distinct = [...new Set(values.map((v) => JSON.stringify(v)))];
+      if (distinct.length !== 1 || values[0] !== expected.expected_value) {
+        record('locale', id, 'fail', `values ${values.join(', ')}, expected all ${expected.expected_value}`);
+        continue;
+      }
+      record('locale', id, 'pass', `${expected.expected_value} under ${SUPPORTED_LOCALES.length} locales`);
+      continue;
+    }
+
+    // ── CSV byte identity across locales ─────────────────────────────────────
+    if (expected.compare_locales) {
+      const [a, b] = expected.compare_locales;
+      const csvA = render(parseUWFile(withLocale(a)), { format: 'csv' }).content;
+      const csvB = render(parseUWFile(withLocale(b)), { format: 'csv' }).content;
+      if (csvA !== csvB) {
+        record('locale', id, 'fail', `csv render differs between ${a} and ${b}`);
+        continue;
+      }
+      record('locale', id, 'pass', `${a} ≡ ${b}`);
+      continue;
+    }
+
+    const parsed = parseUWFile(withLocale(expected.locale));
+
+    // ── Unregistered locale: display refuses, machines keep working ──────────
+    if (expected.render_refuses) {
+      const codes = validateUWFile(parsed).issues.map((i) => i.code);
+      const missing = (expected.validator_codes ?? []).filter((c) => !codes.includes(c));
+      if (missing.length) {
+        record('locale', id, 'fail', `validator missing ${missing.join(', ')}: emitted [${codes.join(', ')}]`);
+        continue;
+      }
+      let threw = false;
+      try { render(parsed, { format: 'summary' }); } catch { threw = true; }
+      if (!threw) {
+        record('locale', id, 'fail', 'summary render of an unregistered locale did not refuse');
+        continue;
+      }
+      if (expected.machine_renders_work) {
+        const json = render(parsed, { format: 'json' }).content;
+        const csv = render(parsed, { format: 'csv' }).content;
+        if (!json.length || !csv.length) {
+          record('locale', id, 'fail', 'machine render produced no output');
+          continue;
+        }
+      }
+      record('locale', id, 'pass', `${(expected.validator_codes ?? []).join(', ')} + display refusal`);
+      continue;
+    }
+
+    // ── Per-locale rendering pins ────────────────────────────────────────────
+    const summary = render(parsed, { format: 'summary' }).content;
+    const missing = (expected.summary_contains ?? []).filter((s) => !summary.includes(s));
+    if (missing.length) {
+      record('locale', id, 'fail', `summary lacks ${missing.map((m) => JSON.stringify(m)).join(', ')}`);
+      continue;
+    }
+    record('locale', id, 'pass', (expected.summary_contains ?? []).join(' · '));
+  }
+}
+
 // ─── Capability tokens (RFC 0011, Protocol §XIV) ─────────────────────────────
 //
 // Each scenario edits the shared deal.uw.md under a token (generated by
@@ -3154,6 +3249,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'lease-up': async () => { await runLeaseUp(); },
   'capability': async () => { await runCapability(); },
+  'locale': async () => { await runLocale(); },
   'size-intensive': async () => { await runSizeIntensive(); },
   'signing': async () => { await runSigning(); },
   'sensitivity': async () => { await runSensitivity(); },

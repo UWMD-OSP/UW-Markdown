@@ -2,17 +2,17 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-01 (evening), after **RFC 0011 (capability
-tokens) was accepted and implemented** on top of RFC 0008 (same day) and the
+**Last verified:** 2026-09-01 (late), after **RFC 0001 (display locales)
+was accepted and implemented** — completing the sprint's Phase 2 trio
+(0008, 0011, 0001, all accepted and implemented the same day) on top of the
 1.8.0 release (tag `v1.8.0`, core+cli live on npm). Full pass: build green
-across all workspaces; **1,208 core tests** + **78 signing tests** (16 new
-capability); **323 conformance** assertions (315 + the 8-scenario generated
-`capability` suite; **44** more through the RFC 0004 CLI driver under
-`--no-skip`, plus **3 conformance profiles**); Biome clean;
-`typecheck:tests` clean; `verify-indexes` clean — protocol at **1.12.0** for
-RFC 0011's §XIV (future work renumbered §XV) after 1.11.0 = RFC 0008's
-§4.25 (1.10.0 RFC 0031; 1.9.0 RFC 0030; 1.8.0 §X.2; 1.7.0 §V.11; 1.6.0
-§XIII).
+across all workspaces; **1,228 core tests** + **78 signing**; **331
+conformance** assertions (323 + the 8-scenario `locale` suite; **44** more
+through the RFC 0004 CLI driver under `--no-skip`, plus **3 conformance
+profiles**); Biome clean; `typecheck:tests` clean; `verify-indexes` clean —
+protocol at **1.13.0** for RFC 0001's §III.1a (1.12.0 = RFC 0011's §XIV,
+future work renumbered §XV; 1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031;
+1.9.0 RFC 0030; 1.8.0 §X.2; 1.7.0 §V.11; 1.6.0 §XIII).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -94,10 +94,10 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **323 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **331 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, `lease-up`, `capability`, `size-intensive`, `signing`,
-  `sensitivity`, `stochastic`, and `source` suites. CI runs the runner's **default** suite list rather than a pinned
+  `capital-stack`, `lease-up`, `capability`, `locale`, `size-intensive`,
+  `signing`, `sensitivity`, `stochastic`, and `source` suites. CI runs the runner's **default** suite list rather than a pinned
   `--tier=`, which is what the earlier claim of replay coverage assumed but did
   not have: `ci.yml` pinned `1,2,3,lite,receipts`, so `4-replay` had never
   actually gated a pull request. See [09](09-conformance-testing.md).
@@ -781,10 +781,25 @@ import). Generated `conformance/capability/` suite, 8 scenarios including
 the no-escalation pin (corpus 315 → 323), owed only under the new
 `capability-verify` capability.
 
-**The sprint order for the rest** (owner-confirmed): 0001
-(locale/multi-currency) next; corpus retrieval (0013) and
-portfolio/relationship profiles (0015) deferred. Each RFC still goes
-through its own acceptance.
+**✅ RFC 0001 display-locale negotiation — accepted and implemented
+2026-09-01** (protocol 1.13.0, new **§III.1a**). Declare-and-refuse: the
+file states its locale (frontmatter, default en-US), the implementation
+states what it renders (`supported_locales`), and an unsupported locale
+refuses display renders (`LOC-01` / `UnsupportedLocaleError`) rather than
+silently switching. **Display-only by construction** — canonical JSON, CSV
+renders, Lite canonical form, digests, and calc are locale-free
+(calc invariance pinned by fixture). Formatting for the five non-en-US
+first-wave locales (en-GB, de-DE, fr-FR, ja-JP, zh-CN) comes from the
+curated `BUILTIN_FORMAT_RULES` registry, never runtime Intl/ICU; en-US
+keeps its historical path byte-identical. New `conformance/locale/` suite,
+8 scenarios (corpus 323 → 331). Currency-code disambiguation deliberately
+deferred to its own RFC.
+
+**Phase 2 is complete.** All three owner-ordered builds (0008 → 0011 →
+0001) accepted and implemented in one day; corpus retrieval (0013) and
+portfolio/relationship profiles (0015) stay deferred to a later sprint.
+Next: Phase 3, cut 1.9.0 — blocked on the owner-only npm trusted-publisher
+step for @uwmd/signing (docs/handoff/HUMAN-configure-signing-trusted-publisher.md).
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
 was revised 2026-08-31** to absorb the split: `provenance` now carries both

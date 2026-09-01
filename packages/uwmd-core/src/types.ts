@@ -407,6 +407,12 @@ export interface UWFrontmatter {
    * `declaredModuleDependencies`.
    */
   asset_class: UWAssetClassId;
+  /**
+   * Display locale the file was authored in (RFC 0001). Absent = `en-US`.
+   * Governs chat/summary/report display only; content stays canonical and
+   * locale-free. An unregistered value is LOC-01 and refuses display renders.
+   */
+  locale?: string;
   asset_subtype?: string | null;
   loan_type?: string | null;
   scenario?: string | null;

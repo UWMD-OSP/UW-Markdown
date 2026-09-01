@@ -1,0 +1,8 @@
+{
+  "why": "NBSP grouping, comma decimal, suffix euro.",
+  "locale": "fr-FR",
+  "summary_contains": [
+    "8 200 000 €",
+    "5,85 %"
+  ]
+}
