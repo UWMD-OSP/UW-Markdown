@@ -1,0 +1,51 @@
+{
+  "why": "stabilized_summary states an occupancy_rate but no square-foot denominator resolves (a hospitality deal states keys, not RSF): unverifiable, distinct from failed -- undecided is never zero.",
+  "schedule": {
+    "model_type": "natural_turnover",
+    "period_granularity": "quarterly",
+    "stabilization_target": "2027-Q4",
+    "assumptions": {
+      "monthly_turnover_rate": 0.04,
+      "market_rent_psf_at_stabilization": 22.0,
+      "vacancy_during_lease_up": 0.18,
+      "concession_months_per_lease": 1,
+      "tenant_improvement_psf": 35.0,
+      "leasing_commission_rate": 0.06
+    },
+    "schedule": [
+      {
+        "period": "2026-Q3",
+        "occupied_sf": 31000,
+        "leased_sf": 31000,
+        "in_place_rent_psf": 21.5,
+        "market_rent_psf": 22.0,
+        "vacancy_rate": 0.27,
+        "rent_revenue": 166375,
+        "concessions": -5400,
+        "ti_lc_capex": -42500,
+        "net_cash_flow": 118475
+      },
+      {
+        "period": "2026-Q4",
+        "occupied_sf": 40500,
+        "leased_sf": 41000,
+        "in_place_rent_psf": 21.65,
+        "market_rent_psf": 22.0,
+        "vacancy_rate": 0.05,
+        "rent_revenue": 184025,
+        "concessions": -8100,
+        "ti_lc_capex": -52500,
+        "net_cash_flow": 123425
+      }
+    ],
+    "stabilized_summary": {
+      "occupied_sf": 40500,
+      "occupancy_rate": 0.9529,
+      "annualized_egi": 858000,
+      "annualized_noi": 478000
+    }
+  },
+  "context": {
+    "total_sf": null
+  }
+}

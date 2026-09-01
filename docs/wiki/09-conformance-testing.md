@@ -59,6 +59,7 @@ npm run conformance -- --tier=modules      # the module manifest suite alone
 npm run conformance -- --tier=packages     # the deal package suite alone
 npm run conformance -- --tier=composition  # the RFC 0021 composition suite alone
 npm run conformance -- --tier=capital-stack  # the RFC 0026 capital-stack suite alone
+npm run conformance -- --tier=lease-up     # the RFC 0008 lease-up suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -332,6 +333,16 @@ the rollup suite, the verifier scenarios are `case.json` stack + context
 descriptions (they exercise `verifyCapitalStack`, not the parser); the
 validator and regression scenarios are full documents. The runner dispatches
 on which files a scenario directory carries (see `conformance/README.md`).
+
+### Lease-up schedule — state-and-verify trajectory (RFC 0008)
+
+`conformance/lease-up/` (9 scenarios) pins format spec §4.25 the same way:
+`case.json` payload + context scenarios exercise `verifyLeaseUpSchedule`'s
+three-state verdict, and `deal.uw.md` scenarios pin the `LU-NN` structural
+codes, the LU-04 warning, the tolerance-checked `CC-15` seam to `noi_model`
+(base variant only), and an end-to-end `verified` verdict through
+`leaseUpContext`'s §XIII denominator resolution. See
+`conformance/lease-up/README.md` for the dispatch and scenario table.
 
 - `senior-mezz-pref-verified/` — all six sizing `fn`s stated correctly →
   `verified`.

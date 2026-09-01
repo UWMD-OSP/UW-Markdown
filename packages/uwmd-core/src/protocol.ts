@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.10.0' as const;
+export const PROTOCOL_VERSION = '1.11.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -880,6 +880,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'gaps',
   'components',
   'capital_stack',
+  'lease_up_schedule',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -1180,7 +1181,7 @@ export interface ProtocolError {
 // ─── Built-in tables ──────────────────────────────────────────────────────────
 
 /**
- * View models for the 21 standard sections defined in UW_FORMAT_SPEC_v1.md §4.
+ * View models for the standard sections defined in UW_FORMAT_SPEC_v1.md §4.
  * Implementers SHOULD use these as the default rendering layout. Modules MAY
  * override per-section by declaring their own `view_models` entry.
  */
@@ -1399,6 +1400,26 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
       { path: 'rationale',  label: 'Rationale', kind: 'string' },
     ],
   },
+  lease_up_schedule: {
+    section_id: 'lease_up_schedule',
+    display_name: 'Lease-Up Schedule',
+    display_order: 22,
+    description: 'Period-by-period trajectory from current to stabilized rents (RFC 0008). State-and-verify: stated figures are recomputed by verifyLeaseUpSchedule, never trusted.',
+    multi_variant: true,
+    primary_fields: [
+      { path: 'model_type',                          label: 'Model',         kind: 'enum', enum: ['natural_turnover', 'absorption_curve'], primary: true },
+      { path: 'stabilization_target',                label: 'Stabilizes',    kind: 'string', primary: true },
+      { path: 'stabilized_summary.occupancy_rate',   label: 'Stab. Occ.',    kind: 'percent' },
+      { path: 'stabilized_summary.annualized_noi',   label: 'Stab. NOI',     kind: 'currency' },
+    ],
+    detail_fields: [
+      { path: 'period_granularity',                          label: 'Granularity',  kind: 'enum', enum: ['monthly', 'quarterly'] },
+      { path: 'assumptions.monthly_turnover_rate',           label: 'Turnover/mo',  kind: 'percent' },
+      { path: 'assumptions.vacancy_during_lease_up',         label: 'Lease-up Vac', kind: 'percent' },
+      { path: 'assumptions.market_rent_psf_at_stabilization', label: 'Mkt Rent PSF', kind: 'currency' },
+      { path: 'stabilized_summary.annualized_egi',           label: 'Stab. EGI',    kind: 'currency' },
+    ],
+  },
   gaps: {
     section_id: 'gaps', display_name: 'Gaps', display_order: 21,
     description: 'Open data gaps blocking stage advancement or carrying provisional defaults. Maintained by the editor when --maintain-gaps is on; otherwise hand-curated.',
@@ -1472,6 +1493,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
+  { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   {
     prefix: 'INVALID-ASSET-CLASS',
     description: 'Asset-class identifier syntax',
@@ -1612,6 +1634,41 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A deal-record document has no property section; format spec §4.1 requires it at every pipeline stage (RFC 0028).',
     remediation: 'Add a property section stating at least the address and asset class. If the record intentionally has no property (a non-deal profile), declare that profile in document_profile.',
     spec_ref: '§5.3 CC-14',
+  },
+  {
+    code: 'CC-15', severity: 'warning',
+    title: 'Lease-up endpoint disagrees with stabilized NOI',
+    description: 'The lease_up_schedule base variant\'s stabilized_summary.annualized_noi is more than LEASE_UP_STABILIZED_TOLERANCE (2%) away from noi_model.net_operating_income.',
+    remediation: 'Reconcile the trajectory endpoint with the stabilized-year model, or document why they diverge. The 2% tolerance is deliberate — the two are independent models of stabilization and exact agreement is not the goal (RFC 0008).',
+    spec_ref: '§5.3 CC-15',
+  },
+  {
+    code: 'LU-01', severity: 'error',
+    title: 'Lease-up period outside the grammar',
+    description: 'A schedule period is outside the declared granularity\'s grammar (YYYY-Qn quarterly, YYYY-MM monthly), or period_granularity itself is invalid.',
+    remediation: 'State every period in the declared granularity\'s grammar; one schedule uses one cadence. Split mixed cadences into separate variants.',
+    spec_ref: '§4.25 LU-01',
+  },
+  {
+    code: 'LU-02', severity: 'error',
+    title: 'Lease-up periods not contiguous',
+    description: 'Schedule periods are not strictly increasing and gap-free.',
+    remediation: 'Order the periods and fill every gap — a schedule that skips a period is asserting something it does not say. A period with no activity states its figures, even when they are zero.',
+    spec_ref: '§4.25 LU-02',
+  },
+  {
+    code: 'LU-03', severity: 'error',
+    title: 'Empty or inverted lease-up schedule',
+    description: 'The schedule array is empty, or stabilization_target is earlier than the first period.',
+    remediation: 'State at least one period, and a stabilization_target at or after the schedule start — a trajectory cannot stabilize before it begins.',
+    spec_ref: '§4.25 LU-03',
+  },
+  {
+    code: 'LU-04', severity: 'warning',
+    title: 'Turnover model with no rent roll',
+    description: 'model_type is natural_turnover but the document has no rent_roll — the turnover trajectory has no stated starting point.',
+    remediation: 'Add the current rent_roll the turnover model departs from, or switch model_type to absorption_curve if there is genuinely no in-place tenancy.',
+    spec_ref: '§4.25 LU-04',
   },
   {
     code: 'MU-01', severity: 'error',

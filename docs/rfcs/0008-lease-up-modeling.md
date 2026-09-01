@@ -1,7 +1,7 @@
 ---
 rfc: 0008
 title: Lease-up modeling section for value-add and ground-up deals
-status: draft
+status: implemented
 author: jared
 created: 2026-04-27
 revised: 2026-09-01
@@ -13,6 +13,17 @@ affects:
 ---
 
 # RFC 0008: Lease-up modeling section for value-add and ground-up deals
+
+> **Implemented 2026-09-01** at protocol **1.11.0**, exactly as revised below
+> with two recorded refinements: (1) the verifier's issue codes are
+> `LU-NCF-DISAGREES` / `LU-SUMMARY-DISAGREES` / `LU-UNEVALUABLE` (the
+> `CS-SIZING-*` naming precedent — verifier codes share the family prefix but
+> live outside `BUILTIN_REMEDIATIONS`, which registers validator codes only);
+> (2) both unresolved questions below were resolved as leaned — one CC-15 seam
+> (no `quick_metrics` cross-check; CC-01 already makes it transitive), and
+> CC-15 reads only the `base` variant (falling back to the sole/default one).
+> Types live in `lease-up.ts` beside the verifier, like `capital-stack.ts`,
+> rather than `types.ts` as the file list below guessed.
 
 > **Revised 2026-09-01** against everything implemented since the April draft.
 > The core instinct survives untouched — the schedule is **data, not

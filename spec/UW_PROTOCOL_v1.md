@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.10.0`) — the
+- **Protocol version** (this document, currently `1.11.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -500,6 +500,7 @@ capability is unconditional: every implementation owes it.
 | `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
+| `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031). | `validate` | `warning` (SRC-02 becomes `error` at format 2.0) |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |

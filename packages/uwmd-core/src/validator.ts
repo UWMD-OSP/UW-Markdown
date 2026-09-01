@@ -17,6 +17,8 @@ import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps.js';
+import { leaseUpPeriodOrdinal, LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
+import type { LeaseUpGranularity } from './lease-up.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
@@ -190,6 +192,7 @@ export function validateUWFile(
   checkCrossSectionConsistency(parsed, issues);
   checkComponents(parsed, issues);
   checkCapitalStack(parsed, issues);
+  checkLeaseUpSchedule(parsed, issues);
   checkSizeIntensive(parsed, issues);
   checkSectionReadiness(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
@@ -853,6 +856,132 @@ function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     const stack = (raw as Record<string, unknown>)['capital_stack'];
     if (stack && typeof stack === 'object' && !Array.isArray(stack)) {
       checkStackContent(stack as Record<string, unknown>, 'components', `${key}.capital_stack.`, issues);
+    }
+  }
+}
+
+// ─── Lease-up schedule (RFC 0008, §4.25) ─────────────────────────────────────
+//
+// Structural rules only: the period grammar, monotonicity, and presence checks
+// are validation; the arithmetic over stated figures belongs to
+// `verifyLeaseUpSchedule` (lease-up.ts). The section is multi-variant, so every
+// variant is checked structurally — a downside scenario with a gapped schedule
+// is just as malformed as a base one. CC-15 reads only the base variant: a
+// downside scenario is *supposed* to disagree with stabilized NOI.
+
+function checkLeaseUpContent(
+  content: Record<string, unknown>,
+  variant: string,
+  issues: ValidationMessage[],
+): void {
+  const section = 'lease_up_schedule';
+  const label = variant === 'default' ? '' : ` (variant "${variant}")`;
+  const granRaw = content['period_granularity'];
+  const granularity: LeaseUpGranularity =
+    granRaw === 'monthly' || granRaw === 'quarterly' ? granRaw : 'quarterly';
+  if (granRaw !== 'monthly' && granRaw !== 'quarterly') {
+    issues.push({
+      code: 'LU-01', severity: 'error', section, field: 'period_granularity',
+      message: `LU-01: period_granularity${label} must be "monthly" or "quarterly", not ${JSON.stringify(granRaw)}`,
+    });
+  }
+
+  const schedule = content['schedule'];
+  const rows = Array.isArray(schedule) ? schedule : [];
+  if (!Array.isArray(schedule) || rows.length === 0) {
+    issues.push({
+      code: 'LU-03', severity: 'error', section, field: 'schedule',
+      message: `LU-03: schedule${label} must be a non-empty array of periods`,
+    });
+    return;
+  }
+
+  // LU-01 (grammar) / LU-02 (strictly increasing, gap-free). One diagnostic
+  // per defect: a row outside the grammar is not also reported as a gap.
+  let prev: number | null = null;
+  let grammarBroken = false;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const period = row && typeof row === 'object' ? (row as Record<string, unknown>)['period'] : undefined;
+    const ordinal = typeof period === 'string' ? leaseUpPeriodOrdinal(period, granularity) : null;
+    if (ordinal === null) {
+      grammarBroken = true;
+      issues.push({
+        code: 'LU-01', severity: 'error', section, field: `schedule[${i}].period`,
+        message: `LU-01: period ${JSON.stringify(period)}${label} is outside the ${granularity} grammar (${granularity === 'quarterly' ? 'YYYY-Qn' : 'YYYY-MM'})`,
+      });
+      prev = null;
+      continue;
+    }
+    if (prev !== null && ordinal !== prev + 1) {
+      issues.push({
+        code: 'LU-02', severity: 'error', section, field: `schedule[${i}].period`,
+        message: `LU-02: periods${label} must be strictly increasing and gap-free; ${String(period)} does not immediately follow the prior period`,
+      });
+    }
+    prev = ordinal;
+  }
+
+  // LU-03 (second arm): a stabilization_target earlier than the first period.
+  const target = content['stabilization_target'];
+  if (!grammarBroken && typeof target === 'string') {
+    const first = (rows[0] as Record<string, unknown>)['period'];
+    const targetOrd = leaseUpPeriodOrdinal(target, granularity);
+    const firstOrd = typeof first === 'string' ? leaseUpPeriodOrdinal(first, granularity) : null;
+    if (targetOrd !== null && firstOrd !== null && targetOrd < firstOrd) {
+      issues.push({
+        code: 'LU-03', severity: 'error', section, field: 'stabilization_target',
+        message: `LU-03: stabilization_target ${target}${label} is earlier than the first schedule period ${String(first)}`,
+      });
+    }
+  }
+}
+
+function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const entry = parsed.sections['lease_up_schedule'];
+  if (!entry) return;
+  const variants: Array<[string, UWBlock]> = isVariantMap(entry)
+    ? Object.entries(entry as Record<string, UWBlock>)
+    : [['default', entry as UWBlock]];
+
+  let turnoverPresent = false;
+  for (const [variant, block] of variants) {
+    const content = block.content as Record<string, unknown>;
+    checkLeaseUpContent(content, variant, issues);
+    if (content['model_type'] === 'natural_turnover') turnoverPresent = true;
+  }
+
+  // LU-04: natural turnover with no rent_roll — a warning, not a refusal,
+  // because a compose-time fragment may carry the schedule without the roll.
+  if (turnoverPresent && !parsed.sections['rent_roll']) {
+    issues.push({
+      code: 'LU-04', severity: 'warning', section: 'lease_up_schedule', field: 'model_type',
+      message: 'LU-04: model_type natural_turnover with no rent_roll in the document; the turnover trajectory has no stated starting point',
+    });
+  }
+
+  // CC-15: the base variant's stated stabilized NOI agrees with noi_model
+  // within LEASE_UP_STABILIZED_TOLERANCE. Tolerance-checked, not exact: the
+  // trajectory endpoint and the stabilized-year projection are two different
+  // models of stabilization (RFC 0008).
+  const base = isVariantMap(entry)
+    ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default'])
+    : (entry as UWBlock);
+  const stabilizedNoi = base
+    ? deepGet(base.content as Record<string, unknown>, 'stabilized_summary.annualized_noi')
+    : undefined;
+  const modelNoi = deepGet(getSection(parsed, 'noi_model')?.content, 'net_operating_income');
+  if (
+    typeof stabilizedNoi === 'number' && Number.isFinite(stabilizedNoi) &&
+    typeof modelNoi === 'number' && Number.isFinite(modelNoi) && modelNoi !== 0
+  ) {
+    const drift = Math.abs(stabilizedNoi - modelNoi) / Math.abs(modelNoi);
+    if (drift > LEASE_UP_STABILIZED_TOLERANCE) {
+      issues.push({
+        code: 'CC-15', severity: 'warning', section: 'lease_up_schedule', field: 'stabilized_summary.annualized_noi',
+        message: `CC-15: the lease-up stabilized NOI ($${stabilizedNoi.toLocaleString()}) is ${(drift * 100).toFixed(1)}% away from noi_model.net_operating_income ($${modelNoi.toLocaleString()}), beyond the ${LEASE_UP_STABILIZED_TOLERANCE * 100}% tolerance`,
+        value: drift,
+      });
     }
   }
 }

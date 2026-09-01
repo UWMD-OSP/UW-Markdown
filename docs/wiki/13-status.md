@@ -2,21 +2,15 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-31, after the **1.8.0 release** (`0fa148d`, tag
-`v1.8.0`) shipped the whole post-1.7.0 arc — RFC 0031 (source vocabulary,
-accepted and implemented the same day), RFC 0030, the unpoliced-write fix, and
-the 2026-08-27 v2-train batch — and the RFC 0009 draft was revised for the
-source/resolution split. Full pass: build green across all workspaces; **1,482
-tests** — 1,171 core, 94 excel, 62 cli, 62 signing, 15 module-hospitality, 4
-batch, 3 report — plus **71 web-editor**; **306 conformance** assertions (and
-**44** more through the RFC 0004 CLI driver, run under `--no-skip`), plus **3
-conformance profiles** via `npm run conformance:profiles`; Biome clean;
-`typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
-`@uwmd/cli` **1.8.0 published to npm** (2026-08-31, tag `v1.8.0`, both
-verified live via `npm view`) by the tag-triggered OIDC job,
-provenance attached — protocol at **1.10.0** for RFC 0031's `_meta` split,
-`SRC-NN`, and the §V.3/§V.7 rewrite (1.9.0 was RFC 0030; 1.8.0 added §X.2;
-1.7.0 added §V.11; 1.6.0 added §XIII).
+**Last verified:** 2026-09-01, after **RFC 0008 (lease-up modeling) was
+accepted and implemented** on top of the 1.8.0 release (tag `v1.8.0`,
+2026-08-31, core+cli live on npm). Full pass: build green across all
+workspaces; **1,199 core tests** (1,171 + 28 lease-up); **315 conformance**
+assertions (306 + the 9-scenario `lease-up` suite; **44** more through the
+RFC 0004 CLI driver under `--no-skip`, plus **3 conformance profiles**);
+Biome clean; `typecheck:tests` clean — protocol at **1.11.0** for RFC 0008's
+§4.25, the `LU-NN` family, and `CC-15` (1.10.0 was RFC 0031's `_meta` split;
+1.9.0 RFC 0030; 1.8.0 added §X.2; 1.7.0 added §V.11; 1.6.0 added §XIII).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -98,10 +92,10 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **306 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **315 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, `size-intensive`, `signing`, `sensitivity`, `stochastic`,
-  and `source` suites. CI runs the runner's **default** suite list rather than a pinned
+  `capital-stack`, `lease-up`, `size-intensive`, `signing`, `sensitivity`,
+  `stochastic`, and `source` suites. CI runs the runner's **default** suite list rather than a pinned
   `--tier=`, which is what the earlier claim of replay coverage assumed but did
   not have: `ci.yml` pinned `1,2,3,lite,receipts`, so `4-replay` had never
   actually gated a pull request. See [09](09-conformance-testing.md).
@@ -749,12 +743,27 @@ host, which stamped bare layer ids, now writes `agent/<id>`.
 own schema pattern rejected its own worked example `agent/L6-01`
 (lowercase-only id charset). **RFC 0009 is unblocked.**
 
-**The stated priority order is complete.** What remains on this train has no
-assigned order yet:
+**✅ RFC 0008 lease-up modeling — accepted and implemented 2026-09-01**
+(protocol 1.11.0). Format spec **§4.25** registers `lease_up_schedule`: the
+trajectory from current to stabilized rents as a **state-and-verify**
+structure on the `capital_stack` pattern — the schedule is data, not
+formulas, so the Tier-3 no-iteration invariant was never in play and the calc
+engine is untouched. New three-state `verifyLeaseUpSchedule` (+
+`leaseUpContext`, which resolves the occupancy denominator through the §XIII
+size registry — no sqft basis → `unverifiable`, never a guess); new `LU-NN`
+validator family (grammar/contiguity/presence, `LU-04` warning for turnover
+with no roll); **`CC-15`** warning with the named exported
+`LEASE_UP_STABILIZED_TOLERANCE` (2%) checking only the base variant against
+`noi_model`. Multi-variant like `stress_tests`; new
+`section-lease-up-schedule.schema.json`; chat/summary renderers gain the
+period table; `conformance/lease-up/` adds 9 scenarios (corpus 306 → 315).
+Deferred by design: Excel emit, `dcf` coupling, defaults entries, and any
+shared period-schedule abstraction (a future hospitality RevPAR ramp should
+reuse §4.25's period grammar, not invent one).
 
-Unordered: lease-up modeling (0008), locale/multi-currency (0001), capability
-tokens (0011), corpus retrieval (0013), and portfolio/relationship profiles
-(0015). Unfrozen means actively being taken up, not accepted — each RFC still
+**The 2026-09-01 sprint order for the rest** (owner-confirmed): 0011
+(capability tokens) next, then 0001 (locale/multi-currency); corpus retrieval
+(0013) and portfolio/relationship profiles (0015) deferred. Each RFC still
 goes through its own acceptance.
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft

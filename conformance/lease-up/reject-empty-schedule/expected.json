@@ -1,0 +1,6 @@
+{
+  "why": "A non-empty schedule is the whole point of the section.",
+  "expected_codes": [
+    "LU-03"
+  ]
+}

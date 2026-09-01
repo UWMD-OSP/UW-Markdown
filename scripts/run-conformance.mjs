@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -81,6 +81,8 @@ import {
   selectInheritedAssumption,
   verifyRollup,
   verifyCapitalStack,
+  verifyLeaseUpSchedule,
+  leaseUpContext,
   MULTIFAMILY_PACK,
   toUWEnvelope,
   canonicalizeUWEnvelope,
@@ -104,7 +106,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity,stochastic,source').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,size-intensive,signing,sensitivity,stochastic,source').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2254,6 +2256,84 @@ async function runCapitalStack() {
   }
 }
 
+// ─── Lease-up schedule (RFC 0008) ────────────────────────────────────────────
+//
+// Scenario kind is dispatched by the files a directory carries:
+//   case.json + expected.json ("verdict")  → verifyLeaseUpSchedule three-state
+//   deal.uw.md + expected.json             → validator codes and/or a full-document
+//                                            verdict through leaseUpContext:
+//       expected_codes[]        each must appear (× min_occurrences)
+//       absent_code_prefixes[]  none may appear
+//       verdict                 base/default variant verified end-to-end
+
+const LEASE_UP_DIR = join(CONFORMANCE_DIR, 'lease-up');
+
+async function runLeaseUp() {
+  if (!existsSync(LEASE_UP_DIR)) {
+    record('lease-up', '(none)', 'pass', 'no lease-up fixtures');
+    return;
+  }
+  const scenarios = readdirSync(LEASE_UP_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(LEASE_UP_DIR, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  for (const { id, dir } of scenarios) {
+    const expected = readCase(dir, 'expected.json');
+
+    // ── Full document: validator codes and/or an end-to-end verdict ──────────
+    if (existsSync(join(dir, 'deal.uw.md'))) {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+      const codes = validateUWFile(parsed).issues.map((i) => i.code);
+
+      const minOccurrences = expected.min_occurrences ?? 1;
+      const short = (expected.expected_codes ?? []).filter(
+        (c) => codes.filter((x) => x === c).length < minOccurrences);
+      if (short.length) {
+        record('lease-up', id, 'fail', `emitted [${codes.join(', ')}], expected ${short.join(', ')} ×${minOccurrences}`);
+        continue;
+      }
+      const tripped = codes.filter((c) =>
+        (expected.absent_code_prefixes ?? []).some((p) => c.startsWith(p)));
+      if (tripped.length) {
+        record('lease-up', id, 'fail', `forbidden codes emitted: ${tripped.join(', ')}`);
+        continue;
+      }
+      if (expected.verdict) {
+        const entry = parsed.sections['lease_up_schedule'];
+        const block = entry && !('annotation' in entry) ? (entry['base'] ?? entry['default']) : entry;
+        if (!block) {
+          record('lease-up', id, 'fail', 'expected a verdict but the document has no lease_up_schedule base/default variant');
+          continue;
+        }
+        const verification = verifyLeaseUpSchedule(block.content, leaseUpContext(parsed));
+        if (verification.verdict !== expected.verdict) {
+          record('lease-up', id, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}: ${verification.issues.map((i) => i.code).join(', ') || '(none)'}`);
+          continue;
+        }
+      }
+      record('lease-up', id, 'pass', [
+        ...(expected.expected_codes ?? []),
+        ...(expected.verdict ? [expected.verdict] : []),
+      ].join(', ') || 'clean');
+      continue;
+    }
+
+    // ── verifyLeaseUpSchedule three-state over a bare payload ────────────────
+    const testCase = readCase(dir, 'case.json');
+    const verification = verifyLeaseUpSchedule(testCase.schedule, testCase.context);
+    if (verification.verdict !== expected.verdict) {
+      record('lease-up', id, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}: ${verification.issues.map((i) => i.code).join(', ') || '(none)'}`);
+      continue;
+    }
+    if (expected.expected_code && !verification.issues.some((i) => i.code === expected.expected_code)) {
+      record('lease-up', id, 'fail', `issues ${verification.issues.map((i) => i.code).join(', ') || '(none)'}, expected ${expected.expected_code}`);
+      continue;
+    }
+    record('lease-up', id, 'pass', expected.verdict);
+  }
+}
+
 // ─── Size intensives (RFC 0027, Protocol §XIII) ──────────────────────────────
 
 const SIZE_INTENSIVE_DIR = join(CONFORMANCE_DIR, 'size-intensive');
@@ -2987,6 +3067,7 @@ const dispatch = {
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
+  'lease-up': async () => { await runLeaseUp(); },
   'size-intensive': async () => { await runSizeIntensive(); },
   'signing': async () => { await runSigning(); },
   'sensitivity': async () => { await runSensitivity(); },

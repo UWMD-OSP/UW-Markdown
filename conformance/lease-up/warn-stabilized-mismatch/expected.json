@@ -1,0 +1,9 @@
+{
+  "why": "The trajectory endpoint and the stabilized-year model are tolerance-checked, not exact; 12.5% drift is a warning either way.",
+  "expected_codes": [
+    "CC-15"
+  ],
+  "absent_code_prefixes": [
+    "LU-"
+  ]
+}

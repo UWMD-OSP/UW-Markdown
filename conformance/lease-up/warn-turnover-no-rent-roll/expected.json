@@ -1,0 +1,6 @@
+{
+  "why": "LU-04 is a warning: guidance, not a refusal.",
+  "expected_codes": [
+    "LU-04"
+  ]
+}

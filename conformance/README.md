@@ -128,6 +128,12 @@ conformance/
 │   │                     before any arithmetic runs
 │   └── lite-projection/  The UWX→Lite projection names externalized sections
 │                         in its omission report and matches the inline twin
+├── lease-up/           Lease-up schedule (RFC 0008, format spec §4.25).
+│                         Same dispatch style: {case.json, expected.json}
+│                         exercises verifyLeaseUpSchedule's three-state
+│                         verdict; {deal.uw.md, expected.json} pins LU-NN /
+│                         CC-15 validator codes and an optional end-to-end
+│                         verdict. See lease-up/README.md.
 ├── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
@@ -211,8 +217,8 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `size-intensive`, `signing`, `sensitivity`, `stochastic`, and
-`source` suites are named rather than numbered:
+`capital-stack`, `lease-up`, `size-intensive`, `signing`, `sensitivity`,
+`stochastic`, and `source` suites are named rather than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and
