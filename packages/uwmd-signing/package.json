@@ -21,7 +21,7 @@
     "test": "vitest run",
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
-  "dependencies": { "@uwmd/core": "1.7.0" },
+  "dependencies": { "@uwmd/core": "1.8.0" },
   "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
   "engines": { "node": ">=18.4.0" },
   "license": "MIT",

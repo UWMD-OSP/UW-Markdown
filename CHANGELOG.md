@@ -6,7 +6,32 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [1.8.0] - 2026-08-31
+
+### Released
+
+- `@uwmd/core` **1.8.0**, `@uwmd/cli` **1.8.0** (lockstep), with coordinated
+  `@uwmd/core` repins in `@uwmd/excel` **0.7.0**, `@uwmd/report` **0.7.0**,
+  `@uwmd/batch` **0.6.0**, and `tools/web-editor` **0.7.0**. `@uwmd/signing`
+  and `@uwmd/module-hospitality` repin to core 1.8.0 but stay **0.1.0,
+  unpublished**.
+- The largest release since 1.0: everything below, from the 2026-08-26 unfreeze
+  of the v2 RFC train through 2026-08-31 — the signing chain (RFCs 0010 + 0002),
+  the language-agnostic conformance driver (0004), the module runtime and
+  hospitality reference module (0006), module-declared asset classes (0003),
+  sensitivity tables (0007), stochastic calculations (0005), class-aware stage
+  requirements (0029), conformance profiles (0030), the unpoliced-write fix,
+  and the source-vocabulary reconciliation (0031) — plus the pre-unfreeze
+  2026-08-25/26 batch: the two closed conformance blind spots, RFC 0028
+  (reportable section readiness), the stage-honest examples pass, and the CLI
+  plumbing extraction.
+- **Format stays 1.1; protocol goes 1.6.0 → 1.10.0** across the span: 1.7.0
+  added §V.11 (block signatures), 1.8.0 added §X.2 (module asset classes),
+  1.9.0 was RFC 0030 (§II.6a.5/6, the §III.6a rewrite), and 1.10.0 is RFC 0031
+  (`_meta` source/resolution split, `SRC-NN`, the §V.3/§V.7 rewrite). Every
+  format change is additive at 1.x.
+- Conformance corpus **222 → 306** assertions across the span, plus the 44-case
+  RFC 0004 CLI driver and the three RFC 0030 profile checks.
 
 ### Added — RFC 0031 implemented: the source vocabularies reconciled (corpus 301 → 306)
 
