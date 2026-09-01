@@ -548,11 +548,14 @@ not core gaps.
 
 ## 🔴 Stubs / not implemented
 
-- **DOCX rendering** — the Word credit-memo target has no pipeline. The core
-  renderer now rejects `docx` explicitly with typed `UnsupportedRenderFormatError`
-  instead of returning an apparently successful empty document. PDF is built via
-  `report.ts` + `@uwmd/report`; the core `pdf` target rejects with guidance to use
-  that package.
+- **DOCX rendering — scoped out (owner decision, 2026-09-01).** The Word
+  credit-memo target is deliberately not built: demand is unproven, and
+  `report.ts` + `@uwmd/report` already produce the print-ready credit-memo
+  deliverable as HTML/PDF. The core renderer keeps rejecting `docx` with typed
+  `UnsupportedRenderFormatError` — a truthful refusal, not a gap. Revisit only
+  on a concrete adopter ask; if built then, reuse `report.ts`'s deterministic
+  model rather than forking the renderer. This closes the last "Large" roadmap
+  item below.
 - **Investor-profile** — interface-only; no reference implementation. Market data
   is now built (see ✅ above); `InvestorProfile` was deliberately excluded from
   RFC 0022 §5 as an institution-private preference set nobody has yet asked to
@@ -776,8 +779,9 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 > **Current state (2026-08-04):** the repository is public and the first npm
 > packages are live: `@uwmd/core@1.1.2` and `@uwmd/cli@1.1.3`. The CLI package
 > is scoped because npm rejects the unscoped `uwmd` name; its executable remains
-> `uwmd`. The Excel add-on remains held separately until its ExcelJS dependency
-> chain is upgraded, replaced, or formally risk-accepted.
+> `uwmd`. The ExcelJS dependency chain was **formally risk-accepted 2026-09-01**
+> (see the Operational section) — the publication hold on `@uwmd/excel` is no
+> longer a dependency question, only a scheduling one.
 
 Completed: public repository, canonical rename to `uw-markdown`, npm organization,
 release secret, and initial package publication. Review-flagged: single-maintainer
@@ -842,12 +846,9 @@ bus factor, personal security email, and no public RFC venue.
 
 ### Large
 
-1. **DOCX path — or formally scope it out.** PDF landed via `report.ts` +
-   `@uwmd/report`; Word remains the gap for institutions that edit memos. If it
-   is built, reuse `report.ts`'s deterministic model rather than forking the
-   renderer, and keep core's typed `UnsupportedRenderFormatError` pointing at the
-   new package as `pdf` already does. Scoping it out is a legitimate outcome and
-   should be recorded as one rather than left ambiguous.
+1. ~~**DOCX path — or formally scope it out.**~~ **Scoped out 2026-09-01** —
+   the legitimate outcome this item asked to have recorded. See the entry under
+   "Stubs / not implemented" for the rationale and the revisit condition.
 
 ### Medium
 
@@ -1054,9 +1055,26 @@ bus factor, personal security email, and no public RFC venue.
     `calc-conventions.md` are live under `tools/docs-site/guide/`; the remaining
     docs work is upkeep, not a gap.
 9. **Operational launch gates** — single-maintainer bus factor, personal
-    security email, and no public RFC venue remain review-flagged. The Excel
-    add-on is held pending its ExcelJS dependency chain being upgraded, replaced,
-    or formally risk-accepted.
+    security email, and no public RFC venue remain review-flagged.
+    **The ExcelJS dependency chain is formally risk-accepted (owner decision,
+    2026-09-01):** `@uwmd/excel` only ever *writes* workbooks from trusted
+    in-repo data (`toWorkbook`) or reads files the operator explicitly names
+    (`fromWorkbook`), it runs in build/CLI contexts rather than serving
+    untrusted uploads, and its output parity is pinned by tests — so the
+    residual exposure is a malicious-workbook parse the tool is not deployed
+    against. Accepted rather than re-vendored; revisit if the converter ever
+    ingests third-party workbooks as a service. Publishing `@uwmd/excel`
+    remains unscheduled (its 0.3.0 number is burned; the next publish would be
+    current-version), but is no longer blocked on this flag.
+    **`@uwmd/signing` will publish (owner decision, 2026-09-01):**
+    `release.yml` now publishes it on any `v*` tag whose manifest version is
+    not yet on npm — so 0.1.0 goes live with the 1.9.0 tag, *provided* the
+    one-time npm trusted-publisher step in
+    [`docs/handoff/HUMAN-configure-signing-trusted-publisher.md`](../handoff/HUMAN-configure-signing-trusted-publisher.md)
+    is done first (it is owner-only). Every publish step in the workflow is
+    now idempotent (skip-if-live), so a partial run is recoverable by re-run.
+    `@uwmd/module-hospitality` deliberately stays unpublished — it is a
+    reference implementation, not a dependency.
 
 ## How to keep this current
 
