@@ -1,8 +1,12 @@
 name: Release
 
-# Publishes @uwmd/core (library) and @uwmd/cli (CLI installer) to npm when a
-# version tag (v*) is pushed. Both packages share a single tag — they
-# version in lockstep because the CLI re-exposes the library's CLI module.
+# Publishes @uwmd/core (library), @uwmd/cli (CLI installer), and
+# @uwmd/signing (RFC 0010 signing companion) to npm when a version tag (v*)
+# is pushed. Core and cli share the tag — they version in lockstep because
+# the CLI re-exposes the library's CLI module. Signing versions
+# independently (its manifest version, not the tag) and publishes only when
+# that version is not already on npm, so a release that didn't bump it is a
+# no-op for it.
 #
 # Authentication is npm trusted publishing (OIDC) — there is no NPM_TOKEN and
 # no secret of any kind. The runner exchanges its `id-token` for a short-lived
@@ -10,17 +14,20 @@ name: Release
 # write` below is load-bearing rather than decoration.
 #
 # Prerequisites (one-time, on npmjs.com — nothing to configure in this repo):
-#   For EACH of @uwmd/core and @uwmd/cli: package page -> Settings ->
-#   Trusted publisher -> GitHub Actions, with
+#   For EACH of @uwmd/core, @uwmd/cli, and @uwmd/signing: package page ->
+#   Settings -> Trusted publisher -> GitHub Actions, with
 #     Organization or user: UWMD-OSP
 #     Repository:           UW-Markdown
 #     Workflow filename:    release.yml     (filename only, no path, with .yml)
 #     Allowed actions:      publish
 #     Environment:          (leave blank)
 #
-# Both are required. Configure one and the run fails partway, publishing core
-# and not cli — recoverable, but it leaves a version live that its sibling does
-# not match. A missing or mismatched trusted publisher surfaces as ENEEDAUTH,
+# All three are required (see docs/handoff/HUMAN-configure-signing-trusted-publisher.md
+# for the signing one). Configure only some and the run fails partway,
+# publishing an incomplete set — recoverable, because every publish step below
+# skips a version that is already live, so re-running the job after fixing the
+# publisher finishes the remainder without EPUBLISHCONFLICT on the ones that
+# landed. A missing or mismatched trusted publisher surfaces as ENEEDAUTH,
 # exactly as a missing token used to.
 #
 # npm allows ONE trusted publisher per package, which is why
@@ -43,7 +50,7 @@ on:
 
 jobs:
   publish:
-    name: Publish @uwmd/core + @uwmd/cli
+    name: Publish @uwmd/core + @uwmd/cli + @uwmd/signing
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -118,10 +125,41 @@ jobs:
       # packages, naming org `UWMD-OSP`, repo `UW-Markdown`, workflow
       # `release.yml`. Without it the publish fails with ENEEDAUTH, the same way
       # a missing token did.
+      # Every publish step is idempotent: a version already on npm is skipped,
+      # so re-running this job after a partial failure (e.g. one package's
+      # trusted publisher missing) finishes the remainder instead of dying on
+      # EPUBLISHCONFLICT for the ones that landed.
       - name: Publish @uwmd/core to npm with provenance
         working-directory: packages/uwmd-core
-        run: npm publish --provenance --access public
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          if npm view "@uwmd/core@$VER" version >/dev/null 2>&1; then
+            echo "@uwmd/core@$VER is already on npm — skipping"
+          else
+            npm publish --provenance --access public
+          fi
 
       - name: Publish @uwmd/cli to npm with provenance
         working-directory: packages/uwmd-cli
-        run: npm publish --provenance --access public
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          if npm view "@uwmd/cli@$VER" version >/dev/null 2>&1; then
+            echo "@uwmd/cli@$VER is already on npm — skipping"
+          else
+            npm publish --provenance --access public
+          fi
+
+      # @uwmd/signing versions independently of the tag (owner decision
+      # 2026-09-01: publish it). First publish requires its trusted publisher
+      # to exist — docs/handoff/HUMAN-configure-signing-trusted-publisher.md.
+      # Deliberately last: if its publisher is missing, core+cli are already
+      # fully published as a matched pair before this step fails.
+      - name: Publish @uwmd/signing to npm with provenance
+        working-directory: packages/uwmd-signing
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          if npm view "@uwmd/signing@$VER" version >/dev/null 2>&1; then
+            echo "@uwmd/signing@$VER is already on npm — skipping"
+          else
+            npm publish --provenance --access public
+          fi
