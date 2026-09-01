@@ -20,7 +20,7 @@ import type {
   EditPolicy,
   ProtocolError,
 } from './protocol.js';
-import { BUILTIN_EDIT_POLICIES } from './protocol.js';
+import { BUILTIN_EDIT_POLICIES, parseActorSource } from './protocol.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';
 import { inferGaps, summarizeGaps } from './gaps.js';
@@ -584,9 +584,19 @@ function checkAuthority(
     };
   }
 
-  const isSystem = actorSource.startsWith('system/') || actorSource.startsWith('institution/');
-  const isAgent = actorSource.startsWith('agent/');
-  const isHuman = !isSystem && !isAgent;
+  // Classify from the parsed actor namespace, never from string prefixes
+  // (RFC 0031). The prefix test's negative space was the bug: anything that
+  // wasn't `system/`/`agent/` counted as human, so the malformed colon form
+  // `agent:L0-01` — and every bare resolution tag — was classified as a human
+  // write. A source outside the grammar now classifies as *nothing*: it can
+  // still write wherever authority is 'either', but it can never satisfy
+  // human_only, agent_only, or system_only. `document/*` is likewise none of
+  // the three — a document is evidence, not an authority class.
+  const actor = parseActorSource(actorSource);
+  const isSystem = actor.kind === 'namespaced'
+    && (actor.namespace === 'system' || actor.namespace === 'institution');
+  const isAgent = actor.kind === 'namespaced' && actor.namespace === 'agent';
+  const isHuman = actor.kind === 'manual';
 
   const allowed = (auth: EditAuthority): boolean => {
     switch (auth) {

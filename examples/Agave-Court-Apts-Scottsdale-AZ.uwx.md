@@ -71,13 +71,13 @@ same senior loan for single-loan consumers.
 
 ## Deal Context {#deal_context}
 
-```json uw:section=deal_context source=user ts=2026-08-21T09:15:00Z v=1 confidence=high
+```json uw:section=deal_context source=manual ts=2026-08-21T09:15:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "deal_context",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-21T09:15:00Z",
     "confidence": "high",
@@ -98,13 +98,13 @@ same senior loan for single-loan consumers.
 
 ## Property {#property}
 
-```json uw:section=property source=user ts=2026-08-21T09:30:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-08-21T09:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-21T09:30:00Z",
     "confidence": "high",
@@ -126,13 +126,13 @@ same senior loan for single-loan consumers.
 
 ## Underwritten NOI {#noi_model}
 
-```json uw:section=noi_model source=engine:calculations.ts ts=2026-08-21T12:00:00Z v=1 confidence=high
+```json uw:section=noi_model source=system/calculations.ts ts=2026-08-21T12:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-08-21T12:00:00Z",
     "confidence": "high",
@@ -141,25 +141,57 @@ same senior loan for single-loan consumers.
   },
   "_notes": "Foots: 4,600,000 − 276,000 − 46,000 − 92,000 + 234,000 = 4,420,000 EGI; 4,420,000 − 1,820,000 = 2,600,000 NOI. This NOI is the numerator of every coverage and debt-yield figure in the capital stack's sizing block.",
   "income": {
-    "gross_potential_rent":  { "value": 4600000 },
-    "vacancy_credit_loss":   { "value": 276000 },
-    "concessions":           { "value": 46000 },
-    "loss_to_lease":         { "value": 92000 },
-    "other_income":          { "value": 234000 },
+    "gross_potential_rent": {
+      "value": 4600000
+    },
+    "vacancy_credit_loss": {
+      "value": 276000
+    },
+    "concessions": {
+      "value": 46000
+    },
+    "loss_to_lease": {
+      "value": 92000
+    },
+    "other_income": {
+      "value": 234000
+    },
     "effective_gross_income": 4420000
   },
   "expenses": {
-    "real_estate_taxes":     { "value": 520000 },
-    "insurance":             { "value": 155000 },
-    "management_fees":       { "value": 132600 },
-    "payroll_benefits":      { "value": 360000 },
-    "utilities":             { "value": 168000 },
-    "repairs_maintenance":   { "value": 175000 },
-    "contract_services":     { "value": 78000 },
-    "marketing_advertising": { "value": 45000 },
-    "administrative":        { "value": 56400 },
-    "professional_fees":     { "value": 40000 },
-    "replacement_reserves":  { "value": 90000 },
+    "real_estate_taxes": {
+      "value": 520000
+    },
+    "insurance": {
+      "value": 155000
+    },
+    "management_fees": {
+      "value": 132600
+    },
+    "payroll_benefits": {
+      "value": 360000
+    },
+    "utilities": {
+      "value": 168000
+    },
+    "repairs_maintenance": {
+      "value": 175000
+    },
+    "contract_services": {
+      "value": 78000
+    },
+    "marketing_advertising": {
+      "value": 45000
+    },
+    "administrative": {
+      "value": 56400
+    },
+    "professional_fees": {
+      "value": 40000
+    },
+    "replacement_reserves": {
+      "value": 90000
+    },
     "total_operating_expenses": 1820000
   },
   "net_operating_income": 2600000
@@ -170,13 +202,14 @@ same senior loan for single-loan consumers.
 
 ## Valuation {#valuation}
 
-```json uw:section=valuation source=user:appraisal ts=2026-08-21T14:00:00Z v=1 confidence=high
+```json uw:section=valuation source=manual ts=2026-08-21T14:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "valuation",
     "version": 1,
     "superseded": false,
-    "source": "user:appraisal",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-08-21T14:00:00Z",
     "confidence": "high",
@@ -196,13 +229,13 @@ same senior loan for single-loan consumers.
 
 ## Debt Structure {#debt_structure}
 
-```json uw:section=debt_structure source=user ts=2026-08-21T15:00:00Z v=1 confidence=high
+```json uw:section=debt_structure source=manual ts=2026-08-21T15:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-21T15:00:00Z",
     "confidence": "high",
@@ -231,13 +264,13 @@ same senior loan for single-loan consumers.
 
 ## Capital Stack {#capital_stack}
 
-```json uw:section=capital_stack source=user ts=2026-08-21T16:00:00Z v=1 confidence=high
+```json uw:section=capital_stack source=manual ts=2026-08-21T16:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "capital_stack",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-21T16:00:00Z",
     "confidence": "high",
@@ -246,18 +279,80 @@ same senior loan for single-loan consumers.
   },
   "_notes": "The stack foots: 24.0 + 4.5 + 3.5 + 16.0 = 48.0M = total sources = total uses. Every sizing value below is the correctly-rounded recomputation from the tranche terms (verifyCapitalStack agrees at each figure's quantum). The pref is current-pay, so its 297,500 return sits inside the blended coverage denominator; had it been accrued, combined_dscr_thru_pref would rise to the thru-mezz figure and debt_yield_thru_mezz would not move.",
   "tranches": [
-    { "id": "senior", "class": "senior_debt", "position": 1, "amount": 24000000, "rate": 0.0595, "amortization_months": 360, "io_months": 0, "term_months": 120, "accrual": "cash" },
-    { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 4500000, "rate": 0.105, "amortization_months": 0, "io_months": 120, "term_months": 120, "accrual": "cash" },
-    { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 3500000, "rate": 0.085, "accrual": "cash" },
-    { "id": "common", "class": "common_equity", "position": 4, "amount": 16000000 }
+    {
+      "id": "senior",
+      "class": "senior_debt",
+      "position": 1,
+      "amount": 24000000,
+      "rate": 0.0595,
+      "amortization_months": 360,
+      "io_months": 0,
+      "term_months": 120,
+      "accrual": "cash"
+    },
+    {
+      "id": "mezz",
+      "class": "mezzanine_debt",
+      "position": 2,
+      "amount": 4500000,
+      "rate": 0.105,
+      "amortization_months": 0,
+      "io_months": 120,
+      "term_months": 120,
+      "accrual": "cash"
+    },
+    {
+      "id": "pref",
+      "class": "preferred_equity",
+      "position": 3,
+      "amount": 3500000,
+      "rate": 0.085,
+      "accrual": "cash"
+    },
+    {
+      "id": "common",
+      "class": "common_equity",
+      "position": 4,
+      "amount": 16000000
+    }
   ],
   "sizing": [
-    { "id": "senior_dscr", "fn": "coverage", "over": "senior", "value": 1.51 },
-    { "id": "combined_dscr_thru_pref", "fn": "blended_coverage", "through": 3, "value": 1.05 },
-    { "id": "debt_yield_thru_mezz", "fn": "debt_yield_through", "through": 2, "value": 0.0912 },
-    { "id": "ltc_thru_mezz", "fn": "ltc_through", "through": 2, "value": 0.5938 },
-    { "id": "ltv_thru_mezz", "fn": "ltv_through", "through": 2, "value": 0.5864 },
-    { "id": "wacc", "fn": "weighted_cost", "over": "*", "value": 0.0687 }
+    {
+      "id": "senior_dscr",
+      "fn": "coverage",
+      "over": "senior",
+      "value": 1.51
+    },
+    {
+      "id": "combined_dscr_thru_pref",
+      "fn": "blended_coverage",
+      "through": 3,
+      "value": 1.05
+    },
+    {
+      "id": "debt_yield_thru_mezz",
+      "fn": "debt_yield_through",
+      "through": 2,
+      "value": 0.0912
+    },
+    {
+      "id": "ltc_thru_mezz",
+      "fn": "ltc_through",
+      "through": 2,
+      "value": 0.5938
+    },
+    {
+      "id": "ltv_thru_mezz",
+      "fn": "ltv_through",
+      "through": 2,
+      "value": 0.5864
+    },
+    {
+      "id": "wacc",
+      "fn": "weighted_cost",
+      "over": "*",
+      "value": 0.0687
+    }
   ]
 }
 ```
@@ -266,13 +361,13 @@ same senior loan for single-loan consumers.
 
 ## Sources & Uses {#sources_uses}
 
-```json uw:section=sources_uses source=engine:calculations.ts ts=2026-08-21T16:05:00Z v=1 confidence=high
+```json uw:section=sources_uses source=system/calculations.ts ts=2026-08-21T16:05:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "sources_uses",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-08-21T16:05:00Z",
     "confidence": "high",
@@ -300,13 +395,13 @@ same senior loan for single-loan consumers.
 
 ## Pipeline Log {#pipeline_log}
 
-```json uw:section=pipeline_log source=engine ts=2026-08-21T16:10:00Z v=1 confidence=high
+```json uw:section=pipeline_log source=system/engine ts=2026-08-21T16:10:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "pipeline_log",
     "version": 1,
     "superseded": false,
-    "source": "engine",
+    "source": "system/engine",
     "actor": "system",
     "timestamp": "2026-08-21T16:10:00Z",
     "confidence": "high",
@@ -339,8 +434,14 @@ same senior loan for single-loan consumers.
       "agent_or_actor": "jared",
       "section_affected": "capital_stack",
       "status": "success",
-      "input_sections": ["noi_model", "debt_structure", "sources_uses"],
-      "output_sections": ["capital_stack"],
+      "input_sections": [
+        "noi_model",
+        "debt_structure",
+        "sources_uses"
+      ],
+      "output_sections": [
+        "capital_stack"
+      ],
       "flags_raised": [],
       "flags_cleared": [],
       "duration_ms": null,
@@ -358,13 +459,13 @@ same senior loan for single-loan consumers.
 
 Financial-validity engine run over the capital stack and operating sections above.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",

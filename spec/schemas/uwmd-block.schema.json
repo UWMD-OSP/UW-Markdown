@@ -58,8 +58,27 @@
         },
         "source": {
           "type": "string",
-          "description": "Provenance tag matching one of the BUILTIN_EDIT_POLICIES patterns (e.g. 'manual', 'agent/L6-01', 'document/rent_roll', 'system/init', 'institution/threshold-override'). See protocol §V.3.",
+          "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+          "description": "Who wrote the block (RFC 0031 actor grammar): 'manual' or '<namespace>/<id>' with a registered namespace (e.g. 'agent/L6-01', 'document/rent_roll', 'system/init', 'institution/threshold-override'). Resolution methods belong in 'resolution'. A legacy SOURCE_TAGS value here is read-time-interpreted as resolution and warns under SRC-02. See protocol §V.3.",
           "minLength": 1
+        },
+        "resolution": {
+          "enum": [
+            "user_input",
+            "user_override",
+            "manual",
+            "inherited_assumption",
+            "investor_profile",
+            "market_data",
+            "market_data_accepted",
+            "ai_extracted",
+            "agent_computed",
+            "asset_class_default",
+            "scenario_default",
+            "global_default",
+            "system_default"
+          ],
+          "description": "How the block's value was resolved — one canonical SOURCE_TAGS member (RFC 0031). Optional and orthogonal to 'source': an agent that filled a field from the asset-class default table has both an actor and a method. See protocol §V.7."
         },
         "agent_id": {
           "type": ["string", "null"],
@@ -119,7 +138,29 @@
                 "description": "Dot-notated path relative to the block content root (e.g. 'units[7].current_rent')."
               },
               "confidence": { "enum": ["high", "medium", "low"] },
-              "source": { "type": "string" },
+              "source": {
+                "type": "string",
+                "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+                "description": "Actor override for this field (RFC 0031 actor grammar)."
+              },
+              "resolution": {
+                "enum": [
+                  "user_input",
+                  "user_override",
+                  "manual",
+                  "inherited_assumption",
+                  "investor_profile",
+                  "market_data",
+                  "market_data_accepted",
+                  "ai_extracted",
+                  "agent_computed",
+                  "asset_class_default",
+                  "scenario_default",
+                  "global_default",
+                  "system_default"
+                ],
+                "description": "How this field's value was resolved; a leaf-level resolution wins over the block-level one for its path (protocol §V.7, RFC 0031)."
+              },
               "reason": { "enum": ["illegible", "missing", "overridden", "estimated", "computed"] },
               "note": { "type": "string" }
             }

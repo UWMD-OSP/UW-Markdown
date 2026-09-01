@@ -39,6 +39,10 @@ export type {
   UWSourceMigration,
 } from './source-representation.js';
 
+// RFC 0031 source-tag migration — pure string transformation, browser-safe.
+export { migrateSourceTags, mapLegacySource } from './migrate-source-tags.js';
+export type { SourceTagMigration } from './migrate-source-tags.js';
+
 export {
   UWLiteError,
   parseUWLite,
@@ -589,6 +593,10 @@ export {
   BUILTIN_REMEDIATIONS,
   VALIDATOR_CODE_FAMILIES,
   validatorCodeFamily,
+  SOURCE_TAGS,
+  ACTOR_NAMESPACES,
+  ACTOR_SOURCE_RE,
+  parseActorSource,
 } from './protocol.js';
 export type {
   ViewerTier,
@@ -608,6 +616,9 @@ export type {
   EditAuthority,
   EditPolicy,
   EditOperation,
+  CanonicalSourceTag,
+  ActorNamespace,
+  ParsedActorSource,
   IssueRemediation,
   CalcEvaluationContext,
   CalcResult,

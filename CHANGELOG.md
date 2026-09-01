@@ -8,6 +8,76 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — RFC 0031 implemented: the source vocabularies reconciled (corpus 301 → 306)
+
+[RFC 0031](docs/rfcs/0031-source-vocabulary.md) (accepted and implemented
+2026-08-31). Protocol goes to **1.10.0**. `_meta.source` was asked to carry two
+unrelated facts — who wrote the block, and how its value was resolved — and the
+specs answered in six vocabularies of which only one was executable; 160 blocks
+in our own corpus (32%) named a source no policy pattern recognized. The
+unpoliced-write half shipped earlier as a bug fix; this lands the vocabulary.
+
+- **The field splits.** `_meta.source` is actor-only — `manual` or
+  `<namespace>/<id>` over the closed namespace set `agent | document | system |
+  institution` (`ACTOR_NAMESPACES`, `parseActorSource`, both exported; the
+  grammar is normative in format §2.6 and mirrored in
+  `uwmd-block.schema.json`). New optional `_meta.resolution` holds one
+  canonical `SOURCE_TAGS` tag; `field_overrides[]` carries the same split at
+  leaf granularity, and format §3.4 now states that the leaf wins for its path.
+- **Read-time interpretation.** A canonical tag found in `_meta.source` is
+  surfaced as `meta.resolution` by the parser — on a clone, never by rewriting
+  `content._meta`, which feeds digests — and the actor is treated as absent.
+  Every pre-split file keeps a correct reading with no edit.
+- **Two new validator codes.** `SRC-01` (unrecognized actor source) and
+  `SRC-02` (resolution tag in the actor field), both warnings through format
+  1.x; `SRC-02` becomes an error at 2.0. The `SRC` family registers under
+  `validate` in §III.6a.
+- **Authority classification reads the parsed namespace**, in both the editor
+  and `verifyProvenance` — never string prefixes. The colon form `agent:L0-01`
+  used to be classified as a *human* write by the prefix test's negative
+  space; a source outside the grammar now satisfies no authority class (it can
+  still write under `either`). The Tier-4 host was itself an offender: it
+  stamped the bare layer id (`L6-01`), which resolved only the catch-all — it
+  now writes `agent/<id>`, and the fence `source=` mirrors the block's actual
+  `_meta.source`. `uwmd init`'s fence annotations likewise stop advertising
+  `wizard` / `engine:uwmd` over metas that said otherwise.
+- **Spec repairs.** Format §2.6 is rewritten (the colon-form table is retired;
+  the broken "see Protocol §IX" cross-reference now points at §V.7); §3.1's
+  contradictory precedence ladder becomes non-normative narrative deferring to
+  §V.7 — **§V.7 wins where they disagreed** (investor profile outranks market
+  data: a declared decision beats a scraped comp), and §3.1's rankings of
+  `ai_extracted`/`agent_computed`, which are not cascade steps, are removed;
+  §4.16's private enum is replaced by `SOURCE_TAGS` and `wizard_input` — a
+  token no other vocabulary or line of code recognized — becomes `user_input`;
+  protocol §V.3 gains the grammar, the normative catch-all, and the
+  classification rule; §V.4 states the actual grammar where producers look
+  first; §V.7 stamps `resolution` rather than `source`.
+- **`uwmd migrate --source-tags`** (and `migrateSourceTags` / 
+  `mapLegacySource`, browser-safe): a total, mechanical rewrite of the legacy
+  spellings. It recovers actors from the block where possible (`agent_id` for
+  agent-method tags, `manual` for user-entered ones, `system/uwmd` for
+  engine-resolved cascade tags, delimiter swaps for colon forms), refuses to
+  guess at unknown sources, and refuses blocks carrying `content_hash` rather
+  than silently invalidating an integrity chain. Applied to the corpus:
+  exactly the 160 measured blocks across 42 files, zero unmapped. (The codemod
+  is EOL-aware — a CRLF working copy would otherwise blind the fence regexes
+  and silently skip files.)
+- **New `conformance/source/` suite** (5 scenarios, corpus 301 → 306),
+  including the data-loss regression: an edit against a catch-all-governed
+  block supersedes, a `section_replace` is refused, and a v2 block with no
+  superseded prior reports `POL-02`.
+- **Errata recorded in the RFC:** the draft schema pattern rejected the RFC's
+  own `agent/L6-01` example (lowercase-only id charset — corrected to mixed
+  case); fixture 03's live refusal code is `PROTO-EDIT-004`, with `POL-02` as
+  the post-hoc provenance verdict; and the migration's actor-assignment
+  mapping, which the RFC left open, is now specified in the RFC's status note.
+  The protocol document's own H1 had also read "v1.3" since protocol 1.3.0 —
+  seven minors of rot — and now carries the major alone, with §0.3 stating the
+  precise version.
+- Unblocks [RFC 0009](docs/rfcs/0009-meta-v2-reorg.md) (`_meta` v2 reorg),
+  which can now type the nested provenance field without orphaning the actor
+  vocabulary the edit engine runs on.
+
 ### Added — RFC 0030 implemented: partial conformance became checkable (corpus 274 → 301)
 
 [RFC 0030](docs/rfcs/0030-conformance-profiles.md) (drafted, accepted, and

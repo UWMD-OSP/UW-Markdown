@@ -99,7 +99,11 @@ over four `EditOperation` kinds (`protocol.ts`): `frontmatter_set`,
 
 It enforces edit policy: `resolvePolicy` matches `_meta.source` against
 `BUILTIN_EDIT_POLICIES` to decide authority (`agent_only`/`human_only`/`either`/
-`system_only`) and whether the edit must supersede (append) or may replace. **The
+`system_only`) and whether the edit must supersede (append) or may replace.
+`_meta.source` is actor-only under RFC 0031 — `manual` or `<namespace>/<id>`
+parsed by `parseActorSource` (never prefix tests); resolution methods live in
+the separate optional `_meta.resolution`, and the table ends in a `*`
+catch-all so every source resolves the conservative policy. **The
 golden rule of Tier-2:** bytes outside the modified region are preserved exactly
 (round-trip stability). Failures return a typed `ProtocolError` in
 `EditResult.error` (e.g. `INT-02` stale parent hash, `POL-01` unauthorized actor).

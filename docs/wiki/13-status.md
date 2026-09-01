@@ -2,20 +2,18 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-08-31, after RFC 0030 (conformance profiles) and the
-unpoliced-write fix, on top of the 2026-08-27 batch — RFC 0010 (signed blocks),
-0002 (module signing), 0004 (language-agnostic conformance driver), 0006
-(hospitality reference module), 0003 (module-declared asset classes), 0007
-(sensitivity tables), and 0005 (stochastic calculations). Full pass: build green
-across all workspaces; **1,446 tests** — 1,135 core, 94 excel, 62 cli, 62
-signing, 15 module-hospitality, 4 batch, 3 report — plus **71 web-editor**;
-**301 conformance** assertions (and **44** more through the RFC 0004 CLI driver,
-run under `--no-skip`), plus **3 conformance profiles** via `npm run
-conformance:profiles`; Biome clean; `typecheck:tests` clean across all seven
-workspaces; `@uwmd/core` and `@uwmd/cli` **1.7.0 published to npm** by the
-tag-triggered OIDC job, provenance attached — protocol at **1.9.0** for RFC
-0030's §II.6a.5/§II.6a.6 and the §III.6a rewrite (1.8.0 added §X.2; 1.7.0 added
-§V.11; 1.6.0 added §XIII).
+**Last verified:** 2026-08-31, after RFC 0031 (source vocabulary — accepted
+and implemented the same day, on top of RFC 0030 and the unpoliced-write fix
+from the same week). Full pass: build green across all workspaces; **1,482
+tests** — 1,171 core, 94 excel, 62 cli, 62 signing, 15 module-hospitality, 4
+batch, 3 report — plus **71 web-editor**; **306 conformance** assertions (and
+**44** more through the RFC 0004 CLI driver, run under `--no-skip`), plus **3
+conformance profiles** via `npm run conformance:profiles`; Biome clean;
+`typecheck:tests` clean across all seven workspaces; `@uwmd/core` and
+`@uwmd/cli` **1.7.0 published to npm** by the tag-triggered OIDC job,
+provenance attached — protocol at **1.10.0** for RFC 0031's `_meta` split,
+`SRC-NN`, and the §V.3/§V.7 rewrite (1.9.0 was RFC 0030; 1.8.0 added §X.2;
+1.7.0 added §V.11; 1.6.0 added §XIII).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -97,10 +95,10 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **301 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **306 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, `size-intensive`, `signing`, `sensitivity`, and `stochastic`
-  suites. CI runs the runner's **default** suite list rather than a pinned
+  `capital-stack`, `size-intensive`, `signing`, `sensitivity`, `stochastic`,
+  and `source` suites. CI runs the runner's **default** suite list rather than a pinned
   `--tier=`, which is what the earlier claim of replay coverage assumed but did
   not have: `ci.yml` pinned `1,2,3,lite,receipts`, so `4-replay` had never
   actually gated a pull request. See [09](09-conformance-testing.md).
@@ -640,7 +638,7 @@ warning, which every example was tripping.
 Receipt **signing** shipped 2026-08-27 with RFC 0010 (`@uwmd/signing`). Unsigned
 issuance and verification are unchanged and remain the default path.
 
-## 📋 v2 RFC train (unfrozen 2026-08-26; 0002-0007 + 0010 + 0030 implemented)
+## 📋 v2 RFC train (unfrozen 2026-08-26; 0002-0007 + 0010 + 0030 + 0031 implemented)
 
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
 emptied (RFCs 0014–0029 all implemented).
@@ -725,17 +723,25 @@ web-editor suite, which root `npm test` does not cover by design.
 This is the correctness half of RFC 0031, shipped ahead of it. The vocabulary
 reconciliation is still a draft.
 
-**📝 RFC 0031 source vocabulary — drafted 2026-08-30, merged as design
-history.** `_meta.source` carries two orthogonal facts (who wrote the block, how
-its value was resolved) and the specs answer that in six vocabularies of which
-only `BUILTIN_EDIT_POLICIES` is executable; only `manual` means the same thing in
-all six. **Format §3.1 and protocol §V.7 rank the same two sources in opposite
-order** — market data vs investor profile — so two producers each following a
-normative section resolve the same field differently. §V.7 is authoritative.
-160 of 496 blocks carrying `_meta.source` (32%) name a source no pattern
-recognizes; that is the migration cost. **Blocks RFC 0009**, which types the
-nested field as `SourceTag` and would bake one half into `provenance.source` for
-format v2.0.
+**✅ RFC 0031 source vocabulary — accepted and implemented 2026-08-31**
+(protocol 1.10.0). `_meta.source` is now actor-only (`manual` or
+`<namespace>/<id>` over the closed `agent|document|system|institution` set,
+parsed by `parseActorSource` — never prefix tests, which is how `agent:L0-01`
+used to classify as a *human* write); the new optional `_meta.resolution`
+carries the canonical `SOURCE_TAGS` method, at block and `field_overrides`
+leaf level (leaf wins — now specified in §3.4, not presumed). Legacy tags in
+`source` are read-time-interpreted onto a **cloned** meta (never into
+`content._meta`, which feeds digests) and warn `SRC-02`; other out-of-grammar
+sources warn `SRC-01`. §3.1's precedence ladder — which ranked market data and
+investor profile in the **opposite order** from §V.7 — is now non-normative
+narrative deferring to §V.7. `uwmd migrate --source-tags` migrated exactly the
+measured **160 blocks** across 42 files (zero unmapped; it refuses unknown
+sources and `content_hash`-bearing blocks rather than guessing); the Tier-4
+host, which stamped bare layer ids, now writes `agent/<id>`.
+`conformance/source/` pins the split and the data-loss regression (corpus
+301 → 306). Three errata recorded in the RFC, the best of which: the draft's
+own schema pattern rejected its own worked example `agent/L6-01`
+(lowercase-only id charset). **RFC 0009 is unblocked.**
 
 **The stated priority order is complete.** What remains on this train has no
 assigned order yet:
@@ -745,13 +751,13 @@ tokens (0011), corpus retrieval (0013), and portfolio/relationship profiles
 (0015). Unfrozen means actively being taken up, not accepted — each RFC still
 goes through its own acceptance.
 
-**Blocked:** `_meta` v2 reorg (0009), behind RFC 0031. It types the nested
-provenance field as `SourceTag` — the *resolution* reading — and accepting it
-first would bake that into `provenance.source` for format v2.0, permanently
-orphaning the *actor* vocabulary the edit engine runs on. Resolve 0031 first.
-Also worth pairing when it is taken up: RFC 0011 (capability tokens) is the
-natural home for the edit-authority questions the catch-all made visible —
-notably whether `institution/*` should keep `system_only`.
+**Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009). With the
+actor/resolution split landed, 0009 can type the nested provenance field
+without orphaning the actor vocabulary — its draft needs revising to carry
+*both* fields into the v2 `provenance` object before acceptance. Also worth
+pairing when it is taken up: RFC 0011 (capability tokens) is the natural home
+for the edit-authority questions the catch-all made visible — notably whether
+`institution/*` should keep `system_only`.
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch

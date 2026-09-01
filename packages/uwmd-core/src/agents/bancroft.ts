@@ -429,7 +429,10 @@ function writeSectionOutputs(
     const newVersion = existingVersion + 1;
 
     const meta = buildMeta(toolOut.section_id, newVersion, {
-      source: agentId,
+      // The RFC 0031 actor grammar: a bare layer id (`L6-01`) is not an actor
+      // and resolved only the catch-all policy; `agent/<id>` is what
+      // BUILTIN_EDIT_POLICIES' agent/* pattern governs.
+      source: `agent/${agentId}`,
       agentId,
       agentVersion: '1.0.0',
       actor: 'system',

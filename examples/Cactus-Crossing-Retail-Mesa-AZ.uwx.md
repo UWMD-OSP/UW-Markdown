@@ -68,13 +68,13 @@ grocery anchor with inline shop space.
 
 Cactus Crossing is a 95,000 SF grocery-anchored neighborhood center in southeast Mesa, anchored by a regional grocer on a long-term NNN lease and 94% leased across eight tenants. The seller is a 1031 exchange buyer who is now out of their hold window. Thesis: acquire a stabilized, daily-needs center with a credit grocery anchor at a 7.0% in-place cap, hold for durable NNN cash flow, and harvest mark-to-market on the inline rollover over a 7-10 year hold.
 
-```json uw:section=deal_context source=user ts=2026-05-18T09:15:00Z v=1 confidence=high
+```json uw:section=deal_context source=manual ts=2026-05-18T09:15:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "deal_context",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-05-18T09:15:00Z",
     "confidence": "high",
@@ -95,13 +95,13 @@ Cactus Crossing is a 95,000 SF grocery-anchored neighborhood center in southeast
 
 ## Property {#property}
 
-```json uw:section=property source=user ts=2026-05-18T09:30:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-05-18T09:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-05-18T09:30:00Z",
     "confidence": "high",
@@ -114,7 +114,7 @@ Cactus Crossing is a 95,000 SF grocery-anchored neighborhood center in southeast
   "building_class": "B",
   "buildings": 4,
   "parking_spaces": 475,
-  "parking_ratio_per_1000_sf": 5.0,
+  "parking_ratio_per_1000_sf": 5,
   "occupancy_pct": 0.94,
   "anchor_tenant": "Sonoran Fresh Market",
   "submarket": "Southeast Mesa / Power Road Corridor"
@@ -127,13 +127,14 @@ Cactus Crossing is a 95,000 SF grocery-anchored neighborhood center in southeast
 
 Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` array (see Part IV §4) for office, retail, and industrial. Grocery anchor on NNN with percentage-rent overage; inline shops on NNN.
 
-```json uw:section=rent_roll source=user:upload ts=2026-05-18T10:00:00Z v=1 confidence=high
+```json uw:section=rent_roll source=manual ts=2026-05-18T10:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "rent_roll",
     "version": 1,
     "superseded": false,
-    "source": "user:upload",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-05-18T10:00:00Z",
     "confidence": "high",
@@ -154,7 +155,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "Anchor",
       "leased_sf": 45000,
       "annual_base_rent": 517500,
-      "rent_psf": 11.50,
+      "rent_psf": 11.5,
       "lease_start": "2018-06-01",
       "lease_expiration": "2034-05-31",
       "lease_type": "NNN",
@@ -168,7 +169,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "A-1",
       "leased_sf": 12000,
       "annual_base_rent": 288000,
-      "rent_psf": 24.00,
+      "rent_psf": 24,
       "lease_start": "2021-03-01",
       "lease_expiration": "2031-02-28",
       "lease_type": "NNN",
@@ -181,7 +182,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "A-2",
       "leased_sf": 15000,
       "annual_base_rent": 270000,
-      "rent_psf": 18.00,
+      "rent_psf": 18,
       "lease_start": "2020-09-01",
       "lease_expiration": "2030-08-31",
       "lease_type": "NNN",
@@ -194,7 +195,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "B-1",
       "leased_sf": 6000,
       "annual_base_rent": 192000,
-      "rent_psf": 32.00,
+      "rent_psf": 32,
       "lease_start": "2022-11-01",
       "lease_expiration": "2032-10-31",
       "lease_type": "NNN",
@@ -207,7 +208,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "B-2",
       "leased_sf": 2500,
       "annual_base_rent": 75000,
-      "rent_psf": 30.00,
+      "rent_psf": 30,
       "lease_start": "2023-05-01",
       "lease_expiration": "2028-04-30",
       "lease_type": "NNN",
@@ -220,7 +221,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "B-3",
       "leased_sf": 1800,
       "annual_base_rent": 68400,
-      "rent_psf": 38.00,
+      "rent_psf": 38,
       "lease_start": "2024-01-15",
       "lease_expiration": "2031-01-14",
       "lease_type": "NNN",
@@ -233,7 +234,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "C-1",
       "leased_sf": 3000,
       "annual_base_rent": 105000,
-      "rent_psf": 35.00,
+      "rent_psf": 35,
       "lease_start": "2019-07-01",
       "lease_expiration": "2029-06-30",
       "lease_type": "NNN",
@@ -246,7 +247,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "C-2",
       "leased_sf": 4000,
       "annual_base_rent": 104000,
-      "rent_psf": 26.00,
+      "rent_psf": 26,
       "lease_start": "2022-02-01",
       "lease_expiration": "2032-01-31",
       "lease_type": "NNN",
@@ -273,13 +274,13 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=engine:calculations.ts ts=2026-05-18T12:00:00Z v=1 confidence=high
+```json uw:section=noi_model source=system/calculations.ts ts=2026-05-18T12:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-05-18T12:00:00Z",
     "confidence": "high",
@@ -314,13 +315,13 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## Debt Structure {#debt_structure}
 
-```json uw:section=debt_structure source=user ts=2026-05-18T13:30:00Z v=1 confidence=high
+```json uw:section=debt_structure source=manual ts=2026-05-18T13:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-05-18T13:30:00Z",
     "confidence": "high",
@@ -352,13 +353,13 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## Sources & Uses {#sources_uses}
 
-```json uw:section=sources_uses source=engine:calculations.ts ts=2026-05-18T13:35:00Z v=1 confidence=high
+```json uw:section=sources_uses source=system/calculations.ts ts=2026-05-18T13:35:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "sources_uses",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-05-18T13:35:00Z",
     "confidence": "high",
@@ -385,13 +386,14 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## Valuation {#valuation}
 
-```json uw:section=valuation source=user:appraisal ts=2026-05-18T14:30:00Z v=1 confidence=high
+```json uw:section=valuation source=manual ts=2026-05-18T14:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "valuation",
     "version": 1,
     "superseded": false,
-    "source": "user:appraisal",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-05-18T14:30:00Z",
     "confidence": "high",
@@ -413,13 +415,14 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
 
-```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+```json uw:section=operating_statement source=system/extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "operating_statement",
     "version": 1,
     "superseded": false,
-    "source": "extractor",
+    "source": "system/extractor",
+    "resolution": "ai_extracted",
     "agent_id": null,
     "agent_version": null,
     "actor": "jared",
@@ -598,13 +601,13 @@ Mesa / East Valley neighborhood retail fundamentals as of 2026-08.
 
 Financial-validity engine run over the sections above.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",

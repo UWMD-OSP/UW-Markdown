@@ -25,13 +25,14 @@ the multifamily pack only.
 
 ## Property {#property}
 
-```json uw:section=property source=user_input ts=2026-01-15T10:00:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user_input",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": null,
     "agent_version": null,
     "actor": "user",

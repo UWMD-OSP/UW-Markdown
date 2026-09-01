@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.9.0' as const;
+export const PROTOCOL_VERSION = '1.10.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -325,43 +325,61 @@ export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
   'system_default',
 ]);
 
+// `SOURCE_TAGS` / `CanonicalSourceTag` live in `types.ts` (the parser needs
+// them for §2.6 read-time interpretation, and `protocol.ts` imports the
+// parser, so hosting them here would make the dependency circular). They are
+// re-exported below so existing `./protocol.js` import sites keep working.
+export { SOURCE_TAGS } from './types.js';
+export type { CanonicalSourceTag } from './types.js';
+
+// ─── Actor grammar for `_meta.source` (RFC 0031) ─────────────────────────────
+
 /**
- * The full set of canonical short-form source tags producers stamp into
- * `_meta.source`. Eight of these match `CascadeStep` 1:1; the rest are
- * non-cascade tags — `manual`, `ai_extracted`, `agent_computed`,
- * `scenario_default`, and `market_data_accepted`.
+ * The registered actor namespaces for `_meta.source`. RFC 0031 makes the
+ * field actor-only: `manual`, or `<namespace>/<id>` where the namespace is a
+ * member of this list and the id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. (The
+ * RFC's draft pattern was lowercase-only, which rejected its own worked
+ * example `agent/L6-01` and every Bancroft layer id — corrected as errata.)
+ * Resolution methods (the {@link SOURCE_TAGS} vocabulary) belong in
+ * `_meta.resolution`.
  *
- * `market_data_accepted` (RFC 0022 §4) is deliberately *not* a cascade step:
- * it is an in-file value of record that resolves at the `user_input` step
- * while keeping its own tag, because a value accepted for lack of better
- * evidence must stay distinguishable from one someone typed in.
- *
- * `scenario_default` is retained but its meaning is sharpened to mean
- * "value derived from a named scenario in the file or institution
- * config." Producers needing a generic fallback SHOULD use
- * `system_default` instead.
- *
- * Long-form patterns (e.g. `agent/L6-01`, `document/rent_roll`,
- * `import:filename.pdf`) remain valid; this constant enumerates the
- * canonical short forms only.
+ * Closed at format 1.x. This list is what `BUILTIN_EDIT_POLICIES` patterns
+ * key on, so opening it is a protocol change, not a producer convention.
  */
-export const SOURCE_TAGS = Object.freeze([
-  'user_input',
-  'user_override',
-  'manual',
-  'inherited_assumption',
-  'investor_profile',
-  'market_data',
-  'market_data_accepted',
-  'ai_extracted',
-  'agent_computed',
-  'asset_class_default',
-  'scenario_default',
-  'global_default',
-  'system_default',
+export const ACTOR_NAMESPACES = Object.freeze([
+  'agent',
+  'document',
+  'system',
+  'institution',
 ] as const);
 
-export type CanonicalSourceTag = (typeof SOURCE_TAGS)[number];
+export type ActorNamespace = (typeof ACTOR_NAMESPACES)[number];
+
+/** The RFC 0031 actor grammar, as one regex. Mirrored (as a JSON Schema
+ *  `pattern`) in `spec/schemas/uwmd-block.schema.json`. */
+export const ACTOR_SOURCE_RE = /^(manual|(agent|document|system|institution)\/[A-Za-z0-9][A-Za-z0-9._-]*)$/;
+
+/** A parsed `_meta.source` actor. `invalid` covers everything outside the
+ *  grammar — legacy colon forms, bare words, and resolution tags alike. */
+export type ParsedActorSource =
+  | { kind: 'manual' }
+  | { kind: 'namespaced'; namespace: ActorNamespace; id: string }
+  | { kind: 'invalid' };
+
+/**
+ * Parse a `_meta.source` value against the RFC 0031 actor grammar.
+ *
+ * This is the one place authority classification is allowed to read the
+ * string: `checkAuthority` derives human/agent/system from the parsed
+ * namespace, never from `startsWith` prefix tests — which is how the colon
+ * form `agent:L0-01` used to be classified as a *human* write.
+ */
+export function parseActorSource(source: string): ParsedActorSource {
+  if (source === 'manual') return { kind: 'manual' };
+  const m = /^(agent|document|system|institution)\/([A-Za-z0-9][A-Za-z0-9._-]*)$/.exec(source);
+  if (m) return { kind: 'namespaced', namespace: m[1] as ActorNamespace, id: m[2]! };
+  return { kind: 'invalid' };
+}
 
 // ─── Incomplete-data policies (Format Spec §4.22) ─────────────────────────────
 
@@ -1466,6 +1484,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
     // Either edit capability implies a policy engine; neither means no POL codes.
     capabilities: ['edit-replace', 'edit-supersede'],
   },
+  { prefix: 'SRC', description: 'Source vocabulary (RFC 0031)', capabilities: ['validate'] },
   { prefix: 'MOD', description: 'Module runtime', capabilities: ['module-load'] },
   { prefix: 'CALC', description: 'Calc engine', capabilities: ['calc-evaluate'] },
   {
@@ -1852,6 +1871,20 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The section\'s policy requires supersede_on_edit but the head version > 1 has no superseded prior versions.',
     remediation: 'Re-issue the edit as section_supersede so the prior version is preserved as a superseded block.',
     spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+  },
+  {
+    code: 'SRC-01', severity: 'warning',
+    title: 'Unrecognized actor source',
+    description: '_meta.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (RFC 0031). The block still parses; edits against it resolve only the conservative catch-all policy.',
+    remediation: 'Rewrite _meta.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`. `uwmd migrate --source-tags` rewrites a file mechanically.',
+    spec_ref: '§2.6, UW_PROTOCOL_v1.md §V.3',
+  },
+  {
+    code: 'SRC-02', severity: 'warning',
+    title: 'Resolution tag in the actor field',
+    description: '_meta.source holds a canonical SOURCE_TAGS value (a resolution method) where an actor belongs. Readers interpret it as `resolution` and treat the actor as absent; this becomes an error at format 2.0 (RFC 0031).',
+    remediation: 'Move the tag to _meta.resolution and state the actual actor in _meta.source (or omit it as manual). `uwmd migrate --source-tags` performs the move mechanically.',
+    spec_ref: '§2.6, UW_PROTOCOL_v1.md §V.7',
   },
 
   // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────

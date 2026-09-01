@@ -140,6 +140,16 @@ conformance/
                           expected-metrics.json} is the no-stack single-loan
                           regression pin — every pack metric must equal its
                           pre-RFC value exactly
+├── source/             Source vocabulary (RFC 0031). Five
+│                         <scenario>/{deal.uwx.md, expected.json}. The split
+│                         (`_meta.source` actor-only, `_meta.resolution` for
+│                         the method) round-trips; a legacy tag in `source` is
+│                         read-time-interpreted without rewriting the raw
+│                         bytes; the retired colon form is neither well-formed
+│                         nor a human write; and 03-unmatched-supersedes is the
+│                         data-loss regression — an unrecognized source
+│                         supersedes instead of replacing, and a caller policy
+│                         list with no coverage refuses rather than grants
 └── size-intensive/     The Protocol §XIII size-intensive registry (RFC 0027).
                           Seven named scenarios: the registry pins (§XIII.1–3
                           against the shipped table; primary-in-pack and
@@ -201,8 +211,8 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `size-intensive`, `signing`, `sensitivity`, and `stochastic`
-suites are named rather than numbered:
+`capital-stack`, `size-intensive`, `signing`, `sensitivity`, `stochastic`, and
+`source` suites are named rather than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and

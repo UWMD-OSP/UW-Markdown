@@ -66,13 +66,13 @@ The thesis is straightforward: acquire at a realistic in-place yield, replace ma
 
 The owner is motivated — estate sale situation, wants a clean close. LOI accepted at $7.2M. 45-day due diligence, 30-day close. We are competing against one other buyer who is likely financing through a local bank.
 
-```json uw:section=deal_context source=user ts=2026-04-24T09:15:00Z v=1 confidence=high
+```json uw:section=deal_context source=manual ts=2026-04-24T09:15:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "deal_context",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "agent_id": "user",
     "agent_version": null,
     "actor": "jared",
@@ -84,38 +84,26 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
     "notes": null
   },
   "_notes": "DSCR tightens once IO burns off — model at amortizing rate before committing. Check if lender will go 24mo IO.",
-
   "deal_summary": "48-unit garden-style multifamily in Glendale AZ (westside Phoenix). Stabilized acquisition, owner-operated with below-market rents. Buy at in-place yield, professionalize management, push rents through natural turnover. 5-year hold.",
-
   "investment_thesis": "Owner-operated asset with 6.8% loss-to-lease. Management replacement + lease-up to market rents over 18 months without capital outlay. Infill submarket with positive population growth and limited new supply at this price point.",
-
   "acquisition_rationale": "Estate sale — motivated seller, clean title, no major deferred maintenance flagged in preliminary walk. LOI accepted at $7.2M after 3 weeks of marketing.",
-
   "value_creation_strategy": "Replace property management (current PM charges 10% — benchmark is 5.5%). Execute lease renewals at market rents through natural turnover. No renovation capex required on units themselves — common areas recently updated by seller.",
-
   "hold_strategy": "long_term_hold",
-
   "exit_strategy_description": "Refinance at year 5 into agency debt if NOI supports; alternatively sell into a market with cap rate compression if Phoenix growth narrative holds. Exit cap assumption of 6.0% is 50bps wide of current market — conservative.",
-
   "deal_goal": "Cash-flowing stabilized asset at sub-market entry with rent-growth optionality. Target 6%+ levered IRR with downside protected by infill location and functional demand.",
-
   "special_circumstances": "Estate sale. Current owner is out-of-state heir, not a sophisticated real estate operator. Management is month-to-month with a local PM firm. Seller wants clean close — no seller financing, no contingencies beyond standard DD.",
-
   "known_risks_user_identified": [
     "DSCR compresses to ~1.11x once IO period ends — tight if NOI doesn't grow as projected",
     "Loss-to-lease means current income understates potential but also means leases are stale and renewal risk exists",
     "Phoenix metro supply pipeline is elevated for 2026-2027 — may pressure rent growth in year 2",
     "Seller's T-12 prepared by management company, not CPA — expenses may be understated"
   ],
-
   "known_opportunities_user_identified": [
     "Management fee reduction from 10% to 5.5% adds ~$19k NOI immediately",
     "Natural turnover at 25-30%/yr means rents can reach market within 18-24 months without buyouts",
     "Submarket has <5% vacancy — strong renter demand provides cushion on lease-up timing"
   ],
-
   "deal_history": "Off-market introduction through estate attorney. No formal listing. Two offers submitted — ours and one local buyer. Seller chose us on certainty of close.",
-
   "time_constraints": {
     "loi_deadline": "2026-04-10",
     "due_diligence_period_days": 45,
@@ -123,9 +111,7 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
     "hard_deadline": true,
     "notes": "Seller has estate court approval deadline in late June — hard close required by June 24."
   },
-
   "competitive_situation": "One competing offer from a local Phoenix buyer believed to be using a community bank bridge loan. Our conventional 70% LTV permanent financing at a known lender gives us execution certainty advantage.",
-
   "lender_preferences": {
     "preferred_lender_type": "bank",
     "preferred_loan_type": "conventional",
@@ -134,7 +120,6 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
     "max_recourse": "partial",
     "notes": "Prefer 24mo IO if available. At 12mo IO, DSCR at amortizing is 1.11x — acceptable but tight. 24mo IO gives time for rent growth to build before full debt service kicks in."
   },
-
   "investor_context": {
     "portfolio_role": "core_plus",
     "target_market_fit": "Secondary Phoenix metro, B-class multifamily — fits buy box",
@@ -143,9 +128,14 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
     "tax_considerations": "Cost segregation study planned at acquisition. Bonus depreciation on personal property components.",
     "depreciation_strategy": "Cost seg year 1 to accelerate depreciation on short-life components"
   },
-
-  "deal_tags": ["multifamily", "phoenix_metro", "stabilized", "estate_sale", "below_market_rents", "management_upside"],
-
+  "deal_tags": [
+    "multifamily",
+    "phoenix_metro",
+    "stabilized",
+    "estate_sale",
+    "below_market_rents",
+    "management_upside"
+  ],
   "ai_synthesis": {
     "generated": false,
     "summary": null,
@@ -166,13 +156,14 @@ Parkview Apartments is a two-story, wood-frame garden-style apartment complex co
 
 The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, with strong renter demand from healthcare workers (Banner Thunderbird Medical Center 1.2 miles), sports/entertainment employees (State Farm Stadium 3 miles), and workforce renters priced out of Scottsdale and Tempe.
 
-```json uw:section=property source=wizard:step_1 ts=2026-04-24T09:05:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-04-24T09:05:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "wizard:step_1",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": "wizard",
     "agent_version": "4.0.0",
     "actor": "jared",
@@ -192,7 +183,10 @@ The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, wi
     "county": "Maricopa",
     "apn": "148-23-456",
     "legal_description": "Parkview Estates Lot 7, Maricopa County, AZ",
-    "coordinates": { "lat": 33.5095, "lng": -112.1845 }
+    "coordinates": {
+      "lat": 33.5095,
+      "lng": -112.1845
+    }
   },
   "asset_class": "multifamily",
   "asset_subtype": "garden_style",
@@ -201,14 +195,19 @@ The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, wi
   "total_units": 48,
   "total_nra_sqft": 41400,
   "land_area_sqft": 78408,
-  "land_area_acres": 1.80,
+  "land_area_acres": 1.8,
   "stories": 2,
   "building_class": "B",
   "construction_type": "wood_frame",
   "parking_spaces": 72,
   "parking_ratio": 1.5,
   "parking_type": "surface",
-  "amenities": ["laundry_room", "pool", "covered_parking_partial", "leasing_office"],
+  "amenities": [
+    "laundry_room",
+    "pool",
+    "covered_parking_partial",
+    "leasing_office"
+  ],
   "condition": "average_good",
   "deferred_maintenance_est": 0,
   "recent_capex_description": "Common area renovation 2023: new leasing office, parking resurfacing, landscaping.",
@@ -227,13 +226,14 @@ The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, wi
 
 Current owner is the Hartwell Family Trust, administered by an out-of-state executor following the death of the original owner in late 2025. Property has been under the same ownership since 2011. No existing debt — property is free and clear, which simplifies the transaction.
 
-```json uw:section=ownership source=wizard ts=2026-04-24T09:08:00Z v=1 confidence=high
+```json uw:section=ownership source=manual ts=2026-04-24T09:08:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "ownership",
     "version": 1,
     "superseded": false,
-    "source": "wizard",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": "wizard",
     "agent_version": "4.0.0",
     "actor": "jared",
@@ -283,20 +283,22 @@ As of April 1, 2026. 45 of 48 units occupied (93.75% physical occupancy). Three 
 | 2BR/2BA | 24 | 975 | $1,225 | $1,275 | $50 | 95.8% (23/24) |
 | **Total** | **48** | **863** | **$1,138** | **$1,188** | **$50** | **93.8%** |
 
-```json uw:section=rent_roll source=agent:L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
+```json uw:section=rent_roll source=agent/L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "rent_roll",
     "version": 1,
     "superseded": false,
-    "source": "agent:L0-01",
+    "source": "agent/L0-01",
     "agent_id": "L0-01",
     "agent_version": "1.0.0",
     "actor": "system",
     "timestamp": "2026-04-24T10:12:00Z",
     "confidence": "high",
     "human_review_required": false,
-    "flags": ["7_units_month_to_month"],
+    "flags": [
+      "7_units_month_to_month"
+    ],
     "input_hash": "sha256:e3b0c44298fc",
     "notes": "Parsed from parkview_rent_roll_apr2026.xlsx. 48 unit records found, 0 parse errors."
   },
@@ -332,7 +334,7 @@ As of April 1, 2026. 45 of 48 units occupied (93.75% physical occupancy). Three 
       "avg_rent_market": 1100,
       "loss_to_lease_avg": 50,
       "occupancy_pct": 0.9167,
-      "pct_of_total": 0.50
+      "pct_of_total": 0.5
     },
     {
       "unit_type": "2BR/2BA",
@@ -342,18 +344,58 @@ As of April 1, 2026. 45 of 48 units occupied (93.75% physical occupancy). Three 
       "avg_rent_market": 1275,
       "loss_to_lease_avg": 50,
       "occupancy_pct": 0.9583,
-      "pct_of_total": 0.50
+      "pct_of_total": 0.5
     }
   ],
   "lease_expiration_schedule": [
-    { "month": "2026-05", "expiring_count": 4, "expiring_rent_monthly": 4500, "pct_of_total_income": 0.088 },
-    { "month": "2026-06", "expiring_count": 6, "expiring_rent_monthly": 6900, "pct_of_total_income": 0.135 },
-    { "month": "2026-07", "expiring_count": 5, "expiring_rent_monthly": 5875, "pct_of_total_income": 0.115 },
-    { "month": "2026-08", "expiring_count": 8, "expiring_rent_monthly": 9400, "pct_of_total_income": 0.183 },
-    { "month": "2026-09", "expiring_count": 6, "expiring_rent_monthly": 7050, "pct_of_total_income": 0.138 },
-    { "month": "2026-10", "expiring_count": 4, "expiring_rent_monthly": 4800, "pct_of_total_income": 0.094 },
-    { "month": "2026-11", "expiring_count": 3, "expiring_rent_monthly": 3525, "pct_of_total_income": 0.069 },
-    { "month": "2026-12", "expiring_count": 2, "expiring_rent_monthly": 2400, "pct_of_total_income": 0.047 }
+    {
+      "month": "2026-05",
+      "expiring_count": 4,
+      "expiring_rent_monthly": 4500,
+      "pct_of_total_income": 0.088
+    },
+    {
+      "month": "2026-06",
+      "expiring_count": 6,
+      "expiring_rent_monthly": 6900,
+      "pct_of_total_income": 0.135
+    },
+    {
+      "month": "2026-07",
+      "expiring_count": 5,
+      "expiring_rent_monthly": 5875,
+      "pct_of_total_income": 0.115
+    },
+    {
+      "month": "2026-08",
+      "expiring_count": 8,
+      "expiring_rent_monthly": 9400,
+      "pct_of_total_income": 0.183
+    },
+    {
+      "month": "2026-09",
+      "expiring_count": 6,
+      "expiring_rent_monthly": 7050,
+      "pct_of_total_income": 0.138
+    },
+    {
+      "month": "2026-10",
+      "expiring_count": 4,
+      "expiring_rent_monthly": 4800,
+      "pct_of_total_income": 0.094
+    },
+    {
+      "month": "2026-11",
+      "expiring_count": 3,
+      "expiring_rent_monthly": 3525,
+      "pct_of_total_income": 0.069
+    },
+    {
+      "month": "2026-12",
+      "expiring_count": 2,
+      "expiring_rent_monthly": 2400,
+      "pct_of_total_income": 0.047
+    }
   ]
 }
 ```
@@ -383,20 +425,24 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
 | **Total OpEx** | **($228,344)** | **($234,301)** | | |
 | **NOI** | **$412,096** | **$396,635** | | |
 
-```json uw:section=operating_statement variant=t12 source=agent:L0-02 ts=2026-04-24T10:18:00Z v=1 confidence=medium
+```json uw:section=operating_statement variant=t12 source=agent/L0-02 ts=2026-04-24T10:18:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "operating_statement",
     "version": 1,
     "superseded": false,
-    "source": "agent:L0-02",
+    "source": "agent/L0-02",
     "agent_id": "L0-02",
     "agent_version": "1.0.0",
     "actor": "system",
     "timestamp": "2026-04-24T10:18:00Z",
     "confidence": "medium",
     "human_review_required": true,
-    "flags": ["management_fee_above_market", "utilities_potentially_understated", "not_cpa_certified"],
+    "flags": [
+      "management_fee_above_market",
+      "utilities_potentially_understated",
+      "not_cpa_certified"
+    ],
     "input_hash": "sha256:a1b2c3d4e5f6",
     "notes": "Management company-prepared. Management fee at 10% of EGI is 450bps above market benchmark. Recommend requesting trailing 24-month statements and utility bills."
   },
@@ -410,7 +456,7 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
   "income": {
     "gross_potential_rent": 655200,
     "less_vacancy_credit_loss": 32760,
-    "vacancy_pct": 0.050,
+    "vacancy_pct": 0.05,
     "less_concessions": 0,
     "less_loss_to_lease": 0,
     "other_income": {
@@ -433,7 +479,7 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
     "real_estate_taxes": 52000,
     "insurance": 24500,
     "management_fees": 64044,
-    "management_fee_pct_egi": 0.100,
+    "management_fee_pct_egi": 0.1,
     "payroll_benefits": 26400,
     "utilities": {
       "electric": 8400,
@@ -457,7 +503,9 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
   "noi_margin": 0.6435,
   "noi_per_unit": 8585,
   "noi_per_sqft": 9.95,
-  "anomalies": ["management_fee_10pct_of_egi_above_market_benchmark_5.5pct"],
+  "anomalies": [
+    "management_fee_10pct_of_egi_above_market_benchmark_5.5pct"
+  ],
   "non_recurring_items": []
 }
 ```
@@ -468,13 +516,13 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
 
 Underwriting applies three key adjustments to the T-12: (1) vacancy normalized to 7% reflecting submarket average versus the owner's reported 5%; (2) management fee reduced from 10% to 5.5% EGI, reflecting market rate and the new management agreement in negotiation; (3) real estate taxes reassessed to reflect post-sale value using Maricopa County's transfer reassessment methodology. All other expenses benchmarked to asset class norms — utilities and payroll slightly above T-12 actuals to reflect conservative underwriting.
 
-```json uw:section=noi_model source=engine:calculations.ts ts=2026-04-24T11:05:00Z v=1 confidence=high
+```json uw:section=noi_model source=system/calculations.ts ts=2026-04-24T11:05:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
@@ -497,19 +545,30 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
     },
     "vacancy_credit_loss": {
       "value": 45864,
-      "rate_applied": 0.070,
+      "rate_applied": 0.07,
       "source": "underwritten",
-      "vs_t12_actual": 0.050,
+      "vs_t12_actual": 0.05,
       "vs_submarket_avg": 0.048,
       "rationale": "Normalized to 7% — T-12 actual of 5% reflects owner's aggressive management; submarket avg 4.8% per CoStar Q1 2026; underwrite to 7% to cushion for management transition turnover"
     },
-    "concessions": { "value": 0, "rationale": "No concessions currently offered; none assumed" },
-    "loss_to_lease": { "value": 0, "rationale": "Rent roll underwritten at in-place rents, not market rents — loss-to-lease is upside, not included in base case" },
+    "concessions": {
+      "value": 0,
+      "rationale": "No concessions currently offered; none assumed"
+    },
+    "loss_to_lease": {
+      "value": 0,
+      "rationale": "Rent roll underwritten at in-place rents, not market rents — loss-to-lease is upside, not included in base case"
+    },
     "other_income": {
       "value": 21600,
       "vs_t12": 3600,
       "non_recurring_excluded": 0,
-      "breakdown": { "laundry": 12000, "pet_fees": 4800, "late_fees": 2400, "parking_add": 2400 }
+      "breakdown": {
+        "laundry": 12000,
+        "pet_fees": 4800,
+        "late_fees": 2400,
+        "parking_add": 2400
+      }
     },
     "effective_gross_income": 630936
   },
@@ -525,7 +584,7 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
     },
     "insurance": {
       "value": 28800,
-      "pct_of_estimated_value": 0.0040,
+      "pct_of_estimated_value": 0.004,
       "source": "benchmark"
     },
     "management_fees": {
@@ -534,14 +593,44 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
       "applied_to": "egi",
       "source": "contract"
     },
-    "payroll_benefits": { "value": 28800, "per_unit": 600, "source": "benchmark" },
-    "utilities": { "value": 24000, "per_unit": 500, "source": "benchmark" },
-    "repairs_maintenance": { "value": 24000, "per_unit": 500, "source": "benchmark" },
-    "contract_services": { "value": 9600, "per_unit": 200, "source": "benchmark" },
-    "marketing_advertising": { "value": 7200, "per_unit": 150, "source": "benchmark" },
-    "administrative": { "value": 0, "source": "benchmark" },
-    "professional_fees": { "value": 4800, "source": "actual" },
-    "replacement_reserves": { "value": 14400, "per_unit": 300, "source": "benchmark" },
+    "payroll_benefits": {
+      "value": 28800,
+      "per_unit": 600,
+      "source": "benchmark"
+    },
+    "utilities": {
+      "value": 24000,
+      "per_unit": 500,
+      "source": "benchmark"
+    },
+    "repairs_maintenance": {
+      "value": 24000,
+      "per_unit": 500,
+      "source": "benchmark"
+    },
+    "contract_services": {
+      "value": 9600,
+      "per_unit": 200,
+      "source": "benchmark"
+    },
+    "marketing_advertising": {
+      "value": 7200,
+      "per_unit": 150,
+      "source": "benchmark"
+    },
+    "administrative": {
+      "value": 0,
+      "source": "benchmark"
+    },
+    "professional_fees": {
+      "value": 4800,
+      "source": "actual"
+    },
+    "replacement_reserves": {
+      "value": 14400,
+      "per_unit": 300,
+      "source": "benchmark"
+    },
     "total_operating_expenses": 234301,
     "expense_ratio": 0.3713,
     "expense_per_unit": 4881,
@@ -557,13 +646,15 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
   "variance_explanation": "UW NOI is 3.7% below T-12 due to higher vacancy assumption (+200bps) and higher tax estimate post-reassessment, partially offset by management fee reduction.",
   "projections": {
     "year_1": {
-      "revenue_growth_rate": 0.030,
+      "revenue_growth_rate": 0.03,
       "expense_growth_rate": 0.025,
       "projected_egi": 649864,
       "projected_opex": 240159,
       "projected_noi": 409705
     },
-    "year_2": { "projected_noi": 423197 }
+    "year_2": {
+      "projected_noi": 423197
+    }
   }
 }
 ```
@@ -574,20 +665,22 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
 
 Income approach produces a value of $7,198,000 at the underwritten NOI and a 5.51% market cap rate — essentially at purchase price, confirming the deal is priced at market. No appraisal in hand yet; ordered, expected within 20 days of contract execution.
 
-```json uw:section=valuation source=engine:calculations.ts ts=2026-04-24T11:06:00Z v=1 confidence=medium
+```json uw:section=valuation source=system/calculations.ts ts=2026-04-24T11:06:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "valuation",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
     "timestamp": "2026-04-24T11:06:00Z",
     "confidence": "medium",
     "human_review_required": true,
-    "flags": ["appraisal_not_yet_received"],
+    "flags": [
+      "appraisal_not_yet_received"
+    ],
     "input_hash": "sha256:f7e8d9c0b1a2",
     "notes": null
   },
@@ -599,7 +692,11 @@ Income approach produces a value of $7,198,000 at the underwritten NOI and a 5.5
   "income_approach": {
     "cap_rate_applied": 0.0551,
     "cap_rate_source": "market_comparable",
-    "cap_rate_range": { "low": 0.050, "mid": 0.0551, "high": 0.060 },
+    "cap_rate_range": {
+      "low": 0.05,
+      "mid": 0.0551,
+      "high": 0.06
+    },
     "noi_used": 396635,
     "noi_source": "underwritten",
     "indicated_value": 7198000,
@@ -632,20 +729,23 @@ Income approach produces a value of $7,198,000 at the underwritten NOI and a 5.5
 
 Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year term with 30-year amortization and 12 months interest-only. **Key flag:** DSCR at amortizing debt service is 1.109x — below the 1.20x warning threshold. Deal passes the 1.0x error threshold with cushion, but lender conversations should explore 24-month IO as a primary ask.
 
-```json uw:section=debt_structure source=wizard:step_4 ts=2026-04-24T09:45:00Z v=1 confidence=high
+```json uw:section=debt_structure source=manual ts=2026-04-24T09:45:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "wizard:step_4",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": "wizard",
     "agent_version": "4.0.0",
     "actor": "jared",
     "timestamp": "2026-04-24T09:45:00Z",
     "confidence": "high",
     "human_review_required": false,
-    "flags": ["dscr_warning_amortizing"],
+    "flags": [
+      "dscr_warning_amortizing"
+    ],
     "input_hash": null,
     "notes": null
   },
@@ -668,14 +768,14 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
   "recourse": "partial",
   "prepayment_type": "stepdown",
   "prepayment_schedule": "5-4-3-2-1",
-  "origination_fee_pct": 0.010,
+  "origination_fee_pct": 0.01,
   "exit_fee_pct": null,
   "lender_name": "First Western Bank",
   "lender_type": "bank",
   "annual_debt_service": 357612,
   "monthly_debt_service": 29801,
   "sizing_metrics": {
-    "ltv": 0.700,
+    "ltv": 0.7,
     "dscr_underwritten": 1.109,
     "dscr_inplace": 1.153,
     "debt_yield": 0.0787,
@@ -716,13 +816,13 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 
 ## Sources & Uses {#sources_uses}
 
-```json uw:section=sources_uses source=engine:calculations.ts ts=2026-04-24T11:07:00Z v=1 confidence=high
+```json uw:section=sources_uses source=system/calculations.ts ts=2026-04-24T11:07:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "sources_uses",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
@@ -799,13 +899,13 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 **Exit:** Year-6 NOI $465,044 ÷ 6.0% = $7,750,733 gross. Net proceeds to equity ~$2,845,000.  
 **Levered IRR:** ~6.3% | **Equity Multiple:** ~1.35x
 
-```json uw:section=dcf source=engine:dcfEngine.ts ts=2026-04-24T11:10:00Z v=1 confidence=high
+```json uw:section=dcf source=system/dcfEngine.ts ts=2026-04-24T11:10:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "dcf",
     "version": 1,
     "superseded": false,
-    "source": "engine:dcfEngine.ts",
+    "source": "system/dcfEngine.ts",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
@@ -820,26 +920,86 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
   "hold_period_years": 5,
   "analysis_start_date": "2026-07-01",
   "assumptions": {
-    "revenue_growth_rate": 0.030,
+    "revenue_growth_rate": 0.03,
     "expense_growth_rate": 0.025,
-    "exit_cap_rate": 0.060,
+    "exit_cap_rate": 0.06,
     "exit_cap_rate_source": "going_in_plus_50bps_expansion",
     "exit_cap_spread_over_going_in_bps": 50,
-    "disposition_costs_pct": 0.020,
-    "discount_rate": 0.070,
+    "disposition_costs_pct": 0.02,
+    "discount_rate": 0.07,
     "going_in_cap_rate": 0.0551
   },
   "annual_cash_flows": [
-    { "year": 1, "gross_potential_rent": 655200, "effective_gross_income": 630936, "total_expenses": 234301, "net_operating_income": 396635, "annual_debt_service": 296100, "net_cash_flow_levered": 100535, "net_cash_flow_unlevered": 396635, "cash_on_cash_return": 0.0419, "cumulative_equity_invested": 2400000, "loan_balance_eoy": 5040000 },
-    { "year": 2, "gross_potential_rent": 674856, "effective_gross_income": 649864, "total_expenses": 240159, "net_operating_income": 409705, "annual_debt_service": 357612, "net_cash_flow_levered": 52093, "net_cash_flow_unlevered": 409705, "cash_on_cash_return": 0.0217, "cumulative_equity_invested": 2400000, "loan_balance_eoy": 4985000 },
-    { "year": 3, "gross_potential_rent": 695101, "effective_gross_income": 669360, "total_expenses": 246163, "net_operating_income": 423197, "annual_debt_service": 357612, "net_cash_flow_levered": 65585, "net_cash_flow_unlevered": 423197, "cash_on_cash_return": 0.0273, "cumulative_equity_invested": 2400000, "loan_balance_eoy": 4927000 },
-    { "year": 4, "gross_potential_rent": 715954, "effective_gross_income": 689441, "total_expenses": 252317, "net_operating_income": 437124, "annual_debt_service": 357612, "net_cash_flow_levered": 79512, "net_cash_flow_unlevered": 437124, "cash_on_cash_return": 0.0331, "cumulative_equity_invested": 2400000, "loan_balance_eoy": 4865000 },
-    { "year": 5, "gross_potential_rent": 737432, "effective_gross_income": 710124, "total_expenses": 258625, "net_operating_income": 451499, "annual_debt_service": 357612, "net_cash_flow_levered": 93887, "net_cash_flow_unlevered": 451499, "cash_on_cash_return": 0.0391, "cumulative_equity_invested": 2400000, "loan_balance_eoy": 4800000 }
+    {
+      "year": 1,
+      "gross_potential_rent": 655200,
+      "effective_gross_income": 630936,
+      "total_expenses": 234301,
+      "net_operating_income": 396635,
+      "annual_debt_service": 296100,
+      "net_cash_flow_levered": 100535,
+      "net_cash_flow_unlevered": 396635,
+      "cash_on_cash_return": 0.0419,
+      "cumulative_equity_invested": 2400000,
+      "loan_balance_eoy": 5040000
+    },
+    {
+      "year": 2,
+      "gross_potential_rent": 674856,
+      "effective_gross_income": 649864,
+      "total_expenses": 240159,
+      "net_operating_income": 409705,
+      "annual_debt_service": 357612,
+      "net_cash_flow_levered": 52093,
+      "net_cash_flow_unlevered": 409705,
+      "cash_on_cash_return": 0.0217,
+      "cumulative_equity_invested": 2400000,
+      "loan_balance_eoy": 4985000
+    },
+    {
+      "year": 3,
+      "gross_potential_rent": 695101,
+      "effective_gross_income": 669360,
+      "total_expenses": 246163,
+      "net_operating_income": 423197,
+      "annual_debt_service": 357612,
+      "net_cash_flow_levered": 65585,
+      "net_cash_flow_unlevered": 423197,
+      "cash_on_cash_return": 0.0273,
+      "cumulative_equity_invested": 2400000,
+      "loan_balance_eoy": 4927000
+    },
+    {
+      "year": 4,
+      "gross_potential_rent": 715954,
+      "effective_gross_income": 689441,
+      "total_expenses": 252317,
+      "net_operating_income": 437124,
+      "annual_debt_service": 357612,
+      "net_cash_flow_levered": 79512,
+      "net_cash_flow_unlevered": 437124,
+      "cash_on_cash_return": 0.0331,
+      "cumulative_equity_invested": 2400000,
+      "loan_balance_eoy": 4865000
+    },
+    {
+      "year": 5,
+      "gross_potential_rent": 737432,
+      "effective_gross_income": 710124,
+      "total_expenses": 258625,
+      "net_operating_income": 451499,
+      "annual_debt_service": 357612,
+      "net_cash_flow_levered": 93887,
+      "net_cash_flow_unlevered": 451499,
+      "cash_on_cash_return": 0.0391,
+      "cumulative_equity_invested": 2400000,
+      "loan_balance_eoy": 4800000
+    }
   ],
   "exit_analysis": {
     "exit_year": 5,
     "exit_noi": 451499,
-    "cap_rate": 0.060,
+    "cap_rate": 0.06,
     "exit_value_gross": 7750733,
     "disposition_costs": 155015,
     "exit_value_net": 7595718,
@@ -855,18 +1015,60 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
     "avg_cash_on_cash": 0.0326,
     "total_equity_distributions": 391612,
     "npv": 76400,
-    "discount_rate_used": 0.070,
+    "discount_rate_used": 0.07,
     "payback_period_years": null
   },
   "sensitivity_matrix": {
-    "exit_cap_rate_axis": [0.050, 0.055, 0.060, 0.065, 0.070],
-    "rent_growth_axis": [0.01, 0.02, 0.03, 0.04, 0.05],
+    "exit_cap_rate_axis": [
+      0.05,
+      0.055,
+      0.06,
+      0.065,
+      0.07
+    ],
+    "rent_growth_axis": [
+      0.01,
+      0.02,
+      0.03,
+      0.04,
+      0.05
+    ],
     "irr_grid": [
-      [0.094, 0.101, 0.108, 0.115, 0.122],
-      [0.079, 0.086, 0.093, 0.100, 0.107],
-      [0.063, 0.070, 0.077, 0.084, 0.091],
-      [0.047, 0.054, 0.061, 0.068, 0.075],
-      [0.031, 0.038, 0.045, 0.052, 0.059]
+      [
+        0.094,
+        0.101,
+        0.108,
+        0.115,
+        0.122
+      ],
+      [
+        0.079,
+        0.086,
+        0.093,
+        0.1,
+        0.107
+      ],
+      [
+        0.063,
+        0.07,
+        0.077,
+        0.084,
+        0.091
+      ],
+      [
+        0.047,
+        0.054,
+        0.061,
+        0.068,
+        0.075
+      ],
+      [
+        0.031,
+        0.038,
+        0.045,
+        0.052,
+        0.059
+      ]
     ]
   }
 }
@@ -876,20 +1078,22 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 
 ## Stress Tests {#stress_tests}
 
-```json uw:section=stress_tests source=engine:calculations.ts ts=2026-04-24T11:12:00Z v=1 confidence=high
+```json uw:section=stress_tests source=system/calculations.ts ts=2026-04-24T11:12:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "stress_tests",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
     "timestamp": "2026-04-24T11:12:00Z",
     "confidence": "high",
     "human_review_required": false,
-    "flags": ["moderate_stress_fails_dscr"],
+    "flags": [
+      "moderate_stress_fails_dscr"
+    ],
     "input_hash": "sha256:f7e8d9c0b1a2",
     "notes": null
   },
@@ -911,17 +1115,17 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
       "resulting_debt_service": 357612,
       "resulting_dscr": 1.109,
       "resulting_debt_yield": 0.0787,
-      "resulting_ltv": 0.700,
+      "resulting_ltv": 0.7,
       "resulting_exit_value": null,
       "passes_dscr_minimum": true,
-      "minimum_dscr_threshold": 1.0,
+      "minimum_dscr_threshold": 1,
       "passes_debt_yield_minimum": true,
-      "minimum_debt_yield_threshold": 0.070
+      "minimum_debt_yield_threshold": 0.07
     },
     {
       "name": "mild_stress",
       "label": "Mild Stress (-10% Rev, +5% Exp)",
-      "revenue_shock_pct": -0.10,
+      "revenue_shock_pct": -0.1,
       "expense_shock_pct": 0.05,
       "rate_shock_bps": 0,
       "cap_rate_expansion_bps": null,
@@ -929,20 +1133,20 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
       "resulting_opex": 246016,
       "resulting_noi": 321826,
       "resulting_debt_service": 357612,
-      "resulting_dscr": 0.900,
+      "resulting_dscr": 0.9,
       "resulting_debt_yield": 0.0639,
       "resulting_ltv": null,
       "resulting_exit_value": null,
       "passes_dscr_minimum": false,
-      "minimum_dscr_threshold": 1.0,
+      "minimum_dscr_threshold": 1,
       "passes_debt_yield_minimum": false,
-      "minimum_debt_yield_threshold": 0.070
+      "minimum_debt_yield_threshold": 0.07
     },
     {
       "name": "moderate_stress",
       "label": "Moderate Stress (-20% Rev, +10% Exp)",
-      "revenue_shock_pct": -0.20,
-      "expense_shock_pct": 0.10,
+      "revenue_shock_pct": -0.2,
+      "expense_shock_pct": 0.1,
       "rate_shock_bps": 0,
       "cap_rate_expansion_bps": 100,
       "resulting_egi": 504749,
@@ -950,18 +1154,18 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
       "resulting_noi": 247018,
       "resulting_debt_service": 357612,
       "resulting_dscr": 0.691,
-      "resulting_debt_yield": 0.0490,
+      "resulting_debt_yield": 0.049,
       "resulting_ltv": null,
       "resulting_exit_value": null,
       "passes_dscr_minimum": false,
-      "minimum_dscr_threshold": 1.0,
+      "minimum_dscr_threshold": 1,
       "passes_debt_yield_minimum": false,
-      "minimum_debt_yield_threshold": 0.070
+      "minimum_debt_yield_threshold": 0.07
     },
     {
       "name": "severe_stress",
       "label": "Severe Stress (-30% Rev, +15% Exp)",
-      "revenue_shock_pct": -0.30,
+      "revenue_shock_pct": -0.3,
       "expense_shock_pct": 0.15,
       "rate_shock_bps": 0,
       "cap_rate_expansion_bps": 200,
@@ -974,17 +1178,17 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
       "resulting_ltv": null,
       "resulting_exit_value": null,
       "passes_dscr_minimum": false,
-      "minimum_dscr_threshold": 1.0,
+      "minimum_dscr_threshold": 1,
       "passes_debt_yield_minimum": false,
-      "minimum_debt_yield_threshold": 0.070
+      "minimum_debt_yield_threshold": 0.07
     }
   ],
   "break_even": {
     "break_even_occupancy_pct": 0.857,
     "break_even_rent_per_unit_monthly": 1031,
     "break_even_rent_per_sqft_annually": null,
-    "current_vs_breakeven_occupancy_cushion": 0.080,
-    "current_vs_breakeven_rent_cushion_pct": 0.010
+    "current_vs_breakeven_occupancy_cushion": 0.08,
+    "current_vs_breakeven_rent_cushion_pct": 0.01
   },
   "rate_sensitivity": null
 }
@@ -996,13 +1200,13 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 
 The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter market with vacancy below the Phoenix metro average. Rent growth has moderated from 2021–2022 peaks but remains positive at ~3% annually. New supply pipeline is concentrated in the Scottsdale and Tempe corridors — not meaningful competition at this price point. Cap rates for B-class multifamily in this submarket have stabilized in the 5.25–5.75% range after the 2023–2024 correction.
 
-```json uw:section=market_analysis source=agent:L2-CRE-07 ts=2026-04-24T12:30:00Z v=1 confidence=medium
+```json uw:section=market_analysis source=agent/L2-CRE-07 ts=2026-04-24T12:30:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "market_analysis",
     "version": 1,
     "superseded": false,
-    "source": "agent:L2-CRE-07",
+    "source": "agent/L2-CRE-07",
     "agent_id": "L2-CRE-07",
     "agent_version": "1.0.0",
     "actor": "system",
@@ -1018,7 +1222,11 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
   "submarket": "Glendale / West Phoenix",
   "market_tier": "2",
   "data_as_of": "2026-04-01",
-  "data_sources": ["CoStar Q1 2026 Phoenix Market Report (secondary)", "CBRE Phoenix Multifamily Outlook 2026", "Marcus & Millichap Phoenix Multifamily 2026"],
+  "data_sources": [
+    "CoStar Q1 2026 Phoenix Market Report (secondary)",
+    "CBRE Phoenix Multifamily Outlook 2026",
+    "Marcus & Millichap Phoenix Multifamily 2026"
+  ],
   "vacancy": {
     "current_rate": 0.048,
     "prior_year_rate": 0.051,
@@ -1032,8 +1240,16 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
     "yoy_rent_growth_pct": 0.029,
     "trend": "moderate",
     "by_unit_type": [
-      { "unit_type": "1BR/1BA", "avg_asking_rent": 1095, "vs_subject_rent": 45 },
-      { "unit_type": "2BR/2BA", "avg_asking_rent": 1295, "vs_subject_rent": 70 }
+      {
+        "unit_type": "1BR/1BA",
+        "avg_asking_rent": 1095,
+        "vs_subject_rent": 45
+      },
+      {
+        "unit_type": "2BR/2BA",
+        "avg_asking_rent": 1295,
+        "vs_subject_rent": 70
+      }
     ]
   },
   "supply": {
@@ -1041,32 +1257,102 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
     "units_planned_12mo": 180,
     "units_planned_24mo": 320,
     "pct_of_existing_stock": 0.018,
-    "major_projects": ["Camelback Commons (148 units, est. delivery Q3 2026)", "Stadium View Apts (272 units, est. Q1 2027)"],
+    "major_projects": [
+      "Camelback Commons (148 units, est. delivery Q3 2026)",
+      "Stadium View Apts (272 units, est. Q1 2027)"
+    ],
     "supply_assessment": "moderate"
   },
   "demand": {
     "net_absorption_trailing_12mo": 680,
     "employment_growth_pct": 0.024,
     "population_growth_pct": 0.019,
-    "major_employers": ["Banner Thunderbird Medical Center", "State Farm", "USAA", "Abrazo Health"],
-    "demand_drivers": ["healthcare employment growth", "westside Phoenix population expansion", "affordability relative to Scottsdale/Tempe"],
+    "major_employers": [
+      "Banner Thunderbird Medical Center",
+      "State Farm",
+      "USAA",
+      "Abrazo Health"
+    ],
+    "demand_drivers": [
+      "healthcare employment growth",
+      "westside Phoenix population expansion",
+      "affordability relative to Scottsdale/Tempe"
+    ],
     "outlook": "positive"
   },
   "cap_rates": {
     "range_low": 0.0525,
     "range_mid": 0.0551,
-    "range_high": 0.0600,
+    "range_high": 0.06,
     "trend": "stable",
     "source": "CBRE / Marcus & Millichap Q1 2026"
   },
   "comparable_sales": [
-    { "address": "4820 N 67th Ave, Glendale AZ", "property_name": "Desert View Apts", "sale_date": "2026-01", "units_or_sqft": 52, "year_built": 1984, "sale_price": 7540000, "price_per_unit": 145000, "price_per_sqft": 168, "cap_rate": 0.0558, "distance_miles": 1.8, "notes": "B-class garden, similar vintage, 94% occupancy at sale" },
-    { "address": "2250 W Bethany Home Rd, Phoenix AZ", "property_name": "Bethany Gardens", "sale_date": "2025-11", "units_or_sqft": 64, "year_built": 1991, "sale_price": 9600000, "price_per_unit": 150000, "price_per_sqft": 171, "cap_rate": 0.0541, "distance_miles": 2.4, "notes": "Larger but similar quality and vintage" },
-    { "address": "5540 N 51st Ave, Glendale AZ", "property_name": "Westwood Place", "sale_date": "2025-08", "units_or_sqft": 36, "year_built": 1979, "sale_price": 4680000, "price_per_unit": 130000, "price_per_sqft": 155, "cap_rate": 0.0612, "distance_miles": 0.9, "notes": "Older vintage, lower quality — represents floor" }
+    {
+      "address": "4820 N 67th Ave, Glendale AZ",
+      "property_name": "Desert View Apts",
+      "sale_date": "2026-01",
+      "units_or_sqft": 52,
+      "year_built": 1984,
+      "sale_price": 7540000,
+      "price_per_unit": 145000,
+      "price_per_sqft": 168,
+      "cap_rate": 0.0558,
+      "distance_miles": 1.8,
+      "notes": "B-class garden, similar vintage, 94% occupancy at sale"
+    },
+    {
+      "address": "2250 W Bethany Home Rd, Phoenix AZ",
+      "property_name": "Bethany Gardens",
+      "sale_date": "2025-11",
+      "units_or_sqft": 64,
+      "year_built": 1991,
+      "sale_price": 9600000,
+      "price_per_unit": 150000,
+      "price_per_sqft": 171,
+      "cap_rate": 0.0541,
+      "distance_miles": 2.4,
+      "notes": "Larger but similar quality and vintage"
+    },
+    {
+      "address": "5540 N 51st Ave, Glendale AZ",
+      "property_name": "Westwood Place",
+      "sale_date": "2025-08",
+      "units_or_sqft": 36,
+      "year_built": 1979,
+      "sale_price": 4680000,
+      "price_per_unit": 130000,
+      "price_per_sqft": 155,
+      "cap_rate": 0.0612,
+      "distance_miles": 0.9,
+      "notes": "Older vintage, lower quality — represents floor"
+    }
   ],
   "comparable_rentals": [
-    { "property_name": "Camelback Village Apts", "address": "4200 W Camelback Rd", "units": 60, "unit_type": "1BR/1BA", "asking_rent_per_unit": 1095, "asking_rent_per_sqft": 1.46, "occupancy_pct": 0.950, "year_built": 1989, "distance_miles": 0.6, "concessions": "None" },
-    { "property_name": "Glendale Palms", "address": "6700 N 43rd Ave", "units": 80, "unit_type": "2BR/2BA", "asking_rent_per_unit": 1310, "asking_rent_per_sqft": 1.40, "occupancy_pct": 0.938, "year_built": 1993, "distance_miles": 1.1, "concessions": "None" }
+    {
+      "property_name": "Camelback Village Apts",
+      "address": "4200 W Camelback Rd",
+      "units": 60,
+      "unit_type": "1BR/1BA",
+      "asking_rent_per_unit": 1095,
+      "asking_rent_per_sqft": 1.46,
+      "occupancy_pct": 0.95,
+      "year_built": 1989,
+      "distance_miles": 0.6,
+      "concessions": "None"
+    },
+    {
+      "property_name": "Glendale Palms",
+      "address": "6700 N 43rd Ave",
+      "units": 80,
+      "unit_type": "2BR/2BA",
+      "asking_rent_per_unit": 1310,
+      "asking_rent_per_sqft": 1.4,
+      "occupancy_pct": 0.938,
+      "year_built": 1993,
+      "distance_miles": 1.1,
+      "concessions": "None"
+    }
   ],
   "market_risk_rating": "moderate",
   "market_narrative": "The Glendale/West Phoenix multifamily submarket is a functionally stable, supply-constrained workforce housing corridor. Vacancy at 4.8% is 80bps below the broader Phoenix metro average of 5.6%, supported by strong healthcare and services employment anchors. Rent growth has normalized to 2.9% annually following the post-pandemic correction, with forward projections of 2.5-3.5% annually through 2028. New supply is below 2% of existing stock annually, concentrated in luxury product at higher price points that competes minimally with this asset. Cap rates have stabilized in the 5.25-6.00% range following the 2023-2024 correction from compressed levels. The primary risk is elevated Phoenix metro-wide supply deliveries in 2026-2027 creating headline noise, but the specific Glendale workforce segment is insulated by its price point."
@@ -1079,20 +1365,24 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
 
 Single-principal LLC, 14 years of CRE experience, 6 assets under management. Financial strength is adequate — NW-to-loan ratio above policy minimum, liquidity slightly below preferred threshold but within range given 0 existing loan exposure on the subject entity.
 
-```json uw:section=borrower_sponsor source=wizard ts=2026-04-24T09:30:00Z v=1 confidence=medium
+```json uw:section=borrower_sponsor source=manual ts=2026-04-24T09:30:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "borrower_sponsor",
     "version": 1,
     "superseded": false,
-    "source": "wizard",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": "wizard",
     "agent_version": "4.0.0",
     "actor": "jared",
     "timestamp": "2026-04-24T09:30:00Z",
     "confidence": "medium",
     "human_review_required": true,
-    "flags": ["pfs_not_verified", "liquidity_to_loan_ratio_below_preferred"],
+    "flags": [
+      "pfs_not_verified",
+      "liquidity_to_loan_ratio_below_preferred"
+    ],
     "input_hash": null,
     "notes": "Figures are PFS-stated. CPA letter requested, expected before end of DD period."
   },
@@ -1101,7 +1391,7 @@ Single-principal LLC, 14 years of CRE experience, 6 assets under management. Fin
     {
       "name": "James Camelback",
       "role": "managing_member",
-      "ownership_pct": 1.00,
+      "ownership_pct": 1,
       "is_guarantor": true,
       "is_key_man": true,
       "net_worth_stated": 8400000,
@@ -1118,9 +1408,9 @@ Single-principal LLC, 14 years of CRE experience, 6 assets under management. Fin
     "global_net_worth": 8400000,
     "global_liquidity": 480000,
     "nw_to_loan_ratio": 1.667,
-    "nw_to_loan_policy_min": 1.0,
+    "nw_to_loan_policy_min": 1,
     "liquidity_to_loan_ratio": 0.095,
-    "liquidity_to_loan_policy_min": 0.10,
+    "liquidity_to_loan_policy_min": 0.1,
     "global_debt_service_annual": 312000,
     "global_dscr": 2.14,
     "all_figures_verified": false,
@@ -1132,8 +1422,14 @@ Single-principal LLC, 14 years of CRE experience, 6 assets under management. Fin
     "total_debt_stated": 7200000,
     "implied_equity": 5400000,
     "portfolio_ltv": 0.571,
-    "asset_classes_managed": ["multifamily", "single_family_rental"],
-    "markets_active_in": ["Phoenix Metro", "Tucson"]
+    "asset_classes_managed": [
+      "multifamily",
+      "single_family_rental"
+    ],
+    "markets_active_in": [
+      "Phoenix Metro",
+      "Tucson"
+    ]
   },
   "track_record": {
     "deals_completed": 8,
@@ -1156,20 +1452,24 @@ Single-principal LLC, 14 years of CRE experience, 6 assets under management. Fin
 
 Due diligence in process. Appraisal and Phase I ordered. Title commitment received — clean. Inspection scheduled for next week.
 
-```json uw:section=due_diligence source=user ts=2026-04-24T09:50:00Z v=1 confidence=medium
+```json uw:section=due_diligence source=manual ts=2026-04-24T09:50:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "due_diligence",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "agent_id": "user",
     "agent_version": null,
     "actor": "jared",
     "timestamp": "2026-04-24T09:50:00Z",
     "confidence": "medium",
     "human_review_required": true,
-    "flags": ["appraisal_pending", "phase1_pending", "inspection_pending"],
+    "flags": [
+      "appraisal_pending",
+      "phase1_pending",
+      "inspection_pending"
+    ],
     "input_hash": null,
     "notes": null
   },
@@ -1196,7 +1496,9 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
     "within_policy_age": null,
     "policy_max_age_months": 12,
     "adequacy_rating": "not_reviewed",
-    "flags": ["ordered_2026-04-22_expected_2026-05-12"]
+    "flags": [
+      "ordered_2026-04-22_expected_2026-05-12"
+    ]
   },
   "environmental": {
     "phase1_received": false,
@@ -1216,7 +1518,9 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
     "remediation_required": false,
     "remediation_cost_est": null,
     "clearance_status": "not_reviewed",
-    "flags": ["ordered_2026-04-23_expected_2026-05-07"]
+    "flags": [
+      "ordered_2026-04-23_expected_2026-05-07"
+    ]
   },
   "title": {
     "commitment_received": true,
@@ -1224,14 +1528,23 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
     "title_company": "Arizona Title & Trust",
     "commitment_amount": 7200000,
     "existing_liens": [],
-    "schedule_b_exceptions": ["Standard utility easements along north and east boundaries", "CC&Rs recorded 1987 — reviewed, no material restrictions"],
+    "schedule_b_exceptions": [
+      "Standard utility easements along north and east boundaries",
+      "CC&Rs recorded 1987 — reviewed, no material restrictions"
+    ],
     "material_exceptions": [],
-    "required_endorsements": ["ALTA 9 — Restrictions, Encroachments, Minerals", "ALTA 17 — Access"],
+    "required_endorsements": [
+      "ALTA 9 — Restrictions, Encroachments, Minerals",
+      "ALTA 17 — Access"
+    ],
     "property_tax_current": true,
     "mechanic_liens_present": false,
     "judgment_liens_present": false,
     "deed_restrictions": [],
-    "easements": ["Utility easement 5ft along north boundary", "Utility easement 5ft along east boundary"],
+    "easements": [
+      "Utility easement 5ft along north boundary",
+      "Utility easement 5ft along east boundary"
+    ],
     "clearance_status": "clear"
   },
   "survey": {
@@ -1257,17 +1570,36 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
     "short_term_needs_0_3yr": [],
     "long_term_needs_3_10yr": [],
     "major_system_remaining_life": {
-      "roof_years": null, "hvac_years": null, "plumbing_years": null,
-      "electrical_years": null, "elevators_years": null
+      "roof_years": null,
+      "hvac_years": null,
+      "plumbing_years": null,
+      "electrical_years": null,
+      "elevators_years": null
     },
     "clearance_status": "not_reviewed"
   },
-  "seismic": { "required": false, "received": false, "pml_pct": null, "clearance_status": "not_reviewed" },
+  "seismic": {
+    "required": false,
+    "received": false,
+    "pml_pct": null,
+    "clearance_status": "not_reviewed"
+  },
   "checklist": {
     "total_items_required": 8,
     "items_received": 1,
-    "items_outstanding": ["appraisal", "phase_1_environmental", "survey", "inspection", "cpa_letter_borrower", "2yr_tax_returns", "operating_statements_2yr"],
-    "blocking_items": ["appraisal", "phase_1_environmental"],
+    "items_outstanding": [
+      "appraisal",
+      "phase_1_environmental",
+      "survey",
+      "inspection",
+      "cpa_letter_borrower",
+      "2yr_tax_returns",
+      "operating_statements_2yr"
+    ],
+    "blocking_items": [
+      "appraisal",
+      "phase_1_environmental"
+    ],
     "ready_to_close": false
   }
 }
@@ -1281,30 +1613,91 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
 
 The deal presents a moderate risk profile. The asset is stabilized with no significant deferred maintenance, in a functionally strong submarket with positive demand fundamentals. The primary structural risk is the tight amortizing DSCR (1.11x) — a 10% revenue decline would breach the 1.0x floor, leaving no debt service coverage cushion in a stress scenario. The management transition risk during the first 6-12 months post-close is the most likely near-term operational challenge.
 
-```json uw:section=risk_assessment source=user ts=2026-04-24T14:00:00Z v=1 confidence=low
+```json uw:section=risk_assessment source=manual ts=2026-04-24T14:00:00Z v=1 confidence=low
 {
   "_meta": {
     "section": "risk_assessment",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "agent_id": "user",
     "agent_version": null,
     "actor": "jared",
     "timestamp": "2026-04-24T14:00:00Z",
     "confidence": "low",
     "human_review_required": true,
-    "flags": ["preliminary_analyst_only_L6_not_run"],
+    "flags": [
+      "preliminary_analyst_only_L6_not_run"
+    ],
     "input_hash": null,
     "notes": "Run L6 agents before credit committee submission."
   },
   "_notes": "PRELIMINARY — not suitable for credit submission. Run full L6 agent chain.",
   "scoring_model_version": null,
   "component_scores": {
-    "property": { "score": null, "max_score": 10, "weight": 0.25, "sub_factors": {}, "strengths": ["functional condition", "2023 common area renovation", "infill location"], "weaknesses": ["1987 vintage", "aging unit interiors"], "rationale": null },
-    "market": { "score": null, "max_score": 10, "weight": 0.20, "sub_factors": {}, "strengths": ["sub-5% vacancy", "positive demand drivers", "limited supply at price point"], "weaknesses": ["metro-wide supply pipeline elevated 2026-2027"], "rationale": null },
-    "borrower": { "score": null, "max_score": 10, "weight": 0.25, "sub_factors": {}, "strengths": ["14yr experience", "same asset class/market", "clean track record"], "weaknesses": ["single principal key-man", "liquidity marginally below preferred threshold", "unverified PFS"], "rationale": null },
-    "loan_structure": { "score": null, "max_score": 10, "weight": 0.30, "sub_factors": {}, "strengths": ["70% LTV — at policy maximum but not exceeding", "5yr fixed rate — no floating rate risk"], "weaknesses": ["DSCR 1.11x at amortizing — tight", "mild stress fails 1.0x threshold"], "rationale": null }
+    "property": {
+      "score": null,
+      "max_score": 10,
+      "weight": 0.25,
+      "sub_factors": {},
+      "strengths": [
+        "functional condition",
+        "2023 common area renovation",
+        "infill location"
+      ],
+      "weaknesses": [
+        "1987 vintage",
+        "aging unit interiors"
+      ],
+      "rationale": null
+    },
+    "market": {
+      "score": null,
+      "max_score": 10,
+      "weight": 0.2,
+      "sub_factors": {},
+      "strengths": [
+        "sub-5% vacancy",
+        "positive demand drivers",
+        "limited supply at price point"
+      ],
+      "weaknesses": [
+        "metro-wide supply pipeline elevated 2026-2027"
+      ],
+      "rationale": null
+    },
+    "borrower": {
+      "score": null,
+      "max_score": 10,
+      "weight": 0.25,
+      "sub_factors": {},
+      "strengths": [
+        "14yr experience",
+        "same asset class/market",
+        "clean track record"
+      ],
+      "weaknesses": [
+        "single principal key-man",
+        "liquidity marginally below preferred threshold",
+        "unverified PFS"
+      ],
+      "rationale": null
+    },
+    "loan_structure": {
+      "score": null,
+      "max_score": 10,
+      "weight": 0.3,
+      "sub_factors": {},
+      "strengths": [
+        "70% LTV — at policy maximum but not exceeding",
+        "5yr fixed rate — no floating rate risk"
+      ],
+      "weaknesses": [
+        "DSCR 1.11x at amortizing — tight",
+        "mild stress fails 1.0x threshold"
+      ],
+      "rationale": null
+    }
   },
   "composite_score": null,
   "composite_rating_1_to_10": null,
@@ -1336,13 +1729,13 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 
 ## Compliance {#compliance}
 
-```json uw:section=compliance source=agent:L5-01 ts=2026-04-24T13:00:00Z v=1 confidence=high
+```json uw:section=compliance source=agent/L5-01 ts=2026-04-24T13:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "compliance",
     "version": 1,
     "superseded": false,
-    "source": "agent:L5-01",
+    "source": "agent/L5-01",
     "agent_id": "L5-01",
     "agent_version": "1.0.0",
     "actor": "system",
@@ -1354,11 +1747,53 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
     "notes": null
   },
   "_notes": null,
-  "hvcre": { "classification": "non_hvcre", "contributing_capital_test_met": true, "ltv_within_regulatory_limits": true, "pre_sold_leased_pct": null, "one_to_four_family_exclusion": false, "risk_weight_pct": 100, "regulatory_citation": "12 CFR 3.2 — HVCRE ADC definition; stabilized acquisition not subject to HVCRE", "rationale": "Permanent acquisition loan on stabilized asset — not ADC. HVCRE does not apply." },
-  "cra": { "eligible": true, "census_tract": "04013-408500", "census_tract_income_category": "moderate", "majority_minority_tract": true, "lmi_census_tract": true, "small_business_loan_eligible": false, "cra_category": "Community Development — affordable housing in LMI tract" },
-  "bsa_aml": { "ofac_sdn_clear": true, "fincen_314a_clear": true, "pep_flags": [], "anonymous_structure_flag": false, "foreign_ownership_flag": false, "high_risk_geography_flag": false, "structuring_indicators": [], "overall_bsa_risk": "low", "escalation_required": false, "escalation_reason": null },
-  "fair_lending": { "review_triggered": false, "trigger_reasons": [], "pricing_variance_flag": false, "appraisal_bias_flag": false, "compliance_officer_review_required": false },
-  "concentration": { "cre_total_pct_of_capital": null, "construction_pct_of_capital": null, "single_borrower_pct_of_tier1": null, "geographic_concentration_flag": false, "asset_class_concentration_flag": false, "within_all_concentration_limits": null, "nearest_limit_headroom_pct": null },
+  "hvcre": {
+    "classification": "non_hvcre",
+    "contributing_capital_test_met": true,
+    "ltv_within_regulatory_limits": true,
+    "pre_sold_leased_pct": null,
+    "one_to_four_family_exclusion": false,
+    "risk_weight_pct": 100,
+    "regulatory_citation": "12 CFR 3.2 — HVCRE ADC definition; stabilized acquisition not subject to HVCRE",
+    "rationale": "Permanent acquisition loan on stabilized asset — not ADC. HVCRE does not apply."
+  },
+  "cra": {
+    "eligible": true,
+    "census_tract": "04013-408500",
+    "census_tract_income_category": "moderate",
+    "majority_minority_tract": true,
+    "lmi_census_tract": true,
+    "small_business_loan_eligible": false,
+    "cra_category": "Community Development — affordable housing in LMI tract"
+  },
+  "bsa_aml": {
+    "ofac_sdn_clear": true,
+    "fincen_314a_clear": true,
+    "pep_flags": [],
+    "anonymous_structure_flag": false,
+    "foreign_ownership_flag": false,
+    "high_risk_geography_flag": false,
+    "structuring_indicators": [],
+    "overall_bsa_risk": "low",
+    "escalation_required": false,
+    "escalation_reason": null
+  },
+  "fair_lending": {
+    "review_triggered": false,
+    "trigger_reasons": [],
+    "pricing_variance_flag": false,
+    "appraisal_bias_flag": false,
+    "compliance_officer_review_required": false
+  },
+  "concentration": {
+    "cre_total_pct_of_capital": null,
+    "construction_pct_of_capital": null,
+    "single_borrower_pct_of_tier1": null,
+    "geographic_concentration_flag": false,
+    "asset_class_concentration_flag": false,
+    "within_all_concentration_limits": null,
+    "nearest_limit_headroom_pct": null
+  },
   "policy_exceptions": []
 }
 ```
@@ -1367,13 +1802,13 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 
 ## Assumptions {#assumptions}
 
-```json uw:section=assumptions source=engine:calculations.ts ts=2026-04-24T11:15:00Z v=1 confidence=high
+```json uw:section=assumptions source=system/calculations.ts ts=2026-04-24T11:15:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "assumptions",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
@@ -1386,18 +1821,163 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
   },
   "_notes": null,
   "assumptions": [
-    { "key": "vacancy_rate", "label": "Vacancy / Credit Loss Rate", "section": "noi_model", "category": "income", "value": 0.070, "unit": "pct", "source": "underwritten", "source_detail": "Normalized to 7% vs T-12 actual 5%; submarket avg 4.8%; haircut for management transition", "agent": "engine", "timestamp": "2026-04-24T11:05:00Z", "confidence": "medium", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null },
-    { "key": "management_fee_pct", "label": "Management Fee % of EGI", "section": "noi_model", "category": "expense", "value": 0.055, "unit": "pct", "source": "user_override", "source_detail": "New management agreement in negotiation; market rate 5-6%; T-12 was 10%", "agent": null, "timestamp": "2026-04-24T09:45:00Z", "confidence": "high", "is_overridden": true, "original_value": 0.100, "override_rationale": "T-12 management fee at 10% is above market; new PM contracted at 5.5%", "linked_to_policy": false, "policy_threshold": null },
-    { "key": "real_estate_taxes", "label": "Real Estate Taxes (Annual)", "section": "noi_model", "category": "expense", "value": 58000, "unit": "dollar", "source": "agent_computed", "source_detail": "Maricopa County transfer reassessment: 70% of $7,200,000 purchase price × 1.15% = $57,960", "agent": "L2-CRE-02", "timestamp": "2026-04-24T11:05:00Z", "confidence": "medium", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null },
-    { "key": "revenue_growth_rate", "label": "Annual Revenue Growth Rate", "section": "dcf", "category": "income", "value": 0.030, "unit": "pct", "source": "market_data", "source_detail": "CoStar Q1 2026 Phoenix submarket rent growth 2.9%; rounded to 3%", "agent": "L2-CRE-07", "timestamp": "2026-04-24T12:30:00Z", "confidence": "medium", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null },
-    { "key": "expense_growth_rate", "label": "Annual Expense Growth Rate", "section": "dcf", "category": "expense", "value": 0.025, "unit": "pct", "source": "scenario_default", "source_detail": "Scenario default: stabilized_acquisition", "agent": null, "timestamp": "2026-04-24T11:05:00Z", "confidence": "high", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null },
-    { "key": "exit_cap_rate", "label": "Exit Cap Rate", "section": "dcf", "category": "exit", "value": 0.060, "unit": "pct", "source": "underwritten", "source_detail": "Going-in cap (5.51%) + 50bps expansion. Conservative relative to market range floor of 5.25%.", "agent": null, "timestamp": "2026-04-24T11:10:00Z", "confidence": "medium", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null },
-    { "key": "hold_period_years", "label": "Hold Period (Years)", "section": "dcf", "category": "scenario", "value": 5, "unit": "years", "source": "wizard_input", "source_detail": "Wizard step 5", "agent": null, "timestamp": "2026-04-24T09:45:00Z", "confidence": "high", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null },
-    { "key": "replacement_reserves_per_unit", "label": "Replacement Reserves ($/unit/yr)", "section": "noi_model", "category": "expense", "value": 300, "unit": "dollar_per_unit", "source": "scenario_default", "source_detail": "Scenario default: stabilized_acquisition, B-class multifamily", "agent": null, "timestamp": "2026-04-24T11:05:00Z", "confidence": "high", "is_overridden": false, "original_value": null, "override_rationale": null, "linked_to_policy": false, "policy_threshold": null }
+    {
+      "key": "vacancy_rate",
+      "label": "Vacancy / Credit Loss Rate",
+      "section": "noi_model",
+      "category": "income",
+      "value": 0.07,
+      "unit": "pct",
+      "source": "underwritten",
+      "source_detail": "Normalized to 7% vs T-12 actual 5%; submarket avg 4.8%; haircut for management transition",
+      "agent": "engine",
+      "timestamp": "2026-04-24T11:05:00Z",
+      "confidence": "medium",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "management_fee_pct",
+      "label": "Management Fee % of EGI",
+      "section": "noi_model",
+      "category": "expense",
+      "value": 0.055,
+      "unit": "pct",
+      "source": "user_override",
+      "source_detail": "New management agreement in negotiation; market rate 5-6%; T-12 was 10%",
+      "agent": null,
+      "timestamp": "2026-04-24T09:45:00Z",
+      "confidence": "high",
+      "is_overridden": true,
+      "original_value": 0.1,
+      "override_rationale": "T-12 management fee at 10% is above market; new PM contracted at 5.5%",
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "real_estate_taxes",
+      "label": "Real Estate Taxes (Annual)",
+      "section": "noi_model",
+      "category": "expense",
+      "value": 58000,
+      "unit": "dollar",
+      "source": "agent_computed",
+      "source_detail": "Maricopa County transfer reassessment: 70% of $7,200,000 purchase price × 1.15% = $57,960",
+      "agent": "L2-CRE-02",
+      "timestamp": "2026-04-24T11:05:00Z",
+      "confidence": "medium",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "revenue_growth_rate",
+      "label": "Annual Revenue Growth Rate",
+      "section": "dcf",
+      "category": "income",
+      "value": 0.03,
+      "unit": "pct",
+      "source": "market_data",
+      "source_detail": "CoStar Q1 2026 Phoenix submarket rent growth 2.9%; rounded to 3%",
+      "agent": "L2-CRE-07",
+      "timestamp": "2026-04-24T12:30:00Z",
+      "confidence": "medium",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "expense_growth_rate",
+      "label": "Annual Expense Growth Rate",
+      "section": "dcf",
+      "category": "expense",
+      "value": 0.025,
+      "unit": "pct",
+      "source": "scenario_default",
+      "source_detail": "Scenario default: stabilized_acquisition",
+      "agent": null,
+      "timestamp": "2026-04-24T11:05:00Z",
+      "confidence": "high",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "exit_cap_rate",
+      "label": "Exit Cap Rate",
+      "section": "dcf",
+      "category": "exit",
+      "value": 0.06,
+      "unit": "pct",
+      "source": "underwritten",
+      "source_detail": "Going-in cap (5.51%) + 50bps expansion. Conservative relative to market range floor of 5.25%.",
+      "agent": null,
+      "timestamp": "2026-04-24T11:10:00Z",
+      "confidence": "medium",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "hold_period_years",
+      "label": "Hold Period (Years)",
+      "section": "dcf",
+      "category": "scenario",
+      "value": 5,
+      "unit": "years",
+      "source": "wizard_input",
+      "source_detail": "Wizard step 5",
+      "agent": null,
+      "timestamp": "2026-04-24T09:45:00Z",
+      "confidence": "high",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    },
+    {
+      "key": "replacement_reserves_per_unit",
+      "label": "Replacement Reserves ($/unit/yr)",
+      "section": "noi_model",
+      "category": "expense",
+      "value": 300,
+      "unit": "dollar_per_unit",
+      "source": "scenario_default",
+      "source_detail": "Scenario default: stabilized_acquisition, B-class multifamily",
+      "agent": null,
+      "timestamp": "2026-04-24T11:05:00Z",
+      "confidence": "high",
+      "is_overridden": false,
+      "original_value": null,
+      "override_rationale": null,
+      "linked_to_policy": false,
+      "policy_threshold": null
+    }
   ],
   "summary": {
     "total_assumptions": 8,
-    "by_source": { "scenario_default": 2, "market_data": 1, "ai_extracted": 0, "user_override": 1, "investor_profile": 0, "agent_computed": 1, "wizard_input": 1, "underwritten": 2 },
+    "by_source": {
+      "scenario_default": 2,
+      "market_data": 1,
+      "ai_extracted": 0,
+      "user_override": 1,
+      "investor_profile": 0,
+      "agent_computed": 1,
+      "wizard_input": 1,
+      "underwritten": 2
+    },
     "low_confidence_count": 0,
     "override_count": 1
   }
@@ -1408,13 +1988,13 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 
 ## Flags & Validation {#validation}
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-04-24T11:16:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-04-24T11:16:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": "engine",
     "agent_version": "3.2.1",
     "actor": "system",
@@ -1428,17 +2008,86 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
   "_notes": null,
   "overall_status": "warnings_only",
   "financial_validity": [
-    { "flag_id": "FV-001", "metric": "dscr", "value": 1.109, "threshold": { "type": "min", "min": 1.20, "max": null }, "severity": "warning", "message": "DSCR (1.109x) is below the 1.20x warning threshold. Deal passes the 1.0x error floor but has limited cushion in amortizing years. Consider requesting 24-month IO period.", "suppressed": false, "suppress_reason": null },
-    { "flag_id": "FV-002", "metric": "ltv", "value": 0.700, "threshold": { "type": "max", "min": null, "max": 0.75 }, "severity": "info", "message": "LTV at 70.0% is at policy maximum but within range.", "suppressed": false, "suppress_reason": null }
+    {
+      "flag_id": "FV-001",
+      "metric": "dscr",
+      "value": 1.109,
+      "threshold": {
+        "type": "min",
+        "min": 1.2,
+        "max": null
+      },
+      "severity": "warning",
+      "message": "DSCR (1.109x) is below the 1.20x warning threshold. Deal passes the 1.0x error floor but has limited cushion in amortizing years. Consider requesting 24-month IO period.",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-002",
+      "metric": "ltv",
+      "value": 0.7,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.75
+      },
+      "severity": "info",
+      "message": "LTV at 70.0% is at policy maximum but within range.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
   ],
   "completeness": [
-    { "section": "due_diligence", "field": "appraisal.received", "required_for_stage": "credit_approval", "severity": "blocking", "message": "Appraisal not yet received. Required before credit approval." },
-    { "section": "due_diligence", "field": "environmental.phase1_received", "required_for_stage": "credit_approval", "severity": "blocking", "message": "Phase I environmental not yet received." },
-    { "section": "risk_assessment", "field": "composite_score", "required_for_stage": "credit_approval", "severity": "blocking", "message": "L6 risk rating agents have not run. Required before credit submission." },
-    { "section": "borrower_sponsor", "field": "financial_summary.all_figures_verified", "required_for_stage": "credit_approval", "severity": "warning", "message": "Borrower financial statements unverified. CPA letter required before credit approval." }
+    {
+      "section": "due_diligence",
+      "field": "appraisal.received",
+      "required_for_stage": "credit_approval",
+      "severity": "blocking",
+      "message": "Appraisal not yet received. Required before credit approval."
+    },
+    {
+      "section": "due_diligence",
+      "field": "environmental.phase1_received",
+      "required_for_stage": "credit_approval",
+      "severity": "blocking",
+      "message": "Phase I environmental not yet received."
+    },
+    {
+      "section": "risk_assessment",
+      "field": "composite_score",
+      "required_for_stage": "credit_approval",
+      "severity": "blocking",
+      "message": "L6 risk rating agents have not run. Required before credit submission."
+    },
+    {
+      "section": "borrower_sponsor",
+      "field": "financial_summary.all_figures_verified",
+      "required_for_stage": "credit_approval",
+      "severity": "warning",
+      "message": "Borrower financial statements unverified. CPA letter required before credit approval."
+    }
   ],
   "cross_section_consistency": [
-    { "flag_id": "CC-05", "sections_involved": ["noi_model", "debt_structure"], "description": "NOI used for DSCR calculation verified against noi_model.net_operating_income", "severity": "info", "field_a": { "section": "noi_model", "field": "net_operating_income", "value": 396635 }, "field_b": { "section": "debt_structure", "field": "sizing_metrics.dscr_underwritten", "value": 1.109 }, "variance": null }
+    {
+      "flag_id": "CC-05",
+      "sections_involved": [
+        "noi_model",
+        "debt_structure"
+      ],
+      "description": "NOI used for DSCR calculation verified against noi_model.net_operating_income",
+      "severity": "info",
+      "field_a": {
+        "section": "noi_model",
+        "field": "net_operating_income",
+        "value": 396635
+      },
+      "field_b": {
+        "section": "debt_structure",
+        "field": "sizing_metrics.dscr_underwritten",
+        "value": 1.109
+      },
+      "variance": null
+    }
   ],
   "policy_flags": [],
   "human_review_items": [
@@ -1447,12 +2096,21 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
     "T-12 prepared by management company — request 2-year operating history and utility bills"
   ],
   "thresholds_used": {
-    "dscr_error_below": 1.0, "dscr_warning_below": 1.20, "ltv_warning_above": 0.75,
-    "ltv_error_above": 0.85, "cap_rate_warning_below": 0.03, "cap_rate_warning_above": 0.15,
-    "vacancy_warning_below": 0.02, "vacancy_warning_above": 0.40, "opex_ratio_warning_below": 0.20,
-    "opex_ratio_warning_above": 0.70, "irr_warning_below": 0.05, "irr_warning_above": 0.40,
-    "annual_rent_growth_warning_above": 0.08, "equity_multiple_warning_below": 1.0,
-    "equity_multiple_warning_above": 5.0
+    "dscr_error_below": 1,
+    "dscr_warning_below": 1.2,
+    "ltv_warning_above": 0.75,
+    "ltv_error_above": 0.85,
+    "cap_rate_warning_below": 0.03,
+    "cap_rate_warning_above": 0.15,
+    "vacancy_warning_below": 0.02,
+    "vacancy_warning_above": 0.4,
+    "opex_ratio_warning_below": 0.2,
+    "opex_ratio_warning_above": 0.7,
+    "irr_warning_below": 0.05,
+    "irr_warning_above": 0.4,
+    "annual_rent_growth_warning_above": 0.08,
+    "equity_multiple_warning_below": 1,
+    "equity_multiple_warning_above": 5
   }
 }
 ```
@@ -1463,13 +2121,13 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 
 Two supplemental metrics: true all-in yield (accounts for closing costs and reserves in the denominator) and the loan constant (useful for lender comp conversations).
 
-```json uw:section=custom_calculations source=user ts=2026-04-24T14:10:00Z v=1 confidence=high
+```json uw:section=custom_calculations source=manual ts=2026-04-24T14:10:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "custom_calculations",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "agent_id": "user",
     "agent_version": null,
     "actor": "jared",
@@ -1488,10 +2146,34 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
       "description": "Cap rate on total capital deployed — NOI divided by purchase price plus all closing costs plus operating reserves. More accurate than going-in cap rate for comparing deals with different cost structures.",
       "category": "returns",
       "inputs": [
-        { "variable": "noi", "label": "Underwritten NOI", "value": null, "source_ref": "noi_model.net_operating_income", "is_live_ref": true },
-        { "variable": "purchase_price", "label": "Purchase Price", "value": null, "source_ref": "valuation.purchase_price", "is_live_ref": true },
-        { "variable": "closing_costs", "label": "Total Closing Costs", "value": null, "source_ref": "sources_uses.uses.closing_costs.total", "is_live_ref": true },
-        { "variable": "reserves", "label": "Operating Reserves", "value": null, "source_ref": "sources_uses.uses.operating_reserves", "is_live_ref": true }
+        {
+          "variable": "noi",
+          "label": "Underwritten NOI",
+          "value": null,
+          "source_ref": "noi_model.net_operating_income",
+          "is_live_ref": true
+        },
+        {
+          "variable": "purchase_price",
+          "label": "Purchase Price",
+          "value": null,
+          "source_ref": "valuation.purchase_price",
+          "is_live_ref": true
+        },
+        {
+          "variable": "closing_costs",
+          "label": "Total Closing Costs",
+          "value": null,
+          "source_ref": "sources_uses.uses.closing_costs.total",
+          "is_live_ref": true
+        },
+        {
+          "variable": "reserves",
+          "label": "Operating Reserves",
+          "value": null,
+          "source_ref": "sources_uses.uses.operating_reserves",
+          "is_live_ref": true
+        }
       ],
       "formula_description": "NOI divided by (purchase_price + closing_costs + reserves)",
       "formula_expression": "noi / (purchase_price + closing_costs + reserves)",
@@ -1499,7 +2181,11 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
       "result_unit": "pct",
       "result_label": "True All-In Yield",
       "result_interpretation": "5.33% vs 5.51% going-in cap rate — difference reflects closing costs and reserves diluting the effective yield. Still within acceptable range.",
-      "thresholds": { "target": 0.055, "minimum": 0.050, "maximum": null },
+      "thresholds": {
+        "target": 0.055,
+        "minimum": 0.05,
+        "maximum": null
+      },
       "passes_threshold": false,
       "status": "computed",
       "error_message": null,
@@ -1513,16 +2199,32 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
       "description": "Annual debt service as a percentage of loan amount. Useful benchmark for comparing to going-in cap rate — if loan constant exceeds cap rate, the deal is negatively leveraged.",
       "category": "debt_metrics",
       "inputs": [
-        { "variable": "annual_ds", "label": "Annual Debt Service (amortizing)", "value": null, "source_ref": "debt_structure.annual_debt_service", "is_live_ref": true },
-        { "variable": "loan_amount", "label": "Loan Amount", "value": null, "source_ref": "debt_structure.loan_amount", "is_live_ref": true }
+        {
+          "variable": "annual_ds",
+          "label": "Annual Debt Service (amortizing)",
+          "value": null,
+          "source_ref": "debt_structure.annual_debt_service",
+          "is_live_ref": true
+        },
+        {
+          "variable": "loan_amount",
+          "label": "Loan Amount",
+          "value": null,
+          "source_ref": "debt_structure.loan_amount",
+          "is_live_ref": true
+        }
       ],
       "formula_description": "Annual debt service divided by loan amount",
       "formula_expression": "annual_ds / loan_amount",
-      "result": 0.0710,
+      "result": 0.071,
       "result_unit": "pct",
       "result_label": "Loan Constant",
       "result_interpretation": "Loan constant of 7.10% exceeds going-in cap rate of 5.51% — deal is negatively leveraged at amortizing debt service. This is why DSCR is only 1.11x. IO period (7.10% × IO rate only) drops effective constant to 5.87%, still above cap rate.",
-      "thresholds": { "target": null, "minimum": null, "maximum": null },
+      "thresholds": {
+        "target": null,
+        "minimum": null,
+        "maximum": null
+      },
       "passes_threshold": null,
       "status": "computed",
       "error_message": null,
@@ -1540,13 +2242,13 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
 
 Scenario: what if the lender grants 24-month IO (instead of 12-month)? Also a sensitivity sweep on exit cap rate against levered IRR.
 
-```json uw:section=custom_scenarios source=user ts=2026-04-24T14:20:00Z v=1 confidence=high
+```json uw:section=custom_scenarios source=manual ts=2026-04-24T14:20:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "custom_scenarios",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "agent_id": "user",
     "agent_version": null,
     "actor": "jared",
@@ -1583,18 +2285,18 @@ Scenario: what if the lender grants 24-month IO (instead of 12-month)? Also a se
         "noi": 396635,
         "egi": 630936,
         "dscr": null,
-        "ltv": 0.700,
+        "ltv": 0.7,
         "debt_yield": 0.0787,
         "irr": 0.071,
-        "equity_multiple": 1.40,
+        "equity_multiple": 1.4,
         "exit_value": null,
         "cash_on_cash_yr1": 0.0419,
         "passes_min_dscr": null,
-        "min_dscr_threshold": 1.0,
+        "min_dscr_threshold": 1,
         "additional_metrics": {
           "yr2_cash_flow_with_24mo_io": 113105,
           "yr2_coc_with_24mo_io": 0.0471,
-          "yr2_dscr_io": 1.340,
+          "yr2_dscr_io": 1.34,
           "yr3_dscr_amortizing": 1.184
         }
       },
@@ -1611,10 +2313,22 @@ Scenario: what if the lender grants 24-month IO (instead of 12-month)? Also a se
       "description": "How sensitive is levered IRR to exit cap rate assumption? Shows the range of outcomes from cap rate compression to expansion.",
       "variable_key": "exit_cap_rate",
       "variable_label": "Exit Cap Rate",
-      "variable_values": [0.050, 0.055, 0.060, 0.065, 0.070],
+      "variable_values": [
+        0.05,
+        0.055,
+        0.06,
+        0.065,
+        0.07
+      ],
       "output_metric": "irr",
       "output_label": "Levered IRR",
-      "results": [0.094, 0.077, 0.063, 0.047, 0.031],
+      "results": [
+        0.094,
+        0.077,
+        0.063,
+        0.047,
+        0.031
+      ],
       "chart_type": "line",
       "status": "computed"
     }
@@ -1628,13 +2342,13 @@ Scenario: what if the lender grants 24-month IO (instead of 12-month)? Also a se
 
 Tracking lenders contacted, terms quoted, and next steps. Three lenders in conversation.
 
-```json uw:section=x_lender_matrix source=user ts=2026-04-24T10:00:00Z v=1 confidence=high
+```json uw:section=x_lender_matrix source=manual ts=2026-04-24T10:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "x_lender_matrix",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "agent_id": null,
     "agent_version": null,
     "actor": "jared",
@@ -1651,7 +2365,9 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
     "output_label": "Lender Outreach Log",
     "output_position": "appendix",
     "after_section_id": null,
-    "visible_tiers": ["analyst"]
+    "visible_tiers": [
+      "analyst"
+    ]
   },
   "schema_version": null,
   "content": {
@@ -1665,7 +2381,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
         "term_years": 5,
         "amortization": 30,
         "io_months_offered": 12,
-        "ltv_max": 0.70,
+        "ltv_max": 0.7,
         "recourse": "partial",
         "origination_fee": "1.0%",
         "notes": "Preferred lender. Verbally confirmed 12mo IO; exploring 24mo IO — answer expected by 4/28. Relationship lender, familiar with our other deals.",
@@ -1681,7 +2397,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
         "term_years": 5,
         "amortization": 30,
         "io_months_offered": 0,
-        "ltv_max": 0.70,
+        "ltv_max": 0.7,
         "recourse": "full",
         "origination_fee": "0.75%",
         "notes": "Higher rate, no IO, full recourse. Less competitive. Keep as backup.",
@@ -1713,13 +2429,13 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
 
 ## Pipeline Log {#pipeline_log}
 
-```json uw:section=pipeline_log source=system ts=2026-04-24T15:42:00Z v=1
+```json uw:section=pipeline_log source=system/unspecified ts=2026-04-24T15:42:00Z v=1
 {
   "_meta": {
     "section": "pipeline_log",
     "version": 1,
     "superseded": false,
-    "source": "system",
+    "source": "system/unspecified",
     "agent_id": "system",
     "agent_version": "1.1.0",
     "actor": "system",
@@ -1731,17 +2447,258 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
     "notes": null
   },
   "entries": [
-    { "entry_id": "e001", "timestamp": "2026-04-24T09:00:00Z", "event_type": "file_created", "agent_or_actor": "uwmd:init", "section_affected": null, "status": "success", "input_sections": [], "output_sections": ["frontmatter"], "flags_raised": [], "flags_cleared": [], "duration_ms": 12, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": "File initialized via uwmd init --scenario stabilized_acquisition --address '1234 W Camelback Rd, Glendale AZ 85301'" },
-    { "entry_id": "e002", "timestamp": "2026-04-24T09:05:00Z", "event_type": "wizard_input", "agent_or_actor": "wizard:step_1", "section_affected": "property", "status": "success", "input_sections": [], "output_sections": ["property"], "flags_raised": [], "flags_cleared": [], "duration_ms": null, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": "Property details entered via wizard step 1" },
-    { "entry_id": "e003", "timestamp": "2026-04-24T09:15:00Z", "event_type": "user_edit", "agent_or_actor": "user:jared", "section_affected": "deal_context", "status": "success", "input_sections": [], "output_sections": ["deal_context"], "flags_raised": [], "flags_cleared": [], "duration_ms": null, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": "Deal narrative and investment thesis written" },
-    { "entry_id": "e004", "timestamp": "2026-04-24T10:12:00Z", "event_type": "agent_run", "agent_or_actor": "agent:L0-01", "section_affected": "rent_roll", "status": "success", "input_sections": [], "output_sections": ["rent_roll"], "flags_raised": ["7_units_month_to_month"], "flags_cleared": [], "duration_ms": 3420, "input_hash": "sha256:e3b0c44298fc", "output_hash": "sha256:1a2b3c4d5e6f", "error_code": null, "error_message": null, "notes": "Parsed parkview_rent_roll_apr2026.xlsx — 48 records, 0 errors" },
-    { "entry_id": "e005", "timestamp": "2026-04-24T10:18:00Z", "event_type": "agent_run", "agent_or_actor": "agent:L0-02", "section_affected": "operating_statement", "status": "success", "input_sections": [], "output_sections": ["operating_statement"], "flags_raised": ["management_fee_above_market", "utilities_potentially_understated", "not_cpa_certified"], "flags_cleared": [], "duration_ms": 4810, "input_hash": "sha256:a1b2c3d4e5f6", "output_hash": "sha256:2b3c4d5e6f7a", "error_code": null, "error_message": null, "notes": "Parsed parkview_t12_2025.pdf — T-12 through Dec 2025" },
-    { "entry_id": "e006", "timestamp": "2026-04-24T11:05:00Z", "event_type": "engine_run", "agent_or_actor": "engine:calculations.ts", "section_affected": "noi_model", "status": "success", "input_sections": ["rent_roll", "operating_statement"], "output_sections": ["noi_model"], "flags_raised": [], "flags_cleared": [], "duration_ms": 88, "input_hash": "sha256:f7e8d9c0b1a2", "output_hash": "sha256:3c4d5e6f7a8b", "error_code": null, "error_message": null, "notes": null },
-    { "entry_id": "e007", "timestamp": "2026-04-24T11:10:00Z", "event_type": "engine_run", "agent_or_actor": "engine:dcfEngine.ts", "section_affected": "dcf", "status": "success", "input_sections": ["noi_model", "debt_structure"], "output_sections": ["dcf", "stress_tests"], "flags_raised": ["moderate_stress_fails_dscr"], "flags_cleared": [], "duration_ms": 124, "input_hash": "sha256:f7e8d9c0b1a2", "output_hash": "sha256:4d5e6f7a8b9c", "error_code": null, "error_message": null, "notes": null },
-    { "entry_id": "e008", "timestamp": "2026-04-24T11:16:00Z", "event_type": "validation", "agent_or_actor": "engine:financialValidityChecker", "section_affected": "validation", "status": "success", "input_sections": ["noi_model", "debt_structure", "dcf", "valuation"], "output_sections": ["validation"], "flags_raised": ["dscr_warning_amortizing"], "flags_cleared": [], "duration_ms": 42, "input_hash": "sha256:f7e8d9c0b1a2", "output_hash": null, "error_code": null, "error_message": null, "notes": "2 financial validity flags, 4 completeness flags, 0 blocking flags on financial metrics" },
-    { "entry_id": "e009", "timestamp": "2026-04-24T12:30:00Z", "event_type": "agent_run", "agent_or_actor": "agent:L2-CRE-07", "section_affected": "market_analysis", "status": "success", "input_sections": ["property"], "output_sections": ["market_analysis"], "flags_raised": [], "flags_cleared": [], "duration_ms": 8920, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": "Market data via web search — CoStar not connected" },
-    { "entry_id": "e010", "timestamp": "2026-04-24T14:10:00Z", "event_type": "user_edit", "agent_or_actor": "user:jared", "section_affected": "custom_calculations", "status": "success", "input_sections": ["noi_model", "valuation", "sources_uses", "debt_structure"], "output_sections": ["custom_calculations"], "flags_raised": [], "flags_cleared": [], "duration_ms": null, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": "Added true all-in yield and loan constant calculations" },
-    { "entry_id": "e011", "timestamp": "2026-04-24T14:20:00Z", "event_type": "user_edit", "agent_or_actor": "user:jared", "section_affected": "custom_scenarios", "status": "success", "input_sections": ["debt_structure", "dcf"], "output_sections": ["custom_scenarios"], "flags_raised": [], "flags_cleared": [], "duration_ms": null, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": "Added 24mo IO scenario and exit cap rate sensitivity sweep" }
+    {
+      "entry_id": "e001",
+      "timestamp": "2026-04-24T09:00:00Z",
+      "event_type": "file_created",
+      "agent_or_actor": "uwmd:init",
+      "section_affected": null,
+      "status": "success",
+      "input_sections": [],
+      "output_sections": [
+        "frontmatter"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": 12,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "File initialized via uwmd init --scenario stabilized_acquisition --address '1234 W Camelback Rd, Glendale AZ 85301'"
+    },
+    {
+      "entry_id": "e002",
+      "timestamp": "2026-04-24T09:05:00Z",
+      "event_type": "wizard_input",
+      "agent_or_actor": "wizard:step_1",
+      "section_affected": "property",
+      "status": "success",
+      "input_sections": [],
+      "output_sections": [
+        "property"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": null,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "Property details entered via wizard step 1"
+    },
+    {
+      "entry_id": "e003",
+      "timestamp": "2026-04-24T09:15:00Z",
+      "event_type": "user_edit",
+      "agent_or_actor": "user:jared",
+      "section_affected": "deal_context",
+      "status": "success",
+      "input_sections": [],
+      "output_sections": [
+        "deal_context"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": null,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "Deal narrative and investment thesis written"
+    },
+    {
+      "entry_id": "e004",
+      "timestamp": "2026-04-24T10:12:00Z",
+      "event_type": "agent_run",
+      "agent_or_actor": "agent:L0-01",
+      "section_affected": "rent_roll",
+      "status": "success",
+      "input_sections": [],
+      "output_sections": [
+        "rent_roll"
+      ],
+      "flags_raised": [
+        "7_units_month_to_month"
+      ],
+      "flags_cleared": [],
+      "duration_ms": 3420,
+      "input_hash": "sha256:e3b0c44298fc",
+      "output_hash": "sha256:1a2b3c4d5e6f",
+      "error_code": null,
+      "error_message": null,
+      "notes": "Parsed parkview_rent_roll_apr2026.xlsx — 48 records, 0 errors"
+    },
+    {
+      "entry_id": "e005",
+      "timestamp": "2026-04-24T10:18:00Z",
+      "event_type": "agent_run",
+      "agent_or_actor": "agent:L0-02",
+      "section_affected": "operating_statement",
+      "status": "success",
+      "input_sections": [],
+      "output_sections": [
+        "operating_statement"
+      ],
+      "flags_raised": [
+        "management_fee_above_market",
+        "utilities_potentially_understated",
+        "not_cpa_certified"
+      ],
+      "flags_cleared": [],
+      "duration_ms": 4810,
+      "input_hash": "sha256:a1b2c3d4e5f6",
+      "output_hash": "sha256:2b3c4d5e6f7a",
+      "error_code": null,
+      "error_message": null,
+      "notes": "Parsed parkview_t12_2025.pdf — T-12 through Dec 2025"
+    },
+    {
+      "entry_id": "e006",
+      "timestamp": "2026-04-24T11:05:00Z",
+      "event_type": "engine_run",
+      "agent_or_actor": "engine:calculations.ts",
+      "section_affected": "noi_model",
+      "status": "success",
+      "input_sections": [
+        "rent_roll",
+        "operating_statement"
+      ],
+      "output_sections": [
+        "noi_model"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": 88,
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "output_hash": "sha256:3c4d5e6f7a8b",
+      "error_code": null,
+      "error_message": null,
+      "notes": null
+    },
+    {
+      "entry_id": "e007",
+      "timestamp": "2026-04-24T11:10:00Z",
+      "event_type": "engine_run",
+      "agent_or_actor": "engine:dcfEngine.ts",
+      "section_affected": "dcf",
+      "status": "success",
+      "input_sections": [
+        "noi_model",
+        "debt_structure"
+      ],
+      "output_sections": [
+        "dcf",
+        "stress_tests"
+      ],
+      "flags_raised": [
+        "moderate_stress_fails_dscr"
+      ],
+      "flags_cleared": [],
+      "duration_ms": 124,
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "output_hash": "sha256:4d5e6f7a8b9c",
+      "error_code": null,
+      "error_message": null,
+      "notes": null
+    },
+    {
+      "entry_id": "e008",
+      "timestamp": "2026-04-24T11:16:00Z",
+      "event_type": "validation",
+      "agent_or_actor": "engine:financialValidityChecker",
+      "section_affected": "validation",
+      "status": "success",
+      "input_sections": [
+        "noi_model",
+        "debt_structure",
+        "dcf",
+        "valuation"
+      ],
+      "output_sections": [
+        "validation"
+      ],
+      "flags_raised": [
+        "dscr_warning_amortizing"
+      ],
+      "flags_cleared": [],
+      "duration_ms": 42,
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "2 financial validity flags, 4 completeness flags, 0 blocking flags on financial metrics"
+    },
+    {
+      "entry_id": "e009",
+      "timestamp": "2026-04-24T12:30:00Z",
+      "event_type": "agent_run",
+      "agent_or_actor": "agent:L2-CRE-07",
+      "section_affected": "market_analysis",
+      "status": "success",
+      "input_sections": [
+        "property"
+      ],
+      "output_sections": [
+        "market_analysis"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": 8920,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "Market data via web search — CoStar not connected"
+    },
+    {
+      "entry_id": "e010",
+      "timestamp": "2026-04-24T14:10:00Z",
+      "event_type": "user_edit",
+      "agent_or_actor": "user:jared",
+      "section_affected": "custom_calculations",
+      "status": "success",
+      "input_sections": [
+        "noi_model",
+        "valuation",
+        "sources_uses",
+        "debt_structure"
+      ],
+      "output_sections": [
+        "custom_calculations"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": null,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "Added true all-in yield and loan constant calculations"
+    },
+    {
+      "entry_id": "e011",
+      "timestamp": "2026-04-24T14:20:00Z",
+      "event_type": "user_edit",
+      "agent_or_actor": "user:jared",
+      "section_affected": "custom_scenarios",
+      "status": "success",
+      "input_sections": [
+        "debt_structure",
+        "dcf"
+      ],
+      "output_sections": [
+        "custom_scenarios"
+      ],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": null,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": "Added 24mo IO scenario and exit cap rate sensitivity sweep"
+    }
   ]
 }
 ```

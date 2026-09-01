@@ -62,13 +62,13 @@ intensive metric divides its own allocated share instead.
 
 ## Deal Context {#deal_context}
 
-```json uw:section=deal_context source=user ts=2026-08-10T09:15:00Z v=1 confidence=high
+```json uw:section=deal_context source=manual ts=2026-08-10T09:15:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "deal_context",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-10T09:15:00Z",
     "confidence": "high",
@@ -89,13 +89,13 @@ intensive metric divides its own allocated share instead.
 
 ## Property {#property}
 
-```json uw:section=property source=user ts=2026-08-10T09:30:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-08-10T09:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-10T09:30:00Z",
     "confidence": "high",
@@ -114,13 +114,13 @@ intensive metric divides its own allocated share instead.
 
 ## Components {#components}
 
-```json uw:section=components source=user ts=2026-08-10T11:00:00Z v=1 confidence=high
+```json uw:section=components source=manual ts=2026-08-10T11:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "components",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-10T11:00:00Z",
     "confidence": "high",
@@ -151,7 +151,7 @@ intensive metric divides its own allocated share instead.
     "operating_expenses": 6000000,
     "net_operating_income": 900000,
     "gross_operating_profit": 1400000,
-    "allocation_pct": 0.30
+    "allocation_pct": 0.3
   }
 }
 ```
@@ -160,13 +160,13 @@ intensive metric divides its own allocated share instead.
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=engine:calculations.ts ts=2026-08-10T12:00:00Z v=1 confidence=high
+```json uw:section=noi_model source=system/calculations.ts ts=2026-08-10T12:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-08-10T12:00:00Z",
     "confidence": "high",
@@ -182,13 +182,13 @@ intensive metric divides its own allocated share instead.
 
 ## Debt Structure {#debt_structure}
 
-```json uw:section=debt_structure source=user ts=2026-08-10T13:30:00Z v=1 confidence=high
+```json uw:section=debt_structure source=manual ts=2026-08-10T13:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-08-10T13:30:00Z",
     "confidence": "high",
@@ -217,13 +217,13 @@ intensive metric divides its own allocated share instead.
 
 ## Sources & Uses {#sources_uses}
 
-```json uw:section=sources_uses source=engine:calculations.ts ts=2026-08-10T13:35:00Z v=1 confidence=high
+```json uw:section=sources_uses source=system/calculations.ts ts=2026-08-10T13:35:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "sources_uses",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-08-10T13:35:00Z",
     "confidence": "high",
@@ -248,13 +248,14 @@ intensive metric divides its own allocated share instead.
 
 ## Valuation {#valuation}
 
-```json uw:section=valuation source=user:appraisal ts=2026-08-10T14:30:00Z v=1 confidence=high
+```json uw:section=valuation source=manual ts=2026-08-10T14:30:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "valuation",
     "version": 1,
     "superseded": false,
-    "source": "user:appraisal",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-08-10T14:30:00Z",
     "confidence": "high",
@@ -275,13 +276,13 @@ intensive metric divides its own allocated share instead.
 
 Financial-validity engine run over the consolidated property figures; per-component figures live in the components section.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",

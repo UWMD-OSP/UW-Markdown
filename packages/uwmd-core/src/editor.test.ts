@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { parseUWFile, getSection } from './parser.js';
 import { applyEdit, resolvePolicy } from './editor.js';
 import type { EditContext, EditResult } from './editor.js';
-import type { EditOperation } from './protocol.js';
+import type { EditOperation, EditPolicy } from './protocol.js';
 import { BUILTIN_EDIT_POLICIES } from './protocol.js';
 
 // ─── Shared fixture ───────────────────────────────────────────────────────────
@@ -557,5 +557,55 @@ describe('an unrecognized _meta.source no longer permits a destructive replace',
     // The prior version survives rather than being overwritten.
     expect(after.superseded.property?.length ?? 0).toBeGreaterThan(0);
     expect(getSection(after, 'property')?.content.total_units).toBe(999);
+  });
+});
+
+// ─── RFC 0031: namespace-parsed authority classification ─────────────────────
+
+describe('authority classification reads the parsed actor namespace', () => {
+  // A human_only policy over the property block. Terminates in a catch-all so
+  // the classification, not policy coverage, is what each case exercises.
+  const HUMAN_ONLY: EditPolicy[] = [
+    { source_pattern: 'manual', authority: 'human_only', supersede_on_edit: false },
+    { source_pattern: '*', authority: 'human_only', supersede_on_edit: true },
+  ];
+
+  const editAs = (source: string): EditResult => {
+    const parsed = parseUWFile(FILE);
+    const op: EditOperation = {
+      kind: 'section_supersede',
+      section_id: 'property',
+      content: { total_units: 11 },
+      meta: {},
+    };
+    return applyEdit(FILE, parsed, op, { actor: 'x', source }, HUMAN_ONLY);
+  };
+
+  it('accepts manual as human', () => {
+    expect(editAs('manual').ok).toBe(true);
+  });
+
+  it('no longer classifies the colon form agent:L0-01 as a human write', () => {
+    // The prefix test's negative space — anything not system/ or agent/ counted
+    // as human — is the bug RFC 0031 closes. The colon form is an agent id in a
+    // retired spelling; it must never pass human_only.
+    const result = editAs('agent:L0-01');
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe('PROTO-EDIT-001');
+  });
+
+  it('classifies no resolution tag or bare word as human', () => {
+    for (const source of ['market_data', 'user_input', 'user', 'wizard', 'engine:uwmd']) {
+      expect(editAs(source).ok, source).toBe(false);
+    }
+  });
+
+  it('classifies document/* as no authority class — evidence, not an actor', () => {
+    expect(editAs('document/rent_roll').ok).toBe(false);
+  });
+
+  it('still refuses agents and systems under human_only', () => {
+    expect(editAs('agent/L6-01').ok).toBe(false);
+    expect(editAs('system/init').ok).toBe(false);
   });
 });

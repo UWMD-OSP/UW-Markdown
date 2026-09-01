@@ -20,13 +20,14 @@ created_by: "test-fixture"
 
 # Gaps section is rewritten after every edit when maintainGaps is on.
 
-```json uw:section=property source=user_input ts=<volatile> v=1 confidence=high
+```json uw:section=property source=manual ts=<volatile> v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user_input",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": null,
     "agent_version": null,
     "actor": "user",

@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                size-intensive,signing,sensitivity,stochastic.
+//                size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -104,7 +104,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity,stochastic').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,size-intensive,signing,sensitivity,stochastic,source').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2824,6 +2824,153 @@ async function runStochastic() {
 }
 
 
+// ─── Source vocabulary (RFC 0031) ────────────────────────────────────────────
+//
+// `_meta.source` is actor-only; resolution methods live in `_meta.resolution`.
+// Five scenarios: the split round-trips, a legacy tag is read-time-interpreted
+// (and never rewritten into the raw bytes), an unmatched source supersedes
+// instead of replacing (the unpoliced-write regression), the retired colon
+// form is neither well-formed nor a human write, and a caller-supplied policy
+// list with no coverage refuses rather than grants.
+
+const SOURCE_DIR = join(CONFORMANCE_DIR, 'source');
+
+async function runSource() {
+  if (!existsSync(SOURCE_DIR)) return;
+
+  const load = (id, file = 'deal.uwx.md') => {
+    const content = readFileSync(join(SOURCE_DIR, id, file), 'utf8');
+    return { content, parsed: parseUWFile(content) };
+  };
+  const expectedOf = (id) => JSON.parse(readFileSync(join(SOURCE_DIR, id, 'expected.json'), 'utf8'));
+  const srcCodes = (parsed) =>
+    [...new Set(validateUWFile(parsed).issues.filter((i) => i.code.startsWith('SRC-')).map((i) => i.code))].sort();
+
+  // 01 — both fields present and distinct; they round-trip independently.
+  {
+    const id = '01-actor-and-resolution';
+    const expected = expectedOf(id);
+    const { parsed } = load(id);
+    const meta = parsed.sections.property?.meta;
+    const problems = [];
+    if (meta?.source !== expected.source) problems.push(`source ${meta?.source} != ${expected.source}`);
+    if (meta?.resolution !== expected.resolution) problems.push(`resolution ${meta?.resolution} != ${expected.resolution}`);
+    const leaf = meta?.field_overrides?.find((o) => o.path === 'year_built');
+    if (leaf?.resolution !== expected.override_resolution) {
+      problems.push(`override resolution ${leaf?.resolution} != ${expected.override_resolution}`);
+    }
+    const codes = srcCodes(parsed);
+    if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
+      problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
+    }
+    record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 02 — a canonical tag in the actor field: interpreted as resolution,
+  // SRC-02 warned, raw block bytes untouched.
+  {
+    const id = '02-legacy-tag-in-source';
+    const expected = expectedOf(id);
+    const { parsed } = load(id);
+    const block = parsed.sections.property;
+    const problems = [];
+    if (block?.meta?.source !== expected.raw_source) problems.push(`raw source ${block?.meta?.source} != ${expected.raw_source}`);
+    if (block?.meta?.resolution !== expected.interpreted_resolution) {
+      problems.push(`interpreted resolution ${block?.meta?.resolution} != ${expected.interpreted_resolution}`);
+    }
+    const rawMeta = block?.content?._meta;
+    const untouched = rawMeta && !('resolution' in rawMeta);
+    if (untouched !== expected.content_meta_untouched) {
+      problems.push('content._meta was rewritten by the reader — it feeds digests and must never be');
+    }
+    const codes = srcCodes(parsed);
+    if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
+      problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
+    }
+    record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 03 — the unpoliced-write regression: catch-all-governed blocks supersede.
+  {
+    const id = '03-unmatched-supersedes';
+    const expected = expectedOf(id);
+    const { content, parsed } = load(id);
+    const problems = [];
+
+    const replace = applyEdit(content, parsed, {
+      kind: 'section_replace', section_id: 'property',
+      content: { total_units: 999 }, meta: {},
+    }, { actor: 'analyst', source: 'manual' });
+    if (replace.ok || replace.error?.code !== expected.replace_error) {
+      problems.push(`replace ${replace.ok ? 'succeeded' : replace.error?.code} != refused ${expected.replace_error}`);
+    }
+
+    const supersede = applyEdit(content, parsed, {
+      kind: 'section_supersede', section_id: 'property',
+      content: { total_units: 999 }, meta: {},
+    }, { actor: 'analyst', source: 'manual' });
+    if (supersede.ok !== expected.supersede_ok) {
+      problems.push(`supersede ok ${supersede.ok} != ${expected.supersede_ok}`);
+    } else if (supersede.ok) {
+      const after = parseUWFile(supersede.content);
+      const preserved = (after.superseded.property?.length ?? 0) > 0;
+      if (preserved !== expected.prior_preserved) problems.push('prior block was not preserved');
+    }
+
+    const replaced = load(id, 'replaced-in-place.uwx.md');
+    const provenance = verifyProvenance(replaced.parsed);
+    const codes = [...new Set(provenance.issues.map((i) => i.code))].sort();
+    const wanted = [...expected.replaced_in_place_codes].sort();
+    if (codes.join(',') !== wanted.join(',')) {
+      problems.push(`replaced-in-place codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
+    }
+    record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 04 — the retired colon form: SRC-01, and never classified as human.
+  {
+    const id = '04-colon-form-rejected';
+    const expected = expectedOf(id);
+    const { content, parsed } = load(id);
+    const problems = [];
+    const codes = srcCodes(parsed);
+    if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
+      problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
+    }
+    // A human_only policy over the manual-sourced property block: an actor
+    // writing as `agent:L0-01` must be refused, not classified as human.
+    const humanOnly = [
+      { source_pattern: 'manual', authority: 'human_only', supersede_on_edit: true },
+      { source_pattern: '*', authority: 'human_only', supersede_on_edit: true },
+    ];
+    const edit = applyEdit(content, parsed, {
+      kind: 'section_supersede', section_id: 'property',
+      content: { total_units: 999 }, meta: {},
+    }, { actor: 'system', source: 'agent:L0-01' }, humanOnly);
+    if (edit.ok || edit.error?.code !== expected.human_only_edit_refused) {
+      problems.push(`colon-form edit ${edit.ok ? 'succeeded' : edit.error?.code} != refused ${expected.human_only_edit_refused}`);
+    }
+    record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 05 — a policy list that does not cover the source refuses, never grants.
+  {
+    const id = '05-custom-policies-no-catchall';
+    const expected = expectedOf(id);
+    const { content, parsed } = load(id);
+    const partial = [
+      { source_pattern: 'agent/*', authority: 'either', supersede_on_edit: true },
+    ];
+    const edit = applyEdit(content, parsed, {
+      kind: 'section_supersede', section_id: 'property',
+      content: { total_units: 999 }, meta: {},
+    }, { actor: 'analyst', source: 'manual' }, partial);
+    const ok = !edit.ok && edit.error?.code === expected.edit_refused;
+    record('source', id, ok ? 'pass' : 'fail',
+      ok ? undefined : `edit ${edit.ok ? 'succeeded' : edit.error?.code} != refused ${expected.edit_refused}`);
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -2844,6 +2991,7 @@ const dispatch = {
   'signing': async () => { await runSigning(); },
   'sensitivity': async () => { await runSensitivity(); },
   'stochastic': async () => { await runStochastic(); },
+  'source': async () => { await runSource(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {

@@ -142,7 +142,7 @@ source_documents: []
 
 _${s.label} — Add narrative here._
 
-\`\`\`json uw:section=${s.id} source=wizard ts=${now} v=1 confidence=low
+\`\`\`json uw:section=${s.id} source=manual ts=${now} v=1 confidence=low
 ${metaStub(s.id)}
 \`\`\`
 
@@ -197,7 +197,7 @@ ${sectionBlocks}
 
 ## Pipeline Log {#pipeline_log}
 
-\`\`\`json uw:section=pipeline_log source=engine:uwmd ts=${now} v=1 confidence=high
+\`\`\`json uw:section=pipeline_log source=system/init ts=${now} v=1 confidence=high
 ${pipelineLogEntry}
 \`\`\`
 `;

@@ -12,6 +12,9 @@ import {
   BUILTIN_REMEDIATIONS,
   VALIDATOR_CODE_FAMILIES,
   validatorCodeFamily,
+  ACTOR_NAMESPACES,
+  ACTOR_SOURCE_RE,
+  parseActorSource,
 } from './protocol.js';
 import { CORE_VERSION } from './version.js';
 
@@ -87,7 +90,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — version', () => {
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('1.9.0');
+    expect(PROTOCOL_VERSION).toBe('1.10.0');
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {
@@ -180,5 +183,78 @@ describe('validator code families (§III.6a, RFC 0030)', () => {
     // ever become unconditional, a reader-only host stops being conformant.
     expect(validatorCodeFamily('INT-01')?.capabilities).toEqual(['integrity']);
     expect(validatorCodeFamily('POL-02')?.capabilities).toEqual(['edit-replace', 'edit-supersede']);
+  });
+});
+
+// ─── RFC 0031: actor grammar for _meta.source ────────────────────────────────
+
+describe('parseActorSource (RFC 0031)', () => {
+  it('accepts manual and every registered namespace', () => {
+    expect(parseActorSource('manual')).toEqual({ kind: 'manual' });
+    expect(parseActorSource('agent/L6-01')).toEqual({
+      kind: 'namespaced', namespace: 'agent', id: 'L6-01',
+    });
+    expect(parseActorSource('document/rent_roll')).toEqual({
+      kind: 'namespaced', namespace: 'document', id: 'rent_roll',
+    });
+    expect(parseActorSource('system/init')).toEqual({
+      kind: 'namespaced', namespace: 'system', id: 'init',
+    });
+    expect(parseActorSource('institution/threshold-override')).toEqual({
+      kind: 'namespaced', namespace: 'institution', id: 'threshold-override',
+    });
+    // Dots are legal id characters — `system/calculations.ts` is a real actor
+    // the corpus migration produces.
+    expect(parseActorSource('system/calculations.ts')).toEqual({
+      kind: 'namespaced', namespace: 'system', id: 'calculations.ts',
+    });
+  });
+
+  it('rejects everything outside the grammar as invalid, never as an actor', () => {
+    for (const source of [
+      'agent:L0-01',            // the retired format-§2.6 colon form
+      'engine:calculations.ts', // ditto
+      'user',                   // bare word
+      'wizard',
+      'market_data',            // a resolution tag in the actor field
+      'ai_extracted',
+      'alien/xyz',              // unregistered namespace
+      'agent/',                 // empty id
+      'agent/-leading-dash',    // id must start alphanumeric
+      'Agent/L6',               // namespace is case-sensitive
+      '',
+    ]) {
+      expect(parseActorSource(source).kind, source).toBe('invalid');
+    }
+  });
+
+  it('agrees with ACTOR_SOURCE_RE on every probe', () => {
+    // Two spellings of one grammar (the regex is what the JSON Schema
+    // mirrors); they must never diverge.
+    const probes = [
+      'manual', 'agent/L6-01', 'document/rent_roll', 'system/uwmd',
+      'institution/x', 'agent:L0-01', 'market_data', 'user', 'alien/xyz',
+      'agent/', 'Agent/L6', '', 'system/calculations.ts',
+    ];
+    for (const p of probes) {
+      expect(ACTOR_SOURCE_RE.test(p), p).toBe(parseActorSource(p).kind !== 'invalid');
+    }
+  });
+
+  it('registers every namespace exactly once', () => {
+    expect([...ACTOR_NAMESPACES]).toEqual(['agent', 'document', 'system', 'institution']);
+  });
+});
+
+describe('SRC code family (RFC 0031)', () => {
+  it('registers SRC under the validate capability', () => {
+    expect(validatorCodeFamily('SRC-01')?.prefix).toBe('SRC');
+    expect(validatorCodeFamily('SRC-01')?.capabilities).toEqual(['validate']);
+  });
+
+  it('ships remediation copy for SRC-01 and SRC-02', () => {
+    const codes = BUILTIN_REMEDIATIONS.filter((r) => r.code.startsWith('SRC-'));
+    expect(codes.map((r) => r.code).sort()).toEqual(['SRC-01', 'SRC-02']);
+    for (const r of codes) expect(r.severity).toBe('warning');
   });
 });

@@ -27,13 +27,14 @@ unknowns. Validates clean at `deal_stage: scope`.
 
 ## Property {#property}
 
-```json uw:section=property source=user_input ts=2026-01-15T10:00:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user_input",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": null,
     "agent_version": null,
     "actor": "user",
@@ -53,13 +54,14 @@ unknowns. Validates clean at `deal_stage: scope`.
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=asset_class_default ts=2026-01-15T10:00:00Z v=1 confidence=low
+```json uw:section=noi_model source=system/uwmd ts=2026-01-15T10:00:00Z v=1 confidence=low
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "asset_class_default",
+    "source": "system/uwmd",
+    "resolution": "asset_class_default",
     "agent_id": "agent/L0a",
     "agent_version": "1.0.0",
     "actor": "agent/L0a",
@@ -71,7 +73,7 @@ unknowns. Validates clean at `deal_stage: scope`.
     "notes": "Filled from asset-class defaults; replace with real T-12 to advance past scope.",
     "provisional": true
   },
-  "expense_ratio": 0.40,
+  "expense_ratio": 0.4,
   "rent_growth_pct_y1": 0.03,
   "management_fee_pct": 0.035,
   "replacement_reserve_per_unit_y1": 300
@@ -80,13 +82,14 @@ unknowns. Validates clean at `deal_stage: scope`.
 
 ## Debt Structure {#debt_structure}
 
-```json uw:section=debt_structure source=asset_class_default ts=2026-01-15T10:00:00Z v=1 confidence=low
+```json uw:section=debt_structure source=system/uwmd ts=2026-01-15T10:00:00Z v=1 confidence=low
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "asset_class_default",
+    "source": "system/uwmd",
+    "resolution": "asset_class_default",
     "agent_id": "agent/L0a",
     "agent_version": "1.0.0",
     "actor": "agent/L0a",
@@ -107,13 +110,14 @@ unknowns. Validates clean at `deal_stage: scope`.
 
 ## Gaps {#gaps}
 
-```json uw:section=gaps source=system_default ts=2026-01-15T10:00:00Z v=1 confidence=high
+```json uw:section=gaps source=system/uwmd ts=2026-01-15T10:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "gaps",
     "version": 1,
     "superseded": false,
-    "source": "system_default",
+    "source": "system/uwmd",
+    "resolution": "system_default",
     "agent_id": "system/gaps-maintainer",
     "agent_version": "1.0.0",
     "actor": "system/gaps-maintainer",

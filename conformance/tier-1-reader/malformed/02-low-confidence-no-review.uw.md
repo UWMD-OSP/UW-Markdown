@@ -33,12 +33,13 @@ The `property` section below carries `_meta.confidence: "low"` but does
 NOT set `_meta.human_review_required: true`. The validator MUST emit
 `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` (severity: info).
 
-```json uw:section=property source=ai_extracted ts=2026-01-15T10:00:00Z v=1
+```json uw:section=property source=agent/unattributed ts=2026-01-15T10:00:00Z v=1
 {
   "_meta": {
     "section": "property",
     "version": 1,
-    "source": "ai_extracted",
+    "source": "agent/unattributed",
+    "resolution": "ai_extracted",
     "timestamp": "2026-01-15T10:00:00Z",
     "confidence": "low",
     "extraction_method": "vision_ocr"

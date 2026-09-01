@@ -26,13 +26,14 @@ MUST emit `DQ-03` (warning).
 
 ## Property {#property}
 
-```json uw:section=property source=user_input ts=2026-01-15T10:00:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user_input",
+    "source": "manual",
+    "resolution": "user_input",
     "agent_id": null,
     "agent_version": null,
     "actor": "user",
@@ -51,13 +52,14 @@ MUST emit `DQ-03` (warning).
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=ai_extracted ts=2026-01-15T10:00:00Z v=1 confidence=medium
+```json uw:section=noi_model source=agent/agent-L2 ts=2026-01-15T10:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "ai_extracted",
+    "source": "agent/agent-L2",
+    "resolution": "ai_extracted",
     "agent_id": "agent/L2",
     "agent_version": "1.0.0",
     "actor": "agent/L2",

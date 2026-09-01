@@ -22,7 +22,12 @@ export type DealStage =
  * 'agent/L6-01', 'document/rent_roll'). Free-form strings remain valid for
  * forward compat; this union enumerates the canonical values.
  *
- * Cascade-resolved values use the lower seven tags below; see protocol §IX.
+ * **RFC 0031 split the field.** `_meta.source` is now actor-only
+ * (`manual | agent/<id> | document/<id> | system/<id> | institution/<id>`);
+ * the resolution-method tags below belong in `_meta.resolution`. A canonical
+ * tag found in `_meta.source` is interpreted at read time as `resolution`
+ * (with the actor treated as absent) and warns under `SRC-02`. See protocol
+ * §V.3/§V.7 and format spec §2.6.
  */
 export type SourceTag =
   | 'user_input'
@@ -52,6 +57,47 @@ export type SourceTag =
   | 'global_default'
   | 'system_default'
   | (string & {});
+
+/**
+ * The full set of canonical short-form source tags. As of RFC 0031 these are
+ * the **resolution-method** vocabulary — producers stamp them into
+ * `_meta.resolution` (a tag found in `_meta.source` is legacy and is
+ * interpreted as `resolution` at read time). Eight of these match
+ * `CascadeStep` 1:1; the rest are non-cascade tags — `manual`,
+ * `ai_extracted`, `agent_computed`, `scenario_default`, and
+ * `market_data_accepted`.
+ *
+ * `market_data_accepted` (RFC 0022 §4) is deliberately *not* a cascade step:
+ * it is an in-file value of record that resolves at the `user_input` step
+ * while keeping its own tag, because a value accepted for lack of better
+ * evidence must stay distinguishable from one someone typed in.
+ *
+ * `scenario_default` is retained but its meaning is sharpened to mean
+ * "value derived from a named scenario in the file or institution
+ * config." Producers needing a generic fallback SHOULD use
+ * `system_default` instead.
+ *
+ * Actor patterns (`manual`, `agent/L6-01`, `document/rent_roll`, …) are a
+ * separate vocabulary — see `ACTOR_NAMESPACES` / `parseActorSource` in
+ * `protocol.ts`.
+ */
+export const SOURCE_TAGS = Object.freeze([
+  'user_input',
+  'user_override',
+  'manual',
+  'inherited_assumption',
+  'investor_profile',
+  'market_data',
+  'market_data_accepted',
+  'ai_extracted',
+  'agent_computed',
+  'asset_class_default',
+  'scenario_default',
+  'global_default',
+  'system_default',
+] as const);
+
+export type CanonicalSourceTag = (typeof SOURCE_TAGS)[number];
 
 export type AssetClass =
   | 'multifamily'
@@ -126,7 +172,16 @@ export interface UWFieldOverride {
   /** Dot-notated path relative to the block's content root (e.g. "units[7].current_rent"). */
   path: string;
   confidence?: ConfidenceLevel;
+  /** Actor override for this field (RFC 0031 actor grammar; legacy tags are
+   *  read as `resolution` — see §2.6 read-time interpretation). */
   source?: SourceTag;
+  /**
+   * How this field's value was resolved (a canonical `SOURCE_TAGS` member,
+   * e.g. the cascade step that produced it — protocol §V.7 permits stamping
+   * at leaf level). A leaf-level `resolution` wins over the block-level one
+   * for its path. RFC 0031.
+   */
+  resolution?: SourceTag;
   reason?: 'illegible' | 'missing' | 'overridden' | 'estimated' | 'computed';
   note?: string;
 }
@@ -135,7 +190,20 @@ export interface UWMeta {
   section: string;
   version: number;
   superseded: boolean;
-  source: SourceTag;            // see spec §2.6 for source identifier patterns
+  /**
+   * Who wrote the block — `manual` or `<namespace>/<id>` with a registered
+   * actor namespace (RFC 0031; grammar in format spec §2.6, authority in
+   * protocol §V.3). Legacy canonical tags in this field are interpreted as
+   * `resolution` at read time and warn under `SRC-02`.
+   */
+  source: SourceTag;
+  /**
+   * How the block's value was resolved — one canonical `SOURCE_TAGS` member
+   * (`user_input`, `asset_class_default`, …). Optional and orthogonal to
+   * `source`: an agent that filled a field from the asset-class default table
+   * has both an actor and a method. RFC 0031; protocol §V.7.
+   */
+  resolution?: SourceTag;
   agent_id: string | null;
   agent_version: string | null;
   actor: string;
@@ -195,8 +263,8 @@ export interface UWMeta {
 
   /**
    * Which observation set a `market_data_accepted` value was promoted from
-   * (RFC 0022 §4). REQUIRED whenever `source` is `market_data_accepted`, and
-   * meaningless otherwise.
+   * (RFC 0022 §4). REQUIRED whenever `resolution` (or, pre-split, `source`)
+   * is `market_data_accepted`, and meaningless otherwise.
    *
    * Without it, "accepted from market data" is an unfalsifiable claim: a
    * reviewer could see the tag but never recover *which* observations, of which
@@ -206,7 +274,8 @@ export interface UWMeta {
 
   /**
    * Which ancestor asserted an `inherited_assumption` value (RFC 0021 §5).
-   * REQUIRED whenever `source` is `inherited_assumption`, and meaningless
+   * REQUIRED whenever `resolution` (or, pre-split, `source`) is
+   * `inherited_assumption`, and meaningless
    * otherwise — an inherited value with no named ancestor is indistinguishable
    * from an ambient default, which is exactly what §5 forbids.
    */

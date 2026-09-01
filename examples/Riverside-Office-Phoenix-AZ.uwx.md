@@ -65,13 +65,13 @@ This file is a **second worked example** in the conformance corpus. It exists to
 
 Riverside is a 42,500 SF Class B suburban office property in north Phoenix at 73% occupancy. The seller is a regional REIT divesting non-strategic assets; the property has been undermanaged with two of the three top-floor tenants approaching natural roll-down in the next 18 months. Thesis: acquire below replacement cost, lease the vacancy through a local broker, retain or replace the rolling tenants at market terms, then refinance into permanent debt at year 2 once stabilized NOI supports a 1.30x DSCR.
 
-```json uw:section=deal_context source=user ts=2026-04-25T08:45:00Z v=1 confidence=high
+```json uw:section=deal_context source=manual ts=2026-04-25T08:45:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "deal_context",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-04-25T08:45:00Z",
     "confidence": "high",
@@ -92,13 +92,13 @@ Riverside is a 42,500 SF Class B suburban office property in north Phoenix at 73
 
 ## Property {#property}
 
-```json uw:section=property source=user ts=2026-04-25T08:50:00Z v=1 confidence=high
+```json uw:section=property source=manual ts=2026-04-25T08:50:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-04-25T08:50:00Z",
     "confidence": "high",
@@ -111,7 +111,7 @@ Riverside is a 42,500 SF Class B suburban office property in north Phoenix at 73
   "building_class": "B",
   "stories": 3,
   "parking_spaces": 170,
-  "parking_ratio_per_1000_sf": 4.0,
+  "parking_ratio_per_1000_sf": 4,
   "occupancy_pct": 0.73,
   "submarket": "North Phoenix / Deer Valley"
 }
@@ -123,13 +123,14 @@ Riverside is a 42,500 SF Class B suburban office property in north Phoenix at 73
 
 Office tenant variant — the spec's `rent_roll` section accepts a `tenants` array (see Part IV §4) when the asset class is office, retail, or industrial.
 
-```json uw:section=rent_roll source=user:upload ts=2026-04-25T09:00:00Z v=1 confidence=high
+```json uw:section=rent_roll source=manual ts=2026-04-25T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "rent_roll",
     "version": 1,
     "superseded": false,
-    "source": "user:upload",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-04-25T09:00:00Z",
     "confidence": "high",
@@ -142,7 +143,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   "occupied_sf": 31000,
   "vacant_sf": 11500,
   "occupancy_pct": 0.73,
-  "weighted_avg_rent_psf": 21.50,
+  "weighted_avg_rent_psf": 21.5,
   "tenants": [
     {
       "tenant_id": "T-001",
@@ -150,7 +151,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "Suite 100",
       "leased_sf": 9500,
       "annual_base_rent": 209000,
-      "rent_psf": 22.00,
+      "rent_psf": 22,
       "lease_start": "2023-08-01",
       "lease_expiration": "2027-07-31",
       "lease_type": "NNN",
@@ -163,7 +164,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "Suite 200",
       "leased_sf": 10000,
       "annual_base_rent": 215000,
-      "rent_psf": 21.50,
+      "rent_psf": 21.5,
       "lease_start": "2023-09-15",
       "lease_expiration": "2027-09-14",
       "lease_type": "NNN",
@@ -176,7 +177,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "Suite 201",
       "leased_sf": 7000,
       "annual_base_rent": 145600,
-      "rent_psf": 20.80,
+      "rent_psf": 20.8,
       "lease_start": "2024-02-01",
       "lease_expiration": "2029-01-31",
       "lease_type": "NNN",
@@ -189,7 +190,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
       "suite": "Suite 202",
       "leased_sf": 4500,
       "annual_base_rent": 96750,
-      "rent_psf": 21.50,
+      "rent_psf": 21.5,
       "lease_start": "2025-03-01",
       "lease_expiration": "2030-02-28",
       "lease_type": "NNN",
@@ -216,13 +217,13 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=engine:calculations.ts ts=2026-04-25T11:00:00Z v=1 confidence=high
+```json uw:section=noi_model source=system/calculations.ts ts=2026-04-25T11:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "noi_model",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-04-25T11:00:00Z",
     "confidence": "high",
@@ -255,13 +256,13 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## Debt Structure (Bridge) {#debt_structure}
 
-```json uw:section=debt_structure source=user ts=2026-04-25T13:00:00Z v=1 confidence=high
+```json uw:section=debt_structure source=manual ts=2026-04-25T13:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "debt_structure",
     "version": 1,
     "superseded": false,
-    "source": "user",
+    "source": "manual",
     "actor": "jared",
     "timestamp": "2026-04-25T13:00:00Z",
     "confidence": "high",
@@ -273,7 +274,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   "lender_type": "debt_fund",
   "loan_amount": 3250000,
   "ltv": 0.65,
-  "ltc": 0.60,
+  "ltc": 0.6,
   "interest_rate_type": "floating",
   "interest_rate_index": "SOFR_30D",
   "interest_rate_spread_bps": 350,
@@ -288,7 +289,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   "dscr": 1.026,
   "debt_yield": 0.0923,
   "recourse": "non_recourse_with_carve_outs",
-  "exit_test_dscr": 1.30
+  "exit_test_dscr": 1.3
 }
 ```
 
@@ -296,13 +297,13 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## Sources & Uses {#sources_uses}
 
-```json uw:section=sources_uses source=engine:calculations.ts ts=2026-04-25T13:05:00Z v=1 confidence=high
+```json uw:section=sources_uses source=system/calculations.ts ts=2026-04-25T13:05:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "sources_uses",
     "version": 1,
     "superseded": false,
-    "source": "engine:calculations.ts",
+    "source": "system/calculations.ts",
     "actor": "system",
     "timestamp": "2026-04-25T13:05:00Z",
     "confidence": "high",
@@ -329,13 +330,14 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 ## Valuation {#valuation}
 
-```json uw:section=valuation source=user:appraisal ts=2026-04-25T14:00:00Z v=1 confidence=high
+```json uw:section=valuation source=manual ts=2026-04-25T14:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "valuation",
     "version": 1,
     "superseded": false,
-    "source": "user:appraisal",
+    "source": "manual",
+    "resolution": "user_input",
     "actor": "jared",
     "timestamp": "2026-04-25T14:00:00Z",
     "confidence": "high",
@@ -357,13 +359,14 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
 
 Trailing-twelve summary reconciled to the NOI model — same revenue, expense, and NOI totals; the line-item detail lives in the source statement.
 
-```json uw:section=operating_statement source=extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
+```json uw:section=operating_statement source=system/extractor ts=2026-08-26T09:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "operating_statement",
     "version": 1,
     "superseded": false,
-    "source": "extractor",
+    "source": "system/extractor",
+    "resolution": "ai_extracted",
     "agent_id": null,
     "agent_version": null,
     "actor": "jared",
@@ -542,13 +545,13 @@ Midtown Phoenix suburban office fundamentals as of 2026-08.
 
 Financial-validity engine run over the sections above.
 
-```json uw:section=validation source=engine:financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
+```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "validation",
     "version": 1,
     "superseded": false,
-    "source": "engine:financialValidityChecker",
+    "source": "system/financialValidityChecker",
     "agent_id": null,
     "agent_version": null,
     "actor": "system",
