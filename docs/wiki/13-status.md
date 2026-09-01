@@ -751,13 +751,21 @@ tokens (0011), corpus retrieval (0013), and portfolio/relationship profiles
 (0015). Unfrozen means actively being taken up, not accepted — each RFC still
 goes through its own acceptance.
 
-**Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009). With the
-actor/resolution split landed, 0009 can type the nested provenance field
-without orphaning the actor vocabulary — its draft needs revising to carry
-*both* fields into the v2 `provenance` object before acceptance. Also worth
-pairing when it is taken up: RFC 0011 (capability tokens) is the natural home
-for the edit-authority questions the catch-all made visible — notably whether
-`institution/*` should keep `system_only`.
+**Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
+was revised 2026-08-31** to absorb the split: `provenance` now carries both
+`source` (actor) and `resolution` (method), the shim applies RFC 0031's
+read-time interpretation (a legacy tag reshapes to `resolution` with the actor
+left absent, never invented), `market_data_ref` / `inherited_from` /
+`signature` — all of which landed after the April draft — are slotted, the
+deprecation timeline is re-anchored on the shared Protocol 2.0 boundary from
+RFC 0025 (where `SRC-02` also flips to error), the `STAGE_CONTRACT` merge now
+absorbs RFC 0029's class overlays, and a new compatibility bullet flags that
+moving `content_hash`/`signature` under `integrity.*` makes canonicalization
+shape-sensitive — that needs v2 spec text before acceptance. Still a draft;
+v2.0 is unscheduled. Also worth pairing when it is taken up: RFC 0011
+(capability tokens) is the natural home for the edit-authority questions the
+catch-all made visible — notably whether `institution/*` should keep
+`system_only`.
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
