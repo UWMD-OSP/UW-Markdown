@@ -6,7 +6,32 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [1.9.0] - 2026-09-01
+
+### Released
+
+- `@uwmd/core` **1.9.0**, `@uwmd/cli` **1.9.0** (lockstep), and `@uwmd/signing`
+  **0.2.0** — signing's first tag-triggered OIDC publish, after its **0.1.0**
+  was manually published earlier the same day from the `v1.8.0` tag (its
+  historically paired state) to bootstrap the trusted publisher. Coordinated
+  `@uwmd/core` repins: `@uwmd/excel` **0.8.0**, `@uwmd/report` **0.8.0**,
+  `@uwmd/batch` **0.7.0**, `tools/web-editor` **0.8.0**;
+  `@uwmd/module-hospitality` repins to core 1.9.0 and stays **0.1.0,
+  unpublished**.
+- The single-day sprint batch: the owner-ordered Phase 2 trio — **RFC 0008**
+  (lease-up schedule, §4.25), **RFC 0011** (capability tokens, §XIV), and
+  **RFC 0001** (display locales, §III.1a) — each accepted and implemented the
+  same day, plus the RFC 0032/0033 adopter-scope clarifications.
+- **Format stays 1.1; protocol goes 1.10.0 → 1.13.0** across the span: 1.11.0
+  added §4.25 + the `LU-NN` family + `CC-15` (RFC 0008), 1.12.0 added §XIV +
+  `POL-03` + `capability-verify` (RFC 0011, future work renumbered §XV), and
+  1.13.0 added §III.1a + the `LOC` family (RFC 0001). Every format change is
+  additive at 1.x.
+- Conformance corpus **306 → 331** (the `lease-up`, `capability`, and
+  `locale` named suites). Receipts baselines regenerated — the diff is
+  exactly the `engine_version` fields — and the 03-result-disagrees frozen
+  receipt re-pinned to the new engine so its disagreement still reads as
+  same-engine `failed` rather than degrading to RCP-07 unverifiable.
 
 ### Added — RFC 0001 implemented: display-locale negotiation (corpus 323 → 331)
 

@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/signing",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Block and receipt signing for UW Markdown (RFC 0010) — Ed25519 / ES256 / ES384 over the normative signing inputs, with a file-backed reference key store. Kept out of @uwmd/core so the library stays crypto-free.",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "test": "vitest run",
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
-  "dependencies": { "@uwmd/core": "1.8.0" },
+  "dependencies": { "@uwmd/core": "1.9.0" },
   "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
   "engines": { "node": ">=18.4.0" },
   "license": "MIT",
