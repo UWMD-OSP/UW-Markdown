@@ -6,7 +6,23 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.0.0] - 2026-09-02
+
+### Released
+
+- `@uwmd/core` **2.0.0**, `@uwmd/cli` **2.0.0** (lockstep), and
+  `@uwmd/signing` **0.2.2** (repin-only: its core dependency is exact, so the
+  core bump forces a patch; core's exact optional-peer pin moves with it).
+  Coordinated repins for the versioned-but-unpublished surfaces:
+  `@uwmd/excel` **0.8.2**, `@uwmd/report` **0.8.2**, `@uwmd/batch` **0.7.2**;
+  `@uwmd/module-hospitality` repins to core 2.0.0 and stays **0.1.0,
+  unpublished**; `tools/web-editor` is a `file:` link and needs no repin.
+- **The major.** Everything in the 2.0 cut below is why this is 2.0.0 and not
+  1.11.0: retired `PROTO-EDIT-010`, the removed `legacy_extension` detection
+  field, `manual` leaving `SOURCE_TAGS`, and the two per-file sunsets are
+  breaking for consumers of those surfaces. A 2.0 implementation remains a
+  full 1.x reader — the whole 1.x line stays supported input — and 1.x files
+  keep their 1.x validation semantics per format v2 §1.3's per-file boundary.
 
 ### Changed — the 2.0 cut (BREAKING; RFC 0009 / RFC 0025 / RFC 0031)
 
@@ -2722,7 +2738,10 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.10.0...v2.0.0
+[1.10.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.9.0...v1.10.0
+[1.9.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.5.0...v1.6.0
