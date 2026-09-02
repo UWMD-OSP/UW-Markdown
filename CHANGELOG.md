@@ -6,6 +6,27 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added
+
+- **RFC 0009 — the format 2.0 normative text** (the 2.0 cut's spec leg):
+  `spec/UW_FORMAT_SPEC_v2.md`, a **delta specification** that incorporates
+  the v1 document by reference and amends it for `uw_version: "2.0"` files —
+  the nested `_meta` shape (§2, with the `revision` rename and
+  `integrity.algorithm`), the `_overrides` block annotation (§3), the 2.0
+  vocabulary (§4: `manual` actor-only, `SRC-01`/`SRC-02` escalate to errors
+  **per-file**, new `SRC-03` for `resolution: "manual"`), canonicalization
+  v2 and the migration/signature policy (§5), and the two boundary sunsets
+  (§6: legacy structured `.uw.md` sniffing becomes an error; the Lite
+  canonicalization `1.0` recognition *obligation* ends while the generic
+  degradation may be retained). §1.3 records the per-file reading of the
+  2.0 boundary, reconciling RFC 0031's per-format phrasing with RFC 0009's
+  per-release phrasing in favor of per-file — the only reading consistent
+  with the v1 round-trip guarantee. Plus
+  `spec/schemas/uwmd-block-v2.schema.json` (nested `UWMetaV2` +
+  `_overrides`, `manual`-free resolution enum) and the schemas-README row.
+
 ## [1.10.0] - 2026-09-01
 
 ### Released

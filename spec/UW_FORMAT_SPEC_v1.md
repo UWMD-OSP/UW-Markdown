@@ -365,13 +365,16 @@ them is well-formed, and validators MUST NOT reject blocks for their
 absence.
 
 **The flat shape above is the only valid `_meta` form for
-`uw_version: "1.x"` files.** Format 2.0 (RFC 0009, accepted) reorganizes
+`uw_version: "1.x"` files.** Format 2.0
+([`UW_FORMAT_SPEC_v2.md`](./UW_FORMAT_SPEC_v2.md), RFC 0009) reorganizes
 `_meta` into nested sub-objects (`provenance` / `quality` / `lifecycle` /
-`integrity`); that nested shape is reserved for files declaring
+`integrity`); that nested shape belongs to files declaring
 `uw_version: "2.0"` or later. A file's `uw_version` is global and decides
 the shape for every block in it: a nested `_meta` in a 1.x file is a
 `META-V2-IN-V1` error, and a flat `_meta` in a 2.0 file is
-`META-V1-IN-V2`. `uwmd migrate --to-v2` converts a whole file.
+`META-V1-IN-V2`. `uwmd migrate --to-v2` converts a whole file. The v2
+document is a delta specification: this document continues to govern 2.0
+files except where it amends it.
 
 ### 2.6 Source Identifiers
 
