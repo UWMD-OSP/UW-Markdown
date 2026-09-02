@@ -2,21 +2,21 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-01 (night), after the **1.9.0 release shipped**
-(`33f5d8b`, tag `v1.9.0`): `@uwmd/core` **1.9.0**, `@uwmd/cli` **1.9.0**,
-and `@uwmd/signing` **0.2.0** all **live on npm, verified via `npm view`**
-— signing's first tag-triggered OIDC publish, bootstrapped the same day by
-a manual 0.1.0 publish from the `v1.8.0` tag plus the owner-configured
-trusted publisher. The release carries the sprint's Phase 2 trio (RFCs
-0008, 0011, 0001 — all accepted and implemented 2026-09-01) and the RFC
-0032/0033 clarifications. Full pass: build green
-across all workspaces; **1,228 core tests** + **78 signing**; **331
-conformance** assertions (323 + the 8-scenario `locale` suite; **44** more
-through the RFC 0004 CLI driver under `--no-skip`, plus **3 conformance
-profiles**); Biome clean; `typecheck:tests` clean; `verify-indexes` clean —
-protocol at **1.13.0** for RFC 0001's §III.1a (1.12.0 = RFC 0011's §XIV,
-future work renumbered §XV; 1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031;
-1.9.0 RFC 0030; 1.8.0 §X.2; 1.7.0 §V.11; 1.6.0 §XIII).
+**Last verified:** 2026-09-02, after the **2.0.0 release shipped**
+(`1738219`, tag `v2.0.0`): `@uwmd/core` **2.0.0**, `@uwmd/cli` **2.0.0**,
+and `@uwmd/signing` **0.2.2** all **live on npm, verified via `npm view`**
+— the RFC 0009 major: protocol **2.0.0**, authoring format **2.0** (the
+whole 1.x line still read via `SUPPORTED_FORMAT_VERSIONS`), full v2
+editing through one writer seam, the per-file SRC escalation + `SRC-03`,
+and the two sunsets (legacy structured `.uw.md` sniffing; the Lite
+canonicalization `1.0` recognition obligation). underwriter.cc
+acknowledged the release. Full pass re-run post-release: build green
+across all workspaces; all tests green (78 signing among them); **341
+conformance** assertions, **20/20 schemas**; `typecheck:tests` clean;
+`verify-indexes` clean (32 RFCs). Protocol history: 2.0.0 = RFC 0009;
+1.14.0 = the 0009 on-ramp; 1.13.0 = RFC 0001's §III.1a (1.12.0 = RFC
+0011's §XIV; 1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031; 1.9.0 RFC 0030;
+1.8.0 §X.2; 1.7.0 §V.11; 1.6.0 §XIII).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -833,9 +833,12 @@ sets), full v2 editing through one writer seam (`PROTO-EDIT-010` retired;
 `init` scaffolds 2.0 by default with `--format 1.1` opt-out), the
 per-file SRC escalation + new `SRC-03`, `manual` out of `SOURCE_TAGS`,
 the structured-`.uw.md` sniffing sunset (`SOURCE_LEGACY_STRUCTURED`), and
-the corpus renamed to spec-compliant `.uwx.md` extensions. **What
-remains of the train: the 2.0.0 release itself — held for the owner's
-explicit go.** The parallel human-only track stays open (PCG64
+the corpus renamed to spec-compliant `.uwx.md` extensions. **The train is
+complete: 2.0.0 released 2026-09-02** (PR #134, tag `v2.0.0`) — `@uwmd/core`
+2.0.0 and `@uwmd/cli` 2.0.0 live on npm via OIDC, `@uwmd/signing` 0.2.2
+(repin-forced patch), with excel/report 0.8.2 and batch 0.7.2 repins landed
+(unpublished). RFC 0009 is **implemented**; underwriter.cc acknowledged the
+2.0 release. The parallel human-only track stays open (PCG64
 vector diff, security alias, public RFC venue, bus-factor note).
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
@@ -848,21 +851,24 @@ deprecation timeline is re-anchored on the shared Protocol 2.0 boundary from
 RFC 0025 (where `SRC-02` also flips to error), the `STAGE_CONTRACT` merge now
 absorbs RFC 0029's class overlays, and a new compatibility bullet flags that
 moving `content_hash`/`signature` under `integrity.*` makes canonicalization
-shape-sensitive — that needs v2 spec text before acceptance. Still a draft;
-v2.0 is unscheduled. Also worth pairing when it is taken up: RFC 0011
-(capability tokens) is the natural home for the edit-authority questions the
-catch-all made visible — notably whether `institution/*` should keep
-`system_only`.
+shape-sensitive — that needed v2 spec text, which RFC 0009's format 2.0 delta
+spec supplied (§5, canonicalization v2 = normalize-then-hash). **RFC 0009 was
+accepted 2026-09-01 and is implemented — shipped in the 2.0.0 release
+2026-09-02.** The RFC 0011 edit-authority question it raised was settled by
+0011's implementation: `institution/*` keeps `system_only` (tokens narrow,
+never widen).
 See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance.md).
 
 ## ⚙️ Operational — gates the public launch
 
-> **Current state (2026-08-04):** the repository is public and the first npm
-> packages are live: `@uwmd/core@1.1.2` and `@uwmd/cli@1.1.3`. The CLI package
-> is scoped because npm rejects the unscoped `uwmd` name; its executable remains
-> `uwmd`. The ExcelJS dependency chain was **formally risk-accepted 2026-09-01**
-> (see the Operational section) — the publication hold on `@uwmd/excel` is no
-> longer a dependency question, only a scheduling one.
+> **Current state (2026-09-02):** the repository is public and the live npm
+> surface is `@uwmd/core@2.0.0`, `@uwmd/cli@2.0.0`, and `@uwmd/signing@0.2.2`,
+> all publishing hands-off on `v*` tags via OIDC trusted publishers. The CLI
+> package is scoped because npm rejects the unscoped `uwmd` name; its
+> executable remains `uwmd`. The ExcelJS dependency chain was **formally
+> risk-accepted 2026-09-01** (see the Operational section) — the publication
+> hold on `@uwmd/excel` is no longer a dependency question, only a scheduling
+> one.
 
 Completed: public repository, canonical rename to `uw-markdown`, npm organization,
 release secret, and initial package publication. Review-flagged: single-maintainer
