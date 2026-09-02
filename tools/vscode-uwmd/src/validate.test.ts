@@ -24,14 +24,14 @@ describe('representation dispatch', () => {
     expect(analyzeDocument(UWX(), 'deal.uwx.md').representation).toBe('uwx-markdown');
   });
 
-  it('recognises structured content still on the legacy .uw.md extension', () => {
+  it('refuses structured content on the legacy .uw.md extension (sunset at 2.0)', () => {
+    // RFC 0025 / format v2 §6.1: the guidance diagnostic became an error, and
+    // the error message carries its own remedy — the byte-identical rename.
     const result = analyzeDocument(UWX(), 'legacy-deal.uw.md');
-    expect(result.representation).toBe('uwx-markdown');
-    // Guidance, not a defect.
-    const legacy = result.diagnostics.filter((d) => d.code === 'SOURCE_LEGACY_EXTENSION');
-    expect(legacy).toHaveLength(1);
-    expect(legacy[0]?.severity).toBe('info');
-    expect(legacy[0]?.message).toMatch(/\.uwx\.md/);
+    expect(result.representation).toBeNull();
+    expect(result.diagnostics[0]?.code).toBe('SOURCE_LEGACY_STRUCTURED');
+    expect(result.diagnostics[0]?.severity).toBe('error');
+    expect(result.diagnostics[0]?.message).toMatch(/\.uwx\.md/);
   });
 
   it('reports an error rather than guessing when the content is unidentifiable', () => {
