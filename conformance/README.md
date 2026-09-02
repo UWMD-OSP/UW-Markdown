@@ -140,6 +140,12 @@ conformance/
 │                         decl.json} → evaluateCashFlowMetrics with pinned
 │                         quantized values; {deal.uwx.md} alone → CF-NN codes
 │                         + an end-to-end verdict. See cash-flow/README.md.
+├── portfolio-relationships/  Portfolio sidecars (RFC 0015, Protocol §XV).
+│                         {profile.json} → validatePortfolioProfile with
+│                         PORT-NN pins, uninterpreted-type reporting, and
+│                         preservation checks; {package-manifest.json} → the
+│                         RFC 0018 projection bridge validates end to end.
+│                         See portfolio-relationships/README.md.
 ├── locale/             Display-locale negotiation (RFC 0001, Protocol
 │                         §III.1a). Shared deal + injected locale line: the
 │                         per-locale rendering pins (NBSP included), the
@@ -252,9 +258,9 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `lease-up`, `cash-flow`, `capability`, `locale`,
-`size-intensive`, `signing`, `sensitivity`, `stochastic`, `source`,
-`meta-v2`, and `migrate`
+`capital-stack`, `lease-up`, `cash-flow`, `portfolio-relationships`,
+`capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
+`stochastic`, `source`, `meta-v2`, and `migrate`
 suites are named rather
 than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,

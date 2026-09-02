@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "edge_count": 4,
+  "edges_touching": {
+    "entity": "borrower:acme",
+    "count": 3
+  }
+}

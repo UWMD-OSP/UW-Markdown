@@ -1,0 +1,44 @@
+{
+  "package_version": "1.0",
+  "package_id": "pkg-austin-2026",
+  "members": [
+    {
+      "member_id": "deal",
+      "role": "underwriting",
+      "media_type": "text/markdown",
+      "content_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "member_id": "lease",
+      "role": "source_evidence",
+      "media_type": "application/pdf",
+      "content_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "member_id": "note",
+      "role": "source_note",
+      "media_type": "text/markdown",
+      "content_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "links": [
+    {
+      "link_id": "l1",
+      "type": "supports",
+      "from": "lease",
+      "to": "deal"
+    },
+    {
+      "link_id": "l2",
+      "type": "abstracts",
+      "from": "note",
+      "to": "lease"
+    },
+    {
+      "link_id": "l3",
+      "type": "related_to",
+      "from": "note",
+      "to": "deal"
+    }
+  ]
+}

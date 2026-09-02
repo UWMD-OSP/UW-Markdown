@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "projected_edge_ids": [
+    "edge:1",
+    "edge:2"
+  ],
+  "projected_types": [
+    "supports",
+    "related_to"
+  ],
+  "note": "abstracts is member-layer only and must NOT project up"
+}

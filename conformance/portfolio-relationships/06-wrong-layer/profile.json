@@ -1,0 +1,78 @@
+{
+  "portfolio_version": "1.0",
+  "portfolio_id": "industrial-2026",
+  "entities": [
+    {
+      "id": "property:austin",
+      "type": "property",
+      "deal_id": "uw_2026_austin"
+    },
+    {
+      "id": "property:dallas",
+      "type": "property",
+      "deal_id": "uw_2026_dallas"
+    },
+    {
+      "id": "borrower:acme",
+      "type": "borrower",
+      "display_name": "Acme Holdings"
+    },
+    {
+      "id": "loan:senior",
+      "type": "loan"
+    },
+    {
+      "id": "doc:org-chart",
+      "type": "document"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:1",
+      "type": "owns",
+      "from": "borrower:acme",
+      "to": "property:austin",
+      "provenance": [
+        {
+          "source": "org-chart.pdf",
+          "locator": "p.2"
+        }
+      ]
+    },
+    {
+      "id": "edge:2",
+      "type": "owns",
+      "from": "borrower:acme",
+      "to": "property:dallas",
+      "provenance": [
+        {
+          "source": "org-chart.pdf",
+          "locator": "p.3"
+        }
+      ]
+    },
+    {
+      "id": "edge:3",
+      "type": "secures",
+      "from": "property:austin",
+      "to": "loan:senior",
+      "provenance": [
+        {
+          "source": "loan-agreement.pdf",
+          "locator": "§2.1"
+        }
+      ]
+    },
+    {
+      "id": "edge:4",
+      "type": "abstracts",
+      "from": "doc:org-chart",
+      "to": "borrower:acme",
+      "provenance": [
+        {
+          "source": "org-chart.pdf"
+        }
+      ]
+    }
+  ]
+}

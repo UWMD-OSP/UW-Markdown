@@ -1,10 +1,12 @@
 ---
 rfc: 0015
 title: Add portfolio and relationship profiles
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-08-05
 revised: 2026-09-02
+accepted: 2026-09-02
+implemented: 2026-09-02
 affects:
   - format-spec
   - protocol-spec
@@ -14,6 +16,19 @@ affects:
 ---
 
 # RFC 0015: Add portfolio and relationship profiles
+
+> **Accepted and implemented 2026-09-02** (protocol 2.1.0 → 2.2.0, new
+> §XV, Future work renumbered §XVI; corpus 356 → 363). **One erratum,
+> found by building it:** the conformance sketch's scenario 05 asked a
+> *targeted edit* to prove extension edges and fields survive
+> byte-for-byte — but this RFC's own reference-implementation section
+> declares the surface read-only, so there is no editor to run that
+> edit through. Scenario 05 instead pins the halves that are real
+> today: extension types and fields validate clean, are reported via
+> `uninterpretedPortfolioTypes`, and are retained through validation
+> (`preserved_paths`). The §XV.3 byte-preservation obligation stands
+> normatively and binds implementations that *write* sidecars;
+> conformance for it waits until an editor exists to test.
 
 > **Revised 2026-09-02 to acceptance-ready**, after the 2.0.0 release.
 > The 2026-08-05 draft predated four things it must now sit on, and the

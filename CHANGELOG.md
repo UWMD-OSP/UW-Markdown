@@ -8,6 +8,45 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — portfolio & relationship profiles (RFC 0015; protocol 2.1.0 → 2.2.0)
+
+- **Protocol §XV** (Future work renumbered §XVI): the optional
+  **`portfolio-relationships`** capability and the
+  **`.uwportfolio.json` sidecar** — typed entities and provenance-backed
+  edges spanning deals, the portable carrier for the **entity layer** of the
+  RFC 0018 edge registry. Out-of-band by design: no `_meta` ownership, no
+  canonical-byte changes, no storage/query/aggregate contract (stated
+  fund-level numbers stay with RFC 0021 composites + rollup receipts).
+- **Registry-resolved edges:** types resolve through `BUILTIN_EDGE_TYPES`
+  (`lookupEdgeType`) — a *known* member-layer type used as an entity edge
+  refuses (`PORT-010`, the one-table-two-layers rule enforced from the
+  sidecar side); builtin `from`/`to` entity-kind constraints refuse
+  (`PORT-011`); *unknown* entity/edge types and fields are **preserved**,
+  reportable via `uninterpretedPortfolioTypes`, never refused. Provenance
+  `source` is a document/source identifier, explicitly kept apart from the
+  RFC 0031 `_meta.source` actor grammar.
+- **Core (`portfolio.ts`, browser-safe, read-only):** `PortfolioProfile` /
+  `PortfolioEntity` / `PortfolioEdge` (exactly `UWEntityEdge` + `id`),
+  `validatePortfolioProfile` (`PORT-001`…`PORT-011`, new `portfolio`
+  error category), `getPortfolioRelationships`, and
+  `entityEdgesToPortfolioEdges` — the bridge that gives
+  `projectPackageLinksToEntityEdges` (which produced entity edges with no
+  portable destination) its home. New `uw-portfolio-profile.schema.json`;
+  `portfolio_version` starts its own line at `1.0`.
+- **CLI:** `uwmd portfolio validate|edges` (`cli-portfolio.ts`) — also what
+  lets the conformance suite exist as commands.
+- **Conformance:** new `conformance/portfolio-relationships/` suite, 7
+  scenarios — validity, missing provenance, duplicate id (one namespace),
+  dangling endpoint, unknown-preservation (types reported + extension
+  fields retained), wrong-layer refusal, and the package→profile
+  projection round-trip (corpus 356 → 363; receipt baselines re-pin
+  `protocol_version` 2.2.0).
+- **Erratum recorded in the RFC:** its conformance sketch asked scenario 05
+  to prove byte-for-byte survival through a *targeted edit*, but the
+  reference surface is read-only by the RFC's own design — 05 pins
+  preservation through validation and type reporting instead; byte-level
+  editor conformance waits for an editor to exist.
+
 ### Added — calendar-anchored cash flows (RFC 0034; protocol 2.0.0 → 2.1.0)
 
 - **Format §4.26 `cash_flow_series`** — dated, irregular flows (ISO-8601
