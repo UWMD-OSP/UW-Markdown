@@ -16,9 +16,9 @@ They MUST:
 
 | Fixture | Covers |
 |---|---|
-| `fixtures/01-minimal-screening.uw.md` | Single-section minimal file at the screening stage |
-| `fixtures/02-full-multifamily.uw.md`  | Full multifamily deal across all 21 standard sections |
-| `fixtures/04-scope-only.uw.md` | Back-of-napkin scope-stage file with provisional blocks + populated `gaps` section |
+| `fixtures/01-minimal-screening.uwx.md` | Single-section minimal file at the screening stage |
+| `fixtures/02-full-multifamily.uwx.md`  | Full multifamily deal across all 21 standard sections |
+| `fixtures/04-scope-only.uwx.md` | Back-of-napkin scope-stage file with provisional blocks + populated `gaps` section |
 
 ### Malformed fixtures
 
@@ -43,7 +43,7 @@ coverage requires fixture-bound policies).
 
 ## Expected outputs
 
-For each fixture `<id>.uw.md`, the corresponding `expected/` directory contains:
+For each fixture `<id>.uwx.md`, the corresponding `expected/` directory contains:
 
 - `<id>.parsed.json` — the result of `cli parse --json` (the canonical JSON
   shape of `ParsedUWFile`).

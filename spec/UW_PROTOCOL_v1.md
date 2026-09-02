@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.14.0`) — the
+- **Protocol version** (this document, currently `2.0.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -554,7 +554,7 @@ capability is unconditional: every implementation owes it.
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
-| `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031). | `validate` | `warning` (SRC-02 becomes `error` at format 2.0) |
+| `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |
 | `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, §XIV). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |

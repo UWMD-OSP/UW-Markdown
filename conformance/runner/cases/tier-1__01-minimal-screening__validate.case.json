@@ -6,7 +6,7 @@
   ],
   "command": "validate",
   "args": [
-    "01-minimal-screening.uw.md",
+    "01-minimal-screening.uwx.md",
     "--json"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",

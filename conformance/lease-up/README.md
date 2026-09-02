@@ -10,7 +10,7 @@ Scenario kind is dispatched by the files a directory carries (see
 - `case.json` + `expected.json` — a bare payload run through
   `verifyLeaseUpSchedule` with the supplied context; `expected.json` pins the
   verdict (and optionally one issue code).
-- `deal.uw.md` + `expected.json` — a full document run through the validator;
+- `deal.uwx.md` + `expected.json` — a full document run through the validator;
   `expected_codes` must each appear, `absent_code_prefixes` must not, and an
   optional `verdict` additionally verifies the base/default variant
   end-to-end through `leaseUpContext` (the Protocol §XIII denominator).

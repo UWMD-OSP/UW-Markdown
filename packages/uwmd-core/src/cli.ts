@@ -507,7 +507,13 @@ function cmdDiff(fileA: string, fileB: string): void {
 }
 
 function cmdInit(flags: Record<string, string | boolean>): void {
+  const requestedFormat = flags['format'] as string | undefined;
+  if (requestedFormat !== undefined && requestedFormat !== '2.0' && requestedFormat !== '1.1') {
+    console.error(`--format must be '2.0' (default, nested _meta) or '1.1' (legacy flat shape); got '${requestedFormat}'.`);
+    process.exit(1);
+  }
   const content = generateBlankUWFile({
+    formatVersion: requestedFormat as '2.0' | '1.1' | undefined,
     dealName: flags['name'] as string | undefined,
     address: flags['address'] as string | undefined,
     city: flags['city'] as string | undefined,

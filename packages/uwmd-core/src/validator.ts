@@ -1030,24 +1030,40 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
 // (colon forms, bare words). Both are warnings: every such block still
 // parses, and edits against it resolve the conservative catch-all policy.
 
-const NON_MANUAL_SOURCE_TAGS: ReadonlySet<string> = new Set(
-  SOURCE_TAGS.filter((t) => t !== 'manual'),
-);
+// `manual` left SOURCE_TAGS at format 2.0 (actor-only), so the set needs no
+// exemption filter any more; the name survives for its call sites' clarity.
+const NON_MANUAL_SOURCE_TAGS: ReadonlySet<string> = new Set(SOURCE_TAGS);
 
 function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  // The 2.0 boundary is per-FILE (format spec v2 §1.3): in a uw_version 2.0
+  // file the actor grammar is enforced (SRC-01/SRC-02 are errors, and the new
+  // SRC-03 rejects the retired `resolution: "manual"` spelling); a 1.x file
+  // keeps the 1.x warnings under this same validator — the only reading
+  // consistent with the round-trip guarantee.
+  const fileIsV2 = isV2File(parsed.frontmatter);
+  const severity = fileIsV2 ? ('error' as const) : ('warning' as const);
+
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     const blocks = isVariantMap(entry)
       ? Object.values(entry as Record<string, UWBlock>)
       : [entry as UWBlock];
 
     for (const block of blocks) {
+      if (fileIsV2 && block.meta?.resolution === 'manual') {
+        issues.push({
+          code: 'SRC-03',
+          severity: 'error',
+          section: sectionId,
+          message: `Section ${sectionId} resolution is 'manual', which left the resolution vocabulary at 2.0 (actor-only). Use 'user_input' — 'uwmd migrate --to-v2' rewrites it mechanically.`,
+        });
+      }
       const src = block.meta?.source;
       if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
 
       if (NON_MANUAL_SOURCE_TAGS.has(src)) {
         issues.push({
           code: 'SRC-02',
-          severity: 'warning',
+          severity,
           section: sectionId,
           message: `Section ${sectionId} _meta.source is '${src}', a resolution tag in the actor field. Move it to _meta.resolution; readers treat the actor as absent.`,
         });
@@ -1057,7 +1073,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
       if (parseActorSource(src).kind === 'invalid') {
         issues.push({
           code: 'SRC-01',
-          severity: 'warning',
+          severity,
           section: sectionId,
           message: `Section ${sectionId} _meta.source '${src}' is not 'manual' or '<namespace>/<id>' with a registered actor namespace (${['agent', 'document', 'system', 'institution'].join(', ')}).`,
         });

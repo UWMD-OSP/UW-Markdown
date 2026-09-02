@@ -6,7 +6,7 @@
   ],
   "command": "parse",
   "args": [
-    "04-scope-only.uw.md"
+    "04-scope-only.uwx.md"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",
   "expect": {

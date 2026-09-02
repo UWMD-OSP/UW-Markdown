@@ -28,16 +28,21 @@ describe('detectUWSourceRepresentation', () => {
   it('recognizes the new UWX extension', () => {
     expect(detectUWSourceRepresentation(UWX, 'deal.uwx.md')).toEqual({
       representation: 'uwx-markdown',
-      legacy_extension: false,
       confidence: 'content',
       warnings: [],
     });
   });
 
-  it('keeps structured legacy .uw.md readable with a migration warning', () => {
-    const result = detectUWSourceRepresentation(UWX, 'deal.uw.md');
+  it('refuses structured content under the legacy .uw.md name (sunset at 2.0)', () => {
+    expect(() => detectUWSourceRepresentation(UWX, 'deal.uw.md')).toThrow(
+      /SOURCE_LEGACY_STRUCTURED/,
+    );
+  });
+
+  it('an explicit UWX override remains the escape hatch, with the migrate warning', () => {
+    const result = detectUWSourceRepresentation(UWX, 'deal.uw.md', 'uwx-markdown');
     expect(result.representation).toBe('uwx-markdown');
-    expect(result.legacy_extension).toBe(true);
+    expect(result.confidence).toBe('explicit');
     expect(result.warnings[0]).toContain('.uwx.md');
   });
 

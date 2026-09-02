@@ -221,11 +221,11 @@ function runTier1() {
     return;
   }
   const fixtures = readdirSync(fixturesDir)
-    .filter((f) => f.endsWith('.uw.md'))
+    .filter((f) => f.endsWith('.uwx.md'))
     .sort();
 
   for (const fixture of fixtures) {
-    const id = fixture.replace(/\.uw\.md$/, '');
+    const id = fixture.replace(/\.uwx\.md$/, '');
     const fixturePath = join(fixturesDir, fixture);
     const fixtureContent = readFileSync(fixturePath, 'utf8');
 
@@ -323,7 +323,7 @@ function runTier1() {
 
 // ─── Tier 1: Malformed (negative tests) ──────────────────────────────────────
 // Fixtures here are intentionally broken in a way the validator must catch.
-// Each <id>.uw.md has a sibling <id>.expected.json declaring the validator
+// Each <id>.uwx.md has a sibling <id>.expected.json declaring the validator
 // codes that MUST appear in the validation result. Extra codes are allowed.
 
 async function runTier1Malformed() {
@@ -331,11 +331,11 @@ async function runTier1Malformed() {
   if (!existsSync(malformedDir)) return;
 
   const fixtures = readdirSync(malformedDir)
-    .filter((f) => f.endsWith('.uw.md'))
+    .filter((f) => f.endsWith('.uwx.md'))
     .sort();
 
   for (const fixture of fixtures) {
-    const id = fixture.replace(/\.uw\.md$/, '');
+    const id = fixture.replace(/\.uwx\.md$/, '');
     const fixturePath = join(malformedDir, fixture);
     const expectedPath = join(malformedDir, `${id}.expected.json`);
 
@@ -446,15 +446,15 @@ async function runTier2() {
 
   for (const scenario of scenarios) {
     const dir = join(baseDir, scenario);
-    const beforePath = join(dir, 'before.uw.md');
+    const beforePath = join(dir, 'before.uwx.md');
     const opPath = join(dir, 'operation.json');
-    const afterPath = join(dir, 'after.uw.md');
+    const afterPath = join(dir, 'after.uwx.md');
     const ctxPath = join(dir, 'context.json');
     const optionsPath = join(dir, 'options.json');
     const expectedErrorPath = join(dir, 'expected-error.json');
 
     if (!existsSync(beforePath) || !existsSync(opPath)) {
-      record('2', scenario, 'fail', 'missing before.uw.md or operation.json');
+      record('2', scenario, 'fail', 'missing before.uwx.md or operation.json');
       continue;
     }
 
@@ -499,20 +499,20 @@ async function runTier2() {
       writeFileSync(afterPath, after);
       record('2', scenario, 'updated');
     } else if (!existsSync(afterPath)) {
-      record('2', scenario, 'fail', 'missing after.uw.md baseline');
+      record('2', scenario, 'fail', 'missing after.uwx.md baseline');
     } else {
       const expected = stripVolatileFields(readFileSync(afterPath, 'utf8'));
       if (normalize(expected) === normalize(after)) {
         record('2', scenario, 'pass');
       } else {
-        record('2', scenario, 'fail', 'output differs from after.uw.md (with volatile fields stripped)');
+        record('2', scenario, 'fail', 'output differs from after.uwx.md (with volatile fields stripped)');
       }
     }
   }
 }
 
 // Strip timestamps and other run-time-volatile values so byte comparisons
-// against the after.uw.md baseline are deterministic.
+// against the after.uwx.md baseline are deterministic.
 function stripVolatileFields(text) {
   return text
     .replace(/last_modified:\s*"[^"]*"/g, 'last_modified: "<volatile>"')
@@ -537,12 +537,12 @@ function runTier3() {
 
   for (const scenario of scenarios) {
     const dir = join(baseDir, scenario);
-    const dealPath = join(dir, 'deal.uw.md');
+    const dealPath = join(dir, 'deal.uwx.md');
     const calcPath = join(dir, 'calc.json');
     const expectedPath = join(dir, 'expected-result.json');
 
     if (!existsSync(dealPath) || !existsSync(calcPath)) {
-      record('3', scenario, 'fail', 'missing deal.uw.md or calc.json');
+      record('3', scenario, 'fail', 'missing deal.uwx.md or calc.json');
       continue;
     }
 
@@ -577,7 +577,7 @@ function runTier3() {
 }
 
 // ─── Tier 3 (refinement mode): dependency graph extraction ───────────────────
-// Each fixture lives in a directory with `deal.uw.md` and a sibling
+// Each fixture lives in a directory with `deal.uwx.md` and a sibling
 // `expected-graph.json` declaring the canonical projection of
 // `extractDependencyGraph(parsed)`. Only Map-typed fields are projected (sets
 // become sorted arrays).
@@ -595,10 +595,10 @@ async function runTier3Refinement() {
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
   for (const scenario of scenarios) {
     const dir = join(baseDir, scenario);
-    const dealPath = join(dir, 'deal.uw.md');
+    const dealPath = join(dir, 'deal.uwx.md');
     const expectedPath = join(dir, 'expected-graph.json');
     if (!existsSync(dealPath)) {
-      record('3-refinement', scenario, 'fail', 'missing deal.uw.md');
+      record('3-refinement', scenario, 'fail', 'missing deal.uwx.md');
       continue;
     }
     const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
@@ -689,10 +689,10 @@ function runTier4() {
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
   for (const scenario of scenarios) {
     const dir = join(baseDir, scenario);
-    const beforePath = join(dir, 'before.uw.md');
+    const beforePath = join(dir, 'before.uwx.md');
     const shapePath = join(dir, 'expected-after-shape.json');
     if (!existsSync(beforePath) || !existsSync(shapePath)) {
-      record('4', scenario, 'fail', 'missing before.uw.md or expected-after-shape.json');
+      record('4', scenario, 'fail', 'missing before.uwx.md or expected-after-shape.json');
       continue;
     }
     // Lint-only: parse the shape JSON and the before file. Live runs are
@@ -2137,9 +2137,9 @@ async function runComposition() {
 // Scenario kind is dispatched by the files a directory carries, not by its id:
 //   case.json + expected.json ("verdict")      → verifyCapitalStack three-state
 //   case.json with "variants"                  → the pref cash-vs-accrued contrast
-//   agree.uw.md + mismatch.uw.md               → generalized CC-03, both directions
-//   deal.uw.md + expected.json                 → validator refusal (typed codes)
-//   deal.uw.md + expected-metrics.json         → the no-stack single-loan pin
+//   agree.uwx.md + mismatch.uwx.md               → generalized CC-03, both directions
+//   deal.uwx.md + expected.json                 → validator refusal (typed codes)
+//   deal.uwx.md + expected-metrics.json         → the no-stack single-loan pin
 
 const CAPITAL_STACK_DIR = join(CONFORMANCE_DIR, 'capital-stack');
 
@@ -2160,7 +2160,7 @@ async function runCapitalStack() {
     // ── The no-stack single-loan pin ─────────────────────────────────────────
     if (existsSync(join(dir, 'expected-metrics.json'))) {
       const expected = readCase(dir, 'expected-metrics.json');
-      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
       const codes = validateUWFile(parsed).issues.map((i) => i.code);
       const tripped = codes.filter((c) =>
         (expected.no_codes_with_prefix ?? []).some((p) => c.startsWith(p)));
@@ -2187,10 +2187,10 @@ async function runCapitalStack() {
     }
 
     // ── Generalized CC-03, both directions ───────────────────────────────────
-    if (existsSync(join(dir, 'agree.uw.md'))) {
+    if (existsSync(join(dir, 'agree.uwx.md'))) {
       const expected = readCase(dir, 'expected.json');
-      const agree = validatorCodes(join(dir, 'agree.uw.md'));
-      const mismatch = validatorCodes(join(dir, 'mismatch.uw.md'));
+      const agree = validatorCodes(join(dir, 'agree.uwx.md'));
+      const mismatch = validatorCodes(join(dir, 'mismatch.uwx.md'));
       if (agree.length !== (expected.agree_codes ?? []).length ||
           !(expected.agree_codes ?? []).every((c) => agree.includes(c))) {
         record('capital-stack', id, 'fail', `agree document emitted [${agree.join(', ')}], expected [${(expected.agree_codes ?? []).join(', ')}]`);
@@ -2206,9 +2206,9 @@ async function runCapitalStack() {
     }
 
     // ── Validator refusal (typed codes on a full document) ───────────────────
-    if (existsSync(join(dir, 'deal.uw.md'))) {
+    if (existsSync(join(dir, 'deal.uwx.md'))) {
       const expected = readCase(dir, 'expected.json');
-      const codes = validatorCodes(join(dir, 'deal.uw.md'));
+      const codes = validatorCodes(join(dir, 'deal.uwx.md'));
       const minOccurrences = expected.min_occurrences ?? 1;
       const short = (expected.expected_codes ?? []).filter(
         (c) => codes.filter((x) => x === c).length < minOccurrences);
@@ -2266,7 +2266,7 @@ async function runCapitalStack() {
 //
 // Scenario kind is dispatched by the files a directory carries:
 //   case.json + expected.json ("verdict")  → verifyLeaseUpSchedule three-state
-//   deal.uw.md + expected.json             → validator codes and/or a full-document
+//   deal.uwx.md + expected.json             → validator codes and/or a full-document
 //                                            verdict through leaseUpContext:
 //       expected_codes[]        each must appear (× min_occurrences)
 //       absent_code_prefixes[]  none may appear
@@ -2288,8 +2288,8 @@ async function runLeaseUp() {
     const expected = readCase(dir, 'expected.json');
 
     // ── Full document: validator codes and/or an end-to-end verdict ──────────
-    if (existsSync(join(dir, 'deal.uw.md'))) {
-      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+    if (existsSync(join(dir, 'deal.uwx.md'))) {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
       const codes = validateUWFile(parsed).issues.map((i) => i.code);
 
       const minOccurrences = expected.min_occurrences ?? 1;
@@ -2342,7 +2342,7 @@ async function runLeaseUp() {
 
 // ─── Display locales (RFC 0001, Protocol §III.1a) ────────────────────────────
 //
-// All scenarios share deal.uw.md; the runner injects `locale: <tag>` into the
+// All scenarios share deal.uwx.md; the runner injects `locale: <tag>` into the
 // frontmatter so canonical content is byte-identical across locales by
 // construction. See conformance/locale/README.md for expected.json fields.
 
@@ -2353,7 +2353,7 @@ async function runLocale() {
     record('locale', '(none)', 'pass', 'no locale fixtures');
     return;
   }
-  const base = readFileSync(join(LOCALE_DIR, 'deal.uw.md'), 'utf8');
+  const base = readFileSync(join(LOCALE_DIR, 'deal.uwx.md'), 'utf8');
   const withLocale = (tag) =>
     tag === 'en-US' ? base : base.replace('uw_version: "1.1"', `uw_version: "1.1"\nlocale: ${tag}`);
 
@@ -2436,7 +2436,7 @@ async function runLocale() {
 
 // ─── Capability tokens (RFC 0011, Protocol §XIV) ─────────────────────────────
 //
-// Each scenario edits the shared deal.uw.md under a token (generated by
+// Each scenario edits the shared deal.uwx.md under a token (generated by
 // scripts/gen-capability-fixtures.mjs with the published TEST key), through
 // the reference verifier over conformance/capability/keys/keystore.json.
 //
@@ -2465,7 +2465,7 @@ async function runCapability() {
   }
   const store = await signing.loadKeyStoreFile(join(CAPABILITY_DIR, 'keys', 'keystore.json'));
   const capabilityVerifier = signing.createCapabilityVerifier(store);
-  const fileContent = readFileSync(join(CAPABILITY_DIR, 'deal.uw.md'), 'utf8');
+  const fileContent = readFileSync(join(CAPABILITY_DIR, 'deal.uwx.md'), 'utf8');
   const parsed = parseUWFile(fileContent);
 
   const scenarios = readdirSync(CAPABILITY_DIR, { withFileTypes: true })
@@ -2637,7 +2637,7 @@ async function runSizeIntensive() {
   {
     const dir = join(SIZE_INTENSIVE_DIR, 'cc-13-warns-and-does-not-refuse');
     const expected = readCase(dir, 'expected.json');
-    const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+    const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
     const validation = validateUWFile(parsed);
     const hits = validation.issues.filter((i) => i.code === expected.expected_code);
     let bad = null;
@@ -2659,7 +2659,7 @@ async function runSizeIntensive() {
   {
     const dir = join(SIZE_INTENSIVE_DIR, 'cc-13-silent-for-mixed-use');
     const expected = readCase(dir, 'expected.json');
-    const parsed = parseUWFile(readFileSync(join(dir, 'deal.uw.md'), 'utf8'));
+    const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
     const codes = validateUWFile(parsed).issues.map((i) => i.code);
     const leaked = expected.absent_codes.filter((c) => codes.includes(c));
     let bad = leaked.length ? `emitted ${leaked.join(', ')} on a mixed_use document` : null;
@@ -2678,7 +2678,7 @@ async function runSizeIntensive() {
 // still conformant. It runs by default here because the reference
 // implementation does claim it.
 //
-//   blocks/<scenario>/deal.uw.md + expected.json
+//   blocks/<scenario>/deal.uwx.md + expected.json
 //     { keystore, ok, signatures_present, signatures_verified, expected_codes }
 //   modules/<scenario>/module.json + expected.json
 //     { keystore, policies: { <policy>: { ok, expected_codes } }, verdict }
@@ -2716,10 +2716,10 @@ async function runSigningBlocks(signing) {
 
   for (const id of scenarios) {
     const dir = join(BLOCKS_DIR, id);
-    const dealPath = join(dir, 'deal.uw.md');
+    const dealPath = join(dir, 'deal.uwx.md');
     const expectedPath = join(dir, 'expected.json');
     if (!existsSync(dealPath) || !existsSync(expectedPath)) {
-      record('signing', `blocks/${id}`, 'fail', 'scenario needs deal.uw.md and expected.json');
+      record('signing', `blocks/${id}`, 'fail', 'scenario needs deal.uwx.md and expected.json');
       continue;
     }
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
@@ -2758,8 +2758,8 @@ async function runSigningBlocks(signing) {
   // implementation: the same bytes verified with and without a backend must
   // agree on how many signatures are *present*. Only `signatures_verified` and
   // the issue list may differ.
-  const withBackend = join(BLOCKS_DIR, '01-signed-valid', 'deal.uw.md');
-  const without = join(BLOCKS_DIR, '05-signed-no-backend', 'deal.uw.md');
+  const withBackend = join(BLOCKS_DIR, '01-signed-valid', 'deal.uwx.md');
+  const without = join(BLOCKS_DIR, '05-signed-no-backend', 'deal.uwx.md');
   if (existsSync(withBackend) && existsSync(without)) {
     const a = await verifyChain(parseUWFile(readFileSync(withBackend, 'utf8')));
     const b = await verifyChain(parseUWFile(readFileSync(without, 'utf8')));
@@ -3252,7 +3252,7 @@ async function runMetaV2() {
   // 01 — minimal v2-shape file: parses to the flat view, no META-V codes.
   {
     const id = '01-nested-meta';
-    const parsed = load(`${id}.uw.md`);
+    const parsed = load(`${id}.uwx.md`);
     const block = parsed.sections.property;
     const problems = [];
     if (block?.meta_shape !== 'v2') problems.push(`meta_shape ${block?.meta_shape} != v2`);
@@ -3266,7 +3266,7 @@ async function runMetaV2() {
   // 02 — nested _meta in a 1.x file is META-V2-IN-V1.
   {
     const id = '02-mixed-shape';
-    const codes = metaCodes(load(`${id}.uw.md`));
+    const codes = metaCodes(load(`${id}.uwx.md`));
     const ok = codes.length === 1 && codes[0] === 'META-V2-IN-V1';
     record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V2-IN-V1]`);
   }
@@ -3274,7 +3274,7 @@ async function runMetaV2() {
   // 03 — the v1→v2 reshape is byte-identical to the recorded output.
   {
     const id = '03-shim-roundtrip';
-    const parsed = load(`${id}.uw.md`);
+    const parsed = load(`${id}.uwx.md`);
     const block = parsed.sections.property;
     const reshaped = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
     const got = `${JSON.stringify(reshaped, null, 2)}\n`;
@@ -3293,7 +3293,7 @@ async function runMetaV2() {
   // resolution set, provenance.source ABSENT (never invented).
   {
     const id = '04-legacy-tag-through-shim';
-    const parsed = load(`${id}.uw.md`);
+    const parsed = load(`${id}.uwx.md`);
     const block = parsed.sections.property;
     const reshaped = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
     const provenance = reshaped._meta?.provenance ?? {};
@@ -3306,7 +3306,7 @@ async function runMetaV2() {
   // 05 — flat _meta in a v2 file is META-V1-IN-V2 (the mirror of 02).
   {
     const id = '05-flat-in-v2';
-    const codes = metaCodes(load(`${id}.uw.md`));
+    const codes = metaCodes(load(`${id}.uwx.md`));
     const ok = codes.length === 1 && codes[0] === 'META-V1-IN-V2';
     record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V1-IN-V2]`);
   }
@@ -3315,8 +3315,8 @@ async function runMetaV2() {
   // digest (canonicalization step 1 is normalization).
   {
     const id = '06-digest-shape-insensitive';
-    const flat = parseUWFile(readFileSync(join(META_V2_DIR, id, 'flat.uw.md'), 'utf8'));
-    const nested = parseUWFile(readFileSync(join(META_V2_DIR, id, 'nested.uw.md'), 'utf8'));
+    const flat = parseUWFile(readFileSync(join(META_V2_DIR, id, 'flat.uwx.md'), 'utf8'));
+    const nested = parseUWFile(readFileSync(join(META_V2_DIR, id, 'nested.uwx.md'), 'utf8'));
     const a = await computeBlockHash(flat.sections.property, { shape: 'v2' });
     const b = await computeBlockHash(nested.sections.property, { shape: 'v2' });
     const ok = a === b;
@@ -3333,8 +3333,8 @@ async function runMetaV2() {
       // and this scenario exists to pin what happens when it is PRESENT.
       return canonicalizeV2(canonicalV2BlockContent(block.content));
     };
-    const a = digestOf('implicit.uw.md');
-    const b = digestOf('explicit.uw.md');
+    const a = digestOf('implicit.uwx.md');
+    const b = digestOf('explicit.uwx.md');
     const ok = a === b && a.length > 0;
     record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : 'explicit sha256 algorithm moved the digest');
   }
@@ -3347,7 +3347,7 @@ const MIGRATE_DIR = join(CONFORMANCE_DIR, 'migrate');
 async function runMigrate() {
   if (!existsSync(MIGRATE_DIR)) return;
 
-  const contentOf = (id) => readFileSync(join(MIGRATE_DIR, id, 'deal.uw.md'), 'utf8');
+  const contentOf = (id) => readFileSync(join(MIGRATE_DIR, id, 'deal.uwx.md'), 'utf8');
   const expectedOf = (id) => JSON.parse(readFileSync(join(MIGRATE_DIR, id, 'expected.json'), 'utf8'));
 
   // 01 — a signed block refuses migration by default: the signature commits

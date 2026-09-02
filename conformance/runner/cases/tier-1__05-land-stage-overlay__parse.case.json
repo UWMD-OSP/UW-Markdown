@@ -6,7 +6,7 @@
   ],
   "command": "parse",
   "args": [
-    "05-land-stage-overlay.uw.md"
+    "05-land-stage-overlay.uwx.md"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",
   "expect": {

@@ -10,7 +10,7 @@ import { render, UnsupportedRenderFormatError } from './renderer.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(
   __dirname,
-  '../../../conformance/tier-1-reader/fixtures/01-minimal-screening.uw.md',
+  '../../../conformance/tier-1-reader/fixtures/01-minimal-screening.uwx.md',
 );
 
 function loadFixture() {

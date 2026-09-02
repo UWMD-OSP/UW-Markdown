@@ -6,7 +6,7 @@
   ],
   "command": "parse",
   "args": [
-    "07-stage-overlay-control.uw.md"
+    "07-stage-overlay-control.uwx.md"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",
   "expect": {

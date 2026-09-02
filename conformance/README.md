@@ -22,17 +22,17 @@ conformance/
 │                         (code, severity) pair) + display strings +
 │                         chat-format renders
 ├── tier-2-editor/      Round-trip writes, supersede semantics
-│   └── fixtures/       <scenario>/{before.uw.md, operation.json, after.uw.md}
+│   └── fixtures/       <scenario>/{before.uwx.md, operation.json, after.uwx.md}
 │                         Optional siblings: context.json (EditContext),
 │                         options.json (ApplyEditOptions, e.g. {integrity: true,
 │                         maintainGaps: true}), expected-error.json (negative
 │                         path — assert applyEdit rejects with a specific code)
 ├── tier-3-calc-host/   Custom calculation evaluation
-│   ├── fixtures/       <scenario>/{deal.uw.md, calc.json, expected-result.json}
-│   └── refinement/     <scenario>/{deal.uw.md, expected-graph.json}
+│   ├── fixtures/       <scenario>/{deal.uwx.md, calc.json, expected-result.json}
+│   └── refinement/     <scenario>/{deal.uwx.md, expected-graph.json}
 │                         Exercises extractDependencyGraph() against a fixture
 ├── tier-4-agent-host/  AI agent layers producing write_uw_section calls
-│   ├── fixtures/       <scenario>/{before.uw.md, expected-after-shape.json}
+│   ├── fixtures/       <scenario>/{before.uwx.md, expected-after-shape.json}
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
 ├── lite/               UW Lite representation + deal-summary-v1 bridge
@@ -53,7 +53,7 @@ conformance/
 │                         compilation), <id>.projection.json + <id>.projected.uw.md
 │                         (UWX→Lite projection with its omission report)
 ├── receipts/           Verification receipts (RFC 0016, spec/UW_RECEIPT_v1.md)
-│   ├── issue/          <scenario>/{deal.uw.md|deal.uwx.md, expected-receipt.json}
+│   ├── issue/          <scenario>/{deal.uwx.md|deal.uwx.md, expected-receipt.json}
 │   │                     Issuance is deterministic apart from issued_at, which
 │   │                     the runner stubs
 │   ├── verify/         <scenario>/{deal.*, receipt.json, expected-verdict.json}
@@ -131,7 +131,7 @@ conformance/
 ├── lease-up/           Lease-up schedule (RFC 0008, format spec §4.25).
 │                         Same dispatch style: {case.json, expected.json}
 │                         exercises verifyLeaseUpSchedule's three-state
-│                         verdict; {deal.uw.md, expected.json} pins LU-NN /
+│                         verdict; {deal.uwx.md, expected.json} pins LU-NN /
 │                         CC-15 validator codes and an optional end-to-end
 │                         verdict. See lease-up/README.md.
 ├── locale/             Display-locale negotiation (RFC 0001, Protocol
@@ -141,7 +141,7 @@ conformance/
 │                         byte identity across locales.
 ├── capability/         Capability-token write authorization (RFC 0011,
 │                         Protocol §XIV). Each scenario edits the shared
-│                         deal.uw.md under a generated token through the
+│                         deal.uwx.md under a generated token through the
 │                         @uwmd/signing reference verifier; pins POL-03's
 │                         typed reasons, the jti note, and the never-escalates
 │                         rule. Owed only under `capability-verify`.
@@ -149,11 +149,11 @@ conformance/
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
                           verifyCapitalStack's three-state verdict (a "variants"
-                          key contrasts pref cash-vs-accrued); {agree.uw.md,
-                          mismatch.uw.md, expected.json} exercises the
-                          generalized CC-03 in both directions; {deal.uw.md,
+                          key contrasts pref cash-vs-accrued); {agree.uwx.md,
+                          mismatch.uwx.md, expected.json} exercises the
+                          generalized CC-03 in both directions; {deal.uwx.md,
                           expected.json} asserts a typed validator refusal
-                          (CS-WATERFALL-UNSUPPORTED); and {deal.uw.md,
+                          (CS-WATERFALL-UNSUPPORTED); and {deal.uwx.md,
                           expected-metrics.json} is the no-stack single-loan
                           regression pin — every pack metric must equal its
                           pre-RFC value exactly
@@ -178,7 +178,7 @@ conformance/
 │                         yields the identical v2 digest; and spelling out the
 │                         defaulted `integrity.algorithm` moves nothing
 ├── migrate/            `uwmd migrate --to-v2` (RFC 0009). Three
-│                         <scenario>/{deal.uw.md, expected.json}: a signed
+│                         <scenario>/{deal.uwx.md, expected.json}: a signed
 │                         block refuses migration by default (the signature
 │                         commits to the v1 digest — the key holder decides);
 │                         --strip-signatures records the removal in
@@ -231,7 +231,7 @@ conformance/
     │                     hash of the file it lives in cannot be hand-edited
     │                     into a meaningful state
     ├── blocks/         Block signatures (RFC 0010, Protocol §V.11). Five
-    │                     <scenario>/{deal.uw.md, expected.json} pairs.
+    │                     <scenario>/{deal.uwx.md, expected.json} pairs.
     │                     expected.json names the keystore to verify against
     │                     (null = no signature backend at all), the expected
     │                     `ok`, the signatures_present / signatures_verified

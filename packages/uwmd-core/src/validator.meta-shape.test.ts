@@ -51,6 +51,7 @@ function file(uwVersion: string, ...blocks: string[]): string {
     'deal_id: shape-001',
     'deal_name: Shape Test',
     'asset_class: multifamily',
+    'status: draft',
     '---',
     '',
     ...blocks.flatMap((b) => [b, '']),
@@ -108,8 +109,8 @@ describe('parser flat view over nested blocks', () => {
   });
 });
 
-describe('editor refuses v2 files at 1.x (PROTO-EDIT-010)', () => {
-  it('refuses any edit against a uw_version 2.0 file', async () => {
+describe('editor writes v2 files natively (the 2.0 cut retired PROTO-EDIT-010)', () => {
+  it('frontmatter edits work against a uw_version 2.0 file', async () => {
     const migrated = await migrateToV2(file('1.1', FLAT_BLOCK));
     const content = migrated.content as string;
     const parsed = parseUWFile(content);
@@ -119,7 +120,58 @@ describe('editor refuses v2 files at 1.x (PROTO-EDIT-010)', () => {
       { kind: 'frontmatter_set', path: 'status', value: 'active' },
       { actor: 'jared', source: 'manual' },
     );
-    expect(result.ok).toBe(false);
-    expect(result.error?.code).toBe('PROTO-EDIT-010');
+    expect(result.ok).toBe(true);
+    expect(result.content).toContain('status: "active"');
+  });
+
+  it('a section_supersede into a 2.0 file emits the NESTED shape and validates clean', async () => {
+    const migrated = await migrateToV2(file('1.1', FLAT_BLOCK));
+    const content = migrated.content as string;
+    const parsed = parseUWFile(content);
+    const result = applyEdit(
+      content,
+      parsed,
+      {
+        kind: 'section_supersede',
+        section_id: 'rent_roll',
+        content: { unit_count: 12 },
+        meta: {},
+      },
+      { actor: 'jared', source: 'manual' },
+    );
+    expect(result.ok).toBe(true);
+    const after = parseUWFile(result.content as string);
+    const head = getSection(after, 'rent_roll');
+    expect(head?.meta_shape).toBe('v2');
+    expect(head?.meta.version).toBe(2);
+    expect((head?.content['_meta'] as Record<string, unknown>)['lifecycle']).toBeDefined();
+    expect(metaIssues(result.content as string)).toEqual([]);
+    // The superseded prior stays nested and marked.
+    expect(after.superseded['rent_roll']?.[0]?.meta.superseded).toBe(true);
+    expect(after.superseded['rent_roll']?.[0]?.meta_shape).toBe('v2');
+  });
+
+  it('field_overrides in an edit lift to the block-level _overrides annotation', async () => {
+    const migrated = await migrateToV2(file('1.1', FLAT_BLOCK));
+    const content = migrated.content as string;
+    const parsed = parseUWFile(content);
+    const result = applyEdit(
+      content,
+      parsed,
+      {
+        kind: 'section_supersede',
+        section_id: 'rent_roll',
+        content: { unit_count: 12 },
+        meta: { field_overrides: [{ path: 'unit_count', confidence: 'low' }] },
+      },
+      { actor: 'jared', source: 'manual' },
+    );
+    expect(result.ok).toBe(true);
+    const head = getSection(parseUWFile(result.content as string), 'rent_roll');
+    expect((head?.content as Record<string, unknown>)['_overrides']).toEqual([
+      { path: 'unit_count', confidence: 'low' },
+    ]);
+    const quality = (head?.content['_meta'] as { quality: Record<string, unknown> }).quality;
+    expect(quality['field_overrides']).toBeUndefined();
   });
 });

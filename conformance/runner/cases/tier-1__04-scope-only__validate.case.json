@@ -6,7 +6,7 @@
   ],
   "command": "validate",
   "args": [
-    "04-scope-only.uw.md",
+    "04-scope-only.uwx.md",
     "--json"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",

@@ -84,7 +84,7 @@ hand-maintaining fifty of those invites one to go stale silently.
   "id": "tier-3/revpar-basic",
   "tier": "3",
   "command": "calc",
-  "args": ["deal.uw.md", "calc.json", "--json"],
+  "args": ["deal.uwx.md", "calc.json", "--json"],
   "fixture_dir": "conformance/tier-3-calc-host/fixtures/revpar-basic",
   "expect": { "kind": "json-subset", "file": "expected-result.json", "exit_code": 0 }
 }

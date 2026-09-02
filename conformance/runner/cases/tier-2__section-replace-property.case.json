@@ -6,7 +6,7 @@
   ],
   "command": "edit",
   "args": [
-    "before.uw.md",
+    "before.uwx.md",
     "operation.json",
     "--json",
     "--actor",
@@ -20,6 +20,6 @@
   "expect": {
     "kind": "json-field-text",
     "field": "content",
-    "file": "after.uw.md"
+    "file": "after.uwx.md"
   }
 }

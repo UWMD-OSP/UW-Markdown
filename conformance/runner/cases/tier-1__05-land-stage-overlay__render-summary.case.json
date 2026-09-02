@@ -6,7 +6,7 @@
   ],
   "command": "render",
   "args": [
-    "05-land-stage-overlay.uw.md",
+    "05-land-stage-overlay.uwx.md",
     "--format",
     "summary"
   ],

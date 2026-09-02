@@ -36,11 +36,10 @@ const FENCE_OPEN_RE = /^```json\s+uw:section=(\S+)(.*)?$/;
 const FENCE_CLOSE_RE = /^```\s*$/;
 const FRONTMATTER_RE = /^---\s*$/;
 
-/** Every canonical tag except `manual` — a legacy-tag `_meta.source` has no
- *  recoverable actor and must go through `migrate --source-tags` first. */
-const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(
-  SOURCE_TAGS.filter((t) => t !== 'manual'),
-);
+/** The canonical resolution tags — a legacy-tag `_meta.source` has no
+ *  recoverable actor and must go through `migrate --source-tags` first.
+ *  (`manual` left SOURCE_TAGS at 2.0; it is an actor, never a legacy tag.) */
+const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(SOURCE_TAGS);
 
 /** What the CLI hands the re-signing callback for one migrated block. */
 export interface ResignRequest {

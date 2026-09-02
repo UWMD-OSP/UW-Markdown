@@ -5,7 +5,7 @@
 // the block it sits in, and `_meta.signature.sig` is a signature over that
 // digest. Editing either by hand produces a file that fails for the wrong
 // reason. So the signing suite is generated, from a checked-in test key, and
-// this script is the only thing that may write those `.uw.md` files.
+// this script is the only thing that may write those `.uwx.md` files.
 //
 // The key in `conformance/signing/keys/` is a TEST key with a published private
 // half. It exists so anyone can regenerate the corpus and get byte-identical
@@ -40,7 +40,7 @@ const key = {
 
 const BLOCKS = join(SUITE, 'blocks');
 const MODULES = join(SUITE, 'modules');
-const BASE = readFileSync(join(BLOCKS, 'base-deal.uw.md'), 'utf8');
+const BASE = readFileSync(join(BLOCKS, 'base-deal.uwx.md'), 'utf8');
 
 /**
  * Stamp `content_hash` (and optionally `signature`) into the named section's
@@ -108,28 +108,28 @@ function writeModule(scenario, manifest) {
 
 // ── 01: a valid signature over a hashed block ────────────────────────────────
 const valid = await stamp(BASE, 'property');
-write('01-signed-valid', 'deal.uw.md', valid);
+write('01-signed-valid', 'deal.uwx.md', valid);
 
 // ── 02: the same signature, over content edited after signing ───────────────
 // `year_built` moves by one. Both INT-04 (the hash no longer recomputes) and
 // INT-07 (the signature no longer verifies) are the correct report: the file
 // says two different things about the same bytes.
-write('02-signed-tampered', 'deal.uw.md', valid.replace('"year_built": 1995', '"year_built": 1996'));
+write('02-signed-tampered', 'deal.uwx.md', valid.replace('"year_built": 1995', '"year_built": 1996'));
 
 // ── 03: a valid signature under a kid the fixture keystore does not hold ────
 write(
   '03-signed-unknown-kid',
-  'deal.uw.md',
+  'deal.uwx.md',
   valid.replaceAll(`"kid": "${KID}"`, '"kid": "rotated-out-2019"'),
 );
 
 // ── 04: a signature with no content_hash to commit to ───────────────────────
-write('04-signed-no-hash', 'deal.uw.md', await stamp(BASE, 'property', { hash: false }));
+write('04-signed-no-hash', 'deal.uwx.md', await stamp(BASE, 'property', { hash: false }));
 
 // ── 05: the valid file again, verified with no signature backend ───────────
 // Same bytes as 01; only the verifier's capability differs. That is the point:
 // the verdict must change because the *verifier* changed, not the document.
-write('05-signed-no-backend', 'deal.uw.md', valid);
+write('05-signed-no-backend', 'deal.uwx.md', valid);
 
 // ── Module manifests (RFC 0002) ─────────────────────────────────────────────
 // Same key, same key store: a host that trusts a signer trusts them for both

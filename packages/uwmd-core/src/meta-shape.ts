@@ -126,11 +126,10 @@ export function isV2File(frontmatter: Pick<UWFrontmatter, 'uw_version'> | undefi
 
 // ─── v1 → v2 (the shim, forward direction) ───────────────────────────────────
 
-/** Every canonical tag except `manual`, which is a legal actor in its own
- *  right and never reinterpreted (RFC 0031, mirrored from parser.ts). */
-const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(
-  SOURCE_TAGS.filter((t) => t !== 'manual'),
-);
+/** The canonical resolution tags (RFC 0031, mirrored from parser.ts).
+ *  `manual` left SOURCE_TAGS at format 2.0, so no exemption filter remains —
+ *  it stays a legal actor and is never reinterpreted. */
+const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(SOURCE_TAGS);
 
 /**
  * Structural reshape of a flat v1 `_meta` into the canonical v2 nested form
@@ -237,6 +236,56 @@ export function reshapeMetaV2toV1(nested: UWMetaV2, overrides?: UWFieldOverride[
   if (p.inherited_from !== undefined) flat.inherited_from = p.inherited_from;
 
   return flat;
+}
+
+// ─── Writer helpers (format 2.0 — nested by default) ─────────────────────────
+
+/**
+ * Stamp a freshly built flat `_meta` into a block content object in the shape
+ * the target file's `uw_version` demands. The single seam every writer
+ * (editor, runner, init) goes through, so no writer can produce
+ * META-V1-IN-V2 by forgetting the reshape.
+ *
+ * For a v2 target: `_meta` is reshaped nested and `field_overrides` lifts to
+ * the block-level `_overrides` annotation (absent when empty).
+ */
+export function stampMetaIntoBlockContent(
+  content: Record<string, unknown>,
+  flatMeta: UWMeta,
+  v2: boolean,
+): void {
+  if (!v2) {
+    content['_meta'] = flatMeta;
+    return;
+  }
+  const { field_overrides, ...rest } = flatMeta;
+  content['_meta'] = reshapeMetaV1toV2(rest as UWMeta) as unknown;
+  delete content['_overrides'];
+  if (field_overrides !== undefined && field_overrides.length > 0) {
+    content['_overrides'] = field_overrides;
+  }
+}
+
+/**
+ * Bump a pipeline-log block's raw `_meta` in place — version + timestamp —
+ * whichever shape it is on disk. Returns the new chain position for the
+ * fence `v=` mirror.
+ */
+export function bumpRawMetaVersion(rawMeta: Record<string, unknown>, now: string): number {
+  if (detectMetaShape(rawMeta) === 'v2') {
+    const lifecycle = (rawMeta['lifecycle'] ?? {}) as Record<string, unknown>;
+    const next = ((lifecycle['revision'] as number) ?? 1) + 1;
+    lifecycle['revision'] = next;
+    rawMeta['lifecycle'] = lifecycle;
+    const provenance = (rawMeta['provenance'] ?? {}) as Record<string, unknown>;
+    provenance['timestamp'] = now;
+    rawMeta['provenance'] = provenance;
+    return next;
+  }
+  const next = ((rawMeta['version'] as number) ?? 1) + 1;
+  rawMeta['version'] = next;
+  rawMeta['timestamp'] = now;
+  return next;
 }
 
 // ─── Digest normalization (RFC 0009 § Canonicalization, step 1) ──────────────

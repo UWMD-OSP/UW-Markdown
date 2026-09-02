@@ -8,6 +8,42 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed — the 2.0 cut (BREAKING; RFC 0009 / RFC 0025 / RFC 0031)
+
+- **Protocol 1.14.0 → 2.0.0; the implementation now authors format 2.0**
+  (`FORMAT_VERSION` `'2.0'`) while reading the whole 1.x line
+  (`SUPPORTED_FORMAT_VERSIONS`). Module `requires_protocol` /
+  `requires_format` ranges are satisfied against the supported SETS
+  (`SUPPORTED_PROTOCOL_VERSIONS`), so `^1` modules keep loading — a 2.0
+  implementation is a 1.x implementation too.
+- **Full v2 editing** — `PROTO-EDIT-010` is retired. Every writer (editor
+  replace/supersede/pipeline-append, `writeAgentBlock`, `init`) goes through
+  one seam (`stampMetaIntoBlockContent`) that emits the shape the file's
+  `uw_version` demands: nested `_meta` + the `_overrides` lift for 2.0
+  files, flat for 1.x. Integrity stamping hashes under the file's own
+  canonicalization rule. `uwmd init` scaffolds `uw_version: "2.0"` by
+  default (`--format 1.1` for the legacy flat scaffold).
+- **The per-file 2.0 vocabulary boundary** (format v2 §1.3/§4): `SRC-01` /
+  `SRC-02` escalate to errors in `uw_version: "2.0"` files (1.x files keep
+  their warnings); new `SRC-03` rejects the retired `resolution: "manual"`;
+  `manual` left `SOURCE_TAGS` (actor-only — the `SourceTag` union keeps it
+  for the actor field); the §2.6 read-time interpretation no longer applies
+  inside a 2.0 file's own blocks.
+- **Legacy structured `.uw.md` sniffing sunset** (RFC 0025, format v2 §6.1):
+  structured UWX content under a `.uw.md` name is now
+  `SOURCE_LEGACY_STRUCTURED` (error); an explicit UWX override remains the
+  escape hatch; `migrateLegacyUWMarkdown` still plans the byte-identical
+  rename (probing fences directly). `UWSourceDetection.legacy_extension` is
+  removed (breaking). The Lite canonicalization `1.0` recognition
+  *obligation* ends; the generic `RCP-10` version-mismatch degradation is
+  retained as quality-of-implementation.
+- **Conformance corpus renamed to spec-compliant extensions**: every
+  structured fixture moved `.uw.md` → `.uwx.md` (86 files), with runner,
+  case-generator, and docs updated; Lite fixtures keep `.uw.md`
+  legitimately. Receipts baselines re-pin `protocol_version` 2.0.0; Lite
+  compile-report baselines re-record the bridge's new pinned-1.1 rationale
+  (the Lite bridge stays a 1.x-format producer until its own RFC).
+
 ### Added
 
 - **RFC 0009 — the format 2.0 normative text** (the 2.0 cut's spec leg):

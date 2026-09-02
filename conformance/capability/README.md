@@ -5,7 +5,7 @@ the `POL-03` refusal, every typed rejection reason, the `jti` provenance
 note, and the AND rule (a token never overrides the static §V.3 policy).
 Cases are owed only by hosts claiming the **`capability-verify`** capability.
 
-Every scenario edits the shared [`deal.uw.md`](deal.uw.md) through
+Every scenario edits the shared [`deal.uwx.md`](deal.uwx.md) through
 `applyEditAsync` with `@uwmd/signing`'s reference verifier over
 [`keys/keystore.json`](keys/keystore.json) — the same published TEST key
 pair the signing suite uses; it authenticates nothing. The `token.jwt`

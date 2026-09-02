@@ -63,9 +63,8 @@ export type SourceTag =
  * the **resolution-method** vocabulary — producers stamp them into
  * `_meta.resolution` (a tag found in `_meta.source` is legacy and is
  * interpreted as `resolution` at read time). Eight of these match
- * `CascadeStep` 1:1; the rest are non-cascade tags — `manual`,
- * `ai_extracted`, `agent_computed`, `scenario_default`, and
- * `market_data_accepted`.
+ * `CascadeStep` 1:1; the rest are non-cascade tags — `ai_extracted`,
+ * `agent_computed`, `scenario_default`, and `market_data_accepted`.
  *
  * `market_data_accepted` (RFC 0022 §4) is deliberately *not* a cascade step:
  * it is an in-file value of record that resolves at the `user_input` step
@@ -84,7 +83,10 @@ export type SourceTag =
 export const SOURCE_TAGS = Object.freeze([
   'user_input',
   'user_override',
-  'manual',
+  // 'manual' left this vocabulary at format 2.0 (RFC 0009 resolved question
+  // 4): it is actor-only now, and `user_input` is the resolution-method
+  // spelling for human-typed values. It remains a legal member of the
+  // `SourceTag` union above because the ACTOR field is typed with it.
   'inherited_assumption',
   'investor_profile',
   'market_data',

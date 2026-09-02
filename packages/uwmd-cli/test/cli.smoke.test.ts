@@ -530,17 +530,17 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('still resolves output paths for a legacy structured .uw.md input', () => {
-      // RFC 0017 keeps legacy structured .uw.md readable. Fixing the UWX case
-      // must not break the path it replaced.
+    it('refuses a legacy structured .uw.md input (sniffing sunset at 2.0)', () => {
+      // RFC 0025 / format v2 §6.1: structured content under the legacy
+      // .uw.md name is SOURCE_LEGACY_STRUCTURED — the fix is a byte-identical
+      // rename to .uwx.md, which the error message states.
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-legacy-'));
       try {
         const dealPath = resolve(temp, 'legacy.uw.md');
         writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
         const r = runCli(['export', dealPath]);
-        expect(r.status).toBe(0);
-        expect(r.stdout).toContain('legacy.uw.json');
-        expect(r.stdout).not.toContain('legacy.uw.md.uw.json');
+        expect(r.status).not.toBe(0);
+        expect(`${r.stdout}${r.stderr}`).toContain('SOURCE_LEGACY_STRUCTURED');
       } finally {
         rmSync(temp, { recursive: true, force: true });
       }
