@@ -2,10 +2,14 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-01 (late), after **RFC 0001 (display locales)
-was accepted and implemented** — completing the sprint's Phase 2 trio
-(0008, 0011, 0001, all accepted and implemented the same day) on top of the
-1.8.0 release (tag `v1.8.0`, core+cli live on npm). Full pass: build green
+**Last verified:** 2026-09-01 (night), after the **1.9.0 release shipped**
+(`33f5d8b`, tag `v1.9.0`): `@uwmd/core` **1.9.0**, `@uwmd/cli` **1.9.0**,
+and `@uwmd/signing` **0.2.0** all **live on npm, verified via `npm view`**
+— signing's first tag-triggered OIDC publish, bootstrapped the same day by
+a manual 0.1.0 publish from the `v1.8.0` tag plus the owner-configured
+trusted publisher. The release carries the sprint's Phase 2 trio (RFCs
+0008, 0011, 0001 — all accepted and implemented 2026-09-01) and the RFC
+0032/0033 clarifications. Full pass: build green
 across all workspaces; **1,228 core tests** + **78 signing**; **331
 conformance** assertions (323 + the 8-scenario `locale` suite; **44** more
 through the RFC 0004 CLI driver under `--no-skip`, plus **3 conformance
@@ -798,8 +802,14 @@ deferred to its own RFC.
 **Phase 2 is complete.** All three owner-ordered builds (0008 → 0011 →
 0001) accepted and implemented in one day; corpus retrieval (0013) and
 portfolio/relationship profiles (0015) stay deferred to a later sprint.
-Next: Phase 3, cut 1.9.0 — blocked on the owner-only npm trusted-publisher
-step for @uwmd/signing (docs/handoff/HUMAN-configure-signing-trusted-publisher.md).
+**Phase 3 is done too**: 1.9.0 cut and published 2026-09-01 (PR #124, tag
+`v1.9.0`) — core/cli 1.9.0 and signing 0.2.0 live, coordinated repins
+landed (excel/report 0.8.0, batch 0.7.0, web-editor 0.8.0, hospitality
+repin-only). The signing trusted publisher is configured, so all three
+packages now release hands-off on any `v*` tag. What remains of the sprint
+is **Phase 4: the RFC 0009 / 2.0 gate** — an owner decision, unscheduled —
+plus the parallel human-only track (PCG64 vector diff, security alias,
+public RFC venue, bus-factor note).
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
 was revised 2026-08-31** to absorb the split: `provenance` now carries both
