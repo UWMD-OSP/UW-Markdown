@@ -11,7 +11,8 @@ files live in this directory pending publication on `uwmd.org`.
 
 | Schema | Mirrors | Spec section |
 |---|---|---|
-| [`uwmd-block.schema.json`](uwmd-block.schema.json) | `UWBlock` + `UWMeta` | Format §2.4–§2.6 |
+| [`uwmd-block.schema.json`](uwmd-block.schema.json) | `UWBlock` + `UWMeta` (v1.x flat shape) | Format §2.4–§2.6 |
+| [`uwmd-block-v2.schema.json`](uwmd-block-v2.schema.json) | `UWBlock` + nested `UWMetaV2` + `_overrides` (format 2.0) | Format v2 §2–§3 / RFC 0009 |
 | [uw-document-envelope.schema.json](uw-document-envelope.schema.json) | UWDocumentEnvelope | RFC 0014 / Envelope 1.0 |
 | [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 1.0 tooling schema | [UW XML Mapping 1.0](../UW_XML_MAPPING_v1.md) |
 | [`edit-operation.schema.json`](edit-operation.schema.json) | `EditOperation` (discriminated union) | Protocol §V |

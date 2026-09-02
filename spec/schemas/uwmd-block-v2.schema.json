@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uwmd-block-v2.schema.json",
+  "title": "UW Markdown Section Block (format 2.0)",
+  "description": "JSON envelope inside a fenced ```json uw:section=... block in a uw_version 2.0 file (RFC 0009). The nested _meta shape: provenance / quality / lifecycle / integrity sub-objects, with per-field exceptions lifted to the block-level _overrides annotation. Mirrors UWMetaV2 in @uwmd/core/meta-shape.ts. v1.x blocks are governed by uwmd-block.schema.json; a file's uw_version decides the shape for every block in it (META-V2-IN-V1 / META-V1-IN-V2).",
+  "type": "object",
+  "required": ["section_id", "_meta", "content"],
+  "additionalProperties": true,
+  "properties": {
+    "section_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Section identifier. Standard sections use the IDs registered in UW_FORMAT_SPEC_v1.md §4 (incorporated by reference into v2). Extension sections MUST start with 'x_'."
+    },
+    "_meta": {
+      "$ref": "#/$defs/UWMetaV2"
+    },
+    "_overrides": {
+      "type": "array",
+      "description": "Per-field exceptions to the block-level metadata (UW_FORMAT_SPEC_v2.md §3). Replaces v1 _meta.field_overrides; same entry shape, same precedence rule (an override wins for the paths it covers). Block content for integrity purposes — inside the digest.",
+      "items": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Dot-notated path relative to the block content root (e.g. 'units[7].current_rent')."
+          },
+          "confidence": { "enum": ["high", "medium", "low"] },
+          "source": {
+            "type": "string",
+            "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+            "description": "Actor override for this field (RFC 0031 actor grammar)."
+          },
+          "resolution": {
+            "$ref": "#/$defs/ResolutionTagV2"
+          },
+          "reason": { "enum": ["illegible", "missing", "overridden", "estimated", "computed"] },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "content": {
+      "description": "Section payload. Schema is per-section (UW_FORMAT_SPEC_v1.md §4.x, incorporated by reference). For extension sections (x_*) the content is unrestricted.",
+      "oneOf": [
+        { "type": "object" },
+        { "type": "array" }
+      ]
+    },
+    "_notes": {
+      "type": ["string", "null"],
+      "description": "Free-text annotation. Never validated, never consumed by agents."
+    }
+  },
+  "$defs": {
+    "ResolutionTagV2": {
+      "enum": [
+        "user_input",
+        "user_override",
+        "inherited_assumption",
+        "investor_profile",
+        "market_data",
+        "market_data_accepted",
+        "ai_extracted",
+        "agent_computed",
+        "asset_class_default",
+        "scenario_default",
+        "global_default",
+        "system_default"
+      ],
+      "description": "The 2.0 resolution vocabulary (UW_FORMAT_SPEC_v2.md §4.1). 'manual' left the vocabulary at 2.0 (RFC 0009 resolved question 4): it is actor-only, and 'user_input' is the resolution-method spelling for human-typed values. resolution: 'manual' in a 2.0 file is SRC-03."
+    },
+    "UWMetaV2": {
+      "type": "object",
+      "required": ["provenance", "quality", "lifecycle"],
+      "additionalProperties": true,
+      "properties": {
+        "section": {
+          "type": "string",
+          "description": "MUST match the outer section_id. 2.0 writers emit the 'section' spelling; readers also accept 'section_id' as an alias (UW_FORMAT_SPEC_v2.md §2.1)."
+        },
+        "section_id": {
+          "type": "string",
+          "description": "Accepted alias of 'section' (the dominant v1 on-disk spelling)."
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["source", "actor", "timestamp"],
+          "additionalProperties": true,
+          "properties": {
+            "source": {
+              "type": "string",
+              "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+              "minLength": 1,
+              "description": "The actor (RFC 0031 grammar): 'manual' or '<namespace>/<id>' with a registered namespace. At 2.0 the grammar is enforced — a resolution tag here is SRC-02 (error), any other out-of-grammar value SRC-01 (error). UW_FORMAT_SPEC_v2.md §4.2."
+            },
+            "resolution": {
+              "$ref": "#/$defs/ResolutionTagV2"
+            },
+            "actor": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The principal that initiated the write. Distinct from source: source is the policy-vocabulary identity of the writer, actor is who asked for the write."
+            },
+            "agent_id": {
+              "type": ["string", "null"],
+              "description": "REQUIRED when source matches 'agent/*'."
+            },
+            "agent_version": {
+              "type": ["string", "null"]
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO-8601 UTC timestamp at write time."
+            },
+            "notes": {
+              "type": ["string", "null"]
+            },
+            "market_data_ref": {
+              "type": "object",
+              "required": ["document_id", "as_of", "digest"],
+              "description": "RFC 0022 §4 — REQUIRED when resolution is 'market_data_accepted'.",
+              "properties": {
+                "document_id": { "type": "string" },
+                "as_of": { "type": "string" },
+                "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+                "rationale": { "type": "string" }
+              }
+            },
+            "inherited_from": {
+              "type": "object",
+              "required": ["document_id", "digest", "distance"],
+              "description": "RFC 0021 §5 — REQUIRED when resolution is 'inherited_assumption'.",
+              "properties": {
+                "document_id": { "type": "string" },
+                "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+                "distance": { "type": "integer", "minimum": 1 }
+              }
+            }
+          }
+        },
+        "quality": {
+          "type": "object",
+          "required": ["confidence", "human_review_required"],
+          "additionalProperties": true,
+          "properties": {
+            "confidence": { "enum": ["high", "medium", "low"] },
+            "human_review_required": { "type": "boolean" },
+            "flags": { "type": "array", "items": { "type": "string" } },
+            "partial": {
+              "type": "boolean",
+              "description": "True when at least one field inside the block is missing or unknown. When true, the block-level _overrides SHOULD enumerate which paths and why."
+            },
+            "provisional": {
+              "type": "boolean",
+              "description": "True when the entire block is a placeholder derived from defaults rather than observed data. Stronger than confidence: 'low'."
+            }
+          },
+          "not": {
+            "required": ["field_overrides"],
+            "description": "field_overrides left _meta at 2.0 — per-field exceptions live in the block-level _overrides annotation."
+          }
+        },
+        "lifecycle": {
+          "type": "object",
+          "required": ["revision", "superseded"],
+          "additionalProperties": true,
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "1-based supersede-chain position. Renamed from v1 'version' to end the collision with frontmatter uw_version (RFC 0009 resolved question 1); semantics unchanged."
+            },
+            "superseded": {
+              "type": "boolean",
+              "description": "True on every block that is not the chain head."
+            }
+          }
+        },
+        "integrity": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Cryptographic / structural verification. The whole sub-object is optional: integrity remains opt-in.",
+          "properties": {
+            "algorithm": {
+              "enum": ["sha256"],
+              "description": "Absent means 'sha256'; 'sha256' is the only admitted value at 2.0 (RFC 0009 resolved question 2). A defaulted value is excluded from the block digest; a non-default value is hashed and cannot be stripped undetected."
+            },
+            "input_hash": {
+              "type": ["string", "null"],
+              "pattern": "^(sha256:[0-9a-f]{64})?$"
+            },
+            "content_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "sha256 of the canonicalization-v2 form (normalize-then-hash; UW_PROTOCOL_v1.md §V.9)."
+            },
+            "parent_hash": {
+              "type": ["string", "null"],
+              "pattern": "^([0-9a-f]{64})?$",
+              "description": "content_hash of the superseded predecessor; null on a chain root."
+            },
+            "signature": {
+              "type": "object",
+              "required": ["alg", "kid", "sig", "signed_at"],
+              "additionalProperties": false,
+              "description": "Detached signature over the block's signing input (protocol §V.11, RFC 0010) — same wire shape as v1, relocated under integrity. Requires content_hash (INT-05).",
+              "properties": {
+                "alg": { "enum": ["ed25519", "es256", "es384"] },
+                "kid": { "type": "string", "minLength": 1 },
+                "sig": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+                "signed_at": { "type": "string", "format": "date-time" },
+                "v": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "section_id": "property",
+      "_meta": {
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "actor": "jared@example.com",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-01T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "total_units": 100,
+        "year_built": 2005,
+        "building_class": "B+"
+      },
+      "_notes": null
+    }
+  ]
+}
