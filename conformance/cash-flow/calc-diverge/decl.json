@@ -1,0 +1,9 @@
+{
+  "decls": [
+    {
+      "id": "impossible_xirr",
+      "series_path": "cash_flow_series",
+      "metric": "xirr"
+    }
+  ]
+}

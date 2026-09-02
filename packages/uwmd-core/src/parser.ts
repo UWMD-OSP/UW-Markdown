@@ -221,6 +221,7 @@ const MULTI_VARIANT_SECTIONS = new Set([
   'stress_tests',
   'due_diligence',
   'lease_up_schedule',
+  'cash_flow_series',
 ]);
 
 // Sections routed to dedicated collections rather than the main sections map

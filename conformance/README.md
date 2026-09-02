@@ -134,6 +134,12 @@ conformance/
 │                         verdict; {deal.uwx.md, expected.json} pins LU-NN /
 │                         CC-15 validator codes and an optional end-to-end
 │                         verdict. See lease-up/README.md.
+├── cash-flow/          Calendar-anchored cash flows (RFC 0034, format spec
+│                         §4.26 / Protocol §VIII.9). Three dispatch kinds:
+│                         {case.json} → verifyCashFlowSeries; {deal.uwx.md,
+│                         decl.json} → evaluateCashFlowMetrics with pinned
+│                         quantized values; {deal.uwx.md} alone → CF-NN codes
+│                         + an end-to-end verdict. See cash-flow/README.md.
 ├── locale/             Display-locale negotiation (RFC 0001, Protocol
 │                         §III.1a). Shared deal + injected locale line: the
 │                         per-locale rendering pins (NBSP included), the
@@ -246,8 +252,9 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `lease-up`, `capability`, `locale`, `size-intensive`,
-`signing`, `sensitivity`, `stochastic`, `source`, `meta-v2`, and `migrate`
+`capital-stack`, `lease-up`, `cash-flow`, `capability`, `locale`,
+`size-intensive`, `signing`, `sensitivity`, `stochastic`, `source`,
+`meta-v2`, and `migrate`
 suites are named rather
 than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,

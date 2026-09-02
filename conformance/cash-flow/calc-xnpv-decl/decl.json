@@ -1,0 +1,10 @@
+{
+  "decls": [
+    {
+      "id": "npv_at_6",
+      "series_path": "cash_flow_series",
+      "metric": "xnpv",
+      "rate": 0.06
+    }
+  ]
+}

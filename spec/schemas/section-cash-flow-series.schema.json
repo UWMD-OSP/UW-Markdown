@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-cash-flow-series.schema.json",
+  "title": "UW Markdown Cash Flow Series Section",
+  "description": "Content payload for the `cash_flow_series` section (UW_FORMAT_SPEC_v1.md §4.26, RFC 0034). A dated, irregular cash-flow series — ISO-8601 calendar dates, signed amounts — with optional stated aggregates (total_net, moic, xnpv at a rate, xirr). This is a state-and-verify structure (RFC 0021 §6, the `capital_stack` / `lease_up_schedule` precedent): the Tier-3 calc engine never reads it, so a variable-length array is safe, and every stated metric is recomputed by `verifyCashFlowSeries` over the Protocol §VIII.9 procedures rather than trusted. This schema enforces structure only. The cross-field rules a validator/verifier adds are: real calendar days and finite amounts with registered enums (CF-01); a non-empty series with non-decreasing dates whose first row anchors every year fraction (CF-02); a stated xirr requiring at least one negative and one positive amount (CF-03); and each stated metric recomputing at its quantization boundary or the verdict is `failed`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["series"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "description": "Standard block provenance envelope (§2.5). Not constrained here."
+    },
+    "_notes": {
+      "type": ["string", "null"],
+      "description": "Optional free-text annotation (§4 universal field)."
+    },
+    "label": {
+      "type": ["string", "null"],
+      "description": "Free-text name for the series (e.g. \"Levered hold-period cash flow\")."
+    },
+    "day_count": {
+      "enum": ["actual/365f", "actual/360", "30/360us", null],
+      "description": "Day-count convention from the closed Protocol §VIII.9.1 registry; `actual/365f` when absent. `30/360us` is exactly the Excel DAYS360 U.S. method (no NASD February special-casing). An unknown convention is CF-01, never a default."
+    },
+    "series": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The dated flows, one entry per flow, dates non-decreasing (CF-02). The first row's date is the anchor. Same-day flows are legal and are not merged. Stated data, not formulas: the calc engine never iterates it; rows remain addressable by path (e.g. `cash_flow_series.series[3].amount`).",
+      "items": { "$ref": "#/$defs/flow" }
+    },
+    "stated_metrics": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "The stated aggregates, each verified when present (three-state; Protocol §VIII.9.4 quanta: currency 2dp, rate 6dp, ratio 4dp). A metric absent here is simply not checked.",
+      "properties": {
+        "total_net": {
+          "type": ["number", "null"],
+          "description": "Σ amount over the series (currency)."
+        },
+        "moic": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Σ inflows ÷ |Σ outflows|. Unverifiable (never failed) on a series with no outflows."
+        },
+        "xnpv": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["rate", "value"],
+          "description": "Net present value at a stated discount rate, per Protocol §VIII.9.2 (closed-form, anchor-relative exponents under the declared day_count).",
+          "properties": {
+            "rate": {
+              "type": "number",
+              "exclusiveMinimum": -1,
+              "description": "Discount rate as a fraction (0.06, never 6)."
+            },
+            "value": { "type": "number" }
+          }
+        },
+        "xirr": {
+          "type": ["number", "null"],
+          "description": "Annualized internal rate of return as a fraction, per the Protocol §VIII.9.3 procedure (the RFC 0024 bisection over date-derived exponents). Requires a sign change in the series (CF-03)."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "amount"],
+      "properties": {
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "ISO-8601 calendar date (YYYY-MM-DD). Must name a real day — 2026-02-30 is CF-01 (the pattern alone cannot check month lengths)."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Signed flow; outflows negative."
+        },
+        "kind": {
+          "enum": ["acquisition", "operating", "capex", "debt_service", "refinance", "disposition", "other", null],
+          "description": "Advisory taxonomy for renderers and rollups; gates no rule (§4.26)."
+        },
+        "label": {
+          "type": ["string", "null"],
+          "description": "Free-text row annotation (e.g. \"Close\", \"Exit\")."
+        }
+      }
+    }
+  }
+}

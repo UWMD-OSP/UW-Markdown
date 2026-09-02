@@ -1,0 +1,19 @@
+{
+  "results": [
+    {
+      "calc_id": "xirr_a365",
+      "ok": true,
+      "value": 0.103392
+    },
+    {
+      "calc_id": "xirr_a360",
+      "ok": true,
+      "value": 0.101906
+    },
+    {
+      "calc_id": "xirr_us360",
+      "ok": true,
+      "value": 0.1025
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "calc_id": "levered_xirr",
+      "ok": true,
+      "value": 0.075239,
+      "unit": "%",
+      "round_to": 6
+    }
+  ]
+}

@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.0.0' as const;
+export const PROTOCOL_VERSION = '2.1.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -55,7 +55,7 @@ export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0'] as 
  * v2 §1.3), so a module written against the 1.x protocol line still loads:
  * its `requires_protocol` range is satisfied against any member of this set.
  */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', PROTOCOL_VERSION] as const);
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', PROTOCOL_VERSION] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
@@ -92,6 +92,8 @@ export type ViewerCapability =
   | 'calc-stochastic'
   /** Evaluates sensitivity declarations (§VIII.7, RFC 0007). */
   | 'calc-sensitivity'
+  /** Evaluates cash-flow metric declarations over dated series (§VIII.9, RFC 0034). */
+  | 'calc-cash-flow'
   | 'agent-host'
   | 'module-load'
   /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
@@ -220,6 +222,7 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'calc-deterministic',
     'calc-stochastic',
     'calc-sensitivity',
+    'calc-cash-flow',
     'agent-host',
     'module-load',
     // Both are gated on the optional @uwmd/signing package being installed.
@@ -1220,6 +1223,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'components',
   'capital_stack',
   'lease_up_schedule',
+  'cash_flow_series',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -1759,6 +1763,24 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
       { path: 'stabilized_summary.annualized_egi',           label: 'Stab. EGI',    kind: 'currency' },
     ],
   },
+  cash_flow_series: {
+    section_id: 'cash_flow_series',
+    display_name: 'Cash Flow Series',
+    display_order: 23,
+    description: 'Dated, irregular cash flows on a real calendar (RFC 0034). State-and-verify: stated metrics are recomputed by verifyCashFlowSeries over the §VIII.9 procedures, never trusted.',
+    multi_variant: true,
+    primary_fields: [
+      { path: 'label',                    label: 'Series',    kind: 'string', primary: true },
+      { path: 'stated_metrics.xirr',      label: 'XIRR',      kind: 'percent', primary: true },
+      { path: 'stated_metrics.total_net', label: 'Net Total', kind: 'currency' },
+      { path: 'stated_metrics.moic',      label: 'MOIC',      kind: 'ratio' },
+    ],
+    detail_fields: [
+      { path: 'day_count',                label: 'Day Count', kind: 'string' },
+      { path: 'stated_metrics.xnpv.rate', label: 'XNPV Rate', kind: 'percent' },
+      { path: 'stated_metrics.xnpv.value', label: 'XNPV',     kind: 'currency' },
+    ],
+  },
   gaps: {
     section_id: 'gaps', display_name: 'Gaps', display_order: 21,
     description: 'Open data gaps blocking stage advancement or carrying provisional defaults. Maintained by the editor when --maintain-gaps is on; otherwise hand-curated.',
@@ -1889,6 +1911,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
+  { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
   {
@@ -2066,6 +2089,27 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'model_type is natural_turnover but the document has no rent_roll — the turnover trajectory has no stated starting point.',
     remediation: 'Add the current rent_roll the turnover model departs from, or switch model_type to absorption_curve if there is genuinely no in-place tenancy.',
     spec_ref: '§4.25 LU-04',
+  },
+  {
+    code: 'CF-01', severity: 'error',
+    title: 'Cash-flow row outside the grammar',
+    description: 'A cash_flow_series row has an invalid ISO-8601 calendar date or non-finite amount, or the section declares an unknown day_count or kind (closed enums, RFC 0034).',
+    remediation: 'State every date as a real YYYY-MM-DD calendar day and every amount as a finite signed number; use a registered day_count (actual/365f, actual/360, 30/360us) and kind.',
+    spec_ref: '§4.26 CF-01',
+  },
+  {
+    code: 'CF-02', severity: 'error',
+    title: 'Cash-flow series empty or out of order',
+    description: 'The series array is empty, or its dates are not non-decreasing. The first row\'s date anchors every year fraction, so order is part of the contract.',
+    remediation: 'State at least one flow and sort rows by date. Same-day flows are legal and keep their own rows — do not merge them.',
+    spec_ref: '§4.26 CF-02',
+  },
+  {
+    code: 'CF-03', severity: 'error',
+    title: 'Stated XIRR with no sign change',
+    description: 'stated_metrics.xirr is stated but the series has no sign change (at least one negative and one positive amount), so the stated number cannot be the root of anything.',
+    remediation: 'Remove the stated xirr, or state the complete series — an XIRR needs both the investment outflow and the return inflows.',
+    spec_ref: '§4.26 CF-03',
   },
   {
     code: 'MU-01', severity: 'error',

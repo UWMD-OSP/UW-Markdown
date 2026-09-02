@@ -1,0 +1,22 @@
+{
+  "decls": [
+    {
+      "id": "xirr_a365",
+      "series_path": "cash_flow_series",
+      "variant": "a365",
+      "metric": "xirr"
+    },
+    {
+      "id": "xirr_a360",
+      "series_path": "cash_flow_series",
+      "variant": "a360",
+      "metric": "xirr"
+    },
+    {
+      "id": "xirr_us360",
+      "series_path": "cash_flow_series",
+      "variant": "us360",
+      "metric": "xirr"
+    }
+  ]
+}

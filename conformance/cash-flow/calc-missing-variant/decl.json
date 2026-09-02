@@ -1,0 +1,10 @@
+{
+  "decls": [
+    {
+      "id": "upside_xirr",
+      "series_path": "cash_flow_series",
+      "variant": "upside",
+      "metric": "xirr"
+    }
+  ]
+}

@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.0.0`) — the
+- **Protocol version** (this document, currently `2.1.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1233,8 +1233,9 @@ evaluated in closed form — `nper` as
 `log((pmt - fv·rate) / (pmt - pv·rate)) / log(1 + rate)`, and the others by the
 formulas in §VIII.3's table. `nper` in particular is solved iteratively in some
 formulations, and an implementation that does so inherits exactly the
-reproducibility problem the `irr` procedure below exists to remove. `irr` is the
-only builtin permitted to iterate.
+reproducibility problem the `irr` procedure below exists to remove. `irr` — and
+`xirr` (§VIII.9.3), which runs this same procedure over date-derived exponents —
+are the only builtins permitted to iterate.
 
 **`irr` convergence (normative).** `irr(...flows)` **MUST** return the root
 computed by the following procedure, which is defined so that any implementation
@@ -1622,6 +1623,100 @@ A host that evaluates stochastic declarations declares
 `calc-stochastic` in its `ImplementationManifest.capabilities`. One
 that does not MUST report a typed refusal rather than crash or silently
 return a point estimate.
+
+### VIII.9 Calendar-anchored cash flows (RFC 0034)
+
+The format's `cash_flow_series` section (format spec §4.26) states
+dated, irregular flows. This section fixes the arithmetic two engines
+must agree on when they read one: how a pair of dates becomes a year
+fraction, how a rate discounts a dated flow, and how the one searched
+number (`xirr`) is found. Everything here is reachable only through a
+declaration or the verifier (§VIII.9.4) — the §VIII.1 grammar and the
+§VIII.3 expression-callable table are unchanged.
+
+#### VIII.9.1 Day-count registry (normative, closed)
+
+Mirrored in `@uwmd/core` as `DAY_COUNT_CONVENTIONS` / `yearfrac`. For
+calendar dates `d1 ≤ d2` (proleptic Gregorian):
+
+- **`actual/365f`** — `yearfrac = actualDays(d1, d2) / 365`, where
+  `actualDays` counts calendar days between the dates. Leap days count
+  as days; the denominator is always 365 (the "fixed" in 365F).
+- **`actual/360`** — `yearfrac = actualDays(d1, d2) / 360`.
+- **`30/360us`** — **exactly the Excel `DAYS360` U.S. method**, pinned
+  so implementers do not reach for one of the other NASD variants: with
+  date parts `(y1, m1, dd1)` and `(y2, m2, dd2)` — if `dd1 = 31` set
+  `dd1 = 30`; then if `dd2 = 31` **and** `dd1 = 30` set `dd2 = 30`;
+  `days = (y2 − y1)·360 + (m2 − m1)·30 + (dd2 − dd1)`;
+  `yearfrac = days / 360`. There is **no February special-casing** —
+  the NASD end-of-February adjustments are deliberately excluded, and
+  the divergence from "full NASD" is documented here rather than
+  discovered in a receipt mismatch.
+
+`yearfrac` MUST be evaluated in binary64 with the division performed
+last (`days` is an exact integer in every convention). An unknown
+convention MUST be refused, never defaulted.
+
+#### VIII.9.2 `xnpv` (normative, closed-form)
+
+Over a series with anchor date `d0` (the first row's date, §4.26
+`CF-02`) and rate `r > −1`:
+
+```
+xnpv(r) = Σᵢ amountᵢ × (1 + r) ^ (−tᵢ)     tᵢ = yearfrac(d0, dᵢ, day_count)
+```
+
+Terms MUST be accumulated in series order, left to right (the §VIII.5
+posture on association order). `r ≤ −1` raises `CALC-TYPE-001`.
+
+#### VIII.9.3 `xirr` (normative)
+
+The root of `xnpv(r) = 0`, computed by **the §VIII.3 `irr` procedure
+verbatim** with `npv` replaced by `xnpv`: bracket over
+`[-0.999, 10.0]`; return an exact **high**-endpoint root; bisect to
+`|xnpv(mid)| < 1e-9` or a half-interval below `1e-12`, whichever comes
+first, capped at 200 iterations; **no Newton polish**. Failure to
+bracket or to converge raises `CALC-XIRR-DIVERGE`. The §VIII.3 note on
+the low endpoint carries over unchanged: a root at exactly `-0.999` is
+not a well-defined binary64 quantity and is not owed.
+
+`irr` and `xirr` are the only builtins permitted to iterate (§VIII.3).
+
+#### VIII.9.4 Reachability, declarations, and quantization
+
+Neither function enters the §VIII.1 grammar. They are reachable only
+through:
+
+1. **`verifyCashFlowSeries`** — the §4.26 three-state verifier, which
+   recomputes each stated metric and compares at the quantization
+   boundary (§VIII.5), and
+2. **`CashFlowMetricDecl`** — a JSON declaration, the §VIII.7/§VIII.8
+   pattern:
+
+```json
+{
+  "id": "levered_xirr",
+  "label": "Levered XIRR",
+  "series_path": "cash_flow_series",
+  "variant": "base",
+  "metric": "xirr",
+  "unit": "%"
+}
+```
+
+`metric` is closed: `xirr | xnpv | moic | total_net`; `xnpv` requires
+a `rate` (a fraction). The result is one quantized number in an
+ordinary `CalcResult` — `CalcResult.value` is not widened and no
+result carries a date. `CalcEvaluationContext.overrides` applies: a
+caller MAY shadow an individual row
+(`cash_flow_series.series[7].amount`) without touching the document,
+the same shadowing contract sensitivity sweeps use. Quantization
+follows the §VIII.5 unit defaults (`$` → 2, `%` → 6, `x` → 4).
+
+A declaration naming a missing, malformed, or wrong-variant series
+raises `CALC-CF-SERIES`. A host that evaluates cash-flow declarations
+declares `calc-cash-flow` in its `ImplementationManifest.capabilities`;
+one that does not MUST report a typed refusal rather than crash.
 
 ---
 

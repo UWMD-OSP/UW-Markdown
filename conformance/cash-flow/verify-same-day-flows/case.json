@@ -1,0 +1,24 @@
+{
+  "series": {
+    "series": [
+      {
+        "date": "2026-03-17",
+        "amount": -14000000,
+        "kind": "acquisition"
+      },
+      {
+        "date": "2026-03-17",
+        "amount": -250000,
+        "kind": "capex"
+      },
+      {
+        "date": "2031-03-17",
+        "amount": 19800000,
+        "kind": "disposition"
+      }
+    ],
+    "stated_metrics": {
+      "total_net": 5550000
+    }
+  }
+}

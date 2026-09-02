@@ -43,14 +43,14 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **26 numbered subsections (§ 4.0 – § 4.25)**:
+Part IV registers **27 numbered subsections (§ 4.0 – § 4.26)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content, the `gaps` inventory (§ 4.22), the mixed-use `components`
-section (§ 4.23), the `capital_stack` section (§ 4.24), and the
-`lease_up_schedule` section (§ 4.25). When this and the protocol
-document refer to "the 21 standard sections" they mean § 4.0 through
-§ 4.20.
+section (§ 4.23), the `capital_stack` section (§ 4.24), the
+`lease_up_schedule` section (§ 4.25), and the `cash_flow_series`
+section (§ 4.26). When this and the protocol document refer to "the 21
+standard sections" they mean § 4.0 through § 4.20.
 
 ---
 
@@ -2575,6 +2575,67 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 ```
 
 **Deliberately deferred (RFC 0008).** Excel emit of a Lease-Up sheet; a `dcf` coupling (`derive_dcf_from_lease_up`); defaults-table entries; and a shared period-schedule primitive. If a later module (e.g. a hospitality RevPAR ramp) wants a period schedule, it SHOULD reuse this section's period grammar rather than invent a second one — noted so the two cannot drift, but no abstraction is built ahead of the second consumer.
+
+---
+
+### § 4.26 — Cash Flow Series
+
+**ID:** `cash_flow_series`  
+**Header:** `## Cash Flow Series {#cash_flow_series}`  
+**Purpose:** A **dated, irregular** cash-flow series — ISO-8601 calendar dates and signed amounts — for hold-period modeling on real calendars: mid-month closings, irregular draws, anniversary exits. `lease_up_schedule` (§ 4.25) carries *period-cadence* rows on a uniform monthly/quarterly axis; this section carries flows anchored to *calendar dates*, which is a different contract (cadence vs. calendar) and deliberately a different section. The section is **asset-class independent** and **multi-variant**: base / upside / downside scenarios coexist under `variant=` exactly as `stress_tests` variants do.  
+**Written by:** `wizard`, `manual`, `agent/L4-*` (an agent MAY draft a series — e.g. from a vendor projection engine — but the host stamps `agent/<id>` and the stated figures remain subject to verification)  
+**Required for pipeline stage:** Optional; never required. A deal underwritten on stabilized annual figures alone legitimately has no dated series.  
+**Dependencies:** none required; `dcf` (§ 4.9) is a natural sibling but no cross-check is defined by RFC 0034 (deferred — see the RFC's unresolved questions).  
+**Schema:** [`spec/schemas/section-cash-flow-series.schema.json`](schemas/section-cash-flow-series.schema.json)  
+**Introduced by:** RFC 0034 (calendar-anchored cash flows).
+
+Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier-3 calc engine never reads the series by pack formula, so the variable-length array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyCashFlowSeries`, a sibling of `verifyCapitalStack` and `verifyLeaseUpSchedule`) over a **fixed, closed recompute vocabulary** (Protocol § VIII.9). The series is **data, not formulas**; specific rows remain addressable by ordinary path traversal (`cash_flow_series.series[3].amount`).
+
+**Fields.**
+
+- `label` — free text ("Levered hold-period cash flow"). Optional.
+- `day_count` — one of the closed Protocol § VIII.9.1 registry: `actual/365f` (the default when absent), `actual/360`, or `30/360us`. Governs every year-fraction this section's metrics use.
+- `series` — one entry per flow: `date` (ISO-8601 `YYYY-MM-DD`), `amount` (signed; outflows negative), optional `kind` (closed: `acquisition | operating | capex | debt_service | refinance | disposition | other`), optional `label`. `kind` is advisory taxonomy for renderers and rollups; it gates no rule.
+- `stated_metrics` — the stated aggregates, all optional, each verified when present:
+  - `total_net` — `Σ amount` (currency).
+  - `moic` — `Σ inflows ÷ |Σ outflows|` (multiple).
+  - `xnpv` — `{ "rate": <fraction>, "value": <number> }` (currency; the rate is a fraction, `0.08` never `8`).
+  - `xirr` — the annualized rate (fraction).
+
+**Normative rules (RFC 2119):**
+
+- The section is OPTIONAL. A document with no `cash_flow_series` behaves exactly as before RFC 0034; no pipeline stage requires it (`STAGE_CONTRACT` untouched).
+- **Row grammar (`CF-01`, error).** Every `date` MUST be a valid ISO-8601 calendar date (`YYYY-MM-DD` naming a real day — `2026-02-30` refuses); every `amount` MUST be a finite number. An unknown `day_count` or `kind` MUST be refused (closed enums).
+- **Ordering (`CF-02`, error).** `series` MUST be non-empty and dates MUST be non-decreasing. Same-day flows are legal (a closing and its first draw share a date) and MUST NOT be merged — each row keeps its identity for path addressing. The first row's date is the series **anchor**.
+- **A stated `xirr` needs a sign change (`CF-03`, error).** A stated `xirr` on a series whose amounts do not include at least one negative and at least one positive value MUST be refused: the stated number cannot be the root of anything.
+- **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture; § VIII.9.4): `total_net` and `moic` directly; `xnpv` closed-form at the stated `rate` (§ VIII.9.2); `xirr` by the § VIII.9.3 procedure. A stated metric whose recomputation *raises* (an `xirr` that fails to bracket) is `failed` — the document asserts a number the procedure cannot produce. A `moic` stated on a series with no outflows is `unverifiable` (an undefined ratio is not evidence of tampering). A metric absent from `stated_metrics` is simply not checked.
+
+```json uw:section=cash_flow_series variant=base source=manual ts=ISO8601 v=1 confidence=high
+{
+  "_meta": { "...": "see §2.5" },
+  "label": "Levered hold-period cash flow",
+  "day_count": "actual/365f",
+  "series": [
+    { "date": "2026-03-17", "amount": -14250000, "kind": "acquisition", "label": "Close" },
+    { "date": "2026-09-30", "amount": 412000, "kind": "operating" },
+    { "date": "2027-03-31", "amount": 431000, "kind": "operating" },
+    { "date": "2027-06-15", "amount": -350000, "kind": "capex", "label": "Roof + amenity" },
+    { "date": "2031-03-17", "amount": 19800000, "kind": "disposition", "label": "Exit" }
+  ],
+  "stated_metrics": {
+    "total_net": 6043000,
+    "moic": 1.4139,
+    "xnpv": { "rate": 0.06, "value": 1022812.04 },
+    "xirr": 0.075239
+  }
+}
+```
+
+*(The stated metrics above were computed by the reference verifier, not
+asserted — `moic` at the 4-decimal ratio quantum, `xnpv` at the currency
+quantum, `xirr` at the 6-decimal rate quantum.)*
+
+**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check, defaults-table entries, and the RFC 0026 Phase 2 distribution waterfall (this section removes its stated precondition; taking it up is a separate acceptance).
 
 ---
 

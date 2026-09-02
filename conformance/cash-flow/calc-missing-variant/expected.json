@@ -1,0 +1,9 @@
+{
+  "results": [
+    {
+      "calc_id": "upside_xirr",
+      "ok": false,
+      "error_code": "CALC-CF-SERIES"
+    }
+  ]
+}

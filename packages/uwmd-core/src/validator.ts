@@ -19,6 +19,8 @@ import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps.js';
 import { leaseUpPeriodOrdinal, LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
 import type { LeaseUpGranularity } from './lease-up.js';
+import { CASH_FLOW_KINDS } from './cash-flow-series.js';
+import { isDayCountConvention, parseISODate } from './calc/day-count.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 import { isV2File } from './meta-shape.js';
 
@@ -124,6 +126,7 @@ export function validateUWFile(
   checkComponents(parsed, issues);
   checkCapitalStack(parsed, issues);
   checkLeaseUpSchedule(parsed, issues);
+  checkCashFlowSeries(parsed, issues);
   checkSizeIntensive(parsed, issues);
   checkSectionReadiness(parsed, issues);
   checkLocale(parsed, issues);
@@ -916,6 +919,110 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[])
         value: drift,
       });
     }
+  }
+}
+
+// ─── Cash-flow series (RFC 0034, §4.26) ──────────────────────────────────────
+//
+// Structural rules only, the lease-up split: date grammar, ordering, and the
+// sign-change precondition are validation; the arithmetic over stated metrics
+// belongs to `verifyCashFlowSeries` (cash-flow-series.ts). Multi-variant, so
+// every variant is checked — a downside series with a gapped date is just as
+// malformed as a base one.
+
+function checkCashFlowContent(
+  content: Record<string, unknown>,
+  variant: string,
+  issues: ValidationMessage[],
+): void {
+  const section = 'cash_flow_series';
+  const label = variant === 'default' ? '' : ` (variant "${variant}")`;
+
+  const dayCount = content['day_count'];
+  if (dayCount != null && !isDayCountConvention(dayCount)) {
+    issues.push({
+      code: 'CF-01', severity: 'error', section, field: 'day_count',
+      message: `CF-01: day_count${label} must be a registered convention (actual/365f, actual/360, 30/360us), not ${JSON.stringify(dayCount)}`,
+    });
+  }
+
+  const series = content['series'];
+  const rows = Array.isArray(series) ? series : [];
+  if (!Array.isArray(series) || rows.length === 0) {
+    issues.push({
+      code: 'CF-02', severity: 'error', section, field: 'series',
+      message: `CF-02: series${label} must be a non-empty array of dated flows`,
+    });
+    return;
+  }
+
+  // CF-01 (row grammar) / CF-02 (non-decreasing dates). One diagnostic per
+  // defect: a row outside the grammar is not also reported as out of order.
+  let hasNegative = false;
+  let hasPositive = false;
+  let prevOrdinal: number | null = null;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rec = row && typeof row === 'object' ? (row as Record<string, unknown>) : {};
+    const date = rec['date'];
+    const amount = rec['amount'];
+    const kind = rec['kind'];
+
+    const parsed = typeof date === 'string' ? parseISODate(date) : null;
+    if (parsed === null) {
+      issues.push({
+        code: 'CF-01', severity: 'error', section, field: `series[${i}].date`,
+        message: `CF-01: date ${JSON.stringify(date)}${label} is not a valid ISO-8601 calendar day (YYYY-MM-DD)`,
+      });
+      prevOrdinal = null;
+    } else {
+      const ordinal = Date.UTC(parsed.year, parsed.month - 1, parsed.day);
+      if (prevOrdinal !== null && ordinal < prevOrdinal) {
+        issues.push({
+          code: 'CF-02', severity: 'error', section, field: `series[${i}].date`,
+          message: `CF-02: dates${label} must be non-decreasing; ${String(date)} precedes the prior row`,
+        });
+      }
+      prevOrdinal = ordinal;
+    }
+
+    if (typeof amount !== 'number' || !Number.isFinite(amount)) {
+      issues.push({
+        code: 'CF-01', severity: 'error', section, field: `series[${i}].amount`,
+        message: `CF-01: amount${label} must be a finite signed number, not ${JSON.stringify(amount)}`,
+      });
+    } else {
+      if (amount < 0) hasNegative = true;
+      if (amount > 0) hasPositive = true;
+    }
+
+    if (kind != null && !(CASH_FLOW_KINDS as readonly string[]).includes(kind as string)) {
+      issues.push({
+        code: 'CF-01', severity: 'error', section, field: `series[${i}].kind`,
+        message: `CF-01: kind ${JSON.stringify(kind)}${label} is not a registered flow kind (${CASH_FLOW_KINDS.join(', ')})`,
+      });
+    }
+  }
+
+  // CF-03: a stated xirr needs a sign change — otherwise the stated number
+  // cannot be the root of anything.
+  const statedXirr = deepGet(content, 'stated_metrics.xirr');
+  if (statedXirr != null && !(hasNegative && hasPositive)) {
+    issues.push({
+      code: 'CF-03', severity: 'error', section, field: 'stated_metrics.xirr',
+      message: `CF-03: stated_metrics.xirr${label} is stated but the series has no sign change (needs at least one negative and one positive amount)`,
+    });
+  }
+}
+
+function checkCashFlowSeries(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const entry = parsed.sections['cash_flow_series'];
+  if (!entry) return;
+  const variants: Array<[string, UWBlock]> = isVariantMap(entry)
+    ? Object.entries(entry as Record<string, UWBlock>)
+    : [['default', entry as UWBlock]];
+  for (const [variant, block] of variants) {
+    checkCashFlowContent(block.content as Record<string, unknown>, variant, issues);
   }
 }
 

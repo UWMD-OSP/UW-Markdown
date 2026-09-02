@@ -98,10 +98,11 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **331 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **356 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, `lease-up`, `capability`, `locale`, `size-intensive`,
-  `signing`, `sensitivity`, `stochastic`, and `source` suites. CI runs the runner's **default** suite list rather than a pinned
+  `capital-stack`, `lease-up`, `cash-flow`, `capability`, `locale`,
+  `size-intensive`, `signing`, `sensitivity`, `stochastic`, `source`,
+  `meta-v2`, and `migrate` suites. CI runs the runner's **default** suite list rather than a pinned
   `--tier=`, which is what the earlier claim of replay coverage assumed but did
   not have: `ci.yml` pinned `1,2,3,lite,receipts`, so `4-replay` had never
   actually gated a pull request. See [09](09-conformance-testing.md).
@@ -356,6 +357,32 @@ not core gaps.
   behavior is a value from outside the domain the spec claims to search, so no
   correct code depends on it.
 
+- **Calendar-anchored cash flows ([RFC 0034](../rfcs/0034-calendar-anchored-cash-flows.md),
+  accepted and implemented 2026-09-02) — protocol 2.0.0 → 2.1.0.** The
+  calendar-date primitive carried as v2 future work since RFC 0024, and the
+  hold-period primitive RFC 0026 Phase 2 named as its missing precondition
+  (that precondition is now removed; the waterfall itself stays deferred).
+  Format §4.26 registers `cash_flow_series` — dated irregular flows as the
+  **third state-and-verify structure** (after §4.24/§4.25): multi-variant,
+  asset-class independent, `CF-01`…`CF-03` validator family, four stated
+  metrics recomputed three-state by `verifyCashFlowSeries`. Protocol §VIII.9
+  pins the closed **day-count registry** (`actual/365f` default,
+  `actual/360`, `30/360us` = the exact Excel DAYS360 U.S. clamps, no NASD
+  February special-casing — divergence documented, not discovered),
+  closed-form `xnpv`, and `xirr` by the RFC 0024 bisection **verbatim**
+  (`irr` and `xirr` are now the only two builtins permitted to iterate).
+  Reachable only via declaration (`CashFlowMetricDecl` /
+  `evaluateCashFlowMetrics`, the §VIII.7/§VIII.8 pattern's third instance)
+  and the verifier — grammar and builtin table untouched,
+  `CalcResult.value` not widened, per-row overrides honored. New
+  `calc-cash-flow` capability, `CALC-XIRR-DIVERGE` / `CALC-CF-SERIES`
+  codes, `section-cash-flow-series.schema.json`, chat/summary renderer
+  tables, and `conformance/cash-flow/` (15 scenarios; corpus 341 → 356).
+  Two errata recorded in the RFC: additive sections never bump the format
+  version (the draft claimed 2.1), and the draft's hand-computed example
+  metrics were wrong — the spec's §4.26 example now carries
+  verifier-generated values that `verify-all-metrics` pins verbatim.
+  Excel emit deferred with the Newton-parity reason recorded.
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 

@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,cash-flow,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -98,6 +98,8 @@ import {
   canonicalV2BlockContent,
   canonicalizeV2,
   migrateToV2,
+  verifyCashFlowSeries,
+  evaluateCashFlowMetrics,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -112,7 +114,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,cash-flow,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2340,6 +2342,113 @@ async function runLeaseUp() {
   }
 }
 
+
+// ─── Cash-flow series (RFC 0034, Protocol §VIII.9) ───────────────────────────
+//
+// Three scenario kinds, dispatched by the files a directory carries:
+//   case.json + expected.json               → verifyCashFlowSeries over a bare payload
+//   deal.uwx.md + decl.json + expected.json → evaluateCashFlowMetrics over the doc
+//   deal.uwx.md + expected.json             → validator codes and/or an end-to-end verdict
+
+const CASH_FLOW_DIR = join(CONFORMANCE_DIR, 'cash-flow');
+
+async function runCashFlow() {
+  if (!existsSync(CASH_FLOW_DIR)) {
+    record('cash-flow', '(none)', 'pass', 'no cash-flow fixtures');
+    return;
+  }
+  const scenarios = readdirSync(CASH_FLOW_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(CASH_FLOW_DIR, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  for (const { id, dir } of scenarios) {
+    const expected = readCase(dir, 'expected.json');
+
+    // ── Declaration evaluation over a full document ──────────────────────────
+    if (existsSync(join(dir, 'decl.json'))) {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const declCase = readCase(dir, 'decl.json');
+      const ctx = {
+        parsed,
+        prior_results: {},
+        ...(declCase.overrides ? { overrides: declCase.overrides } : {}),
+        locale: 'en-US',
+      };
+      const results = evaluateCashFlowMetrics(declCase.decls, ctx);
+      let bad = null;
+      for (let i = 0; i < expected.results.length; i++) {
+        const want = expected.results[i];
+        const got = results[i];
+        if (!got || got.calc_id !== want.calc_id || got.ok !== want.ok) {
+          bad = `result ${i}: got ${got ? `${got.calc_id} ok=${got.ok}` : '(missing)'}, expected ${want.calc_id} ok=${want.ok}`;
+          break;
+        }
+        if (want.ok && got.value !== want.value) {
+          bad = `${want.calc_id}: value ${got.value}, expected ${want.value}`;
+          break;
+        }
+        if (want.unit !== undefined && got.unit !== want.unit) { bad = `${want.calc_id}: unit ${got.unit}`; break; }
+        if (want.round_to !== undefined && got.round_to !== want.round_to) { bad = `${want.calc_id}: round_to ${got.round_to}`; break; }
+        if (!want.ok && got.error?.code !== want.error_code) {
+          bad = `${want.calc_id}: error ${got.error?.code}, expected ${want.error_code}`;
+          break;
+        }
+      }
+      record('cash-flow', id, bad ? 'fail' : 'pass', bad ?? `${expected.results.length} decl result(s)`);
+      continue;
+    }
+
+    // ── Full document: validator codes and/or an end-to-end verdict ──────────
+    if (existsSync(join(dir, 'deal.uwx.md'))) {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const codes = validateUWFile(parsed).issues.map((i) => i.code);
+      const short = (expected.expected_codes ?? []).filter((c) => !codes.includes(c));
+      if (short.length) {
+        record('cash-flow', id, 'fail', `emitted [${codes.join(', ')}], expected ${short.join(', ')}`);
+        continue;
+      }
+      const tripped = codes.filter((c) =>
+        (expected.absent_code_prefixes ?? []).some((p) => c.startsWith(p)));
+      if (tripped.length) {
+        record('cash-flow', id, 'fail', `forbidden codes emitted: ${tripped.join(', ')}`);
+        continue;
+      }
+      if (expected.verdict) {
+        const entry = parsed.sections['cash_flow_series'];
+        const block = entry && !('annotation' in entry) ? (entry['base'] ?? entry['default']) : entry;
+        if (!block) {
+          record('cash-flow', id, 'fail', 'expected a verdict but the document has no cash_flow_series base/default variant');
+          continue;
+        }
+        const verification = verifyCashFlowSeries(block.content);
+        if (verification.verdict !== expected.verdict) {
+          record('cash-flow', id, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}: ${verification.issues.map((i) => i.code).join(', ') || '(none)'}`);
+          continue;
+        }
+      }
+      record('cash-flow', id, 'pass', [
+        ...(expected.expected_codes ?? []),
+        ...(expected.verdict ? [expected.verdict] : []),
+      ].join(', ') || 'clean');
+      continue;
+    }
+
+    // ── verifyCashFlowSeries three-state over a bare payload ─────────────────
+    const testCase = readCase(dir, 'case.json');
+    const verification = verifyCashFlowSeries(testCase.series);
+    if (verification.verdict !== expected.verdict) {
+      record('cash-flow', id, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}: ${verification.issues.map((i) => i.code).join(', ') || '(none)'}`);
+      continue;
+    }
+    if (expected.expected_code && !verification.issues.some((i) => i.code === expected.expected_code)) {
+      record('cash-flow', id, 'fail', `issues ${verification.issues.map((i) => i.code).join(', ') || '(none)'}, expected ${expected.expected_code}`);
+      continue;
+    }
+    record('cash-flow', id, 'pass', expected.verdict);
+  }
+}
+
 // ─── Display locales (RFC 0001, Protocol §III.1a) ────────────────────────────
 //
 // All scenarios share deal.uwx.md; the runner injects `locale: <tag>` into the
@@ -3421,6 +3530,7 @@ const dispatch = {
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
   'lease-up': async () => { await runLeaseUp(); },
+  'cash-flow': async () => { await runCashFlow(); },
   'capability': async () => { await runCapability(); },
   'locale': async () => { await runLocale(); },
   'size-intensive': async () => { await runSizeIntensive(); },

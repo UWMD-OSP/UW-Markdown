@@ -1,0 +1,17 @@
+{
+  "series": {
+    "series": [
+      {
+        "date": "2026-01-01",
+        "amount": 100000
+      },
+      {
+        "date": "2027-01-01",
+        "amount": 210000
+      }
+    ],
+    "stated_metrics": {
+      "moic": 2.1
+    }
+  }
+}

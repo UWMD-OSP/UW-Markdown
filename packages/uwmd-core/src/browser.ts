@@ -775,3 +775,38 @@ export type {
   LeaseUpVerification,
   LeaseUpContext,
 } from './lease-up.js';
+
+export {
+  verifyCashFlowSeries,
+  datedFlowsOf,
+  xnpvOf,
+  xirrOf,
+  CASH_FLOW_KINDS,
+  CASH_FLOW_VERIFY_DECIMALS,
+} from './cash-flow-series.js';
+export type {
+  CashFlowKind,
+  CashFlowRow,
+  CashFlowStatedMetrics,
+  CashFlowSeries,
+  CashFlowVerdict,
+  CashFlowIssueCode,
+  CashFlowIssue,
+  CashFlowVerification,
+  DatedFlow,
+} from './cash-flow-series.js';
+export {
+  DAY_COUNT_CONVENTIONS,
+  DEFAULT_DAY_COUNT,
+  isDayCountConvention,
+  parseISODate,
+  actualDays,
+  yearfrac,
+} from './calc/day-count.js';
+export type { DayCountConvention, CalendarDate } from './calc/day-count.js';
+export {
+  evaluateCashFlowMetric,
+  evaluateCashFlowMetrics,
+  CASH_FLOW_METRICS,
+} from './calc/dated-flows.js';
+export type { CashFlowMetric, CashFlowMetricDecl } from './calc/dated-flows.js';

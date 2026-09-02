@@ -1,0 +1,17 @@
+{
+  "series": {
+    "series": [
+      {
+        "date": "2026-01-01",
+        "amount": 100
+      },
+      {
+        "date": "2027-01-01",
+        "amount": 200
+      }
+    ],
+    "stated_metrics": {
+      "xirr": 0.5
+    }
+  }
+}
