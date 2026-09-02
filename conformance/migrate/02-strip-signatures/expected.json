@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "uw_version": "2.0",
+  "signature_absent": true,
+  "note_contains": "signature stripped at v2 migration (was kid=sponsor-key-1)",
+  "chain_verifies": true
+}

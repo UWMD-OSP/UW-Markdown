@@ -6,6 +6,47 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added
+
+- **RFC 0009 (accepted 2026-09-01 at the sprint's Phase 4 gate) — the 1.10.0
+  on-ramp to format 2.0.** Protocol **1.13.0 → 1.14.0**; format stays 1.1
+  (the nested shape is *reserved*, not admitted, at 1.x):
+  - **The shim** (`meta-shape.ts`): `UWMetaV2` and the structural reshape in
+    both directions. The parser accepts a nested `_meta` in a
+    `uw_version: "2.0"` file and exposes the flat in-memory view every
+    consumer already reads (`block.meta_shape` records the on-disk shape);
+    `content._meta` stays bytes-derived and untouched. The RFC 0031
+    legacy-tag rule survives the shape change: resolution set,
+    `provenance.source` absent, never invented.
+  - **Versioned canonicalization**: the v1 digest rule is frozen forever for
+    `uw_version: "1.x"` files; `canonicalizeV2` is normalize-then-hash, so
+    both accepted shapes digest identically. A defaulted
+    `integrity.algorithm` (`'sha256'`) is excluded from the digest; a future
+    non-default value is hashed and cannot be stripped undetected.
+    `computeBlockHash` / `verifyChain` pick the rule from the file's own
+    frontmatter.
+  - **`META-*` validator family** (protocol §III.6a): `META-V2-IN-V1` and
+    `META-V1-IN-V2` enforce one shape per file, in both directions.
+  - **`uwmd migrate --to-v2`** (engine `migrateToV2`, browser-safe):
+    whole-file conversion — frontmatter to `"2.0"`, every block nested,
+    `field_overrides` lifted to the top-level `_overrides` annotation,
+    `resolution: "manual"` rewritten to `user_input` with a provenance note,
+    hashes re-stamped chain-aware (a parent link that was broken before
+    migration is carried over broken — migration never repairs tamper
+    evidence). Signed blocks refuse by default; `--resign` (via the optional
+    `@uwmd/signing`, structurally typed to preserve layering) or
+    `--strip-signatures` (recorded in `provenance.notes`) is the key
+    holder's explicit choice. `--emit-v2-shape` is accepted as a synonym.
+  - **Editor refusal `PROTO-EDIT-010`**: core 1.x refuses edits against
+    `uw_version: "2.0"` files rather than corrupting them with flat blocks;
+    full v2 editing ships with the 2.0 cut.
+  - Conformance corpus **331 → 341**: the seven-scenario `meta-v2` suite
+    (`tier-1-reader/v2-fixtures/`, including the recorded shim-roundtrip
+    baseline and both digest-insensitivity pins) and the three-scenario
+    `migrate` suite. Receipts baselines re-pin `protocol_version` 1.14.0.
+
 ## [1.9.0] - 2026-09-01
 
 ### Released

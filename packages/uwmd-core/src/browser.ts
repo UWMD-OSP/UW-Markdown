@@ -42,6 +42,24 @@ export type {
 // RFC 0031 source-tag migration — pure string transformation, browser-safe.
 export { migrateSourceTags, mapLegacySource } from './migrate-source-tags.js';
 export type { SourceTagMigration } from './migrate-source-tags.js';
+export { migrateToV2 } from './migrate-to-v2.js';
+export type { MigrateToV2Options, MigrateToV2Result, ResignRequest } from './migrate-to-v2.js';
+export {
+  detectMetaShape,
+  isV2File,
+  uwVersionMajor,
+  reshapeMetaV1toV2,
+  reshapeMetaV2toV1,
+  canonicalV2BlockContent,
+} from './meta-shape.js';
+export type {
+  MetaShape,
+  UWMetaV2,
+  UWMetaV2Provenance,
+  UWMetaV2Quality,
+  UWMetaV2Lifecycle,
+  UWMetaV2Integrity,
+} from './meta-shape.js';
 
 export {
   UWLiteError,

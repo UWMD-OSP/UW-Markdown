@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "uw_version": "2.0",
+  "resolution": "user_input",
+  "note_contains": "resolution 'manual' rewritten to 'user_input' by uwmd migrate --to-v2"
+}

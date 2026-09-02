@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `1.13.0`) — the
+- **Protocol version** (this document, currently `1.14.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -552,6 +552,7 @@ capability is unconditional: every implementation owes it.
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
+| `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031). | `validate` | `warning` (SRC-02 becomes `error` at format 2.0) |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |
@@ -563,9 +564,11 @@ capability is unconditional: every implementation owes it.
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
 
 `FV_*` with an underscore was the v1.0 spelling and was renamed to
-`FV-NN` in v1.1. `META_*` is **retired**: it was specified and never
-emitted, and the provenance conditions it described are covered by
-`DQ-NN`.
+`FV-NN` in v1.1. `META_*` (underscore) is **retired**: it was specified
+and never emitted, and the provenance conditions it described are
+covered by `DQ-NN`. The hyphenated `META-*` family (RFC 0009) is
+unrelated to that retirement — it polices which `_meta` *shape* a file's
+`uw_version` admits, not provenance completeness.
 
 `CC-NN`, `FV-NN`, `DQ-NN`, `MU-NN`, and `SRC-NN` are closed sequences extended by
 RFC without renumbering. `MOD-*` and `CS-*` are open extension points:
@@ -869,6 +872,24 @@ across platforms. Specifically:
 The reference library's implementation is in
 `@uwmd/core/integrity-canonical`; it is dependency-free and ~120
 lines.
+
+**Canonicalization is versioned by the file's `uw_version` (RFC 0009).**
+The rule above is the **v1 rule** and is frozen for the life of the
+format: no digest stamped in a `uw_version: "1.x"` file is ever
+invalidated by a later canonicalization change. Files declaring
+`uw_version: "2.0"` or later use **canonicalization v2** —
+normalize-then-hash: the block content is first reshaped to the
+canonical nested `_meta` form (the RFC 0009 shim, including the
+`field_overrides` → `_overrides` lift), then `integrity.content_hash`,
+`integrity.signature`, and a defaulted (`'sha256'`) `integrity.algorithm`
+are removed, then RFC 8785 serialization applies with the same
+byte-identity requirements. Because normalization runs first, the two
+`_meta` shapes a dual-shape parser accepts yield **identical digests**
+for semantically identical blocks. Migration between the versions
+re-stamps every hash (`uwmd migrate --to-v2`); signatures commit to the
+v1 digest and do not survive it — the migrating tool MUST refuse signed
+blocks unless explicitly told to re-sign or strip
+(RFC 0009 § Canonicalization).
 
 ### V.10 Block integrity (content_hash + parent_hash chains)
 

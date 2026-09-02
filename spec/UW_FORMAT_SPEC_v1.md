@@ -364,6 +364,15 @@ Blocks MAY also carry the optional fields `partial`, `provisional`,
 them is well-formed, and validators MUST NOT reject blocks for their
 absence.
 
+**The flat shape above is the only valid `_meta` form for
+`uw_version: "1.x"` files.** Format 2.0 (RFC 0009, accepted) reorganizes
+`_meta` into nested sub-objects (`provenance` / `quality` / `lifecycle` /
+`integrity`); that nested shape is reserved for files declaring
+`uw_version: "2.0"` or later. A file's `uw_version` is global and decides
+the shape for every block in it: a nested `_meta` in a 1.x file is a
+`META-V2-IN-V1` error, and a flat `_meta` in a 2.0 file is
+`META-V1-IN-V2`. `uwmd migrate --to-v2` converts a whole file.
+
 ### 2.6 Source Identifiers
 
 *Rewritten by [RFC 0031](../docs/rfcs/0031-source-vocabulary.md).

@@ -814,11 +814,15 @@ defaulting `'sha256'`, no mixed shapes per file, `manual` leaves
 v1 rule frozen forever, v2 rule is normalize-then-hash so both parser
 shapes digest identically, signatures don't survive migration —
 `--resign`/`--strip-signatures` is the key holder's explicit choice) and
-**accepted**. The train: a **1.10.0 on-ramp** (shim, versioned
-canonicalization, `META-V2-IN-V1`/`META-V1-IN-V2`, `migrate --to-v2`,
-`--emit-v2-shape`, v2 fixtures), the `STAGE_CONTRACT` merge, then the
-**2.0 cut** (format spec v2, nested default, sniffing + Lite-canon-1.0
-sunsets, `SRC-02`→error). The parallel human-only track stays open (PCG64
+**accepted**. The train: a **1.10.0 on-ramp** — **implemented 2026-09-01**
+(protocol **1.14.0**, corpus **341**: the shim + flat parse view,
+versioned canonicalization with the frozen v1 rule, the `META-*` family,
+`migrate --to-v2` with the refuse/`--resign`/`--strip-signatures`
+signature policy, `PROTO-EDIT-010` guarding v2 files from 1.x edits, and
+the `meta-v2` + `migrate` suites) — then the `STAGE_CONTRACT` merge, a
+1.10.0 release, and the **2.0 cut** (format spec v2, nested default,
+sniffing + Lite-canon-1.0 sunsets, `SRC-02`→error, `manual` out of
+`SOURCE_TAGS`). The parallel human-only track stays open (PCG64
 vector diff, security alias, public RFC venue, bus-factor note).
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft

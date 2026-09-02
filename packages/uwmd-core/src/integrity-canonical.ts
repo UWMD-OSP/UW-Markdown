@@ -28,6 +28,29 @@ export function canonicalize(value: unknown): string {
   return serialize(stripExcludedKeys(value));
 }
 
+/**
+ * Canonicalization v2 (RFC 0009 § Canonicalization, steps 2–3), for blocks in
+ * `uw_version: "2.0"` files. The caller performs step 1 (normalization to the
+ * nested shape — `canonicalV2BlockContent` in `meta-shape.ts`) first; this
+ * function strips the v2 exclusions and serializes:
+ *
+ *   - `integrity.content_hash` and `integrity.signature` inside any v2
+ *     meta-shaped object (`provenance` + `lifecycle` + `section`/`section_id`,
+ *     checked post-normalization);
+ *   - `integrity.algorithm` when it is the defaulted `'sha256'` — so spelling
+ *     the default out never moves a digest, while a future non-default
+ *     algorithm IS hashed and cannot be stripped undetected;
+ *   - the v1 exclusions continue to apply to any v1-shaped meta object
+ *     encountered pre-normalization (defense in depth; a normalized input has
+ *     none).
+ *
+ * The v1 rule (`canonicalize`) is frozen forever for `uw_version: "1.x"`
+ * files — no stored v1 digest is ever invalidated by the v2 rule existing.
+ */
+export function canonicalizeV2(value: unknown): string {
+  return serialize(stripExcludedKeysV2(value));
+}
+
 /** RFC 8785 serialization without block-integrity field exclusions. */
 export function canonicalizeExact(value: unknown): string {
   return serialize(value);
@@ -43,6 +66,48 @@ function stripExcludedKeys(input: unknown): unknown {
     out[k] = stripExcludedKeys(v);
   }
   return out;
+}
+
+function stripExcludedKeysV2(input: unknown): unknown {
+  if (input === null || typeof input !== 'object') return input;
+  if (Array.isArray(input)) return input.map(stripExcludedKeysV2);
+  const obj = input as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  const isMetaV1 = looksLikeMeta(obj);
+  const isMetaV2 = looksLikeMetaV2(obj);
+  for (const [k, v] of Object.entries(obj)) {
+    if (isMetaV1 && (PRESERVE_KEYS_REMOVED as readonly string[]).includes(k)) continue;
+    if (isMetaV2 && k === 'integrity' && v !== null && typeof v === 'object' && !Array.isArray(v)) {
+      const integrity: Record<string, unknown> = {};
+      for (const [ik, iv] of Object.entries(v as Record<string, unknown>)) {
+        if ((PRESERVE_KEYS_REMOVED as readonly string[]).includes(ik)) continue;
+        if (ik === 'algorithm' && iv === 'sha256') continue; // defaulted → excluded
+        integrity[ik] = stripExcludedKeysV2(iv);
+      }
+      // An integrity object emptied by exclusion is dropped entirely, so a
+      // block whose only integrity fields were the excluded ones digests the
+      // same as one that never carried `integrity` at all.
+      if (Object.keys(integrity).length > 0) out[k] = integrity;
+      continue;
+    }
+    out[k] = stripExcludedKeysV2(v);
+  }
+  return out;
+}
+
+/**
+ * The v2 meta-detection triple (RFC 0009 § Canonicalization): object-valued
+ * `provenance` AND `lifecycle`, plus either `section` spelling. Checked after
+ * normalization, so the primary caller always matches on the block's own
+ * `_meta`; the predicate exists for nested meta-shaped values.
+ */
+function looksLikeMetaV2(obj: Record<string, unknown>): boolean {
+  const isObj = (v: unknown) => typeof v === 'object' && v !== null && !Array.isArray(v);
+  return (
+    ('section' in obj || 'section_id' in obj) &&
+    isObj(obj['provenance']) &&
+    isObj(obj['lifecycle'])
+  );
 }
 
 /**

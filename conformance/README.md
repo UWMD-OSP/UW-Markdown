@@ -167,6 +167,24 @@ conformance/
 │                         data-loss regression — an unrecognized source
 │                         supersedes instead of replacing, and a caller policy
 │                         list with no coverage refuses rather than grants
+├── tier-1-reader/v2-fixtures/  The v2 nested _meta shape (RFC 0009). Seven
+│                         scenarios run by the `meta-v2` suite: a minimal
+│                         nested file reads through the flat parse view;
+│                         META-V2-IN-V1 and META-V1-IN-V2 fire in both mixing
+│                         directions; the v1→v2 reshape is byte-identical to a
+│                         recorded baseline; a legacy tag survives the shape
+│                         change with `provenance.source` absent, never
+│                         invented; the same block in both accepted shapes
+│                         yields the identical v2 digest; and spelling out the
+│                         defaulted `integrity.algorithm` moves nothing
+├── migrate/            `uwmd migrate --to-v2` (RFC 0009). Three
+│                         <scenario>/{deal.uw.md, expected.json}: a signed
+│                         block refuses migration by default (the signature
+│                         commits to the v1 digest — the key holder decides);
+│                         --strip-signatures records the removal in
+│                         provenance.notes and the re-stamped chain verifies
+│                         under the v2 rule; resolution 'manual' is rewritten
+│                         to 'user_input' with a note
 └── size-intensive/     The Protocol §XIII size-intensive registry (RFC 0027).
                           Seven named scenarios: the registry pins (§XIII.1–3
                           against the shipped table; primary-in-pack and
@@ -229,7 +247,8 @@ conformance/
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
 `capital-stack`, `lease-up`, `capability`, `locale`, `size-intensive`,
-`signing`, `sensitivity`, `stochastic`, and `source` suites are named rather
+`signing`, `sensitivity`, `stochastic`, `source`, `meta-v2`, and `migrate`
+suites are named rather
 than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
 market data and deal packages are *companion document kinds*, module manifests

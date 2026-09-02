@@ -10,7 +10,9 @@
 //     Crypto (`crypto.subtle`). The browser entry point binds the latter via
 //     subpath export when adopters import from `@uwmd/core/browser`.
 
-import { canonicalize, canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize, canonicalizeExact, canonicalizeV2 } from './integrity-canonical.js';
+import { canonicalV2BlockContent, isV2File } from './meta-shape.js';
+import type { MetaShape } from './meta-shape.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 import type { EditPolicy } from './protocol.js';
@@ -71,11 +73,24 @@ function bytesToHex(bytes: Uint8Array): string {
  * Compute the content_hash for a block. Strips the block's own
  * `_meta.content_hash` and `_meta.signature` before hashing (handled by the
  * canonicalizer).
+ *
+ * Canonicalization is versioned by the file's `uw_version` (RFC 0009):
+ * `shape: 'v1'` (the default) is the frozen 1.x rule; `shape: 'v2'` is the
+ * normalize-then-hash rule for `uw_version: "2.0"` files — the block content
+ * is reshaped to the canonical nested form first, so both accepted parser
+ * shapes yield the identical digest.
  */
-export async function computeBlockHash(block: UWBlock): Promise<string> {
+export async function computeBlockHash(
+  block: UWBlock,
+  options: { shape?: MetaShape } = {},
+): Promise<string> {
   // The canonical scope is the block CONTENT including meta, since meta
-  // carries the cascade-relevant provenance. The two excluded keys are
-  // stripped by the canonicalizer.
+  // carries the cascade-relevant provenance. The excluded keys are stripped
+  // by the canonicalizer.
+  if (options.shape === 'v2') {
+    const normalized = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
+    return sha256TextHex(canonicalizeV2(normalized));
+  }
   return sha256Hex({ ...block.content, _meta: block.meta });
 }
 
@@ -247,6 +262,9 @@ export async function verifyChain(
   const issues: IntegrityIssue[] = [];
   let chainsWithHashes = 0;
   let chainsVerified = 0;
+  // Canonicalization is versioned by the file's own frontmatter (RFC 0009):
+  // digests in a `uw_version: "2.0"` file recompute under the v2 rule.
+  const shape: MetaShape = isV2File(parsed.frontmatter) ? 'v2' : 'v1';
 
   for (const sectionId of Object.keys(parsed.sections)) {
     // Build the chain: prior (superseded) blocks first, then current head.
@@ -277,7 +295,7 @@ export async function verifyChain(
       }
 
       // INT-04: hash mismatch
-      const recomputed = await computeBlockHash(block);
+      const recomputed = await computeBlockHash(block, { shape });
       if (recomputed !== stamped) {
         issues.push({
           code: 'INT-04',
@@ -375,7 +393,9 @@ async function verifySignatures(
     // as INT-04, and the escalation from warning to error is the point: on an
     // unsigned block a drifted hash is a bookkeeping slip, but on a signed one
     // it means the content in front of you is not the content anybody signed.
-    const recomputed = await computeBlockHash(block);
+    const recomputed = await computeBlockHash(block, {
+      shape: isV2File(parsed.frontmatter) ? 'v2' : 'v1',
+    });
     if (recomputed !== block.meta.content_hash) {
       issues.push({
         code: 'INT-07',

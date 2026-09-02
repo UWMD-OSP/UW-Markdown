@@ -10,8 +10,11 @@ import type {
   ParsedSections,
   ParseOptions,
   ConfidenceLevel,
+  UWFieldOverride,
 } from './types.js';
 import { SOURCE_TAGS } from './types.js';
+import type { UWMetaV2 } from './meta-shape.js';
+import { detectMetaShape, reshapeMetaV2toV1 } from './meta-shape.js';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 
@@ -330,7 +333,23 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       parsed = { _parse_error: String(err), _raw: rawJson };
     }
 
-    const meta = interpretMetaSource((parsed['_meta'] as UWMeta | undefined) ?? ({} as UWMeta));
+    // RFC 0009: a nested v2 `_meta` is flattened to the v1 in-memory view at
+    // parse time (the back-compat shim's read direction), so every consumer
+    // keeps reading `meta.version` / `.superseded` / `.source` unchanged. The
+    // on-disk shape is recorded on the block for the validator's
+    // META-V2-IN-V1 / META-V1-IN-V2 enforcement; `content` stays bytes-derived
+    // and untouched either way.
+    const rawMeta = parsed['_meta'] as Record<string, unknown> | undefined;
+    const metaShape = detectMetaShape(rawMeta);
+    const meta =
+      metaShape === 'v2'
+        ? interpretMetaSource(
+            reshapeMetaV2toV1(
+              rawMeta as unknown as UWMetaV2,
+              parsed['_overrides'] as UWFieldOverride[] | undefined,
+            ),
+          )
+        : interpretMetaSource((rawMeta as UWMeta | undefined) ?? ({} as UWMeta));
 
     const block: UWBlock = {
       annotation,
@@ -340,6 +359,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       rawJson,
       lineStart,
       lineEnd,
+      ...(rawMeta !== undefined ? { meta_shape: metaShape } : {}),
     };
 
     routeBlock(result, block, sectionId, annotation, capturedProse);
