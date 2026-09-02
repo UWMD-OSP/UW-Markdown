@@ -1,0 +1,12 @@
+{
+  "overrides": {
+    "cash_flow_series.series[4].amount": 18800000
+  },
+  "decls": [
+    {
+      "id": "stressed_xirr",
+      "series_path": "cash_flow_series",
+      "metric": "xirr"
+    }
+  ]
+}

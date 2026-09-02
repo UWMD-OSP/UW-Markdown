@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "calc_id": "npv_at_6",
+      "ok": true,
+      "value": 1022812.04,
+      "unit": "$",
+      "round_to": 2
+    }
+  ]
+}

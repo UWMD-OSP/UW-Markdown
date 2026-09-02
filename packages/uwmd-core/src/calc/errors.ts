@@ -27,7 +27,13 @@ export type CalcErrorCode =
   | 'CALC-STOCH-003'
   | 'CALC-STOCH-004'
   | 'CALC-STOCH-005'
-  | 'CALC-STOCH-006';
+  | 'CALC-STOCH-006'
+  // Calendar-anchored cash flows (§VIII.9, RFC 0034). `CALC-XIRR-DIVERGE` is
+  // the §VIII.9.3 procedure's own refusal (no bracket / no convergence);
+  // `CALC-CF-SERIES` refuses a DECLARATION naming a missing, malformed, or
+  // wrong-variant series, raised before any arithmetic runs.
+  | 'CALC-XIRR-DIVERGE'
+  | 'CALC-CF-SERIES';
 
 export function calcError(code: CalcErrorCode, message: string, pointer?: string): ProtocolError {
   return {

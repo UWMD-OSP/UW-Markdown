@@ -261,6 +261,28 @@ ${tableRows}
 `;
   }
 
+  // Cash-flow series (RFC 0034): the base variant's dated flows, when present.
+  const cashFlow = getSectionVariant(parsed, 'cash_flow_series', 'base')
+    ?? getSectionVariant(parsed, 'cash_flow_series', 'default');
+  let cashFlowBlock = '';
+  if (cashFlow) {
+    const c = cashFlow.content;
+    const rows = (deepGet(c, 'series') as Record<string, unknown>[] | undefined) ?? [];
+    const tableRows = rows.map(r =>
+      `| ${val(r['date'])} | ${money(r['amount'])} | ${val(r['kind'] ?? '')} | ${val(r['label'] ?? '')} |`
+    ).join('\n');
+    cashFlowBlock = `\n## Cash Flow Series
+
+**${val(deepGet(c, 'label') ?? 'Dated cash flows')}** · **Day count:** ${val(deepGet(c, 'day_count') ?? 'actual/365f')} · **Net Total:** ${money(deepGet(c, 'stated_metrics.total_net'))} · **MOIC:** ${val(deepGet(c, 'stated_metrics.moic'))} · **XIRR:** ${pct(deepGet(c, 'stated_metrics.xirr'))}
+
+| Date | Amount | Kind | Label |
+|---|---|---|---|
+${tableRows}
+
+---
+`;
+  }
+
   const issueLines = validation.issues.length > 0
     ? validation.issues.map(i => `- **[${i.severity.toUpperCase()}]** ${i.message}`).join('\n')
     : '- No issues found';
@@ -307,7 +329,7 @@ ${units && qm.loan_amount ? `| Loan per Unit | ${money((qm.loan_amount as number
 ${qm.purchase_price && units ? `| Price per Unit | ${money((qm.purchase_price as number) / (units as number))} |` : ''}
 
 ---
-${leaseUpBlock}${investmentThesis ? `\n## Investment Thesis\n\n${investmentThesis}\n` : ''}
+${leaseUpBlock}${cashFlowBlock}${investmentThesis ? `\n## Investment Thesis\n\n${investmentThesis}\n` : ''}
 ${valueCreation ? `\n## Value Creation Strategy\n\n${valueCreation}\n` : ''}
 ## Validation
 
@@ -595,6 +617,22 @@ Credit Score: ${val(deepGet(c, 'fico_score') ?? deepGet(c, 'credit_score'))}`);
     );
     sections.push(`## LEASE-UP SCHEDULE (${val(deepGet(c, 'model_type'))}, ${val(deepGet(c, 'period_granularity'))})
 Stabilization Target: ${val(deepGet(c, 'stabilization_target'))} | Stab. Occupancy: ${pct(deepGet(c, 'stabilized_summary.occupancy_rate'))} | Stab. NOI: ${money(deepGet(c, 'stabilized_summary.annualized_noi'))}${elided}
+${rowLines.join('\n')}`);
+  }
+
+  // ── Cash-flow series (abbreviated, base variant) ─────────────────────────
+  const cashFlowSummary = getSectionVariant(parsed, 'cash_flow_series', 'base')
+    ?? getSectionVariant(parsed, 'cash_flow_series', 'default');
+  if (cashFlowSummary) {
+    const c = cashFlowSummary.content;
+    const rows = (deepGet(c, 'series') as Record<string, unknown>[] | undefined) ?? [];
+    const shown = rows.length > 6 ? [...rows.slice(0, 3), ...rows.slice(-3)] : rows;
+    const elided = rows.length > 6 ? ` (${rows.length - 6} middle flows elided)` : '';
+    const rowLines = shown.map(r =>
+      `${val(r['date'])}: ${money(r['amount'])}${r['kind'] ? ` [${val(r['kind'])}]` : ''}`
+    );
+    sections.push(`## CASH FLOW SERIES (${val(deepGet(c, 'day_count') ?? 'actual/365f')})
+Net Total: ${money(deepGet(c, 'stated_metrics.total_net'))} | MOIC: ${val(deepGet(c, 'stated_metrics.moic'))} | XIRR: ${pct(deepGet(c, 'stated_metrics.xirr'))}${elided}
 ${rowLines.join('\n')}`);
   }
 

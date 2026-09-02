@@ -1,0 +1,43 @@
+{
+  "series": {
+    "day_count": "actual/365f",
+    "series": [
+      {
+        "date": "2026-03-17",
+        "amount": -14250000,
+        "kind": "acquisition",
+        "label": "Close"
+      },
+      {
+        "date": "2026-09-30",
+        "amount": 412000,
+        "kind": "operating"
+      },
+      {
+        "date": "2027-03-31",
+        "amount": 431000,
+        "kind": "operating"
+      },
+      {
+        "date": "2027-06-15",
+        "amount": -350000,
+        "kind": "capex"
+      },
+      {
+        "date": "2031-03-17",
+        "amount": 19800000,
+        "kind": "disposition",
+        "label": "Exit"
+      }
+    ],
+    "stated_metrics": {
+      "total_net": 6043000,
+      "moic": 1.4139,
+      "xnpv": {
+        "rate": 0.06,
+        "value": 1022812.04
+      },
+      "xirr": 0.075239
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "results": [
+    {
+      "calc_id": "impossible_xirr",
+      "ok": false,
+      "error_code": "CALC-XIRR-DIVERGE"
+    }
+  ]
+}

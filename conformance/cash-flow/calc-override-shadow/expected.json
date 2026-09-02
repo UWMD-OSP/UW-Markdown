@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "calc_id": "stressed_xirr",
+      "ok": true,
+      "value": 0.064194,
+      "unit": "%",
+      "round_to": 6
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "expected_codes": [],
+  "absent_code_prefixes": [
+    "CF-"
+  ],
+  "verdict": "verified"
+}
