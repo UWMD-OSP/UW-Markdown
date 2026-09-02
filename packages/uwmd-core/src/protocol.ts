@@ -593,6 +593,286 @@ export function lookupIncompleteDataPolicy(
   return best;
 }
 
+// ─── Stage requirements (Format Spec §5.1) ────────────────────────────────────
+// Moved here from validator.ts by the RFC 0009 STAGE_CONTRACT merge: the
+// requirements table and the incomplete-data policies above are two halves of
+// one contract, and deriving the merged registry needs both in one module
+// (validator.ts imports protocol.ts, never the reverse). validator.ts
+// re-exports these so existing import sites keep working.
+
+/**
+ * What a pipeline stage requires of the document. `required_sections` is the
+ * presence list; `required_field_paths` enforces field-level presence (used by
+ * the `scope` stage); `required_one_of` enforces "at least one of these paths
+ * must resolve" (also `scope`-only today).
+ *
+ * Paths are dot-notated relative to a section's content root, prefixed with
+ * the section ID (e.g. `property.asking_price`, `property.units`).
+ */
+export interface StageRequirement {
+  required_sections: string[];
+  required_field_paths?: string[];
+  required_one_of?: string[][];
+}
+
+export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
+  scope: {
+    required_sections: ['property'],
+    required_field_paths: ['property.address', 'property.asset_class'],
+    required_one_of: [['property.asking_price', 'property.units']],
+  },
+  screening:        { required_sections: ['property', 'debt_structure', 'validation'] },
+  term_sheet:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'] },
+  // `operating_statement` re-joined full_underwrite and above with RFC 0028
+  // (spec §5.1 always listed it; the variant-aware `hasSection` case in
+  // validator.ts was built for it but no stage list reached it — decision (a)
+  // in the RFC).
+  full_underwrite:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'] },
+  credit_approval:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'] },
+  closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+  monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+};
+
+/**
+ * Legacy helper that returns just the section-list portion of a stage's
+ * requirements. Preserved for callers that pre-date the widened
+ * `StageRequirement` shape; new code SHOULD consult `STAGE_CONTRACT` (or
+ * `requiredSectionsFor` when the asset class is known).
+ */
+export function getRequiredSections(stage: DealStage): readonly string[] {
+  return STAGE_REQUIREMENTS[stage].required_sections;
+}
+
+/**
+ * Per-class adjustments to the base stage lists (format spec §5.1 class
+ * overlays, RFC 0029). Exhaustive by design: only `land` and `mixed_use`
+ * diverge structurally — every other class reuses the base sections with
+ * class-appropriate payloads (hospitality's `rent_roll` carries
+ * keys/ADR/segmentation), so reuse needs no entry here.
+ *
+ * `exempt` removes a requirement outright; `substitute` replaces it with
+ * another section that is then *required* in its place.
+ */
+export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
+  exempt?: readonly string[];
+  substitute?: Readonly<Record<string, string>>;
+}>> = {
+  land:      { exempt: ['rent_roll', 'operating_statement'] },
+  mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
+};
+
+// ─── STAGE_CONTRACT — the merged stage registry (RFC 0009) ────────────────────
+
+/**
+ * One row of the merged stage contract: for a `(stage, section)` pair —
+ * optionally narrowed to a `field_path` or an `asset_class` — what presence
+ * is required and what to do when the data is provisional.
+ *
+ * This registry merges the three surfaces that previously answered "what
+ * does this stage demand": `STAGE_REQUIREMENTS` (presence),
+ * `STAGE_SECTION_OVERLAYS` (RFC 0029 class adjustments — now the
+ * `asset_class` qualifier on a row, per the RFC's own warning that a second
+ * table beside the merge recreates the two-surface problem), and
+ * `BUILTIN_INCOMPLETE_DATA_POLICIES` (`on_provisional`). It is derived
+ * mechanically from those compact authoring tables at module init, so the
+ * two views cannot disagree; validators consult THIS registry (via
+ * `requiredSectionsFor` / `lookupStageContract`).
+ *
+ * Two refinements against the RFC sketch, recorded here: `required` and
+ * `on_provisional` are optional — a row may state a policy for a section a
+ * stage doesn't require (rent_roll at scope), or a requirement with no
+ * policy — and `one_of` carries the scope stage's either-or field groups,
+ * which the sketch's single `field_path` could not express.
+ */
+export interface StageContractEntry {
+  stage: DealStage;
+  section: string;
+  field_path?: string;
+  /** Group of paths where at least one must resolve (scope-only today). */
+  one_of?: readonly string[];
+  /** Class-qualified row (RFC 0029 overlay absorbed): applies only to files
+   *  of this asset class, overriding the unqualified row. */
+  asset_class?: AssetClass;
+  required?: boolean;
+  on_provisional?: GapAction;
+  /** Reserved: distinct handling for `partial` blocks (full-block
+   *  `provisional` governs today; nothing populates this yet). */
+  on_partial?: GapAction;
+  rationale?: string;
+}
+
+function buildStageContract(): readonly StageContractEntry[] {
+  const rows: StageContractEntry[] = [];
+  const stages = Object.keys(STAGE_REQUIREMENTS) as DealStage[];
+
+  for (const stage of stages) {
+    const req = STAGE_REQUIREMENTS[stage];
+
+    // Presence rows, with the matching provisional policy folded in.
+    for (const section of req.required_sections) {
+      const policy = lookupIncompleteDataPolicy(section, undefined, stage);
+      rows.push({
+        stage,
+        section,
+        required: true,
+        ...(policy ? { on_provisional: policy.action } : {}),
+        ...(policy?.rationale ? { rationale: policy.rationale } : {}),
+      });
+    }
+
+    // Field-level presence rows.
+    for (const path of req.required_field_paths ?? []) {
+      const dot = path.indexOf('.');
+      const section = dot === -1 ? path : path.slice(0, dot);
+      rows.push({ stage, section, field_path: path, required: true });
+    }
+    for (const group of req.required_one_of ?? []) {
+      const first = group[0] ?? '';
+      const dot = first.indexOf('.');
+      const section = dot === -1 ? first : first.slice(0, dot);
+      rows.push({ stage, section, one_of: [...group], required: true });
+    }
+
+    // Class-qualified rows (the absorbed RFC 0029 overlays).
+    for (const [assetClass, overlay] of Object.entries(STAGE_SECTION_OVERLAYS)) {
+      if (!overlay) continue;
+      const substituted = new Set<string>();
+      for (const section of req.required_sections) {
+        if (overlay.exempt?.includes(section)) {
+          rows.push({ stage, section, asset_class: assetClass as AssetClass, required: false });
+          continue;
+        }
+        const replacement = overlay.substitute?.[section];
+        if (replacement !== undefined) {
+          rows.push({ stage, section, asset_class: assetClass as AssetClass, required: false });
+          if (!substituted.has(replacement)) {
+            substituted.add(replacement);
+            const policy = lookupIncompleteDataPolicy(replacement, undefined, stage);
+            rows.push({
+              stage,
+              section: replacement,
+              asset_class: assetClass as AssetClass,
+              required: true,
+              ...(policy ? { on_provisional: policy.action } : {}),
+            });
+          }
+        }
+      }
+    }
+
+    // Policy-only rows: sections with a provisional policy at this stage that
+    // the stage's presence list does not name (rent_roll at scope).
+    for (const policy of BUILTIN_INCOMPLETE_DATA_POLICIES) {
+      if (policy.stage !== stage) continue;
+      const alreadyRequired =
+        policy.field_path === undefined && req.required_sections.includes(policy.section);
+      if (alreadyRequired) continue;
+      rows.push({
+        stage,
+        section: policy.section,
+        ...(policy.field_path ? { field_path: policy.field_path } : {}),
+        required: false,
+        on_provisional: policy.action,
+        ...(policy.rationale ? { rationale: policy.rationale } : {}),
+      });
+    }
+  }
+
+  return Object.freeze(rows.map((r) => Object.freeze(r)));
+}
+
+/** The merged stage registry. Derived once at module init — see
+ *  {@link StageContractEntry}. */
+export const STAGE_CONTRACT: readonly StageContractEntry[] = buildStageContract();
+
+/**
+ * The sections a declared stage requires of a document of the given asset
+ * class, answered from `STAGE_CONTRACT`: unqualified `required: true` rows,
+ * overridden by any class-qualified row for the same `(stage, section)`.
+ * An unrecognized class — or none — takes the unqualified rows verbatim.
+ * Both consumers of stage completeness (`stage_readiness` and `DQ-06`)
+ * resolve through this one function, so the booleans and the issues stream
+ * can never disagree about what a stage requires.
+ */
+export function requiredSectionsFor(stage: DealStage, assetClass?: string): readonly string[] {
+  const out: string[] = [];
+  const qualified = new Map<string, boolean>();
+  if (assetClass) {
+    for (const row of STAGE_CONTRACT) {
+      if (row.stage !== stage || row.asset_class !== assetClass) continue;
+      if (row.field_path !== undefined || row.one_of !== undefined) continue;
+      qualified.set(row.section, row.required === true);
+    }
+  }
+  for (const row of STAGE_CONTRACT) {
+    if (row.stage !== stage || row.asset_class !== undefined) continue;
+    if (row.field_path !== undefined || row.one_of !== undefined) continue;
+    if (row.required !== true) continue;
+    const override = qualified.get(row.section);
+    if (override === false) continue;
+    if (!out.includes(row.section)) out.push(row.section);
+  }
+  // Class-qualified additions (a substitute section the base list never
+  // names), spliced where their displaced section sat when possible — the
+  // build order above already interleaves them, so document order is the
+  // original section order.
+  for (const [section, isRequired] of qualified) {
+    if (isRequired && !out.includes(section)) {
+      // Splice at the position of the first base section this class row
+      // displaced, to preserve the legacy ordering contract.
+      const displacedIndex = indexOfDisplaced(stage, assetClass as AssetClass, section);
+      if (displacedIndex >= 0 && displacedIndex <= out.length) out.splice(displacedIndex, 0, section);
+      else out.push(section);
+    }
+  }
+  return out;
+}
+
+/** Where a class-substituted section should sit in the resolved list: the
+ *  index its first displaced base section would have occupied. */
+function indexOfDisplaced(stage: DealStage, assetClass: AssetClass, replacement: string): number {
+  const overlay = STAGE_SECTION_OVERLAYS[assetClass];
+  if (!overlay?.substitute) return -1;
+  const base = STAGE_REQUIREMENTS[stage].required_sections;
+  const resolved: string[] = [];
+  for (const section of base) {
+    if (overlay.exempt?.includes(section)) continue;
+    const r = overlay.substitute[section] ?? section;
+    if (!resolved.includes(r)) resolved.push(r);
+  }
+  return resolved.indexOf(replacement);
+}
+
+/**
+ * The most-specific `STAGE_CONTRACT` row for `(stage, section, field_path,
+ * asset_class)`. Specificity mirrors `lookupIncompleteDataPolicy`:
+ * class-qualified beats unqualified, field-scoped beats section-scoped.
+ * Returns null when the contract says nothing about the pair.
+ */
+export function lookupStageContract(
+  stage: DealStage,
+  section: string,
+  field_path?: string,
+  assetClass?: string,
+): StageContractEntry | null {
+  let best: StageContractEntry | null = null;
+  let bestScore = -1;
+  for (const row of STAGE_CONTRACT) {
+    if (row.stage !== stage || row.section !== section) continue;
+    if (row.one_of !== undefined) continue;
+    if (row.asset_class !== undefined && row.asset_class !== assetClass) continue;
+    if (row.field_path !== undefined && row.field_path !== field_path) continue;
+    let score = 0;
+    if (row.field_path !== undefined) score += 4;
+    if (row.asset_class !== undefined) score += 2;
+    if (score > bestScore) {
+      bestScore = score;
+      best = row;
+    }
+  }
+  return best;
+}
+
 // ─── Edit semantics (Part V) ──────────────────────────────────────────────────
 
 /** Who is permitted to overwrite a block, derived from `_meta.source`. */

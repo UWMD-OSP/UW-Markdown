@@ -362,6 +362,13 @@ tables every conforming tool references:
 - Cascade: `CascadeStep`, `CASCADE_ORDER`, `SOURCE_TAGS`.
 - Incomplete data: `IncompleteDataPolicy`, `GapAction`,
   `BUILTIN_INCOMPLETE_DATA_POLICIES`, `lookupIncompleteDataPolicy`.
+- Stage contract (RFC 0009 merge): `STAGE_CONTRACT` (the single registry
+  validators consult — presence + class overlays + provisional policy in one
+  row shape), `StageContractEntry`, `lookupStageContract`,
+  `requiredSectionsFor`; the compact authoring tables
+  (`STAGE_REQUIREMENTS`, `STAGE_SECTION_OVERLAYS`) moved here from
+  `validator.ts` and the registry is derived from them at module init, so
+  the two views cannot disagree.
 - Calc contract: `CalcEvaluationContext`, `CalcResult`, `ModuleCalcDecl`.
 - Modules: `ModuleManifest` (+ section/calc/validation/agent-layer decls);
   `modules.ts` validates and registers declarative v1 manifests.
