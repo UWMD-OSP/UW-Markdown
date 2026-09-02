@@ -764,8 +764,15 @@ export {
   ACTOR_SOURCE_RE,
   parseActorSource,
   lookupIncompleteDataPolicy,
+  STAGE_CONTRACT,
+  STAGE_REQUIREMENTS,
+  STAGE_SECTION_OVERLAYS,
+  requiredSectionsFor,
+  lookupStageContract,
 } from './protocol.js';
 export type {
+  StageContractEntry,
+  StageRequirement,
   ViewerTier,
   ViewerRole,
   ViewerCapability,

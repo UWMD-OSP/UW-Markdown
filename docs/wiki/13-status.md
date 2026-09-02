@@ -819,8 +819,11 @@ shapes digest identically, signatures don't survive migration —
 versioned canonicalization with the frozen v1 rule, the `META-*` family,
 `migrate --to-v2` with the refuse/`--resign`/`--strip-signatures`
 signature policy, `PROTO-EDIT-010` guarding v2 files from 1.x edits, and
-the `meta-v2` + `migrate` suites) — then the `STAGE_CONTRACT` merge, a
-1.10.0 release, and the **2.0 cut** (format spec v2, nested default,
+the `meta-v2` + `migrate` suites) — then the `STAGE_CONTRACT` merge, also
+**implemented 2026-09-01** (one registry with asset_class-qualified rows
+absorbs STAGE_REQUIREMENTS + the RFC 0029 overlays +
+INCOMPLETE_DATA_POLICIES; equivalence-tested, no behavior change, no
+protocol move) — then a 1.10.0 release and the **2.0 cut** (format spec v2, nested default,
 sniffing + Lite-canon-1.0 sunsets, `SRC-02`→error, `manual` out of
 `SOURCE_TAGS`). The parallel human-only track stays open (PCG64
 vector diff, security alias, public RFC venue, bus-factor note).

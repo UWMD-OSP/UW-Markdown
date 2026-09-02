@@ -12,7 +12,7 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale } from './protocol.js';
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, STAGE_REQUIREMENTS, requiredSectionsFor } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
@@ -80,88 +80,18 @@ function fvCode(legacy: string): { code: string; legacy_code: string } {
 }
 
 // ─── Stage completeness requirements (spec §5.1) ──────────────────────────────
+// The tables moved to protocol.ts with the RFC 0009 STAGE_CONTRACT merge —
+// requirements, class overlays, and incomplete-data policies are one contract
+// now, derived into a single registry validators consult. Re-exported here so
+// existing import sites (gaps.ts, tests) keep working.
 
-/**
- * A stage's readiness contract. `required_sections` is the legacy section
- * list; `required_field_paths` enforces field-level presence (used by the
- * `scope` stage); `required_one_of` enforces "at least one of these paths
- * must resolve" (also `scope`-only today).
- *
- * Paths are dot-notated relative to a section's content root, prefixed with
- * the section ID (e.g. `property.asking_price`, `property.units`).
- */
-export interface StageRequirement {
-  required_sections: string[];
-  required_field_paths?: string[];
-  required_one_of?: string[][];
-}
-
-export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
-  scope: {
-    required_sections: ['property'],
-    required_field_paths: ['property.address', 'property.asset_class'],
-    required_one_of: [['property.asking_price', 'property.units']],
-  },
-  screening:        { required_sections: ['property', 'debt_structure', 'validation'] },
-  term_sheet:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'] },
-  // `operating_statement` re-joined full_underwrite and above with RFC 0028
-  // (spec §5.1 always listed it; the variant-aware `hasSection` case below
-  // was built for it but no stage list reached it — decision (a) in the RFC).
-  full_underwrite:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'] },
-  credit_approval:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'] },
-  closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
-  monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
-};
-
-/**
- * Legacy helper that returns just the section-list portion of a stage's
- * requirements. Preserved for callers that pre-date the widened
- * `StageRequirement` shape; new code SHOULD consult `STAGE_REQUIREMENTS`
- * directly (or `requiredSectionsFor` when the asset class is known).
- */
-export function getRequiredSections(stage: DealStage): readonly string[] {
-  return STAGE_REQUIREMENTS[stage].required_sections;
-}
-
-/**
- * Per-class adjustments to the base stage lists (format spec §5.1 class
- * overlays, RFC 0029). Exhaustive by design: only `land` and `mixed_use`
- * diverge structurally — every other class reuses the base sections with
- * class-appropriate payloads (hospitality's `rent_roll` carries
- * keys/ADR/segmentation), so reuse needs no entry here.
- *
- * `exempt` removes a requirement outright; `substitute` replaces it with
- * another section that is then *required* in its place.
- */
-export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
-  exempt?: readonly string[];
-  substitute?: Readonly<Record<string, string>>;
-}>> = {
-  land:      { exempt: ['rent_roll', 'operating_statement'] },
-  mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
-};
-
-/**
- * The sections a declared stage requires of a document of the given asset
- * class: the base list with the class overlay applied. A substitute that
- * replaces more than one section appears once. An unrecognized class — or
- * none — takes the base list verbatim. Both consumers of stage completeness
- * (`stage_readiness` and `DQ-06`) resolve through this one function, so the
- * booleans and the issues stream can never disagree about what a stage
- * requires.
- */
-export function requiredSectionsFor(stage: DealStage, assetClass?: string): readonly string[] {
-  const base = STAGE_REQUIREMENTS[stage].required_sections;
-  const overlay = assetClass ? STAGE_SECTION_OVERLAYS[assetClass as AssetClass] : undefined;
-  if (!overlay) return base;
-  const out: string[] = [];
-  for (const section of base) {
-    if (overlay.exempt?.includes(section)) continue;
-    const replacement = overlay.substitute?.[section] ?? section;
-    if (!out.includes(replacement)) out.push(replacement);
-  }
-  return out;
-}
+export {
+  STAGE_REQUIREMENTS,
+  STAGE_SECTION_OVERLAYS,
+  getRequiredSections,
+  requiredSectionsFor,
+} from './protocol.js';
+export type { StageRequirement } from './protocol.js';
 
 /**
  * Resolve a dot-notated path of the form `<section>.<field>...` against

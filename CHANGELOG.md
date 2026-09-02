@@ -10,6 +10,25 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- **RFC 0009 leg 2 — the `STAGE_CONTRACT` merge.** `STAGE_REQUIREMENTS`,
+  `STAGE_SECTION_OVERLAYS` (RFC 0029), and `BUILTIN_INCOMPLETE_DATA_POLICIES`
+  merge into one registry, `STAGE_CONTRACT` — rows keyed
+  `(stage, section, field_path?, asset_class?)` carrying `required`,
+  `on_provisional`, and the scope stage's `one_of` groups; the class overlays
+  become `asset_class`-qualified rows rather than a side table. The registry
+  is derived mechanically from the compact authoring tables at module init
+  (the tables moved from `validator.ts` to `protocol.ts`; validator
+  re-exports them), and validators resolve presence through it. **No
+  behavior change** — pinned by equivalence tests across the full
+  stage × asset-class × policy cross-product (`stage-contract.test.ts`),
+  and no protocol version move (no new codes, no observable contract
+  change). New public API: `STAGE_CONTRACT`, `StageContractEntry`,
+  `lookupStageContract`, plus the previously internal stage tables.
+  Refinements against the RFC sketch, recorded in the RFC on flip:
+  `required`/`on_provisional` are optional per row, and `one_of` exists
+  because the sketch's single `field_path` could not express the scope
+  stage's either-or groups.
+
 - **RFC 0009 (accepted 2026-09-01 at the sprint's Phase 4 gate) — the 1.10.0
   on-ramp to format 2.0.** Protocol **1.13.0 → 1.14.0**; format stays 1.1
   (the nested shape is *reserved*, not admitted, at 1.x):
