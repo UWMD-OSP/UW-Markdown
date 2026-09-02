@@ -2,13 +2,16 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-02 (evening), after the post-2.0 pair of
-same-day RFCs: **RFC 0034** (calendar-anchored cash flows — protocol
-**2.1.0**, §VIII.9) and **RFC 0015** (portfolio & relationship profiles —
-protocol **2.2.0**, §XV; Future work renumbered §XVI), both drafted /
-revised, accepted by the owner, and implemented today on top of the
-morning's **2.0.0 release** (`1738219`, tag `v2.0.0`; core/cli 2.0.0 +
-signing 0.2.2 live on npm, underwriter.cc acknowledged). Full pass: build
+**Last verified:** 2026-09-02 (evening), after the **2.1.0 release
+shipped** (`bd8c249`, tag `v2.1.0`): `@uwmd/core` **2.1.0**, `@uwmd/cli`
+**2.1.0**, and `@uwmd/signing` **0.2.3** all **live on npm, verified via
+`npm view`** (excel/report 0.8.3 and batch 0.7.3 repins landed,
+unpublished). The release carries the post-2.0 pair of same-day RFCs:
+**RFC 0034** (calendar-anchored cash flows — protocol **2.1.0**, §VIII.9)
+and **RFC 0015** (portfolio & relationship profiles — protocol **2.2.0**,
+§XV; Future work renumbered §XVI), both drafted / revised, accepted by
+the owner, and implemented today on top of the morning's **2.0.0
+release** (`1738219`, tag `v2.0.0`; underwriter.cc acknowledged). Full pass: build
 green across all workspaces; all tests green (95 core test files; +74 new
 unit tests today); **363 conformance** assertions (341 + the 15-scenario
 `cash-flow` suite + the 7-scenario `portfolio-relationships` suite);
