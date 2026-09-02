@@ -1,7 +1,7 @@
 ---
 rfc: 0009
 title: _meta v2 sub-object reorganization
-status: draft
+status: accepted
 author: jaredmaxey
 created: 2026-04-27
 revised: 2026-09-01

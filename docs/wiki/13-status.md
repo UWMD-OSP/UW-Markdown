@@ -806,10 +806,20 @@ portfolio/relationship profiles (0015) stay deferred to a later sprint.
 `v1.9.0`) — core/cli 1.9.0 and signing 0.2.0 live, coordinated repins
 landed (excel/report 0.8.0, batch 0.7.0, web-editor 0.8.0, hospitality
 repin-only). The signing trusted publisher is configured, so all three
-packages now release hands-off on any `v*` tag. What remains of the sprint
-is **Phase 4: the RFC 0009 / 2.0 gate** — an owner decision, unscheduled —
-plus the parallel human-only track (PCG64 vector diff, security alias,
-public RFC venue, bus-factor note).
+packages now release hands-off on any `v*` tag. **Phase 4 resolved 2026-09-01: the owner opened the 2.0 train.** RFC 0009
+was revised to acceptance-ready (PR #126 — four open questions resolved by
+the owner: `lifecycle.version`→`revision`, `integrity.algorithm` added
+defaulting `'sha256'`, no mixed shapes per file, `manual` leaves
+`SOURCE_TAGS` at 2.0; plus the previously missing canonicalization section:
+v1 rule frozen forever, v2 rule is normalize-then-hash so both parser
+shapes digest identically, signatures don't survive migration —
+`--resign`/`--strip-signatures` is the key holder's explicit choice) and
+**accepted**. The train: a **1.10.0 on-ramp** (shim, versioned
+canonicalization, `META-V2-IN-V1`/`META-V1-IN-V2`, `migrate --to-v2`,
+`--emit-v2-shape`, v2 fixtures), the `STAGE_CONTRACT` merge, then the
+**2.0 cut** (format spec v2, nested default, sniffing + Lite-canon-1.0
+sunsets, `SRC-02`→error). The parallel human-only track stays open (PCG64
+vector diff, security alias, public RFC venue, bus-factor note).
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
 was revised 2026-08-31** to absorb the split: `provenance` now carries both
