@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/cli",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Command-line installer for UW Markdown — `npx uwmd init|parse|validate|render|run` for .uw.md underwriting files. Thin wrapper over @uwmd/core.",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "prepublishOnly": "npm --prefix ../uwmd-core run build && npm --prefix ../.. test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
   },
   "dependencies": {
-    "@uwmd/core": "2.0.0"
+    "@uwmd/core": "2.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

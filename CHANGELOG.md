@@ -6,7 +6,22 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.1.0] - 2026-09-02
+
+### Released
+
+- `@uwmd/core` **2.1.0**, `@uwmd/cli` **2.1.0** (lockstep), and
+  `@uwmd/signing` **0.2.3** (repin-only: its core dependency is exact, so the
+  core bump forces a patch; core's exact optional-peer pin moves with it).
+  Coordinated repins for the versioned-but-unpublished surfaces:
+  `@uwmd/excel` **0.8.3**, `@uwmd/report` **0.8.3**, `@uwmd/batch` **0.7.3**;
+  `@uwmd/module-hospitality` repins to core 2.1.0 and stays **0.1.0,
+  unpublished**; `tools/web-editor` is a `file:` link and needs no repin.
+- The **post-2.0 same-day pair**: RFC 0034 (calendar-anchored cash flows,
+  protocol **2.1.0** §VIII.9) and RFC 0015 (portfolio & relationship
+  profiles, protocol **2.2.0** §XV) — both drafted/revised, accepted, and
+  implemented 2026-09-02. Format stays **2.0** (additive section
+  registration does not bump it; see the RFC 0034 erratum).
 
 ### Added — portfolio & relationship profiles (RFC 0015; protocol 2.1.0 → 2.2.0)
 
@@ -2832,6 +2847,7 @@ Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
 [Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...HEAD
+[2.1.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.10.0...v2.0.0
 [1.10.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.8.0...v1.9.0
