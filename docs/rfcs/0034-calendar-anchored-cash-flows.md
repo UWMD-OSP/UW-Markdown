@@ -1,0 +1,370 @@
+---
+rfc: 0034
+title: Calendar-anchored cash flows — dated series, day counts, and deterministic xirr/xnpv
+status: draft
+author: jaredmaxey
+created: 2026-09-02
+affects:
+  - format-spec
+  - protocol-spec
+  - core-library
+  - conformance-corpus
+---
+
+# RFC 0034: Calendar-anchored cash flows — dated series, day counts, and deterministic `xirr`/`xnpv`
+
+> Drafted 2026-09-02, immediately after the 2.0.0 release. This is the
+> "calendar-date primitive" the status doc has carried as v2 future work
+> since RFC 0024, and the **hold-period cash-flow primitive RFC 0026
+> Phase 2 names as its missing precondition** — the distribution
+> waterfall "needs a multi-period distribution engine the format does
+> not yet have." This RFC supplies the primitive. The waterfall itself
+> stays deferred; its precondition stops being the reason.
+
+## Summary
+
+Register a `cash_flow_series` section (§4.26): a **dated, irregular
+cash-flow series** — ISO-8601 dates, signed amounts — as a
+**state-and-verify** structure on the `capital_stack` / `lease_up_schedule`
+pattern. Add a normative **day-count registry** to the protocol
+(`actual/365f`, `actual/360`, `30/360us`, each with an exact algorithm)
+and define **`xnpv`** (closed-form) and **`xirr`** (by the RFC 0024
+bisection procedure, verbatim, with day-count-derived exponents) over a
+declared series. The calc grammar (§VIII.1) and the builtin table
+(§VIII.3) are **unchanged**: computation is reachable only through a
+JSON declaration (`CashFlowMetricDecl`, the §VIII.7/§VIII.8 pattern)
+and a three-state verifier (`verifyCashFlowSeries`). Mid-month
+acquisition dates, irregular draws, and hold-period exit flows become
+representable, verifiable, and receipt-coverable — the largest single
+step toward Argus-class time modeling the standard can take without
+touching the sandbox.
+
+## Motivation
+
+Three concrete gaps, each already written down elsewhere in this repo:
+
+1. **The format cannot state a dated cash flow.** `dcf` (§4.9) carries
+   hold-period *inputs* and annual projections; `lease_up_schedule`
+   (§4.25) carries *period-cadence* rows (`YYYY-MM` / `YYYY-Qn`). Neither
+   can say "$-14,250,000 on 2026-03-17, $+412,000 on 2026-09-30,
+   $+19,800,000 on 2031-03-17." Real deals close mid-month, fund draws
+   irregularly, and exit on anniversary dates. Every consumer that needs
+   this today (underwriter.cc's monthly engine, any Argus import) holds
+   it outside the record, where no receipt covers it.
+
+2. **`irr` is deterministic; annualized return on real dates is not
+   expressible.** RFC 0024 pinned `irr(...flows)` so two engines agree
+   on a root — but its flows are implicitly *equal-period*, so the one
+   return number an LP actually asks for (annualized, date-aware — what
+   Excel calls `XIRR`) has no home. Two conforming engines handed the
+   same dated flows today would each invent their own convention and
+   their receipts would disagree. This is exactly the class of number
+   the standard exists to make comparable (protocol §0.2).
+
+3. **RFC 0026 Phase 2 is blocked on this by name.** The distribution
+   waterfall (promote, hurdles, catch-up) is "documented and deferred;
+   it needs a multi-period distribution engine the format does not yet
+   have," with the boundary enforced by `CS-WATERFALL-UNSUPPORTED`.
+   A waterfall is a computation *over a dated series*. Until the series
+   exists as a first-class, verifiable structure, the waterfall cannot
+   even state its inputs.
+
+Non-motivation, stated to bound scope: this RFC does **not** model
+leases, recoveries, or absorption (vendor-side today, per the §4.25
+precedent that projection engines live outside core), and does **not**
+add the waterfall (still RFC 0026 Phase 2).
+
+## Proposed change
+
+### A. Format: §4.26 `cash_flow_series` (new section)
+
+Registered in the base format document (Part IV), taking the registered
+count from 26 to 27 subsections. **Format 2.0 → 2.1** (additive). Like
+§4.24/§4.25 it is asset-class independent, multi-variant
+(`variant=base|upside|downside|<custom>`, `stress_tests` rules), and
+OPTIONAL at every pipeline stage.
+
+**Fields.**
+
+- `label` — free text ("Levered hold-period cash flow").
+- `day_count` — one of the closed §VIII.9 registry:
+  `actual/365f` (default when absent) | `actual/360` | `30/360us`.
+- `series` — one entry per flow: `date` (ISO-8601 `YYYY-MM-DD`),
+  `amount` (signed; outflows negative), optional `kind` (closed:
+  `acquisition | operating | capex | debt_service | refinance |
+  disposition | other`), optional `label`. `kind` is advisory taxonomy
+  for renderers and rollups; it gates no rule in this RFC.
+- `stated_metrics` — the stated aggregates, all optional, each verified
+  when present:
+  - `total_net` — `Σ amount` (unit `$`).
+  - `moic` — `Σ inflows ÷ |Σ outflows|` (unit `x`).
+  - `xnpv` — `{ "rate": <fraction>, "value": <number> }` (unit `$`).
+  - `xirr` — the annualized rate (fraction, unit `%` for quantization).
+
+**Normative rules (RFC 2119), validator family `CF-NN`:**
+
+- **`CF-01` (error) — row grammar.** Every `date` MUST be a valid
+  ISO-8601 calendar date (`YYYY-MM-DD`, a real day — `2026-02-30`
+  refuses); every `amount` MUST be a finite number. An unknown
+  `day_count` or `kind` refuses (closed enums).
+- **`CF-02` (error) — ordering.** `series` MUST be non-empty and dates
+  MUST be non-decreasing. Same-day flows are legal (a closing and its
+  first draw share a date) and are NOT merged — each row keeps its
+  identity for path addressing (`cash_flow_series.series[3].amount`).
+  The first row's date is the series **anchor**.
+- **`CF-03` (error) — `xirr` needs a sign change.** A stated
+  `xirr` on a series whose amounts do not include at least one negative
+  and at least one positive value is refused: the stated number cannot
+  be the root of anything.
+- **Stated figures are verified, never trusted** — the §4.24/§4.25
+  posture, three-state, both sides quantized at the same quantum
+  (§VIII.5): `total_net` and `moic` recompute directly; `xnpv`
+  recomputes closed-form at the stated `rate`; `xirr` recomputes by the
+  §VIII.9 procedure. A stated metric whose recomputation *raises*
+  (e.g. `xirr` fails to bracket) is `failed` — the document asserts a
+  number the procedure cannot produce. A metric absent from
+  `stated_metrics` is simply not checked; `moic` on a series with no
+  outflows is `unverifiable` (division by zero is not evidence of
+  tampering).
+
+The section is **state-and-verify**: no pack formula reads it, the
+Tier-3 sandbox never iterates over it, and the variable-length array is
+therefore safe — the same argument §4.24 and §4.25 already carry.
+
+**Relationship to §4.25.** `lease_up_schedule` keeps the period-cadence
+grammar (`YYYY-MM` / `YYYY-Qn`) for uniform schedules; this section
+carries irregular *dated* flows. They are different axes (cadence
+vs. calendar) and both sections say so, so the two grammars cannot be
+mistaken for drift. The §4.25 deferral note ("a shared period-schedule
+primitive" awaits a second consumer) is unaffected: this is not a
+second consumer of the *period* grammar.
+
+### B. Protocol: §VIII.9 — day counts and dated-flow determinism (new)
+
+**Protocol 2.0.0 → 2.1.0** (additive normative requirements,
+`VERSIONS.md` rule 2).
+
+**§VIII.9.1 Day-count registry (normative, closed).** Mirrored in core
+as `DAY_COUNT_CONVENTIONS`. For dates `d1 ≤ d2`:
+
+- `actual/365f` — `yearfrac = actualDays(d1, d2) / 365`, where
+  `actualDays` is the count of calendar days between the two dates
+  (proleptic Gregorian; leap days count as days; the denominator is
+  always 365 — that is the "fixed" in 365F).
+- `actual/360` — `yearfrac = actualDays(d1, d2) / 360`.
+- `30/360us` — **exactly the Excel `DAYS360` U.S. method**, chosen for
+  the Excel-parity invariant and pinned so implementers do not reach
+  for one of the *other* NASD variants: let `(y1,m1,dd1)` and
+  `(y2,m2,dd2)` be the date parts; if `dd1 = 31` set `dd1 = 30`;
+  then if `dd2 = 31` **and** `dd1 = 30` set `dd2 = 30`;
+  `days = (y2−y1)·360 + (m2−m1)·30 + (dd2−dd1)`;
+  `yearfrac = days / 360`. **No February special-casing** — the NASD
+  end-of-February adjustments are deliberately excluded; the divergence
+  from "full NASD" is documented here rather than discovered in a
+  receipt mismatch.
+
+`yearfrac` is evaluated in binary64 with the division performed last
+(`days` is exact by construction in the first two conventions'
+integer day counts and the third's integer arithmetic).
+
+**§VIII.9.2 `xnpv` (normative, closed-form).** Over a series with
+anchor date `d0`, rate `r > −1`:
+
+```
+xnpv(r) = Σᵢ amountᵢ × (1 + r) ^ (−tᵢ)   where tᵢ = yearfrac(d0, dᵢ, day_count)
+```
+
+Terms are accumulated **in series order** (left-to-right, the §VIII.5
+posture on evaluation order). `r ≤ −1` raises `CALC-TYPE-001`.
+
+**§VIII.9.3 `xirr` (normative).** The root of `xnpv(r) = 0`, computed
+by **the §VIII.3 `irr` procedure verbatim** with `npv` replaced by
+`xnpv`: bracket over `[−0.999, 10.0]`; return an exact **high**-endpoint
+root; bisect to `|xnpv(mid)| < 1e-9` or a half-interval below `1e-12`,
+capped at 200 iterations; **no Newton polish**; failure to bracket or
+converge raises `CALC-XIRR-DIVERGE`. The RFC 0024 erratum about the low
+endpoint carries over unchanged: a root at exactly `−0.999` is not a
+well-defined quantity in binary64 and is not owed. `xirr` joins `irr`
+as the **only two** builtins permitted to iterate — the §VIII.3
+sentence is amended to say so.
+
+**§VIII.9.4 Reachability.** Neither `xnpv` nor `xirr` enters the
+§VIII.1 grammar or the §VIII.3 table of expression-callable builtins.
+They are reachable only through:
+
+1. **`verifyCashFlowSeries`** — the §4.26 verifier, and
+2. **`CashFlowMetricDecl`** — a JSON declaration, the §VIII.7/§VIII.8
+   pattern:
+
+```json
+{
+  "id": "levered_xirr",
+  "label": "Levered XIRR",
+  "series_path": "cash_flow_series",
+  "variant": "base",
+  "metric": "xirr",
+  "unit": "%"
+}
+```
+
+`metric` is closed: `xirr | xnpv | moic | total_net`; `xnpv` requires a
+`rate`. The result is one quantized number in an ordinary
+`CalcResult` — `CalcResult.value` is **not** widened, no result carries
+a date, and `CalcEvaluationContext.overrides` applies (a caller may
+shadow `cash_flow_series.series[7].amount` to ask "what if the exit is
+$1M lower" without touching the document — the same shadowing contract
+sensitivity sweeps already use). Quantization follows the RFC 0023
+unit defaults: `$` → 2, `%` → 6, `x` → 4.
+
+**Error codes.** `CALC-XIRR-DIVERGE` (no bracket / no convergence),
+`CALC-CF-SERIES` (declaration names a missing, malformed, or
+wrong-variant series — the decl-level sibling of `CF-01`/`CF-02`,
+raised at evaluation rather than validation). Both join §XI and the
+§III.6a family registry under the `calc` capability.
+
+### C. What this RFC does *not* change
+
+- No new expression-grammar tokens, no date type in the sandbox, no
+  arrays in `CalcResult.value`, no stateful builtins — the
+  declarations-not-grammar doctrine holds.
+- No pack declares an `xirr` metric (mirroring RFC 0024: no built-in
+  calculation on any asset class moves).
+- **Excel emit is deferred, with the reason recorded:** Excel's `XIRR`
+  is Newton-seeded, so a live `=XIRR(...)` formula cannot be guaranteed
+  bit-equal to the §VIII.9.3 bisection at the parity boundary the way
+  `ROUND`-wrapped closed-form formulas are. If a Cash Flow sheet is
+  ever emitted, stated/computed metrics land as **literals** (the
+  receipt's numbers), never as live `XIRR` formulas — an exception to
+  "NOI is itself a formula" that must be taken knowingly, by the RFC
+  that builds the sheet.
+- The RFC 0026 waterfall stays deferred. This RFC removes its stated
+  precondition; taking it up is a separate acceptance.
+
+## Compatibility analysis
+
+- **Existing files** — unaffected. The section is new and optional;
+  documents without it validate byte-identically. 1.x readers that
+  predate this RFC treat `cash_flow_series` under §XII.2
+  unknown-section tolerance (preserve, don't interpret).
+- **Tier-1 Reader** — additive: one new section id, one new schema,
+  three new `CF-NN` codes (owed under the `validate` capability per
+  RFC 0030 scoping).
+- **Tier-2 Editor** — no change; the section takes ordinary edit
+  policies.
+- **Tier-3 Calc Host** — additive: the day-count registry, `xnpv`,
+  `xirr`, and the declaration evaluator. The §VIII.1 grammar and all
+  existing builtins are untouched; no existing calc result can move.
+- **Tier-4 Agent Host** — no change; agents MAY draft a series, the
+  host stamps `agent/<id>`, the figures remain subject to verification
+  (§4.25's authorship posture).
+- **Modules** — no manifest change. A module MAY reference the section
+  in `sections` requirements like any other.
+
+Nothing breaks; no deprecation path is needed.
+
+## Conformance impact
+
+New suite `conformance/cash-flow/`, sketched:
+
+- **verify/** — a dated multifamily hold (acquisition, quarterly-ish
+  irregular operating flows, disposition) with all four stated metrics
+  `verified`; a `failed` case (stated `xirr` off by more than the 6dp
+  quantum); an `unverifiable` case (`moic` with no outflows); a
+  same-day-flows case (closing + first draw share the anchor date).
+- **refuse/** — `CF-01` (invalid calendar date `2026-02-30`; unknown
+  `day_count`), `CF-02` (descending dates; empty series), `CF-03`
+  (all-positive series stating an `xirr`).
+- **calc/** — `CashFlowMetricDecl` fixtures: `xirr` on a known series
+  pinned to the bisection value at 6dp; `xnpv` at a stated rate pinned
+  at 2dp; an override shadowing one row's amount; `CALC-XIRR-DIVERGE`
+  on a no-sign-change series reached via declaration;
+  `CALC-CF-SERIES` on a missing variant.
+- **day counts** — one fixture trio holding the same two dates under
+  all three conventions, pinning the three `yearfrac` values —
+  including a `30/360us` pair exercising the 31st-day clamps and a
+  leap-February pair proving `actual/365f` keeps its fixed denominator.
+
+Existing fixtures: none move (the section is optional and no pack
+changes). Corpus grows by roughly 12–15 assertions.
+
+## Reference implementation
+
+- **Files:** `calc/day-count.ts` (registry + `yearfrac`, exact
+  algorithms above), `cash-flow-series.ts` (types +
+  `verifyCashFlowSeries`, sibling of `verifyCapitalStack` /
+  `verifyLeaseUpSchedule`), `calc/dated-flows.ts` (`CashFlowMetricDecl`
+  + `evaluateCashFlowMetrics`, sibling of `sensitivity.ts` /
+  `stochastic.ts`; `xnpv`/`xirr` live here, *not* in `builtins.ts`,
+  so the expression namespace cannot reach them), validator
+  `checkCashFlowSeries` + `CF-NN` remediations, schema
+  `section-cash-flow-series.schema.json`, chat/summary renderer rows,
+  section registry entry.
+- **API surface (all additive, exported from `index.ts` and
+  `browser.ts`):** `DAY_COUNT_CONVENTIONS`, `DayCountConvention`,
+  `yearfrac`, `CashFlowSeries`, `CashFlowRow`, `verifyCashFlowSeries`,
+  `CashFlowMetricDecl`, `evaluateCashFlowMetrics`,
+  `CALC-XIRR-DIVERGE` / `CALC-CF-SERIES` codes.
+- **CLI:** the section flows through existing `validate` / `verify` /
+  `render` surfaces; no new command. (`uwmd calc` gains nothing — the
+  decl evaluator is host API, as sensitivity's is.)
+- **Test plan:** unit tests pinning each convention against hand-worked
+  dates (incl. the DAYS360 clamp table and a leap year); a property
+  test that a returned `xirr` actually zeroes `xnpv` (the RFC 0024
+  pattern); verifier three-state tests; decl evaluator tests incl.
+  overrides and both error codes; conformance as above. Excel-parity
+  suites untouched, by construction.
+
+## Alternatives considered
+
+1. **A date type and `xirr(...pairs)` in the expression grammar.**
+   Rejected on doctrine and on mechanics: the grammar has no arrays and
+   no date literals, and widening it for one feature reopens the
+   sandbox surface RFCs 0005/0007 deliberately kept closed. The
+   declaration pattern already solved "a computation over data too big
+   for an expression" twice.
+2. **Extend §4.25's period grammar with a `dated` granularity.**
+   Rejected: cadence and calendar are different contracts. §4.25's
+   contiguity rule (`LU-02`, gap-free) is the *point* of a period
+   schedule and is exactly wrong for irregular flows; forcing both
+   through one section makes each rule conditional on the other's mode.
+3. **Leave it vendor-side (underwriter.cc computes XIRR, the document
+   never states it).** Rejected: an unstated number cannot be receipt-
+   verified, and cross-engine comparability of stated returns is the
+   standard's core promise. The vendor keeps the *projection* freedom
+   (what flows to state); the standard takes the *verification* duty.
+4. **Adopt Excel's Newton-based XIRR for compatibility.** Rejected for
+   the same reason RFC 0024 rejected Newton for `irr`: seed-dependent
+   roots are exactly the non-determinism being removed. Excel parity is
+   preserved at the emit boundary instead (literals, not live
+   formulas).
+5. **All six ISDA/ICMA day counts.** Rejected for v1 of this feature:
+   the three shipped conventions cover US CRE practice and each carries
+   an exact pinned algorithm; `actual/actual` variants are famously
+   ambiguous and can join the closed registry by future RFC when an
+   adopter needs one.
+
+## Unresolved questions
+
+- **`kind` vocabulary** — is the seven-value closed set right, or
+  should `kind` be open with a warning for unknown values (the
+  edge-type posture)? Closed is proposed; acceptance can flip it.
+- **`dcf` coupling** — should a future rule cross-check a base-variant
+  series against `dcf` hold-period inputs (a `CC-16`)? Deferred with
+  the same reasoning as §4.25's `CC-15` tolerance debate; needs corpus
+  evidence first.
+- **Waterfall sequencing** — whether RFC 0026 Phase 2 becomes its own
+  RFC or reopens 0026. Owner's call at acceptance; nothing here
+  depends on the answer.
+
+## Prior art
+
+- Excel `XIRR`/`XNPV`/`DAYS360` — the de-facto semantics; this RFC
+  pins the parts Excel leaves implementation-defined (root search) and
+  adopts the parts that are exact (DAYS360 U.S. clamps).
+- ISDA 2006 definitions §4.16 (day-count fractions) — the naming and
+  the warning: "30/360" is a family, not a convention, which is why
+  §VIII.9.1 pins one member exactly.
+- RFC 0024 (this repo) — the bisection procedure and the
+  refuse-rather-than-invent posture `xirr` inherits verbatim.
+- RFC 0021 §6 / RFCs 0026, 0008 (this repo) — the state-and-verify
+  pattern this section is the third instance of.

@@ -140,6 +140,7 @@ context. This list is the maintainable copy.
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | Portfolio and relationship profiles          | Portable, provenance-backed cross-deal entity and edge sidecars; no storage or aggregate-math contract. |
+| [0034](./docs/rfcs/0034-calendar-anchored-cash-flows.md) | Calendar-anchored cash flows | Dated series (§4.26, state-and-verify), a normative day-count registry, and deterministic `xirr`/`xnpv` via declarations — the hold-period primitive RFC 0026 Phase 2 names as its precondition. Draft. |
 
 
 ## Pre-public-flip checklist
