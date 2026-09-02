@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "agent/L2-01",
+      "resolution": "ai_extracted",
+      "actor": "jared",
+      "agent_id": "L2-01",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-09-01T00:00:00Z",
+      "notes": "extracted from OM"
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [
+        "verify_units"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
+  },
+  "total_units": 24,
+  "year_built": 1998,
+  "_overrides": [
+    {
+      "path": "year_built",
+      "confidence": "low",
+      "reason": "illegible"
+    }
+  ]
+}

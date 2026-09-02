@@ -12,7 +12,7 @@
     "pack_version": "1.0.0",
     "engine": "@uwmd/core",
     "engine_version": "1.9.0",
-    "protocol_version": "1.13.0",
+    "protocol_version": "1.14.0",
     "results": [
       {
         "calc_id": "cap_rate",

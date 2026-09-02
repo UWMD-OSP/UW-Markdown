@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.13.0' as const;
+export const PROTOCOL_VERSION = '1.14.0' as const;
 
 /** Format spec version this protocol pairs with. */
 export const FORMAT_VERSION = '1.1' as const;
@@ -1588,6 +1588,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
+  { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
   {
     prefix: 'INVALID-ASSET-CLASS',
     description: 'Asset-class identifier syntax',
@@ -2036,6 +2037,20 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The editor is configured with a capability verifier and the write presented no token, or a token the verifier rejected (expired, out of scope, bad signature — the reason travels in the issue detail). RFC 0011.',
     remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
     spec_ref: 'UW_PROTOCOL_v1.md §XIV',
+  },
+  {
+    code: 'META-V2-IN-V1', severity: 'error',
+    title: 'Nested _meta in a 1.x file',
+    description: 'A block carries the nested v2 _meta shape (provenance/quality/lifecycle/integrity sub-objects) in a file whose uw_version is 1.x. A file\'s uw_version is global and decides the shape for every block; mixing shapes within a file is invalid in both directions (RFC 0009).',
+    remediation: 'Convert the whole file with `uwmd migrate --to-v2` (which also sets uw_version to "2.0" and re-stamps hashes), or rewrite the block in the flat v1 shape.',
+    spec_ref: 'RFC 0009 §"One shape per file"',
+  },
+  {
+    code: 'META-V1-IN-V2', severity: 'error',
+    title: 'Flat _meta in a v2 file',
+    description: 'A block carries the flat v1 _meta shape in a file whose uw_version is "2.0" or later. v2 writers MUST emit the nested shape for every block (RFC 0009).',
+    remediation: 'Re-run `uwmd migrate --to-v2` on the file so every block is reshaped, or fix the writer that emitted the flat block into a v2 file.',
+    spec_ref: 'RFC 0009 §"One shape per file"',
   },
   {
     code: 'SRC-01', severity: 'warning',

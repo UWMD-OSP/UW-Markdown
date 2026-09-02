@@ -62,6 +62,8 @@ npm run conformance -- --tier=capital-stack  # the RFC 0026 capital-stack suite 
 npm run conformance -- --tier=lease-up     # the RFC 0008 lease-up suite alone
 npm run conformance -- --tier=capability   # the RFC 0011 capability-token suite alone
 npm run conformance -- --tier=locale       # the RFC 0001 display-locale suite alone
+npm run conformance -- --tier=meta-v2      # the RFC 0009 nested-_meta suite alone
+npm run conformance -- --tier=migrate      # the RFC 0009 migrate --to-v2 suite alone
 npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -191,7 +193,7 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs 306 assertions across fourteen suites, and most of what has been added
+runs 341 assertions across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The v2

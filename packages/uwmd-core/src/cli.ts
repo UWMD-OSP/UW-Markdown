@@ -21,7 +21,8 @@ import {
 import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit, applyEditAsync } from './editor.js';
-import { verifyChain, verifyProvenance } from './integrity.js';
+import { verifyChain, verifyProvenance, canonicalBlockSigningInput } from './integrity.js';
+import { migrateToV2 } from './migrate-to-v2.js';
 import type {
   BlockSignatureVerifier,
   IntegrityResult,
@@ -397,6 +398,86 @@ function cmdMigrateSourceTags(file: string, flags: Record<string, string | boole
   const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(file);
   writeFileSync(outPath, result.content, 'utf-8');
   console.log(`Migrated ${result.changed} block(s). Wrote to: ${outPath}`);
+}
+
+async function cmdMigrateToV2(file: string, flags: Record<string, string | boolean>): Promise<void> {
+  const content = readFile(file);
+
+  // --resign needs the optional @uwmd/signing package plus the key holder's
+  // private key. The engine stays crypto-free; the callback closes over the
+  // loaded key (the same dynamic-import arrangement as `verify --signing`).
+  let resign: import('./migrate-to-v2.js').MigrateToV2Options['resign'];
+  if (flags['resign']) {
+    const keyPath = flags['key'];
+    if (typeof keyPath !== 'string' || keyPath.length === 0) {
+      console.error('--resign requires --key=<private.jwk.json> (a JWK private key file).');
+      process.exit(1);
+    }
+    const kid = flags['kid'];
+    const alg = (flags['alg'] as string | undefined) ?? 'ed25519';
+    if (typeof kid !== 'string' || kid.length === 0) {
+      console.error('--resign requires --kid=<key id> (stamped into the new signatures).');
+      process.exit(1);
+    }
+    // Structurally typed rather than `typeof import('@uwmd/signing')` — same
+    // layering reasoning as the `--signing` seam above: signing depends on
+    // core's declarations, so a type import here would close the cycle.
+    interface ResignSigningModule {
+      importPrivateKey(alg: string, material: { jwk: JsonWebKey }): Promise<unknown>;
+      signPayload(payload: string, key: unknown): Promise<string>;
+    }
+    let signing: ResignSigningModule;
+    try {
+      signing = (await import('@uwmd/signing' as string)) as ResignSigningModule;
+    } catch {
+      console.error('--resign needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.');
+      process.exit(1);
+    }
+    const jwk = JSON.parse(readFile(keyPath)) as JsonWebKey;
+    const privateKey = await signing.importPrivateKey(alg, { jwk });
+    const key = { kid, alg: alg as 'ed25519' | 'es256' | 'es384', privateKey };
+    resign = async (req) => {
+      const signedAt = new Date().toISOString();
+      const payload = canonicalBlockSigningInput({
+        content_hash: req.content_hash,
+        section: req.section,
+        actor: req.actor,
+        timestamp: req.timestamp,
+        kid: key.kid,
+        signed_at: signedAt,
+      });
+      return { alg: key.alg, kid: key.kid, sig: await signing.signPayload(payload, key), signed_at: signedAt };
+    };
+  }
+
+  const result = await migrateToV2(content, {
+    stripSignatures: flags['strip-signatures'] === true,
+    resign,
+  });
+
+  for (const note of result.notes) console.error(`[migrate] ${note}`);
+  if (!result.ok) {
+    for (const why of result.refusals) console.error(`[refused] ${why}`);
+    process.exit(1);
+  }
+
+  if (result.changed === 0 && result.restamped === 0) {
+    console.log(`Nothing to migrate in ${basename(file)}.`);
+    return;
+  }
+
+  if (flags['dry-run']) {
+    console.log(
+      `Would migrate ${basename(file)} to uw_version "2.0": ${result.changed} block(s) reshaped, ${result.restamped} hash(es) re-stamped (RFC 0009).`,
+    );
+    return;
+  }
+
+  const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(file);
+  writeFileSync(outPath, result.content as string, 'utf-8');
+  console.log(
+    `Migrated to uw_version "2.0": ${result.changed} block(s) reshaped, ${result.restamped} hash(es) re-stamped. Wrote to: ${outPath}`,
+  );
 }
 
 function cmdDiff(fileA: string, fileB: string): void {
@@ -1178,13 +1259,25 @@ switch (command) {
     cmdDiff(positional[0], positional[1]);
     break;
 
-  case 'migrate':
-    if (!positional[0] || !flags['source-tags']) {
-      console.error('Usage: uwmd migrate <file> --source-tags [--output <file>] [--dry-run]');
+  case 'migrate': {
+    // `--emit-v2-shape` is the RFC 0009 writer-flag spelling; on the CLI it is
+    // a synonym for `--to-v2` (both run the whole-file conversion).
+    const toV2 = flags['to-v2'] === true || flags['emit-v2-shape'] === true;
+    if (!positional[0] || (!flags['source-tags'] && !toV2)) {
+      console.error(
+        'Usage: uwmd migrate <file> --source-tags [--output <file>] [--dry-run]\n' +
+          '       uwmd migrate <file> --to-v2 [--strip-signatures | --resign --key <private.jwk.json> --kid <id> [--alg ed25519|es256|es384]] [--output <file>] [--dry-run]',
+      );
       process.exit(1);
     }
-    cmdMigrateSourceTags(positional[0], flags);
+    if (flags['source-tags'] && toV2) {
+      console.error('Run --source-tags and --to-v2 as separate passes (--source-tags first).');
+      process.exit(1);
+    }
+    if (toV2) await cmdMigrateToV2(positional[0], flags);
+    else cmdMigrateSourceTags(positional[0], flags);
     break;
+  }
 
   case 'render': {
     if (!positional[0]) { console.error('Usage: uwmd render <file> [--format <json|csv|chat|summary>] [--profile <summary|live|compact|full|relevant>] [--sections a,b,c] [--max-tokens 12000] [--no-meta] [--output <file>] [--tier screener|analyst]'); process.exit(1); }
@@ -1632,6 +1725,8 @@ Commands:
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
   migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
+  migrate  <file> --to-v2        Convert the whole file to the v2 nested _meta shape, uw_version "2.0" (RFC 0009;
+                                 re-stamps hashes; signed blocks need --resign or --strip-signatures)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uwx.md file
   summary  <file>              Print quick metrics to terminal

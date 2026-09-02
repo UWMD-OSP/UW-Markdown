@@ -364,6 +364,13 @@ export interface UWBlock<T extends Record<string, unknown> = Record<string, unkn
   rawJson: string;
   lineStart: number;   // 1-indexed line of the opening fence
   lineEnd: number;     // 1-indexed line of the closing ```
+  /**
+   * Which on-disk `_meta` shape this block was parsed from (RFC 0009):
+   * `'v1'` flat, `'v2'` nested. Absent on hand-built blocks. `block.meta` is
+   * always the flat in-memory view regardless — a nested block is reshaped at
+   * parse time so every consumer keeps reading the v1 fields.
+   */
+  meta_shape?: 'v1' | 'v2';
 }
 
 // ─── Frontmatter ──────────────────────────────────────────────────────────────

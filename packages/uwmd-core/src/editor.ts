@@ -26,6 +26,7 @@ import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';
 import { inferGaps, summarizeGaps } from './gaps.js';
 import { computeBlockHash } from './integrity.js';
+import { isV2File } from './meta-shape.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -126,6 +127,21 @@ export function applyEdit(
   policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
   options: EditOptions = {},
 ): EditResult {
+  // RFC 0009: v2-shape files are not editable at core 1.x. Today's writer
+  // emits flat `_meta` blocks, and one flat block in a `uw_version: "2.0"`
+  // file is exactly the META-V1-IN-V2 corruption the one-shape-per-file rule
+  // exists to prevent — so the editor refuses cleanly instead of corrupting.
+  // Full v2 editing ships with the 2.0 cut.
+  if (isV2File(parsed.frontmatter)) {
+    return {
+      ok: false,
+      error: protoError(
+        'PROTO-EDIT-010',
+        `This file declares uw_version '${parsed.frontmatter.uw_version}'; core 1.x edits would write flat v1 _meta blocks into a v2-shape file (META-V1-IN-V2). Edit the v1 source and re-migrate, or upgrade to a v2-capable editor.`,
+      ),
+    };
+  }
+
   // A configured capability verifier can only be honored on the async path
   // (verification is Web Crypto). Refusing here is deliberate: silently
   // skipping the check would turn a mis-wired call site into an authorization

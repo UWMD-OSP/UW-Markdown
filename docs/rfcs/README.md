@@ -25,17 +25,17 @@ and how it gets accepted.
 
 | # | Title | Status | Affects |
 |---|---|---|---|
-| [0001](./0001-locale-negotiation.md)    | Locale negotiation                          | draft | format, protocol, core, conformance |
+| [0001](./0001-locale-negotiation.md)    | Locale negotiation                          | implemented | format, protocol, core, conformance |
 | [0002](./0002-module-signing.md)        | Module signing                              | implemented | protocol, core, conformance, tooling |
 | [0003](./0003-module-asset-classes.md)  | Custom asset-class declarations from modules | implemented | format, protocol, core, conformance, tooling |
 | [0004](./0004-conformance-runner-v2.md) | Conformance test runner v2 (language-agnostic) | implemented | protocol, core, conformance, tooling |
 | [0005](./0005-stochastic-calculations.md) | Stochastic calculations                    | implemented | protocol, core, conformance |
 | [0006](./0006-hospitality-module.md)    | Hospitality reference module                | implemented | core, conformance, tooling |
 | [0007](./0007-sensitivity-tables.md)    | Sensitivity tables as a calc primitive      | implemented | protocol, core, conformance |
-| [0008](./0008-lease-up-modeling.md)     | Lease-up modeling                           | draft | protocol, core, conformance |
+| [0008](./0008-lease-up-modeling.md)     | Lease-up modeling                           | implemented | protocol, core, conformance |
 | [0009](./0009-meta-v2-reorg.md)         | `_meta` v2 sub-object reorganization        | accepted | format, protocol, core, conformance |
 | [0010](./0010-signed-blocks.md)         | Signed blocks                               | implemented | format, protocol, core, conformance, tooling |
-| [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | draft | protocol, core, conformance |
+| [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | implemented | protocol, core, conformance |
 | [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
 | [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | accepted | format, protocol, core, conformance, tooling |
 | [0015](./0015-portfolio-relationships.md) | Portfolio and relationship profiles | draft | format, protocol, core, conformance, tooling |

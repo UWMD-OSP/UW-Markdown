@@ -20,6 +20,7 @@ import { readGapsContent } from './gaps.js';
 import { leaseUpPeriodOrdinal, LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
 import type { LeaseUpGranularity } from './lease-up.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
+import { isV2File } from './meta-shape.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
 //
@@ -198,6 +199,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
+  checkMetaShape(parsed, issues);
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -1132,6 +1134,53 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
       }
     }
   }
+}
+
+// ─── META-V2-IN-V1 / META-V1-IN-V2: _meta shape by uw_version (RFC 0009) ─────
+//
+// A file's `uw_version` frontmatter is global and decides the `_meta` shape
+// for every block in it (RFC 0009 resolved question 3). "Read both shapes" is
+// a property of parsers, never of a single file: nested `_meta` in a 1.x file
+// and flat `_meta` in a 2.0 file are both errors. Blocks without `_meta` at
+// all carry no `meta_shape` and are exempt — absence stays META/DQ territory.
+
+function checkMetaShape(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const fileIsV2 = isV2File(parsed.frontmatter);
+
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (block.meta_shape === undefined) return;
+    if (block.meta_shape === 'v2' && !fileIsV2) {
+      issues.push({
+        code: 'META-V2-IN-V1',
+        severity: 'error',
+        section: sectionId,
+        message: `Section ${sectionId} carries the nested v2 _meta shape in a uw_version '${parsed.frontmatter.uw_version ?? '1.x'}' file. The nested shape requires uw_version "2.0" — run 'uwmd migrate --to-v2' to convert the whole file.`,
+      });
+      return;
+    }
+    if (block.meta_shape === 'v1' && fileIsV2) {
+      issues.push({
+        code: 'META-V1-IN-V2',
+        severity: 'error',
+        section: sectionId,
+        message: `Section ${sectionId} carries the flat v1 _meta shape in a uw_version '${parsed.frontmatter.uw_version}' file. v2 writers MUST emit the nested shape for every block.`,
+      });
+    }
+  };
+
+  for (const [sectionId, entry] of Object.entries(parsed.sections)) {
+    const blocks = isVariantMap(entry)
+      ? Object.values(entry as Record<string, UWBlock>)
+      : [entry as UWBlock];
+    for (const block of blocks) walk(sectionId, block);
+  }
+  for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
+    for (const block of blocks) walk(sectionId, block);
+  }
+  for (const block of parsed.pipeline_log) walk('pipeline_log', block);
+  for (const block of parsed.custom_calculations) walk('custom_calculations', block);
+  for (const block of parsed.custom_scenarios) walk('custom_scenarios', block);
+  for (const [extId, block] of Object.entries(parsed.extensions)) walk(extId, block);
 }
 
 // ─── Stage readiness ──────────────────────────────────────────────────────────

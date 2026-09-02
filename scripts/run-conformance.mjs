@@ -94,6 +94,10 @@ import {
   resolveDealSize,
   getPackForAssetClass,
   renderReportHtml,
+  computeBlockHash,
+  canonicalV2BlockContent,
+  canonicalizeV2,
+  migrateToV2,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -108,7 +112,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,capability,locale,size-intensive,signing,sensitivity,stochastic,source').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -3231,6 +3235,175 @@ async function runSource() {
   }
 }
 
+// ─── meta-v2 (RFC 0009) — nested _meta shape, shim, versioned digests ────────
+
+const META_V2_DIR = join(CONFORMANCE_DIR, 'tier-1-reader', 'v2-fixtures');
+
+async function runMetaV2() {
+  if (!existsSync(META_V2_DIR)) return;
+
+  const load = (file) => {
+    const content = readFileSync(join(META_V2_DIR, file), 'utf8');
+    return parseUWFile(content);
+  };
+  const metaCodes = (parsed) =>
+    validateUWFile(parsed).issues.filter((i) => i.code.startsWith('META-V')).map((i) => i.code).sort();
+
+  // 01 — minimal v2-shape file: parses to the flat view, no META-V codes.
+  {
+    const id = '01-nested-meta';
+    const parsed = load(`${id}.uw.md`);
+    const block = parsed.sections.property;
+    const problems = [];
+    if (block?.meta_shape !== 'v2') problems.push(`meta_shape ${block?.meta_shape} != v2`);
+    if (block?.meta?.version !== 1) problems.push(`flat view version ${block?.meta?.version} != 1`);
+    if (block?.meta?.source !== 'manual') problems.push(`flat view source ${block?.meta?.source} != manual`);
+    const codes = metaCodes(parsed);
+    if (codes.length !== 0) problems.push(`unexpected META-V codes: ${codes.join(', ')}`);
+    record('meta-v2', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 02 — nested _meta in a 1.x file is META-V2-IN-V1.
+  {
+    const id = '02-mixed-shape';
+    const codes = metaCodes(load(`${id}.uw.md`));
+    const ok = codes.length === 1 && codes[0] === 'META-V2-IN-V1';
+    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V2-IN-V1]`);
+  }
+
+  // 03 — the v1→v2 reshape is byte-identical to the recorded output.
+  {
+    const id = '03-shim-roundtrip';
+    const parsed = load(`${id}.uw.md`);
+    const block = parsed.sections.property;
+    const reshaped = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
+    const got = `${JSON.stringify(reshaped, null, 2)}\n`;
+    const expectedPath = join(META_V2_DIR, `${id}.expected-shim-output.json`);
+    if (UPDATE && !existsSync(expectedPath)) {
+      writeFileSync(expectedPath, got, 'utf8');
+      record('meta-v2', id, 'updated', 'baseline written');
+    } else {
+      const expected = normalize(readFileSync(expectedPath, 'utf8'));
+      const ok = normalize(got) === expected;
+      record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : 'reshape differs from recorded baseline');
+    }
+  }
+
+  // 04 — a legacy tag survives the shape change per the RFC 0031 rule:
+  // resolution set, provenance.source ABSENT (never invented).
+  {
+    const id = '04-legacy-tag-through-shim';
+    const parsed = load(`${id}.uw.md`);
+    const block = parsed.sections.property;
+    const reshaped = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
+    const provenance = reshaped._meta?.provenance ?? {};
+    const problems = [];
+    if (provenance.resolution !== 'market_data') problems.push(`resolution ${provenance.resolution} != market_data`);
+    if ('source' in provenance) problems.push(`provenance.source '${provenance.source}' was invented from a legacy tag`);
+    record('meta-v2', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 05 — flat _meta in a v2 file is META-V1-IN-V2 (the mirror of 02).
+  {
+    const id = '05-flat-in-v2';
+    const codes = metaCodes(load(`${id}.uw.md`));
+    const ok = codes.length === 1 && codes[0] === 'META-V1-IN-V2';
+    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V1-IN-V2]`);
+  }
+
+  // 06 — the same block in both accepted shapes yields the identical v2
+  // digest (canonicalization step 1 is normalization).
+  {
+    const id = '06-digest-shape-insensitive';
+    const flat = parseUWFile(readFileSync(join(META_V2_DIR, id, 'flat.uw.md'), 'utf8'));
+    const nested = parseUWFile(readFileSync(join(META_V2_DIR, id, 'nested.uw.md'), 'utf8'));
+    const a = await computeBlockHash(flat.sections.property, { shape: 'v2' });
+    const b = await computeBlockHash(nested.sections.property, { shape: 'v2' });
+    const ok = a === b;
+    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `flat ${a} != nested ${b}`);
+  }
+
+  // 07 — spelling out the defaulted integrity.algorithm moves no digest.
+  {
+    const id = '07-defaulted-algorithm';
+    const digestOf = (file) => {
+      const parsed = parseUWFile(readFileSync(join(META_V2_DIR, id, file), 'utf8'));
+      const block = parsed.sections.property;
+      // Hash the raw nested content directly: the flat view drops `algorithm`,
+      // and this scenario exists to pin what happens when it is PRESENT.
+      return canonicalizeV2(canonicalV2BlockContent(block.content));
+    };
+    const a = digestOf('implicit.uw.md');
+    const b = digestOf('explicit.uw.md');
+    const ok = a === b && a.length > 0;
+    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : 'explicit sha256 algorithm moved the digest');
+  }
+}
+
+// ─── migrate (RFC 0009) — uwmd migrate --to-v2 scenarios ─────────────────────
+
+const MIGRATE_DIR = join(CONFORMANCE_DIR, 'migrate');
+
+async function runMigrate() {
+  if (!existsSync(MIGRATE_DIR)) return;
+
+  const contentOf = (id) => readFileSync(join(MIGRATE_DIR, id, 'deal.uw.md'), 'utf8');
+  const expectedOf = (id) => JSON.parse(readFileSync(join(MIGRATE_DIR, id, 'expected.json'), 'utf8'));
+
+  // 01 — a signed block refuses migration by default: the signature commits
+  // to the v1 digest and only the key holder decides what happens to it.
+  {
+    const id = '01-signed-refused';
+    const expected = expectedOf(id);
+    const result = await migrateToV2(contentOf(id));
+    const problems = [];
+    if (result.ok !== expected.ok) problems.push(`ok ${result.ok} != ${expected.ok}`);
+    if (result.content !== null) problems.push('refused migration still produced content');
+    const refusal = result.refusals.join(' ');
+    if (!refusal.includes(expected.refusal_contains)) problems.push(`refusal missing '${expected.refusal_contains}'`);
+    if (!refusal.includes(expected.refusal_names_section)) problems.push(`refusal does not name '${expected.refusal_names_section}'`);
+    record('migrate', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 02 — --strip-signatures removes the signature, records the removal in
+  // provenance.notes, and the re-stamped chain verifies under the v2 rule.
+  {
+    const id = '02-strip-signatures';
+    const expected = expectedOf(id);
+    const result = await migrateToV2(contentOf(id), { stripSignatures: true });
+    const problems = [];
+    if (result.ok !== expected.ok) problems.push(`ok ${result.ok} != ${expected.ok}`);
+    if (result.ok) {
+      const parsed = parseUWFile(result.content);
+      const block = parsed.sections.property;
+      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if ((block?.meta?.signature === undefined) !== expected.signature_absent) problems.push('signature survived --strip-signatures');
+      if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
+      const chain = await verifyChain(parsed);
+      if (chain.ok !== expected.chain_verifies) problems.push(`migrated chain ok ${chain.ok} != ${expected.chain_verifies}`);
+    }
+    record('migrate', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+
+  // 03 — resolution 'manual' leaves the vocabulary at 2.0: rewritten to
+  // 'user_input' with the rewrite recorded in provenance.notes.
+  {
+    const id = '03-manual-resolution';
+    const expected = expectedOf(id);
+    const result = await migrateToV2(contentOf(id));
+    const problems = [];
+    if (result.ok !== expected.ok) problems.push(`ok ${result.ok} != ${expected.ok}`);
+    if (result.ok) {
+      const parsed = parseUWFile(result.content);
+      const block = parsed.sections.property;
+      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (block?.meta?.resolution !== expected.resolution) problems.push(`resolution ${block?.meta?.resolution} != ${expected.resolution}`);
+      if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
+    }
+    record('migrate', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -3255,6 +3428,8 @@ const dispatch = {
   'sensitivity': async () => { await runSensitivity(); },
   'stochastic': async () => { await runStochastic(); },
   'source': async () => { await runSource(); },
+  'meta-v2': async () => { await runMetaV2(); },
+  'migrate': async () => { await runMigrate(); },
 };
 for (const t of TIERS) {
   if (!dispatch[t]) {
