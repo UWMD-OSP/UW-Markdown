@@ -5,4 +5,4 @@
 // asserts it stays in lockstep with the package manifest — update both together.
 
 export const CORE_PACKAGE_NAME = '@uwmd/core' as const;
-export const CORE_VERSION = '1.10.0';
+export const CORE_VERSION = '2.0.0';
