@@ -2,21 +2,21 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-01 (night), after the **1.9.0 release shipped**
-(`33f5d8b`, tag `v1.9.0`): `@uwmd/core` **1.9.0**, `@uwmd/cli` **1.9.0**,
-and `@uwmd/signing` **0.2.0** all **live on npm, verified via `npm view`**
-— signing's first tag-triggered OIDC publish, bootstrapped the same day by
-a manual 0.1.0 publish from the `v1.8.0` tag plus the owner-configured
-trusted publisher. The release carries the sprint's Phase 2 trio (RFCs
-0008, 0011, 0001 — all accepted and implemented 2026-09-01) and the RFC
-0032/0033 clarifications. Full pass: build green
-across all workspaces; **1,228 core tests** + **78 signing**; **331
-conformance** assertions (323 + the 8-scenario `locale` suite; **44** more
-through the RFC 0004 CLI driver under `--no-skip`, plus **3 conformance
-profiles**); Biome clean; `typecheck:tests` clean; `verify-indexes` clean —
-protocol at **1.13.0** for RFC 0001's §III.1a (1.12.0 = RFC 0011's §XIV,
-future work renumbered §XV; 1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031;
-1.9.0 RFC 0030; 1.8.0 §X.2; 1.7.0 §V.11; 1.6.0 §XIII).
+**Last verified:** 2026-09-01 (late night), after the **1.10.0 release
+shipped** (`293cd5a`, tag `v1.10.0`): `@uwmd/core` **1.10.0**, `@uwmd/cli`
+**1.10.0**, and `@uwmd/signing` **0.2.1** (repin-only patch) all **live on
+npm, verified via `npm view`** — the RFC 0009 timeline's on-ramp minor:
+`uwmd migrate --to-v2` and dual-shape reading are live so operators can
+convert files ahead of 2.0. Same-day chain behind it: the Phase 4 gate
+opened the 2.0 train, RFC 0009 was revised + accepted (#126/#127), and the
+on-ramp (#128) and STAGE_CONTRACT merge (#129) both landed. Full pass:
+build green across all workspaces; **1,269 core tests** + **78 signing**;
+**341 conformance** assertions (331 + the 7-scenario `meta-v2` and
+3-scenario `migrate` suites); Biome clean; `typecheck:tests` clean —
+protocol at **1.14.0** for RFC 0009's on-ramp (1.13.0 = RFC 0001 §III.1a;
+1.12.0 = RFC 0011 §XIV; 1.11.0 = RFC 0008 §4.25; 1.10.0 RFC 0031;
+1.9.0 RFC 0030; 1.8.0 §X.2; 1.7.0 §V.11; 1.6.0 §XIII). Earlier that day
+the 1.9.0 release shipped the Phase 2 trio (RFCs 0008/0011/0001).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -823,7 +823,8 @@ the `meta-v2` + `migrate` suites) — then the `STAGE_CONTRACT` merge, also
 **implemented 2026-09-01** (one registry with asset_class-qualified rows
 absorbs STAGE_REQUIREMENTS + the RFC 0029 overlays +
 INCOMPLETE_DATA_POLICIES; equivalence-tested, no behavior change, no
-protocol move) — then a 1.10.0 release and the **2.0 cut** (format spec v2, nested default,
+protocol move) — then the **1.10.0 release, shipped 2026-09-01** (tag
+`v1.10.0`, all three packages live via OIDC), and the **2.0 cut** (format spec v2, nested default,
 sniffing + Lite-canon-1.0 sunsets, `SRC-02`→error, `manual` out of
 `SOURCE_TAGS`). The parallel human-only track stays open (PCG64
 vector diff, security alias, public RFC venue, bus-factor note).
