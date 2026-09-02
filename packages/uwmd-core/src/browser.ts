@@ -810,3 +810,19 @@ export {
   CASH_FLOW_METRICS,
 } from './calc/dated-flows.js';
 export type { CashFlowMetric, CashFlowMetricDecl } from './calc/dated-flows.js';
+
+export {
+  validatePortfolioProfile,
+  uninterpretedPortfolioTypes,
+  getPortfolioRelationships,
+  entityEdgesToPortfolioEdges,
+  PORTFOLIO_PROFILE_VERSION,
+  PORTFOLIO_ENTITY_TYPES,
+} from './portfolio.js';
+export type {
+  PortfolioEntityType,
+  PortfolioProvenance,
+  PortfolioEntity,
+  PortfolioEdge,
+  PortfolioProfile,
+} from './portfolio.js';

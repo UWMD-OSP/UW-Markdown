@@ -2,21 +2,22 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-02, after the **2.0.0 release shipped**
-(`1738219`, tag `v2.0.0`): `@uwmd/core` **2.0.0**, `@uwmd/cli` **2.0.0**,
-and `@uwmd/signing` **0.2.2** all **live on npm, verified via `npm view`**
-— the RFC 0009 major: protocol **2.0.0**, authoring format **2.0** (the
-whole 1.x line still read via `SUPPORTED_FORMAT_VERSIONS`), full v2
-editing through one writer seam, the per-file SRC escalation + `SRC-03`,
-and the two sunsets (legacy structured `.uw.md` sniffing; the Lite
-canonicalization `1.0` recognition obligation). underwriter.cc
-acknowledged the release. Full pass re-run post-release: build green
-across all workspaces; all tests green (78 signing among them); **341
-conformance** assertions, **20/20 schemas**; `typecheck:tests` clean;
-`verify-indexes` clean (32 RFCs). Protocol history: 2.0.0 = RFC 0009;
-1.14.0 = the 0009 on-ramp; 1.13.0 = RFC 0001's §III.1a (1.12.0 = RFC
-0011's §XIV; 1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031; 1.9.0 RFC 0030;
-1.8.0 §X.2; 1.7.0 §V.11; 1.6.0 §XIII).
+**Last verified:** 2026-09-02 (evening), after the post-2.0 pair of
+same-day RFCs: **RFC 0034** (calendar-anchored cash flows — protocol
+**2.1.0**, §VIII.9) and **RFC 0015** (portfolio & relationship profiles —
+protocol **2.2.0**, §XV; Future work renumbered §XVI), both drafted /
+revised, accepted by the owner, and implemented today on top of the
+morning's **2.0.0 release** (`1738219`, tag `v2.0.0`; core/cli 2.0.0 +
+signing 0.2.2 live on npm, underwriter.cc acknowledged). Full pass: build
+green across all workspaces; all tests green (95 core test files; +74 new
+unit tests today); **363 conformance** assertions (341 + the 15-scenario
+`cash-flow` suite + the 7-scenario `portfolio-relationships` suite);
+**22/22 schemas**; Biome clean; `typecheck:tests` clean;
+`verify-versions` / `verify-indexes` clean. Protocol history: 2.2.0 = RFC
+0015's §XV; 2.1.0 = RFC 0034's §VIII.9; 2.0.0 = RFC 0009; 1.14.0 = the
+0009 on-ramp; 1.13.0 = RFC 0001's §III.1a (1.12.0 = RFC 0011's §XIV;
+1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031; 1.9.0 RFC 0030; 1.8.0 §X.2;
+1.7.0 §V.11; 1.6.0 §XIII).
 
 > **The corpus count moved for a reason worth recording.** It read *274* in this
 > file and in two READMEs for several merges after it stopped being true. RFC
@@ -98,9 +99,9 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **356 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **363 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
-  `capital-stack`, `lease-up`, `cash-flow`, `capability`, `locale`,
+  `capital-stack`, `lease-up`, `cash-flow`, `portfolio-relationships`, `capability`, `locale`,
   `size-intensive`, `signing`, `sensitivity`, `stochastic`, `source`,
   `meta-v2`, and `migrate` suites. CI runs the runner's **default** suite list rather than a pinned
   `--tier=`, which is what the earlier claim of replay coverage assumed but did
@@ -383,6 +384,30 @@ not core gaps.
   metrics were wrong — the spec's §4.26 example now carries
   verifier-generated values that `verify-all-metrics` pins verbatim.
   Excel emit deferred with the Newton-parity reason recorded.
+- **Portfolio & relationship profiles ([RFC 0015](../rfcs/0015-portfolio-relationships.md),
+  revised, accepted, and implemented 2026-09-02) — protocol 2.1.0 → 2.2.0,
+  new §XV (Future work renumbered §XVI).** The `.uwportfolio.json` sidecar:
+  typed entities and provenance-backed edges spanning deals — the portable
+  carrier for the **entity layer** of the RFC 0018 edge registry, which
+  `projectPackageLinksToEntityEdges` could produce but nowhere keep.
+  Registry-resolved validation (`validatePortfolioProfile`,
+  `PORT-001`…`PORT-011`, new `portfolio` error category): a *known*
+  member-layer type used as an entity edge refuses (the
+  one-table-two-layers rule, pinned from the sidecar side for the first
+  time), builtin `from`/`to` entity-kind constraints refuse, and *unknown*
+  entity/edge types and fields are preserved and reportable
+  (`uninterpretedPortfolioTypes`), never refused. Provenance `source` is a
+  document identifier, explicitly kept apart from the RFC 0031
+  `_meta.source` actor grammar. Out-of-band and descriptive by design — no
+  storage, no query semantics, no aggregates (those stay with RFC 0021
+  rollup receipts). New `portfolio-relationships` capability,
+  `uw-portfolio-profile.schema.json` (`portfolio_version` 1.0, its own
+  semver line), `uwmd portfolio validate|edges`, and
+  `conformance/portfolio-relationships/` (7 scenarios; corpus 356 → 363).
+  One erratum recorded in the RFC: its scenario-05 sketch wanted a
+  byte-preserving *edit* proven, but the reference surface is read-only by
+  the RFC's own design — preservation is pinned through validation and
+  type reporting; the §XV.3 editor obligation waits for an editor to test.
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 
@@ -601,9 +626,11 @@ not core gaps.
   registry, and `conformance/size-intensive/` pins the whole surface (corpus
   215 → 222). Note the RFC's §XI numbering was corrected to §XIII in errata —
   §XI was already the Error Taxonomy.
-- **L3 / L9 / L10 layers** — L3 reserved; portfolio/relationship layers absent.
-  RFC 0015 now sketches an optional v2 relationship sidecar, but no protocol or
-  reference implementation exists.
+- **L3 / L9 / L10 layers** — L3 reserved; the portfolio/relationship *agent
+  layers* remain absent, but their data surface now exists: **RFC 0015 is
+  implemented** (protocol §XV, 2026-09-02 — see the Built entry). Reference
+  implementations of the layers themselves are follow-up work that the
+  interchange format deliberately did not gate on.
 
 ## 📋 Active 1.1+ machine-interchange train
 

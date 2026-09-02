@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "uninterpreted": {
+    "entity_types": [
+      "x_fund"
+    ],
+    "edge_types": [
+      "x_cross_collateralized"
+    ]
+  },
+  "preserved_paths": [
+    "entities[5].x_vintage",
+    "edges[4].x_weight"
+  ]
+}

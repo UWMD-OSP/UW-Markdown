@@ -1,7 +1,7 @@
 # Roadmap
 
 The single source of truth for what's planned for UW Markdown. Work in
-the README "Planned" list and the protocol spec's §XIV "Future work"
+the README "Planned" list and the protocol spec's §XVI "Future work"
 both feed back to this document.
 
 This roadmap is **directional**, not contractual. Items move, get cut,
@@ -116,10 +116,15 @@ Detailed sequencing and release gates:
 > lease-up modeling (0008), and capability tokens (0011) all shipped in the
 > 1.9.0 sprint (2026-09-01), and the RFC 0009 train culminated in the
 > **2.0.0 release (2026-09-02** — protocol 2.0.0, format 2.0 authoring,
-> `@uwmd/core`/`@uwmd/cli` 2.0.0 live on npm). What remains on this train —
-> corpus retrieval (0013) and portfolio relationships (0015) — has no
-> assigned order yet. Unfrozen means *actively being taken up*, not
-> accepted — each RFC still goes through its own acceptance.
+> `@uwmd/core`/`@uwmd/cli` 2.0.0 live on npm). Unfrozen means *actively
+> being taken up*, not accepted — each RFC still goes through its own
+> acceptance.
+>
+> **2026-09-02, post-2.0:** RFC 0034 (calendar-anchored cash flows) was
+> drafted, accepted, and implemented (protocol 2.1.0), and RFC 0015
+> (portfolio & relationship profiles) was revised, accepted, and
+> implemented (protocol 2.2.0) — both the same day. The only RFC still
+> open on this train is 0013 (corpus retrieval, draft).
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
 None are required for v1 conformance — they constitute v2 of the
@@ -127,7 +132,7 @@ protocol, the format, or both. RFCs are `draft` until the project owner accepts.
 The 14-day comment window applies after collaborative governance activates; see
 [`GOVERNANCE.md`](./GOVERNANCE.md).
 
-Mirrored in `spec/UW_PROTOCOL_v1.md` §XIV so spec readers see them in
+Mirrored in `spec/UW_PROTOCOL_v1.md` §XVI so spec readers see them in
 context. This list is the maintainable copy.
 
 | RFC | Item | Why it matters |
@@ -139,7 +144,7 @@ context. This list is the maintainable copy.
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
 | [0005](./docs/rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
-| [0015](./docs/rfcs/0015-portfolio-relationships.md) | Portfolio and relationship profiles          | Portable, provenance-backed cross-deal entity and edge sidecars; no storage or aggregate-math contract. |
+| [0015](./docs/rfcs/0015-portfolio-relationships.md) | ✅ Portfolio and relationship profiles        | **Shipped 2026-09-02** (protocol 2.2.0, §XV). The `.uwportfolio.json` sidecar carrying entity-layer edges of the RFC 0018 registry, registry-resolved validation, `uwmd portfolio validate\|edges`, and the package→profile projection bridge. No storage or aggregate-math contract, by design. |
 | [0034](./docs/rfcs/0034-calendar-anchored-cash-flows.md) | ✅ Calendar-anchored cash flows | **Shipped 2026-09-02** (protocol 2.1.0, §VIII.9). Dated series (§4.26, the third state-and-verify structure), the closed day-count registry, and deterministic `xirr`/`xnpv` via declarations. Removes RFC 0026 Phase 2's stated precondition. |
 
 

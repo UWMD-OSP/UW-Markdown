@@ -29,6 +29,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-lease-up-schedule.schema.json`](section-lease-up-schedule.schema.json) | `lease_up_schedule` section (trajectory + stabilized summary) | Format §4.25 / RFC 0008 |
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
 | [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
+| [`uw-portfolio-profile.schema.json`](uw-portfolio-profile.schema.json) | `.uwportfolio.json` sidecar (`PortfolioProfile`) | Protocol §XV / RFC 0015 |
 | [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |
 | [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §2 / RFC 0021 |
 | [`uw-external-section.schema.json`](uw-external-section.schema.json) | `external` section directive | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §3 / RFC 0021 |

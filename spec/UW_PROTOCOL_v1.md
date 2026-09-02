@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.1.0`) — the
+- **Protocol version** (this document, currently `2.2.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -2302,7 +2302,80 @@ mechanism.
 
 ---
 
-## XV. Future work (non-normative)
+## XV. Portfolio and Relationship Profiles (optional, RFC 0015)
+
+An optional capability (`portfolio-relationships`) and a JSON sidecar —
+`<portfolio>.uwportfolio.json` — carrying typed entities and
+provenance-backed relationship edges that span deals: a borrower owns
+properties, a property secures a loan, a source document supports a
+deal. The sidecar is the portable carrier for the **entity layer** of
+the §V edge registry RFC 0018 established (`BUILTIN_EDGE_TYPES`), whose
+entity-layer edges `projectPackageLinksToEntityEdges` can already
+produce. It is **out-of-band by design**: a sidecar is not part of any
+`.uwx.md` file, claims no `_meta` ownership, and changes no record's
+canonical bytes.
+
+Schema: `uw-portfolio-profile.schema.json`. Reference surface:
+`validatePortfolioProfile`, `uninterpretedPortfolioTypes`,
+`getPortfolioRelationships`, `entityEdgesToPortfolioEdges`;
+`uwmd portfolio validate|edges`.
+
+### XV.1 Profile shape
+
+- A profile MUST contain `portfolio_version`, `entities`, and `edges`;
+  `portfolio_id` is RECOMMENDED. **`portfolio_version` is independently
+  versioned** from the format and protocol; this section defines `1.0`.
+- Each entity and edge `id` MUST be non-empty and unique within the
+  profile (`PORT-006`). IDs are opaque, case-sensitive strings;
+  consumers MUST NOT derive identity from an ID's spelling.
+- The initial entity types are `property`, `deal`, `borrower`, `loan`,
+  and `document`. Extension entity types MUST be preserved and MAY be
+  reported as uninterpreted, never refused. A `property` or `deal`
+  entity MAY carry `deal_id`, which MUST exactly equal the referenced
+  deal's canonical frontmatter `deal_id` when the deal is available.
+
+### XV.2 Edges resolve against the canonical registry
+
+- Every edge MUST have `id`, `type`, `from`, `to`, and a non-empty
+  `provenance` array (`PORT-007`/`PORT-009`); `from` and `to` MUST
+  resolve to entity IDs in the same profile (`PORT-008`).
+- **Edge types come from the §V registry, not from this section.** A
+  *known* type not valid on the `entity` layer (e.g. `abstracts`) MUST
+  be refused (`PORT-010`) — the one-table-two-layers rule, enforced
+  from the sidecar side. An *unknown* type MUST be preserved and MAY be
+  reported as uninterpreted. Where the registry declares `from`/`to`
+  entity-kind constraints for a builtin edge, a violation MUST be
+  refused (`PORT-011`) — checked only when the endpoint's entity type
+  is itself registered; an extension entity type is outside the
+  constraint's vocabulary, not in violation of it.
+- Each provenance entry MUST contain a stable `source` identifier and
+  MAY carry `locator`, `note`, or `retrieved_at`. **`source` here is a
+  document/source identifier** (the lease-abstract `SourceRef`
+  posture), NOT the §V.3/RFC 0031 `_meta.source` actor grammar.
+
+### XV.3 Update and preservation obligations
+
+- A profile update MUST append provenance evidence or replace the
+  affected sidecar as a new version; it MUST NOT silently remove
+  provenance from an existing edge. This is an append-only evidence
+  rule, not a storage or revision-control requirement.
+- An editor making a targeted edit MUST preserve bytes outside the
+  edited region, and unknown fields at every level MUST survive
+  round-trips (the §XII posture). The reference implementation is
+  read-only and carries no editor; this obligation binds
+  implementations that write sidecars.
+
+### XV.4 What a profile is not
+
+Hosts MAY store, query, index, or enrich profiles however they choose.
+The profile MUST NOT define SQL tables, graph traversal semantics,
+aggregate financial calculations, or ownership of host `_meta` fields.
+A portfolio that wants to *state* fund-level numbers uses an RFC 0021
+composite with rollup receipts; the sidecar stays descriptive.
+
+---
+
+## XVI. Future work (non-normative)
 
 The following items are deferred beyond v1.0 and consolidated here for
 discoverability. Unless an item says otherwise, it is v2 exploration. None is

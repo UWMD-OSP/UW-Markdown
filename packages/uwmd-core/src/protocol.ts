@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.1.0' as const;
+export const PROTOCOL_VERSION = '2.2.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -55,7 +55,7 @@ export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0'] as 
  * v2 §1.3), so a module written against the 1.x protocol line still loads:
  * its `requires_protocol` range is satisfied against any member of this set.
  */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', PROTOCOL_VERSION] as const);
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', PROTOCOL_VERSION] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
@@ -94,6 +94,8 @@ export type ViewerCapability =
   | 'calc-sensitivity'
   /** Evaluates cash-flow metric declarations over dated series (§VIII.9, RFC 0034). */
   | 'calc-cash-flow'
+  /** Reads and validates `.uwportfolio.json` sidecars (§XV, RFC 0015). */
+  | 'portfolio-relationships'
   | 'agent-host'
   | 'module-load'
   /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
@@ -223,6 +225,7 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'calc-stochastic',
     'calc-sensitivity',
     'calc-cash-flow',
+    'portfolio-relationships',
     'agent-host',
     'module-load',
     // Both are gated on the optional @uwmd/signing package being installed.
@@ -1507,7 +1510,8 @@ export type ProtocolErrorCategory =
   | 'agent'
   | 'module'
   | 'version'
-  | 'package';
+  | 'package'
+  | 'portfolio';
 
 export interface ProtocolError {
   category: ProtocolErrorCategory;

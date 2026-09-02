@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,cash-flow,size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,cash-flow,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -100,6 +100,10 @@ import {
   migrateToV2,
   verifyCashFlowSeries,
   evaluateCashFlowMetrics,
+  validatePortfolioProfile,
+  uninterpretedPortfolioTypes,
+  getPortfolioRelationships,
+  entityEdgesToPortfolioEdges,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -114,7 +118,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,cash-flow,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,cash-flow,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2449,6 +2453,125 @@ async function runCashFlow() {
   }
 }
 
+
+// ─── Portfolio & relationship profiles (RFC 0015, Protocol §XV) ──────────────
+//
+// Two scenario kinds, dispatched by the files a directory carries:
+//   profile.json + expected.json          → validatePortfolioProfile (+ pins on
+//                                           edge queries, uninterpreted types,
+//                                           and unknown-field retention)
+//   package-manifest.json + expected.json → the RFC 0018 projection bridge:
+//                                           project → wrap → validate
+
+const PORTFOLIO_DIR = join(CONFORMANCE_DIR, 'portfolio-relationships');
+
+function portfolioDeepGet(obj, path) {
+  let cursor = obj;
+  for (const part of path.split('.')) {
+    const m = /^([A-Za-z_][A-Za-z0-9_]*)((?:\[\d+\])*)$/.exec(part);
+    if (!m || cursor == null) return undefined;
+    cursor = cursor[m[1]];
+    for (const idx of m[2].matchAll(/\[(\d+)\]/g)) {
+      if (cursor == null) return undefined;
+      cursor = cursor[Number(idx[1])];
+    }
+  }
+  return cursor;
+}
+
+async function runPortfolioRelationships() {
+  if (!existsSync(PORTFOLIO_DIR)) {
+    record('portfolio-relationships', '(none)', 'pass', 'no portfolio fixtures');
+    return;
+  }
+  const scenarios = readdirSync(PORTFOLIO_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(PORTFOLIO_DIR, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  for (const { id, dir } of scenarios) {
+    const expected = readCase(dir, 'expected.json');
+
+    // ── Projection bridge: package manifest → entity edges → profile ─────────
+    if (existsSync(join(dir, 'package-manifest.json'))) {
+      const manifest = readCase(dir, 'package-manifest.json');
+      const projected = projectPackageLinksToEntityEdges(manifest);
+      const edges = entityEdgesToPortfolioEdges(projected);
+      if (expected.projected_edge_ids) {
+        const ids = edges.map((e) => e.id);
+        if (JSON.stringify(ids) !== JSON.stringify(expected.projected_edge_ids)) {
+          record('portfolio-relationships', id, 'fail', `projected ids [${ids.join(', ')}], expected [${expected.projected_edge_ids.join(', ')}]`);
+          continue;
+        }
+      }
+      if (expected.projected_types) {
+        const types = edges.map((e) => e.type);
+        if (JSON.stringify(types) !== JSON.stringify(expected.projected_types)) {
+          record('portfolio-relationships', id, 'fail', `projected types [${types.join(', ')}], expected [${expected.projected_types.join(', ')}]`);
+          continue;
+        }
+      }
+      // Wrap into a profile (endpoints become document entities) and validate.
+      const endpoints = new Set(edges.flatMap((e) => [e.from, e.to]));
+      const profile = {
+        portfolio_version: '1.0',
+        entities: [...endpoints].sort().map((eid) => ({ id: eid, type: 'document' })),
+        edges,
+      };
+      const errors = validatePortfolioProfile(profile);
+      const ok = errors.length === 0;
+      if (ok !== expected.ok) {
+        record('portfolio-relationships', id, 'fail', `profile validation ok=${ok}, expected ${expected.ok}: ${errors.map((e) => e.code).join(', ') || '(none)'}`);
+        continue;
+      }
+      record('portfolio-relationships', id, 'pass', `${edges.length} projected edge(s) validate`);
+      continue;
+    }
+
+    // ── Profile validation ───────────────────────────────────────────────────
+    const profile = readCase(dir, 'profile.json');
+    const errors = validatePortfolioProfile(profile);
+    const ok = errors.length === 0;
+    if (ok !== expected.ok) {
+      record('portfolio-relationships', id, 'fail', `ok=${ok}, expected ${expected.ok}: ${errors.map((e) => e.code).join(', ') || '(none)'}`);
+      continue;
+    }
+    const missing = (expected.expected_codes ?? []).filter((c) => !errors.some((e) => e.code === c));
+    if (missing.length) {
+      record('portfolio-relationships', id, 'fail', `emitted [${errors.map((e) => e.code).join(', ')}], expected ${missing.join(', ')}`);
+      continue;
+    }
+    if (expected.uninterpreted) {
+      const u = uninterpretedPortfolioTypes(profile);
+      if (JSON.stringify(u) !== JSON.stringify(expected.uninterpreted)) {
+        record('portfolio-relationships', id, 'fail', `uninterpreted ${JSON.stringify(u)}, expected ${JSON.stringify(expected.uninterpreted)}`);
+        continue;
+      }
+    }
+    if (expected.preserved_paths) {
+      const gone = expected.preserved_paths.filter((path) => portfolioDeepGet(profile, path) === undefined);
+      if (gone.length) {
+        record('portfolio-relationships', id, 'fail', `extension field(s) not preserved: ${gone.join(', ')}`);
+        continue;
+      }
+    }
+    if (expected.edges_touching) {
+      const around = getPortfolioRelationships(profile, expected.edges_touching.entity);
+      if (around.length !== expected.edges_touching.count) {
+        record('portfolio-relationships', id, 'fail', `${around.length} edge(s) touch ${expected.edges_touching.entity}, expected ${expected.edges_touching.count}`);
+        continue;
+      }
+    }
+    if (expected.edge_count !== undefined && getPortfolioRelationships(profile).length !== expected.edge_count) {
+      record('portfolio-relationships', id, 'fail', `edge count ${getPortfolioRelationships(profile).length}, expected ${expected.edge_count}`);
+      continue;
+    }
+    record('portfolio-relationships', id, 'pass', expected.ok
+      ? 'valid'
+      : (expected.expected_codes ?? []).join(', '));
+  }
+}
+
 // ─── Display locales (RFC 0001, Protocol §III.1a) ────────────────────────────
 //
 // All scenarios share deal.uwx.md; the runner injects `locale: <tag>` into the
@@ -3531,6 +3654,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'lease-up': async () => { await runLeaseUp(); },
   'cash-flow': async () => { await runCashFlow(); },
+  'portfolio-relationships': async () => { await runPortfolioRelationships(); },
   'capability': async () => { await runCapability(); },
   'locale': async () => { await runLocale(); },
   'size-intensive': async () => { await runSizeIntensive(); },

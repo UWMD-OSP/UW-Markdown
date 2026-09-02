@@ -42,6 +42,7 @@ import {
   cmdPackageContextValidate,
   cmdPackageEdges,
 } from './cli-packages.js';
+import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc/index.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
@@ -1700,6 +1701,22 @@ switch (command) {
     console.log(JSON.stringify(REFERENCE_IMPLEMENTATION_MANIFEST, null, 2));
     break;
 
+  case 'portfolio': {
+    const sub = positional[0];
+    const target = positional[1];
+    if (sub === 'validate') {
+      if (!target) { console.error('Usage: uwmd portfolio validate <sidecar.uwportfolio.json> [--json]'); process.exit(1); }
+      cmdPortfolioValidate(target, flags);
+    } else if (sub === 'edges') {
+      if (!target) { console.error('Usage: uwmd portfolio edges <sidecar.uwportfolio.json> [--entity <id>] [--json]'); process.exit(1); }
+      cmdPortfolioEdges(target, flags);
+    } else {
+      console.error('Usage: uwmd portfolio <validate|edges> <sidecar.uwportfolio.json>');
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'receipt': {
     const sub = positional[0];
     if (sub === 'issue') {
@@ -1748,6 +1765,7 @@ Commands:
   modules  validate|list        Validate module manifest files, or list the registry they form
   lease    validate|project     Validate a lease abstract, or project it to a rent-roll row (RFC 0018)
   package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
+  portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
   manifest                     Print this implementation's ImplementationManifest (conformance protocol)
   layers                       List Bancroft agent layers
 
