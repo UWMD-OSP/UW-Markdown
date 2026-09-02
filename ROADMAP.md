@@ -112,9 +112,13 @@ Detailed sequencing and release gates:
 > self-generated and has not been diffed against the reference C
 > implementation.
 >
-> **The stated priority order is complete.** What remains on this train —
-> locale negotiation (0001), lease-up modeling (0008), and portfolio
-> relationships (0015) — has no assigned order yet. Unfrozen means *actively being taken up*, not
+> **The stated priority order is complete.** Locale negotiation (0001),
+> lease-up modeling (0008), and capability tokens (0011) all shipped in the
+> 1.9.0 sprint (2026-09-01), and the RFC 0009 train culminated in the
+> **2.0.0 release (2026-09-02** — protocol 2.0.0, format 2.0 authoring,
+> `@uwmd/core`/`@uwmd/cli` 2.0.0 live on npm). What remains on this train —
+> corpus retrieval (0013) and portfolio relationships (0015) — has no
+> assigned order yet. Unfrozen means *actively being taken up*, not
 > accepted — each RFC still goes through its own acceptance.
 
 Each item below has an opening RFC under [`docs/rfcs/`](./docs/rfcs/).
@@ -129,7 +133,7 @@ context. This list is the maintainable copy.
 | RFC | Item | Why it matters |
 |---|---|---|
 | [0010](./docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
-| [0001](./docs/rfcs/0001-locale-negotiation.md)    | Locale negotiation                            | v1 freezes formatting to `en-US`. International adopters need other locales. |
+| [0001](./docs/rfcs/0001-locale-negotiation.md)    | ✅ Locale negotiation                          | **Shipped 2026-09-01** (protocol 1.13.0, §III.1a). Declare-and-refuse; display-only; curated `BUILTIN_FORMAT_RULES` for five first-wave locales. Currency-code disambiguation deferred to its own RFC. |
 | [0002](./docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
 | [0003](./docs/rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
 | [0004](./docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
