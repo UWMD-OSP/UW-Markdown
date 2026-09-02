@@ -56,4 +56,4 @@ export { signModule, stampModuleSignature, createModuleSignatureVerifier } from 
 export type { SignModuleOptions } from './modules.js';
 
 export const SIGNING_PACKAGE_NAME = '@uwmd/signing' as const;
-export const SIGNING_VERSION = '0.1.0';
+export const SIGNING_VERSION = '0.2.0';
