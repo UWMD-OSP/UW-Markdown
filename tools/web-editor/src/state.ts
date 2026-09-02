@@ -98,9 +98,7 @@ export function useDeal(): [DealState, DealActions] {
       setLoadError(null);
       const prefix = compilation
         ? `Compiled Lite → UWX (${compilation.report.mappings.length} mapped field${compilation.report.mappings.length === 1 ? '' : 's'})`
-        : detection.legacy_extension
-          ? 'Loaded legacy structured source; ready to migrate to .uwx.md'
-          : 'Loaded UWX';
+        : 'Loaded UWX';
       setStatus(`${prefix} — ${Object.keys(state.parsed.sections).length} sections, ${issueSummary(state)}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

@@ -23,7 +23,7 @@ ranges — not a literal expected file.
 
 ```
 fixtures/<scenario-id>/
-├── before.uw.md                Input deal file
+├── before.uwx.md                Input deal file
 └── expected-after-shape.json   JSON Schema for the post-run file shape
 ```
 
@@ -54,7 +54,7 @@ profile/<scenario-id>/
 
 Tier 4 is **operator-driven**, not part of CI — LLM calls cost money and
 are nondeterministic. The reference runner ships a lint-only pass that
-parses each `before.uw.md`, validates each `expected-after-shape.json`
+parses each `before.uwx.md`, validates each `expected-after-shape.json`
 as a well-formed JSON Schema, and runs the profile-contract assertion:
 
 ```bash

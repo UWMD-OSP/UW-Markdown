@@ -30,10 +30,32 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '1.14.0' as const;
+export const PROTOCOL_VERSION = '2.0.0' as const;
 
-/** Format spec version this protocol pairs with. */
-export const FORMAT_VERSION = '1.1' as const;
+/**
+ * The format version this implementation *authors* — what a fresh scaffold
+ * declares. Reading is wider: see {@link SUPPORTED_FORMAT_VERSIONS}.
+ */
+export const FORMAT_VERSION = '2.0' as const;
+
+/**
+ * Every format version this implementation reads and validates. Format 2.0
+ * is a delta over v1 and reading v1.x files is part of the 2.0 contract
+ * (format spec v2 §1.2) — a 2.0 implementation is a 1.x implementation too.
+ * Module `requires_format` ranges are satisfied against ANY member of this
+ * set, not just the authoring version: a module written for the 1.x line
+ * keeps loading, because the files it declared compatibility with are still
+ * fully supported.
+ */
+export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0'] as const);
+
+/**
+ * The protocol contracts this implementation honors. Protocol 2.0.0 keeps
+ * every 1.x behavior for 1.x files (the boundary is per-file — format spec
+ * v2 §1.3), so a module written against the 1.x protocol line still loads:
+ * its `requires_protocol` range is satisfied against any member of this set.
+ */
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', PROTOCOL_VERSION] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
@@ -2333,18 +2355,25 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: 'RFC 0009 §"One shape per file"',
   },
   {
-    code: 'SRC-01', severity: 'warning',
+    code: 'SRC-01', severity: 'error',
     title: 'Unrecognized actor source',
-    description: '_meta.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (RFC 0031). The block still parses; edits against it resolve only the conservative catch-all policy.',
+    description: '_meta.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (RFC 0031). Severity is per-file (format v2 §1.3): error in a uw_version 2.0 file, warning in 1.x — where the block still parses and edits resolve only the conservative catch-all policy.',
     remediation: 'Rewrite _meta.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`. `uwmd migrate --source-tags` rewrites a file mechanically.',
-    spec_ref: '§2.6, UW_PROTOCOL_v1.md §V.3',
+    spec_ref: '§2.6, UW_FORMAT_SPEC_v2.md §4.2',
   },
   {
-    code: 'SRC-02', severity: 'warning',
+    code: 'SRC-02', severity: 'error',
     title: 'Resolution tag in the actor field',
-    description: '_meta.source holds a canonical SOURCE_TAGS value (a resolution method) where an actor belongs. Readers interpret it as `resolution` and treat the actor as absent; this becomes an error at format 2.0 (RFC 0031).',
+    description: '_meta.source holds a canonical SOURCE_TAGS value (a resolution method) where an actor belongs. Severity is per-file (format v2 §1.3): error in a uw_version 2.0 file; warning in 1.x, where readers interpret it as `resolution` and treat the actor as absent (the read-time interpretation never applies inside a 2.0 file).',
     remediation: 'Move the tag to _meta.resolution and state the actual actor in _meta.source (or omit it as manual). `uwmd migrate --source-tags` performs the move mechanically.',
-    spec_ref: '§2.6, UW_PROTOCOL_v1.md §V.7',
+    spec_ref: '§2.6, UW_FORMAT_SPEC_v2.md §4.2',
+  },
+  {
+    code: 'SRC-03', severity: 'error',
+    title: "Retired resolution 'manual'",
+    description: "provenance.resolution is 'manual' in a uw_version 2.0 file. 'manual' left the resolution vocabulary at 2.0 (RFC 0009 resolved question 4) — it is actor-only; 'user_input' is the resolution-method spelling for human-typed values. Never emitted for 1.x files, where the dual membership remains legal.",
+    remediation: "Change the resolution to 'user_input' (or the accurate method). `uwmd migrate --to-v2` performs the rewrite mechanically and records it in provenance.notes.",
+    spec_ref: 'UW_FORMAT_SPEC_v2.md §4.1',
   },
 
   // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────

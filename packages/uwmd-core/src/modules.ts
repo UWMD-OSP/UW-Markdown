@@ -9,8 +9,8 @@
 import { parseExpression } from './calc/parser.js';
 import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
-  FORMAT_VERSION,
-  PROTOCOL_VERSION,
+  SUPPORTED_FORMAT_VERSIONS,
+  SUPPORTED_PROTOCOL_VERSIONS,
   type ModuleLoadResult,
   type ModuleManifest,
   type ProtocolError,
@@ -697,19 +697,27 @@ function validateCompatibility(
       'requires_tier',
     ));
   }
-  const protocolVersion = opts.protocolVersion ?? PROTOCOL_VERSION;
-  if (!versionSatisfies(protocolVersion, manifest.requires_protocol)) {
+  // An explicitly supplied version is checked alone; the host default is the
+  // SUPPORTED set — a 2.0 implementation still honors the 1.x contracts for
+  // 1.x files (format spec v2 §1.2/§1.3), so modules written against the 1.x
+  // line keep loading. A range is satisfied by ANY supported version.
+  const protocolCandidates: readonly string[] =
+    opts.protocolVersion !== undefined ? [opts.protocolVersion] : SUPPORTED_PROTOCOL_VERSIONS;
+  if (!protocolCandidates.some((v) => versionSatisfies(v, manifest.requires_protocol))) {
     errors.push(moduleError(
       'PROTO-MOD-030',
-      `Host protocol ${protocolVersion} does not satisfy ${manifest.requires_protocol}.`,
+      `Host protocol ${protocolCandidates.join('/')} does not satisfy ${manifest.requires_protocol}.`,
       'requires_protocol',
     ));
   }
-  const formatVersion = normalizeFormatVersion(opts.formatVersion ?? FORMAT_VERSION);
-  if (!versionSatisfies(formatVersion, manifest.requires_format)) {
+  const formatCandidates: readonly string[] =
+    opts.formatVersion !== undefined
+      ? [normalizeFormatVersion(opts.formatVersion)]
+      : SUPPORTED_FORMAT_VERSIONS;
+  if (!formatCandidates.some((v) => versionSatisfies(v, manifest.requires_format))) {
     errors.push(moduleError(
       'PROTO-MOD-031',
-      `Host format ${formatVersion} does not satisfy ${manifest.requires_format}.`,
+      `Host format ${formatCandidates.join('/')} does not satisfy ${manifest.requires_format}.`,
       'requires_format',
     ));
   }

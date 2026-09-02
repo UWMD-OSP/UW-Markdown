@@ -1,9 +1,16 @@
 // uwmd init — generates a new blank .uwx.md file from a template
 // Spec: UW_FORMAT_SPEC_v1.md §6 toolchain interface
 
-import type { AssetClass, DealStage } from './types.js';
+import type { AssetClass, DealStage, UWMeta } from './types.js';
+import { stampMetaIntoBlockContent } from './meta-shape.js';
 
 export interface InitOptions {
+  /**
+   * Format line to scaffold. Defaults to '2.0' (nested _meta — v2 writers
+   * emit the nested shape by default, format v2 spec §7); pass '1.1' for a
+   * legacy flat-shape scaffold when downstream consumers are pinned to 1.x.
+   */
+  formatVersion?: '2.0' | '1.1';
   dealId?: string;
   dealName?: string;
   address?: string;
@@ -33,9 +40,11 @@ export function generateBlankUWFile(opts: InitOptions = {}): string {
   const assetClass = opts.assetClass ?? 'multifamily';
   const tier = opts.tier ?? 'screener';
   const dealStage = opts.dealStage ?? 'screening';
+  const formatVersion = opts.formatVersion ?? '2.0';
+  const v2 = formatVersion === '2.0';
 
   const frontmatter = `---
-uw_version: "1.1"
+uw_version: "${formatVersion}"
 deal_id: "${dealId}"
 deal_name: "${dealName}"
 created: "${now}"
@@ -83,34 +92,37 @@ created_by: wizard
 source_documents: []
 ---`;
 
-  const metaStub = (section: string): string => JSON.stringify({
-    _meta: {
-      section,
-      version: 1,
-      superseded: false,
-      // `manual`, not `wizard`. A scaffold a person is about to fill in is a
-      // human-authored block, and `manual` is the one token that means the same
-      // thing in every source vocabulary the specs define. `wizard` matched no
-      // BUILTIN_EDIT_POLICIES pattern, so every freshly generated file carried
-      // blocks that no policy governed — which is why replacing them in place
-      // appeared to work.
-      //
-      // Deliberately not `system/init`: that resolves to `system/*`, whose
-      // authority is `system_only`, and these stubs exist precisely to be edited
-      // by a person.
-      source: 'manual',
-      agent_id: null,
-      agent_version: null,
-      actor: 'user',
-      timestamp: now,
-      confidence: 'low',
-      human_review_required: true,
-      flags: [],
-      input_hash: null,
-      notes: null,
-    },
-    _notes: null,
-  }, null, 2);
+  // `manual`, not `wizard`. A scaffold a person is about to fill in is a
+  // human-authored block, and `manual` is the one token that means the same
+  // thing in every source vocabulary the specs define (it remains a legal
+  // ACTOR at 2.0 — only the resolution reading retired). `wizard` matched no
+  // BUILTIN_EDIT_POLICIES pattern, so every freshly generated file carried
+  // blocks that no policy governed — which is why replacing them in place
+  // appeared to work.
+  //
+  // Deliberately not `system/init`: that resolves to `system/*`, whose
+  // authority is `system_only`, and these stubs exist precisely to be edited
+  // by a person.
+  const stubFlatMeta = (section: string): UWMeta => ({
+    section,
+    version: 1,
+    superseded: false,
+    source: 'manual',
+    agent_id: null,
+    agent_version: null,
+    actor: 'user',
+    timestamp: now,
+    confidence: 'low',
+    human_review_required: true,
+    flags: [],
+    input_hash: null,
+    notes: null,
+  });
+  const metaStub = (section: string): string => {
+    const content: Record<string, unknown> = { _notes: null };
+    stampMetaIntoBlockContent(content, stubFlatMeta(section), v2);
+    return JSON.stringify({ _meta: content['_meta'], _notes: null }, null, 2);
+  };
 
   const sections = [
     { id: 'deal_context', header: 'Deal Context', label: '§4.0' },
@@ -148,24 +160,27 @@ ${metaStub(s.id)}
 
 ---`).join('\n');
 
+  // The initializer writing an append-only log entry. `system/init` matches
+  // `system/*`; `engine:uwmd` matched nothing.
+  const logFlatMeta: UWMeta = {
+    section: 'pipeline_log',
+    version: 1,
+    superseded: false,
+    source: 'system/init',
+    agent_id: null,
+    agent_version: '1.0.0',
+    actor: 'system',
+    timestamp: now,
+    confidence: 'high',
+    human_review_required: false,
+    flags: [],
+    input_hash: null,
+    notes: null,
+  };
+  const logContent: Record<string, unknown> = {};
+  stampMetaIntoBlockContent(logContent, logFlatMeta, v2);
   const pipelineLogEntry = JSON.stringify({
-    _meta: {
-      section: 'pipeline_log',
-      version: 1,
-      superseded: false,
-      // The initializer writing an append-only log entry. `system/init` matches
-      // `system/*`; `engine:uwmd` matched nothing.
-      source: 'system/init',
-      agent_id: null,
-      agent_version: '1.0.0',
-      actor: 'system',
-      timestamp: now,
-      confidence: 'high',
-      human_review_required: false,
-      flags: [],
-      input_hash: null,
-      notes: null,
-    },
+    _meta: logContent['_meta'],
     entries: [
       {
         entry_id: `log_${Date.now()}`,

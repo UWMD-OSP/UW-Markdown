@@ -90,9 +90,8 @@ describe('SRC-01 — unrecognized actor source', () => {
 });
 
 describe('SRC-02 — resolution tag in the actor field', () => {
-  it('warns on every canonical tag except manual', () => {
+  it('warns on every canonical tag (manual left SOURCE_TAGS at 2.0; it is an actor)', () => {
     for (const tag of SOURCE_TAGS) {
-      if (tag === 'manual') continue;
       const file = makeFile({ property: makeBlock('property', { total_units: 10 }, { source: tag }) });
       const issues = srcIssues(file);
       expect(issues, tag).toHaveLength(1);
@@ -116,5 +115,49 @@ describe('SRC-02 — resolution tag in the actor field', () => {
       }),
     });
     expect(srcIssues(file)).toHaveLength(0);
+  });
+});
+
+describe('the 2.0 boundary is per-file (format v2 §1.3 / §4)', () => {
+  const asV2 = (file: ReturnType<typeof makeFile>): ReturnType<typeof makeFile> => ({
+    ...file,
+    frontmatter: { ...file.frontmatter, uw_version: '2.0' },
+  });
+
+  it('SRC-01 and SRC-02 escalate to errors in a uw_version 2.0 file', () => {
+    const legacyTag = asV2(
+      makeFile({ property: makeBlock('property', { total_units: 10 }, { source: 'market_data' }) }),
+    );
+    const tagIssues = srcIssues(legacyTag);
+    expect(tagIssues[0]!.code).toBe('SRC-02');
+    expect(tagIssues[0]!.severity).toBe('error');
+
+    const badActor = asV2(
+      makeFile({ property: makeBlock('property', { total_units: 10 }, { source: 'agent:L0-01' }) }),
+    );
+    const actorIssues = srcIssues(badActor);
+    expect(actorIssues[0]!.code).toBe('SRC-01');
+    expect(actorIssues[0]!.severity).toBe('error');
+  });
+
+  it("SRC-03 rejects resolution 'manual' in a 2.0 file, and only there", () => {
+    const block = makeBlock('property', { total_units: 10 }, {
+      source: 'manual',
+      resolution: 'manual',
+    });
+    const v1 = makeFile({ property: block });
+    expect(srcIssues(v1)).toHaveLength(0); // dual membership stays legal in 1.x
+
+    const v2 = asV2(makeFile({ property: block }));
+    const issues = srcIssues(v2);
+    expect(issues.map((i) => i.code)).toEqual(['SRC-03']);
+    expect(issues[0]!.severity).toBe('error');
+  });
+
+  it('a 1.x file keeps its warnings under this same validator', () => {
+    const file = makeFile({
+      property: makeBlock('property', { total_units: 10 }, { source: 'market_data' }),
+    });
+    expect(srcIssues(file)[0]!.severity).toBe('warning');
   });
 });

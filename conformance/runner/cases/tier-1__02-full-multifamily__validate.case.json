@@ -6,7 +6,7 @@
   ],
   "command": "validate",
   "args": [
-    "02-full-multifamily.uw.md",
+    "02-full-multifamily.uwx.md",
     "--json"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",

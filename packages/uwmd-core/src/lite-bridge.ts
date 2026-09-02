@@ -6,7 +6,13 @@ import type {
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
-import { FORMAT_VERSION } from './protocol.js';
+
+// Lite compiles to format 1.1 envelopes regardless of the implementation's
+// authoring FORMAT_VERSION: the bridge's block writer emits the flat v1
+// _meta shape, and a 2.0-stamped file with flat blocks is exactly the
+// META-V1-IN-V2 corruption the one-shape rule forbids. Lite moves to the
+// nested shape only via its own RFC (format v2 spec §7).
+const UW_LITE_BRIDGE_FORMAT_VERSION = '1.1' as const;
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter, UWMeta } from './types.js';
 
@@ -324,7 +330,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     ok: true,
     envelope: {
       envelope_version: '1.0',
-      format_version: FORMAT_VERSION,
+      format_version: UW_LITE_BRIDGE_FORMAT_VERSION,
       frontmatter,
       sections,
       pipeline_log: [],
@@ -494,12 +500,12 @@ function compileFrontmatter(
   const semanticVersion =
     typeof document.frontmatter['uw_version'] === 'string'
       ? document.frontmatter['uw_version']
-      : FORMAT_VERSION;
+      : UW_LITE_BRIDGE_FORMAT_VERSION;
   if (document.frontmatter['uw_version'] === undefined) {
     report.defaults.push({
       path: 'frontmatter.uw_version',
-      value: FORMAT_VERSION,
-      reason: 'RFC 0017 keeps UW semantic format 1.1 for the initial bridge.',
+      value: UW_LITE_BRIDGE_FORMAT_VERSION,
+      reason: 'RFC 0017 pins the Lite bridge to UW semantic format 1.1; Lite is a 1.x-format source representation until its own RFC moves it (format v2 spec §7).',
     });
   }
 

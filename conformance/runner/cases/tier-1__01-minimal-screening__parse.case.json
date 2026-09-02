@@ -6,7 +6,7 @@
   ],
   "command": "parse",
   "args": [
-    "01-minimal-screening.uw.md"
+    "01-minimal-screening.uwx.md"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",
   "expect": {

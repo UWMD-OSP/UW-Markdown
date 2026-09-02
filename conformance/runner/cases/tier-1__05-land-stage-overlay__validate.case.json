@@ -6,7 +6,7 @@
   ],
   "command": "validate",
   "args": [
-    "05-land-stage-overlay.uw.md",
+    "05-land-stage-overlay.uwx.md",
     "--json"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",

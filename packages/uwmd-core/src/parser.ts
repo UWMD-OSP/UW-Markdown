@@ -341,13 +341,14 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
     // and untouched either way.
     const rawMeta = parsed['_meta'] as Record<string, unknown> | undefined;
     const metaShape = detectMetaShape(rawMeta);
+    // The §2.6 read-time interpretation applies to v1-shaped metas only: in a
+    // nested (2.0) block a legacy tag in provenance.source is an error to be
+    // fixed (SRC-02), never information to be recovered (format v2 §4.2).
     const meta =
       metaShape === 'v2'
-        ? interpretMetaSource(
-            reshapeMetaV2toV1(
-              rawMeta as unknown as UWMetaV2,
-              parsed['_overrides'] as UWFieldOverride[] | undefined,
-            ),
+        ? reshapeMetaV2toV1(
+            rawMeta as unknown as UWMetaV2,
+            parsed['_overrides'] as UWFieldOverride[] | undefined,
           )
         : interpretMetaSource((rawMeta as UWMeta | undefined) ?? ({} as UWMeta));
 
@@ -370,11 +371,10 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
 
 // ─── §2.6 read-time source interpretation (RFC 0031) ─────────────────────────
 
-/** Every canonical tag except `manual`, which is a legal actor in its own
- *  right and never reinterpreted. */
-const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(
-  SOURCE_TAGS.filter((t) => t !== 'manual'),
-);
+/** The canonical resolution tags. `manual` needs no exemption any more — it
+ *  left SOURCE_TAGS at format 2.0 (actor-only; RFC 0009 resolved question 4),
+ *  so a flat block's `source: "manual"` was never in this set to begin with. */
+const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(SOURCE_TAGS);
 
 /**
  * A canonical `SOURCE_TAGS` value found in `_meta.source` is a resolution

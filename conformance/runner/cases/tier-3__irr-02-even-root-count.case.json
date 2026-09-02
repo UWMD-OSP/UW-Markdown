@@ -6,7 +6,7 @@
   ],
   "command": "calc",
   "args": [
-    "deal.uw.md",
+    "deal.uwx.md",
     "calc.json",
     "--json"
   ],

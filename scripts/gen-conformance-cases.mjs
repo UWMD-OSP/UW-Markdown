@@ -74,8 +74,8 @@ const dirs = (base) =>
 
 const T1_FIXTURES = join(CONFORMANCE, 'tier-1-reader', 'fixtures');
 const T1_EXPECTED = join(CONFORMANCE, 'tier-1-reader', 'expected');
-for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uw.md')).sort()) {
-  const stem = basename(file, '.uw.md');
+for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md')).sort()) {
+  const stem = basename(file, '.uwx.md');
   const baseline = (suffix) => rel(join(T1_EXPECTED, `${stem}.${suffix}`));
 
   if (existsSync(join(T1_EXPECTED, `${stem}.parsed.json`))) {
@@ -118,8 +118,8 @@ for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uw.md')).
 // rule out.
 
 const T1_MALFORMED = join(CONFORMANCE, 'tier-1-reader', 'malformed');
-for (const file of readdirSync(T1_MALFORMED).filter((f) => f.endsWith('.uw.md')).sort()) {
-  const stem = basename(file, '.uw.md');
+for (const file of readdirSync(T1_MALFORMED).filter((f) => f.endsWith('.uwx.md')).sort()) {
+  const stem = basename(file, '.uwx.md');
   const expected = join(T1_MALFORMED, `${stem}.expected.json`);
   if (!existsSync(expected)) continue;
   const wanted = JSON.parse(readFileText(expected));
@@ -151,7 +151,7 @@ const T2_SKIP = new Set(['parent-hash-stamp', 'stale-parent-rejected']);
 for (const scenario of dirs(T2)) {
   if (T2_SKIP.has(scenario) || existsSync(join(T2, scenario, 'options.json'))) continue;
   const dir = join(T2, scenario);
-  if (!existsSync(join(dir, 'after.uw.md'))) continue;
+  if (!existsSync(join(dir, 'after.uwx.md'))) continue;
   const context = JSON.parse(readFileText(join(dir, 'context.json')));
   const flags = ['--json'];
   for (const [key, flag] of [
@@ -177,9 +177,9 @@ for (const scenario of dirs(T2)) {
     `tier-2/${scenario}`,
     '2',
     'edit',
-    ['before.uw.md', 'operation.json', ...flags],
+    ['before.uwx.md', 'operation.json', ...flags],
     dir,
-    { kind: 'json-field-text', field: 'content', file: 'after.uw.md' },
+    { kind: 'json-field-text', field: 'content', file: 'after.uwx.md' },
     [editCapability],
   );
 }
@@ -191,7 +191,7 @@ for (const scenario of dirs(T3)) {
   const dir = join(T3, scenario);
   if (!existsSync(join(dir, 'calc.json')) || !existsSync(join(dir, 'expected-result.json'))) continue;
   const expected = JSON.parse(readFileText(join(dir, 'expected-result.json')));
-  add(`tier-3/${scenario}`, '3', 'calc', ['deal.uw.md', 'calc.json', '--json'], dir, {
+  add(`tier-3/${scenario}`, '3', 'calc', ['deal.uwx.md', 'calc.json', '--json'], dir, {
     kind: 'json-subset',
     file: 'expected-result.json',
     // The CLI exits 1 when any declaration fails to evaluate; the refusal

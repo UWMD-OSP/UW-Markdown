@@ -22,9 +22,9 @@ same protocol version.
 
 | Surface | Version | Pairs with |
 |---|---|---|
-| `.uw.md` format spec | **1.1** | files declaring `uw_version: "1.0"` or `"1.1"` |
-| UW Protocol | **1.14.0** | format ≥ 1.0 |
-| `@uwmd/core` | **1.10.0** | format 1.1, protocol 1.14.0 |
+| `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
+| UW Protocol | **2.0.0** | format ≥ 1.0 |
+| `@uwmd/core` | **1.10.0** | format 2.0 (reads 1.x), protocol 2.0.0 |
 | `@uwmd/cli` (CLI) | **1.10.0** | `@uwmd/core` 1.10.0 |
 | `@uwmd/excel` | **0.8.1** | `@uwmd/core` 1.10.x, format 1.1 multifamily pack |
 | `@uwmd/report` | **0.8.1** | `@uwmd/core` 1.10.x, format spec §7.1/§7.2 |

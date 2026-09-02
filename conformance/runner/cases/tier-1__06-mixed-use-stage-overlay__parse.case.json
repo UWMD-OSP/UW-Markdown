@@ -6,7 +6,7 @@
   ],
   "command": "parse",
   "args": [
-    "06-mixed-use-stage-overlay.uw.md"
+    "06-mixed-use-stage-overlay.uwx.md"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",
   "expect": {

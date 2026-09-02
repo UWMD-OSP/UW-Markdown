@@ -17,9 +17,9 @@ Each scenario lives in its own subdirectory:
 
 ```
 fixtures/<scenario-id>/
-├── before.uw.md      Input file
+├── before.uwx.md      Input file
 ├── operation.json    The EditOperation to apply
-└── after.uw.md       Expected output
+└── after.uwx.md       Expected output
 ```
 
 Each scenario also includes a `context.json` describing the actor invoking
@@ -41,10 +41,10 @@ reference runner to populate `_meta` provenance.
 
 - `context.json` — `EditContext` (source, agent_id, agent_version, actor, optional `parentHash`).
 - `options.json` — `ApplyEditOptions` (`{integrity?: boolean, maintainGaps?: boolean, …}`); when `integrity: true` the runner routes the edit through `applyEditAsync`.
-- `expected-error.json` — `{code, category}` for negative-path fixtures. When present, the runner asserts the edit fails with that code instead of comparing against `after.uw.md`.
+- `expected-error.json` — `{code, category}` for negative-path fixtures. When present, the runner asserts the edit fails with that code instead of comparing against `after.uwx.md`.
 
-A conforming Tier-2 Editor's output for `before.uw.md + operation.json` MUST
-match `after.uw.md` after both files are normalized (stripping trailing
+A conforming Tier-2 Editor's output for `before.uwx.md + operation.json` MUST
+match `after.uwx.md` after both files are normalized (stripping trailing
 whitespace, CRLF differences, and volatile fields: `last_modified`,
 `_meta.timestamp`, `ts=` fence attributes).
 

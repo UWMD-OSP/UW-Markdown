@@ -19,7 +19,7 @@ A Tier-3 host MUST:
 
 ```
 fixtures/<scenario-id>/
-├── deal.uw.md             Input deal file
+├── deal.uwx.md             Input deal file
 ├── calc.json              The calculation declaration to evaluate
 └── expected-result.json   Expected CalcResult
 ```
@@ -46,7 +46,7 @@ extraction used by the v1.1 refinement engine
 
 ```
 refinement/<scenario-id>/
-├── deal.uw.md             Input deal file
+├── deal.uwx.md             Input deal file
 └── expected-graph.json    Expected projection of the dependency graph
                             (sorted maps and sets for stable comparison)
 ```

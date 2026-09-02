@@ -28,7 +28,7 @@
       {
         "path": "frontmatter.uw_version",
         "value": "1.1",
-        "reason": "RFC 0017 keeps UW semantic format 1.1 for the initial bridge."
+        "reason": "RFC 0017 pins the Lite bridge to UW semantic format 1.1; Lite is a 1.x-format source representation until its own RFC moves it (format v2 spec §7)."
       }
     ],
     "issues": [],

@@ -26,7 +26,7 @@ import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';
 import { inferGaps, summarizeGaps } from './gaps.js';
 import { computeBlockHash } from './integrity.js';
-import { isV2File } from './meta-shape.js';
+import { isV2File, stampMetaIntoBlockContent, bumpRawMetaVersion, reshapeMetaV1toV2 } from './meta-shape.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -127,21 +127,6 @@ export function applyEdit(
   policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
   options: EditOptions = {},
 ): EditResult {
-  // RFC 0009: v2-shape files are not editable at core 1.x. Today's writer
-  // emits flat `_meta` blocks, and one flat block in a `uw_version: "2.0"`
-  // file is exactly the META-V1-IN-V2 corruption the one-shape-per-file rule
-  // exists to prevent — so the editor refuses cleanly instead of corrupting.
-  // Full v2 editing ships with the 2.0 cut.
-  if (isV2File(parsed.frontmatter)) {
-    return {
-      ok: false,
-      error: protoError(
-        'PROTO-EDIT-010',
-        `This file declares uw_version '${parsed.frontmatter.uw_version}'; core 1.x edits would write flat v1 _meta blocks into a v2-shape file (META-V1-IN-V2). Edit the v1 source and re-migrate, or upgrade to a v2-capable editor.`,
-      ),
-    };
-  }
-
   // A configured capability verifier can only be honored on the async path
   // (verification is Web Crypto). Refusing here is deliberate: silently
   // skipping the check would turn a mis-wired call site into an authorization
@@ -257,24 +242,38 @@ export async function applyEditAsync(
   const newHead = lookupSection(reparsed, op.section_id, op.variant);
   if (!newHead) return result;
 
-  // Stamp parent_hash + content_hash on the new head.
+  // Stamp parent_hash + content_hash on the new head. Canonicalization is
+  // versioned by the file's uw_version (RFC 0009 — the v2 rule for 2.0 files).
+  const v2 = isV2File(reparsed.frontmatter);
   newHead.meta.parent_hash = priorHash;
   // Compute over the block (canonicalizer strips content_hash itself).
-  newHead.meta.content_hash = await computeBlockHash(newHead);
+  newHead.meta.content_hash = await computeBlockHash(newHead, { shape: v2 ? 'v2' : 'v1' });
 
-  const stamped = restampBlockMeta(result.content, newHead);
+  const stamped = restampBlockMeta(result.content, newHead, v2);
   return { ...result, content: stamped };
 }
 
 /**
  * Re-emit a single block in `content` with a fresh _meta payload. Locates the
  * block by lineStart/lineEnd from the parsed AST and rewrites only that range.
+ * `block.meta` is always the flat in-memory view; for a v2 file it is
+ * reshaped back to the nested on-disk form (with the `_overrides` lift).
  */
-function restampBlockMeta(content: string, block: UWBlock): string {
+function restampBlockMeta(content: string, block: UWBlock, v2: boolean): string {
   const lines = content.split('\n');
   const fence = lines[block.lineStart - 1] ?? '';
   const closing = lines[block.lineEnd - 1] ?? '```';
-  const updatedContent = { ...block.content, _meta: block.meta };
+  let updatedContent: Record<string, unknown>;
+  if (v2) {
+    const { field_overrides, ...rest } = block.meta;
+    updatedContent = { ...block.content, _meta: reshapeMetaV1toV2(rest as UWMeta) as unknown };
+    delete updatedContent['_overrides'];
+    if (field_overrides !== undefined && field_overrides.length > 0) {
+      updatedContent['_overrides'] = field_overrides;
+    }
+  } else {
+    updatedContent = { ...block.content, _meta: block.meta };
+  }
   const json = JSON.stringify(updatedContent, null, 2);
   const before = lines.slice(0, block.lineStart - 1);
   const after = lines.slice(block.lineEnd);
@@ -495,7 +494,8 @@ function applySectionReplace(
   // Allow the operation's `meta` partial to override scalar fields (e.g. flags, confidence).
   const finalMeta: UWMeta = { ...meta, ...op.meta, version: newVersion, superseded: false } as UWMeta;
   const blockContent = stripReservedKeys(op.content);
-  blockContent['_meta'] = finalMeta;
+  // Emit the shape the file's uw_version demands (RFC 0009: nested for 2.0).
+  stampMetaIntoBlockContent(blockContent, finalMeta, isV2File(parsed.frontmatter));
 
   const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.confidence);
   const blockJson = JSON.stringify(blockContent, null, 2);
@@ -547,7 +547,7 @@ function applySectionSupersede(
   meta.timestamp = now;
   const finalMeta: UWMeta = { ...meta, ...op.meta, version: newVersion, superseded: false } as UWMeta;
   const blockContent = stripReservedKeys(op.content);
-  blockContent['_meta'] = finalMeta;
+  stampMetaIntoBlockContent(blockContent, finalMeta, isV2File(parsed.frontmatter));
 
   let lines = fileContent.split('\n');
   let supersededPriorBlock = false;
@@ -608,14 +608,15 @@ function applyPipelineLogAppend(
 
   const now = new Date().toISOString();
   const meta = (blockContent['_meta'] as Record<string, unknown> | undefined) ?? {};
-  meta['version'] = ((meta['version'] as number) ?? 1) + 1;
-  meta['timestamp'] = now;
+  // Shape-aware bump: v2 pipeline blocks carry lifecycle.revision /
+  // provenance.timestamp (RFC 0009); the fence v= mirror gets either.
+  const nextVersion = bumpRawMetaVersion(meta, now);
   blockContent['_meta'] = meta;
 
   const updatedJson = JSON.stringify(blockContent, null, 2);
   const lines = fileContent.split('\n');
   const newAnnotation = (lines[lastLogBlock.lineStart - 1] ?? '')
-    .replace(/\bv=\d+/, `v=${meta['version'] as number}`)
+    .replace(/\bv=\d+/, `v=${nextVersion}`)
     .replace(/\bts=\S+/, `ts=${now}`);
 
   lines.splice(

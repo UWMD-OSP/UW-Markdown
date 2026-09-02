@@ -6,7 +6,7 @@
   ],
   "command": "render",
   "args": [
-    "01-minimal-screening.uw.md",
+    "01-minimal-screening.uwx.md",
     "--format",
     "chat"
   ],

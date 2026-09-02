@@ -6,7 +6,7 @@
   ],
   "command": "render",
   "args": [
-    "02-full-multifamily.uw.md",
+    "02-full-multifamily.uwx.md",
     "--format",
     "chat"
   ],

@@ -6,7 +6,7 @@
   ],
   "command": "parse",
   "args": [
-    "02-full-multifamily.uw.md"
+    "02-full-multifamily.uwx.md"
   ],
   "fixture_dir": "conformance/tier-1-reader/fixtures",
   "expect": {

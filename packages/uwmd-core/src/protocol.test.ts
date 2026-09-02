@@ -90,7 +90,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — version', () => {
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('1.14.0');
+    expect(PROTOCOL_VERSION).toBe('2.0.0');
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {
@@ -252,9 +252,12 @@ describe('SRC code family (RFC 0031)', () => {
     expect(validatorCodeFamily('SRC-01')?.capabilities).toEqual(['validate']);
   });
 
-  it('ships remediation copy for SRC-01 and SRC-02', () => {
+  it('ships remediation copy for SRC-01 through SRC-03', () => {
     const codes = BUILTIN_REMEDIATIONS.filter((r) => r.code.startsWith('SRC-'));
-    expect(codes.map((r) => r.code).sort()).toEqual(['SRC-01', 'SRC-02']);
-    for (const r of codes) expect(r.severity).toBe('warning');
+    expect(codes.map((r) => r.code).sort()).toEqual(['SRC-01', 'SRC-02', 'SRC-03']);
+    // The registered severity is the HIGHEST any emission carries: error in a
+    // uw_version 2.0 file (the per-file boundary, format v2 §1.3); the same
+    // codes still emit as warnings against 1.x files.
+    for (const r of codes) expect(r.severity).toBe('error');
   });
 });

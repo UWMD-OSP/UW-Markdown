@@ -6,7 +6,7 @@
   ],
   "command": "render",
   "args": [
-    "07-stage-overlay-control.uw.md",
+    "07-stage-overlay-control.uwx.md",
     "--format",
     "summary"
   ],

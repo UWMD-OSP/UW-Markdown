@@ -14,6 +14,14 @@
 
 import type { ParsedUWFile, UWBlock, UWMeta, PipelineStatus, UWFrontmatter } from './types.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';
+import type { UWMetaV2 } from './meta-shape.js';
+import {
+  bumpRawMetaVersion,
+  detectMetaShape,
+  isV2File,
+  reshapeMetaV2toV1,
+  stampMetaIntoBlockContent,
+} from './meta-shape.js';
 
 // Lightweight re-parse used only to get fresh line numbers after block insertion.
 // parseUWFile is the same function — alias for clarity.
@@ -99,9 +107,23 @@ export function writeAgentBlock(
   const variantPart = variant ? ` variant=${variant}` : '';
   // The fence `source=` mirrors the block's _meta.source (the RFC 0031 actor),
   // falling back to the raw agentId only when the caller supplied no _meta.
-  const outMeta = output.content['_meta'] as UWMeta | undefined;
+  // Callers build flat _meta (buildMeta); a nested one is read via the shim.
+  const rawOutMeta = output.content['_meta'] as Record<string, unknown> | undefined;
+  const outMeta: UWMeta | undefined =
+    rawOutMeta === undefined
+      ? undefined
+      : detectMetaShape(rawOutMeta) === 'v2'
+        ? reshapeMetaV2toV1(rawOutMeta as unknown as UWMetaV2)
+        : (rawOutMeta as unknown as UWMeta);
   const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${outMeta?.source ?? agentId} ts=${now} v=${newVersion} confidence=${outMeta?.confidence ?? 'medium'}`;
-  const blockJson = JSON.stringify(output.content, null, 2);
+  // Emit the shape the file's uw_version demands (RFC 0009): the host owns
+  // _meta, so the reshape happens here, not in agent output.
+  const emitted: Record<string, unknown> = { ...output.content };
+  if (outMeta !== undefined) {
+    // Values pass through untouched — only the shape is the host's call.
+    stampMetaIntoBlockContent(emitted, outMeta, isV2File(parsed.frontmatter));
+  }
+  const blockJson = JSON.stringify(emitted, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
   // ── Step 3: Insert before pipeline_log (or before the last section) ───────
@@ -230,7 +252,7 @@ function appendPipelineLogEntry(
   if (parsed.pipeline_log.length === 0) {
     // No pipeline_log yet — append a new one at the end
     const now = (entry['timestamp'] as string) ?? new Date().toISOString();
-    const newLogBlock = buildNewPipelineLogBlock(entry, now);
+    const newLogBlock = buildNewPipelineLogBlock(entry, now, isV2File(parsed.frontmatter));
     return [...lines, '', newLogBlock, ''];
   }
 
@@ -246,26 +268,25 @@ function appendPipelineLogEntry(
   } catch {
     // Fallback: append a new pipeline_log block
     const now = (entry['timestamp'] as string) ?? new Date().toISOString();
-    return [...lines, '', buildNewPipelineLogBlock(entry, now), ''];
+    return [...lines, '', buildNewPipelineLogBlock(entry, now, isV2File(parsed.frontmatter)), ''];
   }
 
   const entries = (blockContent['entries'] as unknown[]) ?? [];
   entries.push(entry);
   blockContent['entries'] = entries;
 
-  // Update _meta version and timestamp
+  // Update _meta version and timestamp — shape-aware (RFC 0009): a v2
+  // pipeline block carries lifecycle.revision / provenance.timestamp.
   const meta = blockContent['_meta'] as Record<string, unknown> | undefined;
-  if (meta) {
-    meta['version'] = ((meta['version'] as number) ?? 1) + 1;
-    meta['timestamp'] = entry['timestamp'];
-  }
+  const nowTs = (entry['timestamp'] as string) ?? new Date().toISOString();
+  const nextVersion = meta ? bumpRawMetaVersion(meta, nowTs) : 1;
 
   // Rebuild the block JSON
   const updatedJson = JSON.stringify(blockContent, null, 2);
   const newAnnotation = buildUpdatedAnnotation(
     lines[lastLogBlock.lineStart - 1] ?? '',
-    ((meta?.['version'] as number) ?? 1),
-    (entry['timestamp'] as string) ?? new Date().toISOString(),
+    nextVersion,
+    nowTs,
   );
 
   const result = [...lines];
@@ -284,29 +305,31 @@ function appendPipelineLogEntry(
 function buildNewPipelineLogBlock(
   entry: Record<string, unknown>,
   now: string,
+  v2: boolean,
 ): string {
-  const content = {
-    _meta: {
-      section: 'pipeline_log',
-      version: 1,
-      superseded: false,
-      // `system/uwmd`, not the retired colon form `engine:uwmd` — the RFC 0031
-      // actor grammar, and it resolves the system/* policy instead of the
-      // catch-all.
-      source: 'system/uwmd',
-      agent_id: null,
-      agent_version: '1.0.0',
-      actor: 'system',
-      timestamp: now,
-      confidence: 'high',
-      human_review_required: false,
-      flags: [],
-      input_hash: null,
-      notes: null,
-    },
-    entries: [entry],
+  const flatMeta: UWMeta = {
+    section: 'pipeline_log',
+    version: 1,
+    superseded: false,
+    // `system/uwmd`, not the retired colon form `engine:uwmd` — the RFC 0031
+    // actor grammar, and it resolves the system/* policy instead of the
+    // catch-all.
+    source: 'system/uwmd',
+    agent_id: null,
+    agent_version: '1.0.0',
+    actor: 'system',
+    timestamp: now,
+    confidence: 'high',
+    human_review_required: false,
+    flags: [],
+    input_hash: null,
+    notes: null,
   };
-  return `\`\`\`json uw:section=pipeline_log source=system/uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(content, null, 2)}\n\`\`\``;
+  const content: Record<string, unknown> = { entries: [entry] };
+  stampMetaIntoBlockContent(content, flatMeta, v2);
+  // _meta first in the serialized block, matching every other writer.
+  const ordered = { _meta: content['_meta'], entries: content['entries'] };
+  return `\`\`\`json uw:section=pipeline_log source=system/uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(ordered, null, 2)}\n\`\`\``;
 }
 
 function buildUpdatedAnnotation(existing: string, version: number, ts: string): string {
