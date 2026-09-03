@@ -23,8 +23,8 @@ same protocol version.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.2.0** | format ≥ 1.0 (§VIII.9 cash flows RFC 0034; §XV portfolio profiles RFC 0015) |
-| `@uwmd/core` | **2.1.0** | format 2.0 (reads 1.x), protocol 2.2.0 |
+| UW Protocol | **2.3.0** | format ≥ 1.0 (§VIII.9 cash flows RFC 0034; §VIII.10 waterfall RFC 0035; §XV portfolio profiles RFC 0015) |
+| `@uwmd/core` | **2.1.0** | format 2.0 (reads 1.x), protocol 2.3.0 |
 | `@uwmd/cli` (CLI) | **2.1.0** | `@uwmd/core` 2.1.0 |
 | `@uwmd/excel` | **0.8.3** | `@uwmd/core` 2.1.x, format 1.1 multifamily pack |
 | `@uwmd/report` | **0.8.3** | `@uwmd/core` 2.1.x, format spec §7.1/§7.2 |

@@ -46,7 +46,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
   bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.2.0`) — the
+- **Protocol version** (this document, currently `2.3.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1717,6 +1717,64 @@ A declaration naming a missing, malformed, or wrong-variant series
 raises `CALC-CF-SERIES`. A host that evaluates cash-flow declarations
 declares `calc-cash-flow` in its `ImplementationManifest.capabilities`;
 one that does not MUST report a typed refusal rather than crash.
+
+### VIII.10 Distribution waterfall allocation (RFC 0035)
+
+The format's `distribution_waterfall` section (format spec §4.27)
+states a tier ladder over a §4.26 dated series. This section fixes the
+allocation two engines must agree on. Like §VIII.9 it is a verifier
+surface (`verifyWaterfall`), not calc-engine surface: no grammar
+tokens, no builtins, no `CalcResult` changes.
+
+**The walk (normative).** Amounts are evaluated in binary64 and
+quantized only at the reporting boundary (§VIII.5). Maintain, per
+party (`lp`, `gp`): `unreturned` capital, `accrued_pref`,
+`contributions`, `distributions`, receipts by tier kind, and the
+party's dated flow list. Walk the referenced series **in row order**:
+
+1. **Accrue first.** Let `Δt = yearfrac(prev_date, date, day_count)`
+   (§VIII.9.1; the series' convention; the first row's `prev_date` is
+   itself, so `Δt = 0`, and same-date rows accrue nothing). For each
+   party, when a `preferred_return` tier is present:
+   `simple` — `accrued_pref += unreturned × rate × Δt`;
+   `compound_annual` — `accrued_pref += (accrued_pref + unreturned) ×
+   ((1 + rate)^Δt − 1)` — unpaid pref itself compounds.
+2. **Contribution rows** (`amount < 0`): each party's `unreturned` and
+   `contributions` grow by its `equity_split` share of `|amount|`; the
+   share joins the party's dated flows as an outflow at the row's
+   anchor-relative `t` (§VIII.9.2).
+3. **Distribution rows** (`amount > 0`): the cash fills the ladder in
+   order; each tier pays up to its **capacity**, and the remainder
+   falls through. Capacities and splits:
+   - `return_of_capital` — capacity `Σ unreturned`; paid pro-rata by
+     `unreturned`; reduces it.
+   - `preferred_return` — capacity `Σ accrued_pref`; paid pro-rata by
+     accrued balance; reduces it.
+   - `catch_up` — with `P` = total **profit** distributed so far
+     (distributions minus return-of-capital receipts, both parties,
+     including earlier tiers of this row — pref receipts **count as
+     profit**, or a catch-up following the pref tier could never fill)
+     and `G` = GP profit so far: capacity `x = (target_promote × P − G)
+     / (gp_share − target_promote)`, floored at 0. `gp_share` of the
+     payment goes to the GP, the rest to the LP.
+   - `split` — paid `lp_share` / `gp_share`. A tier capped by
+     `until_lp_em` has capacity
+     `max(0, until_lp_em × lp.contributions − lp.distributions) /
+     lp_share`; the final tier is unbounded.
+   Payments join each party's dated flows as inflows. Cash never
+   remains after the final tier (it is unbounded by grammar).
+4. **Outcomes.** Per party: `moic = distributions ÷ contributions`;
+   `xirr` by the §VIII.9.3 procedure over the party's dated flows.
+   `promote_total` = GP distributions − GP return-of-capital receipts
+   − GP pref receipts; `profit_total` = Σ distributions −
+   Σ contributions.
+5. **Verification** (three-state): stated outcomes at the §VIII.9.4
+   quanta (`$`→2, `x`→4, `%`→6); stated schedule cells at the currency
+   quantum with an absent cell reading 0; a stated `xirr` whose
+   recomputation raises is `failed`; a `moic` over zero contributions
+   is `unverifiable`; a missing or structurally invalid referenced
+   series makes every stated figure `unverifiable`. Failure outranks
+   indeterminacy.
 
 ---
 

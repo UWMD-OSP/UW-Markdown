@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-distribution-waterfall.schema.json",
+  "title": "UW Markdown Distribution Waterfall Section",
+  "description": "Content payload for the `distribution_waterfall` section (UW_FORMAT_SPEC_v1.md §4.27, RFC 0035). The tiered LP/GP split of a deal's equity cash flows — return of capital, preferred return, GP catch-up, and promote splits — over a referenced `cash_flow_series` variant (§4.26). The fourth state-and-verify structure (RFC 0021 §6): `verifyWaterfall` recomputes the ENTIRE allocation by the normative Protocol §VIII.10 walk, never trusting the stated splits. This schema enforces structure only. The cross-field rules a validator/verifier adds: the ladder grammar incl. ordering, singleton, terminal-uncapped-split, sum-to-one, and gp_share>target_promote rules (WF-01); the cash reference resolving in-document (WF-02); at least one contribution in the referenced series (WF-03); and every stated outcome/schedule cell recomputing at its quantization boundary or the verdict is `failed`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cash_flow_ref", "equity_split", "tiers"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "description": "Standard block provenance envelope (§2.5). Not constrained here."
+    },
+    "_notes": {
+      "type": ["string", "null"],
+      "description": "Optional free-text annotation (§4 universal field)."
+    },
+    "cash_flow_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variant"],
+      "description": "The §4.26 cash_flow_series variant holding the EQUITY cash vector: negative amounts are contributions, positive amounts are distributable cash. Its day_count governs every year fraction here.",
+      "properties": {
+        "variant": { "type": "string", "minLength": 1 }
+      }
+    },
+    "equity_split": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lp", "gp"],
+      "description": "Each party's share of every contribution; must sum to 1.0 (ratio quantum, WF-01). The GP share is co-invest; the promote comes from the tiers.",
+      "properties": {
+        "lp": { "type": "number", "minimum": 0, "maximum": 1 },
+        "gp": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "tiers": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The ordered ladder: return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split (WF-01).",
+      "items": { "$ref": "#/$defs/tier" }
+    },
+    "stated_outcomes": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "description": "Headline claims, each verified when present (quanta: $→2, x→4, %→6).",
+      "properties": {
+        "lp": { "$ref": "#/$defs/party_outcomes" },
+        "gp": { "$ref": "#/$defs/party_outcomes" },
+        "promote_total": { "type": ["number", "null"], "description": "GP distributions above its returned capital + pref receipts." },
+        "profit_total": { "type": ["number", "null"] }
+      }
+    },
+    "stated_schedule": {
+      "type": ["array", "null"],
+      "description": "Optional per-date distribution detail, one entry per distribution date; checked cell-for-cell against the recomputed allocation, with absent cells reading 0. Display detail — the verifier recomputes regardless.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["date", "by_tier"],
+        "properties": {
+          "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+          "by_tier": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["tier"],
+              "properties": {
+                "tier": { "type": "integer", "minimum": 0, "description": "Index into `tiers`." },
+                "lp": { "type": ["number", "null"] },
+                "gp": { "type": ["number", "null"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "party_outcomes": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "contributions": { "type": ["number", "null"] },
+        "distributions": { "type": ["number", "null"] },
+        "moic": { "type": ["number", "null"], "minimum": 0 },
+        "xirr": { "type": ["number", "null"], "description": "Fraction, recomputed by the §VIII.9.3 procedure over the party's dated flows." }
+      }
+    },
+    "tier": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": { "type": { "const": "return_of_capital" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "rate", "accrual"],
+          "properties": {
+            "type": { "const": "preferred_return" },
+            "rate": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "Fraction (0.09, never 9)." },
+            "accrual": { "enum": ["simple", "compound_annual"], "description": "compound_annual: unpaid pref itself compounds (Protocol §VIII.10.1)." }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "gp_share", "target_promote"],
+          "properties": {
+            "type": { "const": "catch_up" },
+            "gp_share": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+            "target_promote": { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1, "description": "gp_share MUST exceed this (WF-01) or the tier can never fill." }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "lp_share", "gp_share"],
+          "properties": {
+            "type": { "const": "split" },
+            "lp_share": { "type": "number", "minimum": 0, "maximum": 1 },
+            "gp_share": { "type": "number", "minimum": 0, "maximum": 1 },
+            "until_lp_em": { "type": ["number", "null"], "exclusiveMinimum": 0, "description": "Equity-multiple hurdle capping the tier; the final split must be uncapped, and a capped split must have lp_share > 0 (WF-01). `until_lp_irr` is reserved and refused until a future RFC." }
+          }
+        }
+      ]
+    }
+  }
+}

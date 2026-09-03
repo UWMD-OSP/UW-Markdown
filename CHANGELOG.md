@@ -6,6 +6,50 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added — distribution waterfall (RFC 0035; protocol 2.2.0 → 2.3.0)
+
+- **Format §4.27 `distribution_waterfall`** — the tiered LP/GP split of a
+  deal's equity cash flows as the **fourth state-and-verify structure**:
+  `cash_flow_ref` into a §4.26 dated series, `equity_split`, and an
+  ordered closed tier ladder — `return_of_capital`, `preferred_return`
+  (simple / compound-annual accrual under the series' §VIII.9.1 day
+  count; unpaid pref compounds in the latter), `catch_up` (closed-form
+  capacity to a target promote share), and `split` tiers with optional
+  equity-multiple hurdles and a mandatory uncapped terminal split.
+  `stated_outcomes` (per-party contributions / distributions / MOIC /
+  XIRR via §VIII.9.3, `promote_total`, `profit_total`) and an optional
+  `stated_schedule` checked cell-for-cell (absent cells read 0). New
+  validator family **`WF-01`…`WF-03`** (ladder grammar incl. the
+  reserved-and-refused `until_lp_irr`; the cash reference must resolve;
+  a waterfall needs capital).
+- **Protocol §VIII.10** — the normative allocation walk (accrue first,
+  pairwise year fractions, contributions by `equity_split`, ladder fill
+  with pinned per-tier capacities), so **two engines produce identical
+  allocations and agree on the promote**. `verifyWaterfall` /
+  `computeWaterfall` recompute the entire allocation, never trusting
+  stated splits; three-state at the §VIII.9.4 quanta. `capital_stack`
+  and its `CS-WATERFALL-UNSUPPORTED` boundary are untouched — the
+  waterfall is the equity side, in its own section.
+- **Conformance:** new `conformance/waterfall/` suite, 14 scenarios —
+  the fully hand-worked classic case (ROC → 8% pref → 100% catch-up to
+  20% → 80/20, every figure exact on paper; the catch-up lands the GP
+  at exactly 20% of profit), the compound-pref twin, the EM-hurdle
+  boundary crossing, and the six WF refusals (corpus 363 → 377;
+  receipt baselines re-pin `protocol_version` 2.3.0). 30 new unit
+  tests including a cash-conservation property.
+- **Erratum recorded in the RFC, found by building it:** the draft
+  defined catch-up "profit" as distributions above returned capital
+  *and pref* — under which a catch-up following the pref tier has
+  capacity zero forever. Profit means distributions above returned
+  capital; **pref receipts count as profit** (the industry reading);
+  `promote_total` still excludes the GP's own pref.
+- **Deferred by design:** IRR-hurdled tiers (`until_lp_irr` reserved;
+  the bisection-on-boundary-amount design is named in the RFC),
+  clawback/crystallization, n-party splits, Excel emit (the §4.26
+  literals posture), and a `capital_stack` cross-check.
+
 ## [2.1.0] - 2026-09-02
 
 ### Released

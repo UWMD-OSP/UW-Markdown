@@ -1,0 +1,104 @@
+{
+  "waterfall": {
+    "cash_flow_ref": {
+      "variant": "base"
+    },
+    "equity_split": {
+      "lp": 0.9,
+      "gp": 0.1
+    },
+    "tiers": [
+      {
+        "type": "return_of_capital"
+      },
+      {
+        "type": "preferred_return",
+        "rate": 0.08,
+        "accrual": "simple"
+      },
+      {
+        "type": "catch_up",
+        "gp_share": 1,
+        "target_promote": 0.2
+      },
+      {
+        "type": "split",
+        "lp_share": 0.8,
+        "gp_share": 0.2
+      }
+    ],
+    "stated_outcomes": {
+      "lp": {
+        "contributions": 900000,
+        "distributions": 1764000,
+        "moic": 1.96,
+        "xirr": 0.411714
+      },
+      "gp": {
+        "contributions": 100000,
+        "distributions": 316000,
+        "moic": 3.16,
+        "xirr": 0.795449
+      },
+      "promote_total": 200640,
+      "profit_total": 1080000
+    },
+    "stated_schedule": [
+      {
+        "date": "2027-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 72000,
+            "gp": 8000
+          }
+        ]
+      },
+      {
+        "date": "2028-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 828000,
+            "gp": 92000
+          },
+          {
+            "tier": 1,
+            "lp": 138240,
+            "gp": 15360
+          },
+          {
+            "tier": 2,
+            "lp": 0,
+            "gp": 19200
+          },
+          {
+            "tier": 3,
+            "lp": 725760,
+            "gp": 181440
+          }
+        ]
+      }
+    ]
+  },
+  "series": {
+    "day_count": "actual/365f",
+    "series": [
+      {
+        "date": "2026-01-01",
+        "amount": -1000000,
+        "kind": "acquisition"
+      },
+      {
+        "date": "2027-01-01",
+        "amount": 80000,
+        "kind": "operating"
+      },
+      {
+        "date": "2028-01-01",
+        "amount": 2000000,
+        "kind": "disposition"
+      }
+    ]
+  }
+}
