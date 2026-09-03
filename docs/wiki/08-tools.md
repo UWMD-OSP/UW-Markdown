@@ -41,16 +41,23 @@ Command | Purpose
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
-## Batch collection indexer — `packages/uwmd-batch` (`@uwmd/batch` 0.1.0)
+## Batch collection indexer — `packages/uwmd-batch` (unpublished)
 
-A local batch runner for a directory of canonical `.uw.md` deal files. It recursively
-indexes every candidate, validates the required UW frontmatter envelope, records each
-deal's semantic digest, and writes deterministic `uwmd-collection.json` and CSV
-projections:
+A local batch runner for a directory of canonical `.uw.md` / `.uwx.md` deal files. It
+recursively indexes every candidate, validates the required UW frontmatter envelope,
+records each deal's semantic digest, and writes deterministic `uwmd-collection.json`
+and CSV projections:
 
 ```bash
-npx @uwmd/batch deals --out batch-output
+npx uwmd-batch deals --out batch-output --facts
 ```
+
+`--facts` additionally emits `uwmd-facts.jsonl` — the corpus fact table: one line per
+JSON fact per deal, the normative `block_values` row (via core's
+`flattenEnvelopeBlockValues`, never re-implemented) prefixed with deal identity
+(`path`, `deal_id`, `asset_class`, `semantic_digest`, `valid`) — plus a manifest with
+counts and a `deals_skipped` list. See [`docs/DATA_LAKE.md`](../DATA_LAKE.md) for the
+full lake pipeline.
 
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.

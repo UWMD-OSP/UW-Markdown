@@ -3,12 +3,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  buildUWMDFactTable,
   filterUWMDCollection,
   indexUWMDDirectory,
   projectUnderwritingQueue,
   summarizeUWMDCollection,
   UWMD_BATCH_INDEX_VERSION,
+  UWMD_FACT_TABLE_VERSION,
   writeUWMDCollectionIndex,
+  writeUWMDFactTable,
   type UWMDCollectionIndex,
 } from './index.js';
 
@@ -103,5 +106,67 @@ describe('batch workflow projections', () => {
     expect(first.deals.map((deal) => deal.path)).toEqual([
       'b-multifamily.uw.md', 'z-invalid.uw.md', 'c-retail.uw.md', 'a-office.uw.md',
     ]);
+  });
+});
+
+describe('buildUWMDFactTable', () => {
+  it('flattens every parseable deal to identity-prefixed fact rows and lists skips', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'uwmd-facts-'));
+    try {
+      await copyFile(
+        join(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
+        join(root, 'parkview.uw.md'),
+      );
+      await writeFile(join(root, 'broken.uw.md'), '```uwmd json\nnot-json\n```', 'utf8');
+
+      const table = await buildUWMDFactTable(root);
+      expect(table.fact_table_version).toBe(UWMD_FACT_TABLE_VERSION);
+      expect(table.files_scanned).toBe(2);
+      expect(table.deals_included).toBe(1);
+      expect(table.deals_skipped).toHaveLength(1);
+      expect(table.deals_skipped[0]?.path).toBe('broken.uw.md');
+      expect(table.rows.length).toBeGreaterThan(0);
+
+      const index = await indexUWMDDirectory(root);
+      const parkview = index.deals.find((deal) => deal.path === 'parkview.uw.md');
+      for (const row of table.rows) {
+        expect(row.path).toBe('parkview.uw.md');
+        expect(row.semantic_digest).toBe(parkview?.semantic_digest);
+        expect(row.valid).toBe(true);
+        expect(['annotation', 'meta', 'content']).toContain(row.scope);
+      }
+      // A scalar business fact is addressable by (block_ref, scope, pointer).
+      expect(
+        table.rows.some((row) => row.scope === 'content' && row.json_type === 'number' && row.pointer !== ''),
+      ).toBe(true);
+
+      const again = await buildUWMDFactTable(root);
+      expect(again).toEqual(table);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('writes JSONL that parses line-for-line plus a rowless manifest', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'uwmd-facts-out-'));
+    try {
+      await copyFile(
+        join(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),
+        join(root, 'parkview.uw.md'),
+      );
+      const table = await buildUWMDFactTable(root);
+      const files = await writeUWMDFactTable(table, join(root, 'out'));
+
+      const lines = (await readFile(files.jsonl, 'utf8')).split('\n').filter((line) => line !== '');
+      expect(lines).toHaveLength(table.rows.length);
+      expect(JSON.parse(lines[0] ?? '')).toEqual(table.rows[0]);
+
+      const manifest = JSON.parse(await readFile(files.manifest, 'utf8'));
+      expect(manifest.row_count).toBe(table.rows.length);
+      expect(manifest.rows).toBeUndefined();
+      expect(manifest.fact_table_version).toBe(UWMD_FACT_TABLE_VERSION);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });
