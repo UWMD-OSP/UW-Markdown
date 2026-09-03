@@ -1,11 +1,12 @@
 name: Release
 
-# Publishes @uwmd/core (library), @uwmd/cli (CLI installer), and
-# @uwmd/signing (RFC 0010 signing companion) to npm when a version tag (v*)
-# is pushed. Core and cli share the tag — they version in lockstep because
-# the CLI re-exposes the library's CLI module. Signing versions
-# independently (its manifest version, not the tag) and publishes only when
-# that version is not already on npm, so a release that didn't bump it is a
+# Publishes @uwmd/core (library), @uwmd/cli (CLI installer),
+# @uwmd/signing (RFC 0010 signing companion), and @uwmd/batch (collection
+# indexer + corpus fact table) to npm when a version tag (v*) is pushed.
+# Core and cli share the tag — they version in lockstep because the CLI
+# re-exposes the library's CLI module. Signing and batch version
+# independently (their manifest versions, not the tag) and publish only when
+# that version is not already on npm, so a release that didn't bump one is a
 # no-op for it.
 #
 # Authentication is npm trusted publishing (OIDC) — there is no NPM_TOKEN and
@@ -14,16 +15,16 @@ name: Release
 # write` below is load-bearing rather than decoration.
 #
 # Prerequisites (one-time, on npmjs.com — nothing to configure in this repo):
-#   For EACH of @uwmd/core, @uwmd/cli, and @uwmd/signing: package page ->
-#   Settings -> Trusted publisher -> GitHub Actions, with
+#   For EACH of @uwmd/core, @uwmd/cli, @uwmd/signing, and @uwmd/batch:
+#   package page -> Settings -> Trusted publisher -> GitHub Actions, with
 #     Organization or user: UWMD-OSP
 #     Repository:           UW-Markdown
 #     Workflow filename:    release.yml     (filename only, no path, with .yml)
 #     Allowed actions:      publish
 #     Environment:          (leave blank)
 #
-# All three are required (see docs/handoff/HUMAN-configure-signing-trusted-publisher.md
-# for the signing one). Configure only some and the run fails partway,
+# All four are required (see docs/handoff/HUMAN-configure-batch-trusted-publisher.md
+# for the batch one). Configure only some and the run fails partway,
 # publishing an incomplete set — recoverable, because every publish step below
 # skips a version that is already live, so re-running the job after fixing the
 # publisher finishes the remainder without EPUBLISHCONFLICT on the ones that
@@ -50,7 +51,7 @@ on:
 
 jobs:
   publish:
-    name: Publish @uwmd/core + @uwmd/cli + @uwmd/signing
+    name: Publish @uwmd/core + @uwmd/cli + @uwmd/signing + @uwmd/batch
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -160,6 +161,23 @@ jobs:
           VER=$(node -p "require('./package.json').version")
           if npm view "@uwmd/signing@$VER" version >/dev/null 2>&1; then
             echo "@uwmd/signing@$VER is already on npm — skipping"
+          else
+            npm publish --provenance --access public
+          fi
+
+      # @uwmd/batch versions independently of the tag (owner decision
+      # 2026-09-03: publish it, so the underwriter.cc screener needn't clone
+      # the repo). First publish requires its trusted publisher to exist —
+      # docs/handoff/HUMAN-configure-batch-trusted-publisher.md. Deliberately
+      # last: if its publisher is missing, core+cli+signing are already fully
+      # published before this step fails, and a re-run after binding finishes
+      # batch alone (every step above skips versions already live).
+      - name: Publish @uwmd/batch to npm with provenance
+        working-directory: packages/uwmd-batch
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          if npm view "@uwmd/batch@$VER" version >/dev/null 2>&1; then
+            echo "@uwmd/batch@$VER is already on npm — skipping"
           else
             npm publish --provenance --access public
           fi

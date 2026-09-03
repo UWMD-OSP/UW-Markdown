@@ -41,7 +41,7 @@ Command | Purpose
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
-## Batch collection indexer — `packages/uwmd-batch` (unpublished)
+## Batch collection indexer — `packages/uwmd-batch` (`@uwmd/batch`, published since 0.8.0)
 
 A local batch runner for a directory of canonical `.uw.md` / `.uwx.md` deal files. It
 recursively indexes every candidate, validates the required UW frontmatter envelope,
@@ -49,7 +49,7 @@ records each deal's semantic digest, and writes deterministic `uwmd-collection.j
 and CSV projections:
 
 ```bash
-npx uwmd-batch deals --out batch-output --facts
+npx @uwmd/batch deals --out batch-output --facts
 ```
 
 `--facts` additionally emits `uwmd-facts.jsonl` — the corpus fact table: one line per

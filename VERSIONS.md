@@ -24,14 +24,14 @@ same protocol version.
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
 | UW Protocol | **2.3.0** | format ≥ 1.0 (§VIII.9 cash flows RFC 0034; §VIII.10 waterfall RFC 0035; §XV portfolio profiles RFC 0015) |
-| `@uwmd/core` | **2.2.0** | format 2.0 (reads 1.x), protocol 2.3.0 |
-| `@uwmd/cli` (CLI) | **2.2.0** | `@uwmd/core` 2.2.0 |
-| `@uwmd/excel` | **0.8.4** | `@uwmd/core` 2.2.x, format 1.1 multifamily pack |
-| `@uwmd/report` | **0.8.4** | `@uwmd/core` 2.2.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.7.4** | `@uwmd/core` 2.2.x, `.uwx.md` collections |
-| `@uwmd/signing` | **0.2.4** | `@uwmd/core` 2.2.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.2.x, protocol §X module system |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.2.x browser entry |
+| `@uwmd/core` | **2.3.0** | format 2.0 (reads 1.x), protocol 2.3.0 |
+| `@uwmd/cli` (CLI) | **2.3.0** | `@uwmd/core` 2.3.0 |
+| `@uwmd/excel` | **0.8.5** | `@uwmd/core` 2.3.x, format 1.1 multifamily pack |
+| `@uwmd/report` | **0.8.5** | `@uwmd/core` 2.3.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.0** | `@uwmd/core` 2.3.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/signing` | **0.2.5** | `@uwmd/core` 2.3.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.3.x, protocol §X module system |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.3.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

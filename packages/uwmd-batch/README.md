@@ -20,7 +20,7 @@ and unfiltered queue; none of these helpers changes a deal file.
 ## Corpus fact table (`--facts`)
 
 ```bash
-npx uwmd-batch deals --out batch-output --facts
+npx @uwmd/batch deals --out batch-output --facts
 ```
 
 Adds `uwmd-facts.jsonl` — one JSON object per line, one line per JSON fact in

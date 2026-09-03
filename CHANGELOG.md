@@ -6,7 +6,25 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.3.0] - 2026-09-03
+
+### Released
+
+- `@uwmd/core` **2.3.0**, `@uwmd/cli` **2.3.0** (lockstep),
+  `@uwmd/signing` **0.2.5** (repin-only patch; core's exact optional-peer
+  pin moves with it), and — **first publish** — `@uwmd/batch` **0.8.0**
+  (owner decision 2026-09-03: the corpus fact table's first consumer is
+  the underwriter.cc screener, which should `npx @uwmd/batch` rather than
+  clone the repo). `release.yml` now carries a fourth publish step; batch
+  gained the `repository` manifest field npm provenance requires.
+  Coordinated repins for the still-unpublished surfaces: `@uwmd/excel`
+  **0.8.5**, `@uwmd/report` **0.8.5**; `@uwmd/module-hospitality` repins
+  to core 2.3.0 and stays **0.1.0, unpublished**.
+- Carries the **#146 data-lake pair**: the `/guide/data-lake` on-ramp
+  (#148) and the corpus fact table + `.uwx.md` discovery fix (#149).
+  No spec, schema, format, or protocol movement — protocol stays 2.3.0
+  (the core 2.3.0 / protocol 2.3.0 number collision is coincidence;
+  the surfaces version independently).
 
 ### Added — corpus fact table for data-lake ingestion (#146 leg B)
 
@@ -2931,7 +2949,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.10.0...v2.0.0

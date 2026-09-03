@@ -133,12 +133,12 @@ spreadsheet exhaust.
 
 The loop over deals is deliberately boring — any orchestrator can run
 `uwmd convert` and `uwmd receipt issue` per file. For the whole-corpus case,
-`@uwmd/batch` (unpublished; run from a checkout) walks a directory, validates
-every deal, and emits both a deal-level catalog (`uwmd-collection.json` + CSV,
-with semantic digests) and — with `--facts` — the corpus fact table directly:
+`@uwmd/batch` walks a directory, validates every deal, and emits both a
+deal-level catalog (`uwmd-collection.json` + CSV, with semantic digests) and —
+with `--facts` — the corpus fact table directly:
 
 ```bash
-npx uwmd-batch deals --out lake-out --facts
+npx @uwmd/batch deals --out lake-out --facts
 ```
 
 `lake-out/uwmd-facts.jsonl` is one line per JSON fact per deal: the same
