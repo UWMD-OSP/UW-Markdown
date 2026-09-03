@@ -70,6 +70,7 @@ const COPIES = [
   { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools comparison' },
   { from: 'docs/UW_LITE_AND_UWX.md', to: 'guide/lite-and-uwx.md', title: 'UW Lite and UWX' },
   { from: 'docs/UW_RECEIPTS.md',     to: 'guide/receipts.md',     title: 'Verification receipts' },
+  { from: 'docs/DATA_LAKE.md',       to: 'guide/data-lake.md',    title: 'UW Markdown → data lake' },
 
   // RFCs
   { from: 'docs/rfcs/README.md',       to: 'about/rfcs/index.md', title: 'RFC Process' },
@@ -137,10 +138,12 @@ const NORMALIZED_LINK_MAP = new Map([
   ['docs/TOOLS.md', '/guide/tools'],
   ['docs/UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
   ['docs/UW_RECEIPTS.md', '/guide/receipts'],
+  ['docs/DATA_LAKE.md', '/guide/data-lake'],
   ['GLOSSARY.md', '/guide/glossary'],
   ['TOOLS.md', '/guide/tools'],
   ['UW_LITE_AND_UWX.md', '/guide/lite-and-uwx'],
   ['UW_RECEIPTS.md', '/guide/receipts'],
+  ['DATA_LAKE.md', '/guide/data-lake'],
   ['docs/releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['LICENSE', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/LICENSE'],

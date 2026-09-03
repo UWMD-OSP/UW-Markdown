@@ -48,6 +48,7 @@ export default defineConfig({
           { text: 'Calc conventions', link: '/guide/calc-conventions' },
           { text: 'FAQ', link: '/guide/faq' },
           { text: 'Verification receipts', link: '/guide/receipts' },
+          { text: 'Data lake on-ramp', link: '/guide/data-lake' },
           { text: 'Reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
           { text: 'For AI and agents', link: '/ai/' },
           { text: 'Bounded agent skills', link: '/ai/skills' },
