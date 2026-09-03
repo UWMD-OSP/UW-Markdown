@@ -6,7 +6,21 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.2.0] - 2026-09-02
+
+### Released
+
+- `@uwmd/core` **2.2.0**, `@uwmd/cli` **2.2.0** (lockstep), and
+  `@uwmd/signing` **0.2.4** (repin-only: its core dependency is exact, so the
+  core bump forces a patch; core's exact optional-peer pin moves with it).
+  Coordinated repins for the versioned-but-unpublished surfaces:
+  `@uwmd/excel` **0.8.4**, `@uwmd/report` **0.8.4**, `@uwmd/batch` **0.7.4**;
+  `@uwmd/module-hospitality` repins to core 2.2.0 and stays **0.1.0,
+  unpublished**; `tools/web-editor` is a `file:` link and needs no repin.
+- Carries **RFC 0035** (distribution waterfall, protocol **2.3.0** §VIII.10) —
+  drafted, accepted, and implemented 2026-09-02, the same day as the 2.1.0
+  release it follows. Format stays **2.0** (additive section registration
+  does not bump it).
 
 ### Added — distribution waterfall (RFC 0035; protocol 2.2.0 → 2.3.0)
 
@@ -2890,7 +2904,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.10.0...v2.0.0
 [1.10.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.9.0...v1.10.0
