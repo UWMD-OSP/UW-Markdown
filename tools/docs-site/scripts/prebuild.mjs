@@ -33,7 +33,7 @@ const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
   { from: 'spec/UW_FORMAT_SPEC_v2.md',   to: 'spec/format-v2.md', title: 'UW Format Specification (v2.0)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.3)' },
+  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (2.3.0)' },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
   { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
@@ -55,6 +55,7 @@ const COPIES = [
   { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
 
   // Project documents
+  { from: 'docs/ABOUT.md',       to: 'about/index.md', title: 'About UW Markdown' },
   { from: 'ROADMAP.md',          to: 'about/roadmap.md' },
   { from: 'GOVERNANCE.md',       to: 'about/governance.md' },
   { from: 'MAINTAINERS.md',      to: 'about/maintainers.md' },
@@ -133,6 +134,8 @@ const NORMALIZED_LINK_MAP = new Map([
   ['CODE_OF_CONDUCT.md', '/about/code-of-conduct'],
   ['CHANGELOG.md', '/about/changelog'],
   ['ARCHITECTURE.md', '/about/architecture'],
+  ['docs/ABOUT.md', '/about/'],
+  ['ABOUT.md', '/about/'],
   ['VERSIONS.md', '/about/versions'],
   ['docs/GLOSSARY.md', '/guide/glossary'],
   ['docs/TOOLS.md', '/guide/tools'],

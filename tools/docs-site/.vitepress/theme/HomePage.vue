@@ -4,8 +4,8 @@
       <div class="uw-hero-copy">
         <div class="uw-kicker"><span class="uw-file-mark" aria-hidden="true">UW</span> Open underwriting interoperability standard</div>
         <h1 id="uw-home-title"><code>.uw.md</code> is the canonical data contract for underwriting systems.</h1>
-        <p class="uw-lede">AI-ready. Code-verifiable. Portable across systems.</p>
-        <p class="uw-intro">UW Markdown gives AI agents, deterministic calculation services, internal platforms, and any compatible editor or viewer one stable underwriting record to exchange and extend.</p>
+        <p class="uw-lede">AI-ready. Deterministically computed. Verifiable to the digit.</p>
+        <p class="uw-intro">UW Markdown gives AI agents, calculation engines, internal platforms, and any compatible editor one stable underwriting record to exchange and extend. AI never does the financial math: every NOI, DSCR, IRR, and waterfall split is recomputed by deterministic engines, attested by verification receipts, and portable into any data lake.</p>
         <nav class="uw-actions" aria-label="Get started">
           <a class="uw-button uw-button-primary" href="/spec/protocol">Explore the protocol</a>
           <a class="uw-button" href="/ai/">Build with AI and code</a>
@@ -19,13 +19,13 @@
           <span class="uw-status uw-status-valid">ACTIVE</span>
         </div>
         <dl>
-          <div><dt>Format</dt><dd><code>v1.1</code></dd></div>
-          <div><dt>Protocol</dt><dd><code>v1.6.0</code></dd></div>
-          <div><dt>Core</dt><dd><code>v1.7.0</code></dd></div>
+          <div><dt>Format</dt><dd><code>v2.0</code></dd></div>
+          <div><dt>Protocol</dt><dd><code>v2.3.0</code></dd></div>
+          <div><dt>Core</dt><dd><code>v2.3.0</code></dd></div>
           <div><dt>License</dt><dd>MIT</dd></div>
-          <div><dt>Updated</dt><dd><time datetime="2026-08-25">2026-08-25</time></dd></div>
+          <div><dt>Updated</dt><dd><time datetime="2026-09-03">2026-09-03</time></dd></div>
         </dl>
-        <p>Source is public. The core library and CLI are published on npm.</p>
+        <p>Source is public. The core library, CLI, signing companion, and batch indexer are published on npm.</p>
         <a href="/about/versions">Version matrix</a>
       </aside>
     </section>
@@ -33,8 +33,9 @@
     <div class="uw-trust-strip" aria-label="Format summary">
       <span><strong>CANONICAL RECORD</strong> Deal facts + provenance</span>
       <span><strong>DETERMINISTIC</strong> Validation + calculation</span>
+      <span><strong>VERIFIABLE</strong> Receipts + signatures + digests</span>
       <span><strong>REPRESENTATIONS</strong> Markdown / JSON / XML / CSV</span>
-      <span><strong>INTEROPERABLE</strong> Agents / tools / systems</span>
+      <span><strong>INTEROPERABLE</strong> Agents / tools / data lakes</span>
     </div>
 
     <section id="example" class="uw-section uw-example" aria-labelledby="example-title">
@@ -55,7 +56,7 @@
           <section class="uw-source" aria-labelledby="source-title">
             <div class="uw-subhead"><h3 id="source-title">Canonical record</h3><span>portable source</span></div>
             <pre><code><span class="tok-rule">---</span>
-<span class="tok-key">uw_version:</span> <span class="tok-string">"1.1"</span>
+<span class="tok-key">uw_version:</span> <span class="tok-string">"2.0"</span>
 <span class="tok-key">deal_name:</span> <span class="tok-string">"Parkview Apartments"</span>
 <span class="tok-key">asset_class:</span> <span class="tok-string">"multifamily"</span>
 <span class="tok-key">quick_metrics:</span>
@@ -106,7 +107,7 @@ fees use the new agreement at 5.5% of EGI.
             <div class="uw-check"><span aria-hidden="true">✓</span><p><strong>Deterministic calculation complete</strong><br>No AI arithmetic. Inputs resolved by the multifamily calculation pack.</p></div>
           </section>
         </div>
-        <div class="uw-file-footer"><span>FORMAT 1.1 · analyst tier · append-only history</span><a href="/viewer/">Open in reference viewer</a></div>
+        <div class="uw-file-footer"><span>FORMAT 2.0 · analyst tier · append-only history</span><a href="/viewer/">Open in reference viewer</a></div>
       </div>
     </section>
 
@@ -118,10 +119,10 @@ fees use the new agreement at 5.5% of EGI.
         </div>
       </div>
       <div class="uw-capability-grid">
-        <article><span class="uw-index">01</span><h3>Code-native</h3><p>Typed sections, schemas, and conformance make the record dependable software input.</p></article>
-        <article><span class="uw-index">02</span><h3>AI-ready</h3><p>Agents can extract, reason over, and propose changes against one shared contract.</p></article>
-        <article><span class="uw-index">03</span><h3>Deterministic</h3><p>Validators and calculation hosts check consistency and own all underwriting math.</p></article>
-        <article><span class="uw-index">04</span><h3>Interoperable</h3><p>Any compatible platform, editor, viewer, or service can load the same record.</p></article>
+        <article><span class="uw-index">01</span><h3>Code-native</h3><p>Typed sections, schemas, and a 377-assertion conformance corpus make the record dependable software input.</p></article>
+        <article><span class="uw-index">02</span><h3>AI-ready</h3><p>Agents extract data and write narrative against one shared contract — and never do the financial math.</p></article>
+        <article><span class="uw-index">03</span><h3>Verifiable</h3><p>Capital stacks, cash-flow series, and waterfalls are stated in the document and recomputed in full — verifiers never trust the stated numbers. Receipts and signatures carry the proof.</p></article>
+        <article><span class="uw-index">04</span><h3>Interoperable</h3><p>The same record loads in any compatible platform, converts to JSON, XML, and CSV, and flattens straight into a data lake.</p></article>
       </div>
     </section>
 
@@ -149,10 +150,11 @@ fees use the new agreement at 5.5% of EGI.
         </div>
       </div>
       <div class="uw-link-list">
-        <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a .uw.md file</small></span><code>v1.1</code></a>
-        <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calc hosts, and agents</small></span><code>v1.6.0</code></a>
-        <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixtures that prove implementation behavior</small></span><code>222 assertions</code></a>
-        <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, convert, and render</small></span><code>v1.7.0 · npm</code></a>
+        <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a .uw.md file</small></span><code>v2.0</code></a>
+        <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calc hosts, and agents</small></span><code>v2.3.0</code></a>
+        <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixtures that prove implementation behavior</small></span><code>377 assertions</code></a>
+        <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, verify, convert, and render</small></span><code>v2.3.0 · npm</code></a>
+        <a href="/guide/data-lake"><span><strong>Data-lake on-ramp</strong><small>Deals to DuckDB with digests and receipts intact</small></span><code>guide</code></a>
         <a href="/viewer/"><span><strong>Reference viewer</strong><small>Read a file locally in a browser</small></span><code>Tier 1</code></a>
         <a href="https://www.uwmd.org/editor/"><span><strong>Reference editor</strong><small>Edit, validate, calculate, diff, and export</small></span><code>public preview</code></a>
       </div>
@@ -165,7 +167,7 @@ fees use the new agreement at 5.5% of EGI.
       </div>
       <nav class="uw-actions" aria-label="Project links">
         <a class="uw-button uw-button-primary" href="/ai/">Build with AI and code</a>
-        <a class="uw-button" href="/spec/protocol">Read the protocol</a>
+        <a class="uw-button" href="/about/">About the project</a>
         <a class="uw-text-link" href="https://github.com/UWMD-OSP/UW-Markdown">Browse source <span aria-hidden="true">→</span></a>
       </nav>
     </section>
