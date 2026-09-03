@@ -146,6 +146,7 @@ context. This list is the maintainable copy.
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | ✅ Portfolio and relationship profiles        | **Shipped 2026-09-02** (protocol 2.2.0, §XV). The `.uwportfolio.json` sidecar carrying entity-layer edges of the RFC 0018 registry, registry-resolved validation, `uwmd portfolio validate\|edges`, and the package→profile projection bridge. No storage or aggregate-math contract, by design. |
 | [0034](./docs/rfcs/0034-calendar-anchored-cash-flows.md) | ✅ Calendar-anchored cash flows | **Shipped 2026-09-02** (protocol 2.1.0, §VIII.9). Dated series (§4.26, the third state-and-verify structure), the closed day-count registry, and deterministic `xirr`/`xnpv` via declarations. Removes RFC 0026 Phase 2's stated precondition. |
+| [0035](./docs/rfcs/0035-distribution-waterfall.md) | Distribution waterfall | The RFC 0026 §E leg-3: state-and-verify promote / pref / catch-up over a §4.26 dated series, verifyWaterfall recomputing the full allocation. Draft. |
 
 
 ## Pre-public-flip checklist
