@@ -2,17 +2,21 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-02 (night), after **RFC 0035 (distribution
-waterfall)** — drafted, accepted by the owner, and implemented the same
-day (protocol **2.3.0**, §VIII.10; the third same-day RFC of the post-2.0
-run, after 0034 and 0015). npm state: `@uwmd/core` **2.1.0**, `@uwmd/cli`
-**2.1.0**, `@uwmd/signing` **0.2.3** live (tag `v2.1.0`, `bd8c249`,
-npm-verified); the RFC 0035 leg sits in CHANGELOG `[Unreleased]` awaiting
-the next cut. Full pass: build green across all workspaces; all tests
-green (+30 waterfall unit tests; 97 core test files); **377 conformance**
-assertions (363 + the 14-scenario `waterfall` suite); **23/23 schemas**;
-Biome clean; `typecheck:tests` clean; `verify-versions` /
-`verify-indexes` clean. Protocol history: 2.3.0 = RFC 0035's §VIII.10;
+**Last verified:** 2026-09-02 (late night), after the **2.2.0 release**
+(tag `v2.2.0`, `a1b4e28`, #144): `@uwmd/core` **2.2.0**, `@uwmd/cli`
+**2.2.0**, `@uwmd/signing` **0.2.4** live on npm (npm-verified) — the cut
+carrying RFC 0035 (distribution waterfall, protocol **2.3.0**, §VIII.10;
+the third same-day RFC of the post-2.0 run, after 0034 and 0015).
+Same-night companion fix (#145): **every uwmd.org Vercel deploy had been
+silently failing since the 2.0 cut** — a dead `UW_FORMAT_SPEC_v2.md` link
+(never in prebuild's copy list; now `/spec/format-v2` + sidebar row) and
+an RFC 0015 inline code span broken across a line that fed a raw
+`<sidecar>` to Vue's compiler. The Vercel check isn't merge-required, so
+it rotted unnoticed for ~10 merges. Full pass at the cut: build green
+across all workspaces; all tests green (1635 assertions across
+workspaces); **377 conformance** assertions; receipts 14/14; **23/23
+schemas**; Biome clean; `typecheck:tests` clean across all seven
+workspaces; all five verifiers clean. Protocol history: 2.3.0 = RFC 0035's §VIII.10;
 2.2.0 = RFC 0015's §XV; 2.1.0 = RFC 0034's §VIII.9; 2.0.0 = RFC 0009;
 1.14.0 = the 0009 on-ramp; 1.13.0 = RFC 0001's §III.1a (1.12.0 = RFC
 0011's §XIV; 1.11.0 = RFC 0008's §4.25; 1.10.0 RFC 0031; 1.9.0 RFC 0030;
