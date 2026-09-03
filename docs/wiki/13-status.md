@@ -2,9 +2,23 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-02 (late night), after the **2.2.0 release**
-(tag `v2.2.0`, `a1b4e28`, #144): `@uwmd/core` **2.2.0**, `@uwmd/cli`
-**2.2.0**, `@uwmd/signing` **0.2.4** live on npm (npm-verified) — the cut
+**Last verified:** 2026-09-03, after the **2.3.0 release** (tag `v2.3.0`,
+#150): `@uwmd/core` **2.3.0**, `@uwmd/cli` **2.3.0**, `@uwmd/signing`
+**0.2.5**, and — **its first publish** — `@uwmd/batch` **0.8.0**, all
+npm-verified. The cut carries the #146 data-lake pair (the
+`/guide/data-lake` on-ramp, #148, and the corpus fact table +
+`.uwx.md`-discovery fix, #149); batch publishes so the underwriter.cc
+screener can `npx @uwmd/batch` instead of cloning. `release.yml` now has
+four publish steps. Worth remembering: batch's first OIDC publish failed
+`E404 Not Found - PUT` (npm masks a missing trusted-publisher binding as
+404, not ENEEDAUTH); the owner bound the publisher on the package page —
+which existed because the 2026-08-16 partial attempt burned a
+now-public 0.2.0 — and a re-run of the failed job published batch alone.
+No spec/schema/format/protocol movement in the cut (protocol stays
+2.3.0; the core/protocol number collision is coincidence).
+
+Previous verification (2026-09-02 late night, the **2.2.0 release**, tag
+`v2.2.0`, `a1b4e28`, #144): core/cli 2.2.0 + signing 0.2.4 — the cut
 carrying RFC 0035 (distribution waterfall, protocol **2.3.0**, §VIII.10;
 the third same-day RFC of the post-2.0 run, after 0034 and 0015).
 Same-night companion fix (#145): **every uwmd.org Vercel deploy had been
