@@ -33,7 +33,7 @@ export default defineConfig({
     siteTitle: 'UW Markdown',
 
     nav: [
-      { text: 'About', link: '/tutorials/your-first-uwmd-file' },
+      { text: 'About', link: '/about/' },
       { text: 'Specification', link: '/spec/format' },
       { text: 'Protocol', link: '/spec/protocol' },
       { text: 'Examples', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
@@ -57,7 +57,7 @@ export default defineConfig({
         ],
       },
       {
-        text: 'v1.1',
+        text: 'v2.0',
         items: [
           { text: 'Version matrix', link: '/about/versions' },
           { text: 'Changelog', link: '/about/changelog' },
@@ -107,7 +107,7 @@ export default defineConfig({
           items: [
             { text: 'Format spec (v1.1)', link: '/spec/format' },
             { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
-            { text: 'Protocol spec (v1.5)', link: '/spec/protocol' },
+            { text: 'Protocol spec (2.3.0)', link: '/spec/protocol' },
             { text: 'XML mapping (v1.0)', link: '/spec/xml' },
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
             { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
@@ -137,6 +137,7 @@ export default defineConfig({
         {
           text: 'Project',
           items: [
+            { text: 'About UW Markdown', link: '/about/' },
             { text: 'Roadmap', link: '/about/roadmap' },
             { text: 'Architecture', link: '/about/architecture' },
             { text: 'Versions', link: '/about/versions' },
@@ -151,27 +152,8 @@ export default defineConfig({
         {
           text: 'RFCs',
           items: [
-            { text: 'Process', link: '/about/rfcs/' },
+            { text: 'Process and index', link: '/about/rfcs/' },
             { text: 'Template', link: '/about/rfcs/template' },
-            { text: '0001 — Locale negotiation', link: '/about/rfcs/0001-locale-negotiation' },
-            { text: '0002 — Module signing', link: '/about/rfcs/0002-module-signing' },
-            { text: '0003 — Module asset classes', link: '/about/rfcs/0003-module-asset-classes' },
-            { text: '0004 — Conformance runner v2', link: '/about/rfcs/0004-conformance-runner-v2' },
-            { text: '0005 — Stochastic calculations', link: '/about/rfcs/0005-stochastic-calculations' },
-            { text: '0006 — Hospitality module', link: '/about/rfcs/0006-hospitality-module' },
-            { text: '0007 — Sensitivity tables', link: '/about/rfcs/0007-sensitivity-tables' },
-            { text: '0008 — Lease-up modeling', link: '/about/rfcs/0008-lease-up-modeling' },
-            { text: '0009 — _meta v2 reorg', link: '/about/rfcs/0009-meta-v2-reorg' },
-            { text: '0010 — Signed blocks', link: '/about/rfcs/0010-signed-blocks' },
-            { text: '0011 — Capability tokens', link: '/about/rfcs/0011-capability-tokens' },
-            { text: '0013 — Corpus retrieval', link: '/about/rfcs/0013-corpus-retrieval' },
-            { text: '0014 — Multi-format interchange', link: '/about/rfcs/0014-multi-format-interchange' },
-            { text: '0015 — Portfolio relationships', link: '/about/rfcs/0015-portfolio-relationships' },
-            { text: '0016 — Verification receipts', link: '/about/rfcs/0016-verification-receipts' },
-            { text: '0017 — Lite / Extended source split', link: '/about/rfcs/0017-uw-lite-source-representation' },
-            { text: '0018 — Document profiles and deal packages', link: '/about/rfcs/0018-document-profiles-and-deal-packages' },
-            { text: '0019 — Mixed-use composition', link: '/about/rfcs/0019-mixed-use-composition' },
-            { text: '0020 — .uwx.md terminology alignment', link: '/about/rfcs/0020-uwx-terminology-alignment' },
           ],
         },
         {

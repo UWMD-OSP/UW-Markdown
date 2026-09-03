@@ -67,8 +67,11 @@ created_by: "manual"
 
 A few notes on what's required:
 
-- `uw_version` — declares the format version. Use `"1.1"` for a new
-  file today.
+- `uw_version` — declares the format version. The current format is
+  `"2.0"` (`uwmd init` scaffolds it); this tutorial teaches the `"1.1"`
+  shape, which remains fully supported — 1.x files keep 1.x behavior
+  forever. The 2.0 differences (nested block provenance) are in the
+  [format 2.0 spec](/spec/format-v2).
 - `deal_id` — your own unique identifier; any string works.
 - `quick_metrics` — denormalized financial summary used for fast
   pipeline routing. Required for screening-stage files.
