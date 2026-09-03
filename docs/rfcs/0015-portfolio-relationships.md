@@ -224,8 +224,9 @@ read-only:
   `lookupEdgeType`), `getPortfolioRelationships()`, and
   `entityEdgesToPortfolioEdges()` (the projection bridge).
 - `packages/uwmd-core/src/index.ts` / `src/browser.ts` — exports.
-- CLI: `uwmd portfolio validate <sidecar>` and `uwmd portfolio edges
-  <sidecar>` — needed not just for operators but because the RFC 0004
+- CLI: `uwmd portfolio validate <sidecar>` and
+  `uwmd portfolio edges <sidecar>` — needed not just for operators but
+  because the RFC 0004
   conformance driver runs suites through CLI commands, and a suite with
   no command cannot be generated for the protocol driver.
 - Tests: identity, endpoint resolution, wrong-layer refusal, provenance

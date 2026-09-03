@@ -32,6 +32,7 @@ if (process.argv.includes('--clean')) {
 const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
+  { from: 'spec/UW_FORMAT_SPEC_v2.md',   to: 'spec/format-v2.md', title: 'UW Format Specification (v2.0)' },
   { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (v1.3)' },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
@@ -146,6 +147,7 @@ const NORMALIZED_LINK_MAP = new Map([
 
   // Spec
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
+  ['spec/UW_FORMAT_SPEC_v2.md', '/spec/format-v2'],
   ['spec/UW_PROTOCOL_v1.md', '/spec/protocol'],
   ['spec/UW_XML_MAPPING_v1.md', '/spec/xml'],
   ['spec/UW_CSV_BUNDLE_v1.md', '/spec/csv'],
@@ -168,6 +170,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['UW_MCP_BINDING_v1.md', '/spec/mcp'],
   ['UW_HTTP_API_v1.openapi.json', '/spec/UW_HTTP_API_v1.openapi.json'],
   ['UW_FORMAT_SPEC_v1.md', '/spec/format'],
+  ['UW_FORMAT_SPEC_v2.md', '/spec/format-v2'],
   ['UW_PROTOCOL_v1.md', '/spec/protocol'],
   ['UW_XML_MAPPING_v1.md', '/spec/xml'],
   ['UW_CSV_BUNDLE_v1.md', '/spec/csv'],
