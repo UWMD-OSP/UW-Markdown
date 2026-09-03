@@ -83,7 +83,24 @@ interface EncodedBlock {
   block: UWEnvelopeBlock;
 }
 
-type JSONValueType = 'object' | 'array' | 'string' | 'number' | 'boolean' | 'null';
+export type UWJSONValueType = 'object' | 'array' | 'string' | 'number' | 'boolean' | 'null';
+type JSONValueType = UWJSONValueType;
+
+/**
+ * One row of the normative `block_values.csv` fact table (UW CSV Bundle spec
+ * §3): one entry per JSON fact in a block, addressed by JSON Pointer, with the
+ * scalar value as canonical JSON. `scope` separates block `annotation`, the
+ * `_meta` provenance subtree, and the remaining `content`. `block_ref` is the
+ * exact JSON Pointer to the block in the envelope — local to the encoding, not
+ * a durable business identifier.
+ */
+export interface UWBlockValueRow {
+  block_ref: string;
+  scope: 'annotation' | 'meta' | 'content';
+  pointer: string;
+  json_type: UWJSONValueType;
+  value_json: string;
+}
 
 export class UWCSVError extends Error {
   readonly code: string;
@@ -156,27 +173,16 @@ export async function encodeUWCSVBundle(envelope: UWDocumentEnvelope): Promise<U
 
   const blockValueRows: string[][] = [
     ['block_ref', 'scope', 'pointer', 'json_type', 'value_json'],
+    ...flattenEnvelopeBlockValues(stamped).map((row) => [
+      row.block_ref,
+      row.scope,
+      row.pointer,
+      row.json_type,
+      row.value_json,
+    ]),
   ];
   const proseRows: string[][] = [['prose_ref', 'scope', 'block_ref', 'prose_json']];
   for (const entry of blocks) {
-    const content = { ...entry.block.content };
-    const meta = isRecord(content['_meta']) ? content['_meta'] : {};
-    delete content['_meta'];
-    for (const [scope, value] of [
-      ['annotation', entry.block.annotation],
-      ['meta', meta],
-      ['content', content],
-    ] as const) {
-      for (const row of flattenJSON(value)) {
-        blockValueRows.push([
-          entry.block_ref,
-          scope,
-          row.pointer,
-          row.json_type,
-          row.value_json,
-        ]);
-      }
-    }
     if (entry.block.prose !== undefined) {
       proseRows.push([
         `${entry.block_ref}/prose`,
@@ -454,6 +460,39 @@ function enumerateBlocks(envelope: UWDocumentEnvelope): EncodedBlock[] {
     envelope.superseded[section]?.forEach((block, ordinal) => output.push({ block_ref: `/superseded/${pointerEscape(section)}/${ordinal}`, collection: 'superseded', section, variant: null, ordinal, state: 'superseded', block }));
   }
   return output;
+}
+
+/**
+ * Flattens every block of an envelope into the normative `block_values` rows
+ * (UW CSV Bundle spec §3) — the same rows `encodeUWCSVBundle` writes to
+ * `block_values.csv`, exposed as data so hosts (e.g. `@uwmd/batch`) can build
+ * corpus-level fact tables without re-implementing the flattening. Row order
+ * is deterministic: envelope block order, then annotation → meta → content,
+ * then sorted-key JSON Pointer order within each scope.
+ */
+export function flattenEnvelopeBlockValues(envelope: UWDocumentEnvelope): UWBlockValueRow[] {
+  const rows: UWBlockValueRow[] = [];
+  for (const entry of enumerateBlocks(envelope)) {
+    const content = { ...entry.block.content };
+    const meta = isRecord(content['_meta']) ? content['_meta'] : {};
+    delete content['_meta'];
+    for (const [scope, value] of [
+      ['annotation', entry.block.annotation],
+      ['meta', meta],
+      ['content', content],
+    ] as const) {
+      for (const row of flattenJSON(value)) {
+        rows.push({
+          block_ref: entry.block_ref,
+          scope,
+          pointer: row.pointer,
+          json_type: row.json_type,
+          value_json: row.value_json,
+        });
+      }
+    }
+  }
+  return rows;
 }
 
 function flattenJSON(value: unknown, pointer = ''): FlatValueRow[] {

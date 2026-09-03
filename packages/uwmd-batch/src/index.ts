@@ -1,8 +1,16 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { relative, resolve, sep } from 'node:path';
-import { computeEnvelopeDigest, parseUWFile, toUWEnvelope, validateUWFile } from '@uwmd/core';
+import {
+  computeEnvelopeDigest,
+  flattenEnvelopeBlockValues,
+  parseUWFile,
+  toUWEnvelope,
+  type UWBlockValueRow,
+  validateUWFile,
+} from '@uwmd/core';
 
 export const UWMD_BATCH_INDEX_VERSION = '0.2' as const;
+export const UWMD_FACT_TABLE_VERSION = '0.1' as const;
 
 export type MetricComparison = 'gt' | 'gte' | 'lt' | 'lte' | 'eq';
 
@@ -146,12 +154,98 @@ export function projectUnderwritingQueue(
   };
 }
 
+/**
+ * One row of the corpus-level fact table: a normative `block_values` row
+ * (UW CSV Bundle spec §3, via `flattenEnvelopeBlockValues`) prefixed with the
+ * deal's identity — path, `deal_id`, `asset_class`, semantic digest, and
+ * validation verdict. The durable key for a fact is
+ * `(semantic_digest, block_ref, scope, pointer)`; `path` and `deal_id` are
+ * conveniences and `block_ref` alone is not durable across encodings.
+ */
+export interface UWMDFactRow extends UWBlockValueRow {
+  path: string;
+  deal_id: string | null;
+  asset_class: string | null;
+  semantic_digest: string;
+  valid: boolean;
+}
+
+export interface UWMDFactTable {
+  fact_table_version: typeof UWMD_FACT_TABLE_VERSION;
+  files_scanned: number;
+  deals_included: number;
+  /** Files that could not be parsed into an envelope, with the refusal reason. */
+  deals_skipped: Array<{ path: string; error: string }>;
+  rows: UWMDFactRow[];
+}
+
+/**
+ * Walks a directory of deal files and returns every JSON fact of every
+ * parseable deal as one flat table. Deals that parse but fail validation are
+ * INCLUDED with `valid: false` (mirroring the collection index, where invalid
+ * candidates stay visible); files that cannot produce an envelope at all are
+ * listed in `deals_skipped` — a fact table never silently drops a deal.
+ * Ordering is deterministic: files sorted by path, rows in envelope order.
+ */
+export async function buildUWMDFactTable(inputDirectory: string): Promise<UWMDFactTable> {
+  const root = resolve(inputDirectory);
+  const files = (await discoverUWMD(root)).sort();
+  const rows: UWMDFactRow[] = [];
+  const skipped: Array<{ path: string; error: string }> = [];
+  let included = 0;
+  for (const file of files) {
+    const path = relative(root, file).split(sep).join('/');
+    try {
+      const parsed = parseUWFile(await readFile(file, 'utf8'));
+      if (!hasUWEnvelope(parsed.frontmatter)) {
+        throw new BatchError('MISSING_UW_ENVELOPE', 'File does not contain the required UW Markdown frontmatter envelope.');
+      }
+      const envelope = toUWEnvelope(parsed);
+      const digest = await computeEnvelopeDigest(envelope);
+      const validation = validateUWFile(parsed);
+      const valid = !validation.issues.some((issue) => issue.severity === 'error');
+      const frontmatter = parsed.frontmatter as Record<string, unknown>;
+      const deal_id = stringOrNull(frontmatter.deal_id);
+      const asset_class = stringOrNull(frontmatter.asset_class);
+      for (const fact of flattenEnvelopeBlockValues(envelope)) {
+        rows.push({ path, deal_id, asset_class, semantic_digest: digest, valid, ...fact });
+      }
+      included += 1;
+    } catch (error) {
+      skipped.push({ path, error: error instanceof Error ? error.message : String(error) });
+    }
+  }
+  return {
+    fact_table_version: UWMD_FACT_TABLE_VERSION,
+    files_scanned: files.length,
+    deals_included: included,
+    deals_skipped: skipped,
+    rows,
+  };
+}
+
+/**
+ * Writes the fact table as `uwmd-facts.jsonl` (one JSON object per line — the
+ * shape DuckDB's `read_json`, Snowflake, and ClickHouse ingest directly) plus
+ * `uwmd-facts-manifest.json` carrying the counts and skip list.
+ */
+export async function writeUWMDFactTable(table: UWMDFactTable, outputDirectory: string): Promise<{ jsonl: string; manifest: string }> {
+  await mkdir(outputDirectory, { recursive: true });
+  const jsonl = resolve(outputDirectory, 'uwmd-facts.jsonl');
+  const manifest = resolve(outputDirectory, 'uwmd-facts-manifest.json');
+  const lines = table.rows.map((row) => JSON.stringify(row));
+  await writeFile(jsonl, lines.length === 0 ? '' : `${lines.join('\n')}\n`, 'utf8');
+  const { rows: _rows, ...head } = table;
+  await writeFile(manifest, `${JSON.stringify({ ...head, row_count: table.rows.length }, null, 2)}\n`, 'utf8');
+  return { jsonl, manifest };
+}
+
 async function discoverUWMD(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { withFileTypes: true });
   const found = await Promise.all(entries.map(async (entry) => {
     const path = resolve(directory, entry.name);
     if (entry.isDirectory()) return discoverUWMD(path);
-    return entry.isFile() && entry.name.endsWith('.uw.md') ? [path] : [];
+    return entry.isFile() && (entry.name.endsWith('.uw.md') || entry.name.endsWith('.uwx.md')) ? [path] : [];
   }));
   return found.flat();
 }

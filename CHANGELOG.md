@@ -6,6 +6,33 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added — corpus fact table for data-lake ingestion (#146 leg B)
+
+- **`@uwmd/core`: `flattenEnvelopeBlockValues(envelope)`** — the normative
+  `block_values` flattening (UW CSV Bundle spec §3) exposed as data
+  (`UWBlockValueRow[]`), so hosts can build fact tables without
+  re-implementing it. `encodeUWCSVBundle` now consumes the same function —
+  one source of truth. Exported from both entries (`UWJSONValueType` /
+  `UWBlockValueRow` types alongside). No behavior change to the bundle
+  encoding.
+- **`@uwmd/batch`: `buildUWMDFactTable` / `writeUWMDFactTable` and the
+  `--facts` CLI flag** — walks a deal directory and emits
+  `uwmd-facts.jsonl` (one line per JSON fact per deal: the `block_values`
+  row prefixed with `path`, `deal_id`, `asset_class`, `semantic_digest`,
+  and the validation verdict) plus `uwmd-facts-manifest.json` with counts
+  and a `deals_skipped` list. Deals that parse but fail validation are
+  included with `valid: false`; a fact table never silently drops a deal.
+  Durable fact key: `(semantic_digest, block_ref, scope, pointer)`.
+  First consumer: the underwriter.cc batch screener.
+- **`@uwmd/batch` fix: `.uwx.md` discovery** — the directory walker only
+  matched `.uw.md`, silently scanning zero files in a post-2.0 corpus
+  (where `init` scaffolds `.uwx.md`). It now matches both extensions.
+- The data-lake guide (`docs/DATA_LAKE.md`, `/guide/data-lake`) gained a
+  "Scaling up" section showing the `--facts` pipeline; every command and
+  query in it was executed before being written down.
+
 ## [2.2.0] - 2026-09-02
 
 ### Released

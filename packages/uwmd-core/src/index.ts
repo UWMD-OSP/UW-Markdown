@@ -119,9 +119,10 @@ export {
   decodeUWCSVBundle,
   encodeUWCSVZip,
   decodeUWCSVZip,
+  flattenEnvelopeBlockValues,
   UW_CSV_BUNDLE_CODEC,
 } from './uwcsv.js';
-export type { UWCSVBundle, UWCSVDecodeOptions } from './uwcsv.js';
+export type { UWCSVBundle, UWCSVDecodeOptions, UWBlockValueRow, UWJSONValueType } from './uwcsv.js';
 export { CORE_CODEC_REGISTRY, encodeUWDocument, decodeUWDocument } from './codecs.js';
 export {
   UWMD_PUBLIC_ORIGIN,

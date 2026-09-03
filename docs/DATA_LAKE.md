@@ -132,10 +132,31 @@ spreadsheet exhaust.
 ## 4. Scaling up
 
 The loop over deals is deliberately boring — any orchestrator can run
-`uwmd convert` and `uwmd receipt issue` per file. Inside this repository,
-`@uwmd/batch` (unpublished; run from a checkout) already walks a directory,
-validates every deal, and emits a deal-level index (`uwmd-collection.json` +
-CSV) with semantic digests — a ready-made catalog feed.
+`uwmd convert` and `uwmd receipt issue` per file. For the whole-corpus case,
+`@uwmd/batch` (unpublished; run from a checkout) walks a directory, validates
+every deal, and emits both a deal-level catalog (`uwmd-collection.json` + CSV,
+with semantic digests) and — with `--facts` — the corpus fact table directly:
+
+```bash
+npx uwmd-batch deals --out lake-out --facts
+```
+
+`lake-out/uwmd-facts.jsonl` is one line per JSON fact per deal: the same
+normative `block_values` rows as §2's fact table, prefixed with `path`,
+`deal_id`, `asset_class`, `semantic_digest`, and the validation verdict — so
+the DuckDB side collapses to:
+
+```sql
+SELECT deal_id, pointer, value_json
+FROM read_json('lake-out/uwmd-facts.jsonl')
+WHERE block_ref = '/sections/noi_model' AND scope = 'content'
+  AND pointer = '/net_operating_income' AND valid;
+```
+
+Files that cannot produce an envelope are listed in
+`uwmd-facts-manifest.json` under `deals_skipped`; deals that parse but fail
+validation stay in the table with `valid: false`. A fact table never silently
+drops a deal.
 
 What the standard will **not** grow: a storage contract, warehouse-specific
 loaders, or aggregate-math semantics in the lake layer. Aggregates that need
