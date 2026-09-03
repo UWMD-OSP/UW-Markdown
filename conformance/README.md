@@ -140,6 +140,10 @@ conformance/
 │                         decl.json} → evaluateCashFlowMetrics with pinned
 │                         quantized values; {deal.uwx.md} alone → CF-NN codes
 │                         + an end-to-end verdict. See cash-flow/README.md.
+├── waterfall/           Distribution waterfall (RFC 0035, format spec §4.27
+│                         / Protocol §VIII.10). {case.json} → verifyWaterfall
+│                         recomputes the full allocation, three-state;
+│                         {deal.uwx.md} → WF-NN codes. See waterfall/README.md.
 ├── portfolio-relationships/  Portfolio sidecars (RFC 0015, Protocol §XV).
 │                         {profile.json} → validatePortfolioProfile with
 │                         PORT-NN pins, uninterpreted-type reporting, and
@@ -258,7 +262,7 @@ conformance/
 ```
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
-`capital-stack`, `lease-up`, `cash-flow`, `portfolio-relationships`,
+`capital-stack`, `lease-up`, `cash-flow`, `waterfall`, `portfolio-relationships`,
 `capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
 `stochastic`, `source`, `meta-v2`, and `migrate`
 suites are named rather

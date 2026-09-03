@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.2.0' as const;
+export const PROTOCOL_VERSION = '2.3.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -55,7 +55,7 @@ export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0'] as 
  * v2 §1.3), so a module written against the 1.x protocol line still loads:
  * its `requires_protocol` range is satisfied against any member of this set.
  */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', PROTOCOL_VERSION] as const);
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', '2.2.0', PROTOCOL_VERSION] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
@@ -1227,6 +1227,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'capital_stack',
   'lease_up_schedule',
   'cash_flow_series',
+  'distribution_waterfall',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -1785,6 +1786,25 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
       { path: 'stated_metrics.xnpv.value', label: 'XNPV',     kind: 'currency' },
     ],
   },
+  distribution_waterfall: {
+    section_id: 'distribution_waterfall',
+    display_name: 'Distribution Waterfall',
+    display_order: 24,
+    description: 'Tiered LP/GP split of equity cash flows over a §4.26 dated series (RFC 0035). State-and-verify: the whole allocation is recomputed by verifyWaterfall per protocol §VIII.10, never trusted.',
+    multi_variant: true,
+    primary_fields: [
+      { path: 'stated_outcomes.lp.xirr',       label: 'LP XIRR',  kind: 'percent', primary: true },
+      { path: 'stated_outcomes.lp.moic',       label: 'LP MOIC',  kind: 'ratio', primary: true },
+      { path: 'stated_outcomes.promote_total', label: 'Promote',  kind: 'currency' },
+      { path: 'equity_split.lp',               label: 'LP Split', kind: 'percent' },
+    ],
+    detail_fields: [
+      { path: 'cash_flow_ref.variant',         label: 'Cash Ref', kind: 'string' },
+      { path: 'stated_outcomes.gp.xirr',       label: 'GP XIRR',  kind: 'percent' },
+      { path: 'stated_outcomes.gp.moic',       label: 'GP MOIC',  kind: 'ratio' },
+      { path: 'stated_outcomes.profit_total',  label: 'Profit',   kind: 'currency' },
+    ],
+  },
   gaps: {
     section_id: 'gaps', display_name: 'Gaps', display_order: 21,
     description: 'Open data gaps blocking stage advancement or carrying provisional defaults. Maintained by the editor when --maintain-gaps is on; otherwise hand-curated.',
@@ -1916,6 +1936,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
+  { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
   {
@@ -2107,6 +2128,27 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The series array is empty, or its dates are not non-decreasing. The first row\'s date anchors every year fraction, so order is part of the contract.',
     remediation: 'State at least one flow and sort rows by date. Same-day flows are legal and keep their own rows — do not merge them.',
     spec_ref: '§4.26 CF-02',
+  },
+  {
+    code: 'WF-01', severity: 'error',
+    title: 'Waterfall ladder outside the grammar',
+    description: 'The tier ladder violates the closed §4.27 grammar: unknown or duplicated singleton tiers, out-of-order ladder, no uncapped terminal split, shares/rates/hurdles outside their stated ranges or sums, gp_share not exceeding target_promote, or the reserved until_lp_irr (RFC 0035).',
+    remediation: 'State the ladder as return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split; shares in [0,1] with equity_split and each split summing to 1.0; rate in (0,1); until_lp_em > 0 on a tier whose lp_share > 0; gp_share > target_promote. IRR hurdles are reserved for a future RFC.',
+    spec_ref: '§4.27 WF-01',
+  },
+  {
+    code: 'WF-02', severity: 'error',
+    title: 'Waterfall cash reference does not resolve',
+    description: 'cash_flow_ref.variant names a cash_flow_series variant the document does not carry (or the document has no cash_flow_series at all).',
+    remediation: 'Add the referenced cash_flow_series variant (§4.26), or point cash_flow_ref at one that exists. A waterfall without its cash vector is not reviewable.',
+    spec_ref: '§4.27 WF-02',
+  },
+  {
+    code: 'WF-03', severity: 'error',
+    title: 'Waterfall over a series with no capital',
+    description: 'The referenced series contains no negative amount — no equity contribution — so there is no capital to return and every tier is vacuous.',
+    remediation: 'Include the contribution rows (capital calls, closing equity) in the referenced series; outflows are negative amounts.',
+    spec_ref: '§4.27 WF-03',
   },
   {
     code: 'CF-03', severity: 'error',

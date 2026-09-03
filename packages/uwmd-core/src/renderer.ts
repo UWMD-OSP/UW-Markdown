@@ -636,6 +636,18 @@ Net Total: ${money(deepGet(c, 'stated_metrics.total_net'))} | MOIC: ${val(deepGe
 ${rowLines.join('\n')}`);
   }
 
+  // ── Distribution waterfall (abbreviated, base variant) ───────────────────
+  const waterfallSummary = getSectionVariant(parsed, 'distribution_waterfall', 'base')
+    ?? getSectionVariant(parsed, 'distribution_waterfall', 'default');
+  if (waterfallSummary) {
+    const c = waterfallSummary.content;
+    const tiers = (deepGet(c, 'tiers') as Record<string, unknown>[] | undefined) ?? [];
+    const tierLine = tiers.map((t) => String(t['type'])).join(' → ');
+    sections.push(`## DISTRIBUTION WATERFALL (LP ${pct(deepGet(c, 'equity_split.lp'))} / GP ${pct(deepGet(c, 'equity_split.gp'))})
+Ladder: ${tierLine || '(none)'}
+LP: ${pct(deepGet(c, 'stated_outcomes.lp.xirr'))} XIRR, ${val(deepGet(c, 'stated_outcomes.lp.moic'))}x | GP: ${pct(deepGet(c, 'stated_outcomes.gp.xirr'))} XIRR | Promote: ${money(deepGet(c, 'stated_outcomes.promote_total'))}`);
+  }
+
   // ── Risk assessment (abbreviated) ────────────────────────────────────────
   const risk = getSection(parsed, 'risk_assessment');
   if (risk) {

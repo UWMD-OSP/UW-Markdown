@@ -1,9 +1,11 @@
 ---
 rfc: 0035
 title: Distribution waterfall — state-and-verify promote, pref, and catch-up over a dated series
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-09-02
+accepted: 2026-09-02
+implemented: 2026-09-02
 affects:
   - format-spec
   - protocol-spec
@@ -12,6 +14,24 @@ affects:
 ---
 
 # RFC 0035: Distribution waterfall — state-and-verify promote, pref, and catch-up over a dated series
+
+> **Accepted and implemented 2026-09-02** (protocol 2.2.0 → 2.3.0,
+> corpus 363 → 377). **One erratum, found by building it — and it is a
+> substantive one:** the draft defined catch-up "profit" as
+> distributions above returned capital *and pref receipts*. Under that
+> definition a catch-up that follows the pref tier has capacity **zero
+> forever** — `P` and `G` are both 0 when it is reached, so the classic
+> ROC → pref → catch-up → split ladder never engages its promote. The
+> implemented (and industry) semantics: profit means distributions above
+> returned capital, and **pref receipts count as profit** — the LP's
+> pref is exactly the profit the GP catches up against. `promote_total`
+> is unchanged (it still excludes the GP's own pref: the promote is
+> what the GP earns beyond its co-invest return). The hand-worked
+> reference case in `waterfall.test.ts` pins the corrected semantics:
+> the catch-up lands the GP at exactly `target_promote` of total
+> profit, which the draft's definition could never do. The RFC 0024
+> lesson, a third time: an accepted RFC is a proposal until something
+> runs it.
 
 > The third leg of the sequencing RFC 0026 §E wrote down: *(1) this RFC —
 > stack + sizing + pref return/accrual; (2) a hold-period cash-flow RFC

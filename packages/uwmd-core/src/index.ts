@@ -724,6 +724,31 @@ export type {
   PortfolioProfile,
 } from './portfolio.js';
 
+export {
+  computeWaterfall,
+  verifyWaterfall,
+  WATERFALL_VERIFY_DECIMALS,
+} from './waterfall.js';
+export type {
+  WaterfallParty,
+  WaterfallTier,
+  WaterfallTierReturnOfCapital,
+  WaterfallTierPreferredReturn,
+  WaterfallTierCatchUp,
+  WaterfallTierSplit,
+  WaterfallPartyOutcomes,
+  WaterfallStatedOutcomes,
+  WaterfallScheduleRow,
+  WaterfallScheduleCell,
+  DistributionWaterfall,
+  WaterfallPartyResult,
+  WaterfallAllocation,
+  WaterfallVerdict,
+  WaterfallIssueCode,
+  WaterfallIssue,
+  WaterfallVerification,
+} from './waterfall.js';
+
 export { resolveValue, readInFile } from './cascade.js';
 export type {
   CascadeContext,

@@ -1,0 +1,54 @@
+{
+  "waterfall": {
+    "cash_flow_ref": {
+      "variant": "base"
+    },
+    "equity_split": {
+      "lp": 0.9,
+      "gp": 0.1
+    },
+    "tiers": [
+      {
+        "type": "return_of_capital"
+      },
+      {
+        "type": "preferred_return",
+        "rate": 0.08,
+        "accrual": "compound_annual"
+      },
+      {
+        "type": "catch_up",
+        "gp_share": 1,
+        "target_promote": 0.2
+      },
+      {
+        "type": "split",
+        "lp_share": 0.8,
+        "gp_share": 0.2
+      }
+    ],
+    "stated_outcomes": {
+      "promote_total": 200000
+    }
+  },
+  "series": {
+    "day_count": "actual/365f",
+    "series": [
+      {
+        "date": "2026-01-01",
+        "amount": -1000000,
+        "kind": "acquisition"
+      },
+      {
+        "date": "2027-01-01",
+        "amount": 80000,
+        "kind": "operating"
+      },
+      {
+        "date": "2028-01-01",
+        "amount": 2000000,
+        "kind": "disposition"
+      }
+    ]
+  }
+}

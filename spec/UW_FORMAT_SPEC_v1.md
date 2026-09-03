@@ -43,14 +43,15 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **27 numbered subsections (§ 4.0 – § 4.26)**:
+Part IV registers **28 numbered subsections (§ 4.0 – § 4.27)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content, the `gaps` inventory (§ 4.22), the mixed-use `components`
 section (§ 4.23), the `capital_stack` section (§ 4.24), the
-`lease_up_schedule` section (§ 4.25), and the `cash_flow_series`
-section (§ 4.26). When this and the protocol document refer to "the 21
-standard sections" they mean § 4.0 through § 4.20.
+`lease_up_schedule` section (§ 4.25), the `cash_flow_series`
+section (§ 4.26), and the `distribution_waterfall` section (§ 4.27).
+When this and the protocol document refer to "the 21 standard
+sections" they mean § 4.0 through § 4.20.
 
 ---
 
@@ -2635,7 +2636,44 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 asserted — `moic` at the 4-decimal ratio quantum, `xnpv` at the currency
 quantum, `xirr` at the 6-decimal rate quantum.)*
 
-**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check, defaults-table entries, and the RFC 0026 Phase 2 distribution waterfall (this section removes its stated precondition; taking it up is a separate acceptance).
+**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check and defaults-table entries. The RFC 0026 Phase 2 distribution waterfall — whose stated precondition this section removed — was taken up as RFC 0035 (§ 4.27).
+
+---
+
+### § 4.27 — Distribution Waterfall
+
+**ID:** `distribution_waterfall`  
+**Header:** `## Distribution Waterfall {#distribution_waterfall}`  
+**Purpose:** The tiered split of a deal's equity cash flows between the aggregate **LP** and the **GP** — return of capital, a preferred return accrued under a day-count convention, a GP catch-up, and residual promote splits. This is the partnership half of the underwriting: `capital_stack` (§ 4.24) is the liability side at one point in time (RFC 0033), and this section is the equity side over the hold — which is why the § 4.24 `CS-WATERFALL-UNSUPPORTED` boundary stays: partnership tiers never live inside the debt stack. The section is **asset-class independent** and **multi-variant** (`variant=` per the `stress_tests` rules).  
+**Written by:** `wizard`, `manual`, `agent/L4-*` — with one prohibition mirroring § 4.24's: an agent MUST NOT invent tier terms, splits, or hurdle levels; they are partnership terms from the operating agreement.  
+**Required for pipeline stage:** Optional; never required. A single-party deal legitimately has no waterfall.  
+**Dependencies:** `cash_flow_series` (§ 4.26) — the referenced variant is the cash vector (`WF-02`).  
+**Schema:** [`spec/schemas/section-distribution-waterfall.schema.json`](schemas/section-distribution-waterfall.schema.json)  
+**Introduced by:** RFC 0035 (distribution waterfall); the shape was documented and deferred by RFC 0026 §E.
+
+Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6) — the fourth: the document states the ladder and the outcomes, and a deterministic verifier (`verifyWaterfall`) **recomputes the entire allocation** — period by period, tier by tier — by the normative Protocol § VIII.10 procedure, so two conforming engines agree on the promote. The Tier-3 calc engine is untouched.
+
+**Fields.**
+
+- `cash_flow_ref` — `{ "variant": "<name>" }`: the § 4.26 variant holding the **equity** cash vector. Negative amounts are contributions (capital calls); positive amounts are distributable cash. The series' own `day_count` governs every year fraction here.
+- `equity_split` — `{ "lp": 0.90, "gp": 0.10 }`: each party's share of every contribution, summing to 1.0 (ratio quantum). The GP share is co-invest; the promote comes from the tiers.
+- `tiers` — the ordered ladder, closed `type` vocabulary, in this order (any of the first three MAY be absent; each of the first three appears at most once; at least one `split`):
+  1. `return_of_capital` — pro-rata by unreturned contributed capital.
+  2. `preferred_return` — `{ "rate": 0.09, "accrual": "simple" | "compound_annual" }`: accrues on each party's unreturned capital pari passu; paid pro-rata by accrued balance. `rate` is a fraction in (0, 1).
+  3. `catch_up` — `{ "gp_share": 1.0, "target_promote": 0.20 }`: `gp_share` of this tier's cash goes to the GP until GP cumulative **profit** reaches `target_promote` of total profit distributed. Profit means distributions above returned capital; **pref receipts count as profit** (Protocol § VIII.10 — excluding them would give a catch-up that follows the pref tier capacity zero forever). `gp_share` MUST exceed `target_promote` (otherwise the tier can never fill — a grammar refusal, not a runtime case).
+  4. `split` — `{ "lp_share": 0.80, "gp_share": 0.20, "until_lp_em": 1.5 }`: residual split; `lp_share + gp_share` MUST sum to 1.0 (ratio quantum). The optional `until_lp_em` (> 0) caps the tier where cumulative LP distributions reach that multiple of LP contributions to date; a capped split MUST have `lp_share > 0` (a cap on a tier that pays the LP nothing can never bind). The final tier MUST be an uncapped `split`. `until_lp_irr` is **reserved and refused** (`WF-01`) until a future RFC specifies the boundary solve.
+- `stated_outcomes` — the headline claims, all optional, each verified when present: `lp` / `gp` objects with `contributions`, `distributions`, `moic`, `xirr`; plus `promote_total` and `profit_total`.
+- `stated_schedule` — optional: one entry per distribution date — `{ "date": "YYYY-MM-DD", "by_tier": [{ "tier": 0, "lp": 118475.0, "gp": 13163.9 }] }`, tier indexes into `tiers`. When present it MUST match the recomputed allocation cell-for-cell (an absent cell reads as 0); when absent only `stated_outcomes` are checked. Either way the verifier recomputes the full allocation — the schedule is display detail, not the source of truth.
+
+**Normative rules (RFC 2119):**
+
+- The section is OPTIONAL; no pipeline stage requires it (`STAGE_CONTRACT` untouched).
+- **Ladder grammar (`WF-01`, error).** As above: closed types, singleton and ordering rules, an uncapped terminal `split`, shares in [0, 1] with the stated sums, `rate` in (0, 1), `until_lp_em` > 0, capped splits paying the LP, `gp_share > target_promote`, `equity_split` summing to 1.0, and the reserved `until_lp_irr` refused.
+- **The reference must resolve (`WF-02`, error).** `cash_flow_ref.variant` MUST name a variant present in the document's `cash_flow_series`. A waterfall without its cash vector is not reviewable.
+- **A waterfall needs capital (`WF-03`, error).** The referenced series MUST contain at least one negative amount; over pure inflows every tier is vacuous.
+- **Stated figures are verified, never trusted.** `verifyWaterfall` recomputes by Protocol § VIII.10, three-state, both sides quantized at the § VIII.9.4 quanta (`$` → 2, `x` → 4, `%` → 6): outcomes and schedule cells against the recomputed allocation; a stated `xirr` whose recomputation raises (§ VIII.9.3 refusal — e.g. a zero-contribution party) is `failed`; a `moic` over zero contributions is `unverifiable`; an unresolvable or structurally invalid referenced series makes every stated figure `unverifiable`, never a guess.
+
+**Deliberately deferred (RFC 0035).** IRR-hurdled tiers (`until_lp_irr` — the bisection-on-boundary-amount design is named in the RFC), clawback/crystallization, n-party splits, Excel emit (the § 4.26 literals posture), and a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche).
 
 ---
 

@@ -21,6 +21,7 @@ import { leaseUpPeriodOrdinal, LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.
 import type { LeaseUpGranularity } from './lease-up.js';
 import { CASH_FLOW_KINDS } from './cash-flow-series.js';
 import { isDayCountConvention, parseISODate } from './calc/day-count.js';
+import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 import { isV2File } from './meta-shape.js';
 
@@ -127,6 +128,7 @@ export function validateUWFile(
   checkCapitalStack(parsed, issues);
   checkLeaseUpSchedule(parsed, issues);
   checkCashFlowSeries(parsed, issues);
+  checkWaterfall(parsed, issues);
   checkSizeIntensive(parsed, issues);
   checkSectionReadiness(parsed, issues);
   checkLocale(parsed, issues);
@@ -1023,6 +1025,155 @@ function checkCashFlowSeries(parsed: ParsedUWFile, issues: ValidationMessage[]):
     : [['default', entry as UWBlock]];
   for (const [variant, block] of variants) {
     checkCashFlowContent(block.content as Record<string, unknown>, variant, issues);
+  }
+}
+
+// ─── Distribution waterfall (RFC 0035, §4.27) ────────────────────────────────
+//
+// Structural rules only, the standing split: the ladder grammar, the cash
+// reference, and the capital precondition are validation; the allocation
+// arithmetic belongs to `verifyWaterfall` (waterfall.ts). Multi-variant.
+
+const RATIO_QUANTUM = 1e-4;
+
+function sumsToOne(a: unknown, b: unknown): boolean {
+  return typeof a === 'number' && typeof b === 'number' &&
+    Number.isFinite(a) && Number.isFinite(b) &&
+    a >= 0 && a <= 1 && b >= 0 && b <= 1 &&
+    Math.abs(a + b - 1) < RATIO_QUANTUM;
+}
+
+function checkWaterfallContent(
+  content: Record<string, unknown>,
+  variant: string,
+  parsed: ParsedUWFile,
+  issues: ValidationMessage[],
+): void {
+  const section = 'distribution_waterfall';
+  const label = variant === 'default' ? '' : ` (variant "${variant}")`;
+  const wf01 = (field: string, message: string) => {
+    issues.push({ code: 'WF-01', severity: 'error', section, field, message: `WF-01: ${message}${label}` });
+  };
+
+  const split = content['equity_split'] as Record<string, unknown> | undefined;
+  if (!split || !sumsToOne(split['lp'], split['gp'])) {
+    wf01('equity_split', 'equity_split must state lp and gp fractions in [0,1] summing to 1.0');
+  }
+
+  const tiers = content['tiers'];
+  const rows = Array.isArray(tiers) ? (tiers as WaterfallTier[]) : [];
+  if (!Array.isArray(tiers) || rows.length === 0) {
+    wf01('tiers', 'tiers must be a non-empty ordered ladder');
+  } else {
+    // Ladder order: return_of_capital? preferred_return? catch_up? split+
+    const ORDER: Record<string, number> = { return_of_capital: 0, preferred_return: 1, catch_up: 2, split: 3 };
+    let prevRank = -1;
+    let splitCount = 0;
+    const seenSingleton = new Set<string>();
+    rows.forEach((tier, i) => {
+      const type = tier && typeof tier === 'object' ? (tier as { type?: unknown }).type : undefined;
+      if (typeof type !== 'string' || !(type in ORDER)) {
+        wf01(`tiers[${i}].type`, `unknown tier type ${JSON.stringify(type)} (closed: return_of_capital, preferred_return, catch_up, split)`);
+        return;
+      }
+      const rank = ORDER[type]!;
+      // Equal-rank repetition of a singleton is the duplicate defect below,
+      // not an ordering defect — one diagnostic per defect.
+      if (rank < prevRank) {
+        wf01(`tiers[${i}]`, `tier order must be return_of_capital → preferred_return → catch_up → split(s); ${type} is out of order`);
+      }
+      prevRank = Math.max(prevRank, rank);
+      if (type !== 'split') {
+        if (seenSingleton.has(type)) wf01(`tiers[${i}]`, `duplicate ${type} tier; each appears at most once`);
+        seenSingleton.add(type);
+      }
+      if (type === 'preferred_return') {
+        const t = tier as { rate?: unknown; accrual?: unknown };
+        if (!(typeof t.rate === 'number' && t.rate > 0 && t.rate < 1)) {
+          wf01(`tiers[${i}].rate`, 'preferred_return rate must be a fraction in (0, 1)');
+        }
+        if (t.accrual !== 'simple' && t.accrual !== 'compound_annual') {
+          wf01(`tiers[${i}].accrual`, `accrual must be "simple" or "compound_annual", not ${JSON.stringify(t.accrual)}`);
+        }
+      }
+      if (type === 'catch_up') {
+        const t = tier as { gp_share?: unknown; target_promote?: unknown };
+        const gs = t.gp_share;
+        const tp = t.target_promote;
+        if (!(typeof gs === 'number' && gs > 0 && gs <= 1) || !(typeof tp === 'number' && tp > 0 && tp < 1)) {
+          wf01(`tiers[${i}]`, 'catch_up must state gp_share in (0, 1] and target_promote in (0, 1)');
+        } else if (!(gs > tp)) {
+          wf01(`tiers[${i}].gp_share`, `catch_up gp_share (${gs}) must exceed target_promote (${tp}) or the tier can never fill`);
+        }
+      }
+      if (type === 'split') {
+        splitCount++;
+        const t = tier as { lp_share?: unknown; gp_share?: unknown; until_lp_em?: unknown; until_lp_irr?: unknown };
+        if (!sumsToOne(t.lp_share, t.gp_share)) {
+          wf01(`tiers[${i}]`, 'split lp_share and gp_share must be fractions in [0,1] summing to 1.0');
+        }
+        if (t.until_lp_irr !== undefined) {
+          wf01(`tiers[${i}].until_lp_irr`, 'until_lp_irr is reserved for a future RFC and refused (RFC 0035 §C)');
+        }
+        if (t.until_lp_em != null) {
+          if (!(typeof t.until_lp_em === 'number' && t.until_lp_em > 0)) {
+            wf01(`tiers[${i}].until_lp_em`, 'until_lp_em must be a positive equity multiple');
+          } else if (!(typeof t.lp_share === 'number' && t.lp_share > 0)) {
+            wf01(`tiers[${i}].lp_share`, 'a capped split must pay the LP (lp_share > 0) or the cap can never bind');
+          }
+          if (i === rows.length - 1) {
+            wf01(`tiers[${i}].until_lp_em`, 'the final split must be uncapped — capped ladders need a terminal residual tier');
+          }
+        }
+      }
+    });
+    if (splitCount === 0) {
+      wf01('tiers', 'the ladder must end in at least one split tier');
+    }
+  }
+
+  // WF-02 / WF-03: the cash reference.
+  const ref = content['cash_flow_ref'] as Record<string, unknown> | undefined;
+  const refVariant = ref && typeof ref['variant'] === 'string' ? (ref['variant'] as string) : null;
+  if (refVariant === null) {
+    issues.push({
+      code: 'WF-02', severity: 'error', section, field: 'cash_flow_ref',
+      message: `WF-02: cash_flow_ref must name a cash_flow_series variant${label}`,
+    });
+    return;
+  }
+  const cfEntry = parsed.sections['cash_flow_series'];
+  const cfBlock = cfEntry
+    ? (isVariantMap(cfEntry)
+      ? (cfEntry as Record<string, UWBlock>)[refVariant]
+      : (refVariant === 'default' ? (cfEntry as UWBlock) : undefined))
+    : undefined;
+  if (!cfBlock) {
+    issues.push({
+      code: 'WF-02', severity: 'error', section, field: 'cash_flow_ref.variant',
+      message: `WF-02: cash_flow_ref.variant ${JSON.stringify(refVariant)}${label} does not resolve to a cash_flow_series variant in this document`,
+    });
+    return;
+  }
+  const seriesRows = (cfBlock.content as Record<string, unknown>)['series'];
+  if (Array.isArray(seriesRows) && !seriesRows.some((r) =>
+    r && typeof r === 'object' && typeof (r as Record<string, unknown>)['amount'] === 'number' &&
+    ((r as Record<string, unknown>)['amount'] as number) < 0)) {
+    issues.push({
+      code: 'WF-03', severity: 'error', section, field: 'cash_flow_ref.variant',
+      message: `WF-03: the referenced series${label} has no contribution (no negative amount); a waterfall over pure inflows has no capital to return`,
+    });
+  }
+}
+
+function checkWaterfall(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const entry = parsed.sections['distribution_waterfall'];
+  if (!entry) return;
+  const variants: Array<[string, UWBlock]> = isVariantMap(entry)
+    ? Object.entries(entry as Record<string, UWBlock>)
+    : [['default', entry as UWBlock]];
+  for (const [variant, block] of variants) {
+    checkWaterfallContent(block.content as Record<string, unknown>, variant, parsed, issues);
   }
 }
 

@@ -1,0 +1,35 @@
+{
+  "waterfall": {
+    "cash_flow_ref": {
+      "variant": "base"
+    },
+    "equity_split": {
+      "lp": 0.9,
+      "gp": 0.1
+    },
+    "tiers": [
+      {
+        "type": "return_of_capital"
+      },
+      {
+        "type": "preferred_return",
+        "rate": 0.08,
+        "accrual": "simple"
+      },
+      {
+        "type": "catch_up",
+        "gp_share": 1,
+        "target_promote": 0.2
+      },
+      {
+        "type": "split",
+        "lp_share": 0.8,
+        "gp_share": 0.2
+      }
+    ],
+    "stated_outcomes": {
+      "promote_total": 200640
+    }
+  },
+  "series": null
+}

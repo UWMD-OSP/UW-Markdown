@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,cash-flow,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,cash-flow,waterfall,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -104,6 +104,7 @@ import {
   uninterpretedPortfolioTypes,
   getPortfolioRelationships,
   entityEdgesToPortfolioEdges,
+  verifyWaterfall,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -118,7 +119,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,cash-flow,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,cash-flow,waterfall,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2454,6 +2455,64 @@ async function runCashFlow() {
 }
 
 
+
+// ─── Distribution waterfall (RFC 0035, Protocol §VIII.10) ────────────────────
+//
+// Two scenario kinds, dispatched by the files a directory carries:
+//   case.json + expected.json   → verifyWaterfall over a bare payload
+//                                 ({waterfall, series}; series null = WF-02
+//                                 reaching the verifier)
+//   deal.uwx.md + expected.json → validator codes (WF-NN) end to end
+
+const WATERFALL_DIR = join(CONFORMANCE_DIR, 'waterfall');
+
+async function runWaterfall() {
+  if (!existsSync(WATERFALL_DIR)) {
+    record('waterfall', '(none)', 'pass', 'no waterfall fixtures');
+    return;
+  }
+  const scenarios = readdirSync(WATERFALL_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => ({ id: e.name, dir: join(WATERFALL_DIR, e.name) }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  for (const { id, dir } of scenarios) {
+    const expected = readCase(dir, 'expected.json');
+
+    // ── Full document: validator codes ───────────────────────────────────────
+    if (existsSync(join(dir, 'deal.uwx.md'))) {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const codes = validateUWFile(parsed).issues.map((i) => i.code);
+      const short = (expected.expected_codes ?? []).filter((c) => !codes.includes(c));
+      if (short.length) {
+        record('waterfall', id, 'fail', `emitted [${codes.join(', ')}], expected ${short.join(', ')}`);
+        continue;
+      }
+      const tripped = codes.filter((c) =>
+        (expected.absent_code_prefixes ?? []).some((p) => c.startsWith(p)));
+      if (tripped.length) {
+        record('waterfall', id, 'fail', `forbidden codes emitted: ${tripped.join(', ')}`);
+        continue;
+      }
+      record('waterfall', id, 'pass', (expected.expected_codes ?? []).join(', ') || 'clean');
+      continue;
+    }
+
+    // ── verifyWaterfall three-state over a bare payload ──────────────────────
+    const testCase = readCase(dir, 'case.json');
+    const verification = verifyWaterfall(testCase.waterfall, testCase.series ?? null);
+    if (verification.verdict !== expected.verdict) {
+      record('waterfall', id, 'fail', `verdict ${verification.verdict}, expected ${expected.verdict}: ${verification.issues.map((i) => i.code).join(', ') || '(none)'}`);
+      continue;
+    }
+    if (expected.expected_code && !verification.issues.some((i) => i.code === expected.expected_code)) {
+      record('waterfall', id, 'fail', `issues ${verification.issues.map((i) => i.code).join(', ') || '(none)'}, expected ${expected.expected_code}`);
+      continue;
+    }
+    record('waterfall', id, 'pass', expected.verdict);
+  }
+}
+
 // ─── Portfolio & relationship profiles (RFC 0015, Protocol §XV) ──────────────
 //
 // Two scenario kinds, dispatched by the files a directory carries:
@@ -3654,6 +3713,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'lease-up': async () => { await runLeaseUp(); },
   'cash-flow': async () => { await runCashFlow(); },
+  'waterfall': async () => { await runWaterfall(); },
   'portfolio-relationships': async () => { await runPortfolioRelationships(); },
   'capability': async () => { await runCapability(); },
   'locale': async () => { await runLocale(); },
