@@ -564,11 +564,22 @@ capability is unconditional: every implementation owes it.
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
 
 `FV_*` with an underscore was the v1.0 spelling and was renamed to
-`FV-NN` in v1.1. `META_*` (underscore) is **retired**: it was specified
-and never emitted, and the provenance conditions it described are
-covered by `DQ-NN`. The hyphenated `META-*` family (RFC 0009) is
-unrelated to that retirement — it polices which `_meta` *shape* a file's
-`uw_version` admits, not provenance completeness.
+`FV-NN` in v1.1. `META_*` (underscore) is the **provenance-completeness
+family** and is live: the reference validator emits exactly three codes
+— `META_MISSING` (no `_meta` object), `META_FIELD_MISSING_<FIELD>` (a
+required `_meta` field absent; `<FIELD>` ranges over `SECTION`,
+`VERSION`, `SOURCE`, `TIMESTAMP`, `CONFIDENCE`), and
+`META_LOW_CONFIDENCE_NO_REVIEW_FLAG` (`info`: low confidence without
+`human_review_required`) — and the tier-1 conformance baselines pin
+them. A prior revision of this table declared the family retired on the
+claim that it was "specified and never emitted" and that `DQ-NN`
+covered its conditions; both halves of that claim were false (the
+`DQ-NN` sequence polices incomplete *data*, not incomplete
+*provenance*), and a conforming implementation was left choosing
+between the spec's prose and the corpus's baselines. The corpus was
+right. The hyphenated `META-*` family (RFC 0009) is a separate concern
+under the same registry prefix — it polices which `_meta` *shape* a
+file's `uw_version` admits, not provenance completeness.
 
 `CC-NN`, `FV-NN`, `DQ-NN`, `MU-NN`, and `SRC-NN` are closed sequences extended by
 RFC without renumbering. `MOD-*` and `CS-*` are open extension points:
