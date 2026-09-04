@@ -6,7 +6,20 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.4.0] - 2026-09-04
+
+### Released
+
+- `@uwmd/core` **2.4.0**, `@uwmd/cli` **2.4.0** (lockstep),
+  `@uwmd/signing` **0.2.6** (repin-forced patch; core's exact optional-peer
+  pin moves with it), `@uwmd/batch` **0.8.1** (repin). Unpublished repins:
+  `@uwmd/excel` **0.8.6**, `@uwmd/report` **0.8.6**;
+  `@uwmd/module-hospitality` repins at 0.1.0. Protocol **2.4.0** (three
+  spec-conformance fixes below; no new protocol machinery).
+- **Why a minor, not a patch:** `uwmd parse --json`'s per-section shape
+  changed to the §II.6a.6 projection — breaking for consumers of the old
+  UWBlock dump. Receipt baseline `verify/03` engine_version to 2.4.0.
+
 
 ### Fixed
 
@@ -2986,6 +2999,7 @@ Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
 [Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.3.0...HEAD
+[2.4.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.0.0...v2.1.0
