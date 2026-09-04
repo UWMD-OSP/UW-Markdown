@@ -150,8 +150,15 @@ export interface ImplementationManifest {
   protocol_version: string;
   /** Format semver this implementation can read. */
   format_version: string;
-  /** Tier the implementation self-certifies to. */
-  tier: ViewerTier;
+  /**
+   * Tier the implementation self-certifies to. OPTIONAL per §II.5: an
+   * implementation whose capabilities do not stack into a clean cumulative
+   * tier SHOULD publish `capabilities` and omit this field rather than round
+   * down (or up). The schema requiring it was a defect (UPSTREAM-003,
+   * reported by underwriter.cc) — the spec's normative text always allowed
+   * the omission.
+   */
+  tier?: ViewerTier;
   /** Optional finer-grained capability list. */
   capabilities?: ViewerCapability[];
   /** Machine-readable representation discovery (Protocol 1.2+). */
