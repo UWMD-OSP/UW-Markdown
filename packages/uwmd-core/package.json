@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/core",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Reference implementation of the UW Markdown standard — parser, validator, renderer, and CLI for .uw.md underwriting files.",
   "repository": {
     "type": "git",
@@ -58,7 +58,7 @@
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
-    "@uwmd/signing": "0.2.5"
+    "@uwmd/signing": "0.2.6"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {

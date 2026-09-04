@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/batch",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Deterministic local batch indexing for UW Markdown deal files.",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "test": "vitest run",
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
-  "dependencies": { "@uwmd/core": "2.3.0" },
+  "dependencies": { "@uwmd/core": "2.4.0" },
   "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
   "engines": { "node": ">=18.0.0" },
   "license": "MIT"

@@ -30,7 +30,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.3.0' as const;
+export const PROTOCOL_VERSION = '2.4.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
