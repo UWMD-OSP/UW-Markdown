@@ -2251,13 +2251,6 @@
   ],
   "custom_calculations": [
     {
-      "annotation": {
-        "section": "custom_calculations",
-        "source": "manual",
-        "ts": "2026-04-24T14:10:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "custom_calculations",
         "version": 1,
@@ -2274,21 +2267,6 @@
         "notes": null
       },
       "content": {
-        "_meta": {
-          "section": "custom_calculations",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "agent_id": "user",
-          "agent_version": null,
-          "actor": "jared",
-          "timestamp": "2026-04-24T14:10:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": [],
-          "input_hash": null,
-          "notes": null
-        },
         "_notes": null,
         "calculations": [
           {
@@ -2384,23 +2362,11 @@
             "notes": "Negative leverage is the core structural risk of this deal. Year 2 NOI growth should close the gap."
           }
         ]
-      },
-      "prose": "---\n\n## Custom Calculations {#custom_calculations}\n\nTwo supplemental metrics: true all-in yield (accounts for closing costs and reserves in the denominator) and the loan constant (useful for lender comp conversations).",
-      "rawJson": "{\n  \"_meta\": {\n    \"section\": \"custom_calculations\",\n    \"version\": 1,\n    \"superseded\": false,\n    \"source\": \"manual\",\n    \"agent_id\": \"user\",\n    \"agent_version\": null,\n    \"actor\": \"jared\",\n    \"timestamp\": \"2026-04-24T14:10:00Z\",\n    \"confidence\": \"high\",\n    \"human_review_required\": false,\n    \"flags\": [],\n    \"input_hash\": null,\n    \"notes\": null\n  },\n  \"_notes\": null,\n  \"calculations\": [\n    {\n      \"calc_id\": \"cc_001\",\n      \"label\": \"True All-In Yield\",\n      \"description\": \"Cap rate on total capital deployed — NOI divided by purchase price plus all closing costs plus operating reserves. More accurate than going-in cap rate for comparing deals with different cost structures.\",\n      \"category\": \"returns\",\n      \"inputs\": [\n        {\n          \"variable\": \"noi\",\n          \"label\": \"Underwritten NOI\",\n          \"value\": null,\n          \"source_ref\": \"noi_model.net_operating_income\",\n          \"is_live_ref\": true\n        },\n        {\n          \"variable\": \"purchase_price\",\n          \"label\": \"Purchase Price\",\n          \"value\": null,\n          \"source_ref\": \"valuation.purchase_price\",\n          \"is_live_ref\": true\n        },\n        {\n          \"variable\": \"closing_costs\",\n          \"label\": \"Total Closing Costs\",\n          \"value\": null,\n          \"source_ref\": \"sources_uses.uses.closing_costs.total\",\n          \"is_live_ref\": true\n        },\n        {\n          \"variable\": \"reserves\",\n          \"label\": \"Operating Reserves\",\n          \"value\": null,\n          \"source_ref\": \"sources_uses.uses.operating_reserves\",\n          \"is_live_ref\": true\n        }\n      ],\n      \"formula_description\": \"NOI divided by (purchase_price + closing_costs + reserves)\",\n      \"formula_expression\": \"noi / (purchase_price + closing_costs + reserves)\",\n      \"result\": 0.0533,\n      \"result_unit\": \"pct\",\n      \"result_label\": \"True All-In Yield\",\n      \"result_interpretation\": \"5.33% vs 5.51% going-in cap rate — difference reflects closing costs and reserves diluting the effective yield. Still within acceptable range.\",\n      \"thresholds\": {\n        \"target\": 0.055,\n        \"minimum\": 0.05,\n        \"maximum\": null\n      },\n      \"passes_threshold\": false,\n      \"status\": \"computed\",\n      \"error_message\": null,\n      \"written_by\": \"user\",\n      \"timestamp\": \"2026-04-24T14:10:00Z\",\n      \"notes\": \"Slightly below 5.5% target but acceptable given location quality.\"\n    },\n    {\n      \"calc_id\": \"cc_002\",\n      \"label\": \"Loan Constant\",\n      \"description\": \"Annual debt service as a percentage of loan amount. Useful benchmark for comparing to going-in cap rate — if loan constant exceeds cap rate, the deal is negatively leveraged.\",\n      \"category\": \"debt_metrics\",\n      \"inputs\": [\n        {\n          \"variable\": \"annual_ds\",\n          \"label\": \"Annual Debt Service (amortizing)\",\n          \"value\": null,\n          \"source_ref\": \"debt_structure.annual_debt_service\",\n          \"is_live_ref\": true\n        },\n        {\n          \"variable\": \"loan_amount\",\n          \"label\": \"Loan Amount\",\n          \"value\": null,\n          \"source_ref\": \"debt_structure.loan_amount\",\n          \"is_live_ref\": true\n        }\n      ],\n      \"formula_description\": \"Annual debt service divided by loan amount\",\n      \"formula_expression\": \"annual_ds / loan_amount\",\n      \"result\": 0.071,\n      \"result_unit\": \"pct\",\n      \"result_label\": \"Loan Constant\",\n      \"result_interpretation\": \"Loan constant of 7.10% exceeds going-in cap rate of 5.51% — deal is negatively leveraged at amortizing debt service. This is why DSCR is only 1.11x. IO period (7.10% × IO rate only) drops effective constant to 5.87%, still above cap rate.\",\n      \"thresholds\": {\n        \"target\": null,\n        \"minimum\": null,\n        \"maximum\": null\n      },\n      \"passes_threshold\": null,\n      \"status\": \"computed\",\n      \"error_message\": null,\n      \"written_by\": \"user\",\n      \"timestamp\": \"2026-04-24T14:12:00Z\",\n      \"notes\": \"Negative leverage is the core structural risk of this deal. Year 2 NOI growth should close the gap.\"\n    }\n  ]\n}",
-      "lineStart": 2124,
-      "lineEnd": 2237,
-      "meta_shape": "v1"
+      }
     }
   ],
   "custom_scenarios": [
     {
-      "annotation": {
-        "section": "custom_scenarios",
-        "source": "manual",
-        "ts": "2026-04-24T14:20:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "custom_scenarios",
         "version": 1,
@@ -2417,21 +2383,6 @@
         "notes": null
       },
       "content": {
-        "_meta": {
-          "section": "custom_scenarios",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "agent_id": "user",
-          "agent_version": null,
-          "actor": "jared",
-          "timestamp": "2026-04-24T14:20:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": [],
-          "input_hash": null,
-          "notes": null
-        },
         "_notes": null,
         "scenarios": [
           {
@@ -2506,23 +2457,11 @@
             "status": "computed"
           }
         ]
-      },
-      "prose": "---\n\n## Custom Scenarios {#custom_scenarios}\n\nScenario: what if the lender grants 24-month IO (instead of 12-month)? Also a sensitivity sweep on exit cap rate against levered IRR.",
-      "rawJson": "{\n  \"_meta\": {\n    \"section\": \"custom_scenarios\",\n    \"version\": 1,\n    \"superseded\": false,\n    \"source\": \"manual\",\n    \"agent_id\": \"user\",\n    \"agent_version\": null,\n    \"actor\": \"jared\",\n    \"timestamp\": \"2026-04-24T14:20:00Z\",\n    \"confidence\": \"high\",\n    \"human_review_required\": false,\n    \"flags\": [],\n    \"input_hash\": null,\n    \"notes\": null\n  },\n  \"_notes\": null,\n  \"scenarios\": [\n    {\n      \"scenario_id\": \"scen_001\",\n      \"label\": \"24-Month IO\",\n      \"description\": \"Lender grants 24-month interest-only period instead of 12-month. Year 2 cash flow improves significantly while NOI grows into debt service.\",\n      \"rationale\": \"Current 12mo IO leaves DSCR at 1.11x in year 2 — tight. 24mo IO gives the management transition and rent-growth cycle time to run before full amortization kicks in.\",\n      \"type\": \"upside\",\n      \"based_on\": \"base_case\",\n      \"overrides\": [\n        {\n          \"assumption_key\": \"io_period_months\",\n          \"label\": \"IO Period (months)\",\n          \"section_ref\": \"debt_structure\",\n          \"field_ref\": \"io_period_months\",\n          \"original_value\": 12,\n          \"override_value\": 24,\n          \"override_type\": \"absolute\",\n          \"rationale\": \"Request 24mo IO from lender; available on their current multifamily sheet per loan officer\"\n        }\n      ],\n      \"narrative_setup\": \"Assume lender approves 24-month IO at same rate (5.875%). IO monthly payment = $24,675 vs amortizing $29,801.\",\n      \"results\": {\n        \"noi\": 396635,\n        \"egi\": 630936,\n        \"dscr\": null,\n        \"ltv\": 0.7,\n        \"debt_yield\": 0.0787,\n        \"irr\": 0.071,\n        \"equity_multiple\": 1.4,\n        \"exit_value\": null,\n        \"cash_on_cash_yr1\": 0.0419,\n        \"passes_min_dscr\": null,\n        \"min_dscr_threshold\": 1,\n        \"additional_metrics\": {\n          \"yr2_cash_flow_with_24mo_io\": 113105,\n          \"yr2_coc_with_24mo_io\": 0.0471,\n          \"yr2_dscr_io\": 1.34,\n          \"yr3_dscr_amortizing\": 1.184\n        }\n      },\n      \"narrative_result\": \"With 24-month IO, year 2 cash flow rises from $52K to $113K and CoC improves from 2.2% to 4.7%. Amortizing DSCR doesn't kick in until year 3, by which point projected NOI of $423K supports a 1.18x DSCR — still below 1.20x warning threshold but with more runway. Levered IRR improves to 7.1% and equity multiple to 1.40x. This is the preferred structure.\",\n      \"status\": \"computed\",\n      \"written_by\": \"user\",\n      \"timestamp\": \"2026-04-24T14:20:00Z\"\n    }\n  ],\n  \"sensitivity_sweeps\": [\n    {\n      \"sweep_id\": \"sweep_001\",\n      \"label\": \"Levered IRR vs. Exit Cap Rate\",\n      \"description\": \"How sensitive is levered IRR to exit cap rate assumption? Shows the range of outcomes from cap rate compression to expansion.\",\n      \"variable_key\": \"exit_cap_rate\",\n      \"variable_label\": \"Exit Cap Rate\",\n      \"variable_values\": [\n        0.05,\n        0.055,\n        0.06,\n        0.065,\n        0.07\n      ],\n      \"output_metric\": \"irr\",\n      \"output_label\": \"Levered IRR\",\n      \"results\": [\n        0.094,\n        0.077,\n        0.063,\n        0.047,\n        0.031\n      ],\n      \"chart_type\": \"line\",\n      \"status\": \"computed\"\n    }\n  ]\n}",
-      "lineStart": 2245,
-      "lineEnd": 2337,
-      "meta_shape": "v1"
+      }
     }
   ],
   "extensions": {
     "x_lender_matrix": {
-      "annotation": {
-        "section": "x_lender_matrix",
-        "source": "manual",
-        "ts": "2026-04-24T10:00:00Z",
-        "v": 1,
-        "confidence": "high"
-      },
       "meta": {
         "section": "x_lender_matrix",
         "version": 1,
@@ -2539,21 +2478,6 @@
         "notes": null
       },
       "content": {
-        "_meta": {
-          "section": "x_lender_matrix",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "agent_id": null,
-          "agent_version": null,
-          "actor": "jared",
-          "timestamp": "2026-04-24T10:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": [],
-          "input_hash": null,
-          "notes": null
-        },
         "_notes": null,
         "render_hint": {
           "include_in_output": false,
@@ -2617,14 +2541,8 @@
             }
           ]
         }
-      },
-      "prose": "---\n\n## Lender Outreach {#x_lender_matrix}\n\nTracking lenders contacted, terms quoted, and next steps. Three lenders in conversation.",
-      "rawJson": "{\n  \"_meta\": {\n    \"section\": \"x_lender_matrix\",\n    \"version\": 1,\n    \"superseded\": false,\n    \"source\": \"manual\",\n    \"agent_id\": null,\n    \"agent_version\": null,\n    \"actor\": \"jared\",\n    \"timestamp\": \"2026-04-24T10:00:00Z\",\n    \"confidence\": \"high\",\n    \"human_review_required\": false,\n    \"flags\": [],\n    \"input_hash\": null,\n    \"notes\": null\n  },\n  \"_notes\": null,\n  \"render_hint\": {\n    \"include_in_output\": false,\n    \"output_label\": \"Lender Outreach Log\",\n    \"output_position\": \"appendix\",\n    \"after_section_id\": null,\n    \"visible_tiers\": [\n      \"analyst\"\n    ]\n  },\n  \"schema_version\": null,\n  \"content\": {\n    \"lenders\": [\n      {\n        \"name\": \"First Western Bank\",\n        \"contact\": \"Sarah M., CRE Lending\",\n        \"status\": \"term_sheet_verbal\",\n        \"loan_amount_quoted\": 5040000,\n        \"rate_quoted\": \"5.875% fixed\",\n        \"term_years\": 5,\n        \"amortization\": 30,\n        \"io_months_offered\": 12,\n        \"ltv_max\": 0.7,\n        \"recourse\": \"partial\",\n        \"origination_fee\": \"1.0%\",\n        \"notes\": \"Preferred lender. Verbally confirmed 12mo IO; exploring 24mo IO — answer expected by 4/28. Relationship lender, familiar with our other deals.\",\n        \"next_step\": \"Follow up 4/28 re: 24mo IO availability\",\n        \"last_contact\": \"2026-04-22\"\n      },\n      {\n        \"name\": \"Western Alliance Bank\",\n        \"contact\": \"Mike T., Commercial RE\",\n        \"status\": \"indicative_terms_received\",\n        \"loan_amount_quoted\": 5040000,\n        \"rate_quoted\": \"6.125% fixed\",\n        \"term_years\": 5,\n        \"amortization\": 30,\n        \"io_months_offered\": 0,\n        \"ltv_max\": 0.7,\n        \"recourse\": \"full\",\n        \"origination_fee\": \"0.75%\",\n        \"notes\": \"Higher rate, no IO, full recourse. Less competitive. Keep as backup.\",\n        \"next_step\": \"Hold — only engage if First Western falls through\",\n        \"last_contact\": \"2026-04-20\"\n      },\n      {\n        \"name\": \"Triumph Bank\",\n        \"contact\": \"Direct outreach, no response yet\",\n        \"status\": \"outreach_sent\",\n        \"loan_amount_quoted\": null,\n        \"rate_quoted\": null,\n        \"term_years\": null,\n        \"amortization\": null,\n        \"io_months_offered\": null,\n        \"ltv_max\": null,\n        \"recourse\": null,\n        \"origination_fee\": null,\n        \"notes\": \"Smaller community bank, known for competitive multifamily terms in Phoenix. Sent package 4/23.\",\n        \"next_step\": \"Follow up 4/28 if no response\",\n        \"last_contact\": \"2026-04-23\"\n      }\n    ]\n  }\n}",
-      "lineStart": 2345,
-      "lineEnd": 2426,
-      "meta_shape": "v1"
+      }
     }
   },
-  "superseded": {},
-  "superseded_blocks": {}
+  "superseded": {}
 }
