@@ -181,7 +181,32 @@ function canonicalParsed(parsed) {
 // with a different in-memory model had to mimic ours to pass tier 1.
 function projectBlock(b) {
   if (!b) return null;
-  return { meta: projectMeta(b), content: b.content };
+  return { meta: projectMeta(b), content: projectContent(b) };
+}
+
+// `content` is the block content PROPER, never the raw fence object. The
+// parser's in-memory `b.content` is the whole fence (`_meta` nested inside),
+// and projecting it wholesale was this script's copy of the same accident
+// §II.6a.6 was written to end — `uwmd parse` had it too (fixed alongside this,
+// see cmdParse in @uwmd/core). A wrapped fence ({ section_id, _meta, content })
+// is detected by layout, not meta shape: 2.0 wrapping and `_meta` nesting
+// shipped separately, so the corpus carries wrapped-fence/flat-meta blocks.
+function projectContent(b) {
+  if (!b.rawJson) return b.content;
+  let fence;
+  try {
+    fence = JSON.parse(b.rawJson);
+  } catch {
+    return b.content;
+  }
+  if (!fence || typeof fence !== 'object') return b.content;
+  const wrapped =
+    fence.content &&
+    typeof fence.content === 'object' &&
+    ('section_id' in fence || b.meta_shape === 'v2');
+  if (wrapped) return fence.content;
+  const { _meta, section_id, _overrides, ...rest } = fence;
+  return rest;
 }
 
 // `_meta` carries only the keys the *document* carried. The parser fills every
