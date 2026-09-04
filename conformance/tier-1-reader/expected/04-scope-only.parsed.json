@@ -147,12 +147,7 @@
       }
     }
   },
-  "prose": {
-    "property": "# Scope-only fixture\n\nThis file represents the back-of-napkin entry point: only `property` is\npopulated, and most operating / debt assumptions are provisional defaults\nfilled by the scope agent. The `gaps` section enumerates the open\nunknowns. Validates clean at `deal_stage: scope`.\n\n## Property {#property}",
-    "noi_model": "## NOI Model {#noi_model}",
-    "debt_structure": "## Debt Structure {#debt_structure}",
-    "gaps": "## Gaps {#gaps}"
-  },
+  "prose": {},
   "pipeline_log": [],
   "custom_calculations": [],
   "custom_scenarios": [],

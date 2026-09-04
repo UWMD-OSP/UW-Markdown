@@ -142,17 +142,7 @@
       "content": {}
     }
   },
-  "prose": {
-    "property": "# Land overlay fixture (RFC 0029)\n\nA land deal at full_underwrite with no rent_roll or operating_statement.\nThe frozen validation verdict must contain no DQ-06: the SS 5.1 class overlay\nexempts both sections for land, and everything else the stage requires is\npresent.",
-    "noi_model": "",
-    "debt_structure": "",
-    "validation": "",
-    "borrower_sponsor": "",
-    "preliminary_sizing": "",
-    "valuation": "",
-    "sources_uses": "",
-    "market_analysis": ""
-  },
+  "prose": {},
   "pipeline_log": [],
   "custom_calculations": [],
   "custom_scenarios": [],

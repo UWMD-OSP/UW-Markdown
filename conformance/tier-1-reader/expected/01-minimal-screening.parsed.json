@@ -64,9 +64,7 @@
       }
     }
   },
-  "prose": {
-    "property": "# Minimal Screening Fixture\n\nThis is the smallest possible conformant file at the screening stage —\nproperty and quick_metrics only."
-  },
+  "prose": {},
   "pipeline_log": [],
   "custom_calculations": [],
   "custom_scenarios": [],

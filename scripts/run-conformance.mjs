@@ -154,7 +154,9 @@ function canonicalParsed(parsed) {
         return [id, projectBlock(entry)];
       })
     ),
-    prose: parsed.prose,
+    // Baselines must not demand prose entries (§II.6a.6) — emitted empty here
+    // so `--update` writes the minimum; the reference CLI may still emit more.
+    prose: {},
     pipeline_log: parsed.pipeline_log.map((b) => b.content),
     custom_calculations: parsed.custom_calculations.map(projectBlock),
     custom_scenarios: parsed.custom_scenarios.map(projectBlock),
@@ -205,7 +207,7 @@ function projectContent(b) {
     typeof fence.content === 'object' &&
     ('section_id' in fence || b.meta_shape === 'v2');
   if (wrapped) return fence.content;
-  const { _meta, section_id, _overrides, ...rest } = fence;
+  const { _meta, section_id, _overrides, _notes, ...rest } = fence;
   return rest;
 }
 
