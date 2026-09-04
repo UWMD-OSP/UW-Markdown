@@ -60,7 +60,7 @@ import {
   UWPART_EXTENSION,
 } from './composition.js';
 import type { UWPart, ExternalizationResult } from './composition.js';
-import type { ParsedUWFile } from './types.js';
+import type { ParsedUWFile, UWBlock } from './types.js';
 import { createDocumentMarketData, parseMarketDataDocument } from './market-data.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
@@ -137,26 +137,72 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content, { strict: flags['strict'] === true });
-  // The whole ParsedUWFile minus `raw` (which is just the input echoed back).
-  // Four fields — custom_calculations, custom_scenarios, extensions, and the
-  // full `superseded` blocks — used to be dropped here, so a caller that
-  // trusted `uwmd parse` to be "the parsed file" silently lost every custom
-  // calculation and every x_* extension in the document.
+  // `sections` and `superseded` are emitted in the §II.6a.6 conformance
+  // projection — `{ meta, content }` per block, one such object per variant
+  // for a multi-variant section — NOT as in-memory UWBlocks. Two rules from
+  // that spec section decide the shape:
   //
-  // `superseded_blocks` is kept alongside `superseded` for compatibility: it
-  // carries only each prior block's `content`, where `superseded` carries the
-  // whole block. New callers should read `superseded`.
+  //   * `meta` is the on-disk `_meta` VERBATIM (only the keys the document
+  //     carried; a v2 nested meta stays nested). The in-memory flat view is
+  //     an artifact of this reader — RFC 0031's read-time source
+  //     interpretation must not leak into the projection.
+  //   * `content` is the block content proper: for a v2 wrapped fence, its
+  //     `content` member; for a v1 flat fence, the fence minus `_meta` /
+  //     `section_id` / `_overrides`. The raw fence object (which nests
+  //     `_meta` inside `content`) was the accident §II.6a.6 was written to
+  //     end — it made ParsedUWFile a protocol surface.
+  //
+  // Reader artifacts (fence annotation, prose, line numbers, rawJson) are
+  // deliberately not emitted per section: §II.6a.6 lists them as MUST NOT be
+  // required, and emitting them here is how they end up required.
+  //
+  // The other top-level fields keep their prior shapes. `superseded_blocks`
+  // is kept for compatibility; new callers should read `superseded`.
+  const projectBlock = (block: UWBlock): { meta: Record<string, unknown>; content: unknown } => {
+    let fence: Record<string, unknown>;
+    try {
+      fence = JSON.parse(block.rawJson) as Record<string, unknown>;
+    } catch {
+      // Non-strict parse of a malformed fence: project what the parser kept.
+      return { meta: {}, content: block.content };
+    }
+    const meta = (fence['_meta'] as Record<string, unknown> | undefined) ?? {};
+    // A wrapped fence ({ section_id, _meta, content, ... }) is detected by
+    // layout, not by meta shape: 2.0 wrapping and _meta nesting shipped
+    // separately, so a wrapped fence can still carry a v1-flat _meta (the
+    // tier-1 corpus does exactly this). A flat fence never carries a
+    // `section_id` member — the id lives in the fence annotation.
+    const wrapped =
+      typeof fence['content'] === 'object' &&
+      fence['content'] !== null &&
+      ('section_id' in fence || block.meta_shape === 'v2');
+    if (wrapped) {
+      return { meta, content: fence['content'] };
+    }
+    const { _meta: _m, section_id: _sid, _overrides: _ov, ...rest } = fence;
+    return { meta, content: rest };
+  };
+  const isBlock = (v: unknown): v is UWBlock =>
+    typeof v === 'object' && v !== null && 'rawJson' in v && 'meta' in v;
+  const projectEntry = (entry: UWBlock | { [variant: string]: UWBlock }) =>
+    isBlock(entry)
+      ? projectBlock(entry)
+      : Object.fromEntries(
+          Object.entries(entry).map(([variant, block]) => [variant, projectBlock(block)])
+        );
   const output = {
     frontmatter: parsed.frontmatter,
     sections: Object.fromEntries(
-      Object.entries(parsed.sections).map(([id, block]) => [id, block])
+      Object.entries(parsed.sections).map(([id, entry]) => [id, projectEntry(entry)])
     ),
     prose: parsed.prose,
     pipeline_log: parsed.pipeline_log.map(b => b.content),
     custom_calculations: parsed.custom_calculations,
     custom_scenarios: parsed.custom_scenarios,
     extensions: parsed.extensions,
-    superseded: parsed.superseded,
+    superseded: Object.fromEntries(
+      Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
+    ),
     superseded_blocks: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(b => b.content)])
     ),

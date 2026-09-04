@@ -2,15 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/implementation-manifest.schema.json",
   "title": "UW Implementation Manifest",
-  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §I.4.",
+  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md \u00c2\u00a7I.4.",
   "type": "object",
   "required": [
     "id",
     "name",
     "version",
     "protocol_version",
-    "format_version",
-    "tier"
+    "format_version"
   ],
   "additionalProperties": false,
   "properties": {
@@ -48,19 +47,34 @@
         "tier-3-calc-host",
         "tier-4-agent-host"
       ],
-      "description": "Highest tier the implementation self-certifies to. Each tier is a strict superset of the previous."
+      "description": "Highest tier the implementation self-certifies to. Each tier is a strict superset of the previous. OPTIONAL per UW_PROTOCOL \u00a7II.5: an implementation whose capabilities do not stack into a clean tier SHOULD publish `capabilities` and omit this field rather than round down (or up)."
     },
     "capabilities": {
       "type": "array",
       "items": {
         "enum": [
-          "parse", "validate",
-          "render-json", "render-csv", "render-summary", "render-chat", "render-pdf", "render-docx",
-          "edit-replace", "edit-supersede", "edit-frontmatter",
-          "calc-evaluate", "calc-deterministic", "calc-stochastic", "calc-sensitivity",
-          "agent-host", "module-load",
-          "signing", "capability-verify", "module-signature-verification",
-          "integrity", "refinement"
+          "parse",
+          "validate",
+          "render-json",
+          "render-csv",
+          "render-summary",
+          "render-chat",
+          "render-pdf",
+          "render-docx",
+          "edit-replace",
+          "edit-supersede",
+          "edit-frontmatter",
+          "calc-evaluate",
+          "calc-deterministic",
+          "calc-stochastic",
+          "calc-sensitivity",
+          "agent-host",
+          "module-load",
+          "signing",
+          "capability-verify",
+          "module-signature-verification",
+          "integrity",
+          "refinement"
         ]
       },
       "uniqueItems": true,
@@ -68,31 +82,56 @@
     },
     "representations": {
       "type": "array",
-      "items": { "$ref": "#/$defs/representationCapability" },
+      "items": {
+        "$ref": "#/$defs/representationCapability"
+      },
       "uniqueItems": true,
       "description": "Machine-readable representation support (Protocol 1.2+)."
     },
     "supported_locales": {
       "type": "array",
       "items": {
-        "enum": ["en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"]
+        "enum": [
+          "en-US",
+          "en-GB",
+          "de-DE",
+          "fr-FR",
+          "ja-JP",
+          "zh-CN"
+        ]
       },
       "uniqueItems": true,
       "minItems": 1,
       "description": "Display locales this implementation renders (RFC 0001). Absent means ['en-US']. A display render of a file whose declared locale is outside this list is refused with LOC-01, never silently rendered in a different locale. Locale governs display only - content is canonical and locale-free."
-    },    "asset_classes": {
+    },
+    "asset_classes": {
       "type": "array",
       "items": {
         "enum": [
-          "multifamily", "office", "retail", "industrial", "self_storage",
-          "hospitality", "mixed_use", "senior_housing", "student_housing", "land"
+          "multifamily",
+          "office",
+          "retail",
+          "industrial",
+          "self_storage",
+          "hospitality",
+          "mixed_use",
+          "senior_housing",
+          "student_housing",
+          "land"
         ]
       },
       "uniqueItems": true,
       "description": "Asset classes the implementation specifically supports. Omit to mean 'all'."
     },
     "role": {
-      "enum": ["web", "cli", "desktop", "ide-extension", "library", "service"],
+      "enum": [
+        "web",
+        "cli",
+        "desktop",
+        "ide-extension",
+        "library",
+        "service"
+      ],
       "description": "Form factor of the implementation. Informational."
     },
     "homepage": {
@@ -106,43 +145,89 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "id", "media_types", "file_extensions", "directions", "fidelity",
+        "id",
+        "media_types",
+        "file_extensions",
+        "directions",
+        "fidelity",
         "representation_version"
       ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+        },
         "media_types": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$" }
+          "items": {
+            "type": "string",
+            "pattern": "^[^/\\s]+/[^/\\s]+$"
+          }
         },
         "file_extensions": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^\\.[A-Za-z0-9._-]+$" }
+          "items": {
+            "type": "string",
+            "pattern": "^\\.[A-Za-z0-9._-]+$"
+          }
         },
         "directions": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "enum": ["read", "write"] }
+          "items": {
+            "enum": [
+              "read",
+              "write"
+            ]
+          }
         },
-        "fidelity": { "enum": ["source", "model", "view"] },
-        "representation_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-        "view": { "type": "string", "minLength": 1 },
-        "streaming": { "type": "boolean" },
-        "max_bytes": { "type": "integer", "minimum": 1 }
+        "fidelity": {
+          "enum": [
+            "source",
+            "model",
+            "view"
+          ]
+        },
+        "representation_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "view": {
+          "type": "string",
+          "minLength": 1
+        },
+        "streaming": {
+          "type": "boolean"
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 1
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "fidelity": { "const": "view" } } },
-          "then": { "required": ["view"] }
+          "if": {
+            "properties": {
+              "fidelity": {
+                "const": "view"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "view"
+            ]
+          }
         }
       ]
     }
-  },  "examples": [
+  },
+  "examples": [
     {
       "id": "io.uwmd.core",
       "name": "@uwmd/core",
@@ -151,9 +236,16 @@
       "format_version": "1.1",
       "tier": "tier-4-agent-host",
       "capabilities": [
-        "parse", "validate", "render-summary", "render-chat",
-        "edit-replace", "edit-supersede", "edit-frontmatter",
-        "calc-evaluate", "calc-deterministic", "agent-host"
+        "parse",
+        "validate",
+        "render-summary",
+        "render-chat",
+        "edit-replace",
+        "edit-supersede",
+        "edit-frontmatter",
+        "calc-evaluate",
+        "calc-deterministic",
+        "agent-host"
       ],
       "role": "library",
       "homepage": "https://uwmd.org"
