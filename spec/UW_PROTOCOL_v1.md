@@ -385,7 +385,7 @@ minimum a conforming reader surfaces, not the shape of its model.
   },
   "superseded": { "<section_id>": [ /* same shape, document order */ ] },
   "pipeline_log": [], "custom_calculations": [], "custom_scenarios": [],
-  "extensions": {}, "prose": []
+  "extensions": {}, "prose": {}
 }
 ```
 
@@ -400,8 +400,13 @@ make.
 
 Not part of the projection, and MUST NOT be required of any
 implementation: fence-annotation echoes recoverable from `_meta`, source
-line numbers, and per-block prose recoverable from the document. These
-are artifacts of a particular reader.
+line numbers, per-block prose recoverable from the document, and the
+`_notes` fence member (a sibling of `_meta`, not block content — a
+baseline that kept it inside `content` on flat fences while excluding it
+on wrapped ones was requiring the same artifact inconsistently). These
+are artifacts of a particular reader. `prose` therefore appears in a
+baseline as `{}`: an implementation MAY populate it, and a baseline MUST
+NOT demand entries.
 
 This section exists because the requirement it replaces lived in a
 corpus README and made `@uwmd/core`'s in-memory `ParsedUWFile` a

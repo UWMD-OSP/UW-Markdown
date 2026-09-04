@@ -142,17 +142,7 @@
       "content": {}
     }
   },
-  "prose": {
-    "property": "# Overlay control fixture (RFC 0029)\n\nAn office deal with the same section inventory as the land fixture. The\noverlay is two rows, not a loophole: the frozen validation verdict must\ncontain DQ-06 (rent_roll and operating_statement are still owed).",
-    "noi_model": "",
-    "debt_structure": "",
-    "validation": "",
-    "borrower_sponsor": "",
-    "preliminary_sizing": "",
-    "valuation": "",
-    "sources_uses": "",
-    "market_analysis": ""
-  },
+  "prose": {},
   "pipeline_log": [],
   "custom_calculations": [],
   "custom_scenarios": [],

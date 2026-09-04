@@ -171,18 +171,7 @@
       "content": {}
     }
   },
-  "prose": {
-    "property": "# Mixed-use overlay fixture (RFC 0029)\n\nA mixed-use deal at full_underwrite whose components section satisfies the\nsubstitution for rent_roll and operating_statement. The frozen validation\nverdict must contain no DQ-06, and the component NOIs foot to the property\nNOI (CC-12).",
-    "components": "",
-    "noi_model": "",
-    "debt_structure": "",
-    "validation": "",
-    "borrower_sponsor": "",
-    "preliminary_sizing": "",
-    "valuation": "",
-    "sources_uses": "",
-    "market_analysis": ""
-  },
+  "prose": {},
   "pipeline_log": [],
   "custom_calculations": [],
   "custom_scenarios": [],
