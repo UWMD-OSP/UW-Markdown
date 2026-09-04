@@ -19,10 +19,53 @@ Define a per-section embedding contract so that a portfolio of
 specifies which sections are embeddable, how the canonical text input
 to an embedder is derived from a parsed block, and a small sidecar
 file format (`<deal>.embeddings.json`) that carries vector indices
-alongside each file. **This is v3 territory**; the RFC exists now to
-record the design decisions so v1 / v2 work doesn't accidentally
-foreclose them. No implementation lands until at least one adopter is
-running portfolio-scale workflows that need it.
+alongside each file. **This is deliberately-deferred territory**; the
+RFC exists to record the design decisions so other work doesn't
+accidentally foreclose them. No implementation lands until at least
+one adopter needs *semantic* retrieval (find-similar-deals,
+risk-pattern recall) at portfolio scale — analytical retrieval is
+already served (see the status note below).
+
+## Status note — revised 2026-09-03
+
+Drafted 2026-04-27, this RFC predates most of the 1.x train and all of
+2.x. A review at protocol 2.3.0 (owner discussion, 2026-09-03) kept it
+a draft on purpose — the gate is real demand for *semantic* retrieval,
+which no adopter has yet — and reconciled it with what has landed
+since:
+
+- **Use case 2 (cross-deal calibration) is served without vectors.**
+  The corpus fact table (#146: `@uwmd/batch --facts`, the
+  `/guide/data-lake` pipeline) makes "median exit cap rate across 50
+  garden-style deals, weighted and filtered" a SQL query over
+  identity-pinned rows. Vector lookup is the wrong tool for it. The
+  motivating cases that remain are find-similar and risk-pattern
+  recall — genuinely semantic, genuinely deferred.
+- **The sidecar has a precedent now.** RFC 0015's
+  `.uwportfolio.json` (protocol §XV) established the sidecar pattern:
+  a JSON Schema in `spec/schemas/` with a README row, a validation
+  function with its own code family, and unknown-field preservation.
+  The embeddings sidecar follows it when implemented.
+- **`content_hash` should not be invented here.** The integrity chain
+  and canonical hashing exist; sidecar entries pin to the existing
+  canonical block hash rather than a new hash definition.
+- **The capability slots into RFC 0030.** "A new optional capability"
+  now means a row in the conformance-profiles capability registry,
+  not bespoke machinery.
+- **Naming and numbering.** Structured records are `.uwx.md`
+  (RFC 0017/0020); sidecar examples below should read
+  `uw_version: "2.0"` era. The protocol section number is assigned at
+  acceptance (the draft's "§XII" is long since taken).
+- **Likely scope trim at acceptance.** The `CorpusIndex` query API and
+  a reference index package are lake-side infrastructure — the same
+  boundary that keeps warehouse loaders out of the standard
+  ("backbone, not the lake"). The current intent is: registry +
+  `default-v1` input derivation + pinned sidecar are normative; the
+  query API drops to non-normative future work, with at most the
+  **filter vocabulary** (deal metadata the format already defines)
+  kept normative so cross-vendor tooling can exist.
+- **Two new unresolved questions** were added below: numeric fields in
+  `default-v1`, and the receipts/signing interaction.
 
 ## Motivation
 
@@ -34,11 +77,11 @@ deals is fleet-scale. The use cases:
    pipeline match this profile?" Today the only answer is full-text
    `grep` across the corpus, which fails on every reasonable
    semantic-similarity query.
-2. **Cross-deal calibration.** "What's the median exit cap rate for
-   our last 50 garden-style multifamily deals?" can be computed today
-   by parsing every file and aggregating, but joining that with
-   "weighted by deal size" or "filtered to comparable submarkets"
-   needs vector lookup, not exact match.
+2. **Cross-deal calibration.** *(Served without vectors as of
+   2026-09 — see the status note: the corpus fact table makes this a
+   SQL query.)* "What's the median exit cap rate for our last 50
+   garden-style multifamily deals?", weighted and filtered, over
+   identity-pinned rows.
 3. **Risk pattern detection.** A new deal triggers risk flag X. The
    system surfaces every prior deal that triggered X and shows the
    resolution. With ~thousands of historical deals, semantic
@@ -86,7 +129,7 @@ This is intentionally simple; adopters can override per section.
 ### Sidecar file format
 
 ```
-deal-2026-0042.uw.md
+deal-2026-0042.uwx.md
 deal-2026-0042.embeddings.json    ← sidecar
 ```
 
@@ -94,7 +137,7 @@ deal-2026-0042.embeddings.json    ← sidecar
 
 ```jsonc
 {
-  "uw_version": "1.1",
+  "uw_version": "2.0",
   "deal_id": "DEAL-2026-0042",
   "embedder": {
     "model": "text-embedding-3-large",
@@ -105,7 +148,7 @@ deal-2026-0042.embeddings.json    ← sidecar
   "blocks": [
     {
       "section": "market_analysis",
-      "content_hash": "<sha256>",       // pin to a specific block version
+      "content_hash": "<sha256>",       // the EXISTING canonical block hash — see status note
       "vector": [0.012, -0.453, …]
     },
     /* …one entry per embeddable block… */
@@ -128,6 +171,13 @@ The sidecar is **not** embedded in the file itself for three reasons:
    sharing redacted files externally).
 
 ### Index API
+
+> **Revision note (2026-09-03):** likely to drop to non-normative
+> future work at acceptance — query APIs and storage are operator
+> infrastructure, not interchange ("backbone, not the lake"). The
+> `CorpusFilter` *vocabulary* may stay normative since it is deal
+> metadata the format already defines. Kept below as the design
+> record.
 
 `@uwmd/corpus-retrieval` (new package, deferred) exposes:
 
@@ -161,8 +211,8 @@ the **API**, not the storage backend.
 
 ### Protocol additions
 
-A new §XII "Corpus retrieval (optional)" in
-`spec/UW_PROTOCOL_v1.md` defines:
+A new protocol section "Corpus retrieval (optional)" (number assigned
+at acceptance) in `spec/UW_PROTOCOL_v1.md` defines:
 
 - The embedding sidecar file shape.
 - The `EMBEDDABLE_SECTIONS` registry contract (with the
@@ -210,8 +260,9 @@ and we don't ship a model.
 
 ## Reference implementation
 
-Reference implementation lands no earlier than v3.0. Files affected
-when it does:
+Reference implementation is gated on demand, not a version number: it
+lands when an adopter needs semantic retrieval at portfolio scale.
+Files affected when it does:
 
 - `packages/uwmd-core/src/embedding-input.ts` — the `default-v1`
   input format derivation.
@@ -264,6 +315,19 @@ common vocabulary.
 
 ## Unresolved questions
 
+- **Numeric fields in `default-v1` (added 2026-09-03).** The draft
+  derivation skips numbers and booleans, but for CRE similarity some
+  numbers are semantic — "30-unit garden-style, 1995 build" is the
+  profile a find-similar query means. The derivation likely needs a
+  per-section allow-list of semantically meaningful numeric fields
+  rendered into the input string, decided when the first real
+  embedder's retrieval quality can be measured.
+- **Receipts and signing interaction (added 2026-09-03).** A sidecar
+  is derived data. Whether a sidecar should be attestable — "these
+  vectors were derived from blocks with these canonical hashes under
+  input format `default-v1`," signable like a receipt (RFC 0016/0010
+  machinery) — is deferred, but the sidecar shape must not foreclose
+  adding an attestation envelope around it.
 - **Versioning the input-format derivation.** When `default-v1`
   changes (it will), adopters with old sidecars need to know they're
   stale. The `embedder.input_format` field handles this but the
