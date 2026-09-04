@@ -10,6 +10,15 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- **Protocol §III.6a: the `META_*` (underscore) provenance family is live, not
+  retired.** The table declared it retired on the claim that it was "specified
+  and never emitted" and covered by `DQ-NN` — both halves false: the reference
+  validator emits `META_MISSING`, `META_FIELD_MISSING_<FIELD>` and
+  `META_LOW_CONFIDENCE_NO_REVIEW_FLAG`, the tier-1 baselines pin them, and the
+  `DQ` sequence polices incomplete data, not incomplete provenance. Found by
+  underwriter.cc implementing the codes the corpus demands while the spec said
+  they did not exist. Prose-only; no validator or baseline change.
+
 - **`uwmd parse` now emits the §II.6a.6 conformance projection** for
   `sections` and `superseded` — `{ meta, content }` per block (per variant
   for a multi-variant section), with `meta` the on-disk `_meta` verbatim and
