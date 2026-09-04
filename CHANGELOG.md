@@ -6,6 +6,33 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Fixed
+
+- **`uwmd parse` now emits the §II.6a.6 conformance projection** for
+  `sections` and `superseded` — `{ meta, content }` per block (per variant
+  for a multi-variant section), with `meta` the on-disk `_meta` verbatim and
+  `content` the block content proper. Previously it dumped in-memory
+  `UWBlock`s, so the fence object (with `_meta` nested inside `content`),
+  reader artifacts (line numbers, prose, `rawJson`) and the flattened
+  in-memory meta all leaked into the output — and into the tier-1 baselines,
+  which therefore *required* shapes §II.6a.6 says MUST NOT be required. A
+  faithful implementation of the spec's own projection failed 6 of 6 tier-1
+  `parse` cases (found by underwriter.cc's first driver run; their
+  UPSTREAM-notes item on baseline/spec divergence). All six
+  `tier-1-reader/expected/*.parsed.json` baselines are regenerated in the
+  projection shape. **Breaking for consumers of `uwmd parse --json`'s
+  per-section shape** (the fence object is still available in the document
+  itself; `superseded_blocks` keeps its prior shape for compatibility).
+- **`tier` is no longer required by the implementation-manifest schema**,
+  matching §II.5's normative text, which says an implementation whose
+  capabilities do not stack into a clean tier SHOULD "publish capabilities
+  and omit a tier claim rather than round down". The schema's `required`
+  array contradicted the spec (UPSTREAM-003, reported by underwriter.cc);
+  the spec wins. `ImplementationManifest.tier` is now optional in
+  `@uwmd/core` accordingly.
+
 ## [2.3.0] - 2026-09-03
 
 ### Released
