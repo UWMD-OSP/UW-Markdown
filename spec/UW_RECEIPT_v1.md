@@ -76,7 +76,7 @@ conventional sidecar spelling is `<record>.receipt.json`.
     "validation": { "errors": 0, "warnings": 2 }
   },
   "issued_at": "2026-08-09T00:00:00Z",
-  "issuer": "uwmd-cli@1.1.3",
+  "issuer": "uwmd-cli@2.3.0",
   "signature": null
 }
 ```

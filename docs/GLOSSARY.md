@@ -13,13 +13,13 @@ defined, where applicable.
 ## Format-specific terms
 
 ### `_meta` / provenance
-Every block in a `.uw.md` file may carry a `_meta` object recording
+Every block in a `.uwx.md` record may carry a `_meta` object recording
 who wrote it, with what confidence, and whether human review is
 required. See [`UW_FORMAT_SPEC_v1.md` §V](../spec/UW_FORMAT_SPEC_v1.md).
 Validation surfaces issues in the `META_*` family (protocol §III.6a).
 
 ### Append-only / supersede
-The `.uw.md` update model. A block is never edited in place; a
+The `.uwx.md` update model. A block is never edited in place; a
 *superseding* block is appended to the section, and the original is
 marked `_meta.superseded: true` with a back-reference. The
 [compactor](../packages/uwmd-core/src/compactor.ts) materializes the
@@ -71,15 +71,32 @@ in frontmatter, mirrored from the canonical sections. Exists for
 fast pipeline routing without full parse. See format spec §III.
 
 ### Section
-A registered block in a `.uw.md` file (e.g. `rent_roll`,
-`debt_structure`). Twenty-one are standard; a 22nd `x_*` namespace
-holds extensions. See format spec §II.
+A registered block in a `.uwx.md` record (e.g. `rent_roll`,
+`debt_structure`). Twenty-seven are standard (`STANDARD_SECTION_IDS`);
+an `x_*` namespace holds extensions. See format spec §II.
 
 ### Stress test
 A multi-variant section evaluating the deal under perturbed
 assumptions (e.g. exit cap shocks). See format spec §IV. Stress
 tables are framework-only in v1; richer sensitivity analysis is
 queued for v2 (see [RFC 0007](/about/rfcs/0007-sensitivity-tables)).
+
+### UW Lite (`.uw.md`)
+The human-readable **summary** representation: a short Markdown deal
+sheet with a fixed grammar of labeled values, meant to be written and
+read by people. It compiles deterministically into a `.uwx.md` record
+(the `deal-summary-v1` bridge) and a record projects back to Lite with
+an explicit report of everything omitted. Lite is not the working
+record; it is the on-ramp. See [UW Lite and UWX](UW_LITE_AND_UWX.md)
+and [`UW_LITE_SPEC_v1.md`](../spec/UW_LITE_SPEC_v1.md).
+
+### UWX (`.uwx.md`)
+The complete, lossless **working record**: Markdown narrative plus
+typed JSON sections, provenance, supersede history, and calc results.
+Everything in the format spec, the protocol, the calc packs, and the
+conformance corpus is stated over UWX. When a page or tool says "a deal
+file" without qualification, it means this. See
+[UW Lite and UWX](UW_LITE_AND_UWX.md).
 
 ### Supersede chain
 The linked sequence formed when block B carries

@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Release candidate  ·  **Format pairing:** `.uwx.md` v1.1 (see [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.3.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -44,8 +44,9 @@ all requirements of tiers 1..N.
 
 Three independent semvers are tracked:
 
-- **Format version** (`uw_version` in frontmatter, currently `1.1`) — the
-  bytes-on-disk schema. Bumped on any breaking format change.
+- **Format version** (`uw_version` in frontmatter, currently `2.0` for
+  authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
+  — the bytes-on-disk schema. Bumped on any breaking format change.
 - **Protocol version** (this document, currently `2.3.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
@@ -2435,16 +2436,32 @@ composite with rollup receipts; the sidecar stays descriptive.
 
 ## XVI. Future work (non-normative)
 
-The following items are deferred beyond v1.0 and consolidated here for
-discoverability. Unless an item says otherwise, it is v2 exploration. None is
-required for v1 conformance.
+Every RFC accepted through protocol 2.3.0 is implemented (RFC 0001–0035,
+excepting 0013). The items below were **named and deliberately deferred**
+by an implemented RFC; each records where its design lives so later work
+does not foreclose it. None is required for conformance at any tier, and
+each opens as its own RFC under `docs/rfcs/` when taken up. The
+maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
 
-- **Multi-format interchange** — accepted RFC 0014 defines an additive post-v1.0 train:
-  protocol 1.2 representation discovery, `@uwmd/core` / `uwmd` 1.1 codecs,
-  and optional HTTP/MCP binding profiles. The UW Markdown format remains 1.1.
-
-Each of these opens as an RFC under `docs/rfcs/` once that process
-is in place.
+- **IRR hurdles in the distribution waterfall** — `until_lp_irr` is
+  reserved syntax that `WF-01` refuses until specified; the
+  bisection-on-boundary-amount design is sketched in RFC 0035 §C.
+- **Clawback / crystallization** — deferred by RFC 0035; expected to land
+  as a terminal true-up tier, not per-period state.
+- **Currency-code disambiguation** — deferred by RFC 0001; a
+  `currency_code` on monetary values so a deal authored in one locale can
+  carry another currency's amounts.
+- **Lease-up follow-ons** — RFC 0008 deferred the Excel emit of
+  `lease_up_schedule`, its coupling to `dcf`, and defaults-table entries.
+- **Portfolio and relationship agent layers (L9 / L10)** — RFC 0015
+  shipped the data surface (§XV); reference layers that consume it are
+  follow-up work the interchange format did not gate on.
+- **Embedding-based corpus retrieval** — RFC 0013 stays a draft by
+  decision until an adopter needs semantic (find-similar, risk-pattern)
+  retrieval; analytical retrieval is served by the corpus fact table.
+- **Investor profile** — interface-only in `@uwmd/core`; excluded from
+  RFC 0022 §5 as an institution-private preference set nobody has yet
+  asked to exchange.
 
 ---
 

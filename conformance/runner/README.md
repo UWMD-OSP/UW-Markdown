@@ -22,8 +22,8 @@ that needs a package index is a driver an air-gapped implementer cannot run.
 
 ## What it does not cover
 
-**`npm run conformance` remains the CI gate.** It runs 301 assertions across
-thirteen suites, and most of them are not "run a command, compare the output":
+**`npm run conformance` remains the CI gate.** It runs 377 assertions across
+twenty-four suites, and most of them are not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, cross-fixture invariants asserted with no baseline at
 all. Replacing it with this driver would trade breadth for portability, which
