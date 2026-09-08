@@ -59,6 +59,7 @@ and how it gets accepted.
 | [0033](./0033-capital-stack-point-in-time.md) | Scope `capital_stack` to one point in time | implemented | format |
 | [0034](./0034-calendar-anchored-cash-flows.md) | Calendar-anchored cash flows — dated series, day counts, deterministic `xirr`/`xnpv` | implemented | format, protocol, core, conformance |
 | [0035](./0035-distribution-waterfall.md) | Distribution waterfall — state-and-verify promote, pref, and catch-up over a dated series | implemented | format, protocol, core, conformance |
+| [0036](./0036-waterfall-irr-hurdles.md) | IRR-hurdled waterfall tiers — a closed-form boundary, not a nested solve | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

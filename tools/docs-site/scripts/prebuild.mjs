@@ -115,6 +115,7 @@ const COPIES = [
   { from: 'docs/rfcs/0033-capital-stack-point-in-time.md', to: 'about/rfcs/0033-capital-stack-point-in-time.md' },
   { from: 'docs/rfcs/0034-calendar-anchored-cash-flows.md', to: 'about/rfcs/0034-calendar-anchored-cash-flows.md' },
   { from: 'docs/rfcs/0035-distribution-waterfall.md', to: 'about/rfcs/0035-distribution-waterfall.md' },
+  { from: 'docs/rfcs/0036-waterfall-irr-hurdles.md', to: 'about/rfcs/0036-waterfall-irr-hurdles.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
