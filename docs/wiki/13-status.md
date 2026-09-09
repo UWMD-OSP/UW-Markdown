@@ -940,7 +940,8 @@ complete: 2.0.0 released 2026-09-02** (PR #134, tag `v2.0.0`) — `@uwmd/core`
 (repin-forced patch), with excel/report 0.8.2 and batch 0.7.2 repins landed
 (unpublished). RFC 0009 is **implemented**; underwriter.cc acknowledged the
 2.0 release. The parallel human-only track stays open (PCG64
-vector diff, security alias, public RFC venue, bus-factor note).
+vector diff, security alias, public RFC venue); the bus-factor note closed
+2026-09-09 (`MAINTAINERS.md` "Continuity").
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
 was revised 2026-08-31** to absorb the split: `provenance` now carries both
@@ -972,8 +973,10 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 > one.
 
 Completed: public repository, canonical rename to `uw-markdown`, npm organization,
-release secret, and initial package publication. Review-flagged: single-maintainer
-bus factor, personal security email, and no public RFC venue.
+release secret, initial package publication, and the continuity plan
+(`MAINTAINERS.md`, 2026-09-09: MIT + public repo, no named successor, six-month
+dormancy threshold). Review-flagged: personal security email and no public RFC
+venue.
 
 ## Suggested priority order
 
@@ -1242,8 +1245,8 @@ bus factor, personal security email, and no public RFC venue.
 8. ~~**Docs on-ramps.**~~ **Shipped.** `cookbook.md`, `faq.md`, and
     `calc-conventions.md` are live under `tools/docs-site/guide/`; the remaining
     docs work is upkeep, not a gap.
-9. **Operational launch gates** — single-maintainer bus factor, personal
-    security email, and no public RFC venue remain review-flagged.
+9. **Operational launch gates** — personal security email and no public RFC
+    venue remain review-flagged; the bus-factor gate closed 2026-09-09.
     **The ExcelJS dependency chain is formally risk-accepted (owner decision,
     2026-09-01):** `@uwmd/excel` only ever *writes* workbooks from trusted
     in-repo data (`toWorkbook`) or reads files the operator explicitly names
