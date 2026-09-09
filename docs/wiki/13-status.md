@@ -741,6 +741,12 @@ issuance and verification are unchanged and remain the default path.
 
 ## 📋 v2 RFC train (unfrozen 2026-08-26; 0002-0007 + 0010 + 0030 + 0031 implemented)
 
+> **2026-09-09:** RFC 0037 (cross-check resolution over variant maps + the
+> `ValidationResult.coverage` channel, `CC-16`) and RFC 0038
+> (`dcf.returns.tax_basis`, `RT-01`, `getReturnTaxBasis()`) implemented —
+> both raised by underwriter.cc as UPSTREAM-005 / UPSTREAM-006. Unreleased
+> until the next protocol minor is cut.
+
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
 emptied (RFCs 0014–0029 all implemented).
 

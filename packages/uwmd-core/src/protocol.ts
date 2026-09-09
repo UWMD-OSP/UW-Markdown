@@ -1944,6 +1944,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
   { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
+  { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
   {
@@ -1981,6 +1982,30 @@ export function validatorCodeFamily(code: string): ValidatorCodeFamily | null {
   }
   return best;
 }
+
+/**
+ * The §5.3 cross-section checks a conforming validator reports coverage for
+ * (RFC 0037). `CC-16` is not listed: it is the diagnostic emitted when one of
+ * these is skipped over an unresolvable variant map, not a check of its own.
+ */
+export const CROSS_CHECK_RULE_IDS: readonly string[] = Object.freeze([
+  'CC-01', 'CC-02', 'CC-03', 'CC-04', 'CC-05', 'CC-06', 'CC-07', 'CC-08',
+  'CC-09', 'CC-10', 'CC-11', 'CC-12', 'CC-13', 'CC-14', 'CC-15',
+]);
+
+/**
+ * The variant keys a cross-check tries, in order, when the section it reads
+ * is a variant map and the check has no preference of its own (§5.3, RFC 0037).
+ * A check's own preference (`t12` for CC-01, `appraisal` for CC-08) is tried
+ * first; a lone variant is taken last; anything else is unresolvable.
+ */
+export const CROSS_CHECK_VARIANT_PREFERENCE: readonly string[] = Object.freeze(['default', 'base']);
+
+/** The closed set for `dcf.returns.tax_basis` (format §4.9, RFC 0038). */
+export const RETURN_TAX_BASES = ['pre_tax', 'after_tax'] as const;
+
+/** The basis a `returns` object carries when it states none (RFC 0038). */
+export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
 
 /**
  * Remediation copy for the cross-cutting consistency checks CC-01..CC-10
@@ -2093,6 +2118,20 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The lease_up_schedule base variant\'s stabilized_summary.annualized_noi is more than LEASE_UP_STABILIZED_TOLERANCE (2%) away from noi_model.net_operating_income.',
     remediation: 'Reconcile the trajectory endpoint with the stabilized-year model, or document why they diverge. The 2% tolerance is deliberate — the two are independent models of stabilization and exact agreement is not the goal (RFC 0008).',
     spec_ref: '§5.3 CC-15',
+  },
+  {
+    code: 'CC-16', severity: 'info',
+    title: 'Section unresolvable for cross-checking',
+    description: 'A section a cross-check reads is present as multiple variants and none is named default or base (or the check\'s own preferred variant), so every check that reads it was skipped.',
+    remediation: 'Name one variant default (or base) so cross-checks know which block reconciles, or state the section once. The skipped checks are listed in the message and in the validation result\'s coverage record (RFC 0037).',
+    spec_ref: '§5.3 CC-16',
+  },
+  {
+    code: 'RT-01', severity: 'error',
+    title: 'Unregistered return tax basis',
+    description: 'dcf.returns.tax_basis is stated but is not one of the registered values (pre_tax, after_tax).',
+    remediation: 'State tax_basis as "pre_tax" or "after_tax", or omit it — an absent field means pre_tax (format §4.9, RFC 0038).',
+    spec_ref: '§4.9 RT-01',
   },
   {
     code: 'LU-01', severity: 'error',

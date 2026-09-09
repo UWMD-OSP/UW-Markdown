@@ -7,6 +7,28 @@ export type PipelineStatus = 'complete' | 'in_progress' | 'pending' | 'skipped' 
 
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 
+/** Why a §5.3 cross-check was not evaluated (RFC 0037). */
+export type CrossCheckSkipReason =
+  | 'section_absent'
+  | 'variant_unresolvable'
+  | 'field_absent'
+  | 'not_applicable';
+
+/**
+ * Per-rule coverage for the §5.3 cross-section checks (RFC 0037): `evaluated`
+ * when the comparison actually ran (whether or not it produced an issue),
+ * `skipped` with a reason and a short detail otherwise. Reporting only — it
+ * never moves `overall_status`.
+ */
+export interface CrossCheckCoverage {
+  status: 'evaluated' | 'skipped';
+  reason?: CrossCheckSkipReason;
+  detail?: string;
+}
+
+/** Tax basis of the metrics stated in `dcf.returns` (format §4.9, RFC 0038). */
+export type ReturnTaxBasis = 'pre_tax' | 'after_tax';
+
 export type DealStage =
   | 'scope'
   | 'screening'
@@ -500,6 +522,8 @@ export interface ValidationResult {
   errors: ValidationMessage[];
   warnings: ValidationMessage[];
   info: ValidationMessage[];
+  /** One entry per registered `CC-NN` rule (`CROSS_CHECK_RULE_IDS`), RFC 0037. */
+  coverage: Record<string, CrossCheckCoverage>;
 }
 
 // Default financial validity thresholds (spec §5.2)

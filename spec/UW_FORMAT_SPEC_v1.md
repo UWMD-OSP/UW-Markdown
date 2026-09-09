@@ -1412,6 +1412,7 @@ Field notes:
     "exit_value_per_sqft": null
   },
   "returns": {
+    "tax_basis": "pre_tax",
     "levered_irr": null,
     "unlevered_irr": null,
     "equity_multiple": null,
@@ -1428,6 +1429,19 @@ Field notes:
   }
 }
 ```
+
+**`returns.tax_basis` (RFC 0038).** Declares the tax basis of every metric
+stated in `returns` — `levered_irr`, `unlevered_irr`, `equity_multiple`,
+`avg_cash_on_cash`, `total_equity_distributions`, `npv`,
+`payback_period_years`: `pre_tax` (the default when the field is absent)
+or `after_tax`. The declaration is per section, not per metric — a
+`returns` object MUST NOT mix bases; a producer that has both states one
+and carries the other in an extension or a separate document. Any other
+value is `RT-01` (error, Protocol §III.6a). Readers that compare return
+metrics across documents MUST treat differing bases as incomparable rather
+than as a spread. `frontmatter.quick_metrics.irr_projected` inherits the
+`dcf` declaration. `getReturnTaxBasis()` in `@uwmd/core` returns the
+effective basis, default included.
 
 ---
 
@@ -2762,6 +2776,39 @@ Tools MUST run these after each section write:
 | `CC-13` | The property section must state the primary size field for `frontmatter.asset_class` (Protocol §XIII.1) (RFC 0027) | `property`, frontmatter |
 | `CC-14` | A deal-record document must have a `property` section (§4.1) (RFC 0028) | `property` |
 | `CC-15` | The lease-up base variant's `stabilized_summary.annualized_noi` must agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%) (RFC 0008) | `lease_up_schedule`, `noi_model` |
+| `CC-16` | A section a cross-check reads is present as multiple variants and none resolves under the §5.3 preference order; the checks reading it were skipped (`info`) (RFC 0037) | any |
+
+**Resolution over variant maps (RFC 0037).** A cross-section check reads
+each section it names as **one block**. When that section is present as a
+variant map (§2.8, or any section of a UW JSON envelope carrying more than
+one block — the envelope schema admits a variant map on any section), a
+conforming validator MUST resolve it by this order and take the first
+variant present: (1) the check's registered preference, if any — `CC-01`
+prefers `t12` on `operating_statement`, `CC-08` prefers `appraisal` on
+`due_diligence`; (2) `default`; (3) `base`; (4) the sole variant, when
+the map holds exactly one. A check whose own rule exempts every variant
+but a named one (`CC-15` reads the lease-up **base** variant only, RFC
+0008) stops after that name and reports `not_applicable` rather than
+unresolvable — nothing was silenced. If none applies the section is
+**unresolvable for cross-checking**:
+every check that reads it is skipped, the skip is recorded in coverage
+(below), and the validator emits `CC-16` once per unresolvable section as
+`info`, naming the variants found and the checks skipped. A validator MUST
+NOT pick an arbitrary variant, average variants, or check variants
+pairwise — a document that states two senior facilities has not stated
+which one reconciles with `sources_uses`. The executable order is
+`CROSS_CHECK_VARIANT_PREFERENCE` in `@uwmd/core`.
+
+**Coverage (RFC 0037).** A conforming validator MUST report, alongside its
+issues, a **coverage** record for every `CC-NN` check it registers
+(`CROSS_CHECK_RULE_IDS`): `evaluated` when the comparison was actually
+performed, whether or not it produced an issue; or `skipped` with one of
+four reasons — `section_absent`, `variant_unresolvable`, `field_absent`,
+`not_applicable` — and a short detail naming the section, field or
+precondition. A check with no coverage entry is a check the validator does
+not implement. Coverage is reporting, not a verdict: it never changes
+`overall_status`. It exists because a document whose reconciliation checks
+all no-opped is indistinguishable from a reconciled one without it.
 
 **Asset-class identifier codes (RFC 0003).** These sit outside the
 `CC-NN` sequence deliberately: they are about the *identifier*, not a

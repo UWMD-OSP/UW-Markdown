@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/08-variant-cross-checks/render-chat",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "08-variant-cross-checks.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/08-variant-cross-checks.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

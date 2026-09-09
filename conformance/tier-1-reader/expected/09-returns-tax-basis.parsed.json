@@ -1,0 +1,66 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-RETURNS-TAX-BASIS",
+    "deal_name": "Returns Tax Basis Fixture",
+    "created": "2026-09-09T00:00:00Z",
+    "last_modified": "2026-09-09T00:00:00Z",
+    "property_address": "38 Basis Blvd",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "multifamily",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "analyst",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "address": "38 Basis Blvd, Phoenix AZ",
+        "total_units": 80
+      }
+    },
+    "dcf": {
+      "meta": {
+        "section": "dcf",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "hold_period_years": 5,
+        "returns": {
+          "levered_irr": 0.142,
+          "unlevered_irr": 0.091,
+          "equity_multiple": 1.84,
+          "tax_basis": "post_tax"
+        }
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

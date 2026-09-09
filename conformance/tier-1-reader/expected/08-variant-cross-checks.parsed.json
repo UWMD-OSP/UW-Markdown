@@ -1,0 +1,214 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-VARIANT-CC",
+    "deal_name": "Variant Cross-Check Fixture",
+    "created": "2026-09-09T00:00:00Z",
+    "last_modified": "2026-09-09T00:00:00Z",
+    "property_address": "16 Variant Way",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "multifamily",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "analyst",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "address": "16 Variant Way, Phoenix AZ",
+        "total_units": 120
+      }
+    },
+    "valuation": {
+      "meta": {
+        "section": "valuation",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "purchase_price": 10000000,
+        "underwritten_value": 10000000,
+        "appraised_value": 10000000
+      }
+    },
+    "due_diligence": {
+      "appraisal": {
+        "meta": {
+          "section": "due_diligence",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-09T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "appraised_value": 9000000,
+          "appraisal_date": "2026-08-15"
+        }
+      },
+      "environmental": {
+        "meta": {
+          "section": "due_diligence",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-09T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "phase_one": "no_recognized_environmental_conditions"
+        }
+      }
+    },
+    "rent_roll": {
+      "meta": {
+        "section": "rent_roll",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "gross_potential_rent": 1800000
+      }
+    },
+    "operating_statement": {
+      "t3": {
+        "meta": {
+          "section": "operating_statement",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-09T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "gross_potential_rent": 1750000
+        }
+      },
+      "budget": {
+        "meta": {
+          "section": "operating_statement",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-09T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "gross_potential_rent": 1900000
+        }
+      }
+    },
+    "debt_structure": {
+      "meta": {
+        "section": "debt_structure",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "loan_amount": 6500000,
+        "ltv": 0.65,
+        "annual_debt_service": 480000
+      }
+    },
+    "dcf": {
+      "meta": {
+        "section": "dcf",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-09T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "assumptions": {
+          "exit_cap_rate": 0.055
+        }
+      }
+    },
+    "stress_tests": {
+      "downside": {
+        "meta": {
+          "section": "stress_tests",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-09T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "base_case": {
+            "exit_cap_rate": 0.065,
+            "annual_debt_service": 480000
+          }
+        }
+      },
+      "upside": {
+        "meta": {
+          "section": "stress_tests",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-09T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "base_case": {
+            "exit_cap_rate": 0.05,
+            "annual_debt_service": 480000
+          }
+        }
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

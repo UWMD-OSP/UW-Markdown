@@ -267,6 +267,14 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
     console.log(`  ${ready ? '✓' : '✗'}  ${stage}`);
   }
 
+  // §5.3 coverage (RFC 0037): "checked and clean" is not "never looked".
+  const coverage = Object.values(result.coverage);
+  const evaluated = coverage.filter((c) => c.status === 'evaluated').length;
+  const reasons = new Map<string, number>();
+  for (const c of coverage) if (c.status === 'skipped' && c.reason) reasons.set(c.reason, (reasons.get(c.reason) ?? 0) + 1);
+  const reasonText = [...reasons].map(([r, n]) => `${n} ${r}`).join(', ');
+  console.log(`\nCross-checks: ${evaluated} evaluated, ${coverage.length - evaluated} skipped${reasonText ? ` (${reasonText})` : ''}`);
+
   if (result.issues.length > 0) {
     console.log(`\nIssues (${result.issues.length}):`);
     for (const issue of result.issues) {

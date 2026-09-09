@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/08-variant-cross-checks/validate",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "08-variant-cross-checks.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/08-variant-cross-checks.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}
