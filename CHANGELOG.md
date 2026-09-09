@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- **Continuity plan** (`MAINTAINERS.md` "Continuity"): MIT + public repo is
+  the plan; no successor is named; six months of maintainer unresponsiveness
+  is the dormancy threshold after which the community should fork. Closes the
+  launch-review bus-factor flag.
+
 - **Cross-check resolution over variant maps, and a validation coverage
   channel (RFC 0037).** Ten of the fifteen §5.3 cross-checks resolved their
   sections with a bare `getSection`, which returns `null` on a variant map —

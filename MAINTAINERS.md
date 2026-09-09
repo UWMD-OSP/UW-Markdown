@@ -28,6 +28,34 @@ owners (reflected in [`.github/CODEOWNERS`](./.github/CODEOWNERS)):
 - **Governance docs** — `GOVERNANCE.md`, `CONTRIBUTING.md`, `MAINTAINERS.md`,
   `SECURITY.md`, `CODE_OF_CONDUCT.md`, `ROADMAP.md`
 
+## Continuity
+
+UW Markdown currently has a single maintainer. The continuity plan,
+decided by the owner on 2026-09-09:
+
+- The specification, the conformance corpus, and the reference
+  implementation are MIT licensed and fully public. The project is
+  forkable at any time, and no private infrastructure is required to
+  use, implement, or certify against it. **That is the plan.**
+- **No successor is currently named.** If the maintainer is
+  unresponsive for **six months** — no commits, no releases, and no
+  reply to a security report or a pinned issue — the community should
+  treat the `UWMD-OSP` GitHub org, the `@uwmd` npm org, and `uwmd.org`
+  as dormant and fork. A fork that keeps the conformance corpus is a
+  conforming implementation; nothing about conformance depends on this
+  org staying alive.
+- npm publishes are tag-triggered via OIDC trusted publishing; no
+  long-lived tokens exist to leak or inherit. Control of publishing IS
+  control of the GitHub org.
+- The [`security@uwmd.org`](./SECURITY.md) promise ends with the
+  maintainer under this plan: after the six-month threshold, report
+  vulnerabilities against the fork you use.
+- Account recovery for the three accounts above is the maintainer's
+  responsibility and lives outside this repository.
+
+Naming a successor, or shortening the threshold, is an edit to this
+section and a note in `CHANGELOG.md`; it is not a governance change.
+
 ## Emeritus maintainers
 
 None yet.
