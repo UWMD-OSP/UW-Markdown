@@ -557,6 +557,7 @@ capability is unconditional: every implementation owes it.
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
+| `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
@@ -568,6 +569,16 @@ capability is unconditional: every implementation owes it.
 | `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (§2.2). | `parse` | `error` |
 | `PROTO-*` | Protocol-level refusal — a malformed request. | *(none)* | `error` |
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
+
+**Coverage (RFC 0037).** Beside its issues, a conforming validator reports
+a per-check coverage record for the `CC-NN` family — `evaluated`, or
+`skipped` with a reason (`section_absent`, `variant_unresolvable`,
+`field_absent`, `not_applicable`) — as format §5.3 specifies. A host that
+displays validation results SHOULD show "not evaluated" distinctly from
+"clean": the two are different facts about the document, and the
+difference is the whole reason the record exists. `CC-16` (`info`) is the
+one skip that also surfaces as an issue, because the producer can act on
+it by naming a `default` variant.
 
 `FV_*` with an underscore was the v1.0 spelling and was renamed to
 `FV-NN` in v1.1. `META_*` (underscore) is the **provenance-completeness

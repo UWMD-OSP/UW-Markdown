@@ -6,6 +6,34 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added
+
+- **Cross-check resolution over variant maps, and a validation coverage
+  channel (RFC 0037).** Ten of the fifteen §5.3 cross-checks resolved their
+  sections with a bare `getSection`, which returns `null` on a variant map —
+  so a document carrying, say, a senior facility and a mezz sleeve as two
+  `debt_structure` variants (conforming under the RFC 0014 envelope, which
+  admits a variant map on any section) silently lost `CC-02`, `CC-03`,
+  `CC-05` and `CC-09` with no diagnostic. Format §5.3 now specifies the
+  resolution order (the check's own preference → `default` → `base` → a lone
+  variant), an unresolvable map is reported once per section as `CC-16`
+  (`info`), and `ValidationResult` gains a `coverage` record — one entry per
+  registered check, `evaluated` or `skipped` with a reason — so "checked and
+  clean" is distinguishable from "never evaluated". `uwmd validate` prints
+  the summary line; `--json` carries the record. New exports:
+  `CROSS_CHECK_RULE_IDS`, `CROSS_CHECK_VARIANT_PREFERENCE`,
+  `CrossCheckCoverage`, `CrossCheckSkipReason`. Tier-1 fixture
+  `08-variant-cross-checks`. Raised by underwriter.cc as UPSTREAM-005.
+- **`dcf.returns.tax_basis` (RFC 0038).** A closed, optional declaration —
+  `pre_tax` (default when absent) or `after_tax` — of the basis every metric
+  in `dcf.returns` is stated on, so two documents' IRRs can be told apart
+  from a spread. Unregistered values are `RT-01` (error) in the new `RT-NN`
+  family. New exports: `RETURN_TAX_BASES`, `DEFAULT_RETURN_TAX_BASIS`,
+  `ReturnTaxBasis`, `getReturnTaxBasis()`. Tier-1 fixture
+  `09-returns-tax-basis`. Raised by underwriter.cc as UPSTREAM-006.
+
 ## [2.4.0] - 2026-09-04
 
 ### Released

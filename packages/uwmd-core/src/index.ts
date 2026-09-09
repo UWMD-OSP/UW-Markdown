@@ -2,7 +2,7 @@
 // Public API surface
 
 export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
-export { validateUWFile, lookupRemediation } from './validator.js';
+export { validateUWFile, lookupRemediation, getReturnTaxBasis } from './validator.js';
 export { compact, diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError, UnsupportedLocaleError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
@@ -780,6 +780,9 @@ export type {
   // Validation
   ValidationMessage,
   ValidationResult,
+  CrossCheckCoverage,
+  CrossCheckSkipReason,
+  ReturnTaxBasis,
   StageReadiness,
   FinancialThresholds,
   // Enums
@@ -832,6 +835,10 @@ export {
   BUILTIN_REMEDIATIONS,
   VALIDATOR_CODE_FAMILIES,
   validatorCodeFamily,
+  CROSS_CHECK_RULE_IDS,
+  CROSS_CHECK_VARIANT_PREFERENCE,
+  RETURN_TAX_BASES,
+  DEFAULT_RETURN_TAX_BASIS,
   BUILTIN_INCOMPLETE_DATA_POLICIES,
   CASCADE_ORDER,
   SOURCE_TAGS,

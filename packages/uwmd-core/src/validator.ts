@@ -9,10 +9,13 @@ import type {
   StageReadiness,
   AssetClass,
   DealStage,
+  CrossCheckCoverage, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, STAGE_REQUIREMENTS, requiredSectionsFor } from './protocol.js';
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, STAGE_REQUIREMENTS, requiredSectionsFor,
+  CROSS_CHECK_RULE_IDS, CROSS_CHECK_VARIANT_PREFERENCE, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
+} from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
@@ -122,15 +125,18 @@ export function validateUWFile(
   const thresholds: FinancialThresholds = { ...DEFAULT_THRESHOLDS, ...thresholdOverrides };
   const issues: ValidationMessage[] = [];
 
+  const ledger = newCoverageLedger();
+
   checkFinancialValidity(parsed, thresholds, issues);
-  checkCrossSectionConsistency(parsed, issues);
-  checkComponents(parsed, issues);
+  checkCrossSectionConsistency(parsed, issues, ledger);
+  checkComponents(parsed, issues, ledger);
   checkCapitalStack(parsed, issues);
-  checkLeaseUpSchedule(parsed, issues);
+  checkLeaseUpSchedule(parsed, issues, ledger);
   checkCashFlowSeries(parsed, issues);
   checkWaterfall(parsed, issues);
-  checkSizeIntensive(parsed, issues);
-  checkSectionReadiness(parsed, issues);
+  checkSizeIntensive(parsed, issues, ledger);
+  checkSectionReadiness(parsed, issues, ledger);
+  checkReturnsTaxBasis(parsed, issues);
   checkLocale(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
@@ -138,6 +144,23 @@ export function validateUWFile(
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
+
+  // CC-16: one info issue per section that was present as a variant map no
+  // cross-check could resolve (§5.3, RFC 0037). Emitted after every check has
+  // run so the message can name every rule the map silenced.
+  for (const [sectionId, entry] of ledger.unresolvable) {
+    const codes = [...entry.codes].sort();
+    issues.push({
+      code: 'CC-16', severity: 'info', section: sectionId,
+      message: `CC-16: ${sectionId} is present as ${entry.variants.length} variants (${entry.variants.join(', ')}) and none is named default or base; ${codes.join(', ')} ${codes.length === 1 ? 'was' : 'were'} skipped — name a default variant or state the section once (§5.3, RFC 0037)`,
+      value: entry.variants,
+    });
+  }
+  // Every registered rule owes a coverage entry; a rule no check reached is
+  // reported rather than silently missing.
+  for (const code of CROSS_CHECK_RULE_IDS) {
+    if (!ledger.coverage[code]) markSkipped(ledger, code, 'not_applicable', 'not reached');
+  }
 
   // Enrich every issue with BUILTIN_REMEDIATIONS title/remediation/spec_ref
   // when the code matches the registry. Keeps inline messages (which carry
@@ -161,6 +184,7 @@ export function validateUWFile(
     errors,
     warnings,
     info,
+    coverage: orderedCoverage(ledger),
   };
 }
 
@@ -301,144 +325,362 @@ function checkFinancialValidity(
 
 // ─── §5.3 Cross-section consistency checks ───────────────────────────────────
 
+// ─── §5.3 cross-check resolution + coverage (RFC 0037) ───────────────────────
+//
+// A cross-check reads each section it names as ONE block. When the section is
+// a variant map (§2.8, or any envelope section carrying several blocks), it is
+// resolved by: the check's own preference → `default` → `base` → the lone
+// variant. Anything else is UNRESOLVABLE: the check is skipped, the skip is
+// recorded in coverage, and CC-16 names the section once. Never pick an
+// arbitrary variant — two senior facilities have not said which reconciles.
+
+type CrossCheckResolution =
+  | { state: 'absent'; block: null }
+  | { state: 'resolved'; block: UWBlock; variant?: string }
+  | { state: 'unresolvable'; block: null; variants: string[] };
+
+interface CoverageLedger {
+  coverage: Record<string, CrossCheckCoverage>;
+  unresolvable: Map<string, { variants: string[]; codes: Set<string> }>;
+}
+
+function newCoverageLedger(): CoverageLedger {
+  return { coverage: {}, unresolvable: new Map() };
+}
+
+function markEvaluated(ledger: CoverageLedger, code: string): void {
+  ledger.coverage[code] = { status: 'evaluated' };
+}
+
+function markSkipped(ledger: CoverageLedger, code: string, reason: CrossCheckSkipReason, detail?: string): void {
+  if (ledger.coverage[code]?.status === 'evaluated') return;
+  ledger.coverage[code] = { status: 'skipped', reason, ...(detail ? { detail } : {}) };
+}
+
+function noteUnresolvable(ledger: CoverageLedger, sectionId: string, variants: string[], code: string): void {
+  const entry = ledger.unresolvable.get(sectionId) ?? { variants, codes: new Set<string>() };
+  entry.codes.add(code);
+  ledger.unresolvable.set(sectionId, entry);
+}
+
+/** Coverage in registered-rule order, so `--json` output is stable. */
+function orderedCoverage(ledger: CoverageLedger): Record<string, CrossCheckCoverage> {
+  const out: Record<string, CrossCheckCoverage> = {};
+  for (const code of CROSS_CHECK_RULE_IDS) {
+    const entry = ledger.coverage[code];
+    if (entry) out[code] = entry;
+  }
+  return out;
+}
+
+function resolveCrossCheckSection(
+  parsed: ParsedUWFile,
+  sectionId: string,
+  preferred: readonly string[] = [],
+): CrossCheckResolution {
+  const entry = parsed.sections[sectionId];
+  if (!entry) return { state: 'absent', block: null };
+  if (!isVariantMap(entry)) return { state: 'resolved', block: entry as UWBlock };
+  const map = entry as Record<string, UWBlock>;
+  for (const key of [...preferred, ...CROSS_CHECK_VARIANT_PREFERENCE]) {
+    const block = map[key];
+    if (block) return { state: 'resolved', block, variant: key };
+  }
+  const keys = Object.keys(map);
+  if (keys.length === 1) return { state: 'resolved', block: map[keys[0]!]!, variant: keys[0] };
+  return { state: 'unresolvable', block: null, variants: keys.sort() };
+}
+
+/**
+ * Resolve every section a rule reads. On any failure the rule's skip is
+ * recorded (the first failure's reason wins; every unresolvable section is
+ * noted for CC-16) and `null` is returned.
+ */
+function requireSections(
+  ledger: CoverageLedger,
+  parsed: ParsedUWFile,
+  code: string,
+  needs: ReadonlyArray<readonly [string] | readonly [string, readonly string[]]>,
+): Record<string, { block: UWBlock; variant?: string }> | null {
+  const out: Record<string, { block: UWBlock; variant?: string }> = {};
+  let skip: { reason: CrossCheckSkipReason; detail: string } | null = null;
+  for (const need of needs) {
+    const sectionId = need[0];
+    const preferred = need.length > 1 ? need[1] : [];
+    const r = resolveCrossCheckSection(parsed, sectionId, preferred);
+    if (r.state === 'resolved') {
+      out[sectionId] = { block: r.block, ...(r.variant ? { variant: r.variant } : {}) };
+      continue;
+    }
+    if (r.state === 'unresolvable') noteUnresolvable(ledger, sectionId, r.variants, code);
+    skip ??= { reason: r.state === 'absent' ? 'section_absent' : 'variant_unresolvable', detail: sectionId };
+  }
+  if (skip) {
+    markSkipped(ledger, code, skip.reason, skip.detail);
+    return null;
+  }
+  return out;
+}
+
+function num(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+}
+
 function checkCrossSectionConsistency(
   parsed: ParsedUWFile,
   issues: ValidationMessage[],
+  ledger: CoverageLedger,
 ): void {
-  const rentRoll = getSection(parsed, 'rent_roll');
-  const os = getSectionVariant(parsed, 'operating_statement', 't12')
-    ?? getSectionVariant(parsed, 'operating_statement', 'default')
-    ?? getSection(parsed, 'operating_statement');
-  const debtStructure = getSection(parsed, 'debt_structure');
-  const sourcesUses = getSection(parsed, 'sources_uses');
-  const valuation = getSection(parsed, 'valuation');
-  const noiModel = getSection(parsed, 'noi_model');
-  const dcf = getSection(parsed, 'dcf');
-  const stressTests = getSection(parsed, 'stress_tests')
-    ?? getSectionVariant(parsed, 'stress_tests', 'default');
-  const dueDiligence = getSection(parsed, 'due_diligence');
-
   // CC-01: Rent roll GPR must match OS GPR within 3%
-  if (rentRoll && os) {
-    const rrGPR = deepGet(rentRoll.content, 'gross_potential_rent') as number | undefined
-      ?? deepGet(rentRoll.content, 'totals.gross_potential_rent') as number | undefined;
-    const osGPR = deepGet(os.content, 'gross_potential_rent') as number | undefined
-      ?? deepGet(os.content, 'income.gross_potential_rent') as number | undefined;
-    if (rrGPR != null && osGPR != null && osGPR !== 0) {
-      const pctDiff = Math.abs(rrGPR - osGPR) / osGPR;
-      if (pctDiff > 0.03) {
-        issues.push({ code: 'CC-01', severity: 'warning', section: 'rent_roll', field: 'gross_potential_rent', message: `CC-01: Rent roll GPR ($${rrGPR.toLocaleString()}) differs from Operating Statement GPR ($${osGPR.toLocaleString()}) by ${(pctDiff * 100).toFixed(1)}% (threshold: 3%)`, value: pctDiff });
+  {
+    const got = requireSections(ledger, parsed, 'CC-01', [['rent_roll'], ['operating_statement', ['t12']]]);
+    if (got) {
+      const rentRoll = got['rent_roll']!.block;
+      const os = got['operating_statement']!.block;
+      const rrGPR = num(deepGet(rentRoll.content, 'gross_potential_rent')) ?? num(deepGet(rentRoll.content, 'totals.gross_potential_rent'));
+      const osGPR = num(deepGet(os.content, 'gross_potential_rent')) ?? num(deepGet(os.content, 'income.gross_potential_rent'));
+      if (rrGPR == null) markSkipped(ledger, 'CC-01', 'field_absent', 'rent_roll.gross_potential_rent');
+      else if (osGPR == null || osGPR === 0) markSkipped(ledger, 'CC-01', 'field_absent', 'operating_statement.gross_potential_rent');
+      else {
+        markEvaluated(ledger, 'CC-01');
+        const pctDiff = Math.abs(rrGPR - osGPR) / osGPR;
+        if (pctDiff > 0.03) {
+          issues.push({ code: 'CC-01', severity: 'warning', section: 'rent_roll', field: 'gross_potential_rent', message: `CC-01: Rent roll GPR ($${rrGPR.toLocaleString()}) differs from Operating Statement GPR ($${osGPR.toLocaleString()}) by ${(pctDiff * 100).toFixed(1)}% (threshold: 3%)`, value: pctDiff });
+        }
       }
     }
   }
 
   // CC-02: UW value in valuation must match LTV denominator in debt_structure
-  if (valuation && debtStructure) {
-    const uwValue = deepGet(valuation.content, 'underwritten_value') as number | undefined
-      ?? deepGet(valuation.content, 'purchase_price') as number | undefined;
-    const loanAmt = deepGet(debtStructure.content, 'loan_amount') as number | undefined;
-    const ltvInDebt = deepGet(debtStructure.content, 'ltv') as number | undefined;
-    if (uwValue != null && loanAmt != null && ltvInDebt != null && uwValue > 0) {
-      const impliedLTV = loanAmt / uwValue;
-      const diff = Math.abs(impliedLTV - ltvInDebt);
-      if (diff > 0.005) {
-        issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', field: 'ltv', message: `CC-02: Implied LTV (${(impliedLTV * 100).toFixed(2)}%) from loan/value does not match stated LTV (${(ltvInDebt * 100).toFixed(2)}%) — check valuation.underwritten_value vs debt_structure.ltv`, value: diff });
+  {
+    const got = requireSections(ledger, parsed, 'CC-02', [['valuation'], ['debt_structure']]);
+    if (got) {
+      const valuation = got['valuation']!.block;
+      const debtStructure = got['debt_structure']!.block;
+      const uwValue = num(deepGet(valuation.content, 'underwritten_value')) ?? num(deepGet(valuation.content, 'purchase_price'));
+      const loanAmt = num(deepGet(debtStructure.content, 'loan_amount'));
+      const ltvInDebt = num(deepGet(debtStructure.content, 'ltv'));
+      if (uwValue == null || uwValue <= 0) markSkipped(ledger, 'CC-02', 'field_absent', 'valuation.underwritten_value');
+      else if (loanAmt == null) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.loan_amount');
+      else if (ltvInDebt == null) markSkipped(ledger, 'CC-02', 'field_absent', 'debt_structure.ltv');
+      else {
+        markEvaluated(ledger, 'CC-02');
+        const impliedLTV = loanAmt / uwValue;
+        const diff = Math.abs(impliedLTV - ltvInDebt);
+        if (diff > 0.005) {
+          issues.push({ code: 'CC-02', severity: 'warning', section: 'debt_structure', field: 'ltv', message: `CC-02: Implied LTV (${(impliedLTV * 100).toFixed(2)}%) from loan/value does not match stated LTV (${(ltvInDebt * 100).toFixed(2)}%) — check valuation.underwritten_value vs debt_structure.ltv`, value: diff });
+        }
       }
     }
   }
 
   // CC-03: the senior loan reconciles across sources_uses, debt_structure, and
   // (when present) the capital_stack senior_debt tranche — one senior view stated
-  // once and agreeing everywhere (RFC 0026 §4.24).
+  // once and agreeing everywhere (RFC 0026 §4.24). Two legs; the rule is
+  // evaluated when either leg compared.
   {
-    const suLoan = (deepGet(sourcesUses?.content ?? {}, 'sources.loan_amount') as number | undefined)
-      ?? (deepGet(sourcesUses?.content ?? {}, 'sources.debt_proceeds') as number | undefined);
-    const dsLoan = deepGet(debtStructure?.content ?? {}, 'loan_amount') as number | undefined;
-    if (sourcesUses && debtStructure && suLoan != null && dsLoan != null && Math.abs(suLoan - dsLoan) > 100) {
-      issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
+    const su = resolveCrossCheckSection(parsed, 'sources_uses');
+    const ds = resolveCrossCheckSection(parsed, 'debt_structure');
+    if (su.state === 'unresolvable') noteUnresolvable(ledger, 'sources_uses', su.variants, 'CC-03');
+    if (ds.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', ds.variants, 'CC-03');
+    const suLoan = su.block ? (num(deepGet(su.block.content, 'sources.loan_amount')) ?? num(deepGet(su.block.content, 'sources.debt_proceeds'))) : undefined;
+    const dsLoan = ds.block ? num(deepGet(ds.block.content, 'loan_amount')) : undefined;
+    let evaluated = false;
+    if (suLoan != null && dsLoan != null) {
+      evaluated = true;
+      if (Math.abs(suLoan - dsLoan) > 100) {
+        issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
+      }
     }
 
     const senior = seniorDebtTranche(parsed);
     if (senior) {
-      const seniorAmount = typeof senior['amount'] === 'number' ? senior['amount'] : undefined;
+      const seniorAmount = num(senior['amount']);
       const reference = dsLoan ?? suLoan;
-      if (seniorAmount != null && reference != null && Math.abs(seniorAmount - reference) > 100) {
-        issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+      if (seniorAmount != null && reference != null) {
+        evaluated = true;
+        if (Math.abs(seniorAmount - reference) > 100) {
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+        }
+      }
+    }
+
+    if (evaluated) markEvaluated(ledger, 'CC-03');
+    else if (su.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'sources_uses');
+    else if (ds.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'debt_structure');
+    else if (su.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'sources_uses');
+    else if (ds.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'debt_structure');
+    else markSkipped(ledger, 'CC-03', 'field_absent', suLoan == null ? 'sources_uses.sources.loan_amount' : 'debt_structure.loan_amount');
+  }
+
+  // CC-04: Sources must equal uses in sources_uses (within $1)
+  {
+    const got = requireSections(ledger, parsed, 'CC-04', [['sources_uses']]);
+    if (got) {
+      const sourcesUses = got['sources_uses']!.block;
+      const totalSources = num(deepGet(sourcesUses.content, 'total_sources'));
+      const totalUses = num(deepGet(sourcesUses.content, 'total_uses'));
+      if (totalSources == null) markSkipped(ledger, 'CC-04', 'field_absent', 'sources_uses.total_sources');
+      else if (totalUses == null) markSkipped(ledger, 'CC-04', 'field_absent', 'sources_uses.total_uses');
+      else {
+        markEvaluated(ledger, 'CC-04');
+        if (Math.abs(totalSources - totalUses) > 1) {
+          issues.push({ code: 'CC-04', severity: 'error', section: 'sources_uses', field: 'total_sources', message: `CC-04: Sources ($${totalSources.toLocaleString()}) do not equal Uses ($${totalUses.toLocaleString()}) — difference: $${Math.abs(totalSources - totalUses).toLocaleString()}`, value: Math.abs(totalSources - totalUses) });
+        }
       }
     }
   }
 
-  // CC-04: Sources must equal uses in sources_uses (within $1)
-  if (sourcesUses) {
-    const totalSources = deepGet(sourcesUses.content, 'total_sources') as number | undefined;
-    const totalUses = deepGet(sourcesUses.content, 'total_uses') as number | undefined;
-    if (totalSources != null && totalUses != null && Math.abs(totalSources - totalUses) > 1) {
-      issues.push({ code: 'CC-04', severity: 'error', section: 'sources_uses', field: 'total_sources', message: `CC-04: Sources ($${totalSources.toLocaleString()}) do not equal Uses ($${totalUses.toLocaleString()}) — difference: $${Math.abs(totalSources - totalUses).toLocaleString()}`, value: Math.abs(totalSources - totalUses) });
-    }
-  }
-
   // CC-05: NOI used for DSCR must match noi_model.net_operating_income within 1%
-  if (noiModel && debtStructure) {
-    const modelNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
-    const debtNOI = deepGet(debtStructure.content, 'underwritten_noi') as number | undefined
-      ?? deepGet(debtStructure.content, 'noi_used_for_dscr') as number | undefined;
-    if (modelNOI != null && debtNOI != null && modelNOI > 0) {
-      const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
-      if (pctDiff > 0.01) {
-        issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
+  {
+    const got = requireSections(ledger, parsed, 'CC-05', [['noi_model'], ['debt_structure']]);
+    if (got) {
+      const noiModel = got['noi_model']!.block;
+      const debtStructure = got['debt_structure']!.block;
+      const modelNOI = num(deepGet(noiModel.content, 'net_operating_income'));
+      const debtNOI = num(deepGet(debtStructure.content, 'underwritten_noi')) ?? num(deepGet(debtStructure.content, 'noi_used_for_dscr'));
+      if (modelNOI == null || modelNOI <= 0) markSkipped(ledger, 'CC-05', 'field_absent', 'noi_model.net_operating_income');
+      else if (debtNOI == null) markSkipped(ledger, 'CC-05', 'field_absent', 'debt_structure.underwritten_noi');
+      else {
+        markEvaluated(ledger, 'CC-05');
+        const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
+        if (pctDiff > 0.01) {
+          issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
+        }
       }
     }
   }
 
   // CC-06: DCF Year 1 NOI must be consistent with noi_model projections
-  if (noiModel && dcf) {
-    const modelNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
-    const dcfY1NOI = deepGet(dcf.content, 'annual_cash_flows[0].noi') as number | undefined
-      ?? deepGet(dcf.content, 'annual_cash_flows[0].net_operating_income') as number | undefined;
-    if (modelNOI != null && dcfY1NOI != null && modelNOI > 0) {
-      const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
-      if (pctDiff > 0.02) {
-        issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
+  {
+    const got = requireSections(ledger, parsed, 'CC-06', [['noi_model'], ['dcf']]);
+    if (got) {
+      const noiModel = got['noi_model']!.block;
+      const dcf = got['dcf']!.block;
+      const modelNOI = num(deepGet(noiModel.content, 'net_operating_income'));
+      const dcfY1NOI = num(deepGet(dcf.content, 'annual_cash_flows[0].noi')) ?? num(deepGet(dcf.content, 'annual_cash_flows[0].net_operating_income'));
+      if (modelNOI == null || modelNOI <= 0) markSkipped(ledger, 'CC-06', 'field_absent', 'noi_model.net_operating_income');
+      else if (dcfY1NOI == null) markSkipped(ledger, 'CC-06', 'field_absent', 'dcf.annual_cash_flows[0].net_operating_income');
+      else {
+        markEvaluated(ledger, 'CC-06');
+        const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
+        if (pctDiff > 0.02) {
+          issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
+        }
       }
     }
   }
 
   // CC-07: Exit cap rate in dcf must be consistent with stress test cap rate scenarios
-  if (dcf && stressTests) {
-    const dcfExitCap = deepGet(dcf.content, 'assumptions.exit_cap_rate') as number | undefined
-      ?? deepGet(dcf.content, 'exit_cap_rate') as number | undefined;
-    const stressExitCap = deepGet(stressTests.content, 'base_case.exit_cap_rate') as number | undefined;
-    if (dcfExitCap != null && stressExitCap != null && Math.abs(dcfExitCap - stressExitCap) > 0.005) {
-      issues.push({ code: 'CC-07', severity: 'warning', section: 'stress_tests', field: 'base_case.exit_cap_rate', message: `CC-07: Exit cap rate in DCF (${(dcfExitCap * 100).toFixed(2)}%) differs from stress test base case (${(stressExitCap * 100).toFixed(2)}%)`, value: Math.abs(dcfExitCap - stressExitCap) });
+  {
+    const got = requireSections(ledger, parsed, 'CC-07', [['dcf'], ['stress_tests']]);
+    if (got) {
+      const dcf = got['dcf']!.block;
+      const stressTests = got['stress_tests']!.block;
+      const dcfExitCap = num(deepGet(dcf.content, 'assumptions.exit_cap_rate')) ?? num(deepGet(dcf.content, 'exit_cap_rate'));
+      const stressExitCap = num(deepGet(stressTests.content, 'base_case.exit_cap_rate'));
+      if (dcfExitCap == null) markSkipped(ledger, 'CC-07', 'field_absent', 'dcf.assumptions.exit_cap_rate');
+      else if (stressExitCap == null) markSkipped(ledger, 'CC-07', 'field_absent', 'stress_tests.base_case.exit_cap_rate');
+      else {
+        markEvaluated(ledger, 'CC-07');
+        if (Math.abs(dcfExitCap - stressExitCap) > 0.005) {
+          issues.push({ code: 'CC-07', severity: 'warning', section: 'stress_tests', field: 'base_case.exit_cap_rate', message: `CC-07: Exit cap rate in DCF (${(dcfExitCap * 100).toFixed(2)}%) differs from stress test base case (${(stressExitCap * 100).toFixed(2)}%)`, value: Math.abs(dcfExitCap - stressExitCap) });
+        }
+      }
     }
   }
 
-  // CC-08: Appraised value in due_diligence must match valuation.appraised_value
-  if (dueDiligence && valuation) {
-    const ddAppraisedVal = deepGet(dueDiligence.content, 'appraisal.appraised_value') as number | undefined;
-    const valAppraisedVal = deepGet(valuation.content, 'appraised_value') as number | undefined;
-    if (ddAppraisedVal != null && valAppraisedVal != null && Math.abs(ddAppraisedVal - valAppraisedVal) > 1000) {
-      issues.push({ code: 'CC-08', severity: 'warning', section: 'due_diligence', field: 'appraisal.appraised_value', message: `CC-08: Appraised value in due_diligence ($${ddAppraisedVal.toLocaleString()}) does not match valuation.appraised_value ($${valAppraisedVal.toLocaleString()})`, value: Math.abs(ddAppraisedVal - valAppraisedVal) });
+  // CC-08: Appraised value in due_diligence must match valuation.appraised_value.
+  // due_diligence's variants are sub-documents (§2.8), so the `appraisal`
+  // variant is preferred and, when it is the resolved block, the value may
+  // sit at its root rather than under an `appraisal` key.
+  {
+    const got = requireSections(ledger, parsed, 'CC-08', [['due_diligence', ['appraisal']], ['valuation']]);
+    if (got) {
+      const dd = got['due_diligence']!;
+      const valuation = got['valuation']!.block;
+      const ddAppraisedVal = num(deepGet(dd.block.content, 'appraisal.appraised_value'))
+        ?? (dd.variant === 'appraisal' ? num(deepGet(dd.block.content, 'appraised_value')) : undefined);
+      const valAppraisedVal = num(deepGet(valuation.content, 'appraised_value'));
+      if (ddAppraisedVal == null) markSkipped(ledger, 'CC-08', 'field_absent', 'due_diligence.appraisal.appraised_value');
+      else if (valAppraisedVal == null) markSkipped(ledger, 'CC-08', 'field_absent', 'valuation.appraised_value');
+      else {
+        markEvaluated(ledger, 'CC-08');
+        if (Math.abs(ddAppraisedVal - valAppraisedVal) > 1000) {
+          issues.push({ code: 'CC-08', severity: 'warning', section: 'due_diligence', field: 'appraisal.appraised_value', message: `CC-08: Appraised value in due_diligence ($${ddAppraisedVal.toLocaleString()}) does not match valuation.appraised_value ($${valAppraisedVal.toLocaleString()})`, value: Math.abs(ddAppraisedVal - valAppraisedVal) });
+        }
+      }
     }
   }
 
   // CC-09: Annual debt service in stress_tests base case must match debt_structure.annual_debt_service
-  if (stressTests && debtStructure) {
-    const stressADS = deepGet(stressTests.content, 'base_case.annual_debt_service') as number | undefined;
-    const debtADS = deepGet(debtStructure.content, 'annual_debt_service') as number | undefined;
-    if (stressADS != null && debtADS != null && Math.abs(stressADS - debtADS) > 500) {
-      issues.push({ code: 'CC-09', severity: 'warning', section: 'stress_tests', field: 'base_case.annual_debt_service', message: `CC-09: Annual debt service in stress test base case ($${stressADS.toLocaleString()}) differs from debt_structure ($${debtADS.toLocaleString()}) by $${Math.abs(stressADS - debtADS).toLocaleString()}`, value: Math.abs(stressADS - debtADS) });
+  {
+    const got = requireSections(ledger, parsed, 'CC-09', [['stress_tests'], ['debt_structure']]);
+    if (got) {
+      const stressTests = got['stress_tests']!.block;
+      const debtStructure = got['debt_structure']!.block;
+      const stressADS = num(deepGet(stressTests.content, 'base_case.annual_debt_service'));
+      const debtADS = num(deepGet(debtStructure.content, 'annual_debt_service'));
+      if (stressADS == null) markSkipped(ledger, 'CC-09', 'field_absent', 'stress_tests.base_case.annual_debt_service');
+      else if (debtADS == null) markSkipped(ledger, 'CC-09', 'field_absent', 'debt_structure.annual_debt_service');
+      else {
+        markEvaluated(ledger, 'CC-09');
+        if (Math.abs(stressADS - debtADS) > 500) {
+          issues.push({ code: 'CC-09', severity: 'warning', section: 'stress_tests', field: 'base_case.annual_debt_service', message: `CC-09: Annual debt service in stress test base case ($${stressADS.toLocaleString()}) differs from debt_structure ($${debtADS.toLocaleString()}) by $${Math.abs(stressADS - debtADS).toLocaleString()}`, value: Math.abs(stressADS - debtADS) });
+        }
+      }
     }
   }
 
   // CC-10: Purchase price in sources_uses.uses must match valuation.purchase_price
-  if (sourcesUses && valuation) {
-    const suPP = deepGet(sourcesUses.content, 'uses.purchase_price') as number | undefined;
-    const valPP = deepGet(valuation.content, 'purchase_price') as number | undefined;
-    if (suPP != null && valPP != null && Math.abs(suPP - valPP) > 100) {
-      issues.push({ code: 'CC-10', severity: 'error', section: 'sources_uses', field: 'uses.purchase_price', message: `CC-10: Purchase price in Sources & Uses ($${suPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(suPP - valPP) });
+  {
+    const got = requireSections(ledger, parsed, 'CC-10', [['sources_uses'], ['valuation']]);
+    if (got) {
+      const sourcesUses = got['sources_uses']!.block;
+      const valuation = got['valuation']!.block;
+      const suPP = num(deepGet(sourcesUses.content, 'uses.purchase_price'));
+      const valPP = num(deepGet(valuation.content, 'purchase_price'));
+      if (suPP == null) markSkipped(ledger, 'CC-10', 'field_absent', 'sources_uses.uses.purchase_price');
+      else if (valPP == null) markSkipped(ledger, 'CC-10', 'field_absent', 'valuation.purchase_price');
+      else {
+        markEvaluated(ledger, 'CC-10');
+        if (Math.abs(suPP - valPP) > 100) {
+          issues.push({ code: 'CC-10', severity: 'error', section: 'sources_uses', field: 'uses.purchase_price', message: `CC-10: Purchase price in Sources & Uses ($${suPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(suPP - valPP) });
+        }
+      }
     }
   }
+}
+
+// ─── §4.9 dcf.returns.tax_basis (RFC 0038) ───────────────────────────────────
+
+/**
+ * The tax basis every metric in `dcf.returns` is stated on: the declared
+ * `returns.tax_basis` when it is a registered value, else the spec default
+ * (`pre_tax`). Consumers comparing return metrics across documents call this
+ * rather than re-deriving the default.
+ */
+export function getReturnTaxBasis(parsed: ParsedUWFile): ReturnTaxBasis {
+  const dcf = resolveCrossCheckSection(parsed, 'dcf').block;
+  const v = dcf ? deepGet(dcf.content, 'returns.tax_basis') : undefined;
+  return typeof v === 'string' && (RETURN_TAX_BASES as readonly string[]).includes(v)
+    ? (v as ReturnTaxBasis)
+    : DEFAULT_RETURN_TAX_BASIS;
+}
+
+// RT-01: a stated tax_basis outside the closed set. Absent (or null) means
+// the default and is not an issue.
+function checkReturnsTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const dcf = resolveCrossCheckSection(parsed, 'dcf').block;
+  if (!dcf) return;
+  const v = deepGet(dcf.content, 'returns.tax_basis');
+  if (v === undefined || v === null) return;
+  if (typeof v === 'string' && (RETURN_TAX_BASES as readonly string[]).includes(v)) return;
+  issues.push({
+    code: 'RT-01', severity: 'error', section: 'dcf', field: 'returns.tax_basis',
+    message: `RT-01: dcf.returns.tax_basis must be one of ${RETURN_TAX_BASES.join(', ')} (found ${JSON.stringify(v)}); omit it to mean ${DEFAULT_RETURN_TAX_BASIS} (format §4.9, RFC 0038)`,
+    value: v,
+  });
 }
 
 // ─── §4.23 Mixed-use components (RFC 0019) ───────────────────────────────────
@@ -453,14 +695,20 @@ const ADMISSIBLE_COMPONENT_CLASSES: ReadonlySet<string> = new Set([
 // Validates the `components` section: the CC-11 asset-class gate, the CC-12
 // footing check (property NOI == Σ component NOI), and the section-internal
 // MU-* rules. A no-op for any document without a components section.
-function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledger: CoverageLedger): void {
   const components = getSection(parsed, 'components');
-  if (!components) return;
+  if (!components) {
+    markSkipped(ledger, 'CC-11', 'not_applicable', 'no components section');
+    markSkipped(ledger, 'CC-12', 'not_applicable', 'no components section');
+    return;
+  }
 
   const assetClass = parsed.frontmatter.asset_class;
 
   // CC-11: a components section is only valid under asset_class mixed_use.
+  markEvaluated(ledger, 'CC-11');
   if (assetClass !== 'mixed_use') {
+    markSkipped(ledger, 'CC-12', 'not_applicable', 'CC-11 fired');
     issues.push({
       code: 'CC-11', severity: 'error', section: 'components', field: 'asset_class',
       message: `CC-11: a components section is only valid when asset_class is mixed_use (found "${String(assetClass)}")`,
@@ -543,6 +791,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[]): voi
   // when every admissible component states a numeric NOI — a missing one is
   // MU-04's job, not a footing mismatch.
   const noiModel = getSection(parsed, 'noi_model');
+  if (!noiModel) markSkipped(ledger, 'CC-12', 'section_absent', 'noi_model');
   if (noiModel) {
     const propNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
     const compNOIs = admissible
@@ -552,7 +801,10 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[]): voi
           : undefined,
       )
       .filter((v): v is number => typeof v === 'number');
+    if (propNOI == null) markSkipped(ledger, 'CC-12', 'field_absent', 'noi_model.net_operating_income');
+    else if (admissible.length === 0 || compNOIs.length !== admissible.length) markSkipped(ledger, 'CC-12', 'field_absent', 'components[*].net_operating_income');
     if (propNOI != null && admissible.length > 0 && compNOIs.length === admissible.length) {
+      markEvaluated(ledger, 'CC-12');
       const sum = compNOIs.reduce((a, b) => a + b, 0);
       if (Math.abs(sum - propNOI) > 1) {
         issues.push({
@@ -685,37 +937,56 @@ function checkStackContent(
 // hard gate has INCOMPLETE_DATA_POLICIES. The five applicability
 // preconditions are normative (§5.3): each guards against the rule judging a
 // document whose missing size is some *other* rule's diagnosis.
-function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[], ledger: CoverageLedger): void {
   // 1. UWX record, not a compiled UW Lite summary — Lite states size in its
   //    own grammar, and its compiled envelope carries the x_uw_lite_source
   //    extension (surfaced under `extensions` by fromUWEnvelope, under
   //    `sections` by a re-parse of the serialized UWX).
-  if (parsed.sections[UW_LITE_SOURCE_EXTENSION] || parsed.extensions?.[UW_LITE_SOURCE_EXTENSION]) return;
+  if (parsed.sections[UW_LITE_SOURCE_EXTENSION] || parsed.extensions?.[UW_LITE_SOURCE_EXTENSION]) {
+    markSkipped(ledger, 'CC-13', 'not_applicable', 'compiled UW Lite summary');
+    return;
+  }
 
   // 2. Deal-record profile only. An absent profile is the plain underwriting
   //    record; any other declared profile has no property section by design.
   const profile = (parsed.frontmatter as Record<string, unknown>)['document_profile'];
-  if (profile != null && profile !== DEAL_UNDERWRITING_PROFILE) return;
+  if (profile != null && profile !== DEAL_UNDERWRITING_PROFILE) {
+    markSkipped(ledger, 'CC-13', 'not_applicable', `document_profile ${String(profile)}`);
+    return;
+  }
 
   // 3. Recognized class with a primary size field (not mixed_use, §XIII.2;
   //    not an unrecognized class, §XIII.3).
   const assetClass = parsed.frontmatter.asset_class;
-  if (typeof assetClass !== 'string') return;
+  if (typeof assetClass !== 'string') {
+    markSkipped(ledger, 'CC-13', 'not_applicable', 'no asset_class');
+    return;
+  }
   const intensive = getSizeIntensive(assetClass);
-  if (!intensive) return;
+  if (!intensive) {
+    markSkipped(ledger, 'CC-13', 'not_applicable', `${assetClass} has no primary size field`);
+    return;
+  }
 
   // 4. A property section exists — a missing section is a different defect
   //    with a different remedy (RFC 0027, unresolved question 5).
   const property =
     getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
-  if (!property) return;
+  if (!property) {
+    markSkipped(ledger, 'CC-13', 'section_absent', 'property');
+    return;
+  }
 
   // 5. Not externalized (RFC 0021) — the directive is not the section.
   //    Presence of the key is the whole test, as in the Lite projection.
   if (
     EXTERNAL_ANNOTATION_KEY in (property.annotation as Record<string, unknown>) ||
     EXTERNAL_ANNOTATION_KEY in property.content
-  ) return;
+  ) {
+    markSkipped(ledger, 'CC-13', 'not_applicable', 'property is externalized');
+    return;
+  }
+  markEvaluated(ledger, 'CC-13');
 
   // §VIII.2's unwrap rule, exactly as the calc evaluator applies it: a block
   // storing the envelope shape keeps its payload one level down at `content`.
@@ -749,7 +1020,7 @@ function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[]): 
 // same scan shows deal_stage declarations state where a deal is going, not
 // what the file contains (all twelve worked examples fail their declared
 // stage's list); info reports the gap without refusing or nagging.
-function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[], ledger: CoverageLedger): void {
   // CC-14 preconditions mirror CC-13's 1 and 2 (RFC 0028 §1). Precondition 3
   // (not externalized) is satisfied structurally: an externalized-but-
   // unresolved section still parses as a block, so it is present here.
@@ -759,6 +1030,9 @@ function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]
   const isDealRecord = profile == null || profile === DEAL_UNDERWRITING_PROFILE;
 
   const hasProperty = hasStageSection(parsed, 'property');
+  if (isCompiledLite) markSkipped(ledger, 'CC-14', 'not_applicable', 'compiled UW Lite summary');
+  else if (!isDealRecord) markSkipped(ledger, 'CC-14', 'not_applicable', 'not a deal record');
+  else markEvaluated(ledger, 'CC-14');
   let cc14Fired = false;
   if (!isCompiledLite && isDealRecord && !hasProperty) {
     cc14Fired = true;
@@ -875,9 +1149,12 @@ function checkLeaseUpContent(
   }
 }
 
-function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[], ledger: CoverageLedger): void {
   const entry = parsed.sections['lease_up_schedule'];
-  if (!entry) return;
+  if (!entry) {
+    markSkipped(ledger, 'CC-15', 'not_applicable', 'no lease_up_schedule');
+    return;
+  }
   const variants: Array<[string, UWBlock]> = isVariantMap(entry)
     ? Object.entries(entry as Record<string, UWBlock>)
     : [['default', entry as UWBlock]];
@@ -902,17 +1179,27 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[])
   // within LEASE_UP_STABILIZED_TOLERANCE. Tolerance-checked, not exact: the
   // trajectory endpoint and the stabilized-year projection are two different
   // models of stabilization (RFC 0008).
+  // CC-15 reads the base variant ONLY (RFC 0008: non-base variants are
+  // exempt by design — a downside is supposed to disagree). So the §5.3
+  // lone-variant fallback does not apply here, and a map with no base or
+  // default is `not_applicable`, not unresolvable: nothing was silenced.
   const base = isVariantMap(entry)
     ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default'])
     : (entry as UWBlock);
+  if (!base) markSkipped(ledger, 'CC-15', 'not_applicable', 'no base variant');
   const stabilizedNoi = base
     ? deepGet(base.content as Record<string, unknown>, 'stabilized_summary.annualized_noi')
     : undefined;
-  const modelNoi = deepGet(getSection(parsed, 'noi_model')?.content, 'net_operating_income');
+  const noiModel = getSection(parsed, 'noi_model');
+  const modelNoi = deepGet(noiModel?.content, 'net_operating_income');
+  if (base && !noiModel) markSkipped(ledger, 'CC-15', 'section_absent', 'noi_model');
+  else if (base && !(typeof stabilizedNoi === 'number' && Number.isFinite(stabilizedNoi))) markSkipped(ledger, 'CC-15', 'field_absent', 'lease_up_schedule.stabilized_summary.annualized_noi');
+  else if (base && !(typeof modelNoi === 'number' && Number.isFinite(modelNoi) && modelNoi !== 0)) markSkipped(ledger, 'CC-15', 'field_absent', 'noi_model.net_operating_income');
   if (
     typeof stabilizedNoi === 'number' && Number.isFinite(stabilizedNoi) &&
     typeof modelNoi === 'number' && Number.isFinite(modelNoi) && modelNoi !== 0
   ) {
+    markEvaluated(ledger, 'CC-15');
     const drift = Math.abs(stabilizedNoi - modelNoi) / Math.abs(modelNoi);
     if (drift > LEASE_UP_STABILIZED_TOLERANCE) {
       issues.push({
