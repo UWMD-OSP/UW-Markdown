@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/09-returns-tax-basis/render-summary",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "09-returns-tax-basis.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/09-returns-tax-basis.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}
