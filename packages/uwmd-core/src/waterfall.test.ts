@@ -1,5 +1,5 @@
-// Distribution waterfall arithmetic + three-state verification (RFC 0035,
-// §4.27 / protocol §VIII.10). Structure is validation
+// Distribution waterfall arithmetic + three-state verification (RFC 0035 +
+// RFC 0036, §4.27 / protocol §VIII.10). Structure is validation
 // (validator.waterfall.test.ts); this file covers the walk and the verifier.
 //
 // The reference case is FULLY HAND-WORKED, chosen so every year fraction is
@@ -156,6 +156,170 @@ describe('computeWaterfall — tier mechanics', () => {
     expect(a.lp.distributions).toBe(1_000_000 + 500_000 + 525_000);
     expect(a.gp.distributions).toBe(125_000 + 350_000);
     expect(a.lp.distributions / a.lp.contributions).toBeGreaterThan(1.5);
+  });
+  // ── IRR hurdles (RFC 0036): the closed-form hurdle balance ──────────────
+  //
+  // B = −xnpv(F, h) × (1 + h)^t_row. Single-shot, all-LP, one exact year:
+  // F = {(0, −1,000,000)} after ROC pays the capital back at t = 1 the LP's
+  // flows are −1,000,000 @0 and +1,000,000 @1, so
+  //   xnpv(F, 0.12) = −1,000,000 + 1,000,000 / 1.12 = −107,142.857…
+  //   B = 107,142.857… × 1.12 = 120,000 exactly.
+  // The 80/20 tier's capacity is 120,000 / 0.8 = 150,000 (LP 120,000 /
+  // GP 30,000) — the LP lands at 12% by construction, no solver involved.
+  const IRR_LADDER: DistributionWaterfall = {
+    cash_flow_ref: { variant: 'base' },
+    equity_split: { lp: 1.0, gp: 0.0 },
+    tiers: [
+      { type: 'return_of_capital' },
+      { type: 'split', lp_share: 0.8, gp_share: 0.2, until_lp_irr: 0.12 },
+      { type: 'split', lp_share: 0.6, gp_share: 0.4 },
+    ],
+  };
+  it('an IRR-hurdled split pays the hand-worked hurdle balance (B = 120,000 at h = 0.12, t = 1)', () => {
+    const series: CashFlowSeries = {
+      series: [
+        { date: '2026-01-01', amount: -1_000_000 },
+        { date: '2027-01-01', amount: 2_500_000 },
+      ],
+    };
+    const a = computeWaterfall(IRR_LADDER, series)!;
+    const row = a.schedule[0]!;
+    // Evaluated in binary64, quantized at the reporting boundary (§VIII.5):
+    // the balance lands at 120,000 to the cent, not bit-exactly.
+    const cents = (c: { tier: number; lp: number; gp: number }) =>
+      ({ tier: c.tier, lp: Math.round(c.lp * 100) / 100, gp: Math.round(c.gp * 100) / 100 });
+    expect(cents(row.by_tier.find((c) => c.tier === 1)!)).toEqual({ tier: 1, lp: 120_000, gp: 30_000 });
+    // The residual 1,350,000 goes 60/40.
+    expect(cents(row.by_tier.find((c) => c.tier === 2)!)).toEqual({ tier: 2, lp: 810_000, gp: 540_000 });
+    expect(Math.round(a.lp.distributions * 100) / 100).toBe(1_930_000);
+    expect(Math.round(a.gp.distributions * 100) / 100).toBe(570_000);
+  });
+  it('a filled IRR boundary lands the LP xirr on the hurdle to 6 dp (boundary vs §VIII.9.3 agreement)', () => {
+    // Exactly enough cash to fill the hurdled tier and nothing more.
+    const series: CashFlowSeries = {
+      series: [
+        { date: '2026-01-01', amount: -1_000_000 },
+        { date: '2027-01-01', amount: 1_150_000 },
+      ],
+    };
+    const a = computeWaterfall(IRR_LADDER, series)!;
+    expect(a.schedule[0]!.by_tier.map((c) =>
+      ({ tier: c.tier, lp: Math.round(c.lp * 100) / 100, gp: Math.round(c.gp * 100) / 100 }))).toEqual([
+      { tier: 0, lp: 1_000_000, gp: 0 },
+      { tier: 1, lp: 120_000, gp: 30_000 },
+    ]);
+    // Asserted with toBe on the quantized value, not toBeCloseTo: the
+    // boundary is closed-form and the solved xirr must agree at the quantum.
+    expect(Math.round(a.lp.xirr! * 1e6) / 1e6).toBe(0.12);
+  });
+  it('an already-met IRR hurdle has capacity zero — the tier pays nothing and never appears', () => {
+    // A 20% simple pref over one year puts the LP at 1,200,000 on 1,000,000
+    // before the 12%-hurdled tier is reached: B = −(−1,000,000 +
+    // 1,200,000 / 1.12) × 1.12 = −80,000 ≤ 0 → capacity 0.
+    const wf: DistributionWaterfall = {
+      cash_flow_ref: { variant: 'base' },
+      equity_split: { lp: 1.0, gp: 0.0 },
+      tiers: [
+        { type: 'return_of_capital' },
+        { type: 'preferred_return', rate: 0.2, accrual: 'simple' },
+        { type: 'split', lp_share: 0.8, gp_share: 0.2, until_lp_irr: 0.12 },
+        { type: 'split', lp_share: 0.6, gp_share: 0.4 },
+      ],
+    };
+    const series: CashFlowSeries = {
+      series: [
+        { date: '2026-01-01', amount: -1_000_000 },
+        { date: '2027-01-01', amount: 1_500_000 },
+      ],
+    };
+    const a = computeWaterfall(wf, series)!;
+    expect(a.schedule[0]!.by_tier.map((c) => c.tier)).toEqual([0, 1, 3]);
+    expect(a.schedule[0]!.by_tier.find((c) => c.tier === 3)).toEqual({ tier: 3, lp: 180_000, gp: 120_000 });
+  });
+  it('combined hurdles: the tier ends only when both are met — the larger capacity governs', () => {
+    const wf: DistributionWaterfall = {
+      cash_flow_ref: { variant: 'base' },
+      equity_split: { lp: 1.0, gp: 0.0 },
+      tiers: [
+        { type: 'return_of_capital' },
+        { type: 'split', lp_share: 0.8, gp_share: 0.2, until_lp_em: 1.5, until_lp_irr: 0.12 },
+        { type: 'split', lp_share: 0.6, gp_share: 0.4 },
+      ],
+    };
+    // One year: EM headroom 500,000 (cap 625,000) beats the IRR balance
+    // 120,000 (cap 150,000) — the multiple binds.
+    const oneYear = computeWaterfall(wf, {
+      series: [{ date: '2026-01-01', amount: -1_000_000 }, { date: '2027-01-01', amount: 3_000_000 }],
+    })!;
+    expect(oneYear.schedule[0]!.by_tier.find((c) => c.tier === 1)).toEqual({ tier: 1, lp: 500_000, gp: 125_000 });
+    // Five exact years under 30/360 (t = 5): IRR balance 1,000,000 × 1.12^5
+    // − 1,000,000 = 762,341.68 beats the 500,000 EM headroom — the IRR binds.
+    const fiveYears = computeWaterfall(wf, {
+      day_count: '30/360us',
+      series: [{ date: '2026-01-01', amount: -1_000_000 }, { date: '2031-01-01', amount: 3_000_000 }],
+    })!;
+    const lpPay = fiveYears.schedule[0]!.by_tier.find((c) => c.tier === 1)!.lp;
+    expect(Math.round(lpPay * 100) / 100).toBe(Math.round((1_000_000 * 1.12 ** 5 - 1_000_000) * 100) / 100);
+    expect(lpPay).toBeGreaterThan(500_000);
+  });
+  it('the hurdle balance credits earlier tiers of the same row and earlier rows (interleaved capital call)', () => {
+    const series: CashFlowSeries = {
+      series: [
+        { date: '2026-01-01', amount: -1_000_000 },
+        { date: '2027-01-01', amount: 300_000 },
+        { date: '2027-07-02', amount: -200_000 },
+        { date: '2029-01-01', amount: 1_500_000 },
+      ],
+    };
+    const a = computeWaterfall(IRR_LADDER, series)!;
+    // Recompute B independently from the LP's flows before tier 1 pays at
+    // the last row: contributions at t=0 and t=547/365, ROC receipts at
+    // t=1 and t=1096/365 (the second ROC returns the 700,000 + 200,000
+    // still unreturned).
+    const h = 0.12;
+    const flows = [
+      { t: 0, amount: -1_000_000 },
+      { t: 1, amount: 300_000 },
+      { t: 547 / 365, amount: -200_000 },
+      { t: 1096 / 365, amount: 900_000 },
+    ];
+    const xnpv = flows.reduce((acc, f) => acc + f.amount * (1 + h) ** -f.t, 0);
+    const B = -xnpv * (1 + h) ** (1096 / 365);
+    const last = a.schedule[a.schedule.length - 1]!;
+    const lpPay = last.by_tier.find((c) => c.tier === 1)!.lp;
+    expect(Math.round(lpPay * 100) / 100).toBe(Math.round(B * 100) / 100);
+    expect(a.lp.contributions).toBe(1_200_000);
+  });
+  it('cash is conserved through an IRR-hurdled ladder (Σ tier payments = row amount)', () => {
+    const wf: DistributionWaterfall = {
+      cash_flow_ref: { variant: 'base' },
+      equity_split: { lp: 0.9, gp: 0.1 },
+      tiers: [
+        { type: 'return_of_capital' },
+        { type: 'preferred_return', rate: 0.08, accrual: 'compound_annual' },
+        { type: 'catch_up', gp_share: 1.0, target_promote: 0.2 },
+        { type: 'split', lp_share: 0.8, gp_share: 0.2, until_lp_irr: 0.10 },
+        { type: 'split', lp_share: 0.7, gp_share: 0.3, until_lp_irr: 0.15 },
+        { type: 'split', lp_share: 0.6, gp_share: 0.4 },
+      ],
+    };
+    const series: CashFlowSeries = {
+      series: [
+        { date: '2026-01-01', amount: -1_000_000 },
+        { date: '2027-01-01', amount: 100_000 },
+        { date: '2028-01-01', amount: 100_000 },
+        { date: '2029-01-01', amount: 100_000 },
+        { date: '2030-01-01', amount: 2_000_000 },
+      ],
+    };
+    const a = computeWaterfall(wf, series)!;
+    for (const row of a.schedule) {
+      const amount = series.series.find((r) => r.date === row.date)!.amount;
+      const paid = row.by_tier.reduce((acc, c) => acc + c.lp + c.gp, 0);
+      expect(Math.abs(paid - amount)).toBeLessThan(1e-6);
+    }
+    expect(a.lp.distributions + a.gp.distributions).toBeCloseTo(2_300_000, 6);
+    expect(a.lp.xirr!).toBeGreaterThan(0.15);
   });
   it('same-date rows accrue no double pref', () => {
     const series: CashFlowSeries = {

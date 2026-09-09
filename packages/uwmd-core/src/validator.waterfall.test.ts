@@ -1,4 +1,4 @@
-// WF-01…WF-03 — the RFC 0035 waterfall structural checks.
+// WF-01…WF-03 — the RFC 0035 (+ RFC 0036 hurdle grammar) waterfall structural checks.
 //
 // Structure is validation, arithmetic is verification: these codes cover the
 // ladder grammar, the cash reference, and the capital precondition. The
@@ -108,10 +108,84 @@ describe('WF-01 — ladder grammar', () => {
     expect(wfIssues(CLEAN.replace('"lp": 0.9, "gp": 0.1', '"lp": 0.9, "gp": 0.2')).map((i) => i.code)).toEqual(['WF-01']);
     expect(wfIssues(CLEAN.replace('"lp_share": 0.7, "gp_share": 0.3', '"lp_share": 0.7, "gp_share": 0.4')).map((i) => i.code)).toEqual(['WF-01']);
   });
-  it('rejects the reserved until_lp_irr', () => {
-    const issues = wfIssues(CLEAN.replace('"until_lp_em": 1.5', '"until_lp_irr": 0.12'));
+  // ── RFC 0036: until_lp_irr ─────────────────────────────────────────────
+  it('accepts until_lp_irr in (0, 1) — the RFC 0035 reservation is gone', () => {
+    expect(wfIssues(CLEAN.replace('"until_lp_em": 1.5', '"until_lp_irr": 0.12'))).toEqual([]);
+    expect(wfIssues(CLEAN.replace('"until_lp_em": 1.5', '"until_lp_em": 1.5, "until_lp_irr": 0.12'))).toEqual([]);
+    expect(wfIssues(CLEAN.replace('"until_lp_em": 1.5', '"until_lp_irr": null'))).toEqual([]);
+  });
+  it('rejects until_lp_irr outside (0, 1), anchored to the field', () => {
+    for (const bad of ['1.2', '0', '1', '-0.1', '"12%"', 'true']) {
+      const issues = wfIssues(CLEAN.replace('"until_lp_em": 1.5', `"until_lp_irr": ${bad}`));
+      expect(issues.map((i) => i.code), bad).toEqual(['WF-01']);
+      expect(issues[0]!.field).toBe('tiers[3].until_lp_irr');
+    }
+  });
+  it('rejects an IRR-capped split that pays the LP nothing', () => {
+    const issues = wfIssues(CLEAN.replace(
+      '"lp_share": 0.8, "gp_share": 0.2, "until_lp_em": 1.5',
+      '"lp_share": 0, "gp_share": 1, "until_lp_irr": 0.12',
+    ));
     expect(issues.map((i) => i.code)).toEqual(['WF-01']);
-    expect(issues[0]!.message).toContain('reserved');
+    expect(issues[0]!.field).toBe('tiers[3].lp_share');
+  });
+  it('rejects an IRR-capped final split', () => {
+    const issues = wfIssues(`{
+      "cash_flow_ref": { "variant": "base" },
+      "equity_split": { "lp": 0.9, "gp": 0.1 },
+      "tiers": [ { "type": "split", "lp_share": 0.8, "gp_share": 0.2, "until_lp_irr": 0.12 } ]
+    }`);
+    expect(issues.map((i) => i.code)).toEqual(['WF-01']);
+    expect(issues[0]!.field).toBe('tiers[0].until_lp_irr');
+  });
+  it('rejects a non-increasing until_lp_irr ladder at the offending tier', () => {
+    const ladder = (a: string, b: string) => `{
+      "cash_flow_ref": { "variant": "base" },
+      "equity_split": { "lp": 0.9, "gp": 0.1 },
+      "tiers": [
+        { "type": "return_of_capital" },
+        { "type": "split", "lp_share": 0.8, "gp_share": 0.2, "until_lp_irr": ${a} },
+        { "type": "split", "lp_share": 0.7, "gp_share": 0.3, "until_lp_irr": ${b} },
+        { "type": "split", "lp_share": 0.6, "gp_share": 0.4 }
+      ]
+    }`;
+    expect(wfIssues(ladder('0.12', '0.15'))).toEqual([]);
+    for (const [a, b] of [['0.15', '0.12'], ['0.12', '0.12'], ['0.12', '0.1200000001']]) {
+      const issues = wfIssues(ladder(a, b));
+      expect(issues.map((i) => i.code), `${a} → ${b}`).toEqual(['WF-01']);
+      expect(issues[0]!.field).toBe('tiers[2].until_lp_irr');
+    }
+  });
+  it('rejects a non-increasing until_lp_em ladder at the offending tier', () => {
+    const ladder = (a: string, b: string) => `{
+      "cash_flow_ref": { "variant": "base" },
+      "equity_split": { "lp": 0.9, "gp": 0.1 },
+      "tiers": [
+        { "type": "return_of_capital" },
+        { "type": "split", "lp_share": 0.8, "gp_share": 0.2, "until_lp_em": ${a} },
+        { "type": "split", "lp_share": 0.7, "gp_share": 0.3, "until_lp_em": ${b} },
+        { "type": "split", "lp_share": 0.6, "gp_share": 0.4 }
+      ]
+    }`;
+    expect(wfIssues(ladder('1.5', '2.0'))).toEqual([]);
+    for (const [a, b] of [['2.0', '1.5'], ['1.5', '1.5'], ['1.5', '1.50001']]) {
+      const issues = wfIssues(ladder(a, b));
+      expect(issues.map((i) => i.code), `${a} → ${b}`).toEqual(['WF-01']);
+      expect(issues[0]!.field).toBe('tiers[2].until_lp_em');
+    }
+  });
+  it('the two hurdle kinds ladder independently — an IRR after an EM tier is not compared across kinds', () => {
+    expect(wfIssues(`{
+      "cash_flow_ref": { "variant": "base" },
+      "equity_split": { "lp": 0.9, "gp": 0.1 },
+      "tiers": [
+        { "type": "return_of_capital" },
+        { "type": "split", "lp_share": 0.8, "gp_share": 0.2, "until_lp_em": 1.5 },
+        { "type": "split", "lp_share": 0.7, "gp_share": 0.3, "until_lp_irr": 0.12 },
+        { "type": "split", "lp_share": 0.65, "gp_share": 0.35, "until_lp_em": 2.0, "until_lp_irr": 0.15 },
+        { "type": "split", "lp_share": 0.6, "gp_share": 0.4 }
+      ]
+    }`)).toEqual([]);
   });
   it('names the variant in the message', () => {
     const issues = wfIssues(CLEAN.replace('"rate": 0.08', '"rate": 8'), { variant: 'downside' });

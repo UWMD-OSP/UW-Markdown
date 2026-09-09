@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.3.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.6.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.3.0`) — the
+- **Protocol version** (this document, currently `2.6.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1746,7 +1746,7 @@ raises `CALC-CF-SERIES`. A host that evaluates cash-flow declarations
 declares `calc-cash-flow` in its `ImplementationManifest.capabilities`;
 one that does not MUST report a typed refusal rather than crash.
 
-### VIII.10 Distribution waterfall allocation (RFC 0035)
+### VIII.10 Distribution waterfall allocation (RFC 0035, RFC 0036)
 
 The format's `distribution_waterfall` section (format spec §4.27)
 states a tier ladder over a §4.26 dated series. This section fixes the
@@ -1785,12 +1785,41 @@ party's dated flow list. Walk the referenced series **in row order**:
      and `G` = GP profit so far: capacity `x = (target_promote × P − G)
      / (gp_share − target_promote)`, floored at 0. `gp_share` of the
      payment goes to the GP, the rest to the LP.
-   - `split` — paid `lp_share` / `gp_share`. A tier capped by
-     `until_lp_em` has capacity
-     `max(0, until_lp_em × lp.contributions − lp.distributions) /
-     lp_share`; the final tier is unbounded.
+   - `split` — paid `lp_share` / `gp_share`. A capped tier's capacity
+     is the **larger** of the capacities its stated hurdles impose
+     (both must be met before the tier ends); the final tier is
+     unbounded.
+     - `until_lp_em`: `max(0, until_lp_em × lp.contributions −
+       lp.distributions) / lp_share` (unchanged from 2.3.0).
+     - `until_lp_irr` (= `h`, RFC 0036): let `F` be the LP's dated
+       flows so far — every contribution outflow and distribution
+       inflow appended by earlier rows **and by earlier tiers of this
+       row**, at their anchor-relative `t` (§VIII.9.2) — and `t_row`
+       this row's `t`. The LP's **hurdle balance** is
+       `B = −xnpv(F, h) × (1 + h) ^ t_row`
+       (§VIII.9.2's sum, accumulated in flow order; the same `t`
+       values the outcome `xirr` will use). Capacity is
+       `max(0, B) / lp_share`. `B ≤ 0` means the LP has already
+       achieved the hurdle and the tier pays nothing.
+
+     The hurdle test is the balance identity, **not** a comparison
+     against a solved `xirr`: `xnpv(F ∪ {(t_row, B)}, h) = 0` exactly,
+     so a tier that fills lands the LP at the hurdle rate by
+     construction, without iteration. The reported outcome `xirr` is
+     still the §VIII.9.3 procedure over the final flows; at a filled
+     boundary the two agree to within that procedure's stopping
+     tolerance, which the §VIII.9.4 `%` quantum (6 dp) absorbs. The
+     identity — not "LP IRR ≥ h" — is the definition: for flows with a
+     capital call after a distribution `xnpv(·, r)` need not be
+     monotone in `r`, "IRR ≥ h" can be ambiguous or undefined, and two
+     engines solving for the IRR could legitimately disagree on whether
+     the hurdle was met; the balance is single-valued for every finite
+     flow list.
    Payments join each party's dated flows as inflows. Cash never
-   remains after the final tier (it is unbounded by grammar).
+   remains after the final tier (it is unbounded by grammar). An
+   implementation MUST NOT determine a tier boundary by iterating on
+   `xirr`; §VIII.9.3 remains the only permitted iteration and it runs
+   only in step 4.
 4. **Outcomes.** Per party: `moic = distributions ÷ contributions`;
    `xirr` by the §VIII.9.3 procedure over the party's dated flows.
    `promote_total` = GP distributions − GP return-of-capital receipts
@@ -2463,18 +2492,22 @@ composite with rollup receipts; the sidecar stays descriptive.
 
 ## XVI. Future work (non-normative)
 
-Every RFC accepted through protocol 2.3.0 is implemented (RFC 0001–0035,
+Every RFC accepted through protocol 2.6.0 is implemented (RFC 0001–0038,
 excepting 0013). The items below were **named and deliberately deferred**
 by an implemented RFC; each records where its design lives so later work
 does not foreclose it. None is required for conformance at any tier, and
 each opens as its own RFC under `docs/rfcs/` when taken up. The
 maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
 
-- **IRR hurdles in the distribution waterfall** — `until_lp_irr` is
-  reserved syntax that `WF-01` refuses until specified; the
-  bisection-on-boundary-amount design is sketched in RFC 0035 §C.
-- **Clawback / crystallization** — deferred by RFC 0035; expected to land
-  as a terminal true-up tier, not per-period state.
+- **Combined-hurdle "any" mode and GP-side hurdles** — RFC 0036 shipped
+  IRR hurdles with "both must be met" semantics (protocol 2.6.0,
+  §VIII.10 step 3); an LPA reading "until 1.5x *or* 12%, whichever
+  first" would need `hurdle_mode: "any"` (the smaller capacity), and
+  `until_gp_irr` was left out rather than reserved.
+- **Clawback / crystallization** — deferred by RFC 0035 and again by
+  RFC 0036 (an IRR ladder makes it more pressing: a promote paid on an
+  interim hurdle that later un-earns itself); expected to land as a
+  terminal true-up tier, not per-period state.
 - **Currency-code disambiguation** — deferred by RFC 0001; a
   `currency_code` on monetary values so a deal authored in one locale can
   carry another currency's amounts.

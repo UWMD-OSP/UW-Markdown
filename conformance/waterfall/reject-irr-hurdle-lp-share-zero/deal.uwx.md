@@ -1,12 +1,12 @@
 ---
 uw_version: "1.1"
-deal_id: WF-R4
+deal_id: WF-R9
 asset_class: multifamily
 ---
 
 # Waterfall Fixture
 
-```json uw:section=cash_flow_series variant=base source=manual ts=2026-09-02T00:00:00Z v=1
+```json uw:section=cash_flow_series variant=base source=manual ts=2026-09-09T00:00:00Z v=1
 {
   "series": [
     {
@@ -21,7 +21,7 @@ asset_class: multifamily
 }
 ```
 
-```json uw:section=distribution_waterfall variant=base source=manual ts=2026-09-02T00:00:00Z v=1
+```json uw:section=distribution_waterfall variant=base source=manual ts=2026-09-09T00:00:00Z v=1
 {
   "cash_flow_ref": {
     "variant": "base"
@@ -36,14 +36,14 @@ asset_class: multifamily
     },
     {
       "type": "split",
-      "lp_share": 0.8,
-      "gp_share": 0.2,
+      "lp_share": 0,
+      "gp_share": 1,
       "until_lp_irr": 0.12
     },
     {
       "type": "split",
-      "lp_share": 0.8,
-      "gp_share": 0.2
+      "lp_share": 0.6,
+      "gp_share": 0.4
     }
   ]
 }

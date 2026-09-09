@@ -23,7 +23,7 @@ same protocol version.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.5.0** | format ≥ 1.0 (§5.3 cross-check resolution over variant maps + `CC-16` + coverage, RFC 0037; §4.9 `returns.tax_basis` + `RT-NN`, RFC 0038) |
+| UW Protocol | **2.6.0** | format ≥ 1.0 (§VIII.10 IRR-hurdled waterfall tiers — the closed-form hurdle balance, RFC 0036; unreleased until the next cut) |
 | `@uwmd/core` | **2.5.0** | format 2.0 (reads 1.x), protocol 2.5.0 |
 | `@uwmd/cli` (CLI) | **2.5.0** | `@uwmd/core` 2.5.0 |
 | `@uwmd/excel` | **0.8.7** | `@uwmd/core` 2.5.x, format 1.1 multifamily pack |

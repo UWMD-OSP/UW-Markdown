@@ -59,7 +59,7 @@ and how it gets accepted.
 | [0033](./0033-capital-stack-point-in-time.md) | Scope `capital_stack` to one point in time | implemented | format |
 | [0034](./0034-calendar-anchored-cash-flows.md) | Calendar-anchored cash flows — dated series, day counts, deterministic `xirr`/`xnpv` | implemented | format, protocol, core, conformance |
 | [0035](./0035-distribution-waterfall.md) | Distribution waterfall — state-and-verify promote, pref, and catch-up over a dated series | implemented | format, protocol, core, conformance |
-| [0036](./0036-waterfall-irr-hurdles.md) | IRR-hurdled waterfall tiers — a closed-form boundary, not a nested solve | draft | format, protocol, core, conformance |
+| [0036](./0036-waterfall-irr-hurdles.md) | IRR-hurdled waterfall tiers — a closed-form boundary, not a nested solve | implemented | format, protocol, core, conformance |
 | [0037](./0037-cross-check-variant-resolution-and-coverage.md) | Cross-check resolution over variant maps, and a validation coverage channel | implemented | format, protocol, core, conformance |
 | [0038](./0038-return-metric-tax-basis.md) | Tax basis on stated return metrics | implemented | format, protocol, core, conformance |
 | [0039](./0039-data-center-module.md) | Data-center module — the first product module on a module-declared asset class | draft | core, conformance, tooling |
