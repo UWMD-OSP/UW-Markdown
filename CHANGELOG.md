@@ -6,7 +6,22 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.5.0] - 2026-09-09
+
+### Released
+
+- `@uwmd/core` **2.5.0**, `@uwmd/cli` **2.5.0** (lockstep),
+  `@uwmd/signing` **0.2.7** (repin-forced patch; core's exact optional-peer
+  pin moves with it), `@uwmd/batch` **0.8.2** (repin). Unpublished repins:
+  `@uwmd/excel` **0.8.7**, `@uwmd/report` **0.8.7**;
+  `@uwmd/module-hospitality` repins at 0.1.0. Protocol **2.5.0** — the
+  validator-honesty minor: RFC 0037 and RFC 0038 below.
+- **Why a minor, not a patch:** `ValidationResult` gains a required
+  `coverage` field (consumers constructing one by hand must add it), a new
+  registered code (`CC-16`) and a new validator family (`RT-NN`) are
+  emitted, and format §4.9 gains a field. Receipt baseline `verify/03`
+  engine_version to 2.5.0. Also carries #162 (docs wording), #163 (RFC 0036
+  draft) and #165 (continuity plan).
 
 ### Added
 
@@ -3031,7 +3046,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.1.0...v2.2.0
