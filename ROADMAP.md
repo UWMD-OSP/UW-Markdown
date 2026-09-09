@@ -150,6 +150,7 @@ context. This list is the maintainable copy.
 | [0036](./docs/rfcs/0036-waterfall-irr-hurdles.md) | 📋 IRR-hurdled waterfall tiers | **Draft 2026-09-07.** Takes up the `until_lp_irr` reservation from RFC 0035. The boundary is closed-form (the LP hurdle balance, `−xnpv(F,h)·(1+h)^t`), not the nested bisection 0035 §C sketched; laddered and combined hurdles follow. Would move protocol 2.3.0 → 2.4.0. |
 | [0037](./docs/rfcs/0037-cross-check-variant-resolution-and-coverage.md) | ✅ Cross-check resolution over variant maps + coverage channel | **Shipped 2026-09-09** (unreleased). §5.3 resolution order (preference → `default` → `base` → lone variant), `CC-16` for an unresolvable map, `ValidationResult.coverage`. Closes underwriter.cc UPSTREAM-005: variant maps had been silently disabling ten of fifteen cross-checks. |
 | [0038](./docs/rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (unreleased). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
+| [0039](./docs/rfcs/0039-data-center-module.md) | 📋 Data-center module | **Draft 2026-09-09.** `@uwmd/module-data-center`: the first product module on a module-declared class (`org.uwmd.data_center`, fallback `industrial`), three kW-denominated sections, per-commissioned-kW price and NOI calcs — the test of whether RFC 0003 generalizes and of §X.2.4's per-unit refusal. No spec change. |
 
 
 ## Pre-public-flip checklist
