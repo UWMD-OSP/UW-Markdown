@@ -6,6 +6,40 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Added
+
+- **IRR-hurdled waterfall tiers (RFC 0036).** Protocol **2.5.0 → 2.6.0**
+  (a new normative capacity rule in §VIII.10 step 3); the format version
+  does not move. A `split` tier may now state `until_lp_irr` (a fraction
+  in (0, 1)) alongside — or instead of — `until_lp_em`: the tier pays until
+  the LP's dated flows, including the payment being made, reach the hurdle
+  rate under the series' own day count. The boundary is **closed-form**,
+  not the nested bisection RFC 0035 §C sketched: the LP's *hurdle balance*
+  `B = −xnpv(F, h) × (1 + h)^t_row` over every LP flow so far (earlier rows
+  and earlier tiers of this row), capacity `max(0, B) / lp_share`. The
+  identity — not a solved "LP IRR ≥ h" — is the normative definition, so
+  the interleaved-capital-call case is deterministic across engines; an
+  implementation MUST NOT determine a tier boundary by iterating on
+  `xirr`. Both hurdles on one tier means both must be met (the larger
+  capacity governs); laddered promotes (`12% → 15% → 18%`) follow. `WF-01`
+  drops the RFC 0035 reservation refusal and gains: `until_lp_irr` in
+  (0, 1); `lp_share > 0` and the terminal-uncapped rule for a split capped
+  by either field; successive stated hurdles of one kind strictly
+  increasing (compared at the rate / ratio quantum). **One tightening:** a
+  non-increasing `until_lp_em` ladder — always a dead tier — is now
+  refused; the corpus scan the RFC required found zero such documents, so
+  it ships as an error rather than the fallback `WF-04` warning. Schema
+  `section-distribution-waterfall` gains the field; `WaterfallTierSplit.
+  until_lp_irr` is the only type change and there are no new exports.
+  `conformance/waterfall/` gains twelve scenarios (boundary, crossing,
+  ladder, already-met, interleaved call, combined hurdles ×2, compound
+  pref then IRR, and four `WF-01` rejections) and loses
+  `reject-reserved-irr-hurdle` — corpus 385 → 396. Every pinned number is
+  engine-generated; the boundary case is hand-checked (LP 120,000 /
+  GP 30,000, LP `xirr` 0.12 at 6 dp).
+
 ## [2.5.0] - 2026-09-09
 
 ### Released

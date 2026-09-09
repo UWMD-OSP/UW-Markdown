@@ -116,7 +116,7 @@ not core gaps.
   1.0, UW XML 1.0, normalized UW CSV Bundle 1.0, semantic digest/equivalence
   helpers, codec registry, safe ZIP extraction, all six CSV views, and CLI
   conversion are implemented and tested. See [03](03-core-library.md).
-- **Conformance:** **377 assertions** across 4 tiers plus the named `lite`,
+- **Conformance:** **396 assertions** across 4 tiers plus the named `lite`,
   `receipts`, `4-replay`, `modules`, `packages`, `market-data`, `composition`,
   `capital-stack`, `lease-up`, `cash-flow`, `waterfall`, `portfolio-relationships`, `capability`, `locale`,
   `size-intensive`, `signing`, `sensitivity`, `stochastic`, `source`,
@@ -434,7 +434,7 @@ not core gaps.
   series, `equity_split`, and the ordered closed tier ladder (ROC → pref
   with simple/compound-annual accrual under the series' day count →
   catch-up with a closed-form capacity → EM-hurdled and terminal splits;
-  `until_lp_irr` reserved and refused). §VIII.10 pins the allocation walk
+  `until_lp_irr` reserved and refused until RFC 0036, below). §VIII.10 pins the allocation walk
   normatively, and `verifyWaterfall` / `computeWaterfall` **recompute the
   entire allocation** — never trusting stated splits — three-state at the
   §VIII.9.4 quanta, per-party XIRR via §VIII.9.3. `WF-01`…`WF-03`
@@ -447,8 +447,27 @@ not core gaps.
   pref tier capacity zero forever — the classic ladder could never
   promote; implementation caught it, the industry semantics (pref counts
   as profit) landed, and the RFC records it. Deferred with designs named:
-  IRR hurdles (bisection-on-boundary-amount), clawback, n-party splits,
-  Excel emit, the stack cross-check.
+  IRR hurdles (bisection-on-boundary-amount — superseded by RFC 0036's
+  closed form), clawback, n-party splits, Excel emit, the stack
+  cross-check.
+- **IRR-hurdled waterfall tiers ([RFC 0036](../rfcs/0036-waterfall-irr-hurdles.md),
+  drafted 2026-09-07, accepted and implemented 2026-09-09) — protocol
+  2.5.0 → 2.6.0, §VIII.10 step 3 (unreleased until the next cut).** Takes
+  up the `until_lp_irr` reservation. The boundary is **closed-form**: the
+  LP's hurdle balance `B = −xnpv(F, h) × (1 + h)^t_row` over the LP's
+  dated flows so far (earlier rows and earlier tiers of this row), capacity
+  `max(0, B) / lp_share` — not the nested bisection 0035 §C sketched, and
+  the identity (not "LP IRR ≥ h") is the normative definition so the
+  interleaved-call case is deterministic. A tier may state both hurdles
+  (both must be met — the larger capacity governs); `WF-01` gains the
+  (0, 1) range, `lp_share > 0` and terminal-uncapped rules for either
+  field, and strictly-increasing hurdle ladders per kind (the corpus scan
+  found zero non-increasing EM ladders, so no `WF-04` warning). Twelve
+  `conformance/waterfall/` scenarios added, the stale reservation fixture
+  deleted (corpus 385 → 396); every pinned number engine-generated, the
+  boundary case hand-checked (LP 120,000 / GP 30,000, LP xirr 0.12 at
+  6 dp). No new exports; `WaterfallTierSplit.until_lp_irr` is the only
+  type change.
 - **OSS scaffolding:** governance, RFC pipeline, CI+release, CHANGELOG, VERSIONS,
   GLOSSARY, ARCHITECTURE, first-file tutorial.
 
@@ -744,8 +763,10 @@ issuance and verification are unchanged and remain the default path.
 > **2026-09-09:** RFC 0037 (cross-check resolution over variant maps + the
 > `ValidationResult.coverage` channel, `CC-16`) and RFC 0038
 > (`dcf.returns.tax_basis`, `RT-01`, `getReturnTaxBasis()`) implemented —
-> both raised by underwriter.cc as UPSTREAM-005 / UPSTREAM-006. Unreleased
-> until the next protocol minor is cut.
+> both raised by underwriter.cc as UPSTREAM-005 / UPSTREAM-006. Released
+> in 2.5.0. Later the same day, RFC 0036 (IRR-hurdled waterfall tiers,
+> `until_lp_irr`, the closed-form hurdle balance) implemented — protocol
+> 2.6.0, unreleased until the next cut.
 
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
 emptied (RFCs 0014–0029 all implemented).

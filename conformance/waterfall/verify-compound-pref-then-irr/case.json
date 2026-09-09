@@ -1,0 +1,97 @@
+{
+  "waterfall": {
+    "cash_flow_ref": {
+      "variant": "base"
+    },
+    "equity_split": {
+      "lp": 0.9,
+      "gp": 0.1
+    },
+    "tiers": [
+      {
+        "type": "return_of_capital"
+      },
+      {
+        "type": "preferred_return",
+        "rate": 0.08,
+        "accrual": "compound_annual"
+      },
+      {
+        "type": "catch_up",
+        "gp_share": 1,
+        "target_promote": 0.2
+      },
+      {
+        "type": "split",
+        "lp_share": 0.8,
+        "gp_share": 0.2,
+        "until_lp_irr": 0.12
+      },
+      {
+        "type": "split",
+        "lp_share": 0.6,
+        "gp_share": 0.4
+      }
+    ],
+    "stated_outcomes": {
+      "lp": {
+        "contributions": 900000,
+        "distributions": 2191206.96,
+        "moic": 2.4347,
+        "xirr": 0.344919
+      },
+      "gp": {
+        "contributions": 100000,
+        "distributions": 808793.04,
+        "moic": 8.0879,
+        "xirr": 1.006025
+      },
+      "promote_total": 682795.27,
+      "profit_total": 2000000
+    },
+    "stated_schedule": [
+      {
+        "date": "2029-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 900000,
+            "gp": 100000
+          },
+          {
+            "tier": 1,
+            "lp": 233979.88,
+            "gp": 25997.76
+          },
+          {
+            "tier": 2,
+            "lp": 0,
+            "gp": 32497.21
+          },
+          {
+            "tier": 3,
+            "lp": 130847.98,
+            "gp": 32711.99
+          },
+          {
+            "tier": 4,
+            "lp": 926379.11,
+            "gp": 617586.07
+          }
+        ]
+      }
+    ]
+  },
+  "series": {
+    "series": [
+      {
+        "date": "2026-01-01",
+        "amount": -1000000
+      },
+      {
+        "date": "2029-01-01",
+        "amount": 3000000
+      }
+    ]
+  }
+}

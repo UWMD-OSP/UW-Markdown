@@ -1315,13 +1315,14 @@ function checkCashFlowSeries(parsed: ParsedUWFile, issues: ValidationMessage[]):
   }
 }
 
-// ─── Distribution waterfall (RFC 0035, §4.27) ────────────────────────────────
+// ─── Distribution waterfall (RFC 0035 + RFC 0036, §4.27) ─────────────────────
 //
 // Structural rules only, the standing split: the ladder grammar, the cash
 // reference, and the capital precondition are validation; the allocation
 // arithmetic belongs to `verifyWaterfall` (waterfall.ts). Multi-variant.
 
 const RATIO_QUANTUM = 1e-4;
+const RATE_QUANTUM = 1e-6;
 
 function sumsToOne(a: unknown, b: unknown): boolean {
   return typeof a === 'number' && typeof b === 'number' &&
@@ -1356,6 +1357,8 @@ function checkWaterfallContent(
     const ORDER: Record<string, number> = { return_of_capital: 0, preferred_return: 1, catch_up: 2, split: 3 };
     let prevRank = -1;
     let splitCount = 0;
+    let prevEm: number | null = null;
+    let prevIrr: number | null = null;
     const seenSingleton = new Set<string>();
     rows.forEach((tier, i) => {
       const type = tier && typeof tier === 'object' ? (tier as { type?: unknown }).type : undefined;
@@ -1399,18 +1402,49 @@ function checkWaterfallContent(
         if (!sumsToOne(t.lp_share, t.gp_share)) {
           wf01(`tiers[${i}]`, 'split lp_share and gp_share must be fractions in [0,1] summing to 1.0');
         }
-        if (t.until_lp_irr !== undefined) {
-          wf01(`tiers[${i}].until_lp_irr`, 'until_lp_irr is reserved for a future RFC and refused (RFC 0035 §C)');
-        }
+        // Hurdles (RFC 0035 `until_lp_em`, RFC 0036 `until_lp_irr`): each in
+        // range, a capped split paying the LP, the terminal split uncapped by
+        // either field, and each kind of hurdle strictly increasing down the
+        // ladder (a later tier hurdled at or below an earlier one has
+        // capacity zero by construction and would pay nothing, silently).
+        let emOk = false;
+        let irrOk = false;
         if (t.until_lp_em != null) {
-          if (!(typeof t.until_lp_em === 'number' && t.until_lp_em > 0)) {
+          if (!(typeof t.until_lp_em === 'number' && Number.isFinite(t.until_lp_em) && t.until_lp_em > 0)) {
             wf01(`tiers[${i}].until_lp_em`, 'until_lp_em must be a positive equity multiple');
-          } else if (!(typeof t.lp_share === 'number' && t.lp_share > 0)) {
+          } else {
+            emOk = true;
+          }
+        }
+        if (t.until_lp_irr != null) {
+          if (!(typeof t.until_lp_irr === 'number' && t.until_lp_irr > 0 && t.until_lp_irr < 1)) {
+            wf01(`tiers[${i}].until_lp_irr`, 'until_lp_irr must be a fraction in (0, 1) — an IRR hurdle rate, 0.12 not 12');
+          } else {
+            irrOk = true;
+          }
+        }
+        if (t.until_lp_em != null || t.until_lp_irr != null) {
+          if ((emOk || irrOk) && !(typeof t.lp_share === 'number' && t.lp_share > 0)) {
             wf01(`tiers[${i}].lp_share`, 'a capped split must pay the LP (lp_share > 0) or the cap can never bind');
           }
           if (i === rows.length - 1) {
-            wf01(`tiers[${i}].until_lp_em`, 'the final split must be uncapped — capped ladders need a terminal residual tier');
+            const field = t.until_lp_irr != null && t.until_lp_em == null ? 'until_lp_irr' : 'until_lp_em';
+            wf01(`tiers[${i}].${field}`, 'the final split must be uncapped — capped ladders need a terminal residual tier');
           }
+        }
+        if (emOk) {
+          const em = t.until_lp_em as number;
+          if (prevEm !== null && !(em > prevEm + RATIO_QUANTUM)) {
+            wf01(`tiers[${i}].until_lp_em`, `until_lp_em (${em}) must exceed the earlier tier's hurdle (${prevEm}) — a later tier hurdled at or below an earlier one can never pay`);
+          }
+          prevEm = prevEm === null ? em : Math.max(prevEm, em);
+        }
+        if (irrOk) {
+          const irr = t.until_lp_irr as number;
+          if (prevIrr !== null && !(irr > prevIrr + RATE_QUANTUM)) {
+            wf01(`tiers[${i}].until_lp_irr`, `until_lp_irr (${irr}) must exceed the earlier tier's hurdle (${prevIrr}) — a later tier hurdled at or below an earlier one can never pay`);
+          }
+          prevIrr = prevIrr === null ? irr : Math.max(prevIrr, irr);
         }
       }
     });

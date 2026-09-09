@@ -1,7 +1,7 @@
 ---
 rfc: 0036
 title: IRR-hurdled waterfall tiers — a closed-form boundary, not a nested solve
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-09-07
 affects:
@@ -21,8 +21,14 @@ affects:
 > root-solve inside another root-solve and inherits `xirr`'s refusal
 > cases mid-walk. The boundary has a **closed form** under the
 > hurdle-rate balance identity the industry already uses, and that is
-> what is proposed. Protocol 2.3.0 → 2.4.0 (a new capacity rule in
-> §VIII.10 step 3); the format version does not move.
+> what is proposed. Protocol 2.5.0 → 2.6.0 (a new capacity rule in
+> §VIII.10 step 3; drafted against 2.3.0, the number moved under it
+> while 0037/0038 shipped); the format version does not move.
+>
+> **Implemented 2026-09-09** under owner-led governance (accept +
+> implement in one change). The corpus scan the Compatibility section
+> calls for found zero non-increasing `until_lp_em` ladders, so the
+> monotone rule ships as `WF-01` for both hurdle kinds; no `WF-04`.
 
 ## Summary
 
@@ -52,9 +58,9 @@ Tier-3 calc engine is untouched.
   host recomputes it privately — the exact gap 0035 set out to close.
 - **The reserved syntax is a refusal with a known design.** 0035 §C
   and format §4.27 both name the solve and refuse the field. A
-  reservation is meant to be short-lived; every 2.3.0 file that wants an
-  IRR ladder is currently forced to either misstate its terms as a
-  multiple or leave the waterfall out.
+  reservation is meant to be short-lived; every 2.3.0–2.5.0 file that
+  wants an IRR ladder is currently forced to either misstate its terms
+  as a multiple or leave the waterfall out.
 - **The sketched design would have been wrong to build.** Bisecting on
   the boundary amount `x` with `g(x) = xirr(F ∪ {(t, lp_share·x)})` as
   the objective (a) nests the §VIII.9.3 bisection inside another
@@ -101,7 +107,7 @@ field on an existing optional section — the RFC 0034 erratum precedent).
 
 ### B. Protocol: §VIII.10 step 3, the capped-`split` capacity (normative)
 
-**Protocol 2.3.0 → 2.4.0.** Replace the `split` bullet with:
+**Protocol 2.5.0 → 2.6.0.** Replace the `split` bullet with:
 
 > - `split` — paid `lp_share` / `gp_share`. A capped tier's capacity is
 >   the **larger** of the capacities its stated hurdles impose (both
@@ -179,7 +185,7 @@ surface (arithmetic) per RFC 0030.
 
 ## Compatibility analysis
 
-- **Existing files.** Every 2.3.0-valid file stays valid: `until_lp_irr`
+- **Existing files.** Every 2.5.0-valid file stays valid: `until_lp_irr`
   was refused, so no file carries it; `until_lp_em` semantics are
   byte-for-byte the 2.3.0 rule. **One tightening:** the monotone-ladder
   rule newly refuses a non-increasing `until_lp_em` sequence. Such a
@@ -189,13 +195,19 @@ surface (arithmetic) per RFC 0030.
   `until_lp_irr` only and the `until_lp_em` half becomes a warning
   (`WF-04`, new) — the CC-15/CC-16 posture. Expected result: zero hits
   (the only EM-hurdled document in the repo is the single-tier
-  `verify-em-hurdle-boundary` fixture).
+  `verify-em-hurdle-boundary` fixture). **Scan result (2026-09-09):
+  zero hits.** `until_lp_em` appears in `conformance/waterfall/
+  verify-em-hurdle-boundary/case.json` and
+  `reject-capped-final-split/deal.uwx.md` (one capped tier each), in
+  `validator.waterfall.test.ts` / `waterfall.test.ts` (one capped tier
+  each), and nowhere under `examples/` or `spec/`; no document carries
+  two EM-hurdled tiers. The tightening ships as `WF-01` for both kinds.
 - **Tier-1 readers:** additive under `validate`. **Tier-2:** ordinary
   edit policies. **Tier-3:** untouched by construction. **Tier-4:** the
   §4.27 prohibition already covers hurdle levels ("an agent MUST NOT
   invent tier terms, splits, or hurdle levels"); no new text.
 - **Modules:** no manifest change.
-- **Protocol skew:** a 2.3.0 host reading a 2.4.0 file with
+- **Protocol skew:** a 2.3.0–2.5.0 host reading a 2.6.0 file with
   `until_lp_irr` reports `WF-01` (its reservation refusal) — a visible,
   correct refusal rather than a silent mis-allocation. That is the
   §XII.4 posture and needs no shim.
@@ -224,15 +236,16 @@ single-shot cases are chosen so the hand check is trivial anyway):**
 | `verify-irr-hurdle-crossing` | Same ladder, `+2,500,000` at t1: tier 2 fills at `150,000` and hands `1,350,000` to 60/40 — LP `1,930,000`, GP `570,000`, stated schedule cell-for-cell. |
 | `verify-irr-ladder` | ROC → 80/20 to 10% → 70/30 to 15% → 60/40 over a five-row series; each hurdled tier's fill pinned in the schedule; LP `xirr` above 15%. |
 | `verify-irr-hurdle-already-met` | A series whose ROC-plus-earlier distributions already exceed the hurdle: the hurdled tier's capacity is `≤ 0`, it appears in no schedule row, and the next tier absorbs the cash. |
-| `verify-irr-hurdle-interleaved-call` | A capital call after a distribution (`−1,000,000`, `+300,000`, `−200,000`, `+1,500,000` at t = 0, 1, 1.5, 3), 12% hurdle. Pins the balance-identity capacity (`1,265,667.32` under act/365 anchor fractions) — the case where "solve the IRR and compare" and the identity could diverge, resolved by definition. |
-| `verify-combined-hurdles` | One tier stating both `until_lp_em: 1.5` and `until_lp_irr: 0.12` on a series where the IRR hurdle is the binding (larger) one; a twin where the multiple binds. |
+| `verify-irr-hurdle-interleaved-call` | A capital call after a distribution (`−1,000,000`, `+300,000`, `−200,000`, `+1,500,000` on 2026-01-01, 2027-01-01, 2027-07-02, 2029-01-01 — t = 0, 1, 547/365, 1096/365 under act/365f), ROC → 80/20 to 12% → 60/40. Pins the balance-identity payment: the hurdled tier pays the LP `366,097.17` (F credits both ROC receipts and the mid-hold call) — the case where "solve the IRR and compare" and the identity could diverge, resolved by definition. *(As implemented; the draft's `1,265,667.32` was a hand figure for a ladder without a ROC tier at exact t = 1.5 / 3, and hand figures are not pinned.)* |
+| `verify-combined-hurdles-irr-binds` / `-em-binds` | One tier stating both `until_lp_em: 1.5` and `until_lp_irr: 0.12`. Over a five-year hold the IRR balance (`762,888.96`) exceeds the 1.5x headroom (`500,000`) and binds; over a one-year hold the multiple binds (LP `500,000` / GP `125,000`). |
 | `verify-compound-pref-then-irr` | 8% `compound_annual` pref → catch-up → 80/20 until 12% IRR → 60/40: the pref receipts are LP inflows in `F`, so the hurdle balance already credits them; promote pinned. |
 | `reject-irr-hurdle-out-of-range` | `until_lp_irr: 1.2` and `until_lp_irr: 0` → `WF-01`. |
 | `reject-irr-hurdle-non-increasing` | 15% then 12% → `WF-01` at the second tier. |
 | `reject-irr-hurdle-lp-share-zero` | `lp_share: 0` with `until_lp_irr` → `WF-01`. |
 | `reject-irr-hurdle-on-final-split` | The terminal tier capped by IRR → `WF-01`. |
 
-Roughly 11 scenarios, corpus ≈ 377 → 388. The `verify-irr-hurdle-boundary`
+Twelve directories (the combined-hurdle twin is its own scenario); one
+deleted: corpus 385 → 396. The `verify-irr-hurdle-boundary`
 case also serves as the regression pin for the identity itself: if an
 implementation ever "improves" the boundary by solving `xirr`, the LP
 `xirr` still reads `0.12` but the schedule cell moves by the solver's
@@ -245,7 +258,7 @@ tolerance and the pinned cent disagrees.
   (`checkWaterfall` rules in §C + `BUILTIN_REMEDIATIONS` rows),
   `spec/schemas/section-distribution-waterfall.schema.json`,
   `spec/UW_FORMAT_SPEC_v1.md` §4.27, `spec/UW_PROTOCOL_v1.md` §VIII.10 +
-  version line + §XVI, `protocol.ts` (`PROTOCOL_VERSION` 2.4.0),
+  version line + §XVI, `protocol.ts` (`PROTOCOL_VERSION` 2.6.0),
   `conformance/waterfall/` per the table, `CHANGELOG.md`, the waterfall
   rows in `docs/wiki/13-status.md`, `ROADMAP.md`, and the RFC index.
 - **API surface:** no new exports. `WaterfallTierSplit.until_lp_irr?:
@@ -302,8 +315,10 @@ tolerance and the pinned cent disagrees.
   by this RFC, though an IRR ladder makes the clawback question more
   pressing (a promote paid on an interim hurdle that later un-earns
   itself). A terminal true-up tier remains the likely shape.
-- **The `until_lp_em` monotonicity tightening** — error or warning,
-  decided by the corpus scan in §Compatibility.
+- ~~**The `until_lp_em` monotonicity tightening** — error or warning,
+  decided by the corpus scan in §Compatibility.~~ **Resolved:** the scan
+  found zero non-increasing EM ladders (see §Compatibility), so it
+  ships as `WF-01` (error) for both hurdle kinds; no `WF-04`.
 
 ## Prior art
 

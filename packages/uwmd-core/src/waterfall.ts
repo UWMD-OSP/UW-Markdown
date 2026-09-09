@@ -1,5 +1,5 @@
-// Distribution waterfall — state-and-verify LP/GP allocation (RFC 0035,
-// UW_FORMAT_SPEC §4.27, protocol §VIII.10).
+// Distribution waterfall — state-and-verify LP/GP allocation (RFC 0035 +
+// RFC 0036, UW_FORMAT_SPEC §4.27, protocol §VIII.10).
 //
 // The fourth state-and-verify structure: the document states a tier ladder
 // (return of capital → preferred return → catch-up → promote splits) over a
@@ -20,6 +20,7 @@ import {
   type CashFlowSeries,
   datedFlowsOf,
   xirrOf,
+  xnpvOf,
   type DatedFlow,
 } from './cash-flow-series.js';
 import {
@@ -59,6 +60,14 @@ export interface WaterfallTierSplit {
   gp_share: number;
   /** Caps the tier where cumulative LP distributions reach this multiple of LP contributions. */
   until_lp_em?: number | null;
+  /**
+   * Caps the tier where the LP's dated flows — including this tier's payment
+   * at this row's date — reach this internal rate of return (a fraction in
+   * (0, 1)). Closed-form via the hurdle balance (RFC 0036, §VIII.10 step 3),
+   * never by iterating on xirr. When both hurdles are stated the tier ends
+   * only when both are met (the larger capacity governs).
+   */
+  until_lp_irr?: number | null;
 }
 
 export type WaterfallTier =
@@ -165,6 +174,25 @@ function isNum(v: unknown): v is number {
 }
 
 // ─── The §VIII.10 walk ───────────────────────────────────────────────────────
+
+/**
+ * The LP's hurdle balance at `tRow` (RFC 0036, §VIII.10 step 3): the future
+ * value, compounded at the hurdle rate under the series' own anchor-relative
+ * `t`, of every LP flow so far — the amount the LP must receive now for its
+ * flows to have a net present value of exactly zero at the hurdle rate,
+ *
+ *     B = −xnpv(F, h) × (1 + h) ^ t_row
+ *
+ * Closed-form: `xnpv` is a finite sum with no refusal case, so the boundary
+ * never depends on a solver's tolerance and is defined even where `xirr`
+ * would refuse (the LP's flows before its first distribution). `B ≤ 0` means
+ * the hurdle is already met; the caller floors at 0. An implementation MUST
+ * NOT determine a tier boundary by iterating on `xirr`.
+ */
+function hurdleBalance(flows: readonly DatedFlow[], hurdle: number, tRow: number): number {
+  const balance = -xnpvOf(flows, hurdle) * (1 + hurdle) ** tRow;
+  return balance > 0 ? balance : 0;
+}
 
 interface PartyState {
   unreturned: number;
@@ -312,9 +340,18 @@ export function computeWaterfall(
         }
         case 'split': {
           let cap = Number.POSITIVE_INFINITY;
-          if (tier.until_lp_em != null) {
+          const capped = tier.until_lp_em != null || tier.until_lp_irr != null;
+          if (capped) {
             if (!(tier.lp_share > 0)) break; // capped tier paying LP nothing: cap 0
-            cap = Math.max(0, tier.until_lp_em * lp.contributions - lp.distributions) / tier.lp_share;
+            // Both hurdles must be met before the tier ends, so the LARGER
+            // capacity governs (§VIII.10 step 3).
+            cap = 0;
+            if (tier.until_lp_em != null) {
+              cap = Math.max(cap, Math.max(0, tier.until_lp_em * lp.contributions - lp.distributions) / tier.lp_share);
+            }
+            if (tier.until_lp_irr != null) {
+              cap = Math.max(cap, hurdleBalance(lp.flows, tier.until_lp_irr, t) / tier.lp_share);
+            }
           }
           const pay = Math.min(remaining, cap);
           if (pay <= 0) break;

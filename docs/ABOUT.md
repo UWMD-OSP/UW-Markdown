@@ -55,7 +55,7 @@ cryptographically signed.
   bindings define how services and AI agents exchange it.
 - **Portfolio profiles** — a sidecar that relates deals, borrowers, loans,
   and properties across files, with registry-validated edges.
-- **A conformance corpus** of executable fixture/expected pairs (377
+- **A conformance corpus** of executable fixture/expected pairs (396
   assertions and growing) that any implementation, in any language, can run
   through the language-agnostic conformance driver.
 

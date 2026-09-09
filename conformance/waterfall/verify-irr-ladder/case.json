@@ -1,0 +1,130 @@
+{
+  "waterfall": {
+    "cash_flow_ref": {
+      "variant": "base"
+    },
+    "equity_split": {
+      "lp": 0.9,
+      "gp": 0.1
+    },
+    "tiers": [
+      {
+        "type": "return_of_capital"
+      },
+      {
+        "type": "split",
+        "lp_share": 0.8,
+        "gp_share": 0.2,
+        "until_lp_irr": 0.1
+      },
+      {
+        "type": "split",
+        "lp_share": 0.7,
+        "gp_share": 0.3,
+        "until_lp_irr": 0.15
+      },
+      {
+        "type": "split",
+        "lp_share": 0.6,
+        "gp_share": 0.4
+      }
+    ],
+    "stated_outcomes": {
+      "lp": {
+        "contributions": 900000,
+        "distributions": 1802202.86,
+        "moic": 2.0024,
+        "xirr": 0.210392
+      },
+      "gp": {
+        "contributions": 100000,
+        "distributions": 497797.14,
+        "moic": 4.978,
+        "xirr": 0.525273
+      },
+      "promote_total": 397797.14,
+      "profit_total": 1300000
+    },
+    "stated_schedule": [
+      {
+        "date": "2027-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 90000,
+            "gp": 10000
+          }
+        ]
+      },
+      {
+        "date": "2028-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 90000,
+            "gp": 10000
+          }
+        ]
+      },
+      {
+        "date": "2029-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 90000,
+            "gp": 10000
+          }
+        ]
+      },
+      {
+        "date": "2030-01-01",
+        "by_tier": [
+          {
+            "tier": 0,
+            "lp": 630000,
+            "gp": 70000
+          },
+          {
+            "tier": 1,
+            "lp": 360284.4,
+            "gp": 90071.1
+          },
+          {
+            "tier": 2,
+            "lp": 224922.32,
+            "gp": 96395.28
+          },
+          {
+            "tier": 3,
+            "lp": 316996.14,
+            "gp": 211330.76
+          }
+        ]
+      }
+    ]
+  },
+  "series": {
+    "series": [
+      {
+        "date": "2026-01-01",
+        "amount": -1000000
+      },
+      {
+        "date": "2027-01-01",
+        "amount": 100000
+      },
+      {
+        "date": "2028-01-01",
+        "amount": 100000
+      },
+      {
+        "date": "2029-01-01",
+        "amount": 100000
+      },
+      {
+        "date": "2030-01-01",
+        "amount": 2000000
+      }
+    ]
+  }
+}
