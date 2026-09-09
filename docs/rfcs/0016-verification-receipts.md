@@ -1,10 +1,11 @@
 ---
 rfc: 0016
 title: Define signed deterministic verification receipts
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-08-08
 accepted: 2026-08-09
+implemented: 2026-08-27
 affects:
   - format-spec
   - protocol-spec
@@ -14,6 +15,16 @@ affects:
 ---
 
 # RFC 0016: Define signed deterministic verification receipts
+
+> **Status note (2026-09-07).** Unsigned issuance and three-state
+> verification shipped in `receipts.ts` with `spec/UW_RECEIPT_v1.md`,
+> `uw-receipt.schema.json`, `uwmd receipt issue|verify`, and the
+> `conformance/receipts/` suite; the *signed* half landed 2026-08-27 when
+> RFC 0010's `@uwmd/signing` supplied `signReceipt` and the
+> `createReceiptSignatureVerifier` backend core had always accepted. RFC
+> 0021 and 0022 later amended the receipt format (rollup verification,
+> `inputs_provenance`) under the ownership rule this RFC's §5 set. The
+> index status was flipped to `implemented` on 2026-09-07 to match.
 
 ## Summary
 

@@ -1,8 +1,13 @@
 # Which tool should I use?
 
-Five tools ship with the UW Markdown reference stack. They overlap on
+Six tools ship with the UW Markdown reference stack. They overlap on
 purpose: the format is the contract, the tools are interchangeable.
 Pick the one that matches what you're trying to do.
+
+Two file extensions appear below. `.uwx.md` is the complete structured
+record every tool works on; `.uw.md` is the UW Lite summary, which only
+the editor, the CLI, and the VS Code extension read. See
+[UW Lite and UWX](UW_LITE_AND_UWX.md).
 
 ## Decision tree
 
@@ -13,6 +18,7 @@ Pick the one that matches what you're trying to do.
 | Edit numeric fields and watch DSCR/LTV recompute | [Web editor](#web-editor) | 2 + 3 |
 | Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) | 1 + 2 |
 | Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) | 3 (export) |
+| Index a folder of deals, or feed a data lake | [`@uwmd/batch`](#batch-indexer) | 1 + 3 (read-only) |
 | Run an LLM agent over the deal | `runBancroftAgent` from `@uwmd/core` | 4 |
 | Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) | 3 |
 | Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) | 3 |
@@ -27,8 +33,9 @@ If you're not sure what conformance tier means, see the
 
 **[`tools/web-viewer/`](../tools/web-viewer/) — single-file HTML, drag-and-drop.**
 
-Open `index.html` in any browser. Drop a `.uw.md` on the page. See it
-rendered.
+Open `index.html` in any browser. Drop a `.uwx.md` record on the page.
+See it rendered. (It does not read `.uw.md` Lite summaries — use the
+web editor for those.)
 
 Best for: sharing a deal with someone who doesn't have the toolchain.
 Reading a deal you didn't write. Demoing the format.
@@ -56,7 +63,7 @@ It handles both representations: `.uw.md` Lite summaries and `.uwx.md`
 structured records, choosing the parser from the file's content rather
 than its extension.
 
-Best for: writing `.uw.md` files by hand. Reviewing a teammate's PR
+Best for: writing deal files by hand. Reviewing a teammate's PR
 that touches a deal file. Living in the spec while authoring.
 
 Skip it for: numeric editing with live recalculation (the validator
@@ -72,7 +79,7 @@ Not yet on the marketplace; install via `vsce package` + `code
 
 **[`tools/web-editor/`](../tools/web-editor/) — calc-aware browser editor.**
 
-It opens readable .uw.md Lite summaries and complete .uwx.md structured records. Lite imports compile into UWX before editing; exporting back to Lite always shows any omitted advanced fields. See [UW Lite and UWX](UW_LITE_AND_UWX.md).
+It opens readable `.uw.md` Lite summaries and complete `.uwx.md` structured records. Lite imports compile into UWX before editing; exporting back to Lite always shows any omitted advanced fields. See [UW Lite and UWX](UW_LITE_AND_UWX.md).
 
 Single-page app. Embeds the `@uwmd/core` parser, validator, Tier-2
 edit dispatcher, and Tier-3 calc engine in the browser. Every
@@ -98,11 +105,11 @@ Static deploy — no backend needed.
 **[`packages/uwmd-cli`](../packages/uwmd-cli/) — programmatic entry point.**
 
 ```bash
-npx uwmd init my-deal.uw.md           # scaffold
-npx uwmd validate my-deal.uw.md       # check
-npx uwmd parse my-deal.uw.md          # to JSON
-npx uwmd render my-deal.uw.md --html  # to HTML
-npx uwmd run my-deal.uw.md L6         # invoke a Bancroft layer
+npx uwmd init my-deal.uwx.md          # scaffold a format-2.0 record
+npx uwmd validate my-deal.uwx.md      # check
+npx uwmd parse my-deal.uwx.md         # to JSON
+npx uwmd render my-deal.uwx.md --html # to HTML
+npx uwmd run my-deal.uwx.md L6        # invoke a Bancroft layer
 npx uwmd receipt issue my-deal.uwx.md # issue a verification receipt
 npx uwmd receipt verify my-deal.uwx.md my-deal.receipt.json
 ```
@@ -124,7 +131,7 @@ Thin wrapper over `@uwmd/core`. Published on npm as `@uwmd/cli` —
 
 ## Excel converter
 
-**[`packages/uwmd-excel`](../packages/uwmd-excel/) — `.uw.md` → `.xlsx`.**
+**[`packages/uwmd-excel`](../packages/uwmd-excel/) — `.uwx.md` → `.xlsx`.**
 
 Emits a live underwriting workbook. Derived metrics ship as Excel
 formulas, not pre-computed values, so the workbook stays in sync with
@@ -134,7 +141,7 @@ both paths; a parity test asserts they agree to six decimals.
 Best for: handing a deal to someone who lives in Excel. Producing
 deliverables for credit committee. Bridging legacy review processes.
 
-Skip it for: storing your data in. The `.uw.md` file remains the
+Skip it for: storing your data in. The `.uwx.md` record remains the
 source of truth — the workbook is an export, not a roundtrip target
 in v1.
 
@@ -148,9 +155,36 @@ quantum the core verifier compares at.
 
 ---
 
+## Batch indexer
+
+**[`packages/uwmd-batch`](../packages/uwmd-batch/) — a folder of deals → one index.**
+
+```bash
+npx @uwmd/batch deals --out batch-output          # collection index (JSON + CSV)
+npx @uwmd/batch deals --out batch-output --facts  # plus the corpus fact table
+```
+
+Walks a directory of `.uwx.md` records, validates each, records its
+semantic digest, and emits `uwmd-collection.json` plus a
+spreadsheet-safe CSV. With `--facts` it also writes the corpus fact
+table: one identity-pinned row per deal per metric, ready for DuckDB or
+any warehouse. Invalid deals stay visible in the index rather than
+disappearing. See [UW Markdown → data lake](DATA_LAKE.md).
+
+Best for: screening a pipeline of deals. Feeding a data lake without
+writing a loader. Answering "median exit cap across these fifty deals"
+with a SQL query instead of a spreadsheet.
+
+Skip it for: editing (it never writes a deal file). Semantic
+find-similar retrieval (deferred; see RFC 0013).
+
+Read-only by construction. Published on npm as `@uwmd/batch`.
+
+---
+
 ## Programmatic agent host
 
-Bancroft is UWMD optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a .uw.md file; other providers and application-specific agents can use the same format and Tier-4 host contract.
+Bancroft is UW Markdown's optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a deal file; other providers and application-specific agents can use the same format and Tier-4 host contract.
 
 **[`packages/uwmd-core/src/agents/bancroft.ts`](../packages/uwmd-core/src/agents/bancroft.ts)
 — Tier-4 reference implementation.**
@@ -179,4 +213,5 @@ Requires an `ANTHROPIC_API_KEY`.
 | Web editor | `tools/web-editor/` | 2 + 3 |
 | `uwmd` CLI | `packages/uwmd-cli/` | 1 + 2 |
 | Excel converter | `packages/uwmd-excel/` | 3 (export) |
+| Batch indexer | `packages/uwmd-batch/` | 1 + 3 (read-only) |
 | Bancroft agent host | `packages/uwmd-core/src/agents/` | 4 |

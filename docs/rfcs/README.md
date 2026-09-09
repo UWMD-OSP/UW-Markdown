@@ -37,9 +37,9 @@ and how it gets accepted.
 | [0010](./0010-signed-blocks.md)         | Signed blocks                               | implemented | format, protocol, core, conformance, tooling |
 | [0011](./0011-capability-tokens.md)     | Capability tokens for write authorization   | implemented | protocol, core, conformance |
 | [0013](./0013-corpus-retrieval.md)      | Embedding-based corpus retrieval            | draft | protocol, core, conformance |
-| [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | accepted | format, protocol, core, conformance, tooling |
+| [0014](./0014-multi-format-interchange.md) | Extensible multi-format interchange        | implemented | format, protocol, core, conformance, tooling |
 | [0015](./0015-portfolio-relationships.md) | Portfolio and relationship profiles | implemented | format, protocol, core, conformance, tooling |
-| [0016](./0016-verification-receipts.md) | Signed deterministic verification receipts | accepted | format, protocol, core, conformance, tooling |
+| [0016](./0016-verification-receipts.md) | Signed deterministic verification receipts | implemented | format, protocol, core, conformance, tooling |
 | [0017](./0017-uw-lite-source-representation.md) | `.uw.md` Lite / `.uwx.md` Extended source split | implemented | format, protocol, core, conformance, tooling |
 | [0018](./0018-document-profiles-and-deal-packages.md) | Composable document profiles and deal packages | implemented | format, protocol, core, conformance, tooling |
 | [0019](./0019-mixed-use-composition.md) | Mixed-use composition as a document shape | implemented | format, protocol, core, conformance, tooling |

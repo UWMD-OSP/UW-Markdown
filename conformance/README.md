@@ -12,7 +12,7 @@ The corpus is organized by **conformance tier** (see
 ```
 conformance/
 ├── tier-1-reader/      Parse + display, read-only
-│   ├── fixtures/       Well-formed .uw.md files an implementer parses
+│   ├── fixtures/       Well-formed .uwx.md records an implementer parses
 │   ├── malformed/      Files exercising validator / integrity / policy codes
 │   │                     (CC-NN, FV-NN, DQ-NN, INT-NN, POL-NN, META_*)
 │   │                     plus optional <id>.policies.json siblings for

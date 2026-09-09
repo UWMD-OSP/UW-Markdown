@@ -1,10 +1,11 @@
 ---
 rfc: 0014
 title: Define extensible multi-format interchange
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-07-25
 accepted: 2026-07-26
+implemented: 2026-09-03
 affects:
   - format-spec
   - protocol-spec
@@ -14,6 +15,15 @@ affects:
 ---
 
 # RFC 0014: Define extensible multi-format interchange
+
+> **Status note (2026-09-07).** Phases A–E — Envelope 1.0, UW JSON 1.0,
+> UW XML 1.0, the normalized CSV Bundle 1.0, semantic digests, the codec
+> registry, representation negotiation, `uwmd export` / `convert` /
+> `formats`, and the HTTP and MCP bindings — shipped across the 1.1–1.3
+> releases. The one remaining step this RFC named, package publication,
+> closed when `@uwmd/core` and `@uwmd/cli` went to npm and finally with
+> `@uwmd/batch`'s first publish in the 2.3.0 release (2026-09-03). The
+> index status was flipped to `implemented` on 2026-09-07 to match.
 
 ## Summary
 
