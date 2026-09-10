@@ -14,6 +14,6 @@
     "kind": "json-subset",
     "file": "conformance/tier-1-reader/expected/09-returns-tax-basis.validation.json",
     "project": "issue-code-severity-set",
-    "exit_code": 0
+    "exit_code": 1
   }
 }

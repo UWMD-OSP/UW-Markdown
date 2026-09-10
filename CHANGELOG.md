@@ -8,6 +8,20 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`uwmd validate --json` exits 1 on a document with errors, as §II.6a.2 has
+  always said.** The JSON branch returned before the exit-code line, so JSON
+  mode exited 0 on an `errors` verdict while the human-readable mode exited 1.
+  The tier-1 case generator had hardcoded `exit_code: 0` for `validate` on the
+  assumption that every fixture validates clean; fixture 09 (RFC 0038, an
+  `RT-01` error by design) was the first that does not, and it pinned the bug
+  as the baseline. The generator now derives the exit code from the baseline
+  (`errors` / `blocked` → 1) and `tier-1/09-returns-tax-basis/validate`
+  expects 1. Implementations that followed the prose were failing that case;
+  implementations that followed the case were contradicting the prose
+  (raised app-side as underwriter.cc TASK-1121).
+
 ### Added
 
 - **Data-center module (RFC 0039).** `@uwmd/module-data-center` **0.1.0**

@@ -250,7 +250,11 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
 
   if (flags['json']) {
     console.log(JSON.stringify(result, null, 2));
-    return;
+    // §II.6a.2: exit 1 on a validation error, in every output mode. This
+    // branch returned before the exit line below, so `--json` exited 0 on a
+    // document with errors — the human-readable path did not, and the
+    // tier-1 corpus (fixture 09, RFC 0038) pinned the bug as the baseline.
+    process.exit(result.errors.length > 0 ? 1 : 0);
   }
 
   const statusEmoji = {
