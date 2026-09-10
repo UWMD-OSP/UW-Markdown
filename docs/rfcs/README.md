@@ -63,6 +63,7 @@ and how it gets accepted.
 | [0037](./0037-cross-check-variant-resolution-and-coverage.md) | Cross-check resolution over variant maps, and a validation coverage channel | implemented | format, protocol, core, conformance |
 | [0038](./0038-return-metric-tax-basis.md) | Tax basis on stated return metrics | implemented | format, protocol, core, conformance |
 | [0039](./0039-data-center-module.md) | Data-center module — the first product module on a module-declared asset class | draft | core, conformance, tooling |
+| [0040](./0040-variant-role-resolution.md) | Variant roles — resolve cross-checks by a declared role, not a key name | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
