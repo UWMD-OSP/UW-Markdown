@@ -2873,9 +2873,11 @@ band is deliberate. It reads only the **base** variant of
 and `noi_model.net_operating_income` are stated. Non-base variants are
 exempt by design: a downside scenario is supposed to disagree with
 stabilized NOI. `stabilized_summary.annualized_noi` deliberately does **not**
-also cross-check `quick_metrics.noi_underwritten` — `noi_model` already
-reconciles to `quick_metrics` via `CC-01`, so a second seam would be
-transitive noise.
+also cross-check `quick_metrics.noi_underwritten` — `quick_metrics` is a
+frontmatter restatement with no cross-check of its own (`CC-01` compares the
+rent roll to the operating statement, not NOI to the frontmatter), and RFC
+0008 adds one seam, the trajectory endpoint against the stabilized-year
+model, not a second.
 
 ---
 
