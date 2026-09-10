@@ -1,0 +1,29 @@
+{
+  "name": "@uwmd/module-data-center",
+  "version": "0.1.0",
+  "description": "Data-center module for UW Markdown (RFC 0039) — declares the org.uwmd.data_center asset class; capacity, power-economics and revenue sections; kW-denominated calculations; PUE, utility-feed and utilization validations. The first product module on a module-declared asset class.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",
+    "directory": "packages/uwmd-module-data-center"
+  },
+  "homepage": "https://uwmd.org",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./manifest.json": "./dist/manifest.json"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc && node scripts/emit-manifest.mjs",
+    "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": { "@uwmd/core": "2.6.0" },
+  "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
+  "engines": { "node": ">=18.0.0" },
+  "license": "MIT",
+  "keywords": ["uwmd", "underwriting", "commercial-real-estate", "data-center", "colocation", "pue", "module"]
+}

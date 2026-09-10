@@ -40,6 +40,7 @@ const WORKSPACES = [
   'packages/uwmd-batch',
   'packages/uwmd-signing',
   'packages/uwmd-module-hospitality',
+  'packages/uwmd-module-data-center',
 ];
 
 const declaredVersion = new Map();

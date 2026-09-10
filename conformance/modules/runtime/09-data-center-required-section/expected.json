@@ -1,0 +1,15 @@
+{
+  "description": "dc_capacity removed. The module declares it required (it is what makes the document a data center), so MOD-SECTION-MISSING is an error naming the module that asked. Every calc that reads capacity degrades to null rather than throwing, and the six capacity rules fall silent. CC-MOD-DC-07 still fires: rent_index reads dc_revenue alone, and one missing section does not suppress findings about the sections that are present.",
+  "module": "@uwmd/module-data-center",
+  "expected_calcs": {
+    "utilization": null,
+    "facility_load_kw": null,
+    "annual_rent_revenue": null,
+    "price_per_commissioned_kw": null,
+    "rent_index": 0.8
+  },
+  "expected_codes": [
+    "CC-MOD-DC-07",
+    "MOD-SECTION-MISSING"
+  ]
+}

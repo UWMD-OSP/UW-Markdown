@@ -1,0 +1,12 @@
+{
+  "description": "Same bytes as the fixture, module NOT loaded, but the host holds the declaration out of band. The RFC 0003 resolution path on a PRODUCT module rather than the com.example fixture: degraded via the industrial fallback, MOD-FALLBACK-001, and no display name - a cached declaration can only ever degrade, never resolve. Nothing from the module runs, because nothing from the module is loaded.",
+  "module": "@uwmd/module-data-center",
+  "load_module": false,
+  "known_declarations": true,
+  "expected_status": "degraded",
+  "expected_fallback": "industrial",
+  "expected_issue_code": "MOD-FALLBACK-001",
+  "expected_display_name": null,
+  "expected_calcs": {},
+  "expected_codes": []
+}

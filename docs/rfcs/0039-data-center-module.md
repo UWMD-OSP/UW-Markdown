@@ -1,7 +1,7 @@
 ---
 rfc: 0039
 title: Data-center module — the first product module on a module-declared asset class
-status: draft
+status: implemented
 author: jaredmaxey
 created: 2026-09-09
 affects:
@@ -331,6 +331,87 @@ Existing fixtures unchanged, including `conformance/modules/asset-classes/`.
   hospitality; the standard-section scope question is the only place
   discovery can happen.
 
+## Implementation notes (deviations from the proposal)
+
+Shipped 2026-09-09. The module is
+[`@uwmd/module-data-center`](../../packages/uwmd-module-data-center/README.md);
+the example is `examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md`; the
+runtime scenarios are `conformance/modules/runtime/06-…11-…`. No spec
+change; protocol and format versions do not move.
+
+**1. Standard sections ARE in scope for a module formula — the one
+expected discovery closed "yes".** `evaluateModuleCalculations` hands
+`evaluateCalc` the whole parsed file, and the §VIII.2 resolver walks
+frontmatter first (so `quick_metrics.purchase_price` resolves), then any
+section by id (so `noi_model.*` resolves), then `prior_results`. Nothing
+about the hospitality module's own-sections-only habit was a limit of
+the runtime; it was a limit of hospitality. Both per-unit calcs ship,
+pinned at $16,000/kW and $1,120/kW on the example, and no runtime RFC
+follows. The second unresolved question (a module-declared per-unit
+denominator) now has its evidence: the module's `price_per_commissioned_kw`
+sits beside an empty standard `price_per_unit` slot, exactly as §X.2.4
+intends, and nothing so far argues for `declares_size_intensive`.
+
+**2. A declaring module was not scoped to its declared class — the
+unexpected discovery, and the only core change.** `ModuleManifest.asset_classes`
+is typed to the builtin enum (`PROTO-MOD-008` refuses a custom id there),
+and the runtime's applicability filter read *only* that field, treating
+its absence as "applies to every document". A module that declares a
+custom class and lists no builtin — this one — therefore ran against
+every file in the corpus and would have raised `MOD-SECTION-MISSING` for
+`dc_capacity` on every office deal. This is the composition gap the
+Motivation predicted ("required sections from the declaration versus
+`required: true` on the section … is unverified"), one level down.
+`applicableModules` in `module-runtime.ts` now treats
+`declares_asset_classes[].id` as classes the module applies to, alongside
+`asset_classes`; a module naming neither still applies to all. This is
+not the standard-section widening the RFC forbade — it changes *when* a
+class-declaring module runs, not *what* any manifest can read — and the
+prior behaviour was not one any host could have wanted. Unit test in
+`module-runtime.test.ts`; conformance `10-data-center-as-industrial`
+pins it on the product module.
+
+**3. `noi_model.net_operating_income`, not `noi_model.noi`.** The RFC
+named a field the format does not carry. The `noi_model` section's NOI
+field is `net_operating_income` (format §4, and every calc pack reads it
+so); the calc reads that.
+
+**4. Conformance scenarios are numbered `06`–`11`, not `02`–`07`.** The
+RFC's table reused the hospitality suite's numbers; `runtime/02-…05-…`
+already exist. The scenarios are otherwise the RFC's six, in its order,
+and the runner now dispatches on `expected.module` across both packages
+and accepts the RFC 0003 resolution keys (`expected_status`,
+`known_declarations`, `load_module: false`) so the fallback scenario can
+be asserted without a second suite.
+
+**5. `07-data-center-pue-below-one` fires four codes, not one.** With
+`design_pue: 0.85` and nothing else changed, the fixture's measured PUE
+of 1.32 is now far more than 15% above design, so `CC-MOD-DC-06` fires
+alongside `CC-MOD-DC-01`, and `DC-04`/`DC-07` fire as they do on the
+fixture. Pinned as such rather than editing a second field to silence a
+rule that is, in that scenario, correct.
+
+**6. `requires_protocol: '>=2.5.0'` for a different reason than stated.**
+The RFC said the fixture carries `dcf.returns.tax_basis`; the example
+follows the industrial example's section set and carries no `dcf`. The
+pin stays at 2.5.0 because the module's findings are read alongside the
+RFC 0037 coverage channel and the RFC 0038 return basis, both of which
+entered at 2.5.0.
+
+**7. The package fixture and the example are one document.** RFC 0006
+note 6 kept the hospitality fixture separate from the public hotel
+example; here the example *is* the first custom-class example and the
+fixture is its byte-identical copy, with a test that fails if they
+drift. The conformance deal files are derived from it by one edit each.
+
+**8. Not touched, by instruction:** `CHANGELOG.md` released blocks,
+`VERSIONS.md` existing rows, and `.github/workflows/release.yml` (a
+release branch is moving versions in parallel). `VERSIONS.md` gained the
+one new package row; `verify-versions`, `verify-lockfile` and
+`verify-packages` gained the one new entry each. The release workflow's
+publish matrix is left for the release branch — the module is unpublished,
+as hospitality is.
+
 ## Alternatives considered
 
 1. **Add `data_center` to the builtin enum.** Rejected: it is the
@@ -362,11 +443,11 @@ Existing fixtures unchanged, including `conformance/modules/asset-classes/`.
 
 ## Unresolved questions
 
-- **Standard-section scope in module formulas.** Whether
+- **Standard-section scope in module formulas.** ~~Whether
   `evaluateModuleCalculations` resolves `quick_metrics.purchase_price`
-  and `noi_model.noi` for a module calc. Settled at implementation;
-  if "no", the two per-unit calcs are dropped from 0.1.0 and a runtime
-  RFC follows.
+  and `noi_model.noi` for a module calc.~~ **Settled 2026-09-09: yes,
+  with no runtime change** — see implementation note 1. Both per-unit
+  calcs ship in 0.1.0.
 - **A module-declared per-unit denominator.** If the two per-unit
   calcs work, a host still cannot show `price_per_unit` for a
   data-center file, because the §XIII registry does not know the

@@ -1,0 +1,23 @@
+{
+  "description": "design_pue 0.85. PUE below 1.0 is a physical impossibility - total facility power includes the IT load - so CC-MOD-DC-01 is an ERROR. The calcs still compute from it, to facility figures that are too small; only the rule catches it. CC-MOD-DC-06 fires as a consequence: the fixture's measured 1.32 is now far more than 15% above the stated design. DC-04 and DC-07 are unchanged.",
+  "module": "@uwmd/module-data-center",
+  "expected_calcs": {
+    "utilization": 1.1,
+    "commissioned_share": 0.8,
+    "facility_load_kw": 8500,
+    "annual_facility_kwh_at_contract": 81906000,
+    "annual_power_cost": 6552480,
+    "power_cost_per_kw_month": 49.64,
+    "annual_rent_revenue": 19800000,
+    "blended_revenue_per_kw_month": 157,
+    "rent_index": 0.8,
+    "price_per_commissioned_kw": 16000,
+    "noi_per_commissioned_kw": 1120
+  },
+  "expected_codes": [
+    "CC-MOD-DC-01",
+    "CC-MOD-DC-04",
+    "CC-MOD-DC-06",
+    "CC-MOD-DC-07"
+  ]
+}

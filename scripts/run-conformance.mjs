@@ -1566,32 +1566,42 @@ async function runModules() {
 
 
 /**
- * Module runtime (RFC 0006) — the module system with an actual consumer.
+ * Module runtime (RFC 0006, RFC 0039) — the module system with actual consumers.
  *
  * Every other module fixture in this corpus checks that a manifest *loads*.
  * These check that a loaded module *does something*: its calculations compute,
  * its validation rules fire and stay silent in the right places, and its
  * required sections are enforced.
  *
- * The module under test is `@uwmd/module-hospitality`, imported the way any
- * host would import it. If a scenario's `module` names something else, it is
- * skipped rather than silently passing.
+ * Two modules are under test, each imported the way any host would import it:
+ * `@uwmd/module-hospitality` (RFC 0006, a builtin class) and
+ * `@uwmd/module-data-center` (RFC 0039, a module-declared class). A scenario
+ * names its module in `expected.module`; one naming anything else fails rather
+ * than silently passing.
+ *
+ * A scenario may also assert the RFC 0003 resolution verdict (`expected_status`
+ * and friends, the same keys as `asset-classes/`), and may run with the module
+ * NOT loaded (`load_module: false`, optionally with the declaration held out of
+ * band via `known_declarations`) — the fallback path on a product module.
  */
+const RUNTIME_MODULES = {
+  '@uwmd/module-hospitality': async () => (await import('@uwmd/module-hospitality')).HOSPITALITY_MODULE,
+  '@uwmd/module-data-center': async () => (await import('@uwmd/module-data-center')).DATA_CENTER_MODULE,
+};
+
 async function runModuleRuntime() {
   const dir = join(MODULES_DIR, 'runtime');
   if (!existsSync(dir)) return;
 
-  let hospitality;
-  try {
-    hospitality = await import('@uwmd/module-hospitality');
-  } catch {
-    record('modules', 'runtime', 'fail', '@uwmd/module-hospitality is not built — run npm run build first');
-    return;
+  const manifests = {};
+  for (const [name, load] of Object.entries(RUNTIME_MODULES)) {
+    try {
+      manifests[name] = await load();
+    } catch {
+      record('modules', 'runtime', 'fail', `${name} is not built — run npm run build first`);
+      return;
+    }
   }
-  const registry = createModuleRegistry({
-    modules: [hospitality.HOSPITALITY_MODULE],
-    hostTier: 'tier-4-agent-host',
-  });
 
   const scenarios = readdirSync(dir)
     .filter((name) => statSync(join(dir, name)).isDirectory())
@@ -1606,13 +1616,43 @@ async function runModuleRuntime() {
       continue;
     }
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
-    if (expected.module !== '@uwmd/module-hospitality') {
+    const manifest = manifests[expected.module];
+    if (!manifest) {
       record('modules', `runtime/${id}`, 'fail', `unknown module under test: ${expected.module}`);
       continue;
     }
+    const registry = createModuleRegistry({
+      modules: expected.load_module === false ? [] : [manifest],
+      hostTier: 'tier-4-agent-host',
+    });
 
     const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
     const problems = [];
+
+    if (expected.expected_status) {
+      const options = expected.known_declarations
+        ? { knownDeclarations: manifest.declares_asset_classes ?? [] }
+        : {};
+      const resolution = resolveAssetClass(parsed.frontmatter.asset_class, registry, options);
+      if (resolution.status !== expected.expected_status) {
+        problems.push(`status ${resolution.status} != ${expected.expected_status}`);
+      }
+      if (expected.expected_kind && resolution.kind !== expected.expected_kind) {
+        problems.push(`kind ${resolution.kind} != ${expected.expected_kind}`);
+      }
+      if ('expected_display_name' in expected) {
+        const got = resolution.declaration?.display_name ?? null;
+        if (got !== expected.expected_display_name) {
+          problems.push(`display_name ${got} != ${expected.expected_display_name}`);
+        }
+      }
+      if (expected.expected_fallback && resolution.fallback !== expected.expected_fallback) {
+        problems.push(`fallback ${resolution.fallback} != ${expected.expected_fallback}`);
+      }
+      if (expected.expected_issue_code && resolution.issue?.code !== expected.expected_issue_code) {
+        problems.push(`issue ${resolution.issue?.code} != ${expected.expected_issue_code}`);
+      }
+    }
 
     const computed = Object.fromEntries(
       evaluateModuleCalculations(parsed, registry).map(({ result }) => [result.calc_id, result.value]),

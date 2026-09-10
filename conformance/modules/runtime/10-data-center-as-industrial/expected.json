@@ -1,0 +1,6 @@
+{
+  "description": "The same file relabelled asset_class: industrial with no modules list - the misuse RFC 0003 exists to end, and the hospitality suite's relabelled-office twin. The module declares org.uwmd.data_center and enhances no builtin, so nothing runs: no calcs, no findings, and in particular no MOD-SECTION-MISSING for the dc_capacity block that is still physically present. Scope is part of the contract.",
+  "module": "@uwmd/module-data-center",
+  "expected_calcs": {},
+  "expected_codes": []
+}

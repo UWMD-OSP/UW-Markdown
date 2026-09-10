@@ -202,8 +202,16 @@ function runRule(
 }
 
 /**
- * Modules that apply to this document: those declaring its asset class, plus
- * those declaring none at all (which a manifest uses to mean "any class").
+ * Modules that apply to this document: those naming its asset class — either
+ * as a builtin they enhance (`asset_classes`) or as a custom class they
+ * declare (`declares_asset_classes`, §X.2) — plus those naming no class at all,
+ * which a manifest uses to mean "any class".
+ *
+ * A declaring module is scoped to its declared class for the same reason an
+ * enhancing module is scoped to `asset_classes`: `asset_classes` is typed to
+ * the builtin enum (PROTO-MOD-008), so a custom id cannot be listed there, and
+ * a data-center module that ran against every office file would raise
+ * MOD-SECTION-MISSING on all of them (RFC 0039 implementation note 2).
  */
 function applicableModules(
   parsed: ParsedUWFile,
@@ -211,10 +219,11 @@ function applicableModules(
   options: ModuleRuntimeOptions,
 ): readonly ModuleManifest[] {
   const assetClass = options.assetClass ?? parsed.frontmatter?.asset_class;
-  return registry.modules.filter(
-    (m) =>
-      m.asset_classes === undefined ||
-      m.asset_classes.length === 0 ||
-      (assetClass !== undefined && (m.asset_classes as readonly string[]).includes(assetClass)),
-  );
+  return registry.modules.filter((m) => {
+    const enhances = (m.asset_classes ?? []) as readonly string[];
+    const declares = (m.declares_asset_classes ?? []).map((d) => d.id);
+    if (enhances.length === 0 && declares.length === 0) return true;
+    if (assetClass === undefined) return false;
+    return enhances.includes(assetClass) || declares.includes(assetClass);
+  });
 }
