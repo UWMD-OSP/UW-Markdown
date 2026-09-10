@@ -115,6 +115,27 @@ describe('evaluateModuleCalculations', () => {
     delete (manifest as { asset_classes?: unknown }).asset_classes;
     expect(evaluateModuleCalculations(file({}, 'office'), registryOf(manifest))).toHaveLength(1);
   });
+
+  it('scopes a module that DECLARES a custom class to that class (RFC 0039)', () => {
+    // `asset_classes` names builtins a module enhances and cannot carry a
+    // custom id (PROTO-MOD-008), so a declaring module's scope is the class it
+    // declares. Without this, a data-center module would run against every
+    // office file and raise MOD-SECTION-MISSING on all of them.
+    const manifest: ModuleManifest = {
+      ...BASE,
+      declares_asset_classes: [
+        { id: 'org.example.data_center', display_name: 'Data Center', fallback: 'industrial' },
+      ],
+      sections: [{ id: 'dc_capacity', display_name: 'Capacity', required: true, schema: {} }],
+      calculations: [{ id: 'x', label: 'X', formula: '1', deterministic: true }],
+    };
+    delete (manifest as { asset_classes?: unknown }).asset_classes;
+    const registry = registryOf(manifest);
+    expect(evaluateModuleCalculations(file({}, 'org.example.data_center'), registry)).toHaveLength(1);
+    expect(evaluateModuleCalculations(file({}, 'office'), registry)).toEqual([]);
+    expect(evaluateModuleCalculations(file({}, 'industrial'), registry)).toEqual([]);
+    expect(validateAgainstModules(file({}, 'industrial'), registry)).toEqual([]);
+  });
 });
 
 describe('validateAgainstModules', () => {
