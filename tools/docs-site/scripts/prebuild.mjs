@@ -120,6 +120,7 @@ const COPIES = [
   { from: 'docs/rfcs/0038-return-metric-tax-basis.md', to: 'about/rfcs/0038-return-metric-tax-basis.md' },
   { from: 'docs/rfcs/0039-data-center-module.md', to: 'about/rfcs/0039-data-center-module.md' },
   { from: 'docs/rfcs/0040-variant-role-resolution.md', to: 'about/rfcs/0040-variant-role-resolution.md' },
+  { from: 'docs/rfcs/0041-period-indexed-addressing.md', to: 'about/rfcs/0041-period-indexed-addressing.md' },
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
