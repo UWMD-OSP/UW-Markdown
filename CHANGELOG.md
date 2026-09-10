@@ -6,22 +6,7 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [2.6.0] - 2026-09-09
-
-### Released
-
-- `@uwmd/core` **2.6.0**, `@uwmd/cli` **2.6.0** (lockstep),
-  `@uwmd/signing` **0.2.8** (repin-forced patch; core's exact optional-peer
-  pin moves with it), `@uwmd/batch` **0.8.3** (repin). Unpublished repins:
-  `@uwmd/excel` **0.8.8**, `@uwmd/report` **0.8.8**;
-  `@uwmd/module-hospitality` repins at 0.1.0. Protocol **2.6.0** — the
-  IRR-hurdle minor: RFC 0036 below.
-- **Why a minor, not a patch:** §VIII.10 step 3 gains a new normative
-  capacity rule (the closed-form LP hurdle balance behind `until_lp_irr`),
-  and the validator tightens — `WF-01` now refuses a non-increasing hurdle
-  ladder of either kind, so a document 2.5.0 accepted can be refused by
-  2.6.0. Receipt baselines `issue/01`, `issue/02` and `verify/03`
-  engine_version to 2.6.0.
+## [Unreleased]
 
 ### Added
 
@@ -44,6 +29,26 @@ protocol, and each package each carry an independent semver).
   `MOD-SECTION-MISSING` on every non-matching file. `applicableModules`
   now scopes a declaring module to the class it declares; a module naming
   neither field still applies to all. Found by RFC 0039, note 2.
+
+
+## [2.6.0] - 2026-09-09
+
+### Released
+
+- `@uwmd/core` **2.6.0**, `@uwmd/cli` **2.6.0** (lockstep),
+  `@uwmd/signing` **0.2.8** (repin-forced patch; core's exact optional-peer
+  pin moves with it), `@uwmd/batch` **0.8.3** (repin). Unpublished repins:
+  `@uwmd/excel` **0.8.8**, `@uwmd/report` **0.8.8**;
+  `@uwmd/module-hospitality` repins at 0.1.0. Protocol **2.6.0** — the
+  IRR-hurdle minor: RFC 0036 below.
+- **Why a minor, not a patch:** §VIII.10 step 3 gains a new normative
+  capacity rule (the closed-form LP hurdle balance behind `until_lp_irr`),
+  and the validator tightens — `WF-01` now refuses a non-increasing hurdle
+  ladder of either kind, so a document 2.5.0 accepted can be refused by
+  2.6.0. Receipt baselines `issue/01`, `issue/02` and `verify/03`
+  engine_version to 2.6.0.
+
+### Added
 
 - **IRR-hurdled waterfall tiers (RFC 0036).** Protocol **2.5.0 → 2.6.0**
   (a new normative capacity rule in §VIII.10 step 3); the format version
