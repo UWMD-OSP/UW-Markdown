@@ -85,6 +85,7 @@ for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md'))
     });
   }
   if (existsSync(join(T1_EXPECTED, `${stem}.validation.json`))) {
+    const wanted = JSON.parse(readFileText(join(T1_EXPECTED, `${stem}.validation.json`)));
     add(`tier-1/${stem}/validate`, '1', 'validate', [file, '--json'], T1_FIXTURES, {
       kind: 'json-subset',
       file: baseline('validation.json'),
@@ -92,8 +93,13 @@ for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md'))
       // issue list — pinning message wording would make every copy edit a
       // corpus change. The driver applies the same projection by name.
       project: 'issue-code-severity-set',
-      // `validate` exits 1 on a file with errors; the fixtures are valid.
-      exit_code: 0,
+      // §II.6a.2: `validate` exits 1 when the document has a validation error
+      // (the reference CLI does exactly that, `cli.ts`). Derived from the
+      // baseline, never assumed: fixture 09 (RFC 0038) is the first tier-1
+      // document whose expected verdict is `errors`, and the hardcoded 0 that
+      // stood here ("the fixtures are valid") pinned the corpus against the
+      // prose the moment it landed.
+      exit_code: hasError(wanted) || wanted.overall_status === 'blocked' ? 1 : 0,
     });
   }
   for (const [view, suffix] of [['chat', 'rendered-chat.txt'], ['summary', 'rendered-summary.md']]) {
