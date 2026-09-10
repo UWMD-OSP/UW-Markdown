@@ -6,7 +6,22 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.6.0] - 2026-09-09
+
+### Released
+
+- `@uwmd/core` **2.6.0**, `@uwmd/cli` **2.6.0** (lockstep),
+  `@uwmd/signing` **0.2.8** (repin-forced patch; core's exact optional-peer
+  pin moves with it), `@uwmd/batch` **0.8.3** (repin). Unpublished repins:
+  `@uwmd/excel` **0.8.8**, `@uwmd/report` **0.8.8**;
+  `@uwmd/module-hospitality` repins at 0.1.0. Protocol **2.6.0** — the
+  IRR-hurdle minor: RFC 0036 below.
+- **Why a minor, not a patch:** §VIII.10 step 3 gains a new normative
+  capacity rule (the closed-form LP hurdle balance behind `until_lp_irr`),
+  and the validator tightens — `WF-01` now refuses a non-increasing hurdle
+  ladder of either kind, so a document 2.5.0 accepted can be refused by
+  2.6.0. Receipt baselines `issue/01`, `issue/02` and `verify/03`
+  engine_version to 2.6.0.
 
 ### Added
 
@@ -3080,7 +3095,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.2.0...v2.3.0
