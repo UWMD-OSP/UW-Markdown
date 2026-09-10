@@ -1,0 +1,21 @@
+{
+  "description": "The data-center module against its own example. Eleven calcs compute - including the two per-unit metrics read from the STANDARD sections (frontmatter quick_metrics and noi_model), which is the RFC 0039 finding; CC-MOD-DC-04 (contracted above commissioned, a pre-leased phase) and CC-MOD-DC-07 (rent 20% under the comp set) fire; no error. The first product module on a module-declared class, end to end.",
+  "module": "@uwmd/module-data-center",
+  "expected_calcs": {
+    "utilization": 1.1,
+    "commissioned_share": 0.8,
+    "facility_load_kw": 12500,
+    "annual_facility_kwh_at_contract": 120450000,
+    "annual_power_cost": 9636000,
+    "power_cost_per_kw_month": 73,
+    "annual_rent_revenue": 19800000,
+    "blended_revenue_per_kw_month": 157,
+    "rent_index": 0.8,
+    "price_per_commissioned_kw": 16000,
+    "noi_per_commissioned_kw": 1120
+  },
+  "expected_codes": [
+    "CC-MOD-DC-04",
+    "CC-MOD-DC-07"
+  ]
+}

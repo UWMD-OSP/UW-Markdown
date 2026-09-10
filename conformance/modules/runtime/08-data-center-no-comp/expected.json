@@ -1,0 +1,20 @@
+{
+  "description": "market_rent_per_kw_month is null - no comp set was obtained. rent_index is null and CC-MOD-DC-07 stays silent: absence is not violation, and without the null guard every data center without a comp set would carry a permanent below-market warning. CC-MOD-DC-04 still fires.",
+  "module": "@uwmd/module-data-center",
+  "expected_calcs": {
+    "utilization": 1.1,
+    "commissioned_share": 0.8,
+    "facility_load_kw": 12500,
+    "annual_facility_kwh_at_contract": 120450000,
+    "annual_power_cost": 9636000,
+    "power_cost_per_kw_month": 73,
+    "annual_rent_revenue": 19800000,
+    "blended_revenue_per_kw_month": 157,
+    "rent_index": null,
+    "price_per_commissioned_kw": 16000,
+    "noi_per_commissioned_kw": 1120
+  },
+  "expected_codes": [
+    "CC-MOD-DC-04"
+  ]
+}

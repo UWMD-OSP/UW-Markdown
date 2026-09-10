@@ -31,6 +31,7 @@ same protocol version.
 | `@uwmd/batch` | **0.8.3** | `@uwmd/core` 2.6.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
 | `@uwmd/signing` | **0.2.8** | `@uwmd/core` 2.6.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
 | `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.6.x, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.0** (unpublished) | `@uwmd/core` 2.6.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
 | `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.6.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
