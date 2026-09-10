@@ -6,6 +6,26 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
+## [Unreleased]
+
+### Fixed
+
+- **`BUILTIN_REMEDIATIONS` CC-01..CC-10 now describe the rules the validator
+  runs.** The ten cross-section entries dated from the initial commit and
+  described an earlier quick_metrics-reconciliation draft (`CC-01` "NOI
+  mismatch: noi_model vs quick_metrics.noi_underwritten", severity error) that
+  never shipped; §5.3 and `validator.ts` have always defined `CC-01` as
+  rent-roll GPR vs operating-statement GPR within 3%, a warning. Because the
+  validator attaches the registry's `title` / `remediation` / `spec_ref` to
+  every issue it emits, a real `CC-05` issue (DSCR NOI vs the NOI model) was
+  surfaced to renderers titled "Cap rate mismatch". Every entry's sections,
+  tolerance and default severity now mirror the table and the rule, pinned by a
+  test that reads the §5.3 table from the spec. The §4.25 prose that justified
+  `CC-15`'s single seam by claiming `CC-01` reconciles `noi_model` to
+  `quick_metrics` is corrected (no rule does), as are the wiki and the
+  `issue-remediation` schema examples. Validation verdicts, issue codes and
+  severities are unchanged — the conformance corpus does not move.
+
 ## [2.6.1] - 2026-09-10
 
 ### Released

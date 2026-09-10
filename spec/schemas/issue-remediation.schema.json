@@ -20,7 +20,7 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 120,
-      "description": "Short title shown in the issue list (e.g. 'NOI mismatch')."
+      "description": "Short title shown in the issue list (e.g. 'Sources & Uses imbalance')."
     },
     "description": {
       "type": "string",
@@ -30,7 +30,7 @@
     "remediation": {
       "type": "string",
       "minLength": 1,
-      "description": "Imperative remediation copy (e.g. 'Recompute LTV from current loan_amount / purchase_price.')."
+      "description": "Imperative remediation copy (e.g. 'Recompute LTV = loan_amount / underwritten value and restate debt_structure.ltv.')."
     },
     "spec_ref": {
       "type": "string",
@@ -39,12 +39,12 @@
   },
   "examples": [
     {
-      "code": "CC-02",
+      "code": "CC-04",
       "severity": "error",
-      "title": "DSCR mismatch",
-      "description": "debt_structure.dscr disagrees with quick_metrics.dscr.",
-      "remediation": "Recompute DSCR = NOI / annual_debt_service and update both surfaces.",
-      "spec_ref": "§5.3 CC-02"
+      "title": "Sources & Uses imbalance",
+      "description": "sources_uses.total_sources does not equal sources_uses.total_uses (within $1).",
+      "remediation": "Reconcile the capital stack — equity + debt proceeds + other sources MUST equal price + closing + reserves.",
+      "spec_ref": "§5.3 CC-04"
     }
   ]
 }

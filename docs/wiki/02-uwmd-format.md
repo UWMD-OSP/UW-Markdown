@@ -153,8 +153,9 @@ by dropping superseded blocks; `diff()` compares two files section-by-section.
 
 `UW_FORMAT_SPEC_v1.md` §5.3 defines consistency checks the validator enforces;
 their remediation copy lives in `BUILTIN_REMEDIATIONS` (`protocol.ts`). Examples:
-CC-01 NOI mismatch (`noi_model.net_operating_income` vs
-`quick_metrics.noi_underwritten`), CC-02 DSCR, CC-03 LTV, CC-04 sources/uses
-imbalance, CC-05 cap rate. See [07 — Data model reference](07-data-model-reference.md)
+CC-01 rent-roll GPR vs operating-statement GPR (3%), CC-02 stated LTV vs
+`loan_amount / underwritten_value`, CC-03 senior loan across `sources_uses`,
+`debt_structure` and `capital_stack`, CC-04 sources/uses imbalance, CC-05 the
+NOI used for DSCR vs `noi_model.net_operating_income` (1%). See [07 — Data model reference](07-data-model-reference.md)
 and [03 — Core library › validator](03-core-library.md) for the full code families
 (CC / DQ / INT / POL / FV).

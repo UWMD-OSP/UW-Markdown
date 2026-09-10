@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   BUILTIN_INCOMPLETE_DATA_POLICIES,
   CASCADE_ORDER,
@@ -259,5 +260,48 @@ describe('SRC code family (RFC 0031)', () => {
     // uw_version 2.0 file (the per-file boundary, format v2 §1.3); the same
     // codes still emit as warnings against 1.x files.
     for (const r of codes) expect(r.severity).toBe('error');
+  });
+});
+
+describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
+  // Read the spec table rather than restating it. Until 2.6.2 the ten
+  // cross-section entries described a quick_metrics-reconciliation draft that
+  // never shipped (CC-01 "NOI mismatch" for a rule that compares rent-roll GPR
+  // to the operating statement), and enrichWithRemediation attached that copy
+  // to real issues. Nothing noticed because nothing compared the two.
+  const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+  const spec = readFileSync(specPath, 'utf-8');
+  const table = spec.slice(spec.indexOf('### 5.3 Cross-Section Consistency Checks'));
+  const rows = [...table.matchAll(/^\| `(CC-\d\d)` \| (.+?) \| (.+?) \|$/gm)]
+    .map((m) => ({ code: m[1]!, description: m[2]!, sections: [...m[3]!.matchAll(/`([a-z_]+)`/g)].map((s) => s[1]!) }));
+
+  it('finds the table', () => {
+    expect(rows.map((r) => r.code)).toEqual(
+      Array.from({ length: 16 }, (_, i) => `CC-${String(i + 1).padStart(2, '0')}`),
+    );
+  });
+
+  it('every entry names the sections its §5.3 row reads', () => {
+    for (const row of rows.filter((r) => Number(r.code.slice(3)) <= 10)) {
+      const entry = BUILTIN_REMEDIATIONS.find((r) => r.code === row.code);
+      expect(entry, row.code).toBeDefined();
+      for (const section of row.sections) {
+        expect(entry!.description, `${row.code} description should name ${section}`).toContain(section);
+      }
+      expect(entry!.spec_ref).toBe(`§5.3 ${row.code}`);
+    }
+  });
+
+  it('carries the default severity validator.ts emits', () => {
+    // A hand mirror of the `severity:` literal on each rule's issues.push in
+    // validator.ts. If a rule's severity moves, move it here too — the registry
+    // is what renderers show next to the issue.
+    const emitted: Record<string, string> = {
+      'CC-01': 'warning', 'CC-02': 'warning', 'CC-03': 'error', 'CC-04': 'error', 'CC-05': 'warning',
+      'CC-06': 'warning', 'CC-07': 'warning', 'CC-08': 'warning', 'CC-09': 'warning', 'CC-10': 'error',
+    };
+    for (const [code, severity] of Object.entries(emitted)) {
+      expect(BUILTIN_REMEDIATIONS.find((r) => r.code === code)?.severity, code).toBe(severity);
+    }
   });
 });
