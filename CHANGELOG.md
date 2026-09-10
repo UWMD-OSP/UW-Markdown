@@ -6,7 +6,21 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [Unreleased]
+## [2.6.2] - 2026-09-10
+
+### Released
+
+- `@uwmd/core` **2.6.2**, `@uwmd/cli` **2.6.2** (lockstep),
+  `@uwmd/signing` **0.2.10** (repin-forced patch; core's exact optional-peer
+  pin moves with it), `@uwmd/batch` **0.8.5** (repin). Unpublished repins:
+  `@uwmd/excel` **0.8.10**, `@uwmd/report` **0.8.10**;
+  `@uwmd/module-hospitality` and `@uwmd/module-data-center` repin at 0.1.0
+  (both unpublished). Protocol stays **2.6.0**.
+- **Why a patch, not a minor:** nothing normative moves. The cut carries the
+  one fix below — remediation copy that renderers show next to an issue —
+  plus a prose correction in §4.25 and the schema examples. No verdict,
+  code, severity or corpus case changes. Receipt baselines `issue/01`,
+  `issue/02` and `verify/03` engine_version to 2.6.2.
 
 ### Fixed
 
@@ -3171,7 +3185,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.1...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.2...HEAD
+[2.6.2]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.1...v2.6.2
 [2.6.1]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.4.0...v2.5.0
