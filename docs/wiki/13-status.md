@@ -223,6 +223,18 @@ not core gaps.
   implies. `conformance/modules/runtime/` (5 scenarios). Section `schema`
   fragments stay normative JSON Schema a host with a validator SHOULD apply;
   core checks presence and stops, because it takes no validator dependency.
+- **Data-center module — the first product module on a module-declared
+  class (RFC 0039):** **`@uwmd/module-data-center` 0.1.0** declares
+  `org.uwmd.data_center` (fallback `industrial`), three kW-denominated
+  sections, eleven calcs, seven validations (`CC-MOD-DC-01..07`). RFC 0003
+  and RFC 0006 exercised together: module formulas read the *standard*
+  sections unchanged (`quick_metrics`, `noi_model`), so the per-kW price
+  and NOI calcs §X.2.4 withholds from the registry ship from the module;
+  the one gap found — the runtime scoped only on builtin `asset_classes`,
+  so a declaring module ran against every file — is fixed in
+  `module-runtime.ts`. `examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md`,
+  `conformance/modules/runtime/` (now 11 scenarios). Unpublished, like
+  hospitality.
 - **Excel round-trip:** `.uwx.md → .xlsx` via `toWorkbook.ts`, and **reverse
   import** `.xlsx → section fragments` via `fromWorkbook.ts` (shipped 2026-08-13).
   Every workbook also carries a **`UW MCP` sheet** (`mcpSheet.ts`) — machine-readable
@@ -800,6 +812,12 @@ registered module.
 **✅ RFC 0003 module-declared asset classes — shipped 2026-08-27**, following
 0006 because a declared class needs a runtime to mean anything.
 
+**✅ RFC 0039 data-center module — shipped 2026-09-09** (unreleased). The
+first product module on a module-declared class, and the proof that 0003 and
+0006 compose: the standard-section scope question closed *yes* with no runtime
+change, and the one gap (a declaring module was not scoped to its declared
+class) is fixed. See the Built section.
+
 **✅ RFC 0030 conformance profiles — shipped 2026-08-31.** Not from the v2 train
 list: it came out of the first external adopter running the corpus end to end
 and reporting four divergences, all four of which were defects here. Protocol
@@ -1286,7 +1304,8 @@ venue.
     is done first (it is owner-only). Every publish step in the workflow is
     now idempotent (skip-if-live), so a partial run is recoverable by re-run.
     `@uwmd/module-hospitality` deliberately stays unpublished — it is a
-    reference implementation, not a dependency.
+    reference implementation, not a dependency. `@uwmd/module-data-center`
+    (RFC 0039) follows the same rule until a consumer asks for it.
 
 ## How to keep this current
 

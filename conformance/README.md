@@ -90,18 +90,28 @@ conformance/
 │   │                     identical — editing one to fix a failure would void
 │   │                     the whole demonstration, which is that the verdict
 │   │                     depends on the reader and never on the document
-│   └── runtime/        RFC 0006 — the module system with an actual consumer.
-│                         Everything above checks that a manifest LOADS; these
-│                         check that a loaded module DOES something. Five
-│                         <scenario>/{deal.uwx.md, expected.json} derived from
-│                         one hotel fixture, run against
-│                         @uwmd/module-hospitality: the fixture itself (both
-│                         warning branches in one file), no comp set (the rule
-│                         must stay silent — absence is not violation),
+│   └── runtime/        RFC 0006 + RFC 0039 — the module system with actual
+│                         consumers. Everything above checks that a manifest
+│                         LOADS; these check that a loaded module DOES
+│                         something. Eleven <scenario>/{deal.uwx.md,
+│                         expected.json}; `expected.module` names the package
+│                         under test. 01–05 derive from one hotel fixture, run
+│                         against @uwmd/module-hospitality: the fixture itself
+│                         (both warning branches in one file), no comp set (the
+│                         rule must stay silent — absence is not violation),
 │                         occupancy as a percentage (an error, because RevPAR
 │                         still computes, to a number 100x too large), the
 │                         required section removed, and the same file
-│                         relabelled office, where nothing must run at all
+│                         relabelled office, where nothing must run at all.
+│                         06–11 derive from the Mesa Gateway example, run
+│                         against @uwmd/module-data-center — the first product
+│                         module on a module-DECLARED class: the fixture (all
+│                         eleven calcs, including two read from the STANDARD
+│                         sections), PUE below one (an error), no comp set, the
+│                         required section removed, relabelled industrial
+│                         (nothing runs), and the module absent (degraded via
+│                         the industrial fallback, MOD-FALLBACK-001 — the RFC
+│                         0003 path on a product module)
 ├── packages/           UW Deal Packages, RFC 0018 (see packages/README.md)
 │   ├── accept/         <id>.manifest.json + <id>.expected.json — manifest
 │   │                     validation accepts, including extension link types

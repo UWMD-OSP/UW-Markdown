@@ -77,6 +77,24 @@ do. The manifest's source of truth is TypeScript, with `dist/manifest.json`
 emitted at build for hosts without a TS toolchain. **Unpublished**, like the
 other satellites.
 
+## Data-center module — `packages/uwmd-module-data-center` (`@uwmd/module-data-center` 0.1.0)
+
+The first *product* module on a module-declared asset class (RFC 0039).
+Declares `org.uwmd.data_center` with an `industrial` fallback; three sections
+(`dc_capacity` required, `dc_power`, `dc_revenue`); eleven calculations, every
+power figure in **kW** and every rate a fraction; seven validations
+(`CC-MOD-DC-01..07`) — including `CC-MOD-DC-01`, an **error** for a PUE below
+1.0, which is physically impossible. `price_per_commissioned_kw` and
+`noi_per_commissioned_kw` read the *standard* sections (frontmatter
+`quick_metrics`, `noi_model`) — the per-unit metrics the size-intensive
+registry withholds from a custom class, supplied by the module instead.
+
+Same shape as hospitality: built against core's published surface only,
+TypeScript manifest with `dist/manifest.json` emitted at build, **unpublished**.
+A host without it reads `examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` as
+`degraded` under `industrial` (`MOD-FALLBACK-001`) — every dollar figure
+correct, every kilowatt absent.
+
 ## Signing — `packages/uwmd-signing` (`@uwmd/signing` 0.1.0)
 
 Block and receipt signatures (RFC 0010, protocol §V.11). Separate from

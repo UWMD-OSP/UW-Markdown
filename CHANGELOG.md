@@ -25,6 +25,26 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- **Data-center module (RFC 0039).** `@uwmd/module-data-center` **0.1.0**
+  (unpublished, like hospitality) — the first product module on a
+  module-declared asset class. Declares `org.uwmd.data_center` (fallback
+  `industrial`), three kW-denominated sections (`dc_capacity` required,
+  `dc_power`, `dc_revenue`), eleven calculations in threaded order, seven
+  validations (`CC-MOD-DC-01..07`, null-silent). The RFC's open question
+  closed **yes**: a module formula reads the standard sections
+  (`quick_metrics.purchase_price`, `noi_model.net_operating_income`) with
+  no runtime change, so the per-commissioned-kW price and NOI calcs ship.
+  `examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` is the corpus's first
+  custom-class example; `conformance/modules/runtime/06–11` add six
+  scenarios and the runner dispatches on `expected.module`. Protocol and
+  format versions do not move.
+- **Fix (`@uwmd/core` module runtime):** a module that *declares* a custom
+  class (`declares_asset_classes`) and lists no builtin `asset_classes`
+  was treated as applying to every document, so it would have raised
+  `MOD-SECTION-MISSING` on every non-matching file. `applicableModules`
+  now scopes a declaring module to the class it declares; a module naming
+  neither field still applies to all. Found by RFC 0039, note 2.
+
 - **IRR-hurdled waterfall tiers (RFC 0036).** Protocol **2.5.0 → 2.6.0**
   (a new normative capacity rule in §VIII.10 step 3); the format version
   does not move. A `split` tier may now state `until_lp_irr` (a fraction
