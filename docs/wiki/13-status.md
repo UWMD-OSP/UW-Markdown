@@ -812,7 +812,7 @@ registered module.
 **✅ RFC 0003 module-declared asset classes — shipped 2026-08-27**, following
 0006 because a declared class needs a runtime to mean anything.
 
-**✅ RFC 0039 data-center module — shipped 2026-09-09** (unreleased). The
+**✅ RFC 0039 data-center module — shipped 2026-09-09** (released in 2.6.1). The
 first product module on a module-declared class, and the proof that 0003 and
 0006 compose: the standard-section scope question closed *yes* with no runtime
 change, and the one gap (a declaring module was not scoped to its declared
