@@ -151,6 +151,7 @@ context. This list is the maintainable copy.
 | [0037](./docs/rfcs/0037-cross-check-variant-resolution-and-coverage.md) | ✅ Cross-check resolution over variant maps + coverage channel | **Shipped 2026-09-09** (unreleased). §5.3 resolution order (preference → `default` → `base` → lone variant), `CC-16` for an unresolvable map, `ValidationResult.coverage`. Closes underwriter.cc UPSTREAM-005: variant maps had been silently disabling ten of fifteen cross-checks. |
 | [0038](./docs/rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (unreleased). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
 | [0039](./docs/rfcs/0039-data-center-module.md) | 📋 Data-center module | **Draft 2026-09-09.** `@uwmd/module-data-center`: the first product module on a module-declared class (`org.uwmd.data_center`, fallback `industrial`), three kW-denominated sections, per-commissioned-kW price and NOI calcs — the test of whether RFC 0003 generalizes and of §X.2.4's per-unit refusal. No spec change. |
+| [0040](./docs/rfcs/0040-variant-role-resolution.md) | 📋 Variant roles | **Draft 2026-09-09.** Optional `_meta.role` (`primary`/`senior`/`junior`/`summary`/`detail`/`component`) on a variant-map block; cross-checks resolve by registered role before `default`/`base`. Raised by the first production coverage report (3 of 15 checks evaluated; 4 skips `variant_unresolvable` on producer-keyed maps). Would move protocol 2.6.0 → 2.7.0. |
 
 
 ## Pre-public-flip checklist
