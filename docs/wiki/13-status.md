@@ -452,7 +452,7 @@ not core gaps.
   cross-check.
 - **IRR-hurdled waterfall tiers ([RFC 0036](../rfcs/0036-waterfall-irr-hurdles.md),
   drafted 2026-09-07, accepted and implemented 2026-09-09) — protocol
-  2.5.0 → 2.6.0, §VIII.10 step 3 (unreleased until the next cut).** Takes
+  2.5.0 → 2.6.0, §VIII.10 step 3 (released in 2.6.0).** Takes
   up the `until_lp_irr` reservation. The boundary is **closed-form**: the
   LP's hurdle balance `B = −xnpv(F, h) × (1 + h)^t_row` over the LP's
   dated flows so far (earlier rows and earlier tiers of this row), capacity
@@ -766,7 +766,7 @@ issuance and verification are unchanged and remain the default path.
 > both raised by underwriter.cc as UPSTREAM-005 / UPSTREAM-006. Released
 > in 2.5.0. Later the same day, RFC 0036 (IRR-hurdled waterfall tiers,
 > `until_lp_irr`, the closed-form hurdle balance) implemented — protocol
-> 2.6.0, unreleased until the next cut.
+> 2.6.0, released the same day.
 
 Previously 🧊 deferred; the owner unfroze the train once the v1.x dev queue
 emptied (RFCs 0014–0029 all implemented).

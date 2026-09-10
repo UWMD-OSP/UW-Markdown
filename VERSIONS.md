@@ -23,15 +23,15 @@ same protocol version.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.6.0** | format ≥ 1.0 (§VIII.10 IRR-hurdled waterfall tiers — the closed-form hurdle balance, RFC 0036; unreleased until the next cut) |
-| `@uwmd/core` | **2.5.0** | format 2.0 (reads 1.x), protocol 2.5.0 |
-| `@uwmd/cli` (CLI) | **2.5.0** | `@uwmd/core` 2.5.0 |
-| `@uwmd/excel` | **0.8.7** | `@uwmd/core` 2.5.x, format 1.1 multifamily pack |
-| `@uwmd/report` | **0.8.7** | `@uwmd/core` 2.5.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.2** | `@uwmd/core` 2.5.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/signing` | **0.2.7** | `@uwmd/core` 2.5.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.5.x, protocol §X module system |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.5.x browser entry |
+| UW Protocol | **2.6.0** | format ≥ 1.0 (§VIII.10 step 3 IRR-hurdled waterfall tiers — the closed-form hurdle balance, `until_lp_irr`, monotone hurdle ladders in `WF-01`, RFC 0036) |
+| `@uwmd/core` | **2.6.0** | format 2.0 (reads 1.x), protocol 2.6.0 |
+| `@uwmd/cli` (CLI) | **2.6.0** | `@uwmd/core` 2.6.0 |
+| `@uwmd/excel` | **0.8.8** | `@uwmd/core` 2.6.x, format 1.1 multifamily pack |
+| `@uwmd/report` | **0.8.8** | `@uwmd/core` 2.6.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.3** | `@uwmd/core` 2.6.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/signing` | **0.2.8** | `@uwmd/core` 2.6.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.6.x, protocol §X module system |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.6.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 
