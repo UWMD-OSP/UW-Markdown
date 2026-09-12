@@ -353,3 +353,11 @@ normative requirement, not the behavior.
 | `field_overrides` | top-level `_overrides` (not `_meta`) |
 | `input_hash`, `content_hash`, `parent_hash`, `signature` | `integrity.*` |
 | — | `integrity.algorithm` (new; defaulted `sha256`) |
+
+## Signed block roles (RFC 0040, Protocol 2.7.0)
+
+The optional block-level `_role` annotation in the incorporated v1 §2.8 and
+§5.3 also applies to format 2.0. It sits beside nested `_meta`, is covered by
+the existing v2 canonical block hash, and is preserved through representation
+conversion. `_meta.role` has no role-selection meaning. The scalar vocabulary,
+eligibility, collision, trusted-host editing and coverage rules are identical.

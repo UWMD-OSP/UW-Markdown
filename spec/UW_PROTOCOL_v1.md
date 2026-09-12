@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.6.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.7.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.6.0`) — the
+- **Protocol version** (this document, currently `2.7.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -558,6 +558,7 @@ capability is unconditional: every implementation owes it.
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
+| `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
@@ -578,7 +579,14 @@ displays validation results SHOULD show "not evaluated" distinctly from
 "clean": the two are different facts about the document, and the
 difference is the whole reason the record exists. `CC-16` (`info`) is the
 one skip that also surfaces as an issue, because the producer can act on
-it by naming a `default` variant.
+it by declaring an eligible statement or resolving a consulted role collision.
+
+**Role-aware selection (RFC 0040).** Implement format §2.8/§5.3 using the
+closed `BLOCK_ROLES` and frozen `CROSS_CHECK_ROLE_PREFERENCE` table. Report
+optional per-section `CrossCheckCoverage.resolutions` only for role-bearing
+selections; role-free results remain unchanged. `ROLE-01` is a structural
+error in every active block with an invalid scalar `_role`. This annotation
+is included in the existing content hash; `_meta.role` is not an alias.
 
 `FV_*` with an underscore was the v1.0 spelling and was renamed to
 `FV-NN` in v1.1. `META_*` (underscore) is the **provenance-completeness
@@ -660,6 +668,15 @@ declare `depends_on` relationships that establish a precedence.
 
 **Normative schema:** [`spec/schemas/edit-operation.schema.json`](schemas/edit-operation.schema.json)
 defines the wire shape for every `EditOperation` accepted by a Tier-2 Editor.
+
+**Trusted role assignment (RFC 0040).** `section_replace` and
+`section_supersede` accept optional `role: BlockRole | null` outside `content`.
+Omission preserves the prior block's `_role`; a valid scalar assigns it;
+null removes it. Invalid assignments MUST be refused as `PROTO-EDIT-002`.
+The host MUST strip `content._role` and MUST NOT populate the trusted `role`
+field from model output. Agent writing preserves an existing role and strips
+invented roles on new blocks. Hashing and signature verification cover this
+annotation through the existing content path, without new exclusions.
 
 ### V.1 Round-trip preservation
 

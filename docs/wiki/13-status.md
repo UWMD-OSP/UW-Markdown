@@ -1,5 +1,17 @@
 # 13 — Build status (living document)
 
+**RFC 0040 implementation (2026-09-11, unreleased):** owner-approved block-level
+`_role` is signed content. Protocol source is **2.7.0**; published packages
+remain at the versions below. Cross-checks select declared senior/detail/primary
+roles, exclude components from property reads, refuse consulted collisions,
+and report per-section selection evidence. Role-free results remain unchanged.
+Trusted edits preserve or explicitly assign/remove roles; agent content cannot
+assign them. Verified: 1,731 workspace tests, 414 default conformance checks,
+64 declarative conformance cases, build, test typechecking, 23 schemas, lint,
+lockfile/package/version/index checks, and the docs build. Existing tier-1
+baselines are unchanged; two receipt labels now state Protocol 2.7.0 with
+unchanged calculation result digests. RFC 0041 remains the next separate stage.
+
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
 **Targeted reconciliation:** 2026-09-11 against `origin/main` at `9f243e1`

@@ -7,6 +7,10 @@
   "required": ["items"],
   "additionalProperties": true,
   "properties": {
+    "_role": {
+      "enum": ["primary", "senior", "junior", "summary", "detail", "component"],
+      "description": "Optional signed scalar block annotation (RFC 0040)."
+    },
     "items": {
       "type": "array",
       "description": "Open gap inventory. Each entry names a missing or low-quality field, optionally with the stage it blocks and an owner.",

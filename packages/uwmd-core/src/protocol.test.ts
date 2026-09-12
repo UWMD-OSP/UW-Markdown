@@ -91,7 +91,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 
 describe('protocol — version', () => {
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('2.6.0');
+    expect(PROTOCOL_VERSION).toBe('2.7.0');
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {

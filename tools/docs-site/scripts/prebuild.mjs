@@ -75,6 +75,8 @@ const COPIES = [
   { from: 'docs/UW_RECEIPTS.md',     to: 'guide/receipts.md',     title: 'Verification receipts' },
   { from: 'docs/DATA_LAKE.md',       to: 'guide/data-lake.md',    title: 'UW Markdown → data lake' },
 
+  { from: 'docs/reviews/2026-09-11-rfc-0040-0041-readiness.md', to: 'about/reviews/rfc-0040-0041-readiness.md', title: 'RFC 0040 / 0041 readiness review' },
+
   // Discover every docs/rfcs/*.md file, including new drafts.
   ...rfcCopies(REPO_ROOT),
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
@@ -97,6 +99,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['CHANGELOG.md', '/about/changelog'],
   ['ARCHITECTURE.md', '/about/architecture'],
   ['docs/ABOUT.md', '/about/'],
+  ['reviews/2026-09-11-rfc-0040-0041-readiness.md', '/about/reviews/rfc-0040-0041-readiness'],
   ['ABOUT.md', '/about/'],
   ['VERSIONS.md', '/about/versions'],
   ['docs/GLOSSARY.md', '/guide/glossary'],

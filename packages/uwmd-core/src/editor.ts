@@ -13,6 +13,7 @@
 // Pure: no I/O. The runner consumes the returned content string and the
 // caller writes it back to disk.
 
+import { isBlockRole } from './block-roles.js';
 import type { ParsedUWFile, UWBlock, UWMeta } from './types.js';
 import type {
   CapabilityVerifier,
@@ -493,7 +494,15 @@ function applySectionReplace(
 
   // Allow the operation's `meta` partial to override scalar fields (e.g. flags, confidence).
   const finalMeta: UWMeta = { ...meta, ...op.meta, version: newVersion, superseded: false } as UWMeta;
+  if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
+    return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
+  }
   const blockContent = stripReservedKeys(op.content);
+  if (op.role !== undefined) {
+    if (op.role !== null) blockContent['_role'] = op.role;
+  } else if (existing && Object.prototype.hasOwnProperty.call(existing.content, '_role')) {
+    blockContent['_role'] = existing.content['_role'];
+  }
   // Emit the shape the file's uw_version demands (RFC 0009: nested for 2.0).
   stampMetaIntoBlockContent(blockContent, finalMeta, isV2File(parsed.frontmatter));
 
@@ -546,7 +555,15 @@ function applySectionSupersede(
   });
   meta.timestamp = now;
   const finalMeta: UWMeta = { ...meta, ...op.meta, version: newVersion, superseded: false } as UWMeta;
+  if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
+    return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
+  }
   const blockContent = stripReservedKeys(op.content);
+  if (op.role !== undefined) {
+    if (op.role !== null) blockContent['_role'] = op.role;
+  } else if (existing && Object.prototype.hasOwnProperty.call(existing.content, '_role')) {
+    blockContent['_role'] = existing.content['_role'];
+  }
   stampMetaIntoBlockContent(blockContent, finalMeta, isV2File(parsed.frontmatter));
 
   let lines = fileContent.split('\n');
@@ -737,9 +754,10 @@ function stripReservedKeys(content: Record<string, unknown>): Record<string, unk
   // The dispatcher constructs canonical _meta. Drop any caller-supplied _meta
   // or _notes from `content` to mirror Tier-4's _meta substitution rule
   // (UW_PROTOCOL_v1.md §IX.4) — same logic, applied at Tier-2.
-  const { _meta: _drop1, _notes: _drop2, ...rest } = content;
+  const { _meta: _drop1, _notes: _drop2, _role: _drop3, ...rest } = content;
   void _drop1;
   void _drop2;
+  void _drop3;
   return { ...rest };
 }
 

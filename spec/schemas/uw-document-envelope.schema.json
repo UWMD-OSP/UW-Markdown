@@ -100,7 +100,10 @@
     "content": {
       "type": "object",
       "required": ["_meta"],
-      "properties": { "_meta": { "$ref": "#/$defs/meta" } },
+      "properties": {
+        "_meta": { "$ref": "#/$defs/meta" },
+        "_role": { "enum": ["primary", "senior", "junior", "summary", "detail", "component"] }
+      },
       "additionalProperties": true
     },
     "block": {

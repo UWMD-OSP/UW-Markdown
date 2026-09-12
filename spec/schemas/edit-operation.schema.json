@@ -44,6 +44,10 @@
           "type": "object",
           "description": "Full replacement payload — overwrites the existing block in place. Allowed only when BUILTIN_EDIT_POLICIES.supersede_on_edit = false for this source."
         },
+        "role": {
+          "enum": ["primary", "senior", "junior", "summary", "detail", "component", null],
+          "description": "Trusted host assignment: omit to preserve, null to remove. Never derived from model content."
+        },
         "meta": {
           "type": "object",
           "description": "Partial UWMeta. Host fills in version, timestamp, actor, source as required."
@@ -64,6 +68,10 @@
         "content": {
           "type": "object",
           "description": "New block payload. The previous block is flagged superseded:true; this one is appended at version = max(prev)+1."
+        },
+        "role": {
+          "enum": ["primary", "senior", "junior", "summary", "detail", "component", null],
+          "description": "Trusted host assignment: omit to preserve, null to remove. Never derived from model content."
         },
         "meta": {
           "type": "object"

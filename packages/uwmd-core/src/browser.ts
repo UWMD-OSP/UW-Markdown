@@ -556,6 +556,9 @@ export type { DependencyGraph, ExtractDependencyGraphOptions } from './calc/depe
 export type {
   UWBlock,
   UWFenceAnnotation,
+  BlockRole,
+  CrossCheckResolutionEvidence,
+  CrossCheckCoverage,
   UWMeta,
   UWFieldOverride,
   UWBlockSignature,
@@ -610,6 +613,8 @@ export type {
 } from './format.js';
 
 export {
+  BLOCK_ROLES,
+  CROSS_CHECK_ROLE_PREFERENCE,
   PROTOCOL_VERSION,
   FORMAT_VERSION,
   DEFAULT_NUMBER_FORMAT,

@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/11-role-collision/render-summary",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "11-role-collision.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/11-role-collision.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

@@ -1,6 +1,15 @@
 // .uw.md format — TypeScript type definitions
 // Spec: UW_FORMAT_SPEC_v1.md v1.1
 
+/** The signed block annotation used for property-level selection (RFC 0040). */
+export type BlockRole = 'primary' | 'senior' | 'junior' | 'summary' | 'detail' | 'component';
+
+/** Selection evidence for one section read by a cross-check. */
+export interface CrossCheckResolutionEvidence {
+  variant?: string;
+  via: 'preference' | 'role' | 'primary' | 'default' | 'base' | 'sole' | 'single';
+}
+
 export type ConfidenceLevel = 'high' | 'medium' | 'low';
 
 export type PipelineStatus = 'complete' | 'in_progress' | 'pending' | 'skipped' | 'failed';
@@ -24,6 +33,8 @@ export interface CrossCheckCoverage {
   status: 'evaluated' | 'skipped';
   reason?: CrossCheckSkipReason;
   detail?: string;
+  /** Omitted for role-free sections; keys are section ids, not rule ids. */
+  resolutions?: Record<string, CrossCheckResolutionEvidence>;
 }
 
 /** Tax basis of the metrics stated in `dcf.returns` (format §4.9, RFC 0038). */

@@ -12,6 +12,7 @@
 
 import type {
   AssetClass,
+  BlockRole,
   ConfidenceLevel,
   DealStage,
   FinancialThresholds,
@@ -30,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.6.0' as const;
+export const PROTOCOL_VERSION = '2.7.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -942,6 +943,8 @@ export type EditOperation =
       variant?: string;
       content: Record<string, unknown>;
       meta: Partial<UWMeta>;
+      /** Trusted host assignment: undefined preserves, null removes. Never copy from model content. */
+      role?: BlockRole | null;
     }
   | {
       kind: 'section_supersede';
@@ -949,6 +952,8 @@ export type EditOperation =
       variant?: string;
       content: Record<string, unknown>;
       meta: Partial<UWMeta>;
+      /** Trusted host assignment: undefined preserves, null removes. Never copy from model content. */
+      role?: BlockRole | null;
     }
   | {
       kind: 'pipeline_log_append';
@@ -1946,6 +1951,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
   { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
+  { prefix: 'ROLE', description: 'Signed block role (RFC 0040)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
   {
     prefix: 'INVALID-ASSET-CLASS',
@@ -2000,6 +2006,18 @@ export const CROSS_CHECK_RULE_IDS: readonly string[] = Object.freeze([
  * first; a lone variant is taken last; anything else is unresolvable.
  */
 export const CROSS_CHECK_VARIANT_PREFERENCE: readonly string[] = Object.freeze(['default', 'base']);
+
+/** Closed, scalar vocabulary for the signed `_role` block annotation. */
+export const BLOCK_ROLES: readonly BlockRole[] = Object.freeze(['primary', 'senior', 'junior', 'summary', 'detail', 'component']);
+
+/** Per-check role preference, consulted before generic primary/default/base. */
+export const CROSS_CHECK_ROLE_PREFERENCE: Readonly<Record<string, Readonly<Record<string, BlockRole>>>> = Object.freeze({
+  'CC-01': Object.freeze({ rent_roll: 'detail' as const }),
+  'CC-02': Object.freeze({ debt_structure: 'senior' as const }),
+  'CC-03': Object.freeze({ debt_structure: 'senior' as const }),
+  'CC-05': Object.freeze({ debt_structure: 'senior' as const }),
+  'CC-09': Object.freeze({ debt_structure: 'senior' as const }),
+});
 
 /** The closed set for `dcf.returns.tax_basis` (format §4.9, RFC 0038). */
 export const RETURN_TAX_BASES = ['pre_tax', 'after_tax'] as const;
@@ -2122,6 +2140,12 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The lease_up_schedule base variant\'s stabilized_summary.annualized_noi is more than LEASE_UP_STABILIZED_TOLERANCE (2%) away from noi_model.net_operating_income.',
     remediation: 'Reconcile the trajectory endpoint with the stabilized-year model, or document why they diverge. The 2% tolerance is deliberate — the two are independent models of stabilization and exact agreement is not the goal (RFC 0008).',
     spec_ref: '§5.3 CC-15',
+  },
+  {
+    code: 'ROLE-01', severity: 'error', title: 'Invalid block role',
+    description: 'A block declares a role outside the closed scalar vocabulary.',
+    remediation: 'Have the responsible host correct or remove _role; do not infer a role from financial values.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.8',
   },
   {
     code: 'CC-16', severity: 'info',

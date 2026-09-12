@@ -1,0 +1,159 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-VARIANT-CC",
+    "deal_name": "Variant Cross-Check Fixture",
+    "created": "2026-09-09T00:00:00Z",
+    "last_modified": "2026-09-09T00:00:00Z",
+    "property_address": "16 Variant Way",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "multifamily",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "analyst",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-11T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "total_units": 100
+      }
+    },
+    "sources_uses": {
+      "meta": {
+        "section": "sources_uses",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-11T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "sources": {
+          "loan_amount": 6000000
+        }
+      }
+    },
+    "valuation": {
+      "meta": {
+        "section": "valuation",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-11T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "underwritten_value": 10000000
+      }
+    },
+    "noi_model": {
+      "meta": {
+        "section": "noi_model",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-11T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "net_operating_income": 600000
+      }
+    },
+    "stress_tests": {
+      "base": {
+        "meta": {
+          "section": "stress_tests",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-11T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "base_case": {
+            "annual_debt_service": 300000
+          }
+        }
+      }
+    },
+    "debt_structure": {
+      "default": {
+        "meta": {
+          "section": "debt_structure",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-11T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "_role": "component",
+          "loan_amount": 6000000
+        }
+      },
+      "invalid": {
+        "meta": {
+          "section": "debt_structure",
+          "version": 1,
+          "superseded": false,
+          "source": "manual",
+          "timestamp": "2026-09-11T00:00:00Z",
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": []
+        },
+        "content": {
+          "_role": "main"
+        }
+      }
+    },
+    "rent_roll": {
+      "meta": {
+        "section": "rent_roll",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-11T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "_role": "component",
+        "gross_potential_rent": 1000000
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

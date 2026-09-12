@@ -281,6 +281,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   // Collect prose lines between blocks; route each block to the right collection.
 
   let proseLines: string[] = [];
+  const scanned: UWBlock[] = [];
 
   while (i < lines.length) {
     const line = lines[i];
@@ -365,9 +366,16 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       ...(rawMeta !== undefined ? { meta_shape: metaShape } : {}),
     };
 
-    routeBlock(result, block, sectionId, annotation, capturedProse);
+    scanned.push(block);
   }
 
+  const roleSections = new Set(scanned.filter(block => !block.meta?.superseded
+    && block.annotation.superseded !== true && Object.prototype.hasOwnProperty.call(block.content, '_role'))
+    .map(block => block.annotation.section));
+  const roleVariantSections = new Set(scanned.filter(block => roleSections.has(block.annotation.section)
+    && !block.meta?.superseded && block.annotation.superseded !== true && block.annotation.variant !== undefined)
+    .map(block => block.annotation.section));
+  for (const block of scanned) routeBlock(result, block, block.annotation.section, block.annotation, block.prose, roleVariantSections);
   return result;
 }
 
@@ -406,6 +414,7 @@ function routeBlock(
   sectionId: string,
   annotation: UWFenceAnnotation,
   prose: string,
+  roleVariantSections: ReadonlySet<string>,
 ): void {
   // Pipeline log — always append
   if (sectionId === 'pipeline_log') {
@@ -437,7 +446,7 @@ function routeBlock(
   }
 
   // Multi-variant sections — keyed by variant, multiple concurrent instances allowed
-  if (MULTI_VARIANT_SECTIONS.has(sectionId)) {
+  if (MULTI_VARIANT_SECTIONS.has(sectionId) || roleVariantSections.has(sectionId)) {
     const variant = annotation.variant ?? 'default';
     const existing = result.sections[sectionId];
 

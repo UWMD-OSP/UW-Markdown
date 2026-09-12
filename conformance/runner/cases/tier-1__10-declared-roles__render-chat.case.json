@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/10-declared-roles/render-chat",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "10-declared-roles.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/10-declared-roles.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}
