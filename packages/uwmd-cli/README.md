@@ -93,11 +93,11 @@ with source digest and binding evidence. Refusals exit 1 and retain nested
 diagnostics with `--json`. No input files are edited. This partial stream covers
 rent receipts, concessions and TI/LC only; it is not a complete DCF.
 
-### Property cash-flow assembly (source implementation)
+### Property cash-flow assembly (2.9.0)
 
 `uwmd assemble-property <file> <plan.json> [--json]` emits a read-only candidate
 for explicitly covered unlevered, pre-tax cash flows in one declared currency.
 It preserves source evidence and refuses missing or overlapping coverage. The
-plan and source are not edited; no financial inputs are inferred. Protocol 2.12.0
-implements the command in source; published CLI 2.8.0 does not yet include it.
+plan and source are not edited; no financial inputs are inferred. CLI 2.9.0
+includes this command under Protocol 2.12.0.
 See the [synthetic workflow](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md).

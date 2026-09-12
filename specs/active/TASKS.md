@@ -1,8 +1,6 @@
-# Task matrix
+# Release 2.9.0 tasks
 
-- [x] Implement and verify RFC 0045's synthetic-ledger core/CLI contract and normative triad — `782160f`, CI 34719743145.
-- [x] Reconcile source implementation and publication status in PR #190.
-
-The completed implementation contract is archived in
-`specs/archive/property-cash-flow-assembly-implementation.md`.
-Package release and owner-led real-deal validation remain separate next stages.
+- [ ] In flight: prepare versions, pins, receipt labels and release notes;
+  run all gates and isolated tarball smoke, then commit the release PR.
+- [ ] Merge the green release PR, tag v2.9.0 and verify trusted publication.
+- [ ] Verify clean registry installation and reconcile published documentation.

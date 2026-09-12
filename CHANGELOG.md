@@ -8,11 +8,29 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-09-12
+
+### Release preparation
+
+Core/CLI **2.9.0** package RFC 0045 with Protocol **2.12.0** and Format **2.0**.
+Publication is pending the `v2.9.0` trusted-publishing workflow. Signing
+**0.2.13** and batch **0.8.8** repin core. Excel **0.9.1**, report **0.8.13**
+and the **0.1.1** reference module packages remain unpublished.
+
 ### Added
 
 - RFC 0045 / Protocol 2.12.0: candidate-only property cash-flow assembly, explicit
   unlevered/pre-tax coverage and source evidence, with a read-only CLI. The
   synthetic example is engineering data; real-deal validation remains separate.
+
+### Verification
+
+- Clean installation, build, 1,990 workspace tests, 457 default plus 76
+  declarative conformance checks, 34 JSON schemas, test typechecking, lint,
+  release consistency checks and documentation build passed.
+- Isolated four-package tarball installation verified core/browser and CLI
+  assembly, typed refusals, source preservation and pinned synthetic metrics.
+  Receipt changes are engine-version labels only.
 
 ## [2.8.0] - 2026-09-12
 
