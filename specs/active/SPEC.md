@@ -1,7 +1,9 @@
 # Active work
 
-The command-line calculation context stage is complete. See
-[the archived contract](../archive/cli-calculation-context.md).
+The lease-up cash-flow proposal and executable example stage is complete.
+See [completion evidence](../archive/lease-up-cash-flow-proposal.md) and
+[draft RFC 0044](../../docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md).
 
-PR #184 is stacked on #183 and #182; review those in order. No new development
-stage is in flight. Package publication remains pending owner review.
+The next production step is implementing the bounded projection adapter after
+owner acceptance of that contract. Full DCF assembly has separate economic
+prerequisites. No production implementation task is currently in flight.

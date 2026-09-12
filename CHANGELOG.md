@@ -8,6 +8,15 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Proposed — explicit lease-up cash-flow projection
+
+- Draft RFC 0044 scopes verified stated lease-up amounts, explicit cash dates and
+  source-binding evidence. No production adapter or protocol change is included.
+- Add a runnable example and CLI smoke test using existing period/verifier/calendar
+  APIs. Keep the receipt/TI-LC stream distinct from full-property DCF and equity
+  returns; dates and the illustrative discount rate are explicit caller inputs.
+
+
 ### Added — command-line calculation context
 
 - `uwmd calc`, `uwmd refine` and `uwmd-excel` accept `--calc-context <JSON file>`

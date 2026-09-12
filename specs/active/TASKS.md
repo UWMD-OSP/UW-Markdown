@@ -1,7 +1,7 @@
 # Task matrix
 
-- [x] Complete CLI calculation context, endpoint regression, documentation and
-  all local verification gates; implementation and docs committed.
+- [x] Draft RFC 0044, executable example, CI regression, roadmap/docs and all
+  local verification gates — completed and committed.
 
-See [completion evidence](../archive/cli-calculation-context.md).
-No unchecked item is in flight.
+No unchecked task is in flight. Production adapter implementation awaits owner
+acceptance of the draft; complete DCF economics remain outside its scope.

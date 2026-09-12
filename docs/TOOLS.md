@@ -13,6 +13,9 @@ For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants
 and exact overrides in calc, refinement and explicit Excel export.
 
+For the next modeling step, the [lease-up cash-flow example](LEASE_UP_CASH_FLOW_WORKFLOW.md)
+verifies an explicitly dated partial stream using existing APIs.
+
 ## Decision tree
 
 | If you want to... | Reach for | Tier |
