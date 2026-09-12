@@ -1,13 +1,23 @@
-# Active work
+# Active contract: RFC 0045 core and CLI implementation
 
-The RFC 0045 proposal-writing stage is complete and its contract and verification
-are [archived](../archive/property-cash-flow-assembly-proposal.md).
-[PR #189](https://github.com/UWMD-OSP/UW-Markdown/pull/189) is ready for review.
+The owner requested continued development and selected a clearly labeled
+synthetic test ledger on 2026-09-12; real-deal validation follows separately.
+Implement RFC 0045's stated unlevered/pre-tax, single-currency assembly contract,
+including its exact section 8 plan/result/error types. No inferred financial
+inputs, formulas, tolerances, currency conversion or new dependencies.
 
-[RFC 0045](../../docs/rfcs/0045-explicit-property-cash-flow-assembly.md) remains
-**draft**. The next stage is review of its unlevered/pre-tax, single-currency
-scope and reserve boundary against an adopter supplemental cash ledger, followed
-by an exact plan/result/error contract. No implementation task is in flight.
+Authorized normative changes: Protocol 2.12.0, new VIII.9.6 text; the RFC 0045
+types in protocol.ts; CALC-CF-ASSEMBLY; and three plan/result/issue schemas,
+all in one commit. Format remains 2.0. Package release is a separate task.
+Core/browser exports and read-only `assemble-property` CLI consume that contract.
 
-Core/CLI 2.8.0 and Protocol 2.11.0 remain the released surfaces. The proposal
-does not authorize an implementation to infer missing financial inputs.
+Use a Format 2.0 synthetic ledger with complete category coverage, real purchase
+anchor, external reserve transfers and stated gross exit. Test refusal of missing
+coverage, overlapping rows, invalid dates/signs/basis, failed and unverifiable
+sources, snapshot mutation and same-date ordering. Preserve existing math and
+source bytes; verify returns through existing metric procedures only.
+
+Definition of done: implementation, independent conformance cases, schema/runtime
+agreement, CLI success/refusal, workflow docs and living status; all repository
+gates and CI green before merge. Keep synthetic evidence distinct from adopter
+validation and published APIs.

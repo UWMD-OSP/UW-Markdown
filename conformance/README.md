@@ -396,3 +396,11 @@ The default `lease-up-projection` suite exercises RFC 0044 explicit cash-date
 mapping and candidate output. See `lease-up-projection/README.md` for its
 self-contained source/plan/expected cases. Run it alone with
 `npm run conformance -- --tier=lease-up-projection` after building core.
+
+### Property cash-flow assembly (RFC 0045)
+
+The default `property-cash-flow-assembly` suite contains self-contained synthetic
+source/plan/expected triples. Cases exercise complete coverage, monthly/leap and
+same-date timing, reserve declarations, duplicates, currency, signs and original
+source-verifier refusals. These fixtures are engineering inputs, not real deals.
+Run `npm run conformance -- --tier=property-cash-flow-assembly` after building.

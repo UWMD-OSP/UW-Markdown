@@ -1,0 +1,127 @@
+{
+  "basis": "unlevered",
+  "tax_basis": "pre_tax",
+  "currency_code": "USD",
+  "day_count": "actual/365f",
+  "acquisition_date": "2026-07-01",
+  "disposition_date": "2026-12-31",
+  "lease_up": {
+    "source_variant": "base",
+    "currency_code": "USD",
+    "cash_dates": [
+      {
+        "period": "2026-Q3",
+        "date": "2026-09-30"
+      },
+      {
+        "period": "2026-Q4",
+        "date": "2026-12-31"
+      }
+    ]
+  },
+  "supplemental": {
+    "source_variant": "absent",
+    "currency_code": "USD"
+  },
+  "assertions": {
+    "cash_amounts_only": true,
+    "no_financing_or_investor_tax": true,
+    "no_overlapping_economic_amounts": true,
+    "reserve_spending_excluded": true,
+    "gross_sale_excludes_reserve_release": true,
+    "no_terminal_restricted_reserve": true,
+    "hold_only_and_exit_settled": true
+  },
+  "coverage": [
+    {
+      "slot": "acquisition",
+      "category": "purchase_price",
+      "rows": [
+        0
+      ]
+    },
+    {
+      "slot": "acquisition",
+      "category": "transaction_costs",
+      "rows": [
+        1
+      ]
+    },
+    {
+      "slot": "acquisition",
+      "category": "reserve_net",
+      "rows": [
+        2
+      ]
+    },
+    {
+      "slot": "2026-Q3",
+      "category": "other_income",
+      "rows": [
+        3
+      ]
+    },
+    {
+      "slot": "2026-Q3",
+      "category": "operating_expenses",
+      "rows": [
+        4
+      ]
+    },
+    {
+      "slot": "2026-Q3",
+      "category": "other_capex",
+      "zero": "Synthetic scenario explicitly has no cash flow in this category."
+    },
+    {
+      "slot": "2026-Q3",
+      "category": "reserve_net",
+      "zero": "Synthetic scenario explicitly has no cash flow in this category."
+    },
+    {
+      "slot": "2026-Q4",
+      "category": "other_income",
+      "zero": "Synthetic scenario explicitly has no cash flow in this category."
+    },
+    {
+      "slot": "2026-Q4",
+      "category": "operating_expenses",
+      "rows": [
+        5
+      ]
+    },
+    {
+      "slot": "2026-Q4",
+      "category": "other_capex",
+      "rows": [
+        6
+      ]
+    },
+    {
+      "slot": "2026-Q4",
+      "category": "reserve_net",
+      "zero": "Synthetic scenario explicitly has no cash flow in this category."
+    },
+    {
+      "slot": "disposition",
+      "category": "gross_sale",
+      "rows": [
+        7
+      ]
+    },
+    {
+      "slot": "disposition",
+      "category": "transaction_costs",
+      "rows": [
+        8
+      ]
+    },
+    {
+      "slot": "disposition",
+      "category": "reserve_net",
+      "rows": [
+        9
+      ]
+    }
+  ]
+}

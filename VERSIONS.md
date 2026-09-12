@@ -20,6 +20,9 @@ same protocol version.
 
 ## Current matrix
 
+Source Protocol 2.12.0 adds RFC 0045. Published core/CLI 2.8.0 still expose
+Protocol 2.11.0; the next package release will publish the new API.
+
 Release 2.8.0 pairs core/CLI 2.8.0 with Protocol 2.11.0 and Format 2.0.
 Core/CLI 2.8.0, signing 0.2.12 and batch 0.8.7 are published on npm and verified
 by a clean installation. The `v2.8.0` trusted-publishing workflow publishes those
@@ -29,7 +32,7 @@ unpublished. Package, Format and Protocol versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.11.0** | format ≥ 1.0 (explicit lease-up cash-flow projection, RFC 0044) |
+| UW Protocol | **2.12.0** | format ≥ 1.0 (property cash-flow assembly, RFC 0045; source implementation, not yet published) |
 | `@uwmd/core` | **2.8.0** | format 2.0 (reads 1.x), protocol 2.11.0 |
 | `@uwmd/cli` (CLI) | **2.8.0** | `@uwmd/core` 2.8.0 |
 | `@uwmd/excel` | **0.9.0** (unpublished) | `@uwmd/core` 2.8.x, format 2.0, explicit contextual calculations |

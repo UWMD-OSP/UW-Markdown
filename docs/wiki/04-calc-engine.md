@@ -376,3 +376,18 @@ The partial receipt/TI-LC stream is not NOI or complete property/equity cash flo
 Typed `CALC-LU-PROJECTION` refusals preserve failed/unverifiable evidence. See
 the [API and CLI example](../LEASE_UP_CASH_FLOW_WORKFLOW.md). Source Protocol
 2.11.0 is implemented and published in core/CLI 2.8.0.
+
+## Property cash-flow assembly (RFC 0045, source Protocol 2.12.0)
+
+`assemblePropertyCashFlows` in `property-cash-flows.ts` snapshots the document
+and plan, validates the supplemental ledger before hashing, consumes RFC 0044,
+checks full coverage and copies signed rows with stable same-date ordering.
+It adds no financial math. Existing dated metric APIs consume its generic series;
+retain the wrapper for currency, basis and declared completeness.
+
+The core/browser API and `assemble-property` CLI use typed `CALC-CF-ASSEMBLY`
+errors with original nested verifier evidence. Missing/overlapping coverage,
+unknown amounts, unsupported economic assertions and out-of-hold cash refuse.
+Three new schemas and the normative VIII.9.6 text mirror the public types.
+The [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md) uses explicitly synthetic data;
+real-deal validation and the next package publication remain separate.

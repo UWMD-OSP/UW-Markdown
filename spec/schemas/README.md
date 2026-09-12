@@ -74,3 +74,12 @@ of this table before that check existed, which is why it does now.
 
 Schemas check shape. Implementations additionally check exact period coverage,
 real calendar dates, source-order timing, verified amounts and digest agreement.
+
+## Property cash-flow assembly (RFC 0045)
+
+- [Plan](property-cash-flow-plan.schema.json): explicit sources, hold dates, basis and coverage.
+- [Assembly](property-cash-flow-assembly.schema.json): copied cash rows and complete declared coverage evidence.
+- [Refusal](property-cash-flow-assembly-issue.schema.json): typed stage reason and nested diagnostics.
+
+Schemas check shape; source identity, complete coverage and economic assertions
+need semantic validation. Declared completeness is not verified economics.

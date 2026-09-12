@@ -8,6 +8,12 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- RFC 0045 / Protocol 2.12.0: candidate-only property cash-flow assembly, explicit
+  unlevered/pre-tax coverage and source evidence, with a read-only CLI. The
+  synthetic example is engineering data; real-deal validation remains separate.
+
 ## [2.8.0] - 2026-09-12
 
 ### Released

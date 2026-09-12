@@ -1,0 +1,476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/property-cash-flow-assembly.schema.json",
+  "title": "property-cash-flow-assembly",
+  "description": "RFC 0045 / Protocol VIII.9.6. Shape validation; coverage, signs, dates, source verification and cross-field agreement require semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_envelope_digest",
+    "plan",
+    "coverage",
+    "series",
+    "bindings",
+    "cells",
+    "source_verification"
+  ],
+  "properties": {
+    "source_envelope_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "tax_basis",
+        "currency_code",
+        "day_count",
+        "acquisition_date",
+        "disposition_date",
+        "lease_up",
+        "supplemental",
+        "assertions",
+        "coverage"
+      ],
+      "properties": {
+        "basis": {
+          "const": "unlevered"
+        },
+        "tax_basis": {
+          "const": "pre_tax"
+        },
+        "currency_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "day_count": {
+          "enum": [
+            "actual/365f",
+            "actual/360",
+            "30/360us"
+          ]
+        },
+        "acquisition_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "format": "date"
+        },
+        "disposition_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "format": "date"
+        },
+        "lease_up": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_variant",
+            "currency_code",
+            "cash_dates"
+          ],
+          "properties": {
+            "source_variant": {
+              "type": "string",
+              "minLength": 1
+            },
+            "currency_code": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "cash_dates": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "period",
+                  "date"
+                ],
+                "properties": {
+                  "period": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-(Q[1-4]|0[1-9]|1[0-2])$"
+                  },
+                  "date": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "supplemental": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_variant",
+            "currency_code"
+          ],
+          "properties": {
+            "source_variant": {
+              "type": "string",
+              "minLength": 1
+            },
+            "currency_code": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            }
+          }
+        },
+        "assertions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cash_amounts_only",
+            "no_financing_or_investor_tax",
+            "no_overlapping_economic_amounts",
+            "reserve_spending_excluded",
+            "gross_sale_excludes_reserve_release",
+            "no_terminal_restricted_reserve",
+            "hold_only_and_exit_settled"
+          ],
+          "properties": {
+            "cash_amounts_only": {
+              "const": true
+            },
+            "no_financing_or_investor_tax": {
+              "const": true
+            },
+            "no_overlapping_economic_amounts": {
+              "const": true
+            },
+            "reserve_spending_excluded": {
+              "const": true
+            },
+            "gross_sale_excludes_reserve_release": {
+              "const": true
+            },
+            "no_terminal_restricted_reserve": {
+              "const": true
+            },
+            "hold_only_and_exit_settled": {
+              "const": true
+            }
+          }
+        },
+        "coverage": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "slot",
+                  "category",
+                  "rows"
+                ],
+                "properties": {
+                  "slot": {
+                    "type": "string",
+                    "pattern": "^(acquisition|disposition|\\d{4}-(Q[1-4]|0[1-9]|1[0-2]))$"
+                  },
+                  "category": {
+                    "enum": [
+                      "rent",
+                      "concessions",
+                      "ti_lc",
+                      "other_income",
+                      "operating_expenses",
+                      "other_capex",
+                      "reserve_net",
+                      "purchase_price",
+                      "transaction_costs",
+                      "gross_sale"
+                    ]
+                  },
+                  "rows": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "slot",
+                  "category",
+                  "zero"
+                ],
+                "properties": {
+                  "slot": {
+                    "type": "string",
+                    "pattern": "^(acquisition|disposition|\\d{4}-(Q[1-4]|0[1-9]|1[0-2]))$"
+                  },
+                  "category": {
+                    "enum": [
+                      "rent",
+                      "concessions",
+                      "ti_lc",
+                      "other_income",
+                      "operating_expenses",
+                      "other_capex",
+                      "reserve_net",
+                      "purchase_price",
+                      "transaction_costs",
+                      "gross_sale"
+                    ]
+                  },
+                  "zero": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "coverage": {
+      "const": "declared_complete"
+    },
+    "series": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "day_count",
+        "series"
+      ],
+      "properties": {
+        "label": {
+          "const": "Unlevered pre-tax property cash flow"
+        },
+        "day_count": {
+          "enum": [
+            "actual/365f",
+            "actual/360",
+            "30/360us"
+          ]
+        },
+        "series": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "amount",
+              "kind",
+              "label"
+            ],
+            "properties": {
+              "date": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "format": "date"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "kind": {
+                "const": "other"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "output_row_index",
+          "source_section",
+          "source_variant",
+          "source_path",
+          "date",
+          "amount",
+          "cells"
+        ],
+        "properties": {
+          "output_row_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "source_section": {
+            "enum": [
+              "lease_up_schedule",
+              "cash_flow_series"
+            ]
+          },
+          "source_variant": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "format": "date"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "cells": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "slot",
+                "category"
+              ],
+              "properties": {
+                "slot": {
+                  "type": "string",
+                  "pattern": "^(acquisition|disposition|\\d{4}-(Q[1-4]|0[1-9]|1[0-2]))$"
+                },
+                "category": {
+                  "enum": [
+                    "rent",
+                    "concessions",
+                    "ti_lc",
+                    "other_income",
+                    "operating_expenses",
+                    "other_capex",
+                    "reserve_net",
+                    "purchase_price",
+                    "transaction_costs",
+                    "gross_sale"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "slot",
+              "category",
+              "output_rows"
+            ],
+            "properties": {
+              "slot": {
+                "type": "string",
+                "pattern": "^(acquisition|disposition|\\d{4}-(Q[1-4]|0[1-9]|1[0-2]))$"
+              },
+              "category": {
+                "enum": [
+                  "rent",
+                  "concessions",
+                  "ti_lc",
+                  "other_income",
+                  "operating_expenses",
+                  "other_capex",
+                  "reserve_net",
+                  "purchase_price",
+                  "transaction_costs",
+                  "gross_sale"
+                ]
+              },
+              "output_rows": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "slot",
+              "category",
+              "zero"
+            ],
+            "properties": {
+              "slot": {
+                "type": "string",
+                "pattern": "^(acquisition|disposition|\\d{4}-(Q[1-4]|0[1-9]|1[0-2]))$"
+              },
+              "category": {
+                "enum": [
+                  "rent",
+                  "concessions",
+                  "ti_lc",
+                  "other_income",
+                  "operating_expenses",
+                  "other_capex",
+                  "reserve_net",
+                  "purchase_price",
+                  "transaction_costs",
+                  "gross_sale"
+                ]
+              },
+              "zero": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "source_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lease_up",
+        "supplemental_metrics"
+      ],
+      "properties": {
+        "lease_up": {
+          "const": "verified"
+        },
+        "supplemental_metrics": {
+          "enum": [
+            "verified",
+            "not_stated"
+          ]
+        }
+      }
+    }
+  }
+}

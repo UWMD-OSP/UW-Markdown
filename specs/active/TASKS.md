@@ -1,8 +1,7 @@
-# Task matrix
+# Task matrix — RFC 0045
 
-- [x] Draft and verify RFC 0045, reconcile roadmap/status, commit and open review PR #189 — `4a081fe`.
+- [ ] Implement and verify the accepted synthetic-ledger core/CLI contract, normative triad and documentation; commit and run CI. **In flight.**
+- [ ] Reconcile implementation and publication status after the verified change lands.
 
-The completed stage is archived in
-`specs/archive/property-cash-flow-assembly-proposal.md`.
-RFC acceptance and an adopter ledger remain next-stage prerequisites; no
-implementation or release task is in flight.
+The owner selected synthetic engineering fixtures; real-deal validation is a
+separate follow-up, not a claim this implementation can make.
