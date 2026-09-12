@@ -10,11 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ## [2.8.0] - 2026-09-12
 
-### Release preparation
+### Released
 
 Core and CLI **2.8.0** package the merged RFCs 0042–0044. Protocol remains
-**2.11.0** and Format remains **2.0**. Publication is pending the `v2.8.0` tag
-and successful trusted-publishing workflow. Signing **0.2.12** and batch
+**2.11.0** and Format remains **2.0**. The `v2.8.0` tag and trusted-publishing workflow published core, CLI,
+signing and batch; clean registry installation was verified. Signing **0.2.12** and batch
 **0.8.7** repin core; unpublished report **0.8.12**, Excel **0.9.0** and the
 two **0.1.0** reference modules remain outside the publication workflow.
 
@@ -40,8 +40,8 @@ two **0.1.0** reference modules remain outside the publication workflow.
 ### Verification and documentation
 
 - 1,931 workspace tests, 441 default plus 76 declarative conformance checks,
-  and 31 JSON schemas pass for the merged source. All release gates are rerun
-  after repinning. Receipt changes are engine labels only; financial digests,
+  and 31 JSON schemas pass after repinning, along with the full release gates
+  and clean tarball/registry installation smoke checks. Receipt changes are engine labels only; financial digests,
   formulas and precision boundaries remain unchanged.
 - Independently verified PCG64 against NumPy 1.26.4: 11 seeds, 11,264 raw draws
   and 176 doubles. Reconciled roadmap/status and added executable consumer guides.

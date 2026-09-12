@@ -1,7 +1,7 @@
 ---
 rfc: 0044
 title: Project verified lease-up amounts onto explicitly stated cash dates
-status: accepted
+status: implemented
 author: codex
 created: 2026-09-12
 affects:
@@ -15,15 +15,14 @@ affects:
 
 ## Summary
 
-Define a browser-safe adapter that copies a selected, verified lease-up
-schedule's stated `net_cash_flow` amounts into a dated `CashFlowSeries`, using
-one explicitly supplied cash date per source period. Return binding evidence
-alongside the candidate payload. This is a partial receipt/TI-LC stream; it does
-not create a complete DCF, NOI, property cash flow or equity return.
+A browser-safe adapter copies a selected, verified lease-up schedule's stated
+`net_cash_flow` amounts into a dated `CashFlowSeries`, using one explicitly
+supplied cash date per source period. Candidate output includes source-digest
+and binding evidence. It represents rent receipts, concessions and TI/LC only.
 
-**Owner accepted 2026-09-12; merged in PR #186.** Included in the 2.8.0
-package release candidate with Protocol 2.11.0. Publication remains pending;
-RFC status becomes implemented upon registry confirmation.
+Implemented and published in core/CLI **2.8.0** on 2026-09-12, with
+Protocol **2.11.0** and Format **2.0**. See
+[release verification](../reviews/2026-09-12-release-2.8.0.md).
 
 ## Motivation
 

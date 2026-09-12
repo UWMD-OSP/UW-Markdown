@@ -134,8 +134,8 @@ uwmd verify deal.uwx.md --signing --keystore=./keystore.json
 `signReceipt` + `createReceiptSignatureVerifier`, which is what made receipt
 signing real. Key distribution is out of scope by design — the JSON key store
 in `keystore-file.ts` is a reference format, and an adopter backing a `KeyStore`
-with an HSM never touches it. **Unpublished**, like excel/report/batch; the
-npm release scope is core + cli only.
+with an HSM never touches it. **Published:** signing 0.2.12 pairs with core
+2.8.0. The release workflow publishes core, CLI, signing and batch.
 
 The CLI reaches it by dynamic import as an optional peer, so core takes no
 dependency on a sibling package.
@@ -443,5 +443,4 @@ The plan requires exact `source_variant`, registered `day_count`, and one
 Success exits 0. Typed refusals exit 1; `--json` retains the nested verifier or
 structural evidence in an `error` object. Unsupported write flags refuse.
 See the [workflow](../LEASE_UP_CASH_FLOW_WORKFLOW.md) for the supplied plan,
-browser-safe API and economic limits. Available from this source checkout;
-published CLI 2.7.0 does not yet include the command.
+browser-safe API and economic limits. Included in published core/CLI 2.8.0.

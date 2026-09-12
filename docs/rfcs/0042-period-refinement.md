@@ -1,7 +1,7 @@
 ---
 rfc: 0042
 title: Stated period inputs in refinement
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-09-12
 affects:
@@ -11,9 +11,9 @@ affects:
 
 # RFC 0042: Stated period inputs in refinement
 
-Accepted and merged in PR #182. Included in the
-2.8.0 package release candidate; publication remains pending. Current source
-Protocol is 2.11.0; Format remains 2.0.
+Implemented and published in core/CLI **2.8.0** on 2026-09-12, with
+Protocol **2.11.0** and Format **2.0**. See
+[release verification](../reviews/2026-09-12-release-2.8.0.md).
 
 ## Outcome
 

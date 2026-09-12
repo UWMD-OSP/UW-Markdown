@@ -1,14 +1,14 @@
 # Roadmap
 
-Current as of **2026-09-12**, following [release 2.7.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.7.0).
+Current as of **2026-09-12**, following [release 2.8.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.8.0).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
 ## Current release
 
-Core/CLI **2.7.0**, signing **0.2.11** and batch **0.8.6** are published on npm.
-Format is **2.0** and Protocol is **2.8.0**; the version streams are independent.
+Core/CLI **2.8.0**, signing **0.2.12** and batch **0.8.7** are published on npm.
+Format is **2.0** and Protocol is **2.11.0**; the version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -30,6 +30,8 @@ packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 | Financial structures | Released | Asset-class packs, typed capital stacks, calendar cash flows and xirr/xnpv, lease-up schedules, distribution waterfalls and LP IRR hurdles. |
 | Signed block roles — RFC 0040 | Released in 2.7.0 | Role-aware cross-check selection, component exclusion, trusted edits and coverage evidence; introduced Protocol 2.7.0. |
 | Explicit period addressing — RFC 0041 | Released in 2.7.0 | Named holding years and absolute month/quarter/date selectors on five standard series; Protocol 2.8.0. |
+| Period consumers — RFCs 0042/0043 | Core APIs released in 2.8.0 | Fixed stated refinement inputs, explicit variants/overrides and contextual workbook binding APIs. Native Excel verified; standalone Excel package remains unpublished. |
+| Explicit lease-up projection — RFC 0044 | Released in 2.8.0 | Complete explicit cash-date mapping of verified stated amounts, semantic source digest and binding evidence; read-only API and CLI. |
 | Supporting tools and modules | Implemented | Web editor/viewer, docs site, VS Code extension, Excel/report packages and hospitality/data-center reference modules. Publication varies; see the matrix. |
 
 See the [RFC index](docs/rfcs/README.md) and [changelog](CHANGELOG.md) for the
@@ -42,24 +44,20 @@ does not mean its standalone npm package is published.
 |---|---|---|
 | Current roadmap and status reconciliation | Merged in PR #181 | Historical launch plans archived; implemented/published/proposed states separated; RFC 0040/0041 marked implemented. |
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
-| Period consumers | Merged; release pending | [RFC 0042](docs/rfcs/0042-period-refinement.md) adds fixed stated refinement inputs; [RFC 0043](docs/rfcs/0043-contextual-excel-period-bindings.md) adds explicit workbook export, verified in native Excel. Publication remains pending. |
-
-The CLI context stage exposes these consumers through `--calc-context` files,
-including shape validation and explicit refusal of unsupported refinement
-overrides. It is merged source implementation; publication is pending.
+| Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. [Publication and installation evidence](docs/reviews/2026-09-12-release-2.8.0.md). |
 
 ## Forward backlog
 
-The bounded RFC 0042 refinement and RFC 0043 Excel stages are merged; release pending, with package
-publication pending. The remaining order guides the next planning decision;
-the 2.8.0 package release is in preparation. No new financial model is committed.
+The bounded period-consumer and lease-up projection stages are complete. The
+next modeling work needs explicit economic inputs and a concrete adopter case;
+no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Contextual period support in downstream tools | Merged; release pending | RFCs 0042/0043 are accepted and merged. Native Excel verification passes; period defaults, structural workbook edits, reverse import and custom function export remain separate extensions. |
-| 2 | Lease-up / DCF integration | Bounded projection merged; release pending | [RFC 0044](docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md) provides the API, read-only CLI, explicit dates and source evidence. See the [workflow](docs/LEASE_UP_CASH_FLOW_WORKFLOW.md); full DCF still needs economic coverage, valuation anchor and double-count rules. |
-| 3 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
-| 4 | Waterfall extensions | Deferred | RFC 0035/0036 left clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles for separate contracts. Each needs exact economic rules and conformance cases. |
+| 1 | Full DCF assembly | Contract needed | Pin valuation anchor, expense/reserve/capital coverage, acquisition/disposition, financing basis, currency identity and double-count prevention. RFC 0044 supplies only a partial rent/concession/TI-LC stream. |
+| 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
+| 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
+| 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |
 | 5 | Currency-code disambiguation | Deferred | Define currency identity independently from display locale before combining cross-currency values. |
 
 ### Mixed-use and speculative leasing

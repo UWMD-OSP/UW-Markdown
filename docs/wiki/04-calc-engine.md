@@ -360,7 +360,7 @@ CALC-PERIOD error code. Unaffected outputs remain rankable. The member is omitte
 for scalar-only targets and is an empty array for successfully resolved period
 inputs. `diagnostics.resolved` counts dependency entries, not known numeric values.
 Literal ordinary @ keys use a separate environment even when graph strings
-coincide with selector paths. Package publication is pending; the published
+coincide with selector paths. Core/CLI 2.8.0 publishes these consumers; the historical
 core 2.7.0 behavior is preserved in RFC 0041's release record.
 
 ## Explicit lease-up projection (RFC 0044)
@@ -375,4 +375,4 @@ the full semantic envelope digest and period/variant binding evidence.
 The partial receipt/TI-LC stream is not NOI or complete property/equity cash flow.
 Typed `CALC-LU-PROJECTION` refusals preserve failed/unverifiable evidence. See
 the [API and CLI example](../LEASE_UP_CASH_FLOW_WORKFLOW.md). Source Protocol
-2.11.0 is implemented for review; package publication remains pending.
+2.11.0 is implemented and published in core/CLI 2.8.0.

@@ -1,6 +1,7 @@
-# Release 2.8.0 tasks
+# Task matrix
 
-- [ ] In flight: prepare versions, pins, receipt metadata and release docs;
-  install, run all gates, smoke-test packed artifacts and commit the release PR.
-- [ ] Merge the green release PR, tag v2.8.0 and verify trusted publication.
-- [ ] Verify clean npm installation and reconcile published documentation.
+- [x] Prepare and verify 2.8.0 — `d3b8616`, PR #187.
+- [x] Merge, tag and publish — v2.8.0, successful workflow 34712529152.
+- [x] Verify clean npm installation and reconcile published documentation — `a41e3bd`.
+
+All tasks are complete; see `specs/archive/release-2.8.0.md`.

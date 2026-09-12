@@ -1,10 +1,11 @@
 # Period consumers — implementation and remaining scope
 
-Status: **refinement and numeric Excel export implemented for owner review** in
+Status: **refinement and the core Excel binding contract published in 2.8.0**.
 [RFC 0042](../rfcs/0042-period-refinement.md) and
-[RFC 0043](../rfcs/0043-contextual-excel-period-bindings.md), 2026-09-12.
-Source Protocol is 2.11.0. Published core/CLI 2.7.0 still pairs with Protocol
-2.8.0; no new package publication is included in these development PRs.
+[RFC 0043](../rfcs/0043-contextual-excel-period-bindings.md) are implemented.
+Core/CLI 2.8.0 pairs with Protocol 2.11.0 and Format 2.0. The verified numeric
+Excel exporter is available in source **0.9.0**; standalone npm publication
+remains demand-gated.
 
 ## Implemented outcome
 

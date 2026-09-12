@@ -1,7 +1,7 @@
 ---
 rfc: 0043
 title: Contextual Excel period bindings
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-09-12
 affects:
@@ -12,9 +12,10 @@ affects:
 
 # RFC 0043: Contextual Excel period bindings
 
-Accepted and merged in PR #183. Included in the
-2.8.0 package release candidate; publication remains pending. Current source
-Protocol is 2.11.0; Format remains 2.0.
+Implemented and published in core/CLI **2.8.0** on 2026-09-12, with
+Protocol **2.11.0** and Format **2.0**. The core binding API is published;
+standalone Excel **0.9.0** remains unpublished and available from source. See
+[release verification](../reviews/2026-09-12-release-2.8.0.md).
 
 ## Outcome
 
