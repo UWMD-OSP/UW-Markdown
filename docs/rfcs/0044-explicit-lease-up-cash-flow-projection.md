@@ -21,10 +21,9 @@ one explicitly supplied cash date per source period. Return binding evidence
 alongside the candidate payload. This is a partial receipt/TI-LC stream; it does
 not create a complete DCF, NOI, property cash flow or equity return.
 
-**Owner accepted 2026-09-12.** Implemented for review in source Protocol
-2.11.0, with synchronized types, schemas, CLI and conformance coverage.
-Published core/CLI remain 2.7.0 with Protocol 2.8.0; package publication and
-the PR merge are pending. RFC status becomes implemented upon release.
+**Owner accepted 2026-09-12; merged in PR #186.** Included in the 2.8.0
+package release candidate with Protocol 2.11.0. Publication remains pending;
+RFC status becomes implemented upon registry confirmation.
 
 ## Motivation
 

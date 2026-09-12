@@ -3,7 +3,7 @@
 Status: **refinement and numeric Excel export implemented for owner review** in
 [RFC 0042](../rfcs/0042-period-refinement.md) and
 [RFC 0043](../rfcs/0043-contextual-excel-period-bindings.md), 2026-09-12.
-Source Protocol is 2.10.0. Published core/CLI 2.7.0 still pairs with Protocol
+Source Protocol is 2.11.0. Published core/CLI 2.7.0 still pairs with Protocol
 2.8.0; no new package publication is included in these development PRs.
 
 ## Implemented outcome
