@@ -19,6 +19,7 @@ import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 interface ParsedArgs {
   input: string;
   output: string;
+  calculations?: string[];
 }
 
 interface ImportArgs {
@@ -34,9 +35,15 @@ function parseArgs(argv: readonly string[]): ParsedArgs | ImportArgs | { error: 
   }
   let input: string | undefined;
   let output: string | undefined;
+  let calculations: string[] | undefined;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '-o' || a === '--output') {
+    if (a === '--calculations') {
+      const value = argv[++i];
+      if (!value || value.startsWith('-')) return { error: '--calculations requires comma-separated custom calculation IDs' };
+      calculations = value.split(',').map(id => id.trim()).filter(Boolean);
+      if (!calculations.length) return { error: '--calculations requires at least one ID' };
+    } else if (a === '-o' || a === '--output') {
       output = argv[++i];
       if (!output) return { error: `${a} requires a path` };
     } else if (a === '-h' || a === '--help') {
@@ -54,15 +61,14 @@ function parseArgs(argv: readonly string[]): ParsedArgs | ImportArgs | { error: 
   const outputAbs = output
     ? resolve(output)
     : join(dirname(inputAbs), defaultOutputName(inputAbs));
-  return { input: inputAbs, output: outputAbs };
+  return { input: inputAbs, output: outputAbs, calculations };
 }
 
 function defaultOutputName(inputPath: string): string {
   const base = basename(inputPath);
   // Strip .uw.md or .md, leave the rest.
-  const stripped = base.endsWith('.uw.md')
-    ? base.slice(0, -'.uw.md'.length)
-    : base.slice(0, -extname(base).length);
+  const sourceExtension = base.endsWith('.uwx.md') ? '.uwx.md' : base.endsWith('.uw.md') ? '.uw.md' : extname(base);
+  const stripped = base.slice(0, -sourceExtension.length);
   return `${stripped}.xlsx`;
 }
 
@@ -78,6 +84,7 @@ function printHelp(): void {
       '',
       'Options:',
       '  -o, --output <path>   Output .xlsx path (defaults next to input)',
+      '  --calculations <ids>  Export selected numeric custom calculations and their period inputs',
       '  --import <path>       Print editable section payloads from a converter workbook',
       '  -h, --help            Show this help',
       '',
@@ -117,7 +124,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     return 1;
   }
 
-  const wb = await toWorkbook(parsed);
+  const wb = await toWorkbook(parsed, { calculations: args.calculations });
   await wb.xlsx.writeFile(args.output);
   process.stdout.write(`${args.output}\n`);
   return 0;

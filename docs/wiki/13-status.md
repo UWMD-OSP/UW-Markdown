@@ -4,7 +4,7 @@ Reconciled **2026-09-12** against main/tag **v2.7.0** at `560c2aa` and its
 successful release workflow. Core/CLI **2.7.0**, signing **0.2.11** and batch
 **0.8.6** are published and were smoke-tested from a clean npm install.
 Format **2.0** and Protocol **2.8.0** version independently in that release.
-The current source adds Protocol **2.9.0** / RFC 0042; package publication is pending.
+The current source adds Protocol **2.10.0** / RFCs 0042–0043; package publication is pending.
 
 Use [VERSIONS.md](../../VERSIONS.md) for current versions and
 [ROADMAP.md](../../ROADMAP.md) for priorities. The detailed notes accumulated
@@ -51,7 +51,10 @@ conformance baseline or calculation digest changes.
 refinement across all five registered series. Ordinary scalar gaps remain ranked;
 missing/nonnumeric/invalid period inputs produce per-output diagnostics and never
 receive inferred defaults. Exact variants and full-path overrides are supported.
-Excel bindings remain a separate next stage. No financial model changes.
+[RFC 0043](../rfcs/0043-contextual-excel-period-bindings.md) adds explicit numeric
+custom-calculation workbook export with all five period series, identity lookup,
+missing/invalid guards, variants and overrides. Native Excel passed 14 scenarios
+and 48 cell checks. No financial model changes; package publication is pending.
 
 RFC 0042 local verification: **1,827 workspace tests** (33 new acceptance cases),
 **426 default + 76 declarative conformance checks**, **26 JSON schemas**, build,
@@ -62,7 +65,7 @@ build. Only receipt protocol labels changed in the conformance baselines.
 
 | Area | Current limitation | Next condition |
 |---|---|---|
-| Period addressing | Source refinement supports fixed stated values; Excel still refuses selectors. No period defaults/ranges. | Review RFC 0042, then specify the [workbook bindings](../roadmap/period-consumers.md). |
+| Period addressing | Source refinement and explicit numeric workbook export support stated period values. No period defaults/ranges. | Review RFCs 0042/0043; reverse import, structural workbook edits and custom functions remain separate. |
 | Refinement | Marginal perturbation is approximate; stochastic VOI and stage-blocking ranking are not implemented. | Define the ranking/default contract before expanding output claims. |
 | Lease-up | Excel emission and DCF coupling remain follow-ups. | Specify schedule-to-cash-flow timing and fixtures. |
 | Speculative leasing | No renewal/vacancy/market-reset/TI/LC rollover engine. | Adopter example and accepted modeling contract. |

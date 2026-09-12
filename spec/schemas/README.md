@@ -38,6 +38,8 @@ files live in this directory pending publication on `uwmd.org`.
 | [`period-key.schema.json`](period-key.schema.json) | `PeriodKey` | Protocol §VIII.2a / RFC 0041 |
 | [`period-series-entry.schema.json`](period-series-entry.schema.json) | `PeriodSeriesEntry` | Protocol §VIII.2a / RFC 0041 |
 | [`period-refinement-issue.schema.json`](period-refinement-issue.schema.json) | `PeriodRefinementIssue` | Protocol §VIII.2b / RFC 0042 |
+| [`period-excel-binding.schema.json`](period-excel-binding.schema.json) | `PeriodExcelBinding` | Protocol §VIII.2c / RFC 0043 |
+| [`period-column-snapshot.schema.json`](period-column-snapshot.schema.json) | `PeriodColumnSnapshot` | Protocol §VIII.2c / RFC 0043 |
 
 ## Validating a schema
 

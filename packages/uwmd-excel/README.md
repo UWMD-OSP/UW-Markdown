@@ -72,3 +72,29 @@ add sheets, restyle, or pipe to a stream.
 expense line items, named inputs, derived-metric formulas. The converter in
 `src/toWorkbook.ts` is generic; everything asset-class-specific lives in the
 layout module.
+
+
+## Explicit period/custom-calculation export (RFC 0043, source implementation)
+
+```ts
+const workbook = await toWorkbook(parsed, {
+  calculations: ['year_three_noi_per_unit'],
+  calculationContext: { sectionVariants: { dcf: 'base' } },
+});
+```
+
+```sh
+uwmd-excel deal.uwx.md --calculations year_three_noi_per_unit -o deal.xlsx
+```
+
+Only requested IDs export. Numeric literals, paths, period selectors, unary
+minus and arithmetic +, -, *, / are supported. Existing pack sheets are unchanged.
+Shared inputs are editable and period lookup survives whole-row sorting. Missing
+values are #N/A, invalid identities/nonnumeric inputs are #VALUE!, and zero stays
+zero. Change the period set in the source document and re-export. Exact variants
+and full-path overrides, including null, apply only to the additional calculations.
+
+These additional inputs are export-only: reverse import explicitly refuses a
+marked extended workbook. This protects against silently discarding their edits.
+See RFC 0043 and scripts/verify-excel-periods.ps1 for native Excel verification.
+This source implementation does not imply a new standalone package publication.

@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.9.0' as const;
+export const PROTOCOL_VERSION = '2.10.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -1008,6 +1008,20 @@ export const PERIOD_SERIES: readonly PeriodSeriesEntry[] = Object.freeze([
   Object.freeze({ path: 'cash_flow_series.series', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.26' } as const),
   Object.freeze({ path: 'distribution_waterfall.stated_schedule', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.27' } as const),
 ]);
+
+/** Trusted workbook names bound to one canonical selector path (RFC 0043). */
+export type PeriodExcelBinding =
+  | { kind: 'series'; keys_range: string; values_range: string; valid_range: string }
+  | { kind: 'override'; value_range: string };
+
+/** Complete selected series projected onto one literal leaf path, before rounding. */
+export interface PeriodColumnSnapshot {
+  reference: string;
+  series_path: string;
+  variant: string | null;
+  selector_identity: string;
+  rows: Array<{ identity: string; value: unknown }>;
+}
 
 /** An output excluded from refinement because a stated period input is unavailable. */
 export interface PeriodRefinementIssue {

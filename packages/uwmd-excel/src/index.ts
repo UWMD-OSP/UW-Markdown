@@ -1,5 +1,6 @@
 // Public API for @uwmd/excel.
 
+export type { ToWorkbookOptions } from './custom-calculations.js';
 export { toWorkbook, UnsupportedAssetClassError } from './toWorkbook.js';
 export { fromWorkbook, WorkbookImportError } from './fromWorkbook.js';
 export type { WorkbookImport } from './fromWorkbook.js';
