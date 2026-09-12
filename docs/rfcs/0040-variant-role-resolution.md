@@ -13,6 +13,15 @@ affects:
 
 # RFC 0040: Variant roles — resolve cross-checks by a declared role, not a key name
 
+> **Implementation-readiness review (2026-09-11):** this remains a draft.
+> The current v2 metadata reshape drops `_meta.role`; changing that role does
+> not change a v2 block hash. The proposed revision uses a block-level `_role`
+> annotation, pending the owner's field-location decision. The draft below also
+> needs its scalar-role contradiction and per-section coverage details resolved.
+> See the [code-grounded review](../reviews/2026-09-11-rfc-0040-0041-readiness.md).
+> Do not implement the unreconciled draft as written.
+
+
 > RFC 0037 made cross-check resolution over a variant map deterministic:
 > a check reads the variant it prefers, else `default`, else `base`, else
 > the sole variant, else nothing — reported once as `CC-16`. That was the

@@ -13,6 +13,14 @@ affects:
 
 # RFC 0041: Period-indexed addressing — one period axis over the format's per-period series
 
+> **Implementation-readiness review (2026-09-11):** this remains queued after
+> RFC 0040, not accepted. Calendar identity, duplicate resolution, calc AST
+> traversal, variant context, module registration, and the next available
+> protocol minor need reconciliation before implementation. See the
+> [code-grounded review](../reviews/2026-09-11-rfc-0040-0041-readiness.md).
+> The original proposal follows as the input to that revision.
+
+
 > The format carries per-period data in **four unrelated dialects**:
 > positional rows with a `year` field (`dcf.annual_cash_flows[N]`),
 > year-keyed objects (`noi_model.projections.year_N`), calendar period
