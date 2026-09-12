@@ -525,6 +525,7 @@ export { generateBlankUWFile } from './init.js';
 export { resolveValue, readInFile } from './cascade.js';
 export type { CascadeContext, ResolvedValue } from './cascade.js';
 export { rankGaps } from './refinement.js';
+export type { PeriodRefinementIssue } from './protocol.js';
 export type {
   RankGapsOptions,
   RankGapsResult,

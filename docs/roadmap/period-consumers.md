@@ -1,8 +1,10 @@
 # Period consumers — next implementation brief
 
-Status: **planning brief, not an accepted RFC**. Reconciled against release
-2.7.0 / Protocol 2.8.0 on 2026-09-12. The current explicit Excel/refinement
-refusals remain correct behavior until a consumer contract is accepted.
+Status: **workbook planning brief; refinement stage implemented for review in
+[RFC 0042](../rfcs/0042-period-refinement.md)**. Reconciled after PR #181 on
+2026-09-12. Published core 2.7.0 / Protocol 2.8.0 still refuses both consumers;
+the source adds bounded period refinement under Protocol 2.9.0. Workbook binding
+decisions below remain proposals. No package release is included in this stage.
 
 ## User outcome
 
@@ -19,7 +21,7 @@ not create speculative lease cash flows.
 | Reference resolution | `packages/uwmd-core/src/period-path.ts` | Canonical identity, full-series duplicate/malformed checks and explicit/generic variants exist. |
 | Excel formula emission | `packages/uwmd-core/src/packs/excel-emit.ts` | ExcelEmitOptions contains only a static named-range map; period_path raises EXCEL-EMIT-PATH. |
 | Workbook construction | `packages/uwmd-excel/src/toWorkbook.ts`, `layout.ts` | Class layouts construct named ranges and pack metrics. There is no common period-series table/binding contract for all five series or general custom-calculation export. |
-| Refinement | `packages/uwmd-core/src/refinement.ts` | Its numeric interpreter rejects period_path; every dependency goes through generic resolveValue. |
+| Refinement | `packages/uwmd-core/src/refinement.ts` | RFC 0042 resolves stated numeric period inputs separately from the cascade and reports per-output issues. Period ranges/defaults remain unsupported. |
 | Cascade/defaults | `packages/uwmd-core/src/cascade.ts` | Literal paths and ordinary defaults are supported; period identities have no inherited/default-resolution contract. |
 
 ## Proposed sequence
@@ -34,14 +36,14 @@ not create speculative lease cash flows.
    option to the emitter alone would not deliver working workbook export. The
    workbook builder must create the period tables and export an explicit set of
    requested calculations. Keep the existing class-pack exports compatible.
-3. **Accept a separate refinement scope.** A bounded first step can use valid,
-   explicitly stated period values as fixed inputs while ranking existing scalar
-   gaps. Missing period values remain unresolved; no period defaults or ranges
-   are inferred. Decide how invalid references are reported before implementing.
+3. **Review the implemented refinement scope (RFC 0042).** Valid stated period
+   values stay fixed while ordinary scalar gaps are ranked. Missing/nonnumeric
+   or invalid period values yield structured per-output issues and exclude only
+   affected outputs. No period defaults or ranges are inferred.
 4. **Extend period defaults/ranges only with a contract.** A generic year-one
    assumption must never be applied to year five merely by removing the selector.
 
-## Decisions required before coding
+## Remaining workbook decisions before coding
 
 - Must workbook lookup survive a user sorting/reordering the exported table?
   Recommended: yes; use a lookup by canonical identity rather than a fixed cell
@@ -52,8 +54,9 @@ not create speculative lease cash flows.
   lookup scope and how bindings are tied to the parsed document used for export.
 - Which Excel versions are supported, and how will real formula recalculation
   be tested? Formula-string snapshots alone do not establish numeric parity.
-- How are refinement's unresolved/invalid selector inputs surfaced? Avoid
-  returning an empty ranking that appears to prove there are no important gaps.
+Refinement diagnostics are pinned by RFC 0042: inspect `period_inputs` before
+treating an empty ranking as completeness. Its issue schema preserves the full
+selector and identifies each affected output; period defaults remain deferred.
 
 ## Acceptance tests
 

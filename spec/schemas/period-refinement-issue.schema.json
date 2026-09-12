@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/period-refinement-issue.schema.json",
+  "title": "Period refinement issue (RFC 0042)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "output_id",
+    "field_path",
+    "code",
+    "message"
+  ],
+  "properties": {
+    "output_id": {
+      "type": "string"
+    },
+    "field_path": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "code": {
+      "enum": [
+        "REFINE-PERIOD-MISSING",
+        "REFINE-PERIOD-NONNUMERIC",
+        "CALC-PERIOD-001",
+        "CALC-PERIOD-002",
+        "CALC-PERIOD-003"
+      ]
+    }
+  }
+}

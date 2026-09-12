@@ -3,7 +3,8 @@
 Reconciled **2026-09-12** against main/tag **v2.7.0** at `560c2aa` and its
 successful release workflow. Core/CLI **2.7.0**, signing **0.2.11** and batch
 **0.8.6** are published and were smoke-tested from a clean npm install.
-Format **2.0** and Protocol **2.8.0** version independently.
+Format **2.0** and Protocol **2.8.0** version independently in that release.
+The current source adds Protocol **2.9.0** / RFC 0042; package publication is pending.
 
 Use [VERSIONS.md](../../VERSIONS.md) for current versions and
 [ROADMAP.md](../../ROADMAP.md) for priorities. The detailed notes accumulated
@@ -38,17 +39,30 @@ See the [verification record](../reviews/2026-09-12-pcg64-reference.md).
 Normal Vitest tests consume a pinned oracle; the optional Python reproduction
 script does not add a runtime or npm dependency.
 
-Sprint verification: **1,794 workspace tests**, **426 default conformance checks**,
+PR #181 maintenance verification: **1,794 workspace tests**, **426 default conformance checks**,
 **76 declarative cases**, 25 JSON schemas, build, test typechecking, lint,
 package/lockfile/version/index/release checks and docs build pass. The sprint
 adds 12 independent-reference tests to the release baseline; no existing
 conformance baseline or calculation digest changes.
 
+## Implemented for review — next package release pending
+
+[RFC 0042](../rfcs/0042-period-refinement.md) adds fixed stated period inputs to
+refinement across all five registered series. Ordinary scalar gaps remain ranked;
+missing/nonnumeric/invalid period inputs produce per-output diagnostics and never
+receive inferred defaults. Exact variants and full-path overrides are supported.
+Excel bindings remain a separate next stage. No financial model changes.
+
+RFC 0042 local verification: **1,827 workspace tests** (33 new acceptance cases),
+**426 default + 76 declarative conformance checks**, **26 JSON schemas**, build,
+test typechecking, lint, package/lockfile/version/index/release checks and docs
+build. Only receipt protocol labels changed in the conformance baselines.
+
 ## Remaining limitations and follow-ups
 
 | Area | Current limitation | Next condition |
 |---|---|---|
-| Period addressing | Excel emission refuses selector nodes; refinement records dependencies but does not perturb selector expressions. | Accept the [period-consumer brief](../roadmap/period-consumers.md) as a scoped RFC before changing that contract. |
+| Period addressing | Source refinement supports fixed stated values; Excel still refuses selectors. No period defaults/ranges. | Review RFC 0042, then specify the [workbook bindings](../roadmap/period-consumers.md). |
 | Refinement | Marginal perturbation is approximate; stochastic VOI and stage-blocking ranking are not implemented. | Define the ranking/default contract before expanding output claims. |
 | Lease-up | Excel emission and DCF coupling remain follow-ups. | Specify schedule-to-cash-flow timing and fixtures. |
 | Speculative leasing | No renewal/vacancy/market-reset/TI/LC rollover engine. | Adopter example and accepted modeling contract. |

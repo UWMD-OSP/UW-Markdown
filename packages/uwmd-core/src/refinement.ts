@@ -20,11 +20,13 @@
 
 import { getPeriodReferences } from './calc/dependencies.js';
 import type { ParsedUWFile, DealStage } from './types.js';
-import type { ModuleManifest } from './protocol.js';
+import type { ModuleManifest, CalcEvaluationContext, PeriodRefinementIssue } from './protocol.js';
+import { CalcError } from './calc/errors.js';
+import { periodReferenceContract, resolvePeriodReference } from './period-path.js';
 import { MULTIFAMILY_PACK } from './packs/multifamily.js';
 import { extractDependencyGraph } from './calc/dependencies.js';
 import type { Expr } from './calc/parser.js';
-import { parseExpression } from './calc/parser.js';
+import { parseExpression, periodReferencePath } from './calc/parser.js';
 import { resolveValue, type CascadeContext, type ResolvedValue } from './cascade.js';
 
 // ─── Public types ────────────────────────────────────────────────────────────
@@ -59,6 +61,8 @@ export interface RankGapsOptions {
   packs?: ModuleManifest[];
   /** Cascade context (investor profile, market data, etc.). */
   cascadeContext?: CascadeContext;
+  /** RFC 0042: context for fixed period inputs only; never feeds the scalar cascade. */
+  periodContext?: Pick<CalcEvaluationContext, 'sectionVariants' | 'overrides'>;
 }
 
 export interface NonMonotonicWarning {
@@ -76,6 +80,8 @@ export interface RankGapsResult {
     resolved: number;
     perturbations: number;
     non_monotonic: NonMonotonicWarning[];
+    /** Present when selected targets contain period references. Inspect before claiming completeness. */
+    period_inputs?: PeriodRefinementIssue[];
   };
 }
 
@@ -100,7 +106,7 @@ const QUESTION_TEMPLATES: Record<string, string> = {
 // Used by the perturbation loop. Returns NaN for any unsupported subexpr —
 // the caller treats NaN as "skip this output for this gap."
 
-function evalNumeric(expr: Expr, env: Map<string, number>): number {
+function evalNumeric(expr: Expr, env: Map<string, number>, periods: Map<string, number>): number {
   switch (expr.kind) {
     case 'literal':
       return typeof expr.value === 'number' ? expr.value : Number.NaN;
@@ -111,12 +117,12 @@ function evalNumeric(expr: Expr, env: Map<string, number>): number {
       return env.has(k) ? env.get(k)! : Number.NaN;
     }
     case 'unary': {
-      const v = evalNumeric(expr.operand, env);
+      const v = evalNumeric(expr.operand, env, periods);
       return expr.op === '-' ? -v : Number.NaN;
     }
     case 'binary': {
-      const l = evalNumeric(expr.left, env);
-      const r = evalNumeric(expr.right, env);
+      const l = evalNumeric(expr.left, env, periods);
+      const r = evalNumeric(expr.right, env, periods);
       switch (expr.op) {
         case '+': return l + r;
         case '-': return l - r;
@@ -127,6 +133,7 @@ function evalNumeric(expr: Expr, env: Map<string, number>): number {
       }
     }
     case 'period_path':
+      return periods.get(periodReferencePath(expr)) ?? Number.NaN;
     case 'cond':
     case 'call':
       return Number.NaN;
@@ -139,16 +146,30 @@ function isMonotonic(expr: Expr): boolean {
     case 'literal':
     case 'ident':
     case 'path':
+    case 'period_path':
       return true;
     case 'unary':
       return isMonotonic(expr.operand);
     case 'binary':
       if (expr.op === '%') return false;
       return isMonotonic(expr.left) && isMonotonic(expr.right);
-    case 'period_path':
     case 'cond':
     case 'call':
       return false;
+  }
+}
+
+// Keep literal ordinary paths separate from contextual period references even
+// when the descriptive dependency graph's dotted strings happen to coincide.
+function scalarInputs(expr: Expr): string[] {
+  switch (expr.kind) {
+    case 'ident': return [expr.name];
+    case 'path': return [[expr.head, ...expr.segments].join('.')];
+    case 'unary': return scalarInputs(expr.operand);
+    case 'binary': return [...scalarInputs(expr.left), ...scalarInputs(expr.right)];
+    case 'call': return expr.args.flatMap(scalarInputs);
+    case 'cond': return [...scalarInputs(expr.test), ...scalarInputs(expr.consequent), ...scalarInputs(expr.else)];
+    default: return [];
   }
 }
 
@@ -173,22 +194,13 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
     for (const d of deps) allInputs.add(d);
   }
 
-  const resolutions = new Map<string, ResolvedValue>();
-  const gaps: { path: string; range: { low: number; central: number; high: number } }[] = [];
-  for (const path of allInputs) {
-    const r = resolveValue(path, parsed, cascadeCtx);
-    resolutions.set(path, r);
-    const isGap =
-      r.step === 'asset_class_default' ||
-      r.step === 'global_default' ||
-      r.step === 'system_default';
-    if (isGap && r.range) {
-      gaps.push({ path, range: r.range });
-    }
-  }
-
-  // Pre-build target ASTs once.
+  // Parse before resolving inputs: only the AST identifies a contextual selector.
+  // A literal @ in an ordinary path must continue to use the scalar cascade.
   const targetAsts = new Map<string, Expr>();
+  const periodRefs = new Map<string, Extract<Expr, { kind: 'period_path' }>>();
+  const targetPeriods = new Map<string, string[]>();
+  const targetScalars = new Map<string, Set<string>>();
+  const ordinaryInputs = new Set<string>();
   const nonMonotonic: NonMonotonicWarning[] = [];
   for (const id of targets) {
     const formula = graph.formulas.get(id);
@@ -196,17 +208,73 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
     let ast: Expr;
     try { ast = parseExpression(formula); } catch { continue; }
     targetAsts.set(id, ast);
-    if (!isMonotonic(ast)) {
-      nonMonotonic.push({ output_id: id, reason: getPeriodReferences(ast).length ? 'Period selectors are not supported by refinement perturbation.' : 'AST contains non-monotonic op (mod / call / cond)' });
+    const scalars = new Set(scalarInputs(ast));
+    targetScalars.set(id, scalars);
+    for (const path of scalars) ordinaryInputs.add(path);
+    const paths = new Set<string>();
+    for (const ref of getPeriodReferences(ast)) {
+      const path = periodReferencePath(ref);
+      periodRefs.set(path, ref);
+      paths.add(path);
     }
+    targetPeriods.set(id, [...paths]);
+    if (!isMonotonic(ast)) {
+      nonMonotonic.push({ output_id: id, reason: 'AST contains non-monotonic op (mod / call / cond)' });
+    }
+  }
+
+  const periodValues = new Map<string, number>();
+  const periodFailures = new Map<string, Omit<PeriodRefinementIssue, 'output_id'>>();
+  for (const [path, ref] of periodRefs) {
+    try {
+      periodReferenceContract(ref);
+      const overrides = opts.periodContext?.overrides;
+      const value = overrides && Object.hasOwn(overrides, path)
+        ? overrides[path] ?? null
+        : resolvePeriodReference(parsed, ref, opts.periodContext);
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        periodValues.set(path, value);
+      } else {
+        const missing = value === null || value === undefined;
+        periodFailures.set(path, {
+          field_path: path,
+          code: missing ? 'REFINE-PERIOD-MISSING' : 'REFINE-PERIOD-NONNUMERIC',
+          message: missing ? `No stated period value for ${path}.` : `A finite numeric period value is required for ${path}.`,
+        });
+      }
+    } catch (error) {
+      if (!(error instanceof CalcError) || (error.proto.code !== 'CALC-PERIOD-001'
+        && error.proto.code !== 'CALC-PERIOD-002' && error.proto.code !== 'CALC-PERIOD-003')) throw error;
+      periodFailures.set(path, { field_path: path, code: error.proto.code, message: error.proto.message });
+    }
+  }
+
+  const periodIssues: PeriodRefinementIssue[] = [];
+  for (const [id, paths] of targetPeriods) {
+    for (const path of paths) {
+      const failure = periodFailures.get(path);
+      if (failure) {
+        periodIssues.push({ output_id: id, ...failure });
+        targetAsts.delete(id);
+      }
+    }
+  }
+
+  const resolutions = new Map<string, ResolvedValue>();
+  const gaps: { path: string; range: { low: number; central: number; high: number } }[] = [];
+  // Preserve the historical scalar-only graph behavior, including duplicate IDs.
+  for (const path of periodRefs.size ? ordinaryInputs : allInputs) {
+    const r = resolveValue(path, parsed, cascadeCtx);
+    resolutions.set(path, r);
+    const isGap = r.step === 'asset_class_default' || r.step === 'global_default' || r.step === 'system_default';
+    if (isGap && r.range) gaps.push({ path, range: r.range });
   }
 
   // Build the "all-low" and "all-high" environments for the worst-case bracket.
   // For inputs that aren't gaps, take the resolved central as both low and high.
   function makeEnv(perGapAssignment: Map<string, number>, fallbackPick: 'low' | 'high'): Map<string, number> {
     const env = new Map<string, number>();
-    for (const path of allInputs) {
-      const r = resolutions.get(path)!;
+    for (const [path, r] of resolutions) {
       const numeric = typeof r.value === 'number' ? r.value : Number.NaN;
       const range = r.range;
       let v: number;
@@ -232,8 +300,8 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
     for (const id of targets) {
       const ast = targetAsts.get(id);
       if (!ast) continue;
-      const a = evalNumeric(ast, envLow);
-      const b = evalNumeric(ast, envHigh);
+      const a = evalNumeric(ast, envLow, periodValues);
+      const b = evalNumeric(ast, envHigh, periodValues);
       perturbationCount += 2;
       if (Number.isFinite(a) && Number.isFinite(b)) {
         todayRange.set(id, { low: Math.min(a, b), high: Math.max(a, b) });
@@ -256,12 +324,13 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
 
     for (const outputId of consumers) {
       if (!targets.includes(outputId)) continue;
+      if (periodRefs.size && !targetScalars.get(outputId)?.has(gap.path)) continue;
       const ast = targetAsts.get(outputId);
       if (!ast) continue;
       const today = todayRange.get(outputId);
       if (!today) continue;
-      const a = evalNumeric(ast, envCollapsedLow);
-      const b = evalNumeric(ast, envCollapsedHigh);
+      const a = evalNumeric(ast, envCollapsedLow, periodValues);
+      const b = evalNumeric(ast, envCollapsedHigh, periodValues);
       perturbationCount += 2;
       if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
       const collapsed = { low: Math.min(a, b), high: Math.max(a, b) };
@@ -295,9 +364,10 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
     by_stage_blocking: [],
     diagnostics: {
       graph_size: graph.outputs.size,
-      resolved: resolutions.size,
+      resolved: allInputs.size,
       perturbations: perturbationCount,
       non_monotonic: nonMonotonic,
+      ...(periodRefs.size ? { period_inputs: periodIssues } : {}),
     },
   };
 }

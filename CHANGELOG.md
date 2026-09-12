@@ -8,6 +8,18 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — Protocol 2.9.0 / package release pending
+
+- RFC 0042: refinement can use finite stated period inputs while ranking ordinary
+  scalar gaps. Optional period context supports exact variants and full-path
+  overrides, including null. Period inputs never enter the default cascade.
+- Structured per-output period diagnostics distinguish missing/nonnumeric values
+  from malformed, duplicate and ambiguous series; unaffected outputs remain ranked.
+  Add the matching public type/schema and regression coverage. Existing scalar
+  ranking math and calc values are unchanged; receipt protocol labels advance.
+- Format remains 2.0. Published core/CLI remains 2.7.0 (Protocol 2.8.0); a new
+  package release is separate. Excel period emission still requires bindings.
+
 ### Documentation and verification
 
 - Reconcile the roadmap and living status with the published 2.7.0 release;
@@ -17,7 +29,7 @@ protocol, and each package each carry an independent semver).
   reproducible oracle generation and regression coverage; existing outputs,
   financial math, package versions and conformance baselines are unchanged.
 - Scope contextual period support for Excel/refinement in a planning brief.
-  Existing selector refusals remain in effect pending an accepted consumer RFC.
+  RFC 0042 implements the bounded refinement stage; Excel bindings remain queued.
 
 ## [2.7.0] - 2026-09-12
 

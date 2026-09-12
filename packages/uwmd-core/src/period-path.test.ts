@@ -113,11 +113,13 @@ describe('RFC 0041 contextual references', () => {
   });
 });
 
-it('reports unsupported refinement instead of perturbing selector formulas', () => {
+it('accepts finite period inputs in refinement without inventing a gap', () => {
   const parsed = doc();
   parsed.custom_calculations.push(block('custom_calculations', { id: 'period_refinement', formula: 'dcf.annual_cash_flows@Y3.noi' }));
   const result = rankGaps(parsed, { packs: [], targets: ['period_refinement'] });
-  expect(result.diagnostics.non_monotonic).toContainEqual({ output_id: 'period_refinement', reason: 'Period selectors are not supported by refinement perturbation.' });
+  expect(result.diagnostics.non_monotonic).toEqual([]);
+  expect(result.diagnostics.period_inputs).toEqual([]);
+  expect(result.by_voi).toEqual([]);
 });
 
 it('retains bracket-string indexing after a selector', () => {

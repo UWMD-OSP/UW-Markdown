@@ -16,7 +16,9 @@ affects:
 
 **Released in [core/CLI 2.7.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.7.0), 2026-09-12.**
 The implementation and conformance cases are shipped; remaining extensions are
-explicitly deferred below.
+explicitly deferred below. The follow-up [RFC 0042](0042-period-refinement.md)
+implements fixed stated period inputs in refinement for the next package release;
+the 2.7.0 release contract below records the original consumer limitation.
 
 
 The owner authorized the bounded next stage after RFC 0040. This revision

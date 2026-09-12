@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.8.0' as const;
+export const PROTOCOL_VERSION = '2.9.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -1008,6 +1008,15 @@ export const PERIOD_SERIES: readonly PeriodSeriesEntry[] = Object.freeze([
   Object.freeze({ path: 'cash_flow_series.series', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.26' } as const),
   Object.freeze({ path: 'distribution_waterfall.stated_schedule', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.27' } as const),
 ]);
+
+/** An output excluded from refinement because a stated period input is unavailable. */
+export interface PeriodRefinementIssue {
+  output_id: string;
+  field_path: string;
+  code: 'REFINE-PERIOD-MISSING' | 'REFINE-PERIOD-NONNUMERIC'
+    | 'CALC-PERIOD-001' | 'CALC-PERIOD-002' | 'CALC-PERIOD-003';
+  message: string;
+}
 
 export interface CalcEvaluationContext {
   /** Exact section variants for period references only; no fallback when supplied. */
