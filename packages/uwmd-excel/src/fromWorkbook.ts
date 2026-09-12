@@ -4,6 +4,7 @@
 // keeps source bytes and host-owned _meta intact.
 
 import type ExcelJS from 'exceljs';
+import { PERIOD_EXPORT_MARKER } from './custom-calculations.js';
 import type { WorkbookLayout } from './layout.js';
 import { SUBTOTAL_RANGES } from './layout.js';
 import { getLayoutForAssetClass } from './layouts.js';
@@ -168,6 +169,11 @@ function assertSubtotalRows(wb: ExcelJS.Workbook, layout: WorkbookLayout): void 
  * cannot overwrite the pack-owned calc-engine result.
  */
 export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
+  if (wb.definedNames.getRanges(PERIOD_EXPORT_MARKER).ranges.length) {
+    throw new WorkbookImportError('WORKBOOK-IMPORT-UNSUPPORTED-SHAPE',
+      'Additional custom/period inputs are export-only. Edit the source document and re-export; reverse import would discard those edits.');
+  }
+
   // Prefer the UW MCP sheet: a stable keyed location that survives layout
   // changes. Underwriting!B3 is positional and sits next to a human label, so
   // it is only a fallback for workbooks predating the contract.

@@ -127,10 +127,18 @@ npm release scope is core + cli only.
 The CLI reaches it by dynamic import as an optional peer, so core takes no
 dependency on a sibling package.
 
-## Excel converter — `packages/uwmd-excel` (`@uwmd/excel` 0.2.0)
+## Excel converter — `packages/uwmd-excel` (`@uwmd/excel`; see VERSIONS.md)
 
 `.uw.md → .xlsx`. Depends on `@uwmd/core` + `exceljs`. CLI bin:
 `uwmd-excel <input.uw.md> [-o output.xlsx]`.
+
+RFC 0043 adds explicit numeric custom calculations through
+`toWorkbook(parsed, { calculations, calculationContext })` and
+`uwmd-excel deal.uwx.md --calculations <ids>`. Its additional input tables use
+canonical period identity, whole-series guards and the existing calc boundary.
+They support value edits and sorting; reverse import refuses these extended
+workbooks so additional edits are not discarded. The native verification scripts
+exercise generated files in a separate hidden Excel instance.
 
 Key design: the workbook ships **formulas, not pre-computed values**, so it stays
 in sync with the calc engine by construction. The engine (`toWorkbook.ts`) is

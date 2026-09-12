@@ -914,7 +914,8 @@ export { extractDependencyGraph, getExprDependencies } from './calc/dependencies
 export type { DependencyGraph } from './calc/dependencies.js';
 
 export { rankGaps } from './refinement.js';
-export type { PeriodRefinementIssue } from './protocol.js';
+export type { PeriodRefinementIssue, PeriodExcelBinding, PeriodColumnSnapshot } from './protocol.js';
+export { resolvePeriodColumn } from './period-path.js';
 export type {
   RankGapsOptions,
   RankGapsResult,

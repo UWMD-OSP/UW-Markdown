@@ -12,6 +12,7 @@
 // `NOI = EGI − total opex` foots to the stored net_operating_income.
 
 import ExcelJS from 'exceljs';
+import { writeCustomCalculations, type ToWorkbookOptions } from './custom-calculations.js';
 import { deepGet, getSection, evaluateCalc, emitCalcExcelFormula } from '@uwmd/core';
 import type { ParsedUWFile, CalcEvaluationContext, ModuleCalcDecl } from '@uwmd/core';
 import {
@@ -465,6 +466,7 @@ function writeMixedUseOperatingStatement(
 async function toMixedUseWorkbook(
   parsed: ParsedUWFile,
   layout: WorkbookLayout,
+  options: ToWorkbookOptions,
 ): Promise<ExcelJS.Workbook> {
   const wb = new ExcelJS.Workbook();
   wb.creator = '@uwmd/excel';
@@ -477,6 +479,7 @@ async function toMixedUseWorkbook(
   // exists. No-op for a document without a `capital_stack` section (RFC 0026).
   writeCapitalStackSheet(wb, parsed);
   writePipelineLogSheet(wb, parsed);
+  writeCustomCalculations(wb, parsed, options);
   writeMcpSheet(wb, await buildWorkbookContract(parsed, layout));
 
   return wb;
@@ -484,7 +487,7 @@ async function toMixedUseWorkbook(
 
 // ─── Public entry point ──────────────────────────────────────────────────────
 
-export async function toWorkbook(parsed: ParsedUWFile): Promise<ExcelJS.Workbook> {
+export async function toWorkbook(parsed: ParsedUWFile, options: ToWorkbookOptions = {}): Promise<ExcelJS.Workbook> {
   const assetClass = String(parsed.frontmatter.asset_class ?? '');
   const layout = getLayoutForAssetClass(assetClass);
   if (!layout) throw new UnsupportedAssetClassError(assetClass);
@@ -492,7 +495,7 @@ export async function toWorkbook(parsed: ParsedUWFile): Promise<ExcelJS.Workbook
   // Mixed-use has a fundamentally different workbook shape (per-component
   // statements), so it takes its own builder rather than the single-statement
   // engine below.
-  if (layout.mixedUse) return toMixedUseWorkbook(parsed, layout);
+  if (layout.mixedUse) return toMixedUseWorkbook(parsed, layout, options);
 
   const derivedMetrics = buildDerivedMetrics(layout);
 
@@ -508,6 +511,7 @@ export async function toWorkbook(parsed: ParsedUWFile): Promise<ExcelJS.Workbook
   writePipelineLogSheet(wb, parsed);
   // Last: the machine-readable contract (identity, producing pack, source
   // digest, metric dictionary, sibling representations, assurance boundary).
+  writeCustomCalculations(wb, parsed, options);
   writeMcpSheet(wb, await buildWorkbookContract(parsed, layout));
 
   return wb;

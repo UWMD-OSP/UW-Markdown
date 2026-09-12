@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/period-excel-binding.schema.json",
+  "title": "Contextual period Excel binding (RFC 0043)",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "keys_range",
+        "values_range",
+        "valid_range"
+      ],
+      "properties": {
+        "kind": {
+          "const": "series"
+        },
+        "keys_range": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "maxLength": 255,
+          "not": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[Rr][1-9][0-9]*[Cc][1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[RrCc]$"
+              }
+            ]
+          }
+        },
+        "values_range": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "maxLength": 255,
+          "not": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[Rr][1-9][0-9]*[Cc][1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[RrCc]$"
+              }
+            ]
+          }
+        },
+        "valid_range": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "maxLength": 255,
+          "not": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[Rr][1-9][0-9]*[Cc][1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[RrCc]$"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "value_range"
+      ],
+      "properties": {
+        "kind": {
+          "const": "override"
+        },
+        "value_range": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "maxLength": 255,
+          "not": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[Rr][1-9][0-9]*[Cc][1-9][0-9]*$"
+              },
+              {
+                "pattern": "^[RrCc]$"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

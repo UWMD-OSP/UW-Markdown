@@ -337,7 +337,11 @@ returns null; malformed periods or duplicate identities refuse even if validatio
 was skipped. PS-01/02 inspect all active variants and PS-03 checks static kind
 mismatches in custom calc/scenario formulas. See Protocol §VIII.2a for details.
 
-Excel still refuses selector nodes with EXCEL-EMIT-PATH. The RFC 0042 reference
+Excel refuses selector nodes unless RFC 0043 contextual bindings are supplied.
+`resolvePeriodColumn` projects complete validated series for the workbook builder;
+periodBindings map full selector paths to guarded, identity-based lookups or
+explicit override inputs. Plain static named ranges alone remain insufficient.
+The RFC 0042 reference
 implementation uses finite stated period values as fixed inputs in refinement;
 ordinary scalar gaps retain their existing cascade and perturbation arithmetic.
 `rankGaps(parsed, { periodContext: { sectionVariants, overrides } })` applies

@@ -25,8 +25,11 @@
 //     ROUND, PMT, NPV, IRR). Functions without a clean Excel equivalent
 //     (`coalesce`, `avg` with null handling) raise EXCEL-EMIT-FN.
 
-import { parseExpression, type Expr } from '../calc/parser.js';
+import { parseExpression, periodReferencePath, type Expr } from '../calc/parser.js';
 import { resolveRoundTo } from '../calc/quantize.js';
+import { periodReferenceContract } from '../period-path.js';
+import { periodKeyIdentity } from '../periods.js';
+import type { PeriodExcelBinding } from '../protocol.js';
 
 export interface ExcelEmitOptions {
   /**
@@ -34,6 +37,8 @@ export interface ExcelEmitOptions {
    * to Excel named range (e.g. `noi`). Bare identifiers are looked up by name.
    */
   namedRanges: ReadonlyMap<string, string>;
+  /** RFC 0043: canonical selector paths mapped to trusted contextual workbook names. */
+  periodBindings?: ReadonlyMap<string, PeriodExcelBinding>;
 }
 
 export class ExcelEmitError extends Error {
@@ -103,8 +108,28 @@ export function emitFromAst(expr: Expr, opts: ExcelEmitOptions): string {
       return mapped;
     }
 
-    case 'period_path':
-      throw new ExcelEmitError('EXCEL-EMIT-PATH', 'Period selectors require contextual workbook bindings and are not emitted.');
+    case 'period_path': {
+      let identity: string;
+      try { identity = periodKeyIdentity(periodReferenceContract(expr).key); }
+      catch { throw new ExcelEmitError('EXCEL-EMIT-PATH', 'Invalid period selector or unregistered series.'); }
+      const binding = opts.periodBindings?.get(periodReferencePath(expr));
+      if (!binding) throw new ExcelEmitError('EXCEL-EMIT-PATH', 'Period selectors require contextual workbook bindings.');
+      const name = (value: string) => {
+        if (typeof value !== 'string' || value.length > 255 || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)
+          || /^[A-Za-z]{1,3}[1-9][0-9]*$/.test(value) || /^[Rr][1-9][0-9]*[Cc][1-9][0-9]*$/.test(value) || /^[RrCc]$/.test(value)) {
+          throw new ExcelEmitError('EXCEL-EMIT-PATH', 'A period binding must use explicit workbook names, not addresses or formulas.');
+        }
+        return value;
+      };
+      const numeric = (ref: string) => `IF(ISBLANK(${ref}),NA(),IF(ISNUMBER(${ref}),${ref},VALUE("Non-numeric period value")))`;
+      if (binding.kind === 'override') return numeric(name(binding.value_range));
+      if (binding.kind !== 'series') throw new ExcelEmitError('EXCEL-EMIT-PATH', 'Unknown period binding kind.');
+      const keys = name(binding.keys_range);
+      const values = name(binding.values_range);
+      const valid = name(binding.valid_range);
+      const key = `"${identity}"`;
+      return `IF(${valid}<>1,VALUE("Invalid period identities"),IF(COUNTIF(${keys},${key})=0,NA(),${numeric(`INDEX(${values},MATCH(${key},${keys},0))`)}))`;
+    }
 
     case 'unary': {
       const inner = emitFromAst(expr.operand, opts);

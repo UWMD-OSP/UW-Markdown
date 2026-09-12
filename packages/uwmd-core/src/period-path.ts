@@ -1,8 +1,9 @@
 import { getPathSegment, isBlockedSegment } from './parser.js';
 import { PERIOD_SERIES } from './protocol.js';
+import type { PeriodColumnSnapshot } from './protocol.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
-import { parseExpression, type Expr } from './calc/parser.js';
+import { parseExpression, periodReferencePath, type Expr } from './calc/parser.js';
 import { CalcError } from './calc/errors.js';
 import { parsePeriodSelector, periodKeyIdentity, periodKindMatches, scanPeriodSeries } from './periods.js';
 
@@ -64,4 +65,30 @@ export function resolvePeriodPath(parsed: ParsedUWFile, path: string, options: P
   const expr = parseExpression(path);
   if (expr.kind !== 'period_path') throw new CalcError('CALC-PERIOD-001', 'Expected one period reference, not an expression.');
   return resolvePeriodReference(parsed, expr, options);
+}
+
+
+/** Project a complete selected series for contextual workbook binding (RFC 0043). */
+export function resolvePeriodColumn(parsed: ParsedUWFile, reference: string, options: PeriodResolutionOptions = {}): PeriodColumnSnapshot {
+  const expr = parseExpression(reference);
+  if (expr.kind !== 'period_path') throw new CalcError('CALC-PERIOD-001', 'Expected a period reference.');
+  const { entry, key, path } = periodReferenceContract(expr);
+  const result: PeriodColumnSnapshot = { reference: periodReferencePath(expr), series_path: path,
+    variant: null, selector_identity: periodKeyIdentity(key), rows: [] };
+  const block = periodSection(parsed, expr.head, options);
+  if (!block) return result;
+  result.variant = block.annotation.variant ?? null;
+  const payload = periodPayload(block);
+  let series: unknown = payload;
+  for (const segment of expr.series) series = getPathSegment(series, segment);
+  const scan = scanPeriodSeries(entry, series, payload);
+  if (scan.duplicates.length) throw new CalcError('CALC-PERIOD-002', `Duplicate periods in ${path}: ${scan.duplicates.join(', ')}.`);
+  if (scan.invalid.length) throw new CalcError('CALC-PERIOD-001', `Malformed periods in ${path}: ${scan.invalid.join(', ')}.`);
+  const blocked = [expr.head, ...expr.series, ...expr.segments].some(isBlockedSegment);
+  result.rows = [...scan.rows].map(([identity, row]) => {
+    let value: unknown = row.value;
+    for (const segment of expr.segments) value = getPathSegment(value, segment);
+    return { identity, value: blocked ? null : value ?? null };
+  });
+  return result;
 }

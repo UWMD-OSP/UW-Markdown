@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.9.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.10.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -1324,9 +1324,9 @@ leaf keys in bracket-string form. Dependencies use this same spelling, preservin
 period identity and distinguishing a literal dotted key from nested traversal.
 No document writes or changes to numeric quantization occur.
 
-Excel emission MUST explicitly refuse these new AST nodes with `EXCEL-EMIT-PATH`
-until contextual workbook bindings exist; a static named range must not silently
-stand for a row chosen by its current position. The reference refinement engine
+Excel emission MUST refuse selector nodes with `EXCEL-EMIT-PATH` unless explicit
+contextual bindings under §VIII.2c are supplied. A static named-range mapping
+alone MUST NOT stand for a row chosen by its current position. The reference refinement engine
 uses finite stated period inputs as fixed values under §VIII.2b. Its general
 cascade is unchanged.
 
@@ -1377,6 +1377,53 @@ A period leaf is supported by the numeric interpreter; other unsupported AST
 operations retain their existing diagnostics and behavior. This extension does
 not improve the existing perturbation approximation, define period defaults or
 stochastic VOI, or change evaluateCalc's quantization boundary.
+
+### VIII.2c Contextual workbook bindings (RFC 0043)
+
+The optional numeric workbook consumer binds a canonical period reference to a
+`PeriodExcelBinding`. A `series` binding names aligned key/value ranges and a
+whole-series validity cell; an `override` binding names an explicit override
+input. A normal namedRanges entry alone is insufficient. Hosts MUST validate
+the reference registry and selector before emission, including overrides.
+Names MUST be workbook-scoped identifiers rather than cell addresses, formulas,
+or external links. The binding is a trusted host assertion about this workbook;
+the string emitter cannot inspect or authenticate workbook contents.
+
+Series bindings MUST use canonical identities and exact lookup, independent of
+row order. Before lookup, the validity cell MUST reject duplicate, blank or
+changed identities across the complete bound series. This stage exports a closed
+identity set: editing values and reordering rows is supported; adding/removing
+periods requires editing the source document and re-exporting. A protected or
+hidden registry is not a security boundary; deliberate workbook tampering is
+outside this edit contract. Blank source series are valid empty sets.
+
+`resolvePeriodColumn` returns a `PeriodColumnSnapshot` using §VIII.2a role selection
+and full-series validation, projecting one literal leaf without rounding values.
+Missing sections yield an empty set. Generic/explicit variants are preserved;
+malformed/duplicate/unresolvable source series raise the existing CALC-PERIOD
+errors. Safe traversal and literal key rules remain unchanged.
+
+Missing periods and blank values MUST yield #N/A in Excel. Invalid identity sets
+and nonnumeric inputs MUST yield #VALUE!, never coerced zero. Finite numeric zero
+is valid. Explicit own-key overrides bypass source lookup after reference
+validation, including null-as-missing, under §VIII.2a semantics. Numeric expression
+results MUST be rounded once at the existing §VIII.5 boundary.
+
+The reference converter exports only explicitly requested custom-calculation IDs
+through `toWorkbook(parsed, { calculations, calculationContext })`. The context
+selects variants for period inputs and supplies exact full-path overrides. It
+does not alter existing pack sheets. The first custom exporter supports numeric
+literals, paths, period paths, unary minus and arithmetic +, -, *, /; other AST
+nodes explicitly refuse. Ordinary input snapshots use calc resolution without
+default inference or boundary rounding. Shared inputs are written once and
+referenced by formulas. No general calc-result chaining is implied.
+
+Default toWorkbook output is unchanged. Additional period/custom input edits are
+export-only in this stage: reverse import MUST refuse marked extended workbooks,
+rather than silently discarding those edits. Excel 2016-compatible functions
+(IF, INDEX/MATCH exact, COUNTIF, SUMPRODUCT/EXACT, ISBLANK, ISNUMBER, VALUE, NA,
+ROUND) implement the reference bindings. Native recalculation tests are required
+to establish supported-case parity; formula snapshots alone are insufficient.
 
 ### VIII.3 Built-in functions
 

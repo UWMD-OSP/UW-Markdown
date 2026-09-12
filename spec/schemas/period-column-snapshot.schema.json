@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/period-column-snapshot.schema.json",
+  "title": "Projected period column (RFC 0043)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reference",
+    "series_path",
+    "variant",
+    "selector_identity",
+    "rows"
+  ],
+  "properties": {
+    "reference": {
+      "type": "string"
+    },
+    "series_path": {
+      "type": "string"
+    },
+    "variant": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "selector_identity": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identity",
+          "value"
+        ],
+        "properties": {
+          "identity": {
+            "type": "string"
+          },
+          "value": {}
+        }
+      }
+    }
+  }
+}

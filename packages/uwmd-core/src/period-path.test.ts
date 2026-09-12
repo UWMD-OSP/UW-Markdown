@@ -126,3 +126,24 @@ it('retains bracket-string indexing after a selector', () => {
   const parsed = file({ dcf: block('dcf', { annual_cash_flows: [{ year: 1, tiers: [{ amount: 25 }] }] }) });
   expect(calc("dcf.annual_cash_flows@Y1.tiers['0'].amount", parsed)).toMatchObject({ ok: true, value: 25 });
 });
+
+
+import { readFileSync } from 'node:fs';
+import { Ajv2020 } from 'ajv/dist/2020.js';
+import { resolvePeriodColumn } from './period-path.js';
+it('validates projected columns against the RFC 0043 schema', () => {
+  const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/period-column-snapshot.schema.json', import.meta.url), 'utf8'));
+  const validate = new Ajv2020().compile(schema);
+  const projected = resolvePeriodColumn(doc(), 'dcf.annual_cash_flows@Y3.noi');
+  expect(validate(projected)).toBe(true);
+  expect(validate({ ...projected, rows: [{ value: 1 }] })).toBe(false);
+});
+it('validates trusted workbook bindings and refuses addresses/formulas in the RFC 0043 schema', () => {
+  const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/period-excel-binding.schema.json', import.meta.url), 'utf8'));
+  const validate = new Ajv2020().compile(schema);
+  expect(validate({ kind: 'series', keys_range: 'uwp_keys', values_range: 'uwp_values', valid_range: 'uwp_valid' })).toBe(true);
+  expect(validate({ kind: 'override', value_range: 'uwc_input' })).toBe(true);
+  for (const value_range of ['A1', 'R1C1', 'R', 'Sheet!A1', '1+2', 'x'.repeat(256)]) {
+    expect(validate({ kind: 'override', value_range })).toBe(false);
+  }
+});

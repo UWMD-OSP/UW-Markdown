@@ -8,6 +8,21 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — Protocol 2.10.0 / Excel source implementation
+
+- RFC 0043: trusted contextual period bindings and complete column snapshots,
+  with matching public types/schemas. Explicit custom-calculation workbook export
+  supports all five standard series, stable row identities, variants and overrides.
+- Missing Excel inputs remain #N/A; invalid identities/nonnumeric values are
+  #VALUE!. Numeric zero is preserved and ROUND uses the existing boundary.
+  Additional inputs are export-only; reverse import refuses rather than discards.
+- `uwmd-excel --calculations <ids>` exports selected arithmetic calculations.
+  Canonical `.uwx.md` inputs now default to `<name>.xlsx`.
+- Native Excel 16.0 build 20326 passes 14 scenarios / 48 cell checks, including
+  sorting, missing/duplicate handling, fractional spreads and save/reopen.
+  No financial formula, dependency, package version or publication changes.
+
+
 ### Added — Protocol 2.9.0 / package release pending
 
 - RFC 0042: refinement can use finite stated period inputs while ranking ordinary

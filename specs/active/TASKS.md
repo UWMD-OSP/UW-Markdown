@@ -1,9 +1,7 @@
-# Active task matrix
+# RFC 0043 task matrix
 
-No implementation task is in flight. The completed RFC 0042 refinement stage and
-its verification evidence are [archived](../archive/rfc-0042-period-refinement.md).
-Commit `e8a8b0b` passed the local gates. Final-commit CI and owner review are the
-remaining merge conditions; no package publication is part of this sprint.
+- [ ] In flight: implement contextual Excel bindings and explicit calculation
+  export, synchronize contracts/docs, verify in Excel and pass repository gates,
+  then commit and submit a stacked PR for morning review.
 
-Reconcile the `codex/rfc-0042-period-refinement` review branch before starting
-the queued workbook-binding contract.
+PR #182 remains open and is the base. Reconcile its merge state before publication.
