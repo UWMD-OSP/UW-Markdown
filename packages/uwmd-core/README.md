@@ -77,3 +77,14 @@ const resource = await createUWMCPResource(envelope, dealId, {
 Tool results contain compact `structuredContent` plus JSON text fallback and a
 resource link. Complete JSON/XML, CSV views, and binary CSV ZIP bytes are read
 through resources. See [HTTP Binding 1.0](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/bindings/UW_HTTP_BINDING_v1.md) and [MCP Binding 1.0](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/bindings/UW_MCP_BINDING_v1.md).
+## Explicit lease-up cash-flow projection (2.8.0)
+
+`await projectLeaseUpCashFlows(parsed, plan)` copies verified stated lease-up
+amounts into a dated candidate stream. The plan requires an exact
+`source_variant`, registered `day_count`, and one `{ period, date }` cash-date
+mapping per source period. The result includes semantic source-digest and
+binding evidence. It never edits the document or infers full DCF economics.
+The browser-safe export also lives in `@uwmd/core/browser`.
+
+See the [worked API/CLI guide](https://uwmd.org/guide/lease-up-cash-flow) for
+the contract and typed refusals. This API is included in the 2.8.0 release line.

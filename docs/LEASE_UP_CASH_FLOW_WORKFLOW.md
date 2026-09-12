@@ -1,10 +1,10 @@
 # From stated lease-up periods to an explicitly dated stream
 
-[RFC 0044](rfcs/0044-explicit-lease-up-cash-flow-projection.md) is implemented
-for review in source Protocol 2.11.0. The browser-safe
+[RFC 0044](rfcs/0044-explicit-lease-up-cash-flow-projection.md) is merged in source Protocol 2.11.0. The browser-safe
 `projectLeaseUpCashFlows` API and read-only CLI copy verified stated amounts
 onto caller-supplied dates and return source digest/binding evidence.
-Package publication is pending; published core/CLI 2.7.0 do not include this API.
+Included in the 2.8.0 release candidate; publication is pending. Published
+core/CLI 2.7.0 do not include this API.
 
 ## Run it
 

@@ -42,22 +42,22 @@ does not mean its standalone npm package is published.
 |---|---|---|
 | Current roadmap and status reconciliation | Merged in PR #181 | Historical launch plans archived; implemented/published/proposed states separated; RFC 0040/0041 marked implemented. |
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
-| Period consumers | Implemented for review | [RFC 0042](docs/rfcs/0042-period-refinement.md) adds fixed stated refinement inputs; [RFC 0043](docs/rfcs/0043-contextual-excel-period-bindings.md) adds explicit workbook export, verified in native Excel. Publication remains pending. |
+| Period consumers | Merged; release pending | [RFC 0042](docs/rfcs/0042-period-refinement.md) adds fixed stated refinement inputs; [RFC 0043](docs/rfcs/0043-contextual-excel-period-bindings.md) adds explicit workbook export, verified in native Excel. Publication remains pending. |
 
 The CLI context stage exposes these consumers through `--calc-context` files,
 including shape validation and explicit refusal of unsupported refinement
-overrides. It is source implementation for review; publication is pending.
+overrides. It is merged source implementation; publication is pending.
 
 ## Forward backlog
 
-The bounded RFC 0042 refinement and RFC 0043 Excel stages are implemented for review, with package
+The bounded RFC 0042 refinement and RFC 0043 Excel stages are merged; release pending, with package
 publication pending. The remaining order guides the next planning decision;
-no new financial model or package release is committed.
+the 2.8.0 package release is in preparation. No new financial model is committed.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Contextual period support in downstream tools | Implemented for review | Review RFCs 0042/0043. Native Excel verification passes; period defaults, structural workbook edits, reverse import and custom function export remain separate extensions. |
-| 2 | Lease-up / DCF integration | Bounded projection implemented for review | [RFC 0044](docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md) provides the API, read-only CLI, explicit dates and source evidence. Review the [workflow](docs/LEASE_UP_CASH_FLOW_WORKFLOW.md); full DCF still needs economic coverage, valuation anchor and double-count rules. |
+| 1 | Contextual period support in downstream tools | Merged; release pending | RFCs 0042/0043 are accepted and merged. Native Excel verification passes; period defaults, structural workbook edits, reverse import and custom function export remain separate extensions. |
+| 2 | Lease-up / DCF integration | Bounded projection merged; release pending | [RFC 0044](docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md) provides the API, read-only CLI, explicit dates and source evidence. See the [workflow](docs/LEASE_UP_CASH_FLOW_WORKFLOW.md); full DCF still needs economic coverage, valuation anchor and double-count rules. |
 | 3 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 4 | Waterfall extensions | Deferred | RFC 0035/0036 left clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles for separate contracts. Each needs exact economic rules and conformance cases. |
 | 5 | Currency-code disambiguation | Deferred | Define currency identity independently from display locale before combining cross-currency values. |

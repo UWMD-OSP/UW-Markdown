@@ -45,7 +45,7 @@ package/lockfile/version/index/release checks and docs build pass. The sprint
 adds 12 independent-reference tests to the release baseline; no existing
 conformance baseline or calculation digest changes.
 
-## Implemented for review — next package release pending
+## Merged; release pending — next package release pending
 
 [RFC 0042](../rfcs/0042-period-refinement.md) adds fixed stated period inputs to
 refinement across all five registered series. Ordinary scalar gaps remain ranked;
@@ -73,7 +73,7 @@ build. Only receipt protocol labels changed in the conformance baselines.
 |---|---|---|
 | Period addressing | Source refinement and explicit numeric workbook export support stated period values. No period defaults/ranges. | Review RFCs 0042/0043; reverse import, structural workbook edits and custom functions remain separate. |
 | Refinement | Marginal perturbation is approximate; stochastic VOI and stage-blocking ranking are not implemented. | Define the ranking/default contract before expanding output claims. |
-| Lease-up | Explicit projection API and CLI are implemented for review; package release and full DCF coupling remain follow-ups. | Review [RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) and its [executable example](../LEASE_UP_CASH_FLOW_WORKFLOW.md); review the bounded implementation, then specify full DCF economics separately. |
+| Lease-up | Explicit projection API and CLI are merged; release pending; package release and full DCF coupling remain follow-ups. | Review [RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) and its [executable example](../LEASE_UP_CASH_FLOW_WORKFLOW.md); review the bounded implementation, then specify full DCF economics separately. |
 | Speculative leasing | No renewal/vacancy/market-reset/TI/LC rollover engine. | Adopter example and accepted modeling contract. |
 | Waterfalls | Clawback/crystallization, “any” combined hurdles and GP-side hurdles remain deferred. | Separate normative contract and cases. |
 | Currency and bps | Currency-code disambiguation and a dedicated bps unit remain deferred. | Demonstrated use case with explicit unit/precision semantics. |
@@ -113,3 +113,10 @@ four new CLI checks), **441 default + 76 declarative conformance checks**,
 index/release checks and documentation build pass. Published package versions
 remain unchanged. The legacy reader fixtures and wrapped Format 2.0 API cases
 both exercise source compatibility.
+
+## 2.8.0 release preparation
+
+PRs #182–#186 merged to main at `7870f7e`; post-merge CI passed. The 2.8.0
+candidate packages refinement, calculation context and lease-up projection with
+Protocol 2.11.0. The current matrix records candidate pins; registry publication
+is pending. Existing v2.7.0 publication evidence above remains historical fact.

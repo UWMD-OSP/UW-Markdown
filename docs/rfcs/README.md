@@ -65,8 +65,8 @@ and how it gets accepted.
 | [0039](./0039-data-center-module.md) | Data-center module — the first product module on a module-declared asset class | implemented | core, conformance, tooling |
 | [0040](./0040-variant-role-resolution.md) | Variant roles — resolve cross-checks by a declared role, not a key name | implemented | format, protocol, core, conformance |
 | [0041](./0041-period-indexed-addressing.md) | Explicit period addressing for the standard series | implemented | format, protocol, core, conformance |
-| [0042](./0042-period-refinement.md) | Stated period inputs in refinement | active | protocol, core |
-| [0043](./0043-contextual-excel-period-bindings.md) | Contextual Excel period bindings | active | protocol, core, tooling |
+| [0042](./0042-period-refinement.md) | Stated period inputs in refinement | accepted | protocol, core |
+| [0043](./0043-contextual-excel-period-bindings.md) | Contextual Excel period bindings | accepted | protocol, core, tooling |
 | [0044](./0044-explicit-lease-up-cash-flow-projection.md) | Project verified lease-up amounts onto explicit cash dates | accepted | protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their

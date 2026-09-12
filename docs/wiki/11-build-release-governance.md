@@ -34,7 +34,7 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (currently 2.10.0 in source; 2.8.0 in published core/CLI 2.7.0). A test in
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.11.0 in the 2.8.0 candidate; 2.8.0 in published core/CLI 2.7.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
@@ -47,7 +47,7 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
 
-**Cutting a `@uwmd/core` release** touches five things beyond `package.json`,
+**Cutting a `@uwmd/core` release** touches six things beyond `package.json`,
 each with a guard that fails loudly if you miss it:
 
 1. `CORE_VERSION` in `src/version.ts` — a literal, so the browser bundle has it.
@@ -125,8 +125,8 @@ post-v1.0 plan is
   signing (0002/0010), capability tokens (0011), iterative determinism (0024),
   calendar math (0034), and distribution waterfalls (0035/0036) are implemented.
   RFC 0040 (signed block roles) and RFC 0041 (period-indexed addressing)
-  shipped in core/CLI 2.7.0. RFC 0042 period refinement is in review; its source
-  protocol is 2.9.0 and package publication remains separate.
+  shipped in core/CLI 2.7.0. RFCs 0042–0044 are accepted and merged; Protocol 2.11.0 and
+  the 2.8.0 package candidate include their public contracts. Publication is pending.
 - Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).

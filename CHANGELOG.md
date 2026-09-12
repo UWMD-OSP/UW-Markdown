@@ -8,66 +8,43 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-### Added — Protocol 2.11.0 / explicit lease-up projection
+## [2.8.0] - 2026-09-12
 
-- RFC 0044: browser-safe `projectLeaseUpCashFlows` verifies an exact lease-up
-  variant, requires complete explicit cash dates, and copies stated amounts
-  without rounding into a partial receipt/TI-LC stream. Return a semantic source
-  digest and canonical bindings; typed refusals retain verifier/structural evidence.
-- Add matching public types and three schemas, a read-only `project-lease-up`
-  CLI, a production-API worked example, acceptance tests and the default
-  `lease-up-projection` conformance suite. No source documents are edited.
-- Package publication, complete DCF economics and cash-flow metric Excel export
-  remain separate work. No financial formula or dependency changes.
+### Release preparation
 
-### Added — command-line calculation context
+Core and CLI **2.8.0** package the merged RFCs 0042–0044. Protocol remains
+**2.11.0** and Format remains **2.0**. Publication is pending the `v2.8.0` tag
+and successful trusted-publishing workflow. Signing **0.2.12** and batch
+**0.8.7** repin core; unpublished report **0.8.12**, Excel **0.9.0** and the
+two **0.1.0** reference modules remain outside the publication workflow.
 
-- `uwmd calc`, `uwmd refine` and `uwmd-excel` accept `--calc-context <JSON file>`
-  with validated `sectionVariants` and exact `overrides`. Export the shared
-  browser-safe `parseCalculationContext` helper; preserve zero/null values.
-- Refinement rejects ordinary scalar overrides; Excel requires explicit custom
-  calculation IDs. Invalid context fails before result/workbook output.
-- Document source-checkout commands and consumer limits. The refinement CLI
-  regression compares actual calc endpoints at the existing six-decimal boundary;
-  financial math, protocol/package versions and dependencies are unchanged.
+### Added
 
-### Added — Protocol 2.10.0 / Excel source implementation
+- RFC 0042: refinement uses finite stated period inputs while ranking ordinary
+  scalar gaps. Exact variant/override context and per-output diagnostics preserve
+  missing, nonnumeric, malformed, duplicate and ambiguous inputs distinctly.
+- `--calc-context` supplies validated inputs to `uwmd calc`, `uwmd refine` and
+  explicit workbook export. Refinement refuses ordinary scalar overrides;
+  workbook export requires selected custom-calculation IDs.
+- RFC 0043: contextual Excel bindings and complete period-column snapshots,
+  with public types/schemas. The source Excel package exports selected arithmetic
+  calculations across all five standard series. Native Excel verification covers
+  14 scenarios and 48 cell checks. Reverse import of additional inputs refuses.
+- RFC 0044: browser-safe `projectLeaseUpCashFlows` and read-only
+  `uwmd project-lease-up` map a verified exact lease-up variant onto explicit
+  dates. Candidate output preserves exact stated amounts, semantic source digest,
+  and canonical bindings. Typed refusals retain structural/verifier evidence.
+  The output covers rent receipts, concessions and TI/LC only; full DCF economics
+  and cash-flow metric Excel export remain separate contracts.
 
-- RFC 0043: trusted contextual period bindings and complete column snapshots,
-  with matching public types/schemas. Explicit custom-calculation workbook export
-  supports all five standard series, stable row identities, variants and overrides.
-- Missing Excel inputs remain #N/A; invalid identities/nonnumeric values are
-  #VALUE!. Numeric zero is preserved and ROUND uses the existing boundary.
-  Additional inputs are export-only; reverse import refuses rather than discards.
-- `uwmd-excel --calculations <ids>` exports selected arithmetic calculations.
-  Canonical `.uwx.md` inputs now default to `<name>.xlsx`.
-- Native Excel 16.0 build 20326 passes 14 scenarios / 48 cell checks, including
-  sorting, missing/duplicate handling, fractional spreads and save/reopen.
-  No financial formula, dependency, package version or publication changes.
+### Verification and documentation
 
-
-### Added — Protocol 2.9.0 / package release pending
-
-- RFC 0042: refinement can use finite stated period inputs while ranking ordinary
-  scalar gaps. Optional period context supports exact variants and full-path
-  overrides, including null. Period inputs never enter the default cascade.
-- Structured per-output period diagnostics distinguish missing/nonnumeric values
-  from malformed, duplicate and ambiguous series; unaffected outputs remain ranked.
-  Add the matching public type/schema and regression coverage. Existing scalar
-  ranking math and calc values are unchanged; receipt protocol labels advance.
-- Format remains 2.0. Published core/CLI remains 2.7.0 (Protocol 2.8.0); a new
-  package release is separate. Excel period emission still requires bindings.
-
-### Documentation and verification
-
-- Reconcile the roadmap and living status with the published 2.7.0 release;
-  archive historical launch notes and mark RFCs 0040/0041 implemented.
-- Independently verify PCG64 against NumPy 1.26.4 under the upstream default
-  stream and srandom sequence: 11 seeds, 11,264 raw draws, 176 doubles. Add
-  reproducible oracle generation and regression coverage; existing outputs,
-  financial math, package versions and conformance baselines are unchanged.
-- Scope contextual period support for Excel/refinement in a planning brief.
-  RFC 0042 implements the bounded refinement stage; Excel bindings remain queued.
+- 1,931 workspace tests, 441 default plus 76 declarative conformance checks,
+  and 31 JSON schemas pass for the merged source. All release gates are rerun
+  after repinning. Receipt changes are engine labels only; financial digests,
+  formulas and precision boundaries remain unchanged.
+- Independently verified PCG64 against NumPy 1.26.4: 11 seeds, 11,264 raw draws
+  and 176 doubles. Reconciled roadmap/status and added executable consumer guides.
 
 ## [2.7.0] - 2026-09-12
 

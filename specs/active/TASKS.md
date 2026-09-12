@@ -1,7 +1,6 @@
-# Task matrix
+# Release 2.8.0 tasks
 
-- [x] Implement approved RFC 0044 API, normative triad, acceptance coverage,
-  CLI and documentation; run every gate — committed as `14671cf`.
-
-Completion evidence is archived in `specs/archive/lease-up-cash-flow-projection.md`.
-No unchecked implementation task is in flight.
+- [ ] In flight: prepare versions, pins, receipt metadata and release docs;
+  install, run all gates, smoke-test packed artifacts and commit the release PR.
+- [ ] Merge the green release PR, tag v2.8.0 and verify trusted publication.
+- [ ] Verify clean npm installation and reconcile published documentation.

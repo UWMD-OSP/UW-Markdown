@@ -43,7 +43,7 @@ Run any command without arguments for usage help.
 ## Calculation context files (source implementation)
 
 The source checkout adds `--calc-context <JSON file>` to `calc` and `refine`.
-This flag is not included in the published 2.7.0 package. After building the
+This flag is included in the 2.8.0 release line. After building the
 checkout, run from the repository root:
 
 ```sh
@@ -80,3 +80,15 @@ This CLI is the reference implementation of the UW Markdown protocol's Tier-1 (R
 ## License
 
 [MIT](https://github.com/UWMD-OSP/UW-Markdown/blob/main/LICENSE) © UW Markdown contributors.
+
+### Project verified lease-up amounts (2.8.0)
+
+```sh
+uwmd project-lease-up deal.uwx.md cash-dates.json --json
+```
+
+The plan requires exact `source_variant`, explicit `day_count` and a complete
+`cash_dates` array of `{ period, date }` mappings. Success emits a JSON candidate
+with source digest and binding evidence. Refusals exit 1 and retain nested
+diagnostics with `--json`. No input files are edited. This partial stream covers
+rent receipts, concessions and TI/LC only; it is not a complete DCF.
