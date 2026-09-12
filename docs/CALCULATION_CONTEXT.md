@@ -2,10 +2,11 @@
 
 `--calc-context <file>` supplies explicit period variants and input overrides to
 `uwmd calc`, `uwmd refine`, and selected calculations in `uwmd-excel`.
-The source document is unchanged. These commands are implemented in the source
-checkout and await publication; the published core/CLI 2.7.0 release does not
-include this flag. Build the checkout with `npm run build` before using the
-commands below, from the repository root.
+The source document is unchanged. Core/CLI **2.8.0** includes calculation and
+refinement context support. Use `npx @uwmd/cli@2.8.0` in place of `npm run cli --`
+for an installed command, or build the checkout with `npm run build` and run
+the examples below from its root. Standalone Excel **0.9.0** remains unpublished;
+the Excel examples require the source checkout.
 
 ## Context file
 

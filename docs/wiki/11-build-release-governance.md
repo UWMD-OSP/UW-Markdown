@@ -34,7 +34,7 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.11.0 in the 2.8.0 candidate; 2.8.0 in published core/CLI 2.7.0). A test in
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.11.0 in published core/CLI 2.8.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
@@ -75,7 +75,7 @@ CHANGELOG section marked `### Released` against the git tags, exempting only the
 version currently in the core manifest, whose tag is pushed after merge.
 
 Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
-both `@uwmd/core` and `@uwmd/cli`** (below). The tag is the trigger, so a missing
+all four published packages (core, CLI, signing and batch)** (below). The tag is the trigger, so a missing
 publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
@@ -91,7 +91,7 @@ post-v1.0 plan is
   (Node 20 & 22 matrix) that installs, builds, tests, and runs conformance
   tiers 1–3. Tier 4 is excluded (non-deterministic / operator-driven).
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
-  `@uwmd/core` and `@uwmd/cli`. Authentication is **npm trusted publishing
+  `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, and `@uwmd/batch`. Authentication is **npm trusted publishing
   (OIDC)** — no `NPM_TOKEN`, no secret of any kind. The runner trades the
   `id-token: write` permission for a short-lived token scoped to this repo and
   workflow, and provenance is attached automatically.
@@ -126,7 +126,7 @@ post-v1.0 plan is
   calendar math (0034), and distribution waterfalls (0035/0036) are implemented.
   RFC 0040 (signed block roles) and RFC 0041 (period-indexed addressing)
   shipped in core/CLI 2.7.0. RFCs 0042–0044 are accepted and merged; Protocol 2.11.0 and
-  the 2.8.0 package candidate include their public contracts. Publication is pending.
+  published core/CLI 2.8.0 include their public contracts. Standalone Excel remains unpublished.
 - Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).

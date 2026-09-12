@@ -1,10 +1,13 @@
 # From stated lease-up periods to an explicitly dated stream
 
-[RFC 0044](rfcs/0044-explicit-lease-up-cash-flow-projection.md) is merged in source Protocol 2.11.0. The browser-safe
+[RFC 0044](rfcs/0044-explicit-lease-up-cash-flow-projection.md) ships in
+core/CLI **2.8.0**, with Protocol **2.11.0**. The browser-safe
 `projectLeaseUpCashFlows` API and read-only CLI copy verified stated amounts
 onto caller-supplied dates and return source digest/binding evidence.
-Included in the 2.8.0 release candidate; publication is pending. Published
-core/CLI 2.7.0 do not include this API.
+
+Install the published CLI with `npm install -g @uwmd/cli@2.8.0`, or invoke
+`npx @uwmd/cli@2.8.0 project-lease-up deal.uwx.md cash-dates.json --json`.
+The worked repository example below uses the same published API.
 
 ## Run it
 
