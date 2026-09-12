@@ -1,23 +1,13 @@
-# Active contract: RFC 0045 core and CLI implementation
+# Active work
 
-The owner requested continued development and selected a clearly labeled
-synthetic test ledger on 2026-09-12; real-deal validation follows separately.
-Implement RFC 0045's stated unlevered/pre-tax, single-currency assembly contract,
-including its exact section 8 plan/result/error types. No inferred financial
-inputs, formulas, tolerances, currency conversion or new dependencies.
+RFC 0045's core/browser assembler, read-only CLI, schemas, synthetic workflow and
+verification are complete in [PR #190](https://github.com/UWMD-OSP/UW-Markdown/pull/190).
+The contract and evidence are [archived](../archive/property-cash-flow-assembly-implementation.md).
 
-Authorized normative changes: Protocol 2.12.0, new VIII.9.6 text; the RFC 0045
-types in protocol.ts; CALC-CF-ASSEMBLY; and three plan/result/issue schemas,
-all in one commit. Format remains 2.0. Package release is a separate task.
-Core/browser exports and read-only `assemble-property` CLI consume that contract.
+Source Protocol 2.12.0 includes this implementation. Published core/CLI 2.8.0
+still expose Protocol 2.11.0; preparing and publishing the next package release
+is the next delivery stage. No further economic implementation is in flight.
 
-Use a Format 2.0 synthetic ledger with complete category coverage, real purchase
-anchor, external reserve transfers and stated gross exit. Test refusal of missing
-coverage, overlapping rows, invalid dates/signs/basis, failed and unverifiable
-sources, snapshot mutation and same-date ordering. Preserve existing math and
-source bytes; verify returns through existing metric procedures only.
-
-Definition of done: implementation, independent conformance cases, schema/runtime
-agreement, CLI success/refusal, workflow docs and living status; all repository
-gates and CI green before merge. Keep synthetic evidence distinct from adopter
-validation and published APIs.
+The owner selected synthetic engineering inputs and will validate a real deal
+separately. Levered/tax, reserve-rollforward, post-sale settlement and speculative
+leasing extensions need their own bounded contracts.

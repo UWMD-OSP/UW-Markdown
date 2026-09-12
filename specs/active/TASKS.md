@@ -1,7 +1,8 @@
-# Task matrix — RFC 0045
+# Task matrix
 
-- [ ] Implement and verify the accepted synthetic-ledger core/CLI contract, normative triad and documentation; commit and run CI. **In flight.**
-- [ ] Reconcile implementation and publication status after the verified change lands.
+- [x] Implement and verify RFC 0045's synthetic-ledger core/CLI contract and normative triad — `782160f`, CI 34719743145.
+- [x] Reconcile source implementation and publication status in PR #190.
 
-The owner selected synthetic engineering fixtures; real-deal validation is a
-separate follow-up, not a claim this implementation can make.
+The completed implementation contract is archived in
+`specs/archive/property-cash-flow-assembly-implementation.md`.
+Package release and owner-led real-deal validation remain separate next stages.
