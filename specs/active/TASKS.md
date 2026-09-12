@@ -1,15 +1,11 @@
-# RFC 0040 task matrix
+# RFC 0041 task matrix
 
-Derived from [SPEC.md](SPEC.md). One unchecked implementation item in flight.
+Derived from [SPEC.md](SPEC.md) and [the queued contract](../queued-rfc-0041.md).
+RFC 0040 is complete and archived; its PR is ready for review.
 
-- [x] Land the verified documentation reconciliation — PR #177, `59e8912`;
-  all 14 remote checks passed before merge.
-- [ ] Prepare RFC 0040 for acceptance and resolve the signed role location.
-  Owner approved block-level `_role` on 2026-09-11. Acceptance is recorded in
-  the RFC and active contract; implementation is complete and verified locally.
-- [ ] Implement the approved contract across source,
-  normative text, schemas, exports, writers, integrity tests, and conformance.
-- [ ] Pass all gates, commit, and submit the feature for review; archive the
-  completed contract after the matrix is finished.
-- [ ] Reconcile the queued RFC 0041 findings against the new baseline and open
-  its next-stage contract. Do not activate a second implementation stage here.
+- [ ] Reconcile RFC 0040's merge result and the current protocol baseline.
+- [ ] Revise RFC 0041 to pin the bounded selector and calc-context contract.
+- [ ] Implement the standard-series registry and contextual resolver.
+- [ ] Integrate calc/reference surfaces, fixtures and deterministic gates.
+
+No implementation item is in flight until baseline reconciliation completes.

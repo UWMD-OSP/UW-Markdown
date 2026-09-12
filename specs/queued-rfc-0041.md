@@ -1,14 +1,14 @@
 # Next stage — RFC 0041 period addressing
 
 Baseline: RFC 0040 implementation on PR #178, Protocol 2.7.0. Reconcile the
-merged head before starting. This is the queued stage contract; RFC 0040 is
-the only current implementation stage until its review submission is complete.
+merged head before starting. This is the next-stage contract. RFC 0040 is implemented and submitted
+for review; reconcile its merge result before starting the next implementation.
 
 ## Bounded first implementation
 
 - Register the five standard series: `dcf.annual_cash_flows`,
   `noi_model.projections`, `lease_up_schedule.schedule`,
-  `cash_flow_series.flows`, and `distribution_waterfall.stated_schedule`.
+  `cash_flow_series.series`, and `distribution_waterfall.stated_schedule`.
 - Support explicit `Y<n>` year selectors and absolute `YYYY-MM`, `YYYY-Qn`,
   and `YYYY-MM-DD` identities on series with the corresponding grammar.
   Never compare a holding year to a calendar period without an anchor.
