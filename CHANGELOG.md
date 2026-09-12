@@ -10,10 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ## [2.9.0] - 2026-09-12
 
-### Release preparation
+### Released
 
 Core/CLI **2.9.0** package RFC 0045 with Protocol **2.12.0** and Format **2.0**.
-Publication is pending the `v2.9.0` trusted-publishing workflow. Signing
+The `v2.9.0` trusted-publishing workflow published all four packages; clean
+registry installation and API/CLI behavior were verified. Signing
 **0.2.13** and batch **0.8.8** repin core. Excel **0.9.1**, report **0.8.13**
 and the **0.1.1** reference module packages remain unpublished.
 

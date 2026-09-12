@@ -1,9 +1,9 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-12** after release **v2.8.0** at `f0d8642`.
-Core/CLI **2.8.0**, signing **0.2.12** and batch **0.8.7** are published and
+Reconciled **2026-09-12** after release **v2.9.0** at `7d939c7`.
+Core/CLI **2.9.0**, signing **0.2.13** and batch **0.8.8** are published and
 verified through a clean npm installation. Format **2.0** and Protocol
-**2.11.0** version independently. See [release evidence](../reviews/2026-09-12-release-2.8.0.md),
+**2.12.0** version independently. See [release evidence](../reviews/2026-09-12-release-2.9.0.md),
 [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -23,18 +23,18 @@ verified through a clean npm installation. Format **2.0** and Protocol
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.0**, report **0.8.12**, and hospitality/data-center modules **0.1.0**
+Excel **0.9.1**, report **0.8.13**, and hospitality/data-center module packages **0.1.1**
 remain unpublished. Core's RFC 0043 binding API is published; the full Excel
 exporter remains available from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
 
-Release preparation passed clean npm ci, build, **1,931 workspace tests**,
-test typechecking, **441 default + 76 declarative conformance checks**,
-**31 JSON schemas**, lint, lockfile/package/version/index/release checks and
+Release preparation passed clean npm ci, build, **1,990 workspace tests**,
+test typechecking, **457 default + 76 declarative conformance checks**,
+**34 JSON schemas**, lint, lockfile/package/version/index/release checks and
 documentation build. Separate tarball and registry installations verified
-core/browser projection, zero-valued context overrides, CLI success/refusal,
+core/browser assembly and projection, synthetic pinned metrics, explicit zeros, CLI success/refusal,
 signing exports and batch indexing. Source documents remained unchanged.
 
 PCG64 independently matches NumPy 1.26.4's compiled implementation over
@@ -42,19 +42,18 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
 
-## Source implementation after 2.8.0
+## Property cash-flow assembly released in 2.9.0
 
 RFC 0045 adds `assemblePropertyCashFlows` and `uwmd assemble-property` under
 Protocol 2.12.0. It assembles explicitly covered unlevered/pre-tax cash in one
 declared currency, with real purchase anchoring, reserve assertions and source
 evidence. The owner selected a synthetic test ledger; real-deal review remains
 separate. See the [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md).
-This API is not yet in published core/CLI 2.8.0.
+This API and CLI are published in 2.9.0.
 
 ## Remaining work
 
-- Validate RFC 0045 against a real deal and publish the verified implementation
-  in the next package release. Levered/tax, post-sale and reserve-rollforward
+- Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward
   extensions remain separate contracts; declared completeness is not verified
   economics.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing

@@ -1,7 +1,7 @@
 ---
 rfc: 0045
 title: Assemble explicitly covered property cash flows
-status: accepted
+status: implemented
 accepted: 2026-09-12
 author: codex
 created: 2026-09-12
@@ -16,7 +16,7 @@ affects:
 
 ## Summary
 
-Propose a candidate-only assembler that combines the RFC 0044 lease-up stream
+This contract defines a candidate-only assembler that combines the RFC 0044 lease-up stream
 with explicitly stated acquisition, operating, capital, reserve and disposition
 cash flows. Its first scope is one property, one declared currency, unlevered
 and pre-tax. Coverage declarations expose omissions and overlapping inputs;
@@ -24,9 +24,8 @@ existing RFC 0034 procedures remain responsible for dated metrics.
 
 **Accepted for implementation on 2026-09-12.** The owner selected a clearly
 labeled synthetic engineering ledger; real-deal validation remains separate.
-Core/CLI 2.8.0 and Protocol 2.11.0 remain the released contract. This proposal
-defines assembly of stated economics, not a lease forecast or an exit-value
-calculator. The owner directed continued implementation of this bounded scope.
+Released in core/CLI 2.9.0 with Protocol 2.12.0. This contract defines assembly
+of stated economics, not a lease forecast or an exit-value calculator.
 
 ## Motivation
 
@@ -441,7 +440,7 @@ implementation; it supplies test inputs, not evidence about a real investment.
 
 ## Reference implementation
 
-Implemented in source: `packages/uwmd-core/src/property-cash-flows.ts` and
+Released in core/CLI 2.9.0: `packages/uwmd-core/src/property-cash-flows.ts` and
 sibling tests; shared source validation only where it preserves existing rules.
 Reuse `projectLeaseUpCashFlows`, existing date validation, cash-flow verification,
 semantic envelope hashing and metric evaluation. Do not change `deriveDCF`.
@@ -450,11 +449,11 @@ Export from `index.ts` and `browser.ts`; synchronize protocol/types/schemas.
 `uwmd assemble-property <file> <plan.json> [--json]` is a read-only wrapper
 over the core contract, with plan/result/refusal schemas. The
 [synthetic workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md) exercises the built API
-and existing engine metrics. Core/CLI 2.8.0 on npm do not include this new API;
-it is implemented in source for the next release. Add independent conformance fixtures and
-an end-to-end example with reviewed economic inputs. Run all repository gates,
-including test typechecking, schema/index/package checks and docs-site build.
-Excel metric formulas, document writes and publishing are separate stages.
+and existing engine metrics. Sixteen independent conformance fixtures and the
+synthetic end-to-end example accompany the implementation. All repository gates,
+including test typechecking, schema/index/package checks and docs-site build,
+passed, followed by clean tarball and registry consumer verification.
+Real-deal validation, Excel metric formulas and document writes remain separate.
 
 ## Alternatives considered
 
