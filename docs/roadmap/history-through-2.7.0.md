@@ -1,0 +1,214 @@
+# Historical roadmap through 2.7.0
+
+Archived 2026-09-12. This is design and release history, not current status.
+It deliberately preserves superseded launch instructions and point-in-time
+claims. Use the [current roadmap](../../ROADMAP.md) for remaining work.
+
+# Original roadmap
+
+The single source of truth for what's planned for UW Markdown. Work in
+the README "Planned" list and the protocol spec's §XVI "Future work"
+both feed back to this document.
+
+This roadmap is **directional**, not contractual. Items move, get cut,
+or get reordered as we learn from adopters.
+
+## Status legend
+
+- ✅ **Shipped** — landed and documented
+- 🚧 **In progress** — actively being worked on
+- 📋 **Next** — committed for the upcoming release
+- 💭 **Considered** — would be valuable; not yet committed
+- ❄ **Frozen** — explicitly deferred to a later major version
+
+---
+
+## v1 release readiness
+
+> **Status update (2026-07-25):** The repository is already public. The historical
+> pre-public-flip checklist below is superseded; the remaining launch work is the
+> npm organization registration, `NPM_TOKEN`, and the first
+> `v1.0.0` package publication.
+
+Everything required to call the v1 release *credible* is shipped: README claims
+are backed by conformance fixtures and normative schemas. The repository is now
+public and renamed to `uw-markdown`; the remaining v1 work is npm account setup
+and the first package publication.
+
+| Status | Item | Tracking |
+|---|---|---|
+| ✅ | Tier-2 Editor — `applyEdit()` dispatcher + `BUILTIN_EDIT_POLICIES` enforcement | commit `e947e2d` |
+| ✅ | Tier-3 Calc Host — safe-expression parser + evaluator + built-ins (`sum`, `pmt`, `npv`, `irr`, …) | commit `137a858` |
+| ✅ | Validator wired to `BUILTIN_REMEDIATIONS` registry (no inline strings) | commit `137a858` |
+| ✅ | Conformance corpus filled (Tiers 1-4 fixtures) + runner gating tiers 1-3 in CI | commit `0536c67` |
+| ✅ | JSON Schemas for the 6 boundary-crossing types + spec ordering / cross-ref fixes | commit `ae8ab6d` |
+| ✅ | Governance / OSS scaffolding (SECURITY/GOVERNANCE/MAINTAINERS/CODEOWNERS, RFC template) | commit `b8c97b8` |
+| ✅ | npm publish workflow on `v*` tag with provenance | commit `b8c97b8` |
+
+## v1 follow-on tools
+
+Tool surface to grow before the public flip. None of these are blocked
+on going public — they ship into the private repo and wait. Order
+reflects effort vs. devex value.
+
+| Status | Item | Notes |
+|---|---|---|
+| ✅ | VS Code extension (preview 0.1.0) | `tools/vscode-uwmd/` — syntax highlight + section folding + document outline + on-save validation via `@uwmd/core`. |
+| ✅ | Documentation site (preview 0.1.0) | `tools/docs-site/` — VitePress build of spec / protocol / schemas / conformance / project docs. Interactive playground deferred to 0.2. |
+| ✅ | Standalone CLI installer (preview 1.0.0) | `packages/uwmd-cli/` — publishes as `@uwmd/cli` on npm (executable: `uwmd`). `npx @uwmd/cli init` / `validate` / `parse` / `render` / `edit` / `calc` / `run` for non-developers who don't want to clone. Thin wrapper over `@uwmd/core` (depends on it via the new `./cli` subpath export). No calc-drift risk. |
+| ✅ | Calc-aware web editor (preview 0.1.0) | `tools/web-editor/` — Vite + plain TS bundle on `@uwmd/core/browser`. Embeds the Tier-2 dispatcher and Tier-3 calc engine in the browser. Frontmatter editing + numeric section editing on five calc-bearing sections (property, valuation, noi_model, debt_structure, sources_uses) dispatch through `applyEdit()`; multifamily calc starter pack (cap rate, LTV, DSCR, debt yield, $/unit, $/sqft, price/unit, cash-on-cash) re-evaluates every render so derived values can never drift from inputs. Validation footer surfaces every `ValidationMessage` with `BUILTIN_REMEDIATIONS` copy. Replaces the originally-planned narrative-only Tier-2 web editor — that design was rejected because separating "safe" narrative edits from "unsafe" numeric edits creates two paths into the same file and a wrong incentive to use the easier one. |
+| ✅ | Excel converter (preview 0.1.0) | `packages/uwmd-excel/` — `.uw.md` → `.xlsx` for multifamily. Two-sheet workbook (Underwriting + Operating Statement) with named-range inputs and derived-metric formulas mirroring `MULTIFAMILY_STARTER_PACK`, plus a flat Pipeline Log audit sheet. NOI is itself a formula on the Operating Statement sheet, so editing any line item ripples through to every metric. Reverse direction (`.xlsx` → `.uw.md`) deferred — calc-aware web editor remains the Tier-2 chokepoint for now. |
+| 💭 | `docs/CONFORMING_TOOLS.md` | Once adopters arrive — keeps the README from becoming a giant list. |
+
+## v1.1+ machine interchange
+
+Accepted RFC [0014](../../docs/rfcs/0014-multi-format-interchange.md) defines the
+post-v1.0 machine-interchange train. It keeps the `.uw.md` format at 1.1,
+targets additive representation discovery for protocol 1.2, and stages
+`@uwmd/core` / `uwmd` 1.1 releases for the document envelope and codecs.
+
+| Status | Item | Notes |
+|---|---|---|
+| ✅ | RFC 0014 architecture | Accepted by the project owner on 2026-07-26 under owner-led governance. |
+| ✅ | Envelope + UW JSON | Envelope 1.0 schema, JSON 1.0 codec, semantic digest, registry, CLI export, and tests implemented. |
+| ✅ | Registry + discovery | Protocol 1.2 descriptors, manifest schema, negotiation, `uwmd formats`, and optional HTTP/MCP companion profiles implemented. |
+| ✅ | UW XML | Deterministic XML 1.0 mapping, XSD, secure codec, digest checks, and `uwmd convert` implemented. |
+| ✅ | UW CSV bundle | Normalized directory/ZIP codec, deterministic packaging, bounded safe extraction, semantic digests, and all six views implemented. |
+| ✅ | HTTP + MCP bindings | Stable `uwmd.org` deal identities, OpenAPI 3.1, semantic ETags, content negotiation, text/blob resources, resource links, five MCP tool result profiles, and reference adapters implemented. |
+
+Detailed sequencing and release gates:
+[`docs/releases/1.1-plus-interchange-plan.md`](../../docs/releases/1.1-plus-interchange-plan.md).
+
+## v2 spec exploration
+
+> **Unfrozen 2026-08-26.** With the v1.x dev queue empty (RFCs 0014–0029 all
+> implemented), the owner moved this train from ❄ frozen to 📋 active.
+>
+> **The signing chain landed 2026-08-27.** RFC 0010 (signed blocks) shipped
+> protocol §V.11, the new `@uwmd/signing` package, `uwmd verify --signing`,
+> and the `conformance/signing/` suite; receipt signing came with it, since
+> `@uwmd/signing` supplies the `signatureVerifier` core has always accepted.
+> RFC 0002 (module signing) followed the same day as protocol §X.1 — a
+> `uwmd-keystore` scheme on the same machinery rather than the Sigstore
+> design the RFC opened with, for reasons recorded in the RFC.
+>
+> **RFC 0004 (conformance runner v2) landed the same day** — protocol §II.6a
+> defines a CLI protocol any language can implement, and
+> `conformance/runner/runner.py` drives the tier fixtures through it. The
+> TypeScript runner is *not* replaced: it still gates the corpus, while the
+> new driver gates the protocol.
+>
+> **RFC 0006 (hospitality reference module) landed the same day**, closing
+> the priority order the owner set. Building a real module surfaced that the
+> module system was a registry with no runtime: nothing consumed a registered
+> manifest's calculations, validations, or sections. `module-runtime.ts` and
+> `@uwmd/module-hospitality` fix that together.
+>
+> **RFC 0003 (custom asset classes from modules) followed**, since the module
+> runtime 0006 added is what a declared class needs in order to mean anything.
+> Protocol §X.2; the builtin enum stays closed and a second, namespaced space
+> opens beside it.
+>
+> **RFC 0007 (sensitivity tables) followed**, as protocol §VIII.7 — a JSON
+> declaration plus a general path-override mechanism, with the §VIII.1 grammar
+> left exactly as narrow as it was.
+>
+> **RFC 0005 (stochastic calculations) followed** as protocol §VIII.8, reusing
+> the same override mechanism. It carries one known gap: the PCG test vector is
+> self-generated and has not been diffed against the reference C
+> implementation.
+>
+> **The stated priority order is complete.** Locale negotiation (0001),
+> lease-up modeling (0008), and capability tokens (0011) all shipped in the
+> 1.9.0 sprint (2026-09-01), and the RFC 0009 train culminated in the
+> **2.0.0 release (2026-09-02** — protocol 2.0.0, format 2.0 authoring,
+> `@uwmd/core`/`@uwmd/cli` 2.0.0 live on npm). Unfrozen means *actively
+> being taken up*, not accepted — each RFC still goes through its own
+> acceptance.
+>
+> **2026-09-02, post-2.0:** RFC 0034 (calendar-anchored cash flows) was
+> drafted, accepted, and implemented (protocol 2.1.0), and RFC 0015
+> (portfolio & relationship profiles) was revised, accepted, and
+> implemented (protocol 2.2.0) — both the same day. The only RFC still
+> open on this train is 0013 (corpus retrieval, draft).
+
+Each item below has an opening RFC under [`docs/rfcs/`](../../docs/rfcs/).
+None are required for v1 conformance — they constitute v2 of the
+protocol, the format, or both. RFCs are `draft` until the project owner accepts.
+The 14-day comment window applies after collaborative governance activates; see
+[`GOVERNANCE.md`](../../GOVERNANCE.md).
+
+Mirrored in `spec/UW_PROTOCOL_v1.md` §XVI so spec readers see them in
+context. This list is the maintainable copy.
+
+| RFC | Item | Why it matters |
+|---|---|---|
+| [0010](../../docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
+| [0001](../../docs/rfcs/0001-locale-negotiation.md)    | ✅ Locale negotiation                          | **Shipped 2026-09-01** (protocol 1.13.0, §III.1a). Declare-and-refuse; display-only; curated `BUILTIN_FORMAT_RULES` for five first-wave locales. Currency-code disambiguation deferred to its own RFC. |
+| [0002](../../docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
+| [0003](../../docs/rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
+| [0004](../../docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
+| [0005](../../docs/rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
+| [0006](../../docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
+| [0015](../../docs/rfcs/0015-portfolio-relationships.md) | ✅ Portfolio and relationship profiles        | **Shipped 2026-09-02** (protocol 2.2.0, §XV). The `.uwportfolio.json` sidecar carrying entity-layer edges of the RFC 0018 registry, registry-resolved validation, `uwmd portfolio validate\|edges`, and the package→profile projection bridge. No storage or aggregate-math contract, by design. |
+| [0034](../../docs/rfcs/0034-calendar-anchored-cash-flows.md) | ✅ Calendar-anchored cash flows | **Shipped 2026-09-02** (protocol 2.1.0, §VIII.9). Dated series (§4.26, the third state-and-verify structure), the closed day-count registry, and deterministic `xirr`/`xnpv` via declarations. Removes RFC 0026 Phase 2's stated precondition. |
+| [0035](../../docs/rfcs/0035-distribution-waterfall.md) | ✅ Distribution waterfall | **Shipped 2026-09-02** (protocol 2.3.0, §VIII.10). The RFC 0026 §E leg-3: state-and-verify ROC → pref → catch-up → promote splits over a §4.26 dated series; verifyWaterfall recomputes the full allocation so two engines agree on the promote. IRR hurdles subsequently shipped in RFC 0036; clawback remains deferred. |
+| [0036](../../docs/rfcs/0036-waterfall-irr-hurdles.md) | ✅ IRR-hurdled waterfall tiers | **Shipped 2026-09-09** (protocol 2.6.0, §VIII.10 step 3; released in 2.6.0). Takes up the `until_lp_irr` reservation from RFC 0035. The boundary is closed-form (the LP hurdle balance, `−xnpv(F,h)·(1+h)^t`), not the nested bisection 0035 §C sketched; laddered and combined hurdles follow; strictly-increasing hurdle ladders are `WF-01`. Corpus 385 → 396. |
+| [0037](../../docs/rfcs/0037-cross-check-variant-resolution-and-coverage.md) | ✅ Cross-check resolution over variant maps + coverage channel | **Shipped 2026-09-09** (released in 2.5.0). §5.3 resolution order (preference → `default` → `base` → lone variant), `CC-16` for an unresolvable map, `ValidationResult.coverage`. Closes underwriter.cc UPSTREAM-005: variant maps had been silently disabling ten of fifteen cross-checks. |
+| [0038](../../docs/rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (released in 2.5.0). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
+| [0039](../../docs/rfcs/0039-data-center-module.md) | ✅ Data-center module | **Shipped 2026-09-09** (released in 2.6.1). `@uwmd/module-data-center` 0.1.0: the first product module on a module-declared class (`org.uwmd.data_center`, fallback `industrial`), three kW-denominated sections, eleven calcs, seven validations, `examples/Mesa-Gateway-…`, `conformance/modules/runtime/06–11`. RFC 0003 generalizes: module formulas read the standard sections unchanged (the per-kW price and NOI calcs ship), and the one gap found — a declaring module was not scoped to its declared class — is fixed in `module-runtime.ts`. No spec change. |
+| [0040](../../docs/rfcs/0040-variant-role-resolution.md) | ✅ Variant roles | **Accepted 2026-09-11.** Signed block-level `_role`, role-aware cross-checks, component exclusion, trusted-host edits and per-section coverage. Protocol 2.7.0 implementation; package release remains separate. |
+| [0041](../../docs/rfcs/0041-period-indexed-addressing.md) | ✅ Explicit period addressing | **Accepted 2026-09-12.** Named holding years and absolute calendar/date selectors on five standard series. Duplicate refusal, variant context and PS diagnostics; Protocol 2.8.0 implementation. Relative periods, module registration and contextual Excel emission remain deferred. |
+
+
+## Mixed-use aggregation and speculative leasing
+
+[RFC 0019](../../docs/rfcs/0019-mixed-use-composition.md) shipped multi-component
+container aggregation: named components feed a property-level mixed-use pack.
+Its historical array-iteration constraint explains the chosen container shape;
+removing that constraint would not itself deliver Argus parity.
+
+Speculative leasing remains a separate modeling proposal, not a committed release:
+renewal probabilities, months vacant, market-rent resets, and tenant-improvement /
+leasing-commission cash timing and amortization need explicit deterministic rules
+and fixtures. A future module could produce period-indexed schedules.
+[RFC 0041](../../docs/rfcs/0041-period-indexed-addressing.md) addresses
+period lookup over existing series; it is not a lease-rollover engine. The shipped
+[lease-up schedule](../../docs/rfcs/0008-lease-up-modeling.md) likewise does not establish
+that broader modeling contract.
+
+## Pre-public-flip checklist
+
+> **Superseded:** the public flip is complete. Retained for launch-history context;
+> unchecked rows remain prerequisites for the first npm release.
+
+The last thing that happens before the repo flips from private to
+public. Held until the tool surface (above) is broad enough to be
+worth shipping. Nothing else in the project is blocked on this — every
+preceding section can land in private.
+
+| Status | Item | Notes |
+|---|---|---|
+| ✅ | Repo rename to `uw-markdown` | Completed 2026-07-25; repository, package metadata, documentation links, and local remote updated. |
+| ✅ | Register `@uwmd` org on npm | Completed; `@uwmd/core` is published from the organization. |
+| ✅ | Add `NPM_TOKEN` repo secret | Configured for release automation. |
+| ✅ | Publish `@uwmd/cli` | Published as `@uwmd/cli@1.1.3`; its executable remains `uwmd`. |
+| ✅ | Flip repo private → public | Completed before the 2026-07-25 release-readiness review. |
+
+## Permanently out of scope (v1)
+
+Listed so we don't keep re-litigating these:
+
+- ❄ Network protocols. The `.uw.md` file is the protocol surface; how it's transported is out of scope (protocol §I.2).
+- ❄ Persistence / storage. How implementations cache, version, or back up the file is out of scope.
+- ❄ UI design beyond display conventions. Implementations may render any way they wish provided values format identically.
+- ❄ License change. MIT is a permanent commitment for v1 (governance §License changes).
+
+## How to propose a roadmap change
+
+- **Editorial reorder / status update**: open a PR directly.
+- **New roadmap item**: open an issue with the *Feature* template
+  describing the user need; if accepted, it gets added here with the
+  appropriate status.
+- **New v2 RFC**: copy `docs/rfcs/0000-template.md` and submit per
+  `GOVERNANCE.md` rules.

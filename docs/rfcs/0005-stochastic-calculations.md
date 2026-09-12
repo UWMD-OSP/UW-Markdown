@@ -236,19 +236,18 @@ a failed draw is excluded from the summary rather than folded in as
 zero; `stddev` is the sample (`n−1`) form, because reporting `0` for a
 single draw claims a certainty the run does not have.
 
-### Verification gap: the PCG test vector is self-generated
+### Independent PCG64 verification (completed 2026-09-12)
 
-`prng.ts` implements PCG-XSL-RR-128/64 from the published algorithm, and
-the test vector in `prng.test.ts` and `conformance/stochastic/` was
-generated **by that implementation**. It proves self-consistency across
-runs and platforms. It does **not** prove agreement with the reference C
-implementation at pcg-random.org, which nobody has diffed against.
+The existing generator now matches NumPy 1.26.4's compiled PCG64 with the
+upstream default stream and matching srandom state initialization. Eleven seeds
+pin 11,264 raw draws and 176 exact doubles. The original seed-42 vector and all
+stochastic results are unchanged. The upstream fixed-stream API is pcg64s;
+NumPy's default SeedSequence must not be confused with UWMD's seeding convention.
 
-The check is cheap and has not been done. Until it is, an implementer
-porting this to another language should port the TypeScript, not write
-pcg64 from the paper and assume the two agree. This should be closed
-before the RFC is accepted rather than after — the steps are written up
-in [`docs/handoff/HUMAN-verify-pcg64-vector.md`](../../docs/handoff/HUMAN-verify-pcg64-vector.md).
+See the [verification record](../reviews/2026-09-12-pcg64-reference.md) for
+upstream source provenance, coverage and limits. The optional maintainer script
+reproduces the independent oracle; ordinary Vitest tests compare against its
+committed vectors without adding a Python or runtime dependency.
 
 ### Deferred
 

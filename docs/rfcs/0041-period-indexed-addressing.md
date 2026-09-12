@@ -1,7 +1,7 @@
 ---
 rfc: 0041
 title: Explicit period addressing for the standard series
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-09-10
 accepted: 2026-09-12
@@ -13,6 +13,11 @@ affects:
 ---
 
 # RFC 0041: Explicit period addressing
+
+**Released in [core/CLI 2.7.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.7.0), 2026-09-12.**
+The implementation and conformance cases are shipped; remaining extensions are
+explicitly deferred below.
+
 
 The owner authorized the bounded next stage after RFC 0040. This revision
 replaces the earlier draft's positional calendar keys and first-match behavior.

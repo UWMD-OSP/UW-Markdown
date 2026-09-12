@@ -1,6 +1,5 @@
-# Active task matrix
+# Sprint tasks
 
-No implementation task is in flight. Release 2.7.0 preparation and verification
-are [archived](../archive/release-2.7.0-preparation.md). The owner subsequently
-authorized the release operation; PR #180, tag v2.7.0 and the release workflow
-record merge and publication status.
+- [ ] Reconcile docs, verify and pin PCG64, and write the period-consumer brief.
+  This is the single implementation stage in flight; run all gates and commit.
+- [ ] Submit the sprint PR, verify CI and archive the completion evidence.
