@@ -20,18 +20,17 @@ same protocol version.
 
 ## Current matrix
 
-Release candidate 2.9.0 pairs core/CLI 2.9.0 with Protocol 2.12.0 and Format 2.0.
-**Publication pending:** the matrix tracks source manifests; the last verified
-npm versions are core/CLI 2.8.0, signing 0.2.12 and batch 0.8.7.
-The `v2.9.0` workflow publishes those four packages. Excel, report and the
-reference modules remain unpublished. Module package 0.1.1 only repins core;
-the typed module manifests retain their independent 0.1.0 contract version.
-Package, Format and Protocol versions advance independently.
+Release 2.9.0 pairs core/CLI 2.9.0 with Protocol 2.12.0 and Format 2.0.
+Core/CLI 2.9.0, signing 0.2.13 and batch 0.8.8 are published on npm and
+verified by a clean installation. Excel, report and the reference modules remain
+unpublished. Module package 0.1.1 only repins core; the typed module manifests
+retain their independent 0.1.0 contract version. Package, Format and Protocol
+versions advance independently.
 
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.12.0** | format ≥ 1.0 (property cash-flow assembly, RFC 0045; source implementation, not yet published) |
+| UW Protocol | **2.12.0** | format ≥ 1.0 (property cash-flow assembly, RFC 0045; released in core/CLI 2.9.0) |
 | `@uwmd/core` | **2.9.0** | format 2.0 (reads 1.x), protocol 2.12.0 |
 | `@uwmd/cli` (CLI) | **2.9.0** | `@uwmd/core` 2.9.0 |
 | `@uwmd/excel` | **0.9.1** (unpublished) | `@uwmd/core` 2.9.x, format 2.0, explicit contextual calculations |

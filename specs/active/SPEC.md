@@ -1,18 +1,9 @@
-# Release 2.9.0
+# Active work
 
-The owner requested proceeding after PRs #189 and #190 merged. Main CI
-34720089513 passed at f0ce7d6. Publish the RFC 0045 implementation using the
-existing trusted-publishing workflow and verify installed consumer behavior.
+Release 2.9.0 is published and verified. The contract is
+[archived](../archive/release-2.9.0.md), with public
+[release evidence](../../docs/reviews/2026-09-12-release-2.9.0.md).
 
-Core/CLI become 2.9.0; Protocol remains 2.12.0 and Format remains 2.0.
-Signing 0.2.13 and batch 0.8.8 repin core. Unpublished Excel 0.9.1, report
-0.8.13 and module packages 0.1.1 also repin core; typed module manifests
-retain their independent 0.1.0 contract version. No external dependency,
-workspace link, normative contract or financial calculation changes.
-Receipt changes are engine labels only.
-
-Run npm ci, all deterministic gates, docs build and isolated tarball smoke.
-Merge a green release PR and tag the tested main commit v2.9.0. Verify the
-four registry artifacts and clean installed API/CLI behavior before marking
-publication complete. Reconcile public documentation and archive this contract.
-Real-deal economic validation remains with the owner, as previously agreed.
+RFC 0045's bounded synthetic-ledger implementation is complete. The owner will
+validate a real deal separately. Further financial modeling requires a bounded
+contract for its economics; no unapproved financial implementation is in flight.

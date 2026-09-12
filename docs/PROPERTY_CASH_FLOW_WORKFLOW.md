@@ -1,8 +1,6 @@
 # Assemble explicitly covered property cash flows
 
-RFC 0045 is implemented in source with Protocol **2.12.0**. Published core/CLI
-**2.8.0** still expose Protocol **2.11.0**; use a repository build for this
-workflow until the next package release.
+RFC 0045 is available in published core/CLI **2.9.0** with Protocol **2.12.0**.
 
 The assembler combines verified stated lease-up cash with a supplemental dated
 ledger. The result covers one property, one explicitly declared currency,
@@ -16,7 +14,14 @@ property or investment; the owner selected synthetic fixtures for implementation
 and will validate a real deal separately. They demonstrate cash coverage and
 refusal behavior, not an underwriting recommendation.
 
-From a repository checkout:
+Install the CLI for your own explicitly covered source and plan:
+
+```sh
+npm install --global @uwmd/cli@2.9.0
+uwmd assemble-property deal.uwx.md plan.json --json
+```
+
+To run the included synthetic fixtures from a repository checkout:
 
 ```sh
 npm run build

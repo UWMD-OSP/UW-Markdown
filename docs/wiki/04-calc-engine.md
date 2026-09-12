@@ -390,4 +390,4 @@ errors with original nested verifier evidence. Missing/overlapping coverage,
 unknown amounts, unsupported economic assertions and out-of-hold cash refuse.
 Three new schemas and the normative VIII.9.6 text mirror the public types.
 The [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md) uses explicitly synthetic data;
-real-deal validation and the next package publication remain separate.
+core/CLI 2.9.0 publish the implementation. Real-deal validation remains separate.

@@ -1,14 +1,14 @@
 # Roadmap
 
-Current as of **2026-09-12**, following [release 2.8.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.8.0).
+Current as of **2026-09-12**, following [release 2.9.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.9.0).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
 ## Current release
 
-Core/CLI **2.8.0**, signing **0.2.12** and batch **0.8.7** are published on npm.
-Format is **2.0** and Protocol is **2.11.0**; the version streams are independent.
+Core/CLI **2.9.0**, signing **0.2.13** and batch **0.8.8** are published on npm.
+Format is **2.0** and Protocol is **2.12.0**; the version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -32,6 +32,7 @@ packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 | Explicit period addressing — RFC 0041 | Released in 2.7.0 | Named holding years and absolute month/quarter/date selectors on five standard series; Protocol 2.8.0. |
 | Period consumers — RFCs 0042/0043 | Core APIs released in 2.8.0 | Fixed stated refinement inputs, explicit variants/overrides and contextual workbook binding APIs. Native Excel verified; standalone Excel package remains unpublished. |
 | Explicit lease-up projection — RFC 0044 | Released in 2.8.0 | Complete explicit cash-date mapping of verified stated amounts, semantic source digest and binding evidence; read-only API and CLI. |
+| Explicit property cash-flow assembly — RFC 0045 | Released in 2.9.0 | Read-only unlevered/pre-tax, single-currency candidate assembly with explicit coverage, acquisition/disposition and reserve assertions; synthetic engineering fixtures. |
 | Supporting tools and modules | Implemented | Web editor/viewer, docs site, VS Code extension, Excel/report packages and hospitality/data-center reference modules. Publication varies; see the matrix. |
 
 See the [RFC index](docs/rfcs/README.md) and [changelog](CHANGELOG.md) for the
@@ -54,7 +55,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Full DCF assembly | RFC 0045 implemented in source | Unlevered/pre-tax, single-currency assembly with explicit coverage, reserves and real acquisition anchoring. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md); real-deal validation and package publication remain. Further economics need separate contracts. |
+| 1 | Real-deal DCF validation and extensions | RFC 0045 released; adopter review pending | Validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |
