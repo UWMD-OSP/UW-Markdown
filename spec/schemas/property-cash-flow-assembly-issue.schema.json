@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/property-cash-flow-assembly-issue.schema.json",
+  "title": "property-cash-flow-assembly-issue",
+  "description": "RFC 0045 / Protocol VIII.9.6. Shape validation; coverage, signs, dates, source verification and cross-field agreement require semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "category",
+    "code",
+    "reason",
+    "message",
+    "pointer"
+  ],
+  "properties": {
+    "category": {
+      "const": "calc"
+    },
+    "code": {
+      "const": "CALC-CF-ASSEMBLY"
+    },
+    "reason": {
+      "enum": [
+        "plan",
+        "selection",
+        "structure",
+        "verification",
+        "coverage",
+        "basis_currency",
+        "amount_sign",
+        "date_horizon"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "pointer": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "selection": {
+          "$ref": "https://uwmd.org/schemas/protocol-error.schema.json"
+        },
+        "lease_up": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "category",
+            "code",
+            "message",
+            "pointer"
+          ],
+          "properties": {
+            "category": {
+              "const": "calc"
+            },
+            "code": {
+              "const": "CALC-LU-PROJECTION"
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pointer": {
+              "type": "string"
+            },
+            "remediation": {
+              "type": "string"
+            },
+            "cause": {
+              "type": "string"
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [],
+              "properties": {
+                "selection": {
+                  "$ref": "https://uwmd.org/schemas/protocol-error.schema.json"
+                },
+                "structure": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "code",
+                      "severity",
+                      "message"
+                    ],
+                    "properties": {
+                      "code": {
+                        "type": "string"
+                      },
+                      "severity": {
+                        "enum": [
+                          "error",
+                          "warning",
+                          "info"
+                        ]
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "section": {
+                        "type": "string"
+                      },
+                      "field": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "verification": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "verdict",
+                    "issues"
+                  ],
+                  "properties": {
+                    "verdict": {
+                      "enum": [
+                        "verified",
+                        "failed",
+                        "unverifiable"
+                      ]
+                    },
+                    "issues": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "code",
+                          "severity",
+                          "message"
+                        ],
+                        "properties": {
+                          "code": {
+                            "enum": [
+                              "LU-NCF-DISAGREES",
+                              "LU-SUMMARY-DISAGREES",
+                              "LU-UNEVALUABLE"
+                            ]
+                          },
+                          "severity": {
+                            "enum": [
+                              "failure",
+                              "indeterminate"
+                            ]
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "period": {
+                            "type": "string"
+                          },
+                          "expected": {
+                            "type": "string"
+                          },
+                          "actual": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "structure": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning",
+                  "info"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "section": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "verdict",
+            "issues"
+          ],
+          "properties": {
+            "verdict": {
+              "enum": [
+                "verified",
+                "failed",
+                "unverifiable"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "severity",
+                  "metric",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "enum": [
+                      "CF-METRIC-DISAGREES",
+                      "CF-UNEVALUABLE",
+                      "CF-PROCEDURE-REFUSES"
+                    ]
+                  },
+                  "severity": {
+                    "enum": [
+                      "failure",
+                      "indeterminate"
+                    ]
+                  },
+                  "metric": {
+                    "enum": [
+                      "total_net",
+                      "moic",
+                      "xnpv",
+                      "xirr"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "expected": {
+                    "type": "string"
+                  },
+                  "actual": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

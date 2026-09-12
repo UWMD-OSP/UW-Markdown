@@ -74,6 +74,7 @@ const COPIES = [
   { from: 'VERSIONS.md',         to: 'about/versions.md',     title: 'Versions' },
 
   // Guide / on-ramps (source of truth in docs/)
+  { from: 'docs/PROPERTY_CASH_FLOW_WORKFLOW.md', to: 'guide/property-cash-flow.md', title: 'Property cash-flow assembly' },
   { from: 'docs/LEASE_UP_CASH_FLOW_WORKFLOW.md', to: 'guide/lease-up-cash-flow.md', title: 'Lease-up cash-flow workflow' },
   { from: 'docs/CALCULATION_CONTEXT.md', to: 'guide/calculation-context.md', title: 'Calculation context files' },
   { from: 'docs/GLOSSARY.md',    to: 'guide/glossary.md', title: 'Glossary' },
@@ -96,6 +97,8 @@ const COPIES = [
 // Source-relative path → site URL. Keys are normalized: leading "./" and "../"
 // segments are stripped before lookup, so we only list the canonical form once.
 const NORMALIZED_LINK_MAP = new Map([
+  ['docs/PROPERTY_CASH_FLOW_WORKFLOW.md', '/guide/property-cash-flow'],
+  ['PROPERTY_CASH_FLOW_WORKFLOW.md', '/guide/property-cash-flow'],
   ['docs/LEASE_UP_CASH_FLOW_WORKFLOW.md', '/guide/lease-up-cash-flow'],
   ['LEASE_UP_CASH_FLOW_WORKFLOW.md', '/guide/lease-up-cash-flow'],
   ['docs/CALCULATION_CONTEXT.md', '/guide/calculation-context'],

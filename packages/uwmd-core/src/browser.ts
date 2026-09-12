@@ -870,3 +870,9 @@ export { parseCalculationContext } from './calculation-context.js';
 
 export { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
 export type { LeaseUpCashFlowPlan, LeaseUpCashFlowProjection, LeaseUpCashFlowProjectionIssue } from './protocol.js';
+
+// RFC 0045 — explicit property cash-flow assembly.
+export { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
+export type { PropertyCashFlowPlan, PropertyCashFlowAssembly, PropertyCashFlowAssemblyIssue,
+  PropertyCashFlowCategory, PropertyCashFlowCell, PropertyCashFlowCoverage,
+  PropertyCashFlowAssertions, PropertyCashFlowBinding, PropertyCashFlowCellEvidence } from './protocol.js';

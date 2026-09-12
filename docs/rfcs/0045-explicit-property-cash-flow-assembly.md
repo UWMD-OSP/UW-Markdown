@@ -1,7 +1,8 @@
 ---
 rfc: 0045
 title: Assemble explicitly covered property cash flows
-status: draft
+status: accepted
+accepted: 2026-09-12
 author: codex
 created: 2026-09-12
 affects:
@@ -21,10 +22,11 @@ cash flows. Its first scope is one property, one declared currency, unlevered
 and pre-tax. Coverage declarations expose omissions and overlapping inputs;
 existing RFC 0034 procedures remain responsible for dated metrics.
 
-**Draft for owner review; no new API or normative behavior is implemented.**
+**Accepted for implementation on 2026-09-12.** The owner selected a clearly
+labeled synthetic engineering ledger; real-deal validation remains separate.
 Core/CLI 2.8.0 and Protocol 2.11.0 remain the released contract. This proposal
 defines assembly of stated economics, not a lease forecast or an exit-value
-calculator. Acceptance must resolve the review decisions below before coding.
+calculator. The owner directed continued implementation of this bounded scope.
 
 ## Motivation
 
@@ -220,9 +222,169 @@ Propose `PropertyCashFlowAssemblyError extends CalcError` with a structured
 `CALC-CF-ASSEMBLY` issue. Distinct reasons MUST identify plan shape, source
 selection, source structure, source verification, coverage, basis/currency,
 amount/sign or date/horizon failures. Include plan/source pointers and preserve
-existing nested lease-up and cash-flow diagnostics. Exact reason enum, schema
-and error registration must be pinned together in the accepted implementation
-contract; implementers must not invent different wire shapes independently.
+existing nested lease-up and cash-flow diagnostics. The wire contract below
+pins the reason enum and payload shapes; the implementation must register them
+with the normative schemas and protocol prose in the same commit.
+
+### 8. Exact proposed wire contract
+
+The following types define the first JSON contract. All object shapes are closed
+(`additionalProperties: false`), including array entries. All members are required
+unless marked optional; optional members are omitted, never emitted as null.
+Strings used as variants must be nonempty. Zero explanations must contain at
+least one non-whitespace character; preserve their authored text without trimming.
+`DayCountConvention`, `CashFlowSeries`, `ProtocolError`, `ValidationMessage`,
+`CashFlowVerification` and `LeaseUpCashFlowProjectionIssue` retain existing types.
+
+```ts
+type PropertyCashFlowCategory =
+  | 'rent' | 'concessions' | 'ti_lc'
+  | 'other_income' | 'operating_expenses' | 'other_capex' | 'reserve_net'
+  | 'purchase_price' | 'transaction_costs' | 'gross_sale';
+
+interface PropertyCashFlowCell {
+  slot: string; // acquisition, disposition, or exact source period
+  category: PropertyCashFlowCategory;
+}
+
+type PropertyCashFlowCoverage = PropertyCashFlowCell & (
+  | { rows: number[]; zero?: never }
+  | { zero: string; rows?: never }
+);
+
+interface PropertyCashFlowAssertions {
+  cash_amounts_only: true;
+  no_financing_or_investor_tax: true;
+  no_overlapping_economic_amounts: true;
+  reserve_spending_excluded: true;
+  gross_sale_excludes_reserve_release: true;
+  no_terminal_restricted_reserve: true;
+  hold_only_and_exit_settled: true;
+}
+
+interface PropertyCashFlowPlan {
+  basis: 'unlevered';
+  tax_basis: 'pre_tax';
+  currency_code: string; // ^[A-Z]{3}$; author-stated identity
+  day_count: DayCountConvention;
+  acquisition_date: string;
+  disposition_date: string;
+  lease_up: {
+    source_variant: string;
+    currency_code: string;
+    cash_dates: Array<{ period: string; date: string }>;
+  };
+  supplemental: {
+    source_variant: string;
+    currency_code: string;
+  };
+  assertions: PropertyCashFlowAssertions;
+  coverage: PropertyCashFlowCoverage[];
+}
+
+interface PropertyCashFlowBinding {
+  output_row_index: number;
+  source_section: 'lease_up_schedule' | 'cash_flow_series';
+  source_variant: string;
+  source_path: string;
+  date: string;
+  amount: number;
+  cells: PropertyCashFlowCell[];
+}
+
+type PropertyCashFlowCellEvidence = PropertyCashFlowCell & (
+  | { output_rows: number[]; zero?: never }
+  | { zero: string; output_rows?: never }
+);
+
+interface PropertyCashFlowAssembly {
+  source_envelope_digest: string;
+  plan: PropertyCashFlowPlan;
+  coverage: 'declared_complete';
+  series: CashFlowSeries;
+  bindings: PropertyCashFlowBinding[];
+  cells: PropertyCashFlowCellEvidence[];
+  source_verification: {
+    lease_up: 'verified';
+    supplemental_metrics: 'verified' | 'not_stated';
+  };
+}
+
+interface PropertyCashFlowAssemblyIssue {
+  category: 'calc';
+  code: 'CALC-CF-ASSEMBLY';
+  reason: 'plan' | 'selection' | 'structure' | 'verification'
+    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon';
+  message: string;
+  pointer: string;
+  evidence?: {
+    selection?: ProtocolError;
+    lease_up?: LeaseUpCashFlowProjectionIssue;
+    structure?: ValidationMessage[];
+    verification?: CashFlowVerification;
+  };
+}
+```
+
+`rows` and `output_rows` contain nonnegative safe integer indexes, are nonempty
+and have no duplicate entries. The input coverage array is nonempty; its legal
+slot/category pairs are exactly the non-lease-up cells in §3. Date strings must
+be real `YYYY-MM-DD` dates. The plan's lease-up map is the RFC 0044 map with the
+outer day count; there is no second nested day-count setting. Neither source's
+currency assertion is inferred from the other. Required assertions must be
+literal `true`; false, missing or unknown assertions refuse. These declarations
+do not make hidden economic overlap mechanically detectable.
+
+The result's `plan` is a deep copy, preserving the caller's array order. No
+output object or array shares mutable references with a source or input plan.
+Source validation and copying must use one consistent snapshot; mutation of
+the caller's document or plan during the asynchronous call cannot change the
+returned amounts, evidence or digest. No plan digest is introduced by this RFC.
+
+Result `bindings` follow output row order and their `output_row_index` equals
+their array index. Lease-up paths retain RFC 0044 canonical period paths;
+supplemental paths are `cash_flow_series.series[N].amount`. Source variant and
+whole-document digest qualify each path. Each lease-up binding owns exactly
+three cells in `rent`, `concessions`, `ti_lc` order. Each supplemental binding
+owns exactly one cell. Every binding's date and amount match its output row.
+
+Result `cells` are ordered acquisition first, source periods in source order,
+then disposition. Within each slot, use the category order printed in §3's
+table. `output_rows` are ascending output indexes. Input coverage entry order
+and order within an input `rows` list do not change output rows or cell evidence.
+Zero explanations are copied verbatim. Every output row is covered; the three
+lease-up cells intentionally reference their common single bundled row.
+
+The series has exactly `label`, `day_count` and `series`. Each row has exactly
+`date`, `amount`, `kind: "other"` and `label` equal to its canonical source path.
+Use `other` consistently: coverage cells, not the advisory row-kind taxonomy,
+define economic ownership. The wrapped plan carries basis and currency. No
+stated metrics or newly calculated monetary total is emitted.
+
+`supplemental_metrics` is `not_stated` when every existing metric declaration
+is absent or null, including an empty or null `stated_metrics` object. Otherwise
+the source must pass the existing metric verifier and the value is `verified`.
+Structural validation always runs separately. In particular, compare actual
+calendar dates for ordering; equal day-count exponents do not permit reversed
+calendar dates under `30/360us`. This tightens no existing generic metric API.
+
+Refuse in this order: plan shape; basis/currency and assertions; exact source
+selection; supplemental structure preflight; lease-up adapter; supplemental
+metric verification;
+hold horizon; coverage ownership; closing-slot timing; category signs. Traverse arrays in input order and
+required cells in the canonical order above; report the first failure. A nested
+RFC 0044 refusal uses outer reason `verification` and preserves the original
+issue in `evidence.lease_up`, even when that nested issue concerns its date map
+or source structure. This labels the failed adapter stage, not a new verdict on
+the source. Selection failures use `selection` and preserve their existing issue.
+Supplemental structure is checked before the lease-up adapter because its
+whole-envelope hash also visits supplemental values. A noncanonical value
+elsewhere in the envelope refuses with `structure` at `sections`.
+Explicit source shape checks use `structure`; failed metric recomputation uses
+`verification`. False economic assertions use `coverage`. All pointers use the
+existing dotted/bracket style rooted at `plan` or
+`sections.<section>[<JSON-quoted variant>]`. Message prose is explanatory; code,
+reason, pointer and nested evidence carry the machine-readable contract.
 
 ### Review example (mapping only)
 
@@ -246,15 +408,16 @@ requirements; this opt-in helper does not make full DCF assembly mandatory at
 any stage. Module manifests, packs, expression grammar and validation meaning
 are unchanged. No dependencies are proposed.
 
-Implementation requires an additive protocol minor with types, prose and
-plan/result/issue schemas in one commit. Format and package versions follow
-their own surfaces at release; this draft changes none of them. Existing generic
+Source implementation adds Protocol 2.12.0 with types, prose and
+plan/result/issue schemas in one commit. Format remains 2.0; package versions
+advance independently in the subsequent release. Existing generic
 cash-flow APIs remain available with their current, less restrictive contract.
 
 ## Conformance impact
 
-This draft changes no existing fixture or baseline. Implementation should add
-a named `property-cash-flow-assembly` suite with self-contained documents/plans:
+Implementation adds 16 self-contained documents/plans in the default
+`property-cash-flow-assembly` suite. The two existing receipt-issuance baselines
+change their protocol-version labels only. Acceptance coverage includes:
 
 | Case | Expected result |
 |---|---|
@@ -273,20 +436,22 @@ a named `property-cash-flow-assembly` suite with self-contained documents/plans:
 
 Any protocol-version-only receipt baseline changes must be separately reviewed.
 Numerical expectations must be generated and pinned through the existing engine;
-no handwritten return claims. A concrete adopter-owned supplemental ledger is
-required before this proposal advances to implementation.
+no handwritten return claims. The owner authorized a clearly labeled synthetic supplemental ledger for
+implementation; it supplies test inputs, not evidence about a real investment.
 
 ## Reference implementation
 
-Follow-up after acceptance: `packages/uwmd-core/src/property-cash-flows.ts` and
+Implemented in source: `packages/uwmd-core/src/property-cash-flows.ts` and
 sibling tests; shared source validation only where it preserves existing rules.
 Reuse `projectLeaseUpCashFlows`, existing date validation, cash-flow verification,
 semantic envelope hashing and metric evaluation. Do not change `deriveDCF`.
 Export from `index.ts` and `browser.ts`; synchronize protocol/types/schemas.
 
-An eventual `uwmd assemble-property <file> <plan.json> [--json]` command should
-be a read-only wrapper over the approved core contract. Its plan must have an
-exact schema before CLI work starts. Add independent conformance fixtures and
+`uwmd assemble-property <file> <plan.json> [--json]` is a read-only wrapper
+over the core contract, with plan/result/refusal schemas. The
+[synthetic workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md) exercises the built API
+and existing engine metrics. Core/CLI 2.8.0 on npm do not include this new API;
+it is implemented in source for the next release. Add independent conformance fixtures and
 an end-to-end example with reviewed economic inputs. Run all repository gates,
 including test typechecking, schema/index/package checks and docs-site build.
 Excel metric formulas, document writes and publishing are separate stages.
@@ -308,16 +473,15 @@ Excel metric formulas, document writes and publishing are separate stages.
 
 ## Unresolved questions
 
-The owner must accept or revise these concrete first-scope choices: unlevered
+The owner authorized implementation with these first-scope choices: unlevered
 pre-tax basis; one declared currency; complete lease-up hold anchored by a real
 purchase payment; stated gross exit; external reserve-transfer boundary; and a
-supplemental series with exhaustive coverage assertions. Review must supply an
-adopter ledger demonstrating those choices, especially reserve-funded work and
-sale settlements. The current synthetic partial stream is not that ledger.
+supplemental series with exhaustive coverage assertions. The owner selected a complete synthetic test ledger to exercise these choices.
+Real adopter review of reserve-funded work and sale settlements remains pending;
+the earlier partial stream alone is insufficient.
 
-Before implementation, pin the exact plan/result/error JSON shapes against that
-ledger and approve the normative triad. These are remaining design tasks, not
-permission for a builder to fill gaps with defaults. Levered and after-tax
+Implementation validates the §8 shapes against that ledger and synchronizes
+the normative triad. No missing cash input is filled by a default. Levered and after-tax
 assembly, multi-property/currency flows, reserve-account rollforwards, partial
 windows, post-sale settlements, source splitting, speculative leasing, terminal
 valuation, persistent coverage evidence and workbook metrics remain deferred.

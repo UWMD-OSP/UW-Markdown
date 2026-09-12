@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.11.0' as const;
+export const PROTOCOL_VERSION = '2.12.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -2758,5 +2758,94 @@ export interface LeaseUpCashFlowProjectionIssue extends ProtocolError {
     selection?: ProtocolError;
     structure?: ValidationMessage[];
     verification?: import('./lease-up.js').LeaseUpVerification;
+  };
+}
+
+// RFC 0045 — Protocol VIII.9.6.
+export type PropertyCashFlowCategory =
+  | 'rent' | 'concessions' | 'ti_lc'
+  | 'other_income' | 'operating_expenses' | 'other_capex' | 'reserve_net'
+  | 'purchase_price' | 'transaction_costs' | 'gross_sale';
+
+export interface PropertyCashFlowCell {
+  slot: string; // acquisition, disposition, or exact source period
+  category: PropertyCashFlowCategory;
+}
+
+export type PropertyCashFlowCoverage = PropertyCashFlowCell & (
+  | { rows: number[]; zero?: never }
+  | { zero: string; rows?: never }
+);
+
+export interface PropertyCashFlowAssertions {
+  cash_amounts_only: true;
+  no_financing_or_investor_tax: true;
+  no_overlapping_economic_amounts: true;
+  reserve_spending_excluded: true;
+  gross_sale_excludes_reserve_release: true;
+  no_terminal_restricted_reserve: true;
+  hold_only_and_exit_settled: true;
+}
+
+export interface PropertyCashFlowPlan {
+  basis: 'unlevered';
+  tax_basis: 'pre_tax';
+  currency_code: string; // ^[A-Z]{3}$; author-stated identity
+  day_count: import('./calc/day-count.js').DayCountConvention;
+  acquisition_date: string;
+  disposition_date: string;
+  lease_up: {
+    source_variant: string;
+    currency_code: string;
+    cash_dates: Array<{ period: string; date: string }>;
+  };
+  supplemental: {
+    source_variant: string;
+    currency_code: string;
+  };
+  assertions: PropertyCashFlowAssertions;
+  coverage: PropertyCashFlowCoverage[];
+}
+
+export interface PropertyCashFlowBinding {
+  output_row_index: number;
+  source_section: 'lease_up_schedule' | 'cash_flow_series';
+  source_variant: string;
+  source_path: string;
+  date: string;
+  amount: number;
+  cells: PropertyCashFlowCell[];
+}
+
+export type PropertyCashFlowCellEvidence = PropertyCashFlowCell & (
+  | { output_rows: number[]; zero?: never }
+  | { zero: string; output_rows?: never }
+);
+
+export interface PropertyCashFlowAssembly {
+  source_envelope_digest: string;
+  plan: PropertyCashFlowPlan;
+  coverage: 'declared_complete';
+  series: import('./cash-flow-series.js').CashFlowSeries;
+  bindings: PropertyCashFlowBinding[];
+  cells: PropertyCashFlowCellEvidence[];
+  source_verification: {
+    lease_up: 'verified';
+    supplemental_metrics: 'verified' | 'not_stated';
+  };
+}
+
+export interface PropertyCashFlowAssemblyIssue {
+  category: 'calc';
+  code: 'CALC-CF-ASSEMBLY';
+  reason: 'plan' | 'selection' | 'structure' | 'verification'
+    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon';
+  message: string;
+  pointer: string;
+  evidence?: {
+    selection?: ProtocolError;
+    lease_up?: LeaseUpCashFlowProjectionIssue;
+    structure?: ValidationMessage[];
+    verification?: import('./cash-flow-series.js').CashFlowVerification;
   };
 }

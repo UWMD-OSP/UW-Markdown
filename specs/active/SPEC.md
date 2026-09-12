@@ -1,13 +1,13 @@
 # Active work
 
-The RFC 0045 proposal-writing stage is complete and its contract and verification
-are [archived](../archive/property-cash-flow-assembly-proposal.md).
-[PR #189](https://github.com/UWMD-OSP/UW-Markdown/pull/189) is ready for review.
+RFC 0045's core/browser assembler, read-only CLI, schemas, synthetic workflow and
+verification are complete in [PR #190](https://github.com/UWMD-OSP/UW-Markdown/pull/190).
+The contract and evidence are [archived](../archive/property-cash-flow-assembly-implementation.md).
 
-[RFC 0045](../../docs/rfcs/0045-explicit-property-cash-flow-assembly.md) remains
-**draft**. The next stage is review of its unlevered/pre-tax, single-currency
-scope and reserve boundary against an adopter supplemental cash ledger, followed
-by an exact plan/result/error contract. No implementation task is in flight.
+Source Protocol 2.12.0 includes this implementation. Published core/CLI 2.8.0
+still expose Protocol 2.11.0; preparing and publishing the next package release
+is the next delivery stage. No further economic implementation is in flight.
 
-Core/CLI 2.8.0 and Protocol 2.11.0 remain the released surfaces. The proposal
-does not authorize an implementation to infer missing financial inputs.
+The owner selected synthetic engineering inputs and will validate a real deal
+separately. Levered/tax, reserve-rollforward, post-sale settlement and speculative
+leasing extensions need their own bounded contracts.

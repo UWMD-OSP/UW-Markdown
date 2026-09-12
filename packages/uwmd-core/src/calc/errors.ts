@@ -37,7 +37,8 @@ export type CalcErrorCode =
   | 'CALC-PERIOD-001'
   | 'CALC-PERIOD-002'
   | 'CALC-PERIOD-003'
-  | 'CALC-LU-PROJECTION';
+  | 'CALC-LU-PROJECTION'
+  | 'CALC-CF-ASSEMBLY';
 
 export function calcError(code: CalcErrorCode, message: string, pointer?: string): ProtocolError {
   return {

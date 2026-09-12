@@ -48,7 +48,8 @@ import { parseCalculationContext } from './calculation-context.js';
 import { parseExpression, periodReferencePath } from './calc/parser.js';
 import { CalcError } from './calc/errors.js';
 import { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
-import type { LeaseUpCashFlowPlan } from './protocol.js';
+import type { LeaseUpCashFlowPlan, PropertyCashFlowPlan } from './protocol.js';
+import { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
@@ -1645,6 +1646,28 @@ switch (command) {
     break;
   }
 
+  case 'assemble-property': {
+    if (positional.length !== 2 || Object.keys(flags).some(key => key !== 'json')) {
+      console.error('Usage: uwmd assemble-property <file> <plan.json> [--json]');
+      process.exit(1);
+    }
+    const parsed = parseUWFile(readFile(positional[0]!));
+    const planText = readFile(positional[1]!);
+    try {
+      let plan: PropertyCashFlowPlan;
+      try { plan = JSON.parse(planText) as PropertyCashFlowPlan; }
+      catch { throw new PropertyCashFlowAssemblyError('plan', 'Plan must be valid JSON.', 'plan'); }
+      const projection = await assemblePropertyCashFlows(parsed, plan);
+      console.log(JSON.stringify(projection, null, 2));
+    } catch (error) {
+      if (!(error instanceof PropertyCashFlowAssemblyError)) throw error;
+      if (flags['json']) console.log(JSON.stringify({ error: error.proto }, null, 2));
+      else console.error(`${error.message} (${error.proto.pointer})`);
+      process.exitCode = 1;
+    }
+    break;
+  }
+
   case 'calc': {
     if (!positional[0] || !positional[1]) {
       console.error('Usage: uwmd calc <file> <calc.json|formula> [--calc-context <file>]');
@@ -1862,6 +1885,7 @@ Commands:
   migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
   migrate  <file> --to-v2        Convert the whole file to the v2 nested _meta shape, uw_version "2.0" (RFC 0009;
                                  re-stamps hashes; signed blocks need --resign or --strip-signatures)
+  assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
   project-lease-up <file> <plan.json>  Project verified lease-up amounts onto explicit cash dates (JSON candidate only)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uwx.md file

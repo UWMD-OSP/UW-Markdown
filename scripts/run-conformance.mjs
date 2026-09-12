@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,lease-up-projection,cash-flow,waterfall,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -83,6 +83,8 @@ import {
   verifyRollup,
   verifyCapitalStack,
   verifyLeaseUpSchedule,
+  assemblePropertyCashFlows,
+  PropertyCashFlowAssemblyError,
   projectLeaseUpCashFlows,
   LeaseUpCashFlowProjectionError,
   leaseUpContext,
@@ -121,7 +123,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,lease-up-projection,cash-flow,waterfall,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2424,6 +2426,40 @@ async function runLeaseUp() {
 //   deal.uwx.md + decl.json + expected.json → evaluateCashFlowMetrics over the doc
 //   deal.uwx.md + expected.json             → validator codes and/or an end-to-end verdict
 
+async function runPropertyCashFlowAssembly() {
+  const root = join(CONFORMANCE_DIR, 'property-cash-flow-assembly');
+  for (const entry of readdirSync(root, { withFileTypes: true }).filter(e => e.isDirectory())) {
+    const dir = join(root, entry.name);
+    const source = readFileSync(join(dir, 'deal.uwx.md'), 'utf8');
+    const parsed = parseUWFile(source);
+    const plan = readCase(dir, 'plan.json');
+    const before = JSON.stringify([parsed, plan]);
+    const expected = readCase(dir, 'expected.json');
+    try {
+      let result;
+      try { result = await assemblePropertyCashFlows(parsed, plan); }
+      catch (error) {
+        if (!(error instanceof PropertyCashFlowAssemblyError) || !expected.error_code) throw error;
+        if (error.proto.code !== expected.error_code || error.proto.reason !== expected.reason) throw new Error('Assembly refusal mismatch');
+        if (expected.lease_up_verdict && error.proto.evidence?.lease_up?.evidence?.verification?.verdict !== expected.lease_up_verdict) throw new Error('Nested lease-up verdict mismatch');
+      }
+      if (result) {
+        if (expected.error_code) throw new Error('Expected assembly refusal');
+        if (JSON.stringify(result.series.series.map(r => r.amount)) !== JSON.stringify(expected.amounts)) throw new Error('Assembly amount mismatch');
+        if (JSON.stringify(result.series.series.map(r => r.date)) !== JSON.stringify(expected.dates)) throw new Error('Assembly date mismatch');
+        if (result.source_envelope_digest !== await computeEnvelopeDigest(toUWEnvelope(parsed))) throw new Error('Assembly digest mismatch');
+        if (result.coverage !== 'declared_complete' || 'stated_metrics' in result.series) throw new Error('Assembly scope mismatch');
+        for (const [i, binding] of result.bindings.entries()) {
+          if (binding.output_row_index !== i || binding.amount !== result.series.series[i].amount || binding.date !== result.series.series[i].date) throw new Error('Binding mismatch');
+          if (!result.cells.some(c => c.output_rows?.includes(i))) throw new Error('Output row lacks coverage');
+        }
+      }
+      if (JSON.stringify([parsed, plan]) !== before || readFileSync(join(dir, 'deal.uwx.md'), 'utf8') !== source) throw new Error('Assembly mutated its input');
+      record('property-cash-flow-assembly', entry.name, 'pass');
+    } catch (error) { record('property-cash-flow-assembly', entry.name, 'fail', error.message); }
+  }
+}
+
 async function runLeaseUpProjection() {
   const root = join(CONFORMANCE_DIR, 'lease-up-projection');
   const cases = readdirSync(root, { withFileTypes: true }).filter(entry => entry.isDirectory());
@@ -3815,6 +3851,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'lease-up': async () => { await runLeaseUp(); },
   'lease-up-projection': async () => { await runLeaseUpProjection(); },
+  'property-cash-flow-assembly': async () => { await runPropertyCashFlowAssembly(); },
   'cash-flow': async () => { await runCashFlow(); },
   'waterfall': async () => { await runWaterfall(); },
   'portfolio-relationships': async () => { await runPortfolioRelationships(); },
