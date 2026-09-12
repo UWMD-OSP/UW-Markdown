@@ -24,13 +24,13 @@ Release 2.7.0 pairs core/CLI 2.7.0 with Protocol 2.8.0 and Format 2.0.
 The `v2.7.0` release workflow publishes core, CLI, signing and batch; excel,
 report and the two reference modules remain unpublished. Package, Format and
 Protocol versions advance independently. The source tree now implements Protocol
-2.10.0 (RFCs 0042/0043); the published core/CLI 2.7.0 artifacts still implement 2.8.0.
+2.11.0 (RFCs 0042–0044); the published core/CLI 2.7.0 artifacts still implement 2.8.0.
 The next package release is separate.
 
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.10.0** | format ≥ 1.0 (contextual Excel period bindings, RFC 0043; package release pending) |
+| UW Protocol | **2.11.0** | format ≥ 1.0 (explicit lease-up cash-flow projection, RFC 0044; package release pending) |
 | `@uwmd/core` | **2.7.0** | format 2.0 (reads 1.x), protocol 2.8.0 |
 | `@uwmd/cli` (CLI) | **2.7.0** | `@uwmd/core` 2.7.0 |
 | `@uwmd/excel` | **0.8.11** (unpublished) | `@uwmd/core` 2.7.x, format 1.1 multifamily pack |

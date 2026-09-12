@@ -1,7 +1,7 @@
 ---
 rfc: 0044
 title: Project verified lease-up amounts onto explicitly stated cash dates
-status: draft
+status: accepted
 author: codex
 created: 2026-09-12
 affects:
@@ -15,16 +15,16 @@ affects:
 
 ## Summary
 
-Propose a browser-safe adapter that copies a selected, verified lease-up
+Define a browser-safe adapter that copies a selected, verified lease-up
 schedule's stated `net_cash_flow` amounts into a dated `CashFlowSeries`, using
 one explicitly supplied cash date per source period. Return binding evidence
 alongside the candidate payload. This is a partial receipt/TI-LC stream; it does
 not create a complete DCF, NOI, property cash flow or equity return.
 
-**Draft only.** This PR supplies a worked example using existing APIs, not the
-production adapter or a normative amendment. Protocol remains 2.10.0 in source;
-published core/CLI remain 2.7.0 with Protocol 2.8.0. Acceptance and synchronized
-implementation are separate steps.
+**Owner accepted 2026-09-12.** Implemented for review in source Protocol
+2.11.0, with synchronized types, schemas, CLI and conformance coverage.
+Published core/CLI remain 2.7.0 with Protocol 2.8.0; package publication and
+the PR merge are pending. RFC status becomes implemented upon release.
 
 ## Motivation
 
@@ -39,10 +39,9 @@ selects stated periods; RFC 0043 exports requested arithmetic calculations.
 The missing seam is a reviewable assignment of stated period amounts to actual
 cash dates, with full source/variant identity and no hidden period-end convention.
 
-## Proposed change
+## Accepted change
 
-Add `projectLeaseUpCashFlows(parsed, plan)` after owner acceptance. The plan and
-result below are proposed API shapes, not currently exported types:
+Export `projectLeaseUpCashFlows(parsed, plan)`. The plan and result types are:
 
 ```ts
 interface LeaseUpCashFlowPlan {
@@ -58,12 +57,11 @@ interface LeaseUpCashFlowProjection {
 }
 ```
 
-The intended Protocol addition is a subsection following VIII.2c, consuming the
-existing format sections 4.25/4.26 and VIII.9 calendar procedures. If accepted,
-the new type/schema/protocol prose must land together with a protocol minor bump.
+Protocol VIII.9.5 consumes the existing format sections 4.25/4.26 and VIII.9
+calendar procedures. Protocol 2.11.0 types, schemas and prose land together.
 Existing section schemas and the expression grammar need no expansion.
 
-### Proposed source and mapping rules
+### Source and mapping rules
 
 1. The caller MUST provide an exact `source_variant`; no generic/default-role
    fallback is applied by the adapter. Resolve through the existing explicit
@@ -124,8 +122,8 @@ keep their current contracts; a newly authored output is a new document state.
 
 ## Conformance impact
 
-No existing fixture or expected value changes in this proposal. After acceptance,
-add a named projection suite with these acceptance cases:
+The implementation adds a named projection suite and API tests covering these
+acceptance cases. Existing receipt baselines change only their protocol version:
 
 | Case | Required outcome |
 |---|---|
@@ -146,22 +144,27 @@ cash-flow assembly contract described below.
 
 ## Reference implementation
 
-Production follow-up, after acceptance:
+Source implementation:
 
 - `packages/uwmd-core/src/lease-up-cash-flows.ts` plus sibling tests: projection
   and typed refusal; reuse period selection, lease-up validation/verifier,
   calendar validation and semantic envelope digest code.
-- Export proposed types/function from core and browser. Synchronize
+- Export types/function from core and browser. Synchronize
   `protocol.ts`, protocol prose and new plan/result/error schemas in one commit.
 - Add conformance fixtures and a consumer CLI only after the API is verified.
   Excel support must use existing explicit calculation/period bindings; a full
   cash-flow metric workbook is a separate parity contract.
 
-The current [worked example](../LEASE_UP_CASH_FLOW_WORKFLOW.md) runs through
-existing public APIs. Its runner verifies a fixed authored scenario; it does not
-implement generic plan validation, the proposed refusal code, digest evidence,
-or the production API. Its CI smoke test proves the example remains runnable,
-not that the future acceptance matrix is already implemented.
+The [worked example](../LEASE_UP_CASH_FLOW_WORKFLOW.md) now invokes the
+production adapter, checks its output against authored amounts, and evaluates
+the partial stream using existing calendar math. `uwmd project-lease-up` emits
+the JSON candidate without editing its inputs. `projectLeaseUpCashFlows` returns
+a Promise because the semantic digest uses the existing asynchronous hash API.
+Plan and mapping objects reject unknown fields. Typed refusals serialize through
+`LeaseUpCashFlowProjectionError.proto`; the normative details are in Protocol
+VIII.9.5 and the three lease-up-cash-flow schemas. A named default conformance
+suite and API tests exercise the acceptance matrix independently
+of the example's smoke test.
 
 ## Alternatives considered
 
@@ -174,11 +177,10 @@ not that the future acceptance matrix is already implemented.
 - **Add general AST iteration:** does not resolve any economic or timing choice
   and widens the evaluator before a consumer needs that capability.
 
-## Unresolved questions
+## Deferred economics
 
-Owner acceptance is needed for this deliberately narrow first adapter: complete
-schedule mapping, verified source only, and `net_cash_flow` as the sole source
-field. Support for split rent/concession/TI/LC flows, partial windows and lag
+The owner accepted complete schedule mapping, verified source only, and
+`net_cash_flow` as the sole source field. Support for split rent/concession/TI/LC flows, partial windows and lag
 policies is deferred instead of being hidden in implementation defaults.
 
 The next full-DCF contract must pin valuation date, expense/reserve/capex coverage,

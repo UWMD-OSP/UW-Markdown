@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/lease-up-cash-flow-projection-issue.schema.json",
+  "title": "lease-up-cash-flow-projection-issue",
+  "description": "RFC 0044 / Protocol VIII.9.5. Cross-field coverage, ordering, source verification and digest agreement require semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "category",
+    "code",
+    "message",
+    "pointer"
+  ],
+  "properties": {
+    "category": {
+      "const": "calc"
+    },
+    "code": {
+      "const": "CALC-LU-PROJECTION"
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pointer": {
+      "type": "string"
+    },
+    "remediation": {
+      "type": "string"
+    },
+    "cause": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "selection": {
+          "$ref": "https://uwmd.org/schemas/protocol-error.schema.json"
+        },
+        "structure": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "severity",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "severity": {
+                "enum": [
+                  "error",
+                  "warning",
+                  "info"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "section": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "verdict",
+            "issues"
+          ],
+          "properties": {
+            "verdict": {
+              "enum": [
+                "verified",
+                "failed",
+                "unverifiable"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "severity",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "enum": [
+                      "LU-NCF-DISAGREES",
+                      "LU-SUMMARY-DISAGREES",
+                      "LU-UNEVALUABLE"
+                    ]
+                  },
+                  "severity": {
+                    "enum": [
+                      "failure",
+                      "indeterminate"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "period": {
+                    "type": "string"
+                  },
+                  "expected": {
+                    "type": "string"
+                  },
+                  "actual": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

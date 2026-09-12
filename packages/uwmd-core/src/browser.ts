@@ -867,3 +867,6 @@ export { resolvePeriodPath } from './period-path.js';
 export type { PeriodResolutionOptions } from './period-path.js';
 
 export { parseCalculationContext } from './calculation-context.js';
+
+export { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
+export type { LeaseUpCashFlowPlan, LeaseUpCashFlowProjection, LeaseUpCashFlowProjectionIssue } from './protocol.js';

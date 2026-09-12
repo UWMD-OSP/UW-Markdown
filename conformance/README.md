@@ -389,3 +389,10 @@ node scripts/regen-conformance.mjs
 If a regeneration changes any expected output, that's a normative change to
 the protocol — call it out explicitly in the PR description and bump the
 protocol version in `UW_PROTOCOL_v1.md`.
+
+## Lease-up projection
+
+The default `lease-up-projection` suite exercises RFC 0044 explicit cash-date
+mapping and candidate output. See `lease-up-projection/README.md` for its
+self-contained source/plan/expected cases. Run it alone with
+`npm run conformance -- --tier=lease-up-projection` after building core.

@@ -1,7 +1,7 @@
 # Task matrix
 
-- [x] Draft RFC 0044, executable example, CI regression, roadmap/docs and all
-  local verification gates — completed and committed.
+- [x] Implement approved RFC 0044 API, normative triad, acceptance coverage,
+  CLI and documentation; run every gate — committed as `14671cf`.
 
-No unchecked task is in flight. Production adapter implementation awaits owner
-acceptance of the draft; complete DCF economics remain outside its scope.
+Completion evidence is archived in `specs/archive/lease-up-cash-flow-projection.md`.
+No unchecked implementation task is in flight.

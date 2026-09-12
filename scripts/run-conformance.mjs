@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,cash-flow,waterfall,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,lease-up-projection,cash-flow,waterfall,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -83,6 +83,8 @@ import {
   verifyRollup,
   verifyCapitalStack,
   verifyLeaseUpSchedule,
+  projectLeaseUpCashFlows,
+  LeaseUpCashFlowProjectionError,
   leaseUpContext,
   MULTIFAMILY_PACK,
   toUWEnvelope,
@@ -119,7 +121,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,cash-flow,waterfall,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,lease-up-projection,cash-flow,waterfall,portfolio-relationships,capability,locale,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2422,6 +2424,39 @@ async function runLeaseUp() {
 //   deal.uwx.md + decl.json + expected.json → evaluateCashFlowMetrics over the doc
 //   deal.uwx.md + expected.json             → validator codes and/or an end-to-end verdict
 
+async function runLeaseUpProjection() {
+  const root = join(CONFORMANCE_DIR, 'lease-up-projection');
+  const cases = readdirSync(root, { withFileTypes: true }).filter(entry => entry.isDirectory());
+  for (const entry of cases) {
+    const dir = join(root, entry.name);
+    const source = readFileSync(join(dir, 'deal.uwx.md'), 'utf8');
+    const parsed = parseUWFile(source);
+    const before = JSON.stringify(parsed);
+    const plan = readCase(dir, 'plan.json');
+    const expected = readCase(dir, 'expected.json');
+    try {
+      let result;
+      try { result = await projectLeaseUpCashFlows(parsed, plan); }
+      catch (error) {
+        if (!(error instanceof LeaseUpCashFlowProjectionError) || !expected.error_code) throw error;
+        if (error.proto.code !== expected.error_code) throw new Error('Refusal code mismatch');
+        if (expected.verdict && error.proto.evidence?.verification?.verdict !== expected.verdict) throw new Error('Verifier verdict mismatch');
+        if (expected.structure_code && !error.proto.evidence?.structure?.some(issue => issue.code === expected.structure_code)) throw new Error('Structural evidence mismatch');
+      }
+      if (result) {
+        if (expected.error_code) throw new Error('Expected refusal, received projection');
+        if (JSON.stringify(result.bindings.map(row => row.amount)) !== JSON.stringify(expected.amounts)) throw new Error('Amounts mismatch');
+        if (JSON.stringify(result.bindings.map(row => row.date)) !== JSON.stringify(expected.dates)) throw new Error('Dates mismatch');
+        if (result.source_variant !== expected.source_variant) throw new Error('Variant mismatch');
+        if (result.source_envelope_digest !== await computeEnvelopeDigest(toUWEnvelope(parsed))) throw new Error('Source digest mismatch');
+        if (result.series.label !== 'Lease-up receipts and TI/LC only' || 'stated_metrics' in result.series) throw new Error('Scope mismatch');
+      }
+      if (JSON.stringify(parsed) !== before || readFileSync(join(dir, 'deal.uwx.md'), 'utf8') !== source) throw new Error('Source mutated');
+      record('lease-up-projection', entry.name, 'pass');
+    } catch (error) { record('lease-up-projection', entry.name, 'fail', error.message); }
+  }
+}
+
 const CASH_FLOW_DIR = join(CONFORMANCE_DIR, 'cash-flow');
 
 async function runCashFlow() {
@@ -3779,6 +3814,7 @@ const dispatch = {
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
   'lease-up': async () => { await runLeaseUp(); },
+  'lease-up-projection': async () => { await runLeaseUpProjection(); },
   'cash-flow': async () => { await runCashFlow(); },
   'waterfall': async () => { await runWaterfall(); },
   'portfolio-relationships': async () => { await runPortfolioRelationships(); },

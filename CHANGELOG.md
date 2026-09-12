@@ -8,14 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-### Proposed — explicit lease-up cash-flow projection
+### Added — Protocol 2.11.0 / explicit lease-up projection
 
-- Draft RFC 0044 scopes verified stated lease-up amounts, explicit cash dates and
-  source-binding evidence. No production adapter or protocol change is included.
-- Add a runnable example and CLI smoke test using existing period/verifier/calendar
-  APIs. Keep the receipt/TI-LC stream distinct from full-property DCF and equity
-  returns; dates and the illustrative discount rate are explicit caller inputs.
-
+- RFC 0044: browser-safe `projectLeaseUpCashFlows` verifies an exact lease-up
+  variant, requires complete explicit cash dates, and copies stated amounts
+  without rounding into a partial receipt/TI-LC stream. Return a semantic source
+  digest and canonical bindings; typed refusals retain verifier/structural evidence.
+- Add matching public types and three schemas, a read-only `project-lease-up`
+  CLI, a production-API worked example, acceptance tests and the default
+  `lease-up-projection` conformance suite. No source documents are edited.
+- Package publication, complete DCF economics and cash-flow metric Excel export
+  remain separate work. No financial formula or dependency changes.
 
 ### Added — command-line calculation context
 

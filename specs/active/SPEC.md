@@ -1,9 +1,9 @@
 # Active work
 
-The lease-up cash-flow proposal and executable example stage is complete.
-See [completion evidence](../archive/lease-up-cash-flow-proposal.md) and
-[draft RFC 0044](../../docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md).
+The owner-approved RFC 0044 projection implementation is complete and committed.
+See [completion evidence](../archive/lease-up-cash-flow-projection.md).
 
-The next production step is implementing the bounded projection adapter after
-owner acceptance of that contract. Full DCF assembly has separate economic
-prerequisites. No production implementation task is currently in flight.
+The source API, read-only CLI, documentation, normative triad and all local
+gates are complete. PR review/merge and package publication remain external
+release steps. Full DCF economics require a separate contract; no new
+production task is in flight.
