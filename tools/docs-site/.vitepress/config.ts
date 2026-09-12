@@ -79,6 +79,7 @@ export default defineConfig({
             { text: 'Your first .uw.md', link: '/tutorials/your-first-uwmd-file' },
             { text: 'Glossary', link: '/guide/glossary' },
             { text: 'Tools comparison', link: '/guide/tools' },
+            { text: 'Calculation context', link: '/guide/calculation-context' },
             { text: 'UW Lite and UWX', link: '/guide/lite-and-uwx' },
             { text: 'Verification receipts', link: '/guide/receipts' },
             { text: 'Cookbook', link: '/guide/cookbook' },
@@ -93,6 +94,7 @@ export default defineConfig({
           items: [
             { text: 'Glossary', link: '/guide/glossary' },
             { text: 'Tools comparison', link: '/guide/tools' },
+            { text: 'Calculation context', link: '/guide/calculation-context' },
             { text: 'UW Lite and UWX', link: '/guide/lite-and-uwx' },
             { text: 'Verification receipts', link: '/guide/receipts' },
             { text: 'Feeding .uw.md to an LLM', link: '/guide/feeding-uwmd-to-an-llm' },

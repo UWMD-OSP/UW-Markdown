@@ -1698,7 +1698,7 @@ switch (command) {
     break;
 
   case 'refine':
-    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--calc-context <file>] [--json]'); process.exit(1); }
     cmdRefine(positional[0], flags);
     break;
 

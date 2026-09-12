@@ -9,13 +9,13 @@ This package is a thin wrapper around [`@uwmd/core`](https://www.npmjs.com/packa
 No install needed — run via `npx`:
 
 ```bash
-npx uwmd <command> [args]
+npx @uwmd/cli <command> [args]
 ```
 
 Or install globally:
 
 ```bash
-npm install -g uwmd
+npm install -g @uwmd/cli
 uwmd <command> [args]
 ```
 
@@ -23,7 +23,7 @@ uwmd <command> [args]
 
 | Command | What it does |
 |---|---|
-| `uwmd init <file>` | Scaffold a blank `.uw.md` deal file |
+| `uwmd init <file>` | Scaffold a blank `.uwx.md` deal file |
 | `uwmd parse <file>` | Parse and emit canonical JSON |
 | `uwmd validate <file>` | Run the full Tier-1 validator and print issues |
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |
@@ -39,6 +39,27 @@ uwmd <command> [args]
 | `uwmd layers <file>` | Show the agent-context layer breakdown |
 
 Run any command without arguments for usage help.
+
+## Calculation context files (source implementation)
+
+The source checkout adds `--calc-context <JSON file>` to `calc` and `refine`.
+This flag is not included in the published 2.7.0 package. After building the
+checkout, run from the repository root:
+
+```sh
+npm run cli -- calc deal.uwx.md "dcf.annual_cash_flows@Y3.noi" --calc-context context.json --json
+npm run cli -- refine deal.uwx.md --targets year_three_noi_per_unit --calc-context context.json --json
+```
+
+`year_three_noi_per_unit` must be a calculation declared in the deal. A context
+file can contain `{"sectionVariants":{"dcf":"base"},"overrides":{}}`.
+Variants select period references only. Overrides use exact paths and JSON
+scalars, preserving zero and null. `calc` supports ordinary and period overrides;
+`refine` rejects ordinary scalar overrides and requires canonical period keys.
+Inspect refinement's `diagnostics.period_inputs` for excluded outputs.
+
+See the [complete source guide](../../tools/docs-site/guide/calculation-context.md)
+for context validation, missing inputs, Excel export and library usage.
 
 ## Library use
 

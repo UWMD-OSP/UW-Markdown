@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, it, expect } from 'vitest';
+import { quantizeDecimal } from '@uwmd/core';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
@@ -728,10 +729,25 @@ describe('calculation context files', () => {
       const base = ranking(); expect(base.status).toBe(0);
       write({ sectionVariants: { dcf: 'stress' } });
       const stress = ranking(); expect(stress.status).toBe(0);
-      // VOI is normalized; compare the output interval that carries the selected period value.
-      const baseRange = JSON.parse(base.stdout).by_voi[0].affected_outputs[0].range_today;
-      const stressRange = JSON.parse(stress.stdout).by_voi[0].affected_outputs[0].range_today;
-      expect(stressRange).toEqual({ low: baseRange.low * 3, high: baseRange.high * 3 });
+      // Refinement keeps binary64 interval values; compare with calc only at
+      // its existing six-decimal boundary (Protocol VIII.5), as core tests do.
+      // Evaluate each actual endpoint instead of scaling an already-computed bound.
+      for (const [variant, report] of [['base', base], ['stress', stress]] as const) {
+        const gap = JSON.parse(report.stdout).by_voi[0];
+        expect(gap.field_path).toBe('noi_model.expense_ratio');
+        for (const bound of ['low', 'high'] as const) {
+          write({ sectionVariants: { dcf: variant }, overrides: { 'noi_model.expense_ratio': gap.prior_range[bound] } });
+          const endpoint = runCli(['calc', file,
+            'dcf.annual_cash_flows@Y3.noi * noi_model.expense_ratio', '--calc-context', context, '--json']);
+          expect(endpoint.status).toBe(0);
+          const result = JSON.parse(endpoint.stdout);
+          expect(result.ok).toBe(true);
+          expect(result.round_to).toBe(6);
+          expect(quantizeDecimal(gap.affected_outputs[0].range_today[bound], 6)).toBe(result.value);
+        }
+      }
+      expect(JSON.parse(stress.stdout).by_voi[0].affected_outputs[0].range_today.high)
+        .toBeGreaterThan(JSON.parse(base.stdout).by_voi[0].affected_outputs[0].range_today.high);
       write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': null } });
       const missing = ranking(); expect(missing.status).toBe(0);
       expect(JSON.parse(missing.stdout).diagnostics.period_inputs[0].code).toBe('REFINE-PERIOD-MISSING');
