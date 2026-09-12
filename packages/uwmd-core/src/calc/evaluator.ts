@@ -5,7 +5,8 @@ import { deepGet, getPathSegment, getSection, isBlockedSegment } from '../parser
 import type { CalcEvaluationContext } from '../protocol.js';
 import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
-import type { Expr } from './parser.js';
+import { periodReferencePath, type Expr } from './parser.js';
+import { periodReferenceContract, resolvePeriodReference } from '../period-path.js';
 
 const MAX_NODES = 1024;
 
@@ -49,6 +50,14 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
         cur = getPathSegment(cur, seg);
       }
       return coerceCalcValue(cur);
+    }
+
+    case 'period_path': {
+      periodReferenceContract(expr);
+      const overridden = lookupOverride(periodReferencePath(expr), ctx);
+      if (overridden !== undefined) return overridden;
+      const value = resolvePeriodReference(ctx.parsed, expr, ctx);
+      return typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean' ? value : null;
     }
 
     case 'call': {

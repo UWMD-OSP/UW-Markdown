@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/period-series-entry.schema.json",
+  "title": "Period Series Registry Entry (RFC 0041)",
+  "description": "Describes a standard registry entry. Module registration is not supported by this protocol minor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "shape",
+    "grammar",
+    "spec_ref"
+  ],
+  "properties": {
+    "path": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$"
+    },
+    "shape": {
+      "enum": [
+        "rows",
+        "keyed"
+      ]
+    },
+    "period_field": {
+      "type": "string"
+    },
+    "key_pattern": {
+      "type": "string"
+    },
+    "grammar": {
+      "enum": [
+        "year_index",
+        "calendar_period",
+        "iso_date"
+      ]
+    },
+    "cadence_field": {
+      "type": "string"
+    },
+    "spec_ref": {
+      "type": "string"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "shape": {
+            "const": "rows"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "period_field"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "shape": {
+            "const": "keyed"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "key_pattern"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "grammar": {
+            "const": "calendar_period"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "cadence_field"
+        ]
+      }
+    }
+  ]
+}

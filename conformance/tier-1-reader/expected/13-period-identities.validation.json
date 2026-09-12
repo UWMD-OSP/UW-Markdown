@@ -1,0 +1,21 @@
+{
+  "overall_status": "errors",
+  "issues": [
+    {
+      "code": "DQ-06",
+      "severity": "info"
+    },
+    {
+      "code": "PS-01",
+      "severity": "warning"
+    },
+    {
+      "code": "PS-02",
+      "severity": "error"
+    },
+    {
+      "code": "PS-03",
+      "severity": "warning"
+    }
+  ]
+}

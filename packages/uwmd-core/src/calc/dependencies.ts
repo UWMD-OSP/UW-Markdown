@@ -10,7 +10,7 @@
 // what the file currently has.
 
 import type { Expr } from './parser.js';
-import { parseExpression } from './parser.js';
+import { parseExpression, periodReferencePath } from './parser.js';
 import type { ParsedUWFile } from '../types.js';
 import type { ModuleManifest, ModuleCalcDecl } from '../protocol.js';
 
@@ -44,6 +44,9 @@ function walk(expr: Expr, acc: Set<string>): void {
       return;
     case 'path':
       acc.add([expr.head, ...expr.segments].join('.'));
+      return;
+    case 'period_path':
+      acc.add(periodReferencePath(expr));
       return;
     case 'call':
       // Function name is not a dependency; arguments are.
@@ -123,4 +126,15 @@ export function extractDependencyGraph(
   }
 
   return { outputs, inputs, formulas };
+}
+
+export function getPeriodReferences(expr: Expr): Array<Extract<Expr, { kind: 'period_path' }>> {
+  switch (expr.kind) {
+    case 'period_path': return [expr];
+    case 'unary': return getPeriodReferences(expr.operand);
+    case 'binary': return [...getPeriodReferences(expr.left), ...getPeriodReferences(expr.right)];
+    case 'cond': return [...getPeriodReferences(expr.test), ...getPeriodReferences(expr.consequent), ...getPeriodReferences(expr.else)];
+    case 'call': return expr.args.flatMap(getPeriodReferences);
+    default: return [];
+  }
 }

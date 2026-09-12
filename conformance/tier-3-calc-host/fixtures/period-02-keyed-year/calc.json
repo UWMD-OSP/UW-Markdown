@@ -1,0 +1,6 @@
+{
+  "id": "period_02_keyed_year",
+  "label": "period-02-keyed-year",
+  "formula": "noi_model.projections@Y3.projected_noi",
+  "deterministic": true
+}

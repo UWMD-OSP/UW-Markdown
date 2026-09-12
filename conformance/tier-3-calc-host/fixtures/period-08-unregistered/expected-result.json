@@ -1,0 +1,9 @@
+{
+  "calc_id": "period_08_unregistered",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-PERIOD-001",
+    "category": "calc"
+  }
+}

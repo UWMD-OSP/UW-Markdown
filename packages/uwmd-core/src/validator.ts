@@ -27,6 +27,7 @@ import { isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 import { isV2File } from './meta-shape.js';
+import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
 
@@ -144,6 +145,7 @@ export function validateUWFile(
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
   checkBlockRoles(parsed, issues);
+  checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);

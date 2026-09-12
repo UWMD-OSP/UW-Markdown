@@ -11,6 +11,7 @@ export type Expr =
   | { kind: 'literal'; value: number | string | boolean | null }
   | { kind: 'ident'; name: string }
   | { kind: 'path'; head: string; segments: string[] }
+  | { kind: 'period_path'; head: string; series: string[]; selector: string; segments: string[] }
   | { kind: 'call'; name: string; args: Expr[] }
   | { kind: 'unary'; op: '-' | '!'; operand: Expr }
   | { kind: 'binary'; op: BinaryOp; left: Expr; right: Expr }
@@ -26,7 +27,7 @@ export type BinaryOp =
 type TokenKind =
   | 'number' | 'string' | 'ident' | 'bool' | 'null'
   | 'lparen' | 'rparen' | 'lbracket' | 'rbracket'
-  | 'comma' | 'dot' | 'qmark' | 'colon'
+  | 'period' | 'comma' | 'dot' | 'qmark' | 'colon'
   | 'plus' | 'minus' | 'star' | 'slash' | 'percent'
   | 'bang'
   | 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte'
@@ -55,7 +56,17 @@ function tokenize(input: string): Token[] {
 
     if (c === ' ' || c === '\t' || c === '\n' || c === '\r') { i++; continue; }
 
-    if (c >= '0' && c <= '9') {
+    if (c === '@') {
+      const match = /^(?:Y[1-9][0-9]*|[0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{4}-Q[1-4]|[0-9]{4}-[0-9]{2})/.exec(input.slice(i + 1));
+      if (!match || /[A-Za-z0-9_@]/.test(input[i + 1 + match[0].length] ?? '')) {
+        throw new CalcError('CALC-PARSE-001', `Invalid period selector at position ${i}.`);
+      }
+      out.push({ kind: 'period', value: match[0], pos: i });
+      i += match[0].length + 1;
+      continue;
+    }
+
+    if (c >= '0'  && c <= '9') {
       const start = i;
       while (i < input.length && input[i]! >= '0' && input[i]! <= '9') i++;
       if (input[i] === '.' && input[i + 1] && input[i + 1]! >= '0' && input[i + 1]! <= '9') {
@@ -290,7 +301,13 @@ class Parser {
       }
       // Member chain (dot or bracket-string)?
       const segments: string[] = [];
-      while (this.match('dot', 'lbracket')) {
+      let period: { series: string[]; selector: string } | undefined;
+      while (this.match('dot', 'lbracket', 'period')) {
+        if (this.match('period')) {
+          if (period || segments.length === 0) throw new CalcError('CALC-PARSE-001', 'One period selector is allowed after a section series path.');
+          period = { series: segments.splice(0), selector: this.advance().value };
+          continue;
+        }
         if (this.match('dot')) {
           this.advance();
           const idTok = this.expect('ident', 'Expected identifier after .');
@@ -302,6 +319,7 @@ class Parser {
           segments.push(strTok.value);
         }
       }
+      if (period) return { kind: 'period_path', head: tok.value, ...period, segments };
       if (segments.length > 0) return { kind: 'path', head: tok.value, segments };
       return { kind: 'ident', name: tok.value };
     }
@@ -316,4 +334,11 @@ class Parser {
 export function parseExpression(input: string): Expr {
   const tokens = tokenize(input);
   return new Parser(tokens).parse();
+}
+
+/** Canonical dependency/override spelling for a period reference. */
+export function periodReferencePath(expr: Extract<Expr, { kind: 'period_path' }>): string {
+  const suffix = expr.segments.map(segment => /^[A-Za-z_][A-Za-z0-9_]*$/.test(segment)
+    ? `.${segment}` : `['${segment}']`).join('');
+  return `${[expr.head, ...expr.series].join('.')}@${expr.selector}${suffix}`;
 }

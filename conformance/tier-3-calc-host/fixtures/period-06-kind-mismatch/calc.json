@@ -1,0 +1,6 @@
+{
+  "id": "period_06_kind_mismatch",
+  "label": "period-06-kind-mismatch",
+  "formula": "dcf.annual_cash_flows@2028-01-01.noi",
+  "deterministic": true
+}

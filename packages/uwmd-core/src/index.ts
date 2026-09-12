@@ -830,6 +830,7 @@ export type {
 export {
   BLOCK_ROLES,
   CROSS_CHECK_ROLE_PREFERENCE,
+  PERIOD_SERIES,
   PROTOCOL_VERSION,
   FORMAT_VERSION,
   DEFAULT_NUMBER_FORMAT,
@@ -927,3 +928,8 @@ export type {
   BuildContextOptions,
   ContextResult,
 } from './context-profiles.js';
+
+export type { PeriodKey, PeriodSeriesEntry } from './protocol.js';
+export { canonicalPeriod, parsePeriodSelector, periodKeyIdentity } from './periods.js';
+export { resolvePeriodPath } from './period-path.js';
+export type { PeriodResolutionOptions } from './period-path.js';

@@ -103,6 +103,9 @@ export function emitFromAst(expr: Expr, opts: ExcelEmitOptions): string {
       return mapped;
     }
 
+    case 'period_path':
+      throw new ExcelEmitError('EXCEL-EMIT-PATH', 'Period selectors require contextual workbook bindings and are not emitted.');
+
     case 'unary': {
       const inner = emitFromAst(expr.operand, opts);
       if (expr.op === '-') return `-(${inner})`;

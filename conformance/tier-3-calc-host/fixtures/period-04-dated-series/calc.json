@@ -1,0 +1,6 @@
+{
+  "id": "period_04_dated_series",
+  "label": "period-04-dated-series",
+  "formula": "cash_flow_series.series@2028-02-29.amount + distribution_waterfall.stated_schedule@2028-02-29.lp_distribution",
+  "deterministic": true
+}

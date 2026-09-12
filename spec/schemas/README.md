@@ -35,6 +35,8 @@ files live in this directory pending publication on `uwmd.org`.
 | [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §2 / RFC 0021 |
 | [`uw-external-section.schema.json`](uw-external-section.schema.json) | `external` section directive | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §3 / RFC 0021 |
 | [`uw-rollup.schema.json`](uw-rollup.schema.json) | `portfolio_rollup` payload | [UW Receipt 1.0](../UW_RECEIPT_v1.md) §11 / RFC 0021 §6 |
+| [`period-key.schema.json`](period-key.schema.json) | `PeriodKey` | Protocol §VIII.2a / RFC 0041 |
+| [`period-series-entry.schema.json`](period-series-entry.schema.json) | `PeriodSeriesEntry` | Protocol §VIII.2a / RFC 0041 |
 
 ## Validating a schema
 

@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/13-period-identities/parse",
+  "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "13-period-identities.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/13-period-identities.parsed.json"
+  }
+}
