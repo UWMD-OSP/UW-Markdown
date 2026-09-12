@@ -58,7 +58,7 @@ scalars, preserving zero and null. `calc` supports ordinary and period overrides
 `refine` rejects ordinary scalar overrides and requires canonical period keys.
 Inspect refinement's `diagnostics.period_inputs` for excluded outputs.
 
-See the [complete source guide](../../tools/docs-site/guide/calculation-context.md)
+See the [complete source guide](../../docs/CALCULATION_CONTEXT.md)
 for context validation, missing inputs, Excel export and library usage.
 
 ## Library use

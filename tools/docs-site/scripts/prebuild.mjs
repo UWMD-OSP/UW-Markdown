@@ -73,6 +73,7 @@ const COPIES = [
   { from: 'VERSIONS.md',         to: 'about/versions.md',     title: 'Versions' },
 
   // Guide / on-ramps (source of truth in docs/)
+  { from: 'docs/CALCULATION_CONTEXT.md', to: 'guide/calculation-context.md', title: 'Calculation context files' },
   { from: 'docs/GLOSSARY.md',    to: 'guide/glossary.md', title: 'Glossary' },
   { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools comparison' },
   { from: 'docs/UW_LITE_AND_UWX.md', to: 'guide/lite-and-uwx.md', title: 'UW Lite and UWX' },
@@ -93,6 +94,8 @@ const COPIES = [
 // Source-relative path → site URL. Keys are normalized: leading "./" and "../"
 // segments are stripped before lookup, so we only list the canonical form once.
 const NORMALIZED_LINK_MAP = new Map([
+  ['docs/CALCULATION_CONTEXT.md', '/guide/calculation-context'],
+  ['CALCULATION_CONTEXT.md', '/guide/calculation-context'],
   // Project documents
   ['ROADMAP.md', '/about/roadmap'],
   ['docs/roadmap/history-through-2.7.0.md', '/about/roadmap-history'],

@@ -113,5 +113,5 @@ The JSON file accepts `sectionVariants` and `overrides`, for example
 `{"sectionVariants":{"dcf":"base"},"overrides":{}}`. Use exact input paths for
 overrides; zero and null remain distinct. Context requires `--calculations` and
 affects only those additional calculations. Invalid context fails before any
-output is written. See the [context guide](../../tools/docs-site/guide/calculation-context.md)
+output is written. See the [context guide](../../docs/CALCULATION_CONTEXT.md)
 for validation rules and examples.

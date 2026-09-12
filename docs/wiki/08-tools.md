@@ -51,7 +51,7 @@ zero and null intact. The refine CLI refuses ordinary scalar override keys becau
 `rankGaps.periodContext` only consumes period overrides. The Excel CLI requires
 `--calculations` alongside context and applies it only to additional calculations.
 Source documents are never edited by these options. See the
-[source guide](../../tools/docs-site/guide/calculation-context.md) for commands,
+[source guide](../CALCULATION_CONTEXT.md) for commands,
 validation errors and publication status.
 
 ## Batch collection indexer — `packages/uwmd-batch` (`@uwmd/batch`, published since 0.8.0)
