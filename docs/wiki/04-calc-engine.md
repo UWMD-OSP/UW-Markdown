@@ -337,6 +337,20 @@ returns null; malformed periods or duplicate identities refuse even if validatio
 was skipped. PS-01/02 inspect all active variants and PS-03 checks static kind
 mismatches in custom calc/scenario formulas. See Protocol §VIII.2a for details.
 
-Excel currently refuses selector nodes with EXCEL-EMIT-PATH; refinement records
-dependencies but reports unsupported numerical perturbation. Neither substitutes
-an arbitrary row. No financial formula or quantization policy changes.
+Excel still refuses selector nodes with EXCEL-EMIT-PATH. The RFC 0042 reference
+implementation uses finite stated period values as fixed inputs in refinement;
+ordinary scalar gaps retain their existing cascade and perturbation arithmetic.
+`rankGaps(parsed, { periodContext: { sectionVariants, overrides } })` applies
+that context only to period dependencies. No period defaults or ranges exist.
+
+The `uwmd refine` text view prints excluded outputs and period issue codes; its
+JSON view retains the structured diagnostics.
+
+Inspect `diagnostics.period_inputs` before claiming completeness: each issue names
+an excluded output, its full selector path and a missing/nonnumeric or typed
+CALC-PERIOD error code. Unaffected outputs remain rankable. The member is omitted
+for scalar-only targets and is an empty array for successfully resolved period
+inputs. `diagnostics.resolved` counts dependency entries, not known numeric values.
+Literal ordinary @ keys use a separate environment even when graph strings
+coincide with selector paths. Package publication is pending; the published
+core 2.7.0 behavior is preserved in RFC 0041's release record.

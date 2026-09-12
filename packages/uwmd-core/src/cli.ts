@@ -1133,9 +1133,15 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
   if (result.diagnostics.non_monotonic.length > 0) {
     console.log(`⚠  Non-monotonic outputs: ${result.diagnostics.non_monotonic.map(w => w.output_id).join(', ')}`);
   }
+  const periodIssues = result.diagnostics.period_inputs ?? [];
+  for (const issue of periodIssues) {
+    console.log(`Excluded ${issue.output_id}: ${issue.field_path} [${issue.code}] ${issue.message}`);
+  }
   console.log('');
   if (result.by_voi.length === 0) {
-    console.log('No gap-driven inputs found among the requested targets.');
+    console.log(periodIssues.length
+      ? 'No ranking is available for the affected targets until their period inputs are resolved.'
+      : 'No gap-driven inputs found among the requested targets.');
     return;
   }
   result.by_voi.forEach((g, i) => {

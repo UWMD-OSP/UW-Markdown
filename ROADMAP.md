@@ -40,18 +40,19 @@ does not mean its standalone npm package is published.
 
 | Work | State | Evidence / completion |
 |---|---|---|
-| Current roadmap and status reconciliation | Implemented in this change | Historical launch plans archived; implemented/published/proposed states separated; RFC 0040/0041 marked implemented. |
+| Current roadmap and status reconciliation | Merged in PR #181 | Historical launch plans archived; implemented/published/proposed states separated; RFC 0040/0041 marked implemented. |
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
-| Period-consumer follow-up scope | Brief ready | [Implementation brief](docs/roadmap/period-consumers.md) maps workbook/refinement entry points, required decisions and acceptance tests. It is not an accepted RFC. |
+| Period-consumer follow-up scope | Refinement implementation ready for review | [RFC 0042](docs/rfcs/0042-period-refinement.md) adds fixed stated period inputs and diagnostics. [Workbook bindings](docs/roadmap/period-consumers.md) remain a planning brief. |
 
 ## Forward backlog
 
-The order below is a recommendation for the next planning decision. No new
-modeling feature or package release is currently committed.
+The bounded RFC 0042 refinement stage is implemented for review, with package
+publication pending. The remaining order guides the next planning decision;
+no new financial model or package release is committed.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Contextual period support in downstream tools | Next candidate | Accept the [consumer contract](docs/roadmap/period-consumers.md), then bind workbook lookups to canonical period identities and define refinement resolution without invented defaults. Prove row-order independence, duplicate/missing handling, variant isolation and parity. |
+| 1 | Contextual period support in downstream tools | Refinement in review; Excel next | Review [RFC 0042](docs/rfcs/0042-period-refinement.md), then specify [workbook bindings](docs/roadmap/period-consumers.md) and real Excel recalculation checks. Period defaults remain separate. |
 | 2 | Lease-up / DCF integration | Next candidate | Define how stated lease-up schedules feed dated cash flows and Excel, including cash timing and defaults. Reuse existing calendar contracts; do not infer dates or periods. |
 | 3 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 4 | Waterfall extensions | Deferred | RFC 0035/0036 left clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles for separate contracts. Each needs exact economic rules and conformance cases. |

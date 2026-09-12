@@ -37,6 +37,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`uw-rollup.schema.json`](uw-rollup.schema.json) | `portfolio_rollup` payload | [UW Receipt 1.0](../UW_RECEIPT_v1.md) §11 / RFC 0021 §6 |
 | [`period-key.schema.json`](period-key.schema.json) | `PeriodKey` | Protocol §VIII.2a / RFC 0041 |
 | [`period-series-entry.schema.json`](period-series-entry.schema.json) | `PeriodSeriesEntry` | Protocol §VIII.2a / RFC 0041 |
+| [`period-refinement-issue.schema.json`](period-refinement-issue.schema.json) | `PeriodRefinementIssue` | Protocol §VIII.2b / RFC 0042 |
 
 ## Validating a schema
 

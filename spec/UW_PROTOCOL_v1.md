@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.8.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.9.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -1327,8 +1327,8 @@ No document writes or changes to numeric quantization occur.
 Excel emission MUST explicitly refuse these new AST nodes with `EXCEL-EMIT-PATH`
 until contextual workbook bindings exist; a static named range must not silently
 stand for a row chosen by its current position. The reference refinement engine
-records dependencies but declines numerical perturbation of period-selector
-expressions and reports that limitation. Its general cascade is unchanged.
+uses finite stated period inputs as fixed values under §VIII.2b. Its general
+cascade is unchanged.
 
 **Validation.** Inspect all active variants of every present registered series:
 `PS-01` warning for malformed shape/row/period; `PS-02` error for each duplicate
@@ -1339,6 +1339,44 @@ Superseded history and arbitrary narrative strings are not reinterpreted.
 Existing LU/CF/WF structural and financial rules remain unchanged. These new
 diagnostics may expose missing period identities in older files; do not fabricate
 years or dates to clear them.
+
+### VIII.2b Stated period inputs in refinement (RFC 0042)
+
+Refinement is an optional consumer; no tier requires it. A consumer implementing
+this extension MUST resolve period AST dependencies with §VIII.2a and preserve
+the complete selector identity. `RankGapsOptions.periodContext` MAY supply
+`sectionVariants` and full-path `overrides` under CalcEvaluationContext semantics,
+for period dependencies only. Validate the registry/selector before an own-key
+override; null is explicit, and an override bypasses document lookup. Unrelated
+override keys do not alter scalar cascade resolution.
+
+Finite numeric period inputs MUST remain fixed during ordinary gap perturbation.
+Period dependencies MUST NOT enter the default cascade or acquire inferred ranges,
+including from profile, inheritance or market providers. A missing value is not
+zero. Scalar resolution, range arithmetic and normalization remain unchanged.
+
+For each selected output and distinct unresolved period dependency, return a
+`PeriodRefinementIssue` with `output_id`, canonical `field_path`, `code`, and
+human-readable `message`. Null/absent/kind-mismatched or blocked values use
+`REFINE-PERIOD-MISSING`; strings, booleans, objects, arrays and nonfinite numbers
+use `REFINE-PERIOD-NONNUMERIC`. Resolver failures retain `CALC-PERIOD-001`,
+`CALC-PERIOD-002` or `CALC-PERIOD-003`. Do not suppress unexpected internal errors.
+The type, [schema](schemas/period-refinement-issue.schema.json), and these codes
+describe the same contract; message wording is not stable machine data.
+
+Expose these issues as `diagnostics.period_inputs`, in target order and first
+reference occurrence order, including when there are no rankable ordinary gaps.
+Omit the member when selected formulas contain no period references; otherwise
+include an array, empty on successful resolution. Exclude affected outputs from
+numeric ranking while preserving unaffected outputs. An empty ranking with
+issues MUST NOT be represented as proof of complete inputs. The historical
+`diagnostics.resolved` count remains the number of distinct dependency entries
+processed, not the number of finite values.
+
+A period leaf is supported by the numeric interpreter; other unsupported AST
+operations retain their existing diagnostics and behavior. This extension does
+not improve the existing perturbation approximation, define period defaults or
+stochastic VOI, or change evaluateCalc's quantization boundary.
 
 ### VIII.3 Built-in functions
 

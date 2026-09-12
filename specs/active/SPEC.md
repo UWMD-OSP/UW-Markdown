@@ -1,9 +1,12 @@
 # Active specification
 
-No implementation stage is in flight. The roadmap/PCG64 sprint is completed
-in `93c4877` and submitted as [PR #181](https://github.com/UWMD-OSP/UW-Markdown/pull/181).
-See the [completion record](../archive/post-2.7.0-roadmap-pcg-sprint.md).
+No implementation stage is in flight. The RFC 0042 period-refinement stage is
+completed in `e8a8b0b` for owner review on `codex/rfc-0042-period-refinement`.
+See the [completion record](../archive/rfc-0042-period-refinement.md).
 
-The next candidate is [contextual period consumers](../../docs/roadmap/period-consumers.md).
-It remains a planning brief, not an accepted RFC or implementation commitment.
-Reconcile PR #181 and the release state before beginning a new stage.
+Protocol 2.9.0 is implemented in source; published core/CLI remains 2.7.0 with
+Protocol 2.8.0 until a separately reviewed release. The RFC remains active pending
+owner acceptance. Verify its merge state before beginning another stage.
+
+The next candidate is [contextual workbook bindings](../../docs/roadmap/period-consumers.md).
+It remains a planning brief; period defaults and financial modeling are separate.
