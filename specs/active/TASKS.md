@@ -1,5 +1,7 @@
-# Active task matrix
+# Release preparation tasks
 
-No unchecked implementation task is in flight. The RFC 0041 tasks and verification
-record are [archived](../archive/rfc-0041-period-addressing.md#completion-record).
-PR #179 awaits review and must follow its prerequisite PR #178.
+- [ ] Prepare package versions, exact pins, receipt metadata and release docs;
+  run all gates and commit. This is the single implementation stage in flight.
+- [ ] Submit the release PR, verify CI and archive the completed preparation.
+
+Tagging and npm publication are outside this task matrix.

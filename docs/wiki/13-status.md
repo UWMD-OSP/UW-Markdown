@@ -5,7 +5,15 @@ Explicit period selectors cover the five standard series, with absolute calendar
 identities, duplicate refusal without prevalidation, variant context and PS
 diagnostics. Excel selector emission and refinement perturbation are explicitly
 unsupported; relative Qn/Mn and module registry extensions remain deferred.
-This is a dependent feature PR on RFC 0040; no package publication is implied.
+RFCs 0040 and 0041 merged through PRs #178 and #179; main `6fb480a` passed CI.
+Package release preparation targets core/CLI **2.7.0**, signing **0.2.11** and
+batch **0.8.6**, with unpublished excel/report repins to **0.8.11**. These versions
+are not published: registry checks on 2026-09-12 still report core/CLI 2.6.2,
+signing 0.2.10 and batch 0.8.5. See the current matrix for source compatibility.
+Release preparation passes a fresh npm ci, build, 1,782 workspace tests, test
+typechecking, 426 default conformance checks, 76 declarative cases, 25 schemas,
+lint, lockfile/package/version/index/release checks and docs build. The only
+receipt changes are three engine-version labels; calculation digests are unchanged.
 Verified (2026-09-12): 1,782 workspace tests, 426 default conformance checks,
 76 declarative cases, build, test typechecking, 25 schemas, lint, lockfile,
 package/version/index checks and the docs build. Existing calculation digests
