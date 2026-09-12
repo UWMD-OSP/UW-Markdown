@@ -1,7 +1,5 @@
-# RFC 0043 task matrix
+# Task matrix
 
-- [ ] In flight: implement contextual Excel bindings and explicit calculation
-  export, synchronize contracts/docs, verify in Excel and pass repository gates,
-  then commit and submit a stacked PR for morning review.
+- [x] RFC 0043 contextual Excel binding implementation and verification — fc86ab9.
 
-PR #182 remains open and is the base. Reconcile its merge state before publication.
+No development item currently in flight. Reconcile open PRs before the next stage.
