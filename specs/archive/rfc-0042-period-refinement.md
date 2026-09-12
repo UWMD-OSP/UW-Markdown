@@ -53,6 +53,9 @@ outputs/digests, package versions, dependency locks and evaluator math are
 unchanged. The final documentation build passed after adding the usage example.
 Final-commit GitHub CI is a separate pre-merge condition checked on the PR.
 
+Follow-up consumer audit: the CLI text view now prints period exclusions as well
+as the JSON diagnostics, with a command-level regression test.
+
 Next: contextual workbook bindings and actual Excel recalculation verification,
 following docs/roadmap/period-consumers.md. No workbook contract or new financial
 model was implicitly accepted by this implementation sprint.

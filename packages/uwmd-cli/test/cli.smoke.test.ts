@@ -666,3 +666,24 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
     }
   });
 });
+
+
+it('refine displays unresolved period inputs in text and JSON without claiming completeness', () => {
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-refine-period-'));
+  try {
+    const input = resolve(temp, 'period.uwx.md');
+    const source = readFileSync(FIXTURE, 'utf8');
+    const calc = { id: 'missing_period', formula: 'dcf.annual_cash_flows@Y999.noi', label: 'Missing period' };
+    writeFileSync(input, [source, '```json uw:section=custom_calculations source=manual v=1', JSON.stringify(calc), '```', ''].join('\n'));
+    const text = runCli(['refine', input, '--targets', 'missing_period']);
+    expect(text.status).toBe(0);
+    expect(text.stdout).toContain('Excluded missing_period: dcf.annual_cash_flows@Y999.noi [REFINE-PERIOD-MISSING]');
+    expect(text.stdout).toContain('until their period inputs are resolved');
+    expect(text.stdout).not.toContain('No gap-driven inputs found');
+    const json = runCli(['refine', input, '--targets', 'missing_period', '--json']);
+    expect(json.status).toBe(0);
+    expect(JSON.parse(json.stdout).diagnostics.period_inputs).toEqual([expect.objectContaining({ output_id: 'missing_period', code: 'REFINE-PERIOD-MISSING' })]);
+  } finally {
+    rmSync(temp, { recursive: true, force: true });
+  }
+});

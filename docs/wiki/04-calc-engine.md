@@ -343,6 +343,9 @@ ordinary scalar gaps retain their existing cascade and perturbation arithmetic.
 `rankGaps(parsed, { periodContext: { sectionVariants, overrides } })` applies
 that context only to period dependencies. No period defaults or ranges exist.
 
+The `uwmd refine` text view prints excluded outputs and period issue codes; its
+JSON view retains the structured diagnostics.
+
 Inspect `diagnostics.period_inputs` before claiming completeness: each issue names
 an excluded output, its full selector path and a missing/nonnumeric or typed
 CALC-PERIOD error code. Unaffected outputs remain rankable. The member is omitted
