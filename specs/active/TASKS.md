@@ -1,7 +1,8 @@
-# Task matrix — property cash-flow assembly proposal
+# Task matrix
 
-- [ ] Draft and verify RFC 0045, reconcile roadmap/status, commit and open a review PR. **In flight.**
+- [x] Draft and verify RFC 0045, reconcile roadmap/status, commit and open review PR #189 — `4a081fe`.
 
-The previous release is complete; see `specs/archive/release-2.8.0.md`.
-Implementation tasks are intentionally not started while the economic contract
-and adopter ledger remain under review.
+The completed stage is archived in
+`specs/archive/property-cash-flow-assembly-proposal.md`.
+RFC acceptance and an adopter ledger remain next-stage prerequisites; no
+implementation or release task is in flight.
