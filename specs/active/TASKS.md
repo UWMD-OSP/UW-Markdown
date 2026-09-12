@@ -1,8 +1,9 @@
-# RFC 0042 task matrix
+# Active task matrix
 
-- [ ] In flight: implement the bounded period-refinement contract, synchronize
-  protocol/type/schema and docs, add acceptance coverage, pass all gates, commit
-  and submit the PR for owner review.
+No implementation task is in flight. The completed RFC 0042 refinement stage and
+its verification evidence are [archived](../archive/rfc-0042-period-refinement.md).
+Commit `e8a8b0b` passed the local gates. Final-commit CI and owner review are the
+remaining merge conditions; no package publication is part of this sprint.
 
-Reconciled: PR #181 is merged at `a703535`; no competing PR or unpublished
-implementation of this consumer was found. Excel binding design remains queued.
+Reconcile the `codex/rfc-0042-period-refinement` review branch before starting
+the queued workbook-binding contract.
