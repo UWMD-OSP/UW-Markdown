@@ -71,11 +71,9 @@ describe('Pcg64', () => {
     expect(new Pcg64(42).nextUint64()).not.toBe(new Pcg64(43).nextUint64());
   });
 
-  it('pins a self-generated vector — see the verification gap in prng.ts', () => {
-    // This vector was produced BY this implementation. It catches a regression
-    // in our own code; it does NOT prove agreement with the reference C pcg64,
-    // which nobody has diffed against. The gap is recorded in prng.ts and in
-    // RFC 0005 rather than left for someone to assume away.
+  it('retains the seed-42 vector now verified against an independent implementation', () => {
+    // The original vector is unchanged. prng.test.ts covers 11 seeds against
+    // a separately generated NumPy PCG64 oracle, including long-sequence digests.
     const rng = new Pcg64(42);
     expect(Array.from({ length: 4 }, () => rng.nextUint64().toString())).toEqual([
       '2915081201720324186',

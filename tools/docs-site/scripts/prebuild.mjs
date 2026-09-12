@@ -59,6 +59,9 @@ const COPIES = [
   // Project documents
   { from: 'docs/ABOUT.md',       to: 'about/index.md', title: 'About UW Markdown' },
   { from: 'ROADMAP.md',          to: 'about/roadmap.md' },
+  { from: 'docs/roadmap/history-through-2.7.0.md', to: 'about/roadmap-history.md' },
+  { from: 'docs/roadmap/period-consumers.md', to: 'about/period-consumers.md' },
+  { from: 'docs/reviews/2026-09-12-pcg64-reference.md', to: 'about/reviews/pcg64-reference.md' },
   { from: 'GOVERNANCE.md',       to: 'about/governance.md' },
   { from: 'MAINTAINERS.md',      to: 'about/maintainers.md' },
   { from: 'SECURITY.md',         to: 'about/security.md' },
@@ -91,6 +94,10 @@ const COPIES = [
 const NORMALIZED_LINK_MAP = new Map([
   // Project documents
   ['ROADMAP.md', '/about/roadmap'],
+  ['docs/roadmap/history-through-2.7.0.md', '/about/roadmap-history'],
+  ['docs/roadmap/period-consumers.md', '/about/period-consumers'],
+  ['docs/reviews/2026-09-12-pcg64-reference.md', '/about/reviews/pcg64-reference'],
+  ['reviews/2026-09-12-pcg64-reference.md', '/about/reviews/pcg64-reference'],
   ['GOVERNANCE.md', '/about/governance'],
   ['MAINTAINERS.md', '/about/maintainers'],
   ['SECURITY.md', '/about/security'],

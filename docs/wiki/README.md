@@ -16,8 +16,8 @@ breaking the invariants that hold this codebase together.
 UW Markdown is the **open standard `.uw.md`** (a Markdown + JSON file format for
 commercial-real-estate underwriting deals) plus its **reference implementation**
 (`@uwmd/core`), a CLI, an Excel converter, and supporting tools. It is a
-*library and specification*, not a web app — there is **no React frontend, no
-Express server, no database** in this repo. `underwriter.cc` is the first public
+*library and specification*, supported by static tools including a React web
+editor. There is **no Express server or database** in this repo. `underwriter.cc` is the first public
 product *consuming* the standard, and lives in a separate codebase.
 
 ## How to use this wiki

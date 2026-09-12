@@ -1,7 +1,7 @@
 ---
 rfc: 0040
 title: Variant roles — resolve cross-checks by a declared role, not a key name
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-09-09
 accepted: 2026-09-11
@@ -14,8 +14,14 @@ affects:
 
 # RFC 0040: Variant roles
 
+**Released in [core/CLI 2.7.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.7.0), 2026-09-12.**
+The implementation and conformance cases are shipped; remaining extensions are
+explicitly deferred below.
+
+
 The owner approved block-level `_role` on 2026-09-11. Protocol 2.7.0 adds
-role-aware cross-check selection; Format 2.0 and package versions are unchanged.
+role-aware cross-check selection; Format stays 2.0. The initial protocol change
+was followed by package publication in 2.7.0.
 The [readiness review](../reviews/2026-09-11-rfc-0040-0041-readiness.md)
 records why the earlier `_meta.role` proposal was replaced: v2 metadata
 normalization discards that field before hashing.
