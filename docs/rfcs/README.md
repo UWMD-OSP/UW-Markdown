@@ -68,6 +68,7 @@ and how it gets accepted.
 | [0042](./0042-period-refinement.md) | Stated period inputs in refinement | implemented | protocol, core |
 | [0043](./0043-contextual-excel-period-bindings.md) | Contextual Excel period bindings | implemented | protocol, core, tooling |
 | [0044](./0044-explicit-lease-up-cash-flow-projection.md) | Project verified lease-up amounts onto explicit cash dates | implemented | protocol, core, conformance, tooling |
+| [0045](./0045-explicit-property-cash-flow-assembly.md) | Assemble explicitly covered property cash flows | draft | protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

@@ -54,7 +54,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Full DCF assembly | Contract needed | Pin valuation anchor, expense/reserve/capital coverage, acquisition/disposition, financing basis, currency identity and double-count prevention. RFC 0044 supplies only a partial rent/concession/TI-LC stream. |
+| 1 | Full DCF assembly | [RFC 0045 draft](docs/rfcs/0045-explicit-property-cash-flow-assembly.md) | Review the proposed unlevered/pre-tax, single-currency coverage ledger and reserve boundary against an adopter example, then pin plan/result/error schemas before implementation. RFC 0044 remains a partial rent/concession/TI-LC stream. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |

@@ -44,9 +44,11 @@ release repin. The three receipt edits changed engine-version labels only.
 
 ## Remaining work
 
-- Full DCF assembly needs a contract for economic coverage, valuation anchor,
-  financing/currency basis and double counting. RFC 0044 includes rent receipts,
-  concessions and TI/LC only; it does not produce complete investment returns.
+- Full DCF assembly has a [draft contract (RFC 0045)](../rfcs/0045-explicit-property-cash-flow-assembly.md)
+  for unlevered/pre-tax, single-currency cash flows, exhaustive coverage and
+  an explicit reserve boundary. Owner review, an adopter ledger and exact wire
+  schemas remain prerequisites to implementation. RFC 0044 still includes rent
+  receipts, concessions and TI/LC only; no assembly API is released.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
