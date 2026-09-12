@@ -403,7 +403,10 @@ carry source ranges, structured findings map `section` → `block.lineStart`.
 The **published, human-facing** documentation site. A prebuild step
 (`scripts/prebuild.mjs`) copies repo-root markdown (spec, governance, RFCs,
 schemas, examples) into the site tree and rewrites links — repo root stays the
-single source of truth. Config: `.vitepress/config.ts`. Dev: `npm run dev`;
+single source of truth. All `docs/rfcs/*.md` files are discovered automatically;
+the RFC index and template retain their special URLs. Release labels read the
+core manifest and protocol constants via `scripts/docs-site-sources.mjs`.
+Config: `.vitepress/config.ts`. Dev: `npm run dev`;
 build: `npm run build`.
 
 > This wiki (`docs/wiki/`) is deliberately **not** wired into the docs-site nav —

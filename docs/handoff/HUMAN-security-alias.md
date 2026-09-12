@@ -1,6 +1,12 @@
-# HUMAN: stand up the security@uwmd.org alias
+# Completed: security@uwmd.org alias setup
 
-**Why you, why now.** [`SECURITY.md`](../../SECURITY.md) promises
+> **Reconciled 2026-09-11:** this setup handoff was already satisfied by
+> `58dd581` (2026-08-15), whose commit message records that the alias was confirmed
+> live before publication. `SECURITY.md` already uses it. The instructions below
+> are retained as historical setup guidance, not an outstanding action. Current
+> mailbox delivery has not been re-tested in this reconciliation.
+
+**Original handoff.** [`SECURITY.md`](../../SECURITY.md) promises
 acknowledgement of vulnerability reports sent to **security@uwmd.org**
 within 5 business days. The launch-readiness review flagged that this
 routes to a personal address (or nowhere) — only the owner of the

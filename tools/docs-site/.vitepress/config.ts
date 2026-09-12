@@ -1,4 +1,8 @@
 import { defineConfig } from 'vitepress';
+import { fileURLToPath } from 'node:url';
+import { docsVersions } from '../../../scripts/docs-site-sources.mjs';
+
+const versions = docsVersions(fileURLToPath(new URL('../../../', import.meta.url)));
 
 export default defineConfig({
   title: 'UW Markdown',
@@ -107,7 +111,7 @@ export default defineConfig({
           items: [
             { text: 'Format spec (v1.1)', link: '/spec/format' },
             { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
-            { text: 'Protocol spec (2.3.0)', link: '/spec/protocol' },
+            { text: `Protocol spec (${versions.protocol})`, link: '/spec/protocol' },
             { text: 'XML mapping (v1.0)', link: '/spec/xml' },
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
             { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },

@@ -2,7 +2,20 @@
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
-**Last verified:** 2026-09-03, after the **2.3.0 release** (tag `v2.3.0`,
+**Targeted reconciliation:** 2026-09-11 against `origin/main` at `9f243e1`
+(release tag `v2.6.2`, cut `628b7c0`). Core/CLI are **2.6.2**, Format **2.0**,
+Protocol **2.6.0**; package versions are independent. This pass verified the
+repository and tags, not current npm availability or production deployment.
+Calendar math (0034), waterfalls (0035/0036), signing (0002/0010), capability tokens
+(0011), and iterative determinism (0024) are implemented. RFC 0041 remains draft.
+Test typechecking is wired into CI. `SECURITY.md` uses `security@uwmd.org`;
+`58dd581` records confirmation that it was live before publication. The former
+personal-address flag and setup handoff are stale, not new launch blockers.
+The docs build now discovers RFC files and derives release labels from source.
+See the [claim-by-claim verification](../reviews/2026-09-11-history-reconciliation.md)
+for evidence, limitations, and the validation results for this pass.
+
+**Previous full verification:** 2026-09-03, after the **2.3.0 release** (tag `v2.3.0`,
 #150): `@uwmd/core` **2.3.0**, `@uwmd/cli` **2.3.0**, `@uwmd/signing`
 **0.2.5**, and — **its first publish** — `@uwmd/batch` **0.8.0**, all
 npm-verified. The cut carries the #146 data-lake pair (the
@@ -979,7 +992,7 @@ complete: 2.0.0 released 2026-09-02** (PR #134, tag `v2.0.0`) — `@uwmd/core`
 (repin-forced patch), with excel/report 0.8.2 and batch 0.7.2 repins landed
 (unpublished). RFC 0009 is **implemented**; underwriter.cc acknowledged the
 2.0 release. The parallel human-only track stays open (PCG64
-vector diff, security alias, public RFC venue); the bus-factor note closed
+vector diff, public RFC venue); the bus-factor note closed
 2026-09-09 (`MAINTAINERS.md` "Continuity").
 
 **Unblocked (was blocked on 0031):** `_meta` v2 reorg (0009), and its **draft
@@ -1002,7 +1015,7 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 
 ## ⚙️ Operational — gates the public launch
 
-> **Current state (2026-09-02):** the repository is public and the live npm
+> **Historical release snapshot (2026-09-02):** the repository is public and the live npm
 > surface is `@uwmd/core@2.0.0`, `@uwmd/cli@2.0.0`, and `@uwmd/signing@0.2.2`,
 > all publishing hands-off on `v*` tags via OIDC trusted publishers. The CLI
 > package is scoped because npm rejects the unscoped `uwmd` name; its
@@ -1014,8 +1027,9 @@ See [`docs/rfcs/`](../rfcs/) and [11 — Governance](11-build-release-governance
 Completed: public repository, canonical rename to `uw-markdown`, npm organization,
 release secret, initial package publication, and the continuity plan
 (`MAINTAINERS.md`, 2026-09-09: MIT + public repo, no named successor, six-month
-dormancy threshold). Review-flagged: personal security email and no public RFC
-venue.
+dormancy threshold). The security alias was published and confirmed live in
+`58dd581`; current mailbox delivery was not re-tested here. The public RFC venue
+remains review-flagged.
 
 ## Suggested priority order
 
@@ -1284,8 +1298,9 @@ venue.
 8. ~~**Docs on-ramps.**~~ **Shipped.** `cookbook.md`, `faq.md`, and
     `calc-conventions.md` are live under `tools/docs-site/guide/`; the remaining
     docs work is upkeep, not a gap.
-9. **Operational launch gates** — personal security email and no public RFC
-    venue remain review-flagged; the bus-factor gate closed 2026-09-09.
+9. **Operational launch gates** — the public RFC venue remains review-flagged;
+    the bus-factor gate closed 2026-09-09. The security alias setup is recorded
+    complete in `58dd581`; current mailbox delivery was not re-tested here.
     **The ExcelJS dependency chain is formally risk-accepted (owner decision,
     2026-09-01):** `@uwmd/excel` only ever *writes* workbooks from trusted
     in-repo data (`toWorkbook`) or reads files the operator explicitly names

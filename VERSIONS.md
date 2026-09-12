@@ -36,9 +36,11 @@ same protocol version.
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 
-## Planned 1.1+ interchange train
+## Historical 1.1+ interchange release plan
 
-Accepted RFC 0014 defines a coordinated but independently versioned release train:
+The table below preserves the original RFC 0014 release plan and its then-current
+statuses. It is historical, not a list of outstanding work; use the current matrix
+above and the changelog for shipped versions.
 
 | Surface | Candidate version | Status |
 |---|---:|---|
@@ -53,9 +55,7 @@ Accepted RFC 0014 defines a coordinated but independently versioned release trai
 | HTTP binding | 1.0.0 | Optional companion profile, OpenAPI 3.1 contract, and core adapters implemented; release pending. |
 | MCP binding | 1.0.0 | Optional companion profile, resources/tool shapes, and reference adapters implemented; release pending. |
 
-These are candidate versions, not the current compatibility matrix. They become
-authoritative only after RFC acceptance, implementation, conformance, and the
-corresponding release entry in `CHANGELOG.md`. See the
+These were candidate versions when the plan was written. See the
 [1.1+ interchange release plan](docs/releases/1.1-plus-interchange-plan.md).
 
 ## Compatibility rules
@@ -77,13 +77,11 @@ corresponding release entry in `CHANGELOG.md`. See the
 
 ## Pinning recommendations
 
-| If you're building... | Pin to... |
-|---|---|
-| A read-only viewer | format ≥ 1.0, protocol ≥ 1.0, `@uwmd/core@^1` |
-| An editor | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1` |
-| A calc host | format = 1.1, protocol = 1.1, `@uwmd/core@^1.0`, multifamily pack 1.x |
-| An agent host | format ≥ 1.1, protocol ≥ 1.1, `@uwmd/core@^1`, plus an LLM SDK of your choice — `@anthropic-ai/sdk` is an optional peer, installed only if you use the bundled Anthropic provider |
-| A CLI script that calls `uwmd` | `@uwmd/cli@^1` |
+For new integrations, target Format 2.0 and the current Protocol 2.x contract
+listed above. Pin `@uwmd/core@^2` for readers, editors, calc hosts, and agent hosts,
+or `@uwmd/cli@^2` for CLI scripts. Readers retain the documented 1.x format
+compatibility. An agent host installs a provider SDK only if it uses that provider;
+`@anthropic-ai/sdk` remains an optional peer.
 
 ## Release coordination
 

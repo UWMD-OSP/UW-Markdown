@@ -66,6 +66,27 @@ again.
 **Quantization is not display.** `display` is presentation and may round
 differently. Digests, equality, and Excel parity are defined over `value`.
 
+### Excel parity and balance precision
+
+[RFC 0023](../rfcs/0023-numeric-determinism.md) established half-away-from-zero
+boundary quantization. `packs/excel-emit.ts` wraps supported emitted formulas in
+`ROUND(expression, resolveRoundTo(decl))`; pack parity tests compare the reported
+values exactly. This is a contract for supported formulas at their declared
+precision, not a claim that every Excel function or intermediate double is
+identical. [RFC 0024](../rfcs/0024-iterative-function-determinism.md) separately
+pinned the iterative solver; [RFC 0034](../rfcs/0034-calendar-anchored-cash-flows.md)
+subsequently added `xirr` and `xnpv`.
+
+Reporting precision is distinct from rate storage and balance arithmetic. Rates
+remain fractions; inputs and intermediate calculations are not rounded to the
+six-place rate reporting default. A large capital stack with fractional spreads
+does not, by its size alone, require a new unit. A `bps` label changes scale, not
+the precision of binary64. The format already names some spread fields in basis
+points, but the calc unit-default table has no dedicated `bps` entry: it uses
+the fallback unless `round_to` is explicit. RFC 0023 leaves a distinct unit policy
+open. Any new scaling or precision requirement needs a pack use case and an RFC
+that pins conversion and rounding; it is not an implemented guarantee.
+
 ## The grammar (recursive descent)
 
 `parseExpression(input) → Expr`. Precedence (low → high): ternary `?:`, `||`,

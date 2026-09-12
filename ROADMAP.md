@@ -146,7 +146,7 @@ context. This list is the maintainable copy.
 | [0006](./docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
 | [0015](./docs/rfcs/0015-portfolio-relationships.md) | ✅ Portfolio and relationship profiles        | **Shipped 2026-09-02** (protocol 2.2.0, §XV). The `.uwportfolio.json` sidecar carrying entity-layer edges of the RFC 0018 registry, registry-resolved validation, `uwmd portfolio validate\|edges`, and the package→profile projection bridge. No storage or aggregate-math contract, by design. |
 | [0034](./docs/rfcs/0034-calendar-anchored-cash-flows.md) | ✅ Calendar-anchored cash flows | **Shipped 2026-09-02** (protocol 2.1.0, §VIII.9). Dated series (§4.26, the third state-and-verify structure), the closed day-count registry, and deterministic `xirr`/`xnpv` via declarations. Removes RFC 0026 Phase 2's stated precondition. |
-| [0035](./docs/rfcs/0035-distribution-waterfall.md) | ✅ Distribution waterfall | **Shipped 2026-09-02** (protocol 2.3.0, §VIII.10). The RFC 0026 §E leg-3: state-and-verify ROC → pref → catch-up → promote splits over a §4.26 dated series; verifyWaterfall recomputes the full allocation so two engines agree on the promote. IRR hurdles reserved; clawback deferred. |
+| [0035](./docs/rfcs/0035-distribution-waterfall.md) | ✅ Distribution waterfall | **Shipped 2026-09-02** (protocol 2.3.0, §VIII.10). The RFC 0026 §E leg-3: state-and-verify ROC → pref → catch-up → promote splits over a §4.26 dated series; verifyWaterfall recomputes the full allocation so two engines agree on the promote. IRR hurdles subsequently shipped in RFC 0036; clawback remains deferred. |
 | [0036](./docs/rfcs/0036-waterfall-irr-hurdles.md) | ✅ IRR-hurdled waterfall tiers | **Shipped 2026-09-09** (protocol 2.6.0, §VIII.10 step 3; released in 2.6.0). Takes up the `until_lp_irr` reservation from RFC 0035. The boundary is closed-form (the LP hurdle balance, `−xnpv(F,h)·(1+h)^t`), not the nested bisection 0035 §C sketched; laddered and combined hurdles follow; strictly-increasing hurdle ladders are `WF-01`. Corpus 385 → 396. |
 | [0037](./docs/rfcs/0037-cross-check-variant-resolution-and-coverage.md) | ✅ Cross-check resolution over variant maps + coverage channel | **Shipped 2026-09-09** (released in 2.5.0). §5.3 resolution order (preference → `default` → `base` → lone variant), `CC-16` for an unresolvable map, `ValidationResult.coverage`. Closes underwriter.cc UPSTREAM-005: variant maps had been silently disabling ten of fifteen cross-checks. |
 | [0038](./docs/rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (released in 2.5.0). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
@@ -154,6 +154,22 @@ context. This list is the maintainable copy.
 | [0040](./docs/rfcs/0040-variant-role-resolution.md) | 📋 Variant roles | **Draft 2026-09-09.** Optional `_meta.role` (`primary`/`senior`/`junior`/`summary`/`detail`/`component`) on a variant-map block; cross-checks resolve by registered role before `default`/`base`. Raised by the first production coverage report (3 of 15 checks evaluated; 4 skips `variant_unresolvable` on producer-keyed maps). Would move protocol 2.6.0 → 2.7.0. |
 | [0041](./docs/rfcs/0041-period-indexed-addressing.md) | 📋 Period-indexed addressing | **Draft 2026-09-10.** A `@<period>` selector on dot-paths (`dcf.annual_cash_flows@Y3.net_operating_income`), a normative `PERIOD_SERIES` registry naming each per-period series' period field and grammar, and a canonical `PeriodKey` so year 3 compares across `year: 3`, `year_3`, `2028-Q1` and a date. Raised by the first production fact shredder: 592 of 2,664 facts are per-period composites with no period column. No field moves; protocol 2.6.0 → 2.7.0. |
 
+
+## Mixed-use aggregation and speculative leasing
+
+[RFC 0019](./docs/rfcs/0019-mixed-use-composition.md) shipped multi-component
+container aggregation: named components feed a property-level mixed-use pack.
+Its historical array-iteration constraint explains the chosen container shape;
+removing that constraint would not itself deliver Argus parity.
+
+Speculative leasing remains a separate modeling proposal, not a committed release:
+renewal probabilities, months vacant, market-rent resets, and tenant-improvement /
+leasing-commission cash timing and amortization need explicit deterministic rules
+and fixtures. A future module could produce period-indexed schedules.
+[RFC 0041](./docs/rfcs/0041-period-indexed-addressing.md), still a draft, addresses
+period lookup over existing series; it is not a lease-rollover engine. The shipped
+[lease-up schedule](./docs/rfcs/0008-lease-up-modeling.md) likewise does not establish
+that broader modeling contract.
 
 ## Pre-public-flip checklist
 
