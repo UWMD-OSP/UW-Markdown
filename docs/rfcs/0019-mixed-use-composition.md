@@ -22,7 +22,23 @@ affects:
 > conformance fixtures have all shipped. Component-level debt is explicitly out
 > of scope and tracked in RFC 0026.
 
-## Summary
+## Scope clarification (2026-09-11)
+
+The implemented feature is **multi-component container aggregation**: named
+component slots feed one property-level pack. The AST constraints below explain
+that representation choice; they do not define the scope of lease modeling or
+establish Argus parity.
+
+Speculative lease rollover is a separate modeling problem: renewal probabilities,
+vacancy between leases, market-rent resets, and tenant-improvement/leasing-commission
+cash timing and amortization need their own deterministic contract. A future
+leasing module could expose period-indexed schedules, using
+[RFC 0041](0041-period-indexed-addressing.md) if it is accepted. RFC 0041 currently
+proposes addressing existing period series; it neither implements nor specifies
+those leasing calculations. This clarification does not extend RFC 0019's
+accepted scope.
+
+## Summary (original proposal)
 
 `mixed_use` is the last member of the `AssetClass` union without a calc pack, and
 it is the only one that does not describe a single kind of building. A mixed-use

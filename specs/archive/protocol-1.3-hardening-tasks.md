@@ -1,15 +1,14 @@
-# Active Task Matrix
+# Completed Task Matrix — Protocol 1.3 Hardening
 
-Derived from [`SPEC.md`](SPEC.md). One unchecked item is in flight at a time; an
+Derived from [the original contract](protocol-1.3-hardening.md). One unchecked item is in flight at a time; an
 item is checked off only after the deterministic gates pass and the change is
-committed. Reconciled against the working tree on 2026-08-15 — items marked done
+committed. Reconciled against current main on 2026-09-11 — items marked done
 were verified present, not assumed.
 
 ## Stage 1: Protocol 1.3.0 bump & PR #38 finalization — **merged**
 
 Landed on `main` via PR #38 (`6758251`), followed by the 1.2.0 release cut in
-PR #43 (`4c3b101`). Only the Task 1.2 engine-identity item below is still open;
-it moved to its own follow-up because the merge was already green without it.
+PR #43 (`4c3b101`). Task 1.2 landed in its own follow-up; it is complete.
 
 
 - [x] **Task 1.1: Bump protocol version** — `d174014`
@@ -22,7 +21,7 @@ it moved to its own follow-up because the merge was already green without it.
     `engineMatches` had compared `engine_version` alone, so two different
     engines sharing a version string came back `failed` instead of
     `unverifiable`. Receipt spec §5.1/§5.3/§5.4 restated to match.
-    On `fix/receipt-engine-identity`, awaiting PR.
+    Landed on main; the earlier branch/PR note is historical.
 - [x] **Task 1.3: Normative spec & errata documentation** — `d174014`, `1d40011`
   - IRR bracket `[-0.999, 10.0]` documented in `spec/UW_PROTOCOL_v1.md` §VIII.3.
   - `CHANGELOG.md` carries the `round(1.005, 2)` half-away-from-zero errata note.
@@ -89,11 +88,8 @@ it moved to its own follow-up because the merge was already green without it.
     iterations, with the bracket and its 200-iteration bisection as *fallback*.
     That is why `irr(-1, 20)` returns `18.999…` — 1900%, from an engine whose
     spec says it searches to 1000%.
-  - **Remaining is governance, not authorship:** open the PR and accept it. An
-    RFC is accepted by a human, not merged by a builder.
-- [ ] **Task 4.2: Update security alias**
-  - `SECURITY.md:5` currently reads `team@uwmd.org`; change to
-    `security@uwmd.org`. Check `CONTRIBUTING.md`, `GOVERNANCE.md`,
-    `MAINTAINERS.md`, and `docs/` for the same address.
-  - **Confirm with the human partner that the alias is live** before publishing
-    it — an unrouted security address silently drops vulnerability reports.
+  - Accepted in `6ebf0f6`; implementation landed in `dc914d7` (PR #49).
+- [x] **Task 4.2: Update security alias** — `58dd581`
+  - `SECURITY.md` uses `security@uwmd.org`. The commit records that the alias
+    was confirmed live before publishing it. Historical changelog contact
+    addresses remain history; current mailbox delivery was not re-tested.

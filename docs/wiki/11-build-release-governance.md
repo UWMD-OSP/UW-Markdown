@@ -23,7 +23,7 @@ Script | Does
 `npm run verify-packages` | `scripts/verify-packages.mjs` — what `npm pack` would actually ship
 `npm run verify-lockfile` | `scripts/verify-lockfile.mjs` — every `@uwmd/*` reference links to this tree, and cross-package pins match declared versions
 `npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest and the `protocol.ts` constants
-`npm run verify-indexes` | `scripts/verify-indexes.mjs` — the schema table and the RFC copy list match the files on disk
+`npm run verify-indexes` | `scripts/verify-indexes.mjs` — the schema/RFC indexes match files on disk; tests cover automatic RFC discovery and site version metadata
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run
@@ -33,15 +33,15 @@ Script | Does
 ## Versioning (semver-per-surface)
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
-- **Format** — `FORMAT_VERSION` in `protocol.ts` (1.1) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (1.5.0). A test in
+- **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.6.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
   stale through the 1.4.0 release; `verify-versions` now covers every row.
-- **Packages** — each `package.json` (`@uwmd/core` 1.5.0, `@uwmd/cli` 1.5.0,
-  `@uwmd/excel` 0.4.0, `@uwmd/report` 0.4.0, `@uwmd/batch` 0.3.0). Dependents pin
-  `@uwmd/*` to an exact version, so a core bump is a repin of all of them in the
+- **Packages** — each `package.json`; consult the current matrix rather than
+  assuming every package has core's version. Dependents pin `@uwmd/*` to an exact
+  version, so a core bump is a repin of all of them in the
   same change — `npm run verify-lockfile` fails if one is forgotten. Because the
   pin is exact, every dependent must also take its own version bump: a
   republished `0.2.0` carrying a different pin is not something npm allows, so
@@ -120,13 +120,11 @@ post-v1.0 plan is
   conformance contract.** That includes most things this wiki's recipes touch when
   they alter behavior: new sections, new validation codes that change conformance,
   new calc semantics, new asset classes.
-- RFCs live in [`docs/rfcs/`](../../docs/rfcs/), numbered, from
-  `0000-template.md`. Open drafts cover locale negotiation (0001), module signing
-  (0002), custom asset classes (0003), conformance runner v2 (0004), stochastic
-  calcs (0005), hospitality module (0006), sensitivity tables (0007), lease-up
-  modeling (0008), `_meta` v2 reorg (0009), signed blocks (0010), capability
-  tokens (0011), corpus retrieval (0013), and the post-v1.0 machine-interchange
-  train (0014).
+- RFCs live in [`docs/rfcs/`](../rfcs/), numbered from `0000-template.md`.
+  Read the index and each RFC's status before treating it as future work:
+  signing (0002/0010), capability tokens (0011), iterative determinism (0024),
+  calendar math (0034), and distribution waterfalls (0035/0036) are implemented.
+  RFC 0041 (period-indexed addressing) remains a draft.
 - Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).

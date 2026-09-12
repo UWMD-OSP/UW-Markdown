@@ -8,26 +8,16 @@
 //      unlisted. The README is published, so an unlisted schema is one an
 //      adopter cannot find; a listed-but-absent one is a dead link on the site.
 //
-//   2. The RFC copy list in `tools/docs-site/scripts/prebuild.mjs`. The index
-//      table in `docs/rfcs/README.md` is copied to the site and links every
-//      row, so an RFC listed there but missing from the copy list is a dead
-//      link and VitePress fails the build. That is exactly how RFC 0025 broke
-//      main's deploys for three merges.
-//
-// Both failures are silent at the point of the mistake and expensive later,
-// which is the case for a cheap check rather than a convention.
-//
-// Direction matters, and the two are not symmetric:
-//   - listed but absent  → always a failure (dead link)
-//   - present but unlisted → a failure for schemas (undiscoverable), and
-//     tolerated for the RFC copy list, where an extra copied file is just an
-//     orphan page (0000-template.md is deliberately one).
+//   2. The RFC index links must name files in the dynamically discovered
+//      docs-site copy plan. New Markdown files are copied automatically;
+//      unindexed RFCs are reported as orphan pages without failing.
 //
 // Run: npm run verify-indexes
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { rfcCopies } from './docs-site-sources.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -72,24 +62,20 @@ if (schemaFiles.length > 0) {
 // ── 2. The RFC copy list ─────────────────────────────────────────────────────
 
 const RFC_INDEX = 'docs/rfcs/README.md';
-const PREBUILD = 'tools/docs-site/scripts/prebuild.mjs';
 const rfcIndex = read(RFC_INDEX);
-const prebuild = read(PREBUILD);
 
 // Every RFC the index table links. Table rows start `| [0021](./0021-....md)`.
 const linkedRfcs = [
   ...rfcIndex.matchAll(/^\|\s*\[\d{4}\]\(\.\/(\d{4}-[a-z0-9-]+\.md)\)/gm),
 ].map((m) => m[1]);
 
-// Every RFC prebuild copies into the site.
-const copiedRfcs = new Set(
-  [...prebuild.matchAll(/from:\s*'docs\/rfcs\/(\d{4}-[a-z0-9-]+\.md)'/g)].map((m) => m[1]),
-);
+// Use the same discovery as prebuild, preserving index/template routing.
+const copiedRfcs = new Set(rfcCopies(root).map((copy) => copy.from.slice('docs/rfcs/'.length)));
 
 for (const rfc of linkedRfcs) {
   if (!copiedRfcs.has(rfc)) {
     failures.push(
-      `${PREBUILD}: ${RFC_INDEX} links ${rfc} but it is not in the copy list — the generated index will dead-link and the site build will fail.`,
+      `${RFC_INDEX} links ${rfc} but it is not in the discovered copy plan — the generated index will dead-link and the site build will fail.`,
     );
   }
   if (!existsSync(resolve(root, 'docs/rfcs', rfc))) {
@@ -97,12 +83,12 @@ for (const rfc of linkedRfcs) {
   }
 }
 if (linkedRfcs.length > 0) {
-  checks.push(`${linkedRfcs.length} RFCs linked from ${RFC_INDEX} are all in the copy list`);
+  checks.push(`${linkedRfcs.length} RFCs linked from ${RFC_INDEX} are all discovered for the site`);
 }
 
 // A copied-but-unlinked RFC is an orphan page, not a break — 0000-template.md
 // is deliberately one — so it is reported without failing.
-const orphans = [...copiedRfcs].filter((r) => !linkedRfcs.includes(r) && r !== '0000-template.md');
+const orphans = [...copiedRfcs].filter((r) => !linkedRfcs.includes(r) && r !== '0000-template.md' && r !== 'README.md');
 if (orphans.length > 0) {
   checks.push(`note: copied but not linked from the index table: ${orphans.join(', ')}`);
 }

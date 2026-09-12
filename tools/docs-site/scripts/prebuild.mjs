@@ -10,6 +10,7 @@ import { mkdir, copyFile, readFile, writeFile, rm, readdir, stat } from 'node:fs
 import { existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { rfcCopies, docsVersions } from '../../../scripts/docs-site-sources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
@@ -29,11 +30,12 @@ if (process.argv.includes('--clean')) {
 // ─── Copy plan ────────────────────────────────────────────────────────────────
 // Each entry: { from: repo-relative path, to: site-relative path, transform?: fn }
 
+const versions = docsVersions(REPO_ROOT);
 const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
   { from: 'spec/UW_FORMAT_SPEC_v2.md',   to: 'spec/format-v2.md', title: 'UW Format Specification (v2.0)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: 'UW Protocol Specification (2.3.0)' },
+  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: `UW Protocol Specification (${versions.protocol})` },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
   { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
@@ -73,54 +75,8 @@ const COPIES = [
   { from: 'docs/UW_RECEIPTS.md',     to: 'guide/receipts.md',     title: 'Verification receipts' },
   { from: 'docs/DATA_LAKE.md',       to: 'guide/data-lake.md',    title: 'UW Markdown → data lake' },
 
-  // RFCs
-  { from: 'docs/rfcs/README.md',       to: 'about/rfcs/index.md', title: 'RFC Process' },
-  { from: 'docs/rfcs/0000-template.md', to: 'about/rfcs/template.md', title: 'RFC Template' },
-  { from: 'docs/rfcs/0001-locale-negotiation.md',     to: 'about/rfcs/0001-locale-negotiation.md' },
-  { from: 'docs/rfcs/0002-module-signing.md',         to: 'about/rfcs/0002-module-signing.md' },
-  { from: 'docs/rfcs/0003-module-asset-classes.md',   to: 'about/rfcs/0003-module-asset-classes.md' },
-  { from: 'docs/rfcs/0004-conformance-runner-v2.md',  to: 'about/rfcs/0004-conformance-runner-v2.md' },
-  { from: 'docs/rfcs/0005-stochastic-calculations.md', to: 'about/rfcs/0005-stochastic-calculations.md' },
-  { from: 'docs/rfcs/0006-hospitality-module.md',     to: 'about/rfcs/0006-hospitality-module.md' },
-  { from: 'docs/rfcs/0007-sensitivity-tables.md',     to: 'about/rfcs/0007-sensitivity-tables.md' },
-  { from: 'docs/rfcs/0008-lease-up-modeling.md',      to: 'about/rfcs/0008-lease-up-modeling.md' },
-  { from: 'docs/rfcs/0009-meta-v2-reorg.md',          to: 'about/rfcs/0009-meta-v2-reorg.md' },
-  { from: 'docs/rfcs/0010-signed-blocks.md',          to: 'about/rfcs/0010-signed-blocks.md' },
-  { from: 'docs/rfcs/0011-capability-tokens.md',      to: 'about/rfcs/0011-capability-tokens.md' },
-  { from: 'docs/rfcs/0013-corpus-retrieval.md',       to: 'about/rfcs/0013-corpus-retrieval.md' },
-  { from: 'docs/rfcs/0014-multi-format-interchange.md', to: 'about/rfcs/0014-multi-format-interchange.md' },
-  { from: 'docs/rfcs/0015-portfolio-relationships.md', to: 'about/rfcs/0015-portfolio-relationships.md' },
-  { from: 'docs/rfcs/0016-verification-receipts.md',  to: 'about/rfcs/0016-verification-receipts.md' },
-  { from: 'docs/rfcs/0017-uw-lite-source-representation.md', to: 'about/rfcs/0017-uw-lite-source-representation.md' },
-  { from: 'docs/rfcs/0018-document-profiles-and-deal-packages.md', to: 'about/rfcs/0018-document-profiles-and-deal-packages.md' },
-  { from: 'docs/rfcs/0019-mixed-use-composition.md', to: 'about/rfcs/0019-mixed-use-composition.md' },
-  { from: 'docs/rfcs/0020-uwx-terminology-alignment.md', to: 'about/rfcs/0020-uwx-terminology-alignment.md' },
-  // Keep in step with the index table in docs/rfcs/README.md — that file is
-  // copied to about/rfcs/index.md and links every row, so an RFC listed there
-  // but missing here is a dead link and VitePress fails the build.
-  // `npm run verify-indexes` now enforces this; RFC 0025 broke main's deploys
-  // for three merges before it did.
-  { from: 'docs/rfcs/0021-composable-documents.md', to: 'about/rfcs/0021-composable-documents.md' },
-  { from: 'docs/rfcs/0022-market-data-documents.md', to: 'about/rfcs/0022-market-data-documents.md' },
-  { from: 'docs/rfcs/0023-numeric-determinism.md', to: 'about/rfcs/0023-numeric-determinism.md' },
-  { from: 'docs/rfcs/0024-iterative-function-determinism.md', to: 'about/rfcs/0024-iterative-function-determinism.md' },
-  { from: 'docs/rfcs/0025-lite-percent-decimal-exactness.md', to: 'about/rfcs/0025-lite-percent-decimal-exactness.md' },
-  { from: 'docs/rfcs/0026-capital-stack.md', to: 'about/rfcs/0026-capital-stack.md' },
-  { from: 'docs/rfcs/0027-asset-class-size-intensives.md', to: 'about/rfcs/0027-asset-class-size-intensives.md' },
-  { from: 'docs/rfcs/0028-reportable-section-readiness.md', to: 'about/rfcs/0028-reportable-section-readiness.md' },
-  { from: 'docs/rfcs/0029-class-aware-stage-requirements.md', to: 'about/rfcs/0029-class-aware-stage-requirements.md' },
-  { from: 'docs/rfcs/0030-conformance-profiles.md', to: 'about/rfcs/0030-conformance-profiles.md' },
-  { from: 'docs/rfcs/0031-source-vocabulary.md', to: 'about/rfcs/0031-source-vocabulary.md' },
-  { from: 'docs/rfcs/0032-provisional-signing-scope.md', to: 'about/rfcs/0032-provisional-signing-scope.md' },
-  { from: 'docs/rfcs/0033-capital-stack-point-in-time.md', to: 'about/rfcs/0033-capital-stack-point-in-time.md' },
-  { from: 'docs/rfcs/0034-calendar-anchored-cash-flows.md', to: 'about/rfcs/0034-calendar-anchored-cash-flows.md' },
-  { from: 'docs/rfcs/0035-distribution-waterfall.md', to: 'about/rfcs/0035-distribution-waterfall.md' },
-  { from: 'docs/rfcs/0036-waterfall-irr-hurdles.md', to: 'about/rfcs/0036-waterfall-irr-hurdles.md' },
-  { from: 'docs/rfcs/0037-cross-check-variant-resolution-and-coverage.md', to: 'about/rfcs/0037-cross-check-variant-resolution-and-coverage.md' },
-  { from: 'docs/rfcs/0038-return-metric-tax-basis.md', to: 'about/rfcs/0038-return-metric-tax-basis.md' },
-  { from: 'docs/rfcs/0039-data-center-module.md', to: 'about/rfcs/0039-data-center-module.md' },
-  { from: 'docs/rfcs/0040-variant-role-resolution.md', to: 'about/rfcs/0040-variant-role-resolution.md' },
-  { from: 'docs/rfcs/0041-period-indexed-addressing.md', to: 'about/rfcs/0041-period-indexed-addressing.md' },
+  // Discover every docs/rfcs/*.md file, including new drafts.
+  ...rfcCopies(REPO_ROOT),
   { from: 'docs/releases/1.1-plus-interchange-plan.md', to: 'about/releases/1.1-plus-interchange.md', title: '1.1+ Interchange Release Plan' },
 ];
 
@@ -321,3 +277,7 @@ for (const c of COPIES) {
 }
 
 console.log(`\nCopied ${count} files.`);
+
+// The release card uses the same source constants as the generated spec title.
+await mkdir(join(SITE_ROOT, 'about'), { recursive: true });
+await writeFile(join(SITE_ROOT, 'about/versions.json'), JSON.stringify(versions), 'utf8');

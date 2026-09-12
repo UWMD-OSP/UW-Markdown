@@ -32,9 +32,16 @@ npm run preview   # serve the built site locally
 Edit the source files at the repo root. Re-run `npm run dev` (or just save
 in dev mode — the prebuild step runs again automatically when you restart).
 
-To add a new page, edit:
-1. `scripts/prebuild.mjs` — add a `COPIES` entry.
-2. `.vitepress/config.ts` — add it to `nav` or `sidebar`.
+Every `docs/rfcs/*.md` file is discovered automatically in sorted order, including
+new drafts. `README.md` becomes the RFC index and `0000-template.md` keeps its
+template URL. Add the RFC to `docs/rfcs/README.md` so readers can find it; no
+prebuild edit is needed. `npm run verify-indexes` checks linked files and tests
+discovery of a future RFC. RFC status banners still come from frontmatter.
+
+For other new pages, add a `COPIES` entry in `scripts/prebuild.mjs` and a nav or
+sidebar entry in `.vitepress/config.ts`. The home release card, protocol sidebar
+label, and generated protocol title read the package manifest and protocol
+constants through `scripts/docs-site-sources.mjs`; they do not carry version pins.
 
 ## Deploy
 

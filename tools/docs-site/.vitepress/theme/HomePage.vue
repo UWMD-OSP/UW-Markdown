@@ -1,3 +1,7 @@
+<script setup>
+import versions from '../../about/versions.json';
+</script>
+
 <template>
   <main class="uw-home">
     <section class="uw-hero" aria-labelledby="uw-home-title">
@@ -7,7 +11,7 @@
         <p class="uw-lede">AI-ready. Deterministically computed. Verifiable to the digit.</p>
         <p class="uw-intro">UW Markdown gives AI agents, calculation engines, internal platforms, and any compatible editor one stable underwriting record to exchange and extend. AI never does the financial math: every NOI, DSCR, IRR, and waterfall split is recomputed by deterministic engines, attested by verification receipts, and portable into any data lake.</p>
         <nav class="uw-actions" aria-label="Get started">
-          <a class="uw-button uw-button-primary" href="/spec/protocol">Explore the protocol</a>
+          <a class="uw-button uw-button-primary" href="/tutorials/your-first-uwmd-file">Create and validate a file</a>
           <a class="uw-button" href="/ai/">Build with AI and code</a>
           <a class="uw-text-link" href="https://github.com/UWMD-OSP/UW-Markdown">Source on GitHub <span aria-hidden="true">→</span></a>
         </nav>
@@ -19,11 +23,10 @@
           <span class="uw-status uw-status-valid">ACTIVE</span>
         </div>
         <dl>
-          <div><dt>Format</dt><dd><code>v2.0</code></dd></div>
-          <div><dt>Protocol</dt><dd><code>v2.3.0</code></dd></div>
-          <div><dt>Core</dt><dd><code>v2.3.0</code></dd></div>
+          <div><dt>Format</dt><dd><code>v{{ versions.format }}</code></dd></div>
+          <div><dt>Protocol</dt><dd><code>v{{ versions.protocol }}</code></dd></div>
+          <div><dt>Core</dt><dd><code>v{{ versions.core }}</code></dd></div>
           <div><dt>License</dt><dd>MIT</dd></div>
-          <div><dt>Updated</dt><dd><time datetime="2026-09-03">2026-09-03</time></dd></div>
         </dl>
         <p>Source is public. The core library, CLI, signing companion, and batch indexer are published on npm.</p>
         <a href="/about/versions">Version matrix</a>
@@ -119,7 +122,7 @@ fees use the new agreement at 5.5% of EGI.
         </div>
       </div>
       <div class="uw-capability-grid">
-        <article><span class="uw-index">01</span><h3>Code-native</h3><p>Typed sections, schemas, and a 377-assertion conformance corpus make the record dependable software input.</p></article>
+        <article><span class="uw-index">01</span><h3>Code-native</h3><p>Typed sections, schemas, and an executable conformance corpus make the record dependable software input.</p></article>
         <article><span class="uw-index">02</span><h3>AI-ready</h3><p>Agents extract data and write narrative against one shared contract — and never do the financial math.</p></article>
         <article><span class="uw-index">03</span><h3>Verifiable</h3><p>Capital stacks, cash-flow series, and waterfalls are stated in the document and recomputed in full — verifiers never trust the stated numbers. Receipts and signatures carry the proof.</p></article>
         <article><span class="uw-index">04</span><h3>Interoperable</h3><p>The same record loads in any compatible platform, converts to JSON, XML, and CSV, and flattens straight into a data lake.</p></article>
@@ -150,10 +153,10 @@ fees use the new agreement at 5.5% of EGI.
         </div>
       </div>
       <div class="uw-link-list">
-        <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a .uw.md file</small></span><code>v2.0</code></a>
-        <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calc hosts, and agents</small></span><code>v2.3.0</code></a>
-        <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixtures that prove implementation behavior</small></span><code>377 assertions</code></a>
-        <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, verify, convert, and render</small></span><code>v2.3.0 · npm</code></a>
+        <a href="/spec/format-v2"><span><strong>Format specification</strong><small>Normative structure of a .uw.md file</small></span><code>v{{ versions.format }}</code></a>
+        <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calc hosts, and agents</small></span><code>v{{ versions.protocol }}</code></a>
+        <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixtures that prove implementation behavior</small></span><code>Conformance tests</code></a>
+        <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, verify, convert, and render</small></span><code>v{{ versions.core }} · npm</code></a>
         <a href="/guide/data-lake"><span><strong>Data-lake on-ramp</strong><small>Deals to DuckDB with digests and receipts intact</small></span><code>guide</code></a>
         <a href="/viewer/"><span><strong>Reference viewer</strong><small>Read a file locally in a browser</small></span><code>Tier 1</code></a>
         <a href="https://www.uwmd.org/editor/"><span><strong>Reference editor</strong><small>Edit, validate, calculate, diff, and export</small></span><code>public preview</code></a>

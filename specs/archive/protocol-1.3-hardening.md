@@ -1,6 +1,11 @@
 # Specification: Protocol 1.3.0 Finalization & Core Engine Hardening
 
-Status: **active** · Opened 2026-08-15 · Stage 1 merged (PR #38, release PR #43)
+Status: **completed; historical contract** · Opened 2026-08-15 · Reconciled 2026-09-11
+
+The version targets below describe the original work, not current releases.
+RFC 0024 was accepted in `6ebf0f6` and implemented in `dc914d7`; test
+typechecking landed in `10bbc2d` / `6bae5b8`; the security alias landed in
+`58dd581`, which records it was confirmed live before publication.
 
 ## 1. Context & scope
 
@@ -9,7 +14,7 @@ the quantization boundary) and executes the immediate follow-up hardening across
 sandbox security, dependency decoupling, and CI validation.
 
 Much of the work described here landed on feature branches before this spec was
-written down. The task matrix in [`TASKS.md`](TASKS.md) records what is already
+written down. The task matrix in [task matrix](protocol-1.3-hardening-tasks.md) records what is already
 true and what remains; treat the matrix, not this section, as the state of play.
 
 ## 2. Technical contracts & decisions
@@ -57,8 +62,8 @@ true and what remains; treat the matrix, not this section, as the state of play.
 - [x] Coverage excludes the re-export barrels, and the floor is green again.
 - [x] RFC 0024 exists in `docs/rfcs/` with its numerics pinned (acceptance is a
       separate governance step).
-- [ ] Security contact is `security@uwmd.org` — blocked on confirming the alias
-      is live and routed.
+- [x] Security contact is `security@uwmd.org` — `58dd581`; confirmed live
+      before publication according to the commit record.
 
 ## 5. Verification gate
 
