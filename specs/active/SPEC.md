@@ -1,8 +1,8 @@
 # Active specification
 
-No implementation stage is in flight. Release 2.7.0 preparation is committed
-as `33a3be7` and submitted in [PR #180](https://github.com/UWMD-OSP/UW-Markdown/pull/180).
-See the [completed preparation contract](../archive/release-2.7.0-preparation.md).
-
-RFCs 0040 and 0041 are merged into main. The release PR remains separate from
-tagging and npm publication; check its review and CI status before proceeding.
+No implementation stage is in flight. Release 2.7.0 is defined by
+[PR #180](https://github.com/UWMD-OSP/UW-Markdown/pull/180) and tag `v2.7.0`.
+The owner authorized finalization, merge, tagging and publication on 2026-09-12.
+The [preparation contract](../archive/release-2.7.0-preparation.md) records scope
+and local verification. Publication results are recorded by the release workflow
+and the GitHub release. Reconcile those external results before another release.

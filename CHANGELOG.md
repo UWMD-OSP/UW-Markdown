@@ -6,17 +6,18 @@ documented here. The format is based on [Keep a Changelog](https://keepachangelo
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
 
-## [2.7.0] - Unreleased
+## [2.7.0] - 2026-09-12
 
-### Prepared release
+### Released
 
 - Core and CLI **2.7.0** package the merged RFC 0040 and RFC 0041 features.
   Protocol stays **2.8.0**; Format stays **2.0**. Package 2.7.0 and Protocol
-  2.8.0 are independent version streams, not a missing package release.
+  2.8.0 are independent version streams.
 - Exact-pin updates: signing **0.2.11**, batch **0.8.6**; unpublished
   excel/report **0.8.11**. The two unpublished modules retain **0.1.0**.
   Receipt engine labels advance to 2.7.0; calculation digests are unchanged.
-- This is release preparation. No v2.7.0 tag or npm publication is claimed.
+- Release tag: `v2.7.0`. The tag invokes the existing trusted-publishing
+  workflow for core, CLI, signing and batch.
 
 ### Added
 
