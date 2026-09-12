@@ -1,6 +1,9 @@
-# Next stage — RFC 0041 period addressing
+# Historical plan — RFC 0041 period addressing
 
-Baseline: RFC 0040 implementation on PR #178, Protocol 2.7.0. Reconcile the
+Completed 2026-09-12 in `f2204bd`, submitted as PR #179. This preserved plan is
+not a queued task. See the [completion record](archive/rfc-0041-period-addressing.md).
+
+Original planning baseline: RFC 0040 implementation on PR #178, Protocol 2.7.0. Reconcile the
 merged head before starting. This is the next-stage contract. RFC 0040 is implemented and submitted
 for review; reconcile its merge result before starting the next implementation.
 

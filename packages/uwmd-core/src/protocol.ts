@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.7.0' as const;
+export const PROTOCOL_VERSION = '2.8.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -983,7 +983,35 @@ export interface IssueRemediation {
  * Variables made available to a custom_calculation expression. The host
  * resolves `parsed` paths via parser.deepGet semantics.
  */
+/** Exact period identity; holding years and calendar identities never convert implicitly. */
+export type PeriodKey =
+  | { kind: 'year'; index: number }
+  | { kind: 'quarter'; year: number; quarter: number }
+  | { kind: 'month'; year: number; month: number }
+  | { kind: 'date'; date: string };
+
+export interface PeriodSeriesEntry {
+  readonly path: string;
+  readonly shape: 'rows' | 'keyed';
+  readonly period_field?: string;
+  readonly key_pattern?: string;
+  readonly grammar: 'year_index' | 'calendar_period' | 'iso_date';
+  readonly cadence_field?: string;
+  readonly spec_ref: string;
+}
+
+/** Standard registry only; module-defined series are deferred (RFC 0041). */
+export const PERIOD_SERIES: readonly PeriodSeriesEntry[] = Object.freeze([
+  Object.freeze({ path: 'dcf.annual_cash_flows', shape: 'rows', period_field: 'year', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.9' } as const),
+  Object.freeze({ path: 'noi_model.projections', shape: 'keyed', key_pattern: '^year_(\\d+)$', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.5' } as const),
+  Object.freeze({ path: 'lease_up_schedule.schedule', shape: 'rows', period_field: 'period', grammar: 'calendar_period', cadence_field: 'period_granularity', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.25' } as const),
+  Object.freeze({ path: 'cash_flow_series.series', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.26' } as const),
+  Object.freeze({ path: 'distribution_waterfall.stated_schedule', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.27' } as const),
+]);
+
 export interface CalcEvaluationContext {
+  /** Exact section variants for period references only; no fallback when supplied. */
+  sectionVariants?: Readonly<Record<string, string>>;
   parsed: ParsedUWFile;
   /** Result map of previously-evaluated calculations in the same batch. */
   prior_results: Readonly<Record<string, number | string | boolean | null>>;
@@ -1951,6 +1979,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
   { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
+  { prefix: 'PS', description: 'Period series identity (RFC 0041)', capabilities: ['validate'] },
   { prefix: 'ROLE', description: 'Signed block role (RFC 0040)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
   {
@@ -2140,6 +2169,24 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The lease_up_schedule base variant\'s stabilized_summary.annualized_noi is more than LEASE_UP_STABILIZED_TOLERANCE (2%) away from noi_model.net_operating_income.',
     remediation: 'Reconcile the trajectory endpoint with the stabilized-year model, or document why they diverge. The 2% tolerance is deliberate — the two are independent models of stabilization and exact agreement is not the goal (RFC 0008).',
     spec_ref: '§5.3 CC-15',
+  },
+  {
+    code: 'PS-01', severity: 'warning', title: 'Malformed period series',
+    description: 'A registered series has an invalid shape or period identity.',
+    remediation: 'State valid periods in the registered grammar; do not infer dates or years.',
+    spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
+  },
+  {
+    code: 'PS-02', severity: 'error', title: 'Duplicate period identity',
+    description: 'A registered series states the same canonical period more than once.',
+    remediation: 'Resolve the duplicate statements with the responsible producer; do not choose by row order.',
+    spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
+  },
+  {
+    code: 'PS-03', severity: 'warning', title: 'Period kind mismatch',
+    description: 'A static selector uses a different period kind from its registered series.',
+    remediation: 'Use the series period kind; calendar dates and holding years do not convert implicitly.',
+    spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
   },
   {
     code: 'ROLE-01', severity: 'error', title: 'Invalid block role',

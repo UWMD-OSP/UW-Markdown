@@ -1,0 +1,6 @@
+{
+  "id": "period_05_missing",
+  "label": "period-05-missing",
+  "formula": "dcf.annual_cash_flows@Y2.noi",
+  "deterministic": true
+}

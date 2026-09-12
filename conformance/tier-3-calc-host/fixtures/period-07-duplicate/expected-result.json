@@ -1,0 +1,9 @@
+{
+  "calc_id": "period_07_duplicate",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-PERIOD-002",
+    "category": "calc"
+  }
+}

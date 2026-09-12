@@ -1,0 +1,6 @@
+{
+  "id": "period_07_duplicate",
+  "label": "period-07-duplicate",
+  "formula": "dcf.annual_cash_flows@Y3.noi",
+  "deterministic": true
+}

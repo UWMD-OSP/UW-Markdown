@@ -33,7 +33,10 @@ export type CalcErrorCode =
   // `CALC-CF-SERIES` refuses a DECLARATION naming a missing, malformed, or
   // wrong-variant series, raised before any arithmetic runs.
   | 'CALC-XIRR-DIVERGE'
-  | 'CALC-CF-SERIES';
+  | 'CALC-CF-SERIES'
+  | 'CALC-PERIOD-001'
+  | 'CALC-PERIOD-002'
+  | 'CALC-PERIOD-003';
 
 export function calcError(code: CalcErrorCode, message: string, pointer?: string): ProtocolError {
   return {

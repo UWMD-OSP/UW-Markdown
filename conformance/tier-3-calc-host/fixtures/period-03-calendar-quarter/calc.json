@@ -1,0 +1,6 @@
+{
+  "id": "period_03_calendar_quarter",
+  "label": "period-03-calendar-quarter",
+  "formula": "lease_up_schedule.schedule@2028-Q1.noi",
+  "deterministic": true
+}

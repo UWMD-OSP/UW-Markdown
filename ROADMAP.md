@@ -152,7 +152,7 @@ context. This list is the maintainable copy.
 | [0038](./docs/rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (released in 2.5.0). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
 | [0039](./docs/rfcs/0039-data-center-module.md) | ✅ Data-center module | **Shipped 2026-09-09** (released in 2.6.1). `@uwmd/module-data-center` 0.1.0: the first product module on a module-declared class (`org.uwmd.data_center`, fallback `industrial`), three kW-denominated sections, eleven calcs, seven validations, `examples/Mesa-Gateway-…`, `conformance/modules/runtime/06–11`. RFC 0003 generalizes: module formulas read the standard sections unchanged (the per-kW price and NOI calcs ship), and the one gap found — a declaring module was not scoped to its declared class — is fixed in `module-runtime.ts`. No spec change. |
 | [0040](./docs/rfcs/0040-variant-role-resolution.md) | ✅ Variant roles | **Accepted 2026-09-11.** Signed block-level `_role`, role-aware cross-checks, component exclusion, trusted-host edits and per-section coverage. Protocol 2.7.0 implementation; package release remains separate. |
-| [0041](./docs/rfcs/0041-period-indexed-addressing.md) | 📋 Period-indexed addressing | **Draft 2026-09-10.** A `@<period>` selector on dot-paths (`dcf.annual_cash_flows@Y3.net_operating_income`), a normative `PERIOD_SERIES` registry naming each per-period series' period field and grammar, and a canonical `PeriodKey` so year 3 compares across `year: 3`, `year_3`, `2028-Q1` and a date. Raised by the first production fact shredder: 592 of 2,664 facts are per-period composites with no period column. No field moves; next protocol minor after RFC 0040; exact period semantics require reconciliation. |
+| [0041](./docs/rfcs/0041-period-indexed-addressing.md) | ✅ Explicit period addressing | **Accepted 2026-09-12.** Named holding years and absolute calendar/date selectors on five standard series. Duplicate refusal, variant context and PS diagnostics; Protocol 2.8.0 implementation. Relative periods, module registration and contextual Excel emission remain deferred. |
 
 
 ## Mixed-use aggregation and speculative leasing
@@ -166,7 +166,7 @@ Speculative leasing remains a separate modeling proposal, not a committed releas
 renewal probabilities, months vacant, market-rent resets, and tenant-improvement /
 leasing-commission cash timing and amortization need explicit deterministic rules
 and fixtures. A future module could produce period-indexed schedules.
-[RFC 0041](./docs/rfcs/0041-period-indexed-addressing.md), still a draft, addresses
+[RFC 0041](./docs/rfcs/0041-period-indexed-addressing.md) addresses
 period lookup over existing series; it is not a lease-rollover engine. The shipped
 [lease-up schedule](./docs/rfcs/0008-lease-up-modeling.md) likewise does not establish
 that broader modeling contract.

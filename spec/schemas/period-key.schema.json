@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/period-key.schema.json",
+  "title": "Canonical Period Identity (RFC 0041)",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "index"
+      ],
+      "properties": {
+        "kind": {
+          "const": "year"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "year",
+        "quarter"
+      ],
+      "properties": {
+        "kind": {
+          "const": "quarter"
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "quarter": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "year",
+        "month"
+      ],
+      "properties": {
+        "kind": {
+          "const": "month"
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9999
+        },
+        "month": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "date"
+      ],
+      "properties": {
+        "kind": {
+          "const": "date"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      }
+    }
+  ]
+}

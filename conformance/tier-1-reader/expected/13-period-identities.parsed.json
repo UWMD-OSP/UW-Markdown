@@ -1,0 +1,89 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-PERIOD",
+    "deal_name": "Period Identity Fixture",
+    "created": "2026-09-09T00:00:00Z",
+    "last_modified": "2026-09-09T00:00:00Z",
+    "property_address": "16 Variant Way",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "multifamily",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "analyst",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-12T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "total_units": 100
+      }
+    },
+    "dcf": {
+      "meta": {
+        "section": "dcf",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-12T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "annual_cash_flows": [
+          {
+            "year": 1,
+            "noi": 100
+          },
+          {
+            "year": 1,
+            "noi": 101
+          },
+          {
+            "noi": 300
+          }
+        ]
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [
+    {
+      "meta": {
+        "section": "custom_calculations",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-09-12T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "id": "mismatch",
+        "formula": "dcf.annual_cash_flows@2028-01-01.noi",
+        "deterministic": true
+      }
+    }
+  ],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

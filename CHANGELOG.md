@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — RFC 0041
+
+- Protocol 2.8.0: explicit year, absolute month/quarter and date selectors on
+  the five standard period series, with contextual variants and dependency keys.
+- PS-01/02/03 diagnostics and typed evaluation refusals for malformed, duplicate
+  or unresolvable period references. Existing mathematical formulas are unchanged.
+- Excel emission and refinement perturbation explicitly decline selector nodes.
+
 ## Unreleased — RFC 0040
 
 - Protocol 2.7.0: signed block `_role` annotations, deterministic role-aware

@@ -1,0 +1,6 @@
+{
+  "id": "period_01_year_order",
+  "label": "period-01-year-order",
+  "formula": "dcf.annual_cash_flows@Y3.noi - dcf.annual_cash_flows@Y1.noi",
+  "deterministic": true
+}

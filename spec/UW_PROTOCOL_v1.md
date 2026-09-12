@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.7.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.8.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.7.0`) — the
+- **Protocol version** (this document, currently `2.8.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -558,6 +558,7 @@ capability is unconditional: every implementation owes it.
 | `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
+| `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |
 | `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
@@ -1215,7 +1216,14 @@ primary     ::= number | string | bool | null
               | identifier
               | identifier "(" arglist? ")"
               | identifier ( "." identifier | "[" string "]" )+
+              | identifier member+ "@" period_selector member*
               | "(" expr ")"
+member      ::= "." identifier | "[" string "]"
+period_selector ::= "Y" positive_integer | calendar_quarter | calendar_month | calendar_date
+positive_integer ::= [1-9][0-9]*
+calendar_quarter ::= [0-9]{4} "-Q" [1-4]
+calendar_month ::= [0-9]{4} "-" [0-9]{2}
+calendar_date ::= [0-9]{4} "-" [0-9]{2} "-" [0-9]{2}
 arglist     ::= expr ( "," expr )*
 identifier  ::= [A-Za-z_][A-Za-z0-9_]*
 number      ::= [0-9]+ ( "." [0-9]+ )?
@@ -1247,6 +1255,90 @@ Identifiers and dot-paths resolve against the
 - Dot-paths drill into nested objects.
 - A missing path resolves to `null`, not an error. Operators MUST
   propagate null as null for arithmetic (null + x → null).
+
+### VIII.2a Explicit period addressing (RFC 0041)
+
+A period reference selects by stated identity, never row position:
+`dcf.annual_cash_flows@Y3.net_operating_income`. The safe-expression grammar
+adds one `@selector` after the section-rooted path of a registered series;
+ordinary member access may follow it. Exactly one selector is allowed per
+reference. Existing expressions and bracket-string literal keys are unchanged.
+`@` inside a quoted key remains a literal character; generic `deepGet`, metadata
+pointers and other arbitrary string paths do not acquire selector semantics.
+The contextual `resolvePeriodPath(parsed, path, options?)` accepts one reference
+using this calc grammar. Numeric bracket indices are not added to that grammar;
+an existing bracket-string index such as `['0']` remains valid after a selector.
+
+Selectors and canonical `PeriodKey` identities:
+
+| Selector | Key | Constraints |
+|---|---|---|
+| `Y<n>` | `{ kind: 'year', index: n }` | positive safe integer, no leading zero |
+| `YYYY-Qn` | `{ kind: 'quarter', year, quarter: n }` | four-digit year, quarter 1–4 |
+| `YYYY-MM` | `{ kind: 'month', year, month }` | four-digit year, month 01–12 |
+| `YYYY-MM-DD` | `{ kind: 'date', date }` | valid Gregorian date under §VIII.9.1 |
+
+Different kinds never compare equally. Calendar years are absolute, including
+when a schedule begins midyear. No relative Qn/Mn, wildcard, year-of-date,
+calendar conversion, or acquisition-date inference is defined here.
+`canonicalPeriod(entry, value)` reads the registered row field or keyed period;
+`periodKeyIdentity` produces stable kind-qualified keys. Year_N object keys
+canonicalize their positive safe integer suffix, so year_01 and year_1 collide.
+
+The frozen standard `PERIOD_SERIES` registry is normative:
+
+| Path | Shape | Period | Grammar | Cadence |
+|---|---|---|---|---|
+| `dcf.annual_cash_flows` | rows | `year` | year_index | — |
+| `noi_model.projections` | keyed | `^year_(\d+)$` | year_index | — |
+| `lease_up_schedule.schedule` | rows | `period` | calendar_period | `period_granularity` |
+| `cash_flow_series.series` | rows | `date` | iso_date | — |
+| `distribution_waterfall.stated_schedule` | rows | `date` | iso_date | — |
+
+Module-defined series are deferred. A rows series is an array of objects; a
+keyed series is an object of period-keyed objects. A present calendar series
+must state monthly or quarterly cadence and every row must use that kind.
+Missing or null section/series/period resolves to null. An empty series has no
+matching period. Every present row is inspected before selection: malformed
+shape or periods refuse as `CALC-PERIOD-001`; any duplicate canonical identity
+refuses as `CALC-PERIOD-002`, even without prevalidation. A well-formed selector
+of a different kind returns null. Missing leaf values return null; calc results
+remain scalar, although the public resolver may return the selected row object.
+
+**Section context.** These references are section-rooted and do not consult
+frontmatter or prior results for the section head. If the caller supplies
+`CalcEvaluationContext.sectionVariants[section]` (also accepted by
+`PeriodResolutionOptions`), select exactly that variant, with no fallback.
+An explicitly selected component is intentional and allowed; invalid roles
+are not. Otherwise use RFC 0040's generic primary/default/base/sole selection,
+excluding components and invalid roles, with no check-specific role preference.
+Ambiguity or a missing explicitly requested variant in a present section is
+`CALC-PERIOD-003`. A missing section remains null. Own-property traversal and
+the blocked segments `constructor`, `prototype`, `__proto__` remain enforced.
+
+**Overrides and consumers.** Check a full selector-path override before reading
+document data; null is an explicit override. First validate the registry path
+and selector itself so an override cannot legitimize an invalid reference.
+Canonical keys join identifier-like leaf segments with dots and retain other
+leaf keys in bracket-string form. Dependencies use this same spelling, preserving
+period identity and distinguishing a literal dotted key from nested traversal.
+No document writes or changes to numeric quantization occur.
+
+Excel emission MUST explicitly refuse these new AST nodes with `EXCEL-EMIT-PATH`
+until contextual workbook bindings exist; a static named range must not silently
+stand for a row chosen by its current position. The reference refinement engine
+records dependencies but declines numerical perturbation of period-selector
+expressions and reports that limitation. Its general cascade is unchanged.
+
+**Validation.** Inspect all active variants of every present registered series:
+`PS-01` warning for malformed shape/row/period; `PS-02` error for each duplicate
+canonical identity. `PS-03` warns for a statically recognizable kind mismatch
+in custom calculation or scenario formula/base_formula fields under default
+section selection. When that selection is ambiguous, do not guess the cadence.
+Superseded history and arbitrary narrative strings are not reinterpreted.
+Existing LU/CF/WF structural and financial rules remain unchanged. These new
+diagnostics may expose missing period identities in older files; do not fabricate
+years or dates to clear them.
 
 ### VIII.3 Built-in functions
 

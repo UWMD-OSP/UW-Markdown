@@ -601,6 +601,14 @@ Each section entry specifies: ID, canonical header, purpose, who writes it, requ
 
 **Reference path notation:** To reference a live value from another section within custom calculations or custom scenarios, use dot-path notation: `{section_id}.{field_path}`. Array indices are supported: `dcf.annual_cash_flows[0].net_cash_flow_levered`. If the referenced value does not exist, the result is `null` and status is `awaiting_inputs`.
 
+**Explicit period references (RFC 0041 / Protocol §VIII.2a):** safe calc
+expressions and `resolvePeriodPath` can address a registered series by identity,
+for example `dcf.annual_cash_flows@Y3.net_operating_income`. Holding years,
+absolute months/quarters and dates remain distinct. Generic object paths and
+metadata pointer strings retain their existing literal-key semantics. The
+protocol defines duplicate refusal, variant context and PS-01/02/03 diagnostics.
+No field is moved and no period is inferred from row position.
+
 ---
 
 ### § 4.0 — Deal Context

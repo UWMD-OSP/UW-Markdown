@@ -1,7 +1,18 @@
 # 13 — Build status (living document)
 
+**RFC 0041 implementation (unreleased):** Protocol source is **2.8.0**.
+Explicit period selectors cover the five standard series, with absolute calendar
+identities, duplicate refusal without prevalidation, variant context and PS
+diagnostics. Excel selector emission and refinement perturbation are explicitly
+unsupported; relative Qn/Mn and module registry extensions remain deferred.
+This is a dependent feature PR on RFC 0040; no package publication is implied.
+Verified (2026-09-12): 1,782 workspace tests, 426 default conformance checks,
+76 declarative cases, build, test typechecking, 25 schemas, lint, lockfile,
+package/version/index checks and the docs build. Existing calculation digests
+are unchanged; two receipt protocol labels advance to 2.8.0.
+
 **RFC 0040 implementation (2026-09-11, unreleased):** owner-approved block-level
-`_role` is signed content. Protocol source is **2.7.0**; published packages
+`_role` is signed content. This stage introduced Protocol **2.7.0**; published packages
 remain at the versions below. Cross-checks select declared senior/detail/primary
 roles, exclude components from property reads, refuse consulted collisions,
 and report per-section selection evidence. Role-free results remain unchanged.
@@ -10,7 +21,7 @@ assign them. Verified: 1,731 workspace tests, 414 default conformance checks,
 64 declarative conformance cases, build, test typechecking, 23 schemas, lint,
 lockfile/package/version/index checks, and the docs build. Existing tier-1
 baselines are unchanged; two receipt labels now state Protocol 2.7.0 with
-unchanged calculation result digests. RFC 0041 remains the next separate stage.
+unchanged calculation result digests. RFC 0041 is implemented in the dependent stage described above.
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.
@@ -19,7 +30,8 @@ owner-led governance is active.
 Protocol **2.6.0**; package versions are independent. This pass verified the
 repository and tags, not current npm availability or production deployment.
 Calendar math (0034), waterfalls (0035/0036), signing (0002/0010), capability tokens
-(0011), and iterative determinism (0024) are implemented. RFC 0041 remains draft.
+(0011), and iterative determinism (0024) are implemented. RFC 0041 was still draft at that snapshot; its implementation
+is recorded above.
 Test typechecking is wired into CI. `SECURITY.md` uses `security@uwmd.org`;
 `58dd581` records confirmation that it was live before publication. The former
 personal-address flag and setup handoff are stale, not new launch blockers.

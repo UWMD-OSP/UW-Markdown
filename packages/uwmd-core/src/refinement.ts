@@ -18,6 +18,7 @@
 // in each input (true for all eight multifamily metrics). Diagnostics flag
 // non-monotonic ASTs.
 
+import { getPeriodReferences } from './calc/dependencies.js';
 import type { ParsedUWFile, DealStage } from './types.js';
 import type { ModuleManifest } from './protocol.js';
 import { MULTIFAMILY_PACK } from './packs/multifamily.js';
@@ -125,6 +126,7 @@ function evalNumeric(expr: Expr, env: Map<string, number>): number {
         default: return Number.NaN;
       }
     }
+    case 'period_path':
     case 'cond':
     case 'call':
       return Number.NaN;
@@ -143,6 +145,7 @@ function isMonotonic(expr: Expr): boolean {
     case 'binary':
       if (expr.op === '%') return false;
       return isMonotonic(expr.left) && isMonotonic(expr.right);
+    case 'period_path':
     case 'cond':
     case 'call':
       return false;
@@ -194,7 +197,7 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
     try { ast = parseExpression(formula); } catch { continue; }
     targetAsts.set(id, ast);
     if (!isMonotonic(ast)) {
-      nonMonotonic.push({ output_id: id, reason: 'AST contains non-monotonic op (mod / call / cond)' });
+      nonMonotonic.push({ output_id: id, reason: getPeriodReferences(ast).length ? 'Period selectors are not supported by refinement perturbation.' : 'AST contains non-monotonic op (mod / call / cond)' });
     }
   }
 
