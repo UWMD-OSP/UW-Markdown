@@ -1,7 +1,5 @@
-# Release preparation tasks
+# Active task matrix
 
-- [ ] Prepare package versions, exact pins, receipt metadata and release docs;
-  run all gates and commit. This is the single implementation stage in flight.
-- [ ] Submit the release PR, verify CI and archive the completed preparation.
-
-Tagging and npm publication are outside this task matrix.
+No implementation task is in flight. The completed release preparation and
+verification evidence are [archived](../archive/release-2.7.0-preparation.md).
+PR #180 is the review surface; tagging and publication remain separate work.
