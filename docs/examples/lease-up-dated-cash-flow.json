@@ -1,0 +1,19 @@
+{
+  "description": "Synthetic receipt/TI-LC stream; not complete property or equity cash flow.",
+  "source_document": "../../conformance/lease-up/valid-value-add-turnover/deal.uwx.md",
+  "source_variant": "base",
+  "day_count": "actual/365f",
+  "discount_rate": 0.08,
+  "bindings": [
+    {
+      "period": "2026-Q3",
+      "cash_date": "2026-09-30",
+      "stated_amount": 118475
+    },
+    {
+      "period": "2026-Q4",
+      "cash_date": "2026-12-31",
+      "stated_amount": 123425
+    }
+  ]
+}

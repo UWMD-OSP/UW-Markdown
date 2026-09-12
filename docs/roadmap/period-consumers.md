@@ -38,7 +38,11 @@ pin input/period identity, missing-value behavior and actual recalculation check
 
 ## Next development decisions
 
-Lease-up / DCF coupling still needs explicit cash-flow timing and source meaning.
+[RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) now proposes
+an explicit-date projection, supported by an [executable example](../../docs/LEASE_UP_CASH_FLOW_WORKFLOW.md).
+The adapter is not implemented; full DCF coupling still needs complete economic
+coverage and valuation-anchor rules. Lease-up net_cash_flow covers receipts,
+concessions and TI/LC, not complete property/equity cash flow.
 Speculative leasing still needs renewal, vacancy, market-reset and TI/LC rules.
 These consumers select stated data; they do not create those economic models.
 Relative Qn/Mn, currency conversion, bps precision and module-defined period

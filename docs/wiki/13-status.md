@@ -73,7 +73,7 @@ build. Only receipt protocol labels changed in the conformance baselines.
 |---|---|---|
 | Period addressing | Source refinement and explicit numeric workbook export support stated period values. No period defaults/ranges. | Review RFCs 0042/0043; reverse import, structural workbook edits and custom functions remain separate. |
 | Refinement | Marginal perturbation is approximate; stochastic VOI and stage-blocking ranking are not implemented. | Define the ranking/default contract before expanding output claims. |
-| Lease-up | Excel emission and DCF coupling remain follow-ups. | Specify schedule-to-cash-flow timing and fixtures. |
+| Lease-up | Explicit period export exists; the production dated-stream adapter and full DCF coupling remain follow-ups. | Review [RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) and its [executable example](../LEASE_UP_CASH_FLOW_WORKFLOW.md); accept the bounded mapping contract before implementation. |
 | Speculative leasing | No renewal/vacancy/market-reset/TI/LC rollover engine. | Adopter example and accepted modeling contract. |
 | Waterfalls | Clawback/crystallization, “any” combined hurdles and GP-side hurdles remain deferred. | Separate normative contract and cases. |
 | Currency and bps | Currency-code disambiguation and a dedicated bps unit remain deferred. | Demonstrated use case with explicit unit/precision semantics. |
