@@ -9,12 +9,12 @@ import type {
   StageReadiness,
   AssetClass,
   DealStage,
-  CrossCheckCoverage, CrossCheckSkipReason, ReturnTaxBasis,
+  CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, STAGE_REQUIREMENTS, requiredSectionsFor,
-  CROSS_CHECK_RULE_IDS, CROSS_CHECK_VARIANT_PREFERENCE, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
+  CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
@@ -27,6 +27,8 @@ import { isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 import { isV2File } from './meta-shape.js';
+import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
+import type { RoleResolution } from './block-roles.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
 //
@@ -141,6 +143,7 @@ export function validateUWFile(
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
+  checkBlockRoles(parsed, issues);
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
@@ -152,7 +155,8 @@ export function validateUWFile(
     const codes = [...entry.codes].sort();
     issues.push({
       code: 'CC-16', severity: 'info', section: sectionId,
-      message: `CC-16: ${sectionId} is present as ${entry.variants.length} variants (${entry.variants.join(', ')}) and none is named default or base; ${codes.join(', ')} ${codes.length === 1 ? 'was' : 'were'} skipped — name a default variant or state the section once (§5.3, RFC 0037)`,
+      ...(entry.detail ? { remediation: 'Resolve the reported role collision or declare an eligible property-level block; component blocks cannot serve as the property total.' } : {}),
+      message: entry.detail ? `CC-16: ${sectionId}: ${entry.detail}; could not resolve for ${codes.join(', ')} (§5.3, RFC 0040)` : `CC-16: ${sectionId} is present as ${entry.variants.length} variants (${entry.variants.join(', ')}) and none is named default or base; ${codes.join(', ')} ${codes.length === 1 ? 'was' : 'were'} skipped — name a default variant or state the section once (§5.3, RFC 0037)`,
       value: entry.variants,
     });
   }
@@ -329,23 +333,21 @@ function checkFinancialValidity(
 //
 // A cross-check reads each section it names as ONE block. When the section is
 // a variant map (§2.8, or any envelope section carrying several blocks), it is
-// resolved by: the check's own preference → `default` → `base` → the lone
-// variant. Anything else is UNRESOLVABLE: the check is skipped, the skip is
+// resolved by: the check's own preference → its role → primary → default
+// → base → the sole eligible variant (RFC 0040). Anything else is UNRESOLVABLE: the check is skipped, the skip is
 // recorded in coverage, and CC-16 names the section once. Never pick an
 // arbitrary variant — two senior facilities have not said which reconciles.
 
-type CrossCheckResolution =
-  | { state: 'absent'; block: null }
-  | { state: 'resolved'; block: UWBlock; variant?: string }
-  | { state: 'unresolvable'; block: null; variants: string[] };
+type CrossCheckResolution = RoleResolution;
 
 interface CoverageLedger {
   coverage: Record<string, CrossCheckCoverage>;
-  unresolvable: Map<string, { variants: string[]; codes: Set<string> }>;
+  unresolvable: Map<string, { variants: string[]; codes: Set<string>; detail?: string }>;
+  resolutions: Record<string, Record<string, CrossCheckResolutionEvidence>>;
 }
 
 function newCoverageLedger(): CoverageLedger {
-  return { coverage: {}, unresolvable: new Map() };
+  return { coverage: {}, unresolvable: new Map(), resolutions: {} };
 }
 
 function markEvaluated(ledger: CoverageLedger, code: string): void {
@@ -357,8 +359,8 @@ function markSkipped(ledger: CoverageLedger, code: string, reason: CrossCheckSki
   ledger.coverage[code] = { status: 'skipped', reason, ...(detail ? { detail } : {}) };
 }
 
-function noteUnresolvable(ledger: CoverageLedger, sectionId: string, variants: string[], code: string): void {
-  const entry = ledger.unresolvable.get(sectionId) ?? { variants, codes: new Set<string>() };
+function noteUnresolvable(ledger: CoverageLedger, sectionId: string, variants: string[], code: string, detail?: string): void {
+  const entry = ledger.unresolvable.get(sectionId) ?? { variants, codes: new Set<string>(), ...(detail ? { detail } : {}) };
   entry.codes.add(code);
   ledger.unresolvable.set(sectionId, entry);
 }
@@ -368,7 +370,7 @@ function orderedCoverage(ledger: CoverageLedger): Record<string, CrossCheckCover
   const out: Record<string, CrossCheckCoverage> = {};
   for (const code of CROSS_CHECK_RULE_IDS) {
     const entry = ledger.coverage[code];
-    if (entry) out[code] = entry;
+    if (entry) out[code] = { ...entry, ...(ledger.resolutions[code] ? { resolutions: ledger.resolutions[code] } : {}) };
   }
   return out;
 }
@@ -377,18 +379,45 @@ function resolveCrossCheckSection(
   parsed: ParsedUWFile,
   sectionId: string,
   preferred: readonly string[] = [],
+  code?: string,
+  ledger?: CoverageLedger,
 ): CrossCheckResolution {
-  const entry = parsed.sections[sectionId];
-  if (!entry) return { state: 'absent', block: null };
-  if (!isVariantMap(entry)) return { state: 'resolved', block: entry as UWBlock };
-  const map = entry as Record<string, UWBlock>;
-  for (const key of [...preferred, ...CROSS_CHECK_VARIANT_PREFERENCE]) {
-    const block = map[key];
-    if (block) return { state: 'resolved', block, variant: key };
+  const r = resolveRoleBlock(parsed.sections[sectionId], sectionId, preferred, code);
+  if (r.state === 'resolved' && r.evidence && code && ledger) {
+    ledger.resolutions[code] ??= {};
+    ledger.resolutions[code]![sectionId] = r.evidence;
   }
-  const keys = Object.keys(map);
-  if (keys.length === 1) return { state: 'resolved', block: map[keys[0]!]!, variant: keys[0] };
-  return { state: 'unresolvable', block: null, variants: keys.sort() };
+  return r;
+}
+
+/** Preserve legacy direct-read behavior unless the section opts into roles. */
+function roleAwareDirectRead(parsed: ParsedUWFile, sectionId: string, code?: string, ledger?: CoverageLedger): UWBlock | null {
+  const entry = parsed.sections[sectionId];
+  const blocks = !entry ? [] : isVariantMap(entry) ? Object.values(entry) : [entry];
+  if (!blocks.some(hasBlockRole)) return getSection(parsed, sectionId);
+  const r = resolveCrossCheckSection(parsed, sectionId, [], code, ledger);
+  if (r.state === 'unresolvable' && code && ledger) {
+    noteUnresolvable(ledger, sectionId, r.variants, code, r.detail);
+    markSkipped(ledger, code, 'variant_unresolvable', sectionId);
+  }
+  return r.block;
+}
+
+function checkBlockRoles(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const check = (section: string, block: UWBlock): void => {
+    if (hasBlockRole(block) && !isBlockRole(block.content['_role'])) issues.push({
+      code: 'ROLE-01', severity: 'error', section, field: '_role',
+      message: `ROLE-01: ${section}${block.annotation.variant ? ` variant=${block.annotation.variant}` : ''} must declare one valid scalar _role`,
+      value: block.content['_role'],
+    });
+  };
+  for (const [section, entry] of Object.entries(parsed.sections)) {
+    for (const block of isVariantMap(entry) ? Object.values(entry) : [entry]) check(section, block);
+  }
+  for (const [section, block] of Object.entries(parsed.extensions)) check(section, block);
+  for (const section of ['pipeline_log', 'custom_calculations', 'custom_scenarios'] as const) {
+    for (const block of parsed[section]) check(section, block);
+  }
 }
 
 /**
@@ -407,12 +436,12 @@ function requireSections(
   for (const need of needs) {
     const sectionId = need[0];
     const preferred = need.length > 1 ? need[1] : [];
-    const r = resolveCrossCheckSection(parsed, sectionId, preferred);
+    const r = resolveCrossCheckSection(parsed, sectionId, preferred, code, ledger);
     if (r.state === 'resolved') {
       out[sectionId] = { block: r.block, ...(r.variant ? { variant: r.variant } : {}) };
       continue;
     }
-    if (r.state === 'unresolvable') noteUnresolvable(ledger, sectionId, r.variants, code);
+    if (r.state === 'unresolvable') noteUnresolvable(ledger, sectionId, r.variants, code, r.detail);
     skip ??= { reason: r.state === 'absent' ? 'section_absent' : 'variant_unresolvable', detail: sectionId };
   }
   if (skip) {
@@ -479,10 +508,10 @@ function checkCrossSectionConsistency(
   // once and agreeing everywhere (RFC 0026 §4.24). Two legs; the rule is
   // evaluated when either leg compared.
   {
-    const su = resolveCrossCheckSection(parsed, 'sources_uses');
-    const ds = resolveCrossCheckSection(parsed, 'debt_structure');
-    if (su.state === 'unresolvable') noteUnresolvable(ledger, 'sources_uses', su.variants, 'CC-03');
-    if (ds.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', ds.variants, 'CC-03');
+    const su = resolveCrossCheckSection(parsed, 'sources_uses', [], 'CC-03', ledger);
+    const ds = resolveCrossCheckSection(parsed, 'debt_structure', [], 'CC-03', ledger);
+    if (su.state === 'unresolvable') noteUnresolvable(ledger, 'sources_uses', su.variants, 'CC-03', su.detail);
+    if (ds.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', ds.variants, 'CC-03', ds.detail);
     const suLoan = su.block ? (num(deepGet(su.block.content, 'sources.loan_amount')) ?? num(deepGet(su.block.content, 'sources.debt_proceeds'))) : undefined;
     const dsLoan = ds.block ? num(deepGet(ds.block.content, 'loan_amount')) : undefined;
     let evaluated = false;
@@ -493,7 +522,7 @@ function checkCrossSectionConsistency(
       }
     }
 
-    const senior = seniorDebtTranche(parsed);
+    const senior = seniorDebtTranche(parsed, ledger);
     if (senior) {
       const seniorAmount = num(senior['amount']);
       const reference = dsLoan ?? suLoan;
@@ -508,6 +537,7 @@ function checkCrossSectionConsistency(
     if (evaluated) markEvaluated(ledger, 'CC-03');
     else if (su.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'sources_uses');
     else if (ds.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'debt_structure');
+    else if (ledger.coverage['CC-03']?.reason === 'variant_unresolvable') { /* A role-bearing capital stack could not resolve. */ }
     else if (su.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'sources_uses');
     else if (ds.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'debt_structure');
     else markSkipped(ledger, 'CC-03', 'field_absent', suLoan == null ? 'sources_uses.sources.loan_amount' : 'debt_structure.loan_amount');
@@ -696,7 +726,12 @@ const ADMISSIBLE_COMPONENT_CLASSES: ReadonlySet<string> = new Set([
 // footing check (property NOI == Σ component NOI), and the section-internal
 // MU-* rules. A no-op for any document without a components section.
 function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledger: CoverageLedger): void {
-  const components = getSection(parsed, 'components');
+  const components = roleAwareDirectRead(parsed, 'components', 'CC-11', ledger);
+  if (ledger.coverage['CC-11']?.reason === 'variant_unresolvable') {
+    markSkipped(ledger, 'CC-12', 'variant_unresolvable', 'components');
+    ledger.unresolvable.get('components')?.codes.add('CC-12');
+    return;
+  }
   if (!components) {
     markSkipped(ledger, 'CC-11', 'not_applicable', 'no components section');
     markSkipped(ledger, 'CC-12', 'not_applicable', 'no components section');
@@ -790,8 +825,12 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
   // CC-12: property NOI must equal the sum of component NOIs. Only assert footing
   // when every admissible component states a numeric NOI — a missing one is
   // MU-04's job, not a footing mismatch.
-  const noiModel = getSection(parsed, 'noi_model');
-  if (!noiModel) markSkipped(ledger, 'CC-12', 'section_absent', 'noi_model');
+  const noiModel = roleAwareDirectRead(parsed, 'noi_model', 'CC-12', ledger);
+  if (ledger.resolutions['CC-11']?.['components']) {
+    ledger.resolutions['CC-12'] ??= {};
+    ledger.resolutions['CC-12']!['components'] = ledger.resolutions['CC-11']!['components']!;
+  }
+  if (!noiModel && !ledger.coverage['CC-12']) markSkipped(ledger, 'CC-12', 'section_absent', 'noi_model');
   if (noiModel) {
     const propNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
     const compNOIs = admissible
@@ -835,8 +874,8 @@ const WATERFALL_MARKERS = [
 ];
 
 /** The capital_stack `senior_debt` tranche, if the section and tranche exist. */
-function seniorDebtTranche(parsed: ParsedUWFile): Record<string, unknown> | null {
-  const cs = getSection(parsed, 'capital_stack');
+function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): Record<string, unknown> | null {
+  const cs = roleAwareDirectRead(parsed, 'capital_stack', 'CC-03', ledger);
   if (!cs) return null;
   const tranches = (cs.content as Record<string, unknown>)['tranches'];
   if (!Array.isArray(tranches)) return null;
@@ -970,8 +1009,11 @@ function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[], l
 
   // 4. A property section exists — a missing section is a different defect
   //    with a different remedy (RFC 0027, unresolved question 5).
-  const property =
-    getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
+  const propertyEntry = parsed.sections['property'];
+  const roleBearing = propertyEntry && (isVariantMap(propertyEntry) ? Object.values(propertyEntry) : [propertyEntry]).some(hasBlockRole);
+  const property = roleBearing ? roleAwareDirectRead(parsed, 'property', 'CC-13', ledger)
+    : getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
+  if (ledger.coverage['CC-13']?.reason === 'variant_unresolvable') return;
   if (!property) {
     markSkipped(ledger, 'CC-13', 'section_absent', 'property');
     return;
@@ -1186,11 +1228,27 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[],
   const base = isVariantMap(entry)
     ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default'])
     : (entry as UWBlock);
-  if (!base) markSkipped(ledger, 'CC-15', 'not_applicable', 'no base variant');
+  if (base && hasBlockRole(base)) {
+    const r = resolveRoleBlock(base, 'lease_up_schedule');
+    if (r.state === 'unresolvable') {
+      noteUnresolvable(ledger, 'lease_up_schedule', r.variants, 'CC-15', r.detail);
+      markSkipped(ledger, 'CC-15', 'variant_unresolvable', 'lease_up_schedule');
+      return;
+    }
+    ledger.resolutions['CC-15'] ??= {};
+    ledger.resolutions['CC-15']!['lease_up_schedule'] = {
+      ...(base.annotation.variant ? { variant: base.annotation.variant } : {}), via: 'preference',
+    };
+  }
+  if (!base) {
+    markSkipped(ledger, 'CC-15', 'not_applicable', 'no base variant');
+    return;
+  }
   const stabilizedNoi = base
     ? deepGet(base.content as Record<string, unknown>, 'stabilized_summary.annualized_noi')
     : undefined;
-  const noiModel = getSection(parsed, 'noi_model');
+  const noiModel = roleAwareDirectRead(parsed, 'noi_model', 'CC-15', ledger);
+  if (ledger.coverage['CC-15']?.reason === 'variant_unresolvable') return;
   const modelNoi = deepGet(noiModel?.content, 'net_operating_income');
   if (base && !noiModel) markSkipped(ledger, 'CC-15', 'section_absent', 'noi_model');
   else if (base && !(typeof stabilizedNoi === 'number' && Number.isFinite(stabilizedNoi))) markSkipped(ledger, 'CC-15', 'field_absent', 'lease_up_schedule.stabilized_summary.annualized_noi');

@@ -476,7 +476,19 @@ For multi-variant sections, the fence tag carries a `variant=` key:
 ```json uw:section=operating_statement variant=t12 source=agent/L0-02 ts=... v=1
 ```
 
-Parsers collect all non-superseded variants for multi-variant sections and expose them as an array.
+Parsers collect non-superseded variants by their declared variant keys.
+
+**Signed block roles (RFC 0040).** Any active block MAY carry one optional
+`_role` beside `_meta`, drawn from `primary`, `senior`, `junior`, `summary`,
+`detail`, `component`. This scalar is content covered by the existing block
+hash, not provenance metadata; `_meta.role` is not an alias. Primary names the
+generic statement, senior/junior the debt position, detail/summary its level
+of aggregation, and component a part of the property. Roles are allowed on
+any section, including a standalone block. Invalid values (including null or
+arrays) MUST raise `ROLE-01` in every active block. Superseded history is not
+reclassified. Only a trusted host or explicit human assignment may set a role;
+agent content MUST NOT invent it. See §5.3 for selection and Protocol §V for
+editing. Parse and representation conversion MUST preserve this annotation.
 
 ---
 
@@ -2778,26 +2790,35 @@ Tools MUST run these after each section write:
 | `CC-15` | The lease-up base variant's `stabilized_summary.annualized_noi` must agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%) (RFC 0008) | `lease_up_schedule`, `noi_model` |
 | `CC-16` | A section a cross-check reads is present as multiple variants and none resolves under the §5.3 preference order; the checks reading it were skipped (`info`) (RFC 0037) | any |
 
-**Resolution over variant maps (RFC 0037).** A cross-section check reads
-each section it names as **one block**. When that section is present as a
-variant map (§2.8, or any section of a UW JSON envelope carrying more than
-one block — the envelope schema admits a variant map on any section), a
-conforming validator MUST resolve it by this order and take the first
-variant present: (1) the check's registered preference, if any — `CC-01`
-prefers `t12` on `operating_statement`, `CC-08` prefers `appraisal` on
-`due_diligence`; (2) `default`; (3) `base`; (4) the sole variant, when
-the map holds exactly one. A check whose own rule exempts every variant
-but a named one (`CC-15` reads the lease-up **base** variant only, RFC
-0008) stops after that name and reports `not_applicable` rather than
-unresolvable — nothing was silenced. If none applies the section is
-**unresolvable for cross-checking**:
-every check that reads it is skipped, the skip is recorded in coverage
-(below), and the validator emits `CC-16` once per unresolvable section as
-`info`, naming the variants found and the checks skipped. A validator MUST
-NOT pick an arbitrary variant, average variants, or check variants
-pairwise — a document that states two senior facilities has not stated
-which one reconciles with `sources_uses`. The executable order is
-`CROSS_CHECK_VARIANT_PREFERENCE` in `@uwmd/core`.
+**Resolution over variant maps (RFC 0037 / RFC 0040).** A cross-check
+reads one block per section. Exclude component-role blocks and invalid roles
+before every selection step, including standalone/default/base/sole paths.
+For eligible variants, try (1) explicit check preference (`t12` on CC-01's
+operating statement, `appraisal` on CC-08's due diligence); (2) unique check
+role; (3) unique `primary`; (4) `default`; (5) `base`; (6) sole eligible
+variant. CC-01 prefers `detail` on rent_roll; CC-02/03/05/09 prefer `senior`
+on debt_structure (`CROSS_CHECK_ROLE_PREFERENCE`). A consulted role collision
+MUST refuse immediately, without fallback. An earlier successful key selection
+does not consult later roles. Repeated components are allowed but excluded.
+
+Eligible standalone blocks resolve as `single`. CC-15 keeps its base/default
+lease-up scenario exception; roles cannot choose another scenario. Its selected
+schedule must still be eligible. Existing direct reads observe roles when
+present, with their role-free behavior preserved. CC-14 checks section presence.
+No arithmetic, tolerance, tranche aggregation or scenario averaging changes.
+
+If resolution fails, record `variant_unresolvable` coverage and emit `CC-16`
+once per section, naming affected checks in sorted order. Role-bearing
+diagnostics state the collision or eligibility failure; role-free messages
+remain unchanged. A multi-leg check may evaluate another leg, so this issue
+does not imply that every affected check was wholly skipped.
+
+**Role selection evidence (RFC 0040).** Optional coverage `resolutions` maps
+section ids to `{ variant?, via }`, where `via` is `preference`, `role`,
+`primary`, `default`, `base`, `sole`, or `single`. Emit it only for selections
+from sections bearing roles, even when a later field check skips comparison.
+Multi-section checks record selections separately. Role-free coverage has no
+new fields. Constants, reporting and diagnostics do not alter financial math.
 
 **Coverage (RFC 0037).** A conforming validator MUST report, alongside its
 issues, a **coverage** record for every `CC-NN` check it registers
@@ -3173,3 +3194,11 @@ If you need long-form prose in a section, put it in the markdown body (between f
 *Specification version 1.1 | underwriter.cc | April 2026*  
 *v1.0 → v1.1: Added §4.0 (Deal Context), §4.19 (Custom Calculations), §4.20 (Custom Scenarios), §4.21 (Extension Sections); expanded Appendix C; added universal `_notes` field and reference path notation.*  
 *This document is itself a reference artifact. The canonical format for a deal is a `.uwx.md` file. This spec defines what valid means.*
+
+**Markdown opt-in.** When an active section declares `_role` and has explicit
+`variant=` fences, readers collect all its active named variants, even outside
+the legacy multi-variant section registry. Collect before choosing a version,
+so fence order cannot discard an unannotated peer. Superseded roles do not
+activate selection. Role-free Markdown retains its existing routing behavior;
+removing a section's last role ends this opt-in. UW JSON envelopes already
+represent variant maps on every section.

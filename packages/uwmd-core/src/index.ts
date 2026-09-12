@@ -764,6 +764,8 @@ export type {
   // Core types
   UWBlock,
   UWFenceAnnotation,
+  BlockRole,
+  CrossCheckResolutionEvidence,
   UWMeta,
   UWFieldOverride,
   UWBlockSignature,
@@ -826,6 +828,8 @@ export type {
 
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {
+  BLOCK_ROLES,
+  CROSS_CHECK_ROLE_PREFERENCE,
   PROTOCOL_VERSION,
   FORMAT_VERSION,
   DEFAULT_NUMBER_FORMAT,

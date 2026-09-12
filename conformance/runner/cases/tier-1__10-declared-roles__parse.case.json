@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/10-declared-roles/parse",
+  "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "10-declared-roles.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/10-declared-roles.parsed.json"
+  }
+}

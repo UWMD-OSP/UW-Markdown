@@ -119,6 +119,11 @@ export function writeAgentBlock(
   // Emit the shape the file's uw_version demands (RFC 0009): the host owns
   // _meta, so the reshape happens here, not in agent output.
   const emitted: Record<string, unknown> = { ...output.content };
+  // Roles belong to the trusted host. Model output cannot assign or erase them.
+  delete emitted['_role'];
+  if (existingBlock && Object.prototype.hasOwnProperty.call(existingBlock.content, '_role')) {
+    emitted['_role'] = existingBlock.content['_role'];
+  }
   if (outMeta !== undefined) {
     // Values pass through untouched — only the shape is the host's call.
     stampMetaIntoBlockContent(emitted, outMeta, isV2File(parsed.frontmatter));

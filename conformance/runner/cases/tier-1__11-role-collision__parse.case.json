@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/11-role-collision/parse",
+  "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "11-role-collision.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/11-role-collision.parsed.json"
+  }
+}

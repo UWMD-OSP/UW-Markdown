@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/12-role-eligibility/validate",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "12-role-eligibility.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/12-role-eligibility.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/12-role-eligibility/render-summary",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "12-role-eligibility.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/12-role-eligibility.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

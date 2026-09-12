@@ -1,6 +1,6 @@
 # RFC 0040 — role-aware cross-check selection
 
-Status: implementation preparation; owner decision pending on the wire location.
+Status: implementation authorized; owner approved block-level `_role` on 2026-09-11.
 Baseline: `59e8912`, core 2.6.2 / Protocol 2.6.0. Opened 2026-09-11.
 
 ## Authorized objective
@@ -11,16 +11,16 @@ PR #177 completes the first step. One implementation stage is active: RFC 0040.
 The [readiness review](../../docs/reviews/2026-09-11-rfc-0040-0041-readiness.md)
 records verified code findings and the queued RFC 0041 work.
 
-## Pending contract decision
+## Approved contract decision
 
-The recommended wire representation is block-level `_role`, rather than
-`_meta.role`. Existing v2 normalization discards `_meta.role`, so assigning it
-meaning would otherwise leave a validation-relevant field outside the block hash.
-The owner has been asked to choose `_role` or a separately versioned integrity
-contract for `_meta.role`. This contract authorizes preparation and review now;
-it does not authorize assuming an unanswered choice or marking the RFC accepted.
+The owner approved block-level `_role` beside `_meta`. It uses the existing
+signed content path in both hash shapes; `_meta.role` is not an alias. This
+authorizes the additive `BlockRole`, `CrossCheckResolutionEvidence`,
+`CrossCheckCoverage.resolutions`, and `EditOperation.role` public surfaces,
+the block and edit-operation schemas, and Protocol 2.7.0 in the same commit.
+The format remains 2.0; package releases are separate.
 
-## Proposed implementation scope after that decision
+## Implementation scope
 
 1. Revise RFC 0040 with one scalar role, explicit collision semantics, component
    exclusion at every fallback, per-section resolution evidence, and the signed

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — RFC 0040
+
+- Protocol 2.7.0: signed block `_role` annotations, deterministic role-aware
+  cross-check selection, component exclusion and per-section coverage evidence.
+- Trusted role assignment and preservation through edits, agent writes and
+  representation conversion. No package publication or financial math changes.
+
 All notable changes to UW Markdown — the format spec, the protocol spec, the
 reference library `@uwmd/core`, the conformance corpus, and starter tools — are
 documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

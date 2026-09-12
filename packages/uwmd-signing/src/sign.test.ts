@@ -173,3 +173,28 @@ describe('verifyChain with a real verifier', () => {
     });
   });
 });
+
+describe('RFC 0040 signed block roles', () => {
+  it('rejects a role-only mutation after signing', async () => {
+    const { signing, verifying } = await generateSigningKeyPair('ed25519', 'role-key');
+    const block = await hashedBlock('debt_structure', { _role: 'senior', loan_amount: 100 });
+    const signed = stampBlockSignature(block, await signBlock(block, signing));
+    const store = new InMemoryKeyStore([verifying]);
+    expect(await verifyBlockSignature(signed, store)).toMatchObject({ ok: true });
+    expect(await verifyBlockSignature({ ...signed, content: { ...signed.content, _role: 'junior' } }, store))
+      .toMatchObject({ ok: false, reason: 'content_hash_mismatch' });
+  });
+});
+
+it('detects role tampering in a signed format 2.0 chain', async () => {
+  const { signing, verifying } = await generateSigningKeyPair('ed25519', 'role-v2');
+  const block = makeBlock('property', { _role: 'primary', total_units: 100 }, { parent_hash: null });
+  block.meta.content_hash = await computeBlockHash(block, { shape: 'v2' });
+  const signed = stampBlockSignature(block, await signBlock(block, signing));
+  const parsed = makeFile({ property: signed });
+  parsed.frontmatter.uw_version = '2.0';
+  const options = { signatureVerifier: createBlockSignatureVerifier(new InMemoryKeyStore([verifying])) };
+  expect((await verifyChain(parsed, options)).issues).toEqual([]);
+  signed.content['_role'] = 'component';
+  expect((await verifyChain(parsed, options)).issues.map(issue => issue.code)).toContain('INT-04');
+});

@@ -14,6 +14,10 @@
       "maxLength": 128,
       "description": "Section identifier. Standard sections use the IDs registered in UW_FORMAT_SPEC_v1.md §4 (incorporated by reference into v2). Extension sections MUST start with 'x_'."
     },
+    "_role": {
+      "enum": ["primary", "senior", "junior", "summary", "detail", "component"],
+      "description": "Optional signed scalar block role (RFC 0040); not an _meta member."
+    },
     "_meta": {
       "$ref": "#/$defs/UWMetaV2"
     },

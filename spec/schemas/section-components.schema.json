@@ -6,6 +6,10 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "_role": {
+      "enum": ["primary", "senior", "junior", "summary", "detail", "component"],
+      "description": "Optional signed scalar block annotation (RFC 0040)."
+    },
     "_meta": {
       "type": "object",
       "description": "Standard block provenance envelope (§2.5). Not constrained here."
