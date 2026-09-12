@@ -44,6 +44,9 @@ import {
 } from './cli-packages.js';
 import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc/index.js';
+import { parseCalculationContext } from './calculation-context.js';
+import { parseExpression, periodReferencePath } from './calc/parser.js';
+import { CalcError } from './calc/errors.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
@@ -1098,6 +1101,24 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
   }
 }
 
+function loadCalculationContext(flags: Record<string, string | boolean>, periodOnly = false) {
+  const path = flags['calc-context'];
+  if (path === undefined) return undefined;
+  if (typeof path !== 'string' || !path.trim()) {
+    throw new CalcError('CALC-TYPE-001', '--calc-context requires a JSON file path.');
+  }
+  const context = parseCalculationContext(JSON.parse(readFile(path)));
+  if (periodOnly) {
+    for (const key of Object.keys(context.overrides ?? {})) {
+      const expr = parseExpression(key);
+      if (expr.kind !== 'period_path' || periodReferencePath(expr) !== key) {
+        throw new CalcError('CALC-TYPE-001', 'refine --calc-context accepts canonical period overrides only; ordinary scalar overrides are not supported.');
+      }
+    }
+  }
+  return context;
+}
+
 function cmdRefine(file: string, flags: Record<string, string | boolean>): void {
   const content = readFile(file);
   const parsed = parseUWFile(content);
@@ -1116,7 +1137,9 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
   // gap the cascade cannot fill, so it drops out of the VOI ranking. That is
   // the point: the ranking should tell you what is still worth diligencing.
   const market = loadMarketData(flags);
+  const periodContext = loadCalculationContext(flags, true);
   const result = rankGaps(parsed, {
+    periodContext,
     targets,
     top,
     packs: [pack],
@@ -1600,7 +1623,7 @@ switch (command) {
 
   case 'calc': {
     if (!positional[0] || !positional[1]) {
-      console.error('Usage: uwmd calc <file> <calc.json|formula>');
+      console.error('Usage: uwmd calc <file> <calc.json|formula> [--calc-context <file>]');
       process.exit(1);
     }
     const fileContent = readFile(positional[0]!);
@@ -1620,6 +1643,7 @@ switch (command) {
       parsed,
       prior_results: {},
       locale: 'en-US',
+      ...loadCalculationContext(flags),
     };
 
     const results = decls.map((d) => evaluateCalc(d, ctx));
@@ -1674,7 +1698,7 @@ switch (command) {
     break;
 
   case 'refine':
-    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--calc-context <file>] [--json]'); process.exit(1); }
     cmdRefine(positional[0], flags);
     break;
 
@@ -1837,6 +1861,7 @@ Options:
   --output <path>    Output file path (compact, init)
   --dry-run          Show what would change without writing (compact)
   --json             JSON output on stdout, nothing else (validate, calc, edit)
+  --calc-context <f> JSON sectionVariants/overrides (calc, refine; refine: period overrides only)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)

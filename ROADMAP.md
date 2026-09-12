@@ -44,6 +44,10 @@ does not mean its standalone npm package is published.
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
 | Period consumers | Implemented for review | [RFC 0042](docs/rfcs/0042-period-refinement.md) adds fixed stated refinement inputs; [RFC 0043](docs/rfcs/0043-contextual-excel-period-bindings.md) adds explicit workbook export, verified in native Excel. Publication remains pending. |
 
+The CLI context stage exposes these consumers through `--calc-context` files,
+including shape validation and explicit refusal of unsupported refinement
+overrides. It is source implementation for review; publication is pending.
+
 ## Forward backlog
 
 The bounded RFC 0042 refinement and RFC 0043 Excel stages are implemented for review, with package

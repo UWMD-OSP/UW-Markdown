@@ -1,5 +1,7 @@
 # Task matrix
 
-- [x] RFC 0043 contextual Excel binding implementation and verification — fc86ab9.
+- [x] Complete CLI calculation context, endpoint regression, documentation and
+  all local verification gates; implementation and docs committed.
 
-No development item currently in flight. Reconcile open PRs before the next stage.
+See [completion evidence](../archive/cli-calculation-context.md).
+No unchecked item is in flight.

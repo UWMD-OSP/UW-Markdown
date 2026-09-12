@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added — command-line calculation context
+
+- `uwmd calc`, `uwmd refine` and `uwmd-excel` accept `--calc-context <JSON file>`
+  with validated `sectionVariants` and exact `overrides`. Export the shared
+  browser-safe `parseCalculationContext` helper; preserve zero/null values.
+- Refinement rejects ordinary scalar overrides; Excel requires explicit custom
+  calculation IDs. Invalid context fails before result/workbook output.
+- Document source-checkout commands and consumer limits. The refinement CLI
+  regression compares actual calc endpoints at the existing six-decimal boundary;
+  financial math, protocol/package versions and dependencies are unchanged.
+
 ### Added — Protocol 2.10.0 / Excel source implementation
 
 - RFC 0043: trusted contextual period bindings and complete column snapshots,

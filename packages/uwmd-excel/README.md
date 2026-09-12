@@ -1,13 +1,14 @@
 # @uwmd/excel
 
-Excel converter for UW Markdown — emit a live multifamily underwriting
-workbook from a `.uw.md` file.
+Excel converter for UW Markdown — emit an underwriting workbook from a
+structured `.uwx.md` file, using the registered asset-class layout.
 
 ```
-uwmd-excel deal.uw.md -o deal.xlsx
+uwmd-excel deal.uwx.md -o deal.xlsx
 ```
 
-The generated workbook has three sheets:
+The standard multifamily workbook includes these sheets; other asset-class
+layouts and optional features add their own sheets:
 
 - **Underwriting** — header (deal name + address), an *Inputs* block where each
   row is a labeled cell with a workbook-scope named range
@@ -44,13 +45,14 @@ Editing any named-input cell updates every dependent metric. Editing any
 income or expense line item updates EGI, total opex, NOI, and every metric
 that touches NOI.
 
-## Scope (0.1.0)
+## Scope
 
-- `.uw.md` → `.xlsx` only — the reverse direction (workbook → `.uw.md`) is not
-  yet implemented. The calc-aware web editor at `tools/web-editor/` remains the
-  canonical Tier-2 chokepoint for editing a deal file.
-- Multifamily only. Other asset classes will land as separate layout modules
-  alongside `src/multifamily.ts`.
+Layouts cover multifamily, office, retail, industrial, self-storage, hospitality,
+senior housing, student housing, land and mixed-use. `fromWorkbook` and
+`--import` recover editable section fragments from supported converter workbooks;
+apply those through the Tier-2 editor to preserve provenance. Extended custom
+calculation workbooks explicitly refuse reverse import. The standalone Excel
+package remains unpublished; source support is not a publication claim.
 
 ## Library use
 
@@ -58,7 +60,7 @@ that touches NOI.
 import { parseUWFile } from '@uwmd/core';
 import { toWorkbook } from '@uwmd/excel';
 
-const parsed = parseUWFile(await readFile('deal.uw.md', 'utf8'));
+const parsed = parseUWFile(await readFile('deal.uwx.md', 'utf8'));
 const wb = await toWorkbook(parsed);
 await wb.xlsx.writeFile('deal.xlsx');
 ```
@@ -98,3 +100,18 @@ These additional inputs are export-only: reverse import explicitly refuses a
 marked extended workbook. This protects against silently discarding their edits.
 See RFC 0043 and scripts/verify-excel-periods.ps1 for native Excel verification.
 This source implementation does not imply a new standalone package publication.
+
+### Context files
+
+From a built source checkout at the repository root:
+
+```sh
+node packages/uwmd-excel/bin/uwmd-excel.mjs deal.uwx.md --calculations year_three_noi_per_unit --calc-context context.json -o deal.xlsx
+```
+
+The JSON file accepts `sectionVariants` and `overrides`, for example
+`{"sectionVariants":{"dcf":"base"},"overrides":{}}`. Use exact input paths for
+overrides; zero and null remain distinct. Context requires `--calculations` and
+affects only those additional calculations. Invalid context fails before any
+output is written. See the [context guide](../../docs/CALCULATION_CONTEXT.md)
+for validation rules and examples.

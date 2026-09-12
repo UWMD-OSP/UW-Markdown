@@ -9,6 +9,10 @@ record every tool works on; `.uw.md` is the UW Lite summary, which only
 the editor, the CLI, and the VS Code extension read. See
 [UW Lite and UWX](UW_LITE_AND_UWX.md).
 
+For source-checkout calculation scenarios, see
+[Calculation context files](CALCULATION_CONTEXT.md): select period variants
+and exact overrides in calc, refinement and explicit Excel export.
+
 ## Decision tree
 
 | If you want to... | Reach for | Tier |

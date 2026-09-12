@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, it, expect } from 'vitest';
+import { quantizeDecimal } from '@uwmd/core';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
@@ -686,4 +687,85 @@ it('refine displays unresolved period inputs in text and JSON without claiming c
   } finally {
     rmSync(temp, { recursive: true, force: true });
   }
+});
+
+describe('calculation context files', () => {
+  function scenario(run: (file: string, context: string, write: (value: unknown) => void) => void) {
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-context-'));
+    const file = resolve(dir, 'period.uwx.md');
+    const context = resolve(dir, 'context.json');
+    const periodSource = readFileSync(resolve(__dirname, '../../../conformance/tier-3-calc-host/fixtures/period-01-year-order/deal.uwx.md'), 'utf8');
+    const source = [periodSource.replace('uw:section=dcf source=', 'uw:section=dcf variant=base source='),
+      '```json uw:section=dcf variant=stress source=manual v=1',
+      JSON.stringify({ _role: 'component', annual_cash_flows: [{ year: 3, noi: 900 }] }), '```',
+      '```json uw:section=custom_calculations source=manual v=1',
+      JSON.stringify({ id: 'context_total', formula: 'dcf.annual_cash_flows@Y3.noi * noi_model.expense_ratio' }), '```', ''].join('\n');
+    writeFileSync(file, source);
+    try {
+      run(file, context, value => writeFileSync(context, JSON.stringify(value)));
+      expect(readFileSync(file, 'utf8')).toBe(source);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
+  it('calc honors selected periods and ordinary overrides while preserving null and zero', () => {
+    scenario((file, context, write) => {
+      write({ sectionVariants: { dcf: 'stress' }, overrides: { 'property.total_units': 0 } });
+      const selected = runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi + property.total_units', '--calc-context', context, '--json']);
+      expect(selected.status).toBe(0);
+      expect(JSON.parse(selected.stdout).value).toBe(900);
+      write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': null } });
+      const missing = runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi', `--calc-context=${context}`, '--json']);
+      expect(missing.status).toBe(0);
+      expect(JSON.parse(missing.stdout).value).toBeNull();
+      write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': 0 } });
+      const zero = runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi', '--calc-context', context, '--json']);
+      expect(zero.status).toBe(0);
+      expect(JSON.parse(zero.stdout).value).toBe(0);
+    });
+  });
+  it('refine uses selected variants and reports explicit null period inputs', () => {
+    scenario((file, context, write) => {
+      const ranking = () => runCli(['refine', file, '--targets', 'context_total', '--calc-context', context, '--json']);
+      write({ sectionVariants: { dcf: 'base' } });
+      const base = ranking(); expect(base.status).toBe(0);
+      write({ sectionVariants: { dcf: 'stress' } });
+      const stress = ranking(); expect(stress.status).toBe(0);
+      // Refinement keeps binary64 interval values; compare with calc only at
+      // its existing six-decimal boundary (Protocol VIII.5), as core tests do.
+      // Evaluate each actual endpoint instead of scaling an already-computed bound.
+      for (const [variant, report] of [['base', base], ['stress', stress]] as const) {
+        const gap = JSON.parse(report.stdout).by_voi[0];
+        expect(gap.field_path).toBe('noi_model.expense_ratio');
+        for (const bound of ['low', 'high'] as const) {
+          write({ sectionVariants: { dcf: variant }, overrides: { 'noi_model.expense_ratio': gap.prior_range[bound] } });
+          const endpoint = runCli(['calc', file,
+            'dcf.annual_cash_flows@Y3.noi * noi_model.expense_ratio', '--calc-context', context, '--json']);
+          expect(endpoint.status).toBe(0);
+          const result = JSON.parse(endpoint.stdout);
+          expect(result.ok).toBe(true);
+          expect(result.round_to).toBe(6);
+          expect(quantizeDecimal(gap.affected_outputs[0].range_today[bound], 6)).toBe(result.value);
+        }
+      }
+      expect(JSON.parse(stress.stdout).by_voi[0].affected_outputs[0].range_today.high)
+        .toBeGreaterThan(JSON.parse(base.stdout).by_voi[0].affected_outputs[0].range_today.high);
+      write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': null } });
+      const missing = ranking(); expect(missing.status).toBe(0);
+      expect(JSON.parse(missing.stdout).diagnostics.period_inputs[0].code).toBe('REFINE-PERIOD-MISSING');
+      write({ overrides: { 'property.total_units': 0 } });
+      const ignored = ranking(); expect(ignored.status).toBe(1);
+      expect(ignored.stderr).toContain('canonical period overrides only');
+      expect(ignored.stdout).toBe('');
+    });
+  });
+  it('refuses malformed contexts and a missing flag value before emitting results', () => {
+    scenario((file, context, write) => {
+      write({ overides: {} });
+      const invalid = runCli(['calc', file, '1', '--calc-context', context, '--json']);
+      expect(invalid.status).toBe(1); expect(invalid.stdout).toBe('');
+      expect(invalid.stderr).toContain('Unknown calculation context option');
+      const missing = runCli(['calc', file, '1', '--calc-context', '--json']);
+      expect(missing.status).toBe(1); expect(missing.stdout).toBe('');
+      expect(missing.stderr).toContain('requires a JSON file path');
+    });
+  });
 });

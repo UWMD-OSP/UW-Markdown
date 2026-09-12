@@ -34,7 +34,7 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (currently 2.9.0 in source; 2.8.0 in published core/CLI 2.7.0). A test in
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (currently 2.10.0 in source; 2.8.0 in published core/CLI 2.7.0). A test in
   `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went

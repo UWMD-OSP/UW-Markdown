@@ -11,7 +11,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname, basename, extname, join } from 'node:path';
 import ExcelJS from 'exceljs';
-import { parseUWFile } from '@uwmd/core';
+import { parseUWFile, parseCalculationContext } from '@uwmd/core';
 import { toWorkbook } from './toWorkbook.js';
 import { fromWorkbook } from './fromWorkbook.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
@@ -20,6 +20,7 @@ interface ParsedArgs {
   input: string;
   output: string;
   calculations?: string[];
+  calculationContext?: string;
 }
 
 interface ImportArgs {
@@ -36,9 +37,13 @@ function parseArgs(argv: readonly string[]): ParsedArgs | ImportArgs | { error: 
   let input: string | undefined;
   let output: string | undefined;
   let calculations: string[] | undefined;
+  let calculationContext: string | undefined;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--calculations') {
+    if (a === '--calc-context') {
+      calculationContext = argv[++i];
+      if (!calculationContext || calculationContext.startsWith('-')) return { error: '--calc-context requires a JSON file path' };
+    } else if (a === '--calculations') {
       const value = argv[++i];
       if (!value || value.startsWith('-')) return { error: '--calculations requires comma-separated custom calculation IDs' };
       calculations = value.split(',').map(id => id.trim()).filter(Boolean);
@@ -56,12 +61,13 @@ function parseArgs(argv: readonly string[]): ParsedArgs | ImportArgs | { error: 
     }
   }
   if (!input) return { error: 'missing input file' };
+  if (calculationContext && !calculations?.length) return { error: '--calc-context requires --calculations; standard pack sheets do not consume this context' };
 
   const inputAbs = resolve(input);
   const outputAbs = output
     ? resolve(output)
     : join(dirname(inputAbs), defaultOutputName(inputAbs));
-  return { input: inputAbs, output: outputAbs, calculations };
+  return { input: inputAbs, output: outputAbs, calculations, calculationContext };
 }
 
 function defaultOutputName(inputPath: string): string {
@@ -85,6 +91,7 @@ function printHelp(): void {
       'Options:',
       '  -o, --output <path>   Output .xlsx path (defaults next to input)',
       '  --calculations <ids>  Export selected numeric custom calculations and their period inputs',
+      '  --calc-context <path> JSON sectionVariants/overrides for selected calculations',
       '  --import <path>       Print editable section payloads from a converter workbook',
       '  -h, --help            Show this help',
       '',
@@ -124,7 +131,10 @@ export async function main(argv: readonly string[]): Promise<number> {
     return 1;
   }
 
-  const wb = await toWorkbook(parsed, { calculations: args.calculations });
+  const calculationContext = args.calculationContext
+    ? parseCalculationContext(JSON.parse(await readFile(resolve(args.calculationContext), 'utf8')))
+    : undefined;
+  const wb = await toWorkbook(parsed, { calculations: args.calculations, calculationContext });
   await wb.xlsx.writeFile(args.output);
   process.stdout.write(`${args.output}\n`);
   return 0;

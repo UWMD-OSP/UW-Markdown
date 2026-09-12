@@ -935,3 +935,5 @@ export type { PeriodKey, PeriodSeriesEntry } from './protocol.js';
 export { canonicalPeriod, parsePeriodSelector, periodKeyIdentity } from './periods.js';
 export { resolvePeriodPath } from './period-path.js';
 export type { PeriodResolutionOptions } from './period-path.js';
+
+export { parseCalculationContext } from './calculation-context.js';

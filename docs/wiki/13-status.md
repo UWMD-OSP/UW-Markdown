@@ -56,6 +56,12 @@ custom-calculation workbook export with all five period series, identity lookup,
 missing/invalid guards, variants and overrides. Native Excel passed 14 scenarios
 and 48 cell checks. No financial model changes; package publication is pending.
 
+The CLI context stage adds validated `--calc-context` files to calc, refinement
+and explicit Excel export. It uses the existing variant/override contract without
+changing engine math or source documents. Refinement rejects ordinary overrides;
+Excel requires selected custom-calculation IDs. This source feature awaits package
+publication. See [tool usage](08-tools.md#calculation-context).
+
 RFC 0042 local verification: **1,827 workspace tests** (33 new acceptance cases),
 **426 default + 76 declarative conformance checks**, **26 JSON schemas**, build,
 test typechecking, lint, package/lockfile/version/index/release checks and docs

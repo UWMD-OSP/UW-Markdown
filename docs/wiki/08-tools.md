@@ -41,6 +41,19 @@ Command | Purpose
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
+### Calculation context
+
+`calc` and `refine` accept `--calc-context <JSON file>`. The shared
+`parseCalculationContext` helper in core validates only the existing
+`sectionVariants`/`overrides` options; it is exported from core and browser.
+Variants select period dependencies only. Exact scalar/period override keys keep
+zero and null intact. The refine CLI refuses ordinary scalar override keys because
+`rankGaps.periodContext` only consumes period overrides. The Excel CLI requires
+`--calculations` alongside context and applies it only to additional calculations.
+Source documents are never edited by these options. See the
+[source guide](../CALCULATION_CONTEXT.md) for commands,
+validation errors and publication status.
+
 ## Batch collection indexer — `packages/uwmd-batch` (`@uwmd/batch`, published since 0.8.0)
 
 A local batch runner for a directory of canonical `.uw.md` / `.uwx.md` deal files. It
