@@ -1,9 +1,16 @@
-# Active work
+# RFC 0044 implementation
 
-The lease-up cash-flow proposal and executable example stage is complete.
-See [completion evidence](../archive/lease-up-cash-flow-proposal.md) and
-[draft RFC 0044](../../docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md).
+Owner explicitly approved the bounded adapter on 2026-09-12. Implement
+`projectLeaseUpCashFlows(parsed, plan)` against RFC 0044: exact variant,
+existing lease-up structure and verification, complete explicit cash dates,
+exact stated amounts, semantic source digest and candidate-only output.
 
-The next production step is implementing the bounded projection adapter after
-owner acceptance of that contract. Full DCF assembly has separate economic
-prerequisites. No production implementation task is currently in flight.
+Authorized normative changes: Protocol 2.11.0, LeaseUpCashFlowPlan,
+LeaseUpCashFlowProjection, LeaseUpCashFlowProjectionIssue, their schemas,
+and CALC-LU-PROJECTION. Preserve existing verifier diagnostics and math.
+Export browser-safe APIs from both entries. A read-only CLI may consume the
+verified API. No package release, dependency change, new DCF economics,
+document writes, or signing is included.
+
+Done means acceptance tests, a named default conformance suite, API/CLI docs,
+roadmap/status updates, every deterministic gate and a separate stacked PR.

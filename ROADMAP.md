@@ -57,7 +57,7 @@ no new financial model or package release is committed.
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
 | 1 | Contextual period support in downstream tools | Implemented for review | Review RFCs 0042/0043. Native Excel verification passes; period defaults, structural workbook edits, reverse import and custom function export remain separate extensions. |
-| 2 | Lease-up / DCF integration | Projection proposal ready for review | [RFC 0044](docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md) and an [executable worked example](docs/LEASE_UP_CASH_FLOW_WORKFLOW.md) pin explicit date mapping and partial-stream scope. Production projection and full DCF assembly remain separate acceptance steps. |
+| 2 | Lease-up / DCF integration | Bounded projection implemented for review | [RFC 0044](docs/rfcs/0044-explicit-lease-up-cash-flow-projection.md) provides the API, read-only CLI, explicit dates and source evidence. Review the [workflow](docs/LEASE_UP_CASH_FLOW_WORKFLOW.md); full DCF still needs economic coverage, valuation anchor and double-count rules. |
 | 3 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 4 | Waterfall extensions | Deferred | RFC 0035/0036 left clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles for separate contracts. Each needs exact economic rules and conformance cases. |
 | 5 | Currency-code disambiguation | Deferred | Define currency identity independently from display locale before combining cross-currency values. |

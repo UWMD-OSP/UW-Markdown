@@ -4,7 +4,7 @@ Reconciled **2026-09-12** against main/tag **v2.7.0** at `560c2aa` and its
 successful release workflow. Core/CLI **2.7.0**, signing **0.2.11** and batch
 **0.8.6** are published and were smoke-tested from a clean npm install.
 Format **2.0** and Protocol **2.8.0** version independently in that release.
-The current source adds Protocol **2.10.0** / RFCs 0042–0043; package publication is pending.
+The current source adds Protocol **2.11.0** / RFCs 0042–0044; package publication is pending.
 
 Use [VERSIONS.md](../../VERSIONS.md) for current versions and
 [ROADMAP.md](../../ROADMAP.md) for priorities. The detailed notes accumulated
@@ -73,7 +73,7 @@ build. Only receipt protocol labels changed in the conformance baselines.
 |---|---|---|
 | Period addressing | Source refinement and explicit numeric workbook export support stated period values. No period defaults/ranges. | Review RFCs 0042/0043; reverse import, structural workbook edits and custom functions remain separate. |
 | Refinement | Marginal perturbation is approximate; stochastic VOI and stage-blocking ranking are not implemented. | Define the ranking/default contract before expanding output claims. |
-| Lease-up | Explicit period export exists; the production dated-stream adapter and full DCF coupling remain follow-ups. | Review [RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) and its [executable example](../LEASE_UP_CASH_FLOW_WORKFLOW.md); accept the bounded mapping contract before implementation. |
+| Lease-up | Explicit projection API and CLI are implemented for review; package release and full DCF coupling remain follow-ups. | Review [RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) and its [executable example](../LEASE_UP_CASH_FLOW_WORKFLOW.md); review the bounded implementation, then specify full DCF economics separately. |
 | Speculative leasing | No renewal/vacancy/market-reset/TI/LC rollover engine. | Adopter example and accepted modeling contract. |
 | Waterfalls | Clawback/crystallization, “any” combined hurdles and GP-side hurdles remain deferred. | Separate normative contract and cases. |
 | Currency and bps | Currency-code disambiguation and a dedicated bps unit remain deferred. | Demonstrated use case with explicit unit/precision semantics. |
@@ -96,3 +96,20 @@ Keep this page short: current capabilities, real limitations and verified state.
 Put chronology in CHANGELOG.md or a dated review. On release, update RFC statuses,
 the version matrix and publication evidence; preserve old notes in the archive
 without presenting their completed tasks as new work.
+
+### RFC 0044 source implementation
+
+`projectLeaseUpCashFlows` and `uwmd project-lease-up` return candidate-only dated
+streams from an exact verified lease-up variant, with complete explicit timing,
+unaltered amounts, full semantic source digest and canonical path bindings.
+`CALC-LU-PROJECTION` preserves original structural/verification evidence.
+The Protocol 2.11.0 types/prose/schemas are synchronized. The worked example
+uses the production API. No new dependency, financial formula, package version
+or publication is included. Full-property DCF economics remain deferred.
+
+Local RFC 0044 verification: **1,931 workspace tests** (50 adapter cases and
+four new CLI checks), **441 default + 76 declarative conformance checks**,
+**31 JSON schemas**, build, test typechecking, lint, package/lockfile/version/
+index/release checks and documentation build pass. Published package versions
+remain unchanged. The legacy reader fixtures and wrapped Format 2.0 API cases
+both exercise source compatibility.

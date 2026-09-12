@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.10.0' as const;
+export const PROTOCOL_VERSION = '2.11.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -2734,3 +2734,29 @@ export type {
   ValidationMessage,
   ValidationSeverity,
 };
+
+// RFC 0044 — explicit lease-up cash-flow projection (Protocol §VIII.9.5).
+export interface LeaseUpCashFlowPlan {
+  source_variant: string;
+  day_count: import('./calc/day-count.js').DayCountConvention;
+  cash_dates: Array<{ period: string; date: string }>;
+}
+
+export interface LeaseUpCashFlowProjection {
+  source_envelope_digest: string;
+  source_variant: string;
+  series: import('./cash-flow-series.js').CashFlowSeries;
+  bindings: Array<{ source_path: string; date: string; amount: number }>;
+}
+
+/** Serializable refusal; nested evidence retains its original vocabulary. */
+export interface LeaseUpCashFlowProjectionIssue extends ProtocolError {
+  category: 'calc';
+  code: 'CALC-LU-PROJECTION';
+  pointer: string;
+  evidence?: {
+    selection?: ProtocolError;
+    structure?: ValidationMessage[];
+    verification?: import('./lease-up.js').LeaseUpVerification;
+  };
+}

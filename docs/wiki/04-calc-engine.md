@@ -362,3 +362,17 @@ inputs. `diagnostics.resolved` counts dependency entries, not known numeric valu
 Literal ordinary @ keys use a separate environment even when graph strings
 coincide with selector paths. Package publication is pending; the published
 core 2.7.0 behavior is preserved in RFC 0041's release record.
+
+## Explicit lease-up projection (RFC 0044)
+
+`await projectLeaseUpCashFlows(parsed, plan)` reuses the lease-up structural
+checks, existing verifier and calendar date registry. It copies each selected
+period's finite `net_cash_flow` exactly and requires an explicit complete cash
+date map and day count. Verification uses its existing boundary; projection adds
+no arithmetic or rounding. Same-day rows remain distinct. The result includes
+the full semantic envelope digest and period/variant binding evidence.
+
+The partial receipt/TI-LC stream is not NOI or complete property/equity cash flow.
+Typed `CALC-LU-PROJECTION` refusals preserve failed/unverifiable evidence. See
+the [API and CLI example](../LEASE_UP_CASH_FLOW_WORKFLOW.md). Source Protocol
+2.11.0 is implemented for review; package publication remains pending.

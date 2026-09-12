@@ -1,0 +1,10 @@
+{
+  "source_variant": "base",
+  "day_count": "actual/365f",
+  "cash_dates": [
+    {
+      "period": "2026-Q3",
+      "date": "2026-09-30"
+    }
+  ]
+}

@@ -433,3 +433,15 @@ build: `npm run build`.
 > This wiki (`docs/wiki/`) is deliberately **not** wired into the docs-site nav —
 > it is internal dev/agent documentation, not part of the published standard.
 > Keep it that way unless the decision changes.
+
+## Lease-up cash-flow projection
+
+`uwmd project-lease-up <deal.uwx.md> <plan.json> [--json]` uses the verified
+RFC 0044 adapter and emits a JSON candidate with source digest and bindings.
+The plan requires exact `source_variant`, registered `day_count`, and one
+`{ period, date }` mapping per source period. No document is edited.
+Success exits 0. Typed refusals exit 1; `--json` retains the nested verifier or
+structural evidence in an `error` object. Unsupported write flags refuse.
+See the [workflow](../LEASE_UP_CASH_FLOW_WORKFLOW.md) for the supplied plan,
+browser-safe API and economic limits. Available from this source checkout;
+published CLI 2.7.0 does not yet include the command.

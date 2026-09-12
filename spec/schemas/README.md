@@ -65,3 +65,12 @@ If you add a new schema:
 Step 3 is enforced: `npm run verify-indexes` fails when a schema is on disk
 without a row, or a row links a file that is not. Three schemas had drifted out
 of this table before that check existed, which is why it does now.
+
+## Lease-up projection (RFC 0044)
+
+- [Plan](lease-up-cash-flow-plan.schema.json): explicit variant, day count and cash dates.
+- [Projection](lease-up-cash-flow-projection.schema.json): candidate stream, source digest and bindings.
+- [Refusal](lease-up-cash-flow-projection-issue.schema.json): CALC-LU-PROJECTION with nested evidence.
+
+Schemas check shape. Implementations additionally check exact period coverage,
+real calendar dates, source-order timing, verified amounts and digest agreement.

@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.10.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.11.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -1940,6 +1940,50 @@ raises `CALC-CF-SERIES`. A host that evaluates cash-flow declarations
 declares `calc-cash-flow` in its `ImplementationManifest.capabilities`;
 one that does not MUST report a typed refusal rather than crash.
 
+#### VIII.9.5 Explicit lease-up cash-flow projection (RFC 0044)
+
+`projectLeaseUpCashFlows(parsed, plan)` asynchronously returns a
+`LeaseUpCashFlowProjection` candidate. The plan MUST state `source_variant`,
+registered `day_count`, and non-empty `cash_dates: [{ period, date }]`; other
+plan or mapping fields MUST be refused. Selection MUST use the exact variant
+(including eligible component roles), with no base/default fallback. Flat and
+Format 2.0 wrapped section payloads use the existing period-selection contract.
+
+The selected schedule MUST satisfy RFC 0008 LU-01/02/03 structural rules and
+`verifyLeaseUpSchedule(schedule, leaseUpContext(parsed))` MUST return `verified`.
+Every row MUST state finite numeric `net_cash_flow`; zero is valid, absent/null
+is not zero. The adapter MUST copy that exact binary64 value, without rounding
+or substituting the recomputed total. Verification retains its existing quanta.
+
+Every source period MUST map exactly once to a real YYYY-MM-DD cash date.
+Missing, extra and duplicate mappings MUST refuse. Mapping array order is
+irrelevant; output follows source period order, in which dates MUST be
+non-decreasing. Cash dates are caller assertions and MAY lie outside their
+accrual periods. Same-day rows MUST remain separate, so ordinary date selectors
+continue to refuse duplicate-date ambiguity. No synthetic anchor row is added.
+
+Output contains `source_envelope_digest` from the complete semantic document
+envelope (including superseded blocks), exact `source_variant`, `series`, and
+`bindings: [{ source_path, date, amount }]`. The canonical source path is
+`lease_up_schedule.schedule@<period>.net_cash_flow`; the outer variant applies
+to every binding. Digest and values MUST describe the same source snapshot.
+The series label MUST be `Lease-up receipts and TI/LC only`; each row uses
+`kind: "other"` and its source path as label. `stated_metrics` MUST be omitted.
+Net cash flow here covers rent revenue, concessions and TI/LC capex only.
+The operation MUST NOT infer operating expenses, acquisition, debt, disposition,
+NOI or complete investment returns. It MUST NOT write documents or mutate _meta.
+
+Refusals use `LeaseUpCashFlowProjectionError.proto`, a serializable
+`LeaseUpCashFlowProjectionIssue` with category `calc`, code
+`CALC-LU-PROJECTION`, message and pointer. Plan pointers begin `plan`; source
+pointers identify the selected section and variant. Optional `evidence` retains
+the original `selection` ProtocolError, `structure` ValidationMessage array or
+`verification` LeaseUpVerification. Failed and unverifiable verdicts MUST remain
+distinct; no nested diagnostic is renamed. The three normative schemas are
+`lease-up-cash-flow-plan`, `lease-up-cash-flow-projection`, and
+`lease-up-cash-flow-projection-issue` under `spec/schemas/`.
+
+
 ### VIII.10 Distribution waterfall allocation (RFC 0035, RFC 0036)
 
 The format's `distribution_waterfall` section (format spec §4.27)
@@ -2028,6 +2072,7 @@ party's dated flow list. Walk the referenced series **in row order**:
    indeterminacy.
 
 ---
+
 
 ## IX. AI Host Contract (Tier 4)
 

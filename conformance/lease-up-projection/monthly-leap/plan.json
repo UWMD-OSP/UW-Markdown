@@ -1,0 +1,14 @@
+{
+  "source_variant": "base",
+  "day_count": "actual/365f",
+  "cash_dates": [
+    {
+      "period": "2028-02",
+      "date": "2028-02-29"
+    },
+    {
+      "period": "2028-03",
+      "date": "2028-03-31"
+    }
+  ]
+}
