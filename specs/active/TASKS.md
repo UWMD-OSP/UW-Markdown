@@ -1,7 +1,7 @@
-# Task matrix
+# Task matrix — property cash-flow assembly proposal
 
-- [x] Prepare and verify 2.8.0 — `d3b8616`, PR #187.
-- [x] Merge, tag and publish — v2.8.0, successful workflow 34712529152.
-- [x] Verify clean npm installation and reconcile published documentation — `a41e3bd`.
+- [ ] Draft and verify RFC 0045, reconcile roadmap/status, commit and open a review PR. **In flight.**
 
-All tasks are complete; see `specs/archive/release-2.8.0.md`.
+The previous release is complete; see `specs/archive/release-2.8.0.md`.
+Implementation tasks are intentionally not started while the economic contract
+and adopter ledger remain under review.
