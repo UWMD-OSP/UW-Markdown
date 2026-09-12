@@ -23,6 +23,15 @@ and the **0.1.1** reference module packages remain unpublished.
   unlevered/pre-tax coverage and source evidence, with a read-only CLI. The
   synthetic example is engineering data; real-deal validation remains separate.
 
+### Verification
+
+- Clean installation, build, 1,990 workspace tests, 457 default plus 76
+  declarative conformance checks, 34 JSON schemas, test typechecking, lint,
+  release consistency checks and documentation build passed.
+- Isolated four-package tarball installation verified core/browser and CLI
+  assembly, typed refusals, source preservation and pinned synthetic metrics.
+  Receipt changes are engine-version labels only.
+
 ## [2.8.0] - 2026-09-12
 
 ### Released
