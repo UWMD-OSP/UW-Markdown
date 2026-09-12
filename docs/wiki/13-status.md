@@ -1,19 +1,28 @@
 # 13 — Build status (living document)
 
-**RFC 0041 implementation (unreleased):** Protocol source is **2.8.0**.
+**Release 2.7.0 (2026-09-12):** Protocol is **2.8.0**, Format is **2.0**.
 Explicit period selectors cover the five standard series, with absolute calendar
 identities, duplicate refusal without prevalidation, variant context and PS
 diagnostics. Excel selector emission and refinement perturbation are explicitly
 unsupported; relative Qn/Mn and module registry extensions remain deferred.
-This is a dependent feature PR on RFC 0040; no package publication is implied.
+RFCs 0040 and 0041 merged through PRs #178 and #179; main `6fb480a` passed CI.
+The 2.7.0 release cut carries core/CLI **2.7.0**, signing **0.2.11** and
+batch **0.8.6**, with unpublished excel/report repins to **0.8.11**. PR #180
+records the cut; tag `v2.7.0` invokes npm trusted publishing for the four packages.
+See the current matrix for source compatibility and the release workflow for
+publication status.
+Release preparation passes a fresh npm ci, build, 1,782 workspace tests, test
+typechecking, 426 default conformance checks, 76 declarative cases, 25 schemas,
+lint, lockfile/package/version/index/release checks and docs build. The only
+receipt changes are three engine-version labels; calculation digests are unchanged.
 Verified (2026-09-12): 1,782 workspace tests, 426 default conformance checks,
 76 declarative cases, build, test typechecking, 25 schemas, lint, lockfile,
 package/version/index checks and the docs build. Existing calculation digests
 are unchanged; two receipt protocol labels advance to 2.8.0.
 
-**RFC 0040 implementation (2026-09-11, unreleased):** owner-approved block-level
-`_role` is signed content. This stage introduced Protocol **2.7.0**; published packages
-remain at the versions below. Cross-checks select declared senior/detail/primary
+**RFC 0040 implementation (2026-09-11; included in release 2.7.0):** owner-approved block-level
+`_role` is signed content. This stage introduced Protocol **2.7.0**; the current release
+uses the versions above. Cross-checks select declared senior/detail/primary
 roles, exclude components from property reads, refuse consulted collisions,
 and report per-section selection evidence. Role-free results remain unchanged.
 Trusted edits preserve or explicitly assign/remove roles; agent content cannot
@@ -21,7 +30,7 @@ assign them. Verified: 1,731 workspace tests, 414 default conformance checks,
 64 declarative conformance cases, build, test typechecking, 23 schemas, lint,
 lockfile/package/version/index checks, and the docs build. Existing tier-1
 baselines are unchanged; two receipt labels now state Protocol 2.7.0 with
-unchanged calculation result digests. RFC 0041 is implemented in the dependent stage described above.
+unchanged calculation result digests. RFC 0041 is included in the same package release, as described above.
 
 **Review update:** 2026-07-26 — RFC 0014 Phases A–E are implemented;
 owner-led governance is active.

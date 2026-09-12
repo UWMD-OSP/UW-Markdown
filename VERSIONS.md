@@ -20,19 +20,24 @@ same protocol version.
 
 ## Current matrix
 
+Release 2.7.0 pairs core/CLI 2.7.0 with Protocol 2.8.0 and Format 2.0.
+The `v2.7.0` release workflow publishes core, CLI, signing and batch; excel,
+report and the two reference modules remain unpublished. Package, Format and
+Protocol versions advance independently.
+
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.8.0** | format ≥ 1.0 (explicit period addressing, RFC 0041; unreleased implementation) |
-| `@uwmd/core` | **2.6.2** | format 2.0 (reads 1.x), protocol 2.8.0 in source; published 2.6.2 pairs with 2.6.0 |
-| `@uwmd/cli` (CLI) | **2.6.2** | `@uwmd/core` 2.6.2 |
-| `@uwmd/excel` | **0.8.10** | `@uwmd/core` 2.6.x, format 1.1 multifamily pack |
-| `@uwmd/report` | **0.8.10** | `@uwmd/core` 2.6.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.5** | `@uwmd/core` 2.6.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/signing` | **0.2.10** | `@uwmd/core` 2.6.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.6.x, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.0** (unpublished) | `@uwmd/core` 2.6.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.6.x browser entry |
+| UW Protocol | **2.8.0** | format ≥ 1.0 (explicit period addressing, RFC 0041) |
+| `@uwmd/core` | **2.7.0** | format 2.0 (reads 1.x), protocol 2.8.0 |
+| `@uwmd/cli` (CLI) | **2.7.0** | `@uwmd/core` 2.7.0 |
+| `@uwmd/excel` | **0.8.11** (unpublished) | `@uwmd/core` 2.7.x, format 1.1 multifamily pack |
+| `@uwmd/report` | **0.8.11** (unpublished) | `@uwmd/core` 2.7.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.6** | `@uwmd/core` 2.7.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/signing` | **0.2.11** | `@uwmd/core` 2.7.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.0** (unpublished) | `@uwmd/core` 2.7.x, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.0** (unpublished) | `@uwmd/core` 2.7.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.7.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

@@ -1,5 +1,6 @@
 # Active task matrix
 
-No unchecked implementation task is in flight. The RFC 0041 tasks and verification
-record are [archived](../archive/rfc-0041-period-addressing.md#completion-record).
-PR #179 awaits review and must follow its prerequisite PR #178.
+No implementation task is in flight. Release 2.7.0 preparation and verification
+are [archived](../archive/release-2.7.0-preparation.md). The owner subsequently
+authorized the release operation; PR #180, tag v2.7.0 and the release workflow
+record merge and publication status.

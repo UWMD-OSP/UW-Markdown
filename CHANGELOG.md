@@ -1,25 +1,37 @@
 # Changelog
 
-## Unreleased — RFC 0041
-
-- Protocol 2.8.0: explicit year, absolute month/quarter and date selectors on
-  the five standard period series, with contextual variants and dependency keys.
-- PS-01/02/03 diagnostics and typed evaluation refusals for malformed, duplicate
-  or unresolvable period references. Existing mathematical formulas are unchanged.
-- Excel emission and refinement perturbation explicitly decline selector nodes.
-
-## Unreleased — RFC 0040
-
-- Protocol 2.7.0: signed block `_role` annotations, deterministic role-aware
-  cross-check selection, component exclusion and per-section coverage evidence.
-- Trusted role assignment and preservation through edits, agent writes and
-  representation conversion. No package publication or financial math changes.
-
 All notable changes to UW Markdown — the format spec, the protocol spec, the
 reference library `@uwmd/core`, the conformance corpus, and starter tools — are
 documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project follows semantic versioning per surface (the format, the
 protocol, and each package each carry an independent semver).
+
+## [2.7.0] - 2026-09-12
+
+### Released
+
+- Core and CLI **2.7.0** package the merged RFC 0040 and RFC 0041 features.
+  Protocol stays **2.8.0**; Format stays **2.0**. Package 2.7.0 and Protocol
+  2.8.0 are independent version streams.
+- Exact-pin updates: signing **0.2.11**, batch **0.8.6**; unpublished
+  excel/report **0.8.11**. The two unpublished modules retain **0.1.0**.
+  Receipt engine labels advance to 2.7.0; calculation digests are unchanged.
+- Release tag: `v2.7.0`. The tag invokes the existing trusted-publishing
+  workflow for core, CLI, signing and batch.
+
+### Added
+
+- **RFC 0040:** signed block `_role` annotations, deterministic role-aware
+  cross-check selection, component exclusion and per-section coverage evidence.
+  Trusted role assignment survives edits and representation conversion;
+  agent writes cannot assign roles.
+- **RFC 0041:** explicit year, absolute month/quarter and date selectors on
+  the five standard period series, with contextual variants, overrides and
+  dependency keys. PS-01/02/03 diagnostics and typed evaluation refusals cover
+  malformed, duplicate and unresolvable references. Financial formulas are unchanged.
+- Excel emission and refinement perturbation explicitly decline period selector
+  expressions. Relative Qn/Mn aliases, calendar conversion, module registration
+  and speculative leasing remain separate future work.
 
 ## [2.6.2] - 2026-09-10
 
