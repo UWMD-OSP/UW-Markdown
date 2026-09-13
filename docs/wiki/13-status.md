@@ -66,6 +66,11 @@ changing numeric storage, calculation, or locale separators. `CUR-01` refuses
 malformed identity; per-value/multi-currency representation and FX remain
 deferred.
 
+RFC 0047 is implemented on the development branch but unreleased:
+`inspectPropertyCashFlowInputs` and `inspect-property-cash-flows` inventory the
+source shape needed for RFC 0045 authoring without classifying rows or inferring
+expense, reserve, or payment timing.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward

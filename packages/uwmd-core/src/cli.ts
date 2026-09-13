@@ -51,6 +51,7 @@ import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cas
 import { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
 import type { LeaseUpCashFlowPlan, PropertyCashFlowPlan } from './protocol.js';
 import { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
+import { inspectPropertyCashFlowInputs } from './property-cash-flow-inputs.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
@@ -1698,6 +1699,26 @@ switch (command) {
     break;
   }
 
+  case 'inspect-property-cash-flows': {
+    if (positional.length !== 1 || Object.keys(flags).some(key => key !== 'json')) {
+      console.error('Usage: uwmd inspect-property-cash-flows <file> [--json]');
+      process.exit(1);
+    }
+    const inventory = inspectPropertyCashFlowInputs(parseUWFile(readFile(positional[0]!)));
+    if (flags['json']) {
+      console.log(JSON.stringify(inventory, null, 2));
+    } else {
+      console.log(`Lease-up variants: ${inventory.lease_up_schedule.length}`);
+      for (const source of inventory.lease_up_schedule)
+        console.log(`  ${source.variant ?? '(unlabelled)'}: ${source.shape}; ${source.periods.length} periods`);
+      console.log(`Cash-flow variants: ${inventory.cash_flow_series.length}`);
+      for (const source of inventory.cash_flow_series)
+        console.log(`  ${source.variant ?? '(unlabelled)'}: ${source.shape}; ${source.rows.length} rows; ${source.stated_metrics.length} stated metrics`);
+      console.log('This inventories source inputs only; it does not assign categories, dates, zeros, or economic assertions.');
+    }
+    break;
+  }
+
   case 'calc': {
     if (!positional[0] || !positional[1]) {
       console.error('Usage: uwmd calc <file> <calc.json|formula> [--calc-context <file>]');
@@ -1917,6 +1938,7 @@ Commands:
                                  re-stamps hashes; signed blocks need --resign or --strip-signatures)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
   assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
+  inspect-property-cash-flows <file> [--json]  Inventory source inputs needed for an assembly plan (read-only)
   project-lease-up <file> <plan.json>  Project verified lease-up amounts onto explicit cash dates (JSON candidate only)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uwx.md file

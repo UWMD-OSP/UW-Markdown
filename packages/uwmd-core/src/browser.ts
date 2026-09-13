@@ -874,6 +874,13 @@ export type { LeaseUpCashFlowPlan, LeaseUpCashFlowProjection, LeaseUpCashFlowPro
 
 // RFC 0045 — explicit property cash-flow assembly.
 export { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
+// RFC 0047 — read-only source inventory for authoring an RFC 0045 plan.
+export { inspectPropertyCashFlowInputs } from './property-cash-flow-inputs.js';
+export type {
+  PropertyCashFlowInputInventory,
+  PropertyCashFlowInputRow,
+  PropertyCashFlowInputVariant,
+} from './property-cash-flow-inputs.js';
 export type { PropertyCashFlowPlan, PropertyCashFlowAssembly, PropertyCashFlowAssemblyIssue,
   PropertyCashFlowCategory, PropertyCashFlowCell, PropertyCashFlowCoverage,
   PropertyCashFlowAssertions, PropertyCashFlowBinding, PropertyCashFlowCellEvidence } from './protocol.js';

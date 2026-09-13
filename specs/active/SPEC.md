@@ -1,9 +1,9 @@
-# Specification: Document currency identity (RFC 0046)
+# Specification: Property cash-flow input inventory (RFC 0047)
 
 Status: **accepted** · Opened 2026-09-13 · Implementation on `codex/work`
 
-The next protocol milestone after PR #193 is an additive, document-level
-currency identity. It makes display denomination explicit without inventing
-FX or permitting mixed-currency arithmetic.
+The next bounded milestone is a read-only inventory of the source material
+needed to author an RFC 0045 property cash-flow plan. It reduces handoff
+friction without inferring economics or changing the assembly contract.
 
-The complete contract is [RFC 0046](../../docs/rfcs/0046-currency-identity.md).
+The complete contract is [RFC 0047](../../docs/rfcs/0047-property-cash-flow-input-inventory.md).

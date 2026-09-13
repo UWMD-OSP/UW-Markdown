@@ -59,6 +59,10 @@ RFC 0046 is implemented on the development branch but unreleased. It adds
 optional document-level currency identity for honest display across locales;
 numeric storage and financial calculations remain unchanged.
 
+RFC 0047 is implemented on the development branch but unreleased. Its
+read-only input inventory makes the RFC 0045 real-deal handoff inspectable
+without inferring expense, reserve, or payment-timing economics.
+
 ## Forward backlog
 
 The bounded period-consumer and lease-up projection stages are complete. The
@@ -67,7 +71,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFC 0045 released; adopter review pending | Validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
+| 1 | Real-deal DCF validation and extensions | RFC 0045 released; input inventory implemented; adopter review pending | Use the [input inventory](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#prepare-a-real-deal-plan-without-inventing-inputs), then validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |

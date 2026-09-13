@@ -8,7 +8,25 @@ const cli = path('packages/uwmd-cli/bin/uwmd.mjs');
 const source = path('docs/examples/property-cash-flow-synthetic.uwx.md');
 const plan = path('docs/examples/property-cash-flow-plan.json');
 const run = (args: string[]) => spawnSync(process.execPath, [cli, 'assemble-property', ...args], { encoding: 'utf8' });
+const inspect = (args: string[]) => spawnSync(process.execPath, [cli, 'inspect-property-cash-flows', ...args], { encoding: 'utf8' });
 describe('property cash-flow assembly CLI', () => {
+  it('inventories source inputs without producing a plan or editing the deal', () => {
+    const before = readFileSync(source, 'utf8');
+    const result = inspect([source, '--json']);
+    expect(result.status, result.stderr).toBe(0);
+    const value = JSON.parse(result.stdout);
+    expect(value.lease_up_schedule[0]).toMatchObject({ variant: 'base', shape: 'usable' });
+    expect(value.cash_flow_series[0].rows.length).toBeGreaterThan(0);
+    expect(value.notes.join(' ')).toContain('does not establish metric verification');
+    expect(readFileSync(source, 'utf8')).toBe(before);
+  });
+
+  it('refuses unsupported inventory flags', () => {
+    const result = inspect([source, '--output', 'plan.json']);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+  });
+
   it('verifies the synthetic workflow against pinned existing-engine metric outputs', () => {
     const result = spawnSync(process.execPath, [path('scripts/verify-property-cash-flow-workflow.mjs')], { encoding: 'utf8' });
     expect(result.status, result.stderr).toBe(0);

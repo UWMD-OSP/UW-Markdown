@@ -35,6 +35,23 @@ explicit discount-rate input of `0.08`. Neither operation writes to the deal.
 The `.uwx.md` example uses Format 2.0 nested metadata; its provenance labels the
 inputs as synthetic.
 
+## Prepare a real-deal plan without inventing inputs
+
+The source checkout also provides a read-only inventory command for the next
+real-deal step:
+
+```sh
+npm run cli -- inspect-property-cash-flows deal.uwx.md --json
+```
+
+It lists current lease-up and supplemental variants, lease-up periods, source
+row indexes/dates/amounts, stated metric names and the coverage cells that a
+selected schedule requires. It does not choose a variant, assign an expense or
+reserve category, infer a payment date, create zero declarations, or attest an
+economic assertion. The output is an intake aid; the owner still supplies
+explicit expense, reserve and payment-timing inputs before `assemble-property`
+can establish a complete declared candidate.
+
 The complete candidate contains 12 copied cash rows and 20 coverage cells.
 Each period's three lease-up cells intentionally share one bundled row. Four
 other cells have explicit zero explanations; those declarations insert no rows.
