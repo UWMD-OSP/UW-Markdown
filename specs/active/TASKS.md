@@ -1,9 +1,11 @@
 # Task matrix
 
-Release 2.9.0 and RFC 0045 implementation were reconciled as complete.
+- [x] Implement and document the read-only cash-flow verification CLI — `8bd21a3`.
+- [x] Run build, 2,024 tests, test typechecking, 457 default and 76 declarative
+  conformance checks, 34 schemas, lint, package/lockfile/version/index/release
+  checks and docs build. Eight private comparisons also passed through the CLI.
+- [x] Open [PR #193](https://github.com/UWMD-OSP/UW-Markdown/pull/193) for review.
 
-- [ ] Implement and document the read-only cash-flow verification CLI, run all
-  gates, commit and open a review PR. This is the only item in flight.
-
-Real-deal mathematical comparisons have been performed privately; complete
-property assembly still needs expense/reserve coverage and payment timing.
+The completed contract is archived in
+[specs/archive/cash-flow-verification-cli.md](../archive/cash-flow-verification-cli.md).
+Merge and publication are pending; no additional implementation is in flight.
