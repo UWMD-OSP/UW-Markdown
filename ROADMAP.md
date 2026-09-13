@@ -47,6 +47,14 @@ does not mean its standalone npm package is published.
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
 | Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. [Publication and installation evidence](docs/reviews/2026-09-12-release-2.8.0.md). |
 
+## Unreleased development after 2.9.0
+
+The source CLI adds `verify-cash-flows` to check selected stated cash-flow metrics
+without a custom script. It distinguishes no claims from verified claims and
+preserves existing failure/unverifiable results. This is private-deal validation
+tooling, not a completed real-deal property assembly or a new financial model.
+See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+
 ## Forward backlog
 
 The bounded period-consumer and lease-up projection stages are complete. The

@@ -1,8 +1,9 @@
 # Task matrix
 
-- [x] Prepare and verify release 2.9.0, including isolated tarball consumers — PR #191.
-- [x] Merge green release PR, tag v2.9.0 and verify trusted publication.
-- [x] Verify clean registry installation and reconcile published documentation.
+Release 2.9.0 and RFC 0045 implementation were reconciled as complete.
 
-The completed release contract is archived in `specs/archive/release-2.9.0.md`.
-Owner-led real-deal validation remains the next modeling prerequisite.
+- [ ] Implement and document the read-only cash-flow verification CLI, run all
+  gates, commit and open a review PR. This is the only item in flight.
+
+Real-deal mathematical comparisons have been performed privately; complete
+property assembly still needs expense/reserve coverage and payment timing.

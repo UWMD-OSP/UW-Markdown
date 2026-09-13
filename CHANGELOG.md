@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- Read-only `uwmd verify-cash-flows <file> [--variant <name>] [--json]` over
+  the existing cash-flow metric verifier, with strict input guards, explicit
+  no-stated-metrics results and automation exit codes. No protocol, financial
+  formula, precision tolerance or package-version change.
+
 ## [2.9.0] - 2026-09-12
 
 ### Released
