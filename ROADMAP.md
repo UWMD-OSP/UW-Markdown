@@ -1,6 +1,6 @@
 # Roadmap
 
-Current as of **2026-09-12**, following [release 2.9.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.9.0).
+Current as of **2026-09-13**, following [release 2.9.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.9.0).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
@@ -63,6 +63,12 @@ RFC 0047 is implemented on the development branch but unreleased. Its
 read-only input inventory makes the RFC 0045 real-deal handoff inspectable
 without inferring expense, reserve, or payment-timing economics.
 
+Adoption planning now has two draft RFCs. RFC 0048 scopes a worked kit for
+standalone lease abstracts, source notes, rent-roll/P&L/cash-flow fragments,
+inline records and deal packages. RFC 0049 scopes an optional PostgreSQL/JSONB
+lake adapter that preserves canonical envelopes and facts without making a
+warehouse schema part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
+
 ## Forward backlog
 
 The bounded period-consumer and lease-up projection stages are complete. The
@@ -76,6 +82,14 @@ no additional financial assumptions are supplied by the released adapter.
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |
 | 5 | Currency-code disambiguation | RFC 0046 implemented, unreleased | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
+
+### Adoption and integration candidates
+
+| Work | State | Next evidence |
+|---|---|---|
+| Standalone document and package example kit | RFC 0048 draft | Add lease-abstract/source-note examples, rent-roll/P&L/cash-flow fragments, inline/external twins, and a verified package. |
+| PostgreSQL JSONB lake adapter | RFC 0049 draft | Prove idempotent loading of existing CSV/JSONL facts with raw-envelope preservation and typed query projections. |
+| Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing
 

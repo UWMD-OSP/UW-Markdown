@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-12** after release **v2.9.0** at `7d939c7`.
+Reconciled **2026-09-13** after release **v2.9.0** at `7d939c7`.
 Core/CLI **2.9.0**, signing **0.2.13** and batch **0.8.8** are published and
 verified through a clean npm installation. Format **2.0** and Protocol
 **2.12.0** version independently. See [release evidence](../reviews/2026-09-12-release-2.9.0.md),
@@ -70,6 +70,17 @@ RFC 0047 is implemented on the development branch but unreleased:
 `inspectPropertyCashFlowInputs` and `inspect-property-cash-flows` inventory the
 source shape needed for RFC 0045 authoring without classifying rows or inferring
 expense, reserve, or payment timing.
+
+Data-center conformance is structurally complete as a reference module: six
+dedicated runtime scenarios, 26 module tests, 11 calculations, seven
+validations, and explicit fallback/degraded behavior. The Mesa Gateway fixture
+is synthetic and the module package remains unpublished, so adopter validation
+is still open. The built-in library covers nine calculation packs; mixed-use is
+composition rather than a standalone pack.
+
+RFC 0048 and RFC 0049 are draft adoption RFCs. RFC 0048 scopes standalone
+document/package examples; RFC 0049 scopes an optional PostgreSQL/JSONB lake
+adapter outside the protocol and core dependencies.
 
 ## Remaining work
 

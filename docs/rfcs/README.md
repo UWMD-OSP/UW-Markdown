@@ -71,6 +71,8 @@ and how it gets accepted.
 | [0045](./0045-explicit-property-cash-flow-assembly.md) | Assemble explicitly covered property cash flows | implemented | protocol, core, conformance, tooling |
 | [0046](./0046-currency-identity.md) | Document currency identity | accepted | format, protocol, core, conformance |
 | [0047](./0047-property-cash-flow-input-inventory.md) | Property cash-flow input inventory | accepted | core, tooling |
+| [0048](./0048-standalone-document-kit.md) | Standalone UW document kit and package examples | draft | conformance, tooling, documentation |
+| [0049](./0049-postgresql-jsonb-lake-adapter.md) | PostgreSQL JSONB lake adapter boundary | draft | tooling, documentation |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
