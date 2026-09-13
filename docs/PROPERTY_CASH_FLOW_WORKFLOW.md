@@ -40,6 +40,52 @@ Each period's three lease-up cells intentionally share one bundled row. Four
 other cells have explicit zero explanations; those declarations insert no rows.
 A separately stated numeric zero remains an ordinary source row.
 
+## Check stated cash-flow metrics from the CLI (unreleased)
+
+The source checkout adds a read-only command over the existing RFC 0034 verifier.
+It is not included in the published 2.9.0 CLI. After building the checkout:
+
+```sh
+npm run cli -- verify-cash-flows deal.uwx.md --variant base --json
+npm run cli -- verify-cash-flows conformance/cash-flow/valid-hold-period/deal.uwx.md --json
+```
+
+The second command checks the existing synthetic conformance example. For a
+private Excel comparison, transcribe the dated cash amounts and Excel's stated
+metrics into a `cash_flow_series` block with source provenance; this command
+does not import spreadsheets or turn an assembled candidate into a saved block.
+Keep the full assembly wrapper alongside any series extracted for comparison.
+
+Selection follows the existing primary-role, default/base and sole-block rules.
+Ambiguous selections refuse; `--variant` names an exact active variant, including
+a component if deliberately selected. Superseded history is never selected.
+The command parses structured Markdown strictly and checks the selected payload;
+it does not replace whole-document `validate`, signature verification or receipts.
+An omitted day count retains RFC 0034's `actual/365f` default.
+
+JSON reports contain `section`, `variant`, `status`, `checked_metrics` and
+the original `verification` result. Input errors instead contain `error` with
+a code, message and pointer. The names in `checked_metrics` identify the claims
+passed to the verifier; the verdict/issues determine whether they were verifiable.
+
+| Exit | Meaning |
+|---|---|
+| 0 | At least one stated metric was checked and all checked claims verified. |
+| 1 | A metric failed, or arguments, file reading, parsing, selection or input shape refused. |
+| 3 | The verifier returned unverifiable, or no supported non-null metric was stated. |
+
+No claims yields `status: "no_stated_metrics"` and `verification: null`.
+Null is not zero; a stated numeric zero is checked normally. The CLI refuses
+nonnumeric claims and malformed cash rows even when no metrics are stated.
+Partial XNPV claims retain the existing verifier's unverifiable result.
+Write flags, calculation overrides, duplicate options and extra file paths refuse.
+
+A passing comparison establishes only that the stated metrics follow the stated
+rows under the existing engine rules. It establishes no currency or financing
+basis, factual accuracy, complete expense coverage or realized performance.
+Resolve source contradictions with attributable evidence; label scenario
+assumptions explicitly and keep unresolved payment timing visible.
+
 ## Declare coverage and the economic boundary
 
 The plan states acquisition and disposition dates, day count, currency and exact

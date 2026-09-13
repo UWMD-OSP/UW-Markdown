@@ -1,9 +1,10 @@
 # Active work
 
-Release 2.9.0 is published and verified. The contract is
-[archived](../archive/release-2.9.0.md), with public
-[release evidence](../../docs/reviews/2026-09-12-release-2.9.0.md).
+The cash-flow verification CLI is implemented in commit `8bd21a3` and proposed
+for review in [PR #193](https://github.com/UWMD-OSP/UW-Markdown/pull/193).
+Its completed contract is [archived](../archive/cash-flow-verification-cli.md).
+The command is unreleased; published core/CLI remain 2.9.0.
 
-RFC 0045's bounded synthetic-ledger implementation is complete. The owner will
-validate a real deal separately. Further financial modeling requires a bounded
-contract for its economics; no unapproved financial implementation is in flight.
+Private archived-deal metric comparisons are complete for the selected streams.
+Full property assembly still requires explicit expense/reserve coverage and
+payment timing. Further financial extensions need separate bounded contracts.

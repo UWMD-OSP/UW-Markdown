@@ -51,6 +51,15 @@ evidence. The owner selected a synthetic test ledger; real-deal review remains
 separate. See the [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md).
 This API and CLI are published in 2.9.0.
 
+## Unreleased development after 2.9.0
+
+The source CLI adds `verify-cash-flows` for selected stated-metric comparisons,
+with explicit no-claim results, input guards and read-only behavior. This reuses
+the published metric engine without changing the protocol or financial math.
+Private archived-deal comparisons informed the workflow; no private ledgers or
+property identifiers are included in public fixtures. Complete real-deal
+assembly still needs explicit expense/reserve coverage and payment timing.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward

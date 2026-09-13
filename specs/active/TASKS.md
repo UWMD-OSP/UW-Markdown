@@ -1,8 +1,11 @@
 # Task matrix
 
-- [x] Prepare and verify release 2.9.0, including isolated tarball consumers — PR #191.
-- [x] Merge green release PR, tag v2.9.0 and verify trusted publication.
-- [x] Verify clean registry installation and reconcile published documentation.
+- [x] Implement and document the read-only cash-flow verification CLI — `8bd21a3`.
+- [x] Run build, 2,024 tests, test typechecking, 457 default and 76 declarative
+  conformance checks, 34 schemas, lint, package/lockfile/version/index/release
+  checks and docs build. Eight private comparisons also passed through the CLI.
+- [x] Open [PR #193](https://github.com/UWMD-OSP/UW-Markdown/pull/193) for review.
 
-The completed release contract is archived in `specs/archive/release-2.9.0.md`.
-Owner-led real-deal validation remains the next modeling prerequisite.
+The completed contract is archived in
+[specs/archive/cash-flow-verification-cli.md](../archive/cash-flow-verification-cli.md).
+Merge and publication are pending; no additional implementation is in flight.
