@@ -143,6 +143,11 @@ locale: "en-US"                     # display locale (RFC 0001); absent = en-US.
                                     # unregistered value is LOC-01: display
                                     # renders are refused, never silently
                                     # produced in a different locale.
+currency_code: "USD"                # optional document monetary identity
+                                    # (RFC 0046); three uppercase ASCII letters.
+                                    # It controls currency identity only; locale
+                                    # still controls numeric separators. Absent
+                                    # preserves the locale's conventional symbol.
 
 # ── Property Identity ─────────────────────────────────────
 property_address: "string"          # * full street address

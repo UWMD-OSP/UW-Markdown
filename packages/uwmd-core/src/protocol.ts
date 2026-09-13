@@ -211,6 +211,11 @@ export function isSupportedLocale(tag: unknown): tag is SupportedLocale {
   return typeof tag === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(tag);
 }
 
+/** True for the RFC 0046 document-level currency identity syntax. */
+export function isCurrencyCode(value: unknown): value is string {
+  return typeof value === 'string' && /^[A-Z]{3}$/.test(value);
+}
+
 export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.freeze({
   id: 'org.uwmd.core',
   name: '@uwmd/core reference implementation',
@@ -2002,6 +2007,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
   { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
+  { prefix: 'CUR', description: 'Document currency identity (RFC 0046)', capabilities: ['validate'] },
   { prefix: 'PS', description: 'Period series identity (RFC 0041)', capabilities: ['validate'] },
   { prefix: 'ROLE', description: 'Signed block role (RFC 0040)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
@@ -2566,6 +2572,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The file declares a `locale` this implementation does not list in `supported_locales` (or an unregistered tag). Display renders are refused — never silently produced in a different locale; parsing, validation, editing, and calc are unaffected (RFC 0001).',
     remediation: 'Render with an implementation that supports the declared locale, or change the file\'s `locale` to one this implementation supports. Content is canonical and locale-free, so no data conversion is involved.',
     spec_ref: 'UW_PROTOCOL_v1.md §III.1a',
+  },
+  {
+    code: 'CUR-01', severity: 'error',
+    title: 'Malformed currency identity',
+    description: 'The document declares currency_code, but it is not three uppercase ASCII letters. Currency identity is never inferred from a symbol or display locale (RFC 0046).',
+    remediation: 'Set frontmatter.currency_code to the authored three-letter currency identity, or omit it when the source does not establish one. Do not infer it from locale or a display symbol.',
+    spec_ref: 'UW_PROTOCOL_v1.md §III.1b',
   },
   {
     code: 'POL-03', severity: 'error',

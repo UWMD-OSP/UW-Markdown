@@ -60,6 +60,12 @@ Private archived-deal comparisons informed the workflow; no private ledgers or
 property identifiers are included in public fixtures. Complete real-deal
 assembly still needs explicit expense/reserve coverage and payment timing.
 
+RFC 0046 is implemented on the development branch but unreleased: optional
+document-level `currency_code` makes display denomination explicit without
+changing numeric storage, calculation, or locale separators. `CUR-01` refuses
+malformed identity; per-value/multi-currency representation and FX remain
+deferred.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward
@@ -69,8 +75,8 @@ assembly still needs explicit expense/reserve coverage and payment timing.
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
   metric Excel export remain separate extensions.
-- Waterfall extensions, currency identity and stochastic VOI need bounded
-  contracts. Retrieval and standalone optional-package publication remain
+- Waterfall extensions, per-value currency identity and stochastic VOI need
+  bounded contracts. Retrieval and standalone optional-package publication remain
   demand-gated. DOCX remains scoped out by the owner.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).

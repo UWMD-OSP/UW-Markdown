@@ -441,6 +441,14 @@ describe('evaluateCalc', () => {
     expect(r.display).toContain('5,000,000');
   });
 
+  it('threads document currency identity into monetary display only', () => {
+    const ctx = makeCtx();
+    ctx.parsed.frontmatter.currency_code = 'MXN';
+    const r = evaluateCalc(decl('purchase_price', 'quick_metrics.purchase_price', '$'), ctx);
+    expect(r.value).toBe(5000000);
+    expect(r.display).toBe('MXN 5,000,000');
+  });
+
   it('captures parse errors into result.error', () => {
     const r = evaluateCalc(decl('bad', '1 + + 2'), makeCtx());
     expect(r.ok).toBe(false);

@@ -4,7 +4,7 @@
 export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
 export { validateUWFile, lookupRemediation, getReturnTaxBasis } from './validator.js';
 export { compact, diff } from './compactor.js';
-export { render, UnsupportedRenderFormatError, UnsupportedLocaleError } from './renderer.js';
+export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';
 export type { ReportOptions, ReportResult } from './report.js';
@@ -849,6 +849,7 @@ export {
   SOURCE_TAGS,
   SUPPORTED_LOCALES,
   isSupportedLocale,
+  isCurrencyCode,
   ACTOR_NAMESPACES,
   ACTOR_SOURCE_RE,
   parseActorSource,

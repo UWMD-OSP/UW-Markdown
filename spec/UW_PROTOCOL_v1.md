@@ -485,12 +485,29 @@ locales land via additive RFC amendments to this table.
 | `zh-CN` | `.` | `,` | `¥` prefix | `5.51%` | `YYYY-MM-DD` |
 
 NBSP is U+00A0. Currency symbols are the locale's conventional default
-symbol; **currency-code disambiguation is out of scope** (RFC 0001
-defers it to a future data-model RFC — a peso deal authored in `en-US`
-still renders `$` until monetary values carry a `currency_code`).
+symbol when `frontmatter.currency_code` is absent. When that optional field
+is present, its three-uppercase-letter identity is rendered as an explicit
+prefix (`USD 1,234.56`), while the locale continues to control numeric
+separators. Identity is never inferred from `$`, locale, address, or asset
+location; no FX conversion or currency-specific precision is performed.
 Date patterns are applied textually to the ISO source — no timezone
 arithmetic. Example (`de-DE`): `1234567.5` → `1.234.567,5 €`;
 `0.0551` → `5,51 %`; `2026-04-15` → `15.04.2026`.
+
+### III.1b Document currency identity (RFC 0046)
+
+`frontmatter.currency_code` is an optional document-level denomination
+assertion. If present it MUST match `^[A-Z]{3}$`; a malformed value emits
+`CUR-01` (error) and display renders MUST refuse it. A syntactically valid
+code is preserved as authored identity; the reference implementation does
+not perform a live ISO 4217 allocation lookup.
+
+The field applies to monetary display values and calc result display strings
+in the document. It does not alter canonical numeric storage, CSV/JSON
+interchange, Lite canonicalization, hashes, signatures, receipts, or numeric
+calculation. This first tranche supports one currency per document only;
+per-value identity, FX, and mixed-currency arithmetic require a future
+additive money representation.
 
 ### III.2 Date/time
 
@@ -561,6 +578,7 @@ capability is unconditional: every implementation owes it.
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |
 | `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
+| `CUR-NN` | Document currency identity (§III.1b, RFC 0046). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |

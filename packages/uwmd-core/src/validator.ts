@@ -13,7 +13,7 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, STAGE_REQUIREMENTS, requiredSectionsFor,
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
@@ -141,6 +141,7 @@ export function validateUWFile(
   checkSectionReadiness(parsed, issues, ledger);
   checkReturnsTaxBasis(parsed, issues);
   checkLocale(parsed, issues);
+  checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
@@ -1508,6 +1509,19 @@ function checkLocale(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
     code: 'LOC-01', severity: 'error', field: 'locale',
     message: `LOC-01: locale ${JSON.stringify(declared)} is not a registered display locale; display renders are refused rather than silently produced in a different locale`,
     value: String(declared),
+  });
+}
+
+// ─── Document currency identity (RFC 0046) ──────────────────────────────────
+
+function checkCurrencyIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const declared = parsed.frontmatter.currency_code;
+  if (declared == null) return; // absent preserves legacy symbol behavior
+  if (isCurrencyCode(declared)) return;
+  issues.push({
+    code: 'CUR-01', severity: 'error', field: 'currency_code',
+    message: `CUR-01: currency_code ${JSON.stringify(declared)} is not three uppercase ASCII letters; currency identity is never inferred from locale or a display symbol`,
+    value: declared,
   });
 }
 

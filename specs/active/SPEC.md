@@ -1,10 +1,9 @@
-# Active work
+# Specification: Document currency identity (RFC 0046)
 
-The cash-flow verification CLI is implemented in commit `8bd21a3` and proposed
-for review in [PR #193](https://github.com/UWMD-OSP/UW-Markdown/pull/193).
-Its completed contract is [archived](../archive/cash-flow-verification-cli.md).
-The command is unreleased; published core/CLI remain 2.9.0.
+Status: **accepted** · Opened 2026-09-13 · Implementation on `codex/work`
 
-Private archived-deal metric comparisons are complete for the selected streams.
-Full property assembly still requires explicit expense/reserve coverage and
-payment timing. Further financial extensions need separate bounded contracts.
+The next protocol milestone after PR #193 is an additive, document-level
+currency identity. It makes display denomination explicit without inventing
+FX or permitting mixed-currency arithmetic.
+
+The complete contract is [RFC 0046](../../docs/rfcs/0046-currency-identity.md).

@@ -1,11 +1,9 @@
 # Task matrix
 
-- [x] Implement and document the read-only cash-flow verification CLI — `8bd21a3`.
-- [x] Run build, 2,024 tests, test typechecking, 457 default and 76 declarative
-  conformance checks, 34 schemas, lint, package/lockfile/version/index/release
-  checks and docs build. Eight private comparisons also passed through the CLI.
-- [x] Open [PR #193](https://github.com/UWMD-OSP/UW-Markdown/pull/193) for review.
-
-The completed contract is archived in
-[specs/archive/cash-flow-verification-cli.md](../archive/cash-flow-verification-cli.md).
-Merge and publication are pending; no additional implementation is in flight.
+- [x] Add `frontmatter.currency_code` and the `CUR-01` validator contract.
+- [x] Thread explicit currency identity through formatters, core display
+      renders, reports, and calc result display without changing numeric output.
+- [x] Add unit/conformance coverage for explicit, absent, malformed, and
+      locale-crossed currency identity.
+- [x] Run the full deterministic gates, update status/changelog/roadmap, and
+      commit the completed RFC 0046 implementation.

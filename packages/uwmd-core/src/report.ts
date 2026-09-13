@@ -10,8 +10,9 @@
 
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { resolveDealSize } from './protocol.js';
+import { isCurrencyCode, resolveDealSize } from './protocol.js';
 import { validateUWFile } from './validator.js';
+import { InvalidCurrencyCodeError } from './renderer.js';
 import type { RenderTier } from './renderer.js';
 import {
   formatCurrency,
@@ -85,7 +86,11 @@ export function renderReportHtml(parsed: ParsedUWFile, opts: ReportOptions = {})
   builders.push(['assumptions', assumptionsDisclosures]);
   if (tier === 'analyst') builders.push(['appendix', appendix]);
 
-  const ctx: Ctx = { parsed, fm, tier, opts };
+  const currencyCode = fm.currency_code;
+  if (currencyCode != null && !isCurrencyCode(currencyCode)) {
+    throw new InvalidCurrencyCodeError(String(currencyCode));
+  }
+  const ctx: Ctx = { parsed, fm, tier, opts, currencyCode };
   const sectionsRendered: string[] = [];
   const sectionsSkipped: string[] = [];
   const body: string[] = [];
@@ -128,6 +133,7 @@ interface Ctx {
   fm: Record<string, unknown>;
   tier: RenderTier;
   opts: ReportOptions;
+  currencyCode?: string;
 }
 
 function esc(value: unknown): string {
@@ -136,7 +142,6 @@ function esc(value: unknown): string {
   );
 }
 
-const money = (v: unknown): string => formatCurrency(v);
 const pct = (v: unknown): string => formatPercent(v);
 const ratio = (v: unknown, dec = 2): string => formatRatio(v, { decimals: dec });
 const val = (v: unknown): string => formatValue(v);
@@ -237,6 +242,7 @@ function sectionBlock(ctx: Ctx, id: string): UWBlock | null {
 
 function coverPage(ctx: Ctx): string {
   const { fm, tier, opts } = ctx;
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const address = [fm.property_address, fm.city, fm.state, fm.zip].filter(has).join(', ');
   const property = sectionBlock(ctx, 'property');
   const units = deepGet(property?.content, 'total_units');
@@ -294,6 +300,7 @@ function prettyToken(s: string): string {
 
 function executiveSummary(ctx: Ctx): string | null {
   const { fm, parsed } = ctx;
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const qm = (fm.quick_metrics ?? {}) as Record<string, unknown>;
   if (Object.keys(qm).length === 0) return null;
 
@@ -341,6 +348,7 @@ ${flagHtml}`,
 // ─── §7.1 / 3 — Property Overview ────────────────────────────────────────────
 
 function propertyOverview(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'property');
   if (!block) return null;
   const c = block.content;
@@ -391,6 +399,7 @@ ${amenityHtml}`,
 // ─── §7.1 / 4 — Proforma / Cash Flow (noi_model) ─────────────────────────────
 
 function proforma(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'noi_model');
   if (!block) return null;
   const c = block.content;
@@ -464,6 +473,7 @@ function nonZero(v: unknown): unknown {
 // ─── §7.1 / 5 — Rent Roll Summary ────────────────────────────────────────────
 
 function rentRollSummary(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'rent_roll');
   if (!block) return null;
   const c = block.content;
@@ -530,6 +540,7 @@ function rentRollSummary(ctx: Ctx): string | null {
 // ─── §7.1 / 6 — Debt Structure ───────────────────────────────────────────────
 
 function debtStructure(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'debt_structure');
   if (!block) return null;
   const c = block.content;
@@ -591,6 +602,7 @@ const USE_LABELS: Array<[string, string]> = [
 ];
 
 function sourcesUses(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'sources_uses');
   if (!block) return null;
   const c = block.content;
@@ -645,6 +657,7 @@ function sourcesUses(ctx: Ctx): string | null {
 // ─── §7.1 / 8 — Borrower Summary ─────────────────────────────────────────────
 
 function borrowerSummary(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'borrower_sponsor');
   if (!block) return null;
   const c = block.content;
@@ -708,6 +721,7 @@ ${verifiedNote}`,
 // ─── §7.1 / 9 — Exit Analysis ────────────────────────────────────────────────
 
 function exitAnalysis(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'dcf');
   if (!block) return null;
   const c = block.content;
@@ -756,6 +770,7 @@ const SOURCE_BADGE_KIND: Record<string, string> = {
 };
 
 function assumptionsDisclosures(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'assumptions');
   const disclaimer = ctx.opts.disclaimer ?? STANDARD_DISCLAIMER;
   const list = deepGet(block?.content, 'assumptions') as Array<Record<string, unknown>> | undefined;
@@ -798,6 +813,7 @@ function assumptionsDisclosures(ctx: Ctx): string | null {
 // ─── §7.2 — Credit Memo additions ────────────────────────────────────────────
 
 function marketAnalysis(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const block = sectionBlock(ctx, 'market_analysis');
   if (!block) return null;
   const c = block.content;
@@ -839,6 +855,7 @@ function marketAnalysis(ctx: Ctx): string | null {
 }
 
 function financialAnalysis(ctx: Ctx): string | null {
+  const money = (v: unknown): string => formatCurrency(v, { currencyCode: ctx.currencyCode });
   const dcf = sectionBlock(ctx, 'dcf');
   const stress = sectionBlock(ctx, 'stress_tests') ?? getSectionVariant(ctx.parsed, 'stress_tests', 'default');
   if (!dcf && !stress) return null;

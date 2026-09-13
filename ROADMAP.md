@@ -55,6 +55,10 @@ preserves existing failure/unverifiable results. This is private-deal validation
 tooling, not a completed real-deal property assembly or a new financial model.
 See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
 
+RFC 0046 is implemented on the development branch but unreleased. It adds
+optional document-level currency identity for honest display across locales;
+numeric storage and financial calculations remain unchanged.
+
 ## Forward backlog
 
 The bounded period-consumer and lease-up projection stages are complete. The
@@ -67,7 +71,7 @@ no additional financial assumptions are supplied by the released adapter.
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |
-| 5 | Currency-code disambiguation | Deferred | Define currency identity independently from display locale before combining cross-currency values. |
+| 5 | Currency-code disambiguation | RFC 0046 implemented, unreleased | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
 
 ### Mixed-use and speculative leasing
 

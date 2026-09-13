@@ -14,6 +14,10 @@ protocol, and each package each carry an independent semver).
   the existing cash-flow metric verifier, with strict input guards, explicit
   no-stated-metrics results and automation exit codes. No protocol, financial
   formula, precision tolerance or package-version change.
+- RFC 0046 adds optional document-level `frontmatter.currency_code` and
+  `CUR-01`. Explicit identity is rendered as a code prefix while locale still
+  controls numeric separators; absent identity preserves legacy symbols. No FX,
+  mixed-currency arithmetic, or currency-specific precision is introduced.
 
 ## [2.9.0] - 2026-09-12
 

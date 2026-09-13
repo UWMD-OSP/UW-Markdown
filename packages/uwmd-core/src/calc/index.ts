@@ -47,7 +47,7 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
       value: value as number | string | boolean | null,
       ...(decl.unit ? { unit: decl.unit } : {}),
       round_to: roundTo,
-      display: formatForDisplay(value, decl.unit),
+      display: formatForDisplay(value, decl.unit, ctx.parsed?.frontmatter?.currency_code),
     };
   } catch (e) {
     const proto = e instanceof CalcError
@@ -64,12 +64,12 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
   }
 }
 
-function formatForDisplay(value: unknown, unit?: string): string {
+function formatForDisplay(value: unknown, unit?: string, currencyCode?: string): string {
   if (value === null || value === undefined) return formatValue(null);
   if (typeof value !== 'number') return String(value);
   switch (unit) {
     case '%': return formatPercent(value);
-    case '$': return formatCurrency(value);
+    case '$': return formatCurrency(value, { currencyCode });
     case 'x': return formatRatio(value);
     default:
       // Fall back to a fixed-decimal display.
