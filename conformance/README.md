@@ -173,7 +173,7 @@ conformance/
 │                         @uwmd/signing reference verifier; pins POL-03's
 │                         typed reasons, the jti note, and the never-escalates
 │                         rule. Owed only under `capability-verify`.
-├── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
+├── capital-stack/      Typed capital stack (RFC 0026/RFC 0050, format spec §4.24).
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
                           verifyCapitalStack's three-state verdict (a "variants"
@@ -184,7 +184,8 @@ conformance/
                           (CS-WATERFALL-UNSUPPORTED); and {deal.uwx.md,
                           expected-metrics.json} is the no-stack single-loan
                           regression pin — every pack metric must equal its
-                          pre-RFC value exactly
+                          pre-RFC value exactly. RFC 0050 adds split-coupon
+                          positive and refusal cases.
 ├── source/             Source vocabulary (RFC 0031). Five
 │                         <scenario>/{deal.uwx.md, expected.json}. The split
 │                         (`_meta.source` actor-only, `_meta.resolution` for

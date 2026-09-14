@@ -2364,6 +2364,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: '§4.24 CS-02',
   },
   {
+    code: 'CS-02b', severity: 'error',
+    title: 'Split coupon is malformed',
+    description: 'A split preferred-equity coupon is missing a rate component, uses the fields on another accrual mode, or does not reconcile to the tranche rate.',
+    remediation: 'Use accrual: "split" only on preferred_equity, provide numeric cash_rate and accrued_rate, and make rate equal their sum.',
+    spec_ref: '§4.24 CS-02b',
+  },
+  {
     code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error',
     title: 'Distribution waterfall is out of scope',
     description: 'The capital_stack encodes a distribution waterfall (promote, hurdles, tiers, or catch-up), which this version does not model.',

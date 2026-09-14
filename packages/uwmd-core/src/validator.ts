@@ -959,6 +959,30 @@ function checkStackContent(
       }
     }
 
+    // CS-02b: a split coupon is one preferred-equity tranche with two
+    // explicitly typed rate components. Keep the field-presence rule here,
+    // beside CS-02, so schema-valid and hand-built ParsedUWFile inputs receive
+    // the same refusal.
+    const hasCashRate = Object.prototype.hasOwnProperty.call(t, 'cash_rate');
+    const hasAccruedRate = Object.prototype.hasOwnProperty.call(t, 'accrued_rate');
+    if (t['accrual'] === 'split') {
+      if (cls !== 'preferred_equity') {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: split accrual is supported only for preferred_equity tranche ${label}` });
+      }
+      if (!hasCashRate || !Number.isFinite(t['cash_rate'])) {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.cash_rate`, message: `CS-02b: split tranche ${label} must state a numeric cash_rate` });
+      }
+      if (!hasAccruedRate || !Number.isFinite(t['accrued_rate'])) {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrued_rate`, message: `CS-02b: split tranche ${label} must state a numeric accrued_rate` });
+      }
+      if (hasRate && Number.isFinite(t['cash_rate']) && Number.isFinite(t['accrued_rate'])
+        && t['rate'] !== (t['cash_rate'] as number) + (t['accrued_rate'] as number)) {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02b: split tranche ${label}.rate must equal cash_rate + accrued_rate` });
+      }
+    } else if (hasCashRate || hasAccruedRate) {
+      issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: cash_rate and accrued_rate are permitted only when tranche ${label} uses accrual: "split"` });
+    }
+
     // A waterfall smuggled in at the tranche level (promote/hurdle/catch-up).
     for (const key of Object.keys(t)) {
       if (WATERFALL_MARKERS.includes(key)) {

@@ -572,7 +572,7 @@ capability is unconditional: every implementation owes it.
 | `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. | `validate` | typically `warning` |
 | `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
-| `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
+| `CS-*` | Capital stack (§XIII); RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons. | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |

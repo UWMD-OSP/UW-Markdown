@@ -2510,7 +2510,10 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 - `position` — integer, `1` = most senior. Positions MUST be unique within the stack.
 - `amount` — the committed dollar amount.
 - `rate` — the coupon (debt) or preferred return (pref), as a fraction. REQUIRED for every debt tranche and for `preferred_equity`; MUST NOT appear on `common_equity`.
-- `accrual` — `cash` (current‑pay; enters cash coverage) or `accrued` (PIK; compounds on balance and does **not** enter cash coverage). Applies to `preferred_equity` and MAY apply to debt.
+- `accrual` — `cash` (current‑pay; enters cash coverage), `accrued` (PIK; compounds on balance and does **not** enter cash coverage), or `split` (RFC 0050; preferred-equity current-pay plus accrued components). `split` is permitted only on `preferred_equity` in Protocol 2.x.
+- `cash_rate` — fraction required only when `accrual` is `split`; the current-pay component that enters cash coverage. MUST NOT appear for another accrual mode.
+- `accrued_rate` — fraction required only when `accrual` is `split`; the accrued/PIK component that does not enter cash coverage. MUST NOT appear for another accrual mode.
+- For `accrual: "split"`, `rate` is required and MUST equal `cash_rate + accrued_rate`; disagreement is `CS-02b`.
 - `amortization_months`, `io_months`, `term_months` — debt terms, from which the tranche's own annual debt service is derived deterministically.
 
 **Normative rules (RFC 2119):**
@@ -2528,12 +2531,12 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 | `fn` | selector | recomputation |
 |---|---|---|
 | `coverage` | `over` | `noi_model.net_operating_income` ÷ that tranche's annual debt service |
-| `blended_coverage` | `through` | NOI ÷ Σ **cash-pay** debt service at or above the position (accrued/PIK excluded) |
+| `blended_coverage` | `through` | NOI ÷ Σ **cash-pay** debt service at or above the position (accrued/PIK excluded; a split preferred tranche contributes `amount × cash_rate`) |
 | `debt_yield_through` | `through` | NOI ÷ cumulative debt balance through the position — the attachment-point yield |
 | `ltc_through` / `ltv_through` | `through` | cumulative balance through the layer ÷ total cost / value |
-| `weighted_cost` | `*` | amount-weighted average `rate` across the stack |
+| `weighted_cost` | `*` | amount-weighted average `rate` across the stack; a split preferred tranche uses its full `rate`, not only `cash_rate` |
 
-An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you.
+An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you. A split preferred tranche contributes only its `cash_rate` service to coverage and its full stated rate to `weighted_cost`.
 
 ```json uw:section=capital_stack source=manual ts=ISO8601 v=1 confidence=high
 {

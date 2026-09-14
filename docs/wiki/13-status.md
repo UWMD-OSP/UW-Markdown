@@ -82,6 +82,12 @@ RFC 0048 and RFC 0049 are draft adoption RFCs. RFC 0048 scopes standalone
 document/package examples; RFC 0049 scopes an optional PostgreSQL/JSONB lake
 adapter outside the protocol and core dependencies.
 
+RFC 0050 is implemented on `codex/work` but unreleased: split preferred-equity
+coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
+from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
+compounding remain deferred. Release still requires the RFC, the
+format/schema/protocol triad, and conformance fixtures to be accepted together.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward

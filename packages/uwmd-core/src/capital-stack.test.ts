@@ -47,6 +47,23 @@ describe('trancheAnnualDebtService', () => {
     expect(trancheAnnualDebtService(cashPref)).toBe(270_000);
   });
 
+  it('a split preferred contributes only its cash-rate component', () => {
+    const split: Tranche = {
+      ...prefAccrued(),
+      rate: 0.12,
+      cash_rate: 0.08,
+      accrued_rate: 0.04,
+      accrual: 'split',
+    };
+    expect(trancheAnnualDebtService(split)).toBe(240_000);
+  });
+
+  it('a malformed split tranche is uncomputable rather than treated as zero', () => {
+    const split: Tranche = { ...prefAccrued(), rate: 0.12, accrual: 'split', accrued_rate: 0.04 };
+    expect(trancheAnnualDebtService(split)).toBeNull();
+    expect(trancheAnnualDebtService({ id: 'common', class: 'common_equity', position: 4, amount: 1, accrual: 'split', cash_rate: 0.02, accrued_rate: 0.01, rate: 0.03 })).toBeNull();
+  });
+
   it('common equity has no debt service; a rate-less debt tranche is uncomputable', () => {
     expect(trancheAnnualDebtService(common())).toBe(0);
     const noRate: Tranche = { id: 'x', class: 'mezzanine_debt', position: 2, amount: 1_000_000 };
@@ -81,6 +98,18 @@ describe('recomputeSizing', () => {
   it('weighted_cost is amount-weighted over rate-bearing tranches (common excluded)', () => {
     const r = recomputeSizing({ id: 'w', fn: 'weighted_cost', over: '*', value: 0 }, tranches, ctx);
     expect(r).toBeCloseTo(1_770_000 / 28_000_000, 9);
+  });
+
+  it('weighted_cost uses the full rate of a split preferred tranche', () => {
+    const splitTranches = [senior(), mezz(), {
+      ...prefAccrued(),
+      rate: 0.12,
+      cash_rate: 0.08,
+      accrued_rate: 0.04,
+      accrual: 'split' as const,
+    }, common()];
+    const r = recomputeSizing({ id: 'w', fn: 'weighted_cost', over: '*', value: 0 }, splitTranches, ctx);
+    expect(r).toBeCloseTo(1_860_000 / 28_000_000, 9);
   });
 
   it('ltc/ltv divide cumulative debt balance by cost/value', () => {

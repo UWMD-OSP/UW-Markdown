@@ -1,0 +1,19 @@
+{
+  "context": {
+    "noi": 2000000,
+    "total_cost": 30000000,
+    "total_value": 32000000
+  },
+  "stack": {
+    "tranches": [
+      { "id": "senior", "class": "senior_debt", "position": 1, "amount": 20000000, "rate": 0.05, "amortization_months": 0, "accrual": "cash" },
+      { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 5000000, "rate": 0.1, "amortization_months": 0, "accrual": "cash" },
+      { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 4000000, "rate": 0.12, "cash_rate": 0.08, "accrued_rate": 0.04, "accrual": "split" },
+      { "id": "common", "class": "common_equity", "position": 4, "amount": 2000000 }
+    ],
+    "sizing": [
+      { "id": "combined_dscr", "fn": "blended_coverage", "through": 3, "value": 1.1 },
+      { "id": "wacc", "fn": "weighted_cost", "over": "*", "value": 0.0683 }
+    ]
+  }
+}

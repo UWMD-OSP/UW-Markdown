@@ -96,7 +96,7 @@ surfaces usable for the next producer wave.
 
 | Wave | Candidate | State / acceptance gate |
 |---|---|---|
-| 1 | Preferred-equity split coupon | **RFC 0050, draft / PR #194.** Review and accept the `cash_rate` + `accrued_rate` shape and `CS-02b`; cash enters coverage, accrued does not. |
+| 1 | Preferred-equity split coupon | **RFC 0050, implementation in progress on `codex/work`.** Review and accept the `cash_rate` + `accrued_rate` shape and `CS-02b`; cash enters coverage, accrued does not. |
 | 1 | Waterfall dual-hurdle `any` mode | **Next candidate.** Lift the deferred mode into the normative contract, define `verifyWaterfall` semantics, and fixture both `any` and existing `both` behavior. |
 | 1 | Named exit sale deductions | **Next candidate.** Add a closed `sale_deductions` vocabulary and a verifier for net sale proceeds; expose each dated cash line through §4.26 where applicable. |
 | 1 | Tax abatements and reassessment basis | **Next candidate.** Type the abatement schedule and reassessment basis, and distinguish the seller's trailing tax from the buyer's terminal-year underwriting tax after a sale-triggered reassessment. |

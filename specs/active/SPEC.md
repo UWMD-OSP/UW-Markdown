@@ -1,10 +1,13 @@
-# Specification: Standalone UW document kit (RFC 0048)
+# Specification: Preferred-equity split coupon (RFC 0050)
 
-Status: **draft scope** · Opened 2026-09-13 · RFC 0048
+Status: **draft implementation scope** · Opened 2026-09-13 · RFC 0050
 
-The next adoption milestone is a worked example kit for the standalone profiles,
-section fragments, inline records, and deal packages the protocol already
-supports. It should improve onboarding and data-lake grounding without adding
-new document profiles or financial calculations.
+The next protocol milestone adds a bounded `accrual: "split"` representation
+for preferred equity: `cash_rate` enters cash coverage, `accrued_rate` does not,
+and `rate` remains their total. Existing `cash` and `accrued` tranches retain
+their current behavior.
 
-The complete draft is [RFC 0048](../../docs/rfcs/0048-standalone-document-kit.md).
+Debt PIK toggles, accrued compounding frequency, and distribution waterfalls
+remain outside this implementation scope until separately pinned.
+
+The complete contract is [RFC 0050](../../docs/rfcs/0050-preferred-equity-split-coupon.md).

@@ -120,6 +120,32 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     expect(codes(parsed)).toContain('CS-02');
   });
 
+  it('CS-02b: split preferred equity requires component rates that sum to rate', () => {
+    const parsed = file({
+      capital_stack: block('capital_stack', {
+        tranches: [
+          { id: 'pref', class: 'preferred_equity', position: 1, amount: 4_000_000, rate: 0.13, cash_rate: 0.08, accrued_rate: 0.04, accrual: 'split' },
+        ],
+      }),
+    });
+    const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-02b');
+    expect(issue).toBeDefined();
+    expect(issue!.field).toBe('pref.rate');
+  });
+
+  it('CS-02b: split component fields are forbidden on another accrual mode', () => {
+    const parsed = file({
+      capital_stack: block('capital_stack', {
+        tranches: [
+          { id: 'pref', class: 'preferred_equity', position: 1, amount: 4_000_000, rate: 0.12, cash_rate: 0.08, accrual: 'cash' },
+        ],
+      }),
+    });
+    const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-02b');
+    expect(issue).toBeDefined();
+    expect(issue!.field).toBe('pref.accrual');
+  });
+
   it('CS-WATERFALL-UNSUPPORTED: a section-level distribution waterfall is refused', () => {
     const parsed = file({
       capital_stack: block('capital_stack', {

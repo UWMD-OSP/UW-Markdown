@@ -34,8 +34,8 @@ export type TrancheClass =
   | 'seller_financing'
   | 'other_debt';
 
-/** Cash-pay vs PIK. Accrued obligations do not enter cash coverage. */
-export type Accrual = 'cash' | 'accrued';
+/** Cash-pay, PIK, or preferred-equity split coupon. */
+export type Accrual = 'cash' | 'accrued' | 'split';
 
 /** One layer of the capital stack (UW_FORMAT_SPEC §4.24). */
 export interface Tranche {
@@ -45,6 +45,10 @@ export interface Tranche {
   amount: number;
   rate?: number | null;
   accrual?: Accrual | null;
+  /** Current-pay rate; required only for preferred-equity `split`. */
+  cash_rate?: number | null;
+  /** Accrued/PIK rate; required only for preferred-equity `split`. */
+  accrued_rate?: number | null;
   amortization_months?: number | null;
   io_months?: number | null;
   term_months?: number | null;
@@ -144,6 +148,10 @@ export function isDebtTranche(t: Tranche): boolean {
  */
 export function trancheAnnualDebtService(t: Tranche): number | null {
   if (t.accrual === 'accrued') return 0;
+  if (t.accrual === 'split') {
+    if (t.class !== 'preferred_equity' || t.cash_rate === null || t.cash_rate === undefined) return null;
+    return t.amount * t.cash_rate;
+  }
   if (t.class === 'common_equity') return 0;
   if (t.rate === null || t.rate === undefined) return null;
   if (t.class === 'preferred_equity') return t.amount * t.rate;

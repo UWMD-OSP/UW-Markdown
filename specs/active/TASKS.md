@@ -1,6 +1,7 @@
 # Task matrix
 
-- [x] Reconcile the existing profile, fragment, package, and example surfaces.
-- [x] Record RFC 0048 scope and RFC 0049 storage-boundary notes.
-- [x] Confirm the RFC 0048 example matrix and conformance fixtures before implementation.
-- [x] Build the standalone document/package kit and verify digest invariance.
+- [x] Reconcile the RFC 0050 tranche, schema, validator, and sizing surfaces.
+- [x] Record the preferred-equity-only split-coupon boundary and compatibility contract.
+- [x] Implement split-coupon validation and cash-pay sizing semantics with unit tests.
+- [x] Add format/schema/protocol documentation and positive/negative conformance fixtures.
+- [x] Run the full deterministic gates and commit the implementation.
