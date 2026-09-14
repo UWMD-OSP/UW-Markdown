@@ -45,6 +45,22 @@ conformance fixtures where behavior is normative: profile validation,
 fragment standalone parsing, package integrity, and inline/external digest
 invariance.
 
+### Concrete example matrix and conformance mapping
+
+| Adoption surface | Worked example | Named conformance assertion |
+|---|---|---|
+| `lease-abstract-v1` profile plus API shape | `lease-abstract-v1.uwx.md`, `lease-abstract.json` | `standalone/profiles/lease-abstract-v1`, `standalone/lease-abstract/api-shape` |
+| `source-note-v1` and standalone UWX records | `source-note-v1.uwx.md`, `inline-deal.uwx.md`, `externalized-deal.uwx.md` | `standalone/profiles/source-note-v1`, `standalone/profiles/inline-deal`, `standalone/profiles/externalized-deal` |
+| Independently addressable fragments | `parts/*.uwpart.md` | `standalone/fragments/standalone-parse` |
+| Inline versus externalized composition | `inline-deal.uwx.md` and `externalized-deal.uwx.md` | `standalone/composition/inline-external-canonical`, `standalone/composition/inline-external-digest` |
+| Package bytes and context projection | `package/manifest.json`, `package/standalone-demo.uwpkg.zip` | `standalone/package/manifest`, `standalone/package/integrity`, `standalone/package/context-boundary` |
+
+The suite is implemented as a named `standalone` run in
+`scripts/run-conformance.mjs`; it builds the package in memory from the checked
+in manifest and payloads, so conformance does not depend on a generated ZIP
+being present in a fresh checkout. The checked-in ZIP remains the user-facing
+regenerable artifact.
+
 ## Non-goals
 
 This RFC does not add `cash-flow-series-v1`, `rent-roll-v1`, or

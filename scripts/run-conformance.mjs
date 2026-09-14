@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,size-intensive,signing,sensitivity,stochastic,source.
+//                lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -71,6 +71,7 @@ import {
   validateUWDealPackageContext,
   projectPackageLinksToEntityEdges,
   sha256BytesHex,
+  validateLeaseAbstract,
   parseMarketDataDocument,
   createDocumentMarketData,
   selectCurrentMarketData,
@@ -123,7 +124,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -1941,6 +1942,104 @@ function loadParts(dir) {
     }
   }
   return { parts };
+}
+
+// ─── Standalone document kit (RFC 0048) ─────────────────────────────────────
+// These fixtures are adoption examples, but the boundaries they demonstrate
+// are normative: standalone profiles must parse, fragments must remain
+// independently addressable, package bytes must verify, and inline and
+// externalized representations must retain the same semantic digest.
+
+const STANDALONE_DIR = join(ROOT, 'examples', 'standalone');
+
+async function runStandalone() {
+  if (!existsSync(STANDALONE_DIR)) {
+    record('standalone', '(none)', 'pass', 'no standalone document kit');
+    return;
+  }
+
+  const profileDocuments = [
+    ['lease-abstract-v1', 'lease-abstract-v1.uwx.md'],
+    ['source-note-v1', 'source-note-v1.uwx.md'],
+    ['inline-deal', 'inline-deal.uwx.md'],
+    ['externalized-deal', 'externalized-deal.uwx.md'],
+  ];
+  for (const [id, file] of profileDocuments) {
+    try {
+      const parsed = parseUWFile(readFileSync(join(STANDALONE_DIR, file), 'utf8'));
+      const validation = validateUWFile(parsed);
+      record('standalone', `profiles/${id}`, validation.errors.length === 0 ? 'pass' : 'fail',
+        validation.errors.map((e) => e.code).join(', ') || undefined);
+    } catch (e) {
+      record('standalone', `profiles/${id}`, 'fail', e.message);
+    }
+  }
+
+  try {
+    const abstract = JSON.parse(readFileSync(join(STANDALONE_DIR, 'lease-abstract.json'), 'utf8'));
+    const errors = validateLeaseAbstract(abstract);
+    record('standalone', 'lease-abstract/api-shape', errors.length === 0 ? 'pass' : 'fail',
+      errors.map((e) => e.code).join(', ') || undefined);
+  } catch (e) {
+    record('standalone', 'lease-abstract/api-shape', 'fail', e.message);
+  }
+
+  const { parts, error: partsError } = loadParts(STANDALONE_DIR);
+  record('standalone', 'fragments/standalone-parse', partsError || parts.size !== 5 ? 'fail' : 'pass',
+    partsError ? partsError.message : parts.size !== 5 ? `parsed ${parts.size} fragments, expected 5` : undefined);
+
+  try {
+    const externalized = parseUWFile(readFileSync(join(STANDALONE_DIR, 'externalized-deal.uwx.md'), 'utf8'));
+    const inline = parseUWFile(readFileSync(join(STANDALONE_DIR, 'inline-deal.uwx.md'), 'utf8'));
+    const resolution = resolveComposition(externalized, { parts });
+    const canonicalMatches = resolution.status === 'resolved'
+      && canonicalizeUWEnvelope(toUWEnvelope(resolution.document)) === canonicalizeUWEnvelope(toUWEnvelope(inline));
+    record('standalone', 'composition/inline-external-canonical', canonicalMatches ? 'pass' : 'fail',
+      canonicalMatches ? undefined : `resolution ${resolution.status}: ${issueCodes(resolution).join(', ')}`);
+    if (canonicalMatches) {
+      const [resolvedDigest, inlineDigest] = await Promise.all([
+        computeEnvelopeDigest(toUWEnvelope(resolution.document)),
+        computeEnvelopeDigest(toUWEnvelope(inline)),
+      ]);
+      record('standalone', 'composition/inline-external-digest', resolvedDigest === inlineDigest ? 'pass' : 'fail',
+        resolvedDigest === inlineDigest ? resolvedDigest : `${resolvedDigest} != ${inlineDigest}`);
+    }
+  } catch (e) {
+    record('standalone', 'composition/inline-external', 'fail', e.message);
+  }
+
+  try {
+    const manifestPath = join(STANDALONE_DIR, 'package', 'manifest.json');
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    const manifestErrors = validateUWDealPackageManifest(manifest);
+    record('standalone', 'package/manifest', manifestErrors.length === 0 ? 'pass' : 'fail',
+      manifestErrors.map((e) => e.code).join(', ') || undefined);
+
+    const payloads = Object.fromEntries(manifest.members.map((member) => [
+      member.path,
+      readFileSync(join(STANDALONE_DIR, 'package', member.path)),
+    ]));
+    const encoded = await encodeUWDealPackageZip({ manifest, payloads });
+    const decoded = decodeUWDealPackageZip(encoded);
+    const verification = await verifyUWDealPackage(decoded);
+    record('standalone', 'package/integrity', verification.errors.length === 0 ? 'pass' : 'fail',
+      verification.errors.map((e) => e.code).join(', ') || verification.status);
+
+    const context = projectUWDealPackageContext(decoded.manifest, {
+      contents: Object.fromEntries(
+        decoded.manifest.members
+          .filter((member) => member.role !== 'source_evidence')
+          .map((member) => [member.id, new TextDecoder().decode(decoded.payloads[member.path])]),
+      ),
+    });
+    const contextErrors = validateUWDealPackageContext(context);
+    const sourceOmitted = context.source_evidence?.['source:anchor-lease']?.status === 'not_transferred'
+      && !JSON.stringify(context).includes('Example source-evidence stand-in');
+    record('standalone', 'package/context-boundary', contextErrors.length === 0 && sourceOmitted ? 'pass' : 'fail',
+      contextErrors.map((e) => e.code).join(', ') || (sourceOmitted ? undefined : 'source evidence leaked into context'));
+  } catch (e) {
+    record('standalone', 'package/integrity', 'fail', e.message);
+  }
 }
 
 const readCase = (dir, name) => JSON.parse(readFileSync(join(dir, name), 'utf8'));
@@ -3905,6 +4004,7 @@ const dispatch = {
   'cash-flow': async () => { await runCashFlow(); },
   'waterfall': async () => { await runWaterfall(); },
   'portfolio-relationships': async () => { await runPortfolioRelationships(); },
+  'standalone': async () => { await runStandalone(); },
   'capability': async () => { await runCapability(); },
   'locale': async () => { await runLocale(); },
   'currency': async () => { await runCurrency(); },

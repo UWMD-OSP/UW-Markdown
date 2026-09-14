@@ -69,6 +69,61 @@ inline records and deal packages. RFC 0049 scopes an optional PostgreSQL/JSONB
 lake adapter that preserves canonical envelopes and facts without making a
 warehouse schema part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
 
+## StackUW protocol alignment queue
+
+**Source:** owner-supplied *StackUW protocol brief* from the engine team,
+2026-09-13. StackUW (formerly underwriter.cc) is the current vendor building
+on UW Markdown and produces `.uwx.md` records through `export_uwmd`.
+
+This is adopter input, not an accepted contract or an instruction to change the
+spec immediately. Each normative item below still needs its own accepted RFC,
+an absent-case fixture, and an engine-produced fixture. The queue preserves the
+project's existing rules: additive and opt-in fields, stated figures verified
+where practical, explicit "stated, not recomputed" notes where not, custom
+asset classes as namespaced modules, and fund mechanics as document profiles.
+
+### Reuse before extending
+
+The brief explicitly asks us not to duplicate capabilities already present:
+catch-up and LP IRR hurdles are in §4.27; the capital-stack and preferred-equity
+surfaces are in §4.24 (with split coupon in draft RFC 0050); dated cash flows are
+in §4.26; student housing, senior housing, land, mixed-use, portfolios and data
+centers already have class/profile or module homes. The remaining work is to
+type the documented stubs, add missing verification paths, or make the existing
+surfaces usable for the next producer wave.
+
+### Proposed sequence
+
+| Wave | Candidate | State / acceptance gate |
+|---|---|---|
+| 1 | Preferred-equity split coupon | **RFC 0050, draft / PR #194.** Review and accept the `cash_rate` + `accrued_rate` shape and `CS-02b`; cash enters coverage, accrued does not. |
+| 1 | Waterfall dual-hurdle `any` mode | **Next candidate.** Lift the deferred mode into the normative contract, define `verifyWaterfall` semantics, and fixture both `any` and existing `both` behavior. |
+| 1 | Named exit sale deductions | **Next candidate.** Add a closed `sale_deductions` vocabulary and a verifier for net sale proceeds; expose each dated cash line through §4.26 where applicable. |
+| 1 | Tax abatements and reassessment basis | **Next candidate.** Type the abatement schedule and reassessment basis, and distinguish the seller's trailing tax from the buyer's terminal-year underwriting tax after a sale-triggered reassessment. |
+| 1/2 | Lease clauses and TI/LC amortization | **Dependent.** Type break-option and co-tenancy details, add LC balances beside TI, and pin straight-line amortization only after the lease-ledger placement decision. |
+| 2 | Per-lease monthly ledger | **Decision RFC.** Choose a state-and-verify `lease_ledger` series (rather than widening the point-in-time rent roll) to support lease clauses, CAM true-ups, and TI/LC balances. |
+| 2 | Rate caps, escrow and replacement | **Next candidate.** Add term, premium, replacement/escrow cash lines and reserve `rate_swap` / `rate_collar` names for later MTM treatment. |
+| 2 | Construction contingency used share | **Next candidate.** Carry used/unused amounts and total drawn with a trivial verifier; milestone releases remain out of scope. |
+| 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
+| 2 | CAM, redevelopment and OpEx compression | **Dependent / next candidate.** Add CAM true-up after the ledger decision; confirm whether §4.25 + §4.8 already cover redevelopment, otherwise add downtime; support expense-targeted capex with stated annual savings. |
+| 2 | Ground lease positions | **Blocked on owner decision.** Reserve `ground_lease` as a tranche concept, but do not define or implement the shape until the first underwriting position is chosen. |
+| 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, PACE, swaps and collars each require a concrete engine scope and module/RFC pair. |
+| 4 | Fund and land-development profiles | **Later / profile boundary first.** Subscription facilities, clawback/lookback, co-invest fees and lot takedowns belong in fund or land-development profiles that reference deal documents; they do not widen ordinary deal sections. |
+
+### Cross-cutting requirements
+
+- Extend the RFC 0027 size-intensive registry once per demonstrated need (`$/bed`,
+  `$/pad`, `$/acre`, `$/slip`, `$/space`); do not create class-specific aliases
+  outside the registry.
+- If the proposed `ground_lease`, `pace`, `tax_credit_equity` and `soft_debt`
+  tranche classes are accepted, handle their enum opening and coverage treatment
+  in one bounded RFC rather than four uncoordinated changes.
+- Treat §4.26 as the addressable sink for new dated cash lines so assembly and
+  receipt coverage can verify them instead of trusting engine output.
+- Require one engine-produced conformance fixture per accepted RFC, plus one
+  fixture proving that an absent optional field remains byte-identical and
+  verifies as before.
+
 ## Forward backlog
 
 The bounded period-consumer and lease-up projection stages are complete. The

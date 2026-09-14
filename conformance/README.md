@@ -275,7 +275,7 @@ conformance/
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
 `capital-stack`, `lease-up`, `cash-flow`, `waterfall`, `portfolio-relationships`,
-`capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
+`standalone`, `capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
 `stochastic`, `source`, `meta-v2`, and `migrate`
 suites are named rather
 than numbered:
@@ -406,3 +406,11 @@ source/plan/expected triples. Cases exercise complete coverage, monthly/leap and
 same-date timing, reserve declarations, duplicates, currency, signs and original
 source-verifier refusals. These fixtures are engineering inputs, not real deals.
 Run `npm run conformance -- --tier=property-cash-flow-assembly` after building.
+
+### Standalone document kit (RFC 0048)
+
+The default `standalone` suite exercises the worked examples under
+`examples/standalone/`: profile and lease-abstract validation, independent
+fragment parsing, inline/externalized canonical and semantic-digest equality,
+and package integrity/context-boundary behavior. Run it alone with
+`npm run conformance -- --tier=standalone` after building.
