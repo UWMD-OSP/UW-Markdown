@@ -88,6 +88,12 @@ from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
 compounding remain deferred. Release still requires the RFC, the
 format/schema/protocol triad, and conformance fixtures to be accepted together.
 
+RFC 0051 is implemented on `codex/work` but unreleased: `hurdle_mode: "any"`
+enables dual-hurdle tiers to end as soon as either `until_lp_em` or
+`until_lp_irr` is met (smaller capacity), while default `hurdle_mode: "both"`
+preserves existing behavior (larger capacity). `WF-01` rejects `hurdle_mode`
+when both hurdles are not present.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward

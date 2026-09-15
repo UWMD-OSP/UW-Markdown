@@ -74,6 +74,7 @@ and how it gets accepted.
 | [0048](./0048-standalone-document-kit.md) | Standalone UW document kit and package examples | draft | conformance, tooling, documentation |
 | [0049](./0049-postgresql-jsonb-lake-adapter.md) | PostgreSQL JSONB lake adapter boundary | draft | tooling, documentation |
 | [0050](./0050-preferred-equity-split-coupon.md) | Preferred equity with a split coupon | draft | format, protocol, core, conformance |
+| [0051](./0051-waterfall-dual-hurdle-any-mode.md) | Distribution waterfall dual-hurdle "any" mode | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

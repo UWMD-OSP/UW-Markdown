@@ -68,6 +68,12 @@ export interface WaterfallTierSplit {
    * only when both are met (the larger capacity governs).
    */
   until_lp_irr?: number | null;
+  /**
+   * Optional resolution mode when both until_lp_em and until_lp_irr are stated:
+   * - 'both' (default): tier ends when both hurdles are met (larger capacity).
+   * - 'any': tier ends when either hurdle is met (smaller capacity, RFC 0051).
+   */
+  hurdle_mode?: 'both' | 'any' | null;
 }
 
 export type WaterfallTier =
@@ -343,14 +349,23 @@ export function computeWaterfall(
           const capped = tier.until_lp_em != null || tier.until_lp_irr != null;
           if (capped) {
             if (!(tier.lp_share > 0)) break; // capped tier paying LP nothing: cap 0
-            // Both hurdles must be met before the tier ends, so the LARGER
-            // capacity governs (§VIII.10 step 3).
-            cap = 0;
-            if (tier.until_lp_em != null) {
-              cap = Math.max(cap, Math.max(0, tier.until_lp_em * lp.contributions - lp.distributions) / tier.lp_share);
-            }
-            if (tier.until_lp_irr != null) {
-              cap = Math.max(cap, hurdleBalance(lp.flows, tier.until_lp_irr, t) / tier.lp_share);
+            const hasEm = tier.until_lp_em != null;
+            const hasIrr = tier.until_lp_irr != null;
+            const capEm = hasEm
+              ? Math.max(0, tier.until_lp_em! * lp.contributions - lp.distributions) / tier.lp_share
+              : null;
+            const capIrr = hasIrr
+              ? hurdleBalance(lp.flows, tier.until_lp_irr!, t) / tier.lp_share
+              : null;
+
+            if (hasEm && hasIrr) {
+              cap = tier.hurdle_mode === 'any'
+                ? Math.min(capEm!, capIrr!)
+                : Math.max(capEm!, capIrr!);
+            } else if (hasEm) {
+              cap = capEm!;
+            } else {
+              cap = capIrr!;
             }
           }
           const pay = Math.min(remaining, cap);

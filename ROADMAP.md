@@ -96,8 +96,8 @@ surfaces usable for the next producer wave.
 
 | Wave | Candidate | State / acceptance gate |
 |---|---|---|
-| 1 | Preferred-equity split coupon | **RFC 0050, implementation in progress on `codex/work`.** Review and accept the `cash_rate` + `accrued_rate` shape and `CS-02b`; cash enters coverage, accrued does not. |
-| 1 | Waterfall dual-hurdle `any` mode | **Next candidate.** Lift the deferred mode into the normative contract, define `verifyWaterfall` semantics, and fixture both `any` and existing `both` behavior. |
+| 1 | Preferred-equity split coupon | **RFC 0050, implemented on `codex/work`.** Split coupons with cash/accrued decomposition and `CS-02b` validation; cash enters coverage, accrued does not. |
+| 1 | Waterfall dual-hurdle `any` mode | **RFC 0051, implemented on `codex/work`.** Lifted `hurdle_mode: "any" | "both"` into normative contract with closed-form capacity, `WF-01` validation, and conformance fixtures. |
 | 1 | Named exit sale deductions | **Next candidate.** Add a closed `sale_deductions` vocabulary and a verifier for net sale proceeds; expose each dated cash line through §4.26 where applicable. |
 | 1 | Tax abatements and reassessment basis | **Next candidate.** Type the abatement schedule and reassessment basis, and distinguish the seller's trailing tax from the buyer's terminal-year underwriting tax after a sale-triggered reassessment. |
 | 1/2 | Lease clauses and TI/LC amortization | **Dependent.** Type break-option and co-tenancy details, add LC balances beside TI, and pin straight-line amortization only after the lease-ledger placement decision. |
@@ -135,7 +135,7 @@ no additional financial assumptions are supplied by the released adapter.
 | 1 | Real-deal DCF validation and extensions | RFC 0045 released; input inventory implemented; adopter review pending | Use the [input inventory](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#prepare-a-real-deal-plan-without-inventing-inputs), then validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
-| 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |
+| 4 | Waterfall extensions | RFC 0051 implemented; clawback deferred | Combined-hurdle "any" mode implemented under RFC 0051. Clawback/crystallization and GP-side hurdles remain deferred. |
 | 5 | Currency-code disambiguation | RFC 0046 implemented, unreleased | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
 
 ### Adoption and integration candidates

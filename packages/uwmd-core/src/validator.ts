@@ -1416,7 +1416,7 @@ function checkWaterfallContent(
       }
       if (type === 'split') {
         splitCount++;
-        const t = tier as { lp_share?: unknown; gp_share?: unknown; until_lp_em?: unknown; until_lp_irr?: unknown };
+        const t = tier as { lp_share?: unknown; gp_share?: unknown; until_lp_em?: unknown; until_lp_irr?: unknown; hurdle_mode?: unknown };
         if (!sumsToOne(t.lp_share, t.gp_share)) {
           wf01(`tiers[${i}]`, 'split lp_share and gp_share must be fractions in [0,1] summing to 1.0');
         }
@@ -1439,6 +1439,13 @@ function checkWaterfallContent(
             wf01(`tiers[${i}].until_lp_irr`, 'until_lp_irr must be a fraction in (0, 1) — an IRR hurdle rate, 0.12 not 12');
           } else {
             irrOk = true;
+          }
+        }
+        if (t.hurdle_mode != null) {
+          if (t.hurdle_mode !== 'both' && t.hurdle_mode !== 'any') {
+            wf01(`tiers[${i}].hurdle_mode`, 'hurdle_mode must be "both" or "any"');
+          } else if (t.until_lp_em == null || t.until_lp_irr == null) {
+            wf01(`tiers[${i}].hurdle_mode`, 'hurdle_mode is only permitted when both until_lp_em and until_lp_irr are stated');
           }
         }
         if (t.until_lp_em != null || t.until_lp_irr != null) {

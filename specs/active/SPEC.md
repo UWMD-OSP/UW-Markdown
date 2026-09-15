@@ -1,13 +1,15 @@
-# Specification: Preferred-equity split coupon (RFC 0050)
+﻿# Specification: Waterfall dual-hurdle `any` mode (RFC 0051)
 
-Status: **draft implementation scope** · Opened 2026-09-13 · RFC 0050
+Status: **draft implementation scope** · Opened 2026-09-13 · RFC 0051
 
-The next protocol milestone adds a bounded `accrual: "split"` representation
-for preferred equity: `cash_rate` enters cash coverage, `accrued_rate` does not,
-and `rate` remains their total. Existing `cash` and `accrued` tranches retain
-their current behavior.
+This milestone lifts the deferred `hurdle_mode: "any"` representation into the
+normative contract for distribution waterfalls (§4.27, §VIII.10). When both
+`until_lp_em` and `until_lp_irr` are stated on a `split` tier, `hurdle_mode: "any"`
+caps the tier when either hurdle is met (the smaller capacity governs). The
+default `hurdle_mode: "both"` retains existing behavior (the larger capacity
+governs).
 
-Debt PIK toggles, accrued compounding frequency, and distribution waterfalls
-remain outside this implementation scope until separately pinned.
+Stating `hurdle_mode` without both hurdles is rejected as a grammar error (`WF-01`).
+Clawback, crystallization, and GP-side hurdles remain outside this scope.
 
-The complete contract is [RFC 0050](../../docs/rfcs/0050-preferred-equity-split-coupon.md).
+The complete contract is [RFC 0051](../../docs/rfcs/0051-waterfall-dual-hurdle-any-mode.md).

@@ -2390,9 +2390,12 @@ party's dated flow list. Walk the referenced series **in row order**:
      / (gp_share − target_promote)`, floored at 0. `gp_share` of the
      payment goes to the GP, the rest to the LP.
    - `split` — paid `lp_share` / `gp_share`. A capped tier's capacity
-     is the **larger** of the capacities its stated hurdles impose
-     (both must be met before the tier ends); the final tier is
-     unbounded.
+     is governed by its stated hurdles; the final tier is unbounded.
+     When both `until_lp_em` and `until_lp_irr` are stated:
+     - if `hurdle_mode` is `"any"`, the **smaller** of the two capacities
+       governs (the tier ends when either hurdle is met; RFC 0051);
+     - if `hurdle_mode` is `"both"` or omitted, the **larger** of the two
+       capacities governs (both must be met before the tier ends).
      - `until_lp_em`: `max(0, until_lp_em × lp.contributions −
        lp.distributions) / lp_share` (unchanged from 2.3.0).
      - `until_lp_irr` (= `h`, RFC 0036): let `F` be the LP's dated
@@ -3106,9 +3109,8 @@ maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
 
 - **Combined-hurdle "any" mode and GP-side hurdles** — RFC 0036 shipped
   IRR hurdles with "both must be met" semantics (protocol 2.6.0,
-  §VIII.10 step 3); an LPA reading "until 1.5x *or* 12%, whichever
-  first" would need `hurdle_mode: "any"` (the smaller capacity), and
-  `until_gp_irr` was left out rather than reserved.
+  §VIII.10 step 3); RFC 0051 lifted `hurdle_mode: "any"` (the smaller capacity)
+  into the normative contract. `until_gp_irr` remains left out rather than reserved.
 - **Clawback / crystallization** — deferred by RFC 0035 and again by
   RFC 0036 (an IRR ladder makes it more pressing: a promote paid on an
   interim hurdle that later un-earns itself); expected to land as a

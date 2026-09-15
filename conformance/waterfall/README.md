@@ -1,6 +1,6 @@
 # conformance/waterfall
 
-Fixtures for the `distribution_waterfall` section (RFC 0035 + RFC 0036,
+Fixtures for the `distribution_waterfall` section (RFC 0035 + RFC 0036 + RFC 0051,
 UW_FORMAT_SPEC §4.27 / Protocol §VIII.10): the WF-01…WF-03 structural rules and the
 three-state `verifyWaterfall` verifier, which recomputes the **entire
 allocation** — period by period, tier by tier — never trusting the stated
@@ -36,6 +36,7 @@ exactly 20% of profit; only the per-party XIRRs come from the engine (the
 | `verify-irr-hurdle-interleaved-call` | A capital call after a distribution (`−1,000,000`, `+300,000`, `−200,000`, `+1,500,000`): the balance identity credits both ROC receipts and the mid-hold call — the case where "solve the IRR and compare" could diverge, resolved by definition. |
 | `verify-combined-hurdles-irr-binds` | One tier stating `until_lp_em: 1.5` **and** `until_lp_irr: 0.12`; over a five-year hold the IRR balance exceeds the 1.5x headroom — the larger capacity governs. |
 | `verify-combined-hurdles-em-binds` | The twin over a one-year hold: the multiple binds (LP 500,000 / GP 125,000). |
+| `verify-combined-hurdles-any-mode` | RFC 0051. Dual-hurdle split with `hurdle_mode: "any"` over a one-year hold: IRR hurdle balance 120,000 is smaller than EM headroom 500,000 — the smaller capacity governs (LP 120,000 / GP 30,000). |
 | `verify-compound-pref-then-irr` | 8% `compound_annual` pref → catch-up → 80/20 until 12% IRR → 60/40: pref receipts are LP inflows in `F`, so the hurdle balance already credits them. |
 | `verify-no-catchup` | A pref-then-split ladder — the singletons are optional. |
 | `verify-promote-overstated` | A promote off past the cent → `failed`, `WF-OUTCOME-DISAGREES`. |
@@ -43,6 +44,7 @@ exactly 20% of profit; only the per-party XIRRs come from the engine (the
 | `verify-unresolvable-series` | `series: null` (WF-02 reaching the verifier) → `unverifiable`. |
 | `reject-out-of-order` | Pref before ROC → WF-01. |
 | `reject-capped-final-split` | A capped terminal tier → WF-01 (ladders need an uncapped residual). |
+| `reject-hurdle-mode-single-hurdle` | RFC 0051. `hurdle_mode: "any"` stated on a tier with only `until_lp_em` → WF-01. |
 | `reject-gp-share-le-target` | `gp_share ≤ target_promote` → WF-01 (the tier could never fill). |
 | `reject-irr-hurdle-out-of-range` | `until_lp_irr: 1.2` and `until_lp_irr: 0` → WF-01. |
 | `reject-irr-hurdle-non-increasing` | 15% then 12% → WF-01 at the second tier. |

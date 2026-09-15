@@ -2283,7 +2283,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'WF-01', severity: 'error',
     title: 'Waterfall ladder outside the grammar',
     description: 'The tier ladder violates the closed §4.27 grammar: unknown or duplicated singleton tiers, out-of-order ladder, no uncapped terminal split, shares/rates/hurdles outside their stated ranges or sums, gp_share not exceeding target_promote, a capped split that pays the LP nothing, or a hurdle ladder that does not strictly increase (RFC 0035, RFC 0036).',
-    remediation: 'State the ladder as return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split; shares in [0,1] with equity_split and each split summing to 1.0; rate in (0,1); until_lp_em > 0 and until_lp_irr in (0,1) only on tiers whose lp_share > 0, each kind strictly increasing down the ladder (12% → 15% → 18%); gp_share > target_promote. A tier may state both hurdles; it ends when both are met.',
+    remediation: 'State the ladder as return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split; shares in [0,1] with equity_split and each split summing to 1.0; rate in (0,1); until_lp_em > 0 and until_lp_irr in (0,1) only on tiers whose lp_share > 0, each kind strictly increasing down the ladder (12% → 15% → 18%); gp_share > target_promote. A tier may state both hurdles; it ends when both are met unless hurdle_mode: \"any\" is specified (RFC 0051). Stating hurdle_mode without both hurdles is an error.',
     spec_ref: '§4.27 WF-01',
   },
   {

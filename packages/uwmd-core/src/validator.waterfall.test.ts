@@ -108,7 +108,47 @@ describe('WF-01 — ladder grammar', () => {
     expect(wfIssues(CLEAN.replace('"lp": 0.9, "gp": 0.1', '"lp": 0.9, "gp": 0.2')).map((i) => i.code)).toEqual(['WF-01']);
     expect(wfIssues(CLEAN.replace('"lp_share": 0.7, "gp_share": 0.3', '"lp_share": 0.7, "gp_share": 0.4')).map((i) => i.code)).toEqual(['WF-01']);
   });
-  // ── RFC 0036: until_lp_irr ─────────────────────────────────────────────
+  // ── RFC 0051: hurdle_mode ───────────────────────────────────────────────
+  it('accepts hurdle_mode ("both" or "any") when both hurdles are present (RFC 0051)', () => {
+    const withBothHurdles = CLEAN.replace(
+      '"until_lp_em": 1.5',
+      '"until_lp_em": 1.5, "until_lp_irr": 0.12, "hurdle_mode": "any"',
+    );
+    expect(wfIssues(withBothHurdles)).toEqual([]);
+    expect(wfIssues(withBothHurdles.replace('"hurdle_mode": "any"', '"hurdle_mode": "both"'))).toEqual([]);
+    expect(wfIssues(withBothHurdles.replace('"hurdle_mode": "any"', '"hurdle_mode": null'))).toEqual([]);
+  });
+
+  it('rejects hurdle_mode when both hurdles are not present (RFC 0051)', () => {
+    // only EM
+    const onlyEm = CLEAN.replace('"until_lp_em": 1.5', '"until_lp_em": 1.5, "hurdle_mode": "any"');
+    const issuesEm = wfIssues(onlyEm);
+    expect(issuesEm.map((i) => i.code)).toEqual(['WF-01']);
+    expect(issuesEm[0]!.field).toBe('tiers[3].hurdle_mode');
+
+    // only IRR
+    const onlyIrr = CLEAN.replace('"until_lp_em": 1.5', '"until_lp_irr": 0.12, "hurdle_mode": "any"');
+    const issuesIrr = wfIssues(onlyIrr);
+    expect(issuesIrr.map((i) => i.code)).toEqual(['WF-01']);
+    expect(issuesIrr[0]!.field).toBe('tiers[3].hurdle_mode');
+
+    // neither
+    const uncapped = CLEAN.replace('"until_lp_em": 1.5', '"hurdle_mode": "any"');
+    const issuesUncapped = wfIssues(uncapped);
+    expect(issuesUncapped.some((i) => i.code === 'WF-01' && i.field === 'tiers[3].hurdle_mode')).toBe(true);
+  });
+
+  it('rejects invalid hurdle_mode values (RFC 0051)', () => {
+    const badMode = CLEAN.replace(
+      '"until_lp_em": 1.5',
+      '"until_lp_em": 1.5, "until_lp_irr": 0.12, "hurdle_mode": "either"',
+    );
+    const issues = wfIssues(badMode);
+    expect(issues.map((i) => i.code)).toEqual(['WF-01']);
+    expect(issues[0]!.field).toBe('tiers[3].hurdle_mode');
+  });
+
+    // ── RFC 0036: until_lp_irr ─────────────────────────────────────────────
   it('accepts until_lp_irr in (0, 1) — the RFC 0035 reservation is gone', () => {
     expect(wfIssues(CLEAN.replace('"until_lp_em": 1.5', '"until_lp_irr": 0.12'))).toEqual([]);
     expect(wfIssues(CLEAN.replace('"until_lp_em": 1.5', '"until_lp_em": 1.5, "until_lp_irr": 0.12'))).toEqual([]);
