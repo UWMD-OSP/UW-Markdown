@@ -1,14 +1,14 @@
 # Roadmap
 
-Current as of **2026-09-13**, following [release 2.9.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.9.0).
+Current as of **2026-09-15**, following [release 2.10.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.10.0).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
 ## Current release
 
-Core/CLI **2.9.0**, signing **0.2.13** and batch **0.8.8** are published on npm.
-Format is **2.0** and Protocol is **2.12.0**; the version streams are independent.
+Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm.
+Format is **2.0** and Protocol is **2.13.0**; the version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -47,28 +47,28 @@ does not mean its standalone npm package is published.
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
 | Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. [Publication and installation evidence](docs/reviews/2026-09-12-release-2.8.0.md). |
 
-## Unreleased development after 2.9.0
+## Released in 2.10.0
 
-The source CLI adds `verify-cash-flows` to check selected stated cash-flow metrics
-without a custom script. It distinguishes no claims from verified claims and
-preserves existing failure/unverifiable results. This is private-deal validation
-tooling, not a completed real-deal property assembly or a new financial model.
+Seven accepted RFCs that had accumulated on `main` shipped together, with
+Protocol **2.13.0**:
+
+| RFC | Scope |
+|---|---|
+| 0046 | Optional document-level currency identity (`CUR-01`) for honest display across locales. No FX, no mixed-currency arithmetic. |
+| 0047 | Read-only property cash-flow input inventory, making the RFC 0045 handoff inspectable without inferring economics. |
+| 0048 | Standalone document kit — lease abstracts, source notes, fragments, composition twins, a packaged example and the `standalone` suite. |
+| 0050 | Preferred-equity split coupons (`CS-02b`): cash enters coverage, accrued does not, full rate drives weighted cost. |
+| 0051 | Waterfall dual-hurdle `any` mode (`WF-01`): the smaller capacity governs; default `both` keeps the larger. |
+| 0052 | Named exit sale deductions and a `net_sale_proceeds` verifier; levered names reserved and refused. |
+| 0053 | Typed reassessment basis and abatement schedule (`TAX-NN`), naming the trailing, going-in and terminal taxes. |
+
+The source CLI also gained `verify-cash-flows`, which checks stated cash-flow
+metrics without a custom script and distinguishes no claims from verified ones.
 See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
 
-RFC 0046 is implemented on the development branch but unreleased. It adds
-optional document-level currency identity for honest display across locales;
-numeric storage and financial calculations remain unchanged.
-
-RFC 0047 is implemented on the development branch but unreleased. Its
-read-only input inventory makes the RFC 0045 real-deal handoff inspectable
-without inferring expense, reserve, or payment-timing economics.
-
-Adoption planning has one implemented RFC and one draft. RFC 0048 is accepted
-and implemented: a worked kit for standalone lease abstracts, source notes,
-rent-roll/P&L/cash-flow fragments, inline records and deal packages, with its
-own `standalone` conformance suite. RFC 0049 remains a draft scoping an optional
-PostgreSQL/JSONB lake adapter that preserves canonical envelopes and facts
-without making a warehouse schema part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
+RFC 0049 remains the one open draft: an optional PostgreSQL/JSONB lake adapter
+that preserves canonical envelopes and facts without making a warehouse schema
+part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
 
 ## StackUW protocol alignment queue
 
