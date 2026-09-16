@@ -1,7 +1,8 @@
 ---
 rfc: 0052
 title: Name the deductions that turn a gross sale into net proceeds
-status: draft
+status: implemented
+accepted: 2026-09-15
 author: claude
 created: 2026-09-15
 affects:

@@ -1,7 +1,8 @@
 ---
 rfc: 0048
 title: Standalone UW document kit and package examples
-status: draft
+status: implemented
+accepted: 2026-09-15
 author: jaredmaxey
 created: 2026-09-13
 depends_on:
