@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-09-15
+
 ### Added
 
 - Read-only `uwmd verify-cash-flows <file> [--variant <name>] [--json]` over
@@ -48,6 +50,47 @@ protocol, and each package each carry an independent semver).
   equal `exit_value_gross`, catching a going-in tax carried into terminal NOI.
   Stated and verified only: no tax is derived, no jurisdiction rules are
   inferred, and the exit-value circularity remains the author's to converge.
+
+### Changed
+
+- `property-cash-flow-assembly.schema.json` now references
+  `property-cash-flow-plan.schema.json` instead of restating it. The hand-copied
+  duplicate had already drifted once; a regression test fails if the reference is
+  replaced by a copy again. No validation outcome changes.
+- The §VIII.5 half-away-from-zero quantizer is exported from
+  `cash-flow-series.ts` so a surface comparing a stated figure against a
+  recomputation rounds where the verifier rounds, rather than keeping its own copy.
+
+### Fixed
+
+- `examples/standalone/package/**` is marked `-text`. `sources/anchor-lease.txt`
+  was CRLF in the working tree and LF in the index, so the manifest pinned a
+  sha256 over bytes no checkout reproduces and `standalone/package/integrity`
+  failed on every CI runner while passing locally.
+- RFC 0051's title is quoted. It is the first RFC title to contain `: `, which
+  made VitePress read the plain scalar as a nested mapping and fail the site
+  build. `verify-indexes` now reports an unquoted frontmatter scalar carrying
+  `: ` across all copied RFCs, so the break surfaces locally.
+- `VERSIONS.md` no longer claims `@uwmd/excel` and `@uwmd/report` are
+  unpublished. Both serve a stale `0.3.0` on the registry, pushed 2026-08-16
+  during the 1.3.0 manual release and pinned to `@uwmd/core` 1.3.0. Both are
+  pending deprecation. `verify-versions` never contacts the registry, which is
+  why the claim went unchallenged.
+
+### Released
+
+Core/CLI **2.10.0** with Protocol **2.13.0** and Format **2.0**. Signing
+**0.2.14** and batch **0.8.9** repin core. Excel **0.9.2**, report **0.8.14**
+and the **0.1.2** reference module packages remain unpublished.
+
+### Verification
+
+- Build, full workspace test suite, test typechecking, 504 default plus 76
+  declarative conformance checks, three capability profiles, 38 JSON schemas,
+  lint, and the lockfile, package, version, index and release guards.
+- Receipt baselines regenerated for the new engine version, including the
+  `03-result-disagrees` receipt whose `engine_version` must be the new one or
+  `RCP-07` reclassifies the scenario from `failed` to `unverifiable`.
 
 ## [2.9.0] - 2026-09-12
 

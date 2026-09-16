@@ -20,8 +20,8 @@ same protocol version.
 
 ## Current matrix
 
-Release 2.9.0 pairs core/CLI 2.9.0 with Protocol 2.12.0 and Format 2.0.
-Core/CLI 2.9.0, signing 0.2.13 and batch 0.8.8 are published on npm and
+Release 2.10.0 pairs core/CLI 2.10.0 with Protocol 2.13.0 and Format 2.0.
+Core/CLI 2.10.0, signing 0.2.14 and batch 0.8.9 are published on npm and
 verified by a clean installation. The release workflow publishes those four and
 no others. The reference modules have never been published. Excel and report are
 **not published at their current versions**, but the registry does serve a stale
@@ -36,16 +36,16 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.12.0** | format ≥ 1.0 (property cash-flow assembly, RFC 0045; released in core/CLI 2.9.0) |
-| `@uwmd/core` | **2.9.0** | format 2.0 (reads 1.x), protocol 2.12.0 |
-| `@uwmd/cli` (CLI) | **2.9.0** | `@uwmd/core` 2.9.0 |
-| `@uwmd/excel` | **0.9.1** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.9.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.13** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.9.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.8** | `@uwmd/core` 2.9.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/signing` | **0.2.13** | `@uwmd/core` 2.9.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.1** (unpublished) | `@uwmd/core` 2.9.x, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.1** (unpublished) | `@uwmd/core` 2.9.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.9.x browser entry |
+| UW Protocol | **2.13.0** | format ≥ 1.0 (sale deductions RFC 0052 and tax reassessment RFC 0053; released in core/CLI 2.10.0) |
+| `@uwmd/core` | **2.10.0** | format 2.0 (reads 1.x), protocol 2.13.0 |
+| `@uwmd/cli` (CLI) | **2.10.0** | `@uwmd/core` 2.10.0 |
+| `@uwmd/excel` | **0.9.2** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.10.x, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.14** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.10.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.9** | `@uwmd/core` 2.10.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/signing` | **0.2.14** | `@uwmd/core` 2.10.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.2** (unpublished) | `@uwmd/core` 2.10.x, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.2** (unpublished) | `@uwmd/core` 2.10.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.10.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

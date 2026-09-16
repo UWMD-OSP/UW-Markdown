@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/module-data-center",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Data-center module for UW Markdown (RFC 0039) — declares the org.uwmd.data_center asset class; capacity, power-economics and revenue sections; kW-denominated calculations; PUE, utility-feed and utilization validations. The first product module on a module-declared asset class.",
   "repository": {
     "type": "git",
@@ -12,18 +12,40 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
     "./manifest.json": "./dist/manifest.json"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc && node scripts/emit-manifest.mjs",
     "test": "vitest run",
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
-  "dependencies": { "@uwmd/core": "2.9.0" },
-  "devDependencies": { "@types/node": "^20.0.0", "typescript": "^5.4.0", "vitest": "^3.2.6" },
-  "engines": { "node": ">=18.0.0" },
+  "dependencies": {
+    "@uwmd/core": "2.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.2.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "license": "MIT",
-  "keywords": ["uwmd", "underwriting", "commercial-real-estate", "data-center", "colocation", "pue", "module"]
+  "keywords": [
+    "uwmd",
+    "underwriting",
+    "commercial-real-estate",
+    "data-center",
+    "colocation",
+    "pue",
+    "module"
+  ]
 }
