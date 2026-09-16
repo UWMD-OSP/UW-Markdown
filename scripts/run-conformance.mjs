@@ -7,7 +7,7 @@
 //
 //   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
 //                receipts,market-data,modules,packages,composition,capital-stack,
-//                lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,size-intensive,signing,sensitivity,stochastic,source.
+//                recoveries,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,size-intensive,signing,sensitivity,stochastic,source.
 //                Tier 4 requires --tier=4 explicitly because it is shape-only
 //                and assumes a deterministic-replay scenario; live LLM calls
 //                are out of scope for CI.
@@ -124,7 +124,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2352,6 +2352,37 @@ async function runLease() {
   }
 }
 
+const RECOVERIES_DIR = join(CONFORMANCE_DIR, 'recoveries');
+
+// RFC 0058 expense recoveries and the CAM true-up. Its own tier rather than a
+// guest in `lease`: that suite pins LSE-* exactly, so a REC-* code emitted
+// there would be filtered out and a broken fixture would read as passing.
+async function runRecoveries() {
+  if (!existsSync(RECOVERIES_DIR)) {
+    record('recoveries', '(none)', 'pass', 'no recovery fixtures');
+    return;
+  }
+  for (const entry of readdirSync(RECOVERIES_DIR, { withFileTypes: true }).filter((e) => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(RECOVERIES_DIR, entry.name);
+    try {
+      const expected = readCase(dir, 'expected.json');
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const got = validateUWFile(parsed).issues
+        .filter((i) => i.code.startsWith('REC-'))
+        .map((i) => i.code)
+        .sort();
+      const want = [...(expected.codes ?? [])].sort();
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        record('recoveries', entry.name, 'fail', `emitted [${got.join(', ')}], expected [${want.join(', ')}]`);
+        continue;
+      }
+      record('recoveries', entry.name, 'pass', want.length ? want.join(', ') : 'clean');
+    } catch (error) {
+      record('recoveries', entry.name, 'fail', error.message);
+    }
+  }
+}
+
 const HEDGE_DIR = join(CONFORMANCE_DIR, 'hedge');
 
 // RFC 0056 rate hedges and escrows. One tier for one contract: HDG-* is the
@@ -4130,6 +4161,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'tax': async () => { await runTax(); },
   'lease': async () => { await runLease(); },
+  'recoveries': async () => { await runRecoveries(); },
   'hedge': async () => { await runHedge(); },
   'capex': async () => { await runCapex(); },
   'lease-up': async () => { await runLeaseUp(); },

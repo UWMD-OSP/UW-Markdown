@@ -10,6 +10,15 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- RFC 0058 types **expense recoveries and the CAM true-up** on the commercial
+  tenant record (§4.3). `recovery_terms` carries the pro-rata share, the stop,
+  the recoverable pool and a cap whose `accumulation` must be stated;
+  `recovery_true_up` records a closed period's reconciliation, with `REC-06`
+  checking the share of the pool and `REC-08` the settled amount. Registers the
+  `REC-NN` family, including `REC-09`, which requires a stated `cash_flow_ref`
+  to resolve — the settled amount lands in §4.26, the addressable sink where
+  assembly and receipt coverage already verify dated cash. Nothing is projected,
+  grossed up or allocated across tenants.
 - RFC 0059 implements the distribution-waterfall **clawback** as the terminal
   true-up protocol §XVI predicted, closing a gap RFC 0035 deferred and RFC 0036
   deferred again. An optional `distribution_waterfall.clawback` states a basis
@@ -22,9 +31,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Protocol **2.15.0 → 2.16.0** for §VIII.10 step 5 and the clawback codes. No
-  wire format, formula or precision change; the two receipt fixtures that embed
-  `protocol_version` are repinned.
+- Protocol **2.15.0 → 2.17.0** for §VIII.10 step 5 and the clawback codes
+  (RFC 0059) and the `REC-NN` family (RFC 0058). No wire format, formula or
+  precision change; the two receipt fixtures that embed `protocol_version` are
+  repinned.
 
 ### Notes
 
@@ -33,6 +43,13 @@ protocol, and each package each carry an independent semver).
   no iteration, and a design needing a nested solve would have been unreachable.
   A test pins the boundary property: at a floor equal to the IRR the LP actually
   achieved, the true-up is zero.
+- RFC 0058 leaves two figures **stated, not recomputed**, and says why in the
+  spec: the capped amount, because a cumulative or compounding cap depends on a
+  base-year history no single document carries (`REC-07` checks only the
+  direction a cap can move), and the allocation of a pool across tenants,
+  because that needs a vacant-space policy and is a modeling decision. `REC-05`
+  anchors on the rent roll's own `as_of_date` and is skipped when absent —
+  never on file metadata, which is an edit timestamp.
 - A waterfall with no provision reports `null`; a provision that computes to
   nothing reports `0`. Absence and zero are different answers, and a stated
   amount with no provision behind it is `unverifiable`, not a disagreement.

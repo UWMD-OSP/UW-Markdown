@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/lease-recovery-true-up.schema.json",
+  "title": "lease-recovery-true-up",
+  "description": "RFC 0058 / format 4.3. Shape only; the closed-period rule and the three arithmetic ties are semantic checks (REC-05..REC-08).",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "period_start",
+      "period_end"
+    ],
+    "properties": {
+      "period_start": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "format": "date"
+      },
+      "period_end": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "format": "date"
+      },
+      "pool_actual": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0
+      },
+      "tenant_share_uncapped": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0
+      },
+      "tenant_share_capped": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0
+      },
+      "estimated_billed": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0
+      },
+      "true_up_amount": {
+        "description": "Positive: owed by the tenant. Negative: a credit owed to them.",
+        "type": [
+          "number",
+          "null"
+        ]
+      },
+      "settlement": {
+        "enum": [
+          "billed",
+          "credited",
+          "disputed",
+          "unsettled",
+          null
+        ]
+      },
+      "cash_flow_ref": {
+        "description": "Optional §4.26 variant where the settled amount becomes a dated cash line.",
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  }
+}

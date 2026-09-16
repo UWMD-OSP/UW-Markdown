@@ -1,8 +1,9 @@
 ---
 rfc: 0058
 title: 'Expense recoveries and the CAM true-up'
-status: accepted
+status: implemented
 accepted: 2026-09-16
+implemented: 2026-09-16
 author: claude
 created: 2026-09-16
 depends_on:
@@ -230,6 +231,27 @@ Per the cross-cutting requirement, at minimum:
 4. **Leave it to `other_income.utility_reimbursements`.** That is where
    recovery income lands today, and it is why a reader cannot tell a capped
    modified-gross recovery from a flat reimbursement.
+
+## Errata (implementation)
+
+Two things the draft got wrong, corrected in the implementation rather than
+carried forward:
+
+1. **The section is §4.3, not §4.9.** The commercial tenant record lives in the
+   Rent Roll (§4.3) — which is where RFC 0055 put the lease clauses these sit
+   beside. §4.9 is the DCF section. Every rule is registered against §4.3.
+2. **No `verifyRecoveryTrueUp` export.** The draft proposed a verifier surface
+   like `verifyWaterfall`. That was the wrong shape: a verifier surface exists
+   where an engine recomputes a whole allocation (§4.24–§4.27), and a CAM
+   true-up is three subtractions. It is implemented in the validator, matching
+   its actual siblings — `TAX-NN` (RFC 0053), `HDG-NN`/`ESC-NN` (RFC 0056) and
+   `CAPX-NN` (RFC 0057) all do arithmetic there. Adding a verifier export would
+   have introduced a second place to look for one contract's rules.
+
+A third refinement: `REC-05` anchors on the rent roll's own `as_of_date` and is
+**skipped when that is absent**, rather than falling back to file metadata as
+"the document's `as_of` date" loosely implied. File metadata is an edit
+timestamp; using it would refuse a legitimately re-saved document.
 
 ## Unresolved questions
 
