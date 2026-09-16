@@ -2353,6 +2353,61 @@ function sumsToOne(a: unknown, b: unknown): boolean {
     Math.abs(a + b - 1) < RATIO_QUANTUM;
 }
 
+/**
+ * RFC 0059. The clawback is a terminal true-up, so the only structural
+ * questions are whether its basis carries the input it needs, whether the cap
+ * is the one cap that exists, and whether the rates are fractions.
+ */
+function checkWaterfallClawback(
+  content: Record<string, unknown>,
+  tiers: readonly WaterfallTier[],
+  section: string,
+  label: string,
+  issues: ValidationMessage[],
+): void {
+  const raw = content['clawback'];
+  if (raw == null) return;
+  const push = (code: string, field: string, message: string) => {
+    issues.push({ code, severity: 'error', section, field: `clawback.${field}`, message: `${code}: ${message}${label}` });
+  };
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    push('WF-10', 'basis', 'clawback must be an object stating a basis and a cap');
+    return;
+  }
+  const cb = raw as Record<string, unknown>;
+  const basis = cb['basis'];
+  const BASES = ['lp_preferred_shortfall', 'lp_irr_floor', 'lp_em_floor'];
+  if (typeof basis !== 'string' || !BASES.includes(basis)) {
+    push('WF-10', 'basis', `basis must be one of ${BASES.join(', ')} — the vocabulary is closed`);
+  } else if (basis === 'lp_irr_floor') {
+    const rate = cb['floor_rate'];
+    if (!(typeof rate === 'number' && Number.isFinite(rate) && rate > 0 && rate < 1)) {
+      push('WF-10', 'floor_rate', 'lp_irr_floor requires floor_rate as a fraction in (0,1) — 0.12 is 12%, not 12');
+    }
+  } else if (basis === 'lp_em_floor') {
+    const mult = cb['floor_multiple'];
+    if (!(typeof mult === 'number' && Number.isFinite(mult) && mult > 1)) {
+      push('WF-10', 'floor_multiple', 'lp_em_floor requires floor_multiple greater than 1');
+    }
+  }
+
+  // WF-11: a preferred-shortfall floor with no preferred tier to measure it.
+  if (basis === 'lp_preferred_shortfall' && !tiers.some((t) => t?.type === 'preferred_return')) {
+    push('WF-11', 'basis', 'lp_preferred_shortfall needs a preferred_return tier — without one there is no accrual to fall short of');
+  }
+
+  // WF-12: the cap is not a choice.
+  if (cb['cap'] !== 'promote_received') {
+    push('WF-12', 'cap', 'cap must be "promote_received" — a GP cannot owe back more promote than it received, and any other cap is a different instrument');
+  }
+
+  // WF-13: a stated tax rate is a fraction.
+  const tax = cb['net_of_tax_rate'];
+  if (tax != null && !(typeof tax === 'number' && Number.isFinite(tax) && tax >= 0 && tax < 1)) {
+    push('WF-13', 'net_of_tax_rate', 'net_of_tax_rate must be a fraction in [0,1) — 0.37 is 37%, not 37');
+  }
+}
+
 function checkWaterfallContent(
   content: Record<string, unknown>,
   variant: string,
@@ -2482,6 +2537,9 @@ function checkWaterfallContent(
     }
   }
 
+  // WF-10 .. WF-15: the RFC 0059 clawback provision.
+  checkWaterfallClawback(content, rows, section, label, issues);
+
   // WF-02 / WF-03: the cash reference.
   const ref = content['cash_flow_ref'] as Record<string, unknown> | undefined;
   const refVariant = ref && typeof ref['variant'] === 'string' ? (ref['variant'] as string) : null;
@@ -2513,6 +2571,21 @@ function checkWaterfallContent(
       code: 'WF-03', severity: 'error', section, field: 'cash_flow_ref.variant',
       message: `WF-03: the referenced series${label} has no contribution (no negative amount); a waterfall over pure inflows has no capital to return`,
     });
+  }
+
+  // WF-15 (RFC 0059): a clawback provision is unexercisable without a terminal
+  // distribution to have overpaid out of. A warning, not an error — the
+  // provision may legitimately be stated ahead of the exit.
+  if (content['clawback'] != null && Array.isArray(seriesRows)) {
+    const lastPositive = [...seriesRows].reverse().find((r) =>
+      r && typeof r === 'object' && typeof (r as Record<string, unknown>)['amount'] === 'number' &&
+      ((r as Record<string, unknown>)['amount'] as number) > 0);
+    if (lastPositive === undefined) {
+      issues.push({
+        code: 'WF-15', severity: 'warning', section, field: 'clawback',
+        message: `WF-15: a clawback provision is stated but the referenced series${label} has no distribution, so no promote can have been paid and the provision is unexercisable as stated`,
+      });
+    }
   }
 }
 

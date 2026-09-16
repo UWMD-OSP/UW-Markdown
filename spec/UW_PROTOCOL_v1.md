@@ -583,6 +583,7 @@ capability is unconditional: every implementation owes it.
 | `LSE-NN` | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (format §4.3, RFC 0055). | `validate` | `error` |
 | `HDG-NN` | Interest-rate hedges — cap strike, notional, term and post-expiration assumption (format §4.7, RFC 0056). `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`. | `validate` | `error` |
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
+| `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
@@ -2413,7 +2414,7 @@ existing dotted/bracket style rooted at `plan` or
 reason, pointer and nested evidence carry the machine-readable contract.
 
 
-### VIII.10 Distribution waterfall allocation (RFC 0035, RFC 0036)
+### VIII.10 Distribution waterfall allocation (RFC 0035, RFC 0036, RFC 0059)
 
 The format's `distribution_waterfall` section (format spec §4.27)
 states a tier ladder over a §4.26 dated series. This section fixes the
@@ -2495,13 +2496,32 @@ party's dated flow list. Walk the referenced series **in row order**:
    `promote_total` = GP distributions − GP return-of-capital receipts
    − GP pref receipts; `profit_total` = Σ distributions −
    Σ contributions.
-5. **Verification** (three-state): stated outcomes at the §VIII.9.4
+5. **Clawback true-up** (RFC 0059), only when `clawback` is stated.
+   After the walk, compute the LP's shortfall against the stated floor:
+   `lp_preferred_shortfall` — `unreturned + accrued_pref`;
+   `lp_em_floor` — `floor_multiple × contributions − distributions`;
+   `lp_irr_floor` — the step-3 hurdle balance
+   `B = −xnpv(F, floor_rate) × (1 + floor_rate)^t` over the LP's dated
+   flows at the **final row's** `t`. Then
+   `gross = min(max(0, shortfall), max(0, promote_total))` — the GP can
+   never return more promote than it received — and
+   `clawback = gross × (1 − net_of_tax_rate)` when that rate is stated,
+   otherwise `gross`. The result is a single terminal figure, never a
+   schedule row and never per-period state: a clawback moves cash
+   backward after the last row, so representing it as a tier would put a
+   negative distribution in `by_tier`. An implementation MUST NOT
+   determine it by iterating on `xirr`; every basis above is closed-form.
+   A waterfall with no `clawback` reports `null`, which is distinct from
+   a stated provision that computes to `0` (the LP cleared its floor).
+6. **Verification** (three-state): stated outcomes at the §VIII.9.4
    quanta (`$`→2, `x`→4, `%`→6); stated schedule cells at the currency
    quantum with an absent cell reading 0; a stated `xirr` whose
    recomputation raises is `failed`; a `moic` over zero contributions
    is `unverifiable`; a missing or structurally invalid referenced
-   series makes every stated figure `unverifiable`. Failure outranks
-   indeterminacy.
+   series makes every stated figure `unverifiable`; a stated
+   `clawback_amount` on a waterfall declaring no provision is
+   `unverifiable`, because there is no recomputed figure to disagree
+   with. Failure outranks indeterminacy.
 
 ---
 

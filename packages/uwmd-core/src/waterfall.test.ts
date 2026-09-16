@@ -451,3 +451,134 @@ describe('verifyWaterfall', () => {
     expect(v.verdict).toBe('verified');
   });
 });
+
+// ─── RFC 0059: the clawback terminal true-up ────────────────────────────────
+//
+// Built on the same hand-worked case, where LP contributions are 900,000, LP
+// distributions 1,764,000 (MOIC 1.96) and promote_total 200,640. Every
+// expected figure below is exact decimal arithmetic on those numbers.
+
+describe('computeWaterfall — clawback (RFC 0059)', () => {
+  const withClawback = (clawback: DistributionWaterfall['clawback']): DistributionWaterfall =>
+    ({ ...WATERFALL, clawback });
+
+  it('reports null — not zero — when no provision is stated', () => {
+    expect(computeWaterfall(WATERFALL, SERIES)!.clawback).toBeNull();
+  });
+
+  it('is exactly zero when the LP clears its floor: absence and zero are different answers', () => {
+    // The ladder paid every dollar of ROC and pref, so the shortfall is nil.
+    const a = computeWaterfall(withClawback({ basis: 'lp_preferred_shortfall', cap: 'promote_received' }), SERIES)!;
+    expect(a.clawback).toBe(0);
+    expect(a.clawback).not.toBeNull();
+  });
+
+  it('claws back the em shortfall exactly', () => {
+    // floor 2.0 × 900,000 = 1,800,000; LP received 1,764,000 → 36,000 short.
+    const a = computeWaterfall(
+      withClawback({ basis: 'lp_em_floor', floor_multiple: 2.0, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    expect(a.clawback).toBeCloseTo(36_000, 6);
+  });
+
+  it('applies a stated net-of-tax rate arithmetically', () => {
+    // 36,000 × (1 − 0.37) = 22,680.
+    const a = computeWaterfall(
+      withClawback({ basis: 'lp_em_floor', floor_multiple: 2.0, net_of_tax_rate: 0.37, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    expect(a.clawback).toBeCloseTo(22_680, 6);
+  });
+
+  it('caps at promote received — a GP cannot return more than it was paid', () => {
+    // floor 2.5 × 900,000 = 2,250,000 → 486,000 short, well above the
+    // 200,640 promote. The cap, not the shortfall, governs.
+    const a = computeWaterfall(
+      withClawback({ basis: 'lp_em_floor', floor_multiple: 2.5, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    expect(a.clawback).toBe(200_640);
+  });
+
+  it('is zero at exactly the LP\u2019s achieved IRR — the closed-form boundary property', () => {
+    // The strongest available check on the hurdle-balance reuse: at a floor
+    // equal to the IRR the LP actually achieved, the true-up must vanish.
+    const achieved = computeWaterfall(WATERFALL, SERIES)!.lp.xirr!;
+    const at = computeWaterfall(
+      withClawback({ basis: 'lp_irr_floor', floor_rate: achieved, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    expect(at.clawback).toBeCloseTo(0, 4);
+
+    // Just below it, still nothing owed; above it, something is.
+    const below = computeWaterfall(
+      withClawback({ basis: 'lp_irr_floor', floor_rate: achieved - 0.02, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    const above = computeWaterfall(
+      withClawback({ basis: 'lp_irr_floor', floor_rate: achieved + 0.02, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    expect(below.clawback).toBe(0);
+    expect(above.clawback!).toBeGreaterThan(0);
+  });
+
+  it('never returns a negative amount on any basis', () => {
+    for (const clawback of [
+      { basis: 'lp_preferred_shortfall', cap: 'promote_received' },
+      { basis: 'lp_em_floor', floor_multiple: 1.01, cap: 'promote_received' },
+      { basis: 'lp_irr_floor', floor_rate: 0.01, cap: 'promote_received' },
+    ] as const) {
+      expect(computeWaterfall(withClawback(clawback), SERIES)!.clawback!).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('leaves every other figure untouched — the true-up is terminal, not a tier', () => {
+    const plain = computeWaterfall(WATERFALL, SERIES)!;
+    const clawed = computeWaterfall(
+      withClawback({ basis: 'lp_em_floor', floor_multiple: 2.5, cap: 'promote_received' }),
+      SERIES,
+    )!;
+    expect(clawed.schedule).toEqual(plain.schedule);
+    expect(clawed.promote_total).toBe(plain.promote_total);
+    expect(clawed.lp.distributions).toBe(plain.lp.distributions);
+    expect(clawed.profit_total).toBe(plain.profit_total);
+  });
+});
+
+describe('verifyWaterfall — clawback claims', () => {
+  const stated = (clawback_amount: number, provision = true): DistributionWaterfall => ({
+    ...WATERFALL,
+    ...(provision
+      ? { clawback: { basis: 'lp_em_floor' as const, floor_multiple: 2.0, cap: 'promote_received' as const } }
+      : {}),
+    stated_outcomes: { clawback_amount },
+  });
+
+  it('verifies a correct stated amount', () => {
+    expect(verifyWaterfall(stated(36_000), SERIES).verdict).toBe('verified');
+  });
+
+  it('fails a stated amount that disagrees', () => {
+    const result = verifyWaterfall(stated(50_000), SERIES);
+    expect(result.verdict).toBe('failed');
+    expect(result.issues[0]!.code).toBe('WF-OUTCOME-DISAGREES');
+    expect(result.issues[0]!.field).toBe('stated_outcomes.clawback_amount');
+  });
+
+  it('is unverifiable — not failed — when an amount is stated with no provision to produce it', () => {
+    const result = verifyWaterfall(stated(36_000, false), SERIES);
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues[0]!.code).toBe('WF-UNEVALUABLE');
+  });
+
+  it('verifies a stated zero on a provision that computes to zero', () => {
+    const wf: DistributionWaterfall = {
+      ...WATERFALL,
+      clawback: { basis: 'lp_preferred_shortfall', cap: 'promote_received' },
+      stated_outcomes: { clawback_amount: 0 },
+    };
+    expect(verifyWaterfall(wf, SERIES).verdict).toBe('verified');
+  });
+});

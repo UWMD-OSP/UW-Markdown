@@ -94,6 +94,8 @@ export interface WaterfallStatedOutcomes {
   gp?: WaterfallPartyOutcomes | null;
   promote_total?: number | null;
   profit_total?: number | null;
+  /** RFC 0059. Null/absent on a waterfall with no clawback provision. */
+  clawback_amount?: number | null;
 }
 
 export interface WaterfallScheduleCell {
@@ -107,11 +109,42 @@ export interface WaterfallScheduleRow {
   by_tier: WaterfallScheduleCell[];
 }
 
+/**
+ * The clawback provision (RFC 0059). A terminal true-up, never per-period
+ * state: the walk finishes, and only then is the GP's promote tested against
+ * what the LP actually ended up with.
+ */
+export interface WaterfallClawback {
+  /**
+   * What the LP is made whole to.
+   * - `lp_preferred_shortfall` — return of capital plus the declared
+   *   `preferred_return` tier's accrual. Needs no extra input.
+   * - `lp_irr_floor` — `floor_rate` required.
+   * - `lp_em_floor` — `floor_multiple` required.
+   */
+  basis: 'lp_preferred_shortfall' | 'lp_irr_floor' | 'lp_em_floor';
+  /** Fraction in (0, 1). Required for `lp_irr_floor`. */
+  floor_rate?: number | null;
+  /** Multiple > 1. Required for `lp_em_floor`. */
+  floor_multiple?: number | null;
+  /**
+   * Fraction in [0, 1). Stated, never derived — this contract does not model
+   * the GP's tax position, it applies the rate the agreement names.
+   */
+  net_of_tax_rate?: number | null;
+  /**
+   * Always `promote_received`. A GP cannot owe back more than it was paid;
+   * anything else is a different instrument and is refused by WF-12.
+   */
+  cap: 'promote_received';
+}
+
 /** The `distribution_waterfall` section content (UW_FORMAT_SPEC §4.27). */
 export interface DistributionWaterfall {
   cash_flow_ref: { variant: string };
   equity_split: { lp: number; gp: number };
   tiers: WaterfallTier[];
+  clawback?: WaterfallClawback | null;
   stated_outcomes?: WaterfallStatedOutcomes | null;
   stated_schedule?: WaterfallScheduleRow[] | null;
 }
@@ -134,6 +167,11 @@ export interface WaterfallAllocation {
   gp: WaterfallPartyResult;
   promote_total: number;
   profit_total: number;
+  /**
+   * The RFC 0059 terminal true-up, or null when the waterfall states no
+   * clawback provision. Zero is a real answer — the LP cleared its floor.
+   */
+  clawback: number | null;
   /** One row per distribution date; only tiers that paid appear. */
   schedule: Array<{ date: string; by_tier: Array<{ tier: number; lp: number; gp: number }> }>;
 }
@@ -413,14 +451,69 @@ export function computeWaterfall(
     };
   };
 
+  const promote_total = gp.distributions - gp.roc_received - gp.pref_received;
+  const terminalT = flows.length > 0 ? flows[flows.length - 1]!.t : 0;
+
   return {
     lp: partyResult(lp),
     gp: partyResult(gp),
-    promote_total: gp.distributions - gp.roc_received - gp.pref_received,
+    promote_total,
     profit_total:
       lp.distributions + gp.distributions - lp.contributions - gp.contributions,
+    clawback: computeClawback(waterfall.clawback ?? null, lp, promote_total, terminalT),
     schedule,
   };
+}
+
+/**
+ * Step 5 of the §VIII.10 walk (RFC 0059): the terminal true-up.
+ *
+ * Every basis is closed-form. The IRR floor reuses `hurdleBalance` verbatim —
+ * the same RFC 0036 boundary a capped split tier uses — rather than iterating
+ * on `xirr`. That is what makes a clawback reachable at all: the calc engine
+ * has no iteration, and a design needing a nested solve would be unimplementable.
+ *
+ * Returns null when no provision is stated, and a number (possibly exactly 0)
+ * when one is. Zero means the LP cleared its floor and the GP keeps everything;
+ * it is a real answer, not an absence.
+ */
+function computeClawback(
+  provision: WaterfallClawback | null,
+  lp: PartyState,
+  promoteTotal: number,
+  terminalT: number,
+): number | null {
+  if (provision === null) return null;
+
+  let shortfall: number;
+  switch (provision.basis) {
+    case 'lp_preferred_shortfall':
+      // What the ladder never paid: unreturned capital plus unpaid accrual.
+      shortfall = lp.unreturned + lp.accrued_pref;
+      break;
+    case 'lp_em_floor': {
+      const multiple = provision.floor_multiple;
+      if (!isNum(multiple)) return null; // WF-10; unreachable when validated
+      shortfall = multiple * lp.contributions - lp.distributions;
+      break;
+    }
+    case 'lp_irr_floor': {
+      const rate = provision.floor_rate;
+      if (!isNum(rate)) return null; // WF-10; unreachable when validated
+      // The amount the LP must receive at the terminal date for its flows to
+      // clear the floor. Already floored at 0 by hurdleBalance.
+      shortfall = hurdleBalance(lp.flows, rate, terminalT);
+      break;
+    }
+    default:
+      return null;
+  }
+
+  if (!(shortfall > 0)) return 0;
+  // The cap: a GP cannot return more promote than it received.
+  const gross = Math.min(shortfall, Math.max(0, promoteTotal));
+  const tax = provision.net_of_tax_rate;
+  return isNum(tax) && tax > 0 ? gross * (1 - tax) : gross;
 }
 
 // ─── Verification ────────────────────────────────────────────────────────────
@@ -533,6 +626,23 @@ export function verifyWaterfall(
   }
   checkCurrency('stated_outcomes.promote_total', stated?.promote_total, allocation.promote_total);
   checkCurrency('stated_outcomes.profit_total', stated?.profit_total, allocation.profit_total);
+
+  // RFC 0059. A stated amount with no provision to produce it is a claim the
+  // walk cannot evaluate — reported as indeterminate rather than a
+  // disagreement, since there is no recomputed figure to disagree with.
+  if (isNum(stated?.clawback_amount)) {
+    if (allocation.clawback === null) {
+      issues.push({
+        code: 'WF-UNEVALUABLE',
+        severity: 'indeterminate',
+        field: 'stated_outcomes.clawback_amount',
+        message:
+          'stated_outcomes.clawback_amount is stated but the waterfall declares no clawback provision, so there is nothing to recompute it from.',
+      });
+    } else {
+      checkCurrency('stated_outcomes.clawback_amount', stated?.clawback_amount, allocation.clawback);
+    }
+  }
 
   // Schedule cells: an absent cell reads 0, both directions (§VIII.10.5).
   if (statedSchedule != null && statedSchedule.length > 0) {

@@ -1,8 +1,9 @@
 ---
 rfc: 0059
 title: 'Waterfall clawback as a terminal true-up'
-status: accepted
+status: implemented
 accepted: 2026-09-16
+implemented: 2026-09-16
 author: claude
 created: 2026-09-16
 depends_on:
@@ -131,8 +132,18 @@ implementable at all.
 | `WF-11` | error | `lp_preferred_shortfall` on a waterfall with no `preferred_return` tier |
 | `WF-12` | error | A `cap` other than `"promote_received"` |
 | `WF-13` | error | `net_of_tax_rate` outside `[0, 1)`, or stated as a percent |
-| `WF-14` | error | `clawback_amount` disagreeing with the recomputation at the currency quantum |
 | `WF-15` | warning | A `clawback` provision on a waterfall whose series has no terminal distribution — the provision is unexercisable as stated |
+
+**Erratum (implementation).** The draft above also specified `WF-14` for a
+`clawback_amount` that disagrees with the recomputation. That code was not
+implemented and should not be: the waterfall splits validator codes (`WF-01`–
+`WF-03`, structure) from verifier issue codes (`WF-OUTCOME-DISAGREES`,
+arithmetic), and a stated-figure disagreement is squarely the latter. Adding a
+`WF-NN` for it would have created a second, parallel spelling of a refusal the
+verifier already reports. A stated amount on a waterfall with **no** provision
+is likewise `WF-UNEVALUABLE` rather than a failure — there is no recomputed
+figure to disagree with. This is the same class of erratum RFCs 0034–0036
+recorded against their own drafts.
 
 ### Library surface
 

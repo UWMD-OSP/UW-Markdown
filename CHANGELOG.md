@@ -8,6 +8,35 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- RFC 0059 implements the distribution-waterfall **clawback** as the terminal
+  true-up protocol §XVI predicted, closing a gap RFC 0035 deferred and RFC 0036
+  deferred again. An optional `distribution_waterfall.clawback` states a basis
+  (`lp_preferred_shortfall`, `lp_irr_floor` or `lp_em_floor`), an optional
+  stated `net_of_tax_rate`, and a `cap` that must be `"promote_received"` — a GP
+  cannot owe back more promote than it received. `stated_outcomes.clawback_amount`
+  is verified against the recomputation at the currency quantum. Registers
+  `WF-10`–`WF-13` and the `WF-15` warning; protocol §VIII.10 gains step 5.
+  Nothing is escrowed, crystallized per period, or projected.
+
+### Changed
+
+- Protocol **2.15.0 → 2.16.0** for §VIII.10 step 5 and the clawback codes. No
+  wire format, formula or precision change; the two receipt fixtures that embed
+  `protocol_version` are repinned.
+
+### Notes
+
+- Every clawback basis is **closed-form**. The IRR floor reuses RFC 0036's
+  hurdle balance verbatim rather than iterating on `xirr` — the calc engine has
+  no iteration, and a design needing a nested solve would have been unreachable.
+  A test pins the boundary property: at a floor equal to the IRR the LP actually
+  achieved, the true-up is zero.
+- A waterfall with no provision reports `null`; a provision that computes to
+  nothing reports `0`. Absence and zero are different answers, and a stated
+  amount with no provision behind it is `unverifiable`, not a disagreement.
+
 ## [2.11.0] - 2026-09-16
 
 Core/CLI **2.11.0**, signing **0.2.15**, batch **0.8.10**, Protocol **2.15.0**,
