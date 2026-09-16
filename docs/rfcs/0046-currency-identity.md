@@ -1,7 +1,7 @@
 ---
 rfc: 0046
 title: Document currency identity
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-09-13
 accepted: 2026-09-13

@@ -22,6 +22,13 @@ protocol, and each package each carry an independent semver).
 - `@uwmd/lake` readers for the three shapes adopters already hold:
   `lakeInputFromEnvelope`, `readBlockValuesCSV` (UW CSV bundle) and
   `readBatchFactJSONL` (`@uwmd/batch` corpus fact table).
+- RFC 0055 types the commercial lease clauses that have been untyped stubs
+  since Format 1.0 — `escalation_schedule`, `termination_option` and
+  `co_tenancy_details` — and adds the `lc_original` / `lc_outstanding_balance`
+  pair beside the tenant-improvement one, registering the `LSE-NN` validator
+  family. Steps state the resulting rent rather than the increment. Nothing is
+  exercised: no rent escalates, no break is taken, no remedy applies and no
+  balance amortizes. Purely additive.
 
 ### Notes
 
@@ -33,6 +40,13 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Format §4.25 and §4.26 claimed `lease_up_schedule` and `cash_flow_series`
+  cells stayed "addressable by ordinary path traversal", citing expressions that
+  raise `CALC-PARSE-001`. Calc paths are flat identifiers; those structures are
+  read by verifiers and host code, not by pack formulas.
+- `verify-indexes` now fails an RFC that is empty, has no frontmatter block, or
+  has frontmatter with no body, and checks the index table's status column
+  against each RFC's own frontmatter. Both gaps let real drift through.
 - The RFC index listed 0046 (currency identity) and 0047 (property cash-flow
   input inventory) as `accepted` after both shipped in 2.10.0.
 

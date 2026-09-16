@@ -1,7 +1,7 @@
 ---
 rfc: 0047
 title: Property cash-flow input inventory
-status: accepted
+status: implemented
 author: jaredmaxey
 created: 2026-09-13
 accepted: 2026-09-13

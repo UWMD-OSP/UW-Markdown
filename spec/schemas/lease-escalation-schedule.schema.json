@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/lease-escalation-schedule.schema.json",
+  "title": "lease-escalation-schedule",
+  "description": "RFC 0055 / format 4.3. Shape only; ordering, the lease-term bound and the escalation_type agreement are semantic checks (LSE-01..LSE-03).",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "effective_date",
+      "base_rent_annual"
+    ],
+    "properties": {
+      "effective_date": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "format": "date"
+      },
+      "base_rent_annual": {
+        "description": "The rent from this date, not the increment.",
+        "type": "number",
+        "minimum": 0
+      }
+    }
+  }
+}
