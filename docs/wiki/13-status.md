@@ -1,8 +1,8 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-16** for release **v2.11.0**.
-Core/CLI **2.11.0**, signing **0.2.15** and batch **0.8.10** publish to npm with
-SLSA provenance from the `v2.11.0` tag. Format **2.0** and Protocol **2.15.0**
+Reconciled **2026-09-16** for release **v2.12.0**.
+Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** publish to npm with
+SLSA provenance from the `v2.12.0` tag. Format **2.0** and Protocol **2.17.0**
 version independently. See [VERSIONS.md](../../VERSIONS.md) and
 [ROADMAP.md](../../ROADMAP.md).
 
@@ -45,6 +45,35 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 11 seeds, 11,264 raw draws and 176 doubles. See the [record](../reviews/2026-09-12-pcg64-reference.md).
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
+
+## Released in 2.12.0
+
+Two contracts and one guard, all additive.
+
+| RFC | Surface | Family |
+|---|---|---|
+| 0058 | Expense recoveries and the CAM true-up on the commercial tenant record (§4.3). | `REC-NN` |
+| 0059 | Distribution-waterfall clawback as a terminal true-up (§4.27, protocol §VIII.10 step 5). | `WF-10`–`WF-15` |
+
+RFC 0058 leaves two figures **stated, not recomputed**, and the spec says why:
+the capped amount, because a cumulative or compounding cap depends on base-year
+history no single document carries, and the pool allocation across tenants,
+because that needs a vacant-space policy and is a modeling decision. `REC-05`
+anchors on the rent roll's own `as_of_date` and is skipped when absent.
+
+RFC 0059's every basis is closed-form — the IRR floor reuses RFC 0036's hurdle
+balance rather than iterating, because the calc engine has no iteration. A test
+pins the boundary: at a floor equal to the IRR the LP achieved, the true-up is
+exactly zero.
+
+`verify-codes` joins CI. RFC 0058 first shipped nine of its ten codes: `REC-09`
+was in the RFC, the format spec and the schema, and nowhere in the validator,
+and nothing went red — a missing refusal looks exactly like a document with
+nothing to refuse. The guard cross-checks every code an implemented RFC or a
+format-spec bullet promises against what `@uwmd/core` actually emits.
+
+Current gate totals: **1,994 core tests**, **589 default conformance checks**,
+three capability profiles, **46 JSON schemas**, **221 emitted codes**.
 
 ## Released in 2.11.0
 
@@ -170,7 +199,7 @@ circularity is not solved, because the calc engine has no iteration.
 - Validate `@uwmd/lake` against a live PostgreSQL server. The suite proves the
   planned statements and their idempotency, not that a real server accepts the
   DDL or that the indexes earn their keep on a real corpus.
-- RFCs 0055, 0056 and 0057 type structures **nothing yet consumes**. No rent
+- RFCs 0055–0059 type structures **nothing yet consumes**. No rent
   escalates, no break is exercised, no balance amortizes, nothing is priced and
   no strike crossing is projected. Typed-but-inert is the intended state until a
   verifier is specified for each; it is not a gap to be closed by inference.
@@ -178,9 +207,6 @@ circularity is not solved, because the calc engine has no iteration.
   needs a named consumer *and* a calc-grammar answer for collections and a
   second period dimension before it is reachable from pack formulas at all.
   See [the calc-engine limits](10-conventions-invariants.md).
-- Cut a release covering Protocol 2.15.0 and RFCs 0049/0055/0056/0057. Until
-  then `main` and the registry describe different validator tables, which is the
-  one drift a reader cannot detect from either side alone.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).
 They do not describe current release status.
