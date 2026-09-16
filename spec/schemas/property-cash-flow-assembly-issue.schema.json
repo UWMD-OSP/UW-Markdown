@@ -28,7 +28,8 @@
         "coverage",
         "basis_currency",
         "amount_sign",
-        "date_horizon"
+        "date_horizon",
+        "sale_deduction"
       ]
     },
     "message": {

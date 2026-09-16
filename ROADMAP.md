@@ -96,9 +96,9 @@ surfaces usable for the next producer wave.
 
 | Wave | Candidate | State / acceptance gate |
 |---|---|---|
-| 1 | Preferred-equity split coupon | **RFC 0050, implemented on `codex/work`.** Split coupons with cash/accrued decomposition and `CS-02b` validation; cash enters coverage, accrued does not. |
-| 1 | Waterfall dual-hurdle `any` mode | **RFC 0051, implemented on `codex/work`.** Lifted `hurdle_mode: "any" | "both"` into normative contract with closed-form capacity, `WF-01` validation, and conformance fixtures. |
-| 1 | Named exit sale deductions | **Next candidate.** Add a closed `sale_deductions` vocabulary and a verifier for net sale proceeds; expose each dated cash line through §4.26 where applicable. |
+| 1 | Preferred-equity split coupon | **RFC 0050, implemented.** Split coupons with cash/accrued decomposition and `CS-02b` validation; cash enters coverage, accrued does not. |
+| 1 | Waterfall dual-hurdle `any` mode | **RFC 0051, implemented.** Lifted `hurdle_mode: "any" | "both"` into normative contract with closed-form capacity, `WF-01` validation, and conformance fixtures. |
+| 1 | Named exit sale deductions | **RFC 0052, implemented.** Closed `sale_deductions` vocabulary with a label-bearing `other`, reserved-and-refused levered names, complete-naming rule, and a `net_sale_proceeds` verifier at the currency quantum. Each deduction remains its own dated §4.26 row. |
 | 1 | Tax abatements and reassessment basis | **Next candidate.** Type the abatement schedule and reassessment basis, and distinguish the seller's trailing tax from the buyer's terminal-year underwriting tax after a sale-triggered reassessment. |
 | 1/2 | Lease clauses and TI/LC amortization | **Dependent.** Type break-option and co-tenancy details, add LC balances beside TI, and pin straight-line amortization only after the lease-ledger placement decision. |
 | 2 | Per-lease monthly ledger | **Decision RFC.** Choose a state-and-verify `lease_ledger` series (rather than widening the point-in-time rent roll) to support lease clauses, CAM true-ups, and TI/LC balances. |

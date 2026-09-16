@@ -82,17 +82,24 @@ RFC 0048 and RFC 0049 are draft adoption RFCs. RFC 0048 scopes standalone
 document/package examples; RFC 0049 scopes an optional PostgreSQL/JSONB lake
 adapter outside the protocol and core dependencies.
 
-RFC 0050 is implemented on `codex/work` but unreleased: split preferred-equity
+RFC 0050 is implemented on `main` but unreleased: split preferred-equity
 coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
 from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
 compounding remain deferred. Release still requires the RFC, the
 format/schema/protocol triad, and conformance fixtures to be accepted together.
 
-RFC 0051 is implemented on `codex/work` but unreleased: `hurdle_mode: "any"`
+RFC 0051 is implemented on `main` but unreleased: `hurdle_mode: "any"`
 enables dual-hurdle tiers to end as soon as either `until_lp_em` or
 `until_lp_irr` is met (smaller capacity), while default `hurdle_mode: "both"`
 preserves existing behavior (larger capacity). `WF-01` rejects `hurdle_mode`
 when both hurdles are not present.
+
+RFC 0052 is implemented but unreleased: an optional closed `sale_deductions`
+vocabulary names every cost-of-sale row at the disposition slot, and an optional
+`net_sale_proceeds` figure is verified against gross sale less exit costs at the
+currency quantum. `prepayment_penalty`, `defeasance` and `loan_payoff` are
+reserved and refused by this unlevered assembler. A plan stating neither member
+behaves exactly as it did before.
 
 ## Remaining work
 

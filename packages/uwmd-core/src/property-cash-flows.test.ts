@@ -216,3 +216,129 @@ describe('RFC 0045 property cash-flow assembly', () => {
     expect((await assemblePropertyCashFlows(d, p)).series.series[3]!.date).toBe('2028-02-29');
   });
 });
+
+// RFC 0052 — named exit sale deductions. Row 7 is the 1,150,000 gross sale,
+// row 8 the -20,000 exit cost, row 9 the +5,000 reserve release.
+describe('RFC 0052 named exit sale deductions', () => {
+  const named = (over: Partial<PropertyCashFlowPlan> = {}): PropertyCashFlowPlan => ({
+    ...plan(), sale_deductions: [{ row: 8, name: 'broker_commission' }], ...over,
+  });
+
+  it('omitting both members preserves the pre-RFC result', async () => {
+    const result = await assemblePropertyCashFlows(fresh(), plan());
+    expect(result.sale_deductions).toBeUndefined();
+    expect(result.net_sale_proceeds).toEqual({ status: 'not_stated' });
+    expect(outputSchema(result), JSON.stringify(outputSchema.errors)).toBe(true);
+  });
+
+  it('names a deduction and reports it against its output row', async () => {
+    const p = named();
+    expect(planSchema(p), JSON.stringify(planSchema.errors)).toBe(true);
+    const result = await assemblePropertyCashFlows(fresh(), p);
+    const row = result.sale_deductions![0]!;
+    expect(row).toEqual({ output_row_index: expect.any(Number), name: 'broker_commission', amount: -20000 });
+    // The evidence must point at the row the series actually emitted.
+    expect(result.series.series[row.output_row_index]!.amount).toBe(-20000);
+    expect(outputSchema(result), JSON.stringify(outputSchema.errors)).toBe(true);
+  });
+
+  it('verifies a stated net figure as gross sale less exit costs', async () => {
+    const result = await assemblePropertyCashFlows(fresh(), named({ net_sale_proceeds: 1130000 }));
+    expect(result.net_sale_proceeds).toEqual({ status: 'verified', stated: 1130000, computed: 1130000 });
+  });
+
+  it('refuses a net figure that is wrong by a single cent', async () => {
+    expect((await refusal(fresh(), named({ net_sale_proceeds: 1130000.01 }))).reason).toBe('sale_deduction');
+  });
+
+  it('excludes the returned reserve from net proceeds', async () => {
+    // 1,130,000 is gross less costs; adding the 5,000 release must not verify.
+    expect((await refusal(fresh(), named({ net_sale_proceeds: 1135000 }))).reason).toBe('sale_deduction');
+  });
+
+  it('verifies a net figure even when no deduction is named', async () => {
+    const p = plan(); p.net_sale_proceeds = 1130000;
+    const result = await assemblePropertyCashFlows(fresh(), p);
+    expect(result.net_sale_proceeds).toEqual({ status: 'verified', stated: 1130000, computed: 1130000 });
+    expect(result.sale_deductions).toBeUndefined();
+  });
+
+  it('accepts an other deduction carrying a label', async () => {
+    const p = named({ sale_deductions: [{ row: 8, name: 'other', label: 'Municipal exit impact fee' }] });
+    const result = await assemblePropertyCashFlows(fresh(), p);
+    expect(result.sale_deductions![0]!.label).toBe('Municipal exit impact fee');
+  });
+
+  it.each([
+    ['other without a label', [{ row: 8, name: 'other' }]],
+    ['other with a blank label', [{ row: 8, name: 'other', label: '' }]],
+    ['a label on a self-describing name', [{ row: 8, name: 'transfer_tax', label: 'redundant' }]],
+    ['an unknown name', [{ row: 8, name: 'marketing_fee' }]],
+    ['a row outside the cell', [{ row: 7, name: 'broker_commission' }]],
+    ['a row the reserve cell owns', [{ row: 9, name: 'broker_commission' }]],
+    ['a duplicated row', [{ row: 8, name: 'broker_commission' }, { row: 8, name: 'transfer_tax' }]],
+  ])('refuses %s', async (_name, deductions) => {
+    expect((await refusal(fresh(), named({ sale_deductions: deductions as never }))).reason).toBe('sale_deduction');
+  });
+
+  it.each(['prepayment_penalty', 'defeasance', 'loan_payoff'])(
+    'refuses the reserved levered name %s', async (name) => {
+      const issue = await refusal(fresh(), named({ sale_deductions: [{ row: 8, name: name as never }] }));
+      expect(issue.reason).toBe('sale_deduction');
+      expect(issue.message).toContain('unlevered');
+    });
+
+  it('refuses partial naming when a cell owns several rows', async () => {
+    const d = fresh();
+    const series = payload(d).series;
+    // Split the single exit cost into two rows the cell owns together.
+    series.splice(9, 0, { date: series[8].date, amount: -5000, label: 'Synthetic transfer tax' });
+    series[8].amount = -15000;
+    const p = plan();
+    for (const c of p.coverage) {
+      if (c.slot === 'disposition' && c.category === 'transaction_costs') c.rows = [8, 9];
+      else if (c.slot === 'disposition' && c.category === 'reserve_net') c.rows = [10];
+    }
+    expect((await refusal(d, { ...p, sale_deductions: [{ row: 8, name: 'broker_commission' }] })).reason)
+      .toBe('sale_deduction');
+    const complete = await assemblePropertyCashFlows(d, {
+      ...p, sale_deductions: [{ row: 8, name: 'broker_commission' }, { row: 9, name: 'transfer_tax' }],
+      net_sale_proceeds: 1130000,
+    });
+    expect(complete.sale_deductions!.map(r => r.name)).toEqual(['broker_commission', 'transfer_tax']);
+    expect(complete.net_sale_proceeds).toEqual({ status: 'verified', stated: 1130000, computed: 1130000 });
+  });
+
+  it('refuses a stated net figure with no gross sale row', async () => {
+    const d = fresh();
+    payload(d).series.splice(7, 1);
+    const p = plan();
+    for (const c of p.coverage) {
+      if (c.slot === 'disposition' && c.category === 'gross_sale') { delete (c as { rows?: number[] }).rows; (c as { zero?: string }).zero = 'Synthetic scenario has no exit recovery.'; }
+      else if (c.slot === 'disposition' && c.category === 'transaction_costs') c.rows = [7];
+      else if (c.slot === 'disposition' && c.category === 'reserve_net') c.rows = [8];
+    }
+    expect((await refusal(d, { ...p, net_sale_proceeds: 0 })).reason).toBe('sale_deduction');
+  });
+
+  it.each([
+    ['a nonfinite net figure', { net_sale_proceeds: Number.NaN }],
+    ['an empty deduction list', { sale_deductions: [] }],
+    ['a negative row index', { sale_deductions: [{ row: -1, name: 'broker_commission' }] }],
+    ['an unknown member', { sale_deductions: [{ row: 8, name: 'broker_commission', note: 'x' }] }],
+  ])('refuses %s as a plan-shape error', async (_name, over) => {
+    expect((await refusal(fresh(), named(over as never))).reason).toBe('plan');
+  });
+
+  it('never mutates the caller plan', async () => {
+    const p = named({ net_sale_proceeds: 1130000 });
+    const before = JSON.stringify(p);
+    await assemblePropertyCashFlows(fresh(), p);
+    expect(JSON.stringify(p)).toBe(before);
+  });
+
+  it('exposes the same surface from the browser entry', async () => {
+    const result = await browserAssemble(fresh(), named({ net_sale_proceeds: 1130000 }));
+    expect(result.net_sale_proceeds.status).toBe('verified');
+  });
+});

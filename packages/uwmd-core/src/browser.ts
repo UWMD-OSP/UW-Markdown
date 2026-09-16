@@ -884,3 +884,6 @@ export type {
 export type { PropertyCashFlowPlan, PropertyCashFlowAssembly, PropertyCashFlowAssemblyIssue,
   PropertyCashFlowCategory, PropertyCashFlowCell, PropertyCashFlowCoverage,
   PropertyCashFlowAssertions, PropertyCashFlowBinding, PropertyCashFlowCellEvidence } from './protocol.js';
+// RFC 0052 — named exit sale deductions.
+export type { SaleDeduction, SaleDeductionName } from './protocol.js';
+export { UNLEVERED_SALE_DEDUCTIONS, RESERVED_LEVERED_SALE_DEDUCTIONS } from './protocol.js';

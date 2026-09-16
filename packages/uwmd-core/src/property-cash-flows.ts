@@ -4,12 +4,17 @@ import type {
   PropertyCashFlowPlan, PropertyCashFlowAssembly, PropertyCashFlowAssemblyIssue,
   PropertyCashFlowCell, PropertyCashFlowCategory, PropertyCashFlowCoverage,
   PropertyCashFlowBinding, PropertyCashFlowCellEvidence,
+  SaleDeduction, SaleDeductionName,
 } from './protocol.js';
+import { UNLEVERED_SALE_DEDUCTIONS, RESERVED_LEVERED_SALE_DEDUCTIONS } from './protocol.js';
 import { CalcError } from './calc/errors.js';
 import { isDayCountConvention, parseISODate } from './calc/day-count.js';
 import { periodSection, periodPayload } from './period-path.js';
 import { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
-import { CASH_FLOW_KINDS, verifyCashFlowSeries, type CashFlowSeries } from './cash-flow-series.js';
+import {
+  CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals,
+  verifyCashFlowSeries, type CashFlowSeries,
+} from './cash-flow-series.js';
 
 type Reason = PropertyCashFlowAssemblyIssue['reason'];
 type Evidence = PropertyCashFlowAssemblyIssue['evidence'];
@@ -45,7 +50,11 @@ const assertionKeys = [
 ];
 function validatePlan(value: unknown): asserts value is PropertyCashFlowPlan {
   shape(value, ['basis', 'tax_basis', 'currency_code', 'day_count', 'acquisition_date',
-    'disposition_date', 'lease_up', 'supplemental', 'assertions', 'coverage'], 'plan');
+    'disposition_date', 'lease_up', 'supplemental', 'assertions', 'coverage',
+    // RFC 0052 members are optional; a plan omitting both behaves as it did before.
+    ...(isObj(value) && own(value, 'sale_deductions') ? ['sale_deductions'] : []),
+    ...(isObj(value) && own(value, 'net_sale_proceeds') ? ['net_sale_proceeds'] : []),
+  ], 'plan');
   for (const k of ['basis', 'tax_basis', 'currency_code', 'day_count', 'acquisition_date', 'disposition_date'])
     string(value[k], `plan.${k}`);
   shape(value.lease_up, ['source_variant', 'currency_code', 'cash_dates'], 'plan.lease_up');
@@ -90,6 +99,38 @@ function validatePlan(value: unknown): asserts value is PropertyCashFlowPlan {
     if (value.assertions[k] !== true)
       refuse('coverage', 'An explicit true economic assertion is required.', `plan.assertions.${k}`);
   }
+  validateSaleDeductions(value as unknown as PropertyCashFlowPlan);
+}
+
+// RFC 0052. Names carry no sign rule of their own: the transaction_costs rule
+// already governs every row they name, `seller_credits` included.
+const SALE_DEDUCTION_NAMES: readonly SaleDeductionName[] =
+  [...UNLEVERED_SALE_DEDUCTIONS, ...RESERVED_LEVERED_SALE_DEDUCTIONS];
+
+function validateSaleDeductions(plan: PropertyCashFlowPlan): void {
+  if (own(plan, 'net_sale_proceeds') && !finite(plan.net_sale_proceeds))
+    refuse('plan', 'A stated net sale proceeds figure must be a finite number.', 'plan.net_sale_proceeds');
+  if (!own(plan, 'sale_deductions')) return;
+  const named = plan.sale_deductions;
+  if (!Array.isArray(named) || named.length === 0)
+    refuse('plan', 'sale_deductions must be a nonempty list when stated.', 'plan.sale_deductions');
+  named.forEach((entry, i) => {
+    const p = `plan.sale_deductions[${i}]`;
+    shape(entry, isObj(entry) && own(entry, 'label') ? ['row', 'name', 'label'] : ['row', 'name'], p);
+    const row = (entry as unknown as Obj).row;
+    if (!Number.isSafeInteger(row) || (row as number) < 0)
+      refuse('plan', 'row requires a nonnegative safe integer index.', `${p}.row`);
+    if (!SALE_DEDUCTION_NAMES.includes(entry.name))
+      refuse('sale_deduction', `Unknown deduction name. Use one of: ${SALE_DEDUCTION_NAMES.join(', ')}.`, `${p}.name`);
+    if ((RESERVED_LEVERED_SALE_DEDUCTIONS as readonly string[]).includes(entry.name))
+      refuse('sale_deduction',
+        `${entry.name} is a levered, below-NOI amount reserved for a later contract; this assembly is unlevered and pre-tax. State it as "other" with a label if it genuinely belongs in a candidate stream.`,
+        `${p}.name`);
+    if (entry.name === 'other' && !text(entry.label))
+      refuse('sale_deduction', 'An "other" deduction requires a nonempty label saying what it is.', `${p}.label`);
+    if (entry.name !== 'other' && own(entry, 'label'))
+      refuse('sale_deduction', 'Only an "other" deduction carries a label; the name already says what it is.', `${p}.label`);
+  });
 }
 const pointer = (section: string, variant: string) => `sections.${section}[${JSON.stringify(variant)}]`;
 function select(parsed: ParsedUWFile, section: string, variant: string): UWBlock {
@@ -243,15 +284,40 @@ export async function assemblePropertyCashFlows(
       if (bad) refuse('amount_sign', 'Cash amount has the wrong sign for its declared category.', `${sourcePointer}.series[${rowIndex}].amount`);
     }
   }
+  // RFC 0052. Naming must be complete when present: a rollup over some of the
+  // deductions looks complete and is worse than no rollup at all.
+  const exitCostRows = declarations.get(key(cell('disposition', 'transaction_costs')))!.item.rows ?? [];
+  if (plan.sale_deductions) {
+    const seen = new Set<number>();
+    plan.sale_deductions.forEach((entry, i) => {
+      const p = `plan.sale_deductions[${i}].row`;
+      if (!exitCostRows.includes(entry.row))
+        refuse('sale_deduction', 'A named deduction must be a row covering (disposition, transaction_costs).', p);
+      if (seen.has(entry.row)) refuse('sale_deduction', 'A cash row carries exactly one deduction name.', p);
+      seen.add(entry.row);
+    });
+    const unnamed = exitCostRows.filter(r => !seen.has(r));
+    if (unnamed.length > 0)
+      refuse('sale_deduction',
+        `Naming must cover every exit cost row; ${unnamed.length} row(s) are unnamed. Omit sale_deductions entirely, or name them all.`,
+        'plan.sale_deductions');
+  }
   const bindings: PropertyCashFlowBinding[] = projection.bindings.map((b, i) => ({
     ...b, output_row_index: 0, source_section: 'lease_up_schedule',
     source_variant: plan.lease_up.source_variant, cells: leaseCategories.map(c => cell(periods[i]!, c)),
   }));
-  for (const [i, row] of source.series.entries()) bindings.push({
-    output_row_index: 0, source_section: 'cash_flow_series', source_variant: plan.supplemental.source_variant,
-    source_path: `cash_flow_series.series[${i}].amount`, date: row.date, amount: row.amount,
-    cells: [rowCells.get(i)!],
-  });
+  // Keep each supplemental row's binding by source index: output_row_index is
+  // assigned after the sort below, and RFC 0052 evidence needs the pairing.
+  const supplementalBindings = new Map<number, PropertyCashFlowBinding>();
+  for (const [i, row] of source.series.entries()) {
+    const binding: PropertyCashFlowBinding = {
+      output_row_index: 0, source_section: 'cash_flow_series', source_variant: plan.supplemental.source_variant,
+      source_path: `cash_flow_series.series[${i}].amount`, date: row.date, amount: row.amount,
+      cells: [rowCells.get(i)!],
+    };
+    supplementalBindings.set(i, binding);
+    bindings.push(binding);
+  }
   // Stable sort retains lease-up order, then supplemental source index on a tie.
   bindings.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
   bindings.forEach((b, i) => { b.output_row_index = i; });
@@ -265,6 +331,31 @@ export async function assemblePropertyCashFlows(
     if (declaration && own(declaration, 'zero')) return { ...c, zero: declaration.zero! };
     return { ...c, output_rows: bindings.filter(b => b.cells.some(v => key(v) === key(c))).map(b => b.output_row_index) };
   });
+  // RFC 0052. Verify a stated figure; never derive one. The check spans the whole
+  // transaction_costs cell, not only the named rows, so it cannot be satisfied by
+  // leaving a deduction unnamed. reserve_net is excluded: a returned reserve is
+  // not sale proceeds, and the plan already asserts gross sale excludes it.
+  const grossSaleRows = declarations.get(key(cell('disposition', 'gross_sale')))!.item.rows ?? [];
+  const sumOf = (rows: readonly number[]) => rows.reduce((total, r) => total + source.series[r]!.amount, 0);
+  const dp = CASH_FLOW_VERIFY_DECIMALS.currency;
+  let netSaleProceeds: PropertyCashFlowAssembly['net_sale_proceeds'] = { status: 'not_stated' };
+  if (own(plan, 'net_sale_proceeds')) {
+    if (grossSaleRows.length === 0)
+      refuse('sale_deduction', 'A stated net sale proceeds figure requires a gross sale row.', 'plan.net_sale_proceeds');
+    const computed = quantizeAtDecimals(sumOf(grossSaleRows) + sumOf(exitCostRows), dp);
+    const stated = quantizeAtDecimals(plan.net_sale_proceeds!, dp);
+    if (stated !== computed)
+      refuse('sale_deduction',
+        `Stated net sale proceeds ${stated} disagrees with gross sale less exit costs ${computed}.`,
+        'plan.net_sale_proceeds');
+    netSaleProceeds = { status: 'verified', stated, computed };
+  }
+  const saleDeductions = plan.sale_deductions?.map(entry => ({
+    output_row_index: supplementalBindings.get(entry.row)!.output_row_index,
+    name: entry.name,
+    ...(entry.label !== undefined ? { label: entry.label } : {}),
+    amount: source.series[entry.row]!.amount,
+  })).sort((a, b) => a.output_row_index - b.output_row_index);
   return {
     source_envelope_digest: projection.source_envelope_digest, plan,
     coverage: 'declared_complete',
@@ -272,5 +363,7 @@ export async function assemblePropertyCashFlows(
       series: bindings.map(b => ({ date: b.date, amount: b.amount, kind: 'other', label: b.source_path })) },
     bindings, cells,
     source_verification: { lease_up: 'verified', supplemental_metrics: hasMetrics ? 'verified' : 'not_stated' },
+    ...(saleDeductions ? { sale_deductions: saleDeductions } : {}),
+    net_sale_proceeds: netSaleProceeds,
   };
 }

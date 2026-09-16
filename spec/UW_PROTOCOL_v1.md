@@ -2148,6 +2148,40 @@ trailing or forward NOI, a cap rate or the existing `deriveDCF` helper. Net exit
 cash emerges only from the separately stated rows; no extra net-proceeds row
 may be appended. A zero exit recovery needs its own explicit zero explanation.
 
+#### 5a. Named sale deductions and net proceeds (RFC 0052)
+
+The plan MAY carry `sale_deductions`, naming each cash row bound to the
+`(disposition, transaction_costs)` cell from a closed vocabulary. The unlevered
+names are `broker_commission`, `transfer_tax`, `title_and_escrow`,
+`legal_and_closing`, `seller_credits`, `survey_and_diligence` and `other`.
+An `other` entry MUST carry a nonempty author label; any other name MUST NOT,
+because the name already states what the amount is.
+
+`prepayment_penalty`, `defeasance` and `loan_payoff` are reserved in the same
+vocabulary and MUST be refused here: they are levered, below-NOI amounts, and
+this assembly is unlevered and pre-tax. Reserving rather than omitting them
+keeps a later levered contract from colliding with adopter usage and turns a
+basis violation into an explained refusal rather than a silent one.
+
+When `sale_deductions` is present it MUST name every row covering that cell,
+exactly once, and MUST NOT name a row the cell does not cover. Partial naming
+refuses: a rollup over some deductions looks complete and is worse than none.
+Omitting `sale_deductions` entirely remains valid. Names carry no sign rule of
+their own; the existing nonpositive `transaction_costs` rule governs every row
+they name, `seller_credits` included, and naming changes no amount, date or
+output position. Each deduction remains its own dated §4.26 row.
+
+The plan MAY also carry `net_sale_proceeds`, a stated figure the assembler
+verifies and MUST NOT derive. Verification sums the `gross_sale` and
+`transaction_costs` rows at the disposition slot and compares against the stated
+figure, both sides quantized at the §VIII.9.4 currency quantum per §VIII.5. The
+check spans the whole `transaction_costs` cell rather than only the named rows,
+so it cannot be satisfied by leaving a deduction unnamed. It excludes
+`reserve_net`: a returned reserve is not sale proceeds. Stating
+`net_sale_proceeds` without a `gross_sale` row refuses; omitting it leaves the
+result's status `not_stated`. A verified figure is evidence about stated
+amounts, never proof that the deductions are complete or the exit is real.
+
 #### 6. Candidate result and metric interpretation
 
 New public types are `PropertyCashFlowPlan`,
@@ -2225,6 +2259,18 @@ interface PropertyCashFlowAssertions {
   hold_only_and_exit_settled: true;
 }
 
+type SaleDeductionName =
+  | 'broker_commission' | 'transfer_tax' | 'title_and_escrow'
+  | 'legal_and_closing' | 'seller_credits' | 'survey_and_diligence' | 'other'
+  // Reserved below-NOI names; refused by this unlevered assembler.
+  | 'prepayment_penalty' | 'defeasance' | 'loan_payoff';
+
+interface SaleDeduction {
+  row: number; // a supplemental row covering (disposition, transaction_costs)
+  name: SaleDeductionName;
+  label?: string; // required when name is 'other', refused otherwise
+}
+
 interface PropertyCashFlowPlan {
   basis: 'unlevered';
   tax_basis: 'pre_tax';
@@ -2243,6 +2289,8 @@ interface PropertyCashFlowPlan {
   };
   assertions: PropertyCashFlowAssertions;
   coverage: PropertyCashFlowCoverage[];
+  sale_deductions?: SaleDeduction[];
+  net_sale_proceeds?: number;
 }
 
 interface PropertyCashFlowBinding {
@@ -2271,13 +2319,23 @@ interface PropertyCashFlowAssembly {
     lease_up: 'verified';
     supplemental_metrics: 'verified' | 'not_stated';
   };
+  sale_deductions?: Array<{
+    output_row_index: number;
+    name: SaleDeductionName;
+    label?: string;
+    amount: number;
+  }>;
+  net_sale_proceeds:
+    | { status: 'verified'; stated: number; computed: number }
+    | { status: 'not_stated' };
 }
 
 interface PropertyCashFlowAssemblyIssue {
   category: 'calc';
   code: 'CALC-CF-ASSEMBLY';
   reason: 'plan' | 'selection' | 'structure' | 'verification'
-    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon';
+    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon'
+    | 'sale_deduction';
   message: string;
   pointer: string;
   evidence?: {
