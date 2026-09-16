@@ -252,3 +252,102 @@ describe('WF-03 — a waterfall needs capital', () => {
     expect(issues.map((i) => i.code)).toEqual(['WF-03']);
   });
 });
+
+// ─── WF-10…WF-15 — the RFC 0059 clawback provision ──────────────────────────
+
+describe('WF-10…WF-15 — clawback structure', () => {
+  const withClawback = (clawback: string, tiers?: string) =>
+    doc(`{
+  "cash_flow_ref": { "variant": "base" },
+  "equity_split": { "lp": 0.9, "gp": 0.1 },
+  "clawback": ${clawback},
+  "tiers": ${tiers ?? `[
+    { "type": "return_of_capital" },
+    { "type": "preferred_return", "rate": 0.08, "accrual": "simple" },
+    { "type": "split", "lp_share": 0.8, "gp_share": 0.2 }
+  ]`}
+}`);
+
+  const codes = (source: string) =>
+    validateUWFile(parseUWFile(source)).issues.map((i) => i.code);
+
+  it('accepts each basis with its required input', () => {
+    for (const clawback of [
+      '{ "basis": "lp_preferred_shortfall", "cap": "promote_received" }',
+      '{ "basis": "lp_irr_floor", "floor_rate": 0.12, "cap": "promote_received" }',
+      '{ "basis": "lp_em_floor", "floor_multiple": 2.0, "cap": "promote_received" }',
+    ]) {
+      expect(codes(withClawback(clawback)).filter((c) => c.startsWith('WF-1'))).toEqual([]);
+    }
+  });
+
+  it('WF-10 refuses a basis outside the closed vocabulary', () => {
+    expect(codes(withClawback('{ "basis": "gp_catch_down", "cap": "promote_received" }'))).toContain('WF-10');
+  });
+
+  it('WF-10 refuses a basis missing its required input', () => {
+    expect(codes(withClawback('{ "basis": "lp_irr_floor", "cap": "promote_received" }'))).toContain('WF-10');
+    expect(codes(withClawback('{ "basis": "lp_em_floor", "cap": "promote_received" }'))).toContain('WF-10');
+  });
+
+  it('WF-10 refuses a floor rate stated as a percent rather than a fraction', () => {
+    // 12, not 0.12 — the repo-wide convention, and the mistake that silently
+    // makes every deal owe a clawback.
+    expect(codes(withClawback('{ "basis": "lp_irr_floor", "floor_rate": 12, "cap": "promote_received" }'))).toContain('WF-10');
+  });
+
+  it('WF-10 refuses an em floor at or below 1.0 — a floor no deal can miss', () => {
+    expect(codes(withClawback('{ "basis": "lp_em_floor", "floor_multiple": 1.0, "cap": "promote_received" }'))).toContain('WF-10');
+  });
+
+  it('WF-11 refuses a preferred shortfall with no preferred tier to fall short of', () => {
+    const noPref = `[
+    { "type": "return_of_capital" },
+    { "type": "split", "lp_share": 0.8, "gp_share": 0.2 }
+  ]`;
+    expect(codes(withClawback('{ "basis": "lp_preferred_shortfall", "cap": "promote_received" }', noPref))).toContain('WF-11');
+  });
+
+  it('WF-12 refuses any cap other than promote_received', () => {
+    expect(codes(withClawback('{ "basis": "lp_em_floor", "floor_multiple": 2.0, "cap": "uncapped" }'))).toContain('WF-12');
+    expect(codes(withClawback('{ "basis": "lp_em_floor", "floor_multiple": 2.0 }'))).toContain('WF-12');
+  });
+
+  it('WF-13 refuses a tax rate outside [0,1)', () => {
+    for (const rate of ['37', '1', '-0.1']) {
+      expect(codes(withClawback(`{ "basis": "lp_em_floor", "floor_multiple": 2.0, "net_of_tax_rate": ${rate}, "cap": "promote_received" }`))).toContain('WF-13');
+    }
+  });
+
+  it('accepts a zero tax rate — explicit is not the same as absent', () => {
+    expect(codes(withClawback('{ "basis": "lp_em_floor", "floor_multiple": 2.0, "net_of_tax_rate": 0, "cap": "promote_received" }'))).not.toContain('WF-13');
+  });
+
+  it('WF-15 warns when the series has no distribution to have overpaid from', () => {
+    const source = doc(`{
+  "cash_flow_ref": { "variant": "base" },
+  "equity_split": { "lp": 0.9, "gp": 0.1 },
+  "clawback": { "basis": "lp_em_floor", "floor_multiple": 2.0, "cap": "promote_received" },
+  "tiers": [
+    { "type": "return_of_capital" },
+    { "type": "split", "lp_share": 0.8, "gp_share": 0.2 }
+  ]
+}`, {
+      series: `{
+  "series": [
+    { "date": "2026-01-01", "amount": -1000000 }
+  ]
+}`,
+    });
+    const issues = validateUWFile(parseUWFile(source)).issues;
+    const wf15 = issues.find((i) => i.code === 'WF-15');
+    expect(wf15).toBeDefined();
+    expect(wf15!.severity).toBe('warning');
+  });
+
+  it('a waterfall with no clawback raises none of these codes', () => {
+    expect(codes(CLEAN_DOC).filter((c) => /^WF-1[0-5]$/.test(c))).toEqual([]);
+  });
+});
+
+const CLEAN_DOC = doc(CLEAN);

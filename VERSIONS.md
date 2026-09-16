@@ -39,7 +39,7 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.15.0** | format ≥ 1.0 (registers `LSE-NN` for RFC 0055, `HDG-NN` / `ESC-NN` for RFC 0056 and `CAPX-NN` for RFC 0057; released in core/CLI 2.11.0) |
+| UW Protocol | **2.16.0** | format ≥ 1.0 (unreleased: §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes for RFC 0059; 2.15.0 released in core/CLI 2.11.0) |
 | `@uwmd/core` | **2.11.0** | format 2.0 (reads 1.x), protocol 2.15.0 |
 | `@uwmd/cli` (CLI) | **2.11.0** | `@uwmd/core` 2.11.0 |
 | `@uwmd/excel` | **0.9.3** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.11.x, format 2.0, explicit contextual calculations |

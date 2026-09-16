@@ -859,6 +859,7 @@ export type {
   WaterfallTierPreferredReturn,
   WaterfallTierCatchUp,
   WaterfallTierSplit,
+  WaterfallClawback,
   WaterfallPartyOutcomes,
   WaterfallStatedOutcomes,
   WaterfallScheduleRow,

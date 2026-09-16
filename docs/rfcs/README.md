@@ -82,7 +82,7 @@ and how it gets accepted.
 | [0056](./0056-rate-hedges-and-escrows.md) | Typed rate hedges, escrows and the reserves that fund them | implemented | format, protocol, core, conformance |
 | [0057](./0057-renovation-draw-and-expense-targeted-capex.md) | The renovation draw, and capex that buys an expense reduction | implemented | format, protocol, core, conformance |
 | [0058](./0058-expense-recoveries-and-cam-true-up.md) | Expense recoveries and the CAM true-up | accepted | format, protocol, core, conformance |
-| [0059](./0059-waterfall-clawback-terminal-true-up.md) | Waterfall clawback as a terminal true-up | accepted | format, protocol, core, conformance |
+| [0059](./0059-waterfall-clawback-terminal-true-up.md) | Waterfall clawback as a terminal true-up | implemented | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
