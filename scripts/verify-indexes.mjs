@@ -86,6 +86,38 @@ if (linkedRfcs.length > 0) {
   checks.push(`${linkedRfcs.length} RFCs linked from ${RFC_INDEX} are all discovered for the site`);
 }
 
+// ── 2b. RFC frontmatter must be parseable YAML ───────────────────────────────
+// The site copies each RFC verbatim, so an unquoted plain scalar carrying a
+// `: ` sequence is a YAML error that surfaces only as a failed Vercel build.
+// RFC 0051's title ("hurdle_mode: \"any\"") was the first to hit it.
+
+for (const rfc of copiedRfcs) {
+  const path = join('docs/rfcs', rfc);
+  if (!existsSync(resolve(root, path))) continue;
+  const text = read(path).replace(/^\uFEFF/, '');
+  if (!text.startsWith('---')) continue;
+  const end = text.indexOf('\n---', 3);
+  if (end === -1) {
+    failures.push(`${path}: frontmatter opens with --- but is never closed.`);
+    continue;
+  }
+  for (const line of text.slice(3, end).split('\n')) {
+    const field = /^([A-Za-z_][\w-]*):\s+(\S.*)$/.exec(line.trim());
+    if (!field) continue;
+    const [, key, value] = field;
+    const quoted = (value.startsWith("'") && value.endsWith("'"))
+      || (value.startsWith('"') && value.endsWith('"'));
+    if (!quoted && value.includes(': ')) {
+      failures.push(
+        `${path}: frontmatter \`${key}\` contains ": " but is unquoted — YAML reads it as a nested mapping and the site build fails. Wrap the value in single quotes.`,
+      );
+    }
+  }
+}
+if (!failures.some((f) => f.includes('frontmatter'))) {
+  checks.push(`${copiedRfcs.size} RFC frontmatter blocks parse as YAML scalars`);
+}
+
 // A copied-but-unlinked RFC is an orphan page, not a break — 0000-template.md
 // is deliberately one — so it is reported without failing.
 const orphans = [...copiedRfcs].filter((r) => !linkedRfcs.includes(r) && r !== '0000-template.md' && r !== 'README.md');

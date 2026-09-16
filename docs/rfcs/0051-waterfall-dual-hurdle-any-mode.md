@@ -1,6 +1,6 @@
 ﻿---
 rfc: 0051
-title: Distribution waterfall dual-hurdle "any" mode (hurdle_mode: "any" | "both")
+title: 'Distribution waterfall dual-hurdle "any" mode (hurdle_mode: "any" | "both")'
 status: draft
 author: jaredmaxey
 created: 2026-09-13
