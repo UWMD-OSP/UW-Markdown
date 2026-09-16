@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/lease-co-tenancy.schema.json",
+  "title": "lease-co-tenancy",
+  "description": "RFC 0055 / format 4.3. Shape only; trigger companions, the remedy_value rule and agreement with co_tenancy_clause are semantic checks (LSE-06..LSE-08).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trigger",
+    "remedy"
+  ],
+  "properties": {
+    "trigger": {
+      "enum": [
+        "named_tenant_departure",
+        "occupancy_threshold",
+        "both"
+      ]
+    },
+    "named_cotenants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "occupancy_threshold": {
+      "description": "A fraction, exclusive of 0 and 1.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "remedy": {
+      "enum": [
+        "rent_reduction",
+        "alternate_rent",
+        "termination_right"
+      ]
+    },
+    "remedy_value": {
+      "description": "A fraction for rent_reduction, cash for alternate_rent, absent for termination_right.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "cure_period_months": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  }
+}

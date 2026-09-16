@@ -124,7 +124,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2322,6 +2322,36 @@ async function runComposition() {
 // Each case pins the exact set of TAX-* codes a document emits. Unrelated
 // validator output is filtered out, so a fixture asserts its own contract only.
 
+const LEASE_DIR = join(CONFORMANCE_DIR, 'lease');
+
+// RFC 0055 commercial lease clauses. Same contract as the tax tier: each case
+// pins the exact set of LSE-* codes a document emits.
+async function runLease() {
+  if (!existsSync(LEASE_DIR)) {
+    record('lease', '(none)', 'pass', 'no lease fixtures');
+    return;
+  }
+  for (const entry of readdirSync(LEASE_DIR, { withFileTypes: true }).filter((e) => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(LEASE_DIR, entry.name);
+    try {
+      const expected = readCase(dir, 'expected.json');
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const got = validateUWFile(parsed).issues
+        .filter((i) => i.code.startsWith('LSE-'))
+        .map((i) => i.code)
+        .sort();
+      const want = [...(expected.codes ?? [])].sort();
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        record('lease', entry.name, 'fail', `emitted [${got.join(', ')}], expected [${want.join(', ')}]`);
+        continue;
+      }
+      record('lease', entry.name, 'pass', want.length ? want.join(', ') : 'clean');
+    } catch (error) {
+      record('lease', entry.name, 'fail', error.message);
+    }
+  }
+}
+
 const TAX_DIR = join(CONFORMANCE_DIR, 'tax');
 
 async function runTax() {
@@ -4038,6 +4068,7 @@ const dispatch = {
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
   'tax': async () => { await runTax(); },
+  'lease': async () => { await runLease(); },
   'lease-up': async () => { await runLeaseUp(); },
   'lease-up-projection': async () => { await runLeaseUpProjection(); },
   'property-cash-flow-assembly': async () => { await runPropertyCashFlowAssembly(); },

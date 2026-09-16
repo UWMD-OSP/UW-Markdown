@@ -1,7 +1,8 @@
 ---
 rfc: 0055
 title: Type the commercial lease clauses that already have stubs
-status: draft
+status: implemented
+accepted: 2026-09-15
 author: claude
 created: 2026-09-15
 depends_on:

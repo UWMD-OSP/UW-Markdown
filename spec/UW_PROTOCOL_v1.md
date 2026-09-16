@@ -580,6 +580,7 @@ capability is unconditional: every implementation owes it.
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
 | `CUR-NN` | Document currency identity (§III.1b, RFC 0046). | `validate` | `error` |
 | `TAX-NN` | Property-tax reassessment basis and abatement schedule (format §4.5 and §4.9, RFC 0053). | `validate` | `error` |
+| `LSE-NN` | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (format §4.3, RFC 0055). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |

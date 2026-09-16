@@ -78,7 +78,7 @@ and how it gets accepted.
 | [0052](./0052-named-exit-sale-deductions.md) | Named exit sale deductions | implemented | protocol, core, conformance |
 | [0053](./0053-tax-abatements-and-reassessment-basis.md) | Tax abatements and reassessment basis | implemented | format, protocol, core, conformance |
 | [0054](./0054-per-lease-ledger-decision.md) | Where per-lease economics live (decision) | accepted | format, documentation |
-| [0055](./0055-typed-commercial-lease-clauses.md) | Typed commercial lease clauses | draft | format, protocol, core, conformance |
+| [0055](./0055-typed-commercial-lease-clauses.md) | Typed commercial lease clauses | implemented | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

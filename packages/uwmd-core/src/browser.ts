@@ -16,6 +16,8 @@ export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js
 export { validateUWFile, lookupRemediation } from './validator.js';
 // RFC 0053 — the reassessment and abatement vocabularies.
 export { REASSESSMENT_TRIGGERS, TAX_ABATEMENT_KINDS } from './validator.js';
+// RFC 0055 — the commercial lease clause vocabularies.
+export { TERMINATION_PENALTY_COMPONENTS, CO_TENANCY_TRIGGERS, CO_TENANCY_REMEDIES } from './validator.js';
 export { compact, diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
