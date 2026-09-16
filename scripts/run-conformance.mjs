@@ -124,7 +124,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,hedge,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2352,6 +2352,37 @@ async function runLease() {
   }
 }
 
+const HEDGE_DIR = join(CONFORMANCE_DIR, 'hedge');
+
+// RFC 0056 rate hedges and escrows. One tier for one contract: HDG-* is the
+// instrument and ESC-* the cash lines that fund it, and ESC-04 ties them, so a
+// case pins both families at once.
+async function runHedge() {
+  if (!existsSync(HEDGE_DIR)) {
+    record('hedge', '(none)', 'pass', 'no hedge fixtures');
+    return;
+  }
+  for (const entry of readdirSync(HEDGE_DIR, { withFileTypes: true }).filter((e) => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(HEDGE_DIR, entry.name);
+    try {
+      const expected = readCase(dir, 'expected.json');
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const got = validateUWFile(parsed).issues
+        .filter((i) => i.code.startsWith('HDG-') || i.code.startsWith('ESC-'))
+        .map((i) => i.code)
+        .sort();
+      const want = [...(expected.codes ?? [])].sort();
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        record('hedge', entry.name, 'fail', `emitted [${got.join(', ')}], expected [${want.join(', ')}]`);
+        continue;
+      }
+      record('hedge', entry.name, 'pass', want.length ? want.join(', ') : 'clean');
+    } catch (error) {
+      record('hedge', entry.name, 'fail', error.message);
+    }
+  }
+}
+
 const TAX_DIR = join(CONFORMANCE_DIR, 'tax');
 
 async function runTax() {
@@ -4069,6 +4100,7 @@ const dispatch = {
   'capital-stack': async () => { await runCapitalStack(); },
   'tax': async () => { await runTax(); },
   'lease': async () => { await runLease(); },
+  'hedge': async () => { await runHedge(); },
   'lease-up': async () => { await runLeaseUp(); },
   'lease-up-projection': async () => { await runLeaseUpProjection(); },
   'property-cash-flow-assembly': async () => { await runPropertyCashFlowAssembly(); },

@@ -29,6 +29,23 @@ protocol, and each package each carry an independent semver).
   family. Steps state the resulting rent rather than the increment. Nothing is
   exercised: no rent escalates, no break is taken, no remedy applies and no
   balance amortizes. Purely additive.
+- RFC 0056 types `debt_structure.rate_hedge` and `sources_uses.uses.escrows`,
+  registering the `HDG-NN` and `ESC-NN` validator families. A cap now carries a
+  strike, a notional, a term and a stated `post_expiration_assumption` rather
+  than the lone `rate_cap_pct` it had; escrows carry upfront and monthly
+  amounts under a closed vocabulary with a label-bearing `other`. `ESC-04` ties
+  a `"replace"` assumption to a funded `rate_cap_replacement` line, which is the
+  budget a three-year cap on a five-year hold has never had anywhere to go.
+  `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`: their
+  mark-to-market can be negative and a cap's cannot. Nothing is priced and no
+  strike crossing is projected. Purely additive.
+
+### Changed
+
+- Protocol **2.13.0 → 2.14.0**, registering the `LSE-NN`, `HDG-NN` and `ESC-NN`
+  code families. RFC 0055 added `LSE-NN` to the protocol's code-prefix table
+  without a bump, so released 2.13.0 and `main` briefly described two different
+  tables; 2.14.0 covers both. No wire format, formula or precision changes.
 
 ### Notes
 

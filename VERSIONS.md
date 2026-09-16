@@ -21,6 +21,9 @@ same protocol version.
 ## Current matrix
 
 Release 2.10.0 pairs core/CLI 2.10.0 with Protocol 2.13.0 and Format 2.0.
+Protocol **2.14.0** is unreleased: it registers the `LSE-NN`, `HDG-NN` and
+`ESC-NN` validator families. RFC 0055 registered `LSE-NN` without a bump, so
+2.13.0 briefly described two different code-family tables; 2.14.0 covers both.
 Core/CLI 2.10.0, signing 0.2.14 and batch 0.8.9 are published on npm and
 verified by a clean installation. The release workflow publishes those four and
 no others. The reference modules have never been published. Excel and report are
@@ -36,7 +39,7 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.13.0** | format ≥ 1.0 (sale deductions RFC 0052 and tax reassessment RFC 0053; released in core/CLI 2.10.0) |
+| UW Protocol | **2.14.0** | format ≥ 1.0 (unreleased: registers `LSE-NN` for RFC 0055 and `HDG-NN` / `ESC-NN` for RFC 0056; 2.13.0 released in core/CLI 2.10.0) |
 | `@uwmd/core` | **2.10.0** | format 2.0 (reads 1.x), protocol 2.13.0 |
 | `@uwmd/cli` (CLI) | **2.10.0** | `@uwmd/core` 2.10.0 |
 | `@uwmd/excel` | **0.9.2** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.10.x, format 2.0, explicit contextual calculations |

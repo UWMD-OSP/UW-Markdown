@@ -18,6 +18,12 @@ export { validateUWFile, lookupRemediation } from './validator.js';
 export { REASSESSMENT_TRIGGERS, TAX_ABATEMENT_KINDS } from './validator.js';
 // RFC 0055 — the commercial lease clause vocabularies.
 export { TERMINATION_PENALTY_COMPONENTS, CO_TENANCY_TRIGGERS, CO_TENANCY_REMEDIES } from './validator.js';
+// RFC 0056 — the rate-hedge and escrow vocabularies.
+export {
+  HEDGE_INSTRUMENTS, RESERVED_HEDGE_INSTRUMENTS, HEDGE_INDEXES,
+  HEDGE_EXPIRY_ASSUMPTIONS, ESCROW_NAMES,
+} from './validator.js';
+export type { HedgeInstrument, HedgeExpiryAssumption, EscrowName } from './validator.js';
 export { compact, diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
