@@ -63,11 +63,12 @@ RFC 0047 is implemented on the development branch but unreleased. Its
 read-only input inventory makes the RFC 0045 real-deal handoff inspectable
 without inferring expense, reserve, or payment-timing economics.
 
-Adoption planning now has two draft RFCs. RFC 0048 scopes a worked kit for
-standalone lease abstracts, source notes, rent-roll/P&L/cash-flow fragments,
-inline records and deal packages. RFC 0049 scopes an optional PostgreSQL/JSONB
-lake adapter that preserves canonical envelopes and facts without making a
-warehouse schema part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
+Adoption planning has one implemented RFC and one draft. RFC 0048 is accepted
+and implemented: a worked kit for standalone lease abstracts, source notes,
+rent-roll/P&L/cash-flow fragments, inline records and deal packages, with its
+own `standalone` conformance suite. RFC 0049 remains a draft scoping an optional
+PostgreSQL/JSONB lake adapter that preserves canonical envelopes and facts
+without making a warehouse schema part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
 
 ## StackUW protocol alignment queue
 
@@ -86,7 +87,7 @@ asset classes as namespaced modules, and fund mechanics as document profiles.
 
 The brief explicitly asks us not to duplicate capabilities already present:
 catch-up and LP IRR hurdles are in §4.27; the capital-stack and preferred-equity
-surfaces are in §4.24 (with split coupon in draft RFC 0050); dated cash flows are
+surfaces are in §4.24 (with split coupon in RFC 0050); dated cash flows are
 in §4.26; student housing, senior housing, land, mixed-use, portfolios and data
 centers already have class/profile or module homes. The remaining work is to
 type the documented stubs, add missing verification paths, or make the existing

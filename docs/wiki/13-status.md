@@ -60,13 +60,13 @@ Private archived-deal comparisons informed the workflow; no private ledgers or
 property identifiers are included in public fixtures. Complete real-deal
 assembly still needs explicit expense/reserve coverage and payment timing.
 
-RFC 0046 is implemented on the development branch but unreleased: optional
+RFC 0046 is implemented but unreleased: optional
 document-level `currency_code` makes display denomination explicit without
 changing numeric storage, calculation, or locale separators. `CUR-01` refuses
 malformed identity; per-value/multi-currency representation and FX remain
 deferred.
 
-RFC 0047 is implemented on the development branch but unreleased:
+RFC 0047 is implemented but unreleased:
 `inspectPropertyCashFlowInputs` and `inspect-property-cash-flows` inventory the
 source shape needed for RFC 0045 authoring without classifying rows or inferring
 expense, reserve, or payment timing.
@@ -78,23 +78,23 @@ is synthetic and the module package remains unpublished, so adopter validation
 is still open. The built-in library covers nine calculation packs; mixed-use is
 composition rather than a standalone pack.
 
-RFC 0048 and RFC 0049 are draft adoption RFCs. RFC 0048 scopes standalone
-document/package examples; RFC 0049 scopes an optional PostgreSQL/JSONB lake
+RFC 0048 is accepted and implemented but unreleased: standalone
+document/package examples with their own `standalone` conformance suite.
+RFC 0049 remains a draft adoption RFC scoping an optional PostgreSQL/JSONB lake
 adapter outside the protocol and core dependencies.
 
-RFC 0050 is implemented on `main` but unreleased: split preferred-equity
+RFC 0050 is accepted and implemented but unreleased: split preferred-equity
 coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
 from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
-compounding remain deferred. Release still requires the RFC, the
-format/schema/protocol triad, and conformance fixtures to be accepted together.
+compounding remain deferred.
 
-RFC 0051 is implemented on `main` but unreleased: `hurdle_mode: "any"`
+RFC 0051 is accepted and implemented but unreleased: `hurdle_mode: "any"`
 enables dual-hurdle tiers to end as soon as either `until_lp_em` or
 `until_lp_irr` is met (smaller capacity), while default `hurdle_mode: "both"`
 preserves existing behavior (larger capacity). `WF-01` rejects `hurdle_mode`
 when both hurdles are not present.
 
-RFC 0052 is implemented but unreleased: an optional closed `sale_deductions`
+RFC 0052 is accepted and implemented but unreleased: an optional closed `sale_deductions`
 vocabulary names every cost-of-sale row at the disposition slot, and an optional
 `net_sale_proceeds` figure is verified against gross sale less exit costs at the
 currency quantum. `prepayment_penalty`, `defeasance` and `loan_payoff` are

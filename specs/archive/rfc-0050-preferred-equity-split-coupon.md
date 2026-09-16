@@ -7,5 +7,5 @@ tranches with `cash_rate` entering cash coverage, `accrued_rate` omitted from
 coverage, and full `rate` driving weighted cost. Validation rules (`CS-02b`),
 schema updates, unit tests, and conformance fixtures (`split-coupon`,
 `split-coupon-bad-total`, `split-coupon-bad-fields`) are all committed. The
-normative draft is at
+accepted contract is at
 [`docs/rfcs/0050-preferred-equity-split-coupon.md`](../../docs/rfcs/0050-preferred-equity-split-coupon.md).
