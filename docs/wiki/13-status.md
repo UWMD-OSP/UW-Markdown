@@ -1,10 +1,10 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-16**, four merges past release **v2.10.0**.
-Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm
-with SLSA provenance. Format **2.0** and released Protocol **2.13.0** version
-independently; `main` carries an unreleased Protocol **2.15.0**. See
-[VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
+Reconciled **2026-09-16** for release **v2.11.0**.
+Core/CLI **2.11.0**, signing **0.2.15** and batch **0.8.10** publish to npm with
+SLSA provenance from the `v2.11.0` tag. Format **2.0** and Protocol **2.15.0**
+version independently. See [VERSIONS.md](../../VERSIONS.md) and
+[ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
 
@@ -23,8 +23,8 @@ independently; `main` carries an unreleased Protocol **2.15.0**. See
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.2**, report **0.8.14**, lake **0.1.0** and hospitality/data-center
-module packages **0.1.2** remain unpublished. The registry does serve a stale
+Excel **0.9.3**, report **0.8.15**, lake **0.1.1** and hospitality/data-center
+module packages **0.1.3** remain unpublished. The registry does serve a stale
 `0.3.0` of excel and report from a hand publish on 2026-08-16, pending
 deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's RFC 0043 binding API is published; the full Excel
 exporter remains available from source. Native Excel 16.0 build 20326 passed
@@ -46,11 +46,10 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
 
-## On `main`, unreleased
+## Released in 2.11.0
 
-Four contracts have landed since v2.10.0. None is published; all are additive
-and every member is optional, so a document stating none of them validates
-exactly as it did at 2.10.0.
+Five contracts. All additive, every member optional, so a document stating none
+of them validates exactly as it did at 2.10.0.
 
 | RFC | Surface | Family |
 |---|---|---|
@@ -60,13 +59,28 @@ exactly as it did at 2.10.0.
 | 0056 | Rate hedges (§4.7) and escrow cash lines (§4.8). `rate_swap` / `rate_collar` reserved and refused. | `HDG-NN`, `ESC-NN` |
 | 0057 | Renovation draw and expense-targeted capex (§4.8). | `CAPX-NN` |
 
-Three of these require a disclosure rather than defaulting one, because the
-unstated case is the one that misleads: `HDG-06` (what happens when the cap
-expires), `CAPX-07` (whether a stated saving is already inside the NOI) and,
+**RFCs 0055, 0056 and 0057 type structures nothing yet consumes.** No rent
+escalates, no break is exercised, no balance amortizes, nothing is priced, no
+strike crossing is projected and no stated saving is applied. Typed-but-inert is
+the intended state, not an unfinished one: the format learns to *say* these
+things before anything acts on them, and each consumer arrives with its own
+contract.
+
+RFC 0054's periodic-series half is likewise **unbuilt by decision**. It needs a
+named consumer, and a calc-grammar answer for collections and a second period
+dimension, before it is reachable from a pack formula at all.
+
+Three of the new rules require a disclosure rather than defaulting one, because
+the unstated reading is the one that misleads: `HDG-06` (what happens when the
+cap expires), `CAPX-07` (whether a stated saving is already inside the NOI) and,
 from 2.10.0, `TAX-08` (whether the terminal tax is inside exit NOI).
 
-Current gate totals on `main`: **1,937 core tests**, **558 default conformance
+Gate totals at the cut: **1,937 core tests**, **558 default conformance
 checks**, **44 JSON schemas**. Protocol **2.15.0**.
+
+For the lake adapter, **no live PostgreSQL instance has been exercised**: 52
+unit tests cover it against an in-memory warehouse double, so a real load and
+the publication decision both remain open.
 
 ## Property cash-flow assembly released in 2.9.0
 
@@ -156,6 +170,17 @@ circularity is not solved, because the calc engine has no iteration.
 - Validate `@uwmd/lake` against a live PostgreSQL server. The suite proves the
   planned statements and their idempotency, not that a real server accepts the
   DDL or that the indexes earn their keep on a real corpus.
+- RFCs 0055, 0056 and 0057 type structures **nothing yet consumes**. No rent
+  escalates, no break is exercised, no balance amortizes, nothing is priced and
+  no strike crossing is projected. Typed-but-inert is the intended state until a
+  verifier is specified for each; it is not a gap to be closed by inference.
+- The RFC 0054 periodic ledger is unbuilt **by decision, not oversight**. It
+  needs a named consumer *and* a calc-grammar answer for collections and a
+  second period dimension before it is reachable from pack formulas at all.
+  See [the calc-engine limits](10-conventions-invariants.md).
+- Cut a release covering Protocol 2.15.0 and RFCs 0049/0055/0056/0057. Until
+  then `main` and the registry describe different validator tables, which is the
+  one drift a reader cannot detect from either side alone.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).
 They do not describe current release status.
