@@ -1,10 +1,10 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-13** after release **v2.9.0** at `7d939c7`.
-Core/CLI **2.9.0**, signing **0.2.13** and batch **0.8.8** are published and
-verified through a clean npm installation. Format **2.0** and Protocol
-**2.12.0** version independently. See [release evidence](../reviews/2026-09-12-release-2.9.0.md),
-[VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
+Reconciled **2026-09-15** after release **v2.10.0** at `ee0c131`.
+Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm
+with SLSA provenance. Format **2.0** and Protocol **2.13.0** version
+independently. See [VERSIONS.md](../../VERSIONS.md) and
+[ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
 
@@ -30,10 +30,12 @@ exporter remains available from source. Native Excel 16.0 build 20326 passed
 
 ## Verification
 
-Release preparation passed clean npm ci, build, **1,990 workspace tests**,
-test typechecking, **457 default + 76 declarative conformance checks**,
-**34 JSON schemas**, lint, lockfile/package/version/index/release checks and
-documentation build. Separate tarball and registry installations verified
+Release preparation for 2.10.0 passed build, **1,778 core tests** plus every
+other workspace, test typechecking, **504 default + 76 declarative conformance
+checks** and three capability profiles, **38 JSON schemas**, lint,
+lockfile/package/version/index/release checks and the documentation build. The
+`v2.10.0` tag published core, CLI, signing and batch through trusted publishing
+(OIDC) with provenance attached. Separate tarball and registry installations verified
 core/browser assembly and projection, synthetic pinned metrics, explicit zeros, CLI success/refusal,
 signing exports and batch indexing. Source documents remained unchanged.
 
@@ -51,7 +53,7 @@ evidence. The owner selected a synthetic test ledger; real-deal review remains
 separate. See the [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md).
 This API and CLI are published in 2.9.0.
 
-## Unreleased development after 2.9.0
+## Development released in 2.10.0
 
 The source CLI adds `verify-cash-flows` for selected stated-metric comparisons,
 with explicit no-claim results, input guards and read-only behavior. This reuses
@@ -60,13 +62,13 @@ Private archived-deal comparisons informed the workflow; no private ledgers or
 property identifiers are included in public fixtures. Complete real-deal
 assembly still needs explicit expense/reserve coverage and payment timing.
 
-RFC 0046 is implemented but unreleased: optional
+RFC 0046 is released in 2.10.0: optional
 document-level `currency_code` makes display denomination explicit without
 changing numeric storage, calculation, or locale separators. `CUR-01` refuses
 malformed identity; per-value/multi-currency representation and FX remain
 deferred.
 
-RFC 0047 is implemented but unreleased:
+RFC 0047 is released in 2.10.0:
 `inspectPropertyCashFlowInputs` and `inspect-property-cash-flows` inventory the
 source shape needed for RFC 0045 authoring without classifying rows or inferring
 expense, reserve, or payment timing.
@@ -78,30 +80,30 @@ is synthetic and the module package remains unpublished, so adopter validation
 is still open. The built-in library covers nine calculation packs; mixed-use is
 composition rather than a standalone pack.
 
-RFC 0048 is accepted and implemented but unreleased: standalone
+RFC 0048 is released in 2.10.0: standalone
 document/package examples with their own `standalone` conformance suite.
 RFC 0049 remains a draft adoption RFC scoping an optional PostgreSQL/JSONB lake
 adapter outside the protocol and core dependencies.
 
-RFC 0050 is accepted and implemented but unreleased: split preferred-equity
+RFC 0050 is released in 2.10.0: split preferred-equity
 coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
 from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
 compounding remain deferred.
 
-RFC 0051 is accepted and implemented but unreleased: `hurdle_mode: "any"`
+RFC 0051 is released in 2.10.0: `hurdle_mode: "any"`
 enables dual-hurdle tiers to end as soon as either `until_lp_em` or
 `until_lp_irr` is met (smaller capacity), while default `hurdle_mode: "both"`
 preserves existing behavior (larger capacity). `WF-01` rejects `hurdle_mode`
 when both hurdles are not present.
 
-RFC 0052 is accepted and implemented but unreleased: an optional closed `sale_deductions`
+RFC 0052 is released in 2.10.0: an optional closed `sale_deductions`
 vocabulary names every cost-of-sale row at the disposition slot, and an optional
 `net_sale_proceeds` figure is verified against gross sale less exit costs at the
 currency quantum. `prepayment_penalty`, `defeasance` and `loan_payoff` are
 reserved and refused by this unlevered assembler. A plan stating neither member
 behaves exactly as it did before.
 
-RFC 0053 is accepted and implemented but unreleased: the `noi_model`
+RFC 0053 is released in 2.10.0: the `noi_model`
 reassessment basis and abatement schedule are typed, the `TAX-NN` validator
 family is registered, and `dcf.exit_analysis.terminal_tax` names the next
 buyer's tax. Everything is stated-and-verified; the exit-value/terminal-tax

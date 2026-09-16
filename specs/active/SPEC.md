@@ -1,15 +1,9 @@
-﻿# Specification: Waterfall dual-hurdle `any` mode (RFC 0051)
+# Specification: (none active)
 
-Status: **draft implementation scope** · Opened 2026-09-13 · RFC 0051
+No implementation milestone is open. The last completed scope was RFC 0053,
+typed tax abatements and reassessment basis, released in 2.10.0 — see
+[`specs/archive/rfc-0053-tax-abatements-and-reassessment-basis.md`](../archive/rfc-0053-tax-abatements-and-reassessment-basis.md).
 
-This milestone lifts the deferred `hurdle_mode: "any"` representation into the
-normative contract for distribution waterfalls (§4.27, §VIII.10). When both
-`until_lp_em` and `until_lp_irr` are stated on a `split` tier, `hurdle_mode: "any"`
-caps the tier when either hurdle is met (the smaller capacity governs). The
-default `hurdle_mode: "both"` retains existing behavior (the larger capacity
-governs).
-
-Stating `hurdle_mode` without both hurdles is rejected as a grammar error (`WF-01`).
-Clawback, crystallization, and GP-side hurdles remain outside this scope.
-
-The complete contract is [RFC 0051](../../docs/rfcs/0051-waterfall-dual-hurdle-any-mode.md).
+Candidates for the next milestone are in the StackUW protocol alignment queue in
+[`ROADMAP.md`](../../ROADMAP.md). A candidate needs an accepted RFC before it
+becomes an active scope.
