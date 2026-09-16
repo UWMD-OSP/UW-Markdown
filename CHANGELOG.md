@@ -36,6 +36,17 @@ protocol, and each package each carry an independent semver).
   precision change; the two receipt fixtures that embed `protocol_version` are
   repinned.
 
+### Fixed
+
+- `verify-codes` is a new CI guard: every code an **implemented** RFC's table or
+  a format-spec rule bullet promises must be one `@uwmd/core` actually emits,
+  and every emitted validation family must be registered in protocol §XI. It
+  exists because RFC 0058 shipped nine of the ten codes it specified and nothing
+  went red — schemas validated, conformance passed (no fixture exercised the
+  missing rule, because the fixtures came from the same incomplete pass), and
+  the RFC read as delivered. A missing refusal looks exactly like a document
+  with nothing to refuse.
+
 ### Notes
 
 - Every clawback basis is **closed-form**. The IRR floor reuses RFC 0036's

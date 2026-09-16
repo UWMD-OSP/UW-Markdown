@@ -51,6 +51,19 @@ jobs:
           node-version: 20
       - run: npm run verify-indexes
 
+  verify-codes:
+    name: Verify validation-code contracts
+    runs-on: ubuntu-latest
+    # Reads core's sources, the two specs and the RFC frontmatter as text — no
+    # install, no build, same rationale as the guards above. Exists because
+    # RFC 0058 shipped nine of the ten codes it specified and nothing went red.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm run verify-codes
+
   verify-release:
     name: Verify release record
     runs-on: ubuntu-latest

@@ -23,6 +23,7 @@
     "verify-lockfile": "node scripts/verify-lockfile.mjs",
     "verify-versions": "node scripts/verify-versions.mjs",
     "verify-indexes": "node --test scripts/docs-site-sources.test.mjs && node scripts/verify-indexes.mjs",
+    "verify-codes": "node scripts/verify-codes.mjs",
     "verify-release": "node scripts/verify-release.mjs",
     "typecheck:tests": "npm run typecheck:tests --workspaces --if-present",
     "lint": "biome lint .",
