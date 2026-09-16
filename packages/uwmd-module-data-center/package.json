@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/module-data-center",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Data-center module for UW Markdown (RFC 0039) — declares the org.uwmd.data_center asset class; capacity, power-economics and revenue sections; kW-denominated calculations; PUE, utility-feed and utilization validations. The first product module on a module-declared asset class.",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@uwmd/core": "2.11.0"
+    "@uwmd/core": "2.12.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

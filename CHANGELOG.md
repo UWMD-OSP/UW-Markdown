@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-09-16
+
 ### Added
 
 - RFC 0058 types **expense recoveries and the CAM true-up** on the commercial

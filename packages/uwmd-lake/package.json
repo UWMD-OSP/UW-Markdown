@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/lake",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Reference PostgreSQL/JSONB lake adapter for UW Markdown (RFC 0049) — plans idempotent, parameterized load statements for canonical envelopes, block-value facts, receipts and package manifests without taking a database driver as a dependency.",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@uwmd/core": "2.11.0"
+    "@uwmd/core": "2.12.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
