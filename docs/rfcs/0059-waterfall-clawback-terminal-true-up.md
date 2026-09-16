@@ -1,7 +1,8 @@
 ---
 rfc: 0059
 title: 'Waterfall clawback as a terminal true-up'
-status: draft
+status: accepted
+accepted: 2026-09-16
 author: claude
 created: 2026-09-16
 depends_on:
