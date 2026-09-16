@@ -18,6 +18,8 @@ standard.
   (`@anthropic-ai/sdk` is an optional peer, loaded dynamically).
 - `packages/uwmd-cli` — the `uwmd` CLI (thin wrapper over core's `cli.ts`).
 - `packages/uwmd-excel` — `.uw.md → .xlsx` converter.
+- `packages/uwmd-lake` — `@uwmd/lake`, the RFC 0049 PostgreSQL/JSONB lake
+  adapter. Plans SQL; takes no database driver.
 - `tools/` — web-viewer, web-editor, vscode-uwmd, docs-site.
 - `spec/` — the normative format + protocol specs and JSON Schemas.
 - `conformance/` — fixture/expected pairs that prove behavior.

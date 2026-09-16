@@ -66,9 +66,13 @@ The source CLI also gained `verify-cash-flows`, which checks stated cash-flow
 metrics without a custom script and distinguishes no claims from verified ones.
 See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
 
-RFC 0049 remains the one open draft: an optional PostgreSQL/JSONB lake adapter
-that preserves canonical envelopes and facts without making a warehouse schema
-part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
+RFC 0049 is now implemented as the unpublished `@uwmd/lake` package: an optional
+PostgreSQL/JSONB lake adapter that preserves canonical envelopes and facts
+alongside typed query projections, without making a warehouse schema part of the
+protocol or adding a database driver to any package. A real load against a live
+server is still an adopter integration step. See the
+[adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
+the [data-lake guide](docs/DATA_LAKE.md).
 
 ## StackUW protocol alignment queue
 
@@ -143,8 +147,8 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Work | State | Next evidence |
 |---|---|---|
-| Standalone document and package example kit | RFC 0048 draft | Add lease-abstract/source-note examples, rent-roll/P&L/cash-flow fragments, inline/external twins, and a verified package. |
-| PostgreSQL JSONB lake adapter | RFC 0049 draft | Prove idempotent loading of existing CSV/JSONL facts with raw-envelope preservation and typed query projections. |
+| Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
+| PostgreSQL JSONB lake adapter | RFC 0049 implemented (`@uwmd/lake` 0.1.0, unpublished) | Run a load against a live PostgreSQL instance and report query ergonomics; decide whether the package is published. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing

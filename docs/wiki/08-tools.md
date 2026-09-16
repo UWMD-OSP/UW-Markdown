@@ -86,6 +86,47 @@ full lake pipeline.
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
+## PostgreSQL lake adapter — `packages/uwmd-lake` (`@uwmd/lake` 0.1.0, unpublished)
+
+The RFC 0049 reference adapter. It is a **host-side integration**, not part of the
+protocol: it reads canonical outputs the standard already produces and plans
+idempotent SQL that an adopter runs with their own client. There is no database
+driver in its dependency tree and database availability is never part of
+validation.
+
+```ts
+await client.query(postgresLakeSchema('uwmd_lake'), []);
+const { document, facts } = await lakeInputFromEnvelope(envelope, { path, deal_id });
+await executeLakeLoad(await planLakeLoad({ documents: [document], facts, schema: 'uwmd_lake' }), client);
+```
+
+Six tables — `uw_documents`, `uw_facts`, `uw_receipts`, `uw_packages`,
+`uw_package_members`, `uw_source_evidence`. Each stores the raw canonical JSON in
+`jsonb` **and** typed shadow columns beside it. The split is the point:
+
+- **canonical** — `envelope`, `value_json`, `receipt`, `manifest`;
+- **projection** — everything else, which exists so a join or filter can use an
+  index. A query that disagrees with the calc engine is a query against the
+  projection.
+
+Identity is always a digest, never a path: document by semantic digest, fact by
+`(semantic_digest, block_ref, scope, pointer)`, package member by byte digest,
+receipt by the canonical hash of the receipt JSON. Every statement is
+`INSERT … ON CONFLICT … DO UPDATE`, so a re-load is a no-op and a *changed*
+document becomes a new row rather than overwriting the old one.
+
+Inputs come from what an adopter already has: an envelope
+(`lakeInputFromEnvelope`), a CSV bundle's `block_values.csv`
+(`readBlockValuesCSV`), or `@uwmd/batch`'s `uwmd-facts.jsonl`
+(`readBatchFactJSONL`).
+
+Deliberate refusals: `uw_source_evidence` takes identity and status only and
+rejects any bytes-bearing field at any depth (`LAKE_SOURCE_BYTES`); a
+numeric-looking *string* never lands in `value_number`; the adapter never opens
+the transaction, so a partial load is visible rather than hidden. No live
+PostgreSQL instance is exercised by the test suite — a real load is an adopter
+integration step.
+
 ## Hospitality module — `packages/uwmd-module-hospitality` (`@uwmd/module-hospitality` 0.1.0)
 
 The reference consumer of the protocol §X module system (RFC 0006). Three hotel

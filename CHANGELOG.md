@@ -10,6 +10,18 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- RFC 0049 is implemented as `@uwmd/lake` 0.1.0 (`packages/uwmd-lake`,
+  unpublished): the reference PostgreSQL/JSONB lake adapter. It plans
+  idempotent, parameterized `INSERT … ON CONFLICT … DO UPDATE` statements over
+  six tables from canonical outputs — envelopes, `block_values` facts, receipts,
+  package manifests and source-evidence references — and executes them against
+  an adopter-supplied `{ query(sql, params) }` client. Raw canonical JSON is
+  stored in `jsonb` alongside typed shadow columns, so unknown sections,
+  extension keys, explicit nulls and array order survive a load. Identity is
+  always a digest, never a file path.
+- `@uwmd/lake` readers for the three shapes adopters already hold:
+  `lakeInputFromEnvelope`, `readBlockValuesCSV` (UW CSV bundle) and
+  `readBatchFactJSONL` (`@uwmd/batch` corpus fact table).
 - RFC 0055 types the commercial lease clauses that have been untyped stubs
   since Format 1.0 — `escalation_schedule`, `termination_option` and
   `co_tenancy_details` — and adds the `lc_original` / `lc_outstanding_balance`
@@ -17,6 +29,14 @@ protocol, and each package each carry an independent semver).
   family. Steps state the resulting rent rather than the increment. Nothing is
   exercised: no rent escalates, no break is taken, no remedy applies and no
   balance amortizes. Purely additive.
+
+### Notes
+
+- The adapter adds no database driver to any package and does not touch the
+  protocol, the format spec, the schemas, conformance or financial math. Source
+  evidence stores identity and status only: a bytes-bearing payload is refused
+  with `LAKE_SOURCE_BYTES`. No live PostgreSQL instance is exercised by the
+  tests; a real load remains an adopter integration step.
 
 ### Fixed
 
@@ -27,6 +47,8 @@ protocol, and each package each carry an independent semver).
 - `verify-indexes` now fails an RFC that is empty, has no frontmatter block, or
   has frontmatter with no body, and checks the index table's status column
   against each RFC's own frontmatter. Both gaps let real drift through.
+- The RFC index listed 0046 (currency identity) and 0047 (property cash-flow
+  input inventory) as `accepted` after both shipped in 2.10.0.
 
 ## [2.10.0] - 2026-09-15
 

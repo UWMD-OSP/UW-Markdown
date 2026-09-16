@@ -72,7 +72,7 @@ and how it gets accepted.
 | [0046](./0046-currency-identity.md) | Document currency identity | implemented | format, protocol, core, conformance |
 | [0047](./0047-property-cash-flow-input-inventory.md) | Property cash-flow input inventory | implemented | core, tooling |
 | [0048](./0048-standalone-document-kit.md) | Standalone UW document kit and package examples | implemented | conformance, tooling, documentation |
-| [0049](./0049-postgresql-jsonb-lake-adapter.md) | PostgreSQL JSONB lake adapter boundary | draft | tooling, documentation |
+| [0049](./0049-postgresql-jsonb-lake-adapter.md) | PostgreSQL JSONB lake adapter boundary | implemented | tooling, documentation |
 | [0050](./0050-preferred-equity-split-coupon.md) | Preferred equity with a split coupon | implemented | format, protocol, core, conformance |
 | [0051](./0051-waterfall-dual-hurdle-any-mode.md) | Distribution waterfall dual-hurdle "any" mode | implemented | format, protocol, core, conformance |
 | [0052](./0052-named-exit-sale-deductions.md) | Named exit sale deductions | implemented | protocol, core, conformance |
