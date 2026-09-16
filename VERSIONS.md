@@ -22,8 +22,14 @@ same protocol version.
 
 Release 2.9.0 pairs core/CLI 2.9.0 with Protocol 2.12.0 and Format 2.0.
 Core/CLI 2.9.0, signing 0.2.13 and batch 0.8.8 are published on npm and
-verified by a clean installation. Excel, report and the reference modules remain
-unpublished. Module package 0.1.1 only repins core; the typed module manifests
+verified by a clean installation. The release workflow publishes those four and
+no others. The reference modules have never been published. Excel and report are
+**not published at their current versions**, but the registry does serve a stale
+`0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0 manual release and
+never unwound; both declare `@uwmd/core` `1.3.0`. Neither is maintained at that
+version and both are pending deprecation. `verify-versions` reconciles the
+manifests against this file and never contacts the registry, which is why the
+earlier flat "unpublished" claim went unchallenged. Module package 0.1.1 only repins core; the typed module manifests
 retain their independent 0.1.0 contract version. Package, Format and Protocol
 versions advance independently.
 
@@ -33,8 +39,8 @@ versions advance independently.
 | UW Protocol | **2.12.0** | format ≥ 1.0 (property cash-flow assembly, RFC 0045; released in core/CLI 2.9.0) |
 | `@uwmd/core` | **2.9.0** | format 2.0 (reads 1.x), protocol 2.12.0 |
 | `@uwmd/cli` (CLI) | **2.9.0** | `@uwmd/core` 2.9.0 |
-| `@uwmd/excel` | **0.9.1** (unpublished) | `@uwmd/core` 2.9.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.13** (unpublished) | `@uwmd/core` 2.9.x, format spec §7.1/§7.2 |
+| `@uwmd/excel` | **0.9.1** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.9.x, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.13** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.9.x, format spec §7.1/§7.2 |
 | `@uwmd/batch` | **0.8.8** | `@uwmd/core` 2.9.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
 | `@uwmd/signing` | **0.2.13** | `@uwmd/core` 2.9.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
 | `@uwmd/module-hospitality` | **0.1.1** (unpublished) | `@uwmd/core` 2.9.x, protocol §X module system |
