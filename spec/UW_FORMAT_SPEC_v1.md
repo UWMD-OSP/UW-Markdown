@@ -1127,7 +1127,26 @@ Field notes:
       "sale_triggers_reassessment": false,
       "reassessment_basis": null,
       "benchmark_low": null,
-      "benchmark_high": null
+      "benchmark_high": null,
+
+      "reassessment": {
+        "trigger": "sale | construction_completion | statutory_cycle | none",
+        "jurisdiction": null,
+        "value_basis": null,
+        "assessment_ratio": null,
+        "assessed_value": 0.0,
+        "millage_rate": 0.0,
+        "indicated_tax": 0.0,
+        "round_to_decimals": null
+      },
+      "abatement": {
+        "kind": "exemption | freeze | pilot | phase_in | credit",
+        "program": null,
+        "stabilized_period": null,
+        "schedule": [
+          { "period": "Y1", "full_tax": 0.0, "abated_tax": 0.0 }
+        ]
+      }
     },
     "insurance": {
       "value": 0.0,
@@ -1203,6 +1222,44 @@ Field notes:
   }
 }
 ```
+
+**Property taxes and reassessment (RFC 0053).** A deal carries three distinct
+property taxes, and this section holds the second:
+
+| Tax | Where | Whose |
+|---|---|---|
+| Trailing | `operating_statement.expenses.real_estate_taxes` | The seller's actual. |
+| Going-in underwritten | `noi_model.expenses.real_estate_taxes` | The buyer's, after their purchase triggers reassessment. |
+| Terminal | `dcf.exit_analysis.terminal_tax` (§4.9) | The **next** buyer's, after this sale reassesses at the exit price. |
+
+`reassessment` and `abatement` are OPTIONAL. A document omitting both is
+unchanged. Rates are fractions, not percents. The prose `reassessment_basis`
+is retained as narrative; when `reassessment` is present it governs.
+
+- `TAX-01` — `trigger` is one of the four listed values, `assessed_value`,
+  `millage_rate` and `indicated_tax` are finite, and when `value_basis` and
+  `assessment_ratio` are both stated, `assessed_value` MUST equal their product.
+  Stating one of that pair without the other is refused.
+- `TAX-02` — `indicated_tax` MUST equal `assessed_value × millage_rate`.
+- `TAX-03` — `value` MUST equal `indicated_tax` quantized at
+  `round_to_decimals`, which MUST be an integer and MAY be negative to round to
+  a magnitude. Omitting it means the §VIII.9.4 currency quantum, so an unrounded
+  value MUST foot exactly.
+- `TAX-04` — `sale_triggers_reassessment`, when stated as a boolean, MUST agree
+  with `trigger === "sale"`.
+- `TAX-05` — abatement `schedule` periods are RFC 0041 selectors (`Y1`+,
+  `YYYY-Qn`, `YYYY-MM`, or `YYYY-MM-DD`), all of one granularity, strictly
+  increasing, without duplicates. Holding years order numerically, so `Y10`
+  follows `Y9`.
+- `TAX-06` — `kind` is one of the five listed values and every entry holds
+  `0 ≤ abated_tax ≤ full_tax` with both finite. A `freeze` additionally holds
+  `full_tax` nondecreasing.
+- `TAX-07` — when `stabilized_period` is stated it MUST name a period in the
+  schedule, and `value` MUST equal that period's `abated_tax`.
+
+The schedule documents and verifies the stated tax line; it does not project it.
+No per-period expense rows are generated, and no jurisdiction rules are inferred
+from `jurisdiction`, which is a label.
 
 ---
 
@@ -1434,7 +1491,19 @@ Field notes:
     "loan_balance_at_exit": 0.0,
     "net_proceeds_to_equity": 0.0,
     "exit_value_per_unit": null,
-    "exit_value_per_sqft": null
+    "exit_value_per_sqft": null,
+    "terminal_tax": {
+      "trigger": "sale | construction_completion | statutory_cycle | none",
+      "jurisdiction": null,
+      "value_basis": null,
+      "assessment_ratio": null,
+      "assessed_value": 0.0,
+      "millage_rate": 0.0,
+      "indicated_tax": 0.0,
+      "round_to_decimals": null,
+      "in_exit_noi": false,
+      "value_basis_differs_because": null
+    }
   },
   "returns": {
     "tax_basis": "pre_tax",
@@ -1467,6 +1536,27 @@ metrics across documents MUST treat differing bases as incomparable rather
 than as a spread. `frontmatter.quick_metrics.irr_projected` inherits the
 `dcf` declaration. `getReturnTaxBasis()` in `@uwmd/core` returns the
 effective basis, default included.
+
+**Terminal tax (RFC 0053).** `exit_analysis.terminal_tax` is OPTIONAL and holds
+the **next** buyer's tax, after this sale reassesses the property at the exit
+price. It takes the §4.5 `reassessment` shape and the same `TAX-01` through
+`TAX-03` rules, plus:
+
+- `TAX-08` — `in_exit_noi` MUST be stated as a boolean, recording whether this
+  tax is already inside `exit_noi`. When `trigger` is `sale`, `value_basis`
+  MUST equal `exit_analysis.exit_value_gross` — the next buyer is reassessed at
+  what they pay — unless `value_basis_differs_because` gives a nonempty reason.
+
+`TAX-08` is what catches a going-in tax carried into terminal NOI, which
+overstates exit value.
+
+**The engine does not solve the circularity.** Exit value depends on the
+reassessed tax, which depends on exit value. There is no iteration in the calc
+engine and this section adds none: an author who wants the converged figure runs
+that solve in their own model and states the result, which these rules then
+check for internal consistency. No arithmetic is asserted over `exit_noi`
+itself, because `exit_value_gross` capitalizes a *forward* (year N+1) NOI this
+block does not store — the same reason `deriveDCF` leaves it an input.
 
 ---
 

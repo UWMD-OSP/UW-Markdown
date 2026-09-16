@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/tax-reassessment.schema.json",
+  "title": "tax-reassessment",
+  "description": "RFC 0053 / format 4.5. Shape validation only; the TAX-01 through TAX-04 arithmetic identities are semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trigger",
+    "assessed_value",
+    "millage_rate",
+    "indicated_tax"
+  ],
+  "properties": {
+    "trigger": {
+      "enum": [
+        "sale",
+        "construction_completion",
+        "statutory_cycle",
+        "none"
+      ]
+    },
+    "jurisdiction": {
+      "description": "A label. No jurisdiction rules are inferred from it.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "value_basis": {
+      "description": "The value the ratio applies to. Stated together with assessment_ratio or not at all.",
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "assessment_ratio": {
+      "description": "A fraction, not a percent.",
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "assessed_value": {
+      "type": "number"
+    },
+    "millage_rate": {
+      "description": "A fraction, not a percent.",
+      "type": "number"
+    },
+    "indicated_tax": {
+      "description": "What the inputs above produce, before any rounding.",
+      "type": "number"
+    },
+    "round_to_decimals": {
+      "description": "Protocol VIII.5 decimals. May be negative to round to a magnitude. Absent means the currency quantum.",
+      "type": [
+        "integer",
+        "null"
+      ]
+    }
+  }
+}

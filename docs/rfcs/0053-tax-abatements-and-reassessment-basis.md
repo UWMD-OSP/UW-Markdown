@@ -1,7 +1,8 @@
 ---
 rfc: 0053
 title: Type the tax abatement schedule and the reassessment basis
-status: draft
+status: implemented
+accepted: 2026-09-15
 author: claude
 created: 2026-09-15
 depends_on:

@@ -76,7 +76,7 @@ and how it gets accepted.
 | [0050](./0050-preferred-equity-split-coupon.md) | Preferred equity with a split coupon | implemented | format, protocol, core, conformance |
 | [0051](./0051-waterfall-dual-hurdle-any-mode.md) | Distribution waterfall dual-hurdle "any" mode | implemented | format, protocol, core, conformance |
 | [0052](./0052-named-exit-sale-deductions.md) | Named exit sale deductions | implemented | protocol, core, conformance |
-| [0053](./0053-tax-abatements-and-reassessment-basis.md) | Tax abatements and reassessment basis | draft | format, protocol, core, conformance |
+| [0053](./0053-tax-abatements-and-reassessment-basis.md) | Tax abatements and reassessment basis | implemented | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

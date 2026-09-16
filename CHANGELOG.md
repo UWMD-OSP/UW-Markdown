@@ -39,6 +39,15 @@ protocol, and each package each carry an independent semver).
   `prepayment_penalty`, `defeasance` and `loan_payoff` are reserved and refused
   by this unlevered assembler. Purely additive: a plan stating neither member is
   unchanged. No financial formula or derived exit value is introduced.
+- RFC 0053 types the `noi_model` reassessment basis and adds an RFC 0041
+  period-addressed abatement schedule, registering the `TAX-NN` validator
+  family. `TAX-01`-`TAX-04` check the basis arithmetic, with a
+  `round_to_decimals` that may be negative so a deliberate rounding is declared
+  rather than unexplained. `TAX-05`-`TAX-07` check the schedule and its tie to
+  the stabilized value. `TAX-08` requires a sale-triggered terminal basis to
+  equal `exit_value_gross`, catching a going-in tax carried into terminal NOI.
+  Stated and verified only: no tax is derived, no jurisdiction rules are
+  inferred, and the exit-value circularity remains the author's to converge.
 
 ## [2.9.0] - 2026-09-12
 
