@@ -124,7 +124,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,hedge,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2383,6 +2383,36 @@ async function runHedge() {
   }
 }
 
+const CAPEX_DIR = join(CONFORMANCE_DIR, 'capex');
+
+// RFC 0057 renovation draw and expense-targeted capex. Each case pins the exact
+// set of CAPX-* codes a document emits.
+async function runCapex() {
+  if (!existsSync(CAPEX_DIR)) {
+    record('capex', '(none)', 'pass', 'no capex fixtures');
+    return;
+  }
+  for (const entry of readdirSync(CAPEX_DIR, { withFileTypes: true }).filter((e) => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(CAPEX_DIR, entry.name);
+    try {
+      const expected = readCase(dir, 'expected.json');
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const got = validateUWFile(parsed).issues
+        .filter((i) => i.code.startsWith('CAPX-'))
+        .map((i) => i.code)
+        .sort();
+      const want = [...(expected.codes ?? [])].sort();
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        record('capex', entry.name, 'fail', `emitted [${got.join(', ')}], expected [${want.join(', ')}]`);
+        continue;
+      }
+      record('capex', entry.name, 'pass', want.length ? want.join(', ') : 'clean');
+    } catch (error) {
+      record('capex', entry.name, 'fail', error.message);
+    }
+  }
+}
+
 const TAX_DIR = join(CONFORMANCE_DIR, 'tax');
 
 async function runTax() {
@@ -4101,6 +4131,7 @@ const dispatch = {
   'tax': async () => { await runTax(); },
   'lease': async () => { await runLease(); },
   'hedge': async () => { await runHedge(); },
+  'capex': async () => { await runCapex(); },
   'lease-up': async () => { await runLeaseUp(); },
   'lease-up-projection': async () => { await runLeaseUpProjection(); },
   'property-cash-flow-assembly': async () => { await runPropertyCashFlowAssembly(); },

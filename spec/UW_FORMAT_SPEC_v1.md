@@ -1524,6 +1524,7 @@ identically.
     },
     "renovation_budget": null,
     "renovation_contingency": null,
+    "renovation": null,
     "operating_reserves": null,
     "interest_reserve": null,
     "rate_cap_cost": null,
@@ -1580,6 +1581,83 @@ consumer.
   requires that assumption. This is the rule that turns "the cap expires in year
   three" from a note into a funded line; a replacement bought into a higher-rate
   environment is routinely the larger of the two premiums.
+
+**The renovation draw (RFC 0057).** `uses.renovation` is OPTIONAL and types what
+`renovation_budget` and `renovation_contingency` leave unsaid: whether either was
+spent. Two deals stating the same contingency are indistinguishable when one has
+drawn none of it and the other has drawn all of it.
+
+```json
+"renovation": {
+  "budget": 4000000.0,
+  "contingency": 500000.0,
+  "contingency_used": 120000.0,
+  "contingency_remaining": 380000.0,
+  "drawn_to_date": 1850000.0,
+  "as_of_date": "2026-09-01",
+  "expense_targeted": []
+}
+```
+
+A draw is a fact **as of `as_of_date`**. Nothing is projected: there is no
+S-curve, no remaining-to-spend schedule and no milestone release. A draw over
+time is periodic, which RFC 0054 placed behind a named consumer.
+
+- `CAPX-01` — `budget`, `contingency`, `contingency_used` and `drawn_to_date`
+  are finite and nonnegative, and `as_of_date` is a real `YYYY-MM-DD` date.
+- `CAPX-02` — `contingency_used` does not exceed `contingency`. A contingency
+  drawn past its size is an overrun, and calling it a contingency is what hides
+  that.
+- `CAPX-03` — `drawn_to_date` does not exceed `budget + contingency`, and is at
+  least `contingency_used`: the contingency draw is part of the total, not
+  beside it.
+- `CAPX-04` — `contingency_remaining`, when stated, equals
+  `contingency − contingency_used` at the currency quantum (protocol § VIII.5).
+  It is stated and verified rather than left to the reader's subtraction, the
+  posture RFC 0052 took with `net_sale_proceeds`.
+- `CAPX-05` — `budget` and `contingency` agree with the legacy
+  `uses.renovation_budget` and `uses.renovation_contingency` at the currency
+  quantum when both are stated.
+
+**Expense-targeted capex (RFC 0057).** `renovation.expense_targeted` is OPTIONAL
+and names capital spend bought specifically to reduce an operating expense. A
+$600,000 retrofit that takes $95,000 a year out of the utility line is a
+different thing from $600,000 of deferred maintenance, and the format had no way
+to say which one it was looking at.
+
+```json
+{
+  "label": "LED and controls retrofit",
+  "amount": 600000.0,
+  "targets": "utilities",
+  "annual_savings": 95000.0,
+  "savings_begin": "Y2",
+  "in_noi_model": false,
+  "simple_payback_years": 6.3158
+}
+```
+
+**The saving is stated, never applied.** Nothing subtracts `annual_savings` from
+an expense line, from EGI or from NOI — invariant 1 holds here as everywhere,
+and this is the surface most likely to tempt someone into breaking it.
+
+- `CAPX-06` — `label` nonempty; `amount` and `annual_savings` finite and
+  nonnegative; `savings_begin` an RFC 0041 period selector; `targets` names a
+  key that exists under `noi_model.expenses` when that section is present.
+  The target is checked against the keys actually there, not a closed list, so a
+  module adding a class-specific expense line keeps working.
+- `CAPX-07` — `in_noi_model` is stated as a boolean, saying whether the author
+  has already reflected this saving in `noi_model`. It is required because a
+  stated saving with no such flag is how a document gets double-counted: the
+  author reduces the line, and a second reader applies the saving again.
+- `CAPX-08` — `simple_payback_years`, when stated, equals
+  `amount ÷ annual_savings` at four decimals, and is refused against zero
+  savings. A project with no stated saving has no payback period, and a number
+  there would be a fiction.
+
+Redevelopment **downtime** needs no new field: § 4.25 `lease_up_schedule` with
+`model_type: "natural_turnover"` already expresses a period of suppressed
+occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 
 ---
 

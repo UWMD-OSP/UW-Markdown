@@ -39,13 +39,24 @@ protocol, and each package each carry an independent semver).
   `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`: their
   mark-to-market can be negative and a cap's cannot. Nothing is priced and no
   strike crossing is projected. Purely additive.
+- RFC 0057 types `sources_uses.uses.renovation` — budget, contingency,
+  contingency used, a stated-and-verified remaining, and total drawn as of a
+  date — and adds `expense_targeted`, capital spend named against the
+  `noi_model.expenses` line it reduces. Registers the `CAPX-NN` family.
+  `CAPX-07` requires `in_noi_model`, the disclosure that keeps a stated saving
+  from being applied twice; nothing subtracts a saving from an expense line,
+  from EGI or from NOI. `CAPX-08` verifies `simple_payback_years` and refuses it
+  against zero savings rather than admitting an infinity. Redevelopment downtime
+  needs no new field: §4.25 `natural_turnover` already carries it. Purely
+  additive.
 
 ### Changed
 
-- Protocol **2.13.0 → 2.14.0**, registering the `LSE-NN`, `HDG-NN` and `ESC-NN`
-  code families. RFC 0055 added `LSE-NN` to the protocol's code-prefix table
-  without a bump, so released 2.13.0 and `main` briefly described two different
-  tables; 2.14.0 covers both. No wire format, formula or precision changes.
+- Protocol **2.13.0 → 2.15.0**, registering the `LSE-NN`, `HDG-NN`, `ESC-NN`
+  and `CAPX-NN` code families. RFC 0055 added `LSE-NN` to the protocol's
+  code-prefix table without a bump, so released 2.13.0 and `main` briefly
+  described two different tables; the bump covers all four. No wire format,
+  formula or precision changes.
 
 ### Notes
 

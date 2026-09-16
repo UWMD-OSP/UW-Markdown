@@ -1,10 +1,10 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-15** after release **v2.10.0** at `ee0c131`.
+Reconciled **2026-09-16**, four merges past release **v2.10.0**.
 Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm
-with SLSA provenance. Format **2.0** and Protocol **2.13.0** version
-independently. See [VERSIONS.md](../../VERSIONS.md) and
-[ROADMAP.md](../../ROADMAP.md).
+with SLSA provenance. Format **2.0** and released Protocol **2.13.0** version
+independently; `main` carries an unreleased Protocol **2.15.0**. See
+[VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
 
@@ -23,8 +23,10 @@ independently. See [VERSIONS.md](../../VERSIONS.md) and
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.1**, report **0.8.13**, and hospitality/data-center module packages **0.1.1**
-remain unpublished. Core's RFC 0043 binding API is published; the full Excel
+Excel **0.9.2**, report **0.8.14**, lake **0.1.0** and hospitality/data-center
+module packages **0.1.2** remain unpublished. The registry does serve a stale
+`0.3.0` of excel and report from a hand publish on 2026-08-16, pending
+deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's RFC 0043 binding API is published; the full Excel
 exporter remains available from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
@@ -43,6 +45,28 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 11 seeds, 11,264 raw draws and 176 doubles. See the [record](../reviews/2026-09-12-pcg64-reference.md).
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
+
+## On `main`, unreleased
+
+Four contracts have landed since v2.10.0. None is published; all are additive
+and every member is optional, so a document stating none of them validates
+exactly as it did at 2.10.0.
+
+| RFC | Surface | Family |
+|---|---|---|
+| 0049 | `@uwmd/lake`, the PostgreSQL/JSONB adapter. Plans SQL; takes no database driver. | — |
+| 0054 | Decision only: per-lease economics split by shape. The periodic ledger waits for a named consumer. | — |
+| 0055 | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (§4.3). | `LSE-NN` |
+| 0056 | Rate hedges (§4.7) and escrow cash lines (§4.8). `rate_swap` / `rate_collar` reserved and refused. | `HDG-NN`, `ESC-NN` |
+| 0057 | Renovation draw and expense-targeted capex (§4.8). | `CAPX-NN` |
+
+Three of these require a disclosure rather than defaulting one, because the
+unstated case is the one that misleads: `HDG-06` (what happens when the cap
+expires), `CAPX-07` (whether a stated saving is already inside the NOI) and,
+from 2.10.0, `TAX-08` (whether the terminal tax is inside exit NOI).
+
+Current gate totals on `main`: **1,937 core tests**, **558 default conformance
+checks**, **44 JSON schemas**. Protocol **2.15.0**.
 
 ## Property cash-flow assembly released in 2.9.0
 

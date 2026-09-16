@@ -80,6 +80,7 @@ and how it gets accepted.
 | [0054](./0054-per-lease-ledger-decision.md) | Where per-lease economics live (decision) | accepted | format, documentation |
 | [0055](./0055-typed-commercial-lease-clauses.md) | Typed commercial lease clauses | implemented | format, protocol, core, conformance |
 | [0056](./0056-rate-hedges-and-escrows.md) | Typed rate hedges, escrows and the reserves that fund them | implemented | format, protocol, core, conformance |
+| [0057](./0057-renovation-draw-and-expense-targeted-capex.md) | The renovation draw, and capex that buys an expense reduction | implemented | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
