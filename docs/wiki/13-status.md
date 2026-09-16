@@ -101,6 +101,12 @@ currency quantum. `prepayment_penalty`, `defeasance` and `loan_payoff` are
 reserved and refused by this unlevered assembler. A plan stating neither member
 behaves exactly as it did before.
 
+RFC 0053 is accepted and implemented but unreleased: the `noi_model`
+reassessment basis and abatement schedule are typed, the `TAX-NN` validator
+family is registered, and `dcf.exit_analysis.terminal_tax` names the next
+buyer's tax. Everything is stated-and-verified; the exit-value/terminal-tax
+circularity is not solved, because the calc engine has no iteration.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward

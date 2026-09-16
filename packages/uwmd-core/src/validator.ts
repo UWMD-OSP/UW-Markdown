@@ -22,7 +22,7 @@ import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps.js';
 import { LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
 import { checkLeaseUpContent } from './lease-up-structure.js';
-import { CASH_FLOW_KINDS } from './cash-flow-series.js';
+import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from './cash-flow-series.js';
 import { isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
@@ -140,6 +140,7 @@ export function validateUWFile(
   checkSizeIntensive(parsed, issues, ledger);
   checkSectionReadiness(parsed, issues, ledger);
   checkReturnsTaxBasis(parsed, issues);
+  checkTaxBasis(parsed, issues);
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
@@ -714,6 +715,275 @@ function checkReturnsTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[])
     message: `RT-01: dcf.returns.tax_basis must be one of ${RETURN_TAX_BASES.join(', ')} (found ${JSON.stringify(v)}); omit it to mean ${DEFAULT_RETURN_TAX_BASIS} (format §4.9, RFC 0038)`,
     value: v,
   });
+}
+
+// ─── §4.5 / §4.9 Tax abatements and reassessment basis (RFC 0053) ────────────
+//
+// Every rule here checks a figure the author stated. Nothing is derived, no
+// jurisdiction rules are inferred, and the exit-value/terminal-tax circularity
+// is left to the author — the calc engine has no iteration and this adds none.
+// Quantize with the §VIII.5 helper the cash-flow verifier exports rather than
+// keeping a second copy of the rounding rule.
+
+/** What caused the reassessment; `none` means none applies. */
+export const REASSESSMENT_TRIGGERS = Object.freeze([
+  'sale', 'construction_completion', 'statutory_cycle', 'none',
+] as const);
+
+export const TAX_ABATEMENT_KINDS = Object.freeze([
+  'exemption', 'freeze', 'pilot', 'phase_in', 'credit',
+] as const);
+
+const TAX_PATH = 'expenses.real_estate_taxes';
+const CURRENCY_DP = CASH_FLOW_VERIFY_DECIMALS.currency;
+
+function taxIssue(
+  issues: ValidationMessage[], code: string, section: string, field: string, message: string, value?: unknown,
+): void {
+  issues.push({ code, severity: 'error', section, field, message, ...(value !== undefined ? { value } : {}) });
+}
+
+const finiteNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const sameMoney = (a: number, b: number) =>
+  quantizeAtDecimals(a, CURRENCY_DP) === quantizeAtDecimals(b, CURRENCY_DP);
+
+/**
+ * The shape shared by the `noi_model` reassessment and the `dcf` terminal tax.
+ * Returns the quantum the stated expense must be rounded at, or null when the
+ * object is too malformed to check any further.
+ */
+function checkReassessment(
+  r: Record<string, unknown>, issues: ValidationMessage[], section: string, base: string,
+): number | null {
+  const trigger = r['trigger'];
+  if (typeof trigger !== 'string' || !(REASSESSMENT_TRIGGERS as readonly string[]).includes(trigger)) {
+    taxIssue(issues, 'TAX-01', section, `${base}.trigger`,
+      `TAX-01: reassessment.trigger must be one of ${REASSESSMENT_TRIGGERS.join(', ')}`, trigger);
+    return null;
+  }
+  const assessed = r['assessed_value'];
+  const millage = r['millage_rate'];
+  const indicated = r['indicated_tax'];
+  let ok = true;
+  for (const [key, v] of [['assessed_value', assessed], ['millage_rate', millage], ['indicated_tax', indicated]] as const) {
+    if (!finiteNum(v)) {
+      taxIssue(issues, 'TAX-01', section, `${base}.${key}`, `TAX-01: reassessment.${key} must be a finite number`, v);
+      ok = false;
+    }
+  }
+  if (!ok) return null;
+
+  // TAX-01: the assessed value follows from the basis and ratio when both are stated.
+  const basis = r['value_basis'];
+  const ratio = r['assessment_ratio'];
+  if (basis !== undefined || ratio !== undefined) {
+    if (!finiteNum(basis) || !finiteNum(ratio)) {
+      taxIssue(issues, 'TAX-01', section, `${base}.assessment_ratio`,
+        'TAX-01: value_basis and assessment_ratio are stated together or not at all');
+    } else if (!sameMoney(basis * ratio, assessed as number)) {
+      taxIssue(issues, 'TAX-01', section, `${base}.assessed_value`,
+        `TAX-01: assessed_value ${assessed} must equal value_basis x assessment_ratio (${quantizeAtDecimals(basis * ratio, CURRENCY_DP)})`,
+        assessed);
+    }
+  }
+
+  // TAX-02: the indicated tax follows from the assessed value and the millage.
+  if (!sameMoney(indicated as number, (assessed as number) * (millage as number))) {
+    taxIssue(issues, 'TAX-02', section, `${base}.indicated_tax`,
+      `TAX-02: indicated_tax ${indicated} must equal assessed_value x millage_rate (${quantizeAtDecimals((assessed as number) * (millage as number), CURRENCY_DP)})`,
+      indicated);
+  }
+
+  const round = r['round_to_decimals'];
+  if (round !== undefined && !Number.isSafeInteger(round)) {
+    taxIssue(issues, 'TAX-03', section, `${base}.round_to_decimals`,
+      'TAX-03: round_to_decimals must be an integer; it may be negative to round to a magnitude', round);
+    return null;
+  }
+  return round === undefined ? CURRENCY_DP : (round as number);
+}
+
+function checkAbatement(
+  a: Record<string, unknown>, issues: ValidationMessage[], section: string, base: string, stated: unknown,
+): void {
+  const kind = a['kind'];
+  if (typeof kind !== 'string' || !(TAX_ABATEMENT_KINDS as readonly string[]).includes(kind)) {
+    taxIssue(issues, 'TAX-06', section, `${base}.kind`,
+      `TAX-06: abatement.kind must be one of ${TAX_ABATEMENT_KINDS.join(', ')}`, kind);
+    return;
+  }
+  const schedule = a['schedule'];
+  if (!Array.isArray(schedule) || schedule.length === 0) {
+    taxIssue(issues, 'TAX-05', section, `${base}.schedule`, 'TAX-05: abatement.schedule must be a nonempty array');
+    return;
+  }
+  const periods: string[] = [];
+  let shapeOk = true;
+  for (const [i, row] of schedule.entries()) {
+    const at = `${base}.schedule[${i}]`;
+    if (row === null || typeof row !== 'object' || Array.isArray(row)) {
+      taxIssue(issues, 'TAX-05', section, at, 'TAX-05: each schedule entry must be an object');
+      shapeOk = false;
+      continue;
+    }
+    const e = row as Record<string, unknown>;
+    const period = e['period'];
+    if (typeof period !== 'string' || taxPeriodKind(period) === null) {
+      taxIssue(issues, 'TAX-05', section, `${at}.period`,
+        'TAX-05: period must be an RFC 0041 selector (Y1+, YYYY-Qn, YYYY-MM, or YYYY-MM-DD)', period);
+      shapeOk = false;
+      continue;
+    }
+    periods.push(period);
+    const full = e['full_tax'];
+    const abated = e['abated_tax'];
+    if (!finiteNum(full) || !finiteNum(abated)) {
+      taxIssue(issues, 'TAX-06', section, at, 'TAX-06: full_tax and abated_tax must both be finite numbers');
+      shapeOk = false;
+      continue;
+    }
+    if (abated < 0 || full < 0) {
+      taxIssue(issues, 'TAX-06', section, at, 'TAX-06: full_tax and abated_tax must be nonnegative', abated);
+    } else if (abated > full) {
+      taxIssue(issues, 'TAX-06', section, `${at}.abated_tax`,
+        `TAX-06: abated_tax ${abated} cannot exceed full_tax ${full}`, abated);
+    }
+  }
+  if (!shapeOk) return;
+
+  // TAX-05: one granularity, strictly increasing, no duplicates.
+  const kinds = new Set(periods.map(p => taxPeriodKind(p)!));
+  if (kinds.size > 1) {
+    taxIssue(issues, 'TAX-05', section, `${base}.schedule`,
+      `TAX-05: an abatement schedule uses one period granularity (found ${[...kinds].sort().join(', ')})`);
+    return;
+  }
+  for (let i = 1; i < periods.length; i++) {
+    if (periods[i - 1]!.localeCompare(periods[i]!, 'en', { numeric: true }) >= 0) {
+      taxIssue(issues, 'TAX-05', section, `${base}.schedule[${i}].period`,
+        `TAX-05: schedule periods must strictly increase (${periods[i - 1]} then ${periods[i]})`, periods[i]);
+      return;
+    }
+  }
+
+  // TAX-06: a freeze holds the unabated tax nondecreasing across the schedule.
+  if (kind === 'freeze') {
+    for (let i = 1; i < schedule.length; i++) {
+      const prev = (schedule[i - 1] as Record<string, unknown>)['full_tax'] as number;
+      const cur = (schedule[i] as Record<string, unknown>)['full_tax'] as number;
+      if (cur < prev) {
+        taxIssue(issues, 'TAX-06', section, `${base}.schedule[${i}].full_tax`,
+          `TAX-06: a freeze holds full_tax nondecreasing (${prev} then ${cur})`, cur);
+        return;
+      }
+    }
+  }
+
+  // TAX-07: the stabilized snapshot ties to one named period of the schedule.
+  const stabilized = a['stabilized_period'];
+  if (stabilized === undefined) return;
+  if (typeof stabilized !== 'string') {
+    taxIssue(issues, 'TAX-07', section, `${base}.stabilized_period`,
+      'TAX-07: stabilized_period must be a period selector naming a schedule entry', stabilized);
+    return;
+  }
+  const at = periods.indexOf(stabilized);
+  if (at === -1) {
+    taxIssue(issues, 'TAX-07', section, `${base}.stabilized_period`,
+      `TAX-07: stabilized_period ${stabilized} does not name a period in the schedule`, stabilized);
+    return;
+  }
+  if (!finiteNum(stated)) return;
+  const abated = (schedule[at] as Record<string, unknown>)['abated_tax'] as number;
+  if (!sameMoney(stated, abated)) {
+    taxIssue(issues, 'TAX-07', section, `${TAX_PATH}.value`,
+      `TAX-07: the stated tax ${stated} must equal the abated tax ${abated} for stabilized_period ${stabilized}`, stated);
+  }
+}
+
+/** The RFC 0041 selector families, or null when the string is not one. */
+function taxPeriodKind(p: string): 'holding_year' | 'quarter' | 'month' | 'date' | null {
+  if (/^Y[1-9]\d*$/.test(p)) return 'holding_year';
+  if (/^\d{4}-Q[1-4]$/.test(p)) return 'quarter';
+  if (/^\d{4}-(0[1-9]|1[0-2])$/.test(p)) return 'month';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(p) && parseISODate(p)) return 'date';
+  return null;
+}
+
+function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const noi = resolveCrossCheckSection(parsed, 'noi_model').block;
+  if (noi) {
+    const tax = deepGet(noi.content, TAX_PATH);
+    if (tax !== null && typeof tax === 'object' && !Array.isArray(tax)) {
+      const t = tax as Record<string, unknown>;
+      const stated = t['value'];
+      const r = t['reassessment'];
+      if (r !== undefined) {
+        if (r === null || typeof r !== 'object' || Array.isArray(r)) {
+          taxIssue(issues, 'TAX-01', 'noi_model', `${TAX_PATH}.reassessment`,
+            'TAX-01: reassessment must be an object when stated', r);
+        } else {
+          const rr = r as Record<string, unknown>;
+          const dp = checkReassessment(rr, issues, 'noi_model', `${TAX_PATH}.reassessment`);
+          // TAX-03: the stated expense is the indicated tax at the declared quantum.
+          if (dp !== null && finiteNum(stated) && finiteNum(rr['indicated_tax'])) {
+            const rounded = quantizeAtDecimals(rr['indicated_tax'] as number, dp);
+            if (!sameMoney(stated, rounded)) {
+              taxIssue(issues, 'TAX-03', 'noi_model', `${TAX_PATH}.value`,
+                `TAX-03: the stated tax ${stated} must equal indicated_tax rounded at ${dp} decimals (${rounded})`, stated);
+            }
+          }
+          // TAX-04: the legacy boolean has to agree with the typed trigger.
+          const flag = t['sale_triggers_reassessment'];
+          if (typeof flag === 'boolean' && flag !== (rr['trigger'] === 'sale')) {
+            taxIssue(issues, 'TAX-04', 'noi_model', `${TAX_PATH}.sale_triggers_reassessment`,
+              `TAX-04: sale_triggers_reassessment ${flag} disagrees with reassessment.trigger ${JSON.stringify(rr['trigger'])}`, flag);
+          }
+        }
+      }
+      const a = t['abatement'];
+      if (a !== undefined) {
+        if (a === null || typeof a !== 'object' || Array.isArray(a)) {
+          taxIssue(issues, 'TAX-06', 'noi_model', `${TAX_PATH}.abatement`,
+            'TAX-06: abatement must be an object when stated', a);
+        } else {
+          checkAbatement(a as Record<string, unknown>, issues, 'noi_model', `${TAX_PATH}.abatement`, stated);
+        }
+      }
+    }
+  }
+
+  // The terminal tax: the next buyer's, after this sale reassesses at the exit
+  // price. No arithmetic is asserted over exit_noi — deriveDCF leaves
+  // exit_value_gross an input because it capitalizes an unstored forward NOI.
+  const dcf = resolveCrossCheckSection(parsed, 'dcf').block;
+  if (!dcf) return;
+  const tt = deepGet(dcf.content, 'exit_analysis.terminal_tax');
+  if (tt === undefined) return;
+  const base = 'exit_analysis.terminal_tax';
+  if (tt === null || typeof tt !== 'object' || Array.isArray(tt)) {
+    taxIssue(issues, 'TAX-01', 'dcf', base, 'TAX-01: terminal_tax must be an object when stated', tt);
+    return;
+  }
+  const t = tt as Record<string, unknown>;
+  checkReassessment(t, issues, 'dcf', base);
+  if (typeof t['in_exit_noi'] !== 'boolean') {
+    taxIssue(issues, 'TAX-08', 'dcf', `${base}.in_exit_noi`,
+      'TAX-08: terminal_tax.in_exit_noi must state whether this tax is already inside exit_noi', t['in_exit_noi']);
+  }
+  // TAX-08: the next buyer is reassessed at what they pay, so the basis is the
+  // exit value — unless the author says in words why it is not.
+  if (t['trigger'] !== 'sale') return;
+  const why = t['value_basis_differs_because'];
+  if (typeof why === 'string' && why.trim().length > 0) return;
+  const gross = deepGet(dcf.content, 'exit_analysis.exit_value_gross');
+  const basis = t['value_basis'];
+  if (!finiteNum(gross) || !finiteNum(basis)) return;
+  if (!sameMoney(basis, gross)) {
+    taxIssue(issues, 'TAX-08', 'dcf', `${base}.value_basis`,
+      `TAX-08: terminal_tax.value_basis ${basis} must equal exit_value_gross ${gross} for a sale trigger, or state value_basis_differs_because`,
+      basis);
+  }
 }
 
 // ─── §4.23 Mixed-use components (RFC 0019) ───────────────────────────────────

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/tax-terminal.schema.json",
+  "title": "tax-terminal",
+  "description": "RFC 0053 / format 4.9. The next buyer's tax after this sale reassesses at the exit price. TAX-08 ties the basis to exit_value_gross.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "trigger",
+    "assessed_value",
+    "millage_rate",
+    "indicated_tax",
+    "in_exit_noi"
+  ],
+  "properties": {
+    "trigger": {
+      "enum": [
+        "sale",
+        "construction_completion",
+        "statutory_cycle",
+        "none"
+      ]
+    },
+    "jurisdiction": {
+      "description": "A label. No jurisdiction rules are inferred from it.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "value_basis": {
+      "description": "The value the ratio applies to. Stated together with assessment_ratio or not at all.",
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "assessment_ratio": {
+      "description": "A fraction, not a percent.",
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "assessed_value": {
+      "type": "number"
+    },
+    "millage_rate": {
+      "description": "A fraction, not a percent.",
+      "type": "number"
+    },
+    "indicated_tax": {
+      "description": "What the inputs above produce, before any rounding.",
+      "type": "number"
+    },
+    "round_to_decimals": {
+      "description": "Protocol VIII.5 decimals. May be negative to round to a magnitude. Absent means the currency quantum.",
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "in_exit_noi": {
+      "description": "Whether this tax is already inside the stated exit_noi.",
+      "type": "boolean"
+    },
+    "value_basis_differs_because": {
+      "description": "Required when a sale-triggered basis is not exit_value_gross (TAX-08).",
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    }
+  }
+}

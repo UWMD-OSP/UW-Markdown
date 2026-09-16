@@ -1,0 +1,7 @@
+{
+  "codes": [
+    "TAX-01",
+    "TAX-02"
+  ],
+  "note": "Breaking the assessed value breaks both the ratio and the millage identity."
+}
