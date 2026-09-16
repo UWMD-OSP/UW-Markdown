@@ -21,8 +21,13 @@ const payload = (d: ReturnType<typeof fresh>, section = 'cash_flow_series') =>
 const ajv = new Ajv2020({ strict: false });
 addFormats.default(ajv);
 ajv.addSchema(JSON.parse(read('spec/schemas/protocol-error.schema.json')));
+// The assembly schema $refs the plan schema rather than restating it, so the
+// referenced document has to be registered before either one compiles.
+ajv.addSchema(JSON.parse(read('spec/schemas/property-cash-flow-plan.schema.json')));
 const schema = (suffix: string) => ajv.compile(JSON.parse(read(`spec/schemas/property-cash-flow-${suffix}.schema.json`)));
-const planSchema = schema('plan');
+// Registered above for the assembly's $ref, so reuse that validator rather than
+// compiling a second copy of the same $id.
+const planSchema = ajv.getSchema('https://uwmd.org/schemas/property-cash-flow-plan.schema.json')!;
 const outputSchema = schema('assembly');
 const issueSchema = schema('assembly-issue');
 async function refusal(d: ReturnType<typeof fresh>, p: unknown): Promise<PropertyCashFlowAssemblyIssue> {
@@ -340,5 +345,17 @@ describe('RFC 0052 named exit sale deductions', () => {
   it('exposes the same surface from the browser entry', async () => {
     const result = await browserAssemble(fresh(), named({ net_sale_proceeds: 1130000 }));
     expect(result.net_sale_proceeds.status).toBe('verified');
+  });
+
+  // The assembly schema references the plan schema instead of restating it. If
+  // that reference is ever replaced by a copy, the copy can go stale without
+  // anything noticing — which is exactly how the RFC 0052 members first broke.
+  it('validates the embedded plan through the real plan schema', async () => {
+    const result = await assemblePropertyCashFlows(fresh(), named({ net_sale_proceeds: 1130000 }));
+    expect(outputSchema(result), JSON.stringify(outputSchema.errors)).toBe(true);
+    const drifted = { ...result, plan: { ...result.plan, not_a_plan_member: true } };
+    expect(outputSchema(drifted)).toBe(false);
+    // The closed plan shape is what rejected it, not some unrelated rule.
+    expect(JSON.stringify(outputSchema.errors)).toContain('not_a_plan_member');
   });
 });
