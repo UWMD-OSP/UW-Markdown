@@ -356,6 +356,11 @@ codes, the LU-04 warning, the tolerance-checked `CC-15` seam to `noi_model`
   cash-pay pref enters `blended_coverage`, accrued does not, and
   `debt_yield_through` is identical either way (balance counts regardless of
   accrual).
+- `split-coupon/` — RFC 0050's one-position preferred-equity split coupon;
+  only `cash_rate` enters `blended_coverage`, while the full `rate` enters
+  `weighted_cost`.
+- `split-coupon-bad-total/` and `split-coupon-bad-fields/` — wrong total-rate
+  sizing and malformed/non-preferred component fields remain typed refusals.
 - `ab-mezz-notes/` — `mezz_a` + `mezz_b`: the ordered array expresses what
   fixed slots could not.
 - `senior-reconciles-debt-structure/` — the generalized `CC-03` in both

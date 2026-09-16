@@ -10,6 +10,7 @@
 // registered locales. CSV helpers are interchange, not display, and take no
 // locale by design.
 
+import { isCurrencyCode } from './protocol.js';
 import type { SupportedLocale } from './protocol.js';
 import {
   BUILTIN_FORMAT_RULES,
@@ -23,6 +24,7 @@ export interface CurrencyOptions {
   symbol?: string;          // default: the locale's registry symbol ('$' for en-US)
   nullDisplay?: string;     // default: 'n/a'
   locale?: SupportedLocale; // default: 'en-US' (RFC 0001; display renders only)
+  currencyCode?: string;    // explicit identity prefix (RFC 0046)
 }
 
 export interface PercentOptions {
@@ -70,6 +72,14 @@ export function formatCurrency(value: unknown, opts?: CurrencyOptions): string {
   const n = toFiniteNumber(value);
   if (n === null) return opts?.nullDisplay ?? DEFAULT_NULL;
   const locale = opts?.locale ?? 'en-US';
+  if (opts?.currencyCode != null && isCurrencyCode(opts.currencyCode)) {
+    const number = locale === 'en-US'
+      ? (opts?.decimals != null
+        ? n.toLocaleString('en-US', { minimumFractionDigits: opts.decimals, maximumFractionDigits: opts.decimals })
+        : n.toLocaleString('en-US'))
+      : formatNumberWithRules(n, BUILTIN_FORMAT_RULES[locale], opts?.decimals);
+    return `${opts.currencyCode} ${number}`;
+  }
   if (locale !== 'en-US') {
     const base = BUILTIN_FORMAT_RULES[locale];
     const rules = opts?.symbol != null

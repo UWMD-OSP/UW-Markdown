@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-12** after release **v2.9.0** at `7d939c7`.
+Reconciled **2026-09-13** after release **v2.9.0** at `7d939c7`.
 Core/CLI **2.9.0**, signing **0.2.13** and batch **0.8.8** are published and
 verified through a clean npm installation. Format **2.0** and Protocol
 **2.12.0** version independently. See [release evidence](../reviews/2026-09-12-release-2.9.0.md),
@@ -51,6 +51,49 @@ evidence. The owner selected a synthetic test ledger; real-deal review remains
 separate. See the [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md).
 This API and CLI are published in 2.9.0.
 
+## Unreleased development after 2.9.0
+
+The source CLI adds `verify-cash-flows` for selected stated-metric comparisons,
+with explicit no-claim results, input guards and read-only behavior. This reuses
+the published metric engine without changing the protocol or financial math.
+Private archived-deal comparisons informed the workflow; no private ledgers or
+property identifiers are included in public fixtures. Complete real-deal
+assembly still needs explicit expense/reserve coverage and payment timing.
+
+RFC 0046 is implemented on the development branch but unreleased: optional
+document-level `currency_code` makes display denomination explicit without
+changing numeric storage, calculation, or locale separators. `CUR-01` refuses
+malformed identity; per-value/multi-currency representation and FX remain
+deferred.
+
+RFC 0047 is implemented on the development branch but unreleased:
+`inspectPropertyCashFlowInputs` and `inspect-property-cash-flows` inventory the
+source shape needed for RFC 0045 authoring without classifying rows or inferring
+expense, reserve, or payment timing.
+
+Data-center conformance is structurally complete as a reference module: six
+dedicated runtime scenarios, 26 module tests, 11 calculations, seven
+validations, and explicit fallback/degraded behavior. The Mesa Gateway fixture
+is synthetic and the module package remains unpublished, so adopter validation
+is still open. The built-in library covers nine calculation packs; mixed-use is
+composition rather than a standalone pack.
+
+RFC 0048 and RFC 0049 are draft adoption RFCs. RFC 0048 scopes standalone
+document/package examples; RFC 0049 scopes an optional PostgreSQL/JSONB lake
+adapter outside the protocol and core dependencies.
+
+RFC 0050 is implemented on `codex/work` but unreleased: split preferred-equity
+coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
+from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
+compounding remain deferred. Release still requires the RFC, the
+format/schema/protocol triad, and conformance fixtures to be accepted together.
+
+RFC 0051 is implemented on `codex/work` but unreleased: `hurdle_mode: "any"`
+enables dual-hurdle tiers to end as soon as either `until_lp_em` or
+`until_lp_irr` is met (smaller capacity), while default `hurdle_mode: "both"`
+preserves existing behavior (larger capacity). `WF-01` rejects `hurdle_mode`
+when both hurdles are not present.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward
@@ -60,8 +103,8 @@ This API and CLI are published in 2.9.0.
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
   metric Excel export remain separate extensions.
-- Waterfall extensions, currency identity and stochastic VOI need bounded
-  contracts. Retrieval and standalone optional-package publication remain
+- Waterfall extensions, per-value currency identity and stochastic VOI need
+  bounded contracts. Retrieval and standalone optional-package publication remain
   demand-gated. DOCX remains scoped out by the owner.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).

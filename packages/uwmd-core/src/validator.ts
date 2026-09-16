@@ -13,7 +13,7 @@ import type {
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, STAGE_REQUIREMENTS, requiredSectionsFor,
+import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
@@ -141,6 +141,7 @@ export function validateUWFile(
   checkSectionReadiness(parsed, issues, ledger);
   checkReturnsTaxBasis(parsed, issues);
   checkLocale(parsed, issues);
+  checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
@@ -958,6 +959,30 @@ function checkStackContent(
       }
     }
 
+    // CS-02b: a split coupon is one preferred-equity tranche with two
+    // explicitly typed rate components. Keep the field-presence rule here,
+    // beside CS-02, so schema-valid and hand-built ParsedUWFile inputs receive
+    // the same refusal.
+    const hasCashRate = Object.prototype.hasOwnProperty.call(t, 'cash_rate');
+    const hasAccruedRate = Object.prototype.hasOwnProperty.call(t, 'accrued_rate');
+    if (t['accrual'] === 'split') {
+      if (cls !== 'preferred_equity') {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: split accrual is supported only for preferred_equity tranche ${label}` });
+      }
+      if (!hasCashRate || !Number.isFinite(t['cash_rate'])) {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.cash_rate`, message: `CS-02b: split tranche ${label} must state a numeric cash_rate` });
+      }
+      if (!hasAccruedRate || !Number.isFinite(t['accrued_rate'])) {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrued_rate`, message: `CS-02b: split tranche ${label} must state a numeric accrued_rate` });
+      }
+      if (hasRate && Number.isFinite(t['cash_rate']) && Number.isFinite(t['accrued_rate'])
+        && t['rate'] !== (t['cash_rate'] as number) + (t['accrued_rate'] as number)) {
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02b: split tranche ${label}.rate must equal cash_rate + accrued_rate` });
+      }
+    } else if (hasCashRate || hasAccruedRate) {
+      issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: cash_rate and accrued_rate are permitted only when tranche ${label} uses accrual: "split"` });
+    }
+
     // A waterfall smuggled in at the tranche level (promote/hurdle/catch-up).
     for (const key of Object.keys(t)) {
       if (WATERFALL_MARKERS.includes(key)) {
@@ -1391,7 +1416,7 @@ function checkWaterfallContent(
       }
       if (type === 'split') {
         splitCount++;
-        const t = tier as { lp_share?: unknown; gp_share?: unknown; until_lp_em?: unknown; until_lp_irr?: unknown };
+        const t = tier as { lp_share?: unknown; gp_share?: unknown; until_lp_em?: unknown; until_lp_irr?: unknown; hurdle_mode?: unknown };
         if (!sumsToOne(t.lp_share, t.gp_share)) {
           wf01(`tiers[${i}]`, 'split lp_share and gp_share must be fractions in [0,1] summing to 1.0');
         }
@@ -1414,6 +1439,13 @@ function checkWaterfallContent(
             wf01(`tiers[${i}].until_lp_irr`, 'until_lp_irr must be a fraction in (0, 1) — an IRR hurdle rate, 0.12 not 12');
           } else {
             irrOk = true;
+          }
+        }
+        if (t.hurdle_mode != null) {
+          if (t.hurdle_mode !== 'both' && t.hurdle_mode !== 'any') {
+            wf01(`tiers[${i}].hurdle_mode`, 'hurdle_mode must be "both" or "any"');
+          } else if (t.until_lp_em == null || t.until_lp_irr == null) {
+            wf01(`tiers[${i}].hurdle_mode`, 'hurdle_mode is only permitted when both until_lp_em and until_lp_irr are stated');
           }
         }
         if (t.until_lp_em != null || t.until_lp_irr != null) {
@@ -1508,6 +1540,19 @@ function checkLocale(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
     code: 'LOC-01', severity: 'error', field: 'locale',
     message: `LOC-01: locale ${JSON.stringify(declared)} is not a registered display locale; display renders are refused rather than silently produced in a different locale`,
     value: String(declared),
+  });
+}
+
+// ─── Document currency identity (RFC 0046) ──────────────────────────────────
+
+function checkCurrencyIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const declared = parsed.frontmatter.currency_code;
+  if (declared == null) return; // absent preserves legacy symbol behavior
+  if (isCurrencyCode(declared)) return;
+  issues.push({
+    code: 'CUR-01', severity: 'error', field: 'currency_code',
+    message: `CUR-01: currency_code ${JSON.stringify(declared)} is not three uppercase ASCII letters; currency identity is never inferred from locale or a display symbol`,
+    value: declared,
   });
 }
 

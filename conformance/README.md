@@ -165,13 +165,15 @@ conformance/
 │                         per-locale rendering pins (NBSP included), the
 │                         LOC-01 display refusal, calc invariance, and CSV
 │                         byte identity across locales.
+├── currency/           Document currency identity (RFC 0046, Protocol
+│                         §III.1b): explicit code display and CUR-01 refusal.
 ├── capability/         Capability-token write authorization (RFC 0011,
 │                         Protocol §XIV). Each scenario edits the shared
 │                         deal.uwx.md under a generated token through the
 │                         @uwmd/signing reference verifier; pins POL-03's
 │                         typed reasons, the jti note, and the never-escalates
 │                         rule. Owed only under `capability-verify`.
-├── capital-stack/      Typed capital stack (RFC 0026, format spec §4.24).
+├── capital-stack/      Typed capital stack (RFC 0026/RFC 0050, format spec §4.24).
                           Scenario kind is dispatched by the files a directory
                           carries: {case.json, expected.json} exercises
                           verifyCapitalStack's three-state verdict (a "variants"
@@ -182,7 +184,8 @@ conformance/
                           (CS-WATERFALL-UNSUPPORTED); and {deal.uwx.md,
                           expected-metrics.json} is the no-stack single-loan
                           regression pin — every pack metric must equal its
-                          pre-RFC value exactly
+                          pre-RFC value exactly. RFC 0050 adds split-coupon
+                          positive and refusal cases.
 ├── source/             Source vocabulary (RFC 0031). Five
 │                         <scenario>/{deal.uwx.md, expected.json}. The split
 │                         (`_meta.source` actor-only, `_meta.resolution` for
@@ -273,7 +276,7 @@ conformance/
 
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
 `capital-stack`, `lease-up`, `cash-flow`, `waterfall`, `portfolio-relationships`,
-`capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
+`standalone`, `capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
 `stochastic`, `source`, `meta-v2`, and `migrate`
 suites are named rather
 than numbered:
@@ -404,3 +407,11 @@ source/plan/expected triples. Cases exercise complete coverage, monthly/leap and
 same-date timing, reserve declarations, duplicates, currency, signs and original
 source-verifier refusals. These fixtures are engineering inputs, not real deals.
 Run `npm run conformance -- --tier=property-cash-flow-assembly` after building.
+
+### Standalone document kit (RFC 0048)
+
+The default `standalone` suite exercises the worked examples under
+`examples/standalone/`: profile and lease-abstract validation, independent
+fragment parsing, inline/externalized canonical and semantic-digest equality,
+and package integrity/context-boundary behavior. Run it alone with
+`npm run conformance -- --tier=standalone` after building.

@@ -211,6 +211,11 @@ export function isSupportedLocale(tag: unknown): tag is SupportedLocale {
   return typeof tag === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(tag);
 }
 
+/** True for the RFC 0046 document-level currency identity syntax. */
+export function isCurrencyCode(value: unknown): value is string {
+  return typeof value === 'string' && /^[A-Z]{3}$/.test(value);
+}
+
 export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.freeze({
   id: 'org.uwmd.core',
   name: '@uwmd/core reference implementation',
@@ -2002,6 +2007,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
   { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
   { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
+  { prefix: 'CUR', description: 'Document currency identity (RFC 0046)', capabilities: ['validate'] },
   { prefix: 'PS', description: 'Period series identity (RFC 0041)', capabilities: ['validate'] },
   { prefix: 'ROLE', description: 'Signed block role (RFC 0040)', capabilities: ['validate'] },
   { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
@@ -2277,7 +2283,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'WF-01', severity: 'error',
     title: 'Waterfall ladder outside the grammar',
     description: 'The tier ladder violates the closed §4.27 grammar: unknown or duplicated singleton tiers, out-of-order ladder, no uncapped terminal split, shares/rates/hurdles outside their stated ranges or sums, gp_share not exceeding target_promote, a capped split that pays the LP nothing, or a hurdle ladder that does not strictly increase (RFC 0035, RFC 0036).',
-    remediation: 'State the ladder as return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split; shares in [0,1] with equity_split and each split summing to 1.0; rate in (0,1); until_lp_em > 0 and until_lp_irr in (0,1) only on tiers whose lp_share > 0, each kind strictly increasing down the ladder (12% → 15% → 18%); gp_share > target_promote. A tier may state both hurdles; it ends when both are met.',
+    remediation: 'State the ladder as return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split; shares in [0,1] with equity_split and each split summing to 1.0; rate in (0,1); until_lp_em > 0 and until_lp_irr in (0,1) only on tiers whose lp_share > 0, each kind strictly increasing down the ladder (12% → 15% → 18%); gp_share > target_promote. A tier may state both hurdles; it ends when both are met unless hurdle_mode: \"any\" is specified (RFC 0051). Stating hurdle_mode without both hurdles is an error.',
     spec_ref: '§4.27 WF-01',
   },
   {
@@ -2356,6 +2362,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A debt or preferred tranche omits its rate, or a common-equity tranche states one.',
     remediation: 'State a rate on every debt and preferred_equity tranche; remove it from common_equity.',
     spec_ref: '§4.24 CS-02',
+  },
+  {
+    code: 'CS-02b', severity: 'error',
+    title: 'Split coupon is malformed',
+    description: 'A split preferred-equity coupon is missing a rate component, uses the fields on another accrual mode, or does not reconcile to the tranche rate.',
+    remediation: 'Use accrual: "split" only on preferred_equity, provide numeric cash_rate and accrued_rate, and make rate equal their sum.',
+    spec_ref: '§4.24 CS-02b',
   },
   {
     code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error',
@@ -2566,6 +2579,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'The file declares a `locale` this implementation does not list in `supported_locales` (or an unregistered tag). Display renders are refused — never silently produced in a different locale; parsing, validation, editing, and calc are unaffected (RFC 0001).',
     remediation: 'Render with an implementation that supports the declared locale, or change the file\'s `locale` to one this implementation supports. Content is canonical and locale-free, so no data conversion is involved.',
     spec_ref: 'UW_PROTOCOL_v1.md §III.1a',
+  },
+  {
+    code: 'CUR-01', severity: 'error',
+    title: 'Malformed currency identity',
+    description: 'The document declares currency_code, but it is not three uppercase ASCII letters. Currency identity is never inferred from a symbol or display locale (RFC 0046).',
+    remediation: 'Set frontmatter.currency_code to the authored three-letter currency identity, or omit it when the source does not establish one. Do not infer it from locale or a display symbol.',
+    spec_ref: 'UW_PROTOCOL_v1.md §III.1b',
   },
   {
     code: 'POL-03', severity: 'error',

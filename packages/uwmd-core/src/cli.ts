@@ -47,9 +47,11 @@ import { evaluateCalc } from './calc/index.js';
 import { parseCalculationContext } from './calculation-context.js';
 import { parseExpression, periodReferencePath } from './calc/parser.js';
 import { CalcError } from './calc/errors.js';
+import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
 import { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
 import type { LeaseUpCashFlowPlan, PropertyCashFlowPlan } from './protocol.js';
 import { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
+import { inspectPropertyCashFlowInputs } from './property-cash-flow-inputs.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
 import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
@@ -1646,6 +1648,35 @@ switch (command) {
     break;
   }
 
+  case 'verify-cash-flows': {
+    try {
+      const options = parseCashFlowVerificationArgs(args);
+      let source: string;
+      try { source = readFileSync(resolve(options.file), 'utf8'); }
+      catch (error) { throw new CalcError('CALC-CF-SERIES',
+        `Cannot read source: ${error instanceof Error ? error.message : String(error)}`, 'source'); }
+      const result = verifyCashFlowDocument(source, options.variant);
+      if (options.json) console.log(JSON.stringify(result.report, null, 2));
+      else {
+        const r = result.report;
+        console.log(`${r.section} (variant: ${r.variant ?? '(unlabelled)'}): ${r.status}; ${r.checked_metrics.length} stated metrics.`);
+        for (const issue of r.verification?.issues ?? [])
+          console.log(`  [${issue.code}] ${issue.message}`);
+        console.log('This checks stated metrics only; it does not establish economic completeness or verify source facts.');
+      }
+      process.exitCode = result.exitCode;
+    } catch (error) {
+      if (!(error instanceof CalcError)) throw error;
+      if (args.includes('--json')) console.log(JSON.stringify({ error: error.proto }, null, 2));
+      else {
+        console.error(`${error.message} (${error.proto.pointer ?? 'cash_flow_series'})`);
+        console.error('Usage: uwmd verify-cash-flows <file> [--variant <name>] [--json]');
+      }
+      process.exitCode = 1;
+    }
+    break;
+  }
+
   case 'assemble-property': {
     if (positional.length !== 2 || Object.keys(flags).some(key => key !== 'json')) {
       console.error('Usage: uwmd assemble-property <file> <plan.json> [--json]');
@@ -1664,6 +1695,26 @@ switch (command) {
       if (flags['json']) console.log(JSON.stringify({ error: error.proto }, null, 2));
       else console.error(`${error.message} (${error.proto.pointer})`);
       process.exitCode = 1;
+    }
+    break;
+  }
+
+  case 'inspect-property-cash-flows': {
+    if (positional.length !== 1 || Object.keys(flags).some(key => key !== 'json')) {
+      console.error('Usage: uwmd inspect-property-cash-flows <file> [--json]');
+      process.exit(1);
+    }
+    const inventory = inspectPropertyCashFlowInputs(parseUWFile(readFile(positional[0]!)));
+    if (flags['json']) {
+      console.log(JSON.stringify(inventory, null, 2));
+    } else {
+      console.log(`Lease-up variants: ${inventory.lease_up_schedule.length}`);
+      for (const source of inventory.lease_up_schedule)
+        console.log(`  ${source.variant ?? '(unlabelled)'}: ${source.shape}; ${source.periods.length} periods`);
+      console.log(`Cash-flow variants: ${inventory.cash_flow_series.length}`);
+      for (const source of inventory.cash_flow_series)
+        console.log(`  ${source.variant ?? '(unlabelled)'}: ${source.shape}; ${source.rows.length} rows; ${source.stated_metrics.length} stated metrics`);
+      console.log('This inventories source inputs only; it does not assign categories, dates, zeros, or economic assertions.');
     }
     break;
   }
@@ -1885,7 +1936,9 @@ Commands:
   migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
   migrate  <file> --to-v2        Convert the whole file to the v2 nested _meta shape, uw_version "2.0" (RFC 0009;
                                  re-stamps hashes; signed blocks need --resign or --strip-signatures)
+  verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
   assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
+  inspect-property-cash-flows <file> [--json]  Inventory source inputs needed for an assembly plan (read-only)
   project-lease-up <file> <plan.json>  Project verified lease-up amounts onto explicit cash dates (JSON candidate only)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
   init                         Generate a blank .uwx.md file

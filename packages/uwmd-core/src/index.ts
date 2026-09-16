@@ -4,7 +4,7 @@
 export { parseUWFile, getSection, getSectionVariant, deepGet } from './parser.js';
 export { validateUWFile, lookupRemediation, getReturnTaxBasis } from './validator.js';
 export { compact, diff } from './compactor.js';
-export { render, UnsupportedRenderFormatError, UnsupportedLocaleError } from './renderer.js';
+export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';
 export type { RenderFormat, RenderTier, RenderOptions, RenderResult } from './renderer.js';
 export { renderReportHtml, REPORT_CSS } from './report.js';
 export type { ReportOptions, ReportResult } from './report.js';
@@ -849,6 +849,7 @@ export {
   SOURCE_TAGS,
   SUPPORTED_LOCALES,
   isSupportedLocale,
+  isCurrencyCode,
   ACTOR_NAMESPACES,
   ACTOR_SOURCE_RE,
   parseActorSource,
@@ -943,6 +944,13 @@ export type { LeaseUpCashFlowPlan, LeaseUpCashFlowProjection, LeaseUpCashFlowPro
 
 // RFC 0045 — explicit property cash-flow assembly.
 export { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
+// RFC 0047 — read-only source inventory for authoring an RFC 0045 plan.
+export { inspectPropertyCashFlowInputs } from './property-cash-flow-inputs.js';
+export type {
+  PropertyCashFlowInputInventory,
+  PropertyCashFlowInputRow,
+  PropertyCashFlowInputVariant,
+} from './property-cash-flow-inputs.js';
 export type { PropertyCashFlowPlan, PropertyCashFlowAssembly, PropertyCashFlowAssemblyIssue,
   PropertyCashFlowCategory, PropertyCashFlowCell, PropertyCashFlowCoverage,
   PropertyCashFlowAssertions, PropertyCashFlowBinding, PropertyCashFlowCellEvidence } from './protocol.js';

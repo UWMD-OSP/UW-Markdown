@@ -16,6 +16,11 @@ and exact overrides in calc, refinement and explicit Excel export.
 For the next modeling step, the [lease-up cash-flow example](LEASE_UP_CASH_FLOW_WORKFLOW.md)
 verifies an explicitly dated partial stream using existing APIs.
 
+The source checkout's **unreleased** `verify-cash-flows` command checks stated
+cash-flow metrics without a custom script; see the
+[workflow](PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+It checks mathematical consistency, not economic completeness.
+
 ## Decision tree
 
 | If you want to... | Reach for | Tier |

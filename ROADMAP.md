@@ -1,6 +1,6 @@
 # Roadmap
 
-Current as of **2026-09-12**, following [release 2.9.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.9.0).
+Current as of **2026-09-13**, following [release 2.9.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.9.0).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
@@ -47,6 +47,83 @@ does not mean its standalone npm package is published.
 | Independent PCG64 verification | Sprint verification complete | 11 seeds, 11,264 raw draws and 176 doubles match NumPy 1.26.4's compiled PCG64 under the upstream default stream and srandom sequence. Existing outputs are unchanged. [Evidence and reproduction](docs/reviews/2026-09-12-pcg64-reference.md). |
 | Period consumers and lease-up projection | Released in 2.8.0 | RFCs 0042–0044, validated CLI context and the explicit projection workflow. [Publication and installation evidence](docs/reviews/2026-09-12-release-2.8.0.md). |
 
+## Unreleased development after 2.9.0
+
+The source CLI adds `verify-cash-flows` to check selected stated cash-flow metrics
+without a custom script. It distinguishes no claims from verified claims and
+preserves existing failure/unverifiable results. This is private-deal validation
+tooling, not a completed real-deal property assembly or a new financial model.
+See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+
+RFC 0046 is implemented on the development branch but unreleased. It adds
+optional document-level currency identity for honest display across locales;
+numeric storage and financial calculations remain unchanged.
+
+RFC 0047 is implemented on the development branch but unreleased. Its
+read-only input inventory makes the RFC 0045 real-deal handoff inspectable
+without inferring expense, reserve, or payment-timing economics.
+
+Adoption planning now has two draft RFCs. RFC 0048 scopes a worked kit for
+standalone lease abstracts, source notes, rent-roll/P&L/cash-flow fragments,
+inline records and deal packages. RFC 0049 scopes an optional PostgreSQL/JSONB
+lake adapter that preserves canonical envelopes and facts without making a
+warehouse schema part of the protocol. See the [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md).
+
+## StackUW protocol alignment queue
+
+**Source:** owner-supplied *StackUW protocol brief* from the engine team,
+2026-09-13. StackUW (formerly underwriter.cc) is the current vendor building
+on UW Markdown and produces `.uwx.md` records through `export_uwmd`.
+
+This is adopter input, not an accepted contract or an instruction to change the
+spec immediately. Each normative item below still needs its own accepted RFC,
+an absent-case fixture, and an engine-produced fixture. The queue preserves the
+project's existing rules: additive and opt-in fields, stated figures verified
+where practical, explicit "stated, not recomputed" notes where not, custom
+asset classes as namespaced modules, and fund mechanics as document profiles.
+
+### Reuse before extending
+
+The brief explicitly asks us not to duplicate capabilities already present:
+catch-up and LP IRR hurdles are in §4.27; the capital-stack and preferred-equity
+surfaces are in §4.24 (with split coupon in draft RFC 0050); dated cash flows are
+in §4.26; student housing, senior housing, land, mixed-use, portfolios and data
+centers already have class/profile or module homes. The remaining work is to
+type the documented stubs, add missing verification paths, or make the existing
+surfaces usable for the next producer wave.
+
+### Proposed sequence
+
+| Wave | Candidate | State / acceptance gate |
+|---|---|---|
+| 1 | Preferred-equity split coupon | **RFC 0050, implemented on `codex/work`.** Split coupons with cash/accrued decomposition and `CS-02b` validation; cash enters coverage, accrued does not. |
+| 1 | Waterfall dual-hurdle `any` mode | **RFC 0051, implemented on `codex/work`.** Lifted `hurdle_mode: "any" | "both"` into normative contract with closed-form capacity, `WF-01` validation, and conformance fixtures. |
+| 1 | Named exit sale deductions | **Next candidate.** Add a closed `sale_deductions` vocabulary and a verifier for net sale proceeds; expose each dated cash line through §4.26 where applicable. |
+| 1 | Tax abatements and reassessment basis | **Next candidate.** Type the abatement schedule and reassessment basis, and distinguish the seller's trailing tax from the buyer's terminal-year underwriting tax after a sale-triggered reassessment. |
+| 1/2 | Lease clauses and TI/LC amortization | **Dependent.** Type break-option and co-tenancy details, add LC balances beside TI, and pin straight-line amortization only after the lease-ledger placement decision. |
+| 2 | Per-lease monthly ledger | **Decision RFC.** Choose a state-and-verify `lease_ledger` series (rather than widening the point-in-time rent roll) to support lease clauses, CAM true-ups, and TI/LC balances. |
+| 2 | Rate caps, escrow and replacement | **Next candidate.** Add term, premium, replacement/escrow cash lines and reserve `rate_swap` / `rate_collar` names for later MTM treatment. |
+| 2 | Construction contingency used share | **Next candidate.** Carry used/unused amounts and total drawn with a trivial verifier; milestone releases remain out of scope. |
+| 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
+| 2 | CAM, redevelopment and OpEx compression | **Dependent / next candidate.** Add CAM true-up after the ledger decision; confirm whether §4.25 + §4.8 already cover redevelopment, otherwise add downtime; support expense-targeted capex with stated annual savings. |
+| 2 | Ground lease positions | **Blocked on owner decision.** Reserve `ground_lease` as a tranche concept, but do not define or implement the shape until the first underwriting position is chosen. |
+| 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, PACE, swaps and collars each require a concrete engine scope and module/RFC pair. |
+| 4 | Fund and land-development profiles | **Later / profile boundary first.** Subscription facilities, clawback/lookback, co-invest fees and lot takedowns belong in fund or land-development profiles that reference deal documents; they do not widen ordinary deal sections. |
+
+### Cross-cutting requirements
+
+- Extend the RFC 0027 size-intensive registry once per demonstrated need (`$/bed`,
+  `$/pad`, `$/acre`, `$/slip`, `$/space`); do not create class-specific aliases
+  outside the registry.
+- If the proposed `ground_lease`, `pace`, `tax_credit_equity` and `soft_debt`
+  tranche classes are accepted, handle their enum opening and coverage treatment
+  in one bounded RFC rather than four uncoordinated changes.
+- Treat §4.26 as the addressable sink for new dated cash lines so assembly and
+  receipt coverage can verify them instead of trusting engine output.
+- Require one engine-produced conformance fixture per accepted RFC, plus one
+  fixture proving that an absent optional field remains byte-identical and
+  verifies as before.
+
 ## Forward backlog
 
 The bounded period-consumer and lease-up projection stages are complete. The
@@ -55,11 +132,19 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFC 0045 released; adopter review pending | Validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
+| 1 | Real-deal DCF validation and extensions | RFC 0045 released; input inventory implemented; adopter review pending | Use the [input inventory](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#prepare-a-real-deal-plan-without-inventing-inputs), then validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
-| 4 | Waterfall extensions | Deferred | Clawback/crystallization, combined-hurdle “any” mode and GP-side hurdles each need exact economic rules and conformance cases. |
-| 5 | Currency-code disambiguation | Deferred | Define currency identity independently from display locale before combining cross-currency values. |
+| 4 | Waterfall extensions | RFC 0051 implemented; clawback deferred | Combined-hurdle "any" mode implemented under RFC 0051. Clawback/crystallization and GP-side hurdles remain deferred. |
+| 5 | Currency-code disambiguation | RFC 0046 implemented, unreleased | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
+
+### Adoption and integration candidates
+
+| Work | State | Next evidence |
+|---|---|---|
+| Standalone document and package example kit | RFC 0048 draft | Add lease-abstract/source-note examples, rent-roll/P&L/cash-flow fragments, inline/external twins, and a verified package. |
+| PostgreSQL JSONB lake adapter | RFC 0049 draft | Prove idempotent loading of existing CSV/JSONL facts with raw-envelope preservation and typed query projections. |
+| Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing
 

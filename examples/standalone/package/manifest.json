@@ -1,0 +1,83 @@
+{
+  "package_version": "1.0",
+  "package_id": "pkg:parkview:standalone-kit:2026-09-13",
+  "members": [
+    {
+      "id": "deal:parkview",
+      "path": "records/externalized-deal.uwx.md",
+      "role": "underwriting",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:b48937e3104f702c585fcc699c9ed6f4be31689848f902d766120bf1b9586a74",
+      "document_profile": "deal-underwriting-v1",
+      "semantic_digest": "sha256:142b2072adfba6991e66dcd79f1d3dddf9164ad5a21660ddb90e68033034476e"
+    },
+    {
+      "id": "lease:anchor-tenant",
+      "path": "records/lease-abstract-v1.uwx.md",
+      "role": "lease_abstract",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:837c96145e3f43b04719ecacb7498f1766c58526814717db3701add314f252c1",
+      "document_profile": "lease-abstract-v1",
+      "semantic_digest": "sha256:01bb8be339efc31c9de4059cf4d69ca74de04aac5f8391a1250079f7971cd1ea"
+    },
+    {
+      "id": "note:rent-roll-review",
+      "path": "records/source-note-v1.uwx.md",
+      "role": "source_note",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:0b8e436fcea3c305678435c6dcc95ac4de79fd1443e2eca5e2626f62ac705229",
+      "document_profile": "source-note-v1",
+      "semantic_digest": "sha256:8ccfa3deff87f4aba12d86b843eab37cca5e7f3e6a2045110fae50a9ec9f3d2f"
+    },
+    {
+      "id": "part:rent-roll-210",
+      "path": "parts/rent-roll-210.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:8913619f93a1dcd097687eb89c4dd2935a4484d794d6d5193bec23f6c042827c"
+    },
+    {
+      "id": "part:rent-roll-215",
+      "path": "parts/rent-roll-215.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:1cccbd716ad792b583b6745fc9e5f687e7472f2b19c7a8da271aa70eabbabede"
+    },
+    {
+      "id": "part:rent-roll-220",
+      "path": "parts/rent-roll-220.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:1a22b5eeef3aeed971200a4e93344bc49f14474a73aa712e509f2125d6ca3173"
+    },
+    {
+      "id": "part:operating-statement-t12",
+      "path": "parts/operating-statement-t12.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:f1d14289f1f9bcbba7e50768ae082118bda72ee1b3bd6099b3ae4edbdfd04949"
+    },
+    {
+      "id": "part:cash-flow-series-dated",
+      "path": "parts/cash-flow-series-dated.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:6d140a4377fe9af35d0a9537c82ddb8508159903bc52e7340486b3dbf4b4e3e2"
+    },
+    {
+      "id": "source:anchor-lease",
+      "path": "sources/anchor-lease.txt",
+      "role": "source_evidence",
+      "media_type": "text/plain",
+      "sha256": "sha256:5455effcf7cef1cf1c984a44b2f966206ff961e1f43ab469bf303601f34d2b17"
+    }
+  ],
+  "links": [
+    { "type": "abstracts", "from": "lease:anchor-tenant", "to": "source:anchor-lease" },
+    { "type": "supports", "from": "note:rent-roll-review", "to": "lease:anchor-tenant" },
+    { "type": "contributes_to", "from": "lease:anchor-tenant", "to": "deal:parkview" },
+    { "type": "contributes_to", "from": "part:rent-roll-210", "to": "deal:parkview" },
+    { "type": "contributes_to", "from": "part:rent-roll-215", "to": "deal:parkview" },
+    { "type": "contributes_to", "from": "part:rent-roll-220", "to": "deal:parkview" }
+  ]
+}

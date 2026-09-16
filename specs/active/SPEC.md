@@ -1,9 +1,15 @@
-# Active work
+﻿# Specification: Waterfall dual-hurdle `any` mode (RFC 0051)
 
-Release 2.9.0 is published and verified. The contract is
-[archived](../archive/release-2.9.0.md), with public
-[release evidence](../../docs/reviews/2026-09-12-release-2.9.0.md).
+Status: **draft implementation scope** · Opened 2026-09-13 · RFC 0051
 
-RFC 0045's bounded synthetic-ledger implementation is complete. The owner will
-validate a real deal separately. Further financial modeling requires a bounded
-contract for its economics; no unapproved financial implementation is in flight.
+This milestone lifts the deferred `hurdle_mode: "any"` representation into the
+normative contract for distribution waterfalls (§4.27, §VIII.10). When both
+`until_lp_em` and `until_lp_irr` are stated on a `split` tier, `hurdle_mode: "any"`
+caps the tier when either hurdle is met (the smaller capacity governs). The
+default `hurdle_mode: "both"` retains existing behavior (the larger capacity
+governs).
+
+Stating `hurdle_mode` without both hurdles is rejected as a grammar error (`WF-01`).
+Clawback, crystallization, and GP-side hurdles remain outside this scope.
+
+The complete contract is [RFC 0051](../../docs/rfcs/0051-waterfall-dual-hurdle-any-mode.md).

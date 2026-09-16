@@ -6,7 +6,7 @@
 import type { ParsedUWFile, UWBlock, ValidationResult } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';
 import { validateUWFile } from './validator.js';
-import { resolveDealSize, isSupportedLocale, REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
+import { resolveDealSize, isSupportedLocale, isCurrencyCode, REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 import type { SupportedLocale } from './protocol.js';
 import { BUILTIN_FORMAT_RULES, formatNumberWithRules } from './format-rules.js';
 import {
@@ -65,11 +65,29 @@ export class UnsupportedLocaleError extends Error {
   }
 }
 
+export class InvalidCurrencyCodeError extends Error {
+  readonly code = 'CUR-01';
+  readonly currencyCode: string;
+
+  constructor(currencyCode: string) {
+    super(`This document declares malformed currency identity '${currencyCode}'. Use three uppercase ASCII letters or omit currency_code; identity is never inferred from locale or a symbol.`);
+    this.name = 'InvalidCurrencyCodeError';
+    this.currencyCode = currencyCode;
+  }
+}
+
 /** The file's display locale: absent = en-US; unregistered = refusal. */
 function resolveRenderLocale(fm: ParsedUWFile['frontmatter']): SupportedLocale {
   const declared = fm.locale;
   if (declared == null) return 'en-US';
   if (!isSupportedLocale(declared)) throw new UnsupportedLocaleError(String(declared));
+  return declared;
+}
+
+function resolveRenderCurrencyCode(fm: ParsedUWFile['frontmatter']): string | undefined {
+  const declared = fm.currency_code;
+  if (declared == null) return undefined;
+  if (!isCurrencyCode(declared)) throw new InvalidCurrencyCodeError(String(declared));
   return declared;
 }
 
@@ -208,8 +226,9 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   const validation = validateUWFile(parsed);
 
   const locale = resolveRenderLocale(fm);
+  const currencyCode = resolveRenderCurrencyCode(fm);
   const pct = (v: unknown): string => formatPercent(v, { locale });
-  const money = (v: unknown): string => formatCurrency(v, { locale });
+  const money = (v: unknown): string => formatCurrency(v, { locale, currencyCode });
   const num = (v: unknown, dec = 3): string => formatRatio(v, { decimals: dec, suffix: '', locale });
   const val = (v: unknown): string => formatValue(v);
 
@@ -372,8 +391,9 @@ function renderChat(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
   const qm = fm.quick_metrics ?? {};
 
   const locale = resolveRenderLocale(fm);
+  const currencyCode = resolveRenderCurrencyCode(fm);
   const pct = (v: unknown): string => formatPercent(v, { locale });
-  const money = (v: unknown): string => formatCurrency(v, { locale });
+  const money = (v: unknown): string => formatCurrency(v, { locale, currencyCode });
   const val = (v: unknown): string => formatValue(v);
 
   const sections: string[] = [];

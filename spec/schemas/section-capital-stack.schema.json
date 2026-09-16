@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/section-capital-stack.schema.json",
   "title": "UW Markdown Capital Stack Section",
-  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC_v1.md §4.24, RFC 0026). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase.",
+  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC_v1.md §4.24, RFC 0026, RFC 0050). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); a split preferred-equity coupon carries component rates whose sum equals `rate` (CS-02b); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase.",
   "type": "object",
   "additionalProperties": false,
   "required": ["tranches"],
@@ -70,8 +70,16 @@
           "description": "Coupon (debt) or preferred return (pref), as a fraction (0.0625 = 6.25%). Required for every debt tranche and preferred_equity; MUST NOT appear on common_equity (validator CS-02)."
         },
         "accrual": {
-          "enum": ["cash", "accrued"],
-          "description": "`cash` = current-pay, enters cash coverage; `accrued` = PIK, compounds on balance and is excluded from cash coverage. Its balance still counts toward attachment-point debt yield."
+          "enum": ["cash", "accrued", "split"],
+          "description": "`cash` = current-pay, enters cash coverage; `accrued` = PIK, compounds on balance and is excluded from cash coverage; `split` = preferred-equity cash_rate enters coverage while accrued_rate does not. A split coupon's balance still counts toward point-in-time attachment metrics."
+        },
+        "cash_rate": {
+          "type": "number",
+          "description": "Current-pay rate as a fraction. Required only for preferred-equity `split` and forbidden otherwise (RFC 0050)."
+        },
+        "accrued_rate": {
+          "type": "number",
+          "description": "Accrued/PIK rate as a fraction. Required only for preferred-equity `split` and forbidden otherwise (RFC 0050)."
         },
         "amortization_months": {
           "type": ["integer", "null"],
@@ -88,7 +96,27 @@
           "minimum": 0,
           "description": "Term to maturity in months. Debt tranches."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["accrual"],
+            "properties": { "accrual": { "const": "split" } }
+          },
+          "then": {
+            "required": ["rate", "cash_rate", "accrued_rate"],
+            "properties": { "class": { "const": "preferred_equity" } }
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["cash_rate"] },
+                { "required": ["accrued_rate"] }
+              ]
+            }
+          }
+        }
+      ]
     },
     "sizingFigure": {
       "type": "object",

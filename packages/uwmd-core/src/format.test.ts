@@ -17,6 +17,12 @@ describe('display formatters', () => {
     expect(formatCurrency(1234567, { decimals: 2, symbol: '€' })).toBe('€1,234,567.00');
   });
 
+  it('uses an explicit currency identity without inferring from locale symbols', () => {
+    expect(formatCurrency(1234567.89, { currencyCode: 'MXN' })).toBe('MXN 1,234,567.89');
+    expect(formatCurrency(1234567.89, { currencyCode: 'EUR', locale: 'de-DE' })).toBe('EUR 1.234.567,89');
+    expect(formatCurrency(1234567.89, { currencyCode: 'ABC', locale: 'en-GB' })).toBe('ABC 1,234,567.89');
+  });
+
   it('uses configured null displays for invalid numeric values', () => {
     expect(formatCurrency(Number.POSITIVE_INFINITY, { nullDisplay: '—' })).toBe('—');
     expect(formatPercent('not a number', { nullDisplay: 'missing' })).toBe('missing');

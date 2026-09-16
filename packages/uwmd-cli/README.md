@@ -38,6 +38,20 @@ uwmd <command> [args]
 | `uwmd convert <file> --to uw-json\|uw-xml\|uw-csv-bundle` | Convert Markdown, verified JSON/XML, or normalized CSV ZIP bundles |
 | `uwmd layers <file>` | Show the agent-context layer breakdown |
 
+The source checkout also implements the **unreleased** read-only command
+`uwmd verify-cash-flows <file> [--variant <name>] [--json]`. It checks stated
+dated-cash-flow metrics with the existing verifier. Exit 0 means nonempty verified
+claims, 1 means failure/input refusal, and 3 means unverifiable or no stated
+metrics. This command is not included in CLI 2.9.0. See the
+[workflow and limitations](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+
+The source checkout also implements the **unreleased** read-only command
+`uwmd inspect-property-cash-flows <file> [--json]`. It inventories exact
+lease-up variants, periods, supplemental rows and stated metric names so an
+author can prepare an RFC 0045 assembly plan without guessing the source
+shape. It never assigns cash-flow categories, dates, zeros or assertions. See
+the [workflow and limitations](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md#prepare-a-real-deal-plan-without-inventing-inputs).
+
 Run any command without arguments for usage help.
 
 ## Calculation context files (source implementation)

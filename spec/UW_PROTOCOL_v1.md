@@ -485,12 +485,29 @@ locales land via additive RFC amendments to this table.
 | `zh-CN` | `.` | `,` | `¥` prefix | `5.51%` | `YYYY-MM-DD` |
 
 NBSP is U+00A0. Currency symbols are the locale's conventional default
-symbol; **currency-code disambiguation is out of scope** (RFC 0001
-defers it to a future data-model RFC — a peso deal authored in `en-US`
-still renders `$` until monetary values carry a `currency_code`).
+symbol when `frontmatter.currency_code` is absent. When that optional field
+is present, its three-uppercase-letter identity is rendered as an explicit
+prefix (`USD 1,234.56`), while the locale continues to control numeric
+separators. Identity is never inferred from `$`, locale, address, or asset
+location; no FX conversion or currency-specific precision is performed.
 Date patterns are applied textually to the ISO source — no timezone
 arithmetic. Example (`de-DE`): `1234567.5` → `1.234.567,5 €`;
 `0.0551` → `5,51 %`; `2026-04-15` → `15.04.2026`.
+
+### III.1b Document currency identity (RFC 0046)
+
+`frontmatter.currency_code` is an optional document-level denomination
+assertion. If present it MUST match `^[A-Z]{3}$`; a malformed value emits
+`CUR-01` (error) and display renders MUST refuse it. A syntactically valid
+code is preserved as authored identity; the reference implementation does
+not perform a live ISO 4217 allocation lookup.
+
+The field applies to monetary display values and calc result display strings
+in the document. It does not alter canonical numeric storage, CSV/JSON
+interchange, Lite canonicalization, hashes, signatures, receipts, or numeric
+calculation. This first tranche supports one currency per document only;
+per-value identity, FX, and mixed-currency arithmetic require a future
+additive money representation.
 
 ### III.2 Date/time
 
@@ -555,12 +572,13 @@ capability is unconditional: every implementation owes it.
 | `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. | `validate` | typically `warning` |
 | `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
-| `CS-*` | Capital stack (§XIII). | `validate` | `warning` or `error` |
+| `CS-*` | Capital stack (§XIII); RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons. | `validate` | `warning` or `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |
 | `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
 | `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
+| `CUR-NN` | Document currency identity (§III.1b, RFC 0046). | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
@@ -2372,9 +2390,12 @@ party's dated flow list. Walk the referenced series **in row order**:
      / (gp_share − target_promote)`, floored at 0. `gp_share` of the
      payment goes to the GP, the rest to the LP.
    - `split` — paid `lp_share` / `gp_share`. A capped tier's capacity
-     is the **larger** of the capacities its stated hurdles impose
-     (both must be met before the tier ends); the final tier is
-     unbounded.
+     is governed by its stated hurdles; the final tier is unbounded.
+     When both `until_lp_em` and `until_lp_irr` are stated:
+     - if `hurdle_mode` is `"any"`, the **smaller** of the two capacities
+       governs (the tier ends when either hurdle is met; RFC 0051);
+     - if `hurdle_mode` is `"both"` or omitted, the **larger** of the two
+       capacities governs (both must be met before the tier ends).
      - `until_lp_em`: `max(0, until_lp_em × lp.contributions −
        lp.distributions) / lp_share` (unchanged from 2.3.0).
      - `until_lp_irr` (= `h`, RFC 0036): let `F` be the LP's dated
@@ -3088,9 +3109,8 @@ maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
 
 - **Combined-hurdle "any" mode and GP-side hurdles** — RFC 0036 shipped
   IRR hurdles with "both must be met" semantics (protocol 2.6.0,
-  §VIII.10 step 3); an LPA reading "until 1.5x *or* 12%, whichever
-  first" would need `hurdle_mode: "any"` (the smaller capacity), and
-  `until_gp_irr` was left out rather than reserved.
+  §VIII.10 step 3); RFC 0051 lifted `hurdle_mode: "any"` (the smaller capacity)
+  into the normative contract. `until_gp_irr` remains left out rather than reserved.
 - **Clawback / crystallization** — deferred by RFC 0035 and again by
   RFC 0036 (an IRR ladder makes it more pressing: a promote paid on an
   interim hurdle that later un-earns itself); expected to land as a

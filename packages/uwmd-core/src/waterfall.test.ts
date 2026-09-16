@@ -262,7 +262,39 @@ describe('computeWaterfall — tier mechanics', () => {
     expect(Math.round(lpPay * 100) / 100).toBe(Math.round((1_000_000 * 1.12 ** 5 - 1_000_000) * 100) / 100);
     expect(lpPay).toBeGreaterThan(500_000);
   });
-  it('the hurdle balance credits earlier tiers of the same row and earlier rows (interleaved capital call)', () => {
+  it('combined hurdles with hurdle_mode: "any" — the smaller capacity governs (RFC 0051)', () => {
+    const wfAny: DistributionWaterfall = {
+      cash_flow_ref: { variant: 'base' },
+      equity_split: { lp: 1.0, gp: 0.0 },
+      tiers: [
+        { type: 'return_of_capital' },
+        { type: 'split', lp_share: 0.8, gp_share: 0.2, until_lp_em: 1.5, until_lp_irr: 0.12, hurdle_mode: 'any' },
+        { type: 'split', lp_share: 0.6, gp_share: 0.4 },
+      ],
+    };
+    // One year: IRR hurdle balance 120,000 (cap 150,000) is SMALLER than EM headroom 500,000 (cap 625,000).
+    // Under "any", IRR binds first.
+    const oneYear = computeWaterfall(wfAny, {
+      series: [{ date: '2026-01-01', amount: -1_000_000 }, { date: '2027-01-01', amount: 3_000_000 }],
+    })!;
+    const t1 = oneYear.schedule[0]!.by_tier.find((c) => c.tier === 1)!;
+    expect({ tier: t1.tier, lp: Math.round(t1.lp * 100) / 100, gp: Math.round(t1.gp * 100) / 100 }).toEqual({ tier: 1, lp: 120_000, gp: 30_000 });
+    // Remainder: 3,000,000 - 1,000,000 (ROC) - 150,000 (tier 1) = 1,850,000 goes to tier 2 (60/40).
+    const t2 = oneYear.schedule[0]!.by_tier.find((c) => c.tier === 2)!;
+    expect({ tier: t2.tier, lp: Math.round(t2.lp * 100) / 100, gp: Math.round(t2.gp * 100) / 100 }).toEqual({ tier: 2, lp: 1_110_000, gp: 740_000 });
+    expect(Math.round(oneYear.lp.distributions * 100) / 100).toBe(2_230_000);
+    expect(Math.round(oneYear.gp.distributions * 100) / 100).toBe(770_000);
+
+    // Five years under 30/360: EM headroom 500,000 (cap 625,000) is SMALLER than IRR balance (~762,341.68).
+    // Under "any", EM binds first.
+    const fiveYears = computeWaterfall(wfAny, {
+      day_count: '30/360us',
+      series: [{ date: '2026-01-01', amount: -1_000_000 }, { date: '2031-01-01', amount: 3_000_000 }],
+    })!;
+    expect(fiveYears.schedule[0]!.by_tier.find((c) => c.tier === 1)).toEqual({ tier: 1, lp: 500_000, gp: 125_000 });
+  });
+
+    it('the hurdle balance credits earlier tiers of the same row and earlier rows (interleaved capital call)', () => {
     const series: CashFlowSeries = {
       series: [
         { date: '2026-01-01', amount: -1_000_000 },

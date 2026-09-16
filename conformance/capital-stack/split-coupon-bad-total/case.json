@@ -1,0 +1,11 @@
+{
+  "context": { "noi": 2000000 },
+  "stack": {
+    "tranches": [
+      { "id": "pref", "class": "preferred_equity", "position": 1, "amount": 4000000, "rate": 0.13, "cash_rate": 0.08, "accrued_rate": 0.04, "accrual": "split" }
+    ],
+    "sizing": [
+      { "id": "coverage", "fn": "blended_coverage", "through": 1, "value": 1.0 }
+    ]
+  }
+}

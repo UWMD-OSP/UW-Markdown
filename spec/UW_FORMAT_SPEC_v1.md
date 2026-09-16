@@ -143,6 +143,11 @@ locale: "en-US"                     # display locale (RFC 0001); absent = en-US.
                                     # unregistered value is LOC-01: display
                                     # renders are refused, never silently
                                     # produced in a different locale.
+currency_code: "USD"                # optional document monetary identity
+                                    # (RFC 0046); three uppercase ASCII letters.
+                                    # It controls currency identity only; locale
+                                    # still controls numeric separators. Absent
+                                    # preserves the locale's conventional symbol.
 
 # ── Property Identity ─────────────────────────────────────
 property_address: "string"          # * full street address
@@ -2505,7 +2510,10 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 - `position` — integer, `1` = most senior. Positions MUST be unique within the stack.
 - `amount` — the committed dollar amount.
 - `rate` — the coupon (debt) or preferred return (pref), as a fraction. REQUIRED for every debt tranche and for `preferred_equity`; MUST NOT appear on `common_equity`.
-- `accrual` — `cash` (current‑pay; enters cash coverage) or `accrued` (PIK; compounds on balance and does **not** enter cash coverage). Applies to `preferred_equity` and MAY apply to debt.
+- `accrual` — `cash` (current‑pay; enters cash coverage), `accrued` (PIK; compounds on balance and does **not** enter cash coverage), or `split` (RFC 0050; preferred-equity current-pay plus accrued components). `split` is permitted only on `preferred_equity` in Protocol 2.x.
+- `cash_rate` — fraction required only when `accrual` is `split`; the current-pay component that enters cash coverage. MUST NOT appear for another accrual mode.
+- `accrued_rate` — fraction required only when `accrual` is `split`; the accrued/PIK component that does not enter cash coverage. MUST NOT appear for another accrual mode.
+- For `accrual: "split"`, `rate` is required and MUST equal `cash_rate + accrued_rate`; disagreement is `CS-02b`.
 - `amortization_months`, `io_months`, `term_months` — debt terms, from which the tranche's own annual debt service is derived deterministically.
 
 **Normative rules (RFC 2119):**
@@ -2523,12 +2531,12 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 | `fn` | selector | recomputation |
 |---|---|---|
 | `coverage` | `over` | `noi_model.net_operating_income` ÷ that tranche's annual debt service |
-| `blended_coverage` | `through` | NOI ÷ Σ **cash-pay** debt service at or above the position (accrued/PIK excluded) |
+| `blended_coverage` | `through` | NOI ÷ Σ **cash-pay** debt service at or above the position (accrued/PIK excluded; a split preferred tranche contributes `amount × cash_rate`) |
 | `debt_yield_through` | `through` | NOI ÷ cumulative debt balance through the position — the attachment-point yield |
 | `ltc_through` / `ltv_through` | `through` | cumulative balance through the layer ÷ total cost / value |
-| `weighted_cost` | `*` | amount-weighted average `rate` across the stack |
+| `weighted_cost` | `*` | amount-weighted average `rate` across the stack; a split preferred tranche uses its full `rate`, not only `cash_rate` |
 
-An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you.
+An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you. A split preferred tranche contributes only its `cash_rate` service to coverage and its full stated rate to `weighted_cost`.
 
 ```json uw:section=capital_stack source=manual ts=ISO8601 v=1 confidence=high
 {
@@ -2695,19 +2703,19 @@ Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6
   1. `return_of_capital` — pro-rata by unreturned contributed capital.
   2. `preferred_return` — `{ "rate": 0.09, "accrual": "simple" | "compound_annual" }`: accrues on each party's unreturned capital pari passu; paid pro-rata by accrued balance. `rate` is a fraction in (0, 1).
   3. `catch_up` — `{ "gp_share": 1.0, "target_promote": 0.20 }`: `gp_share` of this tier's cash goes to the GP until GP cumulative **profit** reaches `target_promote` of total profit distributed. Profit means distributions above returned capital; **pref receipts count as profit** (Protocol § VIII.10 — excluding them would give a catch-up that follows the pref tier capacity zero forever). `gp_share` MUST exceed `target_promote` (otherwise the tier can never fill — a grammar refusal, not a runtime case).
-  4. `split` — `{ "lp_share": 0.80, "gp_share": 0.20, "until_lp_em": 1.5, "until_lp_irr": 0.12 }`: residual split; `lp_share + gp_share` MUST sum to 1.0 (ratio quantum). The optional `until_lp_em` (> 0) caps the tier where cumulative LP distributions reach that multiple of LP contributions to date. The optional `until_lp_irr` (a fraction in (0, 1)) caps the tier where the LP's dated flows — every contribution and distribution to date, including this tier's payment at this row's date — reach that internal rate of return under the series' day count (Protocol § VIII.10, the **hurdle balance**: closed-form, never a nested solve). `until_lp_em` and `until_lp_irr` MAY both be stated on one tier; the tier then ends only when **both** hurdles are met (the larger capacity governs). A capped split MUST have `lp_share > 0` whichever hurdle caps it (a cap on a tier that pays the LP nothing can never bind). The final tier MUST be a `split` uncapped by either field. Across the ladder, successive stated `until_lp_irr` values MUST strictly increase, as MUST successive stated `until_lp_em` values (a later tier hurdled at or below an earlier one has capacity zero by construction and would pay nothing, silently).
+  4. `split` — `{ "lp_share": 0.80, "gp_share": 0.20, "until_lp_em": 1.5, "until_lp_irr": 0.12 }`: residual split; `lp_share + gp_share` MUST sum to 1.0 (ratio quantum). The optional `until_lp_em` (> 0) caps the tier where cumulative LP distributions reach that multiple of LP contributions to date. The optional `until_lp_irr` (a fraction in (0, 1)) caps the tier where the LP's dated flows — every contribution and distribution to date, including this tier's payment at this row's date — reach that internal rate of return under the series' day count (Protocol § VIII.10, the **hurdle balance**: closed-form, never a nested solve). `until_lp_em` and `until_lp_irr` MAY both be stated on one tier; the tier then ends only when **both** hurdles are met (the larger capacity governs) unless `hurdle_mode: "any"` is specified (the smaller capacity governs; RFC 0051). Stating `hurdle_mode` on a tier that does not state both hurdles is an error (`WF-01`). A capped split MUST have `lp_share > 0` whichever hurdle caps it (a cap on a tier that pays the LP nothing can never bind). The final tier MUST be a `split` uncapped by either field. Across the ladder, successive stated `until_lp_irr` values MUST strictly increase, as MUST successive stated `until_lp_em` values (a later tier hurdled at or below an earlier one has capacity zero by construction and would pay nothing, silently).
 - `stated_outcomes` — the headline claims, all optional, each verified when present: `lp` / `gp` objects with `contributions`, `distributions`, `moic`, `xirr`; plus `promote_total` and `profit_total`.
 - `stated_schedule` — optional: one entry per distribution date — `{ "date": "YYYY-MM-DD", "by_tier": [{ "tier": 0, "lp": 118475.0, "gp": 13163.9 }] }`, tier indexes into `tiers`. When present it MUST match the recomputed allocation cell-for-cell (an absent cell reads as 0); when absent only `stated_outcomes` are checked. Either way the verifier recomputes the full allocation — the schedule is display detail, not the source of truth.
 
 **Normative rules (RFC 2119):**
 
 - The section is OPTIONAL; no pipeline stage requires it (`STAGE_CONTRACT` untouched).
-- **Ladder grammar (`WF-01`, error).** As above: closed types, singleton and ordering rules, a terminal `split` uncapped by either hurdle, shares in [0, 1] with the stated sums, `rate` in (0, 1), `until_lp_em` > 0, `until_lp_irr` in (0, 1), capped splits paying the LP, successive hurdles of one kind strictly increasing (compared at the ratio / rate quantum respectively), `gp_share > target_promote`, and `equity_split` summing to 1.0.
+- **Ladder grammar (`WF-01`, error).** As above: closed types, singleton and ordering rules, a terminal `split` uncapped by either hurdle, shares in [0, 1] with the stated sums, `rate` in (0, 1), `until_lp_em` > 0, `until_lp_irr` in (0, 1), capped splits paying the LP, `hurdle_mode` in ["both", "any"] only when both hurdles are stated, successive hurdles of one kind strictly increasing (compared at the ratio / rate quantum respectively), `gp_share > target_promote`, and `equity_split` summing to 1.0.
 - **The reference must resolve (`WF-02`, error).** `cash_flow_ref.variant` MUST name a variant present in the document's `cash_flow_series`. A waterfall without its cash vector is not reviewable.
 - **A waterfall needs capital (`WF-03`, error).** The referenced series MUST contain at least one negative amount; over pure inflows every tier is vacuous.
 - **Stated figures are verified, never trusted.** `verifyWaterfall` recomputes by Protocol § VIII.10, three-state, both sides quantized at the § VIII.9.4 quanta (`$` → 2, `x` → 4, `%` → 6): outcomes and schedule cells against the recomputed allocation; a stated `xirr` whose recomputation raises (§ VIII.9.3 refusal — e.g. a zero-contribution party) is `failed`; a `moic` over zero contributions is `unverifiable`; an unresolvable or structurally invalid referenced series makes every stated figure `unverifiable`, never a guess.
 
-**Deliberately deferred (RFC 0035, RFC 0036).** Clawback/crystallization, n-party splits, Excel emit (the § 4.26 literals posture), a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche), an "any" mode for combined hurdles (`hurdle_mode: "any"` — the smaller capacity — is the name RFC 0036 proposes so a later RFC does not invent another), and GP-side hurdles.
+**Deliberately deferred (RFC 0035, RFC 0036, RFC 0051).** Clawback/crystallization, n-party splits, Excel emit (the § 4.26 literals posture), a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche), and GP-side hurdles (RFC 0051 lifted `hurdle_mode: "any"` into the normative contract).
 
 ---
 

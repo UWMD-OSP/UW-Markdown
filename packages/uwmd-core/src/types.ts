@@ -455,6 +455,8 @@ export interface UWFrontmatter {
    * locale-free. An unregistered value is LOC-01 and refuses display renders.
    */
   locale?: string;
+  /** Optional document-level monetary denomination (RFC 0046). */
+  currency_code?: string;
   asset_subtype?: string | null;
   loan_type?: string | null;
   scenario?: string | null;

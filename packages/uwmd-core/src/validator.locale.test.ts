@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
-import { render, UnsupportedLocaleError } from './renderer.js';
+import { render, InvalidCurrencyCodeError, UnsupportedLocaleError } from './renderer.js';
 import { SUPPORTED_LOCALES } from './protocol.js';
 
 function doc(localeLine: string): string {
@@ -27,6 +27,10 @@ ${localeLine}
 
 function locIssues(content: string) {
   return validateUWFile(parseUWFile(content)).issues.filter((i) => i.code.startsWith('LOC-'));
+}
+
+function curIssues(content: string) {
+  return validateUWFile(parseUWFile(content)).issues.filter((i) => i.code.startsWith('CUR-'));
 }
 
 describe('LOC-01', () => {
@@ -59,6 +63,26 @@ describe('the display-only boundary', () => {
   it('still produces the machine renders — json and csv are not display', () => {
     expect(render(parsed, { format: 'json' }).content.length).toBeGreaterThan(0);
     expect(render(parsed, { format: 'csv' }).content.length).toBeGreaterThan(0);
+  });
+});
+
+describe('CUR-01 and document currency identity', () => {
+  it('keeps absent identity compatible and renders explicit identity across locales', () => {
+    const legacy = render(parseUWFile(doc('status: draft').replace(
+      'asset_class: office', 'asset_class: office\nquick_metrics:\n  purchase_price: 8200000',
+    )), { format: 'summary' }).content;
+    const explicit = render(parseUWFile(doc('locale: de-DE\ncurrency_code: MXN').replace(
+      'asset_class: office', 'asset_class: office\nquick_metrics:\n  purchase_price: 8200000',
+    )), { format: 'summary' }).content;
+    expect(legacy).toContain('$8,200,000');
+    expect(explicit).toContain('MXN 8.200.000');
+    expect(curIssues(doc('currency_code: MXN'))).toEqual([]);
+  });
+
+  it('reports malformed identity and refuses display renders', () => {
+    const file = doc('currency_code: usd');
+    expect(curIssues(file).map((i) => i.code)).toEqual(['CUR-01']);
+    expect(() => render(parseUWFile(file), { format: 'summary' })).toThrow(InvalidCurrencyCodeError);
   });
 });
 
