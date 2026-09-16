@@ -95,6 +95,31 @@ rate. Negative fixtures must emit `CS-02b` or
 `CS-SIZING-DISAGREES` as specified, and the schema, validator, and executable
 verifier must agree on the accepted shape.
 
+## Alternatives considered
+
+- **Two tranches sharing one position** (`pref_cash` + `pref_pik`): violates
+  position uniqueness or misstates seniority, and double-counts capital in
+  attachment metrics and `sources_uses`. Worse on every axis.
+- **`accrual: "accrued"` with a `cash_rate` side-field only**: fewer fields, but
+  `rate` would then mean "the accrued part" for some tranches and "the total"
+  for others, and a reader could not tell which without this RFC. Keeping `rate`
+  as the total is the compatibility property worth paying two fields for.
+- **Encoding the pref in the waterfall section instead**: LP/GP distribution
+  lives in the waterfall, but the capital stack is where coverage and attachment
+  are stated and verified, and a pref that pays cash affects coverage. It
+  belongs in §4.24.
+
+## Prior art
+
+- RFC 0033 established that the capital stack is one point in time; this extends
+  that section.
+- The §4.24 worked example already says the pref tranche is `accrued`, so it is
+  excluded from `combined_dscr`. The per-part rule here is that sentence applied
+  to half a tranche.
+- ARGUS Enterprise and most institutional models carry current-pay and accrued
+  as two rates on one preferred-equity line. Matching that convention means
+  producers do not have to split principal to describe a common instrument.
+
 ## Deferred follow-ups
 
 Debt split/PIK toggles, accrued compounding frequency, multi-period accrued
