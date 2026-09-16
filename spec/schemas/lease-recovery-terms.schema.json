@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/lease-recovery-terms.schema.json",
+  "title": "lease-recovery-terms",
+  "description": "RFC 0058 / format 4.3. Shape only; the method-input pairing, the pool membership and the cap-accumulation requirement are semantic checks (REC-01..REC-03).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "method"
+  ],
+  "properties": {
+    "method": {
+      "enum": [
+        "net",
+        "base_year_stop",
+        "fixed_stop",
+        "fixed_amount",
+        "none"
+      ]
+    },
+    "pro_rata_share": {
+      "description": "Fraction in (0,1]. 0.0412 is 4.12%.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "share_basis": {
+      "enum": [
+        "nra",
+        "gla",
+        "stated",
+        null
+      ]
+    },
+    "base_year": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "expense_stop_per_sqft": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "fixed_recovery_annual": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "admin_fee_pct": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "gross_up_pct": {
+      "description": "The occupancy the pool was grossed up TO. Recorded, never applied.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0,
+      "maximum": 1
+    },
+    "recoverable_pool": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "cap": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "pct": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "over": {
+          "enum": [
+            "base_year",
+            "prior_year",
+            null
+          ]
+        },
+        "accumulation": {
+          "description": "No default: the three treatments disagree.",
+          "enum": [
+            "cumulative",
+            "non_cumulative",
+            "compounding",
+            null
+          ]
+        }
+      }
+    }
+  }
+}

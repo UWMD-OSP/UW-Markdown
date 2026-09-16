@@ -990,6 +990,35 @@ Field notes:
       "guarantee_type": "personal | corporate | both | null",
       "anchor_tenant": false,
       "cam_cap_pct": null,
+      "recovery_terms": {
+        "method": "net | base_year_stop | fixed_stop | fixed_amount | none",
+        "pro_rata_share": 0.0412,
+        "share_basis": "nra | gla | stated | null",
+        "base_year": null,
+        "expense_stop_per_sqft": null,
+        "fixed_recovery_annual": null,
+        "admin_fee_pct": null,
+        "gross_up_pct": null,
+        "recoverable_pool": ["real_estate_taxes", "insurance", "contract_services"],
+        "cap": {
+          "pct": 0.05,
+          "over": "base_year | prior_year",
+          "accumulation": "cumulative | non_cumulative | compounding"
+        }
+      },
+      "recovery_true_up": [
+        {
+          "period_start": "YYYY-MM-DD",
+          "period_end": "YYYY-MM-DD",
+          "pool_actual": 0.0,
+          "tenant_share_uncapped": 0.0,
+          "tenant_share_capped": 0.0,
+          "estimated_billed": 0.0,
+          "true_up_amount": 0.0,
+          "settlement": "billed | credited | disputed | unsettled",
+          "cash_flow_ref": null
+        }
+      ],
       "tenant_credit": "investment_grade | non_investment_grade | private | individual | null",
       "status": "occupied | vacant | holdover | dark | pending | null",
       "notes": null
@@ -1012,6 +1041,52 @@ Field notes:
   ]
 }
 ```
+
+**Expense recoveries and the CAM true-up (RFC 0058).** `recovery_terms` and
+`recovery_true_up` are OPTIONAL. A tenant stating neither is unchanged, and the
+legacy `cam_cap_pct` keeps working. Like the RFC 0055 clauses these are
+**attributes of a lease** plus a reconciliation of a **closed** period — not a
+periodic ledger, which RFC 0054 placed behind a named consumer.
+
+Two figures are deliberately **stated, not recomputed**. The capped amount,
+because a `cumulative` or `compounding` cap depends on a base-year history no
+single document carries — recomputing it from one year would produce a confident
+wrong number, so `REC-07` checks only the direction a cap can move. And the
+allocation of a pool across tenants, because that needs a policy for vacant space
+and is a modeling decision, not a recorded fact; each tenant states its own share.
+
+- `REC-01` — `pro_rata_share` is a fraction in `(0,1]` and `cap.pct` a fraction
+  in `(0,1)`. `0.0412` is 4.12%. A share stated as a percent multiplies every
+  recovery by a hundred, which is why this is an error and not a warning.
+- `REC-02` — the `method` vocabulary is closed, and `base_year_stop`,
+  `fixed_stop` and `fixed_amount` each REQUIRE their input (`base_year`,
+  `expense_stop_per_sqft`, `fixed_recovery_annual`). A stated `cap.pct` REQUIRES
+  `cap.accumulation`: there is **no default**, because `cumulative`,
+  `non_cumulative` and `compounding` diverge materially inside three years.
+- `REC-03` — every `recoverable_pool` entry names a § 4.4
+  `operating_statement.expenses` key. `total_operating_expenses` (a total),
+  `management_fee_pct_egi` (a ratio), `capital_expenditures_actual` and
+  `replacement_reserves` (capital, not operating) are not members. A pool naming
+  a nonexistent expense recovers zero without saying so.
+- `REC-04` — a true-up row states `period_start` and `period_end` as real dates
+  with the end on or after the start, and any `settlement` from the closed
+  vocabulary.
+- `REC-05` — `period_end` is strictly before the rent roll's `as_of_date`. A
+  reconciliation of an open period is a forecast, and this section carries
+  settled facts. The check is anchored on `as_of_date` and **skipped when it is
+  absent** — never on file metadata, which is an edit timestamp and would refuse
+  a legitimately re-saved document.
+- `REC-06` — `tenant_share_uncapped` equals `pool_actual × pro_rata_share` at
+  the currency quantum, when all three are present.
+- `REC-07` — `tenant_share_capped` does not exceed `tenant_share_uncapped`.
+- `REC-08` — `true_up_amount` equals `tenant_share_capped − estimated_billed` at
+  the currency quantum. A negative amount is a credit the tenant is owed.
+- `REC-10` — a **warning** when `cam_cap_pct` sits beside `recovery_terms.cap`.
+  The legacy field is superseded, not removed; stating both lets them drift.
+
+Nothing here is projected: no future recovery is forecast, no pool is grossed up
+from occupancy, and `gross_up_pct` records the occupancy a pool was grossed up
+to rather than performing the gross-up.
 
 **Lease clauses (RFC 0055).** `escalation_schedule`, `termination_option`,
 `co_tenancy_details`, `lc_original` and `lc_outstanding_balance` are OPTIONAL. A

@@ -30,6 +30,8 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
 | [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |
+| [`lease-recovery-terms.schema.json`](lease-recovery-terms.schema.json) | commercial tenant expense-recovery terms | Format §4.3 / RFC 0058 |
+| [`lease-recovery-true-up.schema.json`](lease-recovery-true-up.schema.json) | closed-period CAM reconciliation rows | Format §4.3 / RFC 0058 |
 | [`lease-termination-option.schema.json`](lease-termination-option.schema.json) | commercial tenant break option | Format §4.3 / RFC 0055 |
 | [`lease-co-tenancy.schema.json`](lease-co-tenancy.schema.json) | commercial tenant co-tenancy trigger and remedy | Format §4.3 / RFC 0055 |
 | [`tax-reassessment.schema.json`](tax-reassessment.schema.json) | `noi_model` reassessment basis (going-in) | Format §4.5 / RFC 0053 |

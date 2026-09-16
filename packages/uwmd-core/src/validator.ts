@@ -1242,11 +1242,246 @@ function checkLeasingCapital(
   }
 }
 
+// ─── §4.3 Expense recoveries and the CAM true-up (RFC 0058) ──────────────────
+//
+// Recovery income is the second-largest line in most commercial deals, and the
+// tenant record carried a lease type and one orphan `cam_cap_pct`. These rules
+// type the terms and check the one piece of arithmetic genuinely knowable from
+// a single document: a closed period's reconciliation.
+//
+// Two things are deliberately NOT recomputed. The cap amount, because a
+// cumulative or compounding cap depends on a base-year history no single
+// document carries — REC-07 checks the direction instead, which is the honest
+// half. And the pool allocation across tenants, because that is a modeling
+// decision with a policy for vacant space, not a recorded fact; each tenant
+// states its own share.
+
+/** Recovery methods. Closed — a producer meaning something else states `none`. */
+export const RECOVERY_METHODS = Object.freeze([
+  'net', 'base_year_stop', 'fixed_stop', 'fixed_amount', 'none',
+] as const);
+
+/**
+ * The §4.4 `operating_statement.expenses` keys a pool may draw from.
+ *
+ * Deliberately excludes `management_fee_pct_egi` (a ratio, not an expense),
+ * `capital_expenditures_actual` and `replacement_reserves` (capital, not
+ * operating), and `total_operating_expenses` (a total — naming it would double
+ * every member beside it).
+ */
+export const RECOVERABLE_EXPENSE_KEYS = Object.freeze([
+  'real_estate_taxes', 'insurance', 'management_fees', 'payroll_benefits',
+  'utilities', 'repairs_maintenance', 'contract_services',
+  'marketing_advertising', 'administrative', 'professional_fees',
+  'other_expenses',
+] as const);
+
+export const RECOVERY_CAP_ACCUMULATIONS = Object.freeze([
+  'cumulative', 'non_cumulative', 'compounding',
+] as const);
+
+export const RECOVERY_SETTLEMENTS = Object.freeze([
+  'billed', 'credited', 'disputed', 'unsettled',
+] as const);
+
+/** Currency quantum, matching every sibling verifier's reporting boundary. */
+const RECOVERY_DP = 2;
+
+function recIssue(
+  issues: ValidationMessage[], code: string, field: string, message: string,
+  value?: unknown, severity: 'error' | 'warning' = 'error',
+): void {
+  issues.push({
+    code, severity, section: 'rent_roll', field, message,
+    ...(value !== undefined ? { value } : {}),
+  });
+}
+
+function roundRec(value: number): number {
+  const f = 10 ** RECOVERY_DP;
+  const scaled = value * f;
+  return (scaled < 0 ? -Math.round(-scaled) : Math.round(scaled)) / f;
+}
+
+function checkRecoveryTerms(
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+): number | null {
+  const raw = t['recovery_terms'];
+  if (raw == null) return null;
+  const p = `${at}.recovery_terms`;
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    recIssue(issues, 'REC-02', p, 'REC-02: recovery_terms must be an object stating a method', raw);
+    return null;
+  }
+  const terms = raw as Record<string, unknown>;
+
+  // REC-01: the share is a fraction, not a percent. 4.12 instead of 0.0412 is
+  // the single most consequential typo available here — it multiplies every
+  // recovery by a hundred.
+  const share = terms['pro_rata_share'];
+  let shareValue: number | null = null;
+  if (share != null) {
+    if (!(leaseNum(share) && share > 0 && share <= 1)) {
+      recIssue(issues, 'REC-01', `${p}.pro_rata_share`,
+        'REC-01: pro_rata_share must be a fraction in (0,1] — 0.0412 is 4.12%, not 4.12', share);
+    } else {
+      shareValue = share;
+    }
+  }
+
+  // REC-02: a method without the input it needs.
+  const method = terms['method'];
+  if (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method)) {
+    recIssue(issues, 'REC-02', `${p}.method`,
+      `REC-02: method must be one of ${RECOVERY_METHODS.join(', ')} — the vocabulary is closed`, method);
+  } else {
+    const REQUIRED: Record<string, string> = {
+      base_year_stop: 'base_year',
+      fixed_stop: 'expense_stop_per_sqft',
+      fixed_amount: 'fixed_recovery_annual',
+    };
+    const needs = REQUIRED[method];
+    if (needs && terms[needs] == null) {
+      recIssue(issues, 'REC-02', `${p}.${needs}`,
+        `REC-02: method "${method}" requires ${needs}; without it the method states nothing`);
+    }
+  }
+
+  // REC-03: a pool entry that names nothing recovers nothing, silently.
+  const pool = terms['recoverable_pool'];
+  if (pool != null) {
+    if (!Array.isArray(pool) || pool.length === 0) {
+      recIssue(issues, 'REC-03', `${p}.recoverable_pool`,
+        'REC-03: recoverable_pool must be a nonempty array of operating-statement expense keys', pool);
+    } else {
+      for (const [j, entry] of pool.entries()) {
+        if (typeof entry !== 'string' || !(RECOVERABLE_EXPENSE_KEYS as readonly string[]).includes(entry)) {
+          recIssue(issues, 'REC-03', `${p}.recoverable_pool[${j}]`,
+            `REC-03: ${JSON.stringify(entry)} is not a recoverable operating_statement.expenses key — a pool naming a nonexistent expense recovers zero without saying so`, entry);
+        }
+      }
+    }
+  }
+
+  // The cap. Accumulation has no default: the three treatments diverge
+  // materially within three years, so a silent choice is a wrong number.
+  const cap = terms['cap'];
+  if (cap != null) {
+    const cp = `${p}.cap`;
+    if (typeof cap !== 'object' || Array.isArray(cap)) {
+      recIssue(issues, 'REC-02', cp, 'REC-02: cap must be an object', cap);
+    } else {
+      const c = cap as Record<string, unknown>;
+      const pct = c['pct'];
+      if (pct != null && !(leaseNum(pct) && pct > 0 && pct < 1)) {
+        recIssue(issues, 'REC-01', `${cp}.pct`,
+          'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
+      }
+      if (pct != null) {
+        const acc = c['accumulation'];
+        if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
+          recIssue(issues, 'REC-02', `${cp}.accumulation`,
+            `REC-02: a stated cap.pct requires cap.accumulation (${RECOVERY_CAP_ACCUMULATIONS.join(' | ')}) — there is no default, because the three disagree`, acc);
+        }
+      }
+    }
+  }
+
+  // REC-10: the legacy field and the typed cap can contradict each other.
+  if (t['cam_cap_pct'] != null && cap != null) {
+    recIssue(issues, 'REC-10', `${at}.cam_cap_pct`,
+      'REC-10: cam_cap_pct is superseded by recovery_terms.cap; stating both lets the two drift apart',
+      t['cam_cap_pct'], 'warning');
+  }
+  return shareValue;
+}
+
+function checkRecoveryTrueUp(
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+  share: number | null, asOf: string | null,
+): void {
+  const rows = t['recovery_true_up'];
+  if (rows == null) return;
+  if (!Array.isArray(rows)) {
+    recIssue(issues, 'REC-04', `${at}.recovery_true_up`,
+      'REC-04: recovery_true_up must be an array of reconciliation rows', rows);
+    return;
+  }
+  for (const [j, raw] of rows.entries()) {
+    const p = `${at}.recovery_true_up[${j}]`;
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+      recIssue(issues, 'REC-04', p, 'REC-04: each true-up entry must be an object', raw);
+      continue;
+    }
+    const row = raw as Record<string, unknown>;
+    const start = row['period_start'];
+    const end = row['period_end'];
+    if (!isDate(start) || !isDate(end)) {
+      recIssue(issues, 'REC-04', `${p}.period_start`,
+        'REC-04: a true-up states period_start and period_end as YYYY-MM-DD dates');
+      continue;
+    }
+    if (end < start) {
+      recIssue(issues, 'REC-04', `${p}.period_end`,
+        `REC-04: period_end (${end}) precedes period_start (${start})`, end);
+      continue;
+    }
+
+    // REC-05: a reconciliation of a period that has not ended is a forecast.
+    // Anchored on the rent roll's own as_of_date — never on file metadata,
+    // which is an edit timestamp and would refuse a legitimately re-saved
+    // document. Skipped when the rent roll states no date.
+    if (asOf !== null && !(end < asOf)) {
+      recIssue(issues, 'REC-05', `${p}.period_end`,
+        `REC-05: the true-up period ends ${end}, on or after the rent roll as_of_date ${asOf} — a reconciliation of an open period is a forecast, and this section carries settled facts`, end);
+    }
+
+    const poolActual = row['pool_actual'];
+    const uncapped = row['tenant_share_uncapped'];
+    const capped = row['tenant_share_capped'];
+    const billed = row['estimated_billed'];
+    const trueUp = row['true_up_amount'];
+
+    // REC-06: the one product a single document can check.
+    if (leaseNum(poolActual) && share !== null && leaseNum(uncapped)) {
+      const want = roundRec(poolActual * share);
+      if (roundRec(uncapped) !== want) {
+        recIssue(issues, 'REC-06', `${p}.tenant_share_uncapped`,
+          `REC-06: tenant_share_uncapped states ${uncapped} but pool_actual x pro_rata_share is ${want}`, uncapped);
+      }
+    }
+
+    // REC-07: the cap can only reduce. The capped amount itself is stated,
+    // not recomputed — see the section note.
+    if (leaseNum(uncapped) && leaseNum(capped) && roundRec(capped) > roundRec(uncapped)) {
+      recIssue(issues, 'REC-07', `${p}.tenant_share_capped`,
+        `REC-07: tenant_share_capped (${capped}) exceeds tenant_share_uncapped (${uncapped}) — a cap cannot increase a recovery`, capped);
+    }
+
+    // REC-08: the subtraction the whole row exists to record.
+    if (leaseNum(capped) && leaseNum(billed) && leaseNum(trueUp)) {
+      const want = roundRec(capped - billed);
+      if (roundRec(trueUp) !== want) {
+        recIssue(issues, 'REC-08', `${p}.true_up_amount`,
+          `REC-08: true_up_amount states ${trueUp} but tenant_share_capped less estimated_billed is ${want}`, trueUp);
+      }
+    }
+
+    const settlement = row['settlement'];
+    if (settlement != null && !(typeof settlement === 'string' && (RECOVERY_SETTLEMENTS as readonly string[]).includes(settlement))) {
+      recIssue(issues, 'REC-04', `${p}.settlement`,
+        `REC-04: settlement must be one of ${RECOVERY_SETTLEMENTS.join(', ')}`, settlement);
+    }
+  }
+}
+
 function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const block = resolveCrossCheckSection(parsed, 'rent_roll').block;
   if (!block) return;
   const tenants = deepGet(block.content, 'tenants');
   if (!Array.isArray(tenants)) return;
+  const rawAsOf = deepGet(block.content, 'as_of_date');
+  const asOf = isDate(rawAsOf) ? rawAsOf : null;
   for (const [i, raw] of tenants.entries()) {
     if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
     const t = raw as Record<string, unknown>;
@@ -1255,6 +1490,8 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     checkTerminationOption(t, issues, at);
     checkCoTenancy(t, issues, at);
     checkLeasingCapital(t, issues, at);
+    const share = checkRecoveryTerms(t, issues, at);
+    checkRecoveryTrueUp(t, issues, at, share, asOf);
   }
 }
 
