@@ -142,6 +142,7 @@ export function validateUWFile(
   checkReturnsTaxBasis(parsed, issues);
   checkTaxBasis(parsed, issues);
   checkLeaseClauses(parsed, issues);
+  checkHedgesAndEscrows(parsed, issues);
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
@@ -1253,6 +1254,269 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     checkTerminationOption(t, issues, at);
     checkCoTenancy(t, issues, at);
     checkLeasingCapital(t, issues, at);
+  }
+}
+
+// ─── §4.7 / §4.8 Rate hedges and escrows (RFC 0056) ──────────────────────────
+//
+// A cap's strike, notional and term are stated, never priced. Nothing values
+// the instrument, projects a strike crossing or rolls an escrow balance
+// forward — that needs a forward curve, which this contract does not fetch.
+// The one thing these rules insist on is that the author answer what happens
+// when the cap expires, and that a stated replacement is a funded line.
+
+/** The only instrument this contract types. Closed. */
+export const HEDGE_INSTRUMENTS = Object.freeze(['rate_cap'] as const);
+
+/**
+ * Named, refused, and left for a mark-to-market contract. Both can be worth
+ * less than zero; a cap cannot. Typing them as caps would make the capital
+ * stack wrong in the one case that matters.
+ */
+export const RESERVED_HEDGE_INSTRUMENTS = Object.freeze([
+  'rate_swap', 'rate_collar',
+] as const);
+
+/** The `rate_index` vocabulary minus `fixed`, which a cap is not struck against. */
+export const HEDGE_INDEXES = Object.freeze([
+  'sofr', 'prime', 'treasury_5yr', 'treasury_10yr',
+] as const);
+
+/** What the author says happens in the month after the cap expires. No default. */
+export const HEDGE_EXPIRY_ASSUMPTIONS = Object.freeze([
+  'replace', 'unhedged', 'loan_matures_first',
+] as const);
+
+/** Closed, with a label-bearing `other` — the RFC 0052 shape. */
+export const ESCROW_NAMES = Object.freeze([
+  'tax', 'insurance', 'replacement_reserve', 'ti_lc',
+  'interest', 'operating', 'rate_cap_replacement', 'other',
+] as const);
+
+export type HedgeInstrument = (typeof HEDGE_INSTRUMENTS)[number];
+export type HedgeExpiryAssumption = (typeof HEDGE_EXPIRY_ASSUMPTIONS)[number];
+export type EscrowName = (typeof ESCROW_NAMES)[number];
+
+function hedgeIssue(
+  issues: ValidationMessage[], code: string, section: string, field: string, message: string, value?: unknown,
+): void {
+  issues.push({ code, severity: 'error', section, field, message, ...(value !== undefined ? { value } : {}) });
+}
+
+/** The §4.7 hedge object: shape, the rate_type gate, and the legacy agreement. */
+function checkRateHedge(
+  h: Record<string, unknown>, rateType: unknown, legacyCapPct: unknown,
+  issues: ValidationMessage[],
+): void {
+  const at = 'rate_hedge';
+  const inst = h['instrument'];
+  // HDG-02 before HDG-01: a reserved name earns its own message, not "unknown".
+  if (typeof inst === 'string' && (RESERVED_HEDGE_INSTRUMENTS as readonly string[]).includes(inst)) {
+    hedgeIssue(issues, 'HDG-02', 'debt_structure', `${at}.instrument`,
+      `HDG-02: ${inst} is reserved for a later mark-to-market contract and is refused here — its value moves with the curve and can be negative, which a cap's cannot`,
+      inst);
+  } else if (typeof inst !== 'string' || !(HEDGE_INSTRUMENTS as readonly string[]).includes(inst)) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.instrument`,
+      `HDG-01: instrument must be one of ${HEDGE_INSTRUMENTS.join(', ')}`, inst);
+  }
+
+  const notional = h['notional'];
+  if (!finiteNum(notional) || notional < 0) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.notional`,
+      'HDG-01: notional must be a finite nonnegative amount', notional);
+  }
+
+  // A fraction, not a percent — a strike of 3.5 is 350%, which is the mistake
+  // this bound exists to catch.
+  const strike = h['strike_rate'];
+  if (!finiteNum(strike) || strike <= 0 || strike >= 1) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.strike_rate`,
+      'HDG-01: strike_rate must be a fraction in (0, 1) — 0.035 is 3.5%', strike);
+  }
+
+  const index = h['index'];
+  if (typeof index !== 'string' || !(HEDGE_INDEXES as readonly string[]).includes(index)) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.index`,
+      `HDG-01: index must be one of ${HEDGE_INDEXES.join(', ')}`, index);
+  }
+
+  const eff = h['effective_date'];
+  const exp = h['expiration_date'];
+  if (!isDate(eff)) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.effective_date`,
+      'HDG-01: effective_date must be a real YYYY-MM-DD date', eff);
+  }
+  if (!isDate(exp)) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.expiration_date`,
+      'HDG-01: expiration_date must be a real YYYY-MM-DD date', exp);
+  } else if (isDate(eff) && exp <= eff) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.expiration_date`,
+      `HDG-01: expiration_date ${exp} must be strictly after effective_date ${eff}`, exp);
+  }
+
+  const premium = h['premium'];
+  if (premium !== undefined && premium !== null && (!finiteNum(premium) || premium < 0)) {
+    hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.premium`,
+      'HDG-01: premium must be a finite nonnegative amount, or null for genuinely none', premium);
+  }
+
+  // HDG-03: a fixed-rate loan does not carry a rate cap.
+  if (rateType !== 'floating' && rateType !== 'hybrid') {
+    hedgeIssue(issues, 'HDG-03', 'debt_structure', 'rate_type',
+      `HDG-03: a stated rate_hedge requires rate_type "floating" or "hybrid" (found ${JSON.stringify(rateType)})`,
+      rateType);
+  }
+
+  // HDG-04: the legacy scalar has to agree with the typed body.
+  if (finiteNum(legacyCapPct) && finiteNum(strike) && legacyCapPct !== strike) {
+    hedgeIssue(issues, 'HDG-04', 'debt_structure', 'rate_cap_pct',
+      `HDG-04: rate_cap_pct ${legacyCapPct} disagrees with rate_hedge.strike_rate ${strike}`, legacyCapPct);
+  }
+
+  // HDG-06: no default. A cap's expiry is the fact the reader came for, and
+  // "unstated" is the answer that hides the cliff.
+  const after = h['post_expiration_assumption'];
+  if (typeof after !== 'string' || !(HEDGE_EXPIRY_ASSUMPTIONS as readonly string[]).includes(after)) {
+    hedgeIssue(issues, 'HDG-06', 'debt_structure', `${at}.post_expiration_assumption`,
+      `HDG-06: post_expiration_assumption must be stated as one of ${HEDGE_EXPIRY_ASSUMPTIONS.join(', ')}`,
+      after);
+  }
+}
+
+/** The §4.8 escrow array. Returns the set of names it managed to read. */
+function checkEscrows(
+  escrows: unknown, uses: Record<string, unknown>, issues: ValidationMessage[],
+): Set<string> {
+  const seen = new Set<string>();
+  const at = 'uses.escrows';
+  if (!Array.isArray(escrows) || escrows.length === 0) {
+    hedgeIssue(issues, 'ESC-01', 'sources_uses', at,
+      'ESC-01: escrows must be a nonempty array when stated');
+    return seen;
+  }
+  const labels = new Set<string>();
+  const upfrontByName = new Map<string, number>();
+  for (const [i, raw] of escrows.entries()) {
+    const p = `${at}[${i}]`;
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+      hedgeIssue(issues, 'ESC-01', 'sources_uses', p, 'ESC-01: each escrow must be an object');
+      continue;
+    }
+    const e = raw as Record<string, unknown>;
+    const name = e['name'];
+    if (typeof name !== 'string' || !(ESCROW_NAMES as readonly string[]).includes(name)) {
+      hedgeIssue(issues, 'ESC-01', 'sources_uses', `${p}.name`,
+        `ESC-01: escrow name must be one of ${ESCROW_NAMES.join(', ')}`, name);
+      continue;
+    }
+
+    const label = e['label'];
+    if (name === 'other') {
+      // ESC-02: `other` says nothing until the label says what it is.
+      if (typeof label !== 'string' || label.trim().length === 0) {
+        hedgeIssue(issues, 'ESC-02', 'sources_uses', `${p}.label`,
+          'ESC-02: an "other" escrow requires a nonempty label', label);
+      } else if (labels.has(label.trim())) {
+        hedgeIssue(issues, 'ESC-02', 'sources_uses', `${p}.label`,
+          `ESC-02: duplicate "other" escrow label ${JSON.stringify(label.trim())}`, label);
+      } else {
+        labels.add(label.trim());
+      }
+    } else {
+      if (label !== undefined && label !== null) {
+        hedgeIssue(issues, 'ESC-02', 'sources_uses', `${p}.label`,
+          `ESC-02: only an "other" escrow carries a label; ${name} names itself`, label);
+      }
+      if (seen.has(name)) {
+        hedgeIssue(issues, 'ESC-02', 'sources_uses', `${p}.name`,
+          `ESC-02: duplicate escrow name ${JSON.stringify(name)}`, name);
+      }
+    }
+    seen.add(name);
+
+    // ESC-01: an escrow that funds neither at close nor monthly is not one.
+    let stated = 0;
+    for (const key of ['upfront', 'monthly'] as const) {
+      const v = e[key];
+      if (v === undefined || v === null) continue;
+      if (!finiteNum(v) || v < 0) {
+        hedgeIssue(issues, 'ESC-01', 'sources_uses', `${p}.${key}`,
+          `ESC-01: ${key} must be a finite nonnegative amount`, v);
+        continue;
+      }
+      stated++;
+      if (key === 'upfront' && !upfrontByName.has(name)) upfrontByName.set(name, v);
+    }
+    if (stated === 0) {
+      hedgeIssue(issues, 'ESC-01', 'sources_uses', p,
+        'ESC-01: an escrow must state at least one of upfront or monthly');
+    }
+  }
+
+  // ESC-03: the legacy scalars have to agree with the typed lines.
+  for (const [legacyKey, name] of [
+    ['interest_reserve', 'interest'],
+    ['operating_reserves', 'operating'],
+  ] as const) {
+    const legacy = uses[legacyKey];
+    const typed = upfrontByName.get(name);
+    if (finiteNum(legacy) && typed !== undefined && !sameMoney(legacy, typed)) {
+      hedgeIssue(issues, 'ESC-03', 'sources_uses', `uses.${legacyKey}`,
+        `ESC-03: uses.${legacyKey} ${legacy} disagrees with the ${name} escrow's upfront ${typed}`, legacy);
+    }
+  }
+  return seen;
+}
+
+function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const debt = resolveCrossCheckSection(parsed, 'debt_structure').block;
+  const su = resolveCrossCheckSection(parsed, 'sources_uses').block;
+
+  let assumption: unknown;
+  let hedgeStated = false;
+  if (debt) {
+    const h = deepGet(debt.content, 'rate_hedge');
+    if (h !== undefined && h !== null) {
+      if (typeof h !== 'object' || Array.isArray(h)) {
+        hedgeIssue(issues, 'HDG-01', 'debt_structure', 'rate_hedge',
+          'HDG-01: rate_hedge must be an object when stated', h);
+      } else {
+        hedgeStated = true;
+        const rec = h as Record<string, unknown>;
+        assumption = rec['post_expiration_assumption'];
+        checkRateHedge(rec, deepGet(debt.content, 'rate_type'), deepGet(debt.content, 'rate_cap_pct'), issues);
+        // HDG-05: the premium is the same cash as the use that funds it.
+        const premium = rec['premium'];
+        const cost = su ? deepGet(su.content, 'uses.rate_cap_cost') : undefined;
+        if (finiteNum(premium) && finiteNum(cost) && !sameMoney(premium, cost)) {
+          hedgeIssue(issues, 'HDG-05', 'debt_structure', 'rate_hedge.premium',
+            `HDG-05: rate_hedge.premium ${premium} disagrees with sources_uses.uses.rate_cap_cost ${cost}`,
+            premium);
+        }
+      }
+    }
+  }
+
+  if (!su) return;
+  const uses = deepGet(su.content, 'uses');
+  if (uses === null || typeof uses !== 'object' || Array.isArray(uses)) return;
+  const u = uses as Record<string, unknown>;
+  const escrows = u['escrows'];
+  const names = escrows === undefined || escrows === null
+    ? new Set<string>()
+    : checkEscrows(escrows, u, issues);
+
+  // ESC-04: the rule that turns "this cap expires in year three" from a note
+  // into a funded line. Both directions, so neither side can drift alone.
+  const wantsReplacement = hedgeStated && assumption === 'replace';
+  const hasReplacement = names.has('rate_cap_replacement');
+  if (wantsReplacement && !hasReplacement) {
+    hedgeIssue(issues, 'ESC-04', 'sources_uses', 'uses.escrows',
+      'ESC-04: rate_hedge.post_expiration_assumption "replace" requires a rate_cap_replacement escrow');
+  } else if (hasReplacement && !wantsReplacement) {
+    hedgeIssue(issues, 'ESC-04', 'sources_uses', 'uses.escrows',
+      `ESC-04: a rate_cap_replacement escrow requires rate_hedge.post_expiration_assumption "replace" (found ${JSON.stringify(assumption)})`,
+      assumption);
   }
 }
 

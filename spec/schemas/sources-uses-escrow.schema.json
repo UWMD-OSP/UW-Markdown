@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/sources-uses-escrow.schema.json",
+  "title": "sources-uses-escrow",
+  "description": "RFC 0056 / format 4.8. One entry of uses.escrows. Shape only: the label rule (ESC-02), the legacy-scalar agreement (ESC-03) and the rate-cap replacement tie (ESC-04) are semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "description": "Closed, with a label-bearing `other` — the RFC 0052 shape.",
+      "enum": [
+        "tax",
+        "insurance",
+        "replacement_reserve",
+        "ti_lc",
+        "interest",
+        "operating",
+        "rate_cap_replacement",
+        "other"
+      ]
+    },
+    "label": {
+      "description": "REQUIRED when name is `other`, and refused otherwise (ESC-02).",
+      "type": ["string", "null"]
+    },
+    "upfront": {
+      "description": "Funded at close. At least one of upfront or monthly is stated (ESC-01).",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "monthly": {
+      "description": "Ongoing deposit.",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "lender_required": {
+      "type": ["boolean", "null"]
+    }
+  }
+}

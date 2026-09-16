@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/debt-rate-hedge.schema.json",
+  "title": "debt-rate-hedge",
+  "description": "RFC 0056 / format 4.7. Shape only. The rate_type gate (HDG-03), the rate_cap_pct agreement (HDG-04) and the rate_cap_cost agreement (HDG-05) are semantic checks. rate_swap and rate_collar are reserved by HDG-02 and are deliberately absent from the instrument enum.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "instrument",
+    "notional",
+    "strike_rate",
+    "index",
+    "effective_date",
+    "expiration_date",
+    "post_expiration_assumption"
+  ],
+  "properties": {
+    "instrument": {
+      "enum": ["rate_cap"]
+    },
+    "notional": {
+      "description": "What the cap is written on. A loan larger than this is partly unhedged.",
+      "type": "number",
+      "minimum": 0
+    },
+    "strike_rate": {
+      "description": "A fraction, not a percent. 0.035 is 3.5%.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    },
+    "index": {
+      "description": "The rate_index vocabulary minus `fixed`, which a cap is not struck against.",
+      "enum": ["sofr", "prime", "treasury_5yr", "treasury_10yr"]
+    },
+    "effective_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "expiration_date": {
+      "description": "Strictly after effective_date (HDG-01).",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "premium": {
+      "description": "Upfront cash paid. null means genuinely none. Never priced from a curve.",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "post_expiration_assumption": {
+      "description": "What happens in the month after the cap expires. No default: unstated is the answer that hides the cliff.",
+      "enum": ["replace", "unhedged", "loan_matures_first"]
+    },
+    "counterparty": {
+      "description": "Author narrative. Nothing is inferred from it.",
+      "type": ["string", "null"]
+    }
+  }
+}

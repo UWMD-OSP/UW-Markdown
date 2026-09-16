@@ -8,7 +8,8 @@ extensions. This roadmap is directional; a candidate is not a release commitment
 ## Current release
 
 Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm.
-Format is **2.0** and Protocol is **2.13.0**; the version streams are independent.
+Format is **2.0** and Protocol is **2.13.0** as released; `main` carries an
+unreleased Protocol **2.14.0**. The version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -103,7 +104,7 @@ surfaces usable for the next producer wave.
 | 1 | Tax abatements and reassessment basis | **RFC 0053, implemented.** Types the reassessment basis (`TAX-01`–`TAX-04`), adds an RFC 0041-addressed abatement schedule (`TAX-05`–`TAX-07`), and names the trailing, going-in and terminal taxes with a `TAX-08` tie to exit value. Stated-and-verified only: the exit-value circularity stays the author's to converge. |
 | 1/2 | Lease clauses and TI/LC amortization | **RFC 0055, implemented.** Break options, co-tenancy triggers/remedies and escalation steps are typed on the commercial tenant record, with LC balances beside TI (`LSE-01`–`LSE-09`). Straight-line amortization stays deferred: RFC 0054 placed it with the periodic series. |
 | 2 | Per-lease monthly ledger | **RFC 0054, draft decision — awaiting acceptance.** Recommends splitting by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
-| 2 | Rate caps, escrow and replacement | **Next candidate.** Add term, premium, replacement/escrow cash lines and reserve `rate_swap` / `rate_collar` names for later MTM treatment. |
+| 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
 | 2 | Construction contingency used share | **Next candidate.** Carry used/unused amounts and total drawn with a trivial verifier; milestone releases remain out of scope. |
 | 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
 | 2 | CAM, redevelopment and OpEx compression | **Dependent / next candidate.** Add CAM true-up after the ledger decision; confirm whether §4.25 + §4.8 already cover redevelopment, otherwise add downtime; support expense-targeted capex with stated annual savings. |

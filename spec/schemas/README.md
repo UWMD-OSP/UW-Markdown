@@ -35,6 +35,8 @@ files live in this directory pending publication on `uwmd.org`.
 | [`tax-reassessment.schema.json`](tax-reassessment.schema.json) | `noi_model` reassessment basis (going-in) | Format §4.5 / RFC 0053 |
 | [`tax-abatement.schema.json`](tax-abatement.schema.json) | `noi_model` abatement schedule | Format §4.5 / RFC 0053 |
 | [`tax-terminal.schema.json`](tax-terminal.schema.json) | `dcf.exit_analysis.terminal_tax` (the next buyer's) | Format §4.9 / RFC 0053 |
+| [`debt-rate-hedge.schema.json`](debt-rate-hedge.schema.json) | `debt_structure.rate_hedge` (cap strike, notional, term) | Format §4.7 / RFC 0056 |
+| [`sources-uses-escrow.schema.json`](sources-uses-escrow.schema.json) | one entry of `sources_uses.uses.escrows` | Format §4.8 / RFC 0056 |
 | [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
 | [`uw-portfolio-profile.schema.json`](uw-portfolio-profile.schema.json) | `.uwportfolio.json` sidecar (`PortfolioProfile`) | Protocol §XV / RFC 0015 |
 | [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |

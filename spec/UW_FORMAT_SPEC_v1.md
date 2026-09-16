@@ -1385,6 +1385,7 @@ from `jurisdiction`, which is a label.
   "rate_spread_bps": null,
   "rate_floor_pct": null,
   "rate_cap_pct": null,
+  "rate_hedge": null,
   "note_rate_at_close": null,
   "amortization_years": 30,
   "loan_term_years": 0,
@@ -1430,6 +1431,53 @@ from `jurisdiction`, which is a label.
   ]
 }
 ```
+
+**Rate hedges (RFC 0056).** `rate_hedge` is OPTIONAL and types what
+`rate_cap_pct` only gestures at. A loan stating neither is unchanged.
+
+```json
+"rate_hedge": {
+  "instrument": "rate_cap",
+  "notional": 30000000.0,
+  "strike_rate": 0.035,
+  "index": "sofr | prime | treasury_5yr | treasury_10yr",
+  "effective_date": "2026-01-01",
+  "expiration_date": "2029-01-01",
+  "premium": 410000.0,
+  "post_expiration_assumption": "replace | unhedged | loan_matures_first",
+  "counterparty": null
+}
+```
+
+Rates are fractions, not percents. Nothing here is priced: the premium is the
+cash the author paid, not a value struck off a forward curve, and no strike
+crossing is projected.
+
+- `HDG-01` — `instrument` is from the closed set; `notional` finite and
+  nonnegative; `strike_rate` a fraction strictly between 0 and 1; `index` from
+  the closed set (the `rate_index` vocabulary minus `fixed`, which a cap is not
+  struck against); both dates real, with `expiration_date` strictly after
+  `effective_date`; `premium` finite and nonnegative when stated, `null` for
+  genuinely none.
+- `HDG-02` — `rate_swap` and `rate_collar` are **reserved and refused**. Their
+  mark-to-market moves with the curve and can be negative, which a cap's cannot;
+  typing them as caps would make the capital stack wrong in the one case that
+  matters. They wait for their own contract.
+- `HDG-03` — a stated `rate_hedge` requires `rate_type` to be `floating` or
+  `hybrid`. A fixed-rate loan does not carry a rate cap.
+- `HDG-04` — `strike_rate` agrees with the legacy `rate_cap_pct` when both are
+  stated.
+- `HDG-05` — `premium` agrees with `sources_uses.uses.rate_cap_cost` at the
+  currency quantum (protocol § VIII.5) when both are stated. It is the same
+  cash seen from the debt side and from the use that funds it.
+- `HDG-06` — `post_expiration_assumption` is stated and from the closed set.
+  It has no default on purpose: a cap's term is the fact the reader came for,
+  and leaving it unstated is the answer that hides the cliff. `replace` is tied
+  to a funded escrow line by `ESC-04` (§ 4.8).
+
+`notional` is the member that makes partial hedging legible. A $40M loan with a
+$30M notional is 75% hedged; without it, that deal and a fully hedged one read
+identically.
 
 ---
 
@@ -1480,6 +1528,7 @@ from `jurisdiction`, which is a label.
     "interest_reserve": null,
     "rate_cap_cost": null,
     "other_reserves": null,
+    "escrows": null,
     "total": 0.0
   },
   "equity_metrics": {
@@ -1492,6 +1541,45 @@ from `jurisdiction`, which is a label.
   "sources_uses_balanced": true
 }
 ```
+
+**Escrows (RFC 0056).** `uses.escrows` is OPTIONAL and types the cash lines the
+four flat scalars above cannot describe: which are lender-required, which fund
+monthly rather than at close, and that the tax and insurance escrows exist at
+all. A document stating none of them is unchanged.
+
+```json
+"escrows": [
+  {
+    "name": "tax | insurance | replacement_reserve | ti_lc | interest | operating | rate_cap_replacement | other",
+    "label": null,
+    "upfront": 120000.0,
+    "monthly": 30000.0,
+    "lender_required": true
+  }
+]
+```
+
+The closed vocabulary with a label-bearing `other` is RFC 0052's shape, for the
+same reason: an open string makes two documents incomparable, and a closed list
+with no escape hatch makes the honest author lie. Nothing is rolled forward —
+an amortizing balance is periodic, which RFC 0054 placed behind a named
+consumer.
+
+- `ESC-01` — `escrows` is a nonempty array of objects; `name` from the closed
+  set; `upfront` and `monthly` finite and nonnegative when stated, with at least
+  one of the two stated. An escrow that funds neither at close nor monthly is
+  not one.
+- `ESC-02` — `other` requires a nonempty `label` and every other name refuses
+  one, since it names itself. `name` is unique across the array, and `other`
+  entries are distinguished by unique labels.
+- `ESC-03` — `uses.interest_reserve` and `uses.operating_reserves` agree with
+  the `interest` and `operating` escrows' `upfront` at the currency quantum
+  (protocol § VIII.5) when both are stated.
+- `ESC-04` — `debt_structure.rate_hedge.post_expiration_assumption: "replace"`
+  requires a `rate_cap_replacement` escrow, and a `rate_cap_replacement` escrow
+  requires that assumption. This is the rule that turns "the cap expires in year
+  three" from a note into a funded line; a replacement bought into a higher-rate
+  environment is routinely the larger of the two premiums.
 
 ---
 
