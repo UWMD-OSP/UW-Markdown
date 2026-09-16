@@ -8,6 +8,25 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-09-16
+
+Core/CLI **2.11.0**, signing **0.2.15**, batch **0.8.10**, Protocol **2.15.0**,
+Format **2.0**. Five RFCs, all additive: every member of every new structure is
+optional, and a document stating none of them validates exactly as it did at
+2.10.0.
+
+**RFCs 0055, 0056 and 0057 type structures nothing yet consumes.** No rent
+escalates, no break is exercised, no balance amortizes, nothing is priced, no
+strike crossing is projected and no stated saving is applied. Typed-but-inert is
+the intended state: the format learns to *say* these things before anything acts
+on them, and each consumer arrives with its own contract.
+
+Three of the new rules require a disclosure rather than defaulting one, because
+in each case the unstated reading is the misleading one: `HDG-06` (what happens
+when a rate cap expires), `CAPX-07` (whether a stated expense saving is already
+inside the NOI model) and, from 2.10.0, `TAX-08` (whether the terminal tax is
+inside exit NOI).
+
 ### Added
 
 - RFC 0049 is implemented as `@uwmd/lake` 0.1.0 (`packages/uwmd-lake`,
@@ -49,6 +68,14 @@ protocol, and each package each carry an independent semver).
   against zero savings rather than admitting an infinity. Redevelopment downtime
   needs no new field: §4.25 `natural_turnover` already carries it. Purely
   additive.
+
+- RFC 0054 decides where per-lease economics live and **declines the roadmap's
+  premise** that lease clauses, CAM true-ups and TI/LC balances share a
+  container. It splits by shape: clauses are attributes of a lease and are typed
+  in place by RFC 0055, while the periodic series waits for a named consumer.
+  The series half is **unbuilt by decision, not by oversight** — the Tier-3 calc
+  grammar addresses neither collections nor two period dimensions, so a
+  lease × period ledger is unreachable from any pack formula.
 
 ### Changed
 
