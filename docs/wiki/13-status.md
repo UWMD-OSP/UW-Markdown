@@ -1,10 +1,12 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-15** after release **v2.10.0** at `ee0c131`.
-Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm
-with SLSA provenance. Format **2.0** and Protocol **2.13.0** version
-independently. See [VERSIONS.md](../../VERSIONS.md) and
-[ROADMAP.md](../../ROADMAP.md).
+Reconciled **2026-09-16** against `main` at `6d4d520`.
+The last release is **v2.10.0**: Core/CLI **2.10.0**, signing **0.2.14** and
+batch **0.8.9** are published on npm with SLSA provenance. Format stays **2.0**;
+Protocol is **2.14.0 on `main` and unreleased** — 2.13.0 is what shipped. Four
+RFCs (0049, 0054, 0055, 0056) have landed since the release and are described
+under [Unreleased on `main`](#unreleased-on-main). See
+[VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
 
@@ -82,17 +84,6 @@ composition rather than a standalone pack.
 
 RFC 0048 is released in 2.10.0: standalone
 document/package examples with their own `standalone` conformance suite.
-RFC 0049 is implemented in development as `@uwmd/lake` 0.1.0
-(`packages/uwmd-lake`, unpublished): a PostgreSQL/JSONB lake adapter that plans
-idempotent digest-keyed upserts over six tables from canonical envelopes,
-`block_values` facts, receipts, package manifests and source-evidence
-references. Raw canonical JSON sits in `jsonb` beside typed shadow columns, so
-unknown sections, extension keys, explicit nulls and array order survive a load.
-It takes no database driver, changes no protocol or financial math, and refuses
-bytes-bearing source evidence. 52 unit tests cover it against an in-memory
-warehouse double; **no live PostgreSQL instance has been exercised**, so a real
-load and the publication decision both remain open.
-
 RFC 0050 is released in 2.10.0: split preferred-equity
 coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
 from coverage, and full `rate` for weighted cost. Debt PIK toggles and accrued
@@ -117,6 +108,56 @@ family is registered, and `dcf.exit_analysis.terminal_tax` names the next
 buyer's tax. Everything is stated-and-verified; the exit-value/terminal-tax
 circularity is not solved, because the calc engine has no iteration.
 
+## Unreleased on `main`
+
+Four RFCs have landed since v2.10.0. None is published; all of it ships in the
+next cut.
+
+**Protocol 2.13.0 → 2.14.0**, registering the `LSE-NN`, `HDG-NN` and `ESC-NN`
+code families. No wire format, formula or precision change.
+
+RFC 0049 — implemented as `@uwmd/lake` 0.1.0 (`packages/uwmd-lake`,
+unpublished): a PostgreSQL/JSONB lake adapter that plans idempotent
+digest-keyed upserts over six tables from canonical envelopes, `block_values`
+facts, receipts, package manifests and source-evidence references. Raw
+canonical JSON sits in `jsonb` beside typed shadow columns, so unknown
+sections, extension keys, explicit nulls and array order survive a load. It
+takes no database driver, changes no protocol or financial math, and refuses
+bytes-bearing source evidence. 52 unit tests cover it against an in-memory
+warehouse double; **no live PostgreSQL instance has been exercised**, so a real
+load and the publication decision both remain open.
+
+RFC 0054 — **accepted as a decision, with its second half deliberately not
+built.** Per-lease economics split by shape: the lease clauses are typed in
+place on the commercial rent roll (that is RFC 0055), and the per-lease
+periodic series waits for a consumer. The reason is structural rather than
+scheduling — the calc grammar addresses neither collections nor two period
+dimensions, so a monthly ledger is unreachable from pack formulas. See
+[the calc-engine limits](10-conventions-invariants.md).
+
+RFC 0055 — the commercial lease clauses that were untyped stubs since Format
+1.0 are typed: `escalation_schedule`, `termination_option`, `co_tenancy_details`,
+plus `lc_original` / `lc_outstanding_balance` beside the TI pair, under the
+`LSE-01`–`LSE-09` family. Escalation steps state the resulting rent rather than
+the increment. **Nothing is exercised**: no rent escalates, no break is taken,
+no remedy applies, no balance amortizes. Straight-line TI/LC amortization stays
+with the deferred periodic series.
+
+RFC 0056 — `debt_structure.rate_hedge` and `sources_uses.uses.escrows` are
+typed under the `HDG-NN` / `ESC-NN` families. A cap carries a strike, notional,
+term and a stated `post_expiration_assumption` instead of the lone
+`rate_cap_pct`; escrows carry upfront and monthly amounts under a closed
+vocabulary with a label-bearing `other`. `ESC-04` ties a `"replace"` assumption
+to a funded `rate_cap_replacement` line — the budget a three-year cap on a
+five-year hold never had anywhere to go. `rate_swap` and `rate_collar` are
+reserved and refused by `HDG-02`, because their mark-to-market can be negative
+and a cap's cannot. **Nothing is priced and no strike crossing is projected.**
+
+Current `main` passes **1,891 core tests** plus every other workspace,
+**542 default + 76 declarative conformance checks**, three capability profiles,
+42 validated schemas across 43 indexed, lint, and the index/version/lockfile
+guards.
+
 ## Remaining work
 
 - Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward
@@ -132,6 +173,16 @@ circularity is not solved, because the calc engine has no iteration.
 - Validate `@uwmd/lake` against a live PostgreSQL server. The suite proves the
   planned statements and their idempotency, not that a real server accepts the
   DDL or that the indexes earn their keep on a real corpus.
+- The RFC 0054 per-lease periodic series is unbuilt by decision, not oversight.
+  It needs a named consumer **and** a calc-grammar answer for collections and a
+  second period dimension before it is reachable; see
+  [the calc-engine limits](10-conventions-invariants.md).
+- RFC 0055 and 0056 type structures nothing yet consumes. Escalation, break
+  exercise, co-tenancy remedies, TI/LC amortization, hedge pricing and strike
+  crossing are all still adopter-side. Typed-but-inert is the intended state
+  until a verifier is specified for each.
+- Cut a release covering protocol 2.14.0 and RFCs 0049/0055/0056. Until then
+  `main` and the registry describe different validator tables.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).
 They do not describe current release status.

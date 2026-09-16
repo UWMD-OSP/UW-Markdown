@@ -67,11 +67,26 @@ The source CLI also gained `verify-cash-flows`, which checks stated cash-flow
 metrics without a custom script and distinguishes no claims from verified ones.
 See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
 
-RFC 0049 is now implemented as the unpublished `@uwmd/lake` package: an optional
-PostgreSQL/JSONB lake adapter that preserves canonical envelopes and facts
-alongside typed query projections, without making a warehouse schema part of the
-protocol or adding a database driver to any package. A real load against a live
-server is still an adopter integration step. See the
+## Unreleased on `main`
+
+Four RFCs have landed since the 2.10.0 cut, taking Protocol to **2.14.0** on
+`main`. None is published, so `main` and the registry currently describe
+different validator tables; the next release closes that.
+
+| RFC | Scope |
+|---|---|
+| 0049 | `@uwmd/lake` (unpublished): an optional PostgreSQL/JSONB adapter preserving canonical envelopes and facts beside typed query projections, without putting a warehouse schema in the protocol or a database driver in any package. |
+| 0054 | **Decision, half deliberately unbuilt.** Per-lease economics split by shape: clauses typed in place (0055), periodic series deferred until a consumer exists and the calc grammar can reach it. |
+| 0055 | Typed commercial lease clauses — escalation, break options, co-tenancy, LC balances beside TI (`LSE-01`–`LSE-09`). |
+| 0056 | Typed rate hedges and escrows (`HDG-NN`, `ESC-NN`), including the `ESC-04` tie from a `"replace"` assumption to a funded replacement line. |
+
+RFC 0055 and 0056 type structures that **nothing yet consumes**: no rent
+escalates, no break is exercised, no balance amortizes, nothing is priced and no
+strike crossing is projected. Typed-but-inert is the intended state until a
+verifier is specified for each.
+
+For the lake adapter, a real load against a live PostgreSQL server is still an
+adopter integration step. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
 
@@ -107,7 +122,7 @@ surfaces usable for the next producer wave.
 | 1 | Named exit sale deductions | **RFC 0052, implemented.** Closed `sale_deductions` vocabulary with a label-bearing `other`, reserved-and-refused levered names, complete-naming rule, and a `net_sale_proceeds` verifier at the currency quantum. Each deduction remains its own dated §4.26 row. |
 | 1 | Tax abatements and reassessment basis | **RFC 0053, implemented.** Types the reassessment basis (`TAX-01`–`TAX-04`), adds an RFC 0041-addressed abatement schedule (`TAX-05`–`TAX-07`), and names the trailing, going-in and terminal taxes with a `TAX-08` tie to exit value. Stated-and-verified only: the exit-value circularity stays the author's to converge. |
 | 1/2 | Lease clauses and TI/LC amortization | **RFC 0055, implemented.** Break options, co-tenancy triggers/remedies and escalation steps are typed on the commercial tenant record, with LC balances beside TI (`LSE-01`–`LSE-09`). Straight-line amortization stays deferred: RFC 0054 placed it with the periodic series. |
-| 2 | Per-lease monthly ledger | **RFC 0054, draft decision — awaiting acceptance.** Recommends splitting by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
+| 2 | Per-lease monthly ledger | **RFC 0054, accepted decision; the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
 | 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
 | 2 | Construction contingency used share | **Next candidate.** Carry used/unused amounts and total drawn with a trivial verifier; milestone releases remain out of scope. |
 | 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
