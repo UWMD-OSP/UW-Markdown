@@ -22,6 +22,23 @@ protocol, and each package each carry an independent semver).
   `uwmd inspect-property-cash-flows`, inventorying source variants, periods,
   rows and required plan dimensions without assigning economic categories or
   inferring expense, reserve or payment-timing inputs.
+- RFC 0048 adds a worked standalone document kit: lease abstract and source
+  note profiles, `.uwpart.md` fragments, inline/externalized composition twins,
+  a packaged `.uwpkg.zip` example and a named `standalone` conformance suite.
+- RFC 0050 adds `accrual: "split"` on preferred-equity tranches, with
+  `cash_rate` entering cash coverage, `accrued_rate` excluded from it, full
+  `rate` driving weighted cost, and `CS-02b` validation. Debt PIK toggles and
+  accrued compounding remain deferred.
+- RFC 0051 lifts `hurdle_mode: "any" | "both"` into the normative waterfall
+  contract. On a `split` tier stating both `until_lp_em` and `until_lp_irr`,
+  `any` caps at the smaller capacity and the default `both` keeps the larger.
+  `WF-01` rejects `hurdle_mode` without both hurdles.
+- RFC 0052 adds an optional closed `sale_deductions` vocabulary naming every
+  disposition cost-of-sale row, and an optional `net_sale_proceeds` figure
+  verified against gross sale less exit costs at the currency quantum.
+  `prepayment_penalty`, `defeasance` and `loan_payoff` are reserved and refused
+  by this unlevered assembler. Purely additive: a plan stating neither member is
+  unchanged. No financial formula or derived exit value is introduced.
 
 ## [2.9.0] - 2026-09-12
 

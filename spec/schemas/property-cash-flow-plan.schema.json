@@ -220,6 +220,48 @@
           }
         ]
       }
+    },
+    "sale_deductions": {
+      "description": "RFC 0052. Optional. When present it must name every row covering (disposition, transaction_costs); completeness, cell membership and the reserved-name refusal are semantic checks.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "row",
+          "name"
+        ],
+        "properties": {
+          "row": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "name": {
+            "enum": [
+              "broker_commission",
+              "transfer_tax",
+              "title_and_escrow",
+              "legal_and_closing",
+              "seller_credits",
+              "survey_and_diligence",
+              "other",
+              "prepayment_penalty",
+              "defeasance",
+              "loan_payoff"
+            ]
+          },
+          "label": {
+            "description": "Required when name is other; refused otherwise.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "net_sale_proceeds": {
+      "description": "RFC 0052. Optional. A stated figure verified against gross sale less exit costs at the currency quantum; never derived.",
+      "type": "number"
     }
   }
 }

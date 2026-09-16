@@ -1,0 +1,78 @@
+{
+  "amounts": [
+    -1000000,
+    -10000,
+    -20000,
+    109000,
+    0,
+    -40000,
+    125000,
+    -45000,
+    -10000,
+    1150000,
+    -28750,
+    -8050,
+    -4200,
+    -6500,
+    -3000,
+    -1500,
+    5000
+  ],
+  "dates": [
+    "2026-07-01",
+    "2026-07-01",
+    "2026-07-01",
+    "2026-09-30",
+    "2026-09-30",
+    "2026-09-30",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31",
+    "2026-12-31"
+  ],
+  "sale_deductions": [
+    {
+      "output_row_index": 10,
+      "name": "broker_commission",
+      "amount": -28750
+    },
+    {
+      "output_row_index": 11,
+      "name": "transfer_tax",
+      "amount": -8050
+    },
+    {
+      "output_row_index": 12,
+      "name": "title_and_escrow",
+      "amount": -4200
+    },
+    {
+      "output_row_index": 13,
+      "name": "legal_and_closing",
+      "amount": -6500
+    },
+    {
+      "output_row_index": 14,
+      "name": "seller_credits",
+      "amount": -3000
+    },
+    {
+      "output_row_index": 15,
+      "name": "other",
+      "label": "Municipal exit impact fee",
+      "amount": -1500
+    }
+  ],
+  "net_sale_proceeds": {
+    "status": "verified",
+    "stated": 1098000,
+    "computed": 1098000
+  }
+}

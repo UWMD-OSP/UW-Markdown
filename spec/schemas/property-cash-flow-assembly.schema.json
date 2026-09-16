@@ -12,7 +12,8 @@
     "series",
     "bindings",
     "cells",
-    "source_verification"
+    "source_verification",
+    "net_sale_proceeds"
   ],
   "properties": {
     "source_envelope_digest": {
@@ -237,6 +238,48 @@
               }
             ]
           }
+        },
+        "sale_deductions": {
+          "description": "RFC 0052. Optional. When present it must name every row covering (disposition, transaction_costs); completeness, cell membership and the reserved-name refusal are semantic checks.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "row",
+              "name"
+            ],
+            "properties": {
+              "row": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "name": {
+                "enum": [
+                  "broker_commission",
+                  "transfer_tax",
+                  "title_and_escrow",
+                  "legal_and_closing",
+                  "seller_credits",
+                  "survey_and_diligence",
+                  "other",
+                  "prepayment_penalty",
+                  "defeasance",
+                  "loan_payoff"
+                ]
+              },
+              "label": {
+                "description": "Required when name is other; refused otherwise.",
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "net_sale_proceeds": {
+          "description": "RFC 0052. Optional. A stated figure verified against gross sale less exit costs at the currency quantum; never derived.",
+          "type": "number"
         }
       }
     },
@@ -471,6 +514,81 @@
           ]
         }
       }
+    },
+    "sale_deductions": {
+      "description": "RFC 0052. Present only when the plan named its deductions, in output-row order.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "output_row_index",
+          "name",
+          "amount"
+        ],
+        "properties": {
+          "output_row_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "name": {
+            "enum": [
+              "broker_commission",
+              "transfer_tax",
+              "title_and_escrow",
+              "legal_and_closing",
+              "seller_credits",
+              "survey_and_diligence",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "net_sale_proceeds": {
+      "description": "RFC 0052. Evidence about a stated figure, not proof the exit is complete.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "stated",
+            "computed"
+          ],
+          "properties": {
+            "status": {
+              "const": "verified"
+            },
+            "stated": {
+              "type": "number"
+            },
+            "computed": {
+              "type": "number"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "not_stated"
+            }
+          }
+        }
+      ]
     }
   }
 }

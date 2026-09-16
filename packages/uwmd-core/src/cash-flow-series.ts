@@ -111,13 +111,20 @@ export const CASH_FLOW_VERIFY_DECIMALS = Object.freeze({
   ratio: 4,
 } as const);
 
-function roundTo(value: number, decimals: number): number {
-  // Half away from zero, the §VIII.5 rule — Math.round is half-up, which
-  // differs for negatives, and a series' net total is routinely negative.
+/**
+ * Quantize at a decimal boundary using the §VIII.5 half-away-from-zero rule.
+ * Exported for the same reason as the decimals above: a surface that compares a
+ * stated figure against a recomputation must round where this verifier rounds,
+ * not keep its own copy of the rule.
+ */
+export function quantizeAtDecimals(value: number, decimals: number): number {
+  // Math.round is half-up, which differs for negatives, and a series' net total
+  // is routinely negative.
   const f = 10 ** decimals;
   const scaled = value * f;
   return (scaled < 0 ? -Math.round(-scaled) : Math.round(scaled)) / f;
 }
+const roundTo = quantizeAtDecimals;
 
 function isNum(v: unknown): v is number {
   return typeof v === 'number' && Number.isFinite(v);

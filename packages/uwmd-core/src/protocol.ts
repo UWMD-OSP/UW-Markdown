@@ -2807,6 +2807,31 @@ export interface PropertyCashFlowAssertions {
   hold_only_and_exit_settled: true;
 }
 
+// RFC 0052 — named exit sale deductions. The first six names are ordinary
+// unlevered costs of sale; `other` is an escape hatch that requires a label.
+// The last three are reserved below-NOI names this unlevered assembler refuses,
+// so a later levered contract cannot collide with an adopter's private use.
+export const UNLEVERED_SALE_DEDUCTIONS = Object.freeze([
+  'broker_commission', 'transfer_tax', 'title_and_escrow',
+  'legal_and_closing', 'seller_credits', 'survey_and_diligence', 'other',
+] as const);
+
+export const RESERVED_LEVERED_SALE_DEDUCTIONS = Object.freeze([
+  'prepayment_penalty', 'defeasance', 'loan_payoff',
+] as const);
+
+export type SaleDeductionName =
+  | (typeof UNLEVERED_SALE_DEDUCTIONS)[number]
+  | (typeof RESERVED_LEVERED_SALE_DEDUCTIONS)[number];
+
+export interface SaleDeduction {
+  /** A supplemental row index covering the (disposition, transaction_costs) cell. */
+  row: number;
+  name: SaleDeductionName;
+  /** Required when `name` is `other`; omitted otherwise. */
+  label?: string;
+}
+
 export interface PropertyCashFlowPlan {
   basis: 'unlevered';
   tax_basis: 'pre_tax';
@@ -2825,6 +2850,10 @@ export interface PropertyCashFlowPlan {
   };
   assertions: PropertyCashFlowAssertions;
   coverage: PropertyCashFlowCoverage[];
+  /** RFC 0052. When present, names every (disposition, transaction_costs) row. */
+  sale_deductions?: SaleDeduction[];
+  /** RFC 0052. A stated net figure the assembler verifies, never derives. */
+  net_sale_proceeds?: number;
 }
 
 export interface PropertyCashFlowBinding {
@@ -2853,13 +2882,25 @@ export interface PropertyCashFlowAssembly {
     lease_up: 'verified';
     supplemental_metrics: 'verified' | 'not_stated';
   };
+  /** RFC 0052. Present only when the plan named its deductions. */
+  sale_deductions?: Array<{
+    output_row_index: number;
+    name: SaleDeductionName;
+    label?: string;
+    amount: number;
+  }>;
+  /** RFC 0052. Evidence about a stated figure, not proof the exit is complete. */
+  net_sale_proceeds:
+    | { status: 'verified'; stated: number; computed: number }
+    | { status: 'not_stated' };
 }
 
 export interface PropertyCashFlowAssemblyIssue {
   category: 'calc';
   code: 'CALC-CF-ASSEMBLY';
   reason: 'plan' | 'selection' | 'structure' | 'verification'
-    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon';
+    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon'
+    | 'sale_deduction';
   message: string;
   pointer: string;
   evidence?: {

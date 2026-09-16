@@ -2552,6 +2552,13 @@ async function runPropertyCashFlowAssembly() {
           if (binding.output_row_index !== i || binding.amount !== result.series.series[i].amount || binding.date !== result.series.series[i].date) throw new Error('Binding mismatch');
           if (!result.cells.some(c => c.output_rows?.includes(i))) throw new Error('Output row lacks coverage');
         }
+        // RFC 0052: named deductions and the verified net figure, when the case states them.
+        if (JSON.stringify(result.sale_deductions ?? null) !== JSON.stringify(expected.sale_deductions ?? null))
+          throw new Error('Sale deduction evidence mismatch');
+        if (expected.net_sale_proceeds && JSON.stringify(result.net_sale_proceeds) !== JSON.stringify(expected.net_sale_proceeds))
+          throw new Error('Net sale proceeds mismatch');
+        if (!expected.net_sale_proceeds && result.net_sale_proceeds?.status !== 'not_stated')
+          throw new Error('Unstated net sale proceeds must report not_stated');
       }
       if (JSON.stringify([parsed, plan]) !== before || readFileSync(join(dir, 'deal.uwx.md'), 'utf8') !== source) throw new Error('Assembly mutated its input');
       record('property-cash-flow-assembly', entry.name, 'pass');
