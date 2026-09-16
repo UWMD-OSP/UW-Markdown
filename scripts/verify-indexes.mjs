@@ -92,13 +92,31 @@ if (linkedRfcs.length > 0) {
 // RFC 0051's title ("hurdle_mode: \"any\"") was the first to hit it.
 
 for (const rfc of copiedRfcs) {
+  // The index is copied alongside the RFCs but is not one, so by design it
+  // carries no frontmatter.
+  if (rfc === 'README.md') continue;
   const path = join('docs/rfcs', rfc);
   if (!existsSync(resolve(root, path))) continue;
   const text = read(path).replace(/^\uFEFF/, '');
-  if (!text.startsWith('---')) continue;
+  // RFC 0054 was committed at zero bytes and every gate stayed green: this loop
+  // used to skip any file that did not open with `---`, and an empty markdown
+  // page builds fine. Emptiness has to fail here, because nothing downstream
+  // can see it.
+  if (text.trim().length === 0) {
+    failures.push(`${path}: the file is empty. An RFC with no content passes the site build and every other check silently.`);
+    continue;
+  }
+  if (!text.startsWith('---')) {
+    failures.push(`${path}: an RFC must open with a YAML frontmatter block.`);
+    continue;
+  }
   const end = text.indexOf('\n---', 3);
   if (end === -1) {
     failures.push(`${path}: frontmatter opens with --- but is never closed.`);
+    continue;
+  }
+  if (text.slice(end + 4).trim().length === 0) {
+    failures.push(`${path}: the frontmatter is closed but the RFC has no body.`);
     continue;
   }
   for (const line of text.slice(3, end).split('\n')) {
@@ -114,8 +132,8 @@ for (const rfc of copiedRfcs) {
     }
   }
 }
-if (!failures.some((f) => f.includes('frontmatter'))) {
-  checks.push(`${copiedRfcs.size} RFC frontmatter blocks parse as YAML scalars`);
+if (!failures.some((f) => f.includes('rfcs'))) {
+  checks.push(`${copiedRfcs.size - 1} RFCs have a body and frontmatter that parses as YAML scalars`);
 }
 
 // A copied-but-unlinked RFC is an orphan page, not a break — 0000-template.md
