@@ -82,8 +82,16 @@ composition rather than a standalone pack.
 
 RFC 0048 is released in 2.10.0: standalone
 document/package examples with their own `standalone` conformance suite.
-RFC 0049 remains a draft adoption RFC scoping an optional PostgreSQL/JSONB lake
-adapter outside the protocol and core dependencies.
+RFC 0049 is implemented in development as `@uwmd/lake` 0.1.0
+(`packages/uwmd-lake`, unpublished): a PostgreSQL/JSONB lake adapter that plans
+idempotent digest-keyed upserts over six tables from canonical envelopes,
+`block_values` facts, receipts, package manifests and source-evidence
+references. Raw canonical JSON sits in `jsonb` beside typed shadow columns, so
+unknown sections, extension keys, explicit nulls and array order survive a load.
+It takes no database driver, changes no protocol or financial math, and refuses
+bytes-bearing source evidence. 52 unit tests cover it against an in-memory
+warehouse double; **no live PostgreSQL instance has been exercised**, so a real
+load and the publication decision both remain open.
 
 RFC 0050 is released in 2.10.0: split preferred-equity
 coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
@@ -121,6 +129,9 @@ circularity is not solved, because the calc engine has no iteration.
 - Waterfall extensions, per-value currency identity and stochastic VOI need
   bounded contracts. Retrieval and standalone optional-package publication remain
   demand-gated. DOCX remains scoped out by the owner.
+- Validate `@uwmd/lake` against a live PostgreSQL server. The suite proves the
+  planned statements and their idempotency, not that a real server accepts the
+  DDL or that the indexes earn their keep on a real corpus.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).
 They do not describe current release status.

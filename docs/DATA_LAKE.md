@@ -158,6 +158,38 @@ Files that cannot produce an envelope are listed in
 validation stay in the table with `valid: false`. A fact table never silently
 drops a deal.
 
+## 5. A PostgreSQL reference loader
+
+DuckDB over JSONL is the zero-setup path. When the destination is a
+PostgreSQL-style warehouse, `@uwmd/lake` (RFC 0049, unpublished — install from
+source) turns the same canonical outputs into idempotent SQL:
+
+```ts
+import { postgresLakeSchema, lakeInputFromEnvelope, planLakeLoad, executeLakeLoad } from '@uwmd/lake';
+
+await client.query(postgresLakeSchema('uwmd_lake'), []);
+const { document, facts } = await lakeInputFromEnvelope(envelope, { path, deal_id, valid });
+await executeLakeLoad(await planLakeLoad({ documents: [document], facts, schema: 'uwmd_lake' }), client);
+```
+
+It plans `{ sql, params }` pairs and never opens a connection itself, so no
+database driver enters any `@uwmd/*` dependency tree. Six tables
+(`uw_documents`, `uw_facts`, `uw_receipts`, `uw_packages`,
+`uw_package_members`, `uw_source_evidence`) each keep the raw canonical JSON in
+`jsonb` **and** typed shadow columns beside it — `value_number`, `value_text`,
+`value_boolean`, `value_date` — so a filter can use an index while the JSONB
+column stays the answer of record.
+
+Identity follows §3's chain rather than the filesystem: a document is keyed by
+its semantic digest, a fact by `(semantic_digest, block_ref, scope, pointer)`, a
+package member by its byte digest, a receipt by the canonical hash of the
+receipt JSON. Every statement is `INSERT … ON CONFLICT … DO UPDATE`, so a
+re-load is a no-op and an edited deal arrives as a new row instead of erasing
+the old one.
+
+`readBatchFactJSONL` and `readBlockValuesCSV` load §4's JSONL and §1's CSV
+bundle directly, so nothing above needs to be regenerated to reach PostgreSQL.
+
 What the standard will **not** grow: a storage contract, warehouse-specific
 loaders, or aggregate-math semantics in the lake layer. Aggregates that need
 to be *verifiable* belong in the document layer (portfolio rollups, RFC 0021

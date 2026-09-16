@@ -8,6 +8,34 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- RFC 0049 is implemented as `@uwmd/lake` 0.1.0 (`packages/uwmd-lake`,
+  unpublished): the reference PostgreSQL/JSONB lake adapter. It plans
+  idempotent, parameterized `INSERT … ON CONFLICT … DO UPDATE` statements over
+  six tables from canonical outputs — envelopes, `block_values` facts, receipts,
+  package manifests and source-evidence references — and executes them against
+  an adopter-supplied `{ query(sql, params) }` client. Raw canonical JSON is
+  stored in `jsonb` alongside typed shadow columns, so unknown sections,
+  extension keys, explicit nulls and array order survive a load. Identity is
+  always a digest, never a file path.
+- `@uwmd/lake` readers for the three shapes adopters already hold:
+  `lakeInputFromEnvelope`, `readBlockValuesCSV` (UW CSV bundle) and
+  `readBatchFactJSONL` (`@uwmd/batch` corpus fact table).
+
+### Notes
+
+- The adapter adds no database driver to any package and does not touch the
+  protocol, the format spec, the schemas, conformance or financial math. Source
+  evidence stores identity and status only: a bytes-bearing payload is refused
+  with `LAKE_SOURCE_BYTES`. No live PostgreSQL instance is exercised by the
+  tests; a real load remains an adopter integration step.
+
+### Fixed
+
+- The RFC index listed 0046 (currency identity) and 0047 (property cash-flow
+  input inventory) as `accepted` after both shipped in 2.10.0.
+
 ## [2.10.0] - 2026-09-15
 
 ### Added

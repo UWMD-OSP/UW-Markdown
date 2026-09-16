@@ -42,6 +42,7 @@ versions advance independently.
 | `@uwmd/excel` | **0.9.2** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.10.x, format 2.0, explicit contextual calculations |
 | `@uwmd/report` | **0.8.14** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.10.x, format spec §7.1/§7.2 |
 | `@uwmd/batch` | **0.8.9** | `@uwmd/core` 2.10.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.1.0** (unpublished) | `@uwmd/core` 2.10.x, RFC 0049 warehouse projection; no database driver dependency |
 | `@uwmd/signing` | **0.2.14** | `@uwmd/core` 2.10.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
 | `@uwmd/module-hospitality` | **0.1.2** (unpublished) | `@uwmd/core` 2.10.x, protocol §X module system |
 | `@uwmd/module-data-center` | **0.1.2** (unpublished) | `@uwmd/core` 2.10.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |

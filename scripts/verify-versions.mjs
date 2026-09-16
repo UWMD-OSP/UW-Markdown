@@ -91,6 +91,7 @@ const MANIFEST_ROWS = [
   { label: '@uwmd/excel', manifest: 'packages/uwmd-excel/package.json' },
   { label: '@uwmd/report', manifest: 'packages/uwmd-report/package.json' },
   { label: '@uwmd/batch', manifest: 'packages/uwmd-batch/package.json' },
+  { label: '@uwmd/lake', manifest: 'packages/uwmd-lake/package.json' },
   { label: '@uwmd/signing', manifest: 'packages/uwmd-signing/package.json' },
   { label: '@uwmd/module-hospitality', manifest: 'packages/uwmd-module-hospitality/package.json' },
   { label: '@uwmd/module-data-center', manifest: 'packages/uwmd-module-data-center/package.json' },

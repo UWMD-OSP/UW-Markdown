@@ -38,6 +38,7 @@ const WORKSPACES = [
   'packages/uwmd-excel',
   'packages/uwmd-report',
   'packages/uwmd-batch',
+  'packages/uwmd-lake',
   'packages/uwmd-signing',
   'packages/uwmd-module-hospitality',
   'packages/uwmd-module-data-center',
