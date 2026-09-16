@@ -141,6 +141,7 @@ export function validateUWFile(
   checkSectionReadiness(parsed, issues, ledger);
   checkReturnsTaxBasis(parsed, issues);
   checkTaxBasis(parsed, issues);
+  checkLeaseClauses(parsed, issues);
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
@@ -983,6 +984,275 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
     taxIssue(issues, 'TAX-08', 'dcf', `${base}.value_basis`,
       `TAX-08: terminal_tax.value_basis ${basis} must equal exit_value_gross ${gross} for a sale trigger, or state value_basis_differs_because`,
       basis);
+  }
+}
+
+// ─── §4.3 Commercial lease clauses (RFC 0055) ────────────────────────────────
+//
+// RFC 0054 placed lease clauses on the lease record because they are attributes
+// of a lease, not of a period. These rules check stated terms: nothing escalates
+// a rent, exercises a break, applies a remedy or amortizes a balance.
+
+/** What a stated termination penalty is composed of. Closed. */
+export const TERMINATION_PENALTY_COMPONENTS = Object.freeze([
+  'unamortized_ti', 'unamortized_lc', 'free_rent', 'fee',
+] as const);
+
+export const CO_TENANCY_TRIGGERS = Object.freeze([
+  'named_tenant_departure', 'occupancy_threshold', 'both',
+] as const);
+
+export const CO_TENANCY_REMEDIES = Object.freeze([
+  'rent_reduction', 'alternate_rent', 'termination_right',
+] as const);
+
+const leaseNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const isDate = (v: unknown): v is string =>
+  typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && parseISODate(v) !== null;
+
+function leaseIssue(
+  issues: ValidationMessage[], code: string, field: string, message: string, value?: unknown,
+): void {
+  issues.push({
+    code, severity: 'error', section: 'rent_roll', field, message,
+    ...(value !== undefined ? { value } : {}),
+  });
+}
+
+function checkEscalationSchedule(
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+): void {
+  const steps = t['escalation_schedule'];
+  if (steps === undefined || steps === null) return;
+  if (!Array.isArray(steps) || steps.length === 0) {
+    leaseIssue(issues, 'LSE-01', `${at}.escalation_schedule`,
+      'LSE-01: escalation_schedule must be a nonempty array when stated');
+    return;
+  }
+  // LSE-03: a flat lease does not carry a step schedule.
+  const type = t['escalation_type'];
+  if (type === undefined || type === null || type === 'none') {
+    leaseIssue(issues, 'LSE-03', `${at}.escalation_type`,
+      'LSE-03: a stated escalation_schedule requires an escalation_type other than "none"', type);
+  }
+  const dates: string[] = [];
+  for (const [i, raw] of steps.entries()) {
+    const p = `${at}.escalation_schedule[${i}]`;
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+      leaseIssue(issues, 'LSE-01', p, 'LSE-01: each escalation step must be an object');
+      return;
+    }
+    const step = raw as Record<string, unknown>;
+    if (!isDate(step['effective_date'])) {
+      leaseIssue(issues, 'LSE-01', `${p}.effective_date`,
+        'LSE-01: effective_date must be a real YYYY-MM-DD date', step['effective_date']);
+      return;
+    }
+    const rent = step['base_rent_annual'];
+    if (!leaseNum(rent) || rent < 0) {
+      leaseIssue(issues, 'LSE-01', `${p}.base_rent_annual`,
+        'LSE-01: base_rent_annual must be a finite nonnegative number', rent);
+      return;
+    }
+    dates.push(step['effective_date'] as string);
+  }
+  for (let i = 1; i < dates.length; i++) {
+    if (dates[i - 1]! >= dates[i]!) {
+      leaseIssue(issues, 'LSE-01', `${at}.escalation_schedule[${i}].effective_date`,
+        `LSE-01: escalation steps must strictly increase by date (${dates[i - 1]} then ${dates[i]})`, dates[i]);
+      return;
+    }
+  }
+  // LSE-02: steps live inside the lease term when the term is stated.
+  const start = t['lease_commencement'];
+  const end = t['lease_expiration'];
+  if (!isDate(start) || !isDate(end)) return;
+  for (const [i, d] of dates.entries()) {
+    if (d < start || d > end) {
+      leaseIssue(issues, 'LSE-02', `${at}.escalation_schedule[${i}].effective_date`,
+        `LSE-02: escalation step ${d} lies outside the lease term ${start}..${end}`, d);
+      return;
+    }
+  }
+}
+
+function checkTerminationOption(
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+): void {
+  const raw = t['termination_option'];
+  if (raw === undefined || raw === null) return;
+  const p = `${at}.termination_option`;
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    leaseIssue(issues, 'LSE-04', p, 'LSE-04: termination_option must be an object when stated', raw);
+    return;
+  }
+  const opt = raw as Record<string, unknown>;
+  if (!isDate(opt['earliest_date'])) {
+    leaseIssue(issues, 'LSE-04', `${p}.earliest_date`,
+      'LSE-04: earliest_date must be a real YYYY-MM-DD date', opt['earliest_date']);
+    return;
+  }
+  const notice = opt['notice_months'];
+  if (!Number.isSafeInteger(notice) || (notice as number) < 0) {
+    leaseIssue(issues, 'LSE-04', `${p}.notice_months`,
+      'LSE-04: notice_months must be a nonnegative whole number of months', notice);
+  }
+  const penalty = opt['penalty'];
+  if (penalty !== undefined && penalty !== null && (!leaseNum(penalty) || penalty < 0)) {
+    leaseIssue(issues, 'LSE-04', `${p}.penalty`,
+      'LSE-04: a stated penalty must be a finite nonnegative amount; null means genuinely none', penalty);
+  }
+  const start = t['lease_commencement'];
+  const end = t['lease_expiration'];
+  if (isDate(start) && isDate(end)) {
+    const d = opt['earliest_date'] as string;
+    if (d < start || d > end) {
+      leaseIssue(issues, 'LSE-04', `${p}.earliest_date`,
+        `LSE-04: the break date ${d} lies outside the lease term ${start}..${end}`, d);
+    }
+  }
+  // LSE-05: what the penalty is composed of, from a closed list, without repeats.
+  const parts = opt['penalty_includes'];
+  if (parts === undefined || parts === null) return;
+  if (!Array.isArray(parts) || parts.length === 0) {
+    leaseIssue(issues, 'LSE-05', `${p}.penalty_includes`,
+      'LSE-05: penalty_includes must be a nonempty array when stated');
+    return;
+  }
+  const seen = new Set<unknown>();
+  for (const [i, part] of parts.entries()) {
+    if (typeof part !== 'string' || !(TERMINATION_PENALTY_COMPONENTS as readonly string[]).includes(part)) {
+      leaseIssue(issues, 'LSE-05', `${p}.penalty_includes[${i}]`,
+        `LSE-05: penalty component must be one of ${TERMINATION_PENALTY_COMPONENTS.join(', ')}`, part);
+      return;
+    }
+    if (seen.has(part)) {
+      leaseIssue(issues, 'LSE-05', `${p}.penalty_includes[${i}]`,
+        `LSE-05: penalty component ${part} is listed more than once`, part);
+      return;
+    }
+    seen.add(part);
+  }
+}
+
+function checkCoTenancy(
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+): void {
+  const raw = t['co_tenancy_details'];
+  const flag = t['co_tenancy_clause'];
+  const stated = raw !== undefined && raw !== null;
+
+  // LSE-06: the boolean and the body agree, or neither is stated. Same move
+  // TAX-04 made for sale_triggers_reassessment: a flag that asserts nothing
+  // until something has to agree with it.
+  if (stated && flag !== true) {
+    leaseIssue(issues, 'LSE-06', `${at}.co_tenancy_clause`,
+      'LSE-06: co_tenancy_details requires co_tenancy_clause: true', flag);
+    return;
+  }
+  if (!stated) {
+    if (flag === true) {
+      leaseIssue(issues, 'LSE-06', `${at}.co_tenancy_details`,
+        'LSE-06: co_tenancy_clause: true requires co_tenancy_details saying what triggers it and what the remedy is');
+    }
+    return;
+  }
+  const p = `${at}.co_tenancy_details`;
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    leaseIssue(issues, 'LSE-06', p, 'LSE-06: co_tenancy_details must be an object when stated', raw);
+    return;
+  }
+  const d = raw as Record<string, unknown>;
+  const trigger = d['trigger'];
+  if (typeof trigger !== 'string' || !(CO_TENANCY_TRIGGERS as readonly string[]).includes(trigger)) {
+    leaseIssue(issues, 'LSE-07', `${p}.trigger`,
+      `LSE-07: trigger must be one of ${CO_TENANCY_TRIGGERS.join(', ')}`, trigger);
+    return;
+  }
+  // LSE-07: the trigger carries what it needs.
+  if (trigger === 'named_tenant_departure' || trigger === 'both') {
+    const named = d['named_cotenants'];
+    if (!Array.isArray(named) || named.length === 0 || named.some(n => typeof n !== 'string' || n.length === 0)) {
+      leaseIssue(issues, 'LSE-07', `${p}.named_cotenants`,
+        `LSE-07: trigger "${trigger}" requires a nonempty list of named co-tenants`, named);
+    }
+  }
+  if (trigger === 'occupancy_threshold' || trigger === 'both') {
+    const th = d['occupancy_threshold'];
+    if (!leaseNum(th) || th <= 0 || th >= 1) {
+      leaseIssue(issues, 'LSE-07', `${p}.occupancy_threshold`,
+        `LSE-07: trigger "${trigger}" requires an occupancy_threshold fraction between 0 and 1, exclusive`, th);
+    }
+  }
+  const remedy = d['remedy'];
+  if (typeof remedy !== 'string' || !(CO_TENANCY_REMEDIES as readonly string[]).includes(remedy)) {
+    leaseIssue(issues, 'LSE-08', `${p}.remedy`,
+      `LSE-08: remedy must be one of ${CO_TENANCY_REMEDIES.join(', ')}`, remedy);
+    return;
+  }
+  // LSE-08: a remedy that changes rent states by how much; a termination right does not.
+  const value = d['remedy_value'];
+  const hasValue = value !== undefined && value !== null;
+  if (remedy === 'termination_right') {
+    if (hasValue) {
+      leaseIssue(issues, 'LSE-08', `${p}.remedy_value`,
+        'LSE-08: a termination_right has no remedy_value; the remedy is the right itself', value);
+    }
+  } else if (!hasValue) {
+    leaseIssue(issues, 'LSE-08', `${p}.remedy_value`,
+      `LSE-08: remedy "${remedy}" requires a remedy_value`);
+  } else if (remedy === 'rent_reduction' && (!leaseNum(value) || value <= 0 || value > 1)) {
+    leaseIssue(issues, 'LSE-08', `${p}.remedy_value`,
+      'LSE-08: a rent_reduction remedy_value is a fraction in (0, 1]', value);
+  } else if (remedy === 'alternate_rent' && (!leaseNum(value) || value < 0)) {
+    leaseIssue(issues, 'LSE-08', `${p}.remedy_value`,
+      'LSE-08: an alternate_rent remedy_value is a nonnegative amount', value);
+  }
+  const cure = d['cure_period_months'];
+  if (cure !== undefined && cure !== null && (!Number.isSafeInteger(cure) || (cure as number) < 0)) {
+    leaseIssue(issues, 'LSE-07', `${p}.cure_period_months`,
+      'LSE-07: cure_period_months must be a nonnegative whole number of months', cure);
+  }
+}
+
+function checkLeasingCapital(
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+): void {
+  // LSE-09: state the balances. Amortization is periodic and RFC 0054 deferred it.
+  for (const [original, outstanding, label] of [
+    ['ti_allowance_original', 'ti_outstanding_balance', 'tenant improvement'],
+    ['lc_original', 'lc_outstanding_balance', 'leasing commission'],
+  ] as const) {
+    for (const key of [original, outstanding]) {
+      const v = t[key];
+      if (v === undefined || v === null) continue;
+      if (!leaseNum(v) || v < 0) {
+        leaseIssue(issues, 'LSE-09', `${at}.${key}`,
+          `LSE-09: ${key} must be a finite nonnegative amount`, v);
+      }
+    }
+    const o = t[original];
+    const b = t[outstanding];
+    if (leaseNum(o) && leaseNum(b) && o >= 0 && b >= 0 && b > o) {
+      leaseIssue(issues, 'LSE-09', `${at}.${outstanding}`,
+        `LSE-09: the outstanding ${label} balance ${b} cannot exceed the original ${o}`, b);
+    }
+  }
+}
+
+function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const block = resolveCrossCheckSection(parsed, 'rent_roll').block;
+  if (!block) return;
+  const tenants = deepGet(block.content, 'tenants');
+  if (!Array.isArray(tenants)) return;
+  for (const [i, raw] of tenants.entries()) {
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
+    const t = raw as Record<string, unknown>;
+    const at = `tenants[${i}]`;
+    checkEscalationSchedule(t, issues, at);
+    checkTerminationOption(t, issues, at);
+    checkCoTenancy(t, issues, at);
+    checkLeasingCapital(t, issues, at);
   }
 }
 

@@ -72,12 +72,13 @@ and how it gets accepted.
 | [0046](./0046-currency-identity.md) | Document currency identity | implemented | format, protocol, core, conformance |
 | [0047](./0047-property-cash-flow-input-inventory.md) | Property cash-flow input inventory | implemented | core, tooling |
 | [0048](./0048-standalone-document-kit.md) | Standalone UW document kit and package examples | implemented | conformance, tooling, documentation |
-| [0049](./0049-postgresql-jsonb-lake-adapter.md) | PostgreSQL JSONB lake adapter boundary | implemented | tooling, documentation |
+| [0049](./0049-postgresql-jsonb-lake-adapter.md) | PostgreSQL JSONB lake adapter boundary | draft | tooling, documentation |
 | [0050](./0050-preferred-equity-split-coupon.md) | Preferred equity with a split coupon | implemented | format, protocol, core, conformance |
 | [0051](./0051-waterfall-dual-hurdle-any-mode.md) | Distribution waterfall dual-hurdle "any" mode | implemented | format, protocol, core, conformance |
 | [0052](./0052-named-exit-sale-deductions.md) | Named exit sale deductions | implemented | protocol, core, conformance |
 | [0053](./0053-tax-abatements-and-reassessment-basis.md) | Tax abatements and reassessment basis | implemented | format, protocol, core, conformance |
-| [0054](./0054-per-lease-ledger-decision.md) | Where per-lease economics live (decision) | draft | format, documentation |
+| [0054](./0054-per-lease-ledger-decision.md) | Where per-lease economics live (decision) | accepted | format, documentation |
+| [0055](./0055-typed-commercial-lease-clauses.md) | Typed commercial lease clauses | implemented | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

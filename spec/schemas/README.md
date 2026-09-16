@@ -29,6 +29,9 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-lease-up-schedule.schema.json`](section-lease-up-schedule.schema.json) | `lease_up_schedule` section (trajectory + stabilized summary) | Format §4.25 / RFC 0008 |
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
+| [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |
+| [`lease-termination-option.schema.json`](lease-termination-option.schema.json) | commercial tenant break option | Format §4.3 / RFC 0055 |
+| [`lease-co-tenancy.schema.json`](lease-co-tenancy.schema.json) | commercial tenant co-tenancy trigger and remedy | Format §4.3 / RFC 0055 |
 | [`tax-reassessment.schema.json`](tax-reassessment.schema.json) | `noi_model` reassessment basis (going-in) | Format §4.5 / RFC 0053 |
 | [`tax-abatement.schema.json`](tax-abatement.schema.json) | `noi_model` abatement schedule | Format §4.5 / RFC 0053 |
 | [`tax-terminal.schema.json`](tax-terminal.schema.json) | `dcf.exit_analysis.terminal_tax` (the next buyer's) | Format §4.9 / RFC 0053 |

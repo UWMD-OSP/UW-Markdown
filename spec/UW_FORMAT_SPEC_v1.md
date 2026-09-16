@@ -951,7 +951,9 @@ Field notes:
       "base_rent_per_sqft": 0.0,
       "escalation_type": "fixed_pct | cpi | fixed_dollar | none | null",
       "escalation_rate_pct": null,
-      "escalation_schedule": null,
+      "escalation_schedule": [
+        { "effective_date": "YYYY-MM-DD", "base_rent_annual": 0.0 }
+      ],
       "renewal_options": [
         {
           "count": 0,
@@ -960,11 +962,26 @@ Field notes:
           "rent_reset": "fair_market | fixed | cpi | null"
         }
       ],
-      "termination_option": null,
+      "termination_option": {
+        "earliest_date": "YYYY-MM-DD",
+        "notice_months": 0,
+        "penalty": null,
+        "penalty_includes": ["unamortized_ti | unamortized_lc | free_rent | fee"],
+        "conditions": null
+      },
       "co_tenancy_clause": false,
-      "co_tenancy_details": null,
+      "co_tenancy_details": {
+        "trigger": "named_tenant_departure | occupancy_threshold | both",
+        "named_cotenants": [],
+        "occupancy_threshold": null,
+        "remedy": "rent_reduction | alternate_rent | termination_right",
+        "remedy_value": null,
+        "cure_period_months": null
+      },
       "ti_allowance_original": null,
       "ti_outstanding_balance": null,
+      "lc_original": null,
+      "lc_outstanding_balance": null,
       "rofo": false,
       "rofr": false,
       "assignment_subletting": null,
@@ -995,6 +1012,42 @@ Field notes:
   ]
 }
 ```
+
+**Lease clauses (RFC 0055).** `escalation_schedule`, `termination_option`,
+`co_tenancy_details`, `lc_original` and `lc_outstanding_balance` are OPTIONAL. A
+tenant stating none of them is unchanged. These are **attributes of a lease**,
+placed here by RFC 0054 because they hold whether you read the roll in month 3 or
+month 40; per-period quantities belong in a period series, not on this record.
+
+Rates are fractions, not percents. Nothing here is exercised: no rent is
+escalated, no break is taken, no remedy is applied and no balance is amortized.
+
+- `LSE-01` — escalation steps are objects with a real `effective_date` and a
+  finite nonnegative `base_rent_annual`, strictly increasing by date. A step
+  states the **resulting** rent, not the increment, so a reader never compounds
+  percentages to learn what year six costs.
+- `LSE-02` — every step lies within `[lease_commencement, lease_expiration]`
+  when both are stated. An unstated term checks nothing.
+- `LSE-03` — a stated schedule requires `escalation_type` present and not
+  `none`. A flat lease does not carry steps.
+- `LSE-04` — `termination_option.earliest_date` is a real date inside the lease
+  term, `notice_months` a nonnegative whole number, and `penalty` finite and
+  nonnegative when stated. `null` means genuinely no penalty.
+- `LSE-05` — `penalty_includes` entries come from
+  `unamortized_ti | unamortized_lc | free_rent | fee`, without repeats. It
+  records what the stated penalty is composed of; it never recomputes it.
+- `LSE-06` — `co_tenancy_details` requires `co_tenancy_clause: true`, and
+  `co_tenancy_clause: true` requires details. The boolean and the body agree, or
+  neither is stated.
+- `LSE-07` — the trigger carries what it needs: a nonempty `named_cotenants` for
+  `named_tenant_departure`, an `occupancy_threshold` strictly between 0 and 1
+  for `occupancy_threshold`, both for `both`. `cure_period_months` is a
+  nonnegative whole number.
+- `LSE-08` — `remedy_value` is required for `rent_reduction` (a fraction in
+  `(0, 1]`) and `alternate_rent` (nonnegative), and refused for
+  `termination_right`, whose remedy is the right itself.
+- `LSE-09` — TI and LC amounts are finite and nonnegative, and an outstanding
+  balance never exceeds its original. Amortization is periodic and out of scope.
 
 ---
 
@@ -2659,7 +2712,7 @@ Here the pref tranche is `accrued`, so it is excluded from `combined_dscr` but i
 **Schema:** [`spec/schemas/section-lease-up-schedule.schema.json`](schemas/section-lease-up-schedule.schema.json)  
 **Introduced by:** RFC 0008 (lease-up modeling).
 
-Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier‑3 calc engine never reads the schedule by pack formula, so the variable-length period array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyLeaseUpSchedule`, a sibling of `verifyCapitalStack`) over a **fixed, closed recompute vocabulary**. The schedule is **data, not formulas** — no calc-engine iteration, time axis, or new builtin is involved, and specific cells remain addressable by ordinary path traversal (`lease_up_schedule.schedule[5].rent_revenue`).
+Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier‑3 calc engine never reads the schedule by pack formula, so the variable-length period array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyLeaseUpSchedule`, a sibling of `verifyCapitalStack`) over a **fixed, closed recompute vocabulary**. The schedule is **data, not formulas** — no calc-engine iteration, time axis, or new builtin is involved. Cells are read by the verifier and by host code, **not** by pack formulas: calc paths are flat identifiers, so `lease_up_schedule.schedule[5].rent_revenue` does not parse and raises `CALC-PARSE-001` (corrected by RFC 0055; the claim that it was addressable was never true).
 
 **Fields.**
 
@@ -2722,7 +2775,7 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 **Schema:** [`spec/schemas/section-cash-flow-series.schema.json`](schemas/section-cash-flow-series.schema.json)  
 **Introduced by:** RFC 0034 (calendar-anchored cash flows).
 
-Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier-3 calc engine never reads the series by pack formula, so the variable-length array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyCashFlowSeries`, a sibling of `verifyCapitalStack` and `verifyLeaseUpSchedule`) over a **fixed, closed recompute vocabulary** (Protocol § VIII.9). The series is **data, not formulas**; specific rows remain addressable by ordinary path traversal (`cash_flow_series.series[3].amount`).
+Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier-3 calc engine never reads the series by pack formula, so the variable-length array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyCashFlowSeries`, a sibling of `verifyCapitalStack` and `verifyLeaseUpSchedule`) over a **fixed, closed recompute vocabulary** (Protocol § VIII.9). The series is **data, not formulas**. Rows are read by the verifier and by host code, **not** by pack formulas: calc paths are flat identifiers, so `cash_flow_series.series[3].amount` does not parse and raises `CALC-PARSE-001` (corrected by RFC 0055).
 
 **Fields.**
 

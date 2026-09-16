@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/lease-termination-option.schema.json",
+  "title": "lease-termination-option",
+  "description": "RFC 0055 / format 4.3. Shape only; the lease-term bound is a semantic check (LSE-04, LSE-05).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "earliest_date",
+    "notice_months"
+  ],
+  "properties": {
+    "earliest_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "notice_months": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "penalty": {
+      "description": "Stated cash. null means genuinely no penalty.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "penalty_includes": {
+      "description": "What the stated penalty is composed of. Never recomputed from it.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "unamortized_ti",
+          "unamortized_lc",
+          "free_rent",
+          "fee"
+        ]
+      }
+    },
+    "conditions": {
+      "description": "Author narrative. Nothing is inferred from it.",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
