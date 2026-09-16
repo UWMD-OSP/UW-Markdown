@@ -69,6 +69,14 @@ const linkedRfcs = [
   ...rfcIndex.matchAll(/^\|\s*\[\d{4}\]\(\.\/(\d{4}-[a-z0-9-]+\.md)\)/gm),
 ].map((m) => m[1]);
 
+// The table's status column and the RFC's own frontmatter are maintained by
+// hand in two places. RFC 0054 shipped accepted in its frontmatter and draft in
+// the table, and nothing noticed.
+const indexedStatus = new Map(
+  [...rfcIndex.matchAll(/^\|\s*\[\d{4}\]\(\.\/(\d{4}-[a-z0-9-]+\.md)\)\s*\|[^|]*\|\s*([a-z]+)\s*\|/gm)]
+    .map((m) => [m[1], m[2]]),
+);
+
 // Use the same discovery as prebuild, preserving index/template routing.
 const copiedRfcs = new Set(rfcCopies(root).map((copy) => copy.from.slice('docs/rfcs/'.length)));
 
@@ -118,6 +126,12 @@ for (const rfc of copiedRfcs) {
   if (text.slice(end + 4).trim().length === 0) {
     failures.push(`${path}: the frontmatter is closed but the RFC has no body.`);
     continue;
+  }
+  // The table's status column must agree with the RFC's own frontmatter.
+  const declared = /^status:\s*(\S+)\s*$/m.exec(text.slice(3, end))?.[1];
+  const tabled = indexedStatus.get(rfc);
+  if (declared && tabled && declared !== tabled) {
+    failures.push(`${path}: frontmatter says status "${declared}" but the index table says "${tabled}" — the two are maintained by hand and have drifted.`);
   }
   for (const line of text.slice(3, end).split('\n')) {
     const field = /^([A-Za-z_][\w-]*):\s+(\S.*)$/.exec(line.trim());
