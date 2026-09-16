@@ -1,7 +1,8 @@
 ---
 rfc: 0058
 title: 'Expense recoveries and the CAM true-up'
-status: draft
+status: accepted
+accepted: 2026-09-16
 author: claude
 created: 2026-09-16
 depends_on:
