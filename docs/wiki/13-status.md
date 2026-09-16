@@ -156,6 +156,17 @@ circularity is not solved, because the calc engine has no iteration.
 - Validate `@uwmd/lake` against a live PostgreSQL server. The suite proves the
   planned statements and their idempotency, not that a real server accepts the
   DDL or that the indexes earn their keep on a real corpus.
+- RFCs 0055, 0056 and 0057 type structures **nothing yet consumes**. No rent
+  escalates, no break is exercised, no balance amortizes, nothing is priced and
+  no strike crossing is projected. Typed-but-inert is the intended state until a
+  verifier is specified for each; it is not a gap to be closed by inference.
+- The RFC 0054 periodic ledger is unbuilt **by decision, not oversight**. It
+  needs a named consumer *and* a calc-grammar answer for collections and a
+  second period dimension before it is reachable from pack formulas at all.
+  See [the calc-engine limits](10-conventions-invariants.md).
+- Cut a release covering Protocol 2.15.0 and RFCs 0049/0055/0056/0057. Until
+  then `main` and the registry describe different validator tables, which is the
+  one drift a reader cannot detect from either side alone.
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).
 They do not describe current release status.
