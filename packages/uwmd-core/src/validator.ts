@@ -143,6 +143,7 @@ export function validateUWFile(
   checkTaxBasis(parsed, issues);
   checkLeaseClauses(parsed, issues);
   checkHedgesAndEscrows(parsed, issues);
+  checkRenovationDraw(parsed, issues);
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
@@ -1517,6 +1518,205 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
     hedgeIssue(issues, 'ESC-04', 'sources_uses', 'uses.escrows',
       `ESC-04: a rate_cap_replacement escrow requires rate_hedge.post_expiration_assumption "replace" (found ${JSON.stringify(assumption)})`,
       assumption);
+  }
+}
+
+// ─── §4.8 Renovation draw and expense-targeted capex (RFC 0057) ──────────────
+//
+// A contingency is the number a construction lender watches, and two deals
+// stating the same one are indistinguishable when one has drawn none of it and
+// the other has drawn all of it. These rules read the draw the author stated.
+//
+// Nothing here applies a saving. `annual_savings` is never subtracted from an
+// expense line, from EGI or from NOI — `in_noi_model` records whether the author
+// already did, and CAPX-07 makes them say so, because a stated saving with no
+// such flag is how a document gets double-counted.
+
+/** Where the payback arithmetic is compared. Years, not money. */
+const PAYBACK_DP = 4;
+
+function capxIssue(
+  issues: ValidationMessage[], code: string, field: string, message: string, value?: unknown,
+): void {
+  issues.push({
+    code, severity: 'error', section: 'sources_uses', field, message,
+    ...(value !== undefined ? { value } : {}),
+  });
+}
+
+/**
+ * One `expense_targeted` entry. `expenseKeys` is null when `noi_model` is absent
+ * or unreadable, in which case CAPX-06 checks the shape but not the target.
+ */
+function checkExpenseTargeted(
+  e: Record<string, unknown>, expenseKeys: Set<string> | null,
+  issues: ValidationMessage[], at: string,
+): void {
+  const label = e['label'];
+  if (typeof label !== 'string' || label.trim().length === 0) {
+    capxIssue(issues, 'CAPX-06', `${at}.label`,
+      'CAPX-06: an expense-targeted capex entry requires a nonempty label', label);
+  }
+
+  for (const key of ['amount', 'annual_savings'] as const) {
+    const v = e[key];
+    if (!finiteNum(v) || v < 0) {
+      capxIssue(issues, 'CAPX-06', `${at}.${key}`,
+        `CAPX-06: ${key} must be a finite nonnegative amount`, v);
+    }
+  }
+
+  const begin = e['savings_begin'];
+  if (typeof begin !== 'string' || taxPeriodKind(begin) === null) {
+    capxIssue(issues, 'CAPX-06', `${at}.savings_begin`,
+      'CAPX-06: savings_begin must be an RFC 0041 period selector (Y1+, YYYY-Qn, YYYY-MM or YYYY-MM-DD)',
+      begin);
+  }
+
+  // The target is checked against the keys actually present, not a hardcoded
+  // list, so a module adding a class-specific expense line keeps working.
+  const targets = e['targets'];
+  if (typeof targets !== 'string' || targets.trim().length === 0) {
+    capxIssue(issues, 'CAPX-06', `${at}.targets`,
+      'CAPX-06: targets must name the noi_model.expenses key this project reduces', targets);
+  } else if (expenseKeys !== null && !expenseKeys.has(targets)) {
+    capxIssue(issues, 'CAPX-06', `${at}.targets`,
+      `CAPX-06: targets ${JSON.stringify(targets)} names no key under noi_model.expenses`, targets);
+  }
+
+  // CAPX-07: the disclosure that keeps a reader from applying the saving twice.
+  if (typeof e['in_noi_model'] !== 'boolean') {
+    capxIssue(issues, 'CAPX-07', `${at}.in_noi_model`,
+      'CAPX-07: in_noi_model must state whether this saving is already inside noi_model',
+      e['in_noi_model']);
+  }
+
+  const payback = e['simple_payback_years'];
+  if (payback === undefined || payback === null) return;
+  const amount = e['amount'];
+  const savings = e['annual_savings'];
+  if (!finiteNum(payback) || payback < 0) {
+    capxIssue(issues, 'CAPX-08', `${at}.simple_payback_years`,
+      'CAPX-08: simple_payback_years must be a finite nonnegative number', payback);
+    return;
+  }
+  if (!finiteNum(amount) || !finiteNum(savings)) return;
+  // A project with no stated saving has no payback period; a number there
+  // would be a fiction, so state nothing rather than Infinity.
+  if (savings === 0) {
+    capxIssue(issues, 'CAPX-08', `${at}.simple_payback_years`,
+      'CAPX-08: simple_payback_years cannot be stated against zero annual_savings', payback);
+    return;
+  }
+  const expected = quantizeAtDecimals(amount / savings, PAYBACK_DP);
+  if (quantizeAtDecimals(payback, PAYBACK_DP) !== expected) {
+    capxIssue(issues, 'CAPX-08', `${at}.simple_payback_years`,
+      `CAPX-08: simple_payback_years ${payback} must equal amount / annual_savings (${expected})`,
+      payback);
+  }
+}
+
+function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const su = resolveCrossCheckSection(parsed, 'sources_uses').block;
+  if (!su) return;
+  const r = deepGet(su.content, 'uses.renovation');
+  if (r === undefined || r === null) return;
+  const at = 'uses.renovation';
+  if (typeof r !== 'object' || Array.isArray(r)) {
+    capxIssue(issues, 'CAPX-01', at, 'CAPX-01: renovation must be an object when stated', r);
+    return;
+  }
+  const ren = r as Record<string, unknown>;
+
+  for (const key of ['budget', 'contingency', 'contingency_used', 'drawn_to_date'] as const) {
+    const v = ren[key];
+    if (!finiteNum(v) || v < 0) {
+      capxIssue(issues, 'CAPX-01', `${at}.${key}`,
+        `CAPX-01: ${key} must be a finite nonnegative amount`, v);
+    }
+  }
+  if (!isDate(ren['as_of_date'])) {
+    capxIssue(issues, 'CAPX-01', `${at}.as_of_date`,
+      'CAPX-01: as_of_date must be a real YYYY-MM-DD date', ren['as_of_date']);
+  }
+
+  // The relational rules below only compare figures CAPX-01 accepted: a bound
+  // computed from a budget we just refused as negative is noise, not a finding.
+  const amt = (v: unknown): v is number => finiteNum(v) && v >= 0;
+  const budget = ren['budget'];
+  const contingency = ren['contingency'];
+  const used = ren['contingency_used'];
+  const drawn = ren['drawn_to_date'];
+
+  // CAPX-02: a contingency drawn past its size is an overrun, and calling it a
+  // contingency is what hides that.
+  if (amt(contingency) && amt(used) && used > contingency) {
+    capxIssue(issues, 'CAPX-02', `${at}.contingency_used`,
+      `CAPX-02: contingency_used ${used} exceeds the contingency ${contingency} — that is an overrun, not a contingency`,
+      used);
+  }
+
+  if (amt(drawn)) {
+    if (amt(budget) && amt(contingency) && drawn > budget + contingency) {
+      capxIssue(issues, 'CAPX-03', `${at}.drawn_to_date`,
+        `CAPX-03: drawn_to_date ${drawn} exceeds budget plus contingency (${budget + contingency})`,
+        drawn);
+    }
+    if (amt(used) && drawn < used) {
+      capxIssue(issues, 'CAPX-03', `${at}.drawn_to_date`,
+        `CAPX-03: drawn_to_date ${drawn} is below contingency_used ${used}; the contingency draw is part of the total`,
+        drawn);
+    }
+  }
+
+  // CAPX-04: stated and verified, the RFC 0052 net_sale_proceeds posture — the
+  // figure a lender quotes should be checkable, not recomputed by every reader.
+  const remaining = ren['contingency_remaining'];
+  if (remaining !== undefined && remaining !== null) {
+    if (!finiteNum(remaining)) {
+      capxIssue(issues, 'CAPX-04', `${at}.contingency_remaining`,
+        'CAPX-04: contingency_remaining must be a finite number when stated', remaining);
+    } else if (amt(contingency) && amt(used) && !sameMoney(remaining, contingency - used)) {
+      capxIssue(issues, 'CAPX-04', `${at}.contingency_remaining`,
+        `CAPX-04: contingency_remaining ${remaining} must equal contingency less contingency_used (${contingency - used})`,
+        remaining);
+    }
+  }
+
+  // CAPX-05: the legacy scalars have to agree with the typed body.
+  for (const [legacyKey, typedKey] of [
+    ['renovation_budget', 'budget'],
+    ['renovation_contingency', 'contingency'],
+  ] as const) {
+    const legacy = deepGet(su.content, `uses.${legacyKey}`);
+    const typed = ren[typedKey];
+    if (finiteNum(legacy) && amt(typed) && !sameMoney(legacy, typed)) {
+      capxIssue(issues, 'CAPX-05', `uses.${legacyKey}`,
+        `CAPX-05: uses.${legacyKey} ${legacy} disagrees with renovation.${typedKey} ${typed}`, legacy);
+    }
+  }
+
+  const targeted = ren['expense_targeted'];
+  if (targeted === undefined || targeted === null) return;
+  if (!Array.isArray(targeted) || targeted.length === 0) {
+    capxIssue(issues, 'CAPX-06', `${at}.expense_targeted`,
+      'CAPX-06: expense_targeted must be a nonempty array when stated');
+    return;
+  }
+
+  const noi = resolveCrossCheckSection(parsed, 'noi_model').block;
+  const expenses = noi ? deepGet(noi.content, 'expenses') : undefined;
+  const expenseKeys = expenses !== null && typeof expenses === 'object' && !Array.isArray(expenses)
+    ? new Set(Object.keys(expenses as Record<string, unknown>))
+    : null;
+
+  for (const [i, raw] of targeted.entries()) {
+    const p = `${at}.expense_targeted[${i}]`;
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+      capxIssue(issues, 'CAPX-06', p, 'CAPX-06: each expense_targeted entry must be an object');
+      continue;
+    }
+    checkExpenseTargeted(raw as Record<string, unknown>, expenseKeys, issues, p);
   }
 }
 

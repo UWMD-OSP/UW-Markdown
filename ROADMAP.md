@@ -9,7 +9,7 @@ extensions. This roadmap is directional; a candidate is not a release commitment
 
 Core/CLI **2.10.0**, signing **0.2.14** and batch **0.8.9** are published on npm.
 Format is **2.0** and Protocol is **2.13.0** as released; `main` carries an
-unreleased Protocol **2.14.0**. The version streams are independent.
+unreleased Protocol **2.15.0**. The version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -109,9 +109,9 @@ surfaces usable for the next producer wave.
 | 1/2 | Lease clauses and TI/LC amortization | **RFC 0055, implemented.** Break options, co-tenancy triggers/remedies and escalation steps are typed on the commercial tenant record, with LC balances beside TI (`LSE-01`–`LSE-09`). Straight-line amortization stays deferred: RFC 0054 placed it with the periodic series. |
 | 2 | Per-lease monthly ledger | **RFC 0054, draft decision — awaiting acceptance.** Recommends splitting by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
 | 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
-| 2 | Construction contingency used share | **Next candidate.** Carry used/unused amounts and total drawn with a trivial verifier; milestone releases remain out of scope. |
+| 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
 | 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
-| 2 | CAM, redevelopment and OpEx compression | **Dependent / next candidate.** Add CAM true-up after the ledger decision; confirm whether §4.25 + §4.8 already cover redevelopment, otherwise add downtime; support expense-targeted capex with stated annual savings. |
+| 2 | CAM, redevelopment and OpEx compression | **Partly resolved by RFC 0057.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. CAM true-up remains deferred — it is periodic, and RFC 0054 placed periodic series behind a named consumer. |
 | 2 | Ground lease positions | **Blocked on owner decision.** Reserve `ground_lease` as a tranche concept, but do not define or implement the shape until the first underwriting position is chosen. |
 | 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, PACE, swaps and collars each require a concrete engine scope and module/RFC pair. |
 | 4 | Fund and land-development profiles | **Later / profile boundary first.** Subscription facilities, clawback/lookback, co-invest fees and lot takedowns belong in fund or land-development profiles that reference deal documents; they do not widen ordinary deal sections. |

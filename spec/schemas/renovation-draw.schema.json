@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/renovation-draw.schema.json",
+  "title": "renovation-draw",
+  "description": "RFC 0057 / format 4.8. Shape only. The draw relations (CAPX-02, CAPX-03), the remaining verification (CAPX-04) and the legacy-scalar agreement (CAPX-05) are semantic checks. A draw is a fact as of as_of_date; nothing is projected.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["budget", "contingency", "contingency_used", "drawn_to_date", "as_of_date"],
+  "properties": {
+    "budget": {
+      "description": "Hard plus soft costs, excluding the contingency.",
+      "type": "number",
+      "minimum": 0
+    },
+    "contingency": {
+      "type": "number",
+      "minimum": 0
+    },
+    "contingency_used": {
+      "description": "Drawn from the contingency to date. Never exceeds contingency (CAPX-02).",
+      "type": "number",
+      "minimum": 0
+    },
+    "contingency_remaining": {
+      "description": "Stated and verified against contingency less contingency_used, rather than left to every reader's subtraction.",
+      "type": ["number", "null"]
+    },
+    "drawn_to_date": {
+      "description": "Total drawn, the budget line plus the contingency draw.",
+      "type": "number",
+      "minimum": 0
+    },
+    "as_of_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "expense_targeted": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "https://uwmd.org/schemas/expense-targeted-capex.schema.json" }
+    }
+  }
+}
