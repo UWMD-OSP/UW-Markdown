@@ -1396,9 +1396,24 @@ function checkRecoveryTerms(
   return shareValue;
 }
 
+/**
+ * REC-09. A settled true-up becomes a dated cash line in §4.26 — the
+ * cross-cutting requirement that new dated cash lands in the addressable sink,
+ * where assembly and receipt coverage already verify it. A reference that
+ * resolves to nothing is the one failure mode that looks like success: the row
+ * claims the amount reached the cash flows, and nothing checks that it did.
+ */
+function recoveryRefResolves(parsed: ParsedUWFile, variant: string): boolean {
+  const entry = parsed.sections['cash_flow_series'];
+  if (!entry) return false;
+  return isVariantMap(entry)
+    ? (entry as Record<string, UWBlock>)[variant] !== undefined
+    : variant === 'default';
+}
+
 function checkRecoveryTrueUp(
   t: Record<string, unknown>, issues: ValidationMessage[], at: string,
-  share: number | null, asOf: string | null,
+  share: number | null, asOf: string | null, parsed: ParsedUWFile,
 ): void {
   const rows = t['recovery_true_up'];
   if (rows == null) return;
@@ -1472,6 +1487,21 @@ function checkRecoveryTrueUp(
       recIssue(issues, 'REC-04', `${p}.settlement`,
         `REC-04: settlement must be one of ${RECOVERY_SETTLEMENTS.join(', ')}`, settlement);
     }
+
+    // REC-09: the §4.26 handoff.
+    const ref = row['cash_flow_ref'];
+    if (ref != null) {
+      const variant = typeof ref === 'object' && !Array.isArray(ref)
+        ? (ref as Record<string, unknown>)['variant']
+        : undefined;
+      if (typeof variant !== 'string' || variant.length === 0) {
+        recIssue(issues, 'REC-09', `${p}.cash_flow_ref`,
+          'REC-09: cash_flow_ref must name a cash_flow_series variant', ref);
+      } else if (!recoveryRefResolves(parsed, variant)) {
+        recIssue(issues, 'REC-09', `${p}.cash_flow_ref.variant`,
+          `REC-09: cash_flow_ref.variant ${JSON.stringify(variant)} does not resolve to a cash_flow_series variant in this document — the settled amount claims a cash line that is not there`, variant);
+      }
+    }
   }
 }
 
@@ -1491,7 +1521,7 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     checkCoTenancy(t, issues, at);
     checkLeasingCapital(t, issues, at);
     const share = checkRecoveryTerms(t, issues, at);
-    checkRecoveryTrueUp(t, issues, at, share, asOf);
+    checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
   }
 }
 

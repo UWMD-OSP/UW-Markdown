@@ -30,7 +30,7 @@ const TRUE_UP = `"recovery_true_up": [
         }
       ]`;
 
-function doc(tenantBody: string, asOf = '2026-06-30'): string {
+function doc(tenantBody: string, asOf = '2026-06-30', series = ''): string {
   return `---
 uw_version: "1.1"
 deal_id: TEST-REC
@@ -49,8 +49,20 @@ asset_class: office
   ]
 }
 \`\`\`
+${series}
 `;
 }
+
+/** A §4.26 series the REC-09 reference can actually land in. */
+const SERIES_BLOCK = `
+\`\`\`json uw:section=cash_flow_series variant=recoveries source=manual ts=2026-09-16T00:00:00Z v=1
+{
+  "series": [
+    { "date": "2026-03-15", "amount": 7299.2 }
+  ]
+}
+\`\`\`
+`;
 
 const codes = (source: string) =>
   validateUWFile(parseUWFile(source)).issues.map((i) => i.code).filter((c) => c.startsWith('REC-'));
@@ -217,5 +229,40 @@ describe('REC-10 — the legacy cap field', () => {
     const rec10 = issues.find((i) => i.code === 'REC-10');
     expect(rec10).toBeDefined();
     expect(rec10!.severity).toBe('warning');
+  });
+});
+
+describe('REC-09 — the §4.26 handoff', () => {
+  const withRef = (ref: string, series = '') =>
+    doc(
+      `"recovery_terms": { "method": "net" },
+      "recovery_true_up": [{ "period_start": "2025-01-01", "period_end": "2025-12-31", "cash_flow_ref": ${ref} }]`,
+      '2026-06-30',
+      series,
+    );
+
+  it('accepts a reference that resolves to a stated variant', () => {
+    expect(codes(withRef('{ "variant": "recoveries" }', SERIES_BLOCK))).toEqual([]);
+  });
+
+  it('refuses a reference to a variant this document does not carry', () => {
+    // The failure mode that looks like success: the row claims the settled
+    // amount reached the cash flows, and nothing else checks that it did.
+    expect(codes(withRef('{ "variant": "recoveries" }'))).toContain('REC-09');
+  });
+
+  it('refuses a reference naming the wrong variant', () => {
+    expect(codes(withRef('{ "variant": "base" }', SERIES_BLOCK))).toContain('REC-09');
+  });
+
+  it('refuses a malformed reference', () => {
+    for (const ref of ['{}', '"recoveries"', '{ "variant": "" }']) {
+      expect(codes(withRef(ref, SERIES_BLOCK))).toContain('REC-09');
+    }
+  });
+
+  it('checks nothing when no reference is stated', () => {
+    const body = '"recovery_terms": { "method": "net" },\n      "recovery_true_up": [{ "period_start": "2025-01-01", "period_end": "2025-12-31" }]';
+    expect(codes(doc(body))).toEqual([]);
   });
 });

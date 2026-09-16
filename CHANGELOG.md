@@ -15,7 +15,10 @@ protocol, and each package each carry an independent semver).
   the recoverable pool and a cap whose `accumulation` must be stated;
   `recovery_true_up` records a closed period's reconciliation, with `REC-06`
   checking the share of the pool and `REC-08` the settled amount. Registers the
-  `REC-NN` family. Nothing is projected, grossed up or allocated across tenants.
+  `REC-NN` family, including `REC-09`, which requires a stated `cash_flow_ref`
+  to resolve — the settled amount lands in §4.26, the addressable sink where
+  assembly and receipt coverage already verify dated cash. Nothing is projected,
+  grossed up or allocated across tenants.
 - RFC 0059 implements the distribution-waterfall **clawback** as the terminal
   true-up protocol §XVI predicted, closing a gap RFC 0035 deferred and RFC 0036
   deferred again. An optional `distribution_waterfall.clawback` states a basis

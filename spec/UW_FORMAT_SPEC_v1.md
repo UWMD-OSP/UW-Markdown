@@ -1081,6 +1081,12 @@ and is a modeling decision, not a recorded fact; each tenant states its own shar
 - `REC-07` — `tenant_share_capped` does not exceed `tenant_share_uncapped`.
 - `REC-08` — `true_up_amount` equals `tenant_share_capped − estimated_billed` at
   the currency quantum. A negative amount is a credit the tenant is owed.
+- `REC-09` — a stated `cash_flow_ref` names a § 4.26 `cash_flow_series` variant
+  that exists in this document. This is the cross-cutting requirement that new
+  dated cash lands in the addressable sink, where assembly and receipt coverage
+  already verify it. A dangling reference is the one failure that looks like
+  success: the row claims the settled amount reached the cash flows, and nothing
+  else checks that it did.
 - `REC-10` — a **warning** when `cam_cap_pct` sits beside `recovery_terms.cap`.
   The legacy field is superseded, not removed; stating both lets them drift.
 
