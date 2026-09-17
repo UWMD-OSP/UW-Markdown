@@ -165,9 +165,14 @@ PostgreSQL-style warehouse, `@uwmd/lake` (RFC 0049, unpublished — install from
 source) turns the same canonical outputs into idempotent SQL:
 
 ```ts
-import { postgresLakeSchema, lakeInputFromEnvelope, planLakeLoad, executeLakeLoad } from '@uwmd/lake';
+import {
+  postgresLakeSchemaStatements, lakeInputFromEnvelope, planLakeLoad, executeLakeLoad,
+} from '@uwmd/lake';
 
-await client.query(postgresLakeSchema('uwmd_lake'), []);
+// One command per call: a client given a values array uses the extended query
+// protocol, which carries exactly one statement. `postgresLakeSchema()` returns
+// the same DDL as a single script, for piping to psql.
+for (const statement of postgresLakeSchemaStatements('uwmd_lake')) await client.query(statement, []);
 const { document, facts } = await lakeInputFromEnvelope(envelope, { path, deal_id, valid });
 await executeLakeLoad(await planLakeLoad({ documents: [document], facts, schema: 'uwmd_lake' }), client);
 ```
@@ -189,6 +194,15 @@ the old one.
 
 `readBatchFactJSONL` and `readBlockValuesCSV` load §4's JSONL and §1's CSV
 bundle directly, so nothing above needs to be regenerated to reach PostgreSQL.
+
+One shape to expect in `uw_facts`: a fact whose `json_type` is `object` or
+`array` has a NULL `value_json`, because the canonical fact table represents a
+container by its flattened children rather than by a repeated blob. Filter on
+`value_json IS NOT NULL` when you want only the leaves.
+
+The whole conformance corpus has been loaded against PostgreSQL 18 — 382
+documents, 24,380 facts — twice, for the same row counts. See the
+[load record](reviews/2026-09-16-lake-live-postgres.md).
 
 What the standard will **not** grow: a storage contract, warehouse-specific
 loaders, or aggregate-math semantics in the lake layer. Aggregates that need

@@ -8,6 +8,42 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@uwmd/lake` 0.1.2 → 0.2.0, lake schema 0.1 → 0.2.** The RFC 0049 adapter
+  was exercised against a live PostgreSQL server for the first time — the whole
+  conformance corpus, 382 documents and 24,380 facts, in one transaction — and
+  three defects fell out that an in-memory double could not have caught.
+  - `uw_facts.value_json` was `jsonb NOT NULL`, but UWMD's canonical fact table
+    represents an object or an array by its flattened children and leaves the
+    container's own value empty. An empty string is not JSON, so **21.6% of real
+    corpus facts were unloadable** and the first one aborted the load. The
+    column is now nullable under
+    `CHECK (value_json IS NOT NULL OR json_type IN ('object', 'array'))`; a
+    container is SQL NULL, and a *scalar* with no value is refused with the new
+    `LAKE_FACT_VALUE` code rather than silently nulled.
+  - `uw_receipts.verdict` projected a field no receipt carries — a verdict is
+    what *verifying* a receipt produces (`UW_RECEIPT_v1` §5), not something a
+    receipt states — so the column was NULL for every real receipt and
+    `uw_receipts_verdict_idx` led with a dead column. Both are replaced by
+    `validation_errors` / `validation_warnings` from `policy.validation`, and
+    the index by `(pack_id, pack_version)`. The unit test had missed this by
+    inventing `computation.verdict` in its fixture.
+  - `postgresLakeSchema()` returns a multi-command script, which cannot be sent
+    through `LakeClient.query(sql, params)` at all: a values array, even an
+    empty one, selects the extended query protocol. New
+    `postgresLakeSchemaStatements()` returns the commands individually and is
+    the source of truth; the README and `docs/DATA_LAKE.md` examples are
+    corrected.
+
+  Also documented, not changed: `uw_packages` is keyed by the manifest's
+  declared `package_id`, the one table not keyed by a digest, so two packages
+  claiming one id collapse. See the
+  [load record](docs/reviews/2026-09-16-lake-live-postgres.md) for the evidence,
+  the row counts, and what the run does **not** prove — no network, no
+  concurrency, no managed service, and a GIN index the planner did not choose at
+  corpus scale.
+
 ## [2.12.0] - 2026-09-16
 
 ### Added

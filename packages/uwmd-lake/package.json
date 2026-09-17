@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/lake",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Reference PostgreSQL/JSONB lake adapter for UW Markdown (RFC 0049) — plans idempotent, parameterized load statements for canonical envelopes, block-value facts, receipts and package manifests without taking a database driver as a dependency.",
   "repository": {
     "type": "git",

@@ -28,8 +28,13 @@ const FACT: LakeFactInput = {
 const RECEIPT = {
   receipt_version: '1.1',
   subject: { representation: 'uwx', representation_version: '2.0', canonicalization: 'envelope', canonicalization_version: '1.0', digest: DIGEST },
-  computation: { pack_id: 'org.uwmd.multifamily', pack_version: '1.2.0', engine: '@uwmd/core', engine_version: '2.10.0', verdict: 'pass', results: [] },
-  policy: {},
+  computation: { pack_id: 'org.uwmd.multifamily', pack_version: '1.2.0', engine: '@uwmd/core', engine_version: '2.10.0', results: [] },
+  // The shape UW_RECEIPT_v1 actually defines. A receipt states its validation
+  // counts; it carries no verdict, because a verdict is what verifying one
+  // produces (§5). An earlier fixture invented `computation.verdict`, which is
+  // why a permanently-NULL projection column went unnoticed until a real
+  // PostgreSQL load ran the corpus.
+  policy: { policy_set: 'builtin', policy_set_version: '1.0', validation: { errors: 0, warnings: 5 } },
   issued_at: '2026-09-15T00:00:00Z',
   issuer: 'uwmd-cli',
   signature: null,
@@ -93,6 +98,28 @@ describe('planFact', () => {
   it('refuses a fact that cannot be keyed', () => {
     expect(() => planFact('public', { ...FACT, semantic_digest: '' })).toThrow(/LAKE_FACT_DIGEST/);
   });
+
+  it('stores a container fact as NULL, because the canonical row has no value of its own', () => {
+    // flattenEnvelopeBlockValues, block_values.csv and @uwmd/batch's JSONL all
+    // emit value_json '' for an object or an array: the children are the
+    // content. '' is not JSON, so passing it verbatim made a jsonb column
+    // refuse 21% of the conformance corpus.
+    for (const json_type of ['object', 'array'] as const) {
+      const { params } = planFact('public', { ...FACT, json_type, value_json: '' });
+      expect(params[5]).toBeNull();
+    }
+  });
+
+  it('keeps a container value that a producer does state', () => {
+    const { params } = planFact('public', { ...FACT, json_type: 'object', value_json: '{"a":1}' });
+    expect(params[5]).toBe('{"a":1}');
+  });
+
+  it('refuses a scalar with no value rather than nulling it', () => {
+    for (const json_type of ['string', 'number', 'boolean', 'null'] as const) {
+      expect(() => planFact('public', { ...FACT, json_type, value_json: '' })).toThrow(/LAKE_FACT_VALUE/);
+    }
+  });
 });
 
 describe('projectShadowColumns', () => {
@@ -139,11 +166,25 @@ describe('planReceipt', () => {
   it('keys by the canonical hash of the receipt and indexes the joinable fields', async () => {
     const statement = await planReceipt('public', RECEIPT);
     expect(statement.params[1]).toBe(DIGEST);
-    expect(statement.params[3]).toBe('pass');
-    expect(statement.params[4]).toBe('org.uwmd.multifamily');
-    expect(statement.params[6]).toBe('@uwmd/core');
-    expect(statement.params[10]).toBe(false);
+    expect(statement.params[3]).toBe('org.uwmd.multifamily');
+    expect(statement.params[4]).toBe('1.2.0');
+    expect(statement.params[5]).toBe('@uwmd/core');
+    expect(statement.params[9]).toBe(false);
     expect(statement.params[0]).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('projects the validation counts the receipt states, and nothing it does not', async () => {
+    const statement = await planReceipt('public', RECEIPT);
+    expect(statement.params[10]).toBe(0);
+    expect(statement.params[11]).toBe(5);
+    // There is no verdict column to project into.
+    expect(statement.sql).not.toContain('verdict');
+  });
+
+  it('leaves the counts null when a receipt states none, rather than guessing zero', async () => {
+    const statement = await planReceipt('public', { ...RECEIPT, policy: { policy_set: 'builtin' } });
+    expect(statement.params[10]).toBeNull();
+    expect(statement.params[11]).toBeNull();
   });
 
   it('gives byte-identical receipts the same key and a re-issue a different one', async () => {
@@ -156,7 +197,7 @@ describe('planReceipt', () => {
 
   it('marks a signed receipt', async () => {
     const statement = await planReceipt('public', { ...RECEIPT, signature: { alg: 'ed25519', value: 'x' } });
-    expect(statement.params[10]).toBe(true);
+    expect(statement.params[9]).toBe(true);
   });
 
   it('refuses a receipt with no subject digest to join on', async () => {

@@ -121,8 +121,41 @@ truth, set a PII policy, or replace CSV/JSON/JSONL interchange.
 
 ### Verification
 
-52 unit tests across the four source files, including an end-to-end load of
+64 unit tests across the four source files, including an end-to-end load of
 `examples/Parkview-Apts-Glendale-AZ.uwx.md` into an in-memory warehouse double
-that honours only primary keys and `ON CONFLICT`. No live PostgreSQL instance
-is exercised: a real load against a real server remains an adopter integration
-step, and that gap is stated rather than implied.
+that honours only primary keys and `ON CONFLICT`.
+
+Since **2026-09-16**, also a live load: the whole conformance corpus — 382
+documents, 24,380 facts, 10 receipts, 9 manifests, 24,809 statements — into
+PostgreSQL 18, twice, for identical row counts. See the
+[load record](../reviews/2026-09-16-lake-live-postgres.md).
+
+### Erratum, 2026-09-16 (lake schema 0.2)
+
+The live load corrected three things this RFC got wrong. None of them changes
+the boundary above; all three are in the projection, which the RFC always held
+to be non-normative.
+
+1. **The `uw_facts.value_json` column was `NOT NULL`.** UWMD's canonical fact
+   table represents an object or an array by its flattened children, so a
+   container row's `value_json` is empty — 21.6% of the corpus — and an empty
+   string is not `jsonb`. The column is now nullable under a CHECK that only a
+   container may omit it. "Canonical `value_json`" in **Boundary** above should
+   be read as *`value_json` where the canonical row has one*.
+2. **The `uw_receipts` verdict column projected a field that does not exist.**
+   **Boundary** says "receipt JSON plus indexed verdict"; no receipt carries a
+   verdict, because a verdict is what verifying one produces
+   (`UW_RECEIPT_v1` §5). The column and its index are replaced by
+   `validation_errors` / `validation_warnings` from `policy.validation`. Read
+   the `uw_documents` bullet's "validation verdict" the same way: it is the
+   caller-supplied `valid` / `error_count` / `warning_count` projection, not a
+   verdict the document states.
+3. **The DDL could not be sent through `LakeClient`.** It is one multi-command
+   script, and the interface is `query(sql, params)`, which is the extended
+   query protocol. `postgresLakeSchemaStatements()` now returns the commands
+   individually and is the source of truth.
+
+One question the load opened and did not close: `uw_packages` is keyed by the
+manifest's declared `package_id` rather than by a digest, so two packages
+claiming one id collapse. That is documented, not changed — changing it amends
+this RFC.
