@@ -226,28 +226,42 @@ describe('variable resolution', () => {
 // ─── Sandbox: the prototype chain is not reachable ────────────────────────────
 
 describe('path navigation cannot escape onto the prototype chain', () => {
-  // A formula is document-authored input. These would be the first two steps
-  // of reaching a constructor from inside the sandbox; both dead-end at null,
-  // the same answer §VIII.2 already gives for a missing path.
   const escapes = [
     'quick_metrics.__proto__',
     'quick_metrics.constructor',
+    'quick_metrics.prototype',
     'quick_metrics.constructor.prototype',
     "quick_metrics['__proto__']",
+    "quick_metrics['constructor']",
+    "quick_metrics['prototype']",
     "quick_metrics['constructor']['name']",
     'noi.__proto__.polluted',
+    'noi.prototype.polluted',
     '__proto__',
     'constructor',
+    'prototype',
+    '__proto__.polluted',
+    'constructor.name',
+    'prototype.polluted',
   ];
 
   for (const formula of escapes) {
-    it(`resolves ${formula} to null`, () => {
-      expect(evaluate(parseExpression(formula), makeCtx())).toBe(null);
+    it(`throws CALC-FORBIDDEN-PROP for ${formula}`, () => {
+      expect(() => evaluate(parseExpression(formula), makeCtx())).toThrow(/CALC-FORBIDDEN-PROP/);
+    });
+
+    it(`evaluateCalc captures CALC-FORBIDDEN-PROP for ${formula}`, () => {
+      const res = evaluateCalc(decl('test_sec', formula), makeCtx());
+      expect(res.ok).toBe(false);
+      expect(res.value).toBe(null);
+      expect(res.error?.code).toBe('CALC-FORBIDDEN-PROP');
     });
   }
 
-  it('does not reach inherited members', () => {
+  it('does not reach inherited members and enforces hasOwnProperty', () => {
     expect(evaluate(parseExpression('quick_metrics.toString'), makeCtx())).toBe(null);
+    expect(evaluate(parseExpression('quick_metrics.valueOf'), makeCtx())).toBe(null);
+    expect(evaluate(parseExpression('quick_metrics.hasOwnProperty'), makeCtx())).toBe(null);
   });
 });
 
@@ -600,7 +614,7 @@ deal_stage: underwriting
   function makeLeaseCtx(): CalcEvaluationContext {
     return {
       parsed: parseUWFile(LEASE_FIXTURE),
-      prior_results: { leases: LEASE_LIST },
+      prior_results: { leases: LEASE_LIST } as unknown as CalcEvaluationContext['prior_results'],
       locale: 'en-US',
     };
   }

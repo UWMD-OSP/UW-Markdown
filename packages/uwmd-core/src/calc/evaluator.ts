@@ -1,7 +1,7 @@
 // Tier-3 Calc Host — AST evaluator.
 // Variable resolution per §VIII.2; null propagation per §VIII.2.
 
-import { deepGet, getPathSegment, getSection, isBlockedSegment } from '../parser.js';
+import { getSection, isBlockedSegment } from '../parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
@@ -9,6 +9,11 @@ import { periodReferencePath, type Expr } from './parser.js';
 import { periodReferenceContract, resolvePeriodReference } from '../period-path.js';
 
 const MAX_NODES = 1024;
+const FORBIDDEN_PROPERTIES = new Set(['__proto__', 'constructor', 'prototype']);
+
+export function isForbiddenProperty(segment: string): boolean {
+  return FORBIDDEN_PROPERTIES.has(segment);
+}
 
 interface EvalState {
   nodes: number;
@@ -29,12 +34,24 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       return expr.value;
 
     case 'ident': {
+      if (isForbiddenProperty(expr.name)) {
+        throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${expr.name}'.`);
+      }
       const overridden = lookupOverride(expr.name, ctx);
       if (overridden !== undefined) return overridden;
       return resolveIdentifier(expr.name, ctx);
     }
 
     case 'path': {
+      if (isForbiddenProperty(expr.head)) {
+        throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${expr.head}'.`);
+      }
+      for (const seg of expr.segments) {
+        if (isForbiddenProperty(seg)) {
+          throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${seg}'.`);
+        }
+      }
+
       // The whole dotted path is checked first, so `dcf.exit_cap_rate` can be
       // overridden without shadowing everything else under `dcf`.
       const overridden = lookupOverride(
@@ -47,12 +64,21 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       let cur: unknown = head;
       for (const seg of expr.segments) {
         if (cur === null || cur === undefined) return null;
-        cur = getPathSegment(cur, seg);
+        if (typeof cur !== 'object' && typeof cur !== 'function') return null;
+        if (!Object.prototype.hasOwnProperty.call(cur, seg)) return null;
+        cur = (cur as Record<string, unknown>)[seg];
       }
       return coerceCalcValue(cur);
     }
 
     case 'period_path': {
+      if (
+        isForbiddenProperty(expr.head) ||
+        expr.series.some(isForbiddenProperty) ||
+        expr.segments.some(isForbiddenProperty)
+      ) {
+        throw new CalcError('CALC-FORBIDDEN-PROP', 'Access to forbidden property in period path.');
+      }
       periodReferenceContract(expr);
       const overridden = lookupOverride(periodReferencePath(expr), ctx);
       if (overridden !== undefined) return overridden;
@@ -61,7 +87,12 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
     }
 
     case 'call': {
-      const fn = BUILTINS[expr.name];
+      if (isForbiddenProperty(expr.name)) {
+        throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${expr.name}'.`);
+      }
+      const fn = Object.prototype.hasOwnProperty.call(BUILTINS, expr.name)
+        ? BUILTINS[expr.name]
+        : undefined;
       if (!fn) {
         throw new CalcError('CALC-RESOLVE-001', `Unknown function '${expr.name}'.`);
       }
@@ -137,7 +168,9 @@ function lookupOverride(path: string, ctx: CalcEvaluationContext): CalcValue | u
 function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue {
   // A blocked head is unresolvable for the same reason a blocked segment is:
   // no document-authored name may reach the prototype chain.
-  if (isBlockedSegment(name)) return null;
+  if (isForbiddenProperty(name) || isBlockedSegment(name)) {
+    throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${name}'.`);
+  }
 
   const fm = ctx.parsed.frontmatter as unknown as Record<string, unknown>;
   if (fm && Object.prototype.hasOwnProperty.call(fm, name)) {
@@ -150,7 +183,7 @@ function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue 
     // inside the JSON envelope). The parser stores the full envelope on
     // block.content; the user-facing data lives at block.content.content.
     const envelope = section.content as Record<string, unknown> | null | undefined;
-    const inner = envelope && typeof envelope === 'object' && 'content' in envelope
+    const inner = envelope && typeof envelope === 'object' && Object.prototype.hasOwnProperty.call(envelope, 'content')
       ? envelope.content
       : envelope;
     return coerceCalcValue(inner);
