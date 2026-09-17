@@ -25,6 +25,7 @@
     "verify-indexes": "node --test scripts/docs-site-sources.test.mjs && node scripts/verify-indexes.mjs",
     "verify-codes": "node scripts/verify-codes.mjs",
     "verify-release": "node scripts/verify-release.mjs",
+    "release:check": "node scripts/check-release-readiness.mjs",
     "typecheck:tests": "npm run typecheck:tests --workspaces --if-present",
     "lint": "biome lint .",
     "format": "biome format --write ."
