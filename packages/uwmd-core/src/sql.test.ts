@@ -22,7 +22,7 @@ describe('exportSql / exportSqlStatements', () => {
         cap_rate: 0.055,
         irr_projected: 0.12,
       },
-    },
+    } as unknown as UWDocumentEnvelope['frontmatter'],
     sections: {
       valuation: {
         annotation: { section: 'valuation' },
