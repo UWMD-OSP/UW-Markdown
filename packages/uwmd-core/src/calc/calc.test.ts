@@ -282,6 +282,9 @@ describe('builtins', () => {
     expect(evaluate(parseExpression('round(2.5, 0)'), makeCtx())).toBe(3);
     expect(evaluate(parseExpression('round(-2.5, 0)'), makeCtx())).toBe(-3);
     expect(evaluate(parseExpression('round(1.2345, 2)'), makeCtx())).toBe(1.23);
+    expect(evaluate(parseExpression('round(57960, -3)'), makeCtx())).toBe(58000);
+    expect(evaluate(parseExpression('round(1234, -2)'), makeCtx())).toBe(1200);
+    expect(evaluate(parseExpression('round(1250, -2)'), makeCtx())).toBe(1300);
   });
 
   it('pmt formula matches Excel', () => {
