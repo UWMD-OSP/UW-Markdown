@@ -19,17 +19,35 @@
  * of those.
  */
 
-export const UWMD_LAKE_SCHEMA_VERSION = '0.1' as const;
+export const UWMD_LAKE_SCHEMA_VERSION = '0.2' as const;
 
 /**
- * Returns the complete DDL as one idempotent script. Every statement is
- * `IF NOT EXISTS`, so re-running it against a loaded warehouse is a no-op.
+ * Returns the complete DDL as one idempotent script, for piping to `psql` or
+ * a migration runner that accepts a multi-statement file.
+ *
+ * **This string cannot be sent through `LakeClient.query`.** A client that is
+ * handed a values array — `pg` and `postgres.js` both, even when the array is
+ * empty — uses the extended query protocol, which carries exactly one command
+ * per message and answers a script with *cannot insert multiple commands into
+ * a prepared statement*. Use {@link postgresLakeSchemaStatements} for that.
  *
  * `schema` names the PostgreSQL schema the tables live in. It is validated
  * rather than escaped: a lake schema name is configuration, not user input,
  * and refusing an unexpected one is safer than quoting it.
  */
 export function postgresLakeSchema(schema = 'public'): string {
+  return `${postgresLakeSchemaStatements(schema).join('\n\n')}\n`;
+}
+
+/**
+ * The same DDL as an ordered array of single commands, each safe to send
+ * through `LakeClient.query(sql, [])`. This is the source of truth;
+ * {@link postgresLakeSchema} joins it.
+ *
+ * Order matters once: `uw_packages` precedes `uw_package_members`, which
+ * references it.
+ */
+export function postgresLakeSchemaStatements(schema = 'public'): string[] {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(schema)) {
     throw new LakeError(
       'LAKE_SCHEMA_NAME',
@@ -37,7 +55,7 @@ export function postgresLakeSchema(schema = 'public'): string {
     );
   }
   const q = (table: string) => `${schema}.${table}`;
-  return [
+  return splitStatements([
     `-- UW Markdown lake schema ${UWMD_LAKE_SCHEMA_VERSION} (RFC 0049). Canonical JSON is never discarded.`,
     `CREATE SCHEMA IF NOT EXISTS ${schema};`,
     '',
@@ -69,7 +87,12 @@ export function postgresLakeSchema(schema = 'public'): string {
     '  pointer          text NOT NULL,',
     '  json_type        text NOT NULL',
     "                   CHECK (json_type IN ('object', 'array', 'string', 'number', 'boolean', 'null')),",
-    '  value_json       jsonb NOT NULL,',
+    '  -- NULL only for a container. The canonical fact table represents an',
+    '  -- object or an array by its flattened children, not by a repeated blob,',
+    "  -- so those rows carry no value of their own -- json_type is the record",
+    '  -- and the children are the content. Every scalar row has a value.',
+    '  value_json       jsonb',
+    "                   CHECK (value_json IS NOT NULL OR json_type IN ('object', 'array')),",
     '  -- Typed shadow columns. NULL means "this fact is not of that type",',
     '  -- never "the value was missing"; value_json is the record.',
     '  value_number     double precision,',
@@ -90,7 +113,6 @@ export function postgresLakeSchema(schema = 'public'): string {
     '  receipt_digest   text PRIMARY KEY,',
     '  subject_digest   text NOT NULL,',
     '  receipt_version  text,',
-    '  verdict          text,',
     '  pack_id          text,',
     '  pack_version     text,',
     '  engine           text,',
@@ -98,11 +120,21 @@ export function postgresLakeSchema(schema = 'public'): string {
     '  issuer           text,',
     '  issued_at        timestamptz,',
     '  signed           boolean NOT NULL DEFAULT false,',
+    '  -- The counts the receipt states in policy.validation. There is no',
+    "  -- verdict column: a verdict is what *verifying* a receipt produces",
+    '  -- (UW_RECEIPT_v1 §5), not a field any receipt carries, so projecting',
+    '  -- one would index a column that is NULL for every real receipt.',
+    '  validation_errors   integer,',
+    '  validation_warnings integer,',
     '  receipt          jsonb NOT NULL',
     ');',
     `CREATE INDEX IF NOT EXISTS uw_receipts_subject_idx ON ${q('uw_receipts')} (subject_digest);`,
-    `CREATE INDEX IF NOT EXISTS uw_receipts_verdict_idx ON ${q('uw_receipts')} (verdict, pack_id);`,
+    `CREATE INDEX IF NOT EXISTS uw_receipts_pack_idx ON ${q('uw_receipts')} (pack_id, pack_version);`,
     '',
+    '-- Unlike every other table here, a package is keyed by the identity its',
+    '-- manifest declares, not by a digest, because package_id is what the links',
+    '-- between members resolve against. Two different packages that claim the',
+    '-- same package_id therefore collapse onto one row, last writer winning.',
     `CREATE TABLE IF NOT EXISTS ${q('uw_packages')} (`,
     '  package_id       text PRIMARY KEY,',
     '  package_version  text,',
@@ -140,8 +172,33 @@ export function postgresLakeSchema(schema = 'public'): string {
     '  evidence            jsonb NOT NULL,',
     '  PRIMARY KEY (semantic_digest, evidence_id)',
     ');',
-    '',
-  ].join('\n');
+  ]);
+}
+
+/**
+ * Groups the DDL lines into one string per command.
+ *
+ * The lines are this module's own, so the rule is simply "a command ends at a
+ * line whose last character is a semicolon". Nothing here contains a string
+ * literal with a semicolon in it, and a schema name that could introduce one
+ * is refused above rather than escaped. A `--` comment is never a terminator,
+ * because prose ends sentences with semicolons and some of this prose does.
+ */
+function splitStatements(lines: readonly string[]): string[] {
+  const statements: string[] = [];
+  let current: string[] = [];
+  for (const line of lines) {
+    if (line === '') continue;
+    current.push(line);
+    if (!line.trimStart().startsWith('--') && line.trimEnd().endsWith(';')) {
+      statements.push(current.join('\n'));
+      current = [];
+    }
+  }
+  if (current.length > 0) {
+    throw new LakeError('LAKE_SCHEMA_SPLIT', 'The lake DDL ended with an unterminated statement.');
+  }
+  return statements;
 }
 
 export class LakeError extends Error {

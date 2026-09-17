@@ -16,7 +16,7 @@
  */
 
 import { sha256Hex } from '@uwmd/core';
-import { LakeError } from './schema.js';
+import { LakeError, UWMD_LAKE_SCHEMA_VERSION } from './schema.js';
 
 /** One parameterized statement. `params` positions match `$1..$n` in `sql`. */
 export interface LakeStatement {
@@ -144,7 +144,7 @@ export async function planLakeLoad(input: LakeLoadInput): Promise<LakeLoadPlan> 
   for (const evidence of input.source_evidence ?? []) statements.push(planSourceEvidence(schema, evidence));
 
   return {
-    schema_version: '0.1',
+    schema_version: UWMD_LAKE_SCHEMA_VERSION,
     schema,
     statements,
     counts: {
@@ -245,7 +245,7 @@ export function planFact(schema: string, fact: LakeFactInput): LakeStatement {
       fact.scope,
       fact.pointer,
       fact.json_type,
-      fact.value_json,
+      containerAwareValueJSON(fact, digest),
       shadow.value_number,
       shadow.value_text,
       shadow.value_boolean,
@@ -256,6 +256,29 @@ export function planFact(schema: string, fact: LakeFactInput): LakeStatement {
       fact.valid ?? null,
     ],
   };
+}
+
+/**
+ * Resolves the `value_json` a fact row actually stores.
+ *
+ * UWMD's canonical fact table — `block_values.csv`, `@uwmd/batch`'s JSONL and
+ * `flattenEnvelopeBlockValues` alike — represents an object or an array by its
+ * flattened children and leaves the container's own `value_json` empty. That
+ * empty string is not JSON, so a `jsonb` column refuses it; before this the
+ * adapter could not load 21% of its own canonical output. A container becomes
+ * a SQL NULL, which is what "this row has no value of its own" means.
+ *
+ * A *scalar* with an empty `value_json` is a different thing entirely — a
+ * malformed fact, not a container — and is refused rather than nulled, because
+ * silently storing NULL would lose the value the row claims to have.
+ */
+function containerAwareValueJSON(fact: LakeFactInput, digest: string): string | null {
+  if (fact.value_json !== '') return fact.value_json;
+  if (fact.json_type === 'object' || fact.json_type === 'array') return null;
+  throw new LakeError(
+    'LAKE_FACT_VALUE',
+    `Fact ${digest} ${fact.block_ref}${fact.pointer} declares json_type "${fact.json_type}" but carries an empty value_json. Only an object or an array may omit its value; a scalar without one is malformed.`,
+  );
 }
 
 export async function planReceipt(
@@ -277,21 +300,22 @@ export async function planReceipt(
   return {
     sql: [
       `INSERT INTO ${schema}.uw_receipts (`,
-      '  receipt_digest, subject_digest, receipt_version, verdict, pack_id, pack_version,',
-      '  engine, engine_version, issuer, issued_at, signed, receipt',
-      ') VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
+      '  receipt_digest, subject_digest, receipt_version, pack_id, pack_version,',
+      '  engine, engine_version, issuer, issued_at, signed,',
+      '  validation_errors, validation_warnings, receipt',
+      ') VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
       'ON CONFLICT (receipt_digest) DO UPDATE SET',
       '  subject_digest = EXCLUDED.subject_digest, receipt_version = EXCLUDED.receipt_version,',
-      '  verdict = EXCLUDED.verdict, pack_id = EXCLUDED.pack_id, pack_version = EXCLUDED.pack_version,',
+      '  pack_id = EXCLUDED.pack_id, pack_version = EXCLUDED.pack_version,',
       '  engine = EXCLUDED.engine, engine_version = EXCLUDED.engine_version,',
       '  issuer = EXCLUDED.issuer, issued_at = EXCLUDED.issued_at,',
-      '  signed = EXCLUDED.signed, receipt = EXCLUDED.receipt',
+      '  signed = EXCLUDED.signed, validation_errors = EXCLUDED.validation_errors,',
+      '  validation_warnings = EXCLUDED.validation_warnings, receipt = EXCLUDED.receipt',
     ].join('\n'),
     params: [
       receiptDigest,
       subjectDigest,
       text(receipt.receipt_version),
-      text(receipt.verdict) ?? text(computation?.verdict) ?? text(policy?.verdict),
       text(computation?.pack_id) ?? text(policy?.pack_id) ?? text(computation?.pack),
       text(computation?.pack_version),
       text(computation?.engine),
@@ -299,6 +323,8 @@ export async function planReceipt(
       text(receipt.issuer),
       text(receipt.issued_at),
       receipt.signature !== null && receipt.signature !== undefined,
+      count(asRecord(policy?.validation)?.errors),
+      count(asRecord(policy?.validation)?.warnings),
       JSON.stringify(receipt),
     ],
   };
@@ -430,8 +456,10 @@ export function projectShadowColumns(fact: Pick<LakeFactInput, 'json_type' | 'va
   try {
     parsed = JSON.parse(fact.value_json);
   } catch {
-    // A fact whose value_json will not parse still loads: value_json is stored
-    // verbatim by the caller and the projection simply stays empty.
+    // The projection stays empty rather than guessing. Whether the row loads
+    // at all is the column's business: `value_json` is `jsonb`, so PostgreSQL
+    // refuses text that is not JSON. Only a container's absent value is
+    // representable, and it becomes NULL — see containerAwareValueJSON.
     return empty;
   }
   switch (fact.json_type) {
@@ -484,6 +512,11 @@ function text(value: unknown): string | null {
 
 function nullable(value: string | null | undefined): string | null {
   return value ?? null;
+}
+
+/** A stated non-negative count, or null. Never a coerced string. */
+function count(value: unknown): number | null {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : null;
 }
 
 function requireText(value: unknown, code: string, message: string): string {

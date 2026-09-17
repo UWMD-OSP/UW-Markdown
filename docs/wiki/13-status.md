@@ -107,9 +107,24 @@ from 2.10.0, `TAX-08` (whether the terminal tax is inside exit NOI).
 Gate totals at the cut: **1,937 core tests**, **558 default conformance
 checks**, **44 JSON schemas**. Protocol **2.15.0**.
 
-For the lake adapter, **no live PostgreSQL instance has been exercised**: 52
-unit tests cover it against an in-memory warehouse double, so a real load and
-the publication decision both remain open.
+For the lake adapter, a live load **has now been run** (2026-09-16, after the
+2.12.0 cut): the whole conformance corpus — 382 documents, 24,380 facts, 24,809
+statements — into PostgreSQL 18, twice, for identical row counts. It found three
+defects the in-memory double could not, all fixed in `@uwmd/lake` **0.2.0** /
+lake schema **0.2**:
+
+- `uw_facts.value_json` was `NOT NULL`, so the **21.6% of canonical facts that
+  are containers** — an object or an array, which UWMD represents by its
+  flattened children and leaves valueless — could not load at all;
+- `uw_receipts.verdict` projected a field no receipt carries, because a verdict
+  is what *verifying* a receipt produces, not something it states. The unit test
+  missed it by inventing the field in its fixture;
+- the documented DDL call could not work: a multi-command script cannot go
+  through a parameterized `query(sql, params)`.
+
+The publication decision stays open — no managed service, network or concurrent
+loader has been exercised. See the
+[load record](../reviews/2026-09-16-lake-live-postgres.md).
 
 ## Property cash-flow assembly released in 2.9.0
 

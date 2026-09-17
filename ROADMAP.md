@@ -1,14 +1,14 @@
 # Roadmap
 
-Current as of **2026-09-16**, following [release 2.11.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.11.0).
+Current as of **2026-09-16**, following [release 2.12.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.12.0).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
 ## Current release
 
-Core/CLI **2.11.0**, signing **0.2.15** and batch **0.8.10** are published on
-npm. Format is **2.0** and Protocol is **2.15.0**. The version streams are
+Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** are published on
+npm. Format is **2.0** and Protocol is **2.17.0**. The version streams are
 independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
@@ -67,6 +67,30 @@ The source CLI also gained `verify-cash-flows`, which checks stated cash-flow
 metrics without a custom script and distinguishes no claims from verified ones.
 See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
 
+## Released in 2.12.0
+
+Two RFCs and one CI guard, with Protocol **2.17.0**. Both contracts are
+additive: every member is optional, so a document stating none of them validates
+exactly as it did at 2.11.0.
+
+| RFC | Scope |
+|---|---|
+| 0058 | Expense recoveries and the CAM true-up on the commercial tenant record (§4.3), registering the `REC-NN` family. `REC-09` requires the settled amount to resolve to a §4.26 cash-flow row, so assembly and receipt coverage verify it rather than trusting it. Nothing is projected, grossed up or allocated across tenants. |
+| 0059 | Distribution-waterfall clawback as the terminal true-up protocol §XVI predicted (§4.27, protocol §VIII.10 step 5), registering `WF-10`–`WF-13` and the `WF-15` warning. Every basis is closed-form — the IRR floor reuses RFC 0036's hurdle balance rather than iterating. The `cap` must be `"promote_received"`: a GP cannot owe back more promote than it received. Nothing is escrowed, crystallized per period or projected. |
+
+RFC 0058 leaves two figures **stated, not recomputed**, and says why: a
+cumulative or compounding cap depends on base-year history no single document
+carries, and allocating the pool across tenants needs a vacant-space policy,
+which is a modeling decision rather than a verification.
+
+`verify-codes` joined CI in the same cut. RFC 0058 first shipped nine of its ten
+codes — `REC-09` was in the RFC, the format spec and the schema, and nowhere in
+the validator, and no gate went red, because a missing refusal looks exactly
+like a document with nothing to refuse. The guard cross-checks every code an
+implemented RFC or a format-spec bullet promises against what `@uwmd/core`
+actually emits. Gate totals at the cut: **1,994 core tests**, **589 default
+conformance checks**, **46 JSON schemas**, **221 emitted codes**.
+
 ## Released in 2.11.0
 
 Five RFCs, with Protocol **2.15.0**. All additive: every member of every new
@@ -88,8 +112,9 @@ strike crossing is projected and no stated saving is applied. Typed-but-inert is
 the intended state: the format learns to *say* these things before anything acts
 on them, and each consumer arrives with its own contract.
 
-For the lake adapter, a real load against a live PostgreSQL server is still an
-adopter integration step, and the publication decision is open. See the
+For the lake adapter, a real load against a live PostgreSQL server ran on
+2026-09-16 and is recorded [here](docs/reviews/2026-09-16-lake-live-postgres.md);
+a managed-service run and the publication decision are still open. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
 
@@ -167,7 +192,7 @@ no additional financial assumptions are supplied by the released adapter.
 | Work | State | Next evidence |
 |---|---|---|
 | Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
-| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0 (`@uwmd/lake` 0.1.1, unpublished) | Run a load against a live PostgreSQL instance and report query ergonomics; decide whether the package is published. |
+| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16** (`@uwmd/lake` 0.2.0, unpublished) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency, and the publication decision. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing

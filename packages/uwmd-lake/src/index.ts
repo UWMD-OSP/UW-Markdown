@@ -13,14 +13,19 @@
  *   |-----------------------------------|-----------------------------------|
  *   | `uw_documents.envelope` jsonb     | every other `uw_documents` column |
  *   | `uw_facts.value_json` jsonb       | `value_number` / `value_text` / … |
- *   | `uw_receipts.receipt` jsonb       | verdict / pack / engine columns   |
+ *   | `uw_receipts.receipt` jsonb       | pack / engine / validation counts |
  *   | `uw_packages.manifest` jsonb      | member and link counts            |
  *
  * A query that disagrees with the calc engine is a query against the
  * projection; the JSONB column is the answer of record.
  */
 
-export { UWMD_LAKE_SCHEMA_VERSION, postgresLakeSchema, LakeError } from './schema.js';
+export {
+  UWMD_LAKE_SCHEMA_VERSION,
+  postgresLakeSchema,
+  postgresLakeSchemaStatements,
+  LakeError,
+} from './schema.js';
 
 export {
   planLakeLoad,

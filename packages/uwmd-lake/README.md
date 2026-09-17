@@ -17,7 +17,7 @@ part of validation.
 |---|---|
 | `uw_documents.envelope` jsonb | `deal_id`, `asset_class`, `currency_code`, … |
 | `uw_facts.value_json` jsonb | `value_number` / `value_text` / `value_boolean` / `value_date` |
-| `uw_receipts.receipt` jsonb | `verdict`, `pack_id`, `engine`, `subject_digest` |
+| `uw_receipts.receipt` jsonb | `pack_id`, `engine`, `subject_digest`, validation counts |
 | `uw_packages.manifest` jsonb | `member_count`, `link_count` |
 
 If a warehouse query disagrees with the calc engine, the query is against the
@@ -27,12 +27,20 @@ PII policy, or replace the CSV/JSON/JSONL interchange.
 
 ## Identity and idempotency
 
-Everything is keyed by digest, never by file path:
+Rows are keyed by digest, never by file path:
 
 - a document by its **semantic digest**;
 - a fact by `(semantic_digest, block_ref, scope, pointer)`;
 - a package member by its **byte digest** (`sha256`);
 - a receipt by the canonical hash of the receipt JSON.
+
+A package is the one exception: `uw_packages` is keyed by the `package_id` its
+manifest declares, because that is what the links between members resolve
+against. Two different packages claiming the same `package_id` therefore
+collapse onto one row, last writer winning. Likewise, two files whose content
+is semantically identical share a semantic digest and so share one
+`uw_documents` row — `path` records whichever loaded last, which is why it is a
+convenience column and not an identity.
 
 Every statement is an `INSERT … ON CONFLICT … DO UPDATE`, so loading the same
 bundle twice leaves the same rows. A document that *changed* has a different
@@ -45,7 +53,7 @@ than overwriting history.
 import { readFile } from 'node:fs/promises';
 import { parseUWFile, toUWEnvelope } from '@uwmd/core';
 import {
-  postgresLakeSchema,
+  postgresLakeSchemaStatements,
   lakeInputFromEnvelope,
   planLakeLoad,
   executeLakeLoad,
@@ -55,8 +63,11 @@ import pg from 'pg';
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const client = { query: (sql, params) => pool.query(sql, [...params]) };
 
-// 1. Create the schema. The DDL is idempotent; re-running it is a no-op.
-await client.query(postgresLakeSchema('uwmd_lake'), []);
+// 1. Create the schema, one command at a time. The DDL is idempotent;
+//    re-running it is a no-op.
+for (const statement of postgresLakeSchemaStatements('uwmd_lake')) {
+  await client.query(statement, []);
+}
 
 // 2. Project a document into a document row plus its complete fact table.
 const envelope = toUWEnvelope(parseUWFile(await readFile('deal.uwx.md', 'utf8')));
@@ -108,6 +119,7 @@ code:
 | `LAKE_DOCUMENT_ENVELOPE` | A typed projection with no canonical JSON behind it is not loadable. |
 | `LAKE_RECEIPT_SUBJECT` | A receipt with no `subject.digest` joins to nothing. |
 | `LAKE_PACKAGE_MEMBER_DIGEST` | A member's byte digest is its identity. |
+| `LAKE_FACT_VALUE` | A *scalar* fact declared a JSON type but carried no `value_json`. Only an object or an array may omit its value. |
 | `LAKE_SOURCE_BYTES` | Source evidence carried a bytes-bearing field. The lake stores identity and status only. |
 | `LAKE_CSV_*` / `LAKE_JSONL_*` | A malformed input line, refused rather than half-loaded. |
 
@@ -115,6 +127,15 @@ Two more deliberate non-behaviors: a numeric-looking *string* never lands in
 `value_number` (a warehouse that guesses types answers filters differently from
 the calc engine), and an unknown extra CSV column is ignored rather than
 rejected, so a future bundle revision still loads.
+
+### Containers have no value of their own
+
+UWMD's canonical fact table represents an object or an array by its flattened
+children, so the container's own row carries an empty `value_json` — about 21%
+of the rows in a real corpus. `uw_facts.value_json` is therefore nullable, with
+a CHECK that only an object or an array may omit it: a container becomes SQL
+NULL, and `json_type` plus the child rows are the record. A scalar with no
+value is a malformed fact and is refused.
 
 ## Querying
 
@@ -125,11 +146,17 @@ FROM uwmd_lake.uw_facts f
 JOIN uwmd_lake.uw_documents d USING (semantic_digest)
 WHERE f.pointer = '/noi' AND f.value_number > 1000000 AND d.valid;
 
--- Every passing receipt over a document, by digest.
-SELECT r.pack_id, r.verdict, r.issued_at
+-- Every clean receipt over a document, by digest.
+SELECT r.pack_id, r.engine_version, r.issued_at
 FROM uwmd_lake.uw_receipts r
-WHERE r.subject_digest = $1 AND r.verdict = 'pass';
+WHERE r.subject_digest = $1 AND r.validation_errors = 0;
 ```
+
+There is no `verdict` column. A verdict is what *verifying* a receipt produces
+(`UW_RECEIPT_v1` §5) — `verified`, `failed`, `unverifiable` — not something a
+receipt states about itself, so projecting one would index a column that is
+NULL for every real receipt. What a receipt does carry is its
+`policy.validation` counts, and those are the columns above.
 
 ## License
 
