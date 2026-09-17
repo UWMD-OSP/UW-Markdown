@@ -144,6 +144,12 @@ export {
   UW_CSV_BUNDLE_CODEC,
 } from './uwcsv.js';
 export type { UWCSVBundle, UWCSVDecodeOptions, UWBlockValueRow, UWJSONValueType } from './uwcsv.js';
+export {
+  exportSql,
+  exportSqlStatements,
+  UWSqlError,
+} from './sql.js';
+export type { ExportSqlOptions } from './sql.js';
 export { CORE_CODEC_REGISTRY, encodeUWDocument, decodeUWDocument } from './codecs.js';
 export {
   UWMD_PUBLIC_ORIGIN,

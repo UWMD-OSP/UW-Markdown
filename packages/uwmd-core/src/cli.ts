@@ -13,6 +13,7 @@ import { generateBlankUWFile } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
 import { stringifyUWEnvelope } from './uwjson.js';
+import { exportSql } from './sql.js';
 import {
   stampEnvelopeDigest,
   toUWEnvelope,
@@ -644,6 +645,13 @@ function cmdSummary(file: string): void {
 }
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
+  const rawFormat = flags['format'];
+  const format = typeof rawFormat === 'string' ? rawFormat.toLowerCase() : undefined;
+  if (format && format !== 'json' && format !== 'uw-json' && format !== 'sql') {
+    console.error(`Unknown export format '${format}'. Supported formats: json, sql.`);
+    process.exit(1);
+  }
+
   const includeSuperseded = !(flags['no-superseded'] === true || flags['compact'] === true);
   // --resolved exports the assembled record. Exporting the directive instead
   // would ship a document whose rent roll is a list of filenames.
@@ -651,7 +659,29 @@ async function cmdExport(file: string, flags: Record<string, string | boolean>):
     ? toUWEnvelope(withResolved(parseUWFile(readFile(file)), file, flags))
     : await loadEnvelope(file);
   const envelope = includeSuperseded ? loaded : { ...loaded, superseded: {} };
-  const text = stringifyUWEnvelope(await stampEnvelopeDigest(envelope));
+  const stamped = await stampEnvelopeDigest(envelope);
+
+  if (format === 'sql') {
+    const schema = typeof flags['schema'] === 'string' ? flags['schema'] : undefined;
+    const includeDdl = flags['no-ddl'] !== true;
+    const includeViews = flags['no-views'] !== true;
+    const text = exportSql(stamped, { schema, includeDdl, includeViews });
+
+    const outPath = flags['output']
+      ? resolve(flags['output'] as string)
+      : resolve(replaceUWExtension(file, '.sql'));
+
+    if (flags['stdout']) {
+      process.stdout.write(text);
+      return;
+    }
+
+    writeFileSync(outPath, text, 'utf-8');
+    console.log(`Exported ${basename(file)} → ${basename(outPath)} (.sql)`);
+    return;
+  }
+
+  const text = stringifyUWEnvelope(stamped);
 
   // Default output path: swap the .uw.md suffix for .uw.json (fall back to appending).
   const outPath = flags['output']
@@ -1773,7 +1803,7 @@ switch (command) {
     break;
 
   case 'export':
-    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--resolved] [--stdout]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--format json|sql] [--output <file>] [--no-superseded] [--resolved] [--stdout]'); process.exit(1); }
     await cmdExport(positional[0], flags);
     break;
 
