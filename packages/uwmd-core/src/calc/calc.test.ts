@@ -534,3 +534,124 @@ describe('evaluateCalc — the quantization boundary', () => {
     expect(evaluateCalc(d, makeCtx()).value).toBe(evaluateCalc(d, makeCtx()).value);
   });
 });
+
+describe('array indexing and collection helpers (RFC 0019)', () => {
+  const LEASE_LIST = [
+    {
+      tenant: 'Acme Retail',
+      base_rent: 50000,
+      sqft: 2500,
+      active: true,
+      recoveries: [
+        { expense_type: 'cam', amount: 3500 },
+        { expense_type: 'tax', amount: 2500 },
+      ],
+    },
+    {
+      tenant: 'Beta Cafe',
+      base_rent: 30000,
+      sqft: 1200,
+      active: true,
+      recoveries: [{ expense_type: 'cam', amount: 1800 }],
+    },
+    {
+      tenant: 'Gamma Vacant',
+      base_rent: 0,
+      sqft: 1500,
+      active: false,
+      recoveries: [],
+    },
+  ];
+
+  const LEASE_FIXTURE = `---
+uw_version: "1.1"
+deal_id: "uw_lease_test"
+deal_name: "Lease Test"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "100 Main St"
+city: "Dallas"
+state: "TX"
+zip: "75001"
+asset_class: retail
+status: draft
+deal_stage: underwriting
+---
+
+\`\`\`json uw:section=rent_roll source=manual confidence=high
+{
+  "section_id": "rent_roll",
+  "_meta": {
+    "section_id": "rent_roll",
+    "version": 1,
+    "timestamp": "2026-01-01T00:00:00Z",
+    "source": "manual",
+    "actor": "tester",
+    "confidence": "high"
+  },
+  "content": {
+    "tenant_count": 3,
+    "leases": ${JSON.stringify(LEASE_LIST)}
+  }
+}
+\`\`\`
+`;
+
+  function makeLeaseCtx(): CalcEvaluationContext {
+    return {
+      parsed: parseUWFile(LEASE_FIXTURE),
+      prior_results: { leases: LEASE_LIST },
+      locale: 'en-US',
+    };
+  }
+
+  it('indexes array items with bracket notation', () => {
+    const ctx = makeLeaseCtx();
+    expect(evaluate(parseExpression('leases[0].tenant'), ctx)).toBe('Acme Retail');
+    expect(evaluate(parseExpression('leases[0].base_rent'), ctx)).toBe(50000);
+    expect(evaluate(parseExpression('leases[1].tenant'), ctx)).toBe('Beta Cafe');
+    expect(evaluate(parseExpression('leases[1].base_rent'), ctx)).toBe(30000);
+    expect(evaluate(parseExpression('rent_roll.leases[0].base_rent'), ctx)).toBe(50000);
+  });
+
+  it('indexes nested arrays with chained bracket notation', () => {
+    const ctx = makeLeaseCtx();
+    expect(evaluate(parseExpression('leases[0].recoveries[0].amount'), ctx)).toBe(3500);
+    expect(evaluate(parseExpression('leases[0].recoveries[1].amount'), ctx)).toBe(2500);
+    expect(evaluate(parseExpression('leases[1].recoveries[0].amount'), ctx)).toBe(1800);
+  });
+
+  it('returns null safely for out-of-bounds array indices', () => {
+    const ctx = makeLeaseCtx();
+    expect(evaluate(parseExpression('leases[99]'), ctx)).toBe(null);
+    expect(evaluate(parseExpression('leases[99].base_rent'), ctx)).toBe(null);
+    expect(evaluate(parseExpression('leases[0].recoveries[99]'), ctx)).toBe(null);
+    expect(evaluate(parseExpression('leases[0].recoveries[99].amount'), ctx)).toBe(null);
+  });
+
+  it('rejects negative or floating point bracket indices at parse time', () => {
+    expect(() => parseExpression('leases[-1]')).toThrow(/CALC-PARSE-001/);
+    expect(() => parseExpression('leases[1.5]')).toThrow(/CALC-PARSE-001/);
+  });
+
+  it('sum_by aggregates numeric property across an array', () => {
+    const ctx = makeLeaseCtx();
+    expect(evaluate(parseExpression("sum_by(leases, 'base_rent')"), ctx)).toBe(80000);
+    expect(evaluate(parseExpression("sum_by(leases, 'sqft')"), ctx)).toBe(5200);
+    expect(evaluate(parseExpression("sum_by(rent_roll.leases, 'base_rent')"), ctx)).toBe(80000);
+    expect(evaluate(parseExpression("sum_by(null, 'base_rent')"), ctx)).toBe(0);
+  });
+
+  it('sum_by throws CALC-TYPE-001 on non-array or non-numeric types', () => {
+    const ctx = makeLeaseCtx();
+    expect(() => evaluate(parseExpression("sum_by(123, 'base_rent')"), ctx)).toThrow(/CALC-TYPE-001/);
+    expect(() => evaluate(parseExpression("sum_by(leases, 'tenant')"), ctx)).toThrow(/CALC-TYPE-001/);
+  });
+
+  it('count_where counts matching truthy elements', () => {
+    const ctx = makeLeaseCtx();
+    expect(evaluate(parseExpression("count_where(leases, 'active')"), ctx)).toBe(2);
+    expect(evaluate(parseExpression("count_where(null, 'active')"), ctx)).toBe(0);
+  });
+});
+

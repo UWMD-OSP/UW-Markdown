@@ -3,6 +3,7 @@
 
 import { CalcError } from './errors.js';
 import { quantizeDecimal } from './quantize.js';
+import { deepGet } from '../parser.js';
 
 export type CalcValue = number | string | boolean | null;
 
@@ -91,6 +92,59 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
       throw new CalcError('CALC-TYPE-001', `if: condition must be boolean, got ${cond === null ? 'null' : typeof cond}.`);
     }
     return cond ? args[1]! : args[2]!;
+  },
+
+  // sum_by(array, key_path) — sums numeric property across objects in array.
+  sum_by(args) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `sum_by: expected 2 arguments (array, key_path), got ${args.length}.`);
+    }
+    const arr = args[0];
+    const keyPath = args[1];
+    if (arr === null || arr === undefined) return 0;
+    if (!Array.isArray(arr)) {
+      throw new CalcError('CALC-TYPE-001', `sum_by: first argument must be an array or null, got ${typeof arr}.`);
+    }
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `sum_by: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    let acc = 0;
+    for (const item of arr) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = deepGet(item, keyPath);
+      if (val === null || val === undefined) continue;
+      if (typeof val === 'number') {
+        acc += val;
+      } else {
+        throw new CalcError('CALC-TYPE-001', `sum_by: property '${keyPath}' must be a number or null, got ${typeof val}.`);
+      }
+    }
+    return acc;
+  },
+
+  // count_where(array, condition_path) — counts matching truthy elements.
+  count_where(args) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `count_where: expected 2 arguments (array, condition_path), got ${args.length}.`);
+    }
+    const arr = args[0];
+    const condPath = args[1];
+    if (arr === null || arr === undefined) return 0;
+    if (!Array.isArray(arr)) {
+      throw new CalcError('CALC-TYPE-001', `count_where: first argument must be an array or null, got ${typeof arr}.`);
+    }
+    if (typeof condPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `count_where: second argument must be a string property path, got ${typeof condPath}.`);
+    }
+    let count = 0;
+    for (const item of arr) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = deepGet(item, condPath);
+      if (val === true || (val !== null && val !== undefined && val !== false && val !== 0 && val !== '')) {
+        count++;
+      }
+    }
+    return count;
   },
 
   // round(num, dec) — half-away-from-zero, delegated to the single quantization
