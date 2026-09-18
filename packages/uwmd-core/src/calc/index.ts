@@ -11,7 +11,16 @@ import { quantizeDecimal, resolveRoundTo } from './quantize.js';
 
 export { parseExpression } from './parser.js';
 export { evaluate } from './evaluator.js';
-export { BUILTINS } from './builtins.js';
+export {
+  BUILTINS,
+  IRR_BRACKET_LO,
+  IRR_BRACKET_HI,
+  IRR_INITIAL_SEED,
+  IRR_MAX_ITER,
+  IRR_CONVERGENCE_EPSILON,
+  IRR_VALUE_TOL,
+  IRR_INTERVAL_TOL,
+} from './builtins.js';
 export type { CalcValue, Builtin } from './builtins.js';
 export { CalcError, calcError } from './errors.js';
 export type { CalcErrorCode } from './errors.js';

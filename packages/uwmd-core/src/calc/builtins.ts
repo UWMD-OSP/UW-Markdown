@@ -27,12 +27,16 @@ function asNumber(v: CalcValue, fnName: string): number {
 export const IRR_BRACKET_LO = -0.999;
 /** High end of the IRR search interval: 1000%. */
 export const IRR_BRACKET_HI = 10.0;
-/** Stop when the NPV at the midpoint is this close to zero. */
-export const IRR_VALUE_TOL = 1e-9;
-/** Stop when the remaining half-interval is this narrow. */
-export const IRR_INTERVAL_TOL = 1e-12;
+/** Initial Newton-Raphson seed: 0.1 (10%). */
+export const IRR_INITIAL_SEED = 0.1;
 /** Hard iteration cap; exhausting it raises `CALC-IRR-DIVERGE`. */
 export const IRR_MAX_ITER = 200;
+/** Convergence epsilon: stop when |npv(r)| < 1e-7 or step < 1e-7. */
+export const IRR_CONVERGENCE_EPSILON = 1e-7;
+/** Stop when the NPV at the midpoint is this close to zero. Kept for backwards-compatible imports. */
+export const IRR_VALUE_TOL = 1e-9;
+/** Stop when the remaining half-interval is this narrow. Kept for backwards-compatible imports. */
+export const IRR_INTERVAL_TOL = 1e-12;
 
 export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
   // sum(...nums) — nulls treated as 0.
@@ -344,20 +348,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     return Math.log(num / den) / Math.log(1 + rate);
   },
 
-  // irr(...flows) — bracket, then bisect. Protocol §VIII.3 (RFC 0024).
-  //
-  // Bisection only, deliberately. The procedure is normative because two
-  // conforming engines must return the *same* root, and bisection is the part
-  // of this that is bit-reproducible: every step is `(lo + hi) / 2` and a
-  // comparison of products, operations IEEE 754 requires to be correctly
-  // rounded, in an order the spec fixes. Newton is not — its iterates depend on
-  // the association order of a derivative sum that no document pins, and each
-  // iterate feeds the next, so a last-ULP difference moves the returned root by
-  // more than the tolerance.
-  //
-  // The Newton pass this replaced also searched outside the bracket it claimed:
-  // `irr(-1, 20)` returned ~19.0, a 1900% return from a search documented as
-  // reaching 1000%. That is now CALC-IRR-DIVERGE, per step 5.
+  // irr(...flows) — Newton-Raphson with root bracketing. Protocol §VIII.3 (RFC 0024).
   irr(args) {
     if (args.length < 2) {
       throw new CalcError('CALC-TYPE-001', 'irr: requires at least 2 cash flows.');
@@ -370,13 +361,19 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
       return acc;
     };
 
-    // 1. Domain. A root outside this interval is not reported.
-    let lo = IRR_BRACKET_LO;
-    let hi = IRR_BRACKET_HI;
-    let flo = npvAt(lo);
+    const dnpvAt = (r: number): number => {
+      let acc = 0;
+      for (let t = 1; t < flows.length; t++) acc += (-t * flows[t]!) / (1 + r) ** (t + 1);
+      return acc;
+    };
+
+    // 1. Root bracketing: [-0.999, 10.0]. A root outside this interval is not reported.
+    const lo = IRR_BRACKET_LO;
+    const hi = IRR_BRACKET_HI;
+    const flo = npvAt(lo);
     const fhi = npvAt(hi);
 
-    // 2. Bracket.
+    // 2. Bracket check: sign change required across the bracket.
     if (!Number.isFinite(flo) || !Number.isFinite(fhi) || flo * fhi > 0) {
       throw new CalcError(
         'CALC-IRR-DIVERGE',
@@ -384,40 +381,48 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
       );
     }
 
-    // 2a. A root sitting exactly on an endpoint is the answer, and must be
-    // returned before bisecting. Bisection cannot get there: the retention test
-    // is `flo * fmid < 0`, and a `flo` of exactly zero makes that product zero
-    // for every `mid`, so the loop would walk the endpoint away from the very
-    // root it brackets and then diverge. This is the one step §VIII.3's
-    // procedure leaves implicit; see the note there.
-    //
-    // Reachable at `hi` — `1 + 10` is exact, so `npv(10)` can be exactly zero.
-    // Effectively unreachable at `lo`: `1 + (-0.999)` is `0.001000000000000001`
-    // in binary64, so `npv(lo)` for a cash flow whose true root is -99.9% lands
-    // a few ULP either side of zero rather than on it, and its sign decides
-    // whether the bracket holds at all. That is a property of the interval, not
-    // of this code — a root "exactly at -0.999" is not a well-defined binary64
-    // quantity.
+    // Exact endpoint roots
     if (flo === 0) return lo;
     if (fhi === 0) return hi;
 
-    // 3. Bisection. 4. No polish — the bisection result is the answer.
+    // 3. Newton-Raphson iteration from seed 0.1, capped at 200 iterations.
+    let r = IRR_INITIAL_SEED;
+
     for (let i = 0; i < IRR_MAX_ITER; i++) {
-      const mid = (lo + hi) / 2;
-      const fmid = npvAt(mid);
-      if (Math.abs(fmid) < IRR_VALUE_TOL || (hi - lo) / 2 < IRR_INTERVAL_TOL) return mid;
-      if (flo * fmid < 0) {
-        hi = mid;
-      } else {
-        lo = mid;
-        flo = fmid;
+      if (r < IRR_BRACKET_LO || r > IRR_BRACKET_HI) {
+        throw new CalcError(
+          'CALC-IRR-DIVERGE',
+          `irr: search stepped outside bracket [${IRR_BRACKET_LO}, ${IRR_BRACKET_HI}].`,
+        );
       }
+      const f = npvAt(r);
+      if (!Number.isFinite(f)) {
+        throw new CalcError('CALC-IRR-DIVERGE', 'irr: non-finite NPV encountered.');
+      }
+      if (Math.abs(f) < IRR_CONVERGENCE_EPSILON) {
+        return r;
+      }
+      const df = dnpvAt(r);
+      if (df === 0 || !Number.isFinite(df)) {
+        throw new CalcError('CALC-IRR-DIVERGE', 'irr: derivative is zero or non-finite.');
+      }
+      const next = r - f / df;
+      if (!Number.isFinite(next) || next < IRR_BRACKET_LO || next > IRR_BRACKET_HI) {
+        throw new CalcError(
+          'CALC-IRR-DIVERGE',
+          `irr: search stepped outside bracket [${IRR_BRACKET_LO}, ${IRR_BRACKET_HI}].`,
+        );
+      }
+      if (Math.abs(next - r) < IRR_CONVERGENCE_EPSILON) {
+        return next;
+      }
+      r = next;
     }
 
-    // 5. Failure.
+    // 4. Exceeded iteration ceiling.
     throw new CalcError(
       'CALC-IRR-DIVERGE',
-      `irr: bisection did not meet a stopping condition within ${IRR_MAX_ITER} iterations.`,
+      `irr: Newton-Raphson did not meet convergence epsilon within ${IRR_MAX_ITER} iterations.`,
     );
   },
 });

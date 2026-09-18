@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { parseUWFile } from '../parser.js';
 import { evaluateCalc, evaluate, parseExpression } from './index.js';
 import type { CalcEvaluationContext, ModuleCalcDecl } from '../protocol.js';
+import { computeResultsDigest, type UWReceiptResult } from '../receipts.js';
 
 const FIXTURE = `---
 uw_version: "1.1"
@@ -360,6 +361,78 @@ describe('builtins', () => {
     for (const expr of ['irr(100, 200)', 'irr(-100, -200)']) {
       expect(() => evaluate(parseExpression(expr), makeCtx())).toThrow(/CALC-IRR-DIVERGE/);
     }
+  });
+
+  it('irr throws CALC-IRR-DIVERGE when search steps outside the bracket during iteration', () => {
+    // [-100, -200, 110] satisfies the initial bracket check flo * fhi < 0,
+    // but Newton-Raphson stepping from seed 0.1 steps outside [-0.999, 10].
+    expect(() => evaluate(parseExpression('irr(-100, -200, 110)'), makeCtx())).toThrow(
+      /CALC-IRR-DIVERGE/,
+    );
+  });
+
+  it('irr throws CALC-IRR-DIVERGE when Newton-Raphson exceeds max iteration ceiling (200)', () => {
+    // Non-converging oscillating cash flow vector that traverses within bracket without meeting epsilon
+    const expr =
+      'irr(-100, 70.40307235321438, 142.53822488266127, -127.99404409966249, 8.99288373556351)';
+    expect(() => evaluate(parseExpression(expr), makeCtx())).toThrow(/CALC-IRR-DIVERGE/);
+  });
+
+  it('asserts exact receipt digest reproducibility for standard and sensitive cash flow vectors', async () => {
+    const standardDecl: ModuleCalcDecl = {
+      id: 'standard_irr',
+      formula: 'irr(-1000000, 200000, 300000, 400000, 500000)',
+      unit: '%',
+    };
+    const sensitiveDeclLong: ModuleCalcDecl = {
+      id: 'sensitive_irr_long',
+      formula: 'irr(-10000000, 500000, 600000, 700000, 800000, 15000000)',
+      unit: '%',
+    };
+    const sensitiveDeclPrecision: ModuleCalcDecl = {
+      id: 'sensitive_irr_precision',
+      formula: 'irr(-1234567.89, 123456.78, 234567.89, 345678.9, 456789.01, 567890.12)',
+      unit: '%',
+    };
+
+    const c = makeCtx();
+
+    // Multiple independent evaluation runs
+    const run1 = [
+      evaluateCalc(standardDecl, c),
+      evaluateCalc(sensitiveDeclLong, c),
+      evaluateCalc(sensitiveDeclPrecision, c),
+    ];
+    const run2 = [
+      evaluateCalc(standardDecl, c),
+      evaluateCalc(sensitiveDeclLong, c),
+      evaluateCalc(sensitiveDeclPrecision, c),
+    ];
+
+    expect(run1[0]!.value).toBe(0.128257);
+    expect(run1[1]!.value).toBe(0.130735);
+    expect(run1[2]!.value).toBe(0.098937);
+
+    const results1: UWReceiptResult[] = run1.map((r) => ({
+      calc_id: r.calc_id,
+      value: r.value,
+      unit: r.unit,
+      computed: r.ok,
+    }));
+    const results2: UWReceiptResult[] = run2.map((r) => ({
+      calc_id: r.calc_id,
+      value: r.value,
+      unit: r.unit,
+      computed: r.ok,
+    }));
+
+    const digest1 = await computeResultsDigest(results1);
+    const digest2 = await computeResultsDigest(results2);
+
+    // Exact bit-identical reproducibility
+    expect(digest1).toBe(digest2);
+    // Pinned exact digest
+    expect(digest1).toBe('sha256:336a54250059cc5dc00d649cb00309a06077cd6cd7f2059362dfdc44f05b5350');
   });
 
   it('unknown function → CALC-RESOLVE-001', () => {
