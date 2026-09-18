@@ -669,3 +669,127 @@ deal_stage: underwriting
   });
 });
 
+describe('RFC 0041 period-indexed path navigation and array offsets', () => {
+  const PERIOD_FIXTURE = `---
+uw_version: "1.1"
+deal_id: PERIOD-TEST
+asset_class: multifamily
+status: draft
+deal_stage: underwriting
+---
+
+\`\`\`json uw:section=dcf source=manual confidence=high
+{
+  "section_id": "dcf",
+  "_meta": { "section_id": "dcf", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
+  "content": {
+    "annual_cash_flows": [
+      { "year": 1, "noi": 100000, "net_cash_flow": 80000 },
+      { "year": 2, "noi": 110000, "net_cash_flow": 88000 },
+      { "year": 3, "noi": 120000, "net_cash_flow": 95000 }
+    ]
+  }
+}
+\`\`\`
+
+\`\`\`json uw:section=noi_model source=manual confidence=high
+{
+  "section_id": "noi_model",
+  "_meta": { "section_id": "noi_model", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
+  "content": {
+    "projections": {
+      "year_1": { "projected_noi": 100000 },
+      "year_2": { "projected_noi": 110000 }
+    }
+  }
+}
+\`\`\`
+
+\`\`\`json uw:section=lease_up_schedule variant=base source=manual confidence=high
+{
+  "section_id": "lease_up_schedule",
+  "_meta": { "section_id": "lease_up_schedule", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
+  "content": {
+    "period_granularity": "quarterly",
+    "schedule": [
+      { "period": "2028-Q1", "rent_revenue": 25000 },
+      { "period": "2028-Q2", "rent_revenue": 30000 }
+    ]
+  }
+}
+\`\`\`
+
+\`\`\`json uw:section=cash_flow_series variant=base source=manual confidence=high
+{
+  "section_id": "cash_flow_series",
+  "_meta": { "section_id": "cash_flow_series", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
+  "content": {
+    "series": [
+      { "date": "2028-02-29", "amount": 45000 }
+    ]
+  }
+}
+\`\`\`
+`;
+
+  function makePeriodCtx(overrides?: Record<string, number | string | boolean | null>): CalcEvaluationContext {
+    return {
+      parsed: parseUWFile(PERIOD_FIXTURE),
+      prior_results: {},
+      locale: 'en-US',
+      ...(overrides ? { overrides } : {}),
+    };
+  }
+
+  it('navigates array series using period bracket notation', () => {
+    const ctx = makePeriodCtx();
+    expect(evaluate(parseExpression("dcf.annual_cash_flows['Y1'].noi"), ctx)).toBe(100000);
+    expect(evaluate(parseExpression("dcf.annual_cash_flows['Y2'].net_cash_flow"), ctx)).toBe(88000);
+    expect(evaluate(parseExpression("dcf.annual_cash_flows['Y3'].noi"), ctx)).toBe(120000);
+    expect(evaluate(parseExpression("lease_up_schedule.schedule['2028-Q1'].rent_revenue"), ctx)).toBe(25000);
+    expect(evaluate(parseExpression("lease_up_schedule.schedule['2028-Q2'].rent_revenue"), ctx)).toBe(30000);
+    expect(evaluate(parseExpression("cash_flow_series.series['2028-02-29'].amount"), ctx)).toBe(45000);
+  });
+
+  it('navigates keyed series using period bracket notation', () => {
+    const ctx = makePeriodCtx();
+    expect(evaluate(parseExpression("noi_model.projections['Y1'].projected_noi"), ctx)).toBe(100000);
+    expect(evaluate(parseExpression("noi_model.projections['Y2'].projected_noi"), ctx)).toBe(110000);
+  });
+
+  it('navigates array series using numeric array offsets', () => {
+    const ctx = makePeriodCtx();
+    expect(evaluate(parseExpression('dcf.annual_cash_flows[0].noi'), ctx)).toBe(100000);
+    expect(evaluate(parseExpression('dcf.annual_cash_flows[1].noi'), ctx)).toBe(110000);
+    expect(evaluate(parseExpression('dcf.annual_cash_flows[2].noi'), ctx)).toBe(120000);
+    expect(evaluate(parseExpression('lease_up_schedule.schedule[0].rent_revenue'), ctx)).toBe(25000);
+  });
+
+  it('returns null for missing periods or out-of-bounds offsets', () => {
+    const ctx = makePeriodCtx();
+    expect(evaluate(parseExpression("dcf.annual_cash_flows['Y99'].noi"), ctx)).toBe(null);
+    expect(evaluate(parseExpression('dcf.annual_cash_flows[99].noi'), ctx)).toBe(null);
+    expect(evaluate(parseExpression("noi_model.projections['Y99'].projected_noi"), ctx)).toBe(null);
+    expect(evaluate(parseExpression("lease_up_schedule.schedule['2099-Q4'].rent_revenue"), ctx)).toBe(null);
+  });
+
+  it('supports overrides on period paths', () => {
+    const ctx = makePeriodCtx({
+      'dcf.annual_cash_flows@Y1.noi': 999999,
+    });
+    expect(evaluate(parseExpression('dcf.annual_cash_flows@Y1.noi'), ctx)).toBe(999999);
+    expect(evaluate(parseExpression("dcf.annual_cash_flows['Y1'].noi"), ctx)).toBe(999999);
+  });
+
+  it('forbids prototype access in period paths and array traversal', () => {
+    const ctx = makePeriodCtx();
+    expect(() => evaluate(parseExpression("dcf.annual_cash_flows['__proto__']"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("dcf.annual_cash_flows['constructor']"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("dcf.annual_cash_flows['prototype']"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("dcf.annual_cash_flows['Y1'].__proto__"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression('dcf.annual_cash_flows@Y1.__proto__'), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression('dcf.annual_cash_flows@Y1.constructor'), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression('dcf.annual_cash_flows@Y1.prototype'), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+  });
+});
+

@@ -6,7 +6,8 @@ import type { CalcEvaluationContext } from '../protocol.js';
 import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
 import { periodReferencePath, type Expr } from './parser.js';
-import { periodReferenceContract, resolvePeriodReference } from '../period-path.js';
+import { periodReferenceContract, periodSection, resolvePeriodReference } from '../period-path.js';
+import { parsePeriodSelector } from '../periods.js';
 
 const MAX_NODES = 1024;
 const FORBIDDEN_PROPERTIES = new Set(['__proto__', 'constructor', 'prototype']);
@@ -59,14 +60,81 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
         ctx,
       );
       if (overridden !== undefined) return overridden;
+
+      // Also check period reference path override if a period selector segment exists
+      for (let i = 0; i < expr.segments.length; i++) {
+        const seg = expr.segments[i]!;
+        if (parsePeriodSelector(seg)) {
+          const seriesPart = [expr.head, ...expr.segments.slice(0, i)].join('.');
+          const rest = expr.segments.slice(i + 1);
+          const suffix = rest.length ? `.${rest.join('.')}` : '';
+          const altOverride = lookupOverride(`${seriesPart}@${seg}${suffix}`, ctx);
+          if (altOverride !== undefined) return altOverride;
+          break;
+        }
+      }
+
       const head = resolveIdentifier(expr.head, ctx);
       if (head === null || head === undefined) return null;
       let cur: unknown = head;
       for (const seg of expr.segments) {
         if (cur === null || cur === undefined) return null;
         if (typeof cur !== 'object' && typeof cur !== 'function') return null;
-        if (!Object.prototype.hasOwnProperty.call(cur, seg)) return null;
-        cur = (cur as Record<string, unknown>)[seg];
+        if (Object.prototype.hasOwnProperty.call(cur, seg)) {
+          cur = (cur as Record<string, unknown>)[seg];
+        } else if (Array.isArray(cur)) {
+          const key = parsePeriodSelector(seg);
+          if (!key) return null;
+          let matched: unknown = undefined;
+          for (const item of cur) {
+            if (item && typeof item === 'object') {
+              if (key.kind === 'year') {
+                if (
+                  (Object.prototype.hasOwnProperty.call(item, 'year') &&
+                    ((item as Record<string, unknown>).year === key.index ||
+                      (item as Record<string, unknown>).year === String(key.index))) ||
+                  (Object.prototype.hasOwnProperty.call(item, 'period') &&
+                    (item as Record<string, unknown>).period === seg)
+                ) {
+                  matched = item;
+                  break;
+                }
+              } else if (key.kind === 'quarter' || key.kind === 'month') {
+                if (
+                  Object.prototype.hasOwnProperty.call(item, 'period') &&
+                  (item as Record<string, unknown>).period === seg
+                ) {
+                  matched = item;
+                  break;
+                }
+              } else if (key.kind === 'date') {
+                if (
+                  (Object.prototype.hasOwnProperty.call(item, 'date') &&
+                    (item as Record<string, unknown>).date === key.date) ||
+                  (Object.prototype.hasOwnProperty.call(item, 'period') &&
+                    (item as Record<string, unknown>).period === seg)
+                ) {
+                  matched = item;
+                  break;
+                }
+              }
+            }
+          }
+          if (matched === undefined) return null;
+          cur = matched;
+        } else {
+          const key = parsePeriodSelector(seg);
+          if (key && key.kind === 'year') {
+            const yearKey = `year_${key.index}`;
+            if (Object.prototype.hasOwnProperty.call(cur, yearKey)) {
+              cur = (cur as Record<string, unknown>)[yearKey];
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        }
       }
       return coerceCalcValue(cur);
     }
@@ -75,13 +143,17 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       if (
         isForbiddenProperty(expr.head) ||
         expr.series.some(isForbiddenProperty) ||
-        expr.segments.some(isForbiddenProperty)
+        expr.segments.some(isForbiddenProperty) ||
+        isForbiddenProperty(expr.selector)
       ) {
         throw new CalcError('CALC-FORBIDDEN-PROP', 'Access to forbidden property in period path.');
       }
       periodReferenceContract(expr);
       const overridden = lookupOverride(periodReferencePath(expr), ctx);
       if (overridden !== undefined) return overridden;
+      const dotPath = [expr.head, ...expr.series, expr.selector, ...expr.segments].join('.');
+      const dotOverridden = lookupOverride(dotPath, ctx);
+      if (dotOverridden !== undefined) return dotOverridden;
       const value = resolvePeriodReference(ctx.parsed, expr, ctx);
       return typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean' ? value : null;
     }
@@ -177,7 +249,14 @@ function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue 
     return coerceCalcValue(fm[name]);
   }
 
-  const section = getSection(ctx.parsed, name);
+  let section = getSection(ctx.parsed, name);
+  if (!section && ctx.parsed?.sections) {
+    try {
+      section = periodSection(ctx.parsed, name, ctx);
+    } catch {
+      section = null;
+    }
+  }
   if (section) {
     // Per §VIII.2: identifier maps to the canonical block's content (user data
     // inside the JSON envelope). The parser stores the full envelope on

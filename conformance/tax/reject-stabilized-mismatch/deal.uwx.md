@@ -11,6 +11,7 @@ asset_class: multifamily
       "value": 58000,
       "abatement": {
         "kind": "phase_in",
+        "program": "Arizona GPLET",
         "stabilized_period": "Y2",
         "schedule": [
           {

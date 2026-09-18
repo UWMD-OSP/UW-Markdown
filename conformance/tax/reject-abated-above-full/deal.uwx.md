@@ -11,6 +11,7 @@ asset_class: multifamily
       "value": 100,
       "abatement": {
         "kind": "pilot",
+        "program": "County PILOT",
         "schedule": [
           {
             "period": "Y1",

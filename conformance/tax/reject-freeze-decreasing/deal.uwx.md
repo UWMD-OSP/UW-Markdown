@@ -11,6 +11,7 @@ asset_class: multifamily
       "value": 50,
       "abatement": {
         "kind": "freeze",
+        "program": "County Freeze",
         "schedule": [
           {
             "period": "Y1",
