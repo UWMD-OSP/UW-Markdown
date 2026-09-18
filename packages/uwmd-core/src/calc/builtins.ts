@@ -3,11 +3,108 @@
 
 import { CalcError } from './errors.js';
 import { quantizeDecimal } from './quantize.js';
-import { deepGet } from '../parser.js';
 
-export type CalcValue = number | string | boolean | null;
+export const MAX_NODES = 1024;
+export const FORBIDDEN_PROPERTIES = new Set(['__proto__', 'constructor', 'prototype']);
 
-export type Builtin = (args: CalcValue[]) => CalcValue;
+export function isForbiddenProperty(segment: string): boolean {
+  return FORBIDDEN_PROPERTIES.has(segment);
+}
+
+export interface EvalState {
+  nodes: number;
+}
+
+export type CalcValue = number | string | boolean | null | unknown[] | Record<string, unknown>;
+
+export type Builtin = (args: CalcValue[], state?: EvalState) => CalcValue;
+
+export function safeGetPath(obj: unknown, path: string): unknown {
+  if (typeof path !== 'string') {
+    throw new CalcError('CALC-TYPE-001', `Property path must be a string, got ${typeof path}.`);
+  }
+  if (path === '') return obj;
+
+  const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+  for (const seg of parts) {
+    if (isForbiddenProperty(seg)) {
+      throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${seg}'.`);
+    }
+  }
+  let cur = obj;
+  for (const seg of parts) {
+    if (cur === null || cur === undefined) return undefined;
+    if (typeof cur !== 'object' && typeof cur !== 'function') return undefined;
+    if (Array.isArray(cur)) {
+      if (/^\d+$/.test(seg)) {
+        const idx = Number.parseInt(seg, 10);
+        cur = cur[idx];
+      } else {
+        return undefined;
+      }
+    } else {
+      if (!Object.prototype.hasOwnProperty.call(cur, seg)) {
+        return undefined;
+      }
+      cur = (cur as Record<string, unknown>)[seg];
+    }
+  }
+  return cur;
+}
+
+export function extractCollection(
+  collection: unknown,
+  fnName: string,
+  state?: EvalState,
+): unknown[] {
+  if (collection === null || collection === undefined) return [];
+  if (Array.isArray(collection)) {
+    if (state) {
+      state.nodes += collection.length;
+      if (state.nodes > MAX_NODES) {
+        throw new CalcError('CALC-LIMIT-001', `Expression exceeds ${MAX_NODES} AST nodes.`);
+      }
+    }
+    return collection;
+  }
+  if (typeof collection === 'object') {
+    const keys = Object.keys(collection);
+    for (const k of keys) {
+      if (isForbiddenProperty(k)) {
+        throw new CalcError('CALC-FORBIDDEN-PROP', `Access to forbidden property '${k}'.`);
+      }
+    }
+    if (state) {
+      state.nodes += keys.length;
+      if (state.nodes > MAX_NODES) {
+        throw new CalcError('CALC-LIMIT-001', `Expression exceeds ${MAX_NODES} AST nodes.`);
+      }
+    }
+    const items: unknown[] = [];
+    for (const k of keys) {
+      if (Object.prototype.hasOwnProperty.call(collection, k)) {
+        items.push((collection as Record<string, unknown>)[k]);
+      }
+    }
+    return items;
+  }
+  throw new CalcError(
+    'CALC-TYPE-001',
+    `${fnName}: first argument must be an array, object, or null, got ${typeof collection}.`,
+  );
+}
+
+function isTruthy(val: unknown): boolean {
+  return val === true || (val !== null && val !== undefined && val !== false && val !== 0 && val !== '');
+}
+
+function matchesCondition(val: unknown, expected?: unknown): boolean {
+  if (expected !== undefined) {
+    if (val === undefined) val = null;
+    return val === expected;
+  }
+  return isTruthy(val);
+}
 
 function asNumberOrNull(v: CalcValue, fnName: string): number | null {
   if (v === null) return null;
@@ -98,24 +195,20 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     return cond ? args[1]! : args[2]!;
   },
 
-  // sum_by(array, key_path) — sums numeric property across objects in array.
-  sum_by(args) {
+  // sum_by(collection, key_path) — sums numeric property across objects in array or object.
+  sum_by(args, state) {
     if (args.length !== 2) {
-      throw new CalcError('CALC-TYPE-001', `sum_by: expected 2 arguments (array, key_path), got ${args.length}.`);
+      throw new CalcError('CALC-TYPE-001', `sum_by: expected 2 arguments (collection, key_path), got ${args.length}.`);
     }
-    const arr = args[0];
+    const items = extractCollection(args[0], 'sum_by', state);
     const keyPath = args[1];
-    if (arr === null || arr === undefined) return 0;
-    if (!Array.isArray(arr)) {
-      throw new CalcError('CALC-TYPE-001', `sum_by: first argument must be an array or null, got ${typeof arr}.`);
-    }
     if (typeof keyPath !== 'string') {
       throw new CalcError('CALC-TYPE-001', `sum_by: second argument must be a string property path, got ${typeof keyPath}.`);
     }
     let acc = 0;
-    for (const item of arr) {
+    for (const item of items) {
       if (item === null || item === undefined || typeof item !== 'object') continue;
-      const val = deepGet(item, keyPath);
+      const val = safeGetPath(item, keyPath);
       if (val === null || val === undefined) continue;
       if (typeof val === 'number') {
         acc += val;
@@ -126,29 +219,216 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     return acc;
   },
 
-  // count_where(array, condition_path) — counts matching truthy elements.
-  count_where(args) {
+  // avg_by(collection, key_path) — averages numeric property across objects.
+  avg_by(args, state) {
     if (args.length !== 2) {
-      throw new CalcError('CALC-TYPE-001', `count_where: expected 2 arguments (array, condition_path), got ${args.length}.`);
+      throw new CalcError('CALC-TYPE-001', `avg_by: expected 2 arguments (collection, key_path), got ${args.length}.`);
     }
-    const arr = args[0];
+    const items = extractCollection(args[0], 'avg_by', state);
+    const keyPath = args[1];
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `avg_by: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    let acc = 0;
+    let count = 0;
+    for (const item of items) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = safeGetPath(item, keyPath);
+      if (val === null || val === undefined) continue;
+      if (typeof val === 'number') {
+        acc += val;
+        count++;
+      } else {
+        throw new CalcError('CALC-TYPE-001', `avg_by: property '${keyPath}' must be a number or null, got ${typeof val}.`);
+      }
+    }
+    return count === 0 ? null : acc / count;
+  },
+
+  // min_by(collection, key_path) — minimum numeric property across objects.
+  min_by(args, state) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `min_by: expected 2 arguments (collection, key_path), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'min_by', state);
+    const keyPath = args[1];
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `min_by: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    let best: number | null = null;
+    for (const item of items) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = safeGetPath(item, keyPath);
+      if (val === null || val === undefined) continue;
+      if (typeof val === 'number') {
+        best = best === null || val < best ? val : best;
+      } else {
+        throw new CalcError('CALC-TYPE-001', `min_by: property '${keyPath}' must be a number or null, got ${typeof val}.`);
+      }
+    }
+    return best;
+  },
+
+  // max_by(collection, key_path) — maximum numeric property across objects.
+  max_by(args, state) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `max_by: expected 2 arguments (collection, key_path), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'max_by', state);
+    const keyPath = args[1];
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `max_by: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    let best: number | null = null;
+    for (const item of items) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = safeGetPath(item, keyPath);
+      if (val === null || val === undefined) continue;
+      if (typeof val === 'number') {
+        best = best === null || val > best ? val : best;
+      } else {
+        throw new CalcError('CALC-TYPE-001', `max_by: property '${keyPath}' must be a number or null, got ${typeof val}.`);
+      }
+    }
+    return best;
+  },
+
+  // count_where(collection, condition_path[, expected_value]) — counts matching elements.
+  count_where(args, state) {
+    if (args.length < 2 || args.length > 3) {
+      throw new CalcError('CALC-TYPE-001', `count_where: expected 2 or 3 arguments (collection, condition_path[, expected_value]), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'count_where', state);
     const condPath = args[1];
-    if (arr === null || arr === undefined) return 0;
-    if (!Array.isArray(arr)) {
-      throw new CalcError('CALC-TYPE-001', `count_where: first argument must be an array or null, got ${typeof arr}.`);
-    }
     if (typeof condPath !== 'string') {
       throw new CalcError('CALC-TYPE-001', `count_where: second argument must be a string property path, got ${typeof condPath}.`);
     }
+    const expected = args.length >= 3 ? args[2] : undefined;
     let count = 0;
-    for (const item of arr) {
+    for (const item of items) {
       if (item === null || item === undefined || typeof item !== 'object') continue;
-      const val = deepGet(item, condPath);
-      if (val === true || (val !== null && val !== undefined && val !== false && val !== 0 && val !== '')) {
+      const val = safeGetPath(item, condPath);
+      if (matchesCondition(val, expected)) {
         count++;
       }
     }
     return count;
+  },
+
+  count_by(args, state) {
+    return BUILTINS.count_where(args, state);
+  },
+
+  // filter(collection, key_path[, expected_value]) — filters elements matching condition.
+  filter(args, state) {
+    if (args.length < 2 || args.length > 3) {
+      throw new CalcError('CALC-TYPE-001', `filter: expected 2 or 3 arguments (collection, key_path[, expected_value]), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'filter', state);
+    const keyPath = args[1];
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `filter: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    const expected = args.length >= 3 ? args[2] : undefined;
+    const result: unknown[] = [];
+    for (const item of items) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = safeGetPath(item, keyPath);
+      if (matchesCondition(val, expected)) {
+        result.push(item);
+      }
+    }
+    return result as unknown as CalcValue;
+  },
+
+  filter_by(args, state) {
+    return BUILTINS.filter(args, state);
+  },
+
+  // find_by(collection, key_path[, expected_value]) — returns first matching element or null.
+  find_by(args, state) {
+    if (args.length < 2 || args.length > 3) {
+      throw new CalcError('CALC-TYPE-001', `find_by: expected 2 or 3 arguments (collection, key_path[, expected_value]), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'find_by', state);
+    const keyPath = args[1];
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `find_by: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    const expected = args.length >= 3 ? args[2] : undefined;
+    for (const item of items) {
+      if (item === null || item === undefined || typeof item !== 'object') continue;
+      const val = safeGetPath(item, keyPath);
+      if (matchesCondition(val, expected)) {
+        return item as unknown as CalcValue;
+      }
+    }
+    return null;
+  },
+
+  find(args, state) {
+    return BUILTINS.find_by(args, state);
+  },
+
+  // map_by(collection, key_path) — extracts property from each item into an array.
+  map_by(args, state) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `map_by: expected 2 arguments (collection, key_path), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'map_by', state);
+    const keyPath = args[1];
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `map_by: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    const result: unknown[] = [];
+    for (const item of items) {
+      if (item === null || item === undefined || typeof item !== 'object') {
+        result.push(null);
+      } else {
+        const val = safeGetPath(item, keyPath);
+        result.push(val === undefined ? null : val);
+      }
+    }
+    return result as unknown as CalcValue;
+  },
+
+  pluck(args, state) {
+    return BUILTINS.map_by(args, state);
+  },
+
+  // values(collection) — converts object/record to array of its values.
+  values(args, state) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `values: expected 1 argument (collection), got ${args.length}.`);
+    }
+    const items = extractCollection(args[0], 'values', state);
+    return items as unknown as CalcValue;
+  },
+
+  to_array(args, state) {
+    return BUILTINS.values(args, state);
+  },
+
+  // get(object, key_path) — extracts property path from a single object.
+  get(args, _state) {
+    if (args.length !== 2) {
+      throw new CalcError('CALC-TYPE-001', `get: expected 2 arguments (object, key_path), got ${args.length}.`);
+    }
+    const obj = args[0];
+    const keyPath = args[1];
+    if (obj === null || obj === undefined) return null;
+    if (typeof obj !== 'object') {
+      throw new CalcError('CALC-TYPE-001', `get: first argument must be an object or null, got ${typeof obj}.`);
+    }
+    if (typeof keyPath !== 'string') {
+      throw new CalcError('CALC-TYPE-001', `get: second argument must be a string property path, got ${typeof keyPath}.`);
+    }
+    const val = safeGetPath(obj, keyPath);
+    return val === undefined ? null : (val as CalcValue);
+  },
+
+  prop(args, state) {
+    return BUILTINS.get(args, state);
   },
 
   // round(num, dec) — half-away-from-zero, delegated to the single quantization

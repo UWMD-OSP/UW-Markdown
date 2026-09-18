@@ -742,6 +742,148 @@ deal_stage: underwriting
   });
 });
 
+describe('RFC 0019 multi-component collection iteration and filtering primitives', () => {
+  const MIXED_USE_FIXTURE = `---
+uw_version: "1.1"
+deal_id: "uw_mixed_use_test"
+deal_name: "Tower & Plaza"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "500 Commerce St"
+city: "Austin"
+state: "TX"
+zip: "78701"
+asset_class: mixed_use
+status: draft
+deal_stage: underwriting
+---
+
+\`\`\`json uw:section=components source=manual confidence=high
+{
+  "section_id": "components",
+  "_meta": {
+    "section_id": "components",
+    "version": 1,
+    "timestamp": "2026-01-01T00:00:00Z",
+    "source": "manual",
+    "actor": "tester",
+    "confidence": "high"
+  },
+  "content": {
+    "multifamily": {
+      "component_class": "multifamily",
+      "effective_gross_income": 2180000,
+      "operating_expenses": 880000,
+      "net_operating_income": 1300000,
+      "total_units": 120,
+      "nra_sqft": 96000,
+      "allocation_pct": 0.78,
+      "active": true
+    },
+    "retail": {
+      "component_class": "retail",
+      "effective_gross_income": 520000,
+      "operating_expenses": 148000,
+      "net_operating_income": 372000,
+      "nra_sqft": 18000,
+      "allocation_pct": 0.22,
+      "active": true
+    }
+  }
+}
+\`\`\`
+`;
+
+  function makeMixedUseCtx(): CalcEvaluationContext {
+    return {
+      parsed: parseUWFile(MIXED_USE_FIXTURE),
+      prior_results: {},
+      locale: 'en-US',
+    };
+  }
+
+  it('aggregates across component pack slots using sum_by, avg_by, min_by, max_by', () => {
+    const ctx = makeMixedUseCtx();
+    // Footing property NOI across components
+    expect(evaluate(parseExpression("sum_by(components, 'net_operating_income')"), ctx)).toBe(1672000);
+    expect(evaluate(parseExpression("sum_by(components, 'effective_gross_income')"), ctx)).toBe(2700000);
+    expect(evaluate(parseExpression("sum_by(components, 'operating_expenses')"), ctx)).toBe(1028000);
+
+    // avg_by, min_by, max_by
+    expect(evaluate(parseExpression("avg_by(components, 'allocation_pct')"), ctx)).toBe(0.5);
+    expect(evaluate(parseExpression("min_by(components, 'nra_sqft')"), ctx)).toBe(18000);
+    expect(evaluate(parseExpression("max_by(components, 'nra_sqft')"), ctx)).toBe(96000);
+  });
+
+  it('counts matching component packs using count_where and count_by', () => {
+    const ctx = makeMixedUseCtx();
+    expect(evaluate(parseExpression("count_where(components, 'total_units')"), ctx)).toBe(1);
+    expect(evaluate(parseExpression("count_where(components, 'component_class', 'retail')"), ctx)).toBe(1);
+    expect(evaluate(parseExpression("count_where(components, 'component_class', 'office')"), ctx)).toBe(0);
+    expect(evaluate(parseExpression("count_by(components, 'active')"), ctx)).toBe(2);
+  });
+
+  it('filters and finds components with filter, filter_by, find_by, get, values', () => {
+    const ctx = makeMixedUseCtx();
+    // values / to_array converts component slots to array
+    const vals = evaluate(parseExpression('values(components)'), ctx) as unknown[];
+    expect(Array.isArray(vals)).toBe(true);
+    expect(vals.length).toBe(2);
+
+    // filter / filter_by
+    const retailFilter = evaluate(parseExpression("filter(components, 'component_class', 'retail')"), ctx) as unknown[];
+    expect(retailFilter.length).toBe(1);
+    expect(evaluate(parseExpression("sum_by(filter(components, 'component_class', 'retail'), 'net_operating_income')"), ctx)).toBe(372000);
+
+    // find_by and get
+    expect(evaluate(parseExpression("get(find_by(components, 'component_class', 'retail'), 'net_operating_income')"), ctx)).toBe(372000);
+    expect(evaluate(parseExpression("get(find_by(components, 'component_class', 'multifamily'), 'total_units')"), ctx)).toBe(120);
+    expect(evaluate(parseExpression("find_by(components, 'component_class', 'industrial')"), ctx)).toBe(null);
+
+    // map_by / pluck
+    expect(evaluate(parseExpression("map_by(components, 'component_class')"), ctx)).toEqual(['multifamily', 'retail']);
+  });
+
+  it('strictly enforces CALC-FORBIDDEN-PROP on collection paths', () => {
+    const ctx = makeMixedUseCtx();
+    expect(() => evaluate(parseExpression("sum_by(components, '__proto__')"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("sum_by(components, 'constructor')"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("filter(components, 'prototype.polluted')"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("find_by(components, 'a.__proto__.b')"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("count_where(components, 'constructor')"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+    expect(() => evaluate(parseExpression("get(components, '__proto__')"), ctx)).toThrow(/CALC-FORBIDDEN-PROP/);
+  });
+
+  it('strictly enforces MAX_NODES execution ceiling during collection traversal', () => {
+    // Array of 1100 items exceeds MAX_NODES (1024)
+    const largeList = Array.from({ length: 1100 }, (_, i) => ({ id: i, val: 1 }));
+    const ctx: CalcEvaluationContext = {
+      parsed: parseUWFile(MIXED_USE_FIXTURE),
+      prior_results: { large_list: largeList } as unknown as CalcEvaluationContext['prior_results'],
+      locale: 'en-US',
+    };
+
+    expect(() => evaluate(parseExpression("sum_by(large_list, 'val')"), ctx)).toThrow(/CALC-LIMIT-001/);
+    expect(() => evaluate(parseExpression("count_where(large_list, 'val')"), ctx)).toThrow(/CALC-LIMIT-001/);
+    expect(() => evaluate(parseExpression("filter(large_list, 'val')"), ctx)).toThrow(/CALC-LIMIT-001/);
+    expect(() => evaluate(parseExpression("map_by(large_list, 'id')"), ctx)).toThrow(/CALC-LIMIT-001/);
+    expect(() => evaluate(parseExpression("values(large_list)"), ctx)).toThrow(/CALC-LIMIT-001/);
+  });
+
+  it('strictly enforces MAX_NODES execution ceiling across chained collection evaluations', () => {
+    // Array of 600 items: each individual step is under 1024, but chaining 2 steps exceeds 1024
+    const mediumList = Array.from({ length: 600 }, (_, i) => ({ id: i, val: 1, active: true }));
+    const ctx: CalcEvaluationContext = {
+      parsed: parseUWFile(MIXED_USE_FIXTURE),
+      prior_results: { medium_list: mediumList } as unknown as CalcEvaluationContext['prior_results'],
+      locale: 'en-US',
+    };
+
+    // First filter traverses 600 items (+ AST nodes), then sum_by traverses 600 items -> total > 1024
+    expect(() => evaluate(parseExpression("sum_by(filter(medium_list, 'active'), 'val')"), ctx)).toThrow(/CALC-LIMIT-001/);
+  });
+});
+
 describe('RFC 0041 period-indexed path navigation and array offsets', () => {
   const PERIOD_FIXTURE = `---
 uw_version: "1.1"

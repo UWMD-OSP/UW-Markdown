@@ -20,8 +20,11 @@ export {
   IRR_CONVERGENCE_EPSILON,
   IRR_VALUE_TOL,
   IRR_INTERVAL_TOL,
+  MAX_NODES,
+  safeGetPath,
+  extractCollection,
 } from './builtins.js';
-export type { CalcValue, Builtin } from './builtins.js';
+export type { CalcValue, Builtin, EvalState } from './builtins.js';
 export { CalcError, calcError } from './errors.js';
 export type { CalcErrorCode } from './errors.js';
 export {
