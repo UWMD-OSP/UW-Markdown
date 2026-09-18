@@ -185,9 +185,11 @@ const NORMALIZED_LINK_MAP = new Map([
 
   // RFCs
   ['docs/rfcs/0000-template.md', '/about/rfcs/template'],
+  ['docs/rfcs/template.md', '/about/rfcs/template'],
   ['docs/rfcs/README.md', '/about/rfcs/'],
   ['docs/rfcs/', '/about/rfcs/'],
   ['0000-template.md', '/about/rfcs/template'],
+  ['template.md', '/about/rfcs/template'],
 
   // Conformance
   ['conformance/', '/conformance/'],

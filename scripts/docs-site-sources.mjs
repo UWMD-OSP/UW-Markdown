@@ -7,12 +7,16 @@ export function rfcCopies(repoRoot) {
     .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
     .map((entry) => entry.name)
     .sort()
-    .map((name) => ({
-      from: `docs/rfcs/${name}`,
-      to: `about/rfcs/${name === 'README.md' ? 'index.md' : name === '0000-template.md' ? 'template.md' : name}`,
-      ...(name === 'README.md' ? { title: 'RFC Process' }
-        : name === '0000-template.md' ? { title: 'RFC Template' } : {}),
-    }));
+    .map((name) => {
+      const isIndex = name === 'README.md';
+      const isTemplate = name === '0000-template.md' || name === 'template.md';
+      return {
+        from: `docs/rfcs/${name}`,
+        to: `about/rfcs/${isIndex ? 'index.md' : isTemplate ? 'template.md' : name}`,
+        ...(isIndex ? { title: 'RFC Process' }
+          : isTemplate ? { title: 'RFC Template' } : {}),
+      };
+    });
 }
 
 export function docsVersions(repoRoot) {

@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "docs:build": "npm --prefix tools/docs-site run build",
     "test": "npm test --workspaces --if-present",
     "test:coverage": "npm --prefix packages/uwmd-core run test:coverage",
     "cli": "node packages/uwmd-cli/bin/uwmd.mjs",

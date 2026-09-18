@@ -21,6 +21,12 @@ test('new RFCs are discovered without script edits; special routes survive', () 
     writeFileSync(join(dir, '9999-future-rfc.md'), '# Future RFC');
     assert.ok(rfcCopies(root).some((copy) => copy.to === 'about/rfcs/9999-future-rfc.md'));
     assert.equal(rfcCopies(root).length, before.length + 1);
+
+    // template.md without 0000- prefix also maps to about/rfcs/template.md
+    writeFileSync(join(dir, 'template.md'), '# Template');
+    const templateCopy = rfcCopies(root).find((copy) => copy.from === 'docs/rfcs/template.md');
+    assert.equal(templateCopy?.to, 'about/rfcs/template.md');
+    assert.equal(templateCopy?.title, 'RFC Template');
   } finally {
     // root is the exact directory returned by mkdtempSync, under the OS temp directory.
     rmSync(root, { recursive: true, force: true });
