@@ -3,7 +3,14 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseUWFile } from '../parser.js';
-import { evaluateCalc, evaluate, parseExpression } from './index.js';
+import {
+  evaluateCalc,
+  evaluate,
+  parseExpression,
+  IRR_BRACKET_LO,
+  IRR_BRACKET_HI,
+  IRR_VALUE_TOL,
+} from './index.js';
 import type { CalcEvaluationContext, ModuleCalcDecl } from '../protocol.js';
 import { computeResultsDigest, type UWReceiptResult } from '../receipts.js';
 
@@ -70,6 +77,13 @@ function makeCtx(): CalcEvaluationContext {
 
 function decl(id: string, formula: string, unit?: string): ModuleCalcDecl {
   return { id, label: id, formula, deterministic: true, ...(unit ? { unit } : {}) };
+}
+
+/** `npv(r) = Σ flows[t] / (1 + r)^t`, per protocol §VIII.3. */
+function npvOf(flows: number[], r: number): number {
+  let acc = 0;
+  for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
+  return acc;
 }
 
 // ─── Grammar / parser ─────────────────────────────────────────────────────────
@@ -363,19 +377,40 @@ describe('builtins', () => {
     }
   });
 
-  it('irr throws CALC-IRR-DIVERGE when search steps outside the bracket during iteration', () => {
-    // [-100, -200, 110] satisfies the initial bracket check flo * fhi < 0,
-    // but Newton-Raphson stepping from seed 0.1 steps outside [-0.999, 10].
-    expect(() => evaluate(parseExpression('irr(-100, -200, 110)'), makeCtx())).toThrow(
-      /CALC-IRR-DIVERGE/,
-    );
+  it('irr zeroes the NPV for [-5, 1, 15] — the RFC 0024 bisection regression', () => {
+    // Pinned from a fast-check counterexample (seed -1565568230). A Newton pass
+    // stopping at |npv| < 1e-7 returns 0.83493515358996, whose NPV residual is
+    // 1.9e-8 — reproducible, but not a root to the precision §VIII.3 step 4
+    // requires. Bisection reaches the value condition here.
+    const flows = [-5, 1, 15];
+    const root = evaluate(parseExpression('irr(-5, 1, 15)'), makeCtx()) as number;
+    expect(Math.abs(npvOf(flows, root))).toBeLessThan(IRR_VALUE_TOL);
   });
 
-  it('irr throws CALC-IRR-DIVERGE when Newton-Raphson exceeds max iteration ceiling (200)', () => {
-    // Non-converging oscillating cash flow vector that traverses within bracket without meeting epsilon
-    const expr =
-      'irr(-100, 70.40307235321438, 142.53822488266127, -127.99404409966249, 8.99288373556351)';
-    expect(() => evaluate(parseExpression(expr), makeCtx())).toThrow(/CALC-IRR-DIVERGE/);
+  it('irr returns the bracketed root rather than diverging out of the interval', () => {
+    // [-100, -200, 110] satisfies the bracket check `npv(lo) * npv(hi) < 0`, so
+    // §VIII.3 step 4 must bisect it to a root. A Newton pass seeded at 0.1
+    // steps outside [-0.999, 10] here and reports CALC-IRR-DIVERGE instead —
+    // which is precisely the behaviour step 5's "no polish" rule forbids.
+    const root = evaluate(parseExpression('irr(-100, -200, 110)'), makeCtx()) as number;
+    expect(root).toBeGreaterThan(IRR_BRACKET_LO);
+    expect(root).toBeLessThan(IRR_BRACKET_HI);
+    expect(Math.abs(npvOf([-100, -200, 110], root))).toBeLessThan(IRR_VALUE_TOL);
+  });
+
+  it('irr terminates on the half-interval condition when the value condition is out of reach', () => {
+    // A steep multi-sign-change curve: near r = -0.92 the high-order terms
+    // dominate, so |npv(mid)| never falls under IRR_VALUE_TOL. §VIII.3 step 4
+    // stops on `(hi - lo) / 2 < 1e-12` instead — "whichever comes first" — so
+    // this returns a root and does not exhaust the 200-iteration cap.
+    // Bisection halves the interval every step, so step 6's exhaustion is
+    // unreachable for any input that brackets at all.
+    const flows = [-100, 70.40307235321438, 142.53822488266127, -127.99404409966249, 8.99288373556351];
+    const root = evaluate(parseExpression(`irr(${flows.join(', ')})`), makeCtx()) as number;
+    expect(root).toBeGreaterThan(IRR_BRACKET_LO);
+    expect(root).toBeLessThan(IRR_BRACKET_HI);
+    // Deterministic to the last bit: the whole point of pinning bisection.
+    expect(root).toBe(-0.9228944569327482);
   });
 
   it('asserts exact receipt digest reproducibility for standard and sensitive cash flow vectors', async () => {

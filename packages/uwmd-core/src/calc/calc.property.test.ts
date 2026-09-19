@@ -27,6 +27,16 @@ import { evaluate } from './evaluator.js';
 import { parseExpression, type Expr } from './parser.js';
 import { emitFromAst } from '../packs/excel-emit.js';
 
+// Deterministic by default. An unseeded run draws a fresh seed every time, so
+// a genuine defect surfaces as an intermittent CI red on whichever push is
+// unlucky, and cannot be reproduced from the failure alone. That is how the
+// RFC 0024 bisection regression hid: the same job passed on the push before.
+// Set UWMD_FUZZ=1 to draw a random seed and hunt for new counterexamples —
+// anything it finds should be pinned as an example in calc.test.ts.
+if (!process.env.UWMD_FUZZ) {
+  fc.configureGlobal({ seed: 0x5eed_1234 });
+}
+
 // ─── Empty context for evaluator ─────────────────────────────────────────────
 
 const EMPTY_PARSED: ParsedUWFile = {

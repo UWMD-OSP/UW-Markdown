@@ -55,14 +55,37 @@ protocol, and each package each carry an independent semver).
   `MAX_NODES` traversal bound. This matters more now that RFC 0019 lets a
   formula traverse collections rather than only fixed paths.
 
-### Changed
-
-- **RFC 0024's Newton-Raphson parameters are enforced, not assumed.** The
-  iterative solver's bracket, tolerances and iteration cap are now checked
-  against what the RFC pins, so two engines that both claim conformance cannot
-  quietly disagree on a root.
-
 ### Fixed
+
+- **`irr` bisects again, as protocol §VIII.3 requires.** An earlier commit on
+  this branch replaced the bisection loop with a Newton-Raphson pass seeded at
+  `0.1` with a `1e-7` epsilon — the exact procedure §VIII.3 step 5 says an
+  implementation **MUST NOT** use, and the one RFC 0024 was written to remove.
+  The bisection loop, the `1e-9` / `1e-12` stopping conditions and the endpoint-
+  root check are restored; `IRR_INITIAL_SEED` and `IRR_CONVERGENCE_EPSILON` are
+  gone rather than left as dead exports.
+
+  Two consequences, both user-visible:
+  - **Cross-engine reproducibility is restored.** Newton's iterates depend on a
+    derivative evaluation order no document pins, so the regression silently
+    gave up the bit-identical-root guarantee that is RFC 0024's entire purpose.
+  - **Some bracketed cash flows stopped refusing.** `irr(-100, -200, 110)`
+    brackets a real root at ≈ -0.5509 but Newton stepped outside `[-0.999, 10]`
+    and raised `CALC-IRR-DIVERGE`; it now returns the root. Conversely, roots
+    are tighter: `irr(-5, 1, 15)` returned an NPV residual of `1.9e-8` under the
+    loose epsilon and now meets `1e-9`.
+
+  Every conformance fixture passed throughout, in both directions — Newton and
+  bisection agree within the §VIII.5 six-decimal quantum on all of them, exactly
+  as RFC 0024 predicts. The defect surfaced only through an unseeded property
+  test drawing a seed that hit `[-5, 1, 15]`.
+
+- **The calc property suite is seeded by default.** `calc.property.test.ts` drew
+  a fresh seed on every run, so a real defect appeared as an intermittent CI red
+  on whichever push was unlucky and could not be reproduced from the failure
+  alone. It now pins a seed; `UWMD_FUZZ=1` restores random exploration, and
+  counterexamples it finds should be pinned as examples in `calc.test.ts` —
+  `[-5, 1, 15]` now is.
 
 - **`@uwmd/lake` 0.1.2 → 0.2.0, lake schema 0.1 → 0.2.** The RFC 0049 adapter
   was exercised against a live PostgreSQL server for the first time — the whole

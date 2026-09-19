@@ -64,8 +64,14 @@ describe 2.12.0.
   a shared `extractCollection` helper — plus period-indexed path navigation.
   This retires the long-standing "the calc engine has no iteration" constraint
   for *traversal*; it is not a fixed-point solver.
-- **RFC 0024 determinism enforced.** The Newton-Raphson parameters the RFC
-  specifies are now checked rather than assumed.
+- **RFC 0024 bisection restored.** An intermediate commit on this branch swapped
+  `irr`'s bisection for a Newton-Raphson pass — the procedure §VIII.3 step 5
+  forbids — and it was reverted. `irr` bisects to the normative `1e-9`/`1e-12`
+  stopping conditions again. Note for future work: **conformance cannot detect
+  this class of regression**, because Newton and bisection agree within the
+  §VIII.5 quantum on every pinned fixture; only the property suite caught it,
+  and only on a lucky seed. That suite is now seeded by default (`UWMD_FUZZ=1`
+  to explore).
 - **Prototype-pollution guard.** The evaluator refuses `__proto__`,
   `constructor` and `prototype` path segments with the new `CALC-FORBIDDEN-PROP`
   code, alongside the existing `MAX_NODES` bound.
