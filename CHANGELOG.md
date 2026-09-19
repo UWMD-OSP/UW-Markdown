@@ -8,6 +8,60 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- **SQL and relational database export (`@uwmd/core`).** New
+  `packages/uwmd-core/src/sql.ts` plans a portable `CREATE TABLE` + `INSERT`
+  script for a document's canonical facts, and a new CLI export command writes
+  it. `exportSql`, `exportSqlStatements` and the typed `UWSqlError` are exported
+  from `src/index.ts` and from the browser entry (`src/browser.ts`) — the
+  planner is byte-oriented and takes no database driver, so it stays
+  browser-safe. This is deliberately **not** `@uwmd/lake`: the lake plans
+  idempotent digest-keyed upserts across a corpus against a PostgreSQL schema it
+  owns, whereas `exportSql` emits standalone SQL text for one document into a
+  table layout the caller owns.
+- **RFC 0019 collection primitives in the Tier-3 calc engine.** The safe
+  expression grammar gained array indexing, and `calc/builtins.ts` gained
+  `filter`, `map_by` and `count_where`, all routed through one
+  `extractCollection` helper so the collection-shape refusals are stated once.
+  `calc/evaluator.ts` gained period-indexed path navigation. Together these
+  retire the standing limitation that the engine could only address static paths
+  and that `sum()` was variadic over explicit arguments rather than aggregating
+  a collection.
+
+  This is **traversal, not convergence.** The primitives walk a collection that
+  already exists; they do not iterate a formula to a fixed point. The
+  exit-value/terminal-tax circularity of RFC 0053 and the closed-form IRR floor
+  of RFC 0059 are unchanged and were not revisited.
+
+  **Excel parity is not yet established for these primitives.** Invariant 4
+  requires one pack to drive both the calc engine and the Excel emission at the
+  same `round_to`, and no dynamic-range emission was added to `@uwmd/excel` in
+  this work. A formula using `filter`, `map_by` or `count_where` therefore has no
+  proven workbook counterpart. This must be closed before the next core minor
+  ships.
+- **Release readiness check.** `scripts/check-release-readiness.mjs`, wired as
+  `npm run release:check` and into `.github/workflows/release.yml`, verifies that
+  npm Trusted Publishers OIDC is configured before a `v*` tag triggers a publish
+  — the tag is the trigger, so a missing trusted publisher otherwise fails after
+  the point of no return.
+
+### Security
+
+- **The calc evaluator refuses prototype-polluting path segments.** A Tier-3
+  path could previously name `__proto__`, `constructor` or `prototype` and walk
+  into the prototype chain of the evaluation context. The evaluator now refuses
+  such a segment with the new `CALC-FORBIDDEN-PROP` code, alongside the existing
+  `MAX_NODES` traversal bound. This matters more now that RFC 0019 lets a
+  formula traverse collections rather than only fixed paths.
+
+### Changed
+
+- **RFC 0024's Newton-Raphson parameters are enforced, not assumed.** The
+  iterative solver's bracket, tolerances and iteration cap are now checked
+  against what the RFC pins, so two engines that both claim conformance cannot
+  quietly disagree on a root.
+
 ### Fixed
 
 - **`@uwmd/lake` 0.1.2 → 0.2.0, lake schema 0.1 → 0.2.** The RFC 0049 adapter

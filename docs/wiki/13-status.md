@@ -1,6 +1,7 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-16** for release **v2.12.0**.
+Reconciled **2026-09-18** for release **v2.12.0**, plus unreleased work on
+`main` (see [Unreleased on `main`](#unreleased-on-main)).
 Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** publish to npm with
 SLSA provenance from the `v2.12.0` tag. Format **2.0** and Protocol **2.17.0**
 version independently. See [VERSIONS.md](../../VERSIONS.md) and
@@ -23,8 +24,8 @@ version independently. See [VERSIONS.md](../../VERSIONS.md) and
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.3**, report **0.8.15**, lake **0.1.1** and hospitality/data-center
-module packages **0.1.3** remain unpublished. The registry does serve a stale
+Excel **0.9.4**, report **0.8.16**, lake **0.2.0** and hospitality/data-center
+module packages **0.1.4** remain unpublished. The registry does serve a stale
 `0.3.0` of excel and report from a hand publish on 2026-08-16, pending
 deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's RFC 0043 binding API is published; the full Excel
 exporter remains available from source. Native Excel 16.0 build 20326 passed
@@ -46,6 +47,37 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
 
+## Unreleased on `main`
+
+Work merged to `main` after the `v2.12.0` tag and **not yet in any release**.
+Package versions are unchanged, so `VERSIONS.md` and the tables above still
+describe 2.12.0.
+
+- **SQL / relational export.** `packages/uwmd-core/src/sql.ts` plans `CREATE
+  TABLE` + `INSERT` statements for a document's canonical facts, exposed as
+  `exportSql`, `exportSqlStatements` and `UWSqlError` from both `index.ts` and
+  the browser entry, and as a CLI export command. Distinct from `@uwmd/lake`:
+  this emits portable SQL text from one document, where the lake plans
+  digest-keyed upserts for a corpus.
+- **RFC 0019 collection primitives.** The Tier-3 calc engine gained array
+  indexing and collection aggregation — `filter`, `map_by`, `count_where` over
+  a shared `extractCollection` helper — plus period-indexed path navigation.
+  This retires the long-standing "the calc engine has no iteration" constraint
+  for *traversal*; it is not a fixed-point solver.
+- **RFC 0024 determinism enforced.** The Newton-Raphson parameters the RFC
+  specifies are now checked rather than assumed.
+- **Prototype-pollution guard.** The evaluator refuses `__proto__`,
+  `constructor` and `prototype` path segments with the new `CALC-FORBIDDEN-PROP`
+  code, alongside the existing `MAX_NODES` bound.
+- **Release readiness check.** `scripts/check-release-readiness.mjs` verifies the
+  npm Trusted Publishers OIDC configuration before a `v*` tag triggers a publish.
+
+**Not yet verified:** invariant 4 requires exact Excel↔calc parity, and nothing
+in this work touched `@uwmd/excel`. The collection primitives have **no matching
+Excel emission for dynamic ranges**, so parity for a formula using them is
+unproven. Treat that as a release blocker for the next core minor, not a bug in
+what shipped.
+
 ## Released in 2.12.0
 
 Two contracts and one guard, all additive.
@@ -62,7 +94,9 @@ because that needs a vacant-space policy and is a modeling decision. `REC-05`
 anchors on the rent roll's own `as_of_date` and is skipped when absent.
 
 RFC 0059's every basis is closed-form — the IRR floor reuses RFC 0036's hurdle
-balance rather than iterating, because the calc engine has no iteration. A test
+balance rather than iterating, because the calc engine had no iteration when
+RFC 0059 shipped. (It has collection primitives on `main` now; see
+[Unreleased on `main`](#unreleased-on-main). RFC 0059 was not revisited.) A test
 pins the boundary: at a floor equal to the IRR the LP achieved, the true-up is
 exactly zero.
 
@@ -164,7 +198,7 @@ composition rather than a standalone pack.
 
 RFC 0048 is released in 2.10.0: standalone
 document/package examples with their own `standalone` conformance suite.
-RFC 0049 is implemented in development as `@uwmd/lake` 0.1.0
+RFC 0049 is implemented in development as `@uwmd/lake` **0.2.0**
 (`packages/uwmd-lake`, unpublished): a PostgreSQL/JSONB lake adapter that plans
 idempotent digest-keyed upserts over six tables from canonical envelopes,
 `block_values` facts, receipts, package manifests and source-evidence
@@ -172,8 +206,9 @@ references. Raw canonical JSON sits in `jsonb` beside typed shadow columns, so
 unknown sections, extension keys, explicit nulls and array order survive a load.
 It takes no database driver, changes no protocol or financial math, and refuses
 bytes-bearing source evidence. 52 unit tests cover it against an in-memory
-warehouse double; **no live PostgreSQL instance has been exercised**, so a real
-load and the publication decision both remain open.
+warehouse double, and a live PostgreSQL 18 load **has** now been run — see the
+live-load subsection above for the three defects it found and what it does not
+prove. The publication decision remains open.
 
 RFC 0050 is released in 2.10.0: split preferred-equity
 coupons use one tranche with `cash_rate` for coverage, `accrued_rate` excluded
@@ -197,7 +232,9 @@ RFC 0053 is released in 2.10.0: the `noi_model`
 reassessment basis and abatement schedule are typed, the `TAX-NN` validator
 family is registered, and `dcf.exit_analysis.terminal_tax` names the next
 buyer's tax. Everything is stated-and-verified; the exit-value/terminal-tax
-circularity is not solved, because the calc engine has no iteration.
+circularity is not solved. It needs a fixed-point solve, which the RFC 0019
+collection primitives on `main` do **not** supply — they traverse a collection,
+they do not iterate a formula to convergence.
 
 ## Remaining work
 
@@ -211,9 +248,10 @@ circularity is not solved, because the calc engine has no iteration.
 - Waterfall extensions, per-value currency identity and stochastic VOI need
   bounded contracts. Retrieval and standalone optional-package publication remain
   demand-gated. DOCX remains scoped out by the owner.
-- Validate `@uwmd/lake` against a live PostgreSQL server. The suite proves the
-  planned statements and their idempotency, not that a real server accepts the
-  DDL or that the indexes earn their keep on a real corpus.
+- Exercise `@uwmd/lake` beyond a single local load. The 2026-09-16 run proves a
+  real PostgreSQL 18 accepts the DDL and the corpus, but **not** network
+  behaviour, concurrent writers, a managed service, or that the GIN index earns
+  its keep — the planner did not choose it at corpus scale.
 - RFCs 0055–0059 type structures **nothing yet consumes**. No rent
   escalates, no break is exercised, no balance amortizes, nothing is priced and
   no strike crossing is projected. Typed-but-inert is the intended state until a
