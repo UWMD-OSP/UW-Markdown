@@ -20,23 +20,10 @@ and how it gets accepted.
    remains open for public comment for at least 14 days before acceptance.
 6. Accepted RFCs move to `accepted`; after the implementation ships, they move
    to `implemented`. Rejected and superseded RFCs remain as design history.
-7. A **decision-only** RFC — one whose entire deliverable is the decision, which
-   defines no fields and ships no code — moves to `decided` once accepted.
-   `decided` is terminal: there is no implementation to wait for, so such an RFC
-   never becomes `implemented`. Use it only when the RFC itself states that it
-   implements nothing; an RFC that defers work to a later RFC is still
-   `accepted` until that work ships.
-
-### Status vocabulary
-
-| Status | Meaning |
-|---|---|
-| `draft` | Written, not yet accepted. |
-| `accepted` | Accepted with intent to implement; implementation pending. |
-| `implemented` | The change has shipped in a release. |
-| `decided` | Terminal. The deliverable was the decision itself; nothing ships. |
-| `rejected` | Not adopted; retained as design history. |
-| `superseded` | Replaced by a later RFC; retained as design history. |
+7. An RFC whose own deliverable is the decision — it defines no fields and
+   ships no code — is `decided` rather than `accepted`, and that is terminal.
+   See [Status values](#status-values) for the full vocabulary and for how
+   `decided` differs from `accepted`.
 
 ## Index
 
@@ -109,15 +96,38 @@ section.
 
 ## Status values
 
+This is the authoritative list. An RFC's frontmatter `status:` must be one of
+these values, and `npm run verify-indexes` fails on any other.
+
 - **draft** — author is still iterating; reviewers may comment but
   the proposal is not stable.
 - **active** — open for comment; the 14-day minimum applies in collaborative mode.
-- **accepted** — merged with intent to implement.
+- **accepted** — merged with intent to implement, and **this RFC itself still
+  promises implementation that has not shipped**.
+- **decided** — terminal. The RFC's own deliverable *is* the architectural or
+  design decision, and it explicitly promises no implementation of its own.
 - **implemented** — the change has shipped in a release; CHANGELOG
   entry exists.
 - **rejected** — closed without merging the change. RFC stays in
   the directory.
 - **superseded** — replaced by a later RFC; cross-link both.
 - **withdrawn** — author pulled the proposal.
+
+### `accepted` versus `decided`
+
+The test is what *this* RFC promises, not whether any work remains in the area.
+
+A `decided` RFC may identify implementation that a **separate future RFC** would
+have to carry. That deferral does not demote it to `accepted`, because the
+deferred work was never this RFC's deliverable — there is nothing here left to
+ship, so it never becomes `implemented`.
+
+[RFC 0054](./0054-per-lease-ledger-decision.md) is the worked example: it decides
+*where* per-lease economics live, states outright that it "defines no fields and
+implements nothing", types the lease clauses through RFC 0055, and defers the
+periodic series until a consumer exists. It is `decided`, not `accepted`, even
+though it names future work.
+
+Use `accepted` when the RFC in hand describes a change that is still owed.
 
 When status changes, edit the RFC's frontmatter and update this index.

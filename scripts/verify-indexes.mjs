@@ -72,6 +72,20 @@ const linkedRfcs = [
 // The table's status column and the RFC's own frontmatter are maintained by
 // hand in two places. RFC 0054 shipped accepted in its frontmatter and draft in
 // the table, and nothing noticed.
+// The allowed status set, mirroring "## Status values" in docs/rfcs/README.md.
+// An unknown status is how vocabulary drifts: two sections once documented
+// overlapping sets, and a typo in frontmatter would have gone unnoticed.
+const ALLOWED_STATUSES = new Set([
+  'draft',
+  'active',
+  'accepted',
+  'decided',
+  'implemented',
+  'rejected',
+  'superseded',
+  'withdrawn',
+]);
+
 const indexedStatus = new Map(
   [...rfcIndex.matchAll(/^\|\s*\[\d{4}\]\(\.\/(\d{4}-[a-z0-9-]+\.md)\)\s*\|[^|]*\|\s*([a-z]+)\s*\|/gm)]
     .map((m) => [m[1], m[2]]),
@@ -132,6 +146,9 @@ for (const rfc of copiedRfcs) {
   const tabled = indexedStatus.get(rfc);
   if (declared && tabled && declared !== tabled) {
     failures.push(`${path}: frontmatter says status "${declared}" but the index table says "${tabled}" — the two are maintained by hand and have drifted.`);
+  }
+  if (declared && !ALLOWED_STATUSES.has(declared)) {
+    failures.push(`${path}: status "${declared}" is not one of ${[...ALLOWED_STATUSES].join(', ')} — see "## Status values" in docs/rfcs/README.md.`);
   }
   for (const line of text.slice(3, end).split('\n')) {
     const field = /^([A-Za-z_][\w-]*):\s+(\S.*)$/.exec(line.trim());
