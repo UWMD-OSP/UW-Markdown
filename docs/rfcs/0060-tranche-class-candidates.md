@@ -64,10 +64,14 @@ need no protocol change (RFC 0026 §A).
 
 | Candidate | Existing representation | Material information lost today | Belongs in capital stack? | Proposed treatment | Decision |
 |---|---|---|---|---|---|
-| `ground_lease` | `operating_statement.expenses` (ground rent, upstream of NOI) | None — and a tranche would *create* an error | **No** | Keep the obligation upstream of NOI | **DO NOT ADD — wrong conceptual layer** |
-| `pace` | `other_debt` + `id: "pace"` + `position` | Nothing the verifier computes | Yes, as `other_debt` | `other_debt` | **DO NOT ADD — existing class sufficient** |
-| `tax_credit_equity` | `sources_uses.sources.tax_credit_equity` + an equity tranche | The credit economics — which need mechanics this model lacks | Yes, as the equity position it is | Existing equity class | **DEFER — mechanics required** |
-| `soft_debt` | `other_debt` + `rate: 0` / `accrual: "accrued"` + subordinate `position` | Residual-receipts and forgiveness — which need mechanics this model lacks | Yes, as `other_debt` | `other_debt` | **DO NOT ADD — existing class sufficient** |
+| `ground_lease` | Dollars only, as a generic operating expense / NOI inclusion. No typed object | **Identity and tenure mechanics**: ground rent as a named line, remaining term, resets, extension options, the fee/leasehold relationship, subordination | **No** | Keep the payment upstream of NOI; the structure needs a tenure contract | **DO NOT ADD — wrong conceptual layer** |
+| `pace` | `other_debt` + `id: "pace"` + `position` | Assessment-specific servicing: whether the obligation is serviced above or below NOI, jurisdictional lien behaviour, transferability | Yes, where it is underwritten as a debt-service-bearing tranche | `other_debt` where the existing fields suffice | **DO NOT ADD ENUM — defer PACE-specific mechanics** |
+| `tax_credit_equity` | `sources_uses.sources.tax_credit_equity` + an equity tranche | The credit economics — pay-in, delivery, compliance, adjusters, recapture | Yes, as the equity position it is | Existing equity class | **DEFER — mechanics required** |
+| `soft_debt` | `other_debt` + `rate: 0` / `accrual: "accrued"` + subordinate `position` | Residual-receipts and contingent payment, forgiveness, maturity forgiveness, accrued-balance rollforward | Yes, for the subset reducible to the existing fields | `other_debt` for that subset | **DO NOT ADD ENUM — specialized mechanics deferred** |
+
+Each row's "material information lost" is lost **whether or not** the enum
+opens — naming a tranche does not model mechanics. That is the point: the enum
+is not the instrument that would recover any of it.
 
 ## `ground_lease` — wrong conceptual layer
 
@@ -76,58 +80,87 @@ two different objects:
 
 1. **The leasehold estate and its ground-rent obligation.** Tenure and
    encumbrance, not capital. Nobody contributed a dollar of capital to the
-   leasehold borrower; the lessee owes periodic rent. That obligation already has
-   an honest home **upstream of NOI**, in § 4.4
-   `operating_statement.expenses`.
+   leasehold borrower; the lessee owes periodic rent.
 2. **Financing products secured by a leasehold,** and the leased-fee position
    itself. A leasehold mortgage is already `senior_debt`. The fee position
    belongs to a different party and is not in this borrower's stack at all.
 
-Stating (1) as a tranche is not a labeling preference — it **double-counts**.
-Ground rent already reduces `noi_model.net_operating_income`, which is the
-numerator of every coverage and debt-yield verb. Adding the same obligation as a
-debt-class balance would also inflate the denominator side of
-`debt_yield_through` and the numerator of `ltc_through` / `ltv_through`. One
-obligation would degrade three sizing figures at once.
+A tranche is the wrong instrument for (1). `amount`, `rate`, `accrual`,
+`position` and the amortization fields describe a capital layer with a balance
+and a return; a ground lease has neither. There is also no honest `amount` to
+state: RFC 0026 defines it as "the committed dollar amount," and a ground
+lease's notional would be a capitalized value of future rent — a valuation
+judgment that moves with the discount rate chosen, not a stated contribution.
 
-There is also no honest `amount`. RFC 0026 defines `amount` as "the committed
-dollar amount." A ground lease's notional would be a capitalized value of future
-rent — a valuation judgment that varies with the discount rate chosen, not a
-stated contribution.
+And **when** the underwriting does include ground rent in operating expenses,
+adding the same obligation as a debt-class tranche would double-count it: the
+payment would reduce `noi_model.net_operating_income` — the numerator of every
+coverage and debt-yield verb — while the invented balance also entered
+`debt_yield_through`, `ltc_through` and `ltv_through`. Whether that inclusion
+happened is the author's doing; the format does not compel it, which is exactly
+the next point.
 
-**The roadmap proposal is conceptually wrong and is corrected rather than
-implemented.** If a future adopter needs the leasehold *structure* expressed —
-remaining term, reset dates, subordination of the fee — that is a property/tenure
-contract, not a capital-stack class, and it needs its own RFC and a demonstrated
-consumer.
+### What the format does *not* represent today
 
-## `pace` — `other_debt` is sufficient
+Nothing in this decision should be read as "ground leases are already modelled."
+They are not, and the gap is wider than a missing enum value:
 
-PACE is debt: money advanced and repaid with interest over a term. Stated as
-`class: "other_debt"`, `id: "pace"`, with `position`, `amount`, `rate`,
-`term_months` and `amortization_months`, every verifier treatment is already
-correct — it counts in debt yield, LTC and LTV, and its service enters coverage.
+- **§ 4.4 `operating_statement.expenses`** has no `ground_rent` key. A historical
+  payment can only be folded into the generic `other_expenses`.
+- **§ 4.5 `noi_model.expenses`** — the underwritten expense set every sizing verb
+  ultimately divides — has no `ground_rent` key **and no generic bucket at all**.
+  Its keys are a fixed named list (taxes, insurance, management fees, payroll,
+  utilities, repairs, contract services, marketing, administrative, professional
+  fees, replacement reserves).
+- No section anywhere in the format types the leasehold as an object.
 
-The three things that make PACE distinctive do not survive contact with a
-point-in-time verifier:
+So the dollars may be reflected in NOI, at the author's discretion and without a
+named line, but **the identity and economics of a ground lease are not preserved
+as a typed underwriting object.** Remaining term, rent resets and escalations,
+extension options, the fee/leasehold relationship and subordination of the fee
+are all absent.
 
-- **Repayment through the property tax bill.** Genuinely material to
-  underwriting, but it is a question of *where the payment sits* — in debt
-  service or in the tax expense line — and the author already decides that by
-  where they state it. UWMD cannot enforce a convention it has no field for, and
-  the enum value would not create one.
-- **Lien priority.** Varies by program and jurisdiction. `position` already
-  carries the author's stated seniority, and inventing a universal priority would
-  be a fiction the format cannot back.
-- **The assessment running with the land.** A transfer and maturity concept; at
-  one point in time it changes nothing the verifier computes.
+That is a real gap. It is simply not a gap a tranche class would close — the
+`Tranche` shape has no field for any of it. The correct future home is a
+**demand-gated property/tenure or ground-lease contract against its own
+section**, with its own RFC and a demonstrated consumer. **The roadmap's
+"reserve `ground_lease` as a tranche concept" framing is corrected rather than
+implemented**; the underlying underwriting need is preserved as tenure work, not
+retired.
 
-Adding the enum value would move a name into the protocol while changing no
-behavior — and would imply UWMD models the tax-bill collection mechanism, which
-it does not. If an adopter later needs the tax-collected payment excluded from
-`coverage` and counted as an expense instead, that is a **mechanics** change (a
-field stating where the obligation is serviced), not an enum change, and it needs
-its own RFC.
+## `pace` — no enum; PACE-specific mechanics deferred
+
+Two questions, and they have different answers.
+
+**The enum question: no new class is needed.** PACE is debt — money advanced and
+repaid with interest over a term. Where the underwriting treats the obligation as
+a debt-service-bearing tranche whose terms are expressible by the existing
+fields, `class: "other_debt"` with `id: "pace"`, `position`, `amount`, `rate`,
+`term_months` and `amortization_months` is an **honest** representation: it
+counts in debt yield, LTC and LTV, and its service enters coverage, which is what
+that underwriting means. A dedicated enum value would change no verifier branch.
+
+**The mechanics question: not everything about PACE is modelled.** These remain
+outside the format, and `other_debt` does not represent them:
+
+- **Assessment-specific servicing** — whether the obligation is serviced above or
+  below NOI. Collected on the property tax bill, a PACE payment may belong in the
+  tax expense line rather than in debt service, and that choice materially
+  changes coverage. The author decides it today by where they state the payment;
+  the format has no field that records or enforces the choice.
+- **Jurisdictional lien behaviour.** Varies by program. `position` carries **the
+  author's stated seniority and nothing more** — it must not be read as asserting
+  a lien priority, and this RFC does not infer one from it. Inventing a universal
+  priority would be a fiction the format cannot back.
+- **Transferability** — the assessment running with the land on sale.
+
+None of that is recovered by naming the tranche. Adding the enum value would move
+a name into the protocol while changing no behaviour, and would imply UWMD models
+the assessment mechanism, which it does not. If an adopter needs any of the
+above, it is a **mechanics contract** — a field stating where the obligation is
+serviced, and what else travels with it — with its own RFC and demonstrated
+consumer. The class, if it were ever warranted, would follow that work rather
+than precede it.
 
 Note that the roadmap already lists PACE a second time, under Wave 3, as
 demand-gated and requiring "a concrete engine scope and module/RFC pair." That
@@ -156,10 +189,17 @@ explicit non-goals, and belongs to a LIHTC profile or module with its own
 contract. **Those mechanics are prerequisites for the class meaning anything, so
 the class defers with them.**
 
-## `soft_debt` — `other_debt` is sufficient
+## `soft_debt` — no enum; specialized mechanics deferred
 
-The existing `Tranche` expresses more "softness" than it first appears, and this
-was verified against the shipped verifier rather than assumed:
+Again two questions. **The enum question: no.** A class should not be added
+merely to label a financing source. **The mechanics question: UWMD models the
+simple subset only**, and this section is careful not to claim more.
+
+The subset `other_debt` represents honestly is the one whose terms reduce to
+`amount`, `rate`, `accrual`, `position`, `amortization_months`, `io_months` and
+`term_months`. Within that subset the existing shape expresses more "softness"
+than it first appears — verified against the shipped verifier rather than
+assumed:
 
 | Soft feature | How it is stated today | Verifier effect |
 |---|---|---|
@@ -167,11 +207,18 @@ was verified against the shipped verifier rather than assumed:
 | Zero / below-market interest | `rate: 0` | Debt service `0` when IO; straight-line when amortizing — both branches already exist in core *and* in the Excel emitter |
 | Deferred payment | `accrual: "accrued"` | Debt service `0`, so it is excluded from `coverage` while still counting in `debt_yield_through` and LTC/LTV — which is the correct treatment |
 
-What the model cannot state is residual-receipts payment, forgiveness,
-subordinate-payment triggers and balloon-on-sale. Those are exactly this RFC's
-non-goals. A `soft_debt` enum would therefore be **actively misleading**: it would
-name a category whose defining mechanics UWMD does not model, inviting producers
-to believe a residual-receipts note is being underwritten as one.
+Outside that subset, the model states nothing: **residual-receipts and other
+contingent payment, forgiveness, maturity forgiveness, accrued-balance
+rollforward, subordinate-payment triggers and balloon-on-sale**. Naming the
+tranche `other_debt` does not represent any of them, and neither would naming it
+`soft_debt` — that is the whole point. An enum value would be **actively
+misleading**: it would name a category whose defining mechanics UWMD does not
+model, inviting producers to believe a residual-receipts note is being
+underwritten as one.
+
+So: `other_debt` for the simple subset, and the specialized mechanics stay
+deferred as their own contract with a demonstrated consumer. **This RFC does not
+claim UWMD models soft debt.**
 
 ## Non-goals
 
@@ -190,20 +237,24 @@ existing document verifies exactly as before, and `other_debt`,
 `preferred_equity` and `common_equity` keep their current meaning — no existing
 document is reinterpreted.
 
-## What would reopen this
+## Scope of this decision, and what it preserves
 
-Each rejection names its own reversal condition, so a future proposer has a
-standard to meet rather than a preference to re-litigate:
+**This RFC closes the enum-opening question only.** It does not declare any of
+these underwriting domains completely modelled, and it must not be cited as
+having done so.
 
-- **`pace`** — an adopter needs the tax-collected payment treated differently
-  from ordinary debt service in `coverage`. That is a mechanics RFC; the class
-  would follow from it, not precede it.
-- **`tax_credit_equity`** — a LIHTC profile or module specifies pay-in and credit
-  delivery. The class becomes meaningful once there is something for it to key.
-- **`soft_debt`** — a residual-receipts or forgiveness contract exists to key off
-  the class.
-- **`ground_lease`** — does not reopen as a tranche class. A leasehold/tenure
-  contract is a different RFC against a different section.
+The tranche-class item is closed and should not reopen. The genuine underwriting
+needs behind it survive as **mechanics, profile and tenure work** — demand-gated,
+each needing its own RFC and a demonstrated consumer:
 
-In every case the mechanics come first and the class follows. A class added ahead
-of its mechanics is a label that lies about what the format verifies.
+| Preserved as | Why it is not tranche-class debt |
+|---|---|
+| **Ground-lease / leasehold tenure contract** | Ground rent has no named line in § 4.4 and no line *or* generic bucket in § 4.5; term, resets, options, fee relationship and subordination are untyped. A `Tranche` has no field for any of it. |
+| **PACE-specific mechanics** | Assessment servicing above or below NOI, jurisdictional lien behaviour, transferability. A mechanics contract, not a label. |
+| **Soft-debt contingent / forgiveness mechanics** | Residual receipts, contingent payment, forgiveness, maturity forgiveness, accrued-balance rollforward. |
+| **Tax-credit equity profile / mechanics** | Pay-in installments, credit delivery, compliance period, adjusters, recapture. |
+
+In every case the mechanics come first and a class, if ever warranted, follows.
+A class added ahead of its mechanics is a label that lies about what the format
+verifies — which is the failure this RFC exists to prevent, in both directions:
+neither adding an empty class, nor pretending the absent mechanics are present.

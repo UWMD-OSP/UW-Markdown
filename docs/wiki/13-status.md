@@ -77,12 +77,18 @@ describe 2.12.0.
 - **RFC 0060 decided the four tranche-class candidates — none opens the enum.**
   `ground_lease`, `pace`, `tax_credit_equity` and `soft_debt` were taken up in
   one bounded RFC, as the roadmap required, and `TrancheClass` is unchanged.
-  `pace` and `soft_debt` are `other_debt` today (for `soft_debt`, `rate: 0` plus
-  `accrual: "accrued"` over a subordinate `position`); `tax_credit_equity`
-  defers with the LIHTC mechanics that would give it meaning; `ground_lease` was
-  a layer error — ground rent is an operating expense upstream of NOI, and a
-  tranche would double-count it. No code, schema or fixture changed. The RFC is
-  `decided` (terminal) and records a reversal condition for each candidate.
+  `pace` and `soft_debt` are `other_debt` **for the subset the existing fields
+  express**; `tax_credit_equity` defers with its mechanics; `ground_lease` was a
+  layer error — a `Tranche` has no field for tenure. No code, schema or fixture
+  changed.
+
+  The RFC closes the **enum question only** and does not claim these domains are
+  modelled. Ground leases are notably *not*: §4.4 has no `ground_rent` key, §4.5
+  `noi_model.expenses` has no ground-rent line and no generic bucket at all, and
+  nothing types the leasehold as an object. PACE assessment servicing, soft-debt
+  contingent payment and forgiveness, and tax-credit pay-in and recapture are
+  equally unmodelled. Each is preserved as demand-gated mechanics, profile or
+  tenure work, not tranche-class debt. `decided` is terminal.
 - **Period-indexed path navigation** (§VIII.2a): a registered series resolves by
   stated period identity, `dcf.annual_cash_flows@Y3`, never by row position.
 - **The Tier-3 collection surface was added and then withdrawn.** Sixteen

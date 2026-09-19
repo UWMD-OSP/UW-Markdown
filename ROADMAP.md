@@ -176,8 +176,8 @@ surfaces usable for the next producer wave.
 | 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
 | 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
 | 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction was the RFC's load-bearing claim, and it was accepted: RFC 0058 shipped in 2.12.0 with the `REC-NN` family and its own conformance suite. |
-| 2 | Ground lease positions | **Closed by [RFC 0060](docs/rfcs/0060-tranche-class-candidates.md); not a tranche class.** The earlier "reserve `ground_lease` as a tranche concept" framing conflated the leasehold estate and its ground-rent obligation — an operating expense upstream of NOI, already at home in §4.4 `operating_statement.expenses` — with financing merely secured by a leasehold, which is already `senior_debt`. Stating the obligation as a tranche would double-count it: ground rent already reduces the NOI every coverage and debt-yield verb divides, and a debt-class balance would distort `debt_yield_through`, `ltc_through` and `ltv_through` as well. No owner decision is outstanding. Expressing the leasehold *structure* (remaining term, resets, fee subordination) would be a property/tenure contract against a different section, needing its own RFC and a demonstrated consumer. |
-| 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, swaps and collars each require a concrete engine scope and module/RFC pair. PACE is no longer listed here as an open item: RFC 0060 records that it is stated today as `other_debt`, and that only a change to *where its payment is serviced* would warrant more. |
+| 2 | Ground lease / leasehold tenure | **Not a tranche class ([RFC 0060](docs/rfcs/0060-tranche-class-candidates.md)); the tenure contract remains demand-gated.** The earlier "reserve `ground_lease` as a tranche concept" framing conflated the leasehold estate and its ground-rent obligation with financing merely secured by a leasehold, which is already `senior_debt`. A `Tranche` has no field for tenure, and no honest `amount` exists for one. **The format does not model ground leases today:** §4.4 has no `ground_rent` key (only the generic `other_expenses`), §4.5 `noi_model.expenses` has no ground-rent line *and no generic bucket at all*, and no section types the leasehold as an object — term, resets, extension options, fee relationship and subordination are all untyped. Where the underwriting does include ground rent in OpEx, adding it again as a debt tranche would double-count it. The open work is a property/tenure contract against its own section, gated on a demonstrated consumer. |
+| 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, swaps and collars each require a concrete engine scope and module/RFC pair. **PACE-specific mechanics** stay on this demand-gated list: RFC 0060 closed the *enum* question — it is stated as `other_debt` where the existing fields suffice — but assessment servicing above or below NOI, jurisdictional lien behaviour and transferability are unmodelled and would need their own contract. |
 | 4 | Fund and land-development profiles | **Later / profile boundary first.** Subscription facilities, clawback/lookback, co-invest fees and lot takedowns belong in fund or land-development profiles that reference deal documents; they do not widen ordinary deal sections. |
 
 ### Cross-cutting requirements
@@ -185,16 +185,18 @@ surfaces usable for the next producer wave.
 - Extend the RFC 0027 size-intensive registry once per demonstrated need (`$/bed`,
   `$/pad`, `$/acre`, `$/slip`, `$/space`); do not create class-specific aliases
   outside the registry.
-- **Settled by [RFC 0060](docs/rfcs/0060-tranche-class-candidates.md) (`decided`).**
-  The four proposed tranche classes were taken up in one bounded RFC, as this
-  requirement asked, and **none opened the enum**. `TrancheClass` is unchanged.
-  `pace` and `soft_debt` are already expressible as `other_debt` with a
-  document-local `id` — for `soft_debt`, `rate: 0` and `accrual: "accrued"` over
-  a subordinate `position` state the economics the verifier acts on.
-  `tax_credit_equity` defers with the LIHTC mechanics that would give it
-  meaning; `sources_uses.sources.tax_credit_equity` already records the amount.
-  `ground_lease` was conceptually wrong as a tranche — see the row above. RFC
-  0060 records each reversal condition, so these are **not open roadmap debt**.
+- **Tranche-enum question settled by [RFC 0060](docs/rfcs/0060-tranche-class-candidates.md) (`decided`); do not reopen it.**
+  The four candidates were taken up in one bounded RFC, as this requirement
+  asked, and **none opened the enum**. `TrancheClass` is unchanged. `pace` and
+  `soft_debt` are stated as `other_debt` **for the subset the existing fields
+  express**; `tax_credit_equity` defers with its mechanics
+  (`sources_uses.sources.tax_credit_equity` already records the amount);
+  `ground_lease` was a layer error. RFC 0060 closed the **enum-opening question
+  only** — it did not declare these domains modelled. The genuine needs survive
+  as demand-gated mechanics, profile and tenure work, each requiring its own RFC
+  and a demonstrated consumer: the ground-lease/leasehold tenure contract (row
+  above), PACE-specific mechanics (row above), soft-debt contingent and
+  forgiveness mechanics, and a tax-credit-equity profile.
 - Treat §4.26 as the addressable sink for new dated cash lines so assembly and
   receipt coverage can verify them instead of trusting engine output.
 - Require one engine-produced conformance fixture per accepted RFC, plus one

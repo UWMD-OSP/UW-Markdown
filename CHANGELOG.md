@@ -28,25 +28,29 @@ protocol, and each package each carry an independent semver).
   classification set, sizing function, validator rule, Excel formula or
   conformance fixture moves.
 
-  - `ground_lease` — **wrong layer.** The ground-rent obligation is an operating
-    expense upstream of NOI (§4.4 `operating_statement.expenses`); financing
-    merely secured by a leasehold is already `senior_debt`. Stating the
-    obligation as a tranche would double-count it, since ground rent already
-    reduces the NOI every coverage and debt-yield verb divides.
-  - `pace` — **`other_debt` is sufficient.** Its distinctive traits are
-    jurisdictional or concern *where the payment is serviced*, which is a
-    mechanics question the enum would not answer.
-  - `soft_debt` — **`other_debt` is sufficient.** `rate: 0`, `accrual:
-    "accrued"` and a subordinate `position` already state the economics the
-    verifier acts on; residual-receipts and forgiveness are mechanics the model
-    does not have, and the enum would imply it does.
+  - `ground_lease` — **wrong layer.** A `Tranche` has no field for tenure, and
+    no honest `amount` exists for one. Where the underwriting includes ground
+    rent in OpEx, adding it again as a debt tranche would double-count it.
+  - `pace` — **no enum;** `other_debt` is honest where the underwriting treats
+    the obligation as a debt-service-bearing tranche whose terms the existing
+    fields express.
+  - `soft_debt` — **no enum;** `other_debt` covers the subset reducible to
+    amount, rate, accrual, position, amortization, IO and term.
   - `tax_credit_equity` — **deferred with its mechanics.**
     `sources_uses.sources.tax_credit_equity` already records the amount, and the
     credit investor's return is not a rate, so the class has nothing a sizing
     verb consumes until a LIHTC profile specifies pay-in and delivery.
 
-  The RFC records a reversal condition for each, so they are not open roadmap
-  debt. `decided` is terminal; nothing ships from it.
+  **The RFC closes the enum-opening question only.** It does not claim these
+  domains are modelled, and says so explicitly. Ground leases in particular are
+  *not* represented: §4.4 has no `ground_rent` key, §4.5 `noi_model.expenses`
+  has no ground-rent line and no generic bucket at all, and no section types the
+  leasehold as an object. Likewise unmodelled: PACE assessment servicing and
+  lien behaviour; residual-receipts, contingent payment and forgiveness for soft
+  debt; tax-credit pay-in, delivery, compliance and recapture. Each survives as
+  demand-gated mechanics, profile or tenure work needing its own RFC and a
+  demonstrated consumer — not as tranche-class debt. `decided` is terminal;
+  nothing ships from it.
 
 ### Removed
 
