@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-18** for release **v2.12.0**, plus unreleased work on
+Reconciled **2026-09-19** for release **v2.12.0**, plus unreleased work on
 `main` (see [Unreleased on `main`](#unreleased-on-main)).
 Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** publish to npm with
 SLSA provenance from the `v2.12.0` tag. Format **2.0** and Protocol **2.17.0**
@@ -74,6 +74,15 @@ describe 2.12.0.
   architectural choice, and there is no adopter requirement to justify deciding
   its package and schema now. If one appears, it returns through an RFC.
   `@uwmd/lake` remains the single relational boundary. JSON export is untouched.
+- **RFC 0060 decided the four tranche-class candidates — none opens the enum.**
+  `ground_lease`, `pace`, `tax_credit_equity` and `soft_debt` were taken up in
+  one bounded RFC, as the roadmap required, and `TrancheClass` is unchanged.
+  `pace` and `soft_debt` are `other_debt` today (for `soft_debt`, `rate: 0` plus
+  `accrual: "accrued"` over a subordinate `position`); `tax_credit_equity`
+  defers with the LIHTC mechanics that would give it meaning; `ground_lease` was
+  a layer error — ground rent is an operating expense upstream of NOI, and a
+  tranche would double-count it. No code, schema or fixture changed. The RFC is
+  `decided` (terminal) and records a reversal condition for each candidate.
 - **Period-indexed path navigation** (§VIII.2a): a registered series resolves by
   stated period identity, `dcf.annual_cash_flows@Y3`, never by row position.
 - **The Tier-3 collection surface was added and then withdrawn.** Sixteen

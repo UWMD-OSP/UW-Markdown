@@ -19,6 +19,35 @@ protocol, and each package each carry an independent semver).
   — the tag is the trigger, so a missing trusted publisher otherwise fails after
   the point of no return.
 
+### Decided
+
+- **RFC 0060 — the four tranche-class candidates, and why none opens the enum.**
+  The roadmap carried `ground_lease`, `pace`, `tax_credit_equity` and
+  `soft_debt` as proposed `capital_stack` classes, to be settled in one bounded
+  RFC. They are settled: **`TrancheClass` is unchanged**, and no schema,
+  classification set, sizing function, validator rule, Excel formula or
+  conformance fixture moves.
+
+  - `ground_lease` — **wrong layer.** The ground-rent obligation is an operating
+    expense upstream of NOI (§4.4 `operating_statement.expenses`); financing
+    merely secured by a leasehold is already `senior_debt`. Stating the
+    obligation as a tranche would double-count it, since ground rent already
+    reduces the NOI every coverage and debt-yield verb divides.
+  - `pace` — **`other_debt` is sufficient.** Its distinctive traits are
+    jurisdictional or concern *where the payment is serviced*, which is a
+    mechanics question the enum would not answer.
+  - `soft_debt` — **`other_debt` is sufficient.** `rate: 0`, `accrual:
+    "accrued"` and a subordinate `position` already state the economics the
+    verifier acts on; residual-receipts and forgiveness are mechanics the model
+    does not have, and the enum would imply it does.
+  - `tax_credit_equity` — **deferred with its mechanics.**
+    `sources_uses.sources.tax_credit_equity` already records the amount, and the
+    credit investor's return is not a rate, so the class has nothing a sizing
+    verb consumes until a LIHTC profile specifies pay-in and delivery.
+
+  The RFC records a reversal condition for each, so they are not open roadmap
+  debt. `decided` is terminal; nothing ships from it.
+
 ### Removed
 
 - **The unreleased SQL export surface, withdrawn before release.** `src/sql.ts`
