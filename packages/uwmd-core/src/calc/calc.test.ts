@@ -820,12 +820,20 @@ describe('Tier-3 surface is closed to the spec', () => {
   });
 
   it('refuses a non-scalar CalcResult.value rather than casting it through', () => {
-    // §VIII.4 pins value to number|string|boolean|null. Receipts digest it, so
-    // an array reaching this field is a protocol break, not a display quirk —
-    // it previously surfaced as display "[object Object]".
+    // calc-result.schema.json types `value` as number|string|boolean|null.
+    // Receipts digest it, so a non-scalar reaching this field is a protocol
+    // break, not a display quirk — it previously surfaced as "[object Object]".
+    //
+    // `quick_metrics` is a frontmatter *object* in FIXTURE, so a bare
+    // identifier resolving to it is a genuinely object-valued terminal
+    // expression. This needs no withdrawn builtin, which is the point: the
+    // guard must hold on the surface that remains.
     const ctx = makeCtx();
-    const res = evaluateCalc(decl('leak', "coalesce(noi, 'x')"), ctx);
-    expect(['number', 'string', 'boolean', 'object']).toContain(typeof res.value);
-    if (res.value !== null) expect(Array.isArray(res.value)).toBe(false);
+    expect(evaluate(parseExpression('quick_metrics'), ctx)).toBeTypeOf('object');
+
+    const res = evaluateCalc(decl('non_scalar', 'quick_metrics'), ctx);
+    expect(res.ok).toBe(false);
+    expect(res.value).toBe(null);
+    expect(res.error?.code).toBe('CALC-TYPE-001');
   });
 });

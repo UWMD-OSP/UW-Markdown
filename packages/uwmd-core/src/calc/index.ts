@@ -48,10 +48,12 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
     const raw = evaluate(ast, ctx);
     const value = typeof raw === 'number' ? quantizeDecimal(raw, roundTo) : raw;
 
-    // §VIII.4 pins `CalcResult.value` to `number | string | boolean | null`.
-    // Receipts digest it and the CLI renders it, so a non-scalar must be
-    // refused here rather than cast through: an array once reached this line
-    // and surfaced as the display string "[object Object]".
+    // `spec/schemas/calc-result.schema.json` — the normative schema declared at
+    // the head of Part VIII — types `value` as
+    // `["number", "string", "boolean", "null"]`. Receipts digest it and the CLI
+    // renders it, so a non-scalar must be refused here rather than cast
+    // through: an array once reached this line and surfaced as the display
+    // string "[object Object]".
     if (
       value !== null &&
       typeof value !== 'number' &&
@@ -60,7 +62,7 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
     ) {
       throw new CalcError(
         'CALC-TYPE-001',
-        `Calculation '${decl.id}' produced a ${Array.isArray(value) ? 'array' : typeof value}; CalcResult.value must be number, string, boolean or null (§VIII.4).`,
+        `Calculation '${decl.id}' produced ${Array.isArray(value) ? 'an array' : `a ${typeof value}`}; CalcResult.value must be number, string, boolean or null (calc-result.schema.json).`,
       );
     }
 

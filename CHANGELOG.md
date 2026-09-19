@@ -45,9 +45,10 @@ protocol, and each package each carry an independent semver).
   to that grammar"**, yet the parser accepted `a[0]`. §VIII.1 also requires a
   host to *reject* what does not parse against the grammar, so this engine
   accepted documents every other conforming engine must refuse. And
-  `filter`/`map_by` returned arrays into `CalcResult.value`, which §VIII.4 pins
-  to `number | string | boolean | null` — `filter` rendered as the display
-  string `"[object Object]"`.
+  `filter`/`map_by` returned arrays into `CalcResult.value`, which
+  `spec/schemas/calc-result.schema.json` — the normative schema declared at the
+  head of Part VIII — types as `number | string | boolean | null`. `filter`
+  rendered as the display string `"[object Object]"`.
 
   RFC 0019 had already considered this exact primitive and **rejected** it
   (Alternatives §1), choosing static component slots precisely so that "named

@@ -65,7 +65,8 @@ describe 2.12.0.
   builtins and numeric bracket indexing landed on this branch and have been
   removed. They were not in §VIII.3's enumerated set, the grammar change was
   the one §VIII.2a explicitly excludes, and `filter`/`map_by` returned arrays
-  into a `CalcResult.value` that §VIII.4 pins to scalars. RFC 0019 had already
+  into a `CalcResult.value` that `calc-result.schema.json`, the normative schema
+  for Part VIII, types as scalars. RFC 0019 had already
   weighed this primitive and rejected it, keeping slots static so the Excel
   emitter stays static — so the addition reopened the parity hole that design
   closed. Nothing consumed it. The calc engine therefore still has **no
@@ -109,9 +110,7 @@ because that needs a vacant-space policy and is a modeling decision. `REC-05`
 anchors on the rent roll's own `as_of_date` and is skipped when absent.
 
 RFC 0059's every basis is closed-form — the IRR floor reuses RFC 0036's hurdle
-balance rather than iterating, because the calc engine had no iteration when
-RFC 0059 shipped. (It has collection primitives on `main` now; see
-[Unreleased on `main`](#unreleased-on-main). RFC 0059 was not revisited.) A test
+balance rather than iterating, because the calc engine has no iteration. A test
 pins the boundary: at a floor equal to the IRR the LP achieved, the true-up is
 exactly zero.
 
@@ -247,9 +246,9 @@ RFC 0053 is released in 2.10.0: the `noi_model`
 reassessment basis and abatement schedule are typed, the `TAX-NN` validator
 family is registered, and `dcf.exit_analysis.terminal_tax` names the next
 buyer's tax. Everything is stated-and-verified; the exit-value/terminal-tax
-circularity is not solved. It needs a fixed-point solve, which the RFC 0019
-collection primitives on `main` do **not** supply — they traverse a collection,
-they do not iterate a formula to convergence.
+circularity is not solved, because the calc engine has no iteration. Note that
+a collection primitive would not solve it either: traversing a collection is
+not iterating a formula to convergence.
 
 ## Remaining work
 
