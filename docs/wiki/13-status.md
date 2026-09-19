@@ -53,12 +53,27 @@ Work merged to `main` after the `v2.12.0` tag and **not yet in any release**.
 Package versions are unchanged, so `VERSIONS.md` and the tables above still
 describe 2.12.0.
 
-- **SQL / relational export.** `packages/uwmd-core/src/sql.ts` plans `CREATE
-  TABLE` + `INSERT` statements for a document's canonical facts, exposed as
-  `exportSql`, `exportSqlStatements` and `UWSqlError` from both `index.ts` and
-  the browser entry, and as a CLI export command. Distinct from `@uwmd/lake`:
-  this emits portable SQL text from one document, where the lake plans
-  digest-keyed upserts for a corpus.
+- **The SQL export surface was added and then withdrawn.** `src/sql.ts`
+  exposed `exportSql`, `exportSqlStatements`, `UWSqlError` and
+  `ExportSqlOptions` from `@uwmd/core` and its browser entry, plus
+  `uwmd export --format sql`, emitting **PostgreSQL and Snowflake** DDL for six
+  tables and four reporting views. All of it is removed; nothing consumed it
+  outside its own tests.
+
+  RFC 0049's Non-goals name "warehouse-specific SQL" explicitly, and the RFC
+  gives the relational boundary to `@uwmd/lake` — `docs/DATA_LAKE.md` opens by
+  saying UWMD "is the backbone of a CRE data lake, not the lake itself." The
+  exporter also **collided** with the lake: both define `uw_documents` with the
+  same primary key and the same three index names but different columns, and
+  both default to schema `public`, so they are the same relation. Loading core's
+  narrower table first makes the lake's `INSERT` fail on `format_version`;
+  loading the lake's first lets core's `INSERT` write catalog rows with a null
+  validation verdict.
+
+  Withdrawn rather than re-homed: a second, BI-shaped projection is a real
+  architectural choice, and there is no adopter requirement to justify deciding
+  its package and schema now. If one appears, it returns through an RFC.
+  `@uwmd/lake` remains the single relational boundary. JSON export is untouched.
 - **Period-indexed path navigation** (§VIII.2a): a registered series resolves by
   stated period identity, `dcf.annual_cash_flows@Y3`, never by row position.
 - **The Tier-3 collection surface was added and then withdrawn.** Sixteen

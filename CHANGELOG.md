@@ -10,16 +10,6 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
-- **SQL and relational database export (`@uwmd/core`).** New
-  `packages/uwmd-core/src/sql.ts` plans a portable `CREATE TABLE` + `INSERT`
-  script for a document's canonical facts, and a new CLI export command writes
-  it. `exportSql`, `exportSqlStatements` and the typed `UWSqlError` are exported
-  from `src/index.ts` and from the browser entry (`src/browser.ts`) — the
-  planner is byte-oriented and takes no database driver, so it stays
-  browser-safe. This is deliberately **not** `@uwmd/lake`: the lake plans
-  idempotent digest-keyed upserts across a corpus against a PostgreSQL schema it
-  owns, whereas `exportSql` emits standalone SQL text for one document into a
-  table layout the caller owns.
 - **Period-indexed path navigation** in `calc/evaluator.ts`, resolving a
   registered series by its stated period identity (`dcf.annual_cash_flows@Y3`)
   per §VIII.2a. Selection is by identity, never by row position.
@@ -30,6 +20,36 @@ protocol, and each package each carry an independent semver).
   the point of no return.
 
 ### Removed
+
+- **The unreleased SQL export surface, withdrawn before release.** `src/sql.ts`
+  exposed `exportSql`, `exportSqlStatements`, `UWSqlError` and
+  `ExportSqlOptions` from `@uwmd/core` and its browser entry, added
+  `uwmd export --format sql` with `--schema` / `--no-ddl` / `--no-views`, and
+  emitted **PostgreSQL and Snowflake** DDL for six tables plus four reporting
+  views. It is removed. Nothing consumed it outside its own tests, and no
+  released version ever contained it.
+
+  RFC 0049 settles the relational boundary, and this crossed it. The RFC's
+  **Non-goals** name "warehouse-specific SQL" outright, and it assigns the
+  integration to `@uwmd/lake`; `docs/DATA_LAKE.md` opens by saying UWMD "is the
+  backbone of a CRE data lake, not the lake itself." The CLI tests labelled the
+  feature "RFC 0049 database lake export", which the RFC does not authorize.
+
+  It was also a live defect. Both `@uwmd/lake` and the exporter define
+  `uw_documents` with the same `semantic_digest` primary key and the same three
+  index names but different columns — the exporter omits `path`,
+  `currency_code`, `format_version`, `protocol_version`, `document_profile`,
+  `valid`, `error_count` and `warning_count` — and both default to schema
+  `public`, so they resolve to one relation. Core-then-lake makes the lake's
+  `INSERT` fail on a missing column; lake-then-core writes catalog rows with a
+  null validation verdict.
+
+  Withdrawn rather than moved into `@uwmd/lake` or a new package: a second,
+  BI-shaped relational projection is an architectural decision, and no adopter
+  requirement exists to justify settling its package and schema now. If one
+  appears it returns through an RFC. **JSON export is unchanged** —
+  `uwmd export` and `stringifyUWEnvelope` behave exactly as before, and the
+  `--format` flag returns to not existing.
 
 - **The unspecified Tier-3 collection surface, withdrawn before release.** Two
   commits on this branch added sixteen builtins — `sum_by`, `avg_by`, `min_by`,

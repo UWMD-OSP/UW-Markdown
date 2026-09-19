@@ -20,6 +20,23 @@ and how it gets accepted.
    remains open for public comment for at least 14 days before acceptance.
 6. Accepted RFCs move to `accepted`; after the implementation ships, they move
    to `implemented`. Rejected and superseded RFCs remain as design history.
+7. A **decision-only** RFC — one whose entire deliverable is the decision, which
+   defines no fields and ships no code — moves to `decided` once accepted.
+   `decided` is terminal: there is no implementation to wait for, so such an RFC
+   never becomes `implemented`. Use it only when the RFC itself states that it
+   implements nothing; an RFC that defers work to a later RFC is still
+   `accepted` until that work ships.
+
+### Status vocabulary
+
+| Status | Meaning |
+|---|---|
+| `draft` | Written, not yet accepted. |
+| `accepted` | Accepted with intent to implement; implementation pending. |
+| `implemented` | The change has shipped in a release. |
+| `decided` | Terminal. The deliverable was the decision itself; nothing ships. |
+| `rejected` | Not adopted; retained as design history. |
+| `superseded` | Replaced by a later RFC; retained as design history. |
 
 ## Index
 
@@ -77,7 +94,7 @@ and how it gets accepted.
 | [0051](./0051-waterfall-dual-hurdle-any-mode.md) | Distribution waterfall dual-hurdle "any" mode | implemented | format, protocol, core, conformance |
 | [0052](./0052-named-exit-sale-deductions.md) | Named exit sale deductions | implemented | protocol, core, conformance |
 | [0053](./0053-tax-abatements-and-reassessment-basis.md) | Tax abatements and reassessment basis | implemented | format, protocol, core, conformance |
-| [0054](./0054-per-lease-ledger-decision.md) | Where per-lease economics live (decision) | accepted | format, documentation |
+| [0054](./0054-per-lease-ledger-decision.md) | Where per-lease economics live (decision) | decided | format, documentation |
 | [0055](./0055-typed-commercial-lease-clauses.md) | Typed commercial lease clauses | implemented | format, protocol, core, conformance |
 | [0056](./0056-rate-hedges-and-escrows.md) | Typed rate hedges, escrows and the reserves that fund them | implemented | format, protocol, core, conformance |
 | [0057](./0057-renovation-draw-and-expense-targeted-capex.md) | The renovation draw, and capex that buys an expense reduction | implemented | format, protocol, core, conformance |

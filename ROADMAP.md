@@ -1,6 +1,8 @@
 # Roadmap
 
-Current as of **2026-09-16**, following [release 2.12.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.12.0).
+Current as of **2026-09-19**, following [release 2.12.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.12.0)
+and reconciled against unreleased work on `main` (see
+[Unreleased on `main`](#unreleased-on-main)).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
@@ -118,6 +120,25 @@ a managed-service run and the publication decision are still open. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
 
+## Unreleased on `main`
+
+Merged after the `v2.12.0` tag and **not in any published release**. Package
+versions are unchanged, so the version matrix above still describes 2.12.0. The
+living detail is in the developer wiki's build-status page
+(`docs/wiki/13-status.md`); this section records only what changes a roadmap or
+status claim.
+
+| Change | Effect on this roadmap |
+|---|---|
+| **Period-indexed path navigation** (§VIII.2a) | Additive. A registered series resolves by stated period identity (`dcf.annual_cash_flows@Y3`), never row position. No roadmap item opens or closes. |
+| **RFC 0024 bisection restored** | A regression had replaced `irr`'s bisection with the Newton pass §VIII.3 step 5 forbids, giving up the cross-engine bit-identical root the RFC exists to guarantee. Reverted. No roadmap item changes; determinism claims elsewhere in this file remain true. |
+| **Tier-3 collection surface: added, then withdrawn** | Sixteen builtins and numeric bracket indexing landed and were removed. They were outside §VIII.3's enumerated set and §VIII.1's grammar, and RFC 0019 had already rejected the primitive. **The calc engine still has no collection iteration**, so every roadmap statement resting on that constraint — RFC 0054's deferral above, and the speculative-leasing note below — stands unchanged. |
+| **SQL export surface: added, then withdrawn** | An unreleased `exportSql` in `@uwmd/core` emitted PostgreSQL and Snowflake DDL and a second `uw_documents` table that collided with `@uwmd/lake`'s. RFC 0049 names warehouse-specific SQL a non-goal and gives `@uwmd/lake` the relational boundary, so it was withdrawn rather than re-homed. **This is not planned work.** A second BI-oriented projection would need an adopter requirement and its own RFC; none exists. |
+| **`@uwmd/lake` 0.2.0, lake schema 0.2** | The live-PostgreSQL fixes below. Still unpublished. |
+| **Release readiness check** | `npm run release:check` verifies npm Trusted Publishers OIDC before a `v*` tag triggers a publish. Tooling only. |
+
+Nothing here adds a protocol capability, and no forward candidate below moved.
+
 ## StackUW protocol alignment queue
 
 **Source:** owner-supplied *StackUW protocol brief* from the engine team,
@@ -150,11 +171,11 @@ surfaces usable for the next producer wave.
 | 1 | Named exit sale deductions | **RFC 0052, implemented.** Closed `sale_deductions` vocabulary with a label-bearing `other`, reserved-and-refused levered names, complete-naming rule, and a `net_sale_proceeds` verifier at the currency quantum. Each deduction remains its own dated §4.26 row. |
 | 1 | Tax abatements and reassessment basis | **RFC 0053, implemented.** Types the reassessment basis (`TAX-01`–`TAX-04`), adds an RFC 0041-addressed abatement schedule (`TAX-05`–`TAX-07`), and names the trailing, going-in and terminal taxes with a `TAX-08` tie to exit value. Stated-and-verified only: the exit-value circularity stays the author's to converge. |
 | 1/2 | Lease clauses and TI/LC amortization | **RFC 0055, implemented.** Break options, co-tenancy triggers/remedies and escalation steps are typed on the commercial tenant record, with LC balances beside TI (`LSE-01`–`LSE-09`). Straight-line amortization stays deferred: RFC 0054 placed it with the periodic series. |
-| 2 | Per-lease monthly ledger | **RFC 0054, accepted decision; the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
+| 2 | Per-lease monthly ledger | **RFC 0054, `decided` (terminal); the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
 | 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
 | 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
 | 2 | Nearest asset-class extensions | **Demand-gated by a concrete deal.** Student by-bed rent roll; manufactured-housing module; and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
-| 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction is the RFC's load-bearing claim and the thing to accept or reject. |
+| 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction was the RFC's load-bearing claim, and it was accepted: RFC 0058 shipped in 2.12.0 with the `REC-NN` family and its own conformance suite. |
 | 2 | Ground lease positions | **Blocked on owner decision.** Reserve `ground_lease` as a tranche concept, but do not define or implement the shape until the first underwriting position is chosen. |
 | 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, PACE, swaps and collars each require a concrete engine scope and module/RFC pair. |
 | 4 | Fund and land-development profiles | **Later / profile boundary first.** Subscription facilities, clawback/lookback, co-invest fees and lot takedowns belong in fund or land-development profiles that reference deal documents; they do not widen ordinary deal sections. |

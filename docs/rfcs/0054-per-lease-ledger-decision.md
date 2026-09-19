@@ -1,7 +1,7 @@
 ---
 rfc: 0054
 title: Where per-lease economics live — a decision, not a container
-status: accepted
+status: decided
 accepted: 2026-09-15
 author: claude
 created: 2026-09-15
