@@ -381,18 +381,24 @@ describe('builtins', () => {
   it('asserts exact receipt digest reproducibility for standard and sensitive cash flow vectors', async () => {
     const standardDecl: ModuleCalcDecl = {
       id: 'standard_irr',
+      label: 'standard_irr',
       formula: 'irr(-1000000, 200000, 300000, 400000, 500000)',
       unit: '%',
+      deterministic: true,
     };
     const sensitiveDeclLong: ModuleCalcDecl = {
       id: 'sensitive_irr_long',
+      label: 'sensitive_irr_long',
       formula: 'irr(-10000000, 500000, 600000, 700000, 800000, 15000000)',
       unit: '%',
+      deterministic: true,
     };
     const sensitiveDeclPrecision: ModuleCalcDecl = {
       id: 'sensitive_irr_precision',
+      label: 'sensitive_irr_precision',
       formula: 'irr(-1234567.89, 123456.78, 234567.89, 345678.9, 456789.01, 567890.12)',
       unit: '%',
+      deterministic: true,
     };
 
     const c = makeCtx();
