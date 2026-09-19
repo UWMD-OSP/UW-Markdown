@@ -3,13 +3,22 @@
 
 import { getSection, isBlockedSegment } from '../parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
-import { BUILTINS, type CalcValue, isForbiddenProperty, MAX_NODES, type EvalState } from './builtins.js';
+import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
 import { periodReferencePath, type Expr } from './parser.js';
 import { periodReferenceContract, periodSection, resolvePeriodReference } from '../period-path.js';
 import { parsePeriodSelector } from '../periods.js';
 
-export { isForbiddenProperty };
+const MAX_NODES = 1024;
+const FORBIDDEN_PROPERTIES = new Set(['__proto__', 'constructor', 'prototype']);
+
+export function isForbiddenProperty(segment: string): boolean {
+  return FORBIDDEN_PROPERTIES.has(segment);
+}
+
+interface EvalState {
+  nodes: number;
+}
 
 export function evaluate(expr: Expr, ctx: CalcEvaluationContext): CalcValue {
   const state: EvalState = { nodes: 0 };
@@ -160,7 +169,7 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
         throw new CalcError('CALC-RESOLVE-001', `Unknown function '${expr.name}'.`);
       }
       const args = expr.args.map((a) => evalNode(a, ctx, state));
-      return fn(args, state);
+      return fn(args);
     }
 
     case 'unary': {

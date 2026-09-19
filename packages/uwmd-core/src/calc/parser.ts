@@ -314,18 +314,9 @@ class Parser {
           segments.push(idTok.value);
         } else {
           this.advance();
-          if (this.match('number')) {
-            const numTok = this.advance();
-            if (!/^\d+$/.test(numTok.value)) {
-              throw new CalcError('CALC-PARSE-001', `Array index must be a non-negative integer, got ${numTok.value}.`);
-            }
-            this.expect('rbracket', "Expected ']'");
-            segments.push(numTok.value);
-          } else {
-            const strTok = this.expect('string', "Expected string or non-negative integer inside [ ]");
-            this.expect('rbracket', "Expected ']'");
-            segments.push(strTok.value);
-          }
+          const strTok = this.expect('string', "Expected string inside [ ]");
+          this.expect('rbracket', "Expected ']'");
+          segments.push(strTok.value);
         }
       }
       if (period) return { kind: 'period_path', head: tok.value, ...period, segments };

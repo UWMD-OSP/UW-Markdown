@@ -59,11 +59,18 @@ describe 2.12.0.
   the browser entry, and as a CLI export command. Distinct from `@uwmd/lake`:
   this emits portable SQL text from one document, where the lake plans
   digest-keyed upserts for a corpus.
-- **RFC 0019 collection primitives.** The Tier-3 calc engine gained array
-  indexing and collection aggregation — `filter`, `map_by`, `count_where` over
-  a shared `extractCollection` helper — plus period-indexed path navigation.
-  This retires the long-standing "the calc engine has no iteration" constraint
-  for *traversal*; it is not a fixed-point solver.
+- **Period-indexed path navigation** (§VIII.2a): a registered series resolves by
+  stated period identity, `dcf.annual_cash_flows@Y3`, never by row position.
+- **The Tier-3 collection surface was added and then withdrawn.** Sixteen
+  builtins and numeric bracket indexing landed on this branch and have been
+  removed. They were not in §VIII.3's enumerated set, the grammar change was
+  the one §VIII.2a explicitly excludes, and `filter`/`map_by` returned arrays
+  into a `CalcResult.value` that §VIII.4 pins to scalars. RFC 0019 had already
+  weighed this primitive and rejected it, keeping slots static so the Excel
+  emitter stays static — so the addition reopened the parity hole that design
+  closed. Nothing consumed it. The calc engine therefore still has **no
+  collection iteration**, by design; see the RFC 0053 and RFC 0059 notes above,
+  which are unaffected.
 - **RFC 0024 bisection restored.** An intermediate commit on this branch swapped
   `irr`'s bisection for a Newton-Raphson pass — the procedure §VIII.3 step 5
   forbids — and it was reverted. `irr` bisects to the normative `1e-9`/`1e-12`
@@ -78,11 +85,13 @@ describe 2.12.0.
 - **Release readiness check.** `scripts/check-release-readiness.mjs` verifies the
   npm Trusted Publishers OIDC configuration before a `v*` tag triggers a publish.
 
-**Not yet verified:** invariant 4 requires exact Excel↔calc parity, and nothing
-in this work touched `@uwmd/excel`. The collection primitives have **no matching
-Excel emission for dynamic ranges**, so parity for a formula using them is
-unproven. Treat that as a release blocker for the next core minor, not a bug in
-what shipped.
+**Invariant 4 is intact.** The parity risk here was the collection surface, and
+withdrawing it removes the risk rather than deferring it: every remaining
+builtin is in §VIII.3 and has a static Excel counterpart. Any future collection
+primitive must arrive through an RFC that pins its Excel emission alongside its
+semantics — the emitter targets Excel 2016, where an array-valued cell has no
+representation, so parity is a design constraint on such a primitive, not a
+follow-up task.
 
 ## Released in 2.12.0
 

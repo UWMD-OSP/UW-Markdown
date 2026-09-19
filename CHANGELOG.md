@@ -20,33 +20,62 @@ protocol, and each package each carry an independent semver).
   idempotent digest-keyed upserts across a corpus against a PostgreSQL schema it
   owns, whereas `exportSql` emits standalone SQL text for one document into a
   table layout the caller owns.
-- **RFC 0019 collection primitives in the Tier-3 calc engine.** The safe
-  expression grammar gained array indexing, and `calc/builtins.ts` gained
-  `filter`, `map_by` and `count_where`, all routed through one
-  `extractCollection` helper so the collection-shape refusals are stated once.
-  `calc/evaluator.ts` gained period-indexed path navigation. Together these
-  retire the standing limitation that the engine could only address static paths
-  and that `sum()` was variadic over explicit arguments rather than aggregating
-  a collection.
-
-  This is **traversal, not convergence.** The primitives walk a collection that
-  already exists; they do not iterate a formula to a fixed point. The
-  exit-value/terminal-tax circularity of RFC 0053 and the closed-form IRR floor
-  of RFC 0059 are unchanged and were not revisited.
-
-  **Excel parity is not yet established for these primitives.** Invariant 4
-  requires one pack to drive both the calc engine and the Excel emission at the
-  same `round_to`, and no dynamic-range emission was added to `@uwmd/excel` in
-  this work. A formula using `filter`, `map_by` or `count_where` therefore has no
-  proven workbook counterpart. This must be closed before the next core minor
-  ships.
+- **Period-indexed path navigation** in `calc/evaluator.ts`, resolving a
+  registered series by its stated period identity (`dcf.annual_cash_flows@Y3`)
+  per §VIII.2a. Selection is by identity, never by row position.
 - **Release readiness check.** `scripts/check-release-readiness.mjs`, wired as
   `npm run release:check` and into `.github/workflows/release.yml`, verifies that
   npm Trusted Publishers OIDC is configured before a `v*` tag triggers a publish
   — the tag is the trigger, so a missing trusted publisher otherwise fails after
   the point of no return.
 
+### Removed
+
+- **The unspecified Tier-3 collection surface, withdrawn before release.** Two
+  commits on this branch added sixteen builtins — `sum_by`, `avg_by`, `min_by`,
+  `max_by`, `count_by`, `count_where`, `filter`, `filter_by`, `find`, `find_by`,
+  `map_by`, `pluck`, `values`, `to_array`, `get`, `prop` — plus numeric bracket
+  indexing in the grammar. All of it is now removed. Nothing consumed it: no
+  pack, no fixture, no tool.
+
+  It was out of spec on four counts. §VIII.3's table is the enumerated builtin
+  set and §II.3 clause 2 requires a host to implement *that* set; none of the
+  sixteen were in it. §VIII.1 defines `member ::= "." identifier | "[" string
+  "]"` and §VIII.2a says in terms that **"numeric bracket indices are not added
+  to that grammar"**, yet the parser accepted `a[0]`. §VIII.1 also requires a
+  host to *reject* what does not parse against the grammar, so this engine
+  accepted documents every other conforming engine must refuse. And
+  `filter`/`map_by` returned arrays into `CalcResult.value`, which §VIII.4 pins
+  to `number | string | boolean | null` — `filter` rendered as the display
+  string `"[object Object]"`.
+
+  RFC 0019 had already considered this exact primitive and **rejected** it
+  (Alternatives §1), choosing static component slots precisely so that "named
+  ranges stay static and the existing emitter is sufficient". Reintroducing it
+  reopened the Excel↔calc parity hole that design closed: the emitter targets
+  Excel 2016, where `FILTER` and `LAMBDA` do not exist and an array-valued cell
+  has no representation, so `filter` and `map_by` had no workbook counterpart at
+  all.
+
+  The five scalar aggregators do have a plausible Excel story (`SUMIF`,
+  `COUNTIF`, `AVERAGE`, `MIN`/`MAX`). If a concrete use case appears, they
+  should return through an RFC that pins the grammar delta, the §VIII.3 table
+  rows, and the emission contract — including the empty-collection, null-versus-
+  blank and truthiness semantics, each of which diverges between the calc engine
+  and Excel and so decides parity rather than following from it.
+
+  A regression test now pins `Object.keys(BUILTINS)` to the §VIII.3 set and
+  asserts the grammar rejects numeric indices, so the surface cannot drift back
+  by accretion.
+
 ### Security
+
+- **`CalcResult.value` is type-checked instead of cast.** `evaluateCalc` cast
+  the evaluator's result straight into `number | string | boolean | null`, so a
+  non-scalar reached receipts and the CLI unchecked. It is now refused with
+  `CALC-TYPE-001`. The removal above eliminates the only builtins that could
+  produce one, but the guard is the invariant, not the absence of a caller —
+  receipts digest this field.
 
 - **The calc evaluator refuses prototype-polluting path segments.** A Tier-3
   path could previously name `__proto__`, `constructor` or `prototype` and walk

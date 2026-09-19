@@ -18,11 +18,8 @@ export {
   IRR_MAX_ITER,
   IRR_VALUE_TOL,
   IRR_INTERVAL_TOL,
-  MAX_NODES,
-  safeGetPath,
-  extractCollection,
 } from './builtins.js';
-export type { CalcValue, Builtin, EvalState } from './builtins.js';
+export type { CalcValue, Builtin } from './builtins.js';
 export { CalcError, calcError } from './errors.js';
 export type { CalcErrorCode } from './errors.js';
 export {
@@ -51,10 +48,26 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
     const raw = evaluate(ast, ctx);
     const value = typeof raw === 'number' ? quantizeDecimal(raw, roundTo) : raw;
 
+    // §VIII.4 pins `CalcResult.value` to `number | string | boolean | null`.
+    // Receipts digest it and the CLI renders it, so a non-scalar must be
+    // refused here rather than cast through: an array once reached this line
+    // and surfaced as the display string "[object Object]".
+    if (
+      value !== null &&
+      typeof value !== 'number' &&
+      typeof value !== 'string' &&
+      typeof value !== 'boolean'
+    ) {
+      throw new CalcError(
+        'CALC-TYPE-001',
+        `Calculation '${decl.id}' produced a ${Array.isArray(value) ? 'array' : typeof value}; CalcResult.value must be number, string, boolean or null (§VIII.4).`,
+      );
+    }
+
     return {
       calc_id: decl.id,
       ok: true,
-      value: value as number | string | boolean | null,
+      value,
       ...(decl.unit ? { unit: decl.unit } : {}),
       round_to: roundTo,
       display: formatForDisplay(value, decl.unit, ctx.parsed?.frontmatter?.currency_code),
