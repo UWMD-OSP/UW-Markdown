@@ -88,6 +88,7 @@ and how it gets accepted.
 | [0058](./0058-expense-recoveries-and-cam-true-up.md) | Expense recoveries and the CAM true-up | implemented | format, protocol, core, conformance |
 | [0059](./0059-waterfall-clawback-terminal-true-up.md) | Waterfall clawback as a terminal true-up | implemented | format, protocol, core, conformance |
 | [0060](./0060-tranche-class-candidates.md) | The four tranche-class candidates (decision) | decided | documentation |
+| [0061](./0061-protocol-version-label-integrity.md) | Keep protocol version labels synchronized | implemented | protocol, tooling, documentation |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

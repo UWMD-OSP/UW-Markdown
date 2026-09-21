@@ -182,8 +182,10 @@ the unstated reading is the one that misleads: `HDG-06` (what happens when the
 cap expires), `CAPX-07` (whether a stated saving is already inside the NOI) and,
 from 2.10.0, `TAX-08` (whether the terminal tax is inside exit NOI).
 
-Gate totals at the cut: **1,937 core tests**, **558 default conformance
-checks**, **44 JSON schemas**. Protocol **2.15.0**.
+Current deterministic gates cover **2,032 core tests**, **589 default
+conformance checks**, and **46 JSON schemas**. Protocol **2.17.0**. RFC 0061
+keeps both protocol-document release labels mechanically synchronized with
+`VERSIONS.md` and `PROTOCOL_VERSION`.
 
 For the lake adapter, a live load **has now been run** (2026-09-16, after the
 2.12.0 cut): the whole conformance corpus — 382 documents, 24,380 facts, 24,809

@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Protocol version-label integrity (RFC 0061).** Corrected the protocol
+  document's stale `2.15.0` status line and `2.8.0` §0.3 label to the
+  authoritative `2.17.0`, and extended `verify-versions` to fail if either
+  checked mirror drifts from `VERSIONS.md` and `PROTOCOL_VERSION` again.
+
 ### Added
 
 - **Period-indexed path navigation** in `calc/evaluator.ts`, resolving a

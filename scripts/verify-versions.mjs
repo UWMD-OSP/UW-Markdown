@@ -19,6 +19,8 @@
 //   3. The `.uw.md format spec` row equals `FORMAT_VERSION` in protocol.ts.
 //   4. Every "pairs with @uwmd/core X" note names the core version in the
 //      matrix — the column that went stale at 1.3.x across four rows.
+//   5. The protocol document's status-line and §0.3 version labels equal the
+//      matrix and executable protocol constant.
 //
 // `CORE_VERSION` vs the core manifest is already covered by version.test.ts and
 // is deliberately not repeated here.
@@ -171,6 +173,39 @@ if (pairChecks > 0) {
   checks.push(`${pairChecks} "pairs with @uwmd/core" notes at ${coreSeries}.x`);
 }
 
+// ── 5. Protocol prose labels match the authoritative release version ────────
+// The protocol document intentionally repeats the current version in its
+// status line and §0.3. Both are useful to readers, so keep them as checked
+// mirrors instead of allowing prose to silently drift from the matrix.
+
+const protocolDoc = read('spec/UW_PROTOCOL_v1.md');
+const authoritativeProtocol = statedVersion('UW Protocol');
+const PROTOCOL_DOC_LABELS = [
+  {
+    label: 'protocol status line',
+    pattern: /^\*\*Status:\*\* Stable — protocol \*\*([^*]+)\*\*/m,
+  },
+  {
+    label: 'protocol §0.3 current-version label',
+    pattern: /\*\*Protocol version\*\* \(this document, currently `([^`]+)`\)/,
+  },
+];
+
+for (const { label, pattern } of PROTOCOL_DOC_LABELS) {
+  const actual = protocolDoc.match(pattern)?.[1] ?? null;
+  if (actual === null) {
+    failures.push(`spec/UW_PROTOCOL_v1.md: could not read the ${label}.`);
+    continue;
+  }
+  if (actual !== authoritativeProtocol) {
+    failures.push(
+      `spec/UW_PROTOCOL_v1.md: ${label} is ${actual}, but VERSIONS.md declares ${authoritativeProtocol}.`,
+    );
+    continue;
+  }
+  checks.push(`${label} ${actual}`);
+}
+
 // ── Report ───────────────────────────────────────────────────────────────────
 
 if (failures.length > 0) {
@@ -181,5 +216,5 @@ if (failures.length > 0) {
 
 for (const check of checks) console.log(`[PASS] ${check}`);
 console.log(
-  `\nSummary: VERSIONS.md agrees with ${MANIFEST_ROWS.length} manifests and ${SPEC_ROWS.length} spec constants.`,
+  `\nSummary: VERSIONS.md agrees with ${MANIFEST_ROWS.length} manifests, ${SPEC_ROWS.length} spec constants, and ${PROTOCOL_DOC_LABELS.length} protocol document labels.`,
 );

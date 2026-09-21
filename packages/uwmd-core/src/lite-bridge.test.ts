@@ -6,7 +6,12 @@ import {
   stringifyUWX,
   UW_LITE_SOURCE_EXTENSION,
 } from './lite-bridge.js';
-import type { UWEnvelopeBlock, UWEnvelopeSectionEntry } from './envelope.js';
+import {
+  areEnvelopesEquivalent,
+  toUWEnvelope,
+  type UWEnvelopeBlock,
+  type UWEnvelopeSectionEntry,
+} from './envelope.js';
 import { getSection, parseUWFile } from './parser.js';
 
 /**
@@ -131,6 +136,39 @@ describe('UWX bridge rendering and Lite projection', () => {
     expect(parsed.superseded['valuation']).toHaveLength(1);
     expect(parsed.superseded['valuation']?.[0]?.content['purchase_price']).toBe(12_000_000);
     expect(getSection(parsed, 'valuation')?.content['purchase_price']).toBe(12_500_000);
+  });
+
+  it('preserves empty frontmatter arrays across a model-fidelity UWX round-trip', () => {
+    const source = parseUWFile(
+      [
+        '---',
+        'uw_version: "1.1"',
+        'deal_id: empty-array-roundtrip',
+        'deal_name: Empty Array Roundtrip',
+        'asset_class: multifamily',
+        'flags: []',
+        'blocking_flags: []',
+        'source_documents: []',
+        '---',
+        '',
+        '```json uw:section=property source=manual v=1',
+        '{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "manual", "timestamp": "2026-09-21T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [] }, "total_units": 10 }',
+        '```',
+      ].join('\n'),
+      { strict: true },
+    );
+    const before = toUWEnvelope(source, { generatedAt: '2026-09-21T00:00:00Z' });
+    const rendered = stringifyUWX(before);
+    const reparsed = parseUWFile(rendered, { strict: true });
+    const after = toUWEnvelope(reparsed, { generatedAt: '2026-09-21T00:00:00Z' });
+
+    expect(rendered).toContain('flags: []');
+    expect(rendered).toContain('blocking_flags: []');
+    expect(rendered).toContain('source_documents: []');
+    expect(reparsed.frontmatter.flags).toEqual([]);
+    expect(reparsed.frontmatter.blocking_flags).toEqual([]);
+    expect(reparsed.frontmatter.source_documents).toEqual([]);
+    expect(areEnvelopesEquivalent(before, after)).toBe(true);
   });
 
   it('projects supported fields and reports omitted advanced data', () => {

@@ -699,8 +699,16 @@ function serializeFrontmatter(frontmatter: UWFrontmatter): string {
   for (const key of keys) {
     const value = frontmatter[key];
     if (Array.isArray(value)) {
-      lines.push(`${key}:`);
-      for (const item of value) lines.push(`  - ${serializeYamlScalar(item)}`);
+      if (value.length === 0) {
+        // A bare `key:` parses as null in the format's restricted YAML subset.
+        // Preserve the only supported flow-style collection literal so a
+        // model-fidelity envelope -> UWX -> envelope round-trip does not turn
+        // empty frontmatter arrays into nulls and change the semantic digest.
+        lines.push(`${key}: []`);
+      } else {
+        lines.push(`${key}:`);
+        for (const item of value) lines.push(`  - ${serializeYamlScalar(item)}`);
+      }
     } else if (isRecord(value)) {
       lines.push(`${key}:`);
       for (const [childKey, child] of Object.entries(value).sort(([left], [right]) =>
