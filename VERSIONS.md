@@ -20,12 +20,13 @@ same protocol version.
 
 ## Current matrix
 
-Release 2.12.0 pairs core/CLI 2.12.0 with Protocol 2.17.0 and Format 2.0.
+Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
 Protocol 2.17.0 adds §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes
 (RFC 0059) and the `REC-NN` recovery family (RFC 0058), on top of the
 `LSE-NN` / `HDG-NN` / `ESC-NN` / `CAPX-NN` families 2.15.0 registered.
-Core/CLI 2.12.0, signing 0.2.16 and batch 0.8.11 publish on npm from the
-`v2.12.0` tag. The release workflow publishes those four and
+Core/CLI 2.13.0, signing 0.2.17 and batch 0.8.12 are prepared for the
+`v2.13.0` tag. Published 2.12.0 remains current until that tag is pushed. The
+release workflow publishes those four and
 no others. The reference modules have never been published. Excel and report are
 **not published at their current versions**, but the registry does serve a stale
 `0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0 manual release and
@@ -40,16 +41,16 @@ versions advance independently.
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
 | UW Protocol | **2.17.0** | format ≥ 1.0 (§VIII.10 step 5 and `WF-10`–`WF-15` for RFC 0059, `REC-NN` for RFC 0058; released in core/CLI 2.12.0) |
-| `@uwmd/core` | **2.12.0** | format 2.0 (reads 1.x), protocol 2.17.0 |
-| `@uwmd/cli` (CLI) | **2.12.0** | `@uwmd/core` 2.12.0 |
-| `@uwmd/excel` | **0.9.4** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.12.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.16** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.12.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.11** | `@uwmd/core` 2.12.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.0** (unpublished) | `@uwmd/core` 2.12.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.16** | `@uwmd/core` 2.12.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.4** (unpublished) | `@uwmd/core` 2.12.x, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.4** (unpublished) | `@uwmd/core` 2.12.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.12.x browser entry |
+| `@uwmd/core` | **2.13.0** | format 2.0 (reads 1.x), protocol 2.17.0 |
+| `@uwmd/cli` (CLI) | **2.13.0** | `@uwmd/core` 2.13.0 |
+| `@uwmd/excel` | **0.9.5** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.13.x, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.17** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.13.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.12** | `@uwmd/core` 2.13.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.1** (unpublished) | `@uwmd/core` 2.13.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.17** | `@uwmd/core` 2.13.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.5** (unpublished) | `@uwmd/core` 2.13.x, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.5** (unpublished) | `@uwmd/core` 2.13.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.13.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

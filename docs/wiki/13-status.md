@@ -1,11 +1,14 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-19** for release **v2.12.0**, plus unreleased work on
-`main` (see [Unreleased on `main`](#unreleased-on-main)).
+Reconciled **2026-09-21** for published release **v2.12.0** and the prepared
+**v2.13.0** candidate on `main` (see [Unreleased on `main`](#unreleased-on-main)).
 Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** publish to npm with
 SLSA provenance from the `v2.12.0` tag. Format **2.0** and Protocol **2.17.0**
 version independently. See [VERSIONS.md](../../VERSIONS.md) and
 [ROADMAP.md](../../ROADMAP.md).
+
+The prepared candidate is core/CLI **2.13.0**, signing **0.2.17** and batch
+**0.8.12**. It is not published until the reviewed `v2.13.0` tag is pushed.
 
 ## Built and released
 
@@ -24,14 +27,25 @@ version independently. See [VERSIONS.md](../../VERSIONS.md) and
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.4**, report **0.8.16**, lake **0.2.0** and hospitality/data-center
-module packages **0.1.4** remain unpublished. The registry does serve a stale
+Excel **0.9.5**, report **0.8.17**, lake **0.2.1** and hospitality/data-center
+module packages **0.1.5** remain unpublished. The registry does serve a stale
 `0.3.0` of excel and report from a hand publish on 2026-08-16, pending
 deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's RFC 0043 binding API is published; the full Excel
 exporter remains available from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
+
+Release preparation for 2.13.0 passed build, **2,433 workspace tests** across
+138 files (**2,032 core**), test typechecking, **589 default conformance
+checks**, all three RFC 0030 profiles (161 checks passed, 67 capability skips),
+**46 JSON schemas**, lint over **1,047 files**, **221 emitted codes**,
+lockfile/package/version/index/release checks, the documentation build, and the
+OIDC release-readiness guard. The frozen private golden corpus also passes all
+eight runnable cases: 532 Artifact B assertions accounted for, 526 passing, six
+documented source/baseline defects, and 20 refusal assertions. GD04 and GD07
+remain evidence-blocked; see the
+[review](../reviews/2026-09-21-golden-deal-release-comparison.md).
 
 Release preparation for 2.10.0 passed build, **1,778 core tests** plus every
 other workspace, test typechecking, **504 default + 76 declarative conformance
@@ -50,8 +64,8 @@ release repin. The three receipt edits changed engine-version labels only.
 ## Unreleased on `main`
 
 Work merged to `main` after the `v2.12.0` tag and **not yet in any release**.
-Package versions are unchanged, so `VERSIONS.md` and the tables above still
-describe 2.12.0.
+The 2.13.0 candidate versions are prepared in `VERSIONS.md`; published 2.12.0
+remains current until the tag is pushed.
 
 - **The SQL export surface was added and then withdrawn.** `src/sql.ts`
   exposed `exportSql`, `exportSqlStatements`, `UWSqlError` and
@@ -115,6 +129,13 @@ describe 2.12.0.
   code, alongside the existing `MAX_NODES` bound.
 - **Release readiness check.** `scripts/check-release-readiness.mjs` verifies the
   npm Trusted Publishers OIDC configuration before a `v*` tag triggers a publish.
+- **Golden-deal release comparison.** A frozen private corpus accounts for 532
+  Artifact B assertions: 526 pass, six remain documented source/baseline
+  defects, and 20 refusal assertions pass. All eight runnable cases pass on the
+  candidate. Published 2.12.0 fails seven model-fidelity round-trips because an
+  empty frontmatter array becomes a bare YAML key and reparses as `null`; the
+  candidate preserves `[]`. See the
+  [de-identified record](../reviews/2026-09-21-golden-deal-release-comparison.md).
 
 **Invariant 4 is intact.** The parity risk here was the collection surface, and
 withdrawing it removes the risk rather than deferring it: every remaining
@@ -284,7 +305,10 @@ not iterating a formula to convergence.
 
 ## Remaining work
 
-- Validate RFC 0045 against a real deal. Levered/tax, post-sale and reserve-rollforward
+- Validate RFC 0045 against qualifying real-deal inputs. The broader golden
+  corpus now supplies real-deal acceptance evidence, but its annual models do
+  not satisfy RFC 0045's explicit monthly/quarterly periods and complete
+  supplemental-cash-flow coverage. Levered/tax, post-sale and reserve-rollforward
   extensions remain separate contracts; declared completeness is not verified
   economics.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing

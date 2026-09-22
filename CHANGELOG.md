@@ -8,8 +8,21 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-09-21
+
+Core/CLI **2.13.0** add the already-specified period-indexed navigation
+capability and ship implementation, security, and representation fixes against
+Protocol **2.17.0** and Format **2.0**. Signing **0.2.17** and batch **0.8.12**
+repin core. Standalone packages remain unpublished.
+
 ### Fixed
 
+- **Empty-frontmatter-array fidelity.** Model-fidelity exports now serialize an
+  empty frontmatter array as `[]` instead of a bare YAML key. The bare key
+  reparsed as `null` and changed the semantic digest on seven private
+  golden-deal/control cases under published 2.12.0; the corrected serializer
+  preserves `[]` and all model-fidelity round-trips pass. See the
+  [de-identified acceptance record](docs/reviews/2026-09-21-golden-deal-release-comparison.md).
 - **Protocol version-label integrity (RFC 0061).** Corrected the protocol
   document's stale `2.15.0` status line and `2.8.0` §0.3 label to the
   authoritative `2.17.0`, and extended `verify-versions` to fail if either
@@ -25,6 +38,21 @@ protocol, and each package each carry an independent semver).
   npm Trusted Publishers OIDC is configured before a `v*` tag triggers a publish
   — the tag is the trigger, so a missing trusted publisher otherwise fails after
   the point of no return.
+
+### Validation
+
+- The frozen private golden corpus accounts for **532** Artifact B assertions:
+  **526** pass and six remain documented source/baseline defects. All **20**
+  refusal assertions and all eight runnable cases pass on this release
+  candidate. GD04 and GD07 remain evidence-blocked. This broad real-deal
+  acceptance does not claim RFC 0045 real-deal property-cash-flow assembly;
+  the required explicit periodic inputs and coverage remain unavailable.
+- Release preparation passed **2,433 workspace tests** across 138 files,
+  **589 default conformance checks**, all three RFC 0030 capability profiles,
+  **46 JSON Schema compilations**, **221 emitted-code checks**, test
+  typechecking, lint over 1,047 files, package-content verification,
+  documentation build, version/index/release/lockfile guards, and OIDC release
+  readiness.
 
 ### Decided
 

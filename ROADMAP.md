@@ -1,17 +1,19 @@
 # Roadmap
 
-Current as of **2026-09-19**, following [release 2.12.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.12.0)
-and reconciled against unreleased work on `main` (see
-[Unreleased on `main`](#unreleased-on-main)).
+Current as of **2026-09-21**, following [release 2.12.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.12.0)
+and preparation of the 2.13.0 release candidate on `main` (see
+[Prepared for 2.13.0](#prepared-for-2130)).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Current release
+## Current release and prepared candidate
 
 Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** are published on
 npm. Format is **2.0** and Protocol is **2.17.0**. The version streams are
 independent.
+Core/CLI **2.13.0**, signing **0.2.17** and batch **0.8.12** are prepared on
+`main` but are not published until the reviewed `v2.13.0` tag is pushed.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -120,10 +122,10 @@ a managed-service run and the publication decision are still open. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
 
-## Unreleased on `main`
+## Prepared for 2.13.0
 
-Merged after the `v2.12.0` tag and **not in any published release**. Package
-versions are unchanged, so the version matrix above still describes 2.12.0. The
+Merged after the `v2.12.0` tag and **not in any published release**. The
+2.13.0 release matrix is prepared, but 2.12.0 remains the published release. The
 living detail is in the developer wiki's build-status page
 (`docs/wiki/13-status.md`); this section records only what changes a roadmap or
 status claim.
@@ -136,6 +138,7 @@ status claim.
 | **SQL export surface: added, then withdrawn** | An unreleased `exportSql` in `@uwmd/core` emitted PostgreSQL and Snowflake DDL and a second `uw_documents` table that collided with `@uwmd/lake`'s. RFC 0049 names warehouse-specific SQL a non-goal and gives `@uwmd/lake` the relational boundary, so it was withdrawn rather than re-homed. **This is not planned work.** A second BI-oriented projection would need an adopter requirement and its own RFC; none exists. |
 | **`@uwmd/lake` 0.2.0, lake schema 0.2** | The live-PostgreSQL fixes below. Still unpublished. |
 | **Release readiness check** | `npm run release:check` verifies npm Trusted Publishers OIDC before a `v*` tag triggers a publish. Tooling only. |
+| **Golden-deal release comparison** | Eight runnable cases pass on the candidate: 532 Artifact B assertions accounted for, 526 passing, six documented baseline defects, and 20 refusal assertions passing. [De-identified evidence](docs/reviews/2026-09-21-golden-deal-release-comparison.md). This does not close RFC 0045-specific real-deal assembly evidence. |
 
 Nothing here adds a protocol capability, and no forward candidate below moved.
 
@@ -211,7 +214,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFC 0045 released; input inventory implemented; adopter review pending | Use the [input inventory](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#prepare-a-real-deal-plan-without-inventing-inputs), then validate explicit coverage and economic assertions against a real deal. [Synthetic workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md) and [release evidence](docs/reviews/2026-09-12-release-2.9.0.md). Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
+| 1 | Real-deal DCF validation and extensions | Broad golden-deal acceptance complete; RFC 0045-specific evidence still pending | The [golden comparison](docs/reviews/2026-09-21-golden-deal-release-comparison.md) supplies broad real-deal acceptance, but its annual models do not satisfy RFC 0045's explicit monthly/quarterly period and supplemental-cash-flow coverage contract. Use the [input inventory](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#prepare-a-real-deal-plan-without-inventing-inputs), then validate that workflow against qualifying real-deal inputs. Levered/tax, reserve-rollforward and post-sale economics require separate contracts. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
