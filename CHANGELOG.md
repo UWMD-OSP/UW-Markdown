@@ -15,6 +15,11 @@ capability and ship implementation, security, and representation fixes against
 Protocol **2.17.0** and Format **2.0**. Signing **0.2.17** and batch **0.8.12**
 repin core. Standalone packages remain unpublished.
 
+### Released
+
+The `v2.13.0` tag published core/CLI **2.13.0**, signing **0.2.17** and batch
+**0.8.12** to npm with SLSA provenance through trusted publishing (OIDC).
+
 ### Fixed
 
 - **Empty-frontmatter-array fidelity.** Model-fidelity exports now serialize an
@@ -43,8 +48,8 @@ repin core. Standalone packages remain unpublished.
 
 - The frozen private golden corpus accounts for **532** Artifact B assertions:
   **526** pass and six remain documented source/baseline defects. All **20**
-  refusal assertions and all eight runnable cases pass on this release
-  candidate. GD04 and GD07 remain evidence-blocked. This broad real-deal
+  refusal assertions and all eight runnable cases pass in this release. GD04
+  and GD07 remain evidence-blocked. This broad real-deal
   acceptance does not claim RFC 0045 real-deal property-cash-flow assembly;
   the required explicit periodic inputs and coverage remain unavailable.
 - Release preparation passed **2,433 workspace tests** across 138 files,
@@ -3752,7 +3757,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.2...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.12.0...v2.13.0
 [2.6.2]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.1...v2.6.2
 [2.6.1]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.5.0...v2.6.0

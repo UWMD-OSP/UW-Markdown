@@ -24,10 +24,10 @@ Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
 Protocol 2.17.0 adds §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes
 (RFC 0059) and the `REC-NN` recovery family (RFC 0058), on top of the
 `LSE-NN` / `HDG-NN` / `ESC-NN` / `CAPX-NN` families 2.15.0 registered.
-Core/CLI 2.13.0, signing 0.2.17 and batch 0.8.12 are prepared for the
-`v2.13.0` tag. Published 2.12.0 remains current until that tag is pushed. The
-release workflow publishes those four and
-no others. The reference modules have never been published. Excel and report are
+Core/CLI 2.13.0, signing 0.2.17 and batch 0.8.12 are published from the
+`v2.13.0` tag with SLSA provenance through trusted publishing (OIDC). The
+release workflow publishes those four and no others. The reference modules have
+never been published. Excel and report are
 **not published at their current versions**, but the registry does serve a stale
 `0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0 manual release and
 never unwound; both declare `@uwmd/core` `1.3.0`. Neither is maintained at that

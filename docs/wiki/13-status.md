@@ -1,14 +1,10 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-21** for published release **v2.12.0** and the prepared
-**v2.13.0** candidate on `main` (see [Unreleased on `main`](#unreleased-on-main)).
-Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** publish to npm with
-SLSA provenance from the `v2.12.0` tag. Format **2.0** and Protocol **2.17.0**
-version independently. See [VERSIONS.md](../../VERSIONS.md) and
-[ROADMAP.md](../../ROADMAP.md).
-
-The prepared candidate is core/CLI **2.13.0**, signing **0.2.17** and batch
-**0.8.12**. It is not published until the reviewed `v2.13.0` tag is pushed.
+Reconciled **2026-09-21** for published release **v2.13.0** (see
+[Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
+**0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
+`v2.13.0` tag. Format **2.0** and Protocol **2.17.0** version independently.
+See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
 
@@ -36,7 +32,7 @@ exporter remains available from source. Native Excel 16.0 build 20326 passed
 
 ## Verification
 
-Release preparation for 2.13.0 passed build, **2,433 workspace tests** across
+Release 2.13.0 passed build, **2,433 workspace tests** across
 138 files (**2,032 core**), test typechecking, **589 default conformance
 checks**, all three RFC 0030 profiles (161 checks passed, 67 capability skips),
 **46 JSON schemas**, lint over **1,047 files**, **221 emitted codes**,
@@ -45,7 +41,9 @@ OIDC release-readiness guard. The frozen private golden corpus also passes all
 eight runnable cases: 532 Artifact B assertions accounted for, 526 passing, six
 documented source/baseline defects, and 20 refusal assertions. GD04 and GD07
 remain evidence-blocked; see the
-[review](../reviews/2026-09-21-golden-deal-release-comparison.md).
+[review](../reviews/2026-09-21-golden-deal-release-comparison.md). The tag
+workflow published core/CLI 2.13.0, signing 0.2.17 and batch 0.8.12 through
+trusted publishing with provenance.
 
 Release preparation for 2.10.0 passed build, **1,778 core tests** plus every
 other workspace, test typechecking, **504 default + 76 declarative conformance
@@ -61,11 +59,11 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
 
-## Unreleased on `main`
+## Released in 2.13.0
 
-Work merged to `main` after the `v2.12.0` tag and **not yet in any release**.
-The 2.13.0 candidate versions are prepared in `VERSIONS.md`; published 2.12.0
-remains current until the tag is pushed.
+The following work shipped from the reviewed `v2.13.0` tag. Withdrawn
+experiments remain documented here because neither is part of the published
+surface.
 
 - **The SQL export surface was added and then withdrawn.** `src/sql.ts`
   exposed `exportSql`, `exportSqlStatements`, `UWSqlError` and
@@ -131,10 +129,10 @@ remains current until the tag is pushed.
   npm Trusted Publishers OIDC configuration before a `v*` tag triggers a publish.
 - **Golden-deal release comparison.** A frozen private corpus accounts for 532
   Artifact B assertions: 526 pass, six remain documented source/baseline
-  defects, and 20 refusal assertions pass. All eight runnable cases pass on the
-  candidate. Published 2.12.0 fails seven model-fidelity round-trips because an
+  defects, and 20 refusal assertions pass. All eight runnable cases pass in the
+  release evidence. Published 2.12.0 fails seven model-fidelity round-trips because an
   empty frontmatter array becomes a bare YAML key and reparses as `null`; the
-  candidate preserves `[]`. See the
+  2.13.0 implementation preserves `[]`. See the
   [de-identified record](../reviews/2026-09-21-golden-deal-release-comparison.md).
 
 **Invariant 4 is intact.** The parity risk here was the collection surface, and

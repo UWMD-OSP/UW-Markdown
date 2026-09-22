@@ -1,19 +1,16 @@
 # Roadmap
 
-Current as of **2026-09-21**, following [release 2.12.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.12.0)
-and preparation of the 2.13.0 release candidate on `main` (see
-[Prepared for 2.13.0](#prepared-for-2130)).
+Current as of **2026-09-21**, following [release 2.13.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.13.0)
+(see [Released in 2.13.0](#released-in-2130)).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Current release and prepared candidate
+## Current release
 
-Core/CLI **2.12.0**, signing **0.2.16** and batch **0.8.11** are published on
-npm. Format is **2.0** and Protocol is **2.17.0**. The version streams are
-independent.
-Core/CLI **2.13.0**, signing **0.2.17** and batch **0.8.12** are prepared on
-`main` but are not published until the reviewed `v2.13.0` tag is pushed.
+Core/CLI **2.13.0**, signing **0.2.17** and batch **0.8.12** are published on
+npm from the `v2.13.0` tag with SLSA provenance. Format is **2.0** and Protocol
+is **2.17.0**; the version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -122,11 +119,10 @@ a managed-service run and the publication decision are still open. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
 
-## Prepared for 2.13.0
+## Released in 2.13.0
 
-Merged after the `v2.12.0` tag and **not in any published release**. The
-2.13.0 release matrix is prepared, but 2.12.0 remains the published release. The
-living detail is in the developer wiki's build-status page
+Released from the reviewed `v2.13.0` tag. The living detail is in the developer
+wiki's build-status page
 (`docs/wiki/13-status.md`); this section records only what changes a roadmap or
 status claim.
 
@@ -136,9 +132,9 @@ status claim.
 | **RFC 0024 bisection restored** | A regression had replaced `irr`'s bisection with the Newton pass §VIII.3 step 5 forbids, giving up the cross-engine bit-identical root the RFC exists to guarantee. Reverted. No roadmap item changes; determinism claims elsewhere in this file remain true. |
 | **Tier-3 collection surface: added, then withdrawn** | Sixteen builtins and numeric bracket indexing landed and were removed. They were outside §VIII.3's enumerated set and §VIII.1's grammar, and RFC 0019 had already rejected the primitive. **The calc engine still has no collection iteration**, so every roadmap statement resting on that constraint — RFC 0054's deferral above, and the speculative-leasing note below — stands unchanged. |
 | **SQL export surface: added, then withdrawn** | An unreleased `exportSql` in `@uwmd/core` emitted PostgreSQL and Snowflake DDL and a second `uw_documents` table that collided with `@uwmd/lake`'s. RFC 0049 names warehouse-specific SQL a non-goal and gives `@uwmd/lake` the relational boundary, so it was withdrawn rather than re-homed. **This is not planned work.** A second BI-oriented projection would need an adopter requirement and its own RFC; none exists. |
-| **`@uwmd/lake` 0.2.0, lake schema 0.2** | The live-PostgreSQL fixes below. Still unpublished. |
+| **`@uwmd/lake` 0.2.1, lake schema 0.2** | The live-PostgreSQL fixes below. The package remains unpublished. |
 | **Release readiness check** | `npm run release:check` verifies npm Trusted Publishers OIDC before a `v*` tag triggers a publish. Tooling only. |
-| **Golden-deal release comparison** | Eight runnable cases pass on the candidate: 532 Artifact B assertions accounted for, 526 passing, six documented baseline defects, and 20 refusal assertions passing. [De-identified evidence](docs/reviews/2026-09-21-golden-deal-release-comparison.md). This does not close RFC 0045-specific real-deal assembly evidence. |
+| **Golden-deal release comparison** | Eight runnable cases pass in the release evidence: 532 Artifact B assertions accounted for, 526 passing, six documented baseline defects, and 20 refusal assertions passing. [De-identified evidence](docs/reviews/2026-09-21-golden-deal-release-comparison.md). This does not close RFC 0045-specific real-deal assembly evidence. |
 
 Nothing here adds a protocol capability, and no forward candidate below moved.
 

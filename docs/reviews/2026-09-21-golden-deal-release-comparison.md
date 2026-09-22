@@ -15,6 +15,9 @@ The corpus was frozen at commit `719ff38`. The compared UWMD targets were:
 - published `v2.12.0`;
 - `main` at `83339b5`.
 
+The evaluated implementation was subsequently released as `v2.13.0` at
+`7c250c2`; this record is the golden-deal acceptance evidence for that release.
+
 ## Results
 
 | Evidence | Result |
@@ -23,7 +26,7 @@ The corpus was frozen at commit `719ff38`. The compared UWMD targets were:
 | Assertions passed | 526 |
 | Documented source/baseline defects | 6 |
 | Refusal assertions passed | 20 |
-| Runnable control/deal cases passing on `main` | 8 |
+| Runnable control/deal cases passing on the 2.13 implementation | 8 |
 
 The six exceptions are frozen source or baseline defects, not UWMD failures. They
 remain recorded rather than being changed to make the implementation pass.
