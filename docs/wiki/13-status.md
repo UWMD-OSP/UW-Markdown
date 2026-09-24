@@ -319,7 +319,7 @@ pass. No core implementation or normative changes were made.
 The [accepted RFC 0062](../rfcs/0062-same-day-cash-flow-selection.md) resolves
 the narrow reconciliation identified above. Jared accepted it on **2026-09-24**,
 retaining Protocol **2.17.1** as normative errata. The reference implementation
-is prepared but has not shipped; RFC status remains `accepted`. Legal same-day cash-flow rows
+is integrated in canonical `main` at `e49eb43` but has not shipped; RFC status remains `accepted`. Legal same-day cash-flow rows
 no longer emit PS-02, repeated requested dates still refuse CALC-PERIOD-002,
 and unique dates in the same ledger resolve. Other series and the whole-column
 Excel guard remain unchanged. Schemas, public types and package versions do not
@@ -327,14 +327,15 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Integrate RFC 0062's accepted same-day reconciliation; release remains a
-  separate step. Refresh stale private crosswalks independently. The earlier
-  [completed-corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
-  remains the evidence baseline. Real-deal RFC 0045 assembly remains
-  unvalidated: monthly source evidence now exists, but terminal-date and reserve
-  boundaries prevent unchanged admission. Levered/tax, post-sale and
-  reserve-rollforward extensions remain separate contracts; declared completeness
-  is not verified economics.
+- Review the private source-to-reference migration ledger before refreshing the
+  four stale references. The [follow-up review](../reviews/2026-09-24-completed-golden-corpus-validation.md#integration-and-crosswalk-follow-up-2026-09-24)
+  reports 568 of 640 assertions evaluated: 337 passing under existing rules,
+  231 failing and 72 unavailable, plus all 20 refusal assertions passing.
+  These diagnostics do not establish current-source parity; changed baselines,
+  a weak debt-yield comparison and a stale package digest remain explicit.
+  RFC 0062 integration is complete; release remains separate. Real-deal RFC 0045
+  assembly still refuses terminal-date and reserve boundaries. Levered/tax,
+  post-sale and reserve-rollforward work remain separate contracts.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
