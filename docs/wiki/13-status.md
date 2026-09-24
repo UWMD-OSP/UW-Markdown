@@ -312,12 +312,15 @@ same-day PS-02 interaction as described below. Unchanged RFC 0045 still refuses
 the final-period disposition boundary and reserve-funded spending.
 
 The [terminal-boundary design brief](../reviews/2026-09-24-terminal-boundary-design.md)
-is ready for owner review. Inspected final monthly cash occurs on economic
-disposition at the final source period's exclusive end, not after sale. The
-recommendation is optional monthly boundary admission, retaining the closed
-acquisition/disposition cash interval. The reserve-dependent example would
-still refuse; reserve state and financing require separate contracts. No RFC,
-new behavior or version change is authorized by the advisory brief.
+is integrated in main at `22d993b5`. Its evidence places final monthly cash on
+economic disposition at the final source period's exclusive end, not after
+sale. Jared directed [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
+to propose an explicit opt-in for both existing monthly and quarterly cadences.
+RFC 0063 is **draft**, not accepted or implemented. It proposes a closed
+`disposition_period_rule` enum, retains the closed acquisition/disposition cash
+interval and leaves reserve-funded spending refused. No normative behavior,
+schema, implementation, conformance fixture or version changes accompany the
+draft. Reserve state and financing still require separate contracts.
 
 ## Accepted, unreleased same-day reconciliation (RFC 0062)
 
@@ -332,10 +335,10 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Decide whether to pursue the [terminal-boundary recommendation](../reviews/2026-09-24-terminal-boundary-design.md)
-  or retain stated-series verification alone; if pursued, decide monthly-only
-  versus also quarterly scope. The evidence does not establish a post-sale
-  settlement category or lag. RFC 0062 remains accepted and Protocol 2.17.1
+- Review the exact opt-in and admission contract in [draft RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md).
+  The owner has selected the assembly extension and both monthly/quarterly
+  cadences; acceptance of the final text is pending. No post-sale settlement
+  category or lag is authorized. RFC 0062 remains accepted and Protocol 2.17.1
   unreleased. Reserve-account, financing, investor-tax and post-sale work remain
   separate; the latter two still lack sufficient evidence.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing

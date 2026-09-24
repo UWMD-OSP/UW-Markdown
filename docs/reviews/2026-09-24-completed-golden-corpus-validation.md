@@ -153,5 +153,8 @@ legacy compatibility. Reserve-account and financing assembly remain separate.
 The [owner-review brief](../reviews/2026-09-24-terminal-boundary-design.md) now completes this design task. It distinguishes cash after a source-period end
 from cash after economic disposition: the reviewed monthly examples demonstrate
 the former only. It recommends optional monthly boundary admission with no
-post-sale cash interval. Owner scope acceptance remains pending; no RFC or
-implementation has been started. The design brief remains local.
+post-sale cash interval. The design review is now integrated at `22d993b5`.
+Jared subsequently directed [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
+to cover both monthly and quarterly final-period boundaries. Its text remains
+`draft` for owner review, with no post-sale horizon, implementation or version
+change. The original monthly evidence is not a claim of quarterly model parity.
