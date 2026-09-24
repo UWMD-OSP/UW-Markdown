@@ -40,7 +40,7 @@ lockfile/package/version/index/release checks, the documentation build, and the
 OIDC release-readiness guard. The frozen private golden corpus also passes all
 eight runnable cases: 532 Artifact B assertions accounted for, 526 passing, six
 documented source/baseline defects, and 20 refusal assertions. GD04 and GD07
-remain evidence-blocked; see the
+were evidence-blocked in that frozen release corpus; see the
 [review](../reviews/2026-09-21-golden-deal-release-comparison.md). The tag
 workflow published core/CLI 2.13.0, signing 0.2.17 and batch 0.8.12 through
 trusted publishing with provenance.
@@ -301,14 +301,28 @@ circularity is not solved, because the calc engine has no iteration. Note that
 a collection primitive would not solve it either: traversing a collection is
 not iterating a formula to convergence.
 
+## Completed-corpus validation (2026-09-24)
+
+The [current-contract evidence pass](../reviews/2026-09-24-completed-golden-corpus-validation.md)
+finds completed monthly source models, so the prior all-annual blocker is stale.
+Both monthly projections and 14 dated metric claims pass, but no real-deal
+RFC 0045 assembly qualifies unchanged: final-period disposition timing and
+reserve-funded spending hit explicit contract boundaries. Whole-document
+validation also reports `PS-02` for same-day rows that the cash-flow and assembly
+contracts preserve. This normative interaction needs a narrow RFC, not an
+unilateral validator patch. Four private reference crosswalks and the aggregate
+suite count need refresh; the historical release result is not a current-corpus
+pass. No core implementation or normative changes were made.
+
 ## Remaining work
 
-- Validate RFC 0045 against qualifying real-deal inputs. The broader golden
-  corpus now supplies real-deal acceptance evidence, but its annual models do
-  not satisfy RFC 0045's explicit monthly/quarterly periods and complete
-  supplemental-cash-flow coverage. Levered/tax, post-sale and reserve-rollforward
-  extensions remain separate contracts; declared completeness is not verified
-  economics.
+- Resolve the same-day cash-flow validation conflict documented in the
+  [completed-corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md),
+  and refresh stale private crosswalks. Real-deal RFC 0045 assembly remains
+  unvalidated: monthly source evidence now exists, but terminal-date and reserve
+  boundaries prevent unchanged admission. Levered/tax, post-sale and
+  reserve-rollforward extensions remain separate contracts; declared completeness
+  is not verified economics.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
