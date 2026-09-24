@@ -52,7 +52,11 @@ export function resolvePeriodReference(parsed: ParsedUWFile, expr: Extract<Expr,
   for (const segment of expr.series) series = getPathSegment(series, segment);
   if (series === null || series === undefined) return null;
   const scan = scanPeriodSeries(entry, series, payload);
-  if (scan.duplicates.length) throw new CalcError('CALC-PERIOD-002', `Duplicate periods in ${path}: ${scan.duplicates.join(', ')}.`);
+  // RFC 0062: only the requested cash-flow date must be unique for scalar lookup.
+  // Other registered series retain their whole-series duplicate refusal.
+  const duplicates = entry.path === 'cash_flow_series.series'
+    ? scan.duplicates.filter(identity => identity === periodKeyIdentity(key)) : scan.duplicates;
+  if (duplicates.length) throw new CalcError('CALC-PERIOD-002', `Duplicate periods in ${path}: ${duplicates.join(', ')}.`);
   if (scan.invalid.length) throw new CalcError('CALC-PERIOD-001', `Malformed periods in ${path}: ${scan.invalid.join(', ')}.`);
   if (!periodKindMatches(entry, key, payload)) return null;
   let value = scan.rows.get(periodKeyIdentity(key))?.value;

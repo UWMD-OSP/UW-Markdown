@@ -415,3 +415,18 @@ The default `standalone` suite exercises the worked examples under
 fragment parsing, inline/externalized canonical and semantic-digest equality,
 and package integrity/context-boundary behavior. Run it alone with
 `npm run conformance -- --tier=standalone` after building.
+
+### Same-day cash-flow reconciliation (RFC 0062 draft)
+
+Protocol 2.17.1's proposed normative errata is prepared for owner acceptance.
+`cash-flow/valid-same-day-selection` exercises full validation, metric
+verification and repeated/unique date selection on one preserved document.
+`cash-flow/reject-duplicate-year-selection` retains the other-series guard.
+The existing property assembly `valid-same-day` scenario additionally pins
+`absent_validation_codes: ["PS-02"]` while preserving its source and assembled
+row/binding checks. Receipt issuance baselines change only their protocol label
+to 2.17.1; engine/package versions are unchanged. Run the focused suites with:
+
+```sh
+npm run conformance -- --tier=cash-flow,property-cash-flow-assembly
+```

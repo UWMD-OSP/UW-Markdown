@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.17.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Proposed normative errata (RFC 0062; owner acceptance pending) — protocol **2.17.1**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.17.0`) — the
+- **Protocol version** (this document, currently `2.17.1`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1325,9 +1325,15 @@ keyed series is an object of period-keyed objects. A present calendar series
 must state monthly or quarterly cadence and every row must use that kind.
 Missing or null section/series/period resolves to null. An empty series has no
 matching period. Every present row is inspected before selection: malformed
-shape or periods refuse as `CALC-PERIOD-001`; any duplicate canonical identity
-refuses as `CALC-PERIOD-002`, even without prevalidation. A well-formed selector
-of a different kind returns null. Missing leaf values return null; calc results
+shape or periods refuse as `CALC-PERIOD-001`. For every registered series except
+`cash_flow_series.series`, any duplicate canonical identity refuses as
+`CALC-PERIOD-002`, even without prevalidation. For `cash_flow_series.series`,
+multiple rows MAY share a valid date: an ordinary selector MUST refuse
+`CALC-PERIOD-002` only when its requested canonical date matches multiple rows.
+A date appearing exactly once MUST resolve normally even when other dates in
+that series repeat. The resolver MUST NOT choose by first/last row, sum or merge
+matches, or infer intent from kind, label, amount or position. A well-formed
+selector of a different kind returns null. Missing leaf values return null; calc results
 remain scalar, although the public resolver may return the selected row object.
 
 **Section context.** These references are section-rooted and do not consult
@@ -1348,6 +1354,11 @@ Canonical keys join identifier-like leaf segments with dots and retain other
 leaf keys in bracket-string form. Dependencies use this same spelling, preserving
 period identity and distinguishing a literal dotted key from nested traversal.
 No document writes or changes to numeric quantization occur.
+Rows retain identity through existing source-row binding surfaces; this
+exception adds no numeric-index calc grammar. Whole-column contextual Excel
+projection (§VIII.2c) still refuses duplicate identities rather than collapsing
+rows into a unique-key column. Its whole-series validity guard is distinct from
+ordinary scalar date selection.
 
 Excel emission MUST refuse selector nodes with `EXCEL-EMIT-PATH` unless explicit
 contextual bindings under §VIII.2c are supplied. A static named-range mapping
@@ -1357,7 +1368,14 @@ cascade is unchanged.
 
 **Validation.** Inspect all active variants of every present registered series:
 `PS-01` warning for malformed shape/row/period; `PS-02` error for each duplicate
-canonical identity. `PS-03` warns for a statically recognizable kind mismatch
+canonical identity **except in `cash_flow_series.series`** (RFC 0062).
+Duplicate valid cash-flow dates MUST NOT produce `PS-02`: these are legal
+distinct ledger rows under Format §4.26. They MUST NOT be merged, netted,
+reordered or collapsed merely because dates are equal. All existing CF rules
+still apply. Duplicate rules for `dcf.annual_cash_flows`,
+`noi_model.projections`, `lease_up_schedule.schedule` and
+`distribution_waterfall.stated_schedule` are unchanged.
+`PS-03` warns for a statically recognizable kind mismatch
 in custom calculation or scenario formula/base_formula fields under default
 section selection. When that selection is ambiguous, do not guess the cadence.
 Superseded history and arbitrary narrative strings are not reinterpreted.

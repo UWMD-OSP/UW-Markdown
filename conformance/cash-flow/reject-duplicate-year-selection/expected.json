@@ -1,0 +1,17 @@
+{
+  "expected_codes": [
+    "PS-02"
+  ],
+  "selectors": [
+    {
+      "formula": "dcf.annual_cash_flows@Y1.noi",
+      "ok": false,
+      "error_code": "CALC-PERIOD-002"
+    },
+    {
+      "formula": "dcf.annual_cash_flows@Y2.noi",
+      "ok": false,
+      "error_code": "CALC-PERIOD-002"
+    }
+  ]
+}

@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.17.0' as const;
+export const PROTOCOL_VERSION = '2.17.1' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -2207,7 +2207,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
   {
     code: 'PS-02', severity: 'error', title: 'Duplicate period identity',
-    description: 'A registered series states the same canonical period more than once.',
+    description: 'A registered series other than cash_flow_series.series states the same canonical period more than once.',
     remediation: 'Resolve the duplicate statements with the responsible producer; do not choose by row order.',
     spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
   },

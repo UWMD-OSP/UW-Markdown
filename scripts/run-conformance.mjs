@@ -2689,6 +2689,10 @@ async function runPropertyCashFlowAssembly() {
     const before = JSON.stringify([parsed, plan]);
     const expected = readCase(dir, 'expected.json');
     try {
+      if (expected.absent_validation_codes) {
+        const forbidden = validateUWFile(parsed).issues.filter(i => expected.absent_validation_codes.includes(i.code));
+        if (forbidden.length) throw new Error(`Forbidden source validation codes: ${forbidden.map(i => i.code).join(', ')}`);
+      }
       let result;
       try { result = await assemblePropertyCashFlows(parsed, plan); }
       catch (error) {
@@ -2805,7 +2809,13 @@ async function runCashFlow() {
     // ── Full document: validator codes and/or an end-to-end verdict ──────────
     if (existsSync(join(dir, 'deal.uwx.md'))) {
       const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
-      const codes = validateUWFile(parsed).issues.map((i) => i.code);
+      const before = JSON.stringify(parsed);
+      const validation = validateUWFile(parsed);
+      const codes = validation.issues.map((i) => i.code);
+      if (expected.require_no_errors && validation.errors.length) {
+        record('cash-flow', id, 'fail', `unexpected errors: ${validation.errors.map(i => i.code).join(', ')}`);
+        continue;
+      }
       const short = (expected.expected_codes ?? []).filter((c) => !codes.includes(c));
       if (short.length) {
         record('cash-flow', id, 'fail', `emitted [${codes.join(', ')}], expected ${short.join(', ')}`);
@@ -2830,10 +2840,30 @@ async function runCashFlow() {
           continue;
         }
       }
-      record('cash-flow', id, 'pass', [
+      // RFC 0062: validate and select against the SAME unmodified parsed document.
+      let crossSurfaceFailure = null;
+      for (const selector of expected.selectors ?? []) {
+        const result = evaluateCalc({ id: 'same-document-selector', label: 'Selector',
+          formula: selector.formula, deterministic: true }, { parsed, prior_results: {}, locale: 'en-US' });
+        if (result.ok !== selector.ok || (selector.ok
+          ? result.value !== selector.value : result.error?.code !== selector.error_code)) {
+          crossSurfaceFailure = `selector ${selector.formula}: ${JSON.stringify(result)}`;
+          break;
+        }
+      }
+      if (expected.expected_series) {
+        const entry = parsed.sections['cash_flow_series'];
+        const block = entry && !('annotation' in entry) ? (entry['base'] ?? entry['default']) : entry;
+        if (JSON.stringify(block?.content.series) !== JSON.stringify(expected.expected_series)) {
+          crossSurfaceFailure = 'Cash-flow rows were not preserved separately in source order';
+        }
+      }
+      if (JSON.stringify(parsed) !== before) crossSurfaceFailure = 'Validation/verification/selection mutated the source';
+      record('cash-flow', id, crossSurfaceFailure ? 'fail' : 'pass', crossSurfaceFailure ?? ([
         ...(expected.expected_codes ?? []),
         ...(expected.verdict ? [expected.verdict] : []),
-      ].join(', ') || 'clean');
+        ...(expected.selectors ? [`${expected.selectors.length} same-document selectors; source preserved`] : []),
+      ].join(', ') || 'clean'));
       continue;
     }
 

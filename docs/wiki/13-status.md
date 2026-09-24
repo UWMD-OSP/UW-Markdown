@@ -314,11 +314,22 @@ unilateral validator patch. Four private reference crosswalks and the aggregate
 suite count need refresh; the historical release result is not a current-corpus
 pass. No core implementation or normative changes were made.
 
+## Proposed same-day reconciliation (RFC 0062)
+
+The [RFC 0062 draft](../rfcs/0062-same-day-cash-flow-selection.md) implements the
+narrow reconciliation identified above. Jared selected Protocol **2.17.1** as
+normative errata; RFC acceptance is still pending. Legal same-day cash-flow rows
+no longer emit PS-02, repeated requested dates still refuse CALC-PERIOD-002,
+and unique dates in the same ledger resolve. Other series and the whole-column
+Excel guard remain unchanged. Schemas, public types and package versions do not
+change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
+
 ## Remaining work
 
-- Resolve the same-day cash-flow validation conflict documented in the
-  [completed-corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md),
-  and refresh stale private crosswalks. Real-deal RFC 0045 assembly remains
+- Obtain owner acceptance of RFC 0062's prepared same-day reconciliation,
+  then refresh stale private crosswalks. The earlier
+  [completed-corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
+  remains the evidence baseline. Real-deal RFC 0045 assembly remains
   unvalidated: monthly source evidence now exists, but terminal-date and reserve
   boundaries prevent unchanged admission. Levered/tax, post-sale and
   reserve-rollforward extensions remain separate contracts; declared completeness

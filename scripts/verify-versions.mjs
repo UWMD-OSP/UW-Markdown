@@ -183,7 +183,7 @@ const authoritativeProtocol = statedVersion('UW Protocol');
 const PROTOCOL_DOC_LABELS = [
   {
     label: 'protocol status line',
-    pattern: /^\*\*Status:\*\* Stable — protocol \*\*([^*]+)\*\*/m,
+    pattern: /^\*\*Status:\*\* [^\r\n]*? — protocol \*\*([^*]+)\*\*/m,
   },
   {
     label: 'protocol §0.3 current-version label',

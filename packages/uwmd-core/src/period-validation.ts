@@ -24,7 +24,8 @@ export function checkPeriodSeries(parsed: ParsedUWFile, issues: ValidationMessag
         code: 'PS-01', severity: 'warning', section: section!, field: segments.join('.'),
         message: `PS-01: ${label} has a malformed period or row at ${position}.`, value: position,
       });
-      for (const identity of scan.duplicates) issues.push({
+      // RFC 0062: equal cash-flow dates are legal ledger rows, not a shape error.
+      for (const identity of entry.path === 'cash_flow_series.series' ? [] : scan.duplicates) issues.push({
         code: 'PS-02', severity: 'error', section: section!, field: segments.join('.'),
         message: `PS-02: ${label} states duplicate period ${identity}.`, value: identity,
       });

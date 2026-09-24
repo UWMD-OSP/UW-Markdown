@@ -27,6 +27,10 @@ The [readiness review](../reviews/2026-09-11-rfc-0040-0041-readiness.md) records
 the conflicts. Protocol 2.8.0 implements explicit year and absolute calendar
 selectors; Format 2.0 and package publication remain separate.
 
+> Proposed reconciliation: [RFC 0062](0062-same-day-cash-flow-selection.md)
+> separates legal same-day cash-flow data from ordinary selector uniqueness.
+> Its prepared 2.17.1 errata remains pending owner acceptance.
+
 ## Why
 
 A reference such as `dcf.annual_cash_flows@Y3.net_operating_income` identifies

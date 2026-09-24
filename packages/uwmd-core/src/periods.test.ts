@@ -55,3 +55,18 @@ it('keeps the executable period registry, protocol table and schemas aligned', (
   expect(keySchema({ kind: 'year', index: 0 })).toBe(false);
   expect(keySchema({ kind: 'quarter', year: 2028, quarter: 5 })).toBe(false);
 });
+
+it('observes same-day identities without mutating or collapsing the source ledger (RFC 0062)', () => {
+  const rows = [
+    { date: '2027-06-30', amount: -100, label: 'purchase' },
+    { date: '2027-06-30', amount: -20, label: 'costs' },
+    { date: '2028-06-30', amount: 150 },
+  ];
+  const before = JSON.stringify(rows);
+  const scan = scanPeriodSeries(PERIOD_SERIES[3]!, rows, {});
+  expect(scan.duplicates).toEqual(['date:2027-06-30']);
+  expect(scan.invalid).toEqual([]);
+  expect(scan.rows.get('date:2028-06-30')?.value).toBe(rows[2]);
+  expect(JSON.stringify(rows)).toBe(before);
+  expect(rows).toHaveLength(3);
+});

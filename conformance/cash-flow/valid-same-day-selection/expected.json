@@ -1,0 +1,46 @@
+{
+  "expected_codes": [],
+  "absent_code_prefixes": [
+    "CF-",
+    "PS-"
+  ],
+  "require_no_errors": true,
+  "verdict": "verified",
+  "expected_series": [
+    {
+      "date": "2027-06-30",
+      "amount": -100,
+      "kind": "acquisition",
+      "label": "Purchase"
+    },
+    {
+      "date": "2027-06-30",
+      "amount": -20,
+      "kind": "capex",
+      "label": "Work"
+    },
+    {
+      "date": "2028-06-30",
+      "amount": 150,
+      "kind": "disposition",
+      "label": "Sale"
+    }
+  ],
+  "selectors": [
+    {
+      "formula": "cash_flow_series.series@2027-06-30.amount",
+      "ok": false,
+      "error_code": "CALC-PERIOD-002"
+    },
+    {
+      "formula": "cash_flow_series.series@2028-06-30.amount",
+      "ok": true,
+      "value": 150
+    },
+    {
+      "formula": "cash_flow_series.series@2029-06-30.amount",
+      "ok": true,
+      "value": null
+    }
+  ]
+}

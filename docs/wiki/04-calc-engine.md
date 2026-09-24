@@ -333,8 +333,13 @@ implicitly to holding years. `periods.ts` owns canonicalization/inspection;
 The parser adds a `period_path` AST node. Full selector keys flow through
 overrides and dependency extraction. `ctx.sectionVariants` selects an exact
 variant; default period lookup uses generic role eligibility. A missing period
-returns null; malformed periods or duplicate identities refuse even if validation
-was skipped. PS-01/02 inspect all active variants and PS-03 checks static kind
+returns null; malformed periods refuse even if validation was skipped.
+The RFC 0062 draft implementation (Protocol 2.17.1 errata, acceptance pending)
+permits same-day `cash_flow_series` rows without PS-02: ordinary selection refuses
+only a duplicated requested date, while a unique date in that ledger resolves.
+Other registered series still refuse any duplicate identity before selection.
+Whole-column Excel projection retains its duplicate guard; it must not collapse
+ledger rows. PS-01/02 inspect all active variants and PS-03 checks static kind
 mismatches in custom calc/scenario formulas. See Protocol §VIII.2a for details.
 
 Excel refuses selector nodes unless RFC 0043 contextual bindings are supplied.

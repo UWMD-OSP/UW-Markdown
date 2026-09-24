@@ -18,7 +18,11 @@ Scenario kind is dispatched by the files a directory carries (see
 - `deal.uwx.md` + `expected.json` — a full document run through the validator;
   `expected_codes` must each appear, `absent_code_prefixes` must not, and an
   optional `verdict` additionally verifies the base/default variant
-  end-to-end.
+  end-to-end. Optional `require_no_errors` requires zero validation errors;
+  `expected_series` pins exact row contents/order; `selectors` lists
+  `{ formula, ok, value? , error_code? }` expectations evaluated against that
+  same parsed document. Validation, verification and selection must not mutate
+  it (RFC 0062).
 
 Every pinned value was computed by the reference implementation, never
 asserted — including the §4.26 worked example, which `verify-all-metrics`
@@ -30,6 +34,8 @@ holds verbatim so the spec and the verifier cannot drift apart.
 | `verify-stated-xirr-disagrees` | A stated xirr off beyond the 6dp quantum → `failed`, `CF-METRIC-DISAGREES`. |
 | `verify-moic-no-outflows` | MOIC on an all-inflow series → `unverifiable`, never `failed`. |
 | `verify-same-day-flows` | Ties are legal and not merged; `total_net` verifies. |
+| `valid-same-day-selection` | Full validation accepts separate same-day rows, verification passes, the repeated date refuses CALC-PERIOD-002, a unique date resolves, and an absent date returns null on the same preserved document (RFC 0062). |
+| `reject-duplicate-year-selection` | DCF duplicates still emit PS-02 and refuse selectors for both the duplicate and another unique year; the exception is not global. |
 | `verify-procedure-refuses` | A stated xirr the §VIII.9.3 procedure cannot bracket → `failed`, `CF-PROCEDURE-REFUSES`. |
 | `valid-hold-period` | Clean codes end-to-end + `verified` through the parsed document. |
 | `reject-bad-date` | `2026-02-30` → CF-01 (the schema pattern alone cannot check month lengths). |

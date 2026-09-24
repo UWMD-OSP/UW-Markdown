@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CalcEvaluationContext } from './protocol.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
-import { resolvePeriodPath } from './period-path.js';
+import { resolvePeriodColumn, resolvePeriodPath } from './period-path.js';
 import { evaluateCalc } from './calc/index.js';
 import { parseExpression } from './calc/parser.js';
 import { getExprDependencies } from './calc/dependencies.js';
@@ -130,7 +130,6 @@ it('retains bracket-string indexing after a selector', () => {
 
 import { readFileSync } from 'node:fs';
 import { Ajv2020 } from 'ajv/dist/2020.js';
-import { resolvePeriodColumn } from './period-path.js';
 it('validates projected columns against the RFC 0043 schema', () => {
   const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/period-column-snapshot.schema.json', import.meta.url), 'utf8'));
   const validate = new Ajv2020().compile(schema);
@@ -146,4 +145,57 @@ it('validates trusted workbook bindings and refuses addresses/formulas in the RF
   for (const value_range of ['A1', 'R1C1', 'R', 'Sheet!A1', '1+2', 'x'.repeat(256)]) {
     expect(validate({ kind: 'override', value_range })).toBe(false);
   }
+});
+
+describe('RFC 0062 ordinary cash-flow date selectors', () => {
+  const source = () => file({ cash_flow_series: block('cash_flow_series', { series: [
+    { date: '2027-06-30', amount: -100, label: 'purchase' },
+    { date: '2027-06-30', amount: -20, label: 'costs' },
+    { date: '2028-06-30', amount: 150 },
+  ] }) });
+  it('refuses the repeated date, resolves the unique date, and preserves every source row', () => {
+    const parsed = source();
+    const before = JSON.stringify(parsed);
+    expect(calc('cash_flow_series.series@2027-06-30.amount', parsed))
+      .toMatchObject({ ok: false, error: { code: 'CALC-PERIOD-002' } });
+    expect(resolvePeriodPath(parsed, 'cash_flow_series.series@2028-06-30.amount')).toBe(150);
+    expect(calc('cash_flow_series.series@2028-06-30.amount', parsed)).toMatchObject({ ok: true, value: 150 });
+    expect(JSON.stringify(parsed)).toBe(before);
+  });
+  it.each(['2029-06-30', 'Y1'])('retains null for an absent or incompatible selector %s', date => {
+    expect(resolvePeriodPath(source(), `cash_flow_series.series@${date}.amount`)).toBeNull();
+  });
+  it('does not infer duplicate-date intent from row order or equal amounts', () => {
+    const parsed = source();
+    const rows = (parsed.sections['cash_flow_series'] as UWBlock).content['series'] as Array<{ amount: number }>;
+    rows[1]!.amount = rows[0]!.amount;
+    rows.reverse();
+    expect(calc('cash_flow_series.series@2027-06-30.amount', parsed))
+      .toMatchObject({ ok: false, error: { code: 'CALC-PERIOD-002' } });
+  });
+  it('retains whole-series malformed-period checks for a unique requested date', () => {
+    const parsed = source();
+    ((parsed.sections['cash_flow_series'] as UWBlock).content['series'] as unknown[]).push({ date: '2027-02-30', amount: 1 });
+    expect(calc('cash_flow_series.series@2028-06-30.amount', parsed))
+      .toMatchObject({ ok: false, error: { code: 'CALC-PERIOD-001' } });
+  });
+  it('retains explicit overrides without selecting or changing an ambiguous row', () => {
+    const parsed = source(); const before = JSON.stringify(parsed);
+    const path = 'cash_flow_series.series@2027-06-30.amount';
+    expect(calc(path, parsed, { overrides: { [path]: null } })).toMatchObject({ ok: true, value: null });
+    expect(JSON.stringify(parsed)).toBe(before);
+  });
+  it('refuses a whole Excel column rather than silently collapsing duplicate-date rows', () => {
+    expect(() => resolvePeriodColumn(source(), 'cash_flow_series.series@2028-06-30.amount'))
+      .toThrowError(/CALC-PERIOD-002/);
+  });
+  it.each([
+    ['dcf', { annual_cash_flows: [{ year: 1 }, { year: 1 }, { year: 2, noi: 150 }] }, 'dcf.annual_cash_flows@Y2.noi'],
+    ['noi_model', { projections: { year_1: {}, year_01: {}, year_2: { projected_noi: 150 } } }, 'noi_model.projections@Y2.projected_noi'],
+    ['lease_up_schedule', { period_granularity: 'monthly', schedule: [{ period: '2027-06' }, { period: '2027-06' }, { period: '2027-07', net_cash_flow: 150 }] }, 'lease_up_schedule.schedule@2027-07.net_cash_flow'],
+    ['distribution_waterfall', { stated_schedule: [{ date: '2027-06-30' }, { date: '2027-06-30' }, { date: '2028-06-30', lp_distribution: 150 }] }, 'distribution_waterfall.stated_schedule@2028-06-30.lp_distribution'],
+  ] as Array<[string, Record<string, unknown>, string]>)('retains whole-series duplicate refusal for %s', (section, payload, path) => {
+    expect(calc(path, file({ [section]: block(section, payload) })))
+      .toMatchObject({ ok: false, error: { code: 'CALC-PERIOD-002' } });
+  });
 });
