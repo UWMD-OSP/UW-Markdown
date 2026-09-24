@@ -17,7 +17,9 @@ Format 2.0, accepted but **unreleased Protocol 2.17.1**, unchanged core/CLI 2.13
 Published core/CLI 2.13.0 still pair with Protocol 2.17.0. RFC 0062 remains
 **accepted**, not implemented under the repository's release-status semantics.
 The [integration CI run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/35955586528)
-passed all 13 jobs. This follow-up is local documentation only.
+passed all 13 jobs. This reconciliation was subsequently integrated and pushed
+to canonical main at `dd3029d6125c9d1c7509b9906099bf93af11c034`, without a
+tag, publication or release.
 
 No source workbook, Artifact B expectation, raw-source manifest, protocol,
 schema, implementation, package version or normative precision rule changed.
@@ -112,7 +114,7 @@ broad suite passes.
 | Candidate | Assessment | Evidence and boundary |
 |---|---|---|
 | Same-day cash rows | Resolved by existing accepted surface | RFC 0062 allows separate same-day cash rows without PS-02; ambiguous date selectors refuse deterministically, unique dates select, other series protections remain. No numeric-index grammar was added. |
-| Terminal cash date | Strengthened | Both complete monthly sources place final cash at the immediate next-period boundary. Projection preserves dates; the existing assembly horizon is inclusive of the final period end and excludes that instant. Stated dated-series verification already works. |
+| Terminal cash date | Strengthened | Both complete monthly sources place final cash at the immediate next-period boundary. Projection preserves dates; disposition equals that cash boundary, but the existing assembly rule requires disposition inside the final calendar source period. Stated dated-series verification already works. |
 | Reserve account treatment | Strengthened as a separate contract | Acquisition funding, periodic contributions, draws, releases and ending balances are explicit in the covered-land and development sources. Replacement reserves deducted in annual NOI are different. Property and financing reserves also remain separate. Gross spending must not be silently netted against reserve releases to pass coverage. |
 | Speculative leasing / rollover | Strengthened for bounded adopter/profile work | Selected source assumptions specify renewal probability, new/renewal cohorts, downtime, market resets, different TI/LC bases, concessions and cash timing. Restriction expiry/conversion is another explicit policy. No generic forecasting contract follows from collection iteration. |
 | LSE / ESC / REC consumers | Mixed: bounded consumers strengthened; some needs resolved | Lease clauses can state terms; forecasts require explicit cohort rules. Escrow declarations can state funding, while account roll-forward remains separate. Closed-period recovery verification exists; future occupancy/recovery allocation is a distinct candidate. TI/LC cash expenditure is demonstrated, but a general amortization consumer is not. |
@@ -148,5 +150,8 @@ Prepare a narrowly bounded owner-review proposal for **terminal cash settlement
 at the final period's exclusive boundary** in RFC 0045, using the two reproduced
 monthly cases. Pin dates, eligible terminal components, refusal behavior and
 legacy compatibility. Reserve-account and financing assembly remain separate.
-This recommendation has not been started; no push, tag, publication or release
-was performed by this follow-up.
+The [owner-review brief](../reviews/2026-09-24-terminal-boundary-design.md) now completes this design task. It distinguishes cash after a source-period end
+from cash after economic disposition: the reviewed monthly examples demonstrate
+the former only. It recommends optional monthly boundary admission with no
+post-sale cash interval. Owner scope acceptance remains pending; no RFC or
+implementation has been started. The design brief remains local.

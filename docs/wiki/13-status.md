@@ -303,16 +303,21 @@ not iterating a formula to convergence.
 
 ## Completed-corpus validation (2026-09-24)
 
-The [current-contract evidence pass](../reviews/2026-09-24-completed-golden-corpus-validation.md)
-finds completed monthly source models, so the prior all-annual blocker is stale.
-Both monthly projections and 14 dated metric claims pass, but no real-deal
-RFC 0045 assembly qualifies unchanged: final-period disposition timing and
-reserve-funded spending hit explicit contract boundaries. Whole-document
-validation also reports `PS-02` for same-day rows that the cash-flow and assembly
-contracts preserve. This normative interaction needs a narrow RFC, not an
-unilateral validator patch. Four private reference crosswalks and the aggregate
-suite count need refresh; the historical release result is not a current-corpus
-pass. No core implementation or normative changes were made.
+The [reconciled evidence pass](../reviews/2026-09-24-completed-golden-corpus-validation.md)
+records 640/640 registered comparisons, 20/20 existing refusals and a separate
+stale-workbook integrity refusal. Both monthly projections and 14 dated metric
+claims pass; stated-source agreement is not complete forecasting/assembly parity.
+The prior four stale reference crosswalks are reconciled. RFC 0062 resolves the
+same-day PS-02 interaction as described below. Unchanged RFC 0045 still refuses
+the final-period disposition boundary and reserve-funded spending.
+
+The [terminal-boundary design brief](../reviews/2026-09-24-terminal-boundary-design.md)
+is ready for owner review. Inspected final monthly cash occurs on economic
+disposition at the final source period's exclusive end, not after sale. The
+recommendation is optional monthly boundary admission, retaining the closed
+acquisition/disposition cash interval. The reserve-dependent example would
+still refuse; reserve state and financing require separate contracts. No RFC,
+new behavior or version change is authorized by the advisory brief.
 
 ## Accepted, unreleased same-day reconciliation (RFC 0062)
 
@@ -327,15 +332,12 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Prepare the bounded terminal-boundary settlement proposal identified by the
-  [reconciled corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md#single-next-task).
-  Four private references are now source-reconciled: 640/640 registered comparisons,
-  20/20 existing refusals and a separate stale-workbook integrity refusal pass.
-  Stated-source checks are distinguished from independent calculations; ratio
-  tolerances and portfolio-level mappings were corrected. Real-deal RFC 0045
-  assembly still refuses terminal-date and reserve boundaries. RFC 0062 remains
-  accepted and Protocol 2.17.1 unreleased. Reserve-account, financing, investor-tax
-  and post-sale work remain separate; the latter two still lack sufficient evidence.
+- Decide whether to pursue the [terminal-boundary recommendation](../reviews/2026-09-24-terminal-boundary-design.md)
+  or retain stated-series verification alone; if pursued, decide monthly-only
+  versus also quarterly scope. The evidence does not establish a post-sale
+  settlement category or lag. RFC 0062 remains accepted and Protocol 2.17.1
+  unreleased. Reserve-account, financing, investor-tax and post-sale work remain
+  separate; the latter two still lack sufficient evidence.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
