@@ -327,15 +327,15 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Review the private source-to-reference migration ledger before refreshing the
-  four stale references. The [follow-up review](../reviews/2026-09-24-completed-golden-corpus-validation.md#integration-and-crosswalk-follow-up-2026-09-24)
-  reports 568 of 640 assertions evaluated: 337 passing under existing rules,
-  231 failing and 72 unavailable, plus all 20 refusal assertions passing.
-  These diagnostics do not establish current-source parity; changed baselines,
-  a weak debt-yield comparison and a stale package digest remain explicit.
-  RFC 0062 integration is complete; release remains separate. Real-deal RFC 0045
-  assembly still refuses terminal-date and reserve boundaries. Levered/tax,
-  post-sale and reserve-rollforward work remain separate contracts.
+- Prepare the bounded terminal-boundary settlement proposal identified by the
+  [reconciled corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md#single-next-task).
+  Four private references are now source-reconciled: 640/640 registered comparisons,
+  20/20 existing refusals and a separate stale-workbook integrity refusal pass.
+  Stated-source checks are distinguished from independent calculations; ratio
+  tolerances and portfolio-level mappings were corrected. Real-deal RFC 0045
+  assembly still refuses terminal-date and reserve boundaries. RFC 0062 remains
+  accepted and Protocol 2.17.1 unreleased. Reserve-account, financing, investor-tax
+  and post-sale work remain separate; the latter two still lack sufficient evidence.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

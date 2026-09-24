@@ -1,218 +1,152 @@
-# Completed Golden Deal corpus: current-contract validation
+# Completed Golden Deal corpus: reconciled current-source validation
 
 Date: 2026-09-24 UTC
 
-## Baseline and privacy
+## Current result and scope
 
-Validation targeted UWMD commit `ecc8bfc416c1119021e993d2ebc8d89b403c550b`:
-Format 2.0, Protocol 2.17.0, core/CLI 2.13.0. Both the canonical checkout and
-the designated Codex worktree were clean before testing. The Codex worktree
-was fast-forwarded to that commit. This report changes documentation only.
+All eight registered private cases pass: **640 registered, 640 evaluated, 640
+passing, zero failing, zero unavailable**, with all 20 existing refusal assertions
+passing. A separate stale-workbook package fixture also produces the expected
+`PKGZIP-002` refusal. These are comparison results under explicit private rules,
+not proof that UWMD independently generates every source-model result.
 
-The completed private corpus was independently pinned by its commit and workbook
-hashes in the local evidence bundle. No source model, baseline, or private
-reference document was modified. This public record contains no property names,
-addresses, identities, workbook contents, private paths, or investment values.
-The September 21 release comparison remains a historical result for its frozen
-corpus; its counts and evidence blockers are not current-corpus claims.
+This record supersedes the intermediate diagnostic review in local commit
+`2250568`. The earlier 568/337/231/72 result remains historical evidence.
+Validation uses integrated main `e49eb4364efc0a43e7644adc15154ed6fee35aa8`:
+Format 2.0, accepted but **unreleased Protocol 2.17.1**, unchanged core/CLI 2.13.0.
+Published core/CLI 2.13.0 still pair with Protocol 2.17.0. RFC 0062 remains
+**accepted**, not implemented under the repository's release-status semantics.
+The [integration CI run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/35955586528)
+passed all 13 jobs. This follow-up is local documentation only.
 
-## Source health and existing suite
+No source workbook, Artifact B expectation, raw-source manifest, protocol,
+schema, implementation, package version or normative precision rule changed.
+Private reference revisions, source values, mappings, identities and paths stay
+in the private corpus. Its normal Git history preserves the former references;
+a committed inventory and per-assertion ledgers link each former reference,
+current frozen source and replacement reference revision.
 
-The inventory contains eight underlying deals, two monthly derivatives, one
-synthetic control and one source/parser negative case. One deal has separate
-raw-evidence refusal and sponsor-underwriting roles.
+## Reconciliation and coverage
 
-- All ten source workbook hashes agree with their Artifact B anchors. All 6,071
-  workbook-backed assertion values match cached cells, with no null assertions
-  or native formula-error cells. With the control, the corpus has 6,099 assertions.
-  Cache agreement is not an independent recomputation of every model.
-- All 11 existing raw-source manifests match. The synthetic control has no
-  raw-source manifest; the blanket manifest command reports that absence.
-- The existing coverage and dated-workbook self-checks pass (33 and 61 checks).
-  Both covered monthly derivatives pass all 12 existing coverage checks. Four
-  existing independent audits pass: 2,732 checks on a retail workbook, 1,742
-  on the development workbook and 1,715 each on a selected monthly sponsor
-  workbook and its derivative.
-- The existing UWMD harness has eight registered cases: four pass, four stop
-  at stale crosswalk counts. The passing cases cover 172 Artifact B assertions
-  and all 20 refusal assertions. The other 468 registered assertions are not
-  evaluated. Five case roles, with 5,459 assertions, remain outside that suite.
-- The registered assertion counts sum to 640, but the harness's aggregate
-  expectation still says 608. Neither is the old release's 532. The four stale
-  crosswalks must be rebuilt from current economics, not merely padded.
-- No current crosswalk carries a `baseline_defect` disposition. The historical
-  six release exceptions must not be carried forward as current exceptions.
+| Registered comparison results | Before reconciliation | After reconciliation |
+|---|---:|---:|
+| Registered | 640 | 640 |
+| Evaluated | 568 | 640 |
+| Passing | 337 | 640 |
+| Failing | 231 | 0 |
+| Unavailable | 72 | 0 |
+| Existing refusal assertions passing | 20/20 | 20/20 |
 
-These failures are source-to-reference maintenance gaps, not financial failures
-of the current UWMD implementation. Passing the raw-evidence refusal case proves
-its declared refusal contract; it does not independently prove the adequacy of
-its diligence gap list.
+All 231 prior failures received individual source evidence. Their primary
+dispositions are 222 stale-source/reference differences and nine historical
+extraction errors: eight child-versus-portfolio NOI bindings and one truncated
+cached scalar. The ledger also records changed definitions, calculation recipes
+and comparison rules; overlapping findings are not counted as extra failures.
 
-## RFC 0045 qualification
+The review followed workbook cell identity, labels, economic scope, formulas and
+changed input dependencies. It did not select targets by numeric agreement.
+All 72 formerly unavailable assertions have explicit current source cells;
+none required an invented expected value, assertion retirement or source-defect
+exemption. Named extension evidence preserves concepts without pretending that
+a dedicated typed consumer exists.
 
-The claim that every available model is annual is now contradicted. Two
-explicitly covered monthly derivatives exist. Neither qualifies for successful
-assembly under the current contract without changing source semantics:
+Across the four refreshed references' 468 assertions, 362 compare stated-source
+representations, 98 exercise existing scalar/calculation recipes, and eight
+calculate source-defined equity metrics over stated cash periods. Receipt and
+round-trip verification do not convert stated-source checks into forecast or
+cash-flow-assembly tests.
 
-| Candidate | Source evidence | Current result |
+Specific definition safeguards:
+
+- Cumulative peak equity includes operating shortfalls and remains distinct
+  from acquisition equity, total contributions and positive/negative cash
+  multiples. Existing scalar grammar can calculate the source-defined metrics.
+- Operating inputs and below-NOI roof/turn capital remain separate.
+- Acquisition transaction costs remain in unlevered acquisition cash; debt
+  issuance costs, refinancing fees and prepayment charges affect levered cash.
+- Restriction expiry, year-average turnover conversion, achieved rents and
+  reassessment timing retain their source definitions.
+- Portfolio NOI is tied to the portfolio row and the sum of both child rows for
+  all eight periods. Current child receipts, parent provenance, relationship
+  sidecar, package and aggregate rollup verify. The original stale workbook
+  digest is retained and rejected in a separate negative integrity fixture.
+
+## Tolerance audit
+
+A debt-yield fraction inherited a generic `0.01` absolute currency tolerance.
+That rule could admit a full percentage-point difference and had admitted a
+material historical discrepancy. It now uses the corpus's documented 0.1%
+relative comparison, which rejects that old result. The private ledger retains
+the old rule, unit, definition, actual discrepancy and counterfactual check.
+
+The same defect was corrected in 28 rate/multiple comparisons across three
+references, including six in an already-current reference. IRRs use the existing
+one-basis-point absolute rule; other affected ratios use 0.1% relative.
+Currency tolerances and stricter existing calculation rules remain distinct.
+No public precision defect was established, and UWMD's 2/6/4-decimal dated-metric
+quantization did not change.
+
+## Remaining current-source discrepancies
+
+There is no surviving mismatch among the 640 registered comparisons and no
+new implementation defect demonstrated by this reconciliation. The following
+coverage limits remain explicit:
+
+| Class | Current evidence and limit |
+|---|---|
+| Representation / validation | Named source evidence and generic dated series preserve the selected information. RFC 0062 resolves legal same-day rows while ambiguous date selection still refuses. |
+| Deterministic calculation / precision | Registered calculations pass their declared private tolerances; this is not universal spreadsheet equivalence or independent recomputation of cached models. |
+| Cash-flow assembly | Two complete monthly sources remain outside unchanged RFC 0045 admission: terminal cash dates fall at the following boundary, and one also contains reserve-funded spending. Correct refusals remain visible. |
+| Provenance / integrity | Refreshed artifacts verify; the historical stale-source digest is a verified negative case, not a suppressed failure. |
+| Profile / module / adopter choices | Leasing, affordable-rent conversion, future recovery allocation and financing policy remain source-specific assumptions without a demonstrated generic execution contract. |
+| Tooling | Crosswalk registration, stale-reference maintenance and unit-inappropriate comparisons were private tooling defects, now reconciled. |
+| Potential protocol omission | Terminal-boundary assembly and reserve-account state remain bounded candidates requiring separate decisions; existing refusals are not implementation bugs. |
+
+Five source roles containing 5,459 workbook assertions remain outside the broad
+UWMD crosswalk suite. They are inventoried, not counted as 640-suite successes.
+No additional real-deal RFC 0045 assembly qualifies merely because the refreshed
+broad suite passes.
+
+## Candidate reassessment
+
+| Candidate | Assessment | Evidence and boundary |
 |---|---|---|
-| Monthly operating derivative | Complete monthly components, explicit zeros, currency and cash dates | `CALC-CF-ASSEMBLY`, `date_horizon`: disposition is the first day after the final source month. Protocol VIII.9.6.5 requires it inside that month. |
-| Monthly covered-land derivative | Complete monthly components plus separate property and financing reserves | `CALC-CF-ASSEMBLY`, `coverage`, at `plan.assertions.reserve_spending_excluded`: the source charges gross reserve-funded TI/LC and separately releases reserve cash. VIII.9.6.4 expressly refuses that bundle. The same final-period date boundary also applies. |
+| Same-day cash rows | Resolved by existing accepted surface | RFC 0062 allows separate same-day cash rows without PS-02; ambiguous date selectors refuse deterministically, unique dates select, other series protections remain. No numeric-index grammar was added. |
+| Terminal cash date | Strengthened | Both complete monthly sources place final cash at the immediate next-period boundary. Projection preserves dates; the existing assembly horizon is inclusive of the final period end and excludes that instant. Stated dated-series verification already works. |
+| Reserve account treatment | Strengthened as a separate contract | Acquisition funding, periodic contributions, draws, releases and ending balances are explicit in the covered-land and development sources. Replacement reserves deducted in annual NOI are different. Property and financing reserves also remain separate. Gross spending must not be silently netted against reserve releases to pass coverage. |
+| Speculative leasing / rollover | Strengthened for bounded adopter/profile work | Selected source assumptions specify renewal probability, new/renewal cohorts, downtime, market resets, different TI/LC bases, concessions and cash timing. Restriction expiry/conversion is another explicit policy. No generic forecasting contract follows from collection iteration. |
+| LSE / ESC / REC consumers | Mixed: bounded consumers strengthened; some needs resolved | Lease clauses can state terms; forecasts require explicit cohort rules. Escrow declarations can state funding, while account roll-forward remains separate. Closed-period recovery verification exists; future occupancy/recovery allocation is a distinct candidate. TI/LC cash expenditure is demonstrated, but a general amortization consumer is not. |
+| Financing assembly | Strengthened; stated-cash need resolved | Bridge/takeout, fees, paydown and payoff are source-defined. Existing dated-series verification handles stated pretax equity cash; generating that cash from debt terms requires a separate bounded assembly contract. |
+| Universal release-parity claim | Weakened | Much of the corpus checks attributable stated outputs. Broad-suite success does not establish independent leasing, financing or reserve generation. |
+| Investor income tax / post-sale | Insufficient evidence | Property transfer taxes and assessment assumptions do not establish investor tax. Immediate boundary settlement is not evidence of later post-sale distributions. |
+| Hedges / expense-targeted savings / clawback | Insufficient evidence | Renovation and stated financing do not establish these consumers. No requirement was manufactured. |
 
-No date was shifted, extra period fabricated, or reserve-funded spending hidden
-to produce a passing assembly. No successful real-deal RFC 0045 assembly is
-claimed. Annual cash-flow models, portfolio-level aggregation and the mixed-grain
-investment schedule require separate qualification; monthly lease support alone
-is not a complete dated property ledger.
-
-Existing `inspect-property-cash-flows`, `project-lease-up`, `assemble-property`
-and `verify-cash-flows` commands were exercised on local derivative files.
-Both RFC 0044 projections passed, preserving 60 and 18 source periods, exact
-cash dates, copied bundle amounts and matching semantic envelope digests.
-The derived bundles were computed deterministically from retained source
-components; this verifies projection, not independent leasing economics.
-
-The RFC 0034 verifier passed 14 stated metric claims across eight dated series,
-including mixed monthly/annual investment cash, monthly diagnostics, and stated
-property/equity cash. Comparison used the existing currency/rate/ratio quanta
-(2/6/4 decimals). These are verifier results over stated rows, not proof of
-property assembly, financing generation, or factual underwriting accuracy.
-
-## A cross-surface validation conflict
-
-Same-day supplemental rows produce whole-document `PS-02` errors. This is not
-caused by proprietary inputs: the existing public fixture reproduces it:
-
-```sh
-npm run cli -- validate conformance/property-cash-flow-assembly/valid-same-day/deal.uwx.md --json
-npm run cli -- assemble-property conformance/property-cash-flow-assembly/valid-same-day/deal.uwx.md conformance/property-cash-flow-assembly/valid-same-day/plan.json --json
-```
-
-The first reports duplicate-period errors; the second succeeds. Format 4.26
-CF-02 permits same-day rows and forbids merging them, while Protocol VIII.2a
-requires `PS-02` for every duplicate registered period identity. RFC 0045
-preserves separate rows and expects ambiguous date selectors to refuse.
-Implementation follows both rules. This is a normative interaction and
-cross-surface conformance gap, not an unambiguous implementation fix.
-
-A narrow RFC candidate should distinguish legal ledger multiplicity from
-ambiguous selector lookup, retaining row identity and `CALC-PERIOD-002` for
-ambiguous date selection. No validator severity, schema, or protocol rule was
-changed in this evidence pass.
-
-## Broader findings and candidate boundaries
-
-- Commercial escalation, renewal, free-rent, TI/LC and recovery assumptions
-  now have concrete source consumers. `LSE-NN` types clauses but does not
-  exercise them; `REC-NN` verifies closed-period true-ups rather than forecasting
-  future recoveries. A passing evidence crosswalk is not a leasing engine.
-- `ESC-NN` can state escrow funding but does not roll balances forward. Two
-  source models explicitly expose reserve contributions, draws, releases and
-  ending balances. Any reserve consumer must distinguish owner transfers from
-  internal spending and preserve the unlevered boundary.
-- Renovation budgets and cash exist; expense-targeted savings are not established
-  merely by the presence of renovation. No new hedge, preferred-equity,
-  waterfall, investor-income-tax or post-sale consumer was demonstrated.
-- Existing tax/reassessment and abatement fields can state and verify inputs;
-  jurisdiction eligibility and future assessment policy remain assumptions.
-- Existing generic dated series represent stated levered cash and mixed grain.
-  Debt generation, refinancing and payoff assembly need their own bounded
-  contracts. They must not be imported into RFC 0045 implicitly.
-- Affordable-rent constraints and rollover warrant adopter/profile investigation,
-  using the source assumptions already selected. Private StackUW field gaps
-  are not automatically UWMD gaps. The format already has `land`; the corpus's
-  generic claim that no land class exists does not apply to current UWMD.
-- RFC 0054's deferred ledger and RFC 0060's tranche-class decision remain intact.
-  No collection iteration, tranche enum change, or full normative RFC was added.
-
-The highest-value next UWMD task is the narrow same-day validation RFC and its
-cross-surface acceptance test. Terminal-boundary settlement and reserve
-roll-forward are separate evidence-backed candidates, not part of that fix.
-Private reference refresh is also necessary before reusing the broad suite as
-current-corpus release acceptance.
+RFC 0054's deferred ledger and RFC 0060's tranche-class decision remain intact.
 
 ## Verification
 
-On the baseline implementation: `npm ci --ignore-scripts` and `npm run build`
-passed; `npm test` passed 2,433 tests across 138 files; `typecheck:tests` passed;
-default `conformance` passed 589 checks; `conformance:profiles` passed all three
-profiles (161 checks and 67 declared capability skips); `validate-schemas`
-passed 46 compilations; `verify-codes` passed 221 checks. `lint`,
-`verify-indexes`, `verify-versions`, `verify-lockfile`, `verify-packages` and
-`verify-release` passed. No publish or OIDC configuration change was attempted.
-`npm --prefix tools/docs-site run build` also passed after registering this
-review in the existing page/link map. Final lint, index and whitespace checks
-passed. Full command output is retained in the private local evidence bundle.
+Private verification passed: 1,294 source-binding, provenance, scope and
+adversarial reconciliation checks; 13 diagnostic-overlay tests; 33 coverage
+self-checks; 61 dated-workbook checks; the full eight-case suite; all 20 existing
+refusals; and the additional stale-source package refusal. All ten workbook
+hashes and all 6,071 cached workbook assertions agree with their source anchors.
+The control adds 28 assertions to that inventory. Cache agreement is not model
+recalculation.
 
-## Integration and crosswalk follow-up (2026-09-24)
+Both monthly coverage rollups pass, as do the development and selected monthly
+independent workbook audits. Both RFC 0044 monthly projections and all 14 dated
+metric claims across eight series pass. RFC 0045 still correctly refuses
+`date_horizon` and `coverage`; no assertion was altered to force qualification.
 
-This section supersedes the unevaluated-count and next-task conclusions above;
-the original pass remains a historical record. Canonical `main` was fast-forwarded
-and pushed to `e49eb4364efc0a43e7644adc15154ed6fee35aa8`. All 13 jobs in
-[integration CI](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/35955586528)
-passed. RFC 0062 remains **accepted**, Protocol 2.17.1 remains **unreleased**, and
-package versions remain unchanged. No release tag or publication was made.
+The public follow-up passes build, tests, test typechecking, default and profile
+conformance, schemas, lint, index/code/version/package/lockfile/release checks
+and the documentation build. Full outputs remain in the private evidence bundle.
 
-The four private crosswalks predated substantive source revisions. Across their
-468 assertions, 158 historical expected values were unchanged, 234 changed, and
-76 assertion IDs were newly registered. This was not just row/cell movement.
-One case also had eight historical child-versus-portfolio NOI extraction errors;
-another changed the meaning of peak equity from acquisition equity to the
-largest cumulative outflow.
+## Single next task
 
-The existing private harness now accepts explicit, source-anchored diagnostic
-review overlays. Each entry retains its historical mapping, proposed mapping,
-workbook/sheet/cell, source meaning, identity rationale and expected-value change.
-Historical crosswalks, reference records, calculations, source models and Artifact B
-were preserved. Changed expectations are compared diagnostically, not accepted
-as replacement baselines. The aggregate registry was corrected from 608 to 640.
-
-| Registered Artifact B assertions | Before | After |
-|---|---:|---:|
-| Total | 640 | 640 |
-| Evaluated | 172 | 568 |
-| Passing under existing comparison rules | 172 | 337 |
-| Failing comparisons | 0 | 231 |
-| Unavailable | 468 | 72 |
-
-All 20 separate refusal assertions pass. The 396 restored comparisons do **not**
-establish current-source financial parity: four cases still fail. The 72 unavailable
-assertions have no defensible existing target or changed meaning. In total, 310
-changed/new assertions remain explicitly marked for source/baseline review,
-including unavailable rows. Six cases' newly issued receipts and registered
-model round-trips pass. A portfolio package correctly refuses a stale workbook
-digest (`PKGZIP-002`); its relationship, child-receipt and aggregate-rollup checks
-pass independently.
-
-The source audit again matches all ten workbook hashes and all 6,071 cached
-workbook assertions. No source-baseline defect exemptions were added. The eight
-historical extraction errors are documented rather than discarded. A historical
-debt-yield tolerance also admits a material difference: that passing diagnostic
-remains review-required, so the passing count must not be read as strict parity.
-No new UWMD implementation defect was demonstrated. Private harness tests cover
-stale anchors, missing/duplicate identities, concealed baseline changes, unavailable
-targets, continued comparison after a failure and nonzero incomplete-suite exits.
-
-### Revised candidate assessment
-
-This is a broader diagnostic evaluation, not a fully passing corpus. Existing
-qualification probes were rerun against integrated main: both monthly projections
-and all 14 dated metric claims pass; assembly still refuses `date_horizon` and
-`coverage` respectively.
-
-| Candidate | Assessment after crosswalk review |
-|---|---|
-| RFC 0045 qualification | The case for fixing private reference maintenance is stronger. No additional real-deal assembly qualifies; financial crosswalk coverage is not assembly coverage. |
-| Terminal cash date | Remains supported by the two complete monthly sources and reproduced refusal. Existing dated series preserve the cash dates; a changed assembly boundary still needs its own contract. |
-| Reserve treatment | Remains supported. Revised annual replacement-reserve assumptions are not evidence that restricted reserve-funded spending can be silently netted. Current assembly refusal is correct. |
-| Levered / tax assembly | Existing dated-series verification resolves representation and stated-metric needs. Pre-tax debt/refinance/payoff evidence still supports a separate bounded consumer; changed private baselines weaken any claim of complete assembly parity. Investor-income-tax evidence is still inadequate. |
-| Reserve roll-forward | Remains supported by previously audited contributions/draws/releases/balances. The newly evaluated annual comparisons add no new account-state contract. |
-| Post-sale economics | Still lacks adequate selected evidence. Next-boundary settlement is not a later post-sale distribution. |
-| Speculative leasing / rollover | Source revisions strengthen the need to preserve explicit turnover, conversion and renewal assumptions. They do not validate a generic forecasting consumer; an adopter/profile example remains necessary. |
-| RFC 0055–0059 consumers | Lease clauses, escrow movements and recovery evidence support bounded investigation. Renovation alone does not prove an expense-savings consumer. No new rate-hedge or waterfall-clawback consumer was established. Closed-period recovery verification already exists; prospective recovery forecasting is separate. |
-
-RFC 0062 resolves the prior same-day candidate. RFC 0054's ledger deferral and
-RFC 0060's tranche decision remain unchanged. The single highest-value next task
-is owner review of the private source-to-reference migration ledger, followed by
-a bounded reference refresh that preserves the selected source economics and
-corrects the weak comparison rule. No next protocol feature has been started.
+Prepare a narrowly bounded owner-review proposal for **terminal cash settlement
+at the final period's exclusive boundary** in RFC 0045, using the two reproduced
+monthly cases. Pin dates, eligible terminal components, refusal behavior and
+legacy compatibility. Reserve-account and financing assembly remain separate.
+This recommendation has not been started; no push, tag, publication or release
+was performed by this follow-up.
