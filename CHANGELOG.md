@@ -8,6 +8,22 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
+
+- Jared accepted RFC 0063 at `f04b34ab5606264424bddc02b09ced256a09bbcc` on
+  **2026-09-24**. The optional closed `disposition_period_rule` plan member
+  preserves legacy behavior when absent or `within_final_period` and admits
+  the exact exclusive upper monthly/quarterly source-period boundary with
+  `allow_exclusive_end`. No later date, new period, proration or settlement
+  horizon is admitted. All cash and disposition-slot anchoring rules remain.
+- The reference implementation, synthetic conformance and API/schema/browser/CLI
+  tests are prepared locally. RFC status remains **accepted**, not implemented,
+  until shipped. Reserve, financing, investor-tax and RFC 0062 behavior remain.
+- Protocol 2.18.0 is the next additive minor after the unreleased 2.17.1 errata
+  recorded below, which it includes without changing that acceptance decision.
+  Format remains 2.0; package versions, dependency links and release tags are
+  unchanged. Published core/CLI 2.13.0 still implement Protocol 2.17.0.
+
 ### Accepted normative errata — Protocol 2.17.1 (RFC 0062, unreleased)
 
 - Same-day `cash_flow_series.series` rows remain distinct and no longer emit

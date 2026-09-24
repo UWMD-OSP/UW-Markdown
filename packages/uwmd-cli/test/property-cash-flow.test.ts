@@ -66,3 +66,21 @@ describe('property cash-flow assembly CLI', () => {
     expect(result.stdout).toBe('');
   });
 });
+
+describe('RFC 0063 assembly CLI plan member', () => {
+  it.each(['monthly', 'quarterly'])('accepts explicit %s boundary via the existing plan-file command', cadence => {
+    const dir = `conformance/property-cash-flow-assembly/boundary-${cadence}-year-rollover`;
+    const result = run([path(`${dir}/deal.uwx.md`), path(`${dir}/plan.json`), '--json']);
+    expect(result.status, result.stderr).toBe(0);
+    const value = JSON.parse(result.stdout);
+    expect(value.plan.disposition_period_rule).toBe('allow_exclusive_end');
+    expect(value.series.series.at(-1).date).toBe('2028-01-01');
+    expect(value.series.series).toHaveLength(12);
+  });
+  it('still refuses a boundary when the plan omits the option', () => {
+    const dir = 'conformance/property-cash-flow-assembly/boundary-monthly-boundary-absent';
+    const result = run([path(`${dir}/deal.uwx.md`), path(`${dir}/plan.json`), '--json']);
+    expect(result.status).toBe(1);
+    expect(JSON.parse(result.stdout).error).toMatchObject({ reason: 'date_horizon', pointer: 'plan' });
+  });
+});

@@ -1,0 +1,5 @@
+{
+  "error_code": "CALC-CF-ASSEMBLY",
+  "reason": "plan",
+  "pointer": "plan.assertions"
+}

@@ -308,19 +308,24 @@ records 640/640 registered comparisons, 20/20 existing refusals and a separate
 stale-workbook integrity refusal. Both monthly projections and 14 dated metric
 claims pass; stated-source agreement is not complete forecasting/assembly parity.
 The prior four stale reference crosswalks are reconciled. RFC 0062 resolves the
-same-day PS-02 interaction as described below. Unchanged RFC 0045 still refuses
-the final-period disposition boundary and reserve-funded spending.
+same-day PS-02 interaction as described below. Legacy RFC 0045 plans still refuse
+the final-period disposition boundary and reserve-funded spending. The accepted
+RFC 0063 opt-in below changes only boundary admission.
 
 The [terminal-boundary design brief](../reviews/2026-09-24-terminal-boundary-design.md)
 is integrated in main at `22d993b5`. Its evidence places final monthly cash on
 economic disposition at the final source period's exclusive end, not after
-sale. Jared directed [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
-to propose an explicit opt-in for both existing monthly and quarterly cadences.
-RFC 0063 is **draft**, not accepted or implemented. It proposes a closed
-`disposition_period_rule` enum, retains the closed acquisition/disposition cash
-interval and leaves reserve-funded spending refused. No normative behavior,
-schema, implementation, conformance fixture or version changes accompany the
-draft. Reserve state and financing still require separate contracts.
+sale. Jared accepted [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
+at `f04b34a` on 2026-09-24 and authorized implementation. The local source
+contract is Protocol **2.18.0**, with a closed `disposition_period_rule` enum
+for both monthly and quarterly sources. Absence and `within_final_period`
+preserve legacy behavior; `allow_exclusive_end` additionally admits only the
+exact exclusive upper boundary. No new period or coverage cell, proration,
+inferred timing, grace period or post-sale cash is introduced. Reserve-funded
+spending still refuses. Quarterly is a calendar generalization, not direct
+Golden Deal evidence. RFC 0063 remains **accepted**, not implemented, until
+release; package versions and Format are unchanged. See the
+[implementation verification record](../reviews/2026-09-24-rfc-0063-implementation.md).
 
 ## Accepted, unreleased same-day reconciliation (RFC 0062)
 
@@ -335,12 +340,11 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Review the exact opt-in and admission contract in [draft RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md).
-  The owner has selected the assembly extension and both monthly/quarterly
-  cadences; acceptance of the final text is pending. No post-sale settlement
-  category or lag is authorized. RFC 0062 remains accepted and Protocol 2.17.1
-  unreleased. Reserve-account, financing, investor-tax and post-sale work remain
-  separate; the latter two still lack sufficient evidence.
+- Review the completed local RFC 0063 implementation before integration or
+  release. Protocol 2.18.0 includes the accepted, unreleased RFC 0062 errata
+  selected as 2.17.1. Both RFCs remain accepted until shipped. No post-sale
+  settlement category or lag is authorized. Reserve-account, financing,
+  investor-tax and post-sale work remain separate contracts.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

@@ -1,0 +1,5 @@
+{
+  "error_code": "CALC-CF-ASSEMBLY",
+  "reason": "sale_deduction",
+  "pointer": "plan.sale_deductions[0].name"
+}

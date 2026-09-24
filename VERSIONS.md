@@ -20,10 +20,13 @@ same protocol version.
 
 ## Current matrix
 
-**Accepted, unreleased source contract:** Protocol **2.17.1** contains RFC 0062's
-same-day cash-flow normative errata. Jared accepted the resolution on 2026-09-24
-and retained the selected patch treatment. The protocol row and runtime/spec
-mirrors describe this unreleased contract. Published core/CLI 2.13.0 still implement Protocol
+**Accepted, unreleased source contract:** Protocol **2.18.0** adds RFC 0063's
+explicit final-period exclusive-boundary admission to the prepared **2.17.1**
+RFC 0062 same-day errata. Jared accepted RFC 0063 on 2026-09-24 at `f04b34a`
+and authorized implementation. No intervening protocol change altered the
+stream. RFCs 0062 and 0063 remain `accepted` until release; the 2.17.1 errata
+decision remains recorded below. The protocol row and runtime/spec mirrors
+describe the combined unreleased contract. Published core/CLI 2.13.0 still implement Protocol
 2.17.0; package versions and release state below are unchanged.
 
 Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
@@ -46,7 +49,7 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.17.1** (accepted, unreleased) | format ≥ 1.0; RFC 0062 normative errata; published core/CLI remain on 2.17.0 |
+| UW Protocol | **2.18.0** (accepted, unreleased) | format ≥ 1.0; RFC 0063 boundary opt-in plus RFC 0062 errata; published core/CLI remain on 2.17.0 |
 | `@uwmd/core` | **2.13.0** | format 2.0 (reads 1.x), protocol 2.17.0 |
 | `@uwmd/cli` (CLI) | **2.13.0** | `@uwmd/core` 2.13.0 |
 | `@uwmd/excel` | **0.9.5** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.13.x, format 2.0, explicit contextual calculations |

@@ -2,18 +2,20 @@
 
 Date: 2026-09-24 UTC
 
-Status: advisory evidence; RFC drafting authorized, implementation not authorized
+Status: historical advisory evidence; RFC 0063 subsequently accepted and implementation authorized
 
 ## Owner direction after integration
 
 This review was integrated and pushed to canonical main at
 `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`. Jared subsequently directed a
-[draft RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md) for explicit
+[RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md) for explicit
 final-period exclusive-boundary admission across **both monthly and quarterly**
 cadences. That resolves the two scope choices recorded below and supersedes
 the original monthly-only recommendation. It does not authorize cash after
-disposition or accept the RFC's final text. RFC 0063 remains `draft`, locally
-prepared for owner review; implementation and release are not authorized.
+disposition. Jared subsequently accepted RFC 0063 at `f04b34a` and authorized
+local implementation on 2026-09-24. Its status is now `accepted`, unreleased;
+the source implementation prepares Protocol 2.18.0. See the
+[verification record](2026-09-24-rfc-0063-implementation.md). Release is not authorized.
 
 The evidence and original alternatives below are retained as the review record.
 Quarterly inclusion is a calendar generalization, not additional corpus evidence.

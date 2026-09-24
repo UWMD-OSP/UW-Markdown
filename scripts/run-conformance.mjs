@@ -2699,6 +2699,7 @@ async function runPropertyCashFlowAssembly() {
         if (!(error instanceof PropertyCashFlowAssemblyError) || !expected.error_code) throw error;
         if (error.proto.code !== expected.error_code || error.proto.reason !== expected.reason) throw new Error('Assembly refusal mismatch');
         if (expected.lease_up_verdict && error.proto.evidence?.lease_up?.evidence?.verification?.verdict !== expected.lease_up_verdict) throw new Error('Nested lease-up verdict mismatch');
+        if (expected.pointer && error.proto.pointer !== expected.pointer) throw new Error(`Assembly refusal pointer mismatch: ${error.proto.pointer}`);
       }
       if (result) {
         if (expected.error_code) throw new Error('Expected assembly refusal');
@@ -2709,6 +2710,23 @@ async function runPropertyCashFlowAssembly() {
         for (const [i, binding] of result.bindings.entries()) {
           if (binding.output_row_index !== i || binding.amount !== result.series.series[i].amount || binding.date !== result.series.series[i].date) throw new Error('Binding mismatch');
           if (!result.cells.some(c => c.output_rows?.includes(i))) throw new Error('Output row lacks coverage');
+        }
+        // RFC 0063: explicit plan echo, no new period/cell, source tie identities,
+        // and pinned RFC 0034 outputs computed from the authored synthetic rows.
+        if (JSON.stringify(result.plan) !== JSON.stringify(plan)) throw new Error('Plan snapshot mismatch');
+        if (expected.cell_count && result.cells.length !== expected.cell_count) throw new Error('Coverage cell count mismatch');
+        if (expected.source_periods && JSON.stringify([...new Set(result.cells.map(c => c.slot))]) !==
+            JSON.stringify(['acquisition', ...expected.source_periods, 'disposition'])) throw new Error('Source period identity mismatch');
+        if (expected.source_paths && JSON.stringify(result.bindings.map(b => b.source_path)) !== JSON.stringify(expected.source_paths))
+          throw new Error('Source tie ordering mismatch');
+        if (expected.metrics) {
+          const metricDoc = parseUWFile([
+            '---', 'uw_version: "2.0"', '---', '',
+            '```json uw:section=cash_flow_series variant=base', JSON.stringify(result.series), '```',
+          ].join('\n'));
+          const decls = ['xirr', 'xnpv', 'moic', 'total_net'].map(metric => ({ id: metric, metric, series_path: 'cash_flow_series', variant: 'base', ...(metric === 'xnpv' ? { rate: 0.08 } : {}) }));
+          const metrics = evaluateCashFlowMetrics(decls, { parsed: metricDoc, prior_results: {}, locale: 'en-US' });
+          if (JSON.stringify(metrics) !== JSON.stringify(expected.metrics)) throw new Error('Pinned dated metric mismatch');
         }
         // RFC 0052: named deductions and the verified net figure, when the case states them.
         if (JSON.stringify(result.sale_deductions ?? null) !== JSON.stringify(expected.sale_deductions ?? null))

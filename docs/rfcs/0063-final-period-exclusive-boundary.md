@@ -1,7 +1,7 @@
 ---
 rfc: 0063
 title: Admit disposition at the final calendar period's exclusive boundary
-status: draft
+status: accepted
 author: codex
 created: 2026-09-24
 affects:
@@ -23,12 +23,14 @@ quarterly cadences. The absent/default rule remains `within_final_period`.
 Every cash date still lies inside the closed acquisition/disposition interval;
 there is no post-sale settlement horizon, new operating period or proration.
 
-**Draft only.** Jared directed this monthly-and-quarterly scope on 2026-09-24;
-that direction is not acceptance of this text. The preceding
-[design review](../reviews/2026-09-24-terminal-boundary-design.md) was integrated
-in canonical `main` at `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4` before this
-draft. No implementation, schema, normative spec, conformance fixture or version
-change accompanies it. Current implementations still reject the proposed field.
+**Accepted, unreleased.** Jared accepted this RFC's final text at
+`f04b34ab5606264424bddc02b09ced256a09bbcc` on 2026-09-24 and authorized
+implementation. Status remains `accepted`, not `implemented`, until the
+capability ships. The preceding [design review](../reviews/2026-09-24-terminal-boundary-design.md)
+was integrated in canonical `main` at `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`.
+The local implementation prepares Protocol **2.18.0**, including the unreleased
+RFC 0062 errata selected as 2.17.1. Format and package versions are unchanged;
+no push, tag, publication or release is authorized by this implementation pass.
 
 ## Motivation
 
@@ -53,8 +55,7 @@ No January operation is inferred in either case.
 
 ## Proposed change
 
-RFC 2119 terms below describe the **proposed** contract, conditional on
-acceptance. Only the final-source-period admission test changes. RFC 0045's
+RFC 2119 terms below describe the **accepted** contract. Only the final-source-period admission test changes. RFC 0045's
 other source, cash, coverage, basis, sign, provenance and refusal rules remain.
 
 ### 1. Explicit plan member
@@ -299,9 +300,9 @@ No numeric-index expression syntax or other calc-grammar change is authorized.
   admission predicate. Otherwise valid boundary plans can succeed; dates after
   that boundary, cash after disposition and all independent failures still
   refuse. An already valid inside-period plan produces the same series and
-  evidence except for the copied opt-in member. Current implementations reject
+  evidence except for the copied opt-in member. Published core/CLI 2.13.0 reject
   the new field, including the explicit legacy value, as an unknown member;
-  callers need an implementation of the later accepted protocol to use it.
+  callers need an implementation of Protocol 2.18.0 to use it.
 - **Persisted documents / Format:** Existing Lite/UWX documents and §4.25/4.26
   content remain unchanged and valid. The member is invocation-plan metadata,
   not a new persisted UW section property. Format stays **2.0**. This RFC does
@@ -319,33 +320,33 @@ No numeric-index expression syntax or other calc-grammar change is authorized.
   not to the new opt-in behavior. Tier-3 metrics are unchanged. Tier-4 hosts may
   explicitly request the option but MUST NOT infer it from cash dates, source
   cadence or a failed attempt, or silently retry a refused legacy plan with it.
-- **Version treatment:** This is an additive **Protocol minor candidate**,
-  because it expands what an explicit opt-in assembly plan may legally request,
-  unlike RFC 0062's owner-selected normative errata. No version number is
-  assigned or bumped in this draft. Protocol **2.17.1** remains the
-  accepted/unreleased RFC 0062 errata state. Format remains **2.0** and package
-  versions remain unchanged. Package versioning is independent; release
-  versions and scheduling belong to later implementation/release planning.
+- **Version treatment:** This is an additive **Protocol minor**, because it
+  expands what an explicit opt-in assembly plan may legally request. With no
+  intervening protocol change, the implementation prepares **2.18.0** after
+  the unreleased **2.17.1** RFC 0062 normative errata. That errata decision and
+  RFC 0062's accepted status are unchanged. Format remains **2.0**, package
+  versions remain unchanged, and RFC 0063 remains accepted until shipped.
+  Package release versions and scheduling require later release planning.
 - **Excel:** This adds no workbook shape, live dated-metric formula or new
   emitter capability. Existing same-day whole-column safeguards and RFC 0034's
   deferred cash-flow metric export remain. No new engine/Excel parity claim.
 
 ## Conformance impact
 
-No fixture or expectation changes in this draft. When accepted, retain every
+The implementation adds synthetic boundary fixtures while retaining every
 existing `conformance/property-cash-flow-assembly/` fixture unchanged, including
 `valid-quarterly`, `valid-monthly-leap`, `valid-same-day`, `valid-map-order`,
 `valid-no-reserves`, `post-sale-cash`, `false-reserve-assertion`,
 `valid-named-sale-deductions` and the reserved-deduction refusals. Preserve the
 RFC 0062 cash-series/selector and other-series regression cases unchanged.
 
-Add minimal synthetic fixtures, with complete otherwise valid sources and all
-unchanged assertions/coverage, in the existing assembly suite. Names below are
-design labels; no files are created yet. Unit/schema tests supplement fixtures
+Synthetic fixtures use complete otherwise valid sources and all
+unchanged assertions/coverage in the existing assembly suite. The matrix below
+is exercised by `boundary-*` fixtures. Unit/schema tests supplement fixtures
 for API-only values and serialization. Pair each cadence through the same
 acceptance matrix rather than inventing separate semantics.
 
-| Future case | Proposed expected behavior |
+| Conformance case | Required behavior |
 |---|---|
 | Legacy absent | Existing valid and invalid plans retain exact outputs/refusal evidence; input/document bytes unchanged; no default member appears. |
 | Explicit legacy value | Same decisions/series as absent; echoed plan retains `within_final_period`; boundary still refuses. |
@@ -376,8 +377,8 @@ fixtures or claim a reserve-dependent source qualifies merely from timing.
 
 ## Reference implementation
 
-Implementation is a follow-up **after owner acceptance**, not part of this
-draft. Expected changes, together in the required spec/schema/type lockstep:
+The implementation is prepared locally under owner acceptance, in the required
+spec/schema/type lockstep. It has not shipped. Changed surfaces:
 
 - `spec/UW_PROTOCOL_v1.md`, VIII.9.6 plan shape and date-admission language;
   `packages/uwmd-core/src/protocol.ts`, additive plan member; and
@@ -400,7 +401,7 @@ No new dependency, capability, error code, math pack, financial formula,
 calendar cadence or source-section field is required. Implementation gates
 include build, tests, schema/default/profile conformance, lint, indexes, codes,
 package/lockfile/version/release guards and docs build. Existing code cannot be
-claimed to implement this draft merely because it verifies a generic dated
+claimed to implement this contract merely because it verifies a generic dated
 series containing the same rows.
 
 ## Alternatives considered
@@ -422,17 +423,15 @@ series containing the same rows.
 
 ## Unresolved questions
 
-No unresolved semantic ambiguity blocks review of this draft. The owner has
-chosen the assembly extension and both cadences. The concrete enum, exact
-boundary, representability limit, unchanged cash horizon and compatibility
-rules above are recommendations awaiting acceptance of the final text.
+No unresolved semantic decision remains for this scope. Jared accepted the
+public enum, both cadences, exact boundary, representability limit, unchanged
+cash horizon and compatibility rules at `f04b34a` on 2026-09-24.
 
-The genuine remaining owner action is to accept or request changes to this
-draft, including its proposed public field. Implementation is not authorized
-until acceptance. A release version and schedule belong to later release
-planning, not this draft. Reserve roll-forward, financing, investor tax,
-speculative leasing and actual post-sale settlement remain separate future
-contracts, not unresolved prerequisites for this narrowly scoped rule.
+The completed local implementation returns for owner review before integration
+or release. RFC status stays `accepted` until shipped. Release scheduling and
+package versions are separate decisions; no push, tag, publication or release
+is authorized here. Reserve roll-forward, financing, investor tax, speculative
+leasing and actual post-sale settlement remain separate future contracts.
 
 ## Prior art
 

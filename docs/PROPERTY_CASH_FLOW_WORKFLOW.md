@@ -129,6 +129,31 @@ settle by the declared disposition on `2026-12-31`; no post-sale settlement or
 partial-window rule is implied. Every date is supplied, never inferred from a
 holding-year row number.
 
+## Explicit final-period boundary (accepted, unreleased RFC 0063)
+
+The Protocol **2.18.0** source checkout accepts this optional plan member:
+
+```json
+{ "disposition_period_rule": "allow_exclusive_end" }
+```
+
+This is a fragment, not a complete plan. Omission preserves RFC 0045 exactly;
+`within_final_period` explicitly selects that same rule and is echoed in the
+copied plan. `allow_exclusive_end` also permits the exact exclusive upper
+calendar boundary of the final stated monthly or quarterly source period.
+For `2027-12` or `2027-Q4`, that date is `2028-01-01`; `2028-01-02` refuses.
+Existing inside-period dates remain legal. Do not infer or silently retry the
+option from a refused plan. Published core/CLI 2.13.0 reject the new member.
+
+The complete source schedule and coverage cells stay unchanged: no extra
+month/quarter, lease-up row, operating period or proration. Every cash date
+still lies between acquisition and disposition inclusive; gross sale, costs
+and eligible reserve return assigned to disposition occur exactly on that
+date. No settlement horizon, delayed cash or inferred reserve release is added.
+Reserve, financing and investor-tax exclusions and RFC 0062 same-day rules
+remain unchanged. See the [accepted RFC](rfcs/0063-final-period-exclusive-boundary.md)
+and [verification record](reviews/2026-09-24-rfc-0063-implementation.md).
+
 ## Read the result without losing its meaning
 
 Keep the entire result wrapper: `plan`, `coverage`, `cells`, `bindings`,

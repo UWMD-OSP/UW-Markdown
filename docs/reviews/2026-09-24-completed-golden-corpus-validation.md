@@ -155,6 +155,8 @@ from cash after economic disposition: the reviewed monthly examples demonstrate
 the former only. It recommends optional monthly boundary admission with no
 post-sale cash interval. The design review is now integrated at `22d993b5`.
 Jared subsequently directed [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
-to cover both monthly and quarterly final-period boundaries. Its text remains
-`draft` for owner review, with no post-sale horizon, implementation or version
-change. The original monthly evidence is not a claim of quarterly model parity.
+to cover both monthly and quarterly final-period boundaries, then accepted it
+at `f04b34a` on 2026-09-24 and authorized local implementation. RFC 0063 remains
+`accepted`, unreleased, in the prepared Protocol 2.18.0 source contract. See the
+[implementation verification record](2026-09-24-rfc-0063-implementation.md).
+The original monthly evidence is not a claim of quarterly model parity.

@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Accepted normative errata (RFC 0062; unreleased) — protocol **2.17.1**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Accepted source contract (RFCs 0062/0063; unreleased) — protocol **2.18.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.17.1`) — the
+- **Protocol version** (this document, currently `2.18.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -2151,9 +2151,49 @@ author assertions are audit evidence, not proof of economic completeness.
 
 The lease-up source supplies the complete, gap-free monthly or quarterly period
 set. The plan MUST state an acquisition date inside the first source period and
-a disposition date inside the last source period, with acquisition strictly
-before disposition. The first implementation covers that full hold only.
-Partial periods require explicitly authored cash amounts; no proration occurs.
+acquisition MUST be strictly before disposition.
+
+RFC 0063 adds the optional top-level plan member
+`disposition_period_rule?: 'within_final_period' | 'allow_exclusive_end'`.
+If absent or `within_final_period`, disposition MUST lie inside the final source
+calendar period under the existing rule. If `allow_exclusive_end`, disposition
+MUST either lie inside that period or equal its exact exclusive upper calendar
+boundary. No other date is admitted: one day later MUST refuse. No grace window
+or settlement horizon is introduced.
+
+Derive the boundary only from the final validated canonical `YYYY-MM` or
+`YYYY-Qn` source identity. Let `y` be the stated year, `m` the month (or
+`3 * (n - 1) + 1` for a quarter), and width 1 or 3 respectively. Add width to
+`m`; if it exceeds 12, subtract 12 and increment `y`. The boundary is day 01 of
+that resulting month, using four-digit year and two-digit month/day padding.
+Use calendar integers, not timezones, elapsed days, row counts or acquisition.
+Leading-zero years retain their identity. A boundary in year 10000 grants no
+additional representable date; MUST NOT wrap/clamp/truncate or invalidate an
+otherwise valid inside-period disposition. Source grammar and validation remain
+unchanged. December and Q4 2027 both yield 2028-01-01; 2028-01-02 refuses.
+
+The enum is closed. An own member with any other value (including JavaScript
+`undefined`, null, boolean or unknown string) MUST refuse `CALC-CF-ASSEMBLY`,
+reason `plan`, pointer `plan.disposition_period_rule`. Unknown plan/assertion
+members still refuse. No schema default or host-materialized default is allowed.
+Copy a supplied valid member verbatim into `result.plan`; absence MUST remain
+absent. Omission preserves existing validation, serialized output, diagnostics,
+digests and refusals exactly. Explicit `within_final_period` differs only in the
+echoed member, not behavior. Hosts MUST NOT infer or silently retry with opt-in.
+Out-of-range disposition still refuses `date_horizon` at `plan`; existing
+assertion/source/horizon/coverage/closing/sign refusal order remains unchanged.
+
+The exclusive boundary creates no source period. The complete final monthly or
+quarterly period remains the final operating/accrual period. MUST NOT synthesize
+an extra month/quarter, lease-up row, period coverage cell or post-sale operating
+period. All source periods and mappings remain mandatory; no append, ignore or
+caller-provided final-period override. Existing inside-period dispositions and
+explicitly authored partial-period amounts remain valid; no proration occurs.
+Timing admission MUST NOT cure any reserve assertion refusal, infer a release,
+or add reserve opening/ending balances, contributions, funded draws, internal
+spending or reconciliation. Existing external-transfer treatment, financing and
+investor-tax exclusions, RFC 0052 sale deductions and RFC 0062 same-day semantics
+remain unchanged.
 
 All cash dates MUST lie within that closed acquisition/disposition interval.
 Acquisition-slot rows MUST occur on the acquisition date, and disposition-slot

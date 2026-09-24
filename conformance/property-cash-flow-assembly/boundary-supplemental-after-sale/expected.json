@@ -1,0 +1,5 @@
+{
+  "error_code": "CALC-CF-ASSEMBLY",
+  "reason": "date_horizon",
+  "pointer": "sections.cash_flow_series[\"base\"].series[9].date"
+}

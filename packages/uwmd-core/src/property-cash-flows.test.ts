@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
@@ -357,5 +357,92 @@ describe('RFC 0052 named exit sale deductions', () => {
     expect(outputSchema(drifted)).toBe(false);
     // The closed plan shape is what rejected it, not some unrelated rule.
     expect(JSON.stringify(outputSchema.errors)).toContain('not_a_plan_member');
+  });
+});
+
+describe('RFC 0063 explicit final-period boundary', () => {
+  const root = 'conformance/property-cash-flow-assembly';
+  const cases = readdirSync(new URL(`../../../${root}`, import.meta.url)).filter(n => n.startsWith('boundary-'));
+  const fixture = (name: string) => ({
+    d: parseUWFile(read(`${root}/${name}/deal.uwx.md`)),
+    p: JSON.parse(read(`${root}/${name}/plan.json`)) as PropertyCashFlowPlan,
+    expected: JSON.parse(read(`${root}/${name}/expected.json`)),
+  });
+  it.each(cases)('%s conforms through the browser-safe entry and schemas', async name => {
+    const { d, p, expected } = fixture(name);
+    const before = JSON.stringify([d, p]);
+    if (expected.error_code) {
+      expect(await refusal(d, p)).toMatchObject({ code: expected.error_code, reason: expected.reason,
+        ...(expected.pointer ? { pointer: expected.pointer } : {}) });
+    } else {
+      expect(planSchema(p), JSON.stringify(planSchema.errors)).toBe(true);
+      const result = await browserAssemble(d, p);
+      expect(outputSchema(result), JSON.stringify(outputSchema.errors)).toBe(true);
+      expect(result.plan).toEqual(p);
+      expect(result.plan).not.toBe(p);
+      expect(result.series.series.map(r => r.amount)).toEqual(expected.amounts);
+      expect(result.series.series.map(r => r.date)).toEqual(expected.dates);
+      expect(result.cells).toHaveLength(expected.cell_count);
+      expect([...new Set(result.cells.map(c => c.slot))]).toEqual(['acquisition', ...expected.source_periods, 'disposition']);
+      expect(result.bindings.map(b => b.source_path)).toEqual(expected.source_paths);
+      expect(result.coverage).toBe('declared_complete');
+      expect(result.source_envelope_digest).toBe(await computeEnvelopeDigest(toUWEnvelope(d)));
+    }
+    expect(JSON.stringify([d, p])).toBe(before);
+  });
+  it.each(['monthly', 'quarterly'])('preserves %s inside results except the explicitly echoed member', async cadence => {
+    const { d, p } = fixture(`boundary-${cadence}-inside-absent`);
+    const absent = await assemblePropertyCashFlows(d, p);
+    expect(absent.plan).not.toHaveProperty('disposition_period_rule');
+    for (const rule of ['within_final_period', 'allow_exclusive_end'] as const) {
+      const result = await assemblePropertyCashFlows(d, { ...p, disposition_period_rule: rule });
+      expect(result.plan.disposition_period_rule).toBe(rule);
+      delete result.plan.disposition_period_rule;
+      expect(result).toEqual(absent);
+    }
+  });
+  it.each([undefined, null, true, false, 1, '', 'future', {}, []])('refuses invalid own rule %j without coercion', async value => {
+    const p = { ...plan(), disposition_period_rule: value };
+    expect(await refusal(fresh(), p)).toMatchObject({ reason: 'plan', pointer: 'plan.disposition_period_rule' });
+    if (value !== undefined) expect(planSchema(p)).toBe(false);
+  });
+  it.each(['monthly', 'quarterly'])('refuses an unrepresentable %s boundary without widening date grammar', async cadence => {
+    const { d, p } = fixture(`boundary-${cadence}-overflow-inside`);
+    p.disposition_date = '10000-01-01';
+    expect(await refusal(d, p)).toMatchObject({ reason: 'date_horizon', pointer: 'plan' });
+  });
+  it.each([undefined, Number.NaN, Number.POSITIVE_INFINITY])('does not infer an unknown/nonfinite reserve return %s', async amount => {
+    const { d, p } = fixture('boundary-monthly-boundary');
+    payload(d).series[9].amount = amount;
+    expect((await refusal(d, p)).reason).toBe('structure');
+  });
+  it('does not declare a schema default or accept extra policy members', async () => {
+    const json = JSON.parse(read('spec/schemas/property-cash-flow-plan.schema.json'));
+    expect(json.properties.disposition_period_rule).not.toHaveProperty('default');
+    const p = { ...plan(), disposition_period_rule: 'allow_exclusive_end', settlement_end: '2027-01-01' };
+    expect(planSchema(p)).toBe(false);
+    expect((await refusal(fresh(), p)).reason).toBe('plan');
+  });
+  it('keeps boundary-day operating and sale rows separate; ambiguity refuses while a unique date selects', async () => {
+    const { d, p } = fixture('boundary-monthly-boundary');
+    // A unique, explicitly authored period cash date inside the hold.
+    p.lease_up.cash_dates[0]!.date = '2027-10-30';
+    const result = await assemblePropertyCashFlows(d, p);
+    expect(result.series.series.filter(r => r.date === p.disposition_date)).toHaveLength(6);
+    periodSection(d, 'cash_flow_series', { sectionVariants: { cash_flow_series: 'base' } })!.content = { ...result.series };
+    expect(() => resolvePeriodPath(d, 'cash_flow_series.series@2027-12-01.amount', { sectionVariants: { cash_flow_series: 'base' } }))
+      .toThrowError(expect.objectContaining({ proto: expect.objectContaining({ code: 'CALC-PERIOD-002' }) }));
+    expect(resolvePeriodPath(d, 'cash_flow_series.series@2027-10-30.amount', { sectionVariants: { cash_flow_series: 'base' } })).toBe(109000);
+  });
+  it('retains independent coverage refusals before the new date admission check', async () => {
+    const { d, p } = fixture('boundary-reserve-spending');
+    p.disposition_date = '2028-01-02';
+    expect(await refusal(d, p)).toMatchObject({ reason: 'coverage', pointer: 'plan.assertions.reserve_spending_excluded' });
+  });
+  it('snapshots the supplied rule rather than reading later caller mutations', async () => {
+    const { d, p } = fixture('boundary-monthly-boundary');
+    const pending = assemblePropertyCashFlows(d, p);
+    p.disposition_period_rule = 'within_final_period';
+    expect((await pending).plan.disposition_period_rule).toBe('allow_exclusive_end');
   });
 });

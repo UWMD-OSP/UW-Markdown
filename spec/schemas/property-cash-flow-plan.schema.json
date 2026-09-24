@@ -45,6 +45,11 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
       "format": "date"
     },
+    "disposition_period_rule": {
+      "type": "string",
+      "enum": ["within_final_period", "allow_exclusive_end"],
+      "description": "RFC 0063. Optional final-period admission rule; omission preserves legacy behavior. No default is materialized."
+    },
     "lease_up": {
       "type": "object",
       "additionalProperties": false,

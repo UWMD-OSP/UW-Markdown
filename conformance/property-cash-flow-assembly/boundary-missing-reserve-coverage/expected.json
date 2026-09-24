@@ -1,0 +1,5 @@
+{
+  "error_code": "CALC-CF-ASSEMBLY",
+  "reason": "coverage",
+  "pointer": "plan.coverage"
+}

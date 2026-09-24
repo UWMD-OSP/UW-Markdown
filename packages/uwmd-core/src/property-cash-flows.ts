@@ -54,9 +54,13 @@ function validatePlan(value: unknown): asserts value is PropertyCashFlowPlan {
     // RFC 0052 members are optional; a plan omitting both behaves as it did before.
     ...(isObj(value) && own(value, 'sale_deductions') ? ['sale_deductions'] : []),
     ...(isObj(value) && own(value, 'net_sale_proceeds') ? ['net_sale_proceeds'] : []),
+    ...(isObj(value) && own(value, 'disposition_period_rule') ? ['disposition_period_rule'] : []),
   ], 'plan');
   for (const k of ['basis', 'tax_basis', 'currency_code', 'day_count', 'acquisition_date', 'disposition_date'])
     string(value[k], `plan.${k}`);
+  if (own(value, 'disposition_period_rule') &&
+      value.disposition_period_rule !== 'within_final_period' && value.disposition_period_rule !== 'allow_exclusive_end')
+    refuse('plan', 'Expected within_final_period or allow_exclusive_end.', 'plan.disposition_period_rule');
   shape(value.lease_up, ['source_variant', 'currency_code', 'cash_dates'], 'plan.lease_up');
   shape(value.supplemental, ['source_variant', 'currency_code'], 'plan.supplemental');
   for (const k of ['lease_up', 'supplemental'] as const) {
@@ -196,6 +200,18 @@ function dateInPeriod(date: string, period: string): boolean {
     Math.floor((Number(date.slice(5, 7)) - 1) / 3) + 1 === Number(period.slice(-1));
 }
 
+// RFC 0063: called only after canonical, gap-free source verification. Calendar
+// integers preserve leading-zero years and never invoke timezone/date pivots.
+function exclusivePeriodEnd(period: string): string | undefined {
+  const quarterly = period[5] === 'Q';
+  let year = Number(period.slice(0, 4));
+  const month = quarterly ? 3 * (Number(period[6]) - 1) + 1 : Number(period.slice(5));
+  let nextMonth = month + (quarterly ? 3 : 1);
+  if (nextMonth > 12) { year += 1; nextMonth -= 12; }
+  if (year > 9999) return undefined;
+  return `${String(year).padStart(4, '0')}-${String(nextMonth).padStart(2, '0')}-01`;
+}
+
 /** Assemble a complete declared ledger. No monetary arithmetic or document writes. */
 export async function assemblePropertyCashFlows(
   parsed: ParsedUWFile, input: PropertyCashFlowPlan,
@@ -230,7 +246,9 @@ export async function assemblePropertyCashFlows(
   if (!parseISODate(plan.acquisition_date) || !parseISODate(plan.disposition_date) ||
       plan.acquisition_date >= plan.disposition_date ||
       !dateInPeriod(plan.acquisition_date, periods[0]!) ||
-      !dateInPeriod(plan.disposition_date, periods[periods.length - 1]!))
+      !(dateInPeriod(plan.disposition_date, periods[periods.length - 1]!) ||
+        (plan.disposition_period_rule === 'allow_exclusive_end' &&
+          plan.disposition_date === exclusivePeriodEnd(periods[periods.length - 1]!))))
     refuse('date_horizon', 'Acquisition and disposition must bound the full source hold.', 'plan');
   for (const [i, row] of projection.bindings.entries()) {
     if (row.date < plan.acquisition_date || row.date > plan.disposition_date)

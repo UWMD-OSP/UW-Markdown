@@ -1,0 +1,52 @@
+{
+  "amounts": [
+    -1000000,
+    -10000,
+    -20000,
+    109000,
+    0,
+    -40000,
+    125000,
+    -45000,
+    -10000,
+    1150000,
+    -20000,
+    5000
+  ],
+  "dates": [
+    "2027-10-01",
+    "2027-10-01",
+    "2027-10-01",
+    "2027-10-31",
+    "2027-10-31",
+    "2027-10-31",
+    "2027-11-30",
+    "2027-11-30",
+    "2027-11-30",
+    "2027-11-30",
+    "2027-11-30",
+    "2027-11-30"
+  ],
+  "cell_count": 20,
+  "source_periods": [
+    "2027-10",
+    "2027-11"
+  ],
+  "absent_validation_codes": [
+    "PS-02"
+  ],
+  "source_paths": [
+    "cash_flow_series.series[0].amount",
+    "cash_flow_series.series[1].amount",
+    "cash_flow_series.series[2].amount",
+    "lease_up_schedule.schedule@2027-10.net_cash_flow",
+    "cash_flow_series.series[3].amount",
+    "cash_flow_series.series[4].amount",
+    "lease_up_schedule.schedule@2027-11.net_cash_flow",
+    "cash_flow_series.series[5].amount",
+    "cash_flow_series.series[6].amount",
+    "cash_flow_series.series[7].amount",
+    "cash_flow_series.series[8].amount",
+    "cash_flow_series.series[9].amount"
+  ]
+}

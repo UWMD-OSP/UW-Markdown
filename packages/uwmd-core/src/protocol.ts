@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.17.1' as const;
+export const PROTOCOL_VERSION = '2.18.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -2839,6 +2839,8 @@ export interface PropertyCashFlowPlan {
   day_count: import('./calc/day-count.js').DayCountConvention;
   acquisition_date: string;
   disposition_date: string;
+  /** RFC 0063. Omission preserves the inside-final-period rule. */
+  disposition_period_rule?: 'within_final_period' | 'allow_exclusive_end';
   lease_up: {
     source_variant: string;
     currency_code: string;
