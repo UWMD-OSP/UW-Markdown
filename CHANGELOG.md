@@ -8,16 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-### Proposed normative errata — Protocol 2.17.1 (RFC 0062)
+### Accepted normative errata — Protocol 2.17.1 (RFC 0062, unreleased)
 
 - Same-day `cash_flow_series.series` rows remain distinct and no longer emit
   PS-02 merely for sharing a valid date. Ordinary date selection still refuses
   CALC-PERIOD-002 for a repeated requested date; a unique date resolves even
   when another date repeats. Other registered series and whole-column Excel
   duplicate guards retain their existing rules.
-- Jared selected **2.17.1** as normative errata. RFC 0062 remains **draft**:
-  implementation and tests are prepared for owner review, not accepted or
-  released. Format stays 2.0; package versions, dependencies and tags do not
+- Jared accepted RFC 0062 on **2026-09-24**, retaining **2.17.1** as normative
+  errata. Status is **accepted**, not implemented: the reference implementation
+  and tests are prepared but have not shipped. Format stays 2.0; package
+  versions, dependencies and tags do not
   change. Published core/CLI 2.13.0 continue to pair with Protocol 2.17.0.
 
 ## [2.13.0] - 2026-09-21

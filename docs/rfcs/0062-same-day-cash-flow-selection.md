@@ -1,7 +1,8 @@
 ---
 rfc: 0062
 title: Permit same-day cash-flow rows while refusing ambiguous selectors
-status: draft
+status: accepted
+accepted: 2026-09-24
 author: codex
 created: 2026-09-24
 affects:
@@ -22,11 +23,16 @@ and do not emit `PS-02`; an ordinary date selector refuses
 date in the same series resolves normally. The four other registered series
 keep their existing duplicate rules.
 
-This is a proposed normative reconciliation, not an implementation bug fix.
-**Owner acceptance remains pending.** Jared selected **Protocol 2.17.1 —
-normative errata** during review on 2026-09-24. The working-tree implementation,
-protocol mirrors and conformance are prepared for review; this draft has not
-been accepted and nothing is released. No schema or public type changes.
+This is an accepted normative reconciliation, not an implementation bug fix.
+**Accepted by Jared on 2026-09-24.** Protocol **2.17.1 — normative errata**
+remains the owner-selected version. The reference implementation, protocol
+mirrors and conformance are prepared locally, but have not shipped. Status is
+`accepted`, not `implemented`, until release. No schema or public type changes.
+
+The owner explicitly accepted legal, separate same-day cash-flow rows without
+PS-02; deterministic refusal of selectors matching multiple rows; selectable
+unique dates; unchanged duplicate-period protection for other registered series;
+and no numeric row-index syntax or other calc-grammar expansion.
 
 ## Motivation
 
@@ -55,7 +61,7 @@ wrapping its identical payload in a document emits `PS-02`.
 Against the latter payload at commit `17749ed`, both the repeated
 `2026-03-17` selector and the unique `2031-03-17` selector refuse
 `CALC-PERIOD-002`. The second result proves that merely suppressing validation
-is insufficient. The proposal changes the whole-series refusal scope for
+is insufficient. The accepted reconciliation changes the whole-series refusal scope for
 ordinary cash-flow selection as well as the document verdict.
 
 ## Proposed change
@@ -95,7 +101,7 @@ and RFC 0045 source-index mappings. No numeric-index calc grammar is added.
 
 `resolvePeriodColumn` currently projects a complete identity-keyed column for
 RFC 0043 contextual bindings. It MUST continue to refuse duplicate identities
-rather than silently dropping same-day rows from its map. This draft does not
+rather than silently dropping same-day rows from its map. This RFC does not
 authorize a duplicate-key workbook binding or change §VIII.2c's whole-column
 validity guard. Unique scalar lookup and acceptance of a whole workbook column
 are distinct contracts. Ordinary selector tests must not be used to claim a
@@ -144,10 +150,10 @@ features into patches.
 
 The executable constant, checked protocol labels, current source matrix and
 receipt-issuance protocol labels move together to 2.17.1. VERSIONS and the
-Unreleased changelog distinguish this unaccepted source proposal from published
+Unreleased changelog distinguish this accepted, unreleased source contract from published
 core/CLI 2.13.0 and Protocol 2.17.0. Format remains 2.0. No package version,
-dependency, lockfile, tag or publication changes. Choosing the version did not
-accept this RFC.
+dependency, lockfile, tag or publication changes. The version choice preceded
+the owner's separate acceptance recorded above.
 
 ## Conformance impact
 
@@ -179,7 +185,7 @@ The public `PeriodSeriesEntry` type and its closed JSON Schema already describe
 the five frozen series. The cash-flow payload schema explicitly permits
 same-day rows; no schema change is needed.
 
-The proposed implementation checks the existing registered path narrowly in
+The reference implementation checks the existing registered path narrowly in
 `period-validation.ts` and `period-path.ts`, with comments referencing this
 RFC. A registry policy field would change an exported type and schema to model
 one known exception; it is unnecessary here. Do not create another registry.
@@ -196,7 +202,7 @@ Updated Protocol §VIII.2a's selection and validation paragraphs and clarified t
 existing Format §4.26 row-addressability statement with a reference to unique
 date selection. The executable validation-code description, period-addressing
 wiki and living status are updated together. Historical RFC 0034/0041 release
-statements are preserved and link this reconciliation as a proposal.
+statements are preserved and link this accepted, unreleased reconciliation.
 
 Focused tests must cover scanner duplicate reporting, every active variant,
 malformed-date/CF retention, repeated versus unique selectors, missing and
@@ -223,7 +229,8 @@ negative control retains PS-02 and both duplicate/unique selector refusals.
 The new positive document also passes the existing CLI validator (exit 0).
 An initial duplicate test import detected by lint/typechecking was corrected;
 the final checks and the edited test file pass. No schema or financial math
-changed. These results do not confer RFC acceptance or constitute a release.
+changed. Verification alone did not confer acceptance; the owner's separate
+decision is recorded above. These results do not constitute a release.
 
 ## Alternatives considered
 
@@ -240,17 +247,16 @@ changed. These results do not confer RFC acceptance or constitute a release.
    normative authorization for other series; repeated NOI years, lease
    periods and waterfall statement dates remain protected.
 6. **Only suppress PS-02:** leaves unique cash-flow dates unselectable whenever
-   another date repeats; does not meet the proposed selector contract.
+   another date repeats; does not meet the accepted selector contract.
 7. **Discard duplicate rows in the scanner:** makes first-match lookup appear
    unique and breaks whole-column safety. Preserve duplicate observations.
 
 ## Unresolved questions
 
-Jared must accept, request changes to, or reject the RFC. The 2.17.1 errata
-choice is already recorded and does not need to be asked again. Status remains
-`draft`; the tested implementation does not itself constitute owner acceptance.
-Terminal settlement, reserve rollforward, levered assembly and any other
-protocol feature are excluded.
+None for this reconciliation. Jared accepted the normative resolution, and
+the 2.17.1 errata version is settled. Integration and release remain separate
+actions; the RFC stays `accepted` until it ships. Terminal settlement, reserve
+rollforward, levered assembly and any other protocol feature are excluded.
 
 ## Prior art
 

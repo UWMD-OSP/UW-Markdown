@@ -416,9 +416,10 @@ fragment parsing, inline/externalized canonical and semantic-digest equality,
 and package integrity/context-boundary behavior. Run it alone with
 `npm run conformance -- --tier=standalone` after building.
 
-### Same-day cash-flow reconciliation (RFC 0062 draft)
+### Same-day cash-flow reconciliation (RFC 0062, accepted)
 
-Protocol 2.17.1's proposed normative errata is prepared for owner acceptance.
+Protocol 2.17.1's normative errata is accepted and prepared locally, but has
+not shipped in a release.
 `cash-flow/valid-same-day-selection` exercises full validation, metric
 verification and repeated/unique date selection on one preserved document.
 `cash-flow/reject-duplicate-year-selection` retains the other-series guard.

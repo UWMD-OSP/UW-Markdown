@@ -334,7 +334,7 @@ The parser adds a `period_path` AST node. Full selector keys flow through
 overrides and dependency extraction. `ctx.sectionVariants` selects an exact
 variant; default period lookup uses generic role eligibility. A missing period
 returns null; malformed periods refuse even if validation was skipped.
-The RFC 0062 draft implementation (Protocol 2.17.1 errata, acceptance pending)
+The accepted RFC 0062 implementation (Protocol 2.17.1 errata, unreleased)
 permits same-day `cash_flow_series` rows without PS-02: ordinary selection refuses
 only a duplicated requested date, while a unique date in that ledger resolves.
 Other registered series still refuse any duplicate identity before selection.

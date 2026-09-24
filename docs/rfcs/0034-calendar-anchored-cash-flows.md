@@ -41,9 +41,9 @@ affects:
 > not yet have." This RFC supplies the primitive. The waterfall itself
 > stays deferred; its precondition stops being the reason.
 
-> Proposed reconciliation: [RFC 0062](0062-same-day-cash-flow-selection.md)
+> Accepted reconciliation: [RFC 0062](0062-same-day-cash-flow-selection.md)
 > separates legal same-day cash-flow data from ordinary selector uniqueness.
-> Its prepared 2.17.1 errata remains pending owner acceptance.
+> Its Protocol 2.17.1 errata is accepted but has not yet shipped.
 
 ## Summary
 

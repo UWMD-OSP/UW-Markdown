@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Proposed normative errata (RFC 0062; owner acceptance pending) — protocol **2.17.1**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Accepted normative errata (RFC 0062; unreleased) — protocol **2.17.1**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to

@@ -20,10 +20,10 @@ same protocol version.
 
 ## Current matrix
 
-**Working-tree proposal:** Protocol **2.17.1** contains RFC 0062's same-day
-cash-flow normative errata. Jared selected the patch treatment; RFC acceptance
-remains pending. The protocol row and runtime/spec mirrors describe this
-unreleased source proposal. Published core/CLI 2.13.0 still implement Protocol
+**Accepted, unreleased source contract:** Protocol **2.17.1** contains RFC 0062's
+same-day cash-flow normative errata. Jared accepted the resolution on 2026-09-24
+and retained the selected patch treatment. The protocol row and runtime/spec
+mirrors describe this unreleased contract. Published core/CLI 2.13.0 still implement Protocol
 2.17.0; package versions and release state below are unchanged.
 
 Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
@@ -46,7 +46,7 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.17.1** (unreleased proposal) | format ≥ 1.0; RFC 0062 normative errata, owner acceptance pending; published core/CLI remain on 2.17.0 |
+| UW Protocol | **2.17.1** (accepted, unreleased) | format ≥ 1.0; RFC 0062 normative errata; published core/CLI remain on 2.17.0 |
 | `@uwmd/core` | **2.13.0** | format 2.0 (reads 1.x), protocol 2.17.0 |
 | `@uwmd/cli` (CLI) | **2.13.0** | `@uwmd/core` 2.13.0 |
 | `@uwmd/excel` | **0.9.5** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.13.x, format 2.0, explicit contextual calculations |
@@ -99,7 +99,7 @@ These were candidate versions when the plan was written. See the
 4. **The format and protocol majors move together.** A `.uw.md` v2
    file requires UW Protocol v2 to be fully read.
 
-### RFC 0062 errata treatment (proposal)
+### RFC 0062 errata treatment (accepted, unreleased)
 
 The owner selected Protocol 2.17.1 for reconciliation of contradictory released
 requirements. This patch changes PS-02 applicability and permits unique-date
@@ -107,8 +107,9 @@ cash-flow selection despite duplicate dates elsewhere. It does not claim
 byte-identical validation verdicts with 2.17.0. The existing minor-version
 monotonicity rule does not resolve contradictory requirements; this narrowly
 recorded erratum reconciles them without general relaxation of period rules.
-See [RFC 0062](docs/rfcs/0062-same-day-cash-flow-selection.md). RFC acceptance
-remains pending; this is not a blanket patch policy for new protocol features.
+See [RFC 0062](docs/rfcs/0062-same-day-cash-flow-selection.md), accepted by Jared
+on 2026-09-24 and not yet released. This is not a blanket patch policy for new
+protocol features.
 
 ## Pinning recommendations
 
