@@ -122,12 +122,15 @@ and code organization are implementation details:
    and two-digit month/day padding. Use calendar integers, with no local time,
    timezone, elapsed-day approximation or financial day-count calculation.
 
-Both cadences therefore use the same period-start-plus-cadence concept; the
-width comes from the existing cadence, not a new financial input. Quarterly
-source validation already shares canonical identities and gap-free progression
-with monthly validation. No architectural distinction requires a second
-semantic rule. Quarterly inclusion is an owner-directed calendar
-generalization, not a claim of separate real-deal quarterly evidence.
+The public Golden Deal review directly demonstrates the monthly boundary
+case only. RFC 0045 already accepts monthly and quarterly source schedules;
+both use canonical calendar-period identities and have a deterministically
+derivable exclusive upper boundary. The same period-start-plus-cadence rule
+therefore covers both, with no different financial arithmetic or economic
+assumption. Quarterly inclusion is an architectural generalization to an
+already-supported cadence, not a claim that a Golden Deal demonstrated a
+quarterly boundary case. Inspection found no semantic difference relevant to
+this admission rule beyond calendar arithmetic.
 
 | Final source period | Exclusive upper boundary |
 |---|---|
@@ -159,7 +162,8 @@ Replace only the inside-final-period requirement in Protocol VIII.9.6.5 with:
 > If it is `allow_exclusive_end`, disposition MUST either lie inside that
 > final period or equal its exact exclusive upper calendar boundary as derived
 > from its stated canonical period identity. No other date is admitted by
-> this option.
+> this option. In particular, one day after the boundary MUST refuse; no
+> intermediate grace window is introduced.
 
 In predicate form, with `P` the validated final source period and `D` the
 already validated disposition date:
@@ -209,9 +213,12 @@ gross sale excludes reserve return and MUST NOT become eventual net receipts.
 
 The complete, gap-free selected source schedule remains mandatory. For the new
 equality case, its final source period is the complete final operating/accrual
-calendar period, ending immediately before economic disposition. The boundary
-option MUST NOT add an operating row, extend leasing, import forward exit-NOI
-support as seller cash, prorate amounts, or infer partial-period economics.
+calendar period, ending immediately before economic disposition. The exclusive
+boundary is a date boundary, not a new source period. The option MUST NOT
+synthesize an extra month or quarter, invent a lease-up row, add a period
+coverage cell, create a post-sale operating period, extend leasing, import
+forward exit-NOI support as seller cash, prorate amounts, or infer
+partial-period economics.
 
 Existing inside-period dispositions continue to follow existing rules,
 including explicitly authored amounts for partial-period economics. Opting in
@@ -233,7 +240,13 @@ and unchanged; no new economic verification claim is made.
 
 ### 6. Reserve, financing, arithmetic and row identity
 
-Every existing reserve assertion remains required and literal `true`.
+Every existing reserve assertion remains required and literal `true`. Timing
+admission MUST NOT cure any reserve refusal: a Golden Deal that fails
+`reserve_spending_excluded` or another existing reserve assertion still fails.
+This RFC adds no reserve roll-forward model for opening balance, contributions,
+funded draws, internal reserve spending, reconciliation or ending balance, and
+no inferred release. Existing explicitly stated external transfers remain
+subject to RFC 0045 unchanged.
 `reserve_net` remains an owner external-transfer boundary. A valid same-date
 release can occur on boundary disposition, but this RFC MUST NOT calculate a
 balance, infer a release, net reserve-funded spending against the lease-up
@@ -252,9 +265,12 @@ Copy signed amounts exactly, preserve each row and its bindings, and retain the
 existing deterministic sort and tie ordering. Use RFC 0034's existing explicit
 dates, first actual cash-date anchor, day count, XIRR/XNPV/MOIC/total-net
 algorithms, refusal conditions and quantization. No financial formula changes.
-Same-day cash rows remain separate under accepted RFC 0062: no PS-02 solely for
-their shared date, ambiguous requested dates refuse `CALC-PERIOD-002`, unique
-dates select, and duplicate protection on other registered series remains.
+Same-day cash rows remain separate under accepted RFC 0062, including final
+operating cash and sale rows sharing disposition. They MUST NOT be merged or
+netted, and their deterministic tie ordering remains unchanged. No PS-02 arises
+solely from their shared date; ambiguous requested dates refuse
+`CALC-PERIOD-002`, unique dates select, and duplicate protection on other
+registered series remains.
 No numeric-index expression syntax or other calc-grammar change is authorized.
 
 ### Existing RFC interactions
@@ -274,9 +290,11 @@ No numeric-index expression syntax or other calc-grammar change is authorized.
 - **Existing plans:** An absent member MUST preserve validation, serialized
   assembly output, source bytes, `_meta`, ordering, digests and refusals exactly.
   Do not emit a default field, normalize legacy plans or move their dates.
-  Preserve existing diagnostics for existing inputs. Explicit
-  `within_final_period` has the same decisions, with only the supplied member
-  additionally echoed in `result.plan`.
+  No previously refused legacy plan becomes accepted and no existing result
+  changes. Explicit `within_final_period` MUST have the same validation,
+  admission, assembly and refusal semantics as omission, with only the
+  supplied member additionally echoed in `result.plan` under the existing
+  plan-copy rule. That representation difference adds no behavioral difference.
 - **Newly admissible plans:** `allow_exclusive_end` changes only the final-date
   admission predicate. Otherwise valid boundary plans can succeed; dates after
   that boundary, cash after disposition and all independent failures still
@@ -301,12 +319,13 @@ No numeric-index expression syntax or other calc-grammar change is authorized.
   not to the new opt-in behavior. Tier-3 metrics are unchanged. Tier-4 hosts may
   explicitly request the option but MUST NOT infer it from cash dates, source
   cadence or a failed attempt, or silently retry a refused legacy plan with it.
-- **Version treatment:** An additive **Protocol minor** is appropriate if
-  accepted, because a deliberate admission rule expands, unlike RFC 0062's
-  owner-selected normative errata. No version number is needed by the RFC
-  template and none is selected here. Package versions are independent and
-  would be considered at implementation/release. Prepared Protocol **2.17.1**,
-  current package versions and accepted/unreleased RFC 0062 are unchanged.
+- **Version treatment:** This is an additive **Protocol minor candidate**,
+  because it expands what an explicit opt-in assembly plan may legally request,
+  unlike RFC 0062's owner-selected normative errata. No version number is
+  assigned or bumped in this draft. Protocol **2.17.1** remains the
+  accepted/unreleased RFC 0062 errata state. Format remains **2.0** and package
+  versions remain unchanged. Package versioning is independent; release
+  versions and scheduling belong to later implementation/release planning.
 - **Excel:** This adds no workbook shape, live dated-metric formula or new
   emitter capability. Existing same-day whole-column safeguards and RFC 0034's
   deferred cash-flow metric export remain. No new engine/Excel parity claim.
@@ -336,10 +355,13 @@ acceptance matrix rather than inventing separate semantics.
 | Quarterly inside | Inside-final-quarter disposition succeeds with either value or absence when otherwise valid. |
 | Quarterly exact boundary | Final `2027-Q3`, disposition `2027-10-01`: succeeds only with `allow_exclusive_end`; absent/explicit legacy refuses `date_horizon`. |
 | Quarterly too late | Same final quarter, disposition `2027-10-02`: refuses with opt-in. No next-quarter operating period is created. |
-| Year and calendar boundaries | `2027-12` and `2027-Q4` both admit only `2028-01-01` as their additional date. Leap/non-leap February derive March 1. Leading-zero-year rollover preserves year identity; year-10000 overflow grants no additional date and does not invalidate a valid inside-period plan. |
+| Monthly year rollover | Final `2027-12`: opt-in admits `2028-01-01`; absence/explicit legacy refuses it. `2028-01-02` refuses even with opt-in. No January source period is synthesized. |
+| Quarterly year rollover | Independently use final `2027-Q4`: opt-in admits `2028-01-01`; absence/explicit legacy refuses it. `2028-01-02` refuses even with opt-in. No Q1 source period is synthesized. |
+| Other calendar boundaries | Leap/non-leap February derive March 1. Leading-zero-year rollover preserves year identity; year-10000 overflow grants no additional date and does not invalidate a valid inside-period plan. |
 | Invalid opt-in | Unknown enum, wrong type, `null`, API own `undefined` and attempted nested assertion fail plan validation. Absent stays distinct from an invalid value. |
 | Source identity | Gaps, duplicates, malformed/mixed cadence or reordered source periods retain existing source refusals. Shuffling the cash-date map cannot manufacture a different final period or boundary. |
 | Acquisition invariants | Acquisition outside the first period or acquisition >= disposition refuses unchanged, with opt-in present. |
+| No new source period | Successful monthly and quarterly exact-boundary cases preserve the entire source schedule and exact period coverage cells. No extra month/quarter, lease-up row, post-sale operating period or prorated amount is created; copied operating amounts and bindings are unchanged. |
 | Operating cutoff / extra period | Extra cash-date mapping not in the selected source retains projection refusal; no period is appended automatically. A following source period with cash after disposition refuses. A complete schedule ending wholly after disposition fails final-period admission. A different otherwise legacy-valid inside-period source is not made invalid by this RFC. |
 | Cash horizon | Independently test projected and supplemental cash after disposition and before acquisition: `date_horizon` retains the original offending-source pointer. Includes a row mislabeled as settlement; no grace day. |
 | Closing anchors / sale deductions | Gross sale, transaction costs or reserve rows assigned to disposition but dated earlier within the hold refuse closing timing. Acquisition-slot timing remains strict. Correct boundary sale plus RFC 0052 costs verifies stated net proceeds, excluding reserve return. |
@@ -386,14 +408,15 @@ series containing the same rows.
 | Alternative | Reason not selected |
 |---|---|
 | Boolean assertion, such as `assertions.allow_final_period_boundary: true` | Existing assertions attest economic facts and are all mandatory literal true. An optional validation policy there conflates intent with truth and complicates their closed shape. A top-level boolean would be smaller but less descriptive than two named terminal-period treatments. |
-| Closed enum, proposed `disposition_period_rule` | Selected: explicit legacy and additional-boundary modes, a precise top-level validation choice, unknown values refused, no silent default insertion. Future values would need a separate RFC; the enum is not permission for a general timing-policy framework. |
+| Closed enum, proposed `disposition_period_rule` | Selected: names the validation rule explicitly, preserves current default behavior, and is closed to the two stated values. Unknown values refuse; no default is inserted and no economic settlement semantics are implied. Future values would need a separate RFC; none are proposed speculatively. |
+| Generic date-policy object | Adds configuration beyond the two required validation rules and suggests independent timing dimensions without evidence or a contract. The closed enum expresses this bounded choice directly. |
 | Existing `hold_only_and_exit_settled`, cash mappings or coverage slots | Those already express different facts and cannot distinguish legacy from expanded period admission. Reinterpreting them would silently change existing plans. Keep them unchanged. |
 | Existing §4.26 series only | Sufficient for stated dates/metrics, but does not provide RFC 0045's verified-source assembly and coverage wrapper. The owner has directed the narrower assembly proposal. |
 | Redefine/backdate disposition or cash | Hides the actual economic sale or changes authored timing. Keeping the sale date honest is the motivation. |
 | Grace days, N-day window or post-sale settlement horizon | The evidence establishes one exact calendar boundary and no later seller cash. Additional dates need separate evidence and a contract. |
 | Add another operating period or infer proration | Invents operating coverage/economics and breaks full-source identity; the boundary adds no accrual period or amount calculation. |
 | Derive dates from row index/hold count | Loses absolute period identity and can move dates when rows or acquisition change. Use the stated canonical period only. |
-| Automatically allow the boundary / retry refused plans with opt-in | Changes existing refusals and author intent. Explicit opt-in and absent compatibility are required. |
+| Infer policy from disposition date, make exclusive-end the default, or retry refused plans with opt-in | Changes existing refusals and author intent. Explicit opt-in and absent compatibility are required. |
 | Monthly-only option or two cadence policies | Owner scope includes both existing cadences. The same calendar operation handles each; separate policies add complexity without a new financial distinction. |
 | Reserve roll-forward or financing assembly in this RFC | Independent economic state/basis contracts. Timing eligibility cannot cure reserve overlap or admit debt/investor cash. |
 
