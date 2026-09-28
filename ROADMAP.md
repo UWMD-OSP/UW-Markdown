@@ -11,10 +11,10 @@ extensions. This roadmap is directional; a candidate is not a release commitment
 
 Core/CLI **2.13.0**, signing **0.2.17** and batch **0.8.12** are published on
 npm from the `v2.13.0` tag with SLSA provenance. Format is **2.0** and Protocol
-is **2.17.0** in that release. Canonical `main` carries the accepted,
-unreleased Protocol **2.18.0** source contract for RFCs 0062 and 0063; package
-versions remain at the published 2.13.0 generation until a release is cut.
-Format stays **2.0**; the version streams are independent.
+is **2.17.0** in that release. The isolated release candidate prepares
+core/CLI **2.14.0** with accepted, unreleased Protocol **2.18.0** for RFCs
+0062 and 0063; no next tag or publication exists. Format stays **2.0**; the
+version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -214,11 +214,16 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 integrated; accepted, unreleased | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. Jared accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs remain **accepted** until shipped. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and Golden Deal probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. No next release tag or publication exists; reserve-account and financing assembly remain separate. |
+| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 integrated; 2.14.0 candidate prepared | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. Jared accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs remain **accepted** until shipped. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and Golden Deal probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. The isolated 2.14.0 candidate has no release tag or publication; reserve-account and financing assembly remain separate. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
 | 5 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
+
+The next reserve-account question is scoped in draft
+[RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md). It seeks
+an account-state verifier and leaves RFC 0045's reserve refusal intact until
+the owner accepts a source-backed property-cash boundary mapping.
 
 ### Adoption and integration candidates
 

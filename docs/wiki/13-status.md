@@ -6,7 +6,8 @@ published release is **v2.13.0** (see
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
 `v2.13.0` tag. That release pairs Format **2.0** with Protocol **2.17.0**.
 Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
-0062 and 0063; package versions remain at the published generation.
+0062 and 0063. The isolated release candidate prepares core/CLI **2.14.0**;
+published packages remain at the 2.13.0 generation.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -328,7 +329,8 @@ exact exclusive upper boundary. No new period or coverage cell, proration,
 inferred timing, grace period or post-sale cash is introduced. Reserve-funded
 spending still refuses. Quarterly is a calendar generalization, not direct
 Golden Deal evidence. RFC 0063 remains **accepted**, not implemented, until
-release; package versions and Format are unchanged. See the
+release; Format is unchanged. The isolated release candidate advances package
+versions separately. See the
 [implementation verification record](../reviews/2026-09-24-rfc-0063-implementation.md).
 
 ## Accepted, unreleased same-day reconciliation (RFC 0062)
@@ -349,6 +351,10 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
   selected as 2.17.1. Both RFCs remain accepted until shipped. No post-sale
   settlement category or lag is authorized. Reserve-account, financing,
   investor-tax and post-sale work remain separate contracts.
+- Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
+  against source-backed property account movement classifications. It proposes
+  deterministic account-state verification, not a relaxation of RFC 0045's
+  reserve refusal or a new standard section.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
