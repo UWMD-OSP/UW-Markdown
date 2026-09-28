@@ -26,8 +26,11 @@ RFC 0062 same-day errata. Jared accepted RFC 0063 on 2026-09-24 at `f04b34a`
 and authorized implementation. No intervening protocol change altered the
 stream. RFCs 0062 and 0063 remain `accepted` until release; the 2.17.1 errata
 decision remains recorded below. The protocol row and runtime/spec mirrors
-describe the combined unreleased contract. Published core/CLI 2.13.0 still implement Protocol
-2.17.0; package versions and release state below are unchanged.
+describe the combined unreleased contract, integrated on canonical `main`
+(RFC 0062 at `e49eb43`, RFC 0063 at `413a645`). Release-candidate manifests
+now pair core/CLI **2.14.0** with Protocol 2.18.0; published core/CLI 2.13.0
+still implement Protocol 2.17.0. Protocol 2.18.0 and the 2.14.0 candidate have
+no release tag or package publication yet.
 
 Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
 Protocol 2.17.0 adds §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes
@@ -50,16 +53,16 @@ versions advance independently.
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
 | UW Protocol | **2.18.0** (accepted, unreleased) | format ≥ 1.0; RFC 0063 boundary opt-in plus RFC 0062 errata; published core/CLI remain on 2.17.0 |
-| `@uwmd/core` | **2.13.0** | format 2.0 (reads 1.x), protocol 2.17.0 |
-| `@uwmd/cli` (CLI) | **2.13.0** | `@uwmd/core` 2.13.0 |
-| `@uwmd/excel` | **0.9.5** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.13.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.17** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.13.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.12** | `@uwmd/core` 2.13.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.1** (unpublished) | `@uwmd/core` 2.13.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.17** | `@uwmd/core` 2.13.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.5** (unpublished) | `@uwmd/core` 2.13.x, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.5** (unpublished) | `@uwmd/core` 2.13.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.13.x browser entry |
+| `@uwmd/core` | **2.14.0** (candidate; published 2.13.0) | format 2.0 (reads 1.x), protocol 2.18.0 |
+| `@uwmd/cli` (CLI) | **2.14.0** (candidate; published 2.13.0) | `@uwmd/core` 2.14.0 |
+| `@uwmd/excel` | **0.9.6** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.14.x, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.18** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.14.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.13** (candidate; published 0.8.12) | `@uwmd/core` 2.14.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.2** (unpublished) | `@uwmd/core` 2.14.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.18** (candidate; published 0.2.17) | `@uwmd/core` 2.14.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.6** (unpublished) | `@uwmd/core` 2.14.x, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.6** (unpublished) | `@uwmd/core` 2.14.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.14.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

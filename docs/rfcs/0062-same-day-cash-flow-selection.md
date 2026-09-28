@@ -26,7 +26,8 @@ keep their existing duplicate rules.
 This is an accepted normative reconciliation, not an implementation bug fix.
 **Accepted by Jared on 2026-09-24.** Protocol **2.17.1 — normative errata**
 remains the owner-selected version. The reference implementation, protocol
-mirrors and conformance are prepared locally, but have not shipped. Status is
+mirrors and conformance are integrated on canonical `main` at `e49eb43`, but
+have not shipped. Status is
 `accepted`, not `implemented`, until release. No schema or public type changes.
 
 The owner explicitly accepted legal, separate same-day cash-flow rows without
@@ -151,9 +152,11 @@ features into patches.
 The executable constant, checked protocol labels, current source matrix and
 receipt-issuance protocol labels move together to 2.17.1. VERSIONS and the
 Unreleased changelog distinguish this accepted, unreleased source contract from published
-core/CLI 2.13.0 and Protocol 2.17.0. Format remains 2.0. No package version,
-dependency, lockfile, tag or publication changes. The version choice preceded
-the owner's separate acceptance recorded above.
+core/CLI 2.13.0 and Protocol 2.17.0. Format remains 2.0. The errata
+implementation made no package-version, dependency, lockfile, tag or
+publication change. An isolated 2.14.0 candidate now repins packages for the
+combined 2.18.0 contract; it has not shipped. The version choice preceded the
+owner's separate acceptance recorded above.
 
 ## Conformance impact
 
@@ -254,8 +257,8 @@ decision is recorded above. These results do not constitute a release.
 ## Unresolved questions
 
 None for this reconciliation. Jared accepted the normative resolution, and
-the 2.17.1 errata version is settled. Integration and release remain separate
-actions; the RFC stays `accepted` until it ships. Terminal settlement, reserve
+the 2.17.1 errata version is settled. Integration is complete; the RFC stays
+`accepted` until it ships. Terminal settlement, reserve
 rollforward, levered assembly and any other protocol feature are excluded.
 
 ## Prior art

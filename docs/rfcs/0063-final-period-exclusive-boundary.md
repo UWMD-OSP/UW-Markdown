@@ -28,9 +28,11 @@ there is no post-sale settlement horizon, new operating period or proration.
 implementation. Status remains `accepted`, not `implemented`, until the
 capability ships. The preceding [design review](../reviews/2026-09-24-terminal-boundary-design.md)
 was integrated in canonical `main` at `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`.
-The local implementation prepares Protocol **2.18.0**, including the unreleased
-RFC 0062 errata selected as 2.17.1. Format and package versions are unchanged;
-no push, tag, publication or release is authorized by this implementation pass.
+The implementation integrated on canonical `main` at `413a645` prepares Protocol
+**2.18.0**, including the unreleased
+RFC 0062 errata selected as 2.17.1. Format is unchanged; an isolated 2.14.0
+package candidate is prepared separately. No next release tag, publication or
+release has occurred.
 
 ## Motivation
 
@@ -377,8 +379,8 @@ fixtures or claim a reserve-dependent source qualifies merely from timing.
 
 ## Reference implementation
 
-The implementation is prepared locally under owner acceptance, in the required
-spec/schema/type lockstep. It has not shipped. Changed surfaces:
+The implementation is integrated on canonical `main` at `413a645` in the
+required spec/schema/type lockstep. It has not shipped. Changed surfaces:
 
 - `spec/UW_PROTOCOL_v1.md`, VIII.9.6 plan shape and date-admission language;
   `packages/uwmd-core/src/protocol.ts`, additive plan member; and
@@ -427,10 +429,10 @@ No unresolved semantic decision remains for this scope. Jared accepted the
 public enum, both cadences, exact boundary, representability limit, unchanged
 cash horizon and compatibility rules at `f04b34a` on 2026-09-24.
 
-The completed local implementation returns for owner review before integration
-or release. RFC status stays `accepted` until shipped. Release scheduling and
-package versions are separate decisions; no push, tag, publication or release
-is authorized here. Reserve roll-forward, financing, investor tax, speculative
+The completed implementation is integrated on canonical `main` and awaits
+release. RFC status stays `accepted` until shipped. Package versions have been
+prepared in an isolated candidate; no next release tag or publication has
+occurred. Reserve roll-forward, financing, investor tax, speculative
 leasing and actual post-sale settlement remain separate future contracts.
 
 ## Prior art

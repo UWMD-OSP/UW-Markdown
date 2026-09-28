@@ -8,6 +8,20 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+See the prepared 2.14.0 candidate below. No tag or package publication has
+occurred.
+
+## [2.14.0] - release candidate (unpublished)
+
+### Prepared
+
+Core/CLI **2.14.0** pair with accepted Protocol **2.18.0** and unchanged
+Format **2.0**. Signing **0.2.18** and batch **0.8.13** repin core; the
+unpublished Excel, report, lake and module manifests also receive exact local
+repins. Receipt issuance baselines and the frozen verification fixture use the
+new engine version. This section records a candidate, not a released package.
+RFCs 0062 and 0063 remain `accepted` until the capability ships.
+
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
 
 - Jared accepted RFC 0063 at `f04b34ab5606264424bddc02b09ced256a09bbcc` on
@@ -17,12 +31,13 @@ protocol, and each package each carry an independent semver).
   `allow_exclusive_end`. No later date, new period, proration or settlement
   horizon is admitted. All cash and disposition-slot anchoring rules remain.
 - The reference implementation, synthetic conformance and API/schema/browser/CLI
-  tests are prepared locally. RFC status remains **accepted**, not implemented,
+  tests are integrated on canonical `main` at `413a645`. RFC status remains
+  **accepted**, not implemented,
   until shipped. Reserve, financing, investor-tax and RFC 0062 behavior remain.
 - Protocol 2.18.0 is the next additive minor after the unreleased 2.17.1 errata
   recorded below, which it includes without changing that acceptance decision.
-  Format remains 2.0; package versions, dependency links and release tags are
-  unchanged. Published core/CLI 2.13.0 still implement Protocol 2.17.0.
+  Format remains 2.0; candidate package versions and exact workspace pins are
+  recorded above. Published core/CLI 2.13.0 still implement Protocol 2.17.0.
 
 ### Accepted normative errata — Protocol 2.17.1 (RFC 0062, unreleased)
 
@@ -33,9 +48,10 @@ protocol, and each package each carry an independent semver).
   duplicate guards retain their existing rules.
 - Jared accepted RFC 0062 on **2026-09-24**, retaining **2.17.1** as normative
   errata. Status is **accepted**, not implemented: the reference implementation
-  and tests are prepared but have not shipped. Format stays 2.0; package
-  versions, dependencies and tags do not
-  change. Published core/CLI 2.13.0 continue to pair with Protocol 2.17.0.
+  and tests are integrated on canonical `main` at `e49eb43` but have not shipped.
+  Format stays 2.0; candidate package versions and exact workspace pins are
+  recorded above. Published core/CLI 2.13.0 continue to pair with Protocol
+  2.17.0.
 
 ## [2.13.0] - 2026-09-21
 

@@ -1,9 +1,13 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-21** for published release **v2.13.0** (see
+Reconciled **2026-09-27** against canonical `main` at `c5df4c0`. The latest
+published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
-`v2.13.0` tag. Format **2.0** and Protocol **2.17.0** version independently.
+`v2.13.0` tag. That release pairs Format **2.0** with Protocol **2.17.0**.
+Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
+0062 and 0063. The isolated release candidate prepares core/CLI **2.14.0**;
+published packages remain at the 2.13.0 generation.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -316,7 +320,8 @@ The [terminal-boundary design brief](../reviews/2026-09-24-terminal-boundary-des
 is integrated in main at `22d993b5`. Its evidence places final monthly cash on
 economic disposition at the final source period's exclusive end, not after
 sale. Jared accepted [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
-at `f04b34a` on 2026-09-24 and authorized implementation. The local source
+at `f04b34a` on 2026-09-24 and authorized implementation. The implementation
+is integrated on canonical `main` at `413a645`. The current source
 contract is Protocol **2.18.0**, with a closed `disposition_period_rule` enum
 for both monthly and quarterly sources. Absence and `within_final_period`
 preserve legacy behavior; `allow_exclusive_end` additionally admits only the
@@ -324,7 +329,8 @@ exact exclusive upper boundary. No new period or coverage cell, proration,
 inferred timing, grace period or post-sale cash is introduced. Reserve-funded
 spending still refuses. Quarterly is a calendar generalization, not direct
 Golden Deal evidence. RFC 0063 remains **accepted**, not implemented, until
-release; package versions and Format are unchanged. See the
+release; Format is unchanged. The isolated release candidate advances package
+versions separately. See the
 [implementation verification record](../reviews/2026-09-24-rfc-0063-implementation.md).
 
 ## Accepted, unreleased same-day reconciliation (RFC 0062)
@@ -340,11 +346,15 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Review the completed local RFC 0063 implementation before integration or
-  release. Protocol 2.18.0 includes the accepted, unreleased RFC 0062 errata
+- Prepare a bounded release candidate for the integrated RFCs 0062 and 0063.
+  Protocol 2.18.0 includes the accepted, unreleased RFC 0062 errata
   selected as 2.17.1. Both RFCs remain accepted until shipped. No post-sale
   settlement category or lag is authorized. Reserve-account, financing,
   investor-tax and post-sale work remain separate contracts.
+- Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
+  against source-backed property account movement classifications. It proposes
+  deterministic account-state verification, not a relaxation of RFC 0045's
+  reserve refusal or a new standard section.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
