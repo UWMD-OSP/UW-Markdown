@@ -43,13 +43,14 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **28 numbered subsections (§ 4.0 – § 4.27)**:
+Part IV registers **29 numbered subsections (§ 4.0 – § 4.28)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content, the `gaps` inventory (§ 4.22), the mixed-use `components`
 section (§ 4.23), the `capital_stack` section (§ 4.24), the
 `lease_up_schedule` section (§ 4.25), the `cash_flow_series`
-section (§ 4.26), and the `distribution_waterfall` section (§ 4.27).
+section (§ 4.26), the `distribution_waterfall` section (§ 4.27), and
+the `reserve_accounts` section (§ 4.28).
 When this and the protocol document refer to "the 21 standard
 sections" they mean § 4.0 through § 4.20.
 
@@ -3107,6 +3108,100 @@ Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6
 - **Stated figures are verified, never trusted.** `verifyWaterfall` recomputes by Protocol § VIII.10, three-state, both sides quantized at the § VIII.9.4 quanta (`$` → 2, `x` → 4, `%` → 6): outcomes and schedule cells against the recomputed allocation; a stated `xirr` whose recomputation raises (§ VIII.9.3 refusal — e.g. a zero-contribution party) is `failed`; a `moic` over zero contributions is `unverifiable`; an unresolvable or structurally invalid referenced series makes every stated figure `unverifiable`, never a guess.
 
 **Deliberately deferred (RFC 0035, RFC 0036, RFC 0051, RFC 0059).** N-party splits, Excel emit (the § 4.26 literals posture), a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche), and GP-side hurdles (RFC 0051 lifted `hurdle_mode: "any"` into the normative contract; RFC 0059 took clawback as a terminal true-up, leaving per-period crystallization and interim promote escrows deferred).
+
+---
+
+### § 4.28 — Reserve Accounts
+
+**ID:** `reserve_accounts`  
+**Header:** `## Reserve Accounts {#reserve_accounts}`  
+**Purpose:** The **custodial roll-forward** of one or more owner-restricted **property reserve accounts** — a replacement reserve, a TI/LC reserve, an interest or operating reserve the *owner* holds — by stated period: the opening balance, every dated movement, and the stated ending balance. It is evidence about **where cash is held**, which is a different question from what was spent (§ 4.8 `uses.renovation`, § 4.25 `ti_lc_capex`, § 4.26 `other_capex`) and from what the owner funded or received (§ 4.26 `reserve_net`). RFC 0056's § 4.8 `escrows` declare *funding* (`upfront`, `monthly`); this section states the *account* those declarations feed, as it actually rolled. The section is **asset-class independent** and **single-variant**: a statement is a fact about one account, not a scenario.  
+**Written by:** `wizard`, `manual`, `agent/L4-*` — with one prohibition: an agent MUST NOT infer a balance, a movement or a period. A statement is transcribed from an account statement or a lender's reserve ledger; the verifier catches what does not add up.  
+**Required for pipeline stage:** Optional; never required. A deal whose reserves are an NOI deduction and nothing more legitimately has no account to roll.  
+**Dependencies:** none. § 4.26 is a natural sibling — a `reserve_net` row is the *owner's* side of a `contribution` or `release` here — but no cross-check is defined by RFC 0064 (deferred; see the RFC's unresolved questions).  
+**Schema:** [`spec/schemas/section-reserve-accounts.schema.json`](schemas/section-reserve-accounts.schema.json)  
+**Introduced by:** RFC 0064 (property reserve-account roll-forward).
+
+Like § 4.24 – § 4.27 this is a **state-and-verify** structure (RFC 0021 § 6) — the fifth: the Tier-3 calc engine never reads it by pack formula, so the variable-length arrays are safe, and every stated ending balance is recomputed by a deterministic verifier (`verifyReserveAccounts`, a sibling of `verifyCashFlowSeries`) over the one identity Protocol § VIII.9.7 registers. The section is **data, not formulas**.
+
+**What this section is not.** It is **not a second expenditure ledger.** A draw of $X that paid for a roof is an account movement of $X; the roof is a **gross** $X in whichever section states it, and the draw never nets against it. It is **not an RFC 0045 assembly input.** A verified roll-forward does not make a reserve-dependent property cash-flow plan eligible, does not cure the `reserve_spending_excluded` refusal, and does not supply a `reserve_net` row; binding gross expenditure rows to account draws is a later contract. It is **not a lender reserve.** A lender-held escrow is financing, not property cash; the class is reserved and refused (`RSV-02`) so it cannot be verified as if it were owner-restricted.
+
+**Fields.**
+
+- `label` — free text. Optional.
+- `accounts` — one entry per account, `account_id` unique within the section:
+  - `account_id` — stable author-stated identity (nonempty string).
+  - `class` — closed: `property_reserve`. `lender_reserve` is **reserved and refused** (`RSV-02`).
+  - `purpose` — what the account is for (nonempty string).
+  - `currency_code` — optional uppercase three-letter identity, the RFC 0046 posture: stated, never inferred.
+  - `statements` — ordered, non-overlapping periods, each:
+    - `period_start`, `period_end` — ISO-8601 `YYYY-MM-DD`, the first and last (inclusive) day of the period. Real dates, authored — never derived from a period position.
+    - `opening_balance` — cash held at the start of the period (nonnegative).
+    - `movements` — every movement in the period, each with a closed `kind`, a nonnegative `amount`, a `date` inside the period, and an optional `label`. May be empty: a quiet period is a real statement.
+      - `contribution` — cash entering the account from outside it.
+      - `draw` — cash leaving the account to fund a separately stated **gross** expenditure.
+      - `release` — cash leaving the account to the owner, separately from any gross sale.
+    - `ending_balance` — cash held at the end of the period, **as stated**. Verified, never derived.
+
+**Normative rules (RFC 2119):**
+
+- The section is OPTIONAL. A document with no `reserve_accounts` behaves exactly as before RFC 0064: no rule fires, no synthetic zero appears, no pipeline stage requires it (`STAGE_CONTRACT` untouched).
+- **Structure (`RSV-01`, error).** `accounts` and every `statements` list MUST be non-empty; every `account_id` and `purpose` MUST be a nonempty string; `class` and every movement `kind` MUST come from their closed vocabularies; every balance and movement `amount` MUST be a finite nonnegative number; every date MUST name a real calendar day; a stated `currency_code` MUST match `^[A-Z]{3}$`. An unsupported movement — interest credited by the bank, a fee, a transfer between two accounts — is refused, **never reclassified** as the nearest kind.
+- **Reserved class (`RSV-02`, error).** `lender_reserve` MUST be refused. Reserving rather than omitting it keeps a later financing contract from colliding with adopter usage, and turns a boundary error into an explained refusal.
+- **Identity and order (`RSV-03`, error).** `account_id` MUST be unique within the section. Within an account, `period_end` MUST NOT precede `period_start`, and each statement's `period_start` MUST be strictly after the prior statement's `period_end`. Order is identity: the roll-forward reads statements in the order stated and never sorts them.
+- **Movement dates (`RSV-04`, error).** Every movement `date` MUST lie within its statement's `[period_start, period_end]`.
+- **Balance identity (`RSV-05`, error).** For every statement, `ending_balance` MUST equal `opening_balance + Σ contribution − Σ draw − Σ release`, both sides quantized at the currency quantum (2 decimals, Protocol § VIII.5 half-away-from-zero). Every stated movement is added **exactly once**. Nothing is inferred to make the identity hold: no missing period is created, no zero movement is assumed, no release is derived.
+- **Continuity (`RSV-06`, error).** When a statement begins the calendar day after the prior statement ends, its `opening_balance` MUST equal the prior `ending_balance` at the currency quantum.
+- **Gap (`RSV-07`, warning).** When a statement does not begin the day after the prior statement ends, the roll-forward makes **no claim across the gap** and MUST NOT fill it. The warning says so.
+- **Stated figures are verified, never trusted.** A verifier MUST recompute every stated `ending_balance` and every consecutive `opening_balance`, three-state (`verified` / `failed` / `unverifiable`) per statement, per account and overall: `failed` on disagreement at the quantum, `unverifiable` when a statement cannot be rolled forward from what it states (a refused kind, a non-finite balance), `verified` otherwise. An `unverifiable` statement is undecided, never zero, and the statement after it is not "consecutive" to it.
+
+```json uw:section=reserve_accounts source=manual ts=ISO8601 v=1 confidence=high
+{
+  "_meta": { "...": "see §2.5" },
+  "label": "Replacement reserve, quarterly statements",
+  "accounts": [
+    {
+      "account_id": "replacement-reserve",
+      "class": "property_reserve",
+      "purpose": "Replacement reserve funded at closing and monthly thereafter",
+      "currency_code": "USD",
+      "statements": [
+        {
+          "period_start": "2026-04-01",
+          "period_end": "2026-06-30",
+          "opening_balance": 0,
+          "movements": [
+            { "kind": "contribution", "amount": 250000, "date": "2026-04-15", "label": "Closing funding" },
+            { "kind": "contribution", "amount": 12500, "date": "2026-05-01", "label": "Monthly deposit" },
+            { "kind": "contribution", "amount": 12500, "date": "2026-06-01", "label": "Monthly deposit" },
+            { "kind": "draw", "amount": 84300.5, "date": "2026-06-20", "label": "Roof replacement draw" }
+          ],
+          "ending_balance": 190699.5
+        },
+        {
+          "period_start": "2026-07-01",
+          "period_end": "2026-09-30",
+          "opening_balance": 190699.5,
+          "movements": [
+            { "kind": "contribution", "amount": 12500, "date": "2026-07-01" },
+            { "kind": "contribution", "amount": 12500, "date": "2026-08-01" },
+            { "kind": "contribution", "amount": 12500, "date": "2026-09-01" },
+            { "kind": "release", "amount": 50000, "date": "2026-09-30", "label": "Excess returned to owner" }
+          ],
+          "ending_balance": 178199.5
+        }
+      ]
+    }
+  ]
+}
+```
+
+*(The stated ending balances above were computed by the reference verifier,
+not asserted. The roof draw of 84,300.50 is an account movement; the roof
+itself is a gross 84,300.50 wherever the document states it, and the two are
+never netted.)*
+
+**Deliberately deferred (RFC 0064).** A cross-check tying a `contribution` or `release` here to a § 4.26 `reserve_net` row (the owner's side of the same movement), and a binding from a `draw` to the gross expenditure row it funded — the two facts an RFC 0045 successor would need before it could relax `reserve_spending_excluded`. Also deferred: a `lender_reserve` class with its own financing contract, and interest credited within the account.
 
 ---
 

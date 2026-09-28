@@ -24,6 +24,10 @@ import { LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
 import { checkLeaseUpContent } from './lease-up-structure.js';
 import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from './cash-flow-series.js';
 import { isDayCountConvention, parseISODate } from './calc/day-count.js';
+import {
+  RESERVE_ACCOUNT_CLASSES, RESERVED_RESERVE_ACCOUNT_CLASSES, RESERVE_MOVEMENT_KINDS,
+  rollForwardEndingBalance, statementsConsecutive, type ReserveStatement,
+} from './reserve-accounts.js';
 import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 import { isV2File } from './meta-shape.js';
@@ -144,6 +148,7 @@ export function validateUWFile(
   checkLeaseClauses(parsed, issues);
   checkHedgesAndEscrows(parsed, issues);
   checkRenovationDraw(parsed, issues);
+  checkReserveAccounts(parsed, issues);
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
@@ -2864,6 +2869,211 @@ function checkWaterfall(parsed: ParsedUWFile, issues: ValidationMessage[]): void
     : [['default', entry as UWBlock]];
   for (const [variant, block] of variants) {
     checkWaterfallContent(block.content as Record<string, unknown>, variant, parsed, issues);
+  }
+}
+
+// ─── Reserve accounts (RFC 0064, §4.28) ──────────────────────────────────────
+//
+// Structural rules for the custodial roll-forward. The arithmetic (`RSV-05`
+// balance identity, `RSV-06` continuity) is computed by reserve-accounts.ts and
+// only *reported* here, so the validator and `verifyReserveAccounts` cannot
+// disagree about a sum. Nothing here nets a draw against the gross expenditure
+// it funded, and nothing here touches RFC 0045's reserve refusals.
+
+function rsvIssue(
+  issues: ValidationMessage[], code: string, field: string, message: string,
+  value?: unknown, severity: 'error' | 'warning' = 'error',
+): void {
+  issues.push({
+    code, severity, section: 'reserve_accounts', field, message,
+    ...(value !== undefined ? { value } : {}),
+  });
+}
+
+function checkReserveAccountsContent(content: Record<string, unknown>, issues: ValidationMessage[]): void {
+  const accountsRaw = content['accounts'];
+  if (!Array.isArray(accountsRaw) || accountsRaw.length === 0) {
+    rsvIssue(issues, 'RSV-01', 'accounts', 'RSV-01: accounts must be a nonempty array', accountsRaw);
+    return;
+  }
+  if (content['label'] != null && typeof content['label'] !== 'string') {
+    rsvIssue(issues, 'RSV-01', 'label', 'RSV-01: label must be text or null', content['label']);
+  }
+
+  const seenIds = new Map<string, number>();
+  for (const [ai, acctRaw] of accountsRaw.entries()) {
+    const at = `accounts[${ai}]`;
+    if (typeof acctRaw !== 'object' || acctRaw === null || Array.isArray(acctRaw)) {
+      rsvIssue(issues, 'RSV-01', at, 'RSV-01: each account must be an object', acctRaw);
+      continue;
+    }
+    const acct = acctRaw as Record<string, unknown>;
+
+    const id = acct['account_id'];
+    if (typeof id !== 'string' || id.trim().length === 0) {
+      rsvIssue(issues, 'RSV-01', `${at}.account_id`, 'RSV-01: account_id must be a nonempty string', id);
+    } else if (seenIds.has(id)) {
+      rsvIssue(issues, 'RSV-03', `${at}.account_id`,
+        `RSV-03: account_id ${JSON.stringify(id)} repeats accounts[${seenIds.get(id)}]; identities must be unique within the section`, id);
+    } else {
+      seenIds.set(id, ai);
+    }
+
+    const cls = acct['class'];
+    if ((RESERVED_RESERVE_ACCOUNT_CLASSES as readonly unknown[]).includes(cls)) {
+      rsvIssue(issues, 'RSV-02', `${at}.class`,
+        `RSV-02: class ${JSON.stringify(cls)} is reserved for a later financing contract; this section verifies owner-restricted property reserves only. A lender-held escrow is not property cash and cannot be verified as one`, cls);
+    } else if (!(RESERVE_ACCOUNT_CLASSES as readonly unknown[]).includes(cls)) {
+      rsvIssue(issues, 'RSV-01', `${at}.class`,
+        `RSV-01: class must be one of ${RESERVE_ACCOUNT_CLASSES.join(', ')}`, cls);
+    }
+
+    if (typeof acct['purpose'] !== 'string' || (acct['purpose'] as string).trim().length === 0) {
+      rsvIssue(issues, 'RSV-01', `${at}.purpose`, 'RSV-01: purpose must be a nonempty string', acct['purpose']);
+    }
+    const cur = acct['currency_code'];
+    if (cur != null && !(typeof cur === 'string' && /^[A-Z]{3}$/.test(cur))) {
+      rsvIssue(issues, 'RSV-01', `${at}.currency_code`,
+        'RSV-01: currency_code, when stated, must be an uppercase three-letter identity', cur);
+    }
+
+    const stmtsRaw = acct['statements'];
+    if (!Array.isArray(stmtsRaw) || stmtsRaw.length === 0) {
+      rsvIssue(issues, 'RSV-01', `${at}.statements`, 'RSV-01: statements must be a nonempty array', stmtsRaw);
+      continue;
+    }
+
+    // Per-statement structure, then the relational rules only over statements
+    // RSV-01 accepted: a balance identity over a refused amount is noise.
+    let prev: { end: string; ending: number; index: number } | null = null;
+    for (const [si, sRaw] of stmtsRaw.entries()) {
+      const sp = `${at}.statements[${si}]`;
+      if (typeof sRaw !== 'object' || sRaw === null || Array.isArray(sRaw)) {
+        rsvIssue(issues, 'RSV-01', sp, 'RSV-01: each statement must be an object', sRaw);
+        prev = null;
+        continue;
+      }
+      const s = sRaw as Record<string, unknown>;
+      let structural = true;
+
+      const start = s['period_start'];
+      const end = s['period_end'];
+      if (!isDate(start)) {
+        rsvIssue(issues, 'RSV-01', `${sp}.period_start`, 'RSV-01: period_start must be a real YYYY-MM-DD date', start);
+        structural = false;
+      }
+      if (!isDate(end)) {
+        rsvIssue(issues, 'RSV-01', `${sp}.period_end`, 'RSV-01: period_end must be a real YYYY-MM-DD date', end);
+        structural = false;
+      }
+      for (const key of ['opening_balance', 'ending_balance'] as const) {
+        const v = s[key];
+        if (!finiteNum(v) || v < 0) {
+          rsvIssue(issues, 'RSV-01', `${sp}.${key}`, `RSV-01: ${key} must be a finite nonnegative amount`, v);
+          structural = false;
+        }
+      }
+
+      const movesRaw = s['movements'];
+      if (!Array.isArray(movesRaw)) {
+        rsvIssue(issues, 'RSV-01', `${sp}.movements`, 'RSV-01: movements must be an array (empty for a quiet period)', movesRaw);
+        structural = false;
+      } else {
+        for (const [mi, mRaw] of movesRaw.entries()) {
+          const mp = `${sp}.movements[${mi}]`;
+          if (typeof mRaw !== 'object' || mRaw === null || Array.isArray(mRaw)) {
+            rsvIssue(issues, 'RSV-01', mp, 'RSV-01: each movement must be an object', mRaw);
+            structural = false;
+            continue;
+          }
+          const m = mRaw as Record<string, unknown>;
+          if (!(RESERVE_MOVEMENT_KINDS as readonly unknown[]).includes(m['kind'])) {
+            rsvIssue(issues, 'RSV-01', `${mp}.kind`,
+              `RSV-01: kind must be one of ${RESERVE_MOVEMENT_KINDS.join(', ')}; an unsupported movement is refused, not reclassified`, m['kind']);
+            structural = false;
+          }
+          if (!finiteNum(m['amount']) || (m['amount'] as number) < 0) {
+            rsvIssue(issues, 'RSV-01', `${mp}.amount`,
+              'RSV-01: amount must be a finite nonnegative magnitude; the kind carries the direction', m['amount']);
+            structural = false;
+          }
+          if (!isDate(m['date'])) {
+            rsvIssue(issues, 'RSV-01', `${mp}.date`, 'RSV-01: date must be a real YYYY-MM-DD date', m['date']);
+            structural = false;
+          } else if (isDate(start) && isDate(end) && ((m['date'] as string) < start || (m['date'] as string) > end)) {
+            rsvIssue(issues, 'RSV-04', `${mp}.date`,
+              `RSV-04: movement date ${m['date']} lies outside the statement period ${start}…${end}`, m['date']);
+          }
+          if (m['label'] != null && typeof m['label'] !== 'string') {
+            rsvIssue(issues, 'RSV-01', `${mp}.label`, 'RSV-01: label must be text or null', m['label']);
+          }
+        }
+      }
+
+      // RSV-03: a period must be well-formed and must follow its predecessor
+      // without overlap. Order is identity here — the roll-forward reads
+      // statements in the order stated.
+      if (isDate(start) && isDate(end)) {
+        if ((start as string) > (end as string)) {
+          rsvIssue(issues, 'RSV-03', `${sp}.period_end`,
+            `RSV-03: period_end ${end} precedes period_start ${start}`, end);
+          structural = false;
+        } else if (prev !== null && (start as string) <= prev.end) {
+          rsvIssue(issues, 'RSV-03', `${sp}.period_start`,
+            `RSV-03: period_start ${start} does not follow statements[${prev.index}].period_end ${prev.end}; statements must be ordered and must not overlap`, start);
+          structural = false;
+        }
+      }
+
+      if (!structural) { prev = null; continue; }
+      const stmt = s as unknown as ReserveStatement;
+
+      // RSV-05: the identity, computed once in reserve-accounts.ts.
+      const computed = rollForwardEndingBalance(stmt);
+      const stated = quantizeAtDecimals(stmt.ending_balance, CASH_FLOW_VERIFY_DECIMALS.currency);
+      if (computed !== stated) {
+        rsvIssue(issues, 'RSV-05', `${sp}.ending_balance`,
+          `RSV-05: ending_balance ${stmt.ending_balance} must equal opening_balance + contributions − draws − releases (${computed}) at the currency quantum`,
+          stmt.ending_balance);
+      }
+
+      // RSV-06 / RSV-07: continuity applies only across adjacent calendar days.
+      // A gap is not an error and is never filled; it is a warning that the
+      // roll-forward makes no claim across it.
+      if (prev !== null) {
+        const consecutive = statementsConsecutive(prev.end, stmt.period_start);
+        if (consecutive === true) {
+          const prevEnding = quantizeAtDecimals(prev.ending, CASH_FLOW_VERIFY_DECIMALS.currency);
+          const opening = quantizeAtDecimals(stmt.opening_balance, CASH_FLOW_VERIFY_DECIMALS.currency);
+          if (prevEnding !== opening) {
+            rsvIssue(issues, 'RSV-06', `${sp}.opening_balance`,
+              `RSV-06: opening_balance ${stmt.opening_balance} must equal the consecutive prior statement's ending_balance ${prev.ending}`,
+              stmt.opening_balance);
+          }
+        } else if (consecutive === false) {
+          rsvIssue(issues, 'RSV-07', `${sp}.period_start`,
+            `RSV-07: statements[${prev.index}] ends ${prev.end} and this statement starts ${stmt.period_start}; the roll-forward makes no claim across the gap and does not fill it`,
+            stmt.period_start, 'warning');
+        }
+      }
+      prev = { end: stmt.period_end, ending: stmt.ending_balance, index: si };
+    }
+  }
+}
+
+function checkReserveAccounts(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const entry = parsed.sections['reserve_accounts'];
+  if (!entry) return;
+  const blocks: UWBlock[] = isVariantMap(entry)
+    ? Object.values(entry as Record<string, UWBlock>)
+    : [entry as UWBlock];
+  for (const block of blocks) {
+    const content = block.content;
+    if (typeof content !== 'object' || content === null || Array.isArray(content)) {
+      rsvIssue(issues, 'RSV-01', '', 'RSV-01: reserve_accounts content must be an object', content);
+      continue;
+    }
+    checkReserveAccountsContent(content as Record<string, unknown>, issues);
   }
 }
 

@@ -186,6 +186,30 @@ The engine uses the plan's `actual/365f` day count and its existing quantization
 an appraisal value. The assembly API emits no `stated_metrics`; callers request
 metrics explicitly. Existing IRR convergence and bracket refusals are unchanged.
 
+## Reserve-account statements (accepted, unreleased RFC 0064)
+
+A deal whose work is paid out of an owner-restricted reserve can now state the
+account itself: the optional `reserve_accounts` section (format §4.28) carries,
+per account and per stated period, the opening balance, every dated
+`contribution` / `draw` / `release` and the stated ending balance. `uwmd
+validate` reports the `RSV-NN` family, and `verifyReserveAccounts` returns the
+roll-forward three-state beside the stated figures.
+
+Two things it does not do, on purpose:
+
+- **It does not cure the reserve refusal.** A plan with
+  `reserve_spending_excluded: false` still refuses at
+  `plan.assertions.reserve_spending_excluded` with a verifying statement in the
+  document; the fixture
+  `conformance/property-cash-flow-assembly/reserve-statement-does-not-cure`
+  pins that. The statement is evidence about custody, not an assembly input.
+- **It does not net a draw against the gross expenditure it funded.** A
+  `draw` of 5,000 that paid for maintenance is an account movement of 5,000;
+  the maintenance is a gross 5,000 wherever the document states it.
+
+Relaxing the RFC 0045 assertion needs a draw-to-expenditure binding and one
+auditable owner-cash treatment, each its own contract.
+
 ## Refusals and further scope
 
 `PropertyCashFlowAssemblyError.proto` carries `CALC-CF-ASSEMBLY`, a stage reason,

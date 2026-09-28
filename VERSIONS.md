@@ -20,17 +20,19 @@ same protocol version.
 
 ## Current matrix
 
-**Accepted, unreleased source contract:** Protocol **2.18.0** adds RFC 0063's
+**Accepted, unreleased source contract:** Protocol **2.19.0** adds RFC 0064's
+`reserve_accounts` section (format §4.28), its `RSV-NN` validation family and
+the §VIII.9.7 roll-forward verifier on top of **2.18.0**, which added RFC 0063's
 explicit final-period exclusive-boundary admission to the prepared **2.17.1**
 RFC 0062 same-day errata. Jared accepted RFC 0063 on 2026-09-24 at `f04b34a`
-and authorized implementation. No intervening protocol change altered the
-stream. RFCs 0062 and 0063 remain `accepted` until release; the 2.17.1 errata
-decision remains recorded below. The protocol row and runtime/spec mirrors
-describe the combined unreleased contract, integrated on canonical `main`
-(RFC 0062 at `e49eb43`, RFC 0063 at `413a645`). Release-candidate manifests
-now pair core/CLI **2.14.0** with Protocol 2.18.0; published core/CLI 2.13.0
-still implement Protocol 2.17.0. Protocol 2.18.0 and the 2.14.0 candidate have
-no release tag or package publication yet.
+and authorized implementation; RFC 0064's acceptance is the owner's merge of
+its RFC-plus-implementation pull request. RFCs 0062, 0063 and 0064 remain
+`accepted` until release; the 2.17.1 errata decision remains recorded below.
+The protocol row and runtime/spec mirrors describe the combined unreleased
+contract, integrated on canonical `main` (RFC 0062 at `e49eb43`, RFC 0063 at
+`413a645`). Release-candidate manifests pair core/CLI **2.14.0** with Protocol
+2.19.0; published core/CLI 2.13.0 still implement Protocol 2.17.0. Protocol
+2.19.0 and the 2.14.0 candidate have no release tag or package publication yet.
 
 Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
 Protocol 2.17.0 adds §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes
@@ -52,8 +54,8 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.18.0** (accepted, unreleased) | format ≥ 1.0; RFC 0063 boundary opt-in plus RFC 0062 errata; published core/CLI remain on 2.17.0 |
-| `@uwmd/core` | **2.14.0** (candidate; published 2.13.0) | format 2.0 (reads 1.x), protocol 2.18.0 |
+| UW Protocol | **2.19.0** (accepted, unreleased) | format ≥ 1.0; RFC 0064 reserve-account roll-forward (`RSV-NN`, §VIII.9.7) on top of RFC 0063 boundary opt-in and RFC 0062 errata; published core/CLI remain on 2.17.0 |
+| `@uwmd/core` | **2.14.0** (candidate; published 2.13.0) | format 2.0 (reads 1.x), protocol 2.19.0 |
 | `@uwmd/cli` (CLI) | **2.14.0** (candidate; published 2.13.0) | `@uwmd/core` 2.14.0 |
 | `@uwmd/excel` | **0.9.6** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.14.x, format 2.0, explicit contextual calculations |
 | `@uwmd/report` | **0.8.18** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.14.x, format spec §7.1/§7.2 |

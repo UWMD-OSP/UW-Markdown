@@ -124,7 +124,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,reserves,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -2444,6 +2444,38 @@ async function runCapex() {
   }
 }
 
+const RESERVES_DIR = join(CONFORMANCE_DIR, 'reserves');
+
+// RFC 0064 property reserve-account roll-forward. Each case pins the exact set
+// of RSV-* codes a document emits; the clean cases prove the identity holds
+// without netting a draw against anything, and the absent case proves the
+// section's absence is silent.
+async function runReserves() {
+  if (!existsSync(RESERVES_DIR)) {
+    record('reserves', '(none)', 'pass', 'no reserve fixtures');
+    return;
+  }
+  for (const entry of readdirSync(RESERVES_DIR, { withFileTypes: true }).filter((e) => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(RESERVES_DIR, entry.name);
+    try {
+      const expected = readCase(dir, 'expected.json');
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const got = validateUWFile(parsed).issues
+        .filter((i) => i.code.startsWith('RSV-'))
+        .map((i) => i.code)
+        .sort();
+      const want = [...(expected.codes ?? [])].sort();
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        record('reserves', entry.name, 'fail', `emitted [${got.join(', ')}], expected [${want.join(', ')}]`);
+        continue;
+      }
+      record('reserves', entry.name, 'pass', want.length ? want.join(', ') : 'clean');
+    } catch (error) {
+      record('reserves', entry.name, 'fail', error.message);
+    }
+  }
+}
+
 const TAX_DIR = join(CONFORMANCE_DIR, 'tax');
 
 async function runTax() {
@@ -4212,6 +4244,7 @@ const dispatch = {
   'recoveries': async () => { await runRecoveries(); },
   'hedge': async () => { await runHedge(); },
   'capex': async () => { await runCapex(); },
+  'reserves': async () => { await runReserves(); },
   'lease-up': async () => { await runLeaseUp(); },
   'lease-up-projection': async () => { await runLeaseUpProjection(); },
   'property-cash-flow-assembly': async () => { await runPropertyCashFlowAssembly(); },

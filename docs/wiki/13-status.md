@@ -5,10 +5,43 @@ published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
 `v2.13.0` tag. That release pairs Format **2.0** with Protocol **2.17.0**.
-Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
-0062 and 0063. The isolated release candidate prepares core/CLI **2.14.0**;
-published packages remain at the 2.13.0 generation.
+Canonical `main` carries accepted, unreleased Protocol **2.19.0**: RFC 0064's
+reserve-account roll-forward on top of 2.18.0 (RFCs 0062 and 0063). The
+isolated release candidate prepares core/CLI **2.14.0**; published packages
+remain at the 2.13.0 generation.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
+
+## Accepted, unreleased: RFC 0064 reserve-account roll-forward
+
+The 2026-09-27 draft stalled on four "owner decisions" — carrier, comparison
+point, movement classification, API name. All four had answers the existing
+contracts already implied, and the RFC now lands with its implementation
+(Protocol **2.19.0**, Format unchanged):
+
+- **§4.28 `reserve_accounts`**, single-variant, the fifth state-and-verify
+  section. Real authored `period_start` / `period_end` dates, not RFC 0041
+  identities: statements need not align to a calendar month, and the evidence
+  carries real dates.
+- **`RSV-01`–`RSV-07`.** `RSV-05` is the one identity the section has
+  (`ending = opening + Σ contribution − Σ draw − Σ release` at the currency
+  quantum); `RSV-06` is continuity across adjacent calendar days; `RSV-07`
+  warns across a gap the roll-forward never fills; `RSV-02` refuses the
+  reserved `lender_reserve` class. The identity is computed once, in
+  `rollForwardEndingBalance`, and both the validator and
+  `verifyReserveAccounts` report it.
+- **The boundary is a fixture, not a sentence.**
+  `property-cash-flow-assembly/reserve-statement-does-not-cure` is the
+  `boundary-reserve-spending` document plus a verifying statement: same
+  refusal, same pointer, and no `RSV-*` code emitted. A draw never nets against
+  the gross expenditure it funded.
+- New conformance suite `reserves` (15 cases); receipt baselines move to
+  protocol 2.19.0. Gate totals after the change: **665 default conformance
+  checks**, **47 JSON schemas**, **228 emitted codes**.
+
+What this does *not* do: make the reserve-dependent Golden Deal assemble. That
+still needs a draw-to-expenditure binding and one auditable owner-cash
+treatment, each its own RFC. Financing assembly from stated debt terms is the
+other open contract on the Priority-1 path.
 
 ## Built and released
 
