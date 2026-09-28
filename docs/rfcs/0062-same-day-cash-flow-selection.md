@@ -26,7 +26,8 @@ keep their existing duplicate rules.
 This is an accepted normative reconciliation, not an implementation bug fix.
 **Accepted by Jared on 2026-09-24.** Protocol **2.17.1 — normative errata**
 remains the owner-selected version. The reference implementation, protocol
-mirrors and conformance are prepared locally, but have not shipped. Status is
+mirrors and conformance are integrated on canonical `main` at `e49eb43`, but
+have not shipped. Status is
 `accepted`, not `implemented`, until release. No schema or public type changes.
 
 The owner explicitly accepted legal, separate same-day cash-flow rows without
@@ -254,8 +255,8 @@ decision is recorded above. These results do not constitute a release.
 ## Unresolved questions
 
 None for this reconciliation. Jared accepted the normative resolution, and
-the 2.17.1 errata version is settled. Integration and release remain separate
-actions; the RFC stays `accepted` until it ships. Terminal settlement, reserve
+the 2.17.1 errata version is settled. Integration is complete; the RFC stays
+`accepted` until it ships. Terminal settlement, reserve
 rollforward, levered assembly and any other protocol feature are excluded.
 
 ## Prior art

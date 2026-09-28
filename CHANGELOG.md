@@ -17,7 +17,8 @@ protocol, and each package each carry an independent semver).
   `allow_exclusive_end`. No later date, new period, proration or settlement
   horizon is admitted. All cash and disposition-slot anchoring rules remain.
 - The reference implementation, synthetic conformance and API/schema/browser/CLI
-  tests are prepared locally. RFC status remains **accepted**, not implemented,
+  tests are integrated on canonical `main` at `413a645`. RFC status remains
+  **accepted**, not implemented,
   until shipped. Reserve, financing, investor-tax and RFC 0062 behavior remain.
 - Protocol 2.18.0 is the next additive minor after the unreleased 2.17.1 errata
   recorded below, which it includes without changing that acceptance decision.
@@ -33,7 +34,8 @@ protocol, and each package each carry an independent semver).
   duplicate guards retain their existing rules.
 - Jared accepted RFC 0062 on **2026-09-24**, retaining **2.17.1** as normative
   errata. Status is **accepted**, not implemented: the reference implementation
-  and tests are prepared but have not shipped. Format stays 2.0; package
+  and tests are integrated on canonical `main` at `e49eb43` but have not shipped.
+  Format stays 2.0; package
   versions, dependencies and tags do not
   change. Published core/CLI 2.13.0 continue to pair with Protocol 2.17.0.
 

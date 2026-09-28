@@ -26,8 +26,10 @@ RFC 0062 same-day errata. Jared accepted RFC 0063 on 2026-09-24 at `f04b34a`
 and authorized implementation. No intervening protocol change altered the
 stream. RFCs 0062 and 0063 remain `accepted` until release; the 2.17.1 errata
 decision remains recorded below. The protocol row and runtime/spec mirrors
-describe the combined unreleased contract. Published core/CLI 2.13.0 still implement Protocol
-2.17.0; package versions and release state below are unchanged.
+describe the combined unreleased contract, integrated on canonical `main`
+(RFC 0062 at `e49eb43`, RFC 0063 at `413a645`). Published core/CLI 2.13.0
+still implement Protocol 2.17.0; package versions and release state below are
+unchanged. Protocol 2.18.0 has no release tag or package publication yet.
 
 Release 2.13.0 pairs core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
 Protocol 2.17.0 adds §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes
