@@ -16,7 +16,7 @@ const EXAMPLE = resolve(__dirname, '../../../../examples/Sonoran-Self-Storage-Pe
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.net_operating_income', 'noi'],
   ['noi_model.income.effective_gross_income', 'effective_gross_income'],
-  ['noi_model.income.gross_potential_rent', 'gross_potential_rent'],
+  ['noi_model.income.gross_potential_rent.value', 'gross_potential_rent'],
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
   ['debt_structure.loan_amount', 'loan_amount'],
@@ -27,6 +27,16 @@ const NAMED_RANGES = new Map<string, string>([
   ['sources_uses.uses.total', 'total_uses'],
   ['rent_roll.occupied_units', 'occupied_units'],
 ]);
+
+/**
+ * Format §4.5 states an income line either bare (`effective_gross_income`) or
+ * as an object (`gross_potential_rent: { value, source, ... }`). The pack reads
+ * the object's `value`; this reads the same number from either shape.
+ */
+function lineValue(v: unknown): number {
+  if (typeof v === 'number') return v;
+  return (v as { value: number }).value;
+}
 
 describe('SELF_STORAGE_PACK', () => {
   it('declares the canonical self-storage metrics', () => {
@@ -69,15 +79,15 @@ describe('SELF_STORAGE_PACK', () => {
     const property = parsed.sections['property'] as { content: Record<string, unknown> };
     const sus = parsed.sections['sources_uses'] as { content: Record<string, unknown> };
     const rentRoll = parsed.sections['rent_roll'] as { content: Record<string, unknown> };
-    const income = noi.content['income'] as Record<string, number>;
+    const income = noi.content['income'] as Record<string, unknown>;
     const expenses = noi.content['expenses'] as Record<string, number>;
     const sources = sus.content['sources'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
     const values: Record<string, number> = {
       noi: noi.content['net_operating_income'] as number,
-      effective_gross_income: income['effective_gross_income']!,
-      gross_potential_rent: income['gross_potential_rent']!,
+      effective_gross_income: lineValue(income['effective_gross_income']),
+      gross_potential_rent: lineValue(income['gross_potential_rent']),
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
       loan_amount: debt.content['loan_amount'] as number,
@@ -107,5 +117,21 @@ describe('SELF_STORAGE_PACK', () => {
       const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));
       expect(excelCell, c.id).toBe(direct.value as number);
     }
+  });
+
+  it('reads gross_potential_rent as the §4.5 object, not a scalar (UPSTREAM-015)', async () => {
+    const raw = await readFile(EXAMPLE, 'utf8');
+    const parsed = parseUWFile(raw);
+    const noi = parsed.sections['noi_model'] as { content: Record<string, unknown> };
+    const income = noi.content['income'] as Record<string, unknown>;
+
+    // The worked example states the template shape; a scalar was never it.
+    expect(income['gross_potential_rent']).toMatchObject({ value: 1080000, source: 'rent_roll' });
+
+    const decl = (SELF_STORAGE_PACK.calculations ?? []).find((c) => c.id === 'economic_occupancy')!;
+    expect(decl.formula).toContain('gross_potential_rent.value');
+    const r = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
+    expect(r.ok, r.error?.message ?? '').toBe(true);
+    expect(r.value).toBe(0.975);
   });
 });

@@ -121,7 +121,9 @@ export const STUDENT_HOUSING_PACK: ModuleManifest = {
     {
       id: 'rent_per_bed_monthly',
       label: 'Rent / Bed (Monthly)',
-      formula: 'noi_model.income.gross_potential_rent / (property.total_beds * 12)',
+      // Format §4.5 states gross_potential_rent as `{ value, source, ... }`,
+      // so the formula reads the object's value, never the object.
+      formula: 'noi_model.income.gross_potential_rent.value / (property.total_beds * 12)',
       unit: '$',
       deterministic: true,
     },

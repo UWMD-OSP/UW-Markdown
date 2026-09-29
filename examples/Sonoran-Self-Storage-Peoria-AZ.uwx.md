@@ -144,7 +144,13 @@ growth and continued physical occupancy above 85%.
   },
   "_notes": null,
   "income": {
-    "gross_potential_rent": 1080000,
+    "gross_potential_rent": {
+      "value": 1080000,
+      "source": "rent_roll",
+      "per_unit_monthly": null,
+      "per_sqft_annually": null,
+      "rationale": null
+    },
     "economic_vacancy_loss": 162000,
     "admin_fees": 45000,
     "tenant_insurance_income": 72000,

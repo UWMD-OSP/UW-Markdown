@@ -1,0 +1,7 @@
+{
+  "id": "rent_per_bed_monthly",
+  "label": "Rent / Bed (Monthly)",
+  "formula": "noi_model.income.gross_potential_rent.value / (property.total_beds * 12)",
+  "unit": "$",
+  "deterministic": true
+}
