@@ -59,9 +59,12 @@ disagree about.
 **Do not quantize by scaling.** `Math.floor(n * 10 ** d + 0.5) / 10 ** d`
 reintroduces the artifact it removes: `1.005 * 100` is `100.49999999999999`, so
 that form gives `1.00` where Excel gives `1.01`. `quantizeDecimal` shifts through
-a decimal string (`Number('1.005e2')` → `100.5`) instead. If you need to round a
-number anywhere in this repo, call `quantizeDecimal` rather than writing it
-again.
+a decimal string (`Number('1.005e2')` → `100.5`) instead. Its shared internal
+routine also combines an existing exponent before shifting (`5e-7` at six
+places → `0.000001`). Stated-figure verifiers use that same routine; TAX-03's
+separately stated integer precision can exceed the calc declaration's ±12
+band. If you need to round a number anywhere in this repo, use the shared
+quantizer rather than writing another rounding algorithm.
 
 **Quantization is not display.** `display` is presentation and may round
 differently. Digests, equality, and Excel parity are defined over `value`.

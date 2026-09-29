@@ -10,8 +10,44 @@ import {
   xirrOf,
   verifyCashFlowSeries,
   CASH_FLOW_VERIFY_DECIMALS,
+  quantizeAtDecimals,
 } from './cash-flow-series.js';
 import { CalcError } from './calc/errors.js';
+import { quantizeDecimal } from './calc/quantize.js';
+
+describe('quantizeAtDecimals (§VIII.5)', () => {
+  it.each([
+    [1.005, 2, 1.01], [-1.005, 2, -1.01],
+    [1.234, 2, 1.23], [-1.234, 2, -1.23],
+    [0.00015, 4, 0.0002], [-0.00015, 4, -0.0002],
+    [0.0001245, 6, 0.000125], [-0.0001245, 6, -0.000125],
+    [5e-7, 6, 1e-6], [-5e-7, 6, -1e-6],
+  ])('matches the normative quantum for %s at %s places', (value, decimals, expected) => {
+    expect(quantizeAtDecimals(value, decimals)).toBe(expected);
+    expect(quantizeAtDecimals(value, decimals)).toBe(quantizeDecimal(value, decimals));
+  });
+
+  it('canonicalizes zero, including negative zero', () => {
+    expect(Object.is(quantizeAtDecimals(0, 2), 0)).toBe(true);
+    expect(Object.is(quantizeAtDecimals(-0, 2), 0)).toBe(true);
+    expect(Object.is(quantizeAtDecimals(-0.001, 2), 0)).toBe(true);
+  });
+
+  it('preserves the tax verifier\'s stated precision outside the calc declaration band', () => {
+    expect(quantizeAtDecimals(57960, -13)).toBe(0);
+    expect(quantizeAtDecimals(57960, 13)).toBe(57960);
+  });
+
+  it('stays in parity across a deterministic grid of decimal half-boundaries', () => {
+    for (const decimals of [2, 4, 6]) {
+      for (const numerator of [-1005, -145, -15, -5, 5, 15, 145, 1005]) {
+        const value = Number(`${numerator}e${-(decimals + 1)}`);
+        expect(quantizeAtDecimals(value, decimals), `${value} at ${decimals} places`)
+          .toBe(quantizeDecimal(value, decimals));
+      }
+    }
+  });
+});
 
 // The §4.26 worked example — stated metrics computed by this module and
 // pinned in the spec, so the two cannot drift silently.
@@ -141,6 +177,32 @@ describe('xirrOf (§VIII.9.3)', () => {
 });
 
 describe('verifyCashFlowSeries', () => {
+  it.each([[1.005, 1.01], [-1.005, -1.01]])(
+    'verifies a %s half-cent total and xnpv against the stated %s', (amount, claim) => {
+      const v = verifyCashFlowSeries({
+        series: [{ date: '2026-01-01', amount }],
+        stated_metrics: { total_net: claim, xnpv: { rate: 0, value: claim } },
+      });
+      expect(v).toEqual({ verdict: 'verified', issues: [] });
+    },
+  );
+
+  it('compares a half-boundary MOIC at the ratio quantum', () => {
+    const v = verifyCashFlowSeries({
+      series: [{ date: '2026-01-01', amount: -1 }, { date: '2027-01-01', amount: 0.000150000001 }],
+      stated_metrics: { moic: 0.00015 },
+    });
+    expect(v).toEqual({ verdict: 'verified', issues: [] });
+  });
+
+  it('compares a half-boundary XIRR claim at the rate quantum', () => {
+    const v = verifyCashFlowSeries({
+      series: [{ date: '2026-01-01', amount: -1 }, { date: '2027-01-01', amount: 1.0001245 }],
+      stated_metrics: { xirr: 0.0001245 },
+    });
+    expect(v).toEqual({ verdict: 'verified', issues: [] });
+  });
+
   it('verifies the spec worked example — all four metrics', () => {
     const v = verifyCashFlowSeries(SPEC_EXAMPLE);
     expect(v.issues).toEqual([]);
