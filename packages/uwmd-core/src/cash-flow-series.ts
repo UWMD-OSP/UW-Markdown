@@ -16,6 +16,7 @@
 // Browser-safe; performs no I/O.
 
 import { CalcError } from './calc/errors.js';
+import { quantizeDecimalAtStatedPrecision } from './calc/quantize.js';
 import {
   DEFAULT_DAY_COUNT,
   type DayCountConvention,
@@ -118,11 +119,7 @@ export const CASH_FLOW_VERIFY_DECIMALS = Object.freeze({
  * not keep its own copy of the rule.
  */
 export function quantizeAtDecimals(value: number, decimals: number): number {
-  // Math.round is half-up, which differs for negatives, and a series' net total
-  // is routinely negative.
-  const f = 10 ** decimals;
-  const scaled = value * f;
-  return (scaled < 0 ? -Math.round(-scaled) : Math.round(scaled)) / f;
+  return quantizeDecimalAtStatedPrecision(value, decimals);
 }
 const roundTo = quantizeAtDecimals;
 

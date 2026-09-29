@@ -251,6 +251,12 @@ describe('RFC 0052 named exit sale deductions', () => {
     const result = await assemblePropertyCashFlows(fresh(), named({ net_sale_proceeds: 1130000 }));
     expect(result.net_sale_proceeds).toEqual({ status: 'verified', stated: 1130000, computed: 1130000 });
   });
+  it('verifies net sale proceeds at a true half-cent boundary', async () => {
+    const d = fresh();
+    payload(d).series[7].amount = 1150000.005;
+    const result = await assemblePropertyCashFlows(d, named({ net_sale_proceeds: 1130000.01 }));
+    expect(result.net_sale_proceeds).toEqual({ status: 'verified', stated: 1130000.01, computed: 1130000.01 });
+  });
 
   it('refuses a net figure that is wrong by a single cent', async () => {
     expect((await refusal(fresh(), named({ net_sale_proceeds: 1130000.01 }))).reason).toBe('sale_deduction');

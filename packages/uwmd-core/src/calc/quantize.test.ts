@@ -25,6 +25,8 @@ describe('quantizeDecimal', () => {
     expect(quantizeDecimal(1.005, 2)).toBe(1.01);
     expect(quantizeDecimal(8.575, 2)).toBe(8.58);
     expect(quantizeDecimal(1.0049999, 2)).toBe(1);
+    expect(quantizeDecimal(5e-7, 6)).toBe(1e-6);
+    expect(quantizeDecimal(-5e-7, 6)).toBe(-1e-6);
   });
 
   it('removes the unquantized tail that made digests unreproducible', () => {

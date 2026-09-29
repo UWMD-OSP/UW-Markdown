@@ -103,6 +103,17 @@ describe('RFC 0053 reassessment basis', () => {
   it('TAX-03 accepts an exact value at the default currency quantum', () => {
     expect(taxCodes(withBasis({ round_to_decimals: undefined }, { value: 57960 }))).toEqual([]);
   });
+  it('TAX-03 accepts a stated cent rounded from a half-cent indicated tax', () => {
+    expect(taxCodes(withBasis({
+      value_basis: 100.5, assessment_ratio: 1, assessed_value: 100.5,
+      millage_rate: 0.01, indicated_tax: 1.005, round_to_decimals: undefined,
+    }, { value: 1.01 }))).toEqual([]);
+  });
+  it.each([[-13, 0], [13, 57960]])(
+    'TAX-03 preserves stated rounding at %s decimals', (round_to_decimals, value) => {
+      expect(taxCodes(withBasis({ round_to_decimals }, { value }))).toEqual([]);
+    },
+  );
 
   it('TAX-03 refuses a fractional rounding quantum', () => {
     expect(taxCodes(withBasis({ round_to_decimals: 1.5 }))).toContain('TAX-03');

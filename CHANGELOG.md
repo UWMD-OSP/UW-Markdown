@@ -22,6 +22,15 @@ repins. Receipt issuance baselines and the frozen verification fixture use the
 new engine version. This section records a candidate, not a released package.
 RFCs 0062 and 0063 remain `accepted` until the capability ships.
 
+### Fixed
+
+- Stated-versus-recomputed cash-flow, net-sale, tax, escrow, hedge and capex
+  comparisons now use the same decimal half-away-from-zero algorithm as calc
+  reporting. This corrects half-cent and rate/ratio ties that binary multiply
+  could round down. The shared decimal shift also handles scientific-notation
+  inputs such as `5e-7` at six places. TAX-03 retains its separately stated
+  integer precision range; calc declarations retain their existing bounds.
+
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
 
 - Jared accepted RFC 0063 at `f04b34ab5606264424bddc02b09ced256a09bbcc` on

@@ -97,23 +97,40 @@ export function quantizeDecimal(n: number, decimals: number): number {
       `quantize: decimals must be an integer in [${-MAX_ROUND_TO}, ${MAX_ROUND_TO}], got ${decimals}.`,
     );
   }
+  return quantizeDecimalAtStatedPrecision(n, decimals);
+}
+
+/**
+ * The shared §VIII.5 decimal shift for stated-figure verifiers. Kept outside
+ * the public barrels: RFC 0053's `round_to_decimals` is a safe integer that may
+ * be negative and has no ±12 calc-declaration limit. The calc-facing
+ * `quantizeDecimal` retains that limit and delegates to this same algorithm.
+ */
+export function quantizeDecimalAtStatedPrecision(n: number, decimals: number): number {
+  if (!Number.isSafeInteger(decimals)) {
+    throw new CalcError('CALC-TYPE-001', `quantize: decimals must be a safe integer, got ${decimals}.`);
+  }
   if (!Number.isFinite(n)) {
     throw new CalcError('CALC-TYPE-001', `quantize: cannot quantize non-finite number ${n}.`);
   }
   const sign = n < 0 ? -1 : 1;
   const magnitude = Math.abs(n);
 
-  const shifted = Number(`${magnitude}e${decimals}`);
+  // `String(magnitude)` already contains an exponent below 1e-6 (and at very
+  // large magnitudes). Combine that exponent with `decimals` before shifting;
+  // appending another `e` would produce NaN and incorrectly return the input.
+  const [coefficient, exponent] = magnitude.toExponential().split('e');
+  const shifted = Number(`${coefficient}e${Number(exponent) + decimals}`);
 
-  // An integral shifted value has no fractional part to round, so `n` is
-  // already quantized and is returned unchanged. This is the correct answer
-  // rather than a fallback, and it subsumes the large-magnitude cases: past
+  // A nonzero integral shifted value has no fractional part to round, so `n`
+  // is already quantized and is returned unchanged. A shift that underflows to
+  // zero must instead return zero. This also covers large magnitudes: past
   // 2^53 every double is integral, which is also the range where
   // `${magnitude}` renders exponentially ("1e+21") and the string shift could
   // not reassemble it. Guarding on integrality rather than on a magnitude
   // threshold also avoids `MAX_SAFE_INTEGER + 0.5` rounding *up* to
   // `MAX_SAFE_INTEGER + 1` before `Math.floor` ever sees it.
-  const result = !Number.isFinite(shifted) || Number.isInteger(shifted)
+  const result = !Number.isFinite(shifted) || (shifted !== 0 && Number.isInteger(shifted))
     ? n
     : sign * Number(`${Math.floor(shifted + 0.5)}e${-decimals}`);
 
