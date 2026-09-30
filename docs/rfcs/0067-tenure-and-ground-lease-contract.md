@@ -2,7 +2,7 @@
 rfc: 0067
 title: Tenure and ground-lease contract
 status: draft
-author: jaredmaxey (StackUW)
+author: claude-code (agent proposal)
 created: 2026-09-29
 depends_on:
   - 0053
@@ -16,6 +16,11 @@ affects:
 ---
 
 # RFC 0067: Tenure and ground-lease contract
+
+**Draft agent proposal.** StackUW's leasehold-acquisition plan is adopter
+requirements evidence. It is not UWMD owner authorship or acceptance. Seven
+contract choices remain unresolved below, so this proposal is not ready for
+normative implementation or acceptance.
 
 ## Summary
 
@@ -52,13 +57,15 @@ Current text confirms it: §4.2 `ownership` (format v1 :797-833) carries transac
 acquisition date and price, existing debt and entity - no interest type and no lease; §4.5
 `expenses` is the fixed list at :1256-1337.
 
-**Demonstrated consumer.** StackUW (`cc.underwriter`) - its owner decided on 2026-09-29 to
-underwrite the leasehold acquisition first (improvements on leased land, ground rent the
+**Demonstrated consumer.** StackUW (`cc.underwriter`) planning evidence dated
+2026-09-29 prioritizes underwriting the leasehold acquisition first
+(improvements on leased land, ground rent the
 obligation), with ground rent stated BEFORE NOI as a named line and the reversion a stated exit
 input never inferred from the term. Its engine computes the schedule, the NOI after ground rent
 and the exit; until this RFC is released it signs a leasehold deal's ground rent only as dollars
 inside NOI and total operating expenses and states no tenure (its Q-100 conformance rule). This RFC
-is the carrier that lets it state what it computed.
+proposes a carrier for what it computed; adopter demand alone does not change
+UWMD's normative contract.
 
 ## Proposed change
 
