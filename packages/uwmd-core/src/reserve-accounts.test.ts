@@ -232,7 +232,11 @@ describe('verifyReserveAccounts', () => {
     expect(v.verdict).toBe('unverifiable');
     expect(v.issues.map((i) => i.code)).toEqual(['RSV-UNEVALUABLE']);
     expect(v.accounts[0]!.statements[0]!.verdict).toBe('unverifiable');
-    expect(Number.isNaN(v.accounts[0]!.statements[0]!.computed_ending_balance)).toBe(true);
+    expect(v.accounts[0]!.statements[0]).toMatchObject({
+      opening_balance: null, contributions: null, draws: null, releases: null,
+      computed_ending_balance: null, stated_ending_balance: null,
+    });
+    expect(JSON.parse(JSON.stringify(v)).accounts[0].statements[0].computed_ending_balance).toBeNull();
     // The statement after an unevaluable one is not "consecutive" to it: there
     // is nothing evaluable to be continuous with.
     expect(v.accounts[0]!.statements[1]!.consecutive).toBe(false);

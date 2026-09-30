@@ -129,6 +129,8 @@ from what it states, `verified` otherwise. It reports, per statement, the
 opening balance, the three movement totals, computed and stated ending
 balances and whether continuity applied. An `unverifiable` statement is
 undecided, never zero, and the statement after it is not consecutive to it.
+Unavailable numeric result fields are explicit `null`, not `NaN` or an inferred
+zero, so the public result remains JSON-safe.
 
 The identity is computed **once**, in `rollForwardEndingBalance`; the
 validator's `RSV-05` and the verifier both call it, so the two surfaces cannot

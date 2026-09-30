@@ -115,13 +115,14 @@ export interface ReserveAccountIssue {
 export interface ReserveStatementRollForward {
   period_start: string;
   period_end: string;
-  opening_balance: number;
-  contributions: number;
-  draws: number;
-  releases: number;
+  /** Null when structure prevents a numeric claim; never an inferred zero. */
+  opening_balance: number | null;
+  contributions: number | null;
+  draws: number | null;
+  releases: number | null;
   /** `opening + contributions − draws − releases`, quantized at the currency quantum. */
-  computed_ending_balance: number;
-  stated_ending_balance: number;
+  computed_ending_balance: number | null;
+  stated_ending_balance: number | null;
   /**
    * `true` when this statement begins the day after the previous one ends, so
    * `RSV-06` continuity applies. `false` on the first statement and across a gap
@@ -257,8 +258,8 @@ export function verifyReserveAccounts(section: ReserveAccountsSection): ReserveA
         rolled.push({
           period_start: isObj(s) && typeof s['period_start'] === 'string' ? s['period_start'] : '',
           period_end: isObj(s) && typeof s['period_end'] === 'string' ? s['period_end'] : '',
-          opening_balance: Number.NaN, contributions: Number.NaN, draws: Number.NaN, releases: Number.NaN,
-          computed_ending_balance: Number.NaN, stated_ending_balance: Number.NaN,
+          opening_balance: null, contributions: null, draws: null, releases: null,
+          computed_ending_balance: null, stated_ending_balance: null,
           consecutive: false, verdict: 'unverifiable',
         });
         prev = null;

@@ -2541,8 +2541,9 @@ statement cannot be rolled forward from what it states — a movement kind
 outside the closed vocabulary, a non-finite balance (`RSV-UNEVALUABLE`);
 `verified` otherwise. The overall verdict is the worst of the parts. An
 `unverifiable` statement is undecided, never zero, and the statement after it
-is not consecutive to it. The result reports, per statement, the opening
-balance, the three movement totals, the computed and stated ending balances and
+is not consecutive to it. Numeric fields without a valid computation MUST be
+`null` in the result, never `NaN` or a synthetic zero. The result reports, per
+statement, the opening balance, the three movement totals, the computed and stated ending balances and
 whether continuity applied, so a host can show the roll-forward beside the
 source without recomputing it.
 
