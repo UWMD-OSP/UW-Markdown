@@ -30,9 +30,9 @@ capability ships. The preceding [design review](../reviews/2026-09-24-terminal-b
 was integrated in canonical `main` at `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`.
 The implementation integrated on canonical `main` at `413a645` prepares Protocol
 **2.18.0**, including the unreleased
-RFC 0062 errata selected as 2.17.1. Format is unchanged; an isolated 2.14.0
-package candidate is prepared separately. No next release tag, publication or
-release has occurred.
+RFC 0062 errata selected as 2.17.1. Format is unchanged; the 2.14.0 package
+candidate was prepared separately and merged to `main` by PR #218. No next
+release tag, publication or release has occurred.
 
 ## Motivation
 
@@ -431,8 +431,8 @@ cash horizon and compatibility rules at `f04b34a` on 2026-09-24.
 
 The completed implementation is integrated on canonical `main` and awaits
 release. RFC status stays `accepted` until shipped. Package versions have been
-prepared in an isolated candidate; no next release tag or publication has
-occurred. Reserve roll-forward, financing, investor tax, speculative
+prepared in the candidate merged by PR #218; no next release tag or publication
+has occurred. Reserve roll-forward, financing, investor tax, speculative
 leasing and actual post-sale settlement remain separate future contracts.
 
 ## Prior art

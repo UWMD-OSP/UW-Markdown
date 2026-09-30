@@ -35,8 +35,9 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.12.0 in published core/CLI 2.9.0). A test in
-  `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (accepted, unreleased
+  2.18.0 in the 2.14.0 candidate; published core/CLI 2.13.0 pair with 2.17.0).
+  A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
   stale through the 1.4.0 release; `verify-versions` now covers every row.
@@ -81,10 +82,10 @@ publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
-per-surface sections. Candidate versions and unaccepted RFC work belong in a
-release plan, not in the current matrix or shipped changelog. The active
-post-v1.0 plan is
-[`docs/releases/1.1-plus-interchange-plan.md`](../releases/1.1-plus-interchange-plan.md).
+per-surface sections. A prepared candidate belongs in the current matrix and
+an explicitly unpublished changelog section, alongside its
+[release plan](../releases/2.14.0-candidate.md). A merged candidate is not a
+tagged or npm-published release.
 
 ## CI / CD (`.github/workflows/`)
 
@@ -126,8 +127,10 @@ post-v1.0 plan is
   signing (0002/0010), capability tokens (0011), iterative determinism (0024),
   calendar math (0034), and distribution waterfalls (0035/0036) are implemented.
   RFC 0040 (signed block roles) and RFC 0041 (period-indexed addressing)
-  shipped in core/CLI 2.7.0. RFCs 0042–0044 are accepted and merged; Protocol 2.11.0 and
-  published core/CLI 2.8.0 include their public contracts. Standalone Excel remains unpublished.
+  shipped in core/CLI 2.7.0. RFCs 0042–0044 shipped in core/CLI 2.8.0 with
+  Protocol 2.11.0; their RFC status is `implemented`. Standalone Excel remains
+  unpublished. RFCs 0062 and 0063 are integrated in the accepted, unreleased
+  Protocol 2.18.0 source contract and remain `accepted` until publication.
 - Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).

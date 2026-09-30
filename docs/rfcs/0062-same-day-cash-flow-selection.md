@@ -154,9 +154,9 @@ receipt-issuance protocol labels move together to 2.17.1. VERSIONS and the
 Unreleased changelog distinguish this accepted, unreleased source contract from published
 core/CLI 2.13.0 and Protocol 2.17.0. Format remains 2.0. The errata
 implementation made no package-version, dependency, lockfile, tag or
-publication change. An isolated 2.14.0 candidate now repins packages for the
-combined 2.18.0 contract; it has not shipped. The version choice preceded the
-owner's separate acceptance recorded above.
+publication change. The 2.14.0 candidate, merged to `main` by PR #218, repins
+packages for the combined 2.18.0 contract; it has not shipped. The version
+choice preceded the owner's separate acceptance recorded above.
 
 ## Conformance impact
 

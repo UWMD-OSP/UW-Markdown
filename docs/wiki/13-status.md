@@ -1,13 +1,18 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-27** against canonical `main` at `c5df4c0`. The latest
+Reconciled **2026-09-29** against canonical `main` at `615e6be`. The latest
 published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
 `v2.13.0` tag. That release pairs Format **2.0** with Protocol **2.17.0**.
 Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
-0062 and 0063. The isolated release candidate prepares core/CLI **2.14.0**;
+0062 and 0063. PR #218 merged the prepared core/CLI **2.14.0** candidate into
+`main`; no `v2.14.0` tag or package publication has occurred, and
 published packages remain at the 2.13.0 generation.
+PR #221 repaired shared decimal quantization in source after the candidate
+merge; it did not create a release or change RFC 0064's draft status.
+PR #223 corrected GPR object value paths for student-housing and self-storage
+packs and Excel layouts; it also did not create a release.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -27,11 +32,12 @@ See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.5**, report **0.8.17**, lake **0.2.1** and hospitality/data-center
-module packages **0.1.5** remain unpublished. The registry does serve a stale
-`0.3.0` of excel and report from a hand publish on 2026-08-16, pending
-deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's RFC 0043 binding API is published; the full Excel
-exporter remains available from source. Native Excel 16.0 build 20326 passed
+Excel **0.9.6**, report **0.8.18**, lake **0.2.2** and hospitality/data-center
+module packages **0.1.6** are prepared in source but remain unpublished. The
+registry does serve a stale `0.3.0` of excel and report from a hand publish on
+2026-08-16, pending deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's
+RFC 0043 binding API is published; the full Excel exporter remains available
+from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
@@ -329,8 +335,7 @@ exact exclusive upper boundary. No new period or coverage cell, proration,
 inferred timing, grace period or post-sale cash is introduced. Reserve-funded
 spending still refuses. Quarterly is a calendar generalization, not direct
 Golden Deal evidence. RFC 0063 remains **accepted**, not implemented, until
-release; Format is unchanged. The isolated release candidate advances package
-versions separately. See the
+release; Format is unchanged. The 2.14.0 package candidate is on `main`. See the
 [implementation verification record](../reviews/2026-09-24-rfc-0063-implementation.md).
 
 ## Accepted, unreleased same-day reconciliation (RFC 0062)
@@ -346,11 +351,12 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 
 ## Remaining work
 
-- Prepare a bounded release candidate for the integrated RFCs 0062 and 0063.
-  Protocol 2.18.0 includes the accepted, unreleased RFC 0062 errata
-  selected as 2.17.1. Both RFCs remain accepted until shipped. No post-sale
-  settlement category or lag is authorized. Reserve-account, financing,
-  investor-tax and post-sale work remain separate contracts.
+- Review the merged 2.14.0 candidate and, after release prerequisites are met,
+  obtain the owner's authorization for the `v2.14.0` tag. Protocol 2.18.0
+  includes the accepted, unreleased RFC 0062 errata selected as 2.17.1. Both
+  RFCs remain accepted until shipped. No post-sale settlement category or lag
+  is authorized. Reserve-account, financing, investor-tax and post-sale work
+  remain separate contracts.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
