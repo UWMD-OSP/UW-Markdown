@@ -2,7 +2,7 @@
 rfc: 0066
 title: Resolve calc identifiers over variant-map sections the way cross-checks do
 status: draft
-author: jaredmaxey (StackUW)
+author: claude-code (agent proposal)
 created: 2026-09-28
 affects:
   - protocol-spec
@@ -11,6 +11,11 @@ affects:
 ---
 
 # RFC 0066: Resolve calc identifiers over variant-map sections the way cross-checks do
+
+**Draft agent proposal.** StackUW's engine-exported document and UPSTREAM-016
+are adopter requirements evidence, not UWMD owner authorship or acceptance.
+The owner has not accepted this RFC or authorized implementation. Keep this
+correctness issue high in the next queue after the current release/reserve work.
 
 ## Summary
 
@@ -188,10 +193,14 @@ read `debt_structure.loan_amount` and `debt_structure.annual_debt_service`
 - **Modules** — `section_roles` is optional; a manifest without it validates
   and resolves as today. The manifest schema change is additive.
 - **Excel** — `emitExcelFormula` is path-based and unchanged. `toWorkbook`'s
-  `sectionContent` (`packages/uwmd-excel/src/toWorkbook.ts:72–75`) reads one
-  block through `getSection` and so has the same gap for named inputs on a
-  variant map; adopting the same resolver there is a follow-up, not a
-  compatibility break.
+  `sectionContent` (`packages/uwmd-excel/src/toWorkbook.ts:72–75`) currently
+  reads one block through `getSection`, so named inputs from a variant map can
+  diverge from the corrected calc result. Before acceptance, pin the same
+  selection or refusal behavior for workbook input extraction and the
+  evaluator, including explicit variant, role preference and generic fallback.
+  Implementation must carry Excel ↔ calc-engine parity to six decimals in the
+  same release scope; deferring workbook behavior while changing pack results
+  would break the repository's parity invariant.
 
 No deprecation path is needed.
 
@@ -234,7 +243,8 @@ read it). All use two `debt_structure` blocks in the shape of
   (`resolveIdentifier`); `packages/uwmd-core/src/calculation-context.ts`;
   `packages/uwmd-core/src/packs/*.ts` (`section_roles` on the packs that read
   `debt_structure`); `packages/uwmd-core/src/cli.ts` (pass a pack's
-  `section_roles` when evaluating a pack); `scripts/run-conformance.mjs` and
+  `section_roles` when evaluating a pack); `packages/uwmd-excel/src/toWorkbook.ts`
+  (the same role-aware input selection and refusal); `scripts/run-conformance.mjs` and
   `scripts/gen-conformance-cases.mjs` (optional `calc-context.json`);
   `conformance/runner/runner.py` needs no change (it passes `args` through);
   the six fixtures above; `docs/wiki/05-calc-packs.md` (the `section_roles`
@@ -247,6 +257,7 @@ read it). All use two `debt_structure` blocks in the shape of
   `calculation-context.test.ts` for the widened `sectionVariants` and new
   `sectionRoles`; `packs.test.ts` asserting every pack that reads
   `debt_structure` declares `section_roles.debt_structure = 'senior'`;
+  workbook parity/refusal cases for resolvable and unresolvable role maps;
   `npm run validate-schemas` over the manifest schema; `npm run conformance`
   and `python conformance/runner/runner.py --tier 3` green with the new cases;
   `npm run verify-codes` unaffected (the `CALC-*` family is registered).
