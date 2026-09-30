@@ -158,7 +158,13 @@ pre-lease premium, not on current coupon.
   },
   "_notes": "Gross potential rent is quoted per bed per month across all 600 beds. Turnover/make-ready is carried as its own line because student housing turns nearly the entire property on a single August date, which makes it a materially larger and less smoothable cost than in conventional multifamily.",
   "income": {
-    "gross_potential_rent": 6480000,
+    "gross_potential_rent": {
+      "value": 6480000,
+      "source": "rent_roll",
+      "per_unit_monthly": null,
+      "per_sqft_annually": null,
+      "rationale": "Quoted per bed per month across all 600 beds: $900 x 600 beds x 12 months."
+    },
     "vacancy_credit_loss": 356400,
     "utility_reimbursements": 288000,
     "parking_income": 96000,

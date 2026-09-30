@@ -199,7 +199,7 @@ id | formula | unit
 ---|---|---
 `pre_lease_rate` | `rent_roll.preleased_beds / property.total_beds` | `%`
 `occupancy` | `rent_roll.occupied_beds / property.total_beds` | `%`
-`rent_per_bed_monthly` | `noi_model.income.gross_potential_rent / (property.total_beds * 12)` | `$`
+`rent_per_bed_monthly` | `noi_model.income.gross_potential_rent.value / (property.total_beds * 12)` | `$`
 
 Student housing re-leases essentially its entire rent roll on one date, so
 pre-lease velocity is the leading indicator of next year's revenue in a way no

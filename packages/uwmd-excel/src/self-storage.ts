@@ -10,7 +10,7 @@ import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
-  { label: 'Gross Potential Rent', path: 'gross_potential_rent', name: 'gross_potential_rent' },
+  { label: 'Gross Potential Rent', path: 'gross_potential_rent.value', name: 'gross_potential_rent' },
   { label: '(Less) Economic Vacancy / Concessions', path: 'economic_vacancy_loss', sign: -1 },
   { label: 'Admin Fees', path: 'admin_fees' },
   { label: 'Tenant Insurance Income', path: 'tenant_insurance_income' },

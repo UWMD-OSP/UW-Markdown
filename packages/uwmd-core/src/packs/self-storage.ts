@@ -102,7 +102,9 @@ export const SELF_STORAGE_PACK: ModuleManifest = {
     {
       id: 'economic_occupancy',
       label: 'Economic Occupancy',
-      formula: 'noi_model.income.effective_gross_income / noi_model.income.gross_potential_rent',
+      // Format §4.5 states gross_potential_rent as `{ value, source, ... }`,
+      // so the formula reads the object's value, never the object.
+      formula: 'noi_model.income.effective_gross_income / noi_model.income.gross_potential_rent.value',
       unit: '%',
       deterministic: true,
     },

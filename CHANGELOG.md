@@ -30,6 +30,18 @@ RFCs 0062 and 0063 remain `accepted` until the capability ships.
   could round down. The shared decimal shift also handles scientific-notation
   inputs such as `5e-7` at six places. TAX-03 retains its separately stated
   integer precision range; calc declarations retain their existing bounds.
+- **Pack formulas read `gross_potential_rent` as the §4.5 object.** Format
+  §4.5 has always declared `noi_model.income.gross_potential_rent` as
+  `{ value, source, per_unit_monthly, per_sqft_annually, rationale }`; the
+  student-housing `rent_per_bed_monthly` and self-storage `economic_occupancy`
+  formulas divided by the object itself, so a template-shaped document
+  evaluated both to `CALC-TYPE-001`. The formulas now read `.value`; the
+  `Mill-Ave-Commons-Student` and `Sonoran-Self-Storage` worked examples and
+  the two classes' Excel layout income lines state the template shape (the
+  multifamily layout already did); and two tier-3 fixtures,
+  `student-housing-rent-per-bed-monthly` and `self-storage-economic-occupancy`,
+  pin both metrics over a §4.5-shaped `noi_model`. A scalar
+  `gross_potential_rent` was never the template's shape.
 
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
 

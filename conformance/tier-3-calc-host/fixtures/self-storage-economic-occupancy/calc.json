@@ -1,0 +1,7 @@
+{
+  "id": "economic_occupancy",
+  "label": "Economic Occupancy",
+  "formula": "noi_model.income.effective_gross_income / noi_model.income.gross_potential_rent.value",
+  "unit": "%",
+  "deterministic": true
+}
