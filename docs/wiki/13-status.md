@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-28** against canonical `main` at `3a51cdf`. The latest
+Reconciled **2026-09-29** against canonical `main` at `356c2a1`. The latest
 published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
@@ -9,6 +9,8 @@ Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
 0062 and 0063. PR #218 merged the prepared core/CLI **2.14.0** candidate into
 `main`; no `v2.14.0` tag or package publication has occurred, and
 published packages remain at the 2.13.0 generation.
+PR #221 repaired shared decimal quantization in source after the candidate
+merge; it did not create a release or change RFC 0064's draft status.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released

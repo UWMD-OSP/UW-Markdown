@@ -1,11 +1,13 @@
 # Roadmap
 
-Reconciled **2026-09-28** against canonical `main` at `3a51cdf`, following
+Reconciled **2026-09-29** against canonical `main` at `356c2a1`, following
 [release 2.13.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.13.0)
 (see [Released in 2.13.0](#released-in-2130)).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+PR #221 subsequently repaired shared decimal quantization for stated-value
+checks; it did not change the 2.14.0 candidate's release status.
 
 ## Current release
 
