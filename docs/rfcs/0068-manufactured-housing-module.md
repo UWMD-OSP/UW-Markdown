@@ -2,7 +2,7 @@
 rfc: 0068
 title: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
 status: draft
-author: jaredmaxey
+author: claude-code (agent proposal)
 created: 2026-09-29
 depends_on:
   - 0003
@@ -15,6 +15,12 @@ affects:
 
 # RFC 0068: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
 
+**Draft agent proposal.** StackUW's manufactured-housing plan is adopter
+requirements evidence, not UWMD owner authorship or acceptance. The per-site
+calculation representation below is unresolved under the current no-collection-
+iteration rule. Do not accept or implement this module until it has a compatible
+representation; this RFC does not reopen collection iteration.
+
 > A manufactured-housing community earns most of its income from pad rent. It leases a lot to a resident who owns
 > the home, so the revenue unit is the site, not the unit or the square foot. Some sites also carry a park-owned
 > home, which earns home rent on top of the pad. No builtin class states either fact, and the §XIII size registry
@@ -23,7 +29,7 @@ affects:
 
 ## Summary
 
-Ship `@uwmd/module-manufactured-housing`. It declares the custom class `org.uwmd.manufactured_housing`, with fallback
+Propose `@uwmd/module-manufactured-housing`. It would declare the custom class `org.uwmd.manufactured_housing`, with fallback
 `multifamily`, and sections `mhc_sites` (required), `mhc_utilities` and `mhc_homes` (optional). Its calculations are
 per-site figures, the park-owned-home split, and the builtin debt metrics over the declared paths. Its `CC-MOD-MH-*`
 validations cover the site roll's internal consistency. It ships an example document, fixtures and a runtime
@@ -31,10 +37,11 @@ conformance suite, as RFC 0039 did.
 
 ## Motivation
 
-StackUW, the demand, approved its manufactured-housing modelling contract on 2026-09-29: StackUW `Q-974` option 1 and
-its `docs/plans/manufactured-housing-2026-09-29/README.md`. Sites are the underwriting unit, a tenant-owned-home site
-earns pad rent, and a park-owned home adds a second home-rent income stream on the same site. The owner's rule is that a
-class lands with its protocol item upstream, never as an app-side workaround.
+StackUW's 2026-09-29 planning record (`Q-974` option 1 and
+`docs/plans/manufactured-housing-2026-09-29/README.md`) treats sites as the
+underwriting unit: a tenant-owned-home site earns pad rent, and a park-owned
+home adds a second home-rent stream on the same site. Its upstream-first
+preference is adopter evidence, not a UWMD owner decision.
 
 What the protocol has today:
 - The builtin classes are closed for protocol 1.x (§2.2). None states sites, pad rent or a park-owned home, and
@@ -97,7 +104,7 @@ The order is load-bearing: each row reads only rows above it. `gross_potential_r
 
 | id | formula | unit | round_to |
 |---|---|---|---|
-| `pad_rent_per_site_monthly` | Σ(`site_types[].count` × `pad_rent_monthly`) / `mhc_sites.total_sites` | `$` | 2 |
+| `pad_rent_per_site_monthly` | **Unresolved.** The proposed Σ(`site_types[].count` × `pad_rent_monthly`) / `mhc_sites.total_sites` requires collection iteration that §VIII currently rejects. | `$` | 2 |
 | `physical_occupancy` | `mhc_sites.occupied_sites / mhc_sites.total_sites` | `%` | 4 |
 | `poh_share` | `mhc_sites.park_owned_homes / mhc_sites.total_sites` | `%` | 4 |
 | `annual_pad_revenue_potential` | `pad_rent_per_site_monthly * mhc_sites.total_sites * 12` | `$` | 2 |
@@ -109,8 +116,14 @@ The order is load-bearing: each row reads only rows above it. `gross_potential_r
 | `loan_per_site` | `debt_structure.loan_amount / mhc_sites.total_sites` | `$` | 2 |
 | `dscr`, `debt_yield`, `ltv`, `ltc` | as the builtin packs state them, over `noi_model`, `debt_structure`, `valuation.purchase_price` and the declared `sources_uses.uses.total` | | |
 
-If §VIII's evaluator cannot express the Σ over an array of products, `mhc_sites` states `weighted_pad_rent_monthly`
-and the first row reads it. This is named under Unresolved questions.
+The current evaluator cannot express this array-product sum under its
+no-collection-iteration invariant. A stated `weighted_pad_rent_monthly` scalar
+is one possible representation, but the draft has not pinned its source,
+verification rule or relationship to `site_types[]`; it is not a silent
+fallback. `annual_pad_revenue_potential` and `poh_rent_share` depend on the
+unresolved first row. Acceptance requires a complete representation and
+conformance plan that preserve the invariant without adding collection
+iteration.
 
 ### Validations (`CC-MOD-MH-*`)
 
@@ -159,7 +172,11 @@ parks under `org.uwmd.manufactured_housing` with its `modules:` frontmatter (Sta
 
 ## Unresolved questions
 
-1. Can §VIII express Σ(count × pad rent) over `site_types[]`, or does `mhc_sites` state `weighted_pad_rent_monthly`?
+1. Which stated and verifiable per-site rent representation replaces the
+   proposed array-product Σ? The current §VIII evaluator has no collection
+   iteration. A scalar such as `weighted_pad_rent_monthly` needs explicit
+   source and consistency semantics before this module can be accepted;
+   collection iteration is not an option in this RFC.
 2. Should the module ship advisory thresholds, for example a warning for low physical occupancy or a high
    park-owned-home share? This draft ships none. A threshold is a market judgement, and the module publishes no
    defaults.
