@@ -11,6 +11,33 @@ protocol, and each package each carry an independent semver).
 See the prepared 2.14.0 candidate below. No tag or package publication has
 occurred.
 
+### Proposed additive contract — Protocol 2.19.0 (RFC 0064 draft)
+
+- **`reserve_accounts` section (format §4.28).** The custodial roll-forward of
+  owner-restricted property reserve accounts by stated period: opening balance,
+  dated `contribution` / `draw` / `release` movements and the stated ending
+  balance. Single-variant, optional, the fifth state-and-verify structure.
+  Schema `section-reserve-accounts.schema.json`; `reserve_accounts` joins
+  `STANDARD_SECTION_IDS` and `BUILTIN_VIEW_MODELS`.
+- **`RSV-01`–`RSV-07`** register the family: structure, the reserved-and-refused
+  `lender_reserve` class, identity and order, movement dates, the balance
+  identity at the currency quantum, consecutive-statement continuity, and a
+  warning across a gap the roll-forward never fills.
+- **`verifyReserveAccounts`** (protocol §VIII.9.7) recomputes every stated
+  ending balance three-state, the shape of `verifyCashFlowSeries`, and reports
+  each statement's roll-forward. The identity is computed once, in
+  `rollForwardEndingBalance`, and both the validator and the verifier report it.
+- **The boundary is pinned, not described.** A draw never nets against the
+  gross expenditure it funded, and a verified statement does not cure RFC
+  0045's `reserve_spending_excluded` refusal:
+  `property-cash-flow-assembly/reserve-statement-does-not-cure` proves the
+  reserve-dependent plan refuses at the same pointer with a verifying statement
+  in the document. RFC 0045, 0062 and 0063 behavior is unchanged.
+- New conformance suite `reserves` (15 synthetic cases). The two receipt
+  baselines that embed `protocol_version` move to 2.19.0 on this proposal
+  branch. RFC 0064 remains draft pending the standard-section owner decision;
+  canonical `main` and the published release have not acquired this contract.
+
 ## [2.14.0] - release candidate (unpublished)
 
 ### Prepared

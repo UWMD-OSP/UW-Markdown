@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Accepted source contract (RFCs 0062/0063; unreleased) — protocol **2.18.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Proposed RFC 0064 branch over accepted, unreleased RFCs 0062/0063 — protocol **2.19.0** if accepted; canonical `main` remains **2.18.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.18.0`) — the
+- **Protocol version** (this document, currently `2.19.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -586,6 +586,7 @@ capability is unconditional: every implementation owes it.
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `REC-10` warning; otherwise `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
+| `RSV-NN` | Property reserve-account roll-forward structure and the §VIII.9.7 balance identity (format §4.28, RFC 0064). `lender_reserve` is reserved and refused by `RSV-02`; a draw never nets against the gross expenditure it funded. Stated-figure disagreement is also reported by the verifier as `RSV-BALANCE-DISAGREES` / `RSV-CONTINUITY-DISAGREES`. | `validate` | `RSV-07` warning; otherwise `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
@@ -2472,6 +2473,83 @@ existing dotted/bracket style rooted at `plan` or
 `sections.<section>[<JSON-quoted variant>]`. Message prose is explanatory; code,
 reason, pointer and nested evidence carry the machine-readable contract.
 
+
+### VIII.9.7 Property reserve-account roll-forward (RFC 0064)
+
+#### 1. Scope and boundary
+
+This opt-in verifier applies whenever a document carries the format's
+`reserve_accounts` section (format spec §4.28). It is not mandatory at any
+pipeline stage, and a document without the section makes no account-state
+claim: no synthetic zero, no diagnostic, no change to any other rule.
+
+The section states **cash custody**: what an owner-restricted property reserve
+account held at the start of a stated period, what moved through it, and what
+it held at the end. It is not an economic expenditure ledger and not an
+assembly input. In particular:
+
+- A `draw` of X funds a separately stated **gross** expenditure of X (lease-up
+  TI/LC, `other_capex`, an operating expense). The expenditure stays gross in
+  its own section. The verifier MUST NOT net a draw against it, and no surface
+  MAY use a verified draw to reduce a gross cash row.
+- A verified roll-forward MUST NOT make an RFC 0045 plan eligible, cure the
+  `reserve_spending_excluded`, `gross_sale_excludes_reserve_release` or
+  `no_terminal_restricted_reserve` refusals, or supply a `reserve_net` row.
+  §VIII.9.6 is unchanged by this section. Binding gross expenditure rows to
+  account draws, and choosing one auditable owner-cash treatment, is a later
+  contract.
+- `lender_reserve` is reserved and MUST be refused (`RSV-02`). A lender-held
+  escrow is a financing cash flow; verifying it as owner-restricted property
+  cash would misstate the boundary this contract exists to keep.
+
+#### 2. Identity
+
+For every statement, the verifier MUST compute
+
+`ending = opening_balance + Σ contribution − Σ draw − Σ release`
+
+adding every stated movement exactly once, and compare it to the stated
+`ending_balance` with both sides quantized at the currency quantum (2 decimals)
+under the §VIII.5 binary64 / half-away-from-zero rule. The identity is the only
+arithmetic this section has. Nothing is inferred to make it hold: the verifier
+MUST NOT create a missing period, assume a zero movement, derive a release,
+project a draw, or treat a balance that agrees as proof that the source is
+complete.
+
+The reference implementation computes the identity in one place
+(`rollForwardEndingBalance`) and both the validator's `RSV-05` and the
+verifier report it, so the two surfaces cannot disagree about a sum.
+
+#### 3. Continuity and gaps
+
+Two statements of one account are **consecutive** when the second's
+`period_start` is the calendar day after the first's `period_end`, decided by
+calendar arithmetic over real dates, never by row position. For consecutive
+statements the second's `opening_balance` MUST equal the first's
+`ending_balance` at the currency quantum (`RSV-06`). Across a gap the verifier
+makes no continuity claim, MUST NOT fill the gap, and the validator warns
+(`RSV-07`). Statements MUST be ordered and MUST NOT overlap (`RSV-03`); the
+verifier reads them in stated order and never sorts.
+
+#### 4. Verdicts
+
+`verifyReserveAccounts(section): ReserveAccountsVerification` is three-state
+per statement, per account and overall: `failed` when a stated ending or a
+consecutive opening balance disagrees at the quantum
+(`RSV-BALANCE-DISAGREES`, `RSV-CONTINUITY-DISAGREES`); `unverifiable` when a
+statement cannot be rolled forward from what it states — a movement kind
+outside the closed vocabulary, a non-finite balance (`RSV-UNEVALUABLE`);
+`verified` otherwise. The overall verdict is the worst of the parts. An
+`unverifiable` statement is undecided, never zero, and the statement after it
+is not consecutive to it. Numeric fields without a valid computation MUST be
+`null` in the result, never `NaN` or a synthetic zero. The result reports, per
+statement, the opening balance, the three movement totals, the computed and stated ending balances and
+whether continuity applied, so a host can show the roll-forward beside the
+source without recomputing it.
+
+Structural rules (`RSV-01`…`RSV-04`) are validator errors, not verifier
+findings: structure is validation, arithmetic is verification. The verifier
+never mutates its input and never writes to the document.
 
 ### VIII.10 Distribution waterfall allocation (RFC 0035, RFC 0036, RFC 0059)
 

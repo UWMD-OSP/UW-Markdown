@@ -1,0 +1,14 @@
+{
+  "error_code": "CALC-CF-ASSEMBLY",
+  "reason": "coverage",
+  "pointer": "plan.assertions.reserve_spending_excluded",
+  "absent_validation_codes": [
+    "RSV-01",
+    "RSV-02",
+    "RSV-03",
+    "RSV-04",
+    "RSV-05",
+    "RSV-06",
+    "RSV-07"
+  ]
+}

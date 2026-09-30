@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.18.0' as const;
+export const PROTOCOL_VERSION = '2.19.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -1296,6 +1296,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'lease_up_schedule',
   'cash_flow_series',
   'distribution_waterfall',
+  'reserve_accounts',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -1871,6 +1872,21 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
       { path: 'stated_outcomes.gp.xirr',       label: 'GP XIRR',  kind: 'percent' },
       { path: 'stated_outcomes.gp.moic',       label: 'GP MOIC',  kind: 'ratio' },
       { path: 'stated_outcomes.profit_total',  label: 'Profit',   kind: 'currency' },
+    ],
+  },
+  reserve_accounts: {
+    section_id: 'reserve_accounts',
+    display_name: 'Reserve Accounts',
+    display_order: 25,
+    description: 'Custodial roll-forward of owner-restricted property reserve accounts by stated period (RFC 0064). State-and-verify: every stated ending balance is recomputed by verifyReserveAccounts per protocol §VIII.9.7, never trusted. Evidence about cash custody, not a second expenditure ledger.',
+    primary_fields: [
+      { path: 'label',                          label: 'Statement', kind: 'string', primary: true },
+      { path: 'accounts[0].account_id',         label: 'Account',   kind: 'string', primary: true },
+      { path: 'accounts[0].purpose',            label: 'Purpose',   kind: 'string' },
+    ],
+    detail_fields: [
+      { path: 'accounts[0].class',              label: 'Class',     kind: 'enum', enum: ['property_reserve'] },
+      { path: 'accounts[0].currency_code',      label: 'Currency',  kind: 'string' },
     ],
   },
   gaps: {

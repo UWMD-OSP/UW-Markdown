@@ -703,6 +703,30 @@ export type {
   CashFlowVerification,
   DatedFlow,
 } from './cash-flow-series.js';
+
+export {
+  verifyReserveAccounts,
+  rollForwardEndingBalance,
+  statementsConsecutive,
+  sumMovements,
+  RESERVE_ACCOUNT_CLASSES,
+  RESERVED_RESERVE_ACCOUNT_CLASSES,
+  RESERVE_MOVEMENT_KINDS,
+} from './reserve-accounts.js';
+export type {
+  ReserveAccountClass,
+  ReserveMovementKind,
+  ReserveMovement,
+  ReserveStatement,
+  ReserveAccount,
+  ReserveAccountsSection,
+  ReserveAccountVerdict,
+  ReserveAccountIssueCode,
+  ReserveAccountIssue,
+  ReserveStatementRollForward,
+  ReserveAccountRollForward,
+  ReserveAccountsVerification,
+} from './reserve-accounts.js';
 export {
   DAY_COUNT_CONVENTIONS,
   DEFAULT_DAY_COUNT,
