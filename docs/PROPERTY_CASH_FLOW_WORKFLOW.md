@@ -186,7 +186,7 @@ The engine uses the plan's `actual/365f` day count and its existing quantization
 an appraisal value. The assembly API emits no `stated_metrics`; callers request
 metrics explicitly. Existing IRR convergence and bracket refusals are unchanged.
 
-## Reserve-account statements (accepted, unreleased RFC 0064)
+## Reserve-account statements (draft RFC 0064 proposal)
 
 A deal whose work is paid out of an owner-restricted reserve can now state the
 account itself: the optional `reserve_accounts` section (format §4.28) carries,

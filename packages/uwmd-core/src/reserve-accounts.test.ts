@@ -89,6 +89,21 @@ describe('rollForwardEndingBalance', () => {
     expect(rollForwardEndingBalance({ opening_balance: 10.006, movements: [] })).toBe(10.01);
   });
 
+  it('uses the shared decimal shift at half cents and for scientific notation', () => {
+    expect(rollForwardEndingBalance({ opening_balance: 1.005, movements: [] })).toBe(1.01);
+    expect(rollForwardEndingBalance({ opening_balance: 1.005e+0, movements: [] })).toBe(1.01);
+    expect(rollForwardEndingBalance({ opening_balance: 1.5e-2, movements: [] })).toBe(0.02);
+    // A negative result is structurally invalid as an account balance, but the
+    // arithmetic helper still quantizes it consistently before validation.
+    expect(rollForwardEndingBalance({ opening_balance: 0, movements: [
+      { kind: 'draw', amount: 1.005, date: '2026-01-02' },
+    ] })).toBe(-1.01);
+    const zero = rollForwardEndingBalance({ opening_balance: 0, movements: [
+      { kind: 'draw', amount: 0.004, date: '2026-01-02' },
+    ] });
+    expect(Object.is(zero, 0)).toBe(true);
+  });
+
   it('never nets a draw against anything but the balance', () => {
     // A draw of X reduces the account by exactly X and nothing else is touched:
     // the gross expenditure it funded lives in its own section.
@@ -171,6 +186,22 @@ describe('verifyReserveAccounts', () => {
     const doc = clone(SPEC_EXAMPLE);
     doc.accounts[0]!.statements[0]!.ending_balance = 190_699.504;
     expect(verifyReserveAccounts(doc).verdict).toBe('verified');
+  });
+
+  it('compares half-cent continuity at the same quantum as the balance identity', () => {
+    const doc = clone(SPEC_EXAMPLE);
+    const first = doc.accounts[0]!.statements[0]!;
+    first.opening_balance = 1.005;
+    first.movements = [];
+    first.ending_balance = 1.005;
+    const second = doc.accounts[0]!.statements[1]!;
+    second.opening_balance = 1.01;
+    second.movements = [];
+    second.ending_balance = 1.01;
+    expect(verifyReserveAccounts(doc).verdict).toBe('verified');
+    second.opening_balance = 1.004;
+    second.ending_balance = 1.004;
+    expect(verifyReserveAccounts(doc).issues.map((i) => i.code)).toEqual(['RSV-CONTINUITY-DISAGREES']);
   });
 
   it('fails a consecutive statement that opens at a different balance', () => {

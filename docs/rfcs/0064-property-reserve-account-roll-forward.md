@@ -1,7 +1,7 @@
 ---
 rfc: 0064
 title: Verify property reserve-account roll-forwards without netting expenditure
-status: accepted
+status: draft
 author: codex, claude
 created: 2026-09-27
 affects:
@@ -29,15 +29,13 @@ never nets against the gross TI/LC, capex or expense it funded — and it does
 not make an RFC 0045 reserve-dependent assembly plan eligible. `lender_reserve`
 is reserved and refused.
 
-**Accepted, unreleased.** The draft of 2026-09-27 left four questions for the
-owner: the carrier, the comparison point, the movement classifications and the
-public API. This revision answers all four with the choices the existing
-contracts already imply, and lands with its reference implementation, synthetic
-conformance and spec text in one pull request. **The owner's merge of that pull
-request is the acceptance record.** Status stays `accepted`, not `implemented`,
-until the capability ships in a tagged release. The implementation prepares
-Protocol **2.19.0** on top of the unreleased 2.18.0 (RFC 0063) and 2.17.1
-(RFC 0062); Format remains 2.0.
+**Draft, awaiting owner review.** The branch proposes answers to the carrier,
+comparison point, movement vocabulary and public API questions alongside a
+reference implementation, synthetic conformance and spec text. None of those
+choices is accepted merely because the implementation exists or its gates pass.
+The branch proposes Protocol **2.19.0** on top of the unreleased 2.18.0 (RFC
+0063) and 2.17.1 (RFC 0062); canonical `main` remains at 2.18.0 and Format
+remains 2.0. The standard-section choice needs an explicit owner decision.
 
 ## Motivation
 

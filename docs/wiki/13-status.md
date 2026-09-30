@@ -1,22 +1,22 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-27** against canonical `main` at `c5df4c0`. The latest
+Reconciled **2026-09-29** against canonical `main` at `356c2a1`. The latest
 published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
 `v2.13.0` tag. That release pairs Format **2.0** with Protocol **2.17.0**.
-Canonical `main` carries accepted, unreleased Protocol **2.19.0**: RFC 0064's
-reserve-account roll-forward on top of 2.18.0 (RFCs 0062 and 0063). The
-isolated release candidate prepares core/CLI **2.14.0**; published packages
-remain at the 2.13.0 generation.
+Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
+0062 and 0063, and the prepared core/CLI **2.14.0** source candidate. This
+RFC 0064 review branch proposes Protocol **2.19.0**; RFC 0064 remains draft.
+Published packages remain at the 2.13.0 generation.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
-## Accepted, unreleased: RFC 0064 reserve-account roll-forward
+## Draft proposal: RFC 0064 reserve-account roll-forward
 
-The 2026-09-27 draft stalled on four "owner decisions" — carrier, comparison
-point, movement classification, API name. All four had answers the existing
-contracts already implied, and the RFC now lands with its implementation
-(Protocol **2.19.0**, Format unchanged):
+The branch proposes a standard-section carrier, currency-quantum comparison,
+author-stated movement kinds and a public verifier (Protocol **2.19.0** if
+accepted; Format 2.0 unchanged). The standard-section choice awaits explicit
+owner review. Its implementation is available on the PR for technical audit:
 
 - **§4.28 `reserve_accounts`**, single-variant, the fifth state-and-verify
   section. Real authored `period_start` / `period_end` dates, not RFC 0041
@@ -35,8 +35,9 @@ contracts already implied, and the RFC now lands with its implementation
   refusal, same pointer, and no `RSV-*` code emitted. A draw never nets against
   the gross expenditure it funded.
 - New conformance suite `reserves` (15 cases); receipt baselines move to
-  protocol 2.19.0. Gate totals after the change: **665 default conformance
-  checks**, **47 JSON schemas**, **228 emitted codes**.
+  proposed protocol 2.19.0 on this branch. Earlier branch evidence recorded
+  **666 default conformance checks**, **47 JSON schemas**, **228 emitted codes**;
+  these totals were reproduced on the current base after PR #221.
 
 What this does *not* do: make the reserve-dependent Golden Deal assemble. That
 still needs a draw-to-expenditure binding and one auditable owner-cash

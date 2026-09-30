@@ -186,6 +186,22 @@ describe('reserve_accounts validation', () => {
       expect(rsv(doc(d))).toEqual([]);
     });
 
+    it('compares a positive half cent and scientific-notation input with the shared quantizer', () => {
+      const d = clone(GOOD);
+      d.accounts[0]!.statements = [{
+        period_start: '2026-04-01', period_end: '2026-04-30',
+        opening_balance: 1.005, movements: [], ending_balance: 1.01,
+      }];
+      expect(rsv(doc(d))).toEqual([]);
+      d.accounts[0]!.statements[0]!.ending_balance = 1;
+      expect(rsv(doc(d)).map((i) => i.code)).toEqual(['RSV-05']);
+      d.accounts[0]!.statements[0]!.opening_balance = 1.5e-2;
+      d.accounts[0]!.statements[0]!.ending_balance = 0.02;
+      const scientific = doc(d).replace('"opening_balance": 0.015', '"opening_balance": 1.5e-2');
+      expect(scientific).toContain('"opening_balance": 1.5e-2');
+      expect(rsv(scientific)).toEqual([]);
+    });
+
     it('never nets a draw against the gross expenditure it funded', () => {
       // A draw reduces the account by exactly its amount. If the identity had
       // been written to "net" the draw against a capex row elsewhere, this
@@ -204,6 +220,19 @@ describe('reserve_accounts validation', () => {
   });
 
   describe('RSV-06 / RSV-07 continuity', () => {
+    it('compares consecutive balances at the same currency quantum as the verifier', () => {
+      const d = clone(GOOD);
+      d.accounts[0]!.statements[0]!.opening_balance = 1.005;
+      d.accounts[0]!.statements[0]!.movements = [];
+      d.accounts[0]!.statements[0]!.ending_balance = 1.005;
+      d.accounts[0]!.statements[1]!.opening_balance = 1.01;
+      d.accounts[0]!.statements[1]!.movements = [];
+      d.accounts[0]!.statements[1]!.ending_balance = 1.01;
+      expect(rsv(doc(d))).toEqual([]);
+      d.accounts[0]!.statements[1]!.opening_balance = 1.004;
+      d.accounts[0]!.statements[1]!.ending_balance = 1.004;
+      expect(rsv(doc(d)).map((i) => i.code)).toEqual(['RSV-06']);
+    });
     it('refuses a consecutive statement that opens at a different balance', () => {
       const d = clone(GOOD);
       d.accounts[0]!.statements[1]!.opening_balance = 165_000;
