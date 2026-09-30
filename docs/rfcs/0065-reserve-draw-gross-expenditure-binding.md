@@ -38,14 +38,14 @@ draw ledger, and RFC 0057's renovation `drawn_to_date` is a budget-to-date
 fact, not a reserve-account movement. Thus an additive protocol binding and
 verifier are needed; no existing reference honestly expresses this edge.
 
-## Proposed narrow layer, pending owner decisions
+## Proposed narrow layer and selected owner rules
 
 A **read-only, document-digested binding plan** should name a reserve movement
 and a pre-existing gross expenditure cell or row, state the funded magnitude,
 and return item-level evidence. It would not create a second expense, change
 the expenditure's authored gross amount, modify a §4.26 source row, or alter
-RFC 0045 eligibility in this RFC. The proposed verifier would be a Protocol
-companion to the RFC 0064 carrier, whichever carrier the owner chooses. No
+RFC 0045 eligibility in this RFC. The proposed verifier is a Protocol
+companion to the owner-selected standard §4.28 `reserve_accounts` carrier. No
 calc grammar, collection primitive, AI calculation, Excel formula or implicit
 date/amount matching is proposed.
 
@@ -54,7 +54,7 @@ Candidate reference shape, **not yet normative**:
 ```ts
 interface ReserveExpenditureBinding {
   reserve: {
-    carrier: 'reserve_accounts' | 'x_...'; // fixed after RFC 0064 decision
+    carrier: 'reserve_accounts';
     account_id: string;
     statement_index: number;
     movement_index: number;
@@ -68,35 +68,44 @@ interface ReserveExpenditureBinding {
 }
 ```
 
-The binding plan would carry the canonical source envelope digest and explicit
-source variant. Indices are addresses into that immutable snapshot, as in RFC
-0045; an edit invalidates the digest. An `account_id` alone is insufficient
+The binding plan must declare the selected draws and an auditable completeness
+scope: **every selected draw is fully allocated** through explicit edges. This
+does not assert that the external source omitted no other account or movement.
+It must carry the canonical document/source digest and explicit source variant.
+Indices are addresses into that immutable snapshot, as in RFC 0045; an edit
+invalidates the digest. An `account_id` alone is insufficient
 because one account has many draws. An equal amount, label or same date is
 never a binding. A lease-up `ti_lc` cell is a gross period component, even
 though RFC 0044 emits a bundled cash row; a plan cannot pretend the whole
 bundle is only TI/LC. Other gross expenditure categories need named source
 cells or separately stated supplemental rows; an undifferentiated total
-refuses. The final reference shape depends on RFC 0064's carrier decision and
-on confirming exact source path/variant representation.
+refuses. The final reference shape still needs exact source path/variant
+representation pinned before acceptance.
 
 ## Proposed verification limits
 
 - Referenced movement must exist, be a `draw`, and belong to a verified
   property reserve statement. A lender reserve refuses. Referenced expenditure
   must exist as a gross, signed expenditure in the digested source snapshot;
-  the verifier must preserve its amount, date, category and source identity.
+  the verifier must preserve its gross amount, authored date, category, currency,
+  exact source identity and provenance.
 - `funded_amount` must be finite and positive at the established currency
-  quantum. Every draw and expenditure may have multiple explicit edges, but
-  duplicate identical edges refuse. The sum of edges from a draw must equal
-  the stated draw if the plan claims complete allocation; the sum into an
-  expenditure cannot exceed its gross magnitude. Missing references, stale
-  digests, mismatched currency, duplicate use, overbinding, unbound portions
-  claimed complete, and sign/category mismatches refuse with source pointers.
-  Whether partial allocation may remain intentionally unbound needs an
-  explicit completeness flag or an all-or-nothing first scope; no default.
+  quantum. A draw may fund multiple expenditures, and an expenditure may
+  receive multiple draws. Duplicate identical edges refuse. For **every
+  selected draw**, the sum of its binding edges must equal the stated draw;
+  no unallocated remainder is allowed in the first verifier scope. The sum
+  of reserve funding into one expenditure must not exceed the absolute gross
+  expenditure. An expenditure may be partially funded when explicitly stated;
+  the unfunded remainder is retained for a later owner-cash contract. Missing
+  references, stale digests, mismatched currency, duplicate use, overbinding,
+  incomplete selected draws, and sign/category mismatches refuse with source
+  pointers.
 - Preserve the gross expenditure and the draw separately in evidence. The
-  edge proves funding identity only; it never subtracts the draw from the
-  expenditure, adds it as a second expense, or synthesizes owner cash.
+  edge proves funding identity only; it never changes the gross source amount,
+  subtracts the draw from the expenditure, adds it as a second expense, or
+  synthesizes owner cash. Result evidence must retain the explicit funded
+  amount, document/source digest, exact source identity, currency, authored
+  date and provenance.
 - Source block `_meta` remains host-owned and append-only. The plan/result
   carry document digest, canonical paths, authored dates and amounts; source
   identities are not rewritten or merged.
@@ -104,7 +113,7 @@ on confirming exact source path/variant representation.
   their current behavior, including reserve refusals. A valid binding alone
   does not change `reserve_spending_excluded` or prove whole-plan completeness.
 
-## Cash boundary to settle before any assembly change
+## Three separate verification and assembly boundaries
 
 RFC 0045 already states a broad owner-cash rule: funding a restricted property
 reserve is an outflow; release to the owner is an inflow; spending inside a
@@ -114,18 +123,30 @@ at the transfer level. It also requires gross sale to exclude returned
 reserves and no restricted balance after disposition. RFC 0064's proposed
 statement records custody, not the §4.26 `reserve_net` owner transfer.
 
-What remains **unsettled** is the output representation when the gross
-expenditure is in a cash-flow source that RFC 0045 would otherwise copy into
-its owner-cash series. The standard does not yet specify whether a successor
-must produce a separate gross-economic ledger and owner-cash series, or a
-single dated series with explicitly paired, non-expense funding offsets. It
-also does not establish how to prove each acquisition contribution, periodic
-contribution and disposition release is the same transfer as one §4.26
-`reserve_net` row, or how mixed owner/property custody is classified. Guessing
-these would double-count owner cash or hide gross cost. **Owner decision is
-required before drafting the assembly effect or changing RFC 0045.** This RFC
-can be reviewed as a binding-only verifier, but it cannot claim the Golden
-Deal has become assembly-eligible.
+1. **This RFC: draw-to-gross-expenditure verification.** Bind each selected
+   internal draw to one or more existing gross expenditures, with complete
+   allocation of that draw and an explicit funded share of each expenditure.
+   Verification does not create owner-cash rows or change RFC 0045.
+2. **Separate external-transfer verification.** Every external contribution
+   from the owner or release to the owner used for future assembly eligibility
+   must be explicitly bound to its applicable §4.26 `reserve_net` row. Date,
+   label, equal amount or shared provenance cannot substitute for an edge.
+   This relationship is distinct from a draw/expenditure edge and is not
+   verified by the first binding scope.
+3. **Later RFC 0045 successor: owner-cash assembly.** Owner cash records cash
+   crossing the owner/property boundary: owner contributions are outflows and
+   releases to the owner are inflows. A reserve draw is internal custody, not
+   an owner receipt and not a second expense. Gross expenditure remains gross
+   in source and audit evidence. A future assembler must never add a positive
+   draw row merely to offset that expenditure in owner cash. Its incremental
+   owner-cash effect is the explicitly unfunded remainder: zero when fully
+   reserve-funded, the remainder when partially funded. That later contract
+   must pin representation and non-overlap checks before changing admission.
+
+Complete allocation of selected draws is an auditable scope declaration, not
+proof that the external source omitted nothing. Even a verifying binding plan
+does not make the Golden Deal assembly-eligible while RFC 0045 still refuses
+reserve-dependent spending and external transfers lack their own binding.
 
 ## Timing and compatibility
 
@@ -142,10 +163,12 @@ until a later, separately accepted assembly contract has complete evidence.
 ## Public synthetic conformance plan
 
 Use invented accounts and amounts only: one draw fully funding one gross TI/LC
-cell; a partial draw with explicit split edges; a supplemental `other_capex`
+cell; one draw split across expenditures; multiple draws funding one expenditure;
+a partially funded expenditure with complete allocation of each selected draw;
+a supplemental `other_capex`
 row; same-day distinct gross rows under RFC 0062; a final-boundary case under
 RFC 0063; missing/stale account, movement and expenditure references; duplicate
-edge; amount and currency mismatch; overbinding; unbound remainder; lender
+edge; amount and currency mismatch; overbinding; unbound selected draw; lender
 reserve refusal; absent plan compatibility; and a valid binding that still
 does **not** cure RFC 0045's `reserve_spending_excluded` refusal. Pin source
 digest, source path, gross amount and movement identity in each result.
@@ -161,11 +184,12 @@ digest, source path, gross amount and movement identity in each result.
 | Use `_meta.source_id` equality | Shared provenance is not a funding allocation and would rewrite source meaning. |
 | Relax RFC 0045 immediately | A binding alone does not prove owner-cash transfers or whole-plan non-overlap. |
 
-## Decisions before acceptance
+## Decisions and work remaining before acceptance
 
-1. RFC 0064 carrier: standard §4.28 or `x_*` companion profile.
-2. Whether the first verifier requires full allocation of each draw and permits
-   split/partial funding; the Golden Deal evidence does not decide a universal
-   completeness policy.
-3. The later owner-cash output treatment and transfer-to-`reserve_net`
-   evidence, before any RFC 0045 successor changes assembly behavior.
+The owner has selected the standard §4.28 carrier, complete allocation of
+every selected draw, many-to-many edges and partial funding of gross expenses.
+The owner also selected the external-transfer binding requirement and the
+owner-cash boundary described above. The first verifier's exact source address
+shape, completeness declaration and refusal/result schema still need review.
+External transfer verification and any RFC 0045 assembly change require their
+own explicit contracts. RFC 0065 remains draft and binding-only.
