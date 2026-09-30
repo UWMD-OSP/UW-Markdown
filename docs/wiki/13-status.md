@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-29** against canonical `main` at `356c2a1`. The latest
+Reconciled **2026-09-29** against canonical `main` at `615e6be`. The latest
 published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
@@ -13,10 +13,12 @@ See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Draft proposal: RFC 0064 reserve-account roll-forward
 
-The branch proposes a standard-section carrier, currency-quantum comparison,
+The owner selected the standard-section carrier on 2026-09-29. The branch
+proposes currency-quantum comparison,
 author-stated movement kinds and a public verifier (Protocol **2.19.0** if
-accepted; Format 2.0 unchanged). The standard-section choice awaits explicit
-owner review. Its implementation is available on the PR for technical audit:
+accepted; Format 2.0 unchanged). Whole-RFC acceptance remains open, and PR
+#219 stays Draft outside the 2.14.0 release train. Its implementation is
+available on the PR for technical audit:
 
 - **§4.28 `reserve_accounts`**, single-variant, the fifth state-and-verify
   section. Real authored `period_start` / `period_end` dates, not RFC 0041
@@ -38,6 +40,10 @@ owner review. Its implementation is available on the PR for technical audit:
   proposed protocol 2.19.0 on this branch. Earlier branch evidence recorded
   **666 default conformance checks**, **47 JSON schemas**, **228 emitted codes**;
   these totals were reproduced on the current base after PR #221.
+
+After 2.14.0 is actually published, rebase this proposal onto the released
+state and advance its package/version candidate before any merge or release.
+Do not republish core 2.14.0; no next version is selected yet.
 
 What this does *not* do: make the reserve-dependent Golden Deal assemble. That
 still needs a draw-to-expenditure binding and one auditable owner-cash

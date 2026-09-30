@@ -2,8 +2,9 @@
 
 RFC 0064 remains **draft**. PR #219 contains a proposed normative implementation;
 passing gates do not accept it. Canonical `main` carries Protocol 2.18.0 and
-the prepared, untagged core/CLI 2.14.0 candidate. This note asks for one
-explicit decision before the RFC or its normative implementation is merged.
+the prepared, untagged core/CLI 2.14.0 candidate. The owner settled the
+carrier choice on 2026-09-29 but has not accepted the whole RFC or authorized
+this PR's merge.
 
 ## Appendix C.7 and precedent
 
@@ -17,7 +18,7 @@ explicit decision before the RFC or its normative implementation is merged.
    adopter extension. It does not expressly forbid a new standard section
    created directly by RFC. Reading it as an exclusive gate for all new
    sections would conflict with the repository's later direct-RFC precedent.
-   That is an interpretation, not an owner decision for RFC 0064.
+   The owner selected this reading for RFC 0064 on 2026-09-29.
 3. **Precedent.** RFC 0026 introduced typed `capital_stack` (§4.24), later
    scoped to one point in time by RFC 0033. RFC 0008 introduced
    `lease_up_schedule` (§4.25). RFC 0034 introduced dated `cash_flow_series`
@@ -40,12 +41,21 @@ promotion threshold or require standard-section discovery. Neither carrier
 alone proves the owner-cash boundary or cures RFC 0045's
 `reserve_spending_excluded` refusal.
 
-**Owner decision:** choose direct RFC-created standard `reserve_accounts` now,
-or an `x_*` carrier and selected companion verifier until promotion evidence
-accumulates. If choosing the latter, PR #219's Format §4.28, standard registry,
-validator trigger, schema placement, Protocol §VIII.9.7 and 2.19.0 proposal
-need redesign together before merge. Do not merge the present normative diff
-while this choice is open.
+**Owner decision, 2026-09-29:** use the direct RFC-created standard
+`reserve_accounts` §4.28 carrier. Reserve-account state is independent of asset
+class. Portable schema, validator, conformance and verifier behavior require a
+standard carrier because ordinary `x_*` sections are deliberately skipped by
+validators and cross-checks. Appendix C.7's five-deal rule applies to promotion
+of an existing extension, while §§4.24–§4.27 show direct-RFC precedent.
+`lender_reserve` remains outside this property-reserve contract and refused.
+Verification of an account alone does not cure RFC 0045's reserve refusal.
+
+The remaining owner action is an explicit acceptance decision for the RFC as a
+whole under `docs/rfcs/README.md`, followed by a separately authorized PR
+merge. Keep PR #219 Draft and outside the 2.14.0 train. After 2.14.0 is
+actually published, rebase this implementation on the released state and
+advance its package/version candidate; do not republish core 2.14.0. No next
+version is selected until publication truth fixes the semver base.
 
 ## Other proposed choices
 

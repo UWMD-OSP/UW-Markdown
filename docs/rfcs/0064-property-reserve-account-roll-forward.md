@@ -29,13 +29,13 @@ never nets against the gross TI/LC, capex or expense it funded — and it does
 not make an RFC 0045 reserve-dependent assembly plan eligible. `lender_reserve`
 is reserved and refused.
 
-**Draft, awaiting owner review.** The branch proposes answers to the carrier,
-comparison point, movement vocabulary and public API questions alongside a
-reference implementation, synthetic conformance and spec text. None of those
-choices is accepted merely because the implementation exists or its gates pass.
-The branch proposes Protocol **2.19.0** on top of the unreleased 2.18.0 (RFC
-0063) and 2.17.1 (RFC 0062); canonical `main` remains at 2.18.0 and Format
-remains 2.0. The standard-section choice needs an explicit owner decision.
+**Draft, awaiting whole-RFC owner acceptance.** The owner selected the standard
+`reserve_accounts` §4.28 carrier on 2026-09-29; this settles the carrier choice,
+not the RFC's acceptance or permission to merge its normative implementation.
+The branch proposes comparison, movement and API rules alongside a reference
+implementation, synthetic conformance and spec text. Its Protocol **2.19.0**
+label and package candidate are provisional. Canonical `main` remains at 2.18.0
+and Format remains 2.0.
 
 ## Motivation
 
@@ -75,10 +75,12 @@ draw. That netting is the failure mode this RFC exists to make impossible.
 ### Format: §4.28 `reserve_accounts`
 
 A new optional, single-variant, asset-class-independent section — the fifth
-state-and-verify structure after §4.24–§4.27. The draft asked whether a section
-could be added at all, citing §C.7's five-deal threshold. §C.7 governs the
-*promotion of an adopter `x_` extension*; every state-and-verify section this
-project has (§4.24, §4.25, §4.26, §4.27) arrived by RFC, and this one does too.
+state-and-verify structure after §4.24–§4.27. The owner selected this standard
+carrier. Appendix C.7 governs *promotion of an existing adopter `x_`
+extension*; it does not prohibit a section created directly by RFC.
+Sections §4.24–§4.27 provide direct-RFC precedent. A portable account-state
+contract needs a common schema, validator, conformance and verifier; ordinary
+`x_*` sections are intentionally skipped by validation and cross-checks.
 Homing the statement under §4.8 `escrows` (rejected by RFC 0056 and the draft),
 under §4.26 (statements are facts, not scenarios; §4.26 is multi-variant), or
 in an `x_` block (a normative verifier over a non-normative carrier) were each
@@ -189,6 +191,13 @@ Protocol minor bump to 2.19.0 (new section, new code family, new verifier with
 a wire shape). Format stays 2.0: the frontmatter and `_meta` contract are
 untouched, and Part IV's registry has always grown by RFC without a format
 bump.
+
+This proposal is **outside the existing 2.14.0 release train**. After 2.14.0
+is actually published, the implementation PR must rebase onto that released
+state and advance its package/version candidate appropriately. It must never
+attempt to publish `@uwmd/core@2.14.0` again. The next version is deliberately
+unselected until publication truth fixes the semver base; the branch's current
+labels are not release authority.
 
 ## Conformance impact
 
