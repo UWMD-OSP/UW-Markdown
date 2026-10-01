@@ -189,3 +189,158 @@ describe('render — size intensives (RFC 0027)', () => {
     expect(chat).not.toContain('Size:');
   });
 });
+
+// ─── Format §4.5 — the chat NOI block reads the stated paths ─────────────────
+//
+// §4.5 places the NOI lines under `income` / `expenses` and states each money
+// line as `{ value, ... }`. The chat block read top-level keys that no §4.5
+// document carries, so a fully stated model rendered GPR, EGI and OpEx as n/a.
+
+function noiDoc(content: Record<string, unknown>): string {
+  const meta = '"_meta": { "section": "noi_model", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-10-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }';
+  return `---
+uw_version: "1.1"
+deal_id: "uw_2026_NOI"
+deal_name: "NOI Read Fixture"
+created: "2026-10-01T00:00:00Z"
+last_modified: "2026-10-01T00:00:00Z"
+property_address: "45 Spec Way"
+city: "Phoenix"
+state: "AZ"
+zip: "85001"
+asset_class: multifamily
+---
+
+\`\`\`json uw:section=noi_model source=manual ts=2026-10-01T00:00:00Z v=1 confidence=high
+{ ${meta}, ${JSON.stringify(content).slice(1, -1)} }
+\`\`\`
+`;
+}
+
+/** The chat NOI block's lines, heading excluded. */
+function chatNoiLines(parsed: ReturnType<typeof parseUWFile>): string[] {
+  const content = render(parsed, { format: 'chat' }).content;
+  const start = content.indexOf('## NOI MODEL');
+  expect(start, 'NOI block present').toBeGreaterThanOrEqual(0);
+  return content.slice(start).split('\n\n')[0]!.split('\n').slice(1);
+}
+
+/** A §4.5-shaped model. Every figure is stated; the renderer derives none. */
+const SPEC_NOI = {
+  underwriting_basis: 'stabilized',
+  income: {
+    gross_potential_rent: { value: 1000000, source: 'rent_roll', per_unit_monthly: null, per_sqft_annually: null, rationale: null },
+    vacancy_credit_loss: { value: 50000, rate_applied: 0.05, source: 'underwritten', vs_t12_actual: null, vs_submarket_avg: null, rationale: null },
+    concessions: { value: 0, rationale: null },
+    loss_to_lease: { value: 0, rationale: null },
+    other_income: { value: 20000, vs_t12: null, non_recurring_excluded: null, breakdown: {} },
+    effective_gross_income: 970000,
+  },
+  expenses: {
+    real_estate_taxes: { value: 150000, per_unit: null, source: 'actual' },
+    total_operating_expenses: 400000,
+    expense_ratio: 0.4124,
+  },
+  net_operating_income: 570000,
+};
+
+describe('render — chat NOI block reads Format §4.5 paths', () => {
+  it('renders GPR, vacancy, other income, EGI, OpEx, NOI and the ratio from their §4.5 paths', () => {
+    expect(chatNoiLines(parseUWFile(noiDoc(SPEC_NOI)))).toEqual([
+      'GPR: $1,000,000',
+      'Vacancy Loss: $50,000 (5.00%)',
+      'Other Income: $20,000',
+      'EGI: $970,000',
+      'Total OpEx: $400,000',
+      'NOI: $570,000',
+      'OpEx Ratio: 0.4124',
+    ]);
+  });
+
+  it('renders a structured money line as its numeric value, never the object', () => {
+    const lines = chatNoiLines(parseUWFile(noiDoc(SPEC_NOI)));
+    for (const prefix of ['GPR:', 'Vacancy Loss:', 'Other Income:']) {
+      const line = lines.find((l) => l.startsWith(prefix))!;
+      expect(line, prefix).not.toContain('[object Object]');
+      expect(line, prefix).not.toMatch(/: n\/a/);
+    }
+  });
+
+  it('renders the tier-1 §4.5 conformance fixture with its stated figures', () => {
+    const parsed = parseUWFile(readFileSync(
+      resolve(__dirname, '../../../conformance/tier-1-reader/fixtures/02-full-multifamily.uwx.md'),
+      'utf-8',
+    ));
+    expect(chatNoiLines(parsed)).toEqual([
+      'GPR: $655,200',
+      'Vacancy Loss: $45,864 (7.00%)',
+      'Other Income: $21,600',
+      'EGI: $630,936',
+      'Total OpEx: $234,301',
+      'NOI: $396,635',
+      'OpEx Ratio: 0.3713',
+    ]);
+  });
+
+  it('derives no ratio from §4.5 totals: an unstated expense_ratio renders n/a', () => {
+    const { expense_ratio: _omitted, ...expenses } = SPEC_NOI.expenses;
+    const lines = chatNoiLines(parseUWFile(noiDoc({ ...SPEC_NOI, expenses })));
+    expect(lines).toContain('EGI: $970,000');
+    expect(lines).toContain('Total OpEx: $400,000');
+    expect(lines).toContain('OpEx Ratio: n/a');
+  });
+
+  it('reads a bare number stated at a §4.5 object path as stated', () => {
+    const income = { ...SPEC_NOI.income, other_income: 20000 };
+    expect(chatNoiLines(parseUWFile(noiDoc({ ...SPEC_NOI, income })))).toContain('Other Income: $20,000');
+  });
+});
+
+// Compatibility only: the top-level keys the chat block read before it
+// followed §4.5. They are consulted only when the §4.5 path is absent.
+
+const LEGACY_NOI = {
+  gross_potential_rent: 800000,
+  vacancy_loss: 40000,
+  vacancy_rate: 0.05,
+  other_income: 10000,
+  effective_gross_income: 770000,
+  total_operating_expenses: 300000,
+  net_operating_income: 470000,
+};
+
+describe('render — chat NOI legacy top-level fallback (compatibility only)', () => {
+  it('a document with only legacy top-level keys renders exactly as before', () => {
+    // These are the bytes the pre-§4.5 renderer produced for this block,
+    // including its own legacy ratio division.
+    expect(chatNoiLines(parseUWFile(noiDoc(LEGACY_NOI)))).toEqual([
+      'GPR: $800,000',
+      'Vacancy Loss: $40,000 (5.00%)',
+      'Other Income: $10,000',
+      'EGI: $770,000',
+      'Total OpEx: $300,000',
+      'NOI: $470,000',
+      'OpEx Ratio: 0.3896',
+    ]);
+  });
+
+  it('keeps scheduled_gross_revenue as the last legacy GPR key', () => {
+    const { gross_potential_rent: _omitted, ...rest } = LEGACY_NOI;
+    const lines = chatNoiLines(parseUWFile(noiDoc({ ...rest, scheduled_gross_revenue: 790000 })));
+    expect(lines).toContain('GPR: $790,000');
+  });
+
+  it('never overrides a stated §4.5 value', () => {
+    // Both shapes present with different figures: §4.5 wins on every line.
+    const lines = chatNoiLines(parseUWFile(noiDoc({ ...LEGACY_NOI, ...SPEC_NOI, opex_ratio: 0.9 })));
+    expect(lines).toEqual([
+      'GPR: $1,000,000',
+      'Vacancy Loss: $50,000 (5.00%)',
+      'Other Income: $20,000',
+      'EGI: $970,000',
+      'Total OpEx: $400,000',
+      'NOI: $570,000',
+      'OpEx Ratio: 0.4124',
+    ]);
+  });
+});
