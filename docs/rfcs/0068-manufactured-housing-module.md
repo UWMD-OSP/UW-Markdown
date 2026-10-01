@@ -17,9 +17,11 @@ affects:
 
 **Draft agent proposal.** A coding agent wrote this RFC. StackUW's
 manufactured-housing plan is adopter requirements evidence, not UWMD
-authority, and it is not verifiable in this repository. No owner decision
-selects any semantics here, and implementation is not authorized. Open
-decisions are listed in [Decision status](#decision-status).
+authority, and it is not verifiable in this repository.
+
+On 2026-10-01 the owner gave directions that narrow the first scope (see
+[Decision status](#decision-status)). Those directions do not accept the RFC or
+authorize implementation.
 
 ## Summary
 
@@ -28,17 +30,20 @@ it leases a site to a resident who owns the home. Some sites also carry a
 park-owned home (POH), which earns home rent on top of the pad. No builtin class
 states either fact.
 
-This draft proposes `@uwmd/module-manufactured-housing`, following RFC 0039's
+This draft proposes `@uwmd/module-manufactured-housing`, on RFC 0039's
 data-centre pattern. The module declares the custom class
 `org.uwmd.manufactured_housing` (fallback `multifamily`) and one required
 section, `mhc_sites`.
 
-The pad rent is carried as **one stated scalar**, `weighted_pad_rent_monthly`,
-with an exact meaning. Every module calculation reads it, or other stated
-scalars, using ordinary existing calc grammar. The earlier draft's per-site-type
-rent schedule, `site_types[]`, is **deferred**. Its only calculation was a sum
-over an array, which the evaluator cannot express. Keeping it beside the scalar
-would create two competing truths that no module rule can reconcile.
+- **Pad rent** is one stated, source-backed scalar,
+  `weighted_pad_rent_monthly`. This is the selected first-scope representation.
+- **Calculations** are limited to MHC-specific and per-site metrics, all in
+  ordinary existing calc grammar. None can divide by zero on a valid document.
+- **Generic metrics are not cloned.** The debt metrics and the expense ratio are
+  not copied into this module.
+- **Every required field is enforced by a runtime rule.** The reference runtime
+  does not validate documents against a module section's JSON Schema, so each
+  required field has a deterministic rule.
 
 No Format or Protocol change is proposed, and no version moves.
 
@@ -48,97 +53,100 @@ No Format or Protocol change is proposed, and no version moves.
   (§2.2). None states sites, pad rent or a park-owned home.
 - **The module path.** A module-declared class (RFC 0003, Protocol §X.2) is the
   designed path. RFC 0039 shipped one (`@uwmd/module-data-center`) with no spec
-  change, and confirmed that module formulas may read standard sections as well
-  as the module's own (RFC 0039 implementation note 1).
+  change, confirmed that module formulas may read standard sections (its
+  implementation note 1), and limited itself to vertical-specific calculations.
+  It does not clone the generic debt pack.
 - **What a custom class does not get (Protocol §X.2.4).** It has no builtin calc
-  pack, no Excel layout and no §XIII size row. "A module supplies its own
-  calculations for the classes it declares; anything the module does not
-  supply, a custom class does not have." `getAssetClassDefaults` returns `null`
-  for a custom class, so a module publishes no defaults. `CC-13` is
-  `not_applicable` for a custom class.
+  pack, no Excel layout and no §XIII size row. `getAssetClassDefaults` returns
+  `null` for it, and `CC-13` is `not_applicable`.
 - **Module runtime (`module-runtime.ts`):**
   - calculations run in declaration order, each seeing earlier results as
     `prior_results`;
-  - a validation `rule` is a safe expression in the §VIII.1 grammar;
-  - a rule fires on `false` and is silent on `null`;
-  - a calculation that fails to evaluate is reported as `MOD-CALC-ERROR`, an
-    error;
-  - a section's `schema` is shape-checked when the manifest loads, but
-    documents are **not** validated against it at runtime. A typed constraint
-    on a document value must be written as a rule.
-- **No collection iteration.** `sum(...nums)` and `avg(...nums)` are variadic
-  over explicit arguments; given an array, `sum` refuses with `CALC-TYPE-001`. A
-  numeric index such as `site_types[0]` does not parse (`CALC-PARSE-001`), and
-  the protocol permits iteration only inside the named solvers. There is no
-  grammar for a product over array rows or a sum over rows.
+  - a validation `rule` is a safe expression in the §VIII.1 grammar that fires
+    on `false` and is silent on `null`;
+  - a rule that cannot evaluate is reported as `MOD-RULE-ERROR`, and a
+    calculation that cannot evaluate as `MOD-CALC-ERROR`. Both are errors that
+    name the rule or calculation;
+  - a section's `schema` is only shape-checked when the manifest loads.
+    **Documents are not validated against it at runtime.**
+- **Calc grammar limits that shape this design:**
+  - **No collection iteration.** `sum(...nums)` and `avg(...nums)` take explicit
+    arguments; given an array, `sum` refuses with `CALC-TYPE-001`, and a numeric
+    index such as `site_types[0]` does not parse.
+  - **No string literals.** `"2026-06-30"` is `CALC-PARSE-001`, and there is no
+    date predicate. A rule can test that a date is present, not that it is
+    real.
+  - **`if()` is eager.** It evaluates both branches, so a guard such as
+    `if(x > 0, 1 / x, null)` still raises `CALC-DIV-ZERO`.
+  - **Type errors.** An ordered comparison or arithmetic on a non-number is
+    `CALC-TYPE-001`. `==` and `!=` return booleans, including against `null`.
 - **Adopter evidence (unverified here).** StackUW's planning record, dated
-  2026-09-29 (its `Q-974` and an internal plans document), treats the site as
-  the underwriting unit, with POH home rent as a second stream. Its
-  upstream-first preference is not a UWMD owner decision.
+  2026-09-29, treats the site as the underwriting unit, with POH home rent as a
+  second stream.
 
-## Why the earlier calculation was unreachable
+## Why the earliest calculation was unreachable
 
-The earlier draft's first calculation was
-Σ(`site_types[].count` × `pad_rent_monthly`) / `total_sites`. That needs
-element-wise products and a sum over a variable-length array. The evaluator has
-neither, and this RFC does not add either: no collection iteration, no
-aggregation primitive, no second engine.
+The original draft computed pad rent as
+Σ(`site_types[].count` × `pad_rent_monthly`) / `total_sites`, and two metrics
+depended on it. That needs element-wise products and a sum over a
+variable-length array, which the evaluator does not have. This RFC adds no
+collection iteration, aggregation primitive or second engine.
 
-Two later calculations (`annual_pad_revenue_potential` and `poh_rent_share`)
-depended on it, so three advertised metrics could not be computed.
-
-A counts-only `site_types[]` has the same problem. A rule cannot check that its
-counts sum to `total_sites`, so it could silently contradict the site total.
+Nor could a rule check a counts-only `site_types[]` against `total_sites`. So the
+schedule is deferred, and pad rent is carried as one stated scalar.
 
 ## Proposed first scope
 
-Everything in this section is a proposal. None of it is accepted.
-
 ### Manifest
 
-| Field | Value | Why |
-|---|---|---|
-| `manifest_version` | `'1'` | |
-| `id` | `org.uwmd.manufactured_housing_module` | the org's namespace, as RFC 0039 |
-| `requires_protocol` | `>=2.5.0` | the data-centre floor; the module uses no later feature |
-| `requires_format` | `>=1.1` | |
-| `requires_tier` | `tier-3-calc-host` | the contribution is calculation |
-| `declares_asset_classes[0].id` | `org.uwmd.manufactured_housing` | the last segment is not a builtin name (§2.2a) |
-| `.display_name` | `Manufactured Housing Community` | |
-| `.fallback` | `multifamily` | see [Fallback](#fallback) |
-| `.required_sections` | `['mhc_sites']` | |
-| `.optional_sections` | none | the earlier `mhc_utilities` and `mhc_homes` are deferred |
+| Field | Value |
+|---|---|
+| `manifest_version` | `'1'` |
+| `id` | `org.uwmd.manufactured_housing_module` |
+| `requires_protocol` | `>=2.5.0` (the data-centre floor; the module uses no later feature) |
+| `requires_format` | `>=1.1` |
+| `requires_tier` | `tier-3-calc-host` |
+| `declares_asset_classes[0].id` | `org.uwmd.manufactured_housing` |
+| `.display_name` | `Manufactured Housing Community` |
+| `.fallback` | `multifamily` (see [Fallback](#fallback)) |
+| `.required_sections` | `['mhc_sites']` |
+| `.optional_sections` | none |
 
 ### Section `mhc_sites` (required)
 
-| Field | Type and unit | Meaning |
-|---|---|---|
-| `total_sites` | integer ≥ 1 | Every manufactured-home site in the community, occupied or vacant. The module's size denominator, since a custom class has no §XIII row. `property` gains no field. |
-| `occupied_sites` | integer, `0 ≤ n ≤ total_sites` | Sites with a home in place under an in-place lease as of `as_of_date`. |
-| `park_owned_homes` | integer, `0 ≤ n ≤ total_sites` | Homes the community owns on its own sites. `0` when it owns none. |
-| `weighted_pad_rent_monthly` | currency per site per month, ≥ 0 | **The authoritative pad-rent figure**, defined below. |
-| `poh_home_rent_monthly` | currency per park-owned home per month, ≥ 0, or `null` | The average monthly **home** rent per park-owned home, across all `park_owned_homes`: occupied homes at in-place home rent, vacant homes at asking home rent. It **excludes** the pad rent for that home's site, which `weighted_pad_rent_monthly` already counts. `null` when `park_owned_homes` is `0` or the source states none. |
-| `age_restricted` | boolean or `null` | Disclosure only (an age-restricted community). No calculation reads it. |
-| `as_of_date` | `YYYY-MM-DD` | The date the counts and rents describe. |
+| Field | Requiredness | Type and unit | Meaning |
+|---|---|---|---|
+| `total_sites` | required | whole number ≥ 1 | Every manufactured-home site in the community, occupied or vacant. The module's size denominator, since a custom class has no §XIII row. `property` gains no field. |
+| `occupied_sites` | required | whole number, `0 ≤ n ≤ total_sites` | Sites with a home in place under an in-place lease as of `as_of_date`. |
+| `park_owned_homes` | required | whole number, `0 ≤ n ≤ total_sites` | Homes the community owns on its own sites. `0` when it owns none. |
+| `weighted_pad_rent_monthly` | required | currency per site per month, > 0 | The authoritative pad-rent input, defined below. |
+| `poh_home_rent_monthly` | conditional | currency per park-owned home per month, ≥ 0 | Required when `park_owned_homes > 0`, and absent or `null` when it is `0`. The average monthly **home** rent per park-owned home across all `park_owned_homes`: occupied homes at in-place home rent, vacant homes at asking home rent. It **excludes** the pad rent for that home's site, which `weighted_pad_rent_monthly` already counts. |
+| `as_of_date` | required | `YYYY-MM-DD` | The date the counts and rents describe. |
 
-**`weighted_pad_rent_monthly`** is the site-count-weighted average monthly pad
-(lot) rent across all `total_sites`. Occupied sites count at their in-place
-contract pad rent, and vacant sites at the source's current asking pad rent.
+**`weighted_pad_rent_monthly`** is the selected first-scope representation. It
+is the site-count-weighted average monthly pad (lot) rent across all
+`total_sites`:
 
-- **Included:** pad rent only.
-- **Excluded:** park-owned-home rent, utility reimbursements, fees, and RV or
-  transient income.
-- **Source:** the figure from the source (a rent roll, a T-12, or the
-  underwriter's stated assumption), carried as stated with the section's
-  `_meta` provenance.
-- **Not derived:** core never derives it from a site-type schedule. No module
-  claims to have computed it.
-- **Currency:** the document's currency (RFC 0046).
+- occupied sites at their in-place pad rent;
+- vacant sites at the asking pad rent the source or underwriter states.
+
+Further rules:
+
+- **Scope.** It is pad rent only, excluding park-owned-home rent, utility
+  reimbursements, fees, and RV or transient income.
+- **Provenance.** It is a stated, source-backed input (a rent roll, a T-12, or
+  the underwriter's stated figure), carried with the section's `_meta`
+  provenance. Core does not derive it, and no module claims to have computed
+  it.
+- **Currency.** Values are in the document's currency (RFC 0046).
+- **Strictly positive.** A pad rent of zero would make `poh_rent_share`'s
+  denominator zero whenever POH home rent is also zero. A community charging no
+  pad rent is not one this module underwrites.
 
 ### Calculations
 
-Every formula is in the existing §VIII.1 grammar. The order is load-bearing: a
-row reads only stated fields and the rows above it.
+Every formula is in the existing §VIII.1 grammar. Order is load-bearing: a row
+reads only stated fields and the rows above it.
 
 | id | Formula | Unit | round_to |
 |---|---|---|---|
@@ -149,72 +157,80 @@ row reads only stated fields and the rows above it.
 | `poh_rent_share` | `annual_poh_home_rent_potential / (annual_pad_rent_potential + annual_poh_home_rent_potential)` | `%` | 4 |
 | `price_per_site` | `valuation.purchase_price / mhc_sites.total_sites` | `$` | 2 |
 | `noi_per_site` | `noi_model.net_operating_income / mhc_sites.total_sites` | `$` | 2 |
-| `loan_per_site` | `debt_structure.loan_amount / mhc_sites.total_sites` | `$` | 2 |
-| `expense_ratio` | `noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income` | `%` | unit default |
-| `ltv` | `debt_structure.loan_amount / valuation.purchase_price` | `%` | unit default |
-| `ltc` | `debt_structure.loan_amount / sources_uses.uses.total` | `%` | unit default |
-| `dscr` | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x` | unit default |
-| `debt_yield` | `noi_model.net_operating_income / debt_structure.loan_amount` | `%` | unit default |
-
-The last five rows reuse, string for string, the formula and unit that the
-builtin office and student-housing packs declare. Per §X.2.4, a custom class has
-these metrics only if its module declares them.
 
 ### Calculation audit
 
-| Metric | How it is reached | Null and zero behaviour |
+| Metric | Denominator on a valid document | Null behaviour |
 |---|---|---|
-| Pad rent per site per month | The stated input `weighted_pad_rent_monthly`; no calculation | Absent: the pad metrics below are `null`. |
-| Annual pad-rent potential | `weighted_pad_rent_monthly × total_sites × 12` | `null` when either input is absent. |
-| Park-owned-home revenue | `poh_home_rent_monthly × park_owned_homes × 12` | `null` when no home rent is stated. No division, so `park_owned_homes: 0` cannot raise `CALC-DIV-ZERO`. |
-| POH share of sites | `park_owned_homes / total_sites` | `total_sites ≥ 1` is enforced by rule `CC-MOD-MH-01`. A stated `0` also makes every per-site division `CALC-DIV-ZERO`. |
-| POH share of rent | home potential ÷ (pad potential + home potential) | `null` when home rent is unstated. Both potentials zero is `CALC-DIV-ZERO`, reported as `MOD-CALC-ERROR` on a degenerate document. |
-| Price, NOI and loan per site | standard-section figure ÷ `total_sites` | `null` when the standard figure is absent. |
-| Expense ratio | as the builtin packs | Zero EGI is `CALC-DIV-ZERO`. |
-| DSCR, debt yield, LTV, LTC | as the builtin packs | `null` when the debt or valuation figures are absent. A **stated zero** `loan_amount` or `annual_debt_service` is `CALC-DIV-ZERO`, which the module runtime reports as `MOD-CALC-ERROR`. An all-cash document omits the debt fields rather than stating zeros. |
+| Pad rent per site per month | none; it is the stated input `weighted_pad_rent_monthly` | — |
+| `physical_occupancy`, `poh_share` | `total_sites ≥ 1` (`CC-MOD-MH-01`) | `null` only if an input is absent, which a rule reports |
+| `annual_pad_rent_potential` | none | as above |
+| `annual_poh_home_rent_potential` | none (a product), so `park_owned_homes: 0` cannot divide by zero | `null` when there are no park-owned homes and therefore no home rent |
+| `poh_rent_share` | `annual_pad_rent_potential + annual_poh_home_rent_potential`, which is > 0 because pad rent > 0 (`CC-MOD-MH-04`) and `total_sites ≥ 1` | `null` when there are no park-owned homes. `poh_share` is then `0` |
+| `price_per_site`, `noi_per_site` | `total_sites ≥ 1` | `null` when the standard-section figure is absent |
 
-No row is unresolved. AI performs none of this arithmetic; the evaluator does.
+No valid document can make a first-scope calculation divide by zero. A stated
+`total_sites: 0` is invalid: `CC-MOD-MH-01` reports it, and each per-site
+calculation also reports `MOD-CALC-ERROR`. AI performs none of this arithmetic;
+the evaluator does.
 
 ### Validations (`CC-MOD-MH-NN`)
 
-Each rule asserts what must be true. It fires on `false` and is silent on
-`null`, so an absent field emits nothing. Every rule is an `error`: each refuses
-a stated value that breaks the section's typed contract. There are no
-market or advisory thresholds.
+Every rule is an `error`, and there are no market or advisory thresholds. Each
+rule opens with `mhc_sites == null ||`, so a document missing the whole section
+reports `MOD-SECTION-MISSING` alone. Presence is tested with `!= null`, which
+yields `false` rather than `null` on an absent field, so a missing required
+field is reported rather than ignored.
 
-| Code | Rule | Message |
+| Code | Rule | Detects |
 |---|---|---|
-| `CC-MOD-MH-01` | `mhc_sites == null \|\| (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` | `total_sites` must be stated as a whole number of at least 1 |
-| `CC-MOD-MH-02` | `mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites` | occupied sites must be a whole number within `total_sites` |
-| `CC-MOD-MH-03` | `mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites` | park-owned homes must be a whole number within `total_sites` |
-| `CC-MOD-MH-04` | `mhc_sites.weighted_pad_rent_monthly >= 0` | pad rent must be nonnegative |
-| `CC-MOD-MH-05` | `mhc_sites.poh_home_rent_monthly == null \|\| (mhc_sites.poh_home_rent_monthly >= 0 && mhc_sites.park_owned_homes > 0)` | home rent must be nonnegative, and stated only when the community owns homes |
+| `CC-MOD-MH-01` | `mhc_sites == null \|\| (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` | `total_sites` missing, below 1, or not whole |
+| `CC-MOD-MH-02` | `mhc_sites == null \|\| (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` | `occupied_sites` missing, negative, not whole, or above `total_sites` |
+| `CC-MOD-MH-03` | `mhc_sites == null \|\| (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` | `park_owned_homes` missing, negative, not whole, or above `total_sites` |
+| `CC-MOD-MH-04` | `mhc_sites == null \|\| (mhc_sites.weighted_pad_rent_monthly != null && mhc_sites.weighted_pad_rent_monthly > 0)` | pad rent missing, zero or negative |
+| `CC-MOD-MH-05` | `mhc_sites == null \|\| mhc_sites.as_of_date != null` | `as_of_date` missing |
+| `CC-MOD-MH-06` | `mhc_sites == null \|\| mhc_sites.park_owned_homes != 0 \|\| mhc_sites.poh_home_rent_monthly == null` | POH home rent stated when there are no park-owned homes |
+| `CC-MOD-MH-07` | `mhc_sites == null \|\| mhc_sites.park_owned_homes == null \|\| mhc_sites.park_owned_homes <= 0 \|\| (mhc_sites.poh_home_rent_monthly != null && mhc_sites.poh_home_rent_monthly >= 0)` | POH home rent missing or negative when park-owned homes exist |
 
-`CC-MOD-MH-01` is the one presence rule. `MOD-SECTION-MISSING` checks only that
-the section exists, and `total_sites` is the denominator of every per-site
-metric. Its leading `mhc_sites == null` keeps it silent when the whole section
-is missing, so that case reports `MOD-SECTION-MISSING` alone.
+**Non-numeric values.** A string, boolean or object in a numeric field makes
+its rule fail to evaluate (`CALC-TYPE-001`). The reference runtime reports that
+deterministically as `MOD-RULE-ERROR`, naming the rule, together with a
+`MOD-CALC-ERROR` for each calculation that reads the field. The rule's own code
+cannot be emitted for this case, because the grammar has no type predicate.
 
-While drafting, the calculation and rule tables above were run unchanged through
-`evaluateModuleCalculations` and `validateAgainstModules` on the current core
-build, using synthetic documents in a scratch harness that is not committed.
-The cases were: with park-owned homes, without them, all-cash, each rule
-violated, `total_sites` missing, and the section missing.
+**`as_of_date` validity is not enforceable.** `CC-MOD-MH-05` detects a missing
+date. A malformed or impossible one, such as `"2026-02-30"`, cannot be detected
+by the reference runtime: rule grammar has no string literals and no date
+predicate, and section schemas are not enforced. No calculation reads the date.
+Closing this gap needs a separate core capability, listed under
+[Unresolved questions](#unresolved-questions). This RFC does not rely on the
+manifest schema for it.
 
-- The manifest loads.
-- Absent operands make a rule `null` (silent), and each violation makes exactly
-  its rule `false`.
-- A stated `total_sites: 0` reports `CC-MOD-MH-01` together with a
-  `MOD-CALC-ERROR` for each per-site calculation.
+**Verified on the real runtime.** While drafting, these calculation and rule
+tables were run unchanged through `evaluateModuleCalculations` and
+`validateAgainstModules` on the current core build, using synthetic documents in
+a scratch harness that is not committed. 25 cases were run, and in each the
+issues matched the tables above:
 
-### What core does not do
+- the manifest loads;
+- valid documents with and without park-owned homes draw no issue;
+- valid documents with a zero `loan_amount`, a zero `annual_debt_service`, or
+  zero EGI draw no issue;
+- a missing section reports only `MOD-SECTION-MISSING`;
+- each missing required field reports exactly its rule;
+- each numeric violation reports its rule;
+- non-numeric values report `MOD-RULE-ERROR`;
+- a malformed `as_of_date` draws no issue, as stated above.
 
-- It does not derive pad rent from site types.
-- It does not iterate over collections.
+### What the module does not do
+
+- It does not derive pad rent from site types, and does not iterate.
+- It does not compute generic debt metrics or the expense ratio (see
+  [Deferred](#deferred)).
 - It does not apply market thresholds, publish class defaults, or assume a
   value the document does not state.
 - It does not model RV or transient sites.
-- It does not reconcile the module's rent potentials with
+- It does not reconcile its rent potentials with
   `noi_model.income.gross_potential_rent`. No rule ties them, because whether
   POH home rent sits in GPR or other income is a modelling choice with no
   evidence in the repository.
@@ -222,44 +238,52 @@ violated, `total_sites` missing, and the section missing.
 ## Fallback
 
 `multifamily` remains the honest degraded reading. Under Protocol §X.2.2, a host
-without the module MAY render the document using the fallback's **view models**,
-MUST report the read as degraded and emit `MOD-FALLBACK-001`, and MUST NOT
-present it as a full read.
+without the module MAY render using the fallback's **view models**, MUST report
+the read as degraded and emit `MOD-FALLBACK-001`, and MUST NOT present it as a
+full read.
 
 - **What survives.** The standard sections (`property`, `ownership`,
-  `noi_model`, `valuation`, `debt_structure`, `sources_uses`, `dcf`) render
-  under residential income-property view models. That is what an MHC's standard
-  sections are: income property leased to residents. The stated NOI, price,
-  debt and returns read correctly.
+  `noi_model`, `valuation`, `debt_structure`, `sources_uses`, `dcf`) stay intact
+  and render under residential income-property view models. The stated NOI,
+  price, debt and returns read correctly. This RFC does not change those
+  sections.
 - **What is lost:**
-  - every module calculation, including the per-site figures and the debt
-    metrics, since §X.2.4 gives a custom class no builtin pack;
-  - the module's validations;
+  - the module's calculations and validations;
   - any labelled presentation of `mhc_sites`, which renders as a generic block.
 - **The `total_units` hazard.** A host that also ran the multifamily *pack*
   (outside what §X.2.2 grants) would divide per-unit metrics by
   `property.total_units`. The example therefore leaves `property.total_units`
-  unstated, so no mislabelled per-unit figure appears. This follows RFC 0039,
-  whose example set square footage so the fallback number was "not wrong, only
-  unhelpful".
+  unstated, so no mislabelled per-unit figure appears. RFC 0039 handled the
+  same issue in its example.
 
 ## Deferred
 
+- **Generic metrics for custom classes:** `loan_per_site`, `ltv`, `ltc`, `dscr`,
+  `debt_yield` and `expense_ratio`.
+  - Copied into this module, a legitimately stated zero `loan_amount`,
+    `annual_debt_service` or `effective_gross_income` would raise
+    `CALC-DIV-ZERO`, which the module runtime reports as `MOD-CALC-ERROR`.
+  - Absence and zero are different facts, and a document should not omit a true
+    zero to avoid an error.
+  - `if()` is eager, so no guarded variant is possible in today's grammar, and
+    this RFC invents none.
+  - The data-centre module already shows a vertical module computing only
+    vertical-specific metrics.
+
+  How custom classes should get generic metrics is a separate, shared design
+  question. Builtin packs are unchanged.
+- **`age_restricted`.** It is disclosure only, no calculation reads it, and the
+  runtime would not enforce its type. It can return with a demonstrated
+  consumer.
 - **The per-site-type rent schedule (`site_types[]`)**, including a counts-only
-  inventory. No rule can reconcile it to `total_sites` or to
-  `weighted_pad_rent_monthly` without collection iteration. It returns only if a
-  separate RFC gives the protocol a deterministic way to reconcile it.
-- **`mhc_utilities`.** No calculation reads it. Its `annual_cost` and
-  `recovery_rate` would duplicate `noi_model.expenses.utilities` and
-  other-income figures, which are two truths.
-- **POH operating detail** (`poh_occupancy`, `turnover_rate`,
-  `turn_cost_per_home`, `reserve_per_home_annual`). No calculation reads it, and
-  the reserve would compete with `noi_model.expenses.replacement_reserves`. The
-  earlier `homes_count` duplicated `park_owned_homes`, so it is removed along
-  with the rule (`MH-03`) that existed only to reconcile the duplicate.
+  inventory. No rule can reconcile it without collection iteration.
+- **Utilities detail (`mhc_utilities`).** No calculation reads it, and it would
+  duplicate `noi_model.expenses.utilities` and other-income figures.
+- **POH operating detail** (occupancy, turnover, turn cost, reserves). No
+  calculation reads it, and the reserve would compete with
+  `noi_model.expenses.replacement_reserves`.
 - **RV and transient sites:** no demonstrated consumer.
-- **Advisory thresholds** (low occupancy, high POH share): market judgements
-  with no evidence.
+- **Advisory thresholds:** market judgements with no evidence.
 - **Module-published class defaults:** the protocol has no mechanism.
 
 ## Compatibility analysis
@@ -269,6 +293,9 @@ present it as a full read.
 - **Documents that don't load the module.** A document that does not list the
   module in `modules:` is unaffected. A host without the module reads an MHC
   document as degraded `multifamily` (see [Fallback](#fallback)).
+- **Standard sections.** `debt_structure`, `valuation`, `sources_uses` and the
+  other standard sections are unchanged and fully renderable. Stating zero debt
+  values draws no module issue, because the module computes no debt metric.
 - **No builtin changes.** No builtin calc pack, Excel layout or size-registry
   row changes.
 
@@ -278,13 +305,16 @@ A runtime suite under `conformance/modules/runtime/`, numbered after the
 data-centre scenarios at implementation. It would hold the example document
 plus fixtures for:
 
-- **Calculations:**
-  - no park-owned homes (POH metrics `null`, no error);
-  - with park-owned homes (all metrics pinned);
-  - an all-cash document with debt fields omitted (debt metrics `null`, no
-    issue).
-- **Rules:** each of `CC-MOD-MH-01` to `CC-MOD-MH-05` firing, plus a document
-  missing `total_sites`.
+- **Valid documents:**
+  - park-owned homes present (all seven calculations pinned);
+  - no park-owned homes (POH revenue and rent share `null`, `poh_share` `0`);
+  - zero `loan_amount` and `annual_debt_service` stated (no module issue).
+- **Missing data:**
+  - the section missing (`MOD-SECTION-MISSING` only);
+  - each required field missing (its rule only).
+- **Rule violations:** each of `CC-MOD-MH-01` to `CC-MOD-MH-07`.
+- **Non-numeric values:** a non-numeric count (`MOD-RULE-ERROR` naming the
+  rule).
 - **Fallback:** the module not loaded, so the read is `degraded` with
   `MOD-FALLBACK-001`.
 
@@ -303,8 +333,7 @@ separate branch, as RFC 0039's did:
 - the example `examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md`;
 - the runtime fixtures above.
 
-A test would pin the five builtin-identical formulas against the builtin packs'
-strings. StackUW's adoption (its `CAP-015` item) is the adopter's own follow-up.
+StackUW's adoption is the adopter's own follow-up.
 
 ## Alternatives considered
 
@@ -312,17 +341,41 @@ strings. StackUW's adoption (its `CAP-015` item) is the adopter's own follow-up.
   (§2.2), and the module path needs no spec change.
 - **A `multifamily` document stating sites as units.** It loses the pad/home
   split and misstates the denominator.
-- **The earlier Σ over `site_types[]`.** Unreachable without collection
-  iteration, which this RFC does not add.
-- **Both `site_types[]` and a scalar.** Two truths that no rule can reconcile.
+- **The original Σ over `site_types[]`.** Unreachable without collection
+  iteration.
+- **Both `site_types[]` and the scalar.** Two truths that no rule can reconcile.
 - **Stating `annual_pad_rent_potential` instead of the monthly average.**
-  Equivalent information. With an annual figure stated, the per-site average
-  would be a division. The draft states the monthly average because it is the
-  per-site figure the consumer reads; see the owner decisions.
-- **Omitting the debt metrics, as the data-centre module does.** Under §X.2.4
-  the class would then have no DSCR, LTV or debt yield at all.
+  Superseded: the owner selected `weighted_pad_rent_monthly`.
+- **Copying the builtin debt metrics and expense ratio.** A true zero would
+  become an error, and no guard is expressible (see [Deferred](#deferred)).
+- **Telling all-cash documents to omit zero debt values.** It conflates absence
+  with zero; rejected.
+- **Relying on the manifest JSON Schema for requiredness and types.** The
+  reference runtime does not enforce it; rules carry the contract instead.
 - **Publishing class defaults.** The protocol has no mechanism; a core RFC would
   be separate.
+
+## Unresolved questions
+
+1. **`as_of_date` validity.** The reference runtime can require the date but
+   cannot detect a malformed one. That needs a core capability, either:
+   - a date-validity predicate in §VIII.3, or
+   - runtime enforcement of module section schemas.
+
+   Either is its own RFC. Until then this module enforces presence only.
+2. **Type errors.** Non-numeric values surface as `MOD-RULE-ERROR` naming the
+   rule, not under the rule's own code. A type predicate would need the same
+   kind of core change. Whether `MOD-RULE-ERROR` is acceptable as the
+   first-scope signal is the owner's call.
+3. **Generic metrics for custom classes:** how a module-declared class should
+   obtain debt metrics and the expense ratio without cloning formulas or
+   refusing true zeros. This is a shared design question, outside this RFC.
+4. **Confirmation of two tightenings the draft makes to the owner's direction:**
+   - `weighted_pad_rent_monthly > 0`, rather than ≥ 0, keeps `poh_rent_share`
+     defined on every valid document;
+   - `expense_ratio` is deferred with the debt metrics, because zero EGI is a
+     legitimate value that would divide by zero.
+5. **Acceptance** of RFC 0068 and authorization to implement.
 
 ## Decision status
 
@@ -332,15 +385,18 @@ RFC 0068 remains `draft`.
 |---|---|---|
 | A custom class gets no builtin pack, layout, size row or defaults; the module supplies its own calculations | Protocol §X.2.4, RFC 0003 | Existing rule. |
 | The degraded fallback renders view models only and reports `MOD-FALLBACK-001` | Protocol §X.2.2 | Existing rule. |
-| No collection iteration; `sum`/`avg` take explicit arguments | Protocol §VIII.1, §VIII.3 | Existing rule. |
-| Module rules fire on `false` and are silent on `null`; failed calculations report `MOD-CALC-ERROR` | `module-runtime.ts`, RFC 0006 | Existing behaviour. |
+| No collection iteration; no string literals; `if()` is eager | Protocol §VIII.1, §VIII.3; evaluator | Existing behaviour. |
+| Module rules fire on `false` and are silent on `null`; failures report `MOD-RULE-ERROR` / `MOD-CALC-ERROR`; section schemas are not enforced at runtime | `module-runtime.ts`, `modules.ts` | Existing behaviour. |
 | Sites as the underwriting unit, with POH rent as a second stream | StackUW planning, 2026-09-29 | Adopter evidence. Not verified here. Not authority. |
-| The class, its fallback, `mhc_sites`, the calculations and the rules above | This draft | Proposal. |
-| `site_types[]`, utilities, POH operating detail, RV sites, thresholds | This draft | Deferred. |
-| The scalar's form: a monthly per-site average (draft) or an annual potential | — | **Owner decision.** |
-| The scalar's basis: all sites with vacant ones at asking rent (draft), or occupied sites only | — | **Owner decision.** |
-| Whether the module declares the builtin debt metrics, accepting that a stated zero loan or debt service reports `MOD-CALC-ERROR` (draft: declare them) | — | **Owner decision.** |
-| Whether `age_restricted` belongs in the first scope (draft: keep, disclosure only) | — | **Owner decision.** |
+| `weighted_pad_rent_monthly` (site-weighted, all sites, vacant at stated asking rent; stated, not derived) is the first-scope pad-rent representation | Owner direction, 2026-10-01 | Selected for first scope. |
+| `age_restricted` removed from first scope | Owner direction, 2026-10-01 | Deferred. |
+| Generic debt calculations (`loan_per_site`, `ltv`, `ltc`, `dscr`, `debt_yield`) deferred; no recommendation to omit true zero values | Owner direction, 2026-10-01 | Deferred. |
+| First-scope requiredness enforced by runtime rules, not the manifest schema | Owner direction, 2026-10-01 | Adopted in `CC-MOD-MH-01..07`. |
+| `poh_home_rent_monthly` required when `park_owned_homes > 0` | This draft's reading of the owner's "conditional" direction | Proposal. |
+| `weighted_pad_rent_monthly > 0`; `expense_ratio` deferred | This draft | Proposal. **Owner confirmation requested.** |
+| The class, fallback, section, seven calculations and seven rules | This draft | Proposal. |
+| `as_of_date` validity; type errors under `MOD-RULE-ERROR` | — | **Unresolved.** Needs a core capability. |
+| `site_types[]`, utilities, POH operating detail, RV sites, thresholds, defaults, generic metrics for custom classes | — | Deferred. |
 | Acceptance of RFC 0068 and implementation | — | Not decided. Not authorized. |
 
 ## Prior art
@@ -349,4 +405,5 @@ RFC 0068 remains `draft`.
 - RFC 0006 — the first module, and the rule semantics of firing on `false` and
   staying silent on `null`.
 - RFC 0039 — the data-centre module, the template followed here, including
-  module formulas over standard sections.
+  module formulas over standard sections and the decision to compute only
+  vertical-specific metrics.
