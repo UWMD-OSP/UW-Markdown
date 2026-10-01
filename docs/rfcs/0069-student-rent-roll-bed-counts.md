@@ -404,7 +404,7 @@ they do not accept the RFC.
 | Pack formulas for `occupancy` and `pre_lease_rate` | `STUDENT_HOUSING_PACK` | Existing. Unchanged. |
 | A stated `occupied_beds` or `preleased_beds` may not exceed `property.total_beds`; both are errors (`BED-02`); no future-phase exception through a warning | Owner decision 1, 2026-10-01 | Decided. Future capacity needs its own contract. |
 | A stated `preleased_beds` requires `preleased_as_of` and `preleased_term_start`: MUST plus error (`BED-04`); the tuple stays optional | Owner decision 2, 2026-10-01 | Decided. |
-| A stated `occupied_beds` requires the roll's `as_of_date`; a missing companion date is an error (`BED-03`) | Owner decision 3, 2026-10-01 | Decided. Treating a malformed `as_of_date` the same way is this draft's reading of that decision. |
+| A stated `occupied_beds` requires the roll's `as_of_date` as a real `YYYY-MM-DD` date; an absent or malformed (non-real) `as_of_date` is an error (`BED-03`) | Owner decision 3, 2026-10-01, confirmed by the owner to cover both an absent and a malformed `as_of_date` | Decided. |
 | The four field names, types and date semantics | This draft | Proposal. |
 | One `BED-NN` family, every code an error | This draft, following §III.6a precedent | Proposal. |
 | Malformed counts and dates are errors; an absent count is not an issue; dates without a count are inert | This draft, following feature-family convention | Proposal. |
