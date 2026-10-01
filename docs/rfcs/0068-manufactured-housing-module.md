@@ -39,8 +39,8 @@ section, `mhc_sites`.
   `weighted_pad_rent_monthly`. This is the selected first-scope representation.
 - **Calculations** are limited to MHC-specific and per-site metrics, all in
   ordinary existing calc grammar. None can divide by zero on a valid document.
-- **Generic metrics are not cloned.** The debt metrics and the expense ratio are
-  not copied into this module.
+- **Generic and derived ratios are deferred.** The debt metrics, the expense
+  ratio and the POH share of rent are not in the first scope.
 - **Every required field is enforced by a runtime rule.** The reference runtime
   does not validate documents against a module section's JSON Schema, so each
   required field has a deterministic rule.
@@ -119,7 +119,7 @@ schedule is deferred, and pad rent is carried as one stated scalar.
 | `total_sites` | required | whole number ≥ 1 | Every manufactured-home site in the community, occupied or vacant. The module's size denominator, since a custom class has no §XIII row. `property` gains no field. |
 | `occupied_sites` | required | whole number, `0 ≤ n ≤ total_sites` | Sites with a home in place under an in-place lease as of `as_of_date`. |
 | `park_owned_homes` | required | whole number, `0 ≤ n ≤ total_sites` | Homes the community owns on its own sites. `0` when it owns none. |
-| `weighted_pad_rent_monthly` | required | currency per site per month, > 0 | The authoritative pad-rent input, defined below. |
+| `weighted_pad_rent_monthly` | required | currency per site per month, finite and ≥ 0 | The authoritative pad-rent input, defined below. |
 | `poh_home_rent_monthly` | conditional | currency per park-owned home per month, ≥ 0 | Required when `park_owned_homes > 0`, and absent or `null` when it is `0`. The average monthly **home** rent per park-owned home across all `park_owned_homes`: occupied homes at in-place home rent, vacant homes at asking home rent. It **excludes** the pad rent for that home's site, which `weighted_pad_rent_monthly` already counts. |
 | `as_of_date` | required | `YYYY-MM-DD` | The date the counts and rents describe. |
 
@@ -139,9 +139,8 @@ Further rules:
   provenance. Core does not derive it, and no module claims to have computed
   it.
 - **Currency.** Values are in the document's currency (RFC 0046).
-- **Strictly positive.** A pad rent of zero would make `poh_rent_share`'s
-  denominator zero whenever POH home rent is also zero. A community charging no
-  pad rent is not one this module underwrites.
+- **Range.** It is finite and nonnegative, so zero is valid. JSON numbers are
+  always finite, so the rule needs to check only presence and `>= 0`.
 
 ### Calculations
 
@@ -154,7 +153,6 @@ reads only stated fields and the rows above it.
 | `annual_pad_rent_potential` | `mhc_sites.weighted_pad_rent_monthly * mhc_sites.total_sites * 12` | `$` | 2 |
 | `poh_share` | `mhc_sites.park_owned_homes / mhc_sites.total_sites` | `%` | 4 |
 | `annual_poh_home_rent_potential` | `mhc_sites.poh_home_rent_monthly * mhc_sites.park_owned_homes * 12` | `$` | 2 |
-| `poh_rent_share` | `annual_poh_home_rent_potential / (annual_pad_rent_potential + annual_poh_home_rent_potential)` | `%` | 4 |
 | `price_per_site` | `valuation.purchase_price / mhc_sites.total_sites` | `$` | 2 |
 | `noi_per_site` | `noi_model.net_operating_income / mhc_sites.total_sites` | `$` | 2 |
 
@@ -164,10 +162,12 @@ reads only stated fields and the rows above it.
 |---|---|---|
 | Pad rent per site per month | none; it is the stated input `weighted_pad_rent_monthly` | — |
 | `physical_occupancy`, `poh_share` | `total_sites ≥ 1` (`CC-MOD-MH-01`) | `null` only if an input is absent, which a rule reports |
-| `annual_pad_rent_potential` | none | as above |
-| `annual_poh_home_rent_potential` | none (a product), so `park_owned_homes: 0` cannot divide by zero | `null` when there are no park-owned homes and therefore no home rent |
-| `poh_rent_share` | `annual_pad_rent_potential + annual_poh_home_rent_potential`, which is > 0 because pad rent > 0 (`CC-MOD-MH-04`) and `total_sites ≥ 1` | `null` when there are no park-owned homes. `poh_share` is then `0` |
+| `annual_pad_rent_potential` | none (a product) | Valid at zero when pad rent is `0` |
+| `annual_poh_home_rent_potential` | none (a product), so `park_owned_homes: 0` cannot divide by zero | Valid at zero when park-owned homes exist and home rent is `0`. `null` when there are no park-owned homes and therefore no home rent; `poh_share` is then `0` |
 | `price_per_site`, `noi_per_site` | `total_sites ≥ 1` | `null` when the standard-section figure is absent |
+
+`poh_share` is the first-scope measure of POH exposure. The POH share of *rent*
+is deferred (see [Deferred](#deferred)).
 
 No valid document can make a first-scope calculation divide by zero. A stated
 `total_sites: 0` is invalid: `CC-MOD-MH-01` reports it, and each per-site
@@ -187,7 +187,7 @@ field is reported rather than ignored.
 | `CC-MOD-MH-01` | `mhc_sites == null \|\| (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` | `total_sites` missing, below 1, or not whole |
 | `CC-MOD-MH-02` | `mhc_sites == null \|\| (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` | `occupied_sites` missing, negative, not whole, or above `total_sites` |
 | `CC-MOD-MH-03` | `mhc_sites == null \|\| (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` | `park_owned_homes` missing, negative, not whole, or above `total_sites` |
-| `CC-MOD-MH-04` | `mhc_sites == null \|\| (mhc_sites.weighted_pad_rent_monthly != null && mhc_sites.weighted_pad_rent_monthly > 0)` | pad rent missing, zero or negative |
+| `CC-MOD-MH-04` | `mhc_sites == null \|\| (mhc_sites.weighted_pad_rent_monthly != null && mhc_sites.weighted_pad_rent_monthly >= 0)` | pad rent missing or negative (zero is valid) |
 | `CC-MOD-MH-05` | `mhc_sites == null \|\| mhc_sites.as_of_date != null` | `as_of_date` missing |
 | `CC-MOD-MH-06` | `mhc_sites == null \|\| mhc_sites.park_owned_homes != 0 \|\| mhc_sites.poh_home_rent_monthly == null` | POH home rent stated when there are no park-owned homes |
 | `CC-MOD-MH-07` | `mhc_sites == null \|\| mhc_sites.park_owned_homes == null \|\| mhc_sites.park_owned_homes <= 0 \|\| (mhc_sites.poh_home_rent_monthly != null && mhc_sites.poh_home_rent_monthly >= 0)` | POH home rent missing or negative when park-owned homes exist |
@@ -209,11 +209,13 @@ manifest schema for it.
 **Verified on the real runtime.** While drafting, these calculation and rule
 tables were run unchanged through `evaluateModuleCalculations` and
 `validateAgainstModules` on the current core build, using synthetic documents in
-a scratch harness that is not committed. 25 cases were run, and in each the
+a scratch harness that is not committed. 27 cases were run, and in each the
 issues matched the tables above:
 
 - the manifest loads;
 - valid documents with and without park-owned homes draw no issue;
+- valid documents with zero pad rent, zero POH home rent with park-owned homes
+  present, or both, draw no issue. The annual potentials are `0`;
 - valid documents with a zero `loan_amount`, a zero `annual_debt_service`, or
   zero EGI draw no issue;
 - a missing section reports only `MOD-SECTION-MISSING`;
@@ -225,8 +227,8 @@ issues matched the tables above:
 ### What the module does not do
 
 - It does not derive pad rent from site types, and does not iterate.
-- It does not compute generic debt metrics or the expense ratio (see
-  [Deferred](#deferred)).
+- It does not compute generic debt metrics, the expense ratio, or the POH share
+  of rent (see [Deferred](#deferred)).
 - It does not apply market thresholds, publish class defaults, or assume a
   value the document does not state.
 - It does not model RV or transient sites.
@@ -272,6 +274,17 @@ full read.
 
   How custom classes should get generic metrics is a separate, shared design
   question. Builtin packs are unchanged.
+- **`poh_rent_share`** (POH home rent as a share of pad plus home rent). Its
+  denominator, `annual_pad_rent_potential + annual_poh_home_rent_potential`, is
+  zero on a valid document when pad rent and home rent are both `0`.
+  - Requiring positive pad rent only to keep a derived ratio evaluable was
+    rejected.
+  - Because `if()` is eager, no conditional form is expressible today.
+  - This RFC invents no engine workaround.
+  - It can return when the calc contract has a suitable denominator or
+    conditional mechanism, or when a use case justifies one.
+
+  `poh_share` remains the first-scope POH-exposure metric.
 - **`age_restricted`.** It is disclosure only, no calculation reads it, and the
   runtime would not enforce its type. It can return with a demonstrated
   consumer.
@@ -306,8 +319,10 @@ data-centre scenarios at implementation. It would hold the example document
 plus fixtures for:
 
 - **Valid documents:**
-  - park-owned homes present (all seven calculations pinned);
-  - no park-owned homes (POH revenue and rent share `null`, `poh_share` `0`);
+  - park-owned homes present (all six calculations pinned);
+  - no park-owned homes (POH revenue `null`, `poh_share` `0`);
+  - zero pad rent, and zero POH home rent with park-owned homes present (annual
+    potentials `0`, no issue);
   - zero `loan_amount` and `annual_debt_service` stated (no module issue).
 - **Missing data:**
   - the section missing (`MOD-SECTION-MISSING` only);
@@ -348,6 +363,9 @@ StackUW's adoption is the adopter's own follow-up.
   Superseded: the owner selected `weighted_pad_rent_monthly`.
 - **Copying the builtin debt metrics and expense ratio.** A true zero would
   become an error, and no guard is expressible (see [Deferred](#deferred)).
+- **Requiring positive pad rent so that `poh_rent_share` always evaluates.**
+  Rejected by the owner: a valid input is not restricted only to keep a derived
+  ratio defined. `poh_rent_share` is deferred instead.
 - **Telling all-cash documents to omit zero debt values.** It conflates absence
   with zero; rejected.
 - **Relying on the manifest JSON Schema for requiredness and types.** The
@@ -357,8 +375,9 @@ StackUW's adoption is the adopter's own follow-up.
 
 ## Unresolved questions
 
-1. **`as_of_date` validity.** The reference runtime can require the date but
-   cannot detect a malformed one. That needs a core capability, either:
+1. **`as_of_date` validity: a module-runtime capability gap.** The reference
+   runtime can require the date but cannot detect a malformed one. That needs a
+   core capability, either:
    - a date-validity predicate in §VIII.3, or
    - runtime enforcement of module section schemas.
 
@@ -370,11 +389,9 @@ StackUW's adoption is the adopter's own follow-up.
 3. **Generic metrics for custom classes:** how a module-declared class should
    obtain debt metrics and the expense ratio without cloning formulas or
    refusing true zeros. This is a shared design question, outside this RFC.
-4. **Confirmation of two tightenings the draft makes to the owner's direction:**
-   - `weighted_pad_rent_monthly > 0`, rather than ≥ 0, keeps `poh_rent_share`
-     defined on every valid document;
-   - `expense_ratio` is deferred with the debt metrics, because zero EGI is a
-     legitimate value that would divide by zero.
+4. **Ratios with a possibly-zero denominator** (`poh_rent_share`): whether the
+   calc contract should gain a denominator or conditional mechanism, or whether
+   a use case justifies one. Outside this RFC.
 5. **Acceptance** of RFC 0068 and authorization to implement.
 
 ## Decision status
@@ -392,11 +409,13 @@ RFC 0068 remains `draft`.
 | `age_restricted` removed from first scope | Owner direction, 2026-10-01 | Deferred. |
 | Generic debt calculations (`loan_per_site`, `ltv`, `ltc`, `dscr`, `debt_yield`) deferred; no recommendation to omit true zero values | Owner direction, 2026-10-01 | Deferred. |
 | First-scope requiredness enforced by runtime rules, not the manifest schema | Owner direction, 2026-10-01 | Adopted in `CC-MOD-MH-01..07`. |
-| `poh_home_rent_monthly` required when `park_owned_homes > 0` | This draft's reading of the owner's "conditional" direction | Proposal. |
-| `weighted_pad_rent_monthly > 0`; `expense_ratio` deferred | This draft | Proposal. **Owner confirmation requested.** |
-| The class, fallback, section, seven calculations and seven rules | This draft | Proposal. |
-| `as_of_date` validity; type errors under `MOD-RULE-ERROR` | — | **Unresolved.** Needs a core capability. |
-| `site_types[]`, utilities, POH operating detail, RV sites, thresholds, defaults, generic metrics for custom classes | — | Deferred. |
+| `expense_ratio` deferred from first scope with the generic debt metrics | Owner decision, 2026-10-01 | Deferred. |
+| `poh_home_rent_monthly` required (≥ 0) when `park_owned_homes > 0`, and absent or `null` when it is `0` | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-06`, `CC-MOD-MH-07`). |
+| `weighted_pad_rent_monthly` is finite and nonnegative (≥ 0), not strictly positive | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-04`). |
+| `poh_rent_share` deferred from first scope; `poh_share` is the POH-exposure metric | Owner decision, 2026-10-01 | Deferred. |
+| The class, fallback, section, six calculations and seven rules | This draft, within the owner directions above | Proposal. |
+| `as_of_date` validity; type errors under `MOD-RULE-ERROR` | — | **Unresolved.** A module-runtime capability gap. |
+| `site_types[]`, utilities, POH operating detail, RV sites, thresholds, defaults, generic metrics for custom classes, `poh_rent_share` | — | Deferred. |
 | Acceptance of RFC 0068 and implementation | — | Not decided. Not authorized. |
 
 ## Prior art
