@@ -94,6 +94,7 @@ and how it gets accepted.
 | [0064](./0064-property-reserve-account-roll-forward.md) | Verify property reserve-account roll-forwards without netting expenditure | draft | format, protocol, core, conformance, tooling |
 | [0065](./0065-reserve-draw-gross-expenditure-binding.md) | Bind a stated reserve draw to an already-stated gross expenditure | draft | protocol, core, conformance |
 | [0066](./0066-calc-identifier-variant-resolution.md) | Resolve calc identifiers over variant-map sections the way cross-checks do | draft | protocol, core, conformance |
+| [0069](./0069-student-rent-roll-bed-counts.md) | Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
