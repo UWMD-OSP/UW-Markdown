@@ -232,7 +232,13 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
   },
   "_notes": "Year-1 underwritten — assumes 73% occupancy held through Y1; Suite 300 backfill modeled in Y2.",
   "income": {
-    "gross_potential_rent": 935000,
+    "gross_potential_rent": {
+      "value": 935000,
+      "source": "market",
+      "per_unit_monthly": null,
+      "per_sqft_annually": null,
+      "rationale": "All 42,500 RSF at the $22/SF NNN market rent the investment thesis underwrites; in-place rolling rents are already at market."
+    },
     "vacancy_loss": 252450,
     "effective_gross_income": 682550,
     "expense_reimbursements": 187500,

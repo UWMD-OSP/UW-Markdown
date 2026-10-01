@@ -83,6 +83,18 @@ describe('OFFICE_PACK', () => {
       ).not.toThrow();
     }
   });
+
+  it('Riverside states gross_potential_rent as the §4.5 object, and it foots to EGI', async () => {
+    const raw = await readFile(RIVERSIDE, 'utf8');
+    const parsed = parseUWFile(raw);
+    const noi = parsed.sections['noi_model'] as { content: Record<string, unknown> };
+    const income = noi.content['income'] as Record<string, unknown>;
+
+    // The worked example states the template shape; a scalar was never it.
+    expect(income['gross_potential_rent']).toMatchObject({ value: 935000, source: 'market' });
+    const gpr = (income['gross_potential_rent'] as { value: number }).value;
+    expect(gpr - (income['vacancy_loss'] as number)).toBe(income['effective_gross_income']);
+  });
 });
 
 describe('Office Excel emit ↔ evaluateCalc parity', () => {

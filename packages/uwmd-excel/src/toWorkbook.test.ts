@@ -258,6 +258,52 @@ for (const { file, layout } of CASES) {
   });
 }
 
+// ─── Format §4.5 — gross_potential_rent is an object ─────────────────────────
+//
+// §4.5 states `noi_model.income.gross_potential_rent` as `{ value, source,
+// per_unit_monthly, per_sqft_annually, rationale }`. A layout line on the bare
+// path reads the object, so the cell is written empty and EGI stops footing.
+// The office layout and the Riverside example both stated a scalar, so the
+// footing test above passed while a template-shaped office document lost its
+// GPR. These pin the layout side and the example side independently.
+
+describe('toWorkbook — gross_potential_rent read as the §4.5 object', () => {
+  it('every layout GPR line reads the object value, never the object', () => {
+    for (const { layout } of CASES) {
+      const gpr = layout.incomeLines.find((l) => l.path.split('.')[0] === 'gross_potential_rent');
+      if (gpr) expect(gpr.path, layout.assetClass).toBe('gross_potential_rent.value');
+    }
+  });
+
+  it('every worked example that states noi_model GPR states the object', async () => {
+    for (const { file } of CASES) {
+      const parsed = parseUWFile(await readFile(resolve(EXAMPLES, file), 'utf8'));
+      const income = (parsed.sections['noi_model'] as { content: Record<string, unknown> } | undefined)
+        ?.content['income'] as Record<string, unknown> | undefined;
+      if (income?.['gross_potential_rent'] === undefined) continue;
+      expect(income['gross_potential_rent'], file).toMatchObject({ value: expect.any(Number) });
+    }
+  });
+
+  it('the office workbook GPR cell holds the numeric value and EGI foots', async () => {
+    const file = 'Riverside-Office-Phoenix-AZ.uwx.md';
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, file), 'utf8'));
+    const income = (parsed.sections['noi_model'] as { content: Record<string, unknown> }).content[
+      'income'
+    ] as Record<string, unknown>;
+    expect(income['gross_potential_rent']).toMatchObject({ value: 935000, source: 'market' });
+
+    const wb = await roundTrip(file);
+    const ws = wb.getWorksheet('Operating Statement')!;
+    const rows = rowByLabel(ws);
+    const gprCell = ws.getCell(`B${rows.get('Gross Potential Rent')}`).value;
+    const vacancyCell = ws.getCell(`B${rows.get('(Less) Vacancy Loss')}`).value;
+    expect(gprCell).toBe(935000);
+    expect(vacancyCell).toBe(-252450);
+    expect((gprCell as number) + (vacancyCell as number)).toBe(income['effective_gross_income']);
+  });
+});
+
 // ─── Capital stack (RFC 0026) — the worked example gains the sheet ───────────
 //
 // The sheet's formula-level behavior is covered by capital-stack.test.ts; this

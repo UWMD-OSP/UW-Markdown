@@ -10,7 +10,8 @@ import { sizeNamedInputs } from './layout.js';
 import type { WorkbookLayout, IncomeLine, ExpenseLine, NamedInput } from './layout.js';
 
 const incomeLines: readonly IncomeLine[] = [
-  { label: 'Gross Potential Rent', path: 'gross_potential_rent' },
+  // Format §4.5 states gross_potential_rent as `{ value, source, ... }`.
+  { label: 'Gross Potential Rent', path: 'gross_potential_rent.value' },
   { label: '(Less) Vacancy Loss', path: 'vacancy_loss', sign: -1 },
 ];
 

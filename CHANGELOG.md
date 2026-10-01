@@ -42,6 +42,14 @@ RFCs 0062 and 0063 remain `accepted` until the capability ships.
   `student-housing-rent-per-bed-monthly` and `self-storage-economic-occupancy`,
   pin both metrics over a §4.5-shaped `noi_model`. A scalar
   `gross_potential_rent` was never the template's shape.
+- **The office Excel layout reads `gross_potential_rent.value`.** It read the
+  bare path, so a §4.5-shaped office document wrote an empty Gross Potential
+  Rent cell and its operating statement no longer footed to EGI. The
+  `Riverside-Office` worked example stated a scalar too, which hid the gap.
+  Riverside now states the §4.5 object at the same $935,000. New `@uwmd/excel`
+  tests check that every layout's GPR line reads `.value` and that every worked
+  example states the object. `OFFICE_PACK` formulas never read GPR and are
+  unchanged.
 
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
 
