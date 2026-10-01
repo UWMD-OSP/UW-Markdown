@@ -5,6 +5,7 @@ status: draft
 author: codex
 created: 2026-09-27
 affects:
+  - format-spec
   - protocol-spec
   - core-library
   - conformance-corpus
@@ -23,6 +24,21 @@ custody. It is not another economic expenditure ledger and does not make a
 reserve-dependent RFC 0045 assembly plan eligible by itself. This is a draft
 design for owner review; no normative text, schema, code, package version or
 conformance baseline changes are authorized by this RFC's presence.
+
+**Decision status.** One owner decision is recorded. On 2026-09-29 the owner
+selected a direct, RFC-created standard section, `reserve_accounts` (Format
+§4.28), as the statement carrier instead of an `x_*` extension (see
+[Proposed layer and scope](#proposed-layer-and-scope) and the
+[owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)). That settles
+the carrier only:
+
+- **Carrier:** decided.
+- **The RFC as a whole:** not accepted. Status remains `draft`.
+- **Implementation:** not authorized. No Protocol or Format version is
+  selected, and RFC 0064 is outside the current 2.14.0 release candidate.
+
+The normative proposal on PR #219 (a Protocol 2.19.0 label, schema, `RSV-NN`
+codes, verifier API and conformance) is not part of this decision.
 
 ## Motivation and demonstrated consumer
 
@@ -54,16 +70,36 @@ expense or underwriting deduction without being cash held in this account.
 
 ## Proposed layer and scope
 
-The proposed first layer is an **opt-in Protocol companion verification** of
-an explicitly selected, attributable property-account statement. It should
-not immediately add a 22nd standard Format section. Format §C.7 requires an
-extension pattern across at least five distinct deals and three examples to
-promote it; this review establishes two source roles, not that threshold. A
-producer may preserve source facts in an `x_*` extension now. Tier-1 parsing and
-ordinary document validation continue to preserve and skip such extensions
-under Format §4.20. The new verifier would check only a caller-selected
-statement/profile, and would return a source digest and item-level evidence.
-Its exact extension carrier and public API name remain for owner acceptance.
+**Carrier (owner decision, 2026-09-29).** The statement is carried by a new
+optional standard section, `reserve_accounts` (Format §4.28), created directly
+by this RFC. The section is asset-class-independent: reserve-account state does
+not vary by asset class.
+
+- **Appendix C.7 does not block it.** C.7's five-deal threshold governs the
+  *promotion of an existing `x_` extension*. It does not prohibit a standard
+  section created directly by RFC.
+- **Precedent.** §4.24–§4.27 were each created this way, by RFCs 0026, 0008,
+  0034 and 0035.
+- **Why not `x_*`.** A portable account-state contract needs one schema,
+  validator, conformance and verifier meaning. Ordinary `x_*` sections (Format
+  §4.21) are deliberately skipped by validators and cross-checks.
+
+Any `x_*` block a producer already uses stays parseable and is not promoted by
+this RFC. `lender_reserve` remains outside this property-reserve contract.
+
+The verifier checks only an explicitly stated, attributable property-account
+statement and returns a source digest and item-level evidence. The carrier
+decision settles where the statement lives and nothing more. These remain part
+of whole-RFC acceptance:
+
+- the section's field shape;
+- the verifier's public API name;
+- whether its rules also run as an ordinary document-validation family;
+- every open point under
+  [Unresolved owner decisions](#unresolved-owner-decisions).
+
+PR #219 proposes answers to each; they remain proposals until the RFC is
+accepted.
 
 The candidate profile MUST represent, without inferred defaults:
 
@@ -127,6 +163,9 @@ Neither the RFC 0062 same-day selector policy nor the RFC 0063 exact boundary
 opt-in is changed. A later accepted implementation would need a Protocol minor
 version and synchronized protocol/runtime/schema/conformance changes wherever
 its final public API has a wire shape; this draft does not choose that version.
+The selected carrier also adds a §4.28 entry to the Format Part IV registry.
+How that addition is versioned is part of acceptance, not of the carrier
+decision.
 
 ## Conformance impact
 
@@ -158,10 +197,11 @@ After acceptance, define a closed candidate statement/schema and a typed
 verifier/result in `@uwmd/core` with browser-safe exports and a read-only CLI
 entry. Keep deterministic arithmetic in core; AI may extract, classify or
 narrate evidence but never reconcile balances. Add focused unit tests and
-conformance, then update Protocol prose, executable types, any schema and
-documentation in one normative commit. Preserve the entire source snapshot,
-source digest, row identity and `_meta`; neither verifier nor CLI edits the
-document. Do not add a calc collection primitive, Excel formula or forecast.
+conformance, then update the Format §4.28 section, Protocol prose, executable
+types, the section schema and documentation in one normative commit. Preserve
+the entire source snapshot, source digest, row identity and `_meta`; neither
+verifier nor CLI edits the document. Do not add a calc collection primitive,
+Excel formula or forecast.
 Run the full repository gates and compare optional profile absence against the
 legacy corpus before considering an RFC 0045 integration proposal.
 
@@ -185,7 +225,7 @@ legacy corpus before considering an RFC 0045 integration proposal.
 |---|---|
 | Put the roll-forward directly in `sources_uses.uses.escrows` | Conflates closing/monthly funding declarations with actual dated custody state and lender accounts; silently redefines RFC 0056. |
 | Treat NOI `replacement_reserves` as a cash account | An operating deduction does not establish custody, opening/ending balances or cash returns. |
-| Add a standard section immediately | Format §C.7's extension-promotion evidence threshold has not been demonstrated. |
+| Carry the statement in an `x_*` extension with a companion verifier | Not selected by the owner on 2026-09-29. Validators and cross-checks deliberately skip `x_*` sections, so a normative verifier would sit over a non-normative carrier. Standardizing later would then need C.7 promotion evidence, migration and conformance for both carriers. Appendix C.7 does not require this route for a section created directly by RFC. |
 | Use only `cash_flow_series` with `reserve_net` | A dated net row cannot prove an account balance or distinguish contribution, draw and release. |
 | Net a draw against gross TI/LC or capex to satisfy RFC 0045 | Hides gross economics and can double count or erase property costs. |
 | Expand RFC 0045 or 0063 directly | Timing admission and account custody are separate decisions; the existing assembler cannot split the lease-up bundle. |
@@ -193,9 +233,26 @@ legacy corpus before considering an RFC 0045 integration proposal.
 
 ## Unresolved owner decisions
 
-Before acceptance, the owner must confirm the statement carrier and source
-provenance shape, the monetary comparison point, and at least one source-backed
-classification for each of contribution, internal draw and external release.
+What is and is not decided:
+
+| Question | State |
+|---|---|
+| Statement carrier | **Decided 2026-09-29:** a direct, RFC-created standard section, `reserve_accounts` (Format §4.28). It is asset-class-independent, and `lender_reserve` remains outside this property-reserve contract. |
+| Acceptance of the RFC as a whole | **Not decided.** Status remains `draft`. |
+| Implementation | **Not authorized.** No normative text, schema, code, export, conformance fixture or version change may merge on the strength of this RFC. |
+| Version | **None selected.** No Protocol or Format version is chosen. RFC 0064 is outside the current 2.14.0 release candidate. |
+
+The carrier decision does not resolve RFC 0045. Verifying a reserve account
+does not cure its `reserve_spending_excluded` refusal. It also does not
+authorize netting draws against gross expenditure.
+
+Still unresolved before acceptance:
+
+- the statement's field shape and source provenance;
+- the monetary comparison point;
+- at least one source-backed classification for each of contribution,
+  internal draw and external release.
+
 In particular, a movement whose source does not establish whether it is
 external property cash, an internal custody transfer, a financing cash flow or
 a gross expenditure must remain unclassified and refused. The public review
@@ -203,9 +260,15 @@ does not settle that mapping for every movement. This RFC therefore makes no
 claim that the reserve-dependent Golden Deal is assembly-eligible and does not
 authorize implementation of a normative reserve contract.
 
+Binding a draw to the gross expenditure row it funded, and choosing one
+auditable owner-cash treatment, remain later contracts. Only those contracts
+could relax RFC 0045.
+
 ## Prior art
 
 RFC 0045's explicit coverage plan and source bindings show how to preserve
 row identity and refuse unproven economics. RFC 0057 verifies a stated balance
-without silently deriving the authored fact. Format §4.20 and §C.7 provide
-the extension path and promotion threshold for evidence that is still young.
+without silently deriving the authored fact. Format §4.21 and Appendix C.7
+describe the extension path and the promotion of an existing extension.
+§4.24–§4.27 (RFCs 0026, 0008, 0034 and 0035) are the direct-RFC precedent for
+the selected standard carrier.

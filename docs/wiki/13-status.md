@@ -360,7 +360,13 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
-  reserve refusal or a new standard section.
+  reserve refusal.
+  - **Carrier selected.** On 2026-09-29 the owner selected a direct, RFC-created
+    standard `reserve_accounts` §4.28 carrier
+    ([owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)).
+  - **Still draft.** RFC 0064 is not accepted, its implementation (PR #219) is
+    not authorized to merge, no version is selected, and it is outside the
+    2.14.0 release candidate.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
