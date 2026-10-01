@@ -91,7 +91,7 @@ and how it gets accepted.
 | [0061](./0061-protocol-version-label-integrity.md) | Keep protocol version labels synchronized | implemented | protocol, tooling, documentation |
 | [0062](./0062-same-day-cash-flow-selection.md) | Permit same-day cash-flow rows while refusing ambiguous selectors | accepted | format, protocol, core, conformance |
 | [0063](./0063-final-period-exclusive-boundary.md) | Admit disposition at the final calendar period's exclusive boundary | accepted | protocol, core, conformance, tooling |
-| [0064](./0064-property-reserve-account-roll-forward.md) | Verify property reserve-account roll-forwards without netting expenditure | draft | protocol, core, conformance, tooling |
+| [0064](./0064-property-reserve-account-roll-forward.md) | Verify property reserve-account roll-forwards without netting expenditure | draft | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
