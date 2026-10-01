@@ -50,6 +50,17 @@ RFCs 0062 and 0063 remain `accepted` until the capability ships.
   tests check that every layout's GPR line reads `.value` and that every worked
   example states the object. `OFFICE_PACK` formulas never read GPR and are
   unchanged.
+- **The chat renderer and the `noi_model` view model read §4.5 paths.** Both
+  read GPR, vacancy, other income, EGI, OpEx and the expense ratio from the
+  section's top level, where §4.5 states none of them. Every §4.5-shaped
+  document, including the tier-1 `02-full-multifamily` fixture, rendered those
+  lines as `n/a`. They now read `income.*` and `expenses.*`, taking a money
+  line's `.value`. The chat block keeps the old top-level keys as an explicit
+  compatibility fallback, used only when the §4.5 path states nothing, and
+  derives no ratio the document does not state. The `02-full-multifamily` chat
+  baseline is regenerated: six NOI lines change from `n/a` to the stated
+  figures. Example drift and the open owner decisions are recorded in
+  `docs/reviews/2026-10-01-noi-model-read-paths.md`.
 
 ### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
 

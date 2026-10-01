@@ -1641,17 +1641,20 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
     display_name: 'NOI Model',
     display_order: 2,
     description: 'Underwritten T-12 normalized operating statement.',
+    // Format §4.5 paths. Income and expense lines sit under `income` /
+    // `expenses`, and a money line is `{ value, ... }`, so its hint reads
+    // `.value`. A hint on the object itself formats as n/a.
     primary_fields: [
-      { path: 'net_operating_income',     label: 'NOI',  kind: 'currency', primary: true },
-      { path: 'effective_gross_income',   label: 'EGI',  kind: 'currency' },
-      { path: 'total_operating_expenses', label: 'OpEx', kind: 'currency' },
-      { path: 'opex_ratio',               label: 'OpEx Ratio', kind: 'percent' },
+      { path: 'net_operating_income',              label: 'NOI',  kind: 'currency', primary: true },
+      { path: 'income.effective_gross_income',     label: 'EGI',  kind: 'currency' },
+      { path: 'expenses.total_operating_expenses', label: 'OpEx', kind: 'currency' },
+      { path: 'expenses.expense_ratio',            label: 'OpEx Ratio', kind: 'percent' },
     ],
     detail_fields: [
-      { path: 'gross_potential_rent',     label: 'GPR',         kind: 'currency' },
-      { path: 'vacancy_loss',             label: 'Vacancy Loss', kind: 'currency' },
-      { path: 'vacancy_rate',             label: 'Vacancy Rate', kind: 'percent' },
-      { path: 'other_income',             label: 'Other Income', kind: 'currency' },
+      { path: 'income.gross_potential_rent.value',        label: 'GPR',         kind: 'currency' },
+      { path: 'income.vacancy_credit_loss.value',         label: 'Vacancy Loss', kind: 'currency' },
+      { path: 'income.vacancy_credit_loss.rate_applied',  label: 'Vacancy Rate', kind: 'percent' },
+      { path: 'income.other_income.value',                label: 'Other Income', kind: 'currency' },
     ],
   },
   debt_structure: {

@@ -380,6 +380,38 @@ ${Object.entries(validation.stage_readiness).map(([stage, ready]) => `- ${ready 
   };
 }
 
+// ─── noi_model read paths (Format §4.5) ───────────────────────────────────────
+// §4.5 places every income and expense line under `income` / `expenses`. The
+// money lines are `{ value, ... }` objects; `effective_gross_income`,
+// `total_operating_expenses` and `expense_ratio` are bare numbers. Only
+// `net_operating_income` sits at the section's top level.
+
+/** A `noi_model` figure at its §4.5 path: an object yields its `value`. */
+function noiSpecValue(content: unknown, path: string): unknown {
+  const v = deepGet(content, path);
+  if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+    return (v as Record<string, unknown>)['value'];
+  }
+  return v;
+}
+
+/**
+ * Compatibility only. These top-level keys are what this renderer read before
+ * it followed §4.5; no §4.5 document states them. They are consulted only when
+ * the §4.5 path states nothing, so they never override a §4.5 value.
+ */
+function noiLegacyValue(content: unknown, keys: readonly string[]): unknown {
+  for (const key of keys) {
+    const v = deepGet(content, key);
+    if (v != null) return v;
+  }
+  return undefined;
+}
+
+function noiField(content: unknown, specPath: string, legacyKeys: readonly string[]): unknown {
+  return noiSpecValue(content, specPath) ?? noiLegacyValue(content, legacyKeys);
+}
+
 // ─── Chat — compressed AI context bundle (<16K tokens) ───────────────────────
 // Designed to be dropped as a user message or system context into an AI chat.
 // Includes everything needed for instant deal literacy. Sections are compressed
@@ -478,14 +510,18 @@ Amenities: ${(deepGet(c, 'amenities') as string[] | undefined)?.join(', ') || 'n
   const noiBlock = getSection(parsed, 'noi_model');
   if (noiBlock) {
     const c = noiBlock.content;
+    // The stated §4.5 ratio comes first. The legacy ratio, including its
+    // division, still reads only the legacy top-level totals, so no ratio is
+    // derived from §4.5 figures that the document does not state.
+    const legacyOpexRatio = deepGet(c, 'opex_ratio') ?? (deepGet(c, 'total_operating_expenses') != null && deepGet(c, 'effective_gross_income') != null ? ((deepGet(c, 'total_operating_expenses') as number) / (deepGet(c, 'effective_gross_income') as number)).toFixed(4) : null);
     sections.push(`## NOI MODEL (${noiBlock.meta?.confidence ?? 'n/a'} confidence)
-GPR: ${money(deepGet(c, 'gross_potential_rent') ?? deepGet(c, 'scheduled_gross_revenue'))}
-Vacancy Loss: ${money(deepGet(c, 'vacancy_loss'))} (${pct(deepGet(c, 'vacancy_rate'))})
-Other Income: ${money(deepGet(c, 'other_income'))}
-EGI: ${money(deepGet(c, 'effective_gross_income'))}
-Total OpEx: ${money(deepGet(c, 'total_operating_expenses'))}
+GPR: ${money(noiField(c, 'income.gross_potential_rent', ['gross_potential_rent', 'scheduled_gross_revenue']))}
+Vacancy Loss: ${money(noiField(c, 'income.vacancy_credit_loss', ['vacancy_loss']))} (${pct(noiField(c, 'income.vacancy_credit_loss.rate_applied', ['vacancy_rate']))})
+Other Income: ${money(noiField(c, 'income.other_income', ['other_income']))}
+EGI: ${money(noiField(c, 'income.effective_gross_income', ['effective_gross_income']))}
+Total OpEx: ${money(noiField(c, 'expenses.total_operating_expenses', ['total_operating_expenses']))}
 NOI: ${money(deepGet(c, 'net_operating_income'))}
-OpEx Ratio: ${val(deepGet(c, 'opex_ratio') ?? (deepGet(c, 'total_operating_expenses') != null && deepGet(c, 'effective_gross_income') != null ? ((deepGet(c, 'total_operating_expenses') as number) / (deepGet(c, 'effective_gross_income') as number)).toFixed(4) : null))}`);
+OpEx Ratio: ${val(noiSpecValue(c, 'expenses.expense_ratio') ?? legacyOpexRatio)}`);
   }
 
   // ── Debt Structure ────────────────────────────────────────────────────────

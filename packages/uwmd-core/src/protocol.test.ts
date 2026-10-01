@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  BUILTIN_VIEW_MODELS,
   BUILTIN_INCOMPLETE_DATA_POLICIES,
   CASCADE_ORDER,
   SOURCE_TAGS,
@@ -18,6 +19,8 @@ import {
   parseActorSource,
 } from './protocol.js';
 import { CORE_VERSION } from './version.js';
+import { deepGet, getSection, parseUWFile } from './parser.js';
+import { formatCurrency, formatPercent } from './format.js';
 
 describe('protocol — CASCADE_ORDER', () => {
   it('lists exactly the eight cascade steps in the documented order', () => {
@@ -303,5 +306,64 @@ describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
     for (const [code, severity] of Object.entries(emitted)) {
       expect(BUILTIN_REMEDIATIONS.find((r) => r.code === code)?.severity, code).toBe(severity);
     }
+  });
+});
+
+describe('BUILTIN_VIEW_MODELS.noi_model reads Format §4.5 paths', () => {
+  // The paths come from the §4.5 template in the spec, not from whichever
+  // worked example happens to pass. The view model read top-level keys that
+  // §4.5 never states, so every NOI card field but NOI resolved to nothing.
+  const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+  const spec = readFileSync(specPath, 'utf-8');
+  const s45 = spec.slice(spec.indexOf('### § 4.5 — NOI Model'));
+  const open = s45.indexOf('```json\n') + '```json\n'.length;
+  const template = JSON.parse(s45.slice(open, s45.indexOf('\n```', open))) as Record<string, unknown>;
+
+  const vm = BUILTIN_VIEW_MODELS['noi_model']!;
+  const hints = [...vm.primary_fields, ...(vm.detail_fields ?? [])];
+
+  it('parses the §4.5 template', () => {
+    expect(template['income']).toHaveProperty('gross_potential_rent.value');
+  });
+
+  it('every NOI hint names a numeric field of the §4.5 template', () => {
+    for (const h of hints) {
+      expect(typeof deepGet(template, h.path), `${h.label}: ${h.path}`).toBe('number');
+    }
+  });
+
+  it('pins each hint to its §4.5 location', () => {
+    expect(hints.map((h) => [h.label, h.path])).toEqual([
+      ['NOI', 'net_operating_income'],
+      ['EGI', 'income.effective_gross_income'],
+      ['OpEx', 'expenses.total_operating_expenses'],
+      ['OpEx Ratio', 'expenses.expense_ratio'],
+      ['GPR', 'income.gross_potential_rent.value'],
+      ['Vacancy Loss', 'income.vacancy_credit_loss.value'],
+      ['Vacancy Rate', 'income.vacancy_credit_loss.rate_applied'],
+      ['Other Income', 'income.other_income.value'],
+    ]);
+  });
+
+  it('every hint resolves and formats on the tier-1 §4.5 conformance fixture', () => {
+    const fixture = fileURLToPath(new URL(
+      '../../../conformance/tier-1-reader/fixtures/02-full-multifamily.uwx.md', import.meta.url,
+    ));
+    const content = getSection(parseUWFile(readFileSync(fixture, 'utf-8')), 'noi_model')!.content;
+    for (const h of hints) {
+      const v = deepGet(content, h.path);
+      expect(Number.isFinite(v), `${h.label}: ${h.path}`).toBe(true);
+      const shown = h.kind === 'percent' ? formatPercent(v) : formatCurrency(v);
+      expect(shown, h.label).not.toBe('n/a');
+    }
+  });
+
+  it('a hint on the money object itself would format as n/a, which is why it reads .value', () => {
+    const fixture = fileURLToPath(new URL(
+      '../../../conformance/tier-1-reader/fixtures/02-full-multifamily.uwx.md', import.meta.url,
+    ));
+    const content = getSection(parseUWFile(readFileSync(fixture, 'utf-8')), 'noi_model')!.content;
+    expect(formatCurrency(deepGet(content, 'income.gross_potential_rent'))).toBe('n/a');
+    expect(formatCurrency(deepGet(content, 'income.gross_potential_rent.value'))).toBe('$655,200');
   });
 });

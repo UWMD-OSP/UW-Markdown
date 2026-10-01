@@ -123,7 +123,10 @@ For rendering, each section has a `SectionViewModel` with `primary_fields` and
 `currency|percent|ratio|count|date|string|enum|list`, `primary?`, `unit?`,
 `decimals?`). This drives any presentation (cards, terminal, future PDF) without
 hard-coding section knowledge. The view-model registry is a *rendering layer* and
-is not 1:1 with the spec's section registry.
+is not 1:1 with the spec's section registry. A hint's `path` follows the
+section's `§ 4.x` shape, not a worked example's. Where the spec states a line as
+`{ value, ... }`, as `noi_model` does for its income and expense lines, the hint
+reads `.value`; a hint on the object itself formats as `n/a`.
 
 ## Financial validity thresholds (`DEFAULT_THRESHOLDS` in `types.ts`)
 
