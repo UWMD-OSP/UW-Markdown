@@ -47,6 +47,108 @@ manifest or on each calculation is unresolved. Any implementation must change
 Excel workbook input extraction in the same change, so the workbook and the
 evaluator never select different blocks.
 
+## Independent verification and owner decision set (2026-10-02)
+
+A second agent session re-checked this diagnosis on `main` at `6ad146a`, the
+2.14.0 candidate. Everything was checked against built code, not prose. The
+draft status is unchanged.
+
+**Every code claim below reproduces.** Over `10-declared-roles.uwx.md` and its
+variants, three readers disagree:
+
+- **Evaluator.** It returns `ok: true, value: null` for an unresolvable map, for
+  a `primary` collision and for an absent explicit variant. It resolves the
+  `primary`, `default` and explicit cases.
+- **Cascade.** `resolveValue` returns the **first fence's** value in every case,
+  including the `primary` collision. Fence order wins at two places: in
+  `findBySource`, which scans every variant for an in-file tag, and in
+  `getBlock`.
+- **Excel.** For a resolvable `primary` + `junior` map with a 10,000,000
+  purchase price, `evaluateCalc` reports the multifamily `ltv` as `0.6`, but the
+  workbook's Loan Amount input is blank. The sheet's
+  `ROUND((loan_amount/purchase_price),6)` therefore yields 0. Exact parity is
+  broken even when calc resolves. This predates 2.14.0; standalone Excel is
+  unpublished.
+
+**Adopter scale (de-identified).** StackUW's 11 canonical engine exports were
+measured under core 2.7.0 and the 2.14.0 candidate:
+
+- Every one states `debt_structure` as a `senior` + `junior` role map, and one
+  states two `senior` blocks.
+- The validator already selects the senior block by role for CC-02/03/05/09,
+  and refuses the two-senior deal with CC-16.
+- Every built-in pack returns `null` for `ltv`, `ltc`, `dscr`, `debt_yield`,
+  `loan_per_*` and `cash_on_cash` on all 11.
+- The adopter's own conformance adapter flattens ordinary identifiers to the
+  last fence. That makes four selection rules in the ecosystem today.
+
+**What existing normative precedent already settles.** These need owner
+acceptance only because they are normative text, not because they are open
+choices:
+
+1. **The order.** Protocol §VIII.2a "Section context" (RFC 0041) already
+   specifies the selection for a present, section-rooted read:
+   - the explicit `sectionVariants` entry, with no fallback, where a component
+     is allowed and an invalid role is not;
+   - then RFC 0040's generic primary/default/base/sole order over eligible
+     blocks;
+   - otherwise refuse;
+   - a missing section stays `null`.
+
+   Applying that same rule to ordinary identifiers adds no new semantics.
+   `periodSection` already implements it, and the evaluator already calls it.
+   It only discards the refusal.
+2. **Ambiguity is not absence.** RFC 0037 (CC-16 and `variant_unresolvable`)
+   and RFC 0040 ("refuse resolution immediately", "never sum … or guess from
+   amounts or producer names") already require refusal.
+3. **Excel's refusal semantics.** Protocol §VIII.2c (RFC 0043) already says
+   custom-calculation ordinary inputs "use calc resolution". It also says
+   unresolvable selections raise, and that invalid identity sets yield
+   `#VALUE!`, "never coerced zero".
+4. **The cascade's refusal shape.** `AmbiguousInheritanceError` (RFC 0021 §5)
+   is the cascade's existing precedent for refusing instead of choosing.
+5. **One resolver.** `resolveRoleBlock` stays the only selection
+   implementation.
+
+**Genuine owner decisions (the smallest set):**
+
+| # | Decision | Recommendation | Why |
+|---|---|---|---|
+| D1 | Make §VIII.2a's section-context rule normative for every section-rooted identifier, with refusal as a new `CALC-RESOLVE-002` | **Yes, new code** | `CALC-PERIOD-003` would file a non-period failure under the period family. A new code also keeps every RFC 0041 fixture frozen. |
+| D2 | When `debt_structure` is a role-bearing map, the built-in **lender-side** metrics mean the **`senior`** block. These are `ltv`, `ltc`, `dscr`, `debt_yield` and `loan_per_*`, 46 declarations across ten packs. Each declares it **per calculation** as `section_roles: { debt_structure: "senior" }`. **`cash_on_cash` declares no role**, so on a multi-tranche map it refuses. | **Yes, per calculation; exclude `cash_on_cash`** | The lender-side metrics mirror the validator's registered `senior` preference for CC-02/03/05/09 without inheriting it implicitly, which RFC 0041 forbids. The evaluator reads the role from the declaration, so no host can forget to pass it. `cash_on_cash` is `(NOI − debt_structure.annual_debt_service) / equity`. Equity cash flow must deduct **all** debt service, so a senior-only figure would overstate the return whenever mezzanine debt exists. It stays refused until a total-debt-service input is contracted, over `capital_stack` (RFC 0026), never by summing blocks. Without D2, D1 alone turns every adopter debt metric from a silent `null` into a `CALC-RESOLVE-002` refusal: honest, but still uncomputed. |
+
+**Defaults applied unless the owner overrides them** (implementation choices
+under D1/D2, not separate questions):
+
+- **Precedence.** An explicit `sectionVariants` beats a declared role, which
+  beats the generic order. If no eligible block carries the declared role, the
+  generic order applies, as `resolveRoleBlock` already does for cross-checks.
+  If two blocks carry it, the read refuses.
+- **No caller `sectionRoles`.** `sectionVariants` already covers ad hoc
+  formulas.
+- **Period references are unchanged.**
+- **`--calc-context`.** It accepts `sectionVariants` for any section id.
+- **Excel standard sheets.** They resolve each section's named inputs through
+  the same resolver, using the role the pack's calculations declare for that
+  section. A refused input is written as an explicit `#VALUE!` cell (§VIII.2c's
+  invalid-identity value), never blank. Dependent metrics therefore show an
+  error exactly where calc reports `ok: false`, and every other metric keeps
+  exact parity.
+- **Excel custom sheets.** These raise the refusal, as unresolvable period
+  selections already do.
+- **Disagreeing calculations.** If two calculations in one pack declare
+  different roles for the same section, the workbook and the refinement ranker
+  refuse rather than choose.
+- **Cascade.** `resolveValue` resolves in-file steps 1–2 against the selected
+  block only, and throws a typed ambiguity error for an unresolvable map, as
+  `AmbiguousInheritanceError` does. Refinement passes its targets' declared
+  roles and propagates the refusal.
+- **Receipts.** Over an unresolvable map, issuance changes from
+  `computed: false` to `RCP_COMPUTATION_FAILED`. That is intended, and part of
+  what accepting D1 approves.
+- **Release.** RFC 0066 is outside 2.14.0. It would land after the `v2.14.0`
+  tag as Protocol 2.19.0 with core 2.15.0.
+
 ## Motivation
 
 Re-measured on `main` at `a961110` (2026-10-01). References name files and
@@ -261,8 +363,9 @@ Under either layer:
 - a caller-supplied `CalcEvaluationContext.sectionRoles` would let a host or
   `--calc-context` express a preference for an ad hoc formula;
 - the ten built-in packs would state `debt_structure: 'senior'` for the
-  metrics that read `debt_structure.loan_amount` or
-  `debt_structure.annual_debt_service`;
+  lender-side metrics that read `debt_structure.loan_amount` or
+  `debt_structure.annual_debt_service`. Per the 2026-10-02 decision set,
+  `cash_on_cash` is excluded: equity cash flow deducts all debt service;
 - a calculation that reads a section under a role preference SHOULD say so in
   its `label` or description.
 
