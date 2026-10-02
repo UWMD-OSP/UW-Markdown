@@ -30,12 +30,15 @@ precedent. Those rules are listed under
 none is a separate owner decision. Status stays `accepted` until a release
 ships it.
 
-**Not merge-ready.** See [Merge readiness](#merge-readiness). The branch must
-not merge until three things are done:
+**Prepared as the core/CLI 2.15.0 candidate.** See
+[Merge readiness](#merge-readiness). All three merge conditions are met:
 
-- `v2.14.0` is tagged and published;
-- the branch is rebased onto released `main`;
-- the 2.15.0 package generation is prepared and its gates rerun.
+- `v2.14.0` was tagged and published on 2026-10-02;
+- the branch is rebased onto released `main`, behind the payload-unwrapping
+  fix;
+- the 2.15.0 package generation is prepared and its gates were rerun.
+
+Merging publishes nothing; the `v2.15.0` tag needs the owner's authorization.
 
 A coding agent wrote this RFC. StackUW's engine-exported documents and its
 app-side note UPSTREAM-016 are adopter requirements evidence, not UWMD owner
@@ -665,31 +668,34 @@ RFC 0066 is `accepted`, not yet released.
 | Per-calculation `section_roles`; built-in lender-side metrics `senior`; `cash_on_cash` none | D2, 2026-10-02 | Accepted. Protocol §X; module-manifest schema. |
 | Cascade, refinement and Excel selection; `diagnostics.section_inputs`; `#VALUE!` | Consequence of D1 under §VIII.2c, RFC 0021 §5 and the parity invariant | Specified in Protocol §V.7, §VIII.2b and §VIII.2c, and the section-refinement-issue schema. |
 | `--calc-context` accepts `sectionVariants` for any section | Consequence of D1 | Specified. |
-| Implementation; release target core/CLI 2.15.0 with Protocol 2.19.0 | D3, 2026-10-02 | Implemented on a separate branch. **Not merge-ready**; see [Merge readiness](#merge-readiness). |
+| Implementation; release target core/CLI 2.15.0 with Protocol 2.19.0 | D3, 2026-10-02 | Implemented and prepared as the core/CLI 2.15.0 candidate; see [Merge readiness](#merge-readiness). |
 
 ## Merge readiness
 
-The implementation branch is **not merge-ready**. It sits on the
-payload-unwrapping fix, and its package manifests still read 2.14.0, the
-unpublished candidate generation. After `v2.14.0` is tagged and published:
+D3 set the release target. The owner then asked that the implementation not
+merge until three conditions held. All three now do:
 
-1. Rebase the branch onto released `main`. Bring in the payload fix first if it
-   merged separately.
-2. Prepare the 2.15.0 package generation, following the 2.14.0 candidate's
-   pattern:
-   - core/CLI 2.15.0;
-   - the exact-pin bumps for every dependent (signing, batch, Excel, report,
-     lake and the two modules);
+1. **`v2.14.0` is published.** The tag published core/CLI 2.14.0 on
+   2026-10-02, with Protocol 2.18.0.
+2. **The branch sits on released `main`.** The payload-unwrapping fix merges
+   first, as its own change; this branch is rebased behind it.
+3. **The 2.15.0 package generation is prepared and gated**, following the
+   2.14.0 candidate's pattern:
+   - core/CLI 2.15.0, and core's optional signing peer at 0.2.19;
+   - exact-pin bumps for every dependent: signing 0.2.19, batch 0.8.14,
+     Excel 0.9.7, report 0.8.19, lake 0.2.3, and the two modules at 0.1.7;
    - the root lockfile and `CORE_VERSION`;
    - receipt issuance baselines and the frozen result-disagreement fixture at
      engine 2.15.0;
-   - the `VERSIONS.md` rows and a `[2.15.0]` candidate CHANGELOG section;
-   - a release-candidate record.
-3. Rerun the release gates under the pinned toolchain (Node 22.14.0, npm
-   11.5.1): build, tests, test typecheck, conformance with profiles and
-   receipts, the portable runner, schemas, lint, every verify-* guard, the docs
-   build and `release:check`.
-4. Only then mark the branch merge-ready.
+   - the `VERSIONS.md` rows, a `[2.15.0]` candidate CHANGELOG section and the
+     candidate record (`docs/releases/2.15.0-candidate.md`).
+
+   The release gates were rerun under the pinned toolchain (Node 22.14.0,
+   npm 11.5.1). The candidate record lists the results.
+
+Merging publishes nothing. The `v2.15.0` tag needs the owner's authorization
+and a trusted-publisher reconfirmation. This RFC stays `accepted` until a
+release ships it.
 
 ## Prior art
 

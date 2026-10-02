@@ -8,6 +8,22 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+See the prepared 2.15.0 candidate below. No tag or package publication has
+occurred.
+
+## [2.15.0] - release candidate (unpublished)
+
+### Prepared
+
+Core/CLI **2.15.0** pair with accepted Protocol **2.19.0** and unchanged
+Format **2.0**, the release target of the owner's decision D3 for RFC 0066.
+Signing **0.2.19** and batch **0.8.14** repin core, and core's optional
+signing peer moves to 0.2.19. The unpublished Excel **0.9.7**, report
+**0.8.19**, lake **0.2.3** and module **0.1.7** manifests also receive exact
+local repins. Receipt issuance baselines and the frozen verification fixture
+use the new engine version. This section records a candidate, not a released
+package. RFC 0066 remains `accepted` until the capability ships.
+
 ### Fixed
 
 - **The cascade, refinement and the Excel converter read a block's payload the
@@ -28,7 +44,7 @@ protocol, and each package each carry an independent semver).
   every Excel layout, mixed-use included, along with Excel ↔ `evaluateCalc`
   parity on a wrapped document. Each fails on the previous code. No normative
   text, schema or conformance baseline changes. Published core/CLI 2.14.0
-  still carries the defect; the fix ships in the next package generation.
+  still carries the defect; this candidate fixes it.
 
 ### Accepted contract — Protocol 2.19.0 (RFC 0066, unreleased)
 
@@ -41,9 +57,8 @@ Jared made three owner decisions on **2026-10-02**:
   **2.15.0** with Protocol 2.19.0.
 
 The other rules below follow from D1 and D2 under existing precedent. This
-source follows the 2.14.0 candidate, whose `v2.14.0` tag ships Protocol 2.18.0.
-The 2.15.0 package generation is prepared after that publication. Format stays
-**2.0**.
+source follows the published 2.14.0 release (Protocol 2.18.0); the 2.15.0
+candidate above carries it. Format stays **2.0**.
 
 - **Calc identifiers over variant-map sections (§VIII.2).** An identifier rooted
   at a section stated as a variant map reads exactly one block. The order is the

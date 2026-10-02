@@ -20,14 +20,16 @@ same protocol version.
 
 ## Current matrix
 
-**Accepted, unreleased source contract after 2.18.0:** Protocol **2.19.0** adds
+**Accepted, unreleased source contract:** Protocol **2.19.0** adds
 RFC 0066. Ordinary calc identifiers select one block of a variant-map section by
 §VIII.2: an explicit variant, then the calculation's declared `section_roles`,
 then RFC 0040's generic order. Ambiguity refuses as `CALC-RESOLVE-002` instead of
 a silent `null`. The cascade, refinement and the Excel converter share that
 selection. Jared's owner decisions of 2026-10-02 (D1–D3) target core/CLI
-**2.15.0** with Protocol 2.19.0. This source follows the published 2.14.0
-release, which implements Protocol 2.18.0.
+**2.15.0** with Protocol 2.19.0. Release-candidate manifests now pair core/CLI
+**2.15.0** with Protocol 2.19.0; published core/CLI 2.14.0 implement Protocol
+2.18.0. Protocol 2.19.0 and the 2.15.0 candidate have no release tag or package
+publication yet.
 
 Release 2.14.0 pairs core/CLI 2.14.0 with Protocol 2.18.0 and Format 2.0.
 Protocol 2.18.0 adds RFC 0063's explicit final-period exclusive-boundary
@@ -56,17 +58,17 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.19.0** (accepted, unreleased) | format ≥ 1.0; RFC 0066 calc variant resolution on 2.18.0 (RFC 0063 boundary opt-in plus RFC 0062 2.17.1 errata); published core/CLI 2.14.0 implement 2.18.0 |
-| `@uwmd/core` | **2.14.0** | format 2.0 (reads 1.x), protocol 2.18.0 |
-| `@uwmd/cli` (CLI) | **2.14.0** | `@uwmd/core` 2.14.0 |
-| `@uwmd/excel` | **0.9.6** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.14.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.18** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.14.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.13** | `@uwmd/core` 2.14.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.2** (unpublished) | `@uwmd/core` 2.14.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.18** | `@uwmd/core` 2.14.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.6** (unpublished) | `@uwmd/core` 2.14.x, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.6** (unpublished) | `@uwmd/core` 2.14.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.14.x browser entry |
+| UW Protocol | **2.19.0** (accepted, unreleased) | format ≥ 1.0; RFC 0066 calc variant resolution on 2.18.0 (RFC 0063 boundary opt-in plus RFC 0062 2.17.1 errata); candidate core/CLI 2.15.0; published core/CLI 2.14.0 implement 2.18.0 |
+| `@uwmd/core` | **2.15.0** (candidate; published 2.14.0) | format 2.0 (reads 1.x), protocol 2.19.0 |
+| `@uwmd/cli` (CLI) | **2.15.0** (candidate; published 2.14.0) | `@uwmd/core` 2.15.0 |
+| `@uwmd/excel` | **0.9.7** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.15.x, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.19** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.15.x, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.14** (candidate; published 0.8.13) | `@uwmd/core` 2.15.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.3** (unpublished) | `@uwmd/core` 2.15.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.19** (candidate; published 0.2.18) | `@uwmd/core` 2.15.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.7** (unpublished) | `@uwmd/core` 2.15.x, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.7** (unpublished) | `@uwmd/core` 2.15.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.15.x browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

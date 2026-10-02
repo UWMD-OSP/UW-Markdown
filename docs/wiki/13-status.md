@@ -6,9 +6,9 @@ Reconciled **2026-10-02** for published release **v2.14.0** (see
 `v2.14.0` tag. That release pairs Format **2.0** with Protocol **2.18.0**,
 which includes RFC 0063 and the RFC 0062 errata selected as 2.17.1. Draft RFCs
 0064, 0065 and 0067–0069 are outside that contract. So is RFC 0066, which the
-owner accepted on 2026-10-02. Its accepted text and Protocol 2.19.0
-implementation, targeting core/CLI 2.15.0, wait on a separate branch until the
-2.15.0 generation is prepared.
+owner accepted on 2026-10-02. Its Protocol 2.19.0 implementation is prepared
+as the core/CLI **2.15.0** candidate (signing 0.2.19, batch 0.8.14); see the
+[candidate record](../releases/2.15.0-candidate.md). It is not published.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -386,9 +386,9 @@ Excel guard remain unchanged. Schemas and public types did not change.
 [RFC 0066](../rfcs/0066-calc-identifier-variant-resolution.md) was accepted on
 **2026-10-02**: owner decisions D1–D3, targeting core/CLI 2.15.0 with Protocol
 **2.19.0**. Its implementation branch also carries the payload-unwrapping fix
-it depends on. It is **not merge-ready** until 2.14.0 is published, the branch
-is rebased onto released `main`, and the 2.15.0 package generation is prepared
-and gated.
+it depends on. After the `v2.14.0` publication the branch was rebased onto
+released `main` behind that fix and carries the 2.15.0 package generation; see
+the [candidate record](../releases/2.15.0-candidate.md).
 
 - **The defect.** Before it, four readers chose differently from one
   role-bearing `debt_structure` map. The evaluator read `null`, the cascade the
@@ -408,10 +408,9 @@ and gated.
 
 ## Remaining work
 
-- Prepare the core/CLI **2.15.0** + Protocol **2.19.0** generation for RFC 0066
-  (accepted 2026-10-02). The Format 2.0 payload-unwrapping fix merges first;
-  the RFC 0066 branch is then rebased onto released `main`, repinned, and its
-  version-sensitive evidence regenerated and gated before it merges. No
+- Review the core/CLI **2.15.0** + Protocol **2.19.0** candidate for RFC 0066
+  (accepted 2026-10-02). Publishing it needs the owner's `v2.15.0` tag
+  authorization and a trusted-publisher reconfirmation. No
   post-sale settlement category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work
   remain separate contracts.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
