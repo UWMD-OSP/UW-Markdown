@@ -193,7 +193,7 @@ describe('RFC 0069 — what the family never does', () => {
     expect(codes(source)).toEqual([]);
     const parsed = parseUWFile(source);
     for (const id of ['occupancy', 'pre_lease_rate']) {
-      const decl = STUDENT_HOUSING_PACK.calculations.find((c) => c.id === id);
+      const decl = STUDENT_HOUSING_PACK.calculations?.find((c) => c.id === id);
       expect(decl).toBeDefined();
       const result = evaluateCalc(decl!, { parsed, prior_results: {}, locale: 'en-US' });
       expect(result.ok).toBe(true);
