@@ -1,10 +1,11 @@
 ---
 rfc: 0066
 title: Resolve calc identifiers over variant-map sections the way cross-checks do
-status: accepted
+status: implemented
 author: claude-code (agent proposal)
 created: 2026-09-28
 accepted: 2026-10-02
+implemented: 2026-10-02
 affects:
   - protocol-spec
   - core-library
@@ -14,7 +15,8 @@ affects:
 
 # RFC 0066: Resolve calc identifiers over variant-map sections the way cross-checks do
 
-**Accepted, unreleased.** On 2026-10-02 Jared made three owner decisions:
+**Implemented; released in 2.15.0.** On 2026-10-02 Jared made three owner
+decisions:
 
 - **D1.** Protocol §VIII.2a's section-context rule becomes normative for every
   section-rooted identifier, with refusal as a new `CALC-RESOLVE-002`.
@@ -27,18 +29,11 @@ affects:
 Every other rule in the accepted contract follows from D1 and D2 under existing
 precedent. Those rules are listed under
 [Consequences of D1 and D2](#independent-verification-and-owner-decision-set-2026-10-02);
-none is a separate owner decision. Status stays `accepted` until a release
-ships it.
+none is a separate owner decision.
 
-**Prepared as the core/CLI 2.15.0 candidate.** See
-[Merge readiness](#merge-readiness). All three merge conditions are met:
-
-- `v2.14.0` was tagged and published on 2026-10-02;
-- the branch is rebased onto released `main`, behind the payload-unwrapping
-  fix;
-- the 2.15.0 package generation is prepared and its gates were rerun.
-
-Merging publishes nothing; the `v2.15.0` tag needs the owner's authorization.
+**Released in core/CLI 2.15.0 with Protocol 2.19.0.** PR #234 merged the
+implementation once the [merge conditions](#merge-readiness) held. The
+`v2.15.0` tag on release commit `aaa9ec3` published it on 2026-10-02.
 
 A coding agent wrote this RFC. StackUW's engine-exported documents and its
 app-side note UPSTREAM-016 are adopter requirements evidence, not UWMD owner
@@ -656,7 +651,7 @@ of one under precedent.
 
 ## Decision status
 
-RFC 0066 is `accepted`, not yet released.
+RFC 0066 is `implemented`, released in core/CLI 2.15.0 with Protocol 2.19.0.
 
 | Item | Source | State |
 |---|---|---|
@@ -668,7 +663,7 @@ RFC 0066 is `accepted`, not yet released.
 | Per-calculation `section_roles`; built-in lender-side metrics `senior`; `cash_on_cash` none | D2, 2026-10-02 | Accepted. Protocol §X; module-manifest schema. |
 | Cascade, refinement and Excel selection; `diagnostics.section_inputs`; `#VALUE!` | Consequence of D1 under §VIII.2c, RFC 0021 §5 and the parity invariant | Specified in Protocol §V.7, §VIII.2b and §VIII.2c, and the section-refinement-issue schema. |
 | `--calc-context` accepts `sectionVariants` for any section | Consequence of D1 | Specified. |
-| Implementation; release target core/CLI 2.15.0 with Protocol 2.19.0 | D3, 2026-10-02 | Implemented and prepared as the core/CLI 2.15.0 candidate; see [Merge readiness](#merge-readiness). |
+| Implementation; release target core/CLI 2.15.0 with Protocol 2.19.0 | D3, 2026-10-02 | Implemented; released in core/CLI 2.15.0 on 2026-10-02. |
 
 ## Merge readiness
 
@@ -693,9 +688,10 @@ merge until three conditions held. All three now do:
    The release gates were rerun under the pinned toolchain (Node 22.14.0,
    npm 11.5.1). The candidate record lists the results.
 
-Merging publishes nothing. The `v2.15.0` tag needs the owner's authorization
-and a trusted-publisher reconfirmation. This RFC stays `accepted` until a
-release ships it.
+PR #234 merged the implementation at `4227744`. After the RFC 0062
+portable-runner cases (PR #235) and the release record (PR #236), the owner
+pushed the `v2.15.0` tag on release commit `aaa9ec3`, which published
+core/CLI 2.15.0 on 2026-10-02.
 
 ## Prior art
 
