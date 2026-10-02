@@ -524,6 +524,30 @@ The guards:
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
+- **Harden the RFC 0066 generic-order fixtures against a first-fence
+  reader.** This is bounded conformance hardening, found during the
+  UPSTREAM-021 work (2026-10-02).
+  - **The gap.** Four tier-3 fixtures resolve to their first `debt_structure`
+    fence:
+    - `variant-01-primary-resolves`;
+    - `variant-02-default-resolves`;
+    - `variant-04-role-preference`;
+    - `variant-10-role-unclaimed`.
+
+    A resolver can validate the role, primary or default correctly and then
+    read the first fence. Mutating the built `resolveRoleBlock` that way still
+    passed all 43 default tier-3 checks. A non-TypeScript calc host could
+    therefore self-certify through the portable driver. Only core's own unit
+    test, "reads the declared role, whichever fence comes first", catches it
+    in the reference implementation.
+  - **The fix.** Follow UPSTREAM-021:
+    - put each selected block between two other fences, without a second
+      `primary` or a second block with the declared role;
+    - keep each fixture's role semantics and expected result;
+    - extend the `section-resolution.test.ts` fence-order suite to cover the
+      four fixtures.
+
+    It is conformance evidence only, with no rule, RFC or version change.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
