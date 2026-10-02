@@ -12,15 +12,19 @@ protocol, and each package each carry an independent semver).
 
 ### Prepared
 
-Core/CLI **2.15.0** pair with accepted Protocol **2.19.0** and unchanged
+Core/CLI **2.15.0** pair with Protocol **2.19.0** and unchanged
 Format **2.0**, the release target of the owner's decision D3 for RFC 0066.
 Signing **0.2.19** and batch **0.8.14** repin core, and core's optional
 signing peer moves to 0.2.19. The unpublished Excel **0.9.7**, report
 **0.8.19**, lake **0.2.3** and module **0.1.7** manifests also receive exact
 local repins. Receipt issuance baselines and the frozen verification fixture
-use the new engine version. The heading is dated for the `v2.15.0` tag, which
-the owner authorizes separately. RFC 0066 remains `accepted` until the tagged
-packages are verified on npm.
+use the new engine version.
+
+### Released
+
+The `v2.15.0` tag published core/CLI **2.15.0**, signing **0.2.19** and batch
+**0.8.14** to npm with SLSA provenance through trusted publishing (OIDC). RFC
+0066 is now `implemented`.
 
 ### Fixed
 
@@ -41,8 +45,8 @@ packages are verified on npm.
   Tests pin flat-versus-envelope equality for the cascade, refinement and
   every Excel layout, mixed-use included, along with Excel ↔ `evaluateCalc`
   parity on a wrapped document. Each fails on the previous code. No normative
-  text, schema or conformance baseline changes. Published core/CLI 2.14.0
-  still carries the defect; this candidate fixes it.
+  text, schema or conformance baseline changes. Core/CLI 2.14.0 still carries
+  the defect; 2.15.0 fixes it.
 
 ### Conformance
 
@@ -62,7 +66,7 @@ packages are verified on npm.
   2.13.0 engine fails the unique-date and absent-date cases. No behavior,
   spec or schema changed; the portable driver now has 93 cases.
 
-### Accepted contract — Protocol 2.19.0 (RFC 0066, unreleased)
+### Accepted contract — Protocol 2.19.0 (RFC 0066)
 
 Jared made three owner decisions on **2026-10-02**:
 
@@ -73,8 +77,7 @@ Jared made three owner decisions on **2026-10-02**:
   **2.15.0** with Protocol 2.19.0.
 
 The other rules below follow from D1 and D2 under existing precedent. This
-source follows the published 2.14.0 release (Protocol 2.18.0); the 2.15.0
-candidate above carries it. Format stays **2.0**.
+release follows 2.14.0 (Protocol 2.18.0). Format stays **2.0**.
 
 - **Calc identifiers over variant-map sections (§VIII.2).** An identifier rooted
   at a section stated as a variant map reads exactly one block. The order is the
@@ -3958,7 +3961,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.14.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.15.0...HEAD
+[2.15.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.14.0...v2.15.0
 [2.14.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.12.0...v2.13.0
 [2.6.2]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.1...v2.6.2

@@ -1,20 +1,17 @@
 # Roadmap
 
 Reconciled **2026-10-02**, following
-[release 2.14.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.14.0)
-(see [Released in 2.14.0](#released-in-2140)).
+[release 2.15.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.15.0)
+(see [Released in 2.15.0](#released-in-2150)).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
 ## Current release
 
-Core/CLI **2.14.0**, signing **0.2.18** and batch **0.8.13** are published on
-npm from the `v2.14.0` tag with SLSA provenance. Format is **2.0** and Protocol
-is **2.18.0**; the version streams are independent. RFC 0066 (accepted
-2026-10-02) is not in this release. Its implementation is prepared as the
-core/CLI **2.15.0** candidate with Protocol **2.19.0**
-(candidate record: `docs/releases/2.15.0-candidate.md`); it is not published.
+Core/CLI **2.15.0**, signing **0.2.19** and batch **0.8.14** are published on
+npm from the `v2.15.0` tag with SLSA provenance. Format is **2.0** and Protocol
+is **2.19.0**; the version streams are independent.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -122,6 +119,21 @@ For the lake adapter, a real load against a live PostgreSQL server ran on
 a managed-service run and the publication decision are still open. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
+
+## Released in 2.15.0
+
+Released from the reviewed `v2.15.0` tag. The living detail is in the developer
+wiki's build-status page (`docs/wiki/13-status.md`); this section records only
+what changes a roadmap or status claim.
+
+| Change | Effect on this roadmap |
+|---|---|
+| **Calc identifiers over variant-map sections (RFC 0066, Protocol 2.19.0)** | An identifier rooted at a variant map reads exactly one block: explicit variant, then the calculation's declared `section_roles`, then RFC 0040's generic order. Otherwise it refuses with `CALC-RESOLVE-002` instead of a silent `null`. Built-in lender-side metrics declare `senior`. `cash_on_cash` refuses on multi-tranche maps until a total-debt-service input is contracted, which is a new forward item. The calc engine still has no collection iteration. |
+| **One selection for the cascade, refinement and Excel** | Excel writes `#VALUE!` where the engine refuses, so Excel ↔ calc parity stays exact. Refinement reports excluded targets in `diagnostics.section_inputs`. |
+| **Format 2.0 payload reading** | The cascade, refinement and Excel read a block's `content` envelope the way the evaluator does. Correction only. |
+| **RFC 0062 portable coverage** | The RFC 0004 driver now carries the same-day selection rule (`period-09` … `period-12`). Tests only. |
+
+No other forward candidate moved.
 
 ## Released in 2.14.0
 

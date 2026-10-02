@@ -1,14 +1,11 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-02** for published release **v2.14.0** (see
-[Released in 2.14.0](#released-in-2140)). Core/CLI **2.14.0**, signing
-**0.2.18** and batch **0.8.13** publish to npm with SLSA provenance from the
-`v2.14.0` tag. That release pairs Format **2.0** with Protocol **2.18.0**,
-which includes RFC 0063 and the RFC 0062 errata selected as 2.17.1. Draft RFCs
-0064, 0065 and 0067–0069 are outside that contract. So is RFC 0066, which the
-owner accepted on 2026-10-02. Its Protocol 2.19.0 implementation is prepared
-as the core/CLI **2.15.0** candidate (signing 0.2.19, batch 0.8.14); see the
-[candidate record](../releases/2.15.0-candidate.md). It is not published.
+Reconciled **2026-10-02** for published release **v2.15.0** (see
+[Released in 2.15.0](#released-in-2150)). Core/CLI **2.15.0**, signing
+**0.2.19** and batch **0.8.14** publish to npm with SLSA provenance from the
+`v2.15.0` tag. That release pairs Format **2.0** with Protocol **2.19.0**,
+which adds RFC 0066 to 2.18.0. Draft RFCs 0064, 0065 and 0067–0069 are outside
+that contract.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -37,6 +34,20 @@ from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
+
+Release 2.15.0 passed its gates on the final tree, `main` at `7b33f00` plus the
+documentation-only release commit `aaa9ec3`, under the pinned Node
+22.14.0/npm 11.5.1 toolchain:
+- build, **2,628 workspace tests** across 139 files (**2,201 core**), test
+  typechecking;
+- **667 default conformance checks** and the 93-case portable driver;
+- all three RFC 0030 profiles, **47 JSON schemas**, lint over **1,185 files**;
+- **221 emitted codes**, the lockfile/package/version/index/release checks, the
+  documentation build and the OIDC release-readiness guard.
+
+The tag workflow published core/CLI 2.15.0, signing 0.2.19 and batch 0.8.14
+through trusted publishing with provenance; see the
+[release record](../releases/2.15.0-candidate.md).
 
 Release 2.14.0 passed its gates at `6ad146a` under the pinned Node
 22.14.0/npm 11.5.1 toolchain: build, **2,573 workspace tests** across 138
@@ -76,6 +87,19 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 11 seeds, 11,264 raw draws and 176 doubles. See the [record](../reviews/2026-09-12-pcg64-reference.md).
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
+
+## Released in 2.15.0
+
+The following work shipped from the reviewed `v2.15.0` tag.
+
+- **Calc variant resolution (RFC 0066, Protocol 2.19.0).** Ordinary calc
+  identifiers over variant-map sections select one block, or refuse with
+  `CALC-RESOLVE-002`; details are below.
+- **Format 2.0 payload reading.** The cascade, refinement and Excel read a
+  block's v2 `content` envelope through `blockPayload`, as the evaluator
+  already did.
+- **RFC 0062 portable coverage.** Tier-3 fixtures `period-09` … `period-12`
+  carry the same-day selection rule into the RFC 0004 driver.
 
 ## Released in 2.14.0
 
@@ -381,14 +405,11 @@ no longer emit PS-02, repeated requested dates still refuse CALC-PERIOD-002,
 and unique dates in the same ledger resolve. Other series and the whole-column
 Excel guard remain unchanged. Schemas and public types did not change.
 
-## Accepted, unreleased calc variant resolution (RFC 0066)
+## Calc variant resolution (RFC 0066, released in 2.15.0)
 
 [RFC 0066](../rfcs/0066-calc-identifier-variant-resolution.md) was accepted on
-**2026-10-02**: owner decisions D1–D3, targeting core/CLI 2.15.0 with Protocol
-**2.19.0**. Its implementation branch also carries the payload-unwrapping fix
-it depends on. After the `v2.14.0` publication the branch was rebased onto
-released `main` behind that fix and carries the 2.15.0 package generation; see
-the [candidate record](../releases/2.15.0-candidate.md).
+**2026-10-02** through owner decisions D1–D3. It shipped in core/CLI 2.15.0
+with Protocol **2.19.0** and is `implemented`.
 
 - **The defect.** Before it, four readers chose differently from one
   role-bearing `debt_structure` map. The evaluator read `null`, the cascade the
@@ -404,15 +425,13 @@ the [candidate record](../releases/2.15.0-candidate.md).
   total-debt-service input is contracted.
 - **Excel.** The workbook writes `#VALUE!` where the engine refuses.
 - **Refinement.** It reports excluded targets in `diagnostics.section_inputs`.
-- **Status.** RFC 0066 stays `accepted` until a release ships it.
 
 ## Remaining work
 
-- Review the core/CLI **2.15.0** + Protocol **2.19.0** candidate for RFC 0066
-  (accepted 2026-10-02). Publishing it needs the owner's `v2.15.0` tag
-  authorization and a trusted-publisher reconfirmation. No
-  post-sale settlement category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work
-  remain separate contracts.
+- Accept or decline draft RFC 0069 (student bed counts) as a whole, then RFCs
+  0068 and 0067, in that order. No post-sale settlement category or lag is
+  authorized. Reserve-account, financing, investor-tax and post-sale work remain
+  separate contracts.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
@@ -422,7 +441,7 @@ the [candidate record](../releases/2.15.0-candidate.md).
     ([owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)).
   - **Still draft.** RFC 0064 is not accepted, its implementation (PR #219) is
     not authorized to merge, no version is selected, and it is outside the
-    2.14.0 release.
+    2.15.0 release.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
