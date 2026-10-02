@@ -20,16 +20,18 @@ same protocol version.
 
 ## Current matrix
 
-**Accepted, unreleased source contract:** Protocol **2.20.0** adds RFC 0069.
-The top-level student-housing `rent_roll` may state `occupied_beds`,
-`preleased_beds`, `preleased_as_of` and `preleased_term_start`, and the `BED-NN`
-family refuses a stated count that is malformed, undated or above
-`property.total_beds`. Jared accepted RFC 0069 on 2026-10-02 and authorized
-implementation. Format stays 2.0. Published core/CLI 2.15.0 implement Protocol
-2.19.0; package versions and release state below are unchanged, and Protocol
-2.20.0 has no release tag or package publication yet.
+Release 2.16.0 pairs core/CLI 2.16.0 with Protocol 2.20.0 and Format 2.0.
+Protocol 2.20.0 adds RFC 0069's four optional top-level student-housing
+`rent_roll` fields: `occupied_beds`, `preleased_beds`, `preleased_as_of`
+and `preleased_term_start`. The `BED-NN` error family validates a stated
+count's type, capacity and measurement dates. Pack formulas are unchanged.
+RFC 0069 is accepted; core/CLI 2.16.0 carry its accepted release contract.
+Signing 0.2.20 and batch 0.8.15 pin core 2.16.0 exactly. The release workflow
+publishes these four packages; the other package generations are source-only.
+This matrix records the final contract and package pairings independently of
+the publication workflow. Preparation evidence accompanies this release generation.
 
-Release 2.15.0 pairs core/CLI 2.15.0 with Protocol 2.19.0 and Format 2.0.
+Release 2.15.0 paired core/CLI 2.15.0 with Protocol 2.19.0 and Format 2.0.
 Protocol 2.19.0 adds RFC 0066. Ordinary calc identifiers select one block of a
 variant-map section by §VIII.2: an explicit variant, then the calculation's
 declared `section_roles`, then RFC 0040's generic order. Ambiguity refuses as
@@ -66,17 +68,17 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.20.0** (accepted, unreleased) | format ≥ 1.0; RFC 0069 student bed counts (`BED-NN`) on 2.19.0, which added RFC 0066 calc variant resolution and was released in core/CLI 2.15.0; published core/CLI 2.15.0 implement 2.19.0 |
-| `@uwmd/core` | **2.15.0** | format 2.0 (reads 1.x), protocol 2.19.0 |
-| `@uwmd/cli` (CLI) | **2.15.0** | `@uwmd/core` 2.15.0 |
-| `@uwmd/excel` | **0.9.7** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.15.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.19** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.15.x, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.14** | `@uwmd/core` 2.15.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.3** (unpublished) | `@uwmd/core` 2.15.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.19** | `@uwmd/core` 2.15.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.7** (unpublished) | `@uwmd/core` 2.15.x, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.7** (unpublished) | `@uwmd/core` 2.15.x, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.15.x browser entry |
+| UW Protocol | **2.20.0** | format ≥ 1.0; RFC 0069 student bed counts (`BED-NN`) on 2.19.0; carried by core/CLI 2.16.0 |
+| `@uwmd/core` | **2.16.0** | format 2.0 (reads 1.x), protocol 2.20.0 |
+| `@uwmd/cli` (CLI) | **2.16.0** | `@uwmd/core` 2.16.0 |
+| `@uwmd/excel` | **0.9.8** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.16.0, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.20** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.16.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.15** | `@uwmd/core` 2.16.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.4** (source only) | `@uwmd/core` 2.16.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.20** | `@uwmd/core` 2.16.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.8** (source only) | `@uwmd/core` 2.16.0, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.8** (source only) | `@uwmd/core` 2.16.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.16.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

@@ -1,13 +1,14 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-02** for published release **v2.15.0** (see
-[Released in 2.15.0](#released-in-2150)). Core/CLI **2.15.0**, signing
-**0.2.19** and batch **0.8.14** publish to npm with SLSA provenance from the
-`v2.15.0` tag. That release pairs Format **2.0** with Protocol **2.19.0**,
-which adds RFC 0066 to 2.18.0. Draft RFCs 0064, 0065, 0067 and 0068 are
-outside that contract. RFC 0069 (student bed counts) was accepted on 2026-10-02
-and is implemented in source as the unreleased Protocol **2.20.0**; see
-[Accepted, unreleased student bed counts](#accepted-unreleased-student-bed-counts-rfc-0069).
+Reconciled **2026-10-02** for the release-prepared **2.16.0** generation.
+Core/CLI **2.16.0** pair with accepted Protocol **2.20.0** and Format **2.0**.
+Signing **0.2.20** and batch **0.8.15** pin core 2.16.0 exactly. RFC 0069
+stays `accepted`; see [Accepted student bed-count release contract](#accepted-student-bed-count-release-contract-rfc-0069).
+The generation includes both RFC 0066 fence-order conformance repairs and
+PR #240's publication-neutral release-state guards. The preparation record
+is `docs/releases/2.16.0-candidate.md`. Draft RFCs 0064, 0065, 0067 and 0068
+remain outside this contract. The historical publication is
+[2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -27,8 +28,8 @@ See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.6**, report **0.8.18**, lake **0.2.2** and hospitality/data-center
-module packages **0.1.6** are prepared in source but remain unpublished. The
+Excel **0.9.8**, report **0.8.20**, lake **0.2.4** and hospitality/data-center
+module packages **0.1.8** are source-only package generations. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
@@ -36,6 +37,24 @@ from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
+
+The 2.16.0 prepared tree passes pinned Node 22.14.0/npm 11.5.1 verification:
+**2,690 workspace tests / 140 files**, test typechecks, core coverage floors,
+**675 default checks**, **101/101 portable cases**, all three profiles,
+47 JSON schemas, 227 codes, version/package/lockfile/index checks,
+ordinary and intended-tag release-state checks, static OIDC eligibility,
+lint over 1,196 files and a clean docs build. Clean web-editor and VS Code
+extension builds pass with 71 and 28 tests respectively.
+The private golden comparison passes 640/640 and 20/20 refusals on both this
+tree and the published 2.15.0 baseline; the 640 assertion ledgers are identical
+and no private file changed. All nine local tarballs pass inspection, and
+the four installed workflow artifacts pass consumer checks and 101/101 portable
+cases. First-/last-fence resolver negative controls still fail the four
+strengthened fixtures. See `docs/releases/2.16.0-candidate.md` for the exact
+receipts and limits. Jared reconfirmed all four npm trusted publishers on
+2026-10-02 from his personal 2026-10-01 inspection, with no settings changes
+since; the inspection clock time was not recorded. The reported fields match
+the canonical release workflow; this is owner-reported account evidence.
 
 Release 2.15.0 passed its gates on the final tree, `main` at `7b33f00` plus the
 documentation-only release commit `aaa9ec3`, under the pinned Node
@@ -435,7 +454,7 @@ with Protocol **2.19.0** and is `implemented`.
     against the unchanged 0.1.
   - **Guard.** `section-resolution.test.ts` checks every context fixture
     against both fence-order readers.
-  - **Scope.** Conformance evidence only, unreleased. The rule, expected
+  - **Scope.** Conformance evidence included in the 2.16.0 generation. The rule, expected
     results and counts are unchanged.
 
 - **First-fence hardening after PR #240.** The successful no-context cases
@@ -451,9 +470,9 @@ with Protocol **2.19.0** and is `implemented`.
     fence passed 43/43 default tier-3 checks and 42/42 portable cases before
     this change. First- and last-fence mutants now fail all four in both runners.
   - **Unchanged.** Expected 0.6, Protocol/RFC/package state, 675 default checks
-    and 101 portable cases. This is conformance evidence only, unreleased.
+    and 101 portable cases. This conformance evidence is included in the 2.16.0 generation.
 
-## Accepted, unreleased student bed counts (RFC 0069)
+## Accepted student bed-count release contract (RFC 0069)
 
 [RFC 0069](../rfcs/0069-student-rent-roll-bed-counts.md) was accepted on
 **2026-10-02**. It declares four OPTIONAL fields on the top-level §4.3
@@ -479,9 +498,9 @@ and its formulas do not change.
 - **Not in scope.** Future-phase capacity is deferred, and `BED-02` is not
   weakened for it. CC-13's acceptance of any finite `total_beds` is a separate,
   pre-existing size-validation concern.
-- **Version.** Protocol **2.20.0**, unreleased. Format stays 2.0.
-  `@uwmd/core` takes the rules in the next package generation, and the RFC
-  stays `accepted` until a release ships it.
+- **Version.** Core/CLI **2.16.0** pair with the accepted Protocol **2.20.0**
+  release contract and unchanged Format **2.0**. The RFC stays `accepted`;
+  its status transition belongs to verified post-publication reconciliation.
 
 ## Release records true of their tag (UPSTREAM-020)
 
@@ -522,8 +541,7 @@ The guards:
 
 ## Remaining work
 
-- Prepare a package generation for RFC 0069 when the owner wants it released.
-  Then decide RFCs 0068 and 0067, in that order. No post-sale settlement
+- Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)

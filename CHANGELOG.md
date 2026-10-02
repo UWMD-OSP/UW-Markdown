@@ -8,12 +8,25 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-### Accepted contract — Protocol 2.20.0 (RFC 0069, unreleased)
+## [2.16.0] - 2026-10-02
+
+### Prepared
+
+Core/CLI **2.16.0** pair with Protocol **2.20.0** and Format **2.0**.
+Signing **0.2.20**, batch **0.8.15**, Excel **0.9.8**, report **0.8.20**,
+lake **0.2.4** and both reference modules **0.1.8** pin core **2.16.0**.
+Core's optional signing peer is **0.2.20**. The release workflow publishes
+core, CLI, signing and batch; the other packages remain source-only.
+RFC 0069 stays `accepted` under the three-state release model. The final
+contract, package pairings and preparation evidence are recorded in
+`docs/releases/2.16.0-candidate.md`.
+
+### Accepted contract — Protocol 2.20.0 (RFC 0069)
 
 Jared accepted RFC 0069 as a whole on **2026-10-02** and authorized
-implementation. Format stays **2.0**. Package versions for this contract are
-set when the next package generation is prepared, and the RFC stays `accepted`
-until a release ships it.
+implementation. Format stays **2.0**. Core/CLI **2.16.0** carry the accepted
+Protocol **2.20.0** release contract. The RFC remains `accepted`; its status
+transition belongs to the verified post-publication reconciliation.
 
 - **Student-housing bed counts (Format §4.3).** The top-level `rent_roll` may
   state four OPTIONAL fields:
@@ -4091,7 +4104,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.15.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.16.0...HEAD
+[2.16.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.14.0...v2.15.0
 [2.14.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.12.0...v2.13.0
