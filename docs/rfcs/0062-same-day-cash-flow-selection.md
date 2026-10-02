@@ -185,6 +185,14 @@ PS-02 while retaining its existing assembled row/binding expectations. The
 unrelated LU-04/CC-14 warnings in that source fixture are not suppressed.
 No private workbook data enters conformance.
 
+**Portable-driver coverage (added 2026-10-02, after acceptance).** The
+scenarios above run in the TypeScript suite only. Tier-3 fixtures
+`period-09-same-day-unique`, `period-10-same-day-repeated`,
+`period-11-same-day-absent` and `period-12-other-series-duplicate` carry the
+selection rule into the RFC 0004 driver, so a non-TypeScript calc host cannot
+self-certify while refusing every same-day series. They add tests only; this
+RFC's contract is unchanged.
+
 ## Reference implementation
 
 The public `PeriodSeriesEntry` type and its closed JSON Schema already describe

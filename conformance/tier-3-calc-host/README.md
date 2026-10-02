@@ -31,6 +31,19 @@ fixtures/<scenario-id>/
 | `fixtures/revpar-basic` | RevPAR = adr × occupancy with literal inputs from `quick_metrics` |
 | `fixtures/dscr-from-section` | DSCR derived by deepGet path resolution across `noi_model` and `debt_structure` sections |
 
+### Dated same-day scenarios (RFC 0062)
+
+The four fixtures share one synthetic document. Its `cash_flow_series.series`
+and `distribution_waterfall.stated_schedule` each have two rows on 2027-06-30
+and one on 2028-06-30.
+
+| Scenario | Tests |
+|---|---|
+| `fixtures/period-09-same-day-unique` | A cash-flow date that appears once resolves (150) although another date repeats |
+| `fixtures/period-10-same-day-repeated` | The repeated cash-flow date refuses `CALC-PERIOD-002`; rows are never summed or chosen |
+| `fixtures/period-11-same-day-absent` | An absent cash-flow date is null, not a refusal |
+| `fixtures/period-12-other-series-duplicate` | Other registered series keep whole-series refusal: a unique waterfall date still refuses `CALC-PERIOD-002` |
+
 ### Refinement scenarios
 
 > **Capability: `refinement`. No tier requires these.** Protocol II.3 lists

@@ -1,0 +1,6 @@
+{
+  "id": "period_11_same_day_absent",
+  "label": "period-11-same-day-absent",
+  "formula": "cash_flow_series.series@2029-06-30.amount",
+  "deterministic": true
+}
