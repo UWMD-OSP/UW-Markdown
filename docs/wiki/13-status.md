@@ -427,6 +427,16 @@ with Protocol **2.19.0** and is `implemented`.
   total-debt-service input is contracted.
 - **Excel.** The workbook writes `#VALUE!` where the engine refuses.
 - **Refinement.** It reports excluded targets in `diagnostics.section_inputs`.
+- **Fixture hardening after the release.** StackUW's UPSTREAM-021 found that
+  `variant-05` and `variant-11` put the block their calc context names in the
+  last fence. A reader that kept the last fence therefore passed both.
+  - **Change.** Both now append a third `junior` fence, so the named block is
+    the middle one: a first-fence reader reads 0.6 and a last-fence reader 0.2,
+    against the unchanged 0.1.
+  - **Guard.** `section-resolution.test.ts` checks every context fixture
+    against both fence-order readers.
+  - **Scope.** Conformance evidence only, unreleased. The rule, expected
+    results and counts are unchanged.
 
 ## Accepted, unreleased student bed counts (RFC 0069)
 
@@ -488,12 +498,6 @@ and its formulas do not change.
     carry only what follows the publish.
   - **Owner decision, 2026-10-02.** Fix it for future tags. No `v2.15.1` is cut
     for this historical metadata alone.
-- **Harden RFC 0066 fixtures `variant-05` and `variant-11`** (StackUW's
-  UPSTREAM-021). In both fixtures the block the calc context selects is also
-  the section's last block. An implementation that ignores the context and
-  keeps the last block therefore passes both. StackUW's adapter did exactly
-  that until its re-vendor. Reorder each fixture, or add a mirror case, so the
-  selected block is not last. Expected results stay unchanged.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

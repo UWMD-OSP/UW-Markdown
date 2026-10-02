@@ -31,6 +31,17 @@ fixtures/<scenario-id>/
 | `fixtures/revpar-basic` | RevPAR = adr × occupancy with literal inputs from `quick_metrics` |
 | `fixtures/dscr-from-section` | DSCR derived by deepGet path resolution across `noi_model` and `debt_structure` sections |
 
+### Variant-map scenarios (RFC 0066)
+
+`fixtures/variant-01` … `variant-11` select one `debt_structure` block of a
+role-bearing variant map, or refuse `CALC-RESOLVE-002`. A scenario may carry an
+optional `calc-context.json`, which both runners pass as `--calc-context`.
+
+When that context names a variant, the named block sits between two other
+fences. A reader that takes the first or the last fence must fail the case, not
+pass by fence order. `section-resolution.test.ts` in `@uwmd/core` enforces
+this for every context scenario.
+
 ### Dated same-day scenarios (RFC 0062)
 
 The four fixtures share one synthetic document. Its `cash_flow_series.series`

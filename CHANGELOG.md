@@ -54,6 +54,26 @@ until a release ships it.
   - The receipt issuance baselines' protocol label moves to 2.20.0, with
     unchanged results.
 
+### Conformance
+
+- **RFC 0066 fixtures `variant-05` and `variant-11` no longer pass a
+  fence-order reader** (StackUW's UPSTREAM-021). Both used to put the block
+  their `calc-context.json` names in the last fence. A reader that checked the
+  name and then kept the last fence therefore passed both, in both runners.
+  - **The change.** Each fixture appends a third `junior` fence,
+    `producer-b-note` (2,000,000), after the named `producer-mezz`. A
+    first-fence reader now reads 0.6 and a last-fence reader 0.2, against the
+    unchanged expected 0.1.
+  - **Why not a swap.** Every generic-order fixture already resolves to its
+    first fence, so swapping would have let a first-fence reader pass the
+    whole family.
+  - **Guard.** A `section-resolution.test.ts` suite runs every context fixture
+    against both fence-order readers and keeps the named block in the middle.
+    It fails on the old fixtures.
+  - **No contract change.** Protocol §VIII.2, the expected results, the case
+    files and the counts (675 default checks, 101 portable cases) are
+    unchanged.
+
 ## [2.15.0] - 2026-10-02
 
 ### Prepared
