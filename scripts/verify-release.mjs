@@ -28,6 +28,15 @@
 //      section relabelled once the next release supersedes it.
 //   2. The core manifest version has a CHANGELOG section, so a bump cannot ship
 //      undocumented.
+//   3. Once that section's heading is dated, the version records describe the
+//      release as released (`release-state.mjs`). v2.14.0 and v2.15.0 were
+//      tagged on commits whose VERSIONS.md still called their own packages
+//      candidates and their protocol unreleased; that is why this exists.
+//
+// `--tag vX.Y.Z` checks the tree as that release: the tag must name the core
+// version, the heading must be dated and check 3 applies unconditionally.
+// release.yml passes the pushed tag before it publishes anything, and the owner
+// can pass the tag about to be pushed.
 //
 // Deliberately NOT checked: whether the version exists on the npm registry. That
 // would need the network, which no other guard here does, and it would fail in
@@ -35,15 +44,25 @@
 // trigger, so the tag is the honest local proxy.
 //
 // Run: npm run verify-release
+//      node scripts/verify-release.mjs --tag v2.16.0
 
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkReleaseState } from './release-state.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
 const checks = [];
+
+const args = process.argv.slice(2);
+const tagIndex = args.findIndex((arg) => arg === '--tag' || arg.startsWith('--tag='));
+const tag = tagIndex === -1 ? undefined : args[tagIndex].includes('=') ? args[tagIndex].slice('--tag='.length) : args[tagIndex + 1];
+if (tagIndex !== -1 && !tag) {
+  console.error('[FAIL] --tag needs a value, e.g. --tag v2.16.0');
+  process.exit(1);
+}
 
 const read = (path) => readFileSync(resolve(root, path), 'utf8');
 const changelog = read('CHANGELOG.md');
@@ -93,7 +112,7 @@ let released = 0;
 for (const { version, body } of sections) {
   if (!/^### Released$/m.test(body)) continue;
   released += 1;
-  if (version === coreVersion) {
+  if (version === coreVersion && !tags.includes(`v${version}`)) {
     checks.push(`[SKIP] ${version} is the version being released; its tag comes after merge`);
     continue;
   }
@@ -116,6 +135,22 @@ if (!sections.some((s) => s.version === coreVersion)) {
   checks.push(`[PASS] @uwmd/core ${coreVersion} has a CHANGELOG section`);
 }
 
+// ── 3. A dated release describes itself as released ──────────────────────────
+const state = checkReleaseState({
+  changelog,
+  versions: read('VERSIONS.md'),
+  protocolDoc: read('spec/UW_PROTOCOL_v1.md'),
+  coreVersion,
+  protocolVersion:
+    read('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)?.[1] ?? null,
+  tag,
+});
+if (!state.applies) {
+  checks.push(`[SKIP] [${coreVersion}] is an undated candidate; its records may still say so until the release commit`);
+}
+checks.push(...state.checks.map((check) => `[PASS] ${check}`));
+failures.push(...state.failures);
+
 // ── Report ───────────────────────────────────────────────────────────────────
 for (const line of checks) console.log(line);
 if (failures.length > 0) {
@@ -124,4 +159,6 @@ if (failures.length > 0) {
   console.error(`\nSummary: ${failures.length} release-record problem(s).`);
   process.exit(1);
 }
-console.log('\nSummary: every released version in the CHANGELOG has a tag.');
+console.log(
+  `\nSummary: every released version in the CHANGELOG has a tag${state.applies ? `, and ${coreVersion}'s records describe it as released` : ''}.`,
+);

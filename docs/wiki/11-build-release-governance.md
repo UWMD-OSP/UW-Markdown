@@ -25,6 +25,7 @@ Script | Does
 `npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest and the `protocol.ts` constants
 `npm run verify-indexes` | `scripts/verify-indexes.mjs` — the schema/RFC indexes match files on disk; tests cover automatic RFC discovery and site version metadata
 `npm run verify-codes` | `scripts/verify-codes.mjs` — every code an implemented RFC or the format spec promises is one `@uwmd/core` actually emits, and every emitted validation family is registered in protocol §XI
+`npm run verify-release` | `scripts/verify-release.mjs` — every CHANGELOG section marked `### Released` has its tag, and a dated release's own records call it released (`release-state.mjs`); `-- --tag vX.Y.Z` checks the tree as that release
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run
@@ -49,7 +50,7 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
 
-**Cutting a `@uwmd/core` release** touches six things beyond `package.json`,
+**Cutting a `@uwmd/core` release** touches seven things beyond `package.json`,
 each with a guard that fails loudly if you miss it:
 
 1. `CORE_VERSION` in `src/version.ts` — a literal, so the browser bundle has it.
@@ -65,10 +66,15 @@ each with a guard that fails loudly if you miss it:
    version cell and the "pairs with `@uwmd/core` 1.x" notes. `verify-versions`.
    This was the unguarded one: the 1.4.0 release left the matrix advertising
    1.3.0, and nothing went red until it was found by hand.
-6. **Push the `v<version>` tag.** This is the step that actually ships:
+6. **Record the release in the commit the tag lands on.** Date the CHANGELOG
+   heading, add its `### Released` block and flip the release state: the
+   current-matrix rows and the protocol status line. See
+   [the release commit and the reconciliation](#the-release-commit-and-the-reconciliation).
+   `verify-release`, and `release.yml` again before it publishes.
+7. **Push the `v<version>` tag.** This is the step that actually ships:
    `release.yml` triggers on `v*` and on nothing else. `verify-release`.
 
-**1.4.0 is why step 6 is written down.** Steps 1–5 were all done for it and the
+**1.4.0 is why step 7 is written down.** Steps 1–5 were all done for it and the
 tag never was, so the publish job never ran — npm went from 1.3.0 to 1.5.0 and no
 1.4.0 of any package exists. Nothing caught it, and nothing could have: the three
 existing guards compare repo files to each other, and all of them agreed on a
@@ -86,6 +92,59 @@ per-surface sections. A prepared candidate belongs in the current matrix and
 an explicitly unpublished changelog section, alongside its release plan (for
 example, the [2.14.0 record](../releases/2.14.0-candidate.md)). A merged
 candidate is not a tagged or npm-published release.
+
+### The release commit and the reconciliation
+
+A release takes three commits on `main`. A tag is immutable, so each record
+belongs in the first commit where it is true.
+
+1. **The candidate** bumps the manifests and labels itself a candidate:
+   - the CHANGELOG heading reads `## [X.Y.Z] - release candidate (unpublished)`;
+   - the matrix rows read `(candidate; published <previous>)`;
+   - a protocol the packages newly carry reads `(accepted, unreleased)`.
+2. **The release commit** is the one-commit release PR that the owner tags. It
+   must already describe the release as released, because the tag carries this
+   tree forever:
+   - the dated heading `## [X.Y.Z] - YYYY-MM-DD`;
+   - a `### Released` block naming the tag and the packages `release.yml`
+     publishes;
+   - no `unreleased`, `candidate` or `unpublished` `###` heading in that
+     section;
+   - bare matrix version cells for core, CLI, signing and batch, and no
+     candidate wording anywhere in the current matrix;
+   - an unannotated Protocol row, with a protocol status line that no longer
+     says unreleased, whenever the core row pairs with it;
+   - a core row that pairs with `PROTOCOL_VERSION`, since the packages report
+     that protocol.
+3. **The reconciliation** follows publication. It adds only what publication
+   establishes:
+   - the release run;
+   - registry versions, dist-tags and `gitHead`;
+   - signature, integrity and provenance checks, with Rekor indexes;
+   - the comparison of published files with a local build;
+   - the portable driver against the published CLI;
+   - the RFC moving from `accepted` to `implemented`, which the owner's
+     process records once the published packages are verified.
+
+   The reconciliation must not be the first commit to call the tagged
+   generation released.
+
+Nothing enforced this until after 2.15.0. At `v2.14.0` and `v2.15.0`, the release
+commit only dated the heading. Their tagged trees still call their own
+packages candidates and their protocol unreleased; StackUW's re-vendor found
+it (its UPSTREAM-020). The owner decided on 2026-10-02 to fix future tags and
+not to cut a `v2.15.1` for that metadata, so both historical tags stay as they
+are.
+
+`verify-release` now enforces step 2 as soon as the heading is dated, so a
+stale release PR fails CI. `release.yml` re-runs it as
+`verify-release.mjs --tag "$GITHUB_REF_NAME"` before installing anything, so a
+tag on a stale or undated tree publishes nothing. `release:check` fails if that
+step goes missing. Run the tag check yourself before tagging:
+
+```
+node scripts/verify-release.mjs --tag vX.Y.Z
+```
 
 ## CI / CD (`.github/workflows/`)
 

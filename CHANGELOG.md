@@ -74,6 +74,40 @@ until a release ships it.
     files and the counts (675 default checks, 101 portable cases) are
     unchanged.
 
+### Release process
+
+- **A release tag now lands on a tree that calls its release released**
+  (StackUW's UPSTREAM-020). At `v2.14.0` and `v2.15.0`, the tagged tree still
+  calls its own generation unreleased:
+  - `VERSIONS.md` labels core/CLI, signing and batch `(candidate; …)` and the
+    Protocol `(accepted, unreleased)`;
+  - the protocol status line says `unreleased`;
+  - the CHANGELOG section has no `### Released`.
+
+  The tagged one-commit release record only dated the CHANGELOG heading. The
+  rows flipped in the post-publication reconciliation, which the tag never
+  sees.
+  - **`verify-release` check 3** (`scripts/release-state.mjs`). Once the core
+    version's heading is dated, the CHANGELOG section must carry
+    `### Released` and no unreleased heading. The matrix must carry no
+    candidate wording. A protocol the core row pairs with must not be
+    annotated or described as unreleased.
+  - **Tag mode.** `--tag vX.Y.Z` also requires the tag to name the core version,
+    the dated heading, and a core row that pairs with `PROTOCOL_VERSION`.
+  - **`release.yml`** runs `verify-release --tag` over a full-history checkout
+    before installing or publishing anything. `release:check` fails if that
+    step goes missing.
+  - **Tests.** `release-state.test.mjs` pins the verbatim `v2.15.0` shape as
+    failing; `npm run verify-release` runs it first. Run against the actual
+    trees, the gate refuses `v2.14.0` and `v2.15.0` with 11 problems each and
+    accepts both reconciled trees.
+  - **Post-publication stays post-publication.** The reconciliation keeps
+    the release run, registry and provenance evidence, Rekor indexes and the
+    RFC's move to `implemented`; it no longer flips rows. Wiki 11 records the
+    split.
+  - **History.** Per the owner's 2026-10-02 decision, the historical tags are
+    not moved and no `v2.15.1` is cut.
+
 ## [2.15.0] - 2026-10-02
 
 ### Prepared

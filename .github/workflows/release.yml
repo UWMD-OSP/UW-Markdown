@@ -58,8 +58,14 @@ jobs:
       contents: read
       id-token: write   # for npm provenance
     steps:
+      # Full history and tags: the release-record check below also compares
+      # every CHANGELOG section marked released against its tag, and a shallow
+      # tag checkout holds only the one tag being pushed.
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -67,6 +73,16 @@ jobs:
           node-version: 22.14.0
           cache: npm
           registry-url: 'https://registry.npmjs.org'
+
+      # The tag must land on a commit whose own records already call this
+      # release released: the VERSIONS.md rows, the protocol status line and
+      # the CHANGELOG section (scripts/release-state.mjs). v2.14.0 and v2.15.0
+      # were tagged on commits that still said "candidate" and "unreleased".
+      # Their rows flipped only in a later commit the tag never sees. This runs
+      # before install, so a stale tree fails before anything publishes; the
+      # owner then fixes the release commit and tags that instead.
+      - name: Verify the tagged tree records this release as released
+        run: node scripts/verify-release.mjs --tag "${GITHUB_REF_NAME}"
 
       # Node 22.14.0 bundles npm 10.x, which has no OIDC support and would fall
       # back to looking for a token that no longer exists. Pinned rather than

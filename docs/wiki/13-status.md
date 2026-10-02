@@ -468,6 +468,24 @@ and its formulas do not change.
   `@uwmd/core` takes the rules in the next package generation, and the RFC
   stays `accepted` until a release ships it.
 
+## Release records true of their tag (UPSTREAM-020)
+
+StackUW's re-vendor of `v2.15.0` found that the tagged tree calls its own
+generation unreleased. `v2.14.0` does the same. `VERSIONS.md` labels the
+packages `(candidate; …)` and the Protocol `(accepted, unreleased)`, and the
+rows flipped only in the post-release reconciliation, after the tag. Per the
+owner's 2026-10-02 decision, the fix covers future tags. Both historical tags
+stay as they are, and no `v2.15.1` is cut.
+
+- **The release commit records the release.** It carries the dated heading,
+  `### Released` and the released matrix rows and protocol status line. The
+  reconciliation adds only what publication establishes: run, registry,
+  provenance and Rekor evidence, and the RFC's move to `implemented`. See
+  [wiki 11](11-build-release-governance.md#the-release-commit-and-the-reconciliation).
+- **Guards.** `verify-release` enforces this once the heading is dated, and
+  `release.yml` re-runs it with `--tag` before publishing. Its test pins the
+  `v2.15.0` shape as failing.
+
 ## Remaining work
 
 - Prepare a package generation for RFC 0069 when the owner wants it released.
@@ -487,17 +505,6 @@ and its formulas do not change.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
-- **Make a tagged tree's version records true of the tag.** StackUW's
-  re-vendor of `v2.15.0` found the problem (its UPSTREAM-020).
-  - **What's wrong.** At both `v2.14.0` and `v2.15.0`, `VERSIONS.md` labels
-    that tag's own release as unreleased: the Protocol row reads `(accepted,
-    unreleased)` and the core row reads `(candidate; ...)`. The rows flip on
-    `main` only in the post-release reconciliation, after the tag.
-  - **The fix.** The one-commit release record, which is the commit the tag
-    lands on, should state the released rows. The reconciliation should then
-    carry only what follows the publish.
-  - **Owner decision, 2026-10-02.** Fix it for future tags. No `v2.15.1` is cut
-    for this historical metadata alone.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
