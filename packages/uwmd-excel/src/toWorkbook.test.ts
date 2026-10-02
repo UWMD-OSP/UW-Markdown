@@ -567,6 +567,8 @@ describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', (
       const excelCell = quantizeDecimal(new Function(`return (${formula});`)() as number, resolveRoundTo(decl));
       expect(excelCell, decl.id).toBe(direct.value);
     }
+  });
+});
 
 // ─── Protocol §VIII.2 — variant-map sections (RFC 0066) ──────────────────────
 //
@@ -604,7 +606,7 @@ async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
   const wb = await toWorkbook(parsed);
   const ws = wb.getWorksheet('Underwriting')!;
   const rows = rowByLabel(ws);
-  const noi = (parsed.sections['noi_model'] as { content: Record<string, unknown> }).content;
+  const noi = blockPayload(parsed.sections['noi_model'] as UWBlock) as Record<string, unknown>;
   const values: Record<string, number> = {
     [SUBTOTAL_RANGES.egi]: (noi['income'] as Record<string, number>)['effective_gross_income']!,
     [SUBTOTAL_RANGES.opex]: (noi['expenses'] as Record<string, number>)['total_operating_expenses']!,
@@ -671,5 +673,28 @@ describe('toWorkbook — variant-map sections (RFC 0066)', () => {
     // role the lender metrics declare holds the named inputs.
     const parsed = await splitDebt('senior', 'junior', { senior: 'senior-loan', junior: 'default' });
     await expect(toWorkbook(parsed)).rejects.toMatchObject({ code: 'EXCEL-EMIT-PATH' });
+  });
+});
+
+describe('toWorkbook — variant maps in the content envelope (RFC 0066 with the §VIII.2 payload)', () => {
+  it('reads and refuses the same metrics as the flat split-debt document', async () => {
+    const flatParsed = await splitDebt('senior', 'junior');
+    const flat = await metricParity(flatParsed);
+    const raw = await readFile(resolve(EXAMPLES, PARKVIEW), 'utf8');
+    const open = '```json uw:section=debt_structure source=manual';
+    const start = raw.indexOf(open);
+    const end = raw.indexOf('\n```', raw.indexOf('\n', start)) + 4;
+    const block = raw.slice(start, end);
+    const tranche = (key: string, role: string, loan: number, ads: number) => block
+      .replace(open, `\`\`\`json uw:section=debt_structure variant=${key} source=manual`)
+      .replace('{\n', `{\n  "_role": "${role}",\n`)
+      .replace('"loan_amount": 5040000', `"loan_amount": ${loan}`)
+      .replace('"annual_debt_service": 357612', `"annual_debt_service": ${ads}`);
+    const split = raw.slice(0, start)
+      + [tranche('senior-loan', 'senior', 5_040_000, 357_612), tranche('mezz-loan', 'junior', 720_000, 86_400)].join('\n\n')
+      + raw.slice(end);
+    const wrapped = await metricParity(parseUWFile(toContentEnvelope(split)));
+    expect(namedNumber(wrapped.wb, 'loan_amount')).toBe(5_040_000);
+    expect(wrapped.out).toEqual(flat.out);
   });
 });

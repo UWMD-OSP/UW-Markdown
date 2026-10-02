@@ -14,20 +14,28 @@ affects:
 
 # RFC 0066: Resolve calc identifiers over variant-map sections the way cross-checks do
 
-**Accepted, unreleased.** On 2026-10-02 Jared accepted the two decisions in the
-[owner decision set](#independent-verification-and-owner-decision-set-2026-10-02)
-and authorized implementation:
+**Accepted, unreleased.** On 2026-10-02 Jared made three owner decisions:
 
 - **D1.** Protocol §VIII.2a's section-context rule becomes normative for every
   section-rooted identifier, with refusal as a new `CALC-RESOLVE-002`.
 - **D2.** The built-in lender-side debt metrics declare a per-calculation
   `senior` preference. `cash_on_cash` declares none and refuses on a
   multi-tranche map.
+- **D3.** Implementation is authorized on a separate branch. The release
+  target is core/CLI **2.15.0** with Protocol **2.19.0**.
 
-He also accepted the defaults listed under the decision set. The implementation
-lives on a separate branch, which merges only after the `v2.14.0` tag. That
-branch implements Protocol **2.19.0**. Status stays `accepted` until a release
+Every other rule in the accepted contract follows from D1 and D2 under existing
+precedent. Those rules are listed under
+[Consequences of D1 and D2](#independent-verification-and-owner-decision-set-2026-10-02);
+none is a separate owner decision. Status stays `accepted` until a release
 ships it.
+
+**Not merge-ready.** See [Merge readiness](#merge-readiness). The branch must
+not merge until three things are done:
+
+- `v2.14.0` is tagged and published;
+- the branch is rebased onto released `main`;
+- the 2.15.0 package generation is prepared and its gates rerun.
 
 A coding agent wrote this RFC. StackUW's engine-exported documents and its
 app-side note UPSTREAM-016 are adopter requirements evidence, not UWMD owner
@@ -132,37 +140,47 @@ choices:
 | D1 | Make §VIII.2a's section-context rule normative for every section-rooted identifier, with refusal as a new `CALC-RESOLVE-002` | **Yes, new code** | `CALC-PERIOD-003` would file a non-period failure under the period family. A new code also keeps every RFC 0041 fixture frozen. |
 | D2 | When `debt_structure` is a role-bearing map, the built-in **lender-side** metrics mean the **`senior`** block. These are `ltv`, `ltc`, `dscr`, `debt_yield` and `loan_per_*`, 46 declarations across ten packs. Each declares it **per calculation** as `section_roles: { debt_structure: "senior" }`. **`cash_on_cash` declares no role**, so on a multi-tranche map it refuses. | **Yes, per calculation; exclude `cash_on_cash`** | The lender-side metrics mirror the validator's registered `senior` preference for CC-02/03/05/09 without inheriting it implicitly, which RFC 0041 forbids. The evaluator reads the role from the declaration, so no host can forget to pass it. `cash_on_cash` is `(NOI − debt_structure.annual_debt_service) / equity`. Equity cash flow must deduct **all** debt service, so a senior-only figure would overstate the return whenever mezzanine debt exists. It stays refused until a total-debt-service input is contracted, over `capital_stack` (RFC 0026), never by summing blocks. Without D2, D1 alone turns every adopter debt metric from a silent `null` into a `CALC-RESOLVE-002` refusal: honest, but still uncomputed. |
 
-**Defaults applied unless the owner overrides them** (implementation choices
-under D1/D2, not separate questions):
+**Consequences of D1 and D2.** These rules are derived from existing precedent
+(cited where it applies). The owner did not decide them separately; the owner
+may still revisit any of them:
 
-- **Precedence.** An explicit `sectionVariants` beats a declared role, which
-  beats the generic order. If no eligible block carries the declared role, the
-  generic order applies, as `resolveRoleBlock` already does for cross-checks.
-  If two blocks carry it, the read refuses.
-- **No caller `sectionRoles`.** `sectionVariants` already covers ad hoc
-  formulas.
-- **Period references are unchanged.**
-- **`--calc-context`.** It accepts `sectionVariants` for any section id.
-- **Excel standard sheets.** They resolve each section's named inputs through
+- **Precedence.** This follows from D1's order. An explicit `sectionVariants`
+  beats a declared role, which beats the generic order. If no eligible block
+  carries the declared role, the generic order applies, as `resolveRoleBlock`
+  already does for cross-checks (RFC 0040). If two blocks carry it, the read
+  refuses (RFC 0040).
+- **No caller `sectionRoles`.** D2 places the preference on the declaration.
+  A caller already has `sectionVariants` for ad hoc formulas.
+- **Period references are unchanged.** D1 extends §VIII.2a to ordinary
+  identifiers; it does not amend §VIII.2a.
+- **`--calc-context`.** It accepts `sectionVariants` for any section id,
+  because under D1 that context applies to every section-rooted read.
+- **Excel standard sheets.** These follow from the parity invariant and
+  §VIII.2c (ordinary inputs "use calc resolution"; an invalid identity yields
+  `#VALUE!`, "never coerced zero"). They resolve each section's named inputs through
   the same resolver, using the role the pack's calculations declare for that
   section. A refused input is written as an explicit `#VALUE!` cell (§VIII.2c's
   invalid-identity value), never blank. Dependent metrics therefore show an
   error exactly where calc reports `ok: false`, and every other metric keeps
   exact parity.
 - **Excel custom sheets.** These raise the refusal, as unresolvable period
-  selections already do.
+  selections already do (§VIII.2c).
 - **Disagreeing calculations.** If two calculations in one pack declare
   different roles for the same section, the workbook and the refinement ranker
-  refuse rather than choose.
+  refuse rather than choose. Each holds one value per path, and RFC 0040
+  forbids guessing.
 - **Cascade.** `resolveValue` resolves in-file steps 1–2 against the selected
-  block only, and throws a typed ambiguity error for an unresolvable map, as
-  `AmbiguousInheritanceError` does. Refinement passes its targets' declared
-  roles and propagates the refusal.
+  block only, and throws for an unresolvable map, following the cascade's own
+  refusal precedent (`AmbiguousInheritanceError`, RFC 0021 §5). Refinement
+  selects under its targets' declared roles and reports each excluded target,
+  mirroring §VIII.2b's `period_inputs`.
+- **Payload.** Every consumer reads the selected block's payload the way
+  §VIII.2 defines it, through `blockPayload`. That comes from the separate
+  payload-unwrapping fix this branch is rebased on; it is not part of RFC 0066's
+  contract.
 - **Receipts.** Over an unresolvable map, issuance changes from
-  `computed: false` to `RCP_COMPUTATION_FAILED`. That is intended, and part of
-  what accepting D1 approves.
-- **Release.** RFC 0066 is outside 2.14.0. It would land after the `v2.14.0`
-  tag as Protocol 2.19.0 with core 2.15.0.
+  `computed: false` to `RCP_COMPUTATION_FAILED`. That is the existing receipt
+  rule (RFC 0016) applied to D1's refusal.
 
 ## Motivation
 
@@ -589,37 +607,44 @@ field is added on the layer chosen, with an optional
 
 ## Resolved questions
 
-Each question below was resolved on 2026-10-02. The resolution follows the
-question, and the original wording is kept.
+Each question below was resolved on 2026-10-02. The original wording is kept.
+Each resolution says whether it is an owner decision (D1, D2) or a consequence
+of one under precedent.
 
 - **The layer for a declared role preference.** Manifest level (A) or per
   calculation (B). The evidence above leans toward B; the owner has not
-  decided. *Resolved: per calculation (D2).*
+  decided. *Resolved by owner decision D2: per calculation.*
 - **Precedence between two preferences.** If both a calculation's declared
   role and a caller-supplied `sectionRoles` exist, which one wins.
-  *Resolved: there is no caller `sectionRoles`. An explicit `sectionVariants`
-  entry beats a declared role.*
+  *Resolved as a consequence of D1 and D2: there is no caller `sectionRoles`,
+  and an explicit `sectionVariants` entry beats a declared role.*
 - **A declared role that matches no eligible block.** Whether it falls through
   to the generic order, as `resolveRoleBlock` does for cross-checks today, or
-  refuses. *Resolved: it falls through. A role claimed twice refuses.*
+  refuses. *Resolved as a consequence of D1: it falls through, as
+  `resolveRoleBlock` does for cross-checks, and a role claimed twice refuses
+  (RFC 0040).*
 - **Period references.** Whether a declared role preference should also apply
   to them. §VIII.2a currently resolves period references without any
-  check-specific preference. *Resolved: no. Period references are unchanged.*
+  check-specific preference. *Resolved as a consequence of D1, which extends
+  §VIII.2a rather than amending it: no, period references are unchanged.*
 - **One code or two.** Whether `CALC-PERIOD-003`'s selection failure should be
   folded into `CALC-RESOLVE-002`, so one code covers "could not choose a
   block" everywhere. This draft leaves the period code alone to keep RFC 0041
-  fixtures frozen. *Resolved: two codes (D1).*
+  fixtures frozen. *Resolved by owner decision D1: two codes.*
 - **How the workbook represents a refused input:** refusing the export, or an
-  explicit error cell. *Resolved: an explicit `#VALUE!` cell for a refused
-  input or metric. The export refuses only when one named input would have to
-  stand for two blocks. Custom-calculation inputs raise.*
+  explicit error cell. *Resolved as a consequence of D1 under §VIII.2c and the
+  parity invariant: an explicit `#VALUE!` cell for a refused input or metric.
+  The export refuses only when one named input would have to stand for two
+  blocks, and custom-calculation inputs raise.*
 - **Cascade reads.** Whether this RFC's implementation also routes
   `cascade.ts`'s `getBlock`, and so the refinement ranker, through the same
   resolver. This draft recommends it, because a third selection rule is the
   drift the shared resolver exists to prevent. The cascade is not the calc
-  evaluator, though, so the scope is the owner's call. *Resolved: yes. The
-  cascade's in-file steps and refinement select through the shared resolver.
-  Refinement reports an excluded target in `diagnostics.section_inputs`.*
+  evaluator, though, so the scope is the owner's call. *Resolved as a
+  consequence of D1, whose question named the evaluator, cascade, Excel and
+  refine: the cascade's in-file steps and refinement select through the shared
+  resolver, and refinement reports an excluded target in
+  `diagnostics.section_inputs`.*
 - **Parser routing.** Whether the parser's RFC 0040 Markdown opt-in should
   widen so a keyed second `debt_structure` block without `_role` is retained
   rather than superseded. This is out of scope: it is a format routing
@@ -638,9 +663,33 @@ RFC 0066 is `accepted`, not yet released.
 | The same selection order for ordinary identifiers | D1, 2026-10-02 | Accepted. Protocol §VIII.2, 2.19.0. |
 | `CALC-RESOLVE-002`, its name and meaning | D1, 2026-10-02 | Accepted. Protocol §VIII.6. |
 | Per-calculation `section_roles`; built-in lender-side metrics `senior`; `cash_on_cash` none | D2, 2026-10-02 | Accepted. Protocol §X; module-manifest schema. |
-| Cascade, refinement and Excel selection; `diagnostics.section_inputs`; `#VALUE!` | Accepted defaults, 2026-10-02 | Accepted. Protocol §V.7, §VIII.2b, §VIII.2c; section-refinement-issue schema. |
-| `--calc-context` accepts `sectionVariants` for any section | Accepted defaults, 2026-10-02 | Accepted. |
-| Implementation | Authorized 2026-10-02 | On a separate branch, merging only after the `v2.14.0` tag. |
+| Cascade, refinement and Excel selection; `diagnostics.section_inputs`; `#VALUE!` | Consequence of D1 under §VIII.2c, RFC 0021 §5 and the parity invariant | Specified in Protocol §V.7, §VIII.2b and §VIII.2c, and the section-refinement-issue schema. |
+| `--calc-context` accepts `sectionVariants` for any section | Consequence of D1 | Specified. |
+| Implementation; release target core/CLI 2.15.0 with Protocol 2.19.0 | D3, 2026-10-02 | Implemented on a separate branch. **Not merge-ready**; see [Merge readiness](#merge-readiness). |
+
+## Merge readiness
+
+The implementation branch is **not merge-ready**. It sits on the
+payload-unwrapping fix, and its package manifests still read 2.14.0, the
+unpublished candidate generation. After `v2.14.0` is tagged and published:
+
+1. Rebase the branch onto released `main`. Bring in the payload fix first if it
+   merged separately.
+2. Prepare the 2.15.0 package generation, following the 2.14.0 candidate's
+   pattern:
+   - core/CLI 2.15.0;
+   - the exact-pin bumps for every dependent (signing, batch, Excel, report,
+     lake and the two modules);
+   - the root lockfile and `CORE_VERSION`;
+   - receipt issuance baselines and the frozen result-disagreement fixture at
+     engine 2.15.0;
+   - the `VERSIONS.md` rows and a `[2.15.0]` candidate CHANGELOG section;
+   - a release-candidate record.
+3. Rerun the release gates under the pinned toolchain (Node 22.14.0, npm
+   11.5.1): build, tests, test typecheck, conformance with profiles and
+   receipts, the portable runner, schemas, lint, every verify-* guard, the docs
+   build and `release:check`.
+4. Only then mark the branch merge-ready.
 
 ## Prior art
 

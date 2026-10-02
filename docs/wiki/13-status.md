@@ -384,8 +384,11 @@ Excel guard remain unchanged. Schemas and public types did not change.
 ## Accepted, unreleased calc variant resolution (RFC 0066)
 
 [RFC 0066](../rfcs/0066-calc-identifier-variant-resolution.md) was accepted on
-**2026-10-02**. It is implemented on a branch that merges only after the
-`v2.14.0` tag, as source Protocol **2.19.0**.
+**2026-10-02**: owner decisions D1–D3, targeting core/CLI 2.15.0 with Protocol
+**2.19.0**. Its implementation branch also carries the payload-unwrapping fix
+it depends on. It is **not merge-ready** until 2.14.0 is published, the branch
+is rebased onto released `main`, and the 2.15.0 package generation is prepared
+and gated.
 
 - **The defect.** Before it, four readers chose differently from one
   role-bearing `debt_structure` map. The evaluator read `null`, the cascade the

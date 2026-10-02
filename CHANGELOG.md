@@ -32,10 +32,18 @@ protocol, and each package each carry an independent semver).
 
 ### Accepted contract — Protocol 2.19.0 (RFC 0066, unreleased)
 
-Jared accepted RFC 0066's two decisions on **2026-10-02** and authorized
-implementation. This source follows the 2.14.0 candidate, whose `v2.14.0` tag
-ships Protocol 2.18.0. Package versions for this contract are set at the next
-candidate preparation. Format stays **2.0**.
+Jared made three owner decisions on **2026-10-02**:
+
+- **D1** is the selection rule and `CALC-RESOLVE-002`.
+- **D2** is a per-calculation `senior` preference on the lender-side metrics,
+  with no role on `cash_on_cash`.
+- **D3** authorizes implementation on a separate branch, targeting core/CLI
+  **2.15.0** with Protocol 2.19.0.
+
+The other rules below follow from D1 and D2 under existing precedent. This
+source follows the 2.14.0 candidate, whose `v2.14.0` tag ships Protocol 2.18.0.
+The 2.15.0 package generation is prepared after that publication. Format stays
+**2.0**.
 
 - **Calc identifiers over variant-map sections (§VIII.2).** An identifier rooted
   at a section stated as a variant map reads exactly one block. The order is the

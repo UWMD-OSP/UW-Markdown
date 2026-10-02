@@ -25,9 +25,9 @@ RFC 0066. Ordinary calc identifiers select one block of a variant-map section by
 §VIII.2: an explicit variant, then the calculation's declared `section_roles`,
 then RFC 0040's generic order. Ambiguity refuses as `CALC-RESOLVE-002` instead of
 a silent `null`. The cascade, refinement and the Excel converter share that
-selection. Jared accepted RFC 0066's two decisions on 2026-10-02. This source
-follows the published 2.14.0 release, which implements Protocol 2.18.0.
-Package versions for 2.19.0 are set when the next candidate is prepared.
+selection. Jared's owner decisions of 2026-10-02 (D1–D3) target core/CLI
+**2.15.0** with Protocol 2.19.0. This source follows the published 2.14.0
+release, which implements Protocol 2.18.0.
 
 Release 2.14.0 pairs core/CLI 2.14.0 with Protocol 2.18.0 and Format 2.0.
 Protocol 2.18.0 adds RFC 0063's explicit final-period exclusive-boundary

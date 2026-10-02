@@ -446,6 +446,8 @@ describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
     const flat = rankGaps(parseUWFile(parkview), { packs });
     expect(flat.by_voi.map((g) => g.field_path)).toEqual(['debt_structure.io_months']);
     expect(rankGaps(parseUWFile(toContentEnvelope(parkview)), { packs })).toEqual(flat);
+  });
+});
 
 describe('section selection for scalar inputs (§VIII.2b, RFC 0066)', () => {
   // `producer-senior` (`_role: senior`) then `producer-mezz` (`_role: junior`).
