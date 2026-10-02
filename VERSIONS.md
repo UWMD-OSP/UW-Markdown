@@ -155,11 +155,13 @@ library changes), the order is:
 Single-surface releases (a library patch with no spec change, a
 tools-only fix) follow normal semver and don't need coordination.
 
-Whatever the release, the commit the tag lands on records it as released in
-this file. The rows carry no `candidate` or `unreleased` wording for what that
-tag ships. A later reconciliation adds publication evidence; it does not flip
-rows. `npm run verify-release` and `release.yml` enforce this; see "The
-release commit and the reconciliation" in
+Whatever the release, the commit the tag lands on finalizes its generation in
+this file. Its rows carry no `candidate`, `unreleased` or
+`published <previous>` wording, and its prose stays publication-neutral, for
+example "Release X.Y.Z pairs core/CLI X.Y.Z with Protocol P". It claims no
+publication. The post-publication reconciliation adds the publication
+statements and evidence. `npm run verify-release` and `release.yml` enforce
+this; see "The three release states" in
 `docs/wiki/11-build-release-governance.md`.
 
 ## History

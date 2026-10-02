@@ -471,20 +471,39 @@ and its formulas do not change.
 ## Release records true of their tag (UPSTREAM-020)
 
 StackUW's re-vendor of `v2.15.0` found that the tagged tree calls its own
-generation unreleased. `v2.14.0` does the same. `VERSIONS.md` labels the
-packages `(candidate; …)` and the Protocol `(accepted, unreleased)`, and the
-rows flipped only in the post-release reconciliation, after the tag. Per the
-owner's 2026-10-02 decision, the fix covers future tags. Both historical tags
-stay as they are, and no `v2.15.1` is cut.
+generation unreleased, and `v2.14.0` does the same:
 
-- **The release commit records the release.** It carries the dated heading,
-  `### Released` and the released matrix rows and protocol status line. The
-  reconciliation adds only what publication establishes: run, registry,
-  provenance and Rekor evidence, and the RFC's move to `implemented`. See
-  [wiki 11](11-build-release-governance.md#the-release-commit-and-the-reconciliation).
-- **Guards.** `verify-release` enforces this once the heading is dated, and
-  `release.yml` re-runs it with `--tag` before publishing. Its test pins the
-  `v2.15.0` shape as failing.
+- `VERSIONS.md` labels the packages `(candidate; …)` and the Protocol
+  `(accepted, unreleased)`;
+- the rows flipped only in the post-release reconciliation, after the tag.
+
+Per the owner's 2026-10-02 decision, the fix covers future tags. Both
+historical tags stay as they are, and no `v2.15.1` is cut.
+
+A generation now passes through three states with distinct records. See
+[wiki 11](11-build-release-governance.md#the-three-release-states).
+
+1. **Candidate.**
+2. **Release-prepared.** This is the commit the owner tags. Its records are
+   final and publication-neutral:
+   - a dated heading;
+   - no candidate, unreleased or `published <previous>` wording for the
+     generation;
+   - exact core/CLI/protocol pairings;
+   - a protocol status such as "Accepted release contract".
+
+   It has no `### Released`, and the RFC stays `accepted`.
+3. **Released and verified.** This is the post-publication reconciliation. It
+   adds `### Released`, the publication statements, the run, registry,
+   provenance and Rekor evidence, and the RFC's move to `implemented`.
+
+The guards:
+
+- `verify-release` enforces state 2's records once the heading is dated.
+- It requires a tag for every `### Released`, with no exemption.
+- `release.yml` re-runs it with `--tag` before publishing.
+- Its tests pin the `v2.15.0` shape as failing, and the real `v2.14.0` and
+  `v2.15.0` tags as unmoved.
 
 ## Remaining work
 

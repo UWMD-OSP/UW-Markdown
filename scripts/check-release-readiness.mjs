@@ -53,7 +53,7 @@ try {
   const firstPublish = workflow.search(/^\s+npm publish/m);
   if (gate === -1 || (firstPublish !== -1 && gate > firstPublish)) {
     failures.push(
-      `${workflowPath}: must run 'node scripts/verify-release.mjs --tag "\${GITHUB_REF_NAME}"' before the first npm publish, so a tag on a tree that does not record its release as released publishes nothing`,
+      `${workflowPath}: must run 'node scripts/verify-release.mjs --tag "\${GITHUB_REF_NAME}"' before the first npm publish, so a tag on a tree whose release records are not final publishes nothing`,
     );
   }
   if (!/fetch-tags:\s*true/.test(workflow) || !/fetch-depth:\s*0/.test(workflow)) {

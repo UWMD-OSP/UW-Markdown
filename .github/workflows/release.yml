@@ -74,14 +74,20 @@ jobs:
           cache: npm
           registry-url: 'https://registry.npmjs.org'
 
-      # The tag must land on a commit whose own records already call this
-      # release released: the VERSIONS.md rows, the protocol status line and
-      # the CHANGELOG section (scripts/release-state.mjs). v2.14.0 and v2.15.0
-      # were tagged on commits that still said "candidate" and "unreleased".
-      # Their rows flipped only in a later commit the tag never sees. This runs
-      # before install, so a stale tree fails before anything publishes; the
-      # owner then fixes the release commit and tags that instead.
-      - name: Verify the tagged tree records this release as released
+      # The tag must land on a release-prepared commit: one whose records are
+      # final and publication-neutral (scripts/release-state.mjs).
+      #   - The CHANGELOG heading is dated.
+      #   - No VERSIONS.md row, protocol status line or CHANGELOG heading still
+      #     calls this generation a candidate or unreleased, or names the
+      #     previous publication.
+      #   - Core, CLI and PROTOCOL_VERSION pair exactly.
+      #   - Nothing yet claims `### Released`, which the post-publication
+      #     reconciliation adds.
+      # v2.14.0 and v2.15.0 were tagged on commits that still said "candidate"
+      # and "unreleased". This runs before install, so such a tree fails before
+      # anything publishes; the owner then fixes the release commit and tags
+      # that instead.
+      - name: Verify the tagged tree's release records are final
         run: node scripts/verify-release.mjs --tag "${GITHUB_REF_NAME}"
 
       # Node 22.14.0 bundles npm 10.x, which has no OIDC support and would fall

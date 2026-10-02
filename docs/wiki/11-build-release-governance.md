@@ -25,7 +25,7 @@ Script | Does
 `npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest and the `protocol.ts` constants
 `npm run verify-indexes` | `scripts/verify-indexes.mjs` — the schema/RFC indexes match files on disk; tests cover automatic RFC discovery and site version metadata
 `npm run verify-codes` | `scripts/verify-codes.mjs` — every code an implemented RFC or the format spec promises is one `@uwmd/core` actually emits, and every emitted validation family is registered in protocol §XI
-`npm run verify-release` | `scripts/verify-release.mjs` — every CHANGELOG section marked `### Released` has its tag, and a dated release's own records call it released (`release-state.mjs`); `-- --tag vX.Y.Z` checks the tree as that release
+`npm run verify-release` | `scripts/verify-release.mjs` — every CHANGELOG section marked `### Released` has its tag, with no exception, and a dated generation's records are final and publication-neutral (`release-state.mjs`); `-- --tag vX.Y.Z` checks the tree as that release
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run
@@ -66,11 +66,11 @@ each with a guard that fails loudly if you miss it:
    version cell and the "pairs with `@uwmd/core` 1.x" notes. `verify-versions`.
    This was the unguarded one: the 1.4.0 release left the matrix advertising
    1.3.0, and nothing went red until it was found by hand.
-6. **Record the release in the commit the tag lands on.** Date the CHANGELOG
-   heading, add its `### Released` block and flip the release state: the
-   current-matrix rows and the protocol status line. See
-   [the release commit and the reconciliation](#the-release-commit-and-the-reconciliation).
-   `verify-release`, and `release.yml` again before it publishes.
+6. **Finalize the generation in the commit the tag lands on.** Date the
+   CHANGELOG heading and make the matrix rows, the protocol status line and the
+   section headings final and publication-neutral. Add no `### Released`. See
+   [the three release states](#the-three-release-states). `verify-release`, and
+   `release.yml` again before it publishes.
 7. **Push the `v<version>` tag.** This is the step that actually ships:
    `release.yml` triggers on `v*` and on nothing else. `verify-release`.
 
@@ -79,8 +79,9 @@ tag never was, so the publish job never ran — npm went from 1.3.0 to 1.5.0 and
 1.4.0 of any package exists. Nothing caught it, and nothing could have: the three
 existing guards compare repo files to each other, and all of them agreed on a
 version nobody had published. `verify-release` closes that by comparing every
-CHANGELOG section marked `### Released` against the git tags, exempting only the
-version currently in the core manifest, whose tag is pushed after merge.
+CHANGELOG section marked `### Released` against the git tags, with no
+exception. `### Released` is added only after the tag exists, so `main` can
+never claim a release that has no tag.
 
 Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
 all four published packages (core, CLI, signing and batch)** (below). The tag is the trigger, so a missing
@@ -93,54 +94,76 @@ an explicitly unpublished changelog section, alongside its release plan (for
 example, the [2.14.0 record](../releases/2.14.0-candidate.md)). A merged
 candidate is not a tagged or npm-published release.
 
-### The release commit and the reconciliation
+### The three release states
 
-A release takes three commits on `main`. A tag is immutable, so each record
-belongs in the first commit where it is true.
+A generation passes through three states on `main`, each with its own
+records. A tag is immutable, so each record belongs to the first state in
+which it is true, and the tagged tree must say nothing whose truth changes
+when the release workflow runs.
 
-1. **The candidate** bumps the manifests and labels itself a candidate:
+1. **Candidate.** The candidate bumps the manifests and labels itself a
+   candidate:
    - the CHANGELOG heading reads `## [X.Y.Z] - release candidate (unpublished)`;
    - the matrix rows read `(candidate; published <previous>)`;
    - a protocol the packages newly carry reads `(accepted, unreleased)`.
-2. **The release commit** is the one-commit release PR that the owner tags. It
-   must already describe the release as released, because the tag carries this
-   tree forever:
-   - the dated heading `## [X.Y.Z] - YYYY-MM-DD`;
-   - a `### Released` block naming the tag and the packages `release.yml`
-     publishes;
-   - no `unreleased`, `candidate` or `unpublished` `###` heading in that
-     section;
-   - bare matrix version cells for core, CLI, signing and batch, and no
-     candidate wording anywhere in the current matrix;
-   - an unannotated Protocol row, with a protocol status line that no longer
-     says unreleased, whenever the core row pairs with it;
-   - a core row that pairs with `PROTOCOL_VERSION`, since the packages report
-     that protocol.
-3. **The reconciliation** follows publication. It adds only what publication
-   establishes:
+
+   Nothing checks a candidate.
+2. **Release-prepared.** This is the one-commit release PR that the owner tags.
+   Its records are final and publication-neutral: as true before the workflow
+   publishes as after it. Write "Core/CLI X.Y.Z pair with Protocol P", not "are
+   published" and not "will be published".
+   - **Required:**
+     - the dated heading `## [X.Y.Z] - YYYY-MM-DD`, with the complete release
+       contents;
+     - bare matrix version cells for core, CLI, signing and batch, with exact
+       pairings;
+     - a core row that pairs with `PROTOCOL_VERSION`, and a CLI that pins core
+       exactly;
+     - a Protocol row with no annotation;
+     - a protocol status line in publication-independent wording, such as
+       `Accepted release contract (RFC NNNN)`.
+   - **Forbidden:**
+     - `candidate`, `unreleased` or `unpublished` anywhere describing the
+       generation, in a section heading, a row or the matrix prose;
+     - `published <previous>` on a row;
+     - "no release tag or publication yet";
+     - `### Released` and any other claim that npm publication happened.
+
+   The RFC stays `accepted`.
+3. **Released and verified.** The post-publication reconciliation runs only
+   after the tag exists and the workflow has published. It adds:
+   - the `### Released` block and the explicit npm publication statements;
    - the release run;
    - registry versions, dist-tags and `gitHead`;
    - signature, integrity and provenance checks, with Rekor indexes;
    - the comparison of published files with a local build;
    - the portable driver against the published CLI;
-   - the RFC moving from `accepted` to `implemented`, which the owner's
-     process records once the published packages are verified.
+   - the RFC moving from `accepted` to `implemented`;
+   - the protocol status line moving to `Stable`.
 
-   The reconciliation must not be the first commit to call the tagged
-   generation released.
+At `v2.14.0` and `v2.15.0`, the release commit only dated the heading, so
+their tagged trees still call their own packages candidates and their
+protocol unreleased. StackUW's re-vendor found it (its UPSTREAM-020). The
+owner decided on 2026-10-02 to fix future tags and not to cut a `v2.15.1` for
+that metadata, so both historical tags stay as they are.
 
-Nothing enforced this until after 2.15.0. At `v2.14.0` and `v2.15.0`, the release
-commit only dated the heading. Their tagged trees still call their own
-packages candidates and their protocol unreleased; StackUW's re-vendor found
-it (its UPSTREAM-020). The owner decided on 2026-10-02 to fix future tags and
-not to cut a `v2.15.1` for that metadata, so both historical tags stay as they
-are.
+The guards:
 
-`verify-release` now enforces step 2 as soon as the heading is dated, so a
-stale release PR fails CI. `release.yml` re-runs it as
-`verify-release.mjs --tag "$GITHUB_REF_NAME"` before installing anything, so a
-tag on a stale or undated tree publishes nothing. `release:check` fails if that
-step goes missing. Run the tag check yourself before tagging:
+- **`verify-release` (CI).** It enforces state 2's records as soon as the
+  heading is dated, so a stale release PR fails CI. It also requires every
+  `### Released` section to have its tag, so a premature `### Released` fails
+  too.
+- **`release.yml`.** It re-runs the check as
+  `verify-release.mjs --tag "$GITHUB_REF_NAME"` before installing anything.
+  - Tag mode adds the tag/core/CLI/`PROTOCOL_VERSION` pairing and the dated
+    heading.
+  - It refuses a `### Released` in the tagged version's own section.
+
+  A tag on a stale, undated or prematurely "released" tree publishes nothing.
+- **`release:check`.** It fails if that step goes missing.
+
+Source may still run ahead between releases, as Protocol 2.20.0 does against
+published 2.15.0's 2.19.0. Run the tag check yourself before tagging:
 
 ```
 node scripts/verify-release.mjs --tag vX.Y.Z
