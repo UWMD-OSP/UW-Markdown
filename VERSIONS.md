@@ -43,7 +43,8 @@ never been published. Excel and report are
 **not published at their current versions**, but the registry does serve a stale
 `0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0 manual release and
 never unwound; both declare `@uwmd/core` `1.3.0`. Neither is maintained at that
-version and both are pending deprecation. `verify-versions` reconciles the
+version. Jared deprecated both on 2026-10-02, and the registry shows the
+deprecation message on each `0.3.0`. `verify-versions` reconciles the
 manifests against this file and never contacts the registry, which is why the
 earlier flat "unpublished" claim went unchallenged. Module package 0.1.1 only repins core; the typed module manifests
 retain their independent 0.1.0 contract version. Package, Format and Protocol
@@ -55,8 +56,8 @@ versions advance independently.
 | UW Protocol | **2.18.0** (accepted, unreleased) | format ≥ 1.0; RFC 0063 boundary opt-in plus RFC 0062 errata; published core/CLI remain on 2.17.0 |
 | `@uwmd/core` | **2.14.0** (candidate; published 2.13.0) | format 2.0 (reads 1.x), protocol 2.18.0 |
 | `@uwmd/cli` (CLI) | **2.14.0** (candidate; published 2.13.0) | `@uwmd/core` 2.14.0 |
-| `@uwmd/excel` | **0.9.6** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.14.x, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.18** (unpublished; stale `0.3.0` on the registry, pending deprecation) | `@uwmd/core` 2.14.x, format spec §7.1/§7.2 |
+| `@uwmd/excel` | **0.9.6** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.14.x, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.18** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.14.x, format spec §7.1/§7.2 |
 | `@uwmd/batch` | **0.8.13** (candidate; published 0.8.12) | `@uwmd/core` 2.14.x, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
 | `@uwmd/lake` | **0.2.2** (unpublished) | `@uwmd/core` 2.14.x, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
 | `@uwmd/signing` | **0.2.18** (candidate; published 0.2.17) | `@uwmd/core` 2.14.x, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
