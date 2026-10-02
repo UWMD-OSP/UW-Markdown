@@ -1,28 +1,14 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-01** against canonical `main` at `6ad146a`. The latest
-published release is **v2.13.0** (see
-[Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
-**0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
-`v2.13.0` tag. That release pairs Format **2.0** with Protocol **2.17.0**.
-Canonical `main` carries accepted, unreleased Protocol **2.18.0** for RFCs
-0062 and 0063. PR #218 merged the prepared core/CLI **2.14.0** candidate into
-`main`; no `v2.14.0` tag or package publication has occurred, and
-published packages remain at the 2.13.0 generation.
-PR #221 repaired shared decimal quantization in source after the candidate
-merge; it did not create a release or change RFC 0064's draft status.
-PR #223 corrected GPR object value paths for student-housing and self-storage
-packs and Excel layouts; it also did not create a release.
-PRs #228 and #229 aligned the Excel office layout, chat renderer and
-`noi_model` view model with the Format §4.5 shape. On 2026-10-01 the owner
-confirmed 2.14.0 as the release point, and the release gates passed at
-`6ad146a` under the pinned Node 22.14.0/npm 11.5.1 toolchain
-([review](../reviews/2026-09-28-2.14.0-pre-release.md)). On 2026-10-02 the
-owner completed the npm steps and authorized the `v2.14.0` tag. Draft RFCs
+Reconciled **2026-10-02** for published release **v2.14.0** (see
+[Released in 2.14.0](#released-in-2140)). Core/CLI **2.14.0**, signing
+**0.2.18** and batch **0.8.13** publish to npm with SLSA provenance from the
+`v2.14.0` tag. That release pairs Format **2.0** with Protocol **2.18.0**,
+which includes RFC 0063 and the RFC 0062 errata selected as 2.17.1. Draft RFCs
 0064, 0065 and 0067–0069 are outside that contract. So is RFC 0066, which the
 owner accepted on 2026-10-02. Its accepted text and Protocol 2.19.0
-implementation, targeting core/CLI 2.15.0, wait on a separate branch until
-2.14.0 is published and the 2.15.0 generation is prepared.
+implementation, targeting core/CLI 2.15.0, wait on a separate branch until the
+2.15.0 generation is prepared.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -52,6 +38,18 @@ from source. Native Excel 16.0 build 20326 passed
 
 ## Verification
 
+Release 2.14.0 passed its gates at `6ad146a` under the pinned Node
+22.14.0/npm 11.5.1 toolchain: build, **2,573 workspace tests** across 138
+files (**2,166 core**), test typechecking, **652 default conformance checks**,
+the 78-case portable driver, all three RFC 0030 profiles, **46 JSON schemas**,
+lint over **1,168 files**, **221 emitted codes**,
+lockfile/package/version/index/release checks, the documentation build and the
+OIDC release-readiness guard
+([review](../reviews/2026-09-28-2.14.0-pre-release.md)). The release commit
+`641554d` changed documentation only. The tag workflow published core/CLI
+2.14.0, signing 0.2.18 and batch 0.8.13 through trusted publishing with
+provenance.
+
 Release 2.13.0 passed build, **2,433 workspace tests** across
 138 files (**2,032 core**), test typechecking, **589 default conformance
 checks**, all three RFC 0030 profiles (161 checks passed, 67 capability skips),
@@ -78,6 +76,30 @@ PCG64 independently matches NumPy 1.26.4's compiled implementation over
 11 seeds, 11,264 raw draws and 176 doubles. See the [record](../reviews/2026-09-12-pcg64-reference.md).
 No financial formula, precision boundary or calculation digest changed in the
 release repin. The three receipt edits changed engine-version labels only.
+
+## Released in 2.14.0
+
+The following work shipped from the reviewed `v2.14.0` tag.
+
+- **Same-day cash-flow rows (RFC 0062, Protocol 2.17.1 errata).** Legal
+  same-day `cash_flow_series.series` rows no longer emit PS-02. A repeated
+  requested date refuses `CALC-PERIOD-002`, and a unique date in the same
+  ledger resolves. Other registered series and the whole-column Excel guard
+  keep their duplicate refusal.
+- **Final-period exclusive boundary (RFC 0063, Protocol 2.18.0).** The optional
+  closed `disposition_period_rule` plan member admits the exact exclusive end
+  of the final monthly or quarterly source period with `allow_exclusive_end`.
+  Absence and `within_final_period` keep the legacy rule.
+- **Decimal quantization for stated-value checks.** Cash-flow, net-sale, tax,
+  escrow, hedge and capex comparisons use calc reporting's half-away-from-zero
+  decimal algorithm (PR #221).
+- **§4.5 `noi_model` read paths.** The student-housing and self-storage pack
+  formulas, the office Excel layout, the chat renderer and the `noi_model` view
+  model read `gross_potential_rent` and the other §4.5 lines as the stated
+  object shape (PRs #223, #228 and #229).
+
+No formula quantum or source amount changed in the release repin. Excel ↔ calc
+parity is unchanged.
 
 ## Released in 2.13.0
 
@@ -337,35 +359,35 @@ is integrated in main at `22d993b5`. Its evidence places final monthly cash on
 economic disposition at the final source period's exclusive end, not after
 sale. Jared accepted [RFC 0063](../rfcs/0063-final-period-exclusive-boundary.md)
 at `f04b34a` on 2026-09-24 and authorized implementation. The implementation
-is integrated on canonical `main` at `413a645`. The current source
+integrated on canonical `main` at `413a645` shipped in 2.14.0. The released
 contract is Protocol **2.18.0**, with a closed `disposition_period_rule` enum
 for both monthly and quarterly sources. Absence and `within_final_period`
 preserve legacy behavior; `allow_exclusive_end` additionally admits only the
 exact exclusive upper boundary. No new period or coverage cell, proration,
 inferred timing, grace period or post-sale cash is introduced. Reserve-funded
 spending still refuses. Quarterly is a calendar generalization, not direct
-Golden Deal evidence. RFC 0063 remains **accepted**, not implemented, until
-release; Format is unchanged. The 2.14.0 package candidate is on `main`. See the
+Golden Deal evidence. RFC 0063 shipped in 2.14.0 and is **implemented**;
+Format is unchanged. See the
 [implementation verification record](../reviews/2026-09-24-rfc-0063-implementation.md).
 
-## Accepted, unreleased same-day reconciliation (RFC 0062)
+## Same-day reconciliation (RFC 0062, released in 2.14.0)
 
-The [accepted RFC 0062](../rfcs/0062-same-day-cash-flow-selection.md) resolves
+[RFC 0062](../rfcs/0062-same-day-cash-flow-selection.md) resolves
 the narrow reconciliation identified above. Jared accepted it on **2026-09-24**,
-retaining Protocol **2.17.1** as normative errata. The reference implementation
-is integrated in canonical `main` at `e49eb43` but has not shipped; RFC status remains `accepted`. Legal same-day cash-flow rows
+retaining Protocol **2.17.1** as normative errata. The reference implementation,
+integrated at `e49eb43`, shipped in core/CLI 2.14.0; RFC status is
+`implemented`. Legal same-day cash-flow rows
 no longer emit PS-02, repeated requested dates still refuse CALC-PERIOD-002,
 and unique dates in the same ledger resolve. Other series and the whole-column
-Excel guard remain unchanged. Schemas, public types and package versions do not
-change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
+Excel guard remain unchanged. Schemas and public types did not change.
 
 ## Remaining work
 
-- Review the merged 2.14.0 candidate and, after release prerequisites are met,
-  obtain the owner's authorization for the `v2.14.0` tag. Protocol 2.18.0
-  includes the accepted, unreleased RFC 0062 errata selected as 2.17.1. Both
-  RFCs remain accepted until shipped. No post-sale settlement category or lag
-  is authorized. Reserve-account, financing, investor-tax and post-sale work
+- Prepare the core/CLI **2.15.0** + Protocol **2.19.0** generation for RFC 0066
+  (accepted 2026-10-02). The Format 2.0 payload-unwrapping fix merges first;
+  the RFC 0066 branch is then rebased onto released `main`, repinned, and its
+  version-sensitive evidence regenerated and gated before it merges. No
+  post-sale settlement category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work
   remain separate contracts.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
@@ -376,7 +398,7 @@ change; published core/CLI 2.13.0 still pair with Protocol 2.17.0.
     ([owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)).
   - **Still draft.** RFC 0064 is not accepted, its implementation (PR #219) is
     not authorized to merge, no version is selected, and it is outside the
-    2.14.0 release candidate.
+    2.14.0 release.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

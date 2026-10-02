@@ -1,18 +1,13 @@
 # HUMAN: ship 2.14.0 (owner-only steps)
 
-> **Status 2026-10-02.** Every repository gate passed on `main` at `6ad146a`
-> under the release toolchain (Node 22.14.0, npm 11.5.1); see the
-> [pre-release review](../reviews/2026-09-28-2.14.0-pre-release.md).
->
-> - **Step 1 is done.** Jared reconfirmed all four trusted publishers on
->   2026-10-02: GitHub Actions, `UWMD-OSP` / `UW-Markdown`, workflow
->   `release.yml`, environment blank.
-> - **Step 2 is done.** The registry shows both deprecations.
-> - **Step 3 is done.** Jared authorized `v2.14.0` the same day and authorized
->   the agent to push the annotated tag on the release commit once it is on
->   `main`.
->
-> Nothing here changes code.
+> **Complete 2026-10-02.** All three owner steps are done. Jared reconfirmed
+> the four trusted publishers, the registry shows both deprecations, and Jared
+> authorized the tag. PR #231 merged the release commit `641554d`. The
+> session's GitHub credentials could not push a tag (HTTP 403), so Jared
+> pushed the annotated `v2.14.0` tag on `641554d`. Release run
+> [36961809558](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/36961809558)
+> published the four packages with provenance. Step 4 is recorded in the
+> [release record](../releases/2.14.0-candidate.md).
 
 The tag `v2.14.0` publishes `@uwmd/core` 2.14.0, `@uwmd/cli` 2.14.0,
 `@uwmd/signing` 0.2.18 and `@uwmd/batch` 0.8.13 via `release.yml`. No other

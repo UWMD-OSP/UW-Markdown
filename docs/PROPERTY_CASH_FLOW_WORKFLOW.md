@@ -57,10 +57,10 @@ Each period's three lease-up cells intentionally share one bundled row. Four
 other cells have explicit zero explanations; those declarations insert no rows.
 A separately stated numeric zero remains an ordinary source row.
 
-## Check stated cash-flow metrics from the CLI (unreleased)
+## Check stated cash-flow metrics from the CLI
 
-The source checkout adds a read-only command over the existing RFC 0034 verifier.
-It is not included in the published 2.9.0 CLI. After building the checkout:
+The CLI has a read-only command over the existing RFC 0034 verifier, released
+in core/CLI 2.10.0. From a built source checkout:
 
 ```sh
 npm run cli -- verify-cash-flows deal.uwx.md --variant base --json
@@ -129,9 +129,9 @@ settle by the declared disposition on `2026-12-31`; no post-sale settlement or
 partial-window rule is implied. Every date is supplied, never inferred from a
 holding-year row number.
 
-## Explicit final-period boundary (accepted, unreleased RFC 0063)
+## Explicit final-period boundary (RFC 0063)
 
-The Protocol **2.18.0** source checkout accepts this optional plan member:
+Core/CLI **2.14.0** (Protocol **2.18.0**) accept this optional plan member:
 
 ```json
 { "disposition_period_rule": "allow_exclusive_end" }

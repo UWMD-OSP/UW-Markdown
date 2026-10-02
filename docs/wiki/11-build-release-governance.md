@@ -35,8 +35,8 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (accepted, unreleased
-  2.18.0 in the 2.14.0 candidate; published core/CLI 2.13.0 pair with 2.17.0).
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.18.0, released with
+  core/CLI 2.14.0).
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
@@ -83,9 +83,9 @@ publisher fails the job after every gate has already passed.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
 per-surface sections. A prepared candidate belongs in the current matrix and
-an explicitly unpublished changelog section, alongside its
-[release plan](../releases/2.14.0-candidate.md). A merged candidate is not a
-tagged or npm-published release.
+an explicitly unpublished changelog section, alongside its release plan (for
+example, the [2.14.0 record](../releases/2.14.0-candidate.md)). A merged
+candidate is not a tagged or npm-published release.
 
 ## CI / CD (`.github/workflows/`)
 
@@ -129,8 +129,8 @@ tagged or npm-published release.
   RFC 0040 (signed block roles) and RFC 0041 (period-indexed addressing)
   shipped in core/CLI 2.7.0. RFCs 0042–0044 shipped in core/CLI 2.8.0 with
   Protocol 2.11.0; their RFC status is `implemented`. Standalone Excel remains
-  unpublished. RFCs 0062 and 0063 are integrated in the accepted, unreleased
-  Protocol 2.18.0 source contract and remain `accepted` until publication.
+  unpublished. RFCs 0062 and 0063 shipped in core/CLI 2.14.0 with Protocol
+  2.18.0; their RFC status is `implemented`.
 - Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).

@@ -18,7 +18,7 @@ verifies an explicitly dated partial stream using existing APIs.
 
 The source checkout's **unreleased** `verify-cash-flows` command checks stated
 cash-flow metrics without a custom script; see the
-[workflow](PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+[workflow](PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
 It checks mathematical consistency, not economic completeness.
 
 ## Decision tree

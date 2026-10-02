@@ -41,16 +41,16 @@ Command | Purpose
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
-### Cash-flow metric verification (unreleased)
+### Cash-flow metric verification
 
 `verify-cash-flows <file> [--variant <name>] [--json]` uses the CLI-only
 `src/cli-cash-flows.ts` boundary and existing `verifyCashFlowSeries`. Selection
 uses `periodSection`; strict parsing and payload guards precede metric checks.
 No claims is distinct from verified claims. Exit codes are 0 verified, 1
 failed/input refusal, 3 unverifiable/no claims. Nothing writes to the source.
-Tests cover both the helper and actual CLI subprocesses; the published 2.9.0
-package does not contain the new command. See the
-[workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+Tests cover both the helper and actual CLI subprocesses. The command shipped in
+core/CLI 2.10.0. See the
+[workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
 
 ### Calculation context
 
