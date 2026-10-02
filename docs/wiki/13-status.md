@@ -427,6 +427,16 @@ with Protocol **2.19.0** and is `implemented`.
   total-debt-service input is contracted.
 - **Excel.** The workbook writes `#VALUE!` where the engine refuses.
 - **Refinement.** It reports excluded targets in `diagnostics.section_inputs`.
+- **Fixture hardening after the release.** StackUW's UPSTREAM-021 found that
+  `variant-05` and `variant-11` put the block their calc context names in the
+  last fence. A reader that kept the last fence therefore passed both.
+  - **Change.** Both now append a third `junior` fence, so the named block is
+    the middle one: a first-fence reader reads 0.6 and a last-fence reader 0.2,
+    against the unchanged 0.1.
+  - **Guard.** `section-resolution.test.ts` checks every context fixture
+    against both fence-order readers.
+  - **Scope.** Conformance evidence only, unreleased. The rule, expected
+    results and counts are unchanged.
 
 ## Accepted, unreleased student bed counts (RFC 0069)
 
@@ -458,6 +468,43 @@ and its formulas do not change.
   `@uwmd/core` takes the rules in the next package generation, and the RFC
   stays `accepted` until a release ships it.
 
+## Release records true of their tag (UPSTREAM-020)
+
+StackUW's re-vendor of `v2.15.0` found that the tagged tree calls its own
+generation unreleased, and `v2.14.0` does the same:
+
+- `VERSIONS.md` labels the packages `(candidate; …)` and the Protocol
+  `(accepted, unreleased)`;
+- the rows flipped only in the post-release reconciliation, after the tag.
+
+Per the owner's 2026-10-02 decision, the fix covers future tags. Both
+historical tags stay as they are, and no `v2.15.1` is cut.
+
+A generation now passes through three states with distinct records. See
+[wiki 11](11-build-release-governance.md#the-three-release-states).
+
+1. **Candidate.**
+2. **Release-prepared.** This is the commit the owner tags. Its records are
+   final and publication-neutral:
+   - a dated heading;
+   - no candidate, unreleased or `published <previous>` wording for the
+     generation;
+   - exact core/CLI/protocol pairings;
+   - a protocol status such as "Accepted release contract".
+
+   It has no `### Released`, and the RFC stays `accepted`.
+3. **Released and verified.** This is the post-publication reconciliation. It
+   adds `### Released`, the publication statements, the run, registry,
+   provenance and Rekor evidence, and the RFC's move to `implemented`.
+
+The guards:
+
+- `verify-release` enforces state 2's records once the heading is dated.
+- It requires a tag for every `### Released`, with no exemption.
+- `release.yml` re-runs it with `--tag` before publishing.
+- Its tests pin the `v2.15.0` shape as failing, and the real `v2.14.0` and
+  `v2.15.0` tags as unmoved.
+
 ## Remaining work
 
 - Prepare a package generation for RFC 0069 when the owner wants it released.
@@ -477,23 +524,30 @@ and its formulas do not change.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
-- **Make a tagged tree's version records true of the tag.** StackUW's
-  re-vendor of `v2.15.0` found the problem (its UPSTREAM-020).
-  - **What's wrong.** At both `v2.14.0` and `v2.15.0`, `VERSIONS.md` labels
-    that tag's own release as unreleased: the Protocol row reads `(accepted,
-    unreleased)` and the core row reads `(candidate; ...)`. The rows flip on
-    `main` only in the post-release reconciliation, after the tag.
-  - **The fix.** The one-commit release record, which is the commit the tag
-    lands on, should state the released rows. The reconciliation should then
-    carry only what follows the publish.
-  - **Owner decision, 2026-10-02.** Fix it for future tags. No `v2.15.1` is cut
-    for this historical metadata alone.
-- **Harden RFC 0066 fixtures `variant-05` and `variant-11`** (StackUW's
-  UPSTREAM-021). In both fixtures the block the calc context selects is also
-  the section's last block. An implementation that ignores the context and
-  keeps the last block therefore passes both. StackUW's adapter did exactly
-  that until its re-vendor. Reorder each fixture, or add a mirror case, so the
-  selected block is not last. Expected results stay unchanged.
+- **Harden the RFC 0066 generic-order fixtures against a first-fence
+  reader.** This is bounded conformance hardening, found during the
+  UPSTREAM-021 work (2026-10-02).
+  - **The gap.** Four tier-3 fixtures resolve to their first `debt_structure`
+    fence:
+    - `variant-01-primary-resolves`;
+    - `variant-02-default-resolves`;
+    - `variant-04-role-preference`;
+    - `variant-10-role-unclaimed`.
+
+    A resolver can validate the role, primary or default correctly and then
+    read the first fence. Mutating the built `resolveRoleBlock` that way still
+    passed all 43 default tier-3 checks. A non-TypeScript calc host could
+    therefore self-certify through the portable driver. Only core's own unit
+    test, "reads the declared role, whichever fence comes first", catches it
+    in the reference implementation.
+  - **The fix.** Follow UPSTREAM-021:
+    - put each selected block between two other fences, without a second
+      `primary` or a second block with the declared role;
+    - keep each fixture's role semantics and expected result;
+    - extend the `section-resolution.test.ts` fence-order suite to cover the
+      four fixtures.
+
+    It is conformance evidence only, with no rule, RFC or version change.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

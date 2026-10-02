@@ -54,6 +54,80 @@ until a release ships it.
   - The receipt issuance baselines' protocol label moves to 2.20.0, with
     unchanged results.
 
+### Conformance
+
+- **RFC 0066 fixtures `variant-05` and `variant-11` no longer pass a
+  fence-order reader** (StackUW's UPSTREAM-021). Both used to put the block
+  their `calc-context.json` names in the last fence. A reader that checked the
+  name and then kept the last fence therefore passed both, in both runners.
+  - **The change.** Each fixture appends a third `junior` fence,
+    `producer-b-note` (2,000,000), after the named `producer-mezz`. A
+    first-fence reader now reads 0.6 and a last-fence reader 0.2, against the
+    unchanged expected 0.1.
+  - **Why not a swap.** Every generic-order fixture already resolves to its
+    first fence, so swapping would have let a first-fence reader pass the
+    whole family.
+  - **Guard.** A `section-resolution.test.ts` suite runs every context fixture
+    against both fence-order readers and keeps the named block in the middle.
+    It fails on the old fixtures.
+  - **No contract change.** Protocol §VIII.2, the expected results, the case
+    files and the counts (675 default checks, 101 portable cases) are
+    unchanged.
+
+### Release process
+
+- **A release tag now lands on a tree whose records about its own generation
+  are final** (StackUW's UPSTREAM-020). At `v2.14.0` and `v2.15.0`, the tagged
+  tree still calls that generation unreleased:
+  - `VERSIONS.md` labels core/CLI, signing and batch
+    `(candidate; published <previous>)` and the Protocol `(accepted, unreleased)`;
+  - the protocol status line says `unreleased`;
+  - the dated CHANGELOG section keeps an `(…, unreleased)` heading.
+
+  The tagged one-commit release record only dated the heading. Everything else
+  waited for the post-publication reconciliation, a commit the tag never sees.
+- **Three release states, each with its own records** (wiki 11).
+  - **Candidate.**
+  - **Release-prepared:** the commit the owner tags.
+    - Its records are final and publication-neutral: a dated heading, exact
+      core/CLI/protocol pairings and bare matrix rows.
+    - Nothing says candidate, unreleased or `published <previous>` about the
+      generation.
+    - The protocol status uses wording such as "Accepted release contract".
+    - It carries no `### Released`, and the RFC stays `accepted`.
+  - **Released and verified:** the post-publication reconciliation. It adds
+    `### Released`, the publication statements, the run, registry, provenance
+    and Rekor evidence, and the RFC's move to `implemented`.
+- **`verify-release` check 3** (`scripts/release-state.mjs`) enforces the
+  release-prepared records once the core version's heading is dated. A
+  protocol rule applies only while the core row pairs with the matrix
+  Protocol, so source may still run ahead between releases.
+- **`verify-release --tag vX.Y.Z`** checks the tree as that release:
+  - the tag names core/CLI;
+  - the CLI pins core exactly;
+  - the core row pairs with `PROTOCOL_VERSION`;
+  - the heading is dated;
+  - the tagged version's own section has no `### Released`.
+- **`release.yml`** runs the tag check over a full-history, tagged checkout,
+  before `npm ci` and before any publish. `release:check` fails if that step
+  goes missing.
+- **`### Released` now requires a real tag, with no exception.** Check 1
+  exempted the current core version, because its block went in before its
+  tag. That exemption is gone. `### Released` is written only after the tag
+  exists, which closes the 1.4.0 window in which `main` could claim a release
+  with no tag.
+- **Tests.** `release-state.test.mjs` runs first in `npm run verify-release`. It
+  covers:
+  - a release-prepared tree passing before its tag;
+  - the same tree passing as its tag;
+  - the verbatim `v2.15.0` shape failing;
+  - a `### Released` without its tag failing;
+  - source protocol running ahead;
+  - the real `v2.14.0` and `v2.15.0` tags staying on `641554d` and `aaa9ec3`.
+    Tag mode refuses them with 13 and 11 problems.
+- **History.** Per the owner's 2026-10-02 decision, no tag is moved and no
+  `v2.15.1` is cut.
+
 ## [2.15.0] - 2026-10-02
 
 ### Prepared

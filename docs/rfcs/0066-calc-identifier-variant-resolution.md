@@ -527,6 +527,12 @@ All cases use two `debt_structure` blocks shaped like those in
 | `variant-07-explicit-missing` | as 03 | `{ "sectionVariants": { "debt_structure": "absent-key" } }` | `ok: false`, `CALC-RESOLVE-002` (today `ok: true, value: null`) |
 | `variant-08-primary-collision` | two `_role: primary` blocks | none | `ok: false`, `CALC-RESOLVE-002` (today `ok: true, value: null`) |
 
+> **After 2.15.0 (StackUW's UPSTREAM-021).** As shipped, `variant-05` and
+> `variant-11` put the named block in the last fence, so a last-fence reader
+> passed both. Each now appends a third `junior` fence after it. A first-fence
+> or a last-fence reader therefore fails. Expected results and the rule above
+> are unchanged.
+
 Workbook cases in `uwmd-excel` would pin the same selection and refusal for a
 resolvable and an unresolvable role-bearing map.
 

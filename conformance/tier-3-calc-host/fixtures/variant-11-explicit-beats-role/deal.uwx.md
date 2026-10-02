@@ -22,7 +22,9 @@ created_by: "conformance"
 
 The caller's exact variant wins over the calculation's declared `senior`: the junior block is read, 0.1.
 
-Two `debt_structure` blocks are a variant map only because each carries `_role` and a `variant=` key (RFC 0040's Markdown opt-in).
+Three `debt_structure` blocks are a variant map only because each carries `_role` and a `variant=` key (RFC 0040's Markdown opt-in).
+
+`producer-mezz` is the middle fence. A reader that takes the first fence (0.6) or the last (0.2) instead of the named variant fails this case.
 
 
 ```json uw:section=valuation source=manual v=1
@@ -72,5 +74,22 @@ Two `debt_structure` blocks are a variant map only because each carries `_role` 
   },
   "_role": "junior",
   "loan_amount": 1000000
+}
+```
+
+```json uw:section=debt_structure variant=producer-b-note source=manual v=1
+{
+  "_meta": {
+    "section": "debt_structure",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "timestamp": "2026-10-02T00:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": []
+  },
+  "_role": "junior",
+  "loan_amount": 2000000
 }
 ```

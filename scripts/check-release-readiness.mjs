@@ -3,7 +3,8 @@
 // 1. Package version synchronization across @uwmd/core, @uwmd/cli, @uwmd/signing, and @uwmd/batch.
 // 2. Export targets, binaries, and production build artifacts exist and resolve.
 // 3. OIDC provenance eligibility (repository metadata, public access, zero hardcoded tokens).
-// 4. .github/workflows/release.yml triggers on tag pushes and includes id-token: write.
+// 4. .github/workflows/release.yml triggers on tag pushes and includes id-token: write,
+//    and runs `verify-release --tag` over a tagged checkout before any publish.
 //
 // Run: npm run release:check
 
@@ -46,6 +47,19 @@ try {
     failures.push(`${workflowPath}: missing 'contents: read' permission`);
   }
 
+  // The release-record gate must run on the tag before any publish step, over a
+  // checkout that has the tags verify-release compares against.
+  const gate = workflow.search(/node scripts\/verify-release\.mjs --tag "\$\{GITHUB_REF_NAME\}"/);
+  const firstPublish = workflow.search(/^\s+npm publish/m);
+  if (gate === -1 || (firstPublish !== -1 && gate > firstPublish)) {
+    failures.push(
+      `${workflowPath}: must run 'node scripts/verify-release.mjs --tag "\${GITHUB_REF_NAME}"' before the first npm publish, so a tag on a tree whose release records are not final publishes nothing`,
+    );
+  }
+  if (!/fetch-tags:\s*true/.test(workflow) || !/fetch-depth:\s*0/.test(workflow)) {
+    failures.push(`${workflowPath}: checkout needs fetch-depth: 0 and fetch-tags: true for verify-release`);
+  }
+
   // Check publish steps for all 4 packages with --provenance
   for (const pkg of RELEASE_PACKAGES) {
     const pkgPublishRegex = new RegExp(
@@ -60,7 +74,7 @@ try {
   }
 
   passes.push(
-    'Workflow .github/workflows/release.yml: tag trigger, OIDC permissions, and provenance steps verified',
+    'Workflow .github/workflows/release.yml: tag trigger, OIDC permissions, release-record gate, and provenance steps verified',
   );
 } catch (err) {
   failures.push(`.github/workflows/release.yml verification failed: ${err.message}`);
