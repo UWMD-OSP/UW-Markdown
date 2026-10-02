@@ -195,3 +195,15 @@ it('names both mixed-use checks when the components statement cannot resolve', (
   const result = validateUWFile(file({ components: block({ _role: 'component' }, 'components') }));
   expect(result.issues.find(issue => issue.code === 'CC-16')?.message).toContain('CC-11, CC-12');
 });
+
+describe('declared role preference (RFC 0066)', () => {
+  const map = {
+    a: block({ _role: 'senior', loan_amount: 6 }, 'debt_structure', 'a'),
+    b: block({ _role: 'junior', loan_amount: 1 }, 'debt_structure', 'b'),
+  };
+  it("uses a calculation's declared role in place of a check's registered one", () => {
+    expect(resolveRoleBlock(map, 'debt_structure', [], 'CC-02', 'junior')).toMatchObject({ state: 'resolved', variant: 'b' });
+    expect(resolveRoleBlock(map, 'debt_structure', [], 'CC-02')).toMatchObject({ state: 'resolved', variant: 'a' });
+    expect(resolveRoleBlock(map, 'debt_structure')).toMatchObject({ state: 'unresolvable' });
+  });
+});

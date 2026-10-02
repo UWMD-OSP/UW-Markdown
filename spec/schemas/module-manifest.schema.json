@@ -145,6 +145,12 @@
           "deterministic": {
             "type": "boolean",
             "description": "MUST be true in v1. Reserved for v2 stochastic calcs."
+          },
+          "section_roles": {
+            "type": "object",
+            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL_v1.md §VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
+            "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+            "additionalProperties": { "enum": ["primary", "senior", "junior", "summary", "detail"] }
           }
         }
       }

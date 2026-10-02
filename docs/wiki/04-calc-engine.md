@@ -120,6 +120,27 @@ This is why a multifamily formula like
 `noi_model.net_operating_income / valuation.purchase_price` works: `noi_model`
 resolves to the section's data, `.net_operating_income` drills in.
 
+**A section stated as a variant map** (RFC 0066, Protocol 2.19.0 source,
+unreleased) reads exactly one block. `resolveSectionBlock`
+(`section-resolution.ts`) picks it in this order:
+
+1. the caller's `ctx.sectionVariants[<id>]`, with no fallback;
+2. the evaluated declaration's `section_roles[<id>]`;
+3. RFC 0040's generic primary/default/base/sole order.
+
+Anything else throws `CALC-RESOLVE-002`, naming the section and the variants
+found. The evaluator never reads `null`, falls through to `prior_results`, or
+takes the first fence. A **missing** section is still `null`; only ambiguity
+refuses. The roles reach resolution only through `evaluateCalc(decl, ctx)`
+(`evaluateDeclared`). The public `evaluate(ast, ctx)` and the calc context carry
+none, so a host cannot hand a calculation a preference its declaration does not
+state.
+
+The cascade's in-file steps, refinement and the Excel converter call the same
+resolver. That makes one rule in place of the four that diverged before:
+evaluator `null`, cascade first fence, workbook blank, and one adopter's last
+fence.
+
 ## Null propagation and operator semantics
 
 - **Null propagates.** Any arithmetic/comparison with a `null` operand yields
@@ -207,6 +228,7 @@ Code | Meaning
 ---|---
 `CALC-PARSE-001` | Tokenizer/parser rejected the input
 `CALC-RESOLVE-001` | Unknown function name
+`CALC-RESOLVE-002` | A present variant-map section from which §VIII.2 selects no block (RFC 0066). Distinct from a missing path, which is `null`
 `CALC-TYPE-001` | Type/arity error in an operator or builtin
 `CALC-DIV-ZERO` | Division or modulo by zero
 `CALC-IRR-DIVERGE` | `irr` found no sign-change bracket in `[-0.999, 10]` (including a root outside it, and any even number of roots inside it), or bisection hit 200 iterations
@@ -356,7 +378,8 @@ The RFC 0042 reference
 implementation uses finite stated period values as fixed inputs in refinement;
 ordinary scalar gaps retain their existing cascade and perturbation arithmetic.
 `rankGaps(parsed, { periodContext: { sectionVariants, overrides } })` applies
-that context only to period dependencies. No period defaults or ranges exist.
+its overrides only to period dependencies; its `sectionVariants` select for
+every section-rooted read (RFC 0066). No period defaults or ranges exist.
 
 The `uwmd refine` text view prints excluded outputs and period issue codes; its
 JSON view retains the structured diagnostics. `--calc-context <file>` supplies
@@ -370,6 +393,14 @@ an excluded output, its full selector path and a missing/nonnumeric or typed
 CALC-PERIOD error code. Unaffected outputs remain rankable. The member is omitted
 for scalar-only targets and is an empty array for successfully resolved period
 inputs. `diagnostics.resolved` counts dependency entries, not known numeric values.
+RFC 0066 adds `diagnostics.section_inputs` for scalar inputs. The scalar
+cascade holds one value per path, so a section's block is selected once, under
+the role its reading targets declare. A target is excluded and reported with
+`CALC-RESOLVE-002` when its own selection refuses, reads another block, or
+conflicts with another target's declared role. With the built-in packs on a
+senior + junior debt map, that excludes only `cash_on_cash`.
+`periodContext.sectionVariants` now selects for scalar inputs too; its
+`overrides` remain period-only.
 Literal ordinary @ keys use a separate environment even when graph strings
 coincide with selector paths. Core/CLI 2.8.0 publishes these consumers; the historical
 core 2.7.0 behavior is preserved in RFC 0041's release record.

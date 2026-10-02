@@ -12,8 +12,9 @@ extensions. This roadmap is directional; a candidate is not a release commitment
 Core/CLI **2.14.0**, signing **0.2.18** and batch **0.8.13** are published on
 npm from the `v2.14.0` tag with SLSA provenance. Format is **2.0** and Protocol
 is **2.18.0**; the version streams are independent. RFC 0066 (accepted
-2026-10-02) is not in this release; it targets core/CLI 2.15.0 with Protocol
-2.19.0.
+2026-10-02) is not in this release. Its implementation is prepared as the
+core/CLI **2.15.0** candidate with Protocol **2.19.0**
+(candidate record: `docs/releases/2.15.0-candidate.md`); it is not published.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 

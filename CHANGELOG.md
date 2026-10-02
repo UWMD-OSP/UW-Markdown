@@ -8,6 +8,22 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+See the prepared 2.15.0 candidate below. No tag or package publication has
+occurred.
+
+## [2.15.0] - release candidate (unpublished)
+
+### Prepared
+
+Core/CLI **2.15.0** pair with accepted Protocol **2.19.0** and unchanged
+Format **2.0**, the release target of the owner's decision D3 for RFC 0066.
+Signing **0.2.19** and batch **0.8.14** repin core, and core's optional
+signing peer moves to 0.2.19. The unpublished Excel **0.9.7**, report
+**0.8.19**, lake **0.2.3** and module **0.1.7** manifests also receive exact
+local repins. Receipt issuance baselines and the frozen verification fixture
+use the new engine version. This section records a candidate, not a released
+package. RFC 0066 remains `accepted` until the capability ships.
+
 ### Fixed
 
 - **The cascade, refinement and the Excel converter read a block's payload the
@@ -28,7 +44,67 @@ protocol, and each package each carry an independent semver).
   every Excel layout, mixed-use included, along with Excel ↔ `evaluateCalc`
   parity on a wrapped document. Each fails on the previous code. No normative
   text, schema or conformance baseline changes. Published core/CLI 2.14.0
-  still carries the defect; the fix ships in the next package generation.
+  still carries the defect; this candidate fixes it.
+
+### Accepted contract — Protocol 2.19.0 (RFC 0066, unreleased)
+
+Jared made three owner decisions on **2026-10-02**:
+
+- **D1** is the selection rule and `CALC-RESOLVE-002`.
+- **D2** is a per-calculation `senior` preference on the lender-side metrics,
+  with no role on `cash_on_cash`.
+- **D3** authorizes implementation on a separate branch, targeting core/CLI
+  **2.15.0** with Protocol 2.19.0.
+
+The other rules below follow from D1 and D2 under existing precedent. This
+source follows the published 2.14.0 release (Protocol 2.18.0); the 2.15.0
+candidate above carries it. Format stays **2.0**.
+
+- **Calc identifiers over variant-map sections (§VIII.2).** An identifier rooted
+  at a section stated as a variant map reads exactly one block. The order is the
+  caller's `sectionVariants`, then the calculation's declared `section_roles`,
+  then RFC 0040's generic primary/default/base/sole order. Anything else
+  refuses with the new **`CALC-RESOLVE-002`**, naming the section and the
+  variants found.
+  - **Behavior change.** It used to be `ok: true, value: null`, the same answer
+    as a section that is not stated.
+  - **Unchanged.** A missing section is still `null`; a standalone block reads
+    as before; period references keep §VIII.2a and `CALC-PERIOD-003`.
+  - **No guessing.** Nothing chooses by fence order, amount or label.
+- **Per-calculation role preference.** `ModuleCalcDecl.section_roles` is
+  validated at manifest load (`PROTO-MOD-079`; module-manifest schema).
+  - **Lender-side metrics read the senior tranche.** The 46 `ltv`, `ltc`,
+    `dscr`, `debt_yield` and `loan_per_*` declarations across the ten built-in
+    packs declare `debt_structure: senior`. That is the validator's CC-02/03/05/09
+    preference, stated rather than inherited.
+  - **`cash_on_cash` declares none.** Equity cash flow deducts all debt service,
+    so it refuses on a multi-tranche map instead of overstating the return.
+  - **Receipts.** A receipt over a refused metric refuses issuance
+    (`RCP_COMPUTATION_FAILED`) rather than recording it as uncomputed.
+- **One selection everywhere.**
+  - **Cascade.** `resolveValue`'s in-file steps read only the selected block and
+    throw `CALC-RESOLVE-002` rather than reading the first fence (§V.7).
+  - **Refinement.** It selects each section once, under its targets' declared
+    roles, and reports excluded targets in the new `diagnostics.section_inputs`
+    (`SectionRefinementIssue`; `section-refinement-issue.schema.json`).
+    `periodContext.sectionVariants` now selects for scalar inputs too.
+  - **`uwmd scope`.** It reports a refused field instead of crashing.
+  - **Web editor.** The Scope table shows the refusal.
+  - **`--calc-context`.** It accepts `sectionVariants` for any section, not
+    only period-series heads.
+- **Excel parity (`@uwmd/excel`).** Standard pack sheets read named inputs
+  through the same selection, under the pack's declared roles.
+  - **Refusals are visible.** A refused input or metric is written as `#VALUE!`
+    with a note, never a blank Excel reads as zero.
+  - **Different block.** The export refuses with `EXCEL-EMIT-PATH` only when a
+    metric would read a different block than its named input holds.
+  - **Fixed.** A `primary` + `junior` debt map used to write a blank Loan Amount
+    (Excel LTV 0) while `evaluateCalc` reported 0.6.
+- **Conformance.** Eleven tier-3 fixtures, `variant-01` … `variant-11`, use an
+  optional `calc-context.json`, which both runners now pass. The portable runner
+  grows from 78 to 89 cases. Against the published CLI 2.13.0, seven of the
+  eleven fail, exactly the cases that exercise the fix. The receipt issuance
+  baselines' protocol label moves to 2.19.0 with unchanged results.
 
 ## [2.14.0] - 2026-10-02
 

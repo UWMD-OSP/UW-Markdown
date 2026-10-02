@@ -6,6 +6,9 @@ import type { ProtocolError } from '../protocol.js';
 export type CalcErrorCode =
   | 'CALC-PARSE-001'
   | 'CALC-RESOLVE-001'
+  // A present variant-map section from which §VIII.2 selects no block (RFC
+  // 0066). Distinct from a missing path, which stays null.
+  | 'CALC-RESOLVE-002'
   | 'CALC-TYPE-001'
   | 'CALC-DIV-ZERO'
   | 'CALC-IRR-DIVERGE'

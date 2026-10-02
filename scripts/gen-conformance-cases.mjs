@@ -197,7 +197,9 @@ for (const scenario of dirs(T3)) {
   const dir = join(T3, scenario);
   if (!existsSync(join(dir, 'calc.json')) || !existsSync(join(dir, 'expected-result.json'))) continue;
   const expected = JSON.parse(readFileText(join(dir, 'expected-result.json')));
-  add(`tier-3/${scenario}`, '3', 'calc', ['deal.uwx.md', 'calc.json', '--json'], dir, {
+  // An optional caller context (RFC 0066) reaches the CLI as --calc-context.
+  const context = existsSync(join(dir, 'calc-context.json')) ? ['--calc-context', 'calc-context.json'] : [];
+  add(`tier-3/${scenario}`, '3', 'calc', ['deal.uwx.md', 'calc.json', ...context, '--json'], dir, {
     kind: 'json-subset',
     file: 'expected-result.json',
     // The CLI exits 1 when any declaration fails to evaluate; the refusal

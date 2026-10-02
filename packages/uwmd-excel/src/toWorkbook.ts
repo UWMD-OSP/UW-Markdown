@@ -13,8 +13,18 @@
 
 import ExcelJS from 'exceljs';
 import { writeCustomCalculations, type ToWorkbookOptions } from './custom-calculations.js';
-import { blockPayload, deepGet, getSection, evaluateCalc, emitCalcExcelFormula } from '@uwmd/core';
-import type { ParsedUWFile, CalcEvaluationContext, ModuleCalcDecl } from '@uwmd/core';
+import {
+  blockPayload,
+  CalcError,
+  deepGet,
+  evaluateCalc,
+  emitCalcExcelFormula,
+  ExcelEmitError,
+  getExprDependencies,
+  parseExpression,
+  resolveSectionBlock,
+} from '@uwmd/core';
+import type { ParsedUWFile, CalcEvaluationContext, ModuleCalcDecl, UWBlock } from '@uwmd/core';
 import {
   buildDerivedMetrics,
   excelFormatFor,
@@ -69,17 +79,120 @@ function abs(sheet: string, row: number, col: number): string {
   return `${sheetRef}!$${colLetter(col)}$${row}`;
 }
 
-/** The block's user payload, as evaluateCalc reads it (flat or content envelope). */
-function sectionContent(parsed: ParsedUWFile, sectionId: string): Record<string, unknown> {
-  const block = getSection(parsed, sectionId);
-  const payload = block ? blockPayload(block) : undefined;
-  return (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown>;
+// ─── Section selection (Protocol §VIII.2, RFC 0066) ──────────────────────────
+//
+// Named inputs are read from the block the calc engine reads: the pack's
+// declared role, then RFC 0040's generic order. A section with no selectable
+// block is a refusal. It is written as an explicit #VALUE! (§VIII.2c's
+// invalid-identity value) and never left blank, because Excel reads a blank as
+// zero. A metric whose own selection refuses shows #VALUE! where the calc
+// engine reports ok: false. Each named input stands for one block, so a metric
+// that would read a different block than its input refuses the export instead.
+
+type SectionRead = { block: UWBlock | null } | { refused: string };
+type Refusal = { refused: string };
+type DeclaredRoles = NonNullable<ModuleCalcDecl['section_roles']>;
+
+function refusalOf(e: unknown): Refusal {
+  if (e instanceof CalcError) return { refused: `${e.proto.code}: ${e.proto.message}` };
+  throw e;
 }
 
-function readNumber(parsed: ParsedUWFile, sectionId: string, path: string): number | null {
-  const v = deepGet(sectionContent(parsed, sectionId), path);
-  if (typeof v === 'number' && Number.isFinite(v)) return v;
-  return null;
+/** The sections a calculation reads, by the head of each dotted dependency. */
+function sectionsRead(parsed: ParsedUWFile, decl: ModuleCalcDecl): string[] {
+  const heads = getExprDependencies(parseExpression(decl.formula))
+    .map((dep) => dep.split('.')[0]!)
+    .filter((head) => Object.hasOwn(parsed.sections, head));
+  return [...new Set(heads)];
+}
+
+class SectionReader {
+  private readonly cache = new Map<string, SectionRead>();
+  private readonly roles: DeclaredRoles;
+
+  constructor(private readonly parsed: ParsedUWFile, decls: readonly ModuleCalcDecl[]) {
+    const declared = new Map<string, Set<string>>();
+    for (const decl of decls) {
+      for (const [section, role] of Object.entries(decl.section_roles ?? {})) {
+        declared.set(section, (declared.get(section) ?? new Set()).add(role));
+      }
+    }
+    const roles: Record<string, string> = {};
+    for (const [section, set] of declared) {
+      if (set.size > 1) {
+        throw new ExcelEmitError(
+          'EXCEL-EMIT-PATH',
+          `Pack calculations declare different roles for ${section} (${[...set].sort().join(', ')}); one workbook input cannot stand for both.`,
+        );
+      }
+      roles[section] = [...set][0]!;
+    }
+    this.roles = roles as DeclaredRoles;
+  }
+
+  read(section: string): SectionRead {
+    let read = this.cache.get(section);
+    if (!read) {
+      try {
+        read = { block: resolveSectionBlock(this.parsed, section, { sectionRoles: this.roles }) };
+      } catch (e) {
+        read = refusalOf(e);
+      }
+      this.cache.set(section, read);
+    }
+    return read;
+  }
+
+  /**
+   * The selected block's user payload, as evaluateCalc reads it (flat or
+   * content envelope); a missing section reads as empty.
+   */
+  content(section: string): { content: Record<string, unknown> } | Refusal {
+    const read = this.read(section);
+    if ('refused' in read) return read;
+    const payload = read.block ? blockPayload(read.block) : undefined;
+    return { content: (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown> };
+  }
+
+  number(section: string, path: string): number | null | Refusal {
+    const read = this.content(section);
+    if ('refused' in read) return read;
+    const v = deepGet(read.content, path);
+    return typeof v === 'number' && Number.isFinite(v) ? v : null;
+  }
+
+  /**
+   * Null when the workbook's formula for `decl` reads what evaluateCalc reads;
+   * a refusal when evaluateCalc refuses one of its sections. Throws when the
+   * calculation reads a block other than the one its named inputs hold.
+   */
+  metricRefusal(decl: ModuleCalcDecl): Refusal | null {
+    for (const section of sectionsRead(this.parsed, decl)) {
+      let own: UWBlock | null;
+      try {
+        own = resolveSectionBlock(this.parsed, section, decl.section_roles ? { sectionRoles: decl.section_roles } : {});
+      } catch (e) {
+        return refusalOf(e);
+      }
+      const input = this.read(section);
+      if ('refused' in input || input.block !== own) {
+        throw new ExcelEmitError(
+          'EXCEL-EMIT-PATH',
+          `Calculation '${decl.id}' reads a different ${section} block than the workbook's named inputs; one input cannot stand for both.`,
+        );
+      }
+    }
+    return null;
+  }
+}
+
+function writeInputValue(cell: ExcelJS.Cell, value: number | null | Refusal, sign = 1): void {
+  if (value !== null && typeof value === 'object') {
+    cell.value = { error: '#VALUE!' };
+    cell.note = value.refused;
+    return;
+  }
+  cell.value = value === null ? null : value * sign;
 }
 
 // ─── Sheet 1: Underwriting ───────────────────────────────────────────────────
@@ -108,6 +221,7 @@ function writeDealHeader(ws: ExcelJS.Worksheet, fm: ParsedUWFile['frontmatter'])
 function writeUnderwritingSheet(
   wb: ExcelJS.Workbook,
   parsed: ParsedUWFile,
+  reader: SectionReader,
   layout: WorkbookLayout,
   derivedMetrics: readonly DerivedMetric[],
 ): void {
@@ -123,7 +237,7 @@ function writeUnderwritingSheet(
   row++;
 
   for (const input of layout.namedInputs) {
-    writeNamedInputRow(wb, ws, parsed, input, row);
+    writeNamedInputRow(wb, ws, reader, input, row);
     row++;
   }
 
@@ -133,8 +247,10 @@ function writeUnderwritingSheet(
   ws.mergeCells(`A${row}:B${row}`);
   row++;
 
+  const decls = new Map((layout.pack.calculations ?? []).map((decl) => [decl.id, decl as ModuleCalcDecl]));
   for (const metric of derivedMetrics) {
-    writeDerivedMetricRow(ws, metric, row);
+    const decl = decls.get(metric.id);
+    writeDerivedMetricRow(ws, metric, row, decl ? reader.metricRefusal(decl) : null);
     row++;
   }
 }
@@ -142,21 +258,31 @@ function writeUnderwritingSheet(
 function writeNamedInputRow(
   wb: ExcelJS.Workbook,
   ws: ExcelJS.Worksheet,
-  parsed: ParsedUWFile,
+  reader: SectionReader,
   input: NamedInput,
   row: number,
 ): void {
   ws.getCell(`A${row}`).value = input.label;
   const valueCell = ws.getCell(`B${row}`);
-  valueCell.value = readNumber(parsed, input.source.section, input.source.path);
+  writeInputValue(valueCell, reader.number(input.source.section, input.source.path));
   valueCell.numFmt = fmtFor(input.format);
   wb.definedNames.add(abs(ws.name, row, 2), input.name);
 }
 
-function writeDerivedMetricRow(ws: ExcelJS.Worksheet, metric: DerivedMetric, row: number): void {
+function writeDerivedMetricRow(
+  ws: ExcelJS.Worksheet,
+  metric: DerivedMetric,
+  row: number,
+  refusal: Refusal | null = null,
+): void {
   ws.getCell(`A${row}`).value = metric.label;
   const valueCell = ws.getCell(`B${row}`);
-  valueCell.value = { formula: metric.formula.replace(/^=/, ''), result: undefined };
+  if (refusal) {
+    valueCell.value = { error: '#VALUE!' };
+    valueCell.note = refusal.refused;
+  } else {
+    valueCell.value = { formula: metric.formula.replace(/^=/, ''), result: undefined };
+  }
   valueCell.numFmt = fmtFor(metric.format);
 }
 
@@ -164,7 +290,7 @@ function writeDerivedMetricRow(ws: ExcelJS.Worksheet, metric: DerivedMetric, row
 
 function writeOperatingStatementSheet(
   wb: ExcelJS.Workbook,
-  parsed: ParsedUWFile,
+  reader: SectionReader,
   layout: WorkbookLayout,
 ): void {
   const ws = wb.addWorksheet('Operating Statement');
@@ -182,8 +308,7 @@ function writeOperatingStatementSheet(
   for (const line of layout.incomeLines) {
     ws.getCell(`A${row}`).value = line.label;
     const valueCell = ws.getCell(`B${row}`);
-    const raw = readNumber(parsed, 'noi_model', `income.${line.path}`);
-    valueCell.value = raw === null ? null : raw * (line.sign ?? 1);
+    writeInputValue(valueCell, reader.number('noi_model', `income.${line.path}`), line.sign ?? 1);
     valueCell.numFmt = fmtFor('currency');
     if (line.name) wb.definedNames.add(abs(ws.name, row, 2), line.name);
     row++;
@@ -210,7 +335,7 @@ function writeOperatingStatementSheet(
   for (const line of layout.expenseLines) {
     ws.getCell(`A${row}`).value = line.label;
     const valueCell = ws.getCell(`B${row}`);
-    valueCell.value = readNumber(parsed, 'noi_model', `expenses.${line.path}`);
+    writeInputValue(valueCell, reader.number('noi_model', `expenses.${line.path}`));
     valueCell.numFmt = fmtFor('currency');
     if (line.name) wb.definedNames.add(abs(ws.name, row, 2), line.name);
     row++;
@@ -298,6 +423,7 @@ function compNumber(comp: Record<string, unknown>, field: string): number | null
 /** Pack metrics that evaluate to a finite number for this specific deal. */
 function buildMixedUseDerivedMetrics(
   parsed: ParsedUWFile,
+  reader: SectionReader,
   layout: WorkbookLayout,
 ): DerivedMetric[] {
   const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
@@ -306,6 +432,7 @@ function buildMixedUseDerivedMetrics(
   for (const decl of (layout.pack.calculations ?? []) as ModuleCalcDecl[]) {
     const r = evaluateCalc(decl, ctx);
     if (!r.ok || typeof r.value !== 'number' || !Number.isFinite(r.value)) continue;
+    reader.metricRefusal(decl); // a metric evaluateCalc computed must read its inputs' blocks
     out.push({
       id: decl.id,
       label: decl.label,
@@ -319,6 +446,7 @@ function buildMixedUseDerivedMetrics(
 function writeMixedUseUnderwritingSheet(
   wb: ExcelJS.Workbook,
   parsed: ParsedUWFile,
+  reader: SectionReader,
   derivedMetrics: readonly DerivedMetric[],
 ): void {
   const ws = wb.addWorksheet('Underwriting');
@@ -335,7 +463,7 @@ function writeMixedUseUnderwritingSheet(
     const { section, rest } = splitPath(input.path);
     ws.getCell(`A${row}`).value = input.label;
     const cell = ws.getCell(`B${row}`);
-    cell.value = readNumber(parsed, section, rest);
+    writeInputValue(cell, reader.number(section, rest));
     cell.numFmt = fmtFor('currency');
     wb.definedNames.add(abs(ws.name, row, 2), mixedUseName(input.path));
     row++;
@@ -355,12 +483,13 @@ function writeMixedUseUnderwritingSheet(
 
 function writeMixedUseOperatingStatement(
   wb: ExcelJS.Workbook,
-  parsed: ParsedUWFile,
+  reader: SectionReader,
   layout: WorkbookLayout,
 ): void {
   const ws = wb.addWorksheet('Operating Statement');
   ws.columns = [{ width: 36 }, { width: 18 }];
-  const components = sectionContent(parsed, 'components');
+  const read = reader.content('components');
+  const components = 'refused' in read ? {} : read.content;
   const specs = layout.mixedUse?.components ?? [];
 
   let row = 1;
@@ -459,7 +588,8 @@ function writeMixedUseOperatingStatement(
   ws.getCell(`A${row}`).value = 'Property Net Operating Income';
   ws.getCell(`A${row}`).font = { bold: true, size: 12 };
   const propNoi = ws.getCell(`B${row}`);
-  propNoi.value = { formula: noiNames.join('+'), result: undefined };
+  writeInputValue(propNoi, 'refused' in read ? read : null);
+  if (!('refused' in read)) propNoi.value = { formula: noiNames.join('+'), result: undefined };
   propNoi.numFmt = fmtFor('currency');
   propNoi.font = { bold: true, size: 12 };
   wb.definedNames.add(abs(ws.name, row, 2), mixedUseName('noi_model.net_operating_income'));
@@ -474,9 +604,10 @@ async function toMixedUseWorkbook(
   wb.creator = '@uwmd/excel';
   wb.created = new Date();
 
-  const derivedMetrics = buildMixedUseDerivedMetrics(parsed, layout);
-  writeMixedUseUnderwritingSheet(wb, parsed, derivedMetrics);
-  writeMixedUseOperatingStatement(wb, parsed, layout);
+  const reader = new SectionReader(parsed, (layout.pack.calculations ?? []) as ModuleCalcDecl[]);
+  const derivedMetrics = buildMixedUseDerivedMetrics(parsed, reader, layout);
+  writeMixedUseUnderwritingSheet(wb, parsed, reader, derivedMetrics);
+  writeMixedUseOperatingStatement(wb, reader, layout);
   // After the operating statement, so the NOI named range its inputs reference
   // exists. No-op for a document without a `capital_stack` section (RFC 0026).
   writeCapitalStackSheet(wb, parsed);
@@ -500,13 +631,14 @@ export async function toWorkbook(parsed: ParsedUWFile, options: ToWorkbookOption
   if (layout.mixedUse) return toMixedUseWorkbook(parsed, layout, options);
 
   const derivedMetrics = buildDerivedMetrics(layout);
+  const reader = new SectionReader(parsed, (layout.pack.calculations ?? []) as ModuleCalcDecl[]);
 
   const wb = new ExcelJS.Workbook();
   wb.creator = '@uwmd/excel';
   wb.created = new Date();
 
-  writeUnderwritingSheet(wb, parsed, layout, derivedMetrics);
-  writeOperatingStatementSheet(wb, parsed, layout);
+  writeUnderwritingSheet(wb, parsed, reader, layout, derivedMetrics);
+  writeOperatingStatementSheet(wb, reader, layout);
   // After the operating statement, so the NOI named range its inputs reference
   // exists. No-op for a document without a `capital_stack` section (RFC 0026).
   writeCapitalStackSheet(wb, parsed);

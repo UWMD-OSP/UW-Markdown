@@ -2,7 +2,8 @@ import { blockPayload, getPathSegment, isBlockedSegment } from './parser.js';
 import { PERIOD_SERIES } from './protocol.js';
 import type { PeriodColumnSnapshot } from './protocol.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
-import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
+import { resolveRoleBlock } from './block-roles.js';
+import { explicitVariantBlock } from './section-resolution.js';
 import { parseExpression, periodReferencePath, type Expr } from './calc/parser.js';
 import { CalcError } from './calc/errors.js';
 import { parsePeriodSelector, periodKeyIdentity, periodKindMatches, scanPeriodSeries } from './periods.js';
@@ -16,11 +17,8 @@ export function periodSection(parsed: ParsedUWFile, section: string, options: Pe
   if (!entry) return null;
   if (options.sectionVariants && Object.prototype.hasOwnProperty.call(options.sectionVariants, section)) {
     const variant = options.sectionVariants[section]!;
-    const block = 'annotation' in entry ? (entry as UWBlock).annotation.variant === variant ? entry as UWBlock : null
-      : getPathSegment(entry, variant) as UWBlock | undefined;
-    if (!block || (hasBlockRole(block) && !isBlockRole(block.content['_role']))) {
-      throw new CalcError('CALC-PERIOD-003', `Cannot select ${section} variant=${variant}.`);
-    }
+    const block = explicitVariantBlock(entry, variant);
+    if (!block) throw new CalcError('CALC-PERIOD-003', `Cannot select ${section} variant=${variant}.`);
     return block;
   }
   const resolved = resolveRoleBlock(entry, section);

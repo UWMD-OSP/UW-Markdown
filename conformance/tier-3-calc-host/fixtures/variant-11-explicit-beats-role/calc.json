@@ -1,0 +1,10 @@
+{
+  "id": "ltv",
+  "label": "LTV",
+  "formula": "debt_structure.loan_amount / valuation.purchase_price",
+  "unit": "%",
+  "deterministic": true,
+  "section_roles": {
+    "debt_structure": "senior"
+  }
+}

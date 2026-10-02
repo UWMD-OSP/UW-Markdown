@@ -19,8 +19,14 @@
 // non-monotonic ASTs.
 
 import { getPeriodReferences } from './calc/dependencies.js';
-import type { ParsedUWFile, DealStage } from './types.js';
-import type { ModuleManifest, CalcEvaluationContext, PeriodRefinementIssue } from './protocol.js';
+import type { BlockRole, ParsedUWFile, DealStage, UWBlock } from './types.js';
+import type {
+  ModuleManifest,
+  ModuleCalcDecl,
+  CalcEvaluationContext,
+  PeriodRefinementIssue,
+  SectionRefinementIssue,
+} from './protocol.js';
 import { CalcError } from './calc/errors.js';
 import { periodReferenceContract, resolvePeriodReference } from './period-path.js';
 import { MULTIFAMILY_PACK } from './packs/multifamily.js';
@@ -28,6 +34,7 @@ import { extractDependencyGraph } from './calc/dependencies.js';
 import type { Expr } from './calc/parser.js';
 import { parseExpression, periodReferencePath } from './calc/parser.js';
 import { resolveValue, type CascadeContext, type ResolvedValue } from './cascade.js';
+import { resolveSectionBlock } from './section-resolution.js';
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
@@ -61,7 +68,11 @@ export interface RankGapsOptions {
   packs?: ModuleManifest[];
   /** Cascade context (investor profile, market data, etc.). */
   cascadeContext?: CascadeContext;
-  /** RFC 0042: context for fixed period inputs only; never feeds the scalar cascade. */
+  /**
+   * RFC 0042: context for fixed period inputs. Its `overrides` never feed the
+   * scalar cascade; its `sectionVariants` select the block every section-rooted
+   * read uses, scalar ones included (§VIII.2, RFC 0066).
+   */
   periodContext?: Pick<CalcEvaluationContext, 'sectionVariants' | 'overrides'>;
 }
 
@@ -82,6 +93,12 @@ export interface RankGapsResult {
     non_monotonic: NonMonotonicWarning[];
     /** Present when selected targets contain period references. Inspect before claiming completeness. */
     period_inputs?: PeriodRefinementIssue[];
+    /**
+     * Present when selected targets read a section that needs a selection: a
+     * variant map, or a section named by an explicit variant (RFC 0066). Each
+     * entry is a target excluded from ranking. Inspect before claiming completeness.
+     */
+    section_inputs?: SectionRefinementIssue[];
   };
 }
 
@@ -260,11 +277,82 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
     }
   }
 
+  // §VIII.2 (RFC 0066): one cascade value per path means one block per
+  // section. That block is selected with the role the section's reading
+  // targets declare. A target whose own selection refuses, or reads another
+  // block, is excluded and reported, never ranked over a block it does not read.
+  const declRoles = new Map<string, ModuleCalcDecl['section_roles']>();
+  for (const pack of packs) for (const c of pack.calculations ?? []) declRoles.set(c.id, c.section_roles);
+  for (const block of parsed.custom_calculations) {
+    // A document calculation replaces a pack one of the same id, as in the graph.
+    const content = block.content as Record<string, unknown>;
+    const id = content.id ?? content.calc_id;
+    if (typeof id === 'string' && typeof content.formula === 'string') declRoles.delete(id);
+  }
+  const sectionVariants = opts.periodContext?.sectionVariants ?? cascadeCtx.sectionVariants;
+  const sharedRoles: Record<string, Exclude<BlockRole, 'component'>> = { ...cascadeCtx.sectionRoles };
+  const readers = new Map<string, string[]>();
+  for (const [id, scalars] of targetScalars) {
+    for (const path of scalars) {
+      const dot = path.indexOf('.');
+      const section = dot > 0 ? path.slice(0, dot) : '';
+      if (!section || !Object.hasOwn(parsed.sections, section)) continue;
+      const ids = readers.get(section) ?? [];
+      if (!ids.includes(id)) ids.push(id);
+      readers.set(section, ids);
+    }
+  }
+  const sectionIssues: SectionRefinementIssue[] = [];
+  const blockedSections = new Set<string>();
+  let selectionNeeded = false;
+  const exclude = (id: string, section: string, message: string) => {
+    sectionIssues.push({ output_id: id, section, code: 'CALC-RESOLVE-002', message });
+    targetAsts.delete(id);
+  };
+  const select = (section: string, role: Exclude<BlockRole, 'component'> | undefined): UWBlock | CalcError => {
+    try {
+      return resolveSectionBlock(parsed, section, {
+        ...(sectionVariants ? { sectionVariants } : {}),
+        ...(role ? { sectionRoles: { [section]: role } } : {}),
+      })!;
+    } catch (error) {
+      if (error instanceof CalcError) return error;
+      throw error;
+    }
+  };
+  for (const [section, ids] of readers) {
+    const explicit = sectionVariants !== undefined && Object.hasOwn(sectionVariants, section);
+    if ('annotation' in parsed.sections[section]! && !explicit) continue; // nothing to choose
+    selectionNeeded = true;
+    const declared = [...new Set(ids.map((id) => declRoles.get(id)?.[section]).filter((r) => r !== undefined))].sort();
+    if (declared.length > 1) {
+      blockedSections.add(section);
+      for (const id of ids) exclude(id, section, `Selected outputs declare different roles for ${section}: ${declared.join(', ')}.`);
+      continue;
+    }
+    if (declared.length === 1) sharedRoles[section] = declared[0]!;
+    const shared = select(section, sharedRoles[section]);
+    if (shared instanceof CalcError) blockedSections.add(section);
+    for (const id of ids) {
+      const own = select(section, declRoles.get(id)?.[section]);
+      if (own instanceof CalcError) exclude(id, section, own.proto.message);
+      else if (shared instanceof CalcError) exclude(id, section, `${id} cannot share a ${section} block with the other selected outputs: ${shared.proto.message}`);
+      else if (own !== shared) exclude(id, section, `${id} reads a different ${section} block than the other selected outputs; refinement holds one value per path.`);
+    }
+  }
+  sectionIssues.sort((a, b) => targets.indexOf(a.output_id) - targets.indexOf(b.output_id));
+  const scalarCascadeCtx: CascadeContext = {
+    ...cascadeCtx,
+    ...(sectionVariants ? { sectionVariants } : {}),
+    sectionRoles: sharedRoles,
+  };
+
   const resolutions = new Map<string, ResolvedValue>();
   const gaps: { path: string; range: { low: number; central: number; high: number } }[] = [];
   // Preserve the historical scalar-only graph behavior, including duplicate IDs.
   for (const path of periodRefs.size ? ordinaryInputs : allInputs) {
-    const r = resolveValue(path, parsed, cascadeCtx);
+    if (blockedSections.has(path.slice(0, Math.max(0, path.indexOf('.'))))) continue;
+    const r = resolveValue(path, parsed, scalarCascadeCtx);
     resolutions.set(path, r);
     const isGap = r.step === 'asset_class_default' || r.step === 'global_default' || r.step === 'system_default';
     if (isGap && r.range) gaps.push({ path, range: r.range });
@@ -368,6 +456,7 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
       perturbations: perturbationCount,
       non_monotonic: nonMonotonic,
       ...(periodRefs.size ? { period_inputs: periodIssues } : {}),
+      ...(selectionNeeded ? { section_inputs: sectionIssues } : {}),
     },
   };
 }

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-refinement-issue.schema.json",
+  "title": "Section refinement issue (RFC 0066)",
+  "description": "A refinement target excluded from ranking because the block one of its sections must be read from cannot be selected for it (UW_PROTOCOL_v1.md \u00a7VIII.2b). message is not stable machine data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "output_id",
+    "section",
+    "code",
+    "message"
+  ],
+  "properties": {
+    "output_id": {
+      "type": "string"
+    },
+    "section": {
+      "type": "string",
+      "description": "The section id whose block could not be selected for this output."
+    },
+    "code": {
+      "const": "CALC-RESOLVE-002"
+    },
+    "message": {
+      "type": "string"
+    }
+  }
+}

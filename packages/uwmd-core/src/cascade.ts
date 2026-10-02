@@ -9,7 +9,8 @@
 import type { CascadeStep } from './protocol.js';
 import { getAssetClassDefaults, type DefaultRange } from './defaults.js';
 import { blockPayload, deepGet } from './parser.js';
-import type { ParsedUWFile, SourceTag, UWBlock, UWFieldOverride } from './types.js';
+import { resolveSectionBlock, type SectionSelectionOptions } from './section-resolution.js';
+import type { BlockRole, ParsedUWFile, SourceTag, UWBlock, UWFieldOverride } from './types.js';
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
@@ -143,6 +144,13 @@ export interface CascadeContext {
   market?: MarketDataLookup;
   global?: GlobalDefaults;
   system?: SystemDefaults;
+  /**
+   * Exact variant per section for the in-file steps, as in
+   * `CalcEvaluationContext.sectionVariants` (§VIII.2, RFC 0066).
+   */
+  sectionVariants?: Readonly<Record<string, string>>;
+  /** Role preference per section, as the consuming calculations declare it. */
+  sectionRoles?: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
 }
 
 // ─── Output ──────────────────────────────────────────────────────────────────
@@ -159,15 +167,18 @@ export interface ResolvedValue {
 
 // ─── Internal helpers ────────────────────────────────────────────────────────
 
-function getBlock(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
-  const entry = parsed.sections[sectionId];
-  if (!entry) return null;
-  if ('annotation' in (entry as object)) return entry as UWBlock;
-  // Multi-variant: walk variants and return the first that yields a value.
-  // Resolution at this layer just needs a representative block; the path
-  // walk that follows decides whether the value exists.
-  const variants = Object.values(entry as Record<string, UWBlock>);
-  return variants[0] ?? null;
+/**
+ * The one block an in-file read consults (§VIII.2, RFC 0066): the same
+ * selection the calc evaluator makes, never the first fence. An ambiguous
+ * variant map throws `CALC-RESOLVE-002` rather than letting fence order choose,
+ * as `AmbiguousInheritanceError` does for equidistant ancestors.
+ */
+function getBlock(parsed: ParsedUWFile, sectionId: string, ctx: CascadeContext = {}): UWBlock | null {
+  const selection: SectionSelectionOptions = {
+    ...(ctx.sectionVariants ? { sectionVariants: ctx.sectionVariants } : {}),
+    ...(ctx.sectionRoles ? { sectionRoles: ctx.sectionRoles } : {}),
+  };
+  return resolveSectionBlock(parsed, sectionId, selection);
 }
 
 function splitFieldPath(field_path: string): { sectionId: string; rest: string } | null {
@@ -177,10 +188,10 @@ function splitFieldPath(field_path: string): { sectionId: string; rest: string }
 }
 
 /** Look up a value in `parsed.sections[section].content` for the given path. */
-function readFromSection(parsed: ParsedUWFile, field_path: string): unknown {
+function readFromSection(parsed: ParsedUWFile, field_path: string, ctx: CascadeContext = {}): unknown {
   const split = splitFieldPath(field_path);
   if (!split) return undefined;
-  const block = getBlock(parsed, split.sectionId);
+  const block = getBlock(parsed, split.sectionId, ctx);
   if (!block) return undefined;
   return deepGet(blockPayload(block), split.rest);
 }
@@ -204,36 +215,31 @@ function findFieldOverride(block: UWBlock, rest: string): UWFieldOverride | unde
  * `resolution` and its actor never collides with a tag.
  *
  * Used to detect user_override / user_input / market_data values already
- * recorded in the file. Returns the first match; multi-variant sections check
- * every variant.
+ * recorded in the file. A variant-map section consults only the block §VIII.2
+ * selects (RFC 0066).
  */
 function findBySource(
   parsed: ParsedUWFile,
   field_path: string,
   wanted: SourceTag[],
+  ctx: CascadeContext,
 ): { block: UWBlock; value: unknown; source: SourceTag } | null {
   const split = splitFieldPath(field_path);
   if (!split) return null;
-  const entry = parsed.sections[split.sectionId];
-  if (!entry) return null;
-
-  const blocks: UWBlock[] = 'annotation' in (entry as object)
-    ? [entry as UWBlock]
-    : Object.values(entry as Record<string, UWBlock>);
-
-  for (const block of blocks) {
-    // The payload, not the stored body: a content-envelope block keeps the
-    // field one level down, and the calc evaluator reads it there (§VIII.2).
-    const value = deepGet(blockPayload(block), split.rest);
-    if (value === undefined) continue;
-    const override = findFieldOverride(block, split.rest);
-    const effective =
-      override?.resolution ?? override?.source ?? block.meta.resolution ?? block.meta.source;
-    if (effective !== undefined && wanted.includes(effective)) {
-      return { block, value, source: effective };
-    }
-  }
-  return null;
+  // Only the selected block's value is in the file for this read. Another
+  // variant's tagged value belongs to a different statement (another tranche,
+  // another scenario) and never stands in for it. The value is read from the
+  // block's payload, as the calc evaluator reads it (§VIII.2).
+  const block = getBlock(parsed, split.sectionId, ctx);
+  if (!block) return null;
+  const value = deepGet(blockPayload(block), split.rest);
+  if (value === undefined) return null;
+  const override = findFieldOverride(block, split.rest);
+  const effective =
+    override?.resolution ?? override?.source ?? block.meta.resolution ?? block.meta.source;
+  return effective !== undefined && wanted.includes(effective)
+    ? { block, value, source: effective }
+    : null;
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
@@ -253,7 +259,9 @@ function findBySource(
  *   8. system_default (ctx.system)
  *
  * Throws `AmbiguousInheritanceError` when two equidistant ancestors assert the
- * same field — the one case where resolution refuses rather than choosing.
+ * same field, and a `CalcError` `CALC-RESOLVE-002` when the field's section is
+ * a variant map §VIII.2 cannot select from (RFC 0066). Resolution refuses
+ * rather than choosing in both cases.
  *
  * Returns `undefined` value with step='system_default' as a sentinel only when
  * every step misses; callers SHOULD treat that as an unresolvable input and
@@ -265,7 +273,7 @@ export function resolveValue(
   ctx: CascadeContext = {},
 ): ResolvedValue {
   // Step 1: user_override
-  const override = findBySource(parsed, field_path, ['user_override']);
+  const override = findBySource(parsed, field_path, ['user_override'], ctx);
   if (override) {
     return { value: override.value, source: 'user_override', step: 'user_override' };
   }
@@ -285,7 +293,7 @@ export function resolveValue(
   // resolved at an existing step rather than a step of its own. Extending the
   // cascade is a protocol change, which is what RFC 0021 §5 did for
   // `inherited_assumption`; RFC 0022 deliberately did not need one.
-  const input = findBySource(parsed, field_path, ['user_input', 'manual', 'market_data_accepted']);
+  const input = findBySource(parsed, field_path, ['user_input', 'manual', 'market_data_accepted'], ctx);
   if (input) {
     return { value: input.value, source: input.source, step: 'user_input' };
   }
@@ -339,7 +347,7 @@ export function resolveValue(
   }
 
   // Also recognize an existing market_data tag already stamped in-file.
-  const inFileMarket = findBySource(parsed, field_path, ['market_data']);
+  const inFileMarket = findBySource(parsed, field_path, ['market_data'], ctx);
   if (inFileMarket) {
     return { value: inFileMarket.value, source: 'market_data', step: 'market_data' };
   }
@@ -381,7 +389,8 @@ export function resolveValue(
 /**
  * Read a value already present in the file at `field_path` without walking the
  * cascade. Useful when callers want to distinguish "in file" vs "resolved."
+ * A variant-map section is read through the same selection as the cascade.
  */
-export function readInFile(parsed: ParsedUWFile, field_path: string): unknown {
-  return readFromSection(parsed, field_path);
+export function readInFile(parsed: ParsedUWFile, field_path: string, ctx: CascadeContext = {}): unknown {
+  return readFromSection(parsed, field_path, ctx);
 }

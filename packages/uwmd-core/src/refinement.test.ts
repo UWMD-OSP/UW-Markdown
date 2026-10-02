@@ -1,7 +1,9 @@
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { rankGaps } from './refinement.js';
 import { parseUWFile } from './parser.js';
 import { MULTIFAMILY_PACK } from './packs/multifamily.js';
+import type { ModuleCalcDecl, ModuleManifest } from './protocol.js';
 
 const MINIMAL_MULTIFAMILY = `---
 uw_version: "1.1"
@@ -444,5 +446,59 @@ describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
     const flat = rankGaps(parseUWFile(parkview), { packs });
     expect(flat.by_voi.map((g) => g.field_path)).toEqual(['debt_structure.io_months']);
     expect(rankGaps(parseUWFile(toContentEnvelope(parkview)), { packs })).toEqual(flat);
+  });
+});
+
+describe('section selection for scalar inputs (§VIII.2b, RFC 0066)', () => {
+  // `producer-senior` (`_role: senior`) then `producer-mezz` (`_role: junior`).
+  const ROLES = readFileSync(
+    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+    'utf8',
+  );
+  const decl = (id: string, formula: string, section_roles?: ModuleCalcDecl['section_roles']): ModuleCalcDecl => ({
+    id, label: id, formula, deterministic: true, ...(section_roles ? { section_roles } : {}),
+  });
+  const pack = (...calculations: ModuleCalcDecl[]): ModuleManifest => ({ ...MULTIFAMILY_PACK, calculations });
+
+  it('excludes and reports only the pack outputs whose own selection refuses', () => {
+    const result = rankGaps(parseUWFile(ROLES), { packs: [MULTIFAMILY_PACK] });
+    expect(result.diagnostics.section_inputs).toEqual([
+      expect.objectContaining({ output_id: 'cash_on_cash', section: 'debt_structure', code: 'CALC-RESOLVE-002' }),
+    ]);
+    expect(result.by_voi.flatMap((g) => g.affected_outputs.map((o) => o.output_id))).not.toContain('cash_on_cash');
+  });
+
+  it('excludes every reader when calculations declare different roles for one section', () => {
+    const result = rankGaps(parseUWFile(ROLES), {
+      packs: [pack(
+        decl('senior_yield', 'noi_model.net_operating_income / debt_structure.loan_amount', { debt_structure: 'senior' }),
+        decl('junior_yield', 'noi_model.net_operating_income / debt_structure.loan_amount', { debt_structure: 'junior' }),
+      )],
+    });
+    expect(result.diagnostics.section_inputs?.map((i) => i.output_id)).toEqual(['senior_yield', 'junior_yield']);
+    expect(result.diagnostics.section_inputs?.[0]?.message).toContain('declare different roles for debt_structure: junior, senior');
+  });
+
+  it('selects by an explicit periodContext variant for scalar inputs too', () => {
+    const result = rankGaps(parseUWFile(ROLES), {
+      packs: [pack(decl('yield', 'noi_model.net_operating_income / debt_structure.loan_amount'))],
+      periodContext: { sectionVariants: { debt_structure: 'producer-mezz' } },
+    });
+    expect(result.diagnostics.section_inputs).toEqual([]);
+  });
+
+  it('emits issues the published section-refinement-issue schema accepts', () => {
+    const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/section-refinement-issue.schema.json', import.meta.url), 'utf8'));
+    const validate = new Ajv().compile(schema);
+    const issue = rankGaps(parseUWFile(ROLES), { packs: [MULTIFAMILY_PACK] }).diagnostics.section_inputs![0]!;
+    expect(validate(issue)).toBe(true);
+    expect(validate({ ...issue, code: 'CALC-PERIOD-003' })).toBe(false);
+    const { section: _section, ...missing } = issue;
+    expect(validate(missing)).toBe(false);
+  });
+
+  it('omits section_inputs when no selected target reads a section that needs a choice', () => {
+    const result = rankGaps(parseUWFile(MINIMAL_MULTIFAMILY), { packs: [MULTIFAMILY_PACK] });
+    expect(result.diagnostics.section_inputs).toBeUndefined();
   });
 });

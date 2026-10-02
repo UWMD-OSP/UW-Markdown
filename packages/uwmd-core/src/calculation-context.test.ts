@@ -37,8 +37,15 @@ describe('calculation context transport', () => {
     { sectionVariants: [] },
     { sectionVariants: { dcf: '' } },
     { sectionVariants: { dcf: 3 } },
-    { sectionVariants: { typo: 'base' } },
+    { sectionVariants: { ' ': 'base' } },
+    { sectionVariants: JSON.parse('{"constructor":"base"}') },
   ])('refuses invalid transport %j', (value) => {
     expect(() => parseCalculationContext(value)).toThrow('CALC-TYPE-001');
+  });
+
+  it('accepts sectionVariants for any section id (RFC 0066), not only period series', () => {
+    expect(parseCalculationContext({ sectionVariants: { debt_structure: 'producer-mezz' } })).toEqual({
+      sectionVariants: { debt_structure: 'producer-mezz' },
+    });
   });
 });
