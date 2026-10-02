@@ -1,0 +1,6 @@
+{
+  "id": "period_12_other_series_duplicate",
+  "label": "period-12-other-series-duplicate",
+  "formula": "distribution_waterfall.stated_schedule@2028-06-30.lp_distribution",
+  "deterministic": true
+}

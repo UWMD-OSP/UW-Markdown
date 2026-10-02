@@ -1,0 +1,9 @@
+{
+  "calc_id": "period_10_same_day_repeated",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-PERIOD-002",
+    "category": "calc"
+  }
+}

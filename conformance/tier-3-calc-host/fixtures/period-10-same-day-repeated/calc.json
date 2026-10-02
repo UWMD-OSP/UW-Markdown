@@ -1,0 +1,6 @@
+{
+  "id": "period_10_same_day_repeated",
+  "label": "period-10-same-day-repeated",
+  "formula": "cash_flow_series.series@2027-06-30.amount",
+  "deterministic": true
+}

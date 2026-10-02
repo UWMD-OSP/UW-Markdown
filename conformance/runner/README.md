@@ -29,9 +29,10 @@ signature key stores, cross-fixture invariants asserted with no baseline at
 all. Replacing it with this driver would trade breadth for portability, which
 is a bad trade.
 
-This driver runs the subset that *is* a CLI call — the tier fixtures, 44 cases
-across tiers 1–3. That is enough to self-certify to a tier, which is what
-RFC 0004 set out to make possible.
+This driver runs the subset that *is* a CLI call — the tier fixtures across
+tiers 1–3 (`npm run gen-conformance-cases` prints the current count). That is
+enough to self-certify to a tier, which is what RFC 0004 set out to make
+possible.
 
 Known gaps inside the tiers it does cover, listed rather than hidden:
 
@@ -42,6 +43,9 @@ Known gaps inside the tiers it does cover, listed rather than hidden:
 - **The named suites** (`lite`, `receipts`, `market-data`, `modules`,
   `packages`, `composition`, `capital-stack`, `size-intensive`, `signing`) are
   TypeScript-only today.
+  So is `cash-flow`. Its RFC 0062 same-day selection rule is mirrored as
+  tier-3 fixtures `period-09` to `period-12`, so this driver checks the rule
+  itself.
 
 ## Output
 
