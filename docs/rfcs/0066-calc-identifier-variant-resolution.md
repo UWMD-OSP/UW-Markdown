@@ -1,23 +1,38 @@
 ---
 rfc: 0066
 title: Resolve calc identifiers over variant-map sections the way cross-checks do
-status: draft
+status: accepted
 author: claude-code (agent proposal)
 created: 2026-09-28
+accepted: 2026-10-02
 affects:
   - protocol-spec
   - core-library
   - conformance-corpus
+  - tooling
 ---
 
 # RFC 0066: Resolve calc identifiers over variant-map sections the way cross-checks do
 
-**Draft agent proposal.** A coding agent wrote this RFC. StackUW's
-engine-exported document and its app-side note UPSTREAM-016 are adopter
-requirements evidence, not UWMD owner authorship or acceptance. The owner has
-not accepted any part of it: not the resolution order, not the proposed
-`CALC-RESOLVE-002` code, not a role-preference declaration or the layer it
-lives on, not any schema change, and not implementation. See
+**Accepted, unreleased.** On 2026-10-02 Jared accepted the two decisions in the
+[owner decision set](#independent-verification-and-owner-decision-set-2026-10-02)
+and authorized implementation:
+
+- **D1.** Protocol §VIII.2a's section-context rule becomes normative for every
+  section-rooted identifier, with refusal as a new `CALC-RESOLVE-002`.
+- **D2.** The built-in lender-side debt metrics declare a per-calculation
+  `senior` preference. `cash_on_cash` declares none and refuses on a
+  multi-tranche map.
+
+He also accepted the defaults listed under the decision set. The implementation
+lives on a separate branch, which merges only after the `v2.14.0` tag. That
+branch implements Protocol **2.19.0**. Status stays `accepted` until a release
+ships it.
+
+A coding agent wrote this RFC. StackUW's engine-exported documents and its
+app-side note UPSTREAM-016 are adopter requirements evidence, not UWMD owner
+authorship. Where the original proposal below differs from the accepted
+decision set, the decision set and Protocol §VIII.2 govern. See
 [Decision status](#decision-status).
 
 ## Summary
@@ -252,7 +267,12 @@ symbols rather than line numbers.
 
 ## Proposed change
 
-Everything in this section is a proposal. None of it is accepted.
+This is the original proposal, kept for the record. The accepted contract is the
+2026-10-02 decision set and Protocol §VIII.2. Where they differ, they govern:
+
+- `cash_on_cash` takes no role.
+- There is no caller `sectionRoles`.
+- `sectionVariants` also applies to a standalone block.
 
 ### Protocol §VIII.2 (normative, proposed)
 
@@ -567,50 +587,60 @@ field is added on the layer chosen, with an optional
   written to prevent; making it the calc rule would reintroduce it for the
   role-bearing case.
 
-## Unresolved questions
+## Resolved questions
+
+Each question below was resolved on 2026-10-02. The resolution follows the
+question, and the original wording is kept.
 
 - **The layer for a declared role preference.** Manifest level (A) or per
   calculation (B). The evidence above leans toward B; the owner has not
-  decided.
+  decided. *Resolved: per calculation (D2).*
 - **Precedence between two preferences.** If both a calculation's declared
   role and a caller-supplied `sectionRoles` exist, which one wins.
+  *Resolved: there is no caller `sectionRoles`. An explicit `sectionVariants`
+  entry beats a declared role.*
 - **A declared role that matches no eligible block.** Whether it falls through
   to the generic order, as `resolveRoleBlock` does for cross-checks today, or
-  refuses.
+  refuses. *Resolved: it falls through. A role claimed twice refuses.*
 - **Period references.** Whether a declared role preference should also apply
   to them. §VIII.2a currently resolves period references without any
-  check-specific preference.
+  check-specific preference. *Resolved: no. Period references are unchanged.*
 - **One code or two.** Whether `CALC-PERIOD-003`'s selection failure should be
   folded into `CALC-RESOLVE-002`, so one code covers "could not choose a
   block" everywhere. This draft leaves the period code alone to keep RFC 0041
-  fixtures frozen.
+  fixtures frozen. *Resolved: two codes (D1).*
 - **How the workbook represents a refused input:** refusing the export, or an
-  explicit error cell.
+  explicit error cell. *Resolved: an explicit `#VALUE!` cell for a refused
+  input or metric. The export refuses only when one named input would have to
+  stand for two blocks. Custom-calculation inputs raise.*
 - **Cascade reads.** Whether this RFC's implementation also routes
   `cascade.ts`'s `getBlock`, and so the refinement ranker, through the same
   resolver. This draft recommends it, because a third selection rule is the
   drift the shared resolver exists to prevent. The cascade is not the calc
-  evaluator, though, so the scope is the owner's call.
+  evaluator, though, so the scope is the owner's call. *Resolved: yes. The
+  cascade's in-file steps and refinement select through the shared resolver.
+  Refinement reports an excluded target in `diagnostics.section_inputs`.*
 - **Parser routing.** Whether the parser's RFC 0040 Markdown opt-in should
   widen so a keyed second `debt_structure` block without `_role` is retained
   rather than superseded. This is out of scope: it is a format routing
   decision, and this draft only makes the evaluator honest about the maps that
-  do exist.
+  do exist. *Still out of scope; parser routing is unchanged.*
 
 ## Decision status
 
-RFC 0066 remains `draft`.
+RFC 0066 is `accepted`, not yet released.
 
 | Item | Source | State |
 |---|---|---|
 | A missing path resolves to `null` | Protocol §VIII.2 | Existing normative rule. Unchanged. |
 | Period-reference selection: explicit `sectionVariants`, RFC 0040 generic order, `CALC-PERIOD-003` | Protocol §VIII.2a (RFC 0041), RFC 0040 | Existing normative rule. Unchanged. |
 | Exact Excel ↔ calc-engine parity | Repository invariant; Protocol §VIII.5 | Existing. Binding on any implementation. |
-| The same selection order for ordinary identifiers | This draft | Proposal. |
-| `CALC-RESOLVE-002`, its name and meaning | This draft | Proposal. |
-| A role-preference declaration and its layer | This draft (recommends per calculation) | Proposal. Layer unresolved. |
-| Schema, public API and `--calc-context` changes | This draft | Proposal. None made. |
-| Implementation | — | Not authorized. |
+| The same selection order for ordinary identifiers | D1, 2026-10-02 | Accepted. Protocol §VIII.2, 2.19.0. |
+| `CALC-RESOLVE-002`, its name and meaning | D1, 2026-10-02 | Accepted. Protocol §VIII.6. |
+| Per-calculation `section_roles`; built-in lender-side metrics `senior`; `cash_on_cash` none | D2, 2026-10-02 | Accepted. Protocol §X; module-manifest schema. |
+| Cascade, refinement and Excel selection; `diagnostics.section_inputs`; `#VALUE!` | Accepted defaults, 2026-10-02 | Accepted. Protocol §V.7, §VIII.2b, §VIII.2c; section-refinement-issue schema. |
+| `--calc-context` accepts `sectionVariants` for any section | Accepted defaults, 2026-10-02 | Accepted. |
+| Implementation | Authorized 2026-10-02 | On a separate branch, merging only after the `v2.14.0` tag. |
 
 ## Prior art
 

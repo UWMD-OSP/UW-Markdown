@@ -80,6 +80,7 @@ export const LAND_PACK: ModuleManifest = {
       formula: 'debt_structure.loan_amount / valuation.purchase_price',
       unit: '%',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'ltc',
@@ -87,6 +88,7 @@ export const LAND_PACK: ModuleManifest = {
       formula: 'debt_structure.loan_amount / sources_uses.uses.total',
       unit: '%',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'loan_per_acre',
@@ -94,6 +96,7 @@ export const LAND_PACK: ModuleManifest = {
       formula: 'debt_structure.loan_amount / property.gross_acres',
       unit: '$',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'basis_per_buildable_unit',

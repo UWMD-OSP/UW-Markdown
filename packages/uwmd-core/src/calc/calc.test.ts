@@ -1,6 +1,8 @@
 // Tier-3 Calc Host tests — grammar coverage, builtins, null propagation,
 // error taxonomy, IRR convergence.
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { parseUWFile } from '../parser.js';
 import {
@@ -835,5 +837,60 @@ describe('Tier-3 surface is closed to the spec', () => {
     expect(res.ok).toBe(false);
     expect(res.value).toBe(null);
     expect(res.error?.code).toBe('CALC-TYPE-001');
+  });
+});
+
+describe('§VIII.2 ordinary identifiers over a variant map (RFC 0066)', () => {
+  // `variant=producer-senior` (`_role: senior`, 6,000,000) then
+  // `variant=producer-mezz` (`_role: junior`, 1,000,000); valuation 10,000,000.
+  const ROLES = readFileSync(
+    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+    'utf8',
+  );
+  const ctx = (
+    source = ROLES,
+    extra: Pick<Partial<CalcEvaluationContext>, 'sectionVariants' | 'prior_results'> = {},
+  ): CalcEvaluationContext => ({
+    parsed: parseUWFile(source),
+    prior_results: extra.prior_results ?? {},
+    locale: 'en-US',
+    ...(extra.sectionVariants ? { sectionVariants: extra.sectionVariants } : {}),
+  });
+  const ltv = (section_roles?: ModuleCalcDecl['section_roles']): ModuleCalcDecl => ({
+    id: 'ltv',
+    label: 'LTV',
+    formula: 'debt_structure.loan_amount / valuation.underwritten_value',
+    unit: '%',
+    deterministic: true,
+    ...(section_roles ? { section_roles } : {}),
+  });
+
+  it('refuses CALC-RESOLVE-002 instead of the former silent null', () => {
+    const r = evaluateCalc(ltv(), ctx());
+    expect(r).toMatchObject({ ok: false, value: null, error: { code: 'CALC-RESOLVE-002' } });
+    expect(r.error?.message).toContain('variants found: producer-mezz, producer-senior');
+  });
+
+  it("reads the block the declaration's section_roles names, per declaration", () => {
+    expect(evaluateCalc(ltv({ debt_structure: 'senior' }), ctx())).toMatchObject({ ok: true, value: 0.6 });
+    expect(evaluateCalc(ltv({ debt_structure: 'junior' }), ctx())).toMatchObject({ ok: true, value: 0.1 });
+  });
+
+  it('lets an explicit sectionVariants entry win over a declared role', () => {
+    const explicit = ctx(ROLES, { sectionVariants: { debt_structure: 'producer-mezz' } });
+    expect(evaluateCalc(ltv({ debt_structure: 'senior' }), explicit)).toMatchObject({ ok: true, value: 0.1 });
+    const absent = ctx(ROLES, { sectionVariants: { debt_structure: 'absent-key' } });
+    expect(evaluateCalc(ltv({ debt_structure: 'senior' }), absent).error?.code).toBe('CALC-RESOLVE-002');
+  });
+
+  it('keeps a missing section null and does not fall through to prior_results after a refusal', () => {
+    const missing = ctx(ROLES.replaceAll('uw:section=debt_structure', 'uw:section=x_debt'));
+    expect(evaluateCalc(ltv(), missing)).toMatchObject({ ok: true, value: null });
+    const shadowed = ctx(ROLES, { prior_results: { debt_structure: 1 } });
+    expect(evaluateCalc(ltv(), shadowed).error?.code).toBe('CALC-RESOLVE-002');
+  });
+
+  it('never consults a role from the public evaluate() context', () => {
+    expect(() => evaluate(parseExpression('debt_structure.loan_amount'), ctx())).toThrow(/CALC-RESOLVE-002/);
   });
 });

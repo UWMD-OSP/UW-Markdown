@@ -80,6 +80,17 @@ describe('loadModuleManifest', () => {
     }
   });
 
+  it('accepts a calculation section_roles map and refuses a malformed one (RFC 0066)', () => {
+    const roles = (section_roles: unknown) => loadModuleManifest({
+      ...BASE,
+      calculations: [{ ...BASE.calculations![0], section_roles } as never],
+    });
+    expect(roles({ debt_structure: 'senior' }).ok).toBe(true);
+    for (const bad of [{ debt_structure: 'component' }, { debt_structure: 'mezzanine' }, { 'Debt': 'senior' }, ['senior'], 'senior']) {
+      expect(roles(bad).errors.map((e) => e.code), JSON.stringify(bad)).toContain('PROTO-MOD-079');
+    }
+  });
+
   it('rejects asset classes outside the v1 enum', () => {
     const result = loadModuleManifest({ ...BASE, asset_classes: ['marina'] });
 

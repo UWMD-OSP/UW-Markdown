@@ -110,6 +110,7 @@ import {
   getPortfolioRelationships,
   entityEdgesToPortfolioEdges,
   verifyWaterfall,
+  parseCalculationContext,
 } from '../packages/uwmd-core/dist/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -587,7 +588,13 @@ function runTier3() {
 
     const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
     const decl = JSON.parse(readFileSync(calcPath, 'utf8'));
-    const result = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
+    // Optional caller context (RFC 0066 variant cases): the same validated
+    // transport `uwmd calc --calc-context` reads, so both runners agree.
+    const contextPath = join(dir, 'calc-context.json');
+    const context = existsSync(contextPath)
+      ? parseCalculationContext(JSON.parse(readFileSync(contextPath, 'utf8')))
+      : {};
+    const result = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US', ...context });
 
     // Strip transient fields (display formatting may vary across locale extensions).
     const projected = {

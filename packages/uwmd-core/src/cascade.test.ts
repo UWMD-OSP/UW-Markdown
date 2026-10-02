@@ -315,5 +315,37 @@ describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
       expect(readInFile(wrapped, path), path).toEqual(readInFile(flat, path));
       expect(resolveValue(path, wrapped), path).toEqual(resolveValue(path, flat));
     }
+
+describe('in-file steps over a variant map (§VIII.2, RFC 0066)', () => {
+  // `producer-senior` (`_role: senior`, 6,000,000) then `producer-mezz`
+  // (`_role: junior`, 1,000,000); both tagged `manual`.
+  const ROLES = readFileSync(
+    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+    'utf8',
+  );
+  const senior = ROLES.indexOf('variant=producer-senior');
+  const untaggedSenior = ROLES.slice(0, senior)
+    + ROLES.slice(senior).replace('"source": "manual"', '"source": "ai_extracted"');
+
+  it('refuses rather than reading the first fence when no block can be selected', () => {
+    expect(() => resolveValue('debt_structure.loan_amount', parseUWFile(ROLES))).toThrow(/CALC-RESOLVE-002/);
+    expect(() => readInFile(parseUWFile(ROLES), 'debt_structure.loan_amount')).toThrow(/CALC-RESOLVE-002/);
+  });
+
+  it('reads the selected block by role or exact variant', () => {
+    const parsed = parseUWFile(ROLES);
+    expect(resolveValue('debt_structure.loan_amount', parsed, { sectionRoles: { debt_structure: 'senior' } }))
+      .toMatchObject({ value: 6_000_000, step: 'user_input' });
+    expect(resolveValue('debt_structure.loan_amount', parsed, { sectionVariants: { debt_structure: 'producer-mezz' } }))
+      .toMatchObject({ value: 1_000_000, step: 'user_input' });
+    expect(readInFile(parsed, 'debt_structure.loan_amount', { sectionRoles: { debt_structure: 'junior' } })).toBe(1_000_000);
+  });
+
+  it("never lets another variant's tagged value stand in for the selected block", () => {
+    const r = resolveValue('debt_structure.loan_amount', parseUWFile(untaggedSenior), {
+      sectionRoles: { debt_structure: 'senior' },
+    });
+    expect(r.value).not.toBe(1_000_000);
+    expect(r.step).not.toBe('user_input');
   });
 });

@@ -567,5 +567,109 @@ describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', (
       const excelCell = quantizeDecimal(new Function(`return (${formula});`)() as number, resolveRoundTo(decl));
       expect(excelCell, decl.id).toBe(direct.value);
     }
+
+// ─── Protocol §VIII.2 — variant-map sections (RFC 0066) ──────────────────────
+//
+// Parkview's one debt block, split into a senior loan (5,040,000; ADS 357,612)
+// and a mezzanine loan (720,000; ADS 86,400). The workbook must read the block
+// evaluateCalc reads, or refuse where it refuses: never a blank input that
+// Excel would read as zero.
+
+const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
+
+async function splitDebt(
+  seniorRole: string,
+  juniorRole: string,
+  keys: { senior: string; junior: string } = { senior: 'senior-loan', junior: 'mezz-loan' },
+) {
+  const raw = await readFile(resolve(EXAMPLES, PARKVIEW), 'utf8');
+  const open = '```json uw:section=debt_structure source=manual';
+  const start = raw.indexOf(open);
+  const end = raw.indexOf('\n```', raw.indexOf('\n', start)) + 4;
+  const block = raw.slice(start, end);
+  const tranche = (key: string, role: string, loan: number, ads: number) => block
+    .replace(open, `\`\`\`json uw:section=debt_structure variant=${key} source=manual`)
+    .replace('{\n', `{\n  "_role": "${role}",\n`)
+    .replace('"loan_amount": 5040000', `"loan_amount": ${loan}`)
+    .replace('"annual_debt_service": 357612', `"annual_debt_service": ${ads}`);
+  const tranches = [
+    tranche(keys.senior, seniorRole, 5_040_000, 357_612),
+    tranche(keys.junior, juniorRole, 720_000, 86_400),
+  ].join('\n\n');
+  return parseUWFile(raw.slice(0, start) + tranches + raw.slice(end));
+}
+
+/** Every pack metric: its workbook cell against evaluateCalc on the same document. */
+async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
+  const wb = await toWorkbook(parsed);
+  const ws = wb.getWorksheet('Underwriting')!;
+  const rows = rowByLabel(ws);
+  const noi = (parsed.sections['noi_model'] as { content: Record<string, unknown> }).content;
+  const values: Record<string, number> = {
+    [SUBTOTAL_RANGES.egi]: (noi['income'] as Record<string, number>)['effective_gross_income']!,
+    [SUBTOTAL_RANGES.opex]: (noi['expenses'] as Record<string, number>)['total_operating_expenses']!,
+    [SUBTOTAL_RANGES.noi]: noi['net_operating_income'] as number,
+  };
+  for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
+    const n = namedNumber(wb, input.name);
+    if (n !== null) values[input.name] = n;
+  }
+  const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
+  const map = buildNamedRangeMap(MULTIFAMILY_LAYOUT);
+  const out: Record<string, { calc: unknown; cell: unknown; note?: unknown }> = {};
+  for (const decl of MULTIFAMILY_LAYOUT.pack.calculations ?? []) {
+    const direct = evaluateCalc(decl, ctx);
+    const cell = ws.getCell(`B${rows.get(decl.label)}`);
+    if (!direct.ok) {
+      out[decl.id] = { calc: direct.error?.code, cell: cell.value, note: cell.note };
+      continue;
+    }
+    let formula = emitExcelFormula(decl.formula, { namedRanges: map });
+    for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+    expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id}: ${formula}`).toBe(true);
+    // eslint-disable-next-line no-new-func
+    const excelCell = quantizeDecimal(new Function(`return (${formula});`)() as number, resolveRoundTo(decl));
+    expect(excelCell, decl.id).toBe(direct.value);
+    out[decl.id] = { calc: direct.value, cell: (cell.value as { formula?: string })?.formula ? 'formula' : cell.value };
+  }
+  return { wb, out };
+}
+
+describe('toWorkbook — variant-map sections (RFC 0066)', () => {
+  it('reads the senior tranche the lender metrics declare; cash-on-cash refuses on both sides', async () => {
+    const { wb, out } = await metricParity(await splitDebt('senior', 'junior'));
+    expect(namedNumber(wb, 'loan_amount')).toBe(5_040_000);
+    expect(namedNumber(wb, 'annual_debt_service')).toBe(357_612);
+    for (const id of ['ltv', 'dscr', 'debt_yield', 'loan_per_unit', 'loan_per_sqft']) {
+      expect(out[id]?.cell, id).toBe('formula');
+    }
+    expect(out['cash_on_cash']).toMatchObject({ calc: 'CALC-RESOLVE-002', cell: { error: '#VALUE!' } });
+    expect(String(out['cash_on_cash']?.note)).toContain('CALC-RESOLVE-002');
+  });
+
+  it('resolves a primary + junior map identically in the workbook and the engine', async () => {
+    const { wb, out } = await metricParity(await splitDebt('primary', 'junior'));
+    expect(namedNumber(wb, 'loan_amount')).toBe(5_040_000);
+    expect(Object.values(out).every((m) => m.cell === 'formula')).toBe(true);
+  });
+
+  it('writes #VALUE!, never a blank zero, for inputs and metrics of a section that cannot be selected', async () => {
+    const { wb, out } = await metricParity(await splitDebt('senior', 'senior'));
+    const ranges = wb.definedNames.getRanges('loan_amount').ranges;
+    expect(cellAt(wb, ranges[0]!)?.value).toEqual({ error: '#VALUE!' });
+    for (const id of ['ltv', 'dscr', 'debt_yield', 'loan_per_unit', 'loan_per_sqft', 'cash_on_cash']) {
+      expect(out[id], id).toMatchObject({ calc: 'CALC-RESOLVE-002', cell: { error: '#VALUE!' } });
+    }
+    expect(out['cap_rate']?.cell).toBe('formula');
+    const reloaded = new ExcelJS.Workbook();
+    await reloaded.xlsx.load((await wb.xlsx.writeBuffer()) as ArrayBuffer);
+    expect(cellAt(reloaded, reloaded.definedNames.getRanges('loan_amount').ranges[0]!)?.value).toEqual({ error: '#VALUE!' });
+  });
+
+  it('refuses the export when a metric would read a different block than its named input', async () => {
+    // `default` (junior) is what cash_on_cash's generic order reads; the senior
+    // role the lender metrics declare holds the named inputs.
+    const parsed = await splitDebt('senior', 'junior', { senior: 'senior-loan', junior: 'default' });
+    await expect(toWorkbook(parsed)).rejects.toMatchObject({ code: 'EXCEL-EMIT-PATH' });
   });
 });

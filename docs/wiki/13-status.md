@@ -381,6 +381,28 @@ no longer emit PS-02, repeated requested dates still refuse CALC-PERIOD-002,
 and unique dates in the same ledger resolve. Other series and the whole-column
 Excel guard remain unchanged. Schemas and public types did not change.
 
+## Accepted, unreleased calc variant resolution (RFC 0066)
+
+[RFC 0066](../rfcs/0066-calc-identifier-variant-resolution.md) was accepted on
+**2026-10-02**. It is implemented on a branch that merges only after the
+`v2.14.0` tag, as source Protocol **2.19.0**.
+
+- **The defect.** Before it, four readers chose differently from one
+  role-bearing `debt_structure` map. The evaluator read `null`, the cascade the
+  first fence, the workbook a blank input, and one adopter's adapter the last
+  fence.
+- **One selection now.** All of them select through `resolveSectionBlock`: an
+  explicit variant, the calculation's declared `section_roles`, then RFC 0040's
+  generic order.
+- **Ambiguity refuses.** It refuses as `CALC-RESOLVE-002`, while a missing
+  section stays `null`.
+- **Built-in packs.** Lender-side debt metrics declare `senior`.
+  `cash_on_cash` declares no role and refuses on multi-tranche maps until a
+  total-debt-service input is contracted.
+- **Excel.** The workbook writes `#VALUE!` where the engine refuses.
+- **Refinement.** It reports excluded targets in `diagnostics.section_inputs`.
+- **Status.** RFC 0066 stays `accepted` until a release ships it.
+
 ## Remaining work
 
 - Prepare the core/CLI **2.15.0** + Protocol **2.19.0** generation for RFC 0066
@@ -399,6 +421,9 @@ Excel guard remain unchanged. Schemas and public types did not change.
   - **Still draft.** RFC 0064 is not accepted, its implementation (PR #219) is
     not authorized to merge, no version is selected, and it is outside the
     2.14.0 release.
+- Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
+  multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
+  than senior-only.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

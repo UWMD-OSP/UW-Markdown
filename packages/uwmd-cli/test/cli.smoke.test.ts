@@ -345,6 +345,48 @@ describe('uwmd CLI', () => {
     expect(r.status).toBe(0);
   });
 
+  describe('a role-bearing debt map (RFC 0066)', () => {
+    const roles = resolve(__dirname, '..', '..', '..', 'conformance', 'tier-1-reader', 'fixtures', '10-declared-roles.uwx.md');
+
+    it('scope reports a debt field it cannot select as refused, not defaulted', () => {
+      const r = runCli(['scope', roles, '--json']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout).resolved['debt_structure.rate_pct']).toMatchObject({
+        value: null,
+        step: null,
+        refused: { code: 'CALC-RESOLVE-002' },
+      });
+    });
+
+    it('refine excludes only cash_on_cash and names why', () => {
+      const r = runCli(['refine', roles, '--json']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout).diagnostics.section_inputs).toEqual([
+        expect.objectContaining({ output_id: 'cash_on_cash', section: 'debt_structure', code: 'CALC-RESOLVE-002' }),
+      ]);
+      expect(runCli(['refine', roles]).stdout).toContain('Excluded cash_on_cash: debt_structure [CALC-RESOLVE-002]');
+    });
+
+    it('calc reads the senior block for a declared role and refuses without one', () => {
+      const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-rfc0066-'));
+      try {
+        const decl = { id: 'ltv', label: 'LTV', formula: 'debt_structure.loan_amount / valuation.underwritten_value', unit: '%', deterministic: true };
+        const senior = resolve(dir, 'senior.json');
+        const plain = resolve(dir, 'plain.json');
+        writeFileSync(senior, JSON.stringify({ ...decl, section_roles: { debt_structure: 'senior' } }));
+        writeFileSync(plain, JSON.stringify(decl));
+        const ok = runCli(['calc', roles, senior, '--json']);
+        expect(ok.status).toBe(0);
+        expect(JSON.parse(ok.stdout)).toMatchObject({ ok: true, value: 0.6 });
+        const refused = runCli(['calc', roles, plain, '--json']);
+        expect(refused.status).toBe(1);
+        expect(JSON.parse(refused.stdout)).toMatchObject({ ok: false, error: { code: 'CALC-RESOLVE-002' } });
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    });
+  });
+
   describe.each(ASSET_CLASS_FIXTURES)('%s example', (assetClass, filename) => {
     const fixture = exampleFixture(filename);
 

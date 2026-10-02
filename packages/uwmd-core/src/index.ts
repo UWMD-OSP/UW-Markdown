@@ -926,7 +926,7 @@ export { extractDependencyGraph, getExprDependencies } from './calc/dependencies
 export type { DependencyGraph } from './calc/dependencies.js';
 
 export { rankGaps } from './refinement.js';
-export type { PeriodRefinementIssue, PeriodExcelBinding, PeriodColumnSnapshot } from './protocol.js';
+export type { PeriodRefinementIssue, SectionRefinementIssue, PeriodExcelBinding, PeriodColumnSnapshot } from './protocol.js';
 export { resolvePeriodColumn } from './period-path.js';
 export type {
   RankGapsOptions,
@@ -947,6 +947,9 @@ export type { PeriodKey, PeriodSeriesEntry } from './protocol.js';
 export { canonicalPeriod, parsePeriodSelector, periodKeyIdentity } from './periods.js';
 export { resolvePeriodPath } from './period-path.js';
 export type { PeriodResolutionOptions } from './period-path.js';
+// RFC 0066: the one section selection every section-rooted read shares (§VIII.2).
+export { resolveSectionBlock } from './section-resolution.js';
+export type { SectionSelectionOptions } from './section-resolution.js';
 
 export { parseCalculationContext } from './calculation-context.js';
 

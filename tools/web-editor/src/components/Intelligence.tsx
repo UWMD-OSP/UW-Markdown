@@ -13,6 +13,7 @@
 
 import { useMemo, useState } from 'react';
 import {
+  CalcError,
   resolveValue,
   rankGaps,
   getAssetClassDefaults,
@@ -21,7 +22,7 @@ import {
   formatCurrency,
   formatPercent,
 } from '@uwmd/core/browser';
-import type { ParsedUWFile, RankedGap, DefaultRange } from '@uwmd/core/browser';
+import type { ParsedUWFile, RankedGap, DefaultRange, ResolvedValue } from '@uwmd/core/browser';
 
 type IntelTab = 'scope' | 'refine';
 
@@ -65,6 +66,18 @@ export function Intelligence({ parsed }: { parsed: ParsedUWFile }) {
 
 const IN_FILE_STEPS = new Set(['user_override', 'user_input']);
 
+type ScopeResolution = ResolvedValue | { refused: string };
+
+/** A variant-map section with no selectable block is shown as refused (RFC 0066), not guessed. */
+function resolveOrRefuse(path: string, parsed: ParsedUWFile): ScopeResolution {
+  try {
+    return resolveValue(path, parsed);
+  } catch (err) {
+    if (err instanceof CalcError && err.proto.code === 'CALC-RESOLVE-002') return { refused: err.proto.message };
+    throw err;
+  }
+}
+
 function ScopeTable(props: {
   parsed: ParsedUWFile;
   fields: Record<string, DefaultRange>;
@@ -75,13 +88,14 @@ function ScopeTable(props: {
       Object.entries(props.fields).map(([path, range]) => ({
         path,
         range,
-        resolved: resolveValue(path, props.parsed),
+        resolved: resolveOrRefuse(path, props.parsed),
       })),
     [props.fields, props.parsed],
   );
 
-  const inFile = rows.filter((r) => IN_FILE_STEPS.has(r.resolved.step)).length;
-  const defaulted = rows.length - inFile;
+  const inFile = rows.filter((r) => 'step' in r.resolved && IN_FILE_STEPS.has(r.resolved.step)).length;
+  const refused = rows.filter((r) => 'refused' in r.resolved).length;
+  const defaulted = rows.length - inFile - refused;
 
   return (
     <div className="max-w-4xl">
@@ -89,6 +103,7 @@ function ScopeTable(props: {
         <h2 className="font-display text-xl text-accent">Scope</h2>
         <span className="text-xs text-muted">
           defaults v{props.version} · {inFile} in-file · {defaulted} from default/fallback
+          {refused ? ` · ${refused} refused (ambiguous variants)` : ''}
         </span>
       </div>
       <table className="w-full border-collapse text-sm">
@@ -107,10 +122,14 @@ function ScopeTable(props: {
                 <code className="text-xs">{path}</code>
               </td>
               <td className="px-2 py-1.5 text-right tabular-nums">
-                {formatResolved(resolved.value, range.unit)}
+                {'refused' in resolved ? (
+                  <span title={resolved.refused}>refused</span>
+                ) : (
+                  formatResolved(resolved.value, range.unit)
+                )}
               </td>
               <td className="px-2 py-1.5">
-                <StepBadge step={resolved.step} />
+                <StepBadge step={'refused' in resolved ? 'CALC-RESOLVE-002' : resolved.step} />
               </td>
               <td className="px-2 py-1.5 text-xs text-muted tabular-nums">
                 {formatRange(range)}

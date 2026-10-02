@@ -5,7 +5,7 @@
 import { formatCurrency, formatPercent, formatRatio, formatValue } from '../format.js';
 import type { CalcEvaluationContext, CalcResult, ModuleCalcDecl } from '../protocol.js';
 import { CalcError } from './errors.js';
-import { evaluate } from './evaluator.js';
+import { evaluateDeclared } from './evaluator.js';
 import { parseExpression } from './parser.js';
 import { quantizeDecimal, resolveRoundTo } from './quantize.js';
 
@@ -45,7 +45,8 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
   const roundTo = resolveRoundTo(decl);
   try {
     const ast = parseExpression(decl.formula);
-    const raw = evaluate(ast, ctx);
+    // A declaration's `section_roles` reaches resolution here and nowhere else.
+    const raw = evaluateDeclared(ast, ctx, decl.section_roles);
     const value = typeof raw === 'number' ? quantizeDecimal(raw, roundTo) : raw;
 
     // `spec/schemas/calc-result.schema.json` — the normative schema declared at

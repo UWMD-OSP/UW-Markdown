@@ -11,6 +11,17 @@ import { resolve } from 'node:path';
 import { parseUWFile } from '../parser.js';
 import { evaluateCalc } from '../calc/index.js';
 import { MULTIFAMILY_PACK } from './multifamily.js';
+import {
+  HOSPITALITY_PACK,
+  INDUSTRIAL_PACK,
+  LAND_PACK,
+  MIXED_USE_PACK,
+  OFFICE_PACK,
+  RETAIL_PACK,
+  SELF_STORAGE_PACK,
+  SENIOR_HOUSING_PACK,
+  STUDENT_HOUSING_PACK,
+} from './index.js';
 import { emitExcelFormula, ExcelEmitError, emitFromAst } from './excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { parseExpression } from '../calc/parser.js';
@@ -188,5 +199,29 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
       const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));
       expect(excelCell, c.id).toBe(direct.value as number);
     }
+  });
+});
+
+describe('debt_structure role declarations (RFC 0066)', () => {
+  const PACKS = [
+    MULTIFAMILY_PACK, OFFICE_PACK, RETAIL_PACK, INDUSTRIAL_PACK, SELF_STORAGE_PACK,
+    HOSPITALITY_PACK, SENIOR_HOUSING_PACK, STUDENT_HOUSING_PACK, LAND_PACK, MIXED_USE_PACK,
+  ];
+  const readers = PACKS.flatMap((pack) => (pack.calculations ?? [])
+    .filter((calc) => calc.formula.includes('debt_structure.'))
+    .map((calc) => ({ pack: pack.id, calc })));
+
+  it('states senior on every lender-side metric that reads debt_structure', () => {
+    const lender = readers.filter(({ calc }) => calc.id !== 'cash_on_cash');
+    expect(lender).toHaveLength(46);
+    for (const { pack, calc } of lender) {
+      expect(calc.section_roles, `${pack}:${calc.id}`).toEqual({ debt_structure: 'senior' });
+    }
+  });
+
+  it('states no role on cash_on_cash: equity cash flow deducts all debt service', () => {
+    const coc = readers.filter(({ calc }) => calc.id === 'cash_on_cash');
+    expect(coc).toHaveLength(9);
+    for (const { pack, calc } of coc) expect(calc.section_roles, pack).toBeUndefined();
   });
 });

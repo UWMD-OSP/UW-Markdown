@@ -1,7 +1,7 @@
 // Validated transport for the existing CalcEvaluationContext input options.
 // This helper performs no lookup, defaulting, canonicalization or financial math.
 import type { CalcEvaluationContext } from './protocol.js';
-import { PERIOD_SERIES } from './protocol.js';
+import { isBlockedSegment } from './parser.js';
 import { CalcError } from './calc/errors.js';
 
 type ContextInputs = Pick<CalcEvaluationContext, 'sectionVariants' | 'overrides'>;
@@ -34,10 +34,12 @@ export function parseCalculationContext(value: unknown): ContextInputs {
     const entries = object(input['sectionVariants'], 'sectionVariants');
     const variants: Record<string, string> = Object.create(null);
     for (const [section, variant] of Object.entries(entries)) {
-      if (!PERIOD_SERIES.some((series) => series.path.split('.')[0] === section)) {
+      // Any section id (§VIII.2, RFC 0066): ordinary identifiers select by the
+      // same exact variant as period references.
+      if (!section.trim() || isBlockedSegment(section)) {
         throw new CalcError(
           'CALC-TYPE-001',
-          `sectionVariants contains unregistered period section '${section}'.`
+          `sectionVariants contains an invalid section id '${section}'.`
         );
       }
       if (typeof variant !== 'string' || !variant.trim()) {

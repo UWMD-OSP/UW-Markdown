@@ -1,12 +1,14 @@
 // Tier-3 Calc Host — AST evaluator.
 // Variable resolution per §VIII.2; null propagation per §VIII.2.
 
-import { blockPayload, getSection, isBlockedSegment } from '../parser.js';
+import { blockPayload, isBlockedSegment } from '../parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
+import { resolveSectionBlock } from '../section-resolution.js';
+import type { BlockRole } from '../types.js';
 import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
 import { periodReferencePath, type Expr } from './parser.js';
-import { periodReferenceContract, periodSection, resolvePeriodReference } from '../period-path.js';
+import { periodReferenceContract, resolvePeriodReference } from '../period-path.js';
 import { parsePeriodSelector } from '../periods.js';
 
 const MAX_NODES = 1024;
@@ -18,10 +20,26 @@ export function isForbiddenProperty(segment: string): boolean {
 
 interface EvalState {
   nodes: number;
+  /** The evaluated declaration's `section_roles` (RFC 0066); never caller-supplied. */
+  roles?: Readonly<Record<string, BlockRole>>;
 }
 
 export function evaluate(expr: Expr, ctx: CalcEvaluationContext): CalcValue {
   const state: EvalState = { nodes: 0 };
+  return evalNode(expr, ctx, state);
+}
+
+/**
+ * Evaluate on behalf of a declaration that states `section_roles`. Internal to
+ * the calc engine: `evaluateCalc` is the only caller, so a role preference
+ * reaches resolution only from the declaration that states it.
+ */
+export function evaluateDeclared(
+  expr: Expr,
+  ctx: CalcEvaluationContext,
+  roles: Readonly<Record<string, BlockRole>> | undefined,
+): CalcValue {
+  const state: EvalState = { nodes: 0, ...(roles ? { roles } : {}) };
   return evalNode(expr, ctx, state);
 }
 
@@ -40,7 +58,7 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
       }
       const overridden = lookupOverride(expr.name, ctx);
       if (overridden !== undefined) return overridden;
-      return resolveIdentifier(expr.name, ctx);
+      return resolveIdentifier(expr.name, ctx, state);
     }
 
     case 'path': {
@@ -74,7 +92,7 @@ function evalNode(expr: Expr, ctx: CalcEvaluationContext, state: EvalState): Cal
         }
       }
 
-      const head = resolveIdentifier(expr.head, ctx);
+      const head = resolveIdentifier(expr.head, ctx, state);
       if (head === null || head === undefined) return null;
       let cur: unknown = head;
       for (const seg of expr.segments) {
@@ -237,7 +255,7 @@ function lookupOverride(path: string, ctx: CalcEvaluationContext): CalcValue | u
   return overrides[path] ?? null;
 }
 
-function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue {
+function resolveIdentifier(name: string, ctx: CalcEvaluationContext, state: EvalState): CalcValue {
   // A blocked head is unresolvable for the same reason a blocked segment is:
   // no document-authored name may reach the prototype chain.
   if (isForbiddenProperty(name) || isBlockedSegment(name)) {
@@ -249,14 +267,14 @@ function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue 
     return coerceCalcValue(fm[name]);
   }
 
-  let section = getSection(ctx.parsed, name);
-  if (!section && ctx.parsed?.sections) {
-    try {
-      section = periodSection(ctx.parsed, name, ctx);
-    } catch {
-      section = null;
-    }
-  }
+  // §VIII.2 (RFC 0066): a variant map selects one block or refuses with
+  // CALC-RESOLVE-002. Only a missing section falls through to null.
+  const section = ctx.parsed?.sections
+    ? resolveSectionBlock(ctx.parsed, name, {
+        ...(ctx.sectionVariants ? { sectionVariants: ctx.sectionVariants } : {}),
+        ...(state.roles ? { sectionRoles: state.roles } : {}),
+      })
+    : null;
   if (section) {
     // Per §VIII.2: identifier maps to the canonical block's content (user data,
     // which a content-envelope block keeps one level down; see blockPayload).

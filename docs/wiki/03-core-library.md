@@ -43,6 +43,7 @@ Module | Responsibility | Key exports
 `context.ts` | Optional Bancroft reference-layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
 `context-profiles.ts` | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
 `cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
+`section-resolution.ts` | One block per section-rooted read (§VIII.2, RFC 0066) | `resolveSectionBlock` (browser-exported)
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
@@ -200,6 +201,13 @@ published `{low, central, high}` ranges with citations in `defaults.ts`
 In-file steps read a block's payload through `blockPayload`, so a
 content-envelope block resolves the same values as a flat one, as in the calc
 evaluator.
+
+For a section stated as a variant map, the in-file steps read only the block
+`resolveSectionBlock` (`section-resolution.ts`, RFC 0066) selects. The
+selection is `CascadeContext.sectionVariants`, then `sectionRoles`, then RFC
+0040's generic order. When no block can be selected, resolution throws
+`CALC-RESOLVE-002` rather than reading the first fence; `uwmd scope` reports
+that field as refused.
 
 ## refinement.ts + gaps.ts
 

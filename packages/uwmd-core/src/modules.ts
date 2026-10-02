@@ -9,6 +9,7 @@
 import { parseExpression } from './calc/parser.js';
 import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
+  BLOCK_ROLES,
   SUPPORTED_FORMAT_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
   type ModuleLoadResult,
@@ -67,7 +68,9 @@ const MANIFEST_KEYS: readonly string[] = [
   'declares_asset_classes',
 ];
 const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
-const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'round_to', 'deterministic'];
+const CALC_KEYS: readonly string[] = ['id', 'label', 'formula', 'unit', 'round_to', 'deterministic', 'section_roles'];
+/** Roles a calculation may prefer (RFC 0066); a component is only ever selected explicitly. */
+const SELECTABLE_ROLES: readonly string[] = BLOCK_ROLES.filter((role) => role !== 'component');
 const VALIDATION_KEYS: readonly string[] = ['code', 'severity', 'message', 'rule'];
 const VIEW_MODEL_KEYS: readonly string[] = [
   'section_id', 'display_name', 'display_order', 'description',
@@ -614,6 +617,21 @@ function validateCalculations(errors: ProtocolError[], manifest: ModuleManifest)
           'PROTO-MOD-067',
           `Calculation round_to must be an integer in [0, ${MAX_ROUND_TO}].`,
           `${pointer}.round_to`,
+        ));
+      }
+    }
+    // §VIII.2 (RFC 0066): a role preference per section id. A malformed one is
+    // refused rather than ignored, because ignoring it would change which block
+    // the calculation reads.
+    if (calc.section_roles !== undefined) {
+      const roles = calc.section_roles;
+      const valid = isRecord(roles) && Object.entries(roles).every(([section, role]) =>
+        /^[a-z][a-z0-9_]*$/.test(section) && typeof role === 'string' && SELECTABLE_ROLES.includes(role));
+      if (!valid) {
+        errors.push(moduleError(
+          'PROTO-MOD-079',
+          `Calculation section_roles must map section ids to one of ${SELECTABLE_ROLES.join(', ')}.`,
+          `${pointer}.section_roles`,
         ));
       }
     }

@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.18.0' as const;
+export const PROTOCOL_VERSION = '2.19.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -1037,8 +1037,25 @@ export interface PeriodRefinementIssue {
   message: string;
 }
 
+/**
+ * A refinement target excluded because the block one of its sections must be
+ * read from cannot be selected for it (§VIII.2b, RFC 0066). Same reporting
+ * contract as `PeriodRefinementIssue`; `message` is not stable machine data.
+ */
+export interface SectionRefinementIssue {
+  output_id: string;
+  /** The section id whose block could not be selected for this output. */
+  section: string;
+  code: 'CALC-RESOLVE-002';
+  message: string;
+}
+
 export interface CalcEvaluationContext {
-  /** Exact section variants for period references only; no fallback when supplied. */
+  /**
+   * Exact section variant per section id, with no fallback, for every
+   * section-rooted read: period references (§VIII.2a) and ordinary identifiers
+   * (§VIII.2, RFC 0066). A requested variant that is absent refuses.
+   */
   sectionVariants?: Readonly<Record<string, string>>;
   parsed: ParsedUWFile;
   /** Result map of previously-evaluated calculations in the same batch. */
@@ -1224,6 +1241,14 @@ export interface ModuleCalcDecl {
   round_to?: number;
   /** True if the formula has no side effects and same inputs → same output. */
   deterministic: boolean;
+  /**
+   * Role preference per section id for this calculation's section-rooted reads
+   * (§VIII.2, RFC 0066). When the section is a role-bearing variant map, the
+   * unique eligible block with this role is read; with none, RFC 0040's generic
+   * order applies; with two, the read refuses. An explicit `sectionVariants`
+   * entry still wins. `component` is not selectable this way.
+   */
+  section_roles?: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
 }
 
 export interface ModuleValidationDecl {

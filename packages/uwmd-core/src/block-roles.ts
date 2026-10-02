@@ -14,12 +14,20 @@ export type RoleResolution =
   | { state: 'resolved'; block: UWBlock; variant?: string; evidence?: CrossCheckResolutionEvidence }
   | { state: 'unresolvable'; block: null; variants: string[]; detail?: string };
 
-/** Property-level reads exclude components and invalid roles before any fallback. */
+/**
+ * Property-level reads exclude components and invalid roles before any fallback.
+ *
+ * The role preference is a cross-check's registered one (`code`), or a
+ * calculation's declared `section_roles` entry (`declaredRole`, RFC 0066). A
+ * calculation never inherits a check's preference (RFC 0041), so callers pass
+ * one or the other.
+ */
 export function resolveRoleBlock(
   entry: UWBlock | Record<string, UWBlock> | undefined,
   sectionId: string,
   preferred: readonly string[] = [],
   code?: string,
+  declaredRole?: BlockRole,
 ): RoleResolution {
   if (!entry) return { state: 'absent', block: null };
   const single = 'annotation' in entry;
@@ -42,7 +50,7 @@ export function resolveRoleBlock(
     const found = eligible.find(([variant]) => variant === key);
     if (found) return resolve(found, 'preference');
   }
-  const rolePreference = code ? CROSS_CHECK_ROLE_PREFERENCE[code]?.[sectionId] : undefined;
+  const rolePreference = declaredRole ?? (code ? CROSS_CHECK_ROLE_PREFERENCE[code]?.[sectionId] : undefined);
   for (const role of [...(rolePreference ? [rolePreference] : []), 'primary']) {
     const found = eligible.filter(([, block]) => block.content['_role'] === role);
     if (found.length > 1) return refuse(`multiple variants claim role ${role}: ${found.map(([v]) => v).sort().join(', ')}`);

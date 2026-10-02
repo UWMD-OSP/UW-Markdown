@@ -64,6 +64,33 @@ id | label | formula | unit
 `loan_per_sqft` | Loan / SqFt | `debt_structure.loan_amount / property.total_nra_sqft` | `$`
 `cash_on_cash` | Cash-on-Cash | `(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.equity_sponsor` | `%`
 
+### Debt metrics over several debt blocks (RFC 0066)
+
+A deal with senior and mezzanine debt can state `debt_structure` as a
+role-bearing variant map: `_role: senior` and `_role: junior` blocks, each with
+a `variant=` key. Every metric that reads `debt_structure` must then say which
+block it means (Protocol §VIII.2).
+
+- **Lender-side metrics declare `senior`.** In every built-in pack, `ltv`,
+  `ltc`, `dscr`, `debt_yield` and `loan_per_*` (46 declarations across ten
+  packs) declare `section_roles: { debt_structure: 'senior' }`. This mirrors the
+  validator's registered senior preference for CC-02/03/05/09, stated on the
+  declaration rather than inherited.
+- **`cash_on_cash` declares no role.** Equity cash flow deducts all debt
+  service, so a senior-only cash-on-cash would overstate the return. On a
+  multi-tranche map it refuses `CALC-RESOLVE-002` until a total-debt-service
+  input is contracted (over `capital_stack`, never by summing blocks).
+- **A standalone block is unaffected.** A `primary` + `junior` map reads the
+  `primary` block, because an unclaimed declared role falls through to the
+  generic order.
+- **Two blocks claiming `senior` refuse.** This is the same answer as CC-16.
+
+`null` still means "not stated"; `CALC-RESOLVE-002` means "stated, but no block
+can be chosen". A receipt over a refused metric is not issued
+(`RCP_COMPUTATION_FAILED`) rather than recording the metric as uncomputed.
+`packs.test.ts` pins the 46 senior declarations and the nine role-free
+`cash_on_cash` ones.
+
 ## `OFFICE_PACK`
 
 A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
@@ -313,6 +340,15 @@ to Excel equivalents (`sum→SUM`, `pmt→PMT`, `npv→NPV`, `irr→IRR`, `round
 > evaluator's number and the Excel formula's number agree **to six decimals**.
 > If you add or change a metric, both paths must still agree, or the test fails.
 
+**Variant-map inputs (RFC 0066).** `@uwmd/excel` reads every named input from
+the block `resolveSectionBlock` selects, under the role the pack's calculations
+declare. A section that cannot be selected writes `#VALUE!` with a note, never a
+blank Excel would read as zero. A metric whose own selection refuses also shows
+`#VALUE!`, exactly where `evaluateCalc` is `ok: false`. The export refuses
+(`EXCEL-EMIT-PATH`) only when a metric would read a different block than its
+named input holds. `toWorkbook.test.ts` pins the senior + junior, primary +
+junior, two-senior and default-junior cases.
+
 ## Recipe: add a derived metric to the multifamily pack
 
 1. Add a `ModuleCalcDecl` to `MULTIFAMILY_PACK.calculations` in
@@ -323,6 +359,10 @@ to Excel equivalents (`sum→SUM`, `pmt→PMT`, `npv→NPV`, `irr→IRR`, `round
    `packages/uwmd-excel/src/multifamily.ts` (see [08 — Tools › Excel](08-tools.md)).
    If the formula uses a builtin with no Excel equivalent, the Excel path will
    fail with `EXCEL-EMIT-FN` — choose Excel-mappable builtins.
+   If it reads a section that can be a role-bearing variant map (`debt_structure`
+   today), decide which block it means: declare `section_roles` for a single
+   tranche, or none when it needs every tranche (it then refuses on a map).
+   Keep one role per section within a pack; the workbook holds one input per path.
 3. Run `npm test` (the parity test in `packs.test.ts` will exercise it) and, if
    you added a Tier-3 fixture, `npm run conformance -- --tier=3`.
 

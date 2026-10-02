@@ -1,0 +1,10 @@
+{
+  "calc_id": "ltv",
+  "ok": false,
+  "value": null,
+  "unit": "%",
+  "error": {
+    "code": "CALC-RESOLVE-002",
+    "category": "calc"
+  }
+}

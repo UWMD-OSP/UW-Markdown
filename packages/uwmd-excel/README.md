@@ -45,6 +45,20 @@ Editing any named-input cell updates every dependent metric. Editing any
 income or expense line item updates EGI, total opex, NOI, and every metric
 that touches NOI.
 
+**Several debt blocks (RFC 0066).** A deal can state `debt_structure` as
+`_role: senior` and `_role: junior` blocks. The named inputs then hold the
+senior tranche, which the pack's lender-side metrics declare. They are read by
+the same Protocol §VIII.2 selection `evaluateCalc` uses.
+
+- **No selectable block.** When a section has none (two `senior` blocks, say),
+  its inputs are written as `#VALUE!` with a note, never left blank. Excel would
+  read a blank as zero.
+- **Refused metric.** A metric the calc engine refuses shows `#VALUE!` in the
+  same place. Cash-on-cash refuses on a multi-tranche deal, because equity cash
+  flow deducts all debt service.
+- **Different block.** The export refuses with `EXCEL-EMIT-PATH` only when a
+  metric would read a different block than its named input holds.
+
 ## Scope
 
 Layouts cover multifamily, office, retail, industrial, self-storage, hospitality,

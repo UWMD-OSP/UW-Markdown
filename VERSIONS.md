@@ -20,6 +20,15 @@ same protocol version.
 
 ## Current matrix
 
+**Accepted, unreleased source contract after 2.18.0:** Protocol **2.19.0** adds
+RFC 0066. Ordinary calc identifiers select one block of a variant-map section by
+§VIII.2: an explicit variant, then the calculation's declared `section_roles`,
+then RFC 0040's generic order. Ambiguity refuses as `CALC-RESOLVE-002` instead of
+a silent `null`. The cascade, refinement and the Excel converter share that
+selection. Jared accepted RFC 0066's two decisions on 2026-10-02. This source
+follows the published 2.14.0 release, which implements Protocol 2.18.0.
+Package versions for 2.19.0 are set when the next candidate is prepared.
+
 Release 2.14.0 pairs core/CLI 2.14.0 with Protocol 2.18.0 and Format 2.0.
 Protocol 2.18.0 adds RFC 0063's explicit final-period exclusive-boundary
 admission to the **2.17.1** RFC 0062 same-day errata. Jared accepted both RFCs
@@ -47,7 +56,7 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.18.0** | format ≥ 1.0 (RFC 0063 boundary opt-in plus RFC 0062 2.17.1 errata; released in core/CLI 2.14.0) |
+| UW Protocol | **2.19.0** (accepted, unreleased) | format ≥ 1.0; RFC 0066 calc variant resolution on 2.18.0 (RFC 0063 boundary opt-in plus RFC 0062 2.17.1 errata); published core/CLI 2.14.0 implement 2.18.0 |
 | `@uwmd/core` | **2.14.0** | format 2.0 (reads 1.x), protocol 2.18.0 |
 | `@uwmd/cli` (CLI) | **2.14.0** | `@uwmd/core` 2.14.0 |
 | `@uwmd/excel` | **0.9.6** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.14.x, format 2.0, explicit contextual calculations |

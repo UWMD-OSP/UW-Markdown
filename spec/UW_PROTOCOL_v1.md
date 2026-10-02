@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.18.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Accepted source contract (RFC 0066; unreleased) — protocol **2.19.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.18.0`) — the
+- **Protocol version** (this document, currently `2.19.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -837,6 +837,16 @@ runtime constant `CASCADE_ORDER` in `protocol.ts` is the canonical
 machine-readable representation; conformant resolvers walk this
 array.
 
+**Variant-map sections (RFC 0066).** The in-file steps read a
+variant-map section's value from the one block §VIII.2 selects. That
+covers steps 1 and 2, and recognition of an in-file `market_data`
+value. The selection is the consumer's explicit variant, then the role
+its calculations declare, then RFC 0040's generic order. Another
+variant's tagged value never stands in for the selected block. When no
+block can be selected, resolution refuses with `CALC-RESOLVE-002`
+rather than letting fence order choose, just as §V.7.1 refuses
+equidistant ancestors.
+
 A producer that resolves a value via a step at or below
 `asset_class_default` (i.e. not from observed user or document data)
 SHOULD also stamp the resulting block with `_meta.provisional: true`
@@ -1281,6 +1291,41 @@ Identifiers and dot-paths resolve against the
 - A missing path resolves to `null`, not an error. Operators MUST
   propagate null as null for arithmetic (null + x → null).
 
+**Variant-map sections (RFC 0066).** When `sections.<id>` is present as a
+variant map (format §2.8, RFC 0040's Markdown opt-in, or any section a UW
+JSON envelope carries as more than one block), an identifier rooted at
+`<id>` reads exactly one block, selected in this order:
+
+1. The caller's `CalcEvaluationContext.sectionVariants[<id>]`, when
+   supplied: exactly that variant, with no fallback. An explicitly
+   selected component is allowed. A requested variant that is absent, or
+   that carries an invalid `_role`, refuses. The same entry applies to a
+   standalone block, which matches only its own variant key.
+2. The evaluated calculation's declared role, `section_roles[<id>]` (§X):
+   the unique eligible block carrying that `_role`. Two eligible blocks
+   carrying it refuse, without fallback. None continues to step 3.
+3. RFC 0040's generic order: the unique `primary`, then the `default`
+   variant, then `base`, then the sole eligible variant. A `primary`
+   collision refuses, without fallback.
+4. Otherwise refuse.
+
+Blocks whose `_role` is `component` or invalid are excluded before steps
+2–4. A refusal is `CALC-RESOLVE-002` (§VIII.6): the result is
+`ok: false`, the identifier MUST NOT resolve to `null` or fall through to
+`prior_results`, and the message MUST name the section and the variants
+found. A missing section remains `null`: a missing path is not an
+ambiguity. A standalone block without an explicit selection resolves as
+before. An evaluator MUST NOT choose by fence order, sum blocks, or infer
+from amounts, producer key names or labels. A role preference reaches
+resolution only from the evaluated declaration. A calculation never
+inherits a validator check's preference (RFC 0041), and the calculation
+context carries none.
+
+Every consumer that reads a section for a calculation's inputs MUST select
+by this rule, so no two consumers read different blocks of one map. That
+covers the cascade's in-file steps (§V.7), refinement (§VIII.2b) and
+workbook binding (§VIII.2c).
+
 ### VIII.2a Explicit period addressing (RFC 0041)
 
 A period reference selects by stated identity, never row position:
@@ -1346,6 +1391,10 @@ excluding components and invalid roles, with no check-specific role preference.
 Ambiguity or a missing explicitly requested variant in a present section is
 `CALC-PERIOD-003`. A missing section remains null. Own-property traversal and
 the blocked segments `constructor`, `prototype`, `__proto__` remain enforced.
+Ordinary identifiers select by the same order under §VIII.2 (RFC 0066). There,
+a calculation's declared `section_roles` takes the place of "no check-specific
+role preference", and a refusal is `CALC-RESOLVE-002`. Period references keep
+this paragraph unchanged.
 
 **Overrides and consumers.** Check a full selector-path override before reading
 document data; null is an explicit override. First validate the registry path
@@ -1388,10 +1437,29 @@ years or dates to clear them.
 Refinement is an optional consumer; no tier requires it. A consumer implementing
 this extension MUST resolve period AST dependencies with §VIII.2a and preserve
 the complete selector identity. `RankGapsOptions.periodContext` MAY supply
-`sectionVariants` and full-path `overrides` under CalcEvaluationContext semantics,
-for period dependencies only. Validate the registry/selector before an own-key
-override; null is explicit, and an override bypasses document lookup. Unrelated
-override keys do not alter scalar cascade resolution.
+`sectionVariants` and full-path `overrides` under CalcEvaluationContext semantics.
+Its overrides apply to period dependencies only. Its `sectionVariants` also select
+the block that scalar dependencies are read from (§VIII.2). Validate the
+registry/selector before an own-key override; null is explicit, and an override
+bypasses document lookup. Unrelated override keys do not alter scalar cascade
+resolution.
+
+**Section selection for scalar inputs (RFC 0066).** The scalar cascade holds one
+value per path, so each section a selected target reads is read from one block.
+That block is the §VIII.2 selection under the role the section's reading targets
+declare. A target MUST be excluded from numeric ranking when:
+
+- targets declare different roles for one section; or
+- the target's own §VIII.2 selection refuses; or
+- the target's own selection names a different block.
+
+Report each excluded target in `diagnostics.section_inputs`, in target order, as
+a `SectionRefinementIssue`. It carries `output_id`, `section`,
+`code: CALC-RESOLVE-002` and `message`; see the
+[schema](schemas/section-refinement-issue.schema.json). Include the member
+whenever a selected target reads a variant-map section or a section named by an
+explicit variant, and leave it empty when nothing is excluded; omit it
+otherwise. Unaffected targets are ranked as before.
 
 Finite numeric period inputs MUST remain fixed during ordinary gap perturbation.
 Period dependencies MUST NOT enter the default cascade or acquire inferred ranges,
@@ -1458,10 +1526,28 @@ selects variants for period inputs and supplies exact full-path overrides. It
 does not alter existing pack sheets. The first custom exporter supports numeric
 literals, paths, period paths, unary minus and arithmetic +, -, *, /; other AST
 nodes explicitly refuse. Ordinary input snapshots use calc resolution without
-default inference or boundary rounding. Shared inputs are written once and
+default inference or boundary rounding. Under §VIII.2 that includes variant
+selection: an ordinary input whose section refuses raises `CALC-RESOLVE-002`,
+as an unresolvable period selection raises `CALC-PERIOD-003`. Shared inputs are written once and
 referenced by formulas. No general calc-result chaining is implied.
 
-Default toWorkbook output is unchanged. Additional period/custom input edits are
+**Pack sheets over variant-map sections (RFC 0066).** The converter reads each of
+a pack's named inputs from the block §VIII.2 selects under the role the pack's
+calculations declare for that section.
+
+- **Disagreeing roles.** Calculations declaring different roles for one section
+  refuse the export.
+- **Refused input.** An input whose section refuses MUST be written as `#VALUE!`,
+  the invalid-identity value above, and never blank, because Excel reads a blank
+  as zero.
+- **Refused metric.** A metric whose own §VIII.2 selection refuses MUST show
+  `#VALUE!` exactly where the calc engine reports `ok: false`. Every other metric
+  keeps exact parity.
+- **Different block.** A metric whose own selection names a different block than
+  the one its named input holds refuses the export. One input cannot stand for
+  two blocks.
+
+Default toWorkbook output is otherwise unchanged. Additional period/custom input edits are
 export-only in this stage: reverse import MUST refuse marked extended workbooks,
 rather than silently discarding those edits. Excel 2016-compatible functions
 (IF, INDEX/MATCH exact, COUNTIF, SUMPRODUCT/EXACT, ISBLANK, ISNUMBER, VALUE, NA,
@@ -1617,6 +1703,7 @@ reproduce across platforms.
 |---|---|
 | `CALC-PARSE-001` | Expression failed to parse against the grammar. |
 | `CALC-RESOLVE-001` | Identifier could not be resolved. |
+| `CALC-RESOLVE-002` | An identifier names a present variant-map section from which §VIII.2 selects no block. Either an explicitly requested variant is absent or carries an invalid role, or a declared role or `primary` is claimed more than once, or no generic rule applies (RFC 0066). |
 | `CALC-TYPE-001` | Operator applied to incompatible types. |
 | `CALC-DIV-ZERO` | Division by zero. |
 | `CALC-IRR-DIVERGE` | IRR did not converge. |
@@ -2731,6 +2818,15 @@ Required fields: `manifest_version` (always `"1"` in v1), `id`, `name`,
 
 Optional fields are documented in the schema. The TypeScript mirror
 type `ModuleManifest` in `protocol.ts` is kept in lockstep.
+
+**Calculation role preferences (RFC 0066).** A `calculations[]` entry MAY
+declare `section_roles`, a map from section id to any `_role` except
+`component`. It applies only under §VIII.2, to that calculation's reads of a
+role-bearing variant map, and an explicit `sectionVariants` entry still wins.
+Hosts pass nothing extra: the evaluator reads the map from the declaration. A
+host that validates manifests MUST refuse a malformed map rather than ignore it,
+because ignoring it changes which block is read. The reference library refuses
+it with `PROTO-MOD-079`.
 
 **A registered module must actually run.** Registering a manifest is
 not the same as honoring it, and a host that loads a module and then

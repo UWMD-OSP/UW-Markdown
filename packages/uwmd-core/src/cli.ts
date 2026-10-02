@@ -1072,12 +1072,28 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
 
   const market = loadMarketData(flags);
 
-  const out: Record<string, { value: unknown; step: string; source?: string; range?: unknown; resolved_from?: string }> = {};
+  const out: Record<string, {
+    value: unknown;
+    step: string | null;
+    source?: string;
+    range?: unknown;
+    resolved_from?: string;
+    refused?: { code: string; message: string };
+  }> = {};
   for (const path of Object.keys(table.fields)) {
-    const r = resolveValue(path, parsed, {
-      asset_class: assetClass,
-      ...(market ? { market: market.lookup } : {}),
-    });
+    let r: ReturnType<typeof resolveValue>;
+    try {
+      r = resolveValue(path, parsed, {
+        asset_class: assetClass,
+        ...(market ? { market: market.lookup } : {}),
+      });
+    } catch (e) {
+      // RFC 0066: a variant-map section with no selectable block is reported
+      // per field, never resolved by fence order or replaced by a default.
+      if (!(e instanceof CalcError) || e.proto.code !== 'CALC-RESOLVE-002') throw e;
+      out[path] = { value: null, step: null, refused: { code: e.proto.code, message: e.proto.message } };
+      continue;
+    }
     out[path] = {
       value: r.value,
       step: r.step,
@@ -1165,11 +1181,17 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
   for (const issue of periodIssues) {
     console.log(`Excluded ${issue.output_id}: ${issue.field_path} [${issue.code}] ${issue.message}`);
   }
+  const sectionIssues = result.diagnostics.section_inputs ?? [];
+  for (const issue of sectionIssues) {
+    console.log(`Excluded ${issue.output_id}: ${issue.section} [${issue.code}] ${issue.message}`);
+  }
   console.log('');
   if (result.by_voi.length === 0) {
     console.log(periodIssues.length
       ? 'No ranking is available for the affected targets until their period inputs are resolved.'
-      : 'No gap-driven inputs found among the requested targets.');
+      : sectionIssues.length
+        ? 'No ranking is available for the affected targets until a block of each section can be selected.'
+        : 'No gap-driven inputs found among the requested targets.');
     return;
   }
   result.by_voi.forEach((g, i) => {

@@ -36,6 +36,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
       formula: 'debt_structure.loan_amount / valuation.purchase_price',
       unit: '%',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'ltc',
@@ -43,6 +44,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
       formula: 'debt_structure.loan_amount / sources_uses.uses.total',
       unit: '%',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'dscr',
@@ -50,6 +52,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
       formula: 'noi_model.net_operating_income / debt_structure.annual_debt_service',
       unit: 'x',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'debt_yield',
@@ -57,6 +60,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
       formula: 'noi_model.net_operating_income / debt_structure.loan_amount',
       unit: '%',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'price_per_key',
@@ -71,6 +75,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
       formula: 'debt_structure.loan_amount / property.keys',
       unit: '$',
       deterministic: true,
+      section_roles: { debt_structure: 'senior' },
     },
     {
       id: 'noi_per_key',
