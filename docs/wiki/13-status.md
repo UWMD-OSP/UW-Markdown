@@ -477,6 +477,23 @@ and its formulas do not change.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
+- **Make a tagged tree's version records true of the tag.** StackUW's
+  re-vendor of `v2.15.0` found the problem (its UPSTREAM-020).
+  - **What's wrong.** At both `v2.14.0` and `v2.15.0`, `VERSIONS.md` labels
+    that tag's own release as unreleased: the Protocol row reads `(accepted,
+    unreleased)` and the core row reads `(candidate; ...)`. The rows flip on
+    `main` only in the post-release reconciliation, after the tag.
+  - **The fix.** The one-commit release record, which is the commit the tag
+    lands on, should state the released rows. The reconciliation should then
+    carry only what follows the publish.
+  - **Owner decision, 2026-10-02.** Fix it for future tags. No `v2.15.1` is cut
+    for this historical metadata alone.
+- **Harden RFC 0066 fixtures `variant-05` and `variant-11`** (StackUW's
+  UPSTREAM-021). In both fixtures the block the calc context selects is also
+  the section's last block. An implementation that ignores the context and
+  keeps the last block therefore passes both. StackUW's adapter did exactly
+  that until its re-vendor. Reorder each fixture, or add a mirror case, so the
+  selected block is not last. Expected results stay unchanged.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow
