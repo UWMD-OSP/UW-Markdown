@@ -25,11 +25,14 @@ Protocol 2.20.0 adds RFC 0069's four optional top-level student-housing
 `rent_roll` fields: `occupied_beds`, `preleased_beds`, `preleased_as_of`
 and `preleased_term_start`. The `BED-NN` error family validates a stated
 count's type, capacity and measurement dates. Pack formulas are unchanged.
-RFC 0069 is accepted; core/CLI 2.16.0 carry its accepted release contract.
-Signing 0.2.20 and batch 0.8.15 pin core 2.16.0 exactly. The release workflow
-publishes these four packages; the other package generations are source-only.
-This matrix records the final contract and package pairings independently of
-the publication workflow. Preparation evidence accompanies this release generation.
+RFC 0069 is implemented; Protocol 2.20.0 is stable. Core/CLI 2.16.0, signing
+0.2.20 and batch 0.8.15 are published from the immutable `v2.16.0` tag on
+`a1ca815e2aee5da374caf7627ba3702849ecd257`, through trusted publishing with
+SLSA provenance. Signing and batch pin core 2.16.0 exactly. Release run
+37075007121 succeeded; registry `latest`, `gitHead`, signatures, attestations,
+Rekor records, published file comparisons and all 101 delivered-CLI portable
+cases were independently verified. The other package generations are source-only.
+Publication evidence is recorded separately from the tagged preparation tree.
 
 Release 2.15.0 paired core/CLI 2.15.0 with Protocol 2.19.0 and Format 2.0.
 Protocol 2.19.0 adds RFC 0066. Ordinary calc identifiers select one block of a

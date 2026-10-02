@@ -1,8 +1,9 @@
 ---
 rfc: 0069
 title: Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads
-status: accepted
+status: implemented
 accepted: 2026-10-02
+implemented: 2026-10-02
 author: claude-code (agent proposal)
 created: 2026-09-28
 affects:
@@ -14,9 +15,10 @@ affects:
 
 # RFC 0069: Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads
 
-**Accepted release contract.** On 2026-10-02 Jared accepted this RFC as a whole
-and authorized implementation. Core/CLI 2.16.0 pair with Protocol 2.20.0
-and Format 2.0; RFC status remains `accepted`. A coding agent wrote it. StackUW's
+**Implemented; released in 2.16.0.** On 2026-10-02 Jared accepted this RFC
+as a whole and authorized implementation. Published core/CLI 2.16.0 pair
+with stable Protocol 2.20.0 and Format 2.0; RFC status is `implemented`.
+A coding agent wrote it. StackUW's
 student-housing export and its app-side note UPSTREAM-014 are adopter
 requirements evidence, not UWMD authority or owner authorship.
 
@@ -365,8 +367,8 @@ is read from the property block CC-13 reads.
 
 **Version.** The change adds optional §4.3 fields and registers a validator
 family, the same additive shape RFC 0058 shipped as a Protocol minor. It
-therefore takes the next Protocol minor, **2.20.0**, the accepted release
-contract paired with core/CLI **2.16.0**. Format stays **2.0**:
+therefore takes Protocol minor **2.20.0**, released in core/CLI **2.16.0**
+and now stable. Format stays **2.0**:
 `UW_FORMAT_SPEC_v2.md` incorporates v1 Part IV by reference, as for RFCs 0055
 and 0058. The version follows from existing semver-per-surface precedent; it is
 not a separate owner decision.
@@ -445,9 +447,12 @@ The owner resolved the draft's four open questions on acceptance, 2026-10-02:
 
 ## Decision status
 
-RFC 0069 is `accepted`. Core/CLI **2.16.0** carry the accepted Protocol
-**2.20.0** release contract with Format **2.0**. The lifecycle transition to
-`implemented` belongs to the verified post-publication reconciliation.
+RFC 0069 is `implemented`, released in core/CLI **2.16.0** with stable
+Protocol **2.20.0** and Format **2.0**. Release run 37075007121 succeeded
+on tagged commit `a1ca815e2aee5da374caf7627ba3702849ecd257`; independent
+registry, signature/provenance, published-content and delivered-CLI checks
+are recorded in `docs/releases/2.16.0-candidate.md`. The immutable tag keeps
+the prior `accepted` lifecycle wording of its release-prepared state.
 
 | Item | Source | State |
 |---|---|---|
@@ -459,7 +464,7 @@ RFC 0069 is `accepted`. Core/CLI **2.16.0** carry the accepted Protocol
 | Acceptance of RFC 0069 as a whole: field names, types and date semantics; one `BED-NN` error family; absent counts draw nothing; dates without a count are inert; no pack formula change | Owner acceptance, 2026-10-02 | Accepted. Format §4.3, Protocol §III.6a. |
 | Senior housing, `mixed_use` components, other classes, future capacity | Owner scope resolutions, 2026-10-02 | Resolved; see [Resolved questions](#resolved-questions). |
 | Protocol 2.20.0; Format unchanged at 2.0 | Semver-per-surface precedent (RFC 0058) | Consequence of acceptance, not a separate owner decision. |
-| Implementation | Owner authorization, 2026-10-02 | Source implementation present; RFC status `accepted`. |
+| Implementation | Owner authorization, 2026-10-02 | Released in core/CLI 2.16.0; RFC status `implemented` after verification. |
 
 ## Prior art
 
