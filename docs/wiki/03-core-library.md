@@ -197,6 +197,9 @@ asset_class_default → global_default → system_default`. Asset-class defaults
 published `{low, central, high}` ranges with citations in `defaults.ts`
 (multifamily, office, retail, industrial, and self-storage today). The CLI
 `uwmd scope` command materializes the full resolved triage view.
+In-file steps read a block's payload through `blockPayload`, so a
+content-envelope block resolves the same values as a flat one, as in the calc
+evaluator.
 
 ## refinement.ts + gaps.ts
 

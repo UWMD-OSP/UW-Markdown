@@ -25,7 +25,7 @@ import type {
   ValidationSeverity,
 } from './types.js';
 
-import { deepGet, getSection, getSectionVariant } from './parser.js';
+import { blockPayload, deepGet, getSection, getSectionVariant } from './parser.js';
 import { CORE_VERSION } from './version.js';
 
 // ─── Versioning ───────────────────────────────────────────────────────────────
@@ -1372,14 +1372,10 @@ export function resolveDealSize(
   const property =
     getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
   if (!property) return null;
-  // §VIII.2's unwrap rule, exactly as the calc evaluator applies it: when a
-  // block stores the envelope shape, the user-facing payload lives one level
-  // down at `content`. The registry must read the same payload the pack
-  // divides by, or the two disagree about the same document.
-  const payload =
-    property.content && typeof property.content === 'object' && 'content' in property.content
-      ? (property.content as Record<string, unknown>)['content']
-      : property.content;
+  // §VIII.2's payload, exactly as the calc evaluator reads it: the registry
+  // must read the same payload the pack divides by, or the two disagree
+  // about the same document.
+  const payload = blockPayload(property);
   const raw = deepGet(payload, intensive.path);
   if (typeof raw !== 'number' || !Number.isFinite(raw)) return null;
   return { basis: intensive.path, label: intensive.label, unit: intensive.unit, quantity: raw };

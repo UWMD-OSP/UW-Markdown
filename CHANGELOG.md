@@ -8,6 +8,28 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- **The cascade, refinement and the Excel converter read a block's payload the
+  way the calc evaluator does.** A block may keep its fields beside `_meta` or
+  one level down in a `content` envelope. Protocol §VIII.2 maps an identifier
+  to "the canonical block's `content`". `evaluateCalc`, period paths, the
+  cash-flow readers, CC-13 and the size registry already unwrapped it; three
+  consumers did not:
+  - `resolveValue`/`readInFile` fell through to `system_default`;
+  - `rankGaps` therefore ranked a stated value as missing;
+  - `@uwmd/excel` wrote blank named inputs and operating-statement lines, which
+    Excel reads as zero.
+
+  On Parkview rewrapped in the envelope, 33 of 45 observations disagreed with
+  the flat form; now none do. All of these consumers now read through one
+  exported accessor, `blockPayload`, and `periodPayload` delegates to it.
+  Tests pin flat-versus-envelope equality for the cascade, refinement and
+  every Excel layout, mixed-use included, along with Excel ↔ `evaluateCalc`
+  parity on a wrapped document. Each fails on the previous code. No normative
+  text, schema or conformance baseline changes. Published core/CLI 2.14.0
+  still carries the defect; the fix ships in the next package generation.
+
 ## [2.14.0] - 2026-10-02
 
 ### Prepared

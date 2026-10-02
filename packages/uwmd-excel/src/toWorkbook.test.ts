@@ -14,13 +14,14 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import ExcelJS from 'exceljs';
 import {
+  blockPayload,
   parseUWFile,
   evaluateCalc,
   emitExcelFormula,
   quantizeDecimal,
   resolveRoundTo,
 } from '@uwmd/core';
-import type { CalcEvaluationContext } from '@uwmd/core';
+import type { CalcEvaluationContext, UWBlock } from '@uwmd/core';
 import { toWorkbook, UnsupportedAssetClassError } from './toWorkbook.js';
 import { buildNamedRangeMap, SUBTOTAL_RANGES } from './layout.js';
 import type { WorkbookLayout } from './layout.js';
@@ -501,5 +502,70 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
     const parsed = parseUWFile(await readFile(resolve(EXAMPLES, MIXED_USE_FILE), 'utf8'));
     const ws = wb.getWorksheet('Pipeline Log')!;
     expect(ws.rowCount).toBe(1 + parsed.pipeline_log.length);
+  });
+});
+
+// ─── Protocol §VIII.2 — content-envelope blocks ───────────────────────────────
+//
+// A block may keep its fields beside `_meta` or one level down at `content`.
+// evaluateCalc reads the payload either way, so the workbook must too, or a
+// wrapped document gets blank inputs that Excel reads as zero.
+
+/** The same document with each standard block's user fields moved into a content envelope. */
+function toContentEnvelope(source: string): string {
+  return source.replace(/(```json uw:section=([a-z_]+)[^\n]*\n)([\s\S]*?)(\n```)/g, (all, open: string, section: string, body: string, close: string) => {
+    if (section.startsWith('x_') || section.startsWith('custom_') || section === 'pipeline_log') return all;
+    const { _meta, _role, _notes, ...fields } = JSON.parse(body) as Record<string, unknown>;
+    if ('content' in fields) return all;
+    const envelope = { _meta, ...(_role !== undefined ? { _role } : {}), ...(_notes !== undefined ? { _notes } : {}), content: fields };
+    return `${open}${JSON.stringify(envelope, null, 2)}${close}`;
+  });
+}
+
+function sheetValues(wb: ExcelJS.Workbook, sheet: string): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  wb.getWorksheet(sheet)!.eachRow((row) => {
+    const label = row.getCell(1).value;
+    if (typeof label === 'string') out[label] = row.getCell(2).value;
+  });
+  return out;
+}
+
+describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', () => {
+  it.each([...CASES.map((c) => c.file), MIXED_USE_FILE].map((f) => [f] as const))('%s writes the same inputs and statement wrapped as flat', async (file) => {
+    const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
+    const wrappedRaw = toContentEnvelope(raw);
+    expect(wrappedRaw).not.toBe(raw);
+    const flat = await toWorkbook(parseUWFile(raw));
+    const wrapped = await toWorkbook(parseUWFile(wrappedRaw));
+    for (const sheet of ['Underwriting', 'Operating Statement']) {
+      expect(sheetValues(wrapped, sheet), sheet).toEqual(sheetValues(flat, sheet));
+    }
+  });
+
+  it('keeps Excel ↔ evaluateCalc parity on a wrapped document', async () => {
+    const parsed = parseUWFile(toContentEnvelope(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8')));
+    const wb = await toWorkbook(parsed);
+    const values: Record<string, number> = {};
+    for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
+      const n = namedNumber(wb, input.name);
+      expect(n, input.name).not.toBeNull();
+      values[input.name] = n as number;
+    }
+    const payload = blockPayload(parsed.sections['noi_model'] as UWBlock) as Record<string, unknown>;
+    values[SUBTOTAL_RANGES.egi] = (payload['income'] as Record<string, number>)['effective_gross_income']!;
+    values[SUBTOTAL_RANGES.opex] = (payload['expenses'] as Record<string, number>)['total_operating_expenses']!;
+    values[SUBTOTAL_RANGES.noi] = payload['net_operating_income'] as number;
+    const map = buildNamedRangeMap(MULTIFAMILY_LAYOUT);
+    const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
+    for (const decl of MULTIFAMILY_LAYOUT.pack.calculations ?? []) {
+      const direct = evaluateCalc(decl, ctx);
+      expect(direct.ok, decl.id).toBe(true);
+      let formula = emitExcelFormula(decl.formula, { namedRanges: map });
+      for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
+      // eslint-disable-next-line no-new-func
+      const excelCell = quantizeDecimal(new Function(`return (${formula});`)() as number, resolveRoundTo(decl));
+      expect(excelCell, decl.id).toBe(direct.value);
+    }
   });
 });

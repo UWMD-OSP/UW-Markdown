@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { rankGaps } from './refinement.js';
 import { parseUWFile } from './parser.js';
+import { MULTIFAMILY_PACK } from './packs/multifamily.js';
 
 const MINIMAL_MULTIFAMILY = `---
 uw_version: "1.1"
@@ -412,4 +413,36 @@ it('refinement never calls a cascade provider for a selector-only target', () =>
   const result = ranked(parsed, { cascadeContext: { market: { resolve, staleness_seconds: 3600 } } });
   expect(resolve).not.toHaveBeenCalled();
   expect(result.diagnostics.period_inputs?.[0]?.code).toBe('REFINE-PERIOD-MISSING');
+});
+
+/** The same document with each standard block's user fields moved into a content envelope. */
+function toContentEnvelope(source: string): string {
+  return source.replace(/(```json uw:section=([a-z_]+)[^\n]*\n)([\s\S]*?)(\n```)/g, (all, open: string, section: string, body: string, close: string) => {
+    if (section.startsWith('x_') || section.startsWith('custom_') || section === 'pipeline_log') return all;
+    const { _meta, _role, _notes, ...fields } = JSON.parse(body) as Record<string, unknown>;
+    if ('content' in fields) return all;
+    const envelope = { _meta, ...(_role !== undefined ? { _role } : {}), ...(_notes !== undefined ? { _notes } : {}), content: fields };
+    return `${open}${JSON.stringify(envelope, null, 2)}${close}`;
+  });
+}
+
+describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
+  it('ranks the same gaps from flat and content-envelope blocks', () => {
+    const parkview = readFileSync(new URL('../../../examples/Parkview-Apts-Glendale-AZ.uwx.md', import.meta.url), 'utf8');
+    // loan_amount and total_units are stated in the file; io_months is a
+    // published-default gap. Read as a wrapper, the stated inputs would be NaN
+    // and the ranking would silently empty.
+    const packs = [{
+      ...MULTIFAMILY_PACK,
+      calculations: [{
+        id: 'io_loan_per_unit',
+        label: 'IO loan / unit',
+        formula: 'debt_structure.loan_amount * debt_structure.io_months / property.total_units',
+        deterministic: true,
+      }],
+    }];
+    const flat = rankGaps(parseUWFile(parkview), { packs });
+    expect(flat.by_voi.map((g) => g.field_path)).toEqual(['debt_structure.io_months']);
+    expect(rankGaps(parseUWFile(toContentEnvelope(parkview)), { packs })).toEqual(flat);
+  });
 });

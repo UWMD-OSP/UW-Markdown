@@ -107,9 +107,12 @@ Member access supports dotted paths and bracket-string keys:
 
 An `ident` / `path` `head` resolves in this order:
 1. **Frontmatter** key of the same name.
-2. **Section** of the same name — returns the block's *inner user data* (the
-   parser stores the full envelope at `block.content`; user fields live at
-   `block.content.content`). Path segments then drill into that object.
+2. **Section** of the same name — returns the block's *user payload*,
+   `blockPayload(block)` (parser.ts). A flat block keeps its fields beside
+   `_meta`; a content-envelope block keeps them at `block.content.content`. Path
+   segments then drill into that object. The cascade, refinement and the Excel
+   converter read through the same accessor, so both shapes yield the same
+   values everywhere.
 3. **`prior_results`** (results of earlier calcs in the same batch).
 4. Otherwise `null`.
 
