@@ -8,7 +8,7 @@
 
 import type { CascadeStep } from './protocol.js';
 import { getAssetClassDefaults, type DefaultRange } from './defaults.js';
-import { deepGet } from './parser.js';
+import { blockPayload, deepGet } from './parser.js';
 import type { ParsedUWFile, SourceTag, UWBlock, UWFieldOverride } from './types.js';
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ function readFromSection(parsed: ParsedUWFile, field_path: string): unknown {
   if (!split) return undefined;
   const block = getBlock(parsed, split.sectionId);
   if (!block) return undefined;
-  return deepGet(block.content, split.rest);
+  return deepGet(blockPayload(block), split.rest);
 }
 
 /**
@@ -222,7 +222,9 @@ function findBySource(
     : Object.values(entry as Record<string, UWBlock>);
 
   for (const block of blocks) {
-    const value = deepGet(block.content, split.rest);
+    // The payload, not the stored body: a content-envelope block keeps the
+    // field one level down, and the calc evaluator reads it there (§VIII.2).
+    const value = deepGet(blockPayload(block), split.rest);
     if (value === undefined) continue;
     const override = findFieldOverride(block, split.rest);
     const effective =

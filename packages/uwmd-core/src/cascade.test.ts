@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { resolveValue, type CascadeContext } from './cascade.js';
+import { readInFile, resolveValue, type CascadeContext } from './cascade.js';
+import { parseUWFile } from './parser.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 
 /**
@@ -276,5 +279,41 @@ describe('cascade — asset class selection', () => {
       expect(asMultifamily.resolved_from).toBe('multifamily@1.0.0');
       expect(asRetail.resolved_from).toBe('retail@1.0.0');
     });
+  });
+});
+
+/** The same document with each standard block's user fields moved into a content envelope. */
+function toContentEnvelope(source: string): string {
+  return source.replace(/(```json uw:section=([a-z_]+)[^\n]*\n)([\s\S]*?)(\n```)/g, (all, open: string, section: string, body: string, close: string) => {
+    if (section.startsWith('x_') || section.startsWith('custom_') || section === 'pipeline_log') return all;
+    const { _meta, _role, _notes, ...fields } = JSON.parse(body) as Record<string, unknown>;
+    if ('content' in fields) return all;
+    const envelope = { _meta, ...(_role !== undefined ? { _role } : {}), ...(_notes !== undefined ? { _notes } : {}), content: fields };
+    return `${open}${JSON.stringify(envelope, null, 2)}${close}`;
+  });
+}
+
+describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
+  const PARKVIEW = readFileSync(resolve(process.cwd(), '../..', 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
+  const PATHS = [
+    'property.total_units',
+    'property.total_nra_sqft',
+    'debt_structure.loan_amount',
+    'debt_structure.annual_debt_service',
+    'valuation.purchase_price',
+    'sources_uses.sources.equity_sponsor',
+    'noi_model.net_operating_income',
+  ];
+
+  it('resolves the same in-file values from flat and content-envelope blocks', () => {
+    const flat = parseUWFile(PARKVIEW);
+    const wrapped = parseUWFile(toContentEnvelope(PARKVIEW));
+    expect((wrapped.sections['debt_structure'] as { content: Record<string, unknown> }).content['content']).toBeDefined();
+    expect(readInFile(flat, 'debt_structure.loan_amount')).toBe(5_040_000);
+    expect(resolveValue('debt_structure.loan_amount', flat)).toMatchObject({ value: 5_040_000, step: 'user_input' });
+    for (const path of PATHS) {
+      expect(readInFile(wrapped, path), path).toEqual(readInFile(flat, path));
+      expect(resolveValue(path, wrapped), path).toEqual(resolveValue(path, flat));
+    }
   });
 });

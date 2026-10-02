@@ -509,6 +509,20 @@ function isMultiVariantMap(val: unknown): boolean {
 
 // ─── Convenience: get current block for a section ─────────────────────────────
 
+/**
+ * A block's user payload: Protocol §VIII.2's "canonical block's `content`".
+ * A flat block keeps its fields beside `_meta`; a block written in the content
+ * envelope keeps them one level down at `content`. Every reader of calc inputs
+ * reads through here, so both shapes yield the same values: the evaluator,
+ * period paths, the cascade, refinement and the Excel converter.
+ */
+export function blockPayload(block: UWBlock): unknown {
+  const body: unknown = block.content;
+  return body !== null && typeof body === 'object' && Object.prototype.hasOwnProperty.call(body, 'content')
+    ? getPathSegment(body, 'content')
+    : body;
+}
+
 export function getSection(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
   const entry = parsed.sections[sectionId];
   if (!entry) return null;

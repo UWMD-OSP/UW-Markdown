@@ -1,4 +1,4 @@
-import { getPathSegment, isBlockedSegment } from './parser.js';
+import { blockPayload, getPathSegment, isBlockedSegment } from './parser.js';
 import { PERIOD_SERIES } from './protocol.js';
 import type { PeriodColumnSnapshot } from './protocol.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
@@ -28,8 +28,9 @@ export function periodSection(parsed: ParsedUWFile, section: string, options: Pe
   return resolved.block;
 }
 
+/** A block's user payload; see `blockPayload` (parser.ts). */
 export function periodPayload(block: UWBlock): unknown {
-  return Object.prototype.hasOwnProperty.call(block.content, 'content') ? getPathSegment(block.content, 'content') : block.content;
+  return blockPayload(block);
 }
 
 export function periodReferenceContract(expr: Extract<Expr, { kind: 'period_path' }>) {

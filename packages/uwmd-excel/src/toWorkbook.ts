@@ -13,7 +13,7 @@
 
 import ExcelJS from 'exceljs';
 import { writeCustomCalculations, type ToWorkbookOptions } from './custom-calculations.js';
-import { deepGet, getSection, evaluateCalc, emitCalcExcelFormula } from '@uwmd/core';
+import { blockPayload, deepGet, getSection, evaluateCalc, emitCalcExcelFormula } from '@uwmd/core';
 import type { ParsedUWFile, CalcEvaluationContext, ModuleCalcDecl } from '@uwmd/core';
 import {
   buildDerivedMetrics,
@@ -69,9 +69,11 @@ function abs(sheet: string, row: number, col: number): string {
   return `${sheetRef}!$${colLetter(col)}$${row}`;
 }
 
+/** The block's user payload, as evaluateCalc reads it (flat or content envelope). */
 function sectionContent(parsed: ParsedUWFile, sectionId: string): Record<string, unknown> {
   const block = getSection(parsed, sectionId);
-  return (block?.content ?? {}) as Record<string, unknown>;
+  const payload = block ? blockPayload(block) : undefined;
+  return (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown>;
 }
 
 function readNumber(parsed: ParsedUWFile, sectionId: string, path: string): number | null {

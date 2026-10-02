@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseUWFile, getSection, getSectionVariant, deepGet, UWMDParseError } from './parser.js';
+import { parseUWFile, getSection, getSectionVariant, deepGet, blockPayload, UWMDParseError } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
@@ -571,5 +571,21 @@ asset_class: multifamily
     const parsed = parseUWFile(file);
     const block = parsed.sections['property'] as import('./types.js').UWBlock;
     expect(block.meta.resolution).toBe('user_input');
+  });
+});
+
+describe('blockPayload (Protocol §VIII.2 payload)', () => {
+  const block = (content: unknown) => ({ content }) as unknown as Parameters<typeof blockPayload>[0];
+
+  it('reads a flat block as stated and a content-envelope block one level down', () => {
+    expect(blockPayload(block({ _meta: {}, total_units: 48 }))).toEqual({ _meta: {}, total_units: 48 });
+    expect(blockPayload(block({ _meta: {}, content: { total_units: 48 } }))).toEqual({ total_units: 48 });
+  });
+
+  it('leaves a non-object body alone and ignores an inherited content key', () => {
+    expect(blockPayload(block(null))).toBeNull();
+    expect(blockPayload(block([1, 2]))).toEqual([1, 2]);
+    const inherited = Object.create({ content: { x: 1 } }) as Record<string, unknown>;
+    expect(blockPayload(block(inherited))).toBe(inherited);
   });
 });

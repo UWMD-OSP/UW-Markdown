@@ -1,7 +1,7 @@
 // Tier-3 Calc Host — AST evaluator.
 // Variable resolution per §VIII.2; null propagation per §VIII.2.
 
-import { getSection, isBlockedSegment } from '../parser.js';
+import { blockPayload, getSection, isBlockedSegment } from '../parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 import { BUILTINS, type CalcValue } from './builtins.js';
 import { CalcError } from './errors.js';
@@ -258,14 +258,9 @@ function resolveIdentifier(name: string, ctx: CalcEvaluationContext): CalcValue 
     }
   }
   if (section) {
-    // Per §VIII.2: identifier maps to the canonical block's content (user data
-    // inside the JSON envelope). The parser stores the full envelope on
-    // block.content; the user-facing data lives at block.content.content.
-    const envelope = section.content as Record<string, unknown> | null | undefined;
-    const inner = envelope && typeof envelope === 'object' && Object.prototype.hasOwnProperty.call(envelope, 'content')
-      ? envelope.content
-      : envelope;
-    return coerceCalcValue(inner);
+    // Per §VIII.2: identifier maps to the canonical block's content (user data,
+    // which a content-envelope block keeps one level down; see blockPayload).
+    return coerceCalcValue(blockPayload(section));
   }
 
   if (Object.prototype.hasOwnProperty.call(ctx.prior_results, name)) {

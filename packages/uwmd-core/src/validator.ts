@@ -12,7 +12,7 @@ import type {
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
-import { getSection, getSectionVariant, deepGet } from './parser.js';
+import { blockPayload, getSection, getSectionVariant, deepGet } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
@@ -2328,13 +2328,9 @@ function checkSizeIntensive(parsed: ParsedUWFile, issues: ValidationMessage[], l
   }
   markEvaluated(ledger, 'CC-13');
 
-  // §VIII.2's unwrap rule, exactly as the calc evaluator applies it: a block
-  // storing the envelope shape keeps its payload one level down at `content`.
-  // CC-13 judges the payload the pack divides by — never the wrapper.
-  const payload =
-    'content' in property.content
-      ? (property.content as Record<string, unknown>)['content']
-      : property.content;
+  // §VIII.2's payload, exactly as the calc evaluator reads it: CC-13 judges
+  // the payload the pack divides by, never the wrapper.
+  const payload = blockPayload(property);
   const value = deepGet(payload, intensive.path);
   if (typeof value === 'number' && Number.isFinite(value)) return;
 
