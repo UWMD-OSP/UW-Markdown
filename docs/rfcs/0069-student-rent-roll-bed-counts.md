@@ -1,7 +1,8 @@
 ---
 rfc: 0069
 title: Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads
-status: draft
+status: accepted
+accepted: 2026-10-02
 author: claude-code (agent proposal)
 created: 2026-09-28
 affects:
@@ -13,19 +14,40 @@ affects:
 
 # RFC 0069: Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads
 
-**Draft agent proposal.** A coding agent wrote this RFC. StackUW's
+**Accepted, unreleased.** On 2026-10-02 Jared accepted this RFC as a whole
+and authorized implementation. A coding agent wrote it. StackUW's
 student-housing export and its app-side note UPSTREAM-014 are adopter
 requirements evidence, not UWMD authority or owner authorship.
 
-The owner recorded three decisions on 2026-10-01 that settle specific
-validation semantics (see [Decision status](#decision-status)):
+Three owner decisions of 2026-10-01 settle specific validation semantics:
 
 1. a stated bed count may not exceed `property.total_beds`;
 2. a stated `preleased_beds` requires both pre-leasing dates;
 3. a stated `occupied_beds` requires the roll's `as_of_date`.
 
-The owner has not accepted the RFC as a whole: not the field names, the code
-family, any Format or Protocol text, or implementation.
+With acceptance the owner resolved the draft's four open questions; see
+[Resolved questions](#resolved-questions):
+
+- senior housing is out of scope;
+- `student_housing` components of a `mixed_use` deal are out of scope;
+- another class that states the fields draws no `info` issue, but the `BED`
+  rules still apply to what it states;
+- future capacity is deferred, and `BED-02` is not weakened for it.
+
+The accepted field contract:
+
+- `occupied_beds` is an OPTIONAL nonnegative integer, measured on a real
+  `rent_roll.as_of_date`.
+- `preleased_beds` is an OPTIONAL nonnegative integer. It requires a real
+  `preleased_as_of` and a real `preleased_term_start`, and
+  `preleased_as_of < preleased_term_start`.
+- Neither count may exceed `property.total_beds`.
+- The counts are stated, never derived or cross-inferred.
+- An absent count produces no `BED` issue, and its pack metric stays `null`.
+- One `BED-NN` error family, as drafted.
+- No pack formula changes.
+
+Status stays `accepted` until a release ships it.
 
 ## Summary
 
@@ -36,7 +58,7 @@ family, any Format or Protocol text, or implementation.
 declares neither field, and no field carries the date either count was
 measured on.
 
-This draft proposes four OPTIONAL §4.3 roll-total fields for
+This RFC declares four OPTIONAL §4.3 roll-total fields for
 `student_housing` documents, and a registered `BED-NN` validator family:
 
 - **An absent count is not an issue.** Incomplete screening data may omit the
@@ -98,9 +120,9 @@ and spec sections rather than line numbers.
 
 ## Proposed change
 
-Everything in this section is a proposal. None of it is accepted.
+This section is the accepted contract, as written into the specs.
 
-### Format spec §4.3 (normative, proposed)
+### Format spec §4.3 (normative)
 
 **Template.** In the Multifamily Variant template of `spec/UW_FORMAT_SPEC_v1.md`
 §4.3, insert four keys after `"month_to_month_pct"` and before `"units"`. They
@@ -137,6 +159,12 @@ recoveries and the CAM true-up" paragraph:
 >   `preleased_beds` describes. The term is in the future relative to
 >   `preleased_as_of`, not relative to the date a tool reads the file.
 >
+> The fields describe the top-level `rent_roll` only. They do not extend to
+> `senior_housing`, which also states `total_beds` (§4.1), and they give a
+> `student_housing` component of a `mixed_use` deal (§4.23) no bed-count
+> semantics. A class other than `student_housing` that states them draws no
+> issue for doing so; the rules below still apply to what it states.
+>
 > The fields are optional as a group. A roll may omit either count, and with
 > `preleased_beds` the whole pre-leasing tuple. A count that is stated is a
 > complete typed fact only with its measurement date:
@@ -149,7 +177,9 @@ recoveries and the CAM true-up" paragraph:
 > The two counts are **stated, never derived**. Pre-leasing never sets
 > occupancy, neither count is inferred from the other, and no rule compares the
 > two. `property.total_beds` (§4.1) remains the size field and the denominator
-> of every per-bed metric (Protocol §XIII.1). Neither count may exceed it.
+> of every per-bed metric (Protocol §XIII.1). Neither count may exceed it,
+> including for capacity a later phase will deliver; future-phase capacity
+> needs its own explicit representation, which this section does not define.
 >
 > An absent count is not an issue. A roll that omits a count draws no `BED-*`
 > issue for it, and a pack metric over an absent count resolves to `null`
@@ -181,7 +211,7 @@ recoveries and the CAM true-up" paragraph:
 
 ### Why each condition is treated this way
 
-| Condition | Proposed | Basis |
+| Condition | Rule | Basis |
 |---|---|---|
 | A count is absent because underwriting is incomplete | No `BED-*` issue; the metric resolves to `null` | New §4.3 fields are OPTIONAL and absence is unchanged ("a tenant stating none of them is unchanged", RFC 0055/0058). Stage gating of absent data is `IncompleteDataPolicy` (`halt`, `degrade`, `substitute`, `defer` per section, field and stage); its built-in `rent_roll` entries already degrade at screening and halt at full underwrite. |
 | A stated count is non-numeric, non-integer, non-finite or negative | `BED-01` error | Feature families refuse a stated value that breaks its typed contract: `REC-01` (fractions out of range), `LSE-09` (amounts finite and nonnegative). |
@@ -192,7 +222,7 @@ recoveries and the CAM true-up" paragraph:
 | `preleased_as_of` ≥ `preleased_term_start` | `BED-06` error | Date-order contracts are errors: `REC-05` (a true-up ends strictly before the roll's `as_of_date`) and `LSE-02` (steps inside the lease term). |
 | A pre-leasing date stated without `preleased_beds` | No requirement beyond `BED-05`/`BED-06` | Inert context. Nothing in the existing contract requires a count to accompany a date, and the pack reads only the counts. No rule is added for symmetry. |
 
-### Protocol §III.6a (normative, proposed)
+### Protocol §III.6a (normative)
 
 Add one row to the registered-family table:
 
@@ -206,9 +236,9 @@ because each one refuses a stated value that is malformed, out of bounds, or
 missing its required companion. Absence of a count emits nothing, so the family
 never reports incomplete underwriting.
 
-### Library (proposed)
+### Library
 
-`@uwmd/core` would gain six validator rules (`BED-01`..`BED-06`), emitted from
+`@uwmd/core` gains six validator rules (`BED-01`..`BED-06`), emitted from
 `packages/uwmd-core/src/validator.ts` beside the other feature families. Each
 issue's message is its description, as with `REC-NN` and `LSE-NN`; there is no
 separate description registry in `protocol.ts`.
@@ -228,9 +258,9 @@ Because `verify-codes` fails a format-spec rule bullet that nothing emits, the
   never states a count is unaffected. A document that states a count must now
   state it completely:
   - The Mill Ave example states both counts as integers within `total_beds`,
-    but its roll has no `as_of_date` and no pre-leasing dates. Under this
-    proposal it would draw `BED-03` and `BED-04` errors. The reference
-    implementation therefore adds those dates to it in the same change.
+    but its roll has no `as_of_date` and no pre-leasing dates. It would draw
+    `BED-03` and `BED-04` errors, so the implementation adds those dates to it
+    in the same change.
   - The tier-3 fixture `student-housing-pre-lease-rate` states
     `preleased_beds` without dates. Tier-3 cases evaluate the calculation
     only, so its expected result does not move. The implementation still adds
@@ -262,7 +292,7 @@ document relied on an undated count.
 
 ## Conformance impact
 
-Existing files the reference implementation would update in the same change:
+Existing files the implementation updates in the same change:
 
 - `conformance/tier-3-calc-host/fixtures/student-housing-pre-lease-rate/deal.uwx.md`
   gains `preleased_as_of` and `preleased_term_start` beside `preleased_beds`.
@@ -273,7 +303,7 @@ Existing files the reference implementation would update in the same change:
   undeclared roll fields are outside this RFC and are neither declared nor
   read here.
 
-Proposed new tier-1 reader fixtures (next free numbers 14 and 15), each with
+New tier-1 reader fixtures (next free numbers 14 and 15), each with
 the four standard baselines (`.parsed.json`, `.rendered-chat.txt`,
 `.rendered-summary.md`, `.validation.json`):
 
@@ -286,7 +316,7 @@ the four standard baselines (`.parsed.json`, `.rendered-chat.txt`,
   `preleased_term_start`. Baseline: `BED-02` and `BED-06` errors, and nothing
   for the valid, dated `occupied_beds`.
 
-Unit tests (`validator.test.ts`) would pin each condition separately:
+Unit tests pin each condition separately:
 
 - **`BED-01`.** A string, a fraction, a negative and a non-finite count each
   error, including **when `property.total_beds` is absent**. That absence skips
@@ -309,24 +339,42 @@ Unit tests (`validator.test.ts`) would pin each condition separately:
 - **No cross-comparison.** No rule ever compares `occupied_beds` with
   `preleased_beds`, or either with the current date.
 
-## Reference implementation (if accepted)
+## Reference implementation
 
-This draft authorizes no implementation. If accepted, the implementation would
-land with the acceptance or in a linked follow-up PR. The RFC would not be
-`implemented` until it ships in a release with a CHANGELOG entry.
+Implemented in the change that records this acceptance. The RFC becomes
+`implemented` only when a release ships it, with a CHANGELOG entry.
 
-**Files likely affected:**
+**Files affected:**
 
 - `spec/UW_FORMAT_SPEC_v1.md` (§4.3 template and prose);
-- `spec/UW_PROTOCOL_v1.md` (§III.6a row);
-- `packages/uwmd-core/src/validator.ts` (a `checkStudentBedCounts` pass over
-  the resolved `rent_roll` block, honoring RFC 0040 role selection through the
-  existing `roleAwareDirectRead`);
-- `docs/wiki/05-calc-packs.md` (link the fields from the
-  `STUDENT_HOUSING_PACK` entry);
-- the fixture and example listed above.
+- `spec/UW_PROTOCOL_v1.md` (§III.6a row; version label);
+- `packages/uwmd-core/src/validator.ts` (`checkStudentBedCounts`);
+- `packages/uwmd-core/src/protocol.ts` (`PROTOCOL_VERSION`);
+- the fixture, the example and the two new tier-1 fixtures listed above;
+- `docs/wiki/05-calc-packs.md` and the living records.
+
+`checkStudentBedCounts` reads the property-level `rent_roll`. It selects the
+block with RFC 0040 roles, the same selection the lease-clause rules use, so a
+`component` block is never the roll it checks. It reads the block's payload
+the way the calc evaluator does (`blockPayload`, Protocol §VIII.2), so a v1
+flat block and a v2 `content` envelope are judged alike. `property.total_beds`
+is read from the property block CC-13 reads.
 
 **API surface:** none. No new export and no type change.
+
+**Version.** The change adds optional §4.3 fields and registers a validator
+family, the same additive shape RFC 0058 shipped as a Protocol minor. It
+therefore takes the next Protocol minor, **2.20.0**, accepted and unreleased
+until a package generation is prepared. Format stays **2.0**:
+`UW_FORMAT_SPEC_v2.md` incorporates v1 Part IV by reference, as for RFCs 0055
+and 0058. The version follows from existing semver-per-surface precedent; it is
+not a separate owner decision.
+
+**Separate concern, not in scope.** CC-13 accepts any finite number as a
+class's primary size field, so it does not enforce that `total_beds` is a
+nonnegative integer. That is a pre-existing size-intensive validation concern.
+`BED-02` compares a valid count with whatever finite `total_beds` is stated,
+and stays correct as specified, so this RFC does not change CC-13.
 
 **Test plan:**
 
@@ -377,26 +425,26 @@ land with the acceptance or in a linked follow-up PR. The RFC would not be
   their features. A new feature-scoped family is how §III.6a has registered
   rule sets since RFC 0008 (`LU-NN`).
 
-## Unresolved questions
+## Resolved questions
 
-- **Senior housing.** Whether `senior_housing`, which also states `total_beds`
-  as a secondary size (§4.1), should be allowed `occupied_beds` under this rule
-  set. The draft scopes the fields to `student_housing`. Senior housing has no
-  pre-leasing term, and its pack does not read these names.
-- **Mixed-use components.** Whether the fields apply to a `student_housing`
-  component of a `mixed_use` deal (Format §4.23), whose component metrics are
-  read under `components.student_housing`.
-- **Other classes stating the fields.** Whether a non-student class stating
-  them should draw an `info` issue rather than nothing. The typed rules apply
-  whenever the fields are stated.
-- **Future capacity.** If a phase delivering before the coming term must be
-  represented, that needs its own explicit contract (owner decision 1). This
-  draft does not propose one.
+The owner resolved the draft's four open questions on acceptance, 2026-10-02:
+
+- **Senior housing: out of scope.** `senior_housing` also states `total_beds`
+  as a secondary size (§4.1), but RFC 0069 does not extend `occupied_beds`,
+  `preleased_beds` or the pre-leasing date contract to it.
+- **Mixed-use components: out of scope.** RFC 0069 governs the top-level
+  student-housing `rent_roll`. It defines no bed-count semantics for a
+  `student_housing` component of a `mixed_use` deal (§4.23). If adopter
+  evidence later requires them, they need a separate contract.
+- **Other classes stating the fields: the draft behavior stands.** A
+  non-student class that states the fields draws no `info` issue for doing so.
+  When the fields are stated, the `BED` typed and date rules still apply.
+- **Future capacity: deferred.** `BED-02` is not weakened for planned future
+  beds. Future-phase capacity requires its own explicit representation.
 
 ## Decision status
 
-RFC 0069 remains `draft`. The owner decisions below settle specific semantics;
-they do not accept the RFC.
+RFC 0069 is `accepted`, not yet released.
 
 | Item | Source | State |
 |---|---|---|
@@ -405,16 +453,15 @@ they do not accept the RFC.
 | A stated `occupied_beds` or `preleased_beds` may not exceed `property.total_beds`; both are errors (`BED-02`); no future-phase exception through a warning | Owner decision 1, 2026-10-01 | Decided. Future capacity needs its own contract. |
 | A stated `preleased_beds` requires `preleased_as_of` and `preleased_term_start`: MUST plus error (`BED-04`); the tuple stays optional | Owner decision 2, 2026-10-01 | Decided. |
 | A stated `occupied_beds` requires the roll's `as_of_date` as a real `YYYY-MM-DD` date; an absent or malformed (non-real) `as_of_date` is an error (`BED-03`) | Owner decision 3, 2026-10-01, confirmed by the owner to cover both an absent and a malformed `as_of_date` | Decided. |
-| The four field names, types and date semantics | This draft | Proposal. |
-| One `BED-NN` family, every code an error | This draft, following §III.6a precedent | Proposal. |
-| Malformed counts and dates are errors; an absent count is not an issue; dates without a count are inert | This draft, following feature-family convention | Proposal. |
-| Format, Protocol, validator, fixture and example changes | This draft | Proposal. None made. |
-| Acceptance of RFC 0069 as a whole, and implementation | — | Not decided. Not authorized. |
+| Acceptance of RFC 0069 as a whole: field names, types and date semantics; one `BED-NN` error family; absent counts draw nothing; dates without a count are inert; no pack formula change | Owner acceptance, 2026-10-02 | Accepted. Format §4.3, Protocol §III.6a. |
+| Senior housing, `mixed_use` components, other classes, future capacity | Owner scope resolutions, 2026-10-02 | Resolved; see [Resolved questions](#resolved-questions). |
+| Protocol 2.20.0; Format unchanged at 2.0 | Semver-per-surface precedent (RFC 0058) | Consequence of acceptance, not a separate owner decision. |
+| Implementation | Owner authorization, 2026-10-02 | Implemented in source; `accepted` until released. |
 
 ## Prior art
 
 - RFC 0027 (asset-class size intensives) declared `total_beds`, and Protocol
-  §XIII.1 made it the student-housing denominator. This draft completes the
+  §XIII.1 made it the student-housing denominator. This RFC completes the
   roll-side pair the pack assumed.
 - RFC 0055 and RFC 0058 are the pattern for optional §4.3 fields with a
   feature-scoped family, a §III.6a row and typed-contract errors.

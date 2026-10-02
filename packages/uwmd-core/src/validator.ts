@@ -142,6 +142,7 @@ export function validateUWFile(
   checkReturnsTaxBasis(parsed, issues);
   checkTaxBasis(parsed, issues);
   checkLeaseClauses(parsed, issues);
+  checkStudentBedCounts(parsed, issues);
   checkHedgesAndEscrows(parsed, issues);
   checkRenovationDraw(parsed, issues);
   checkLocale(parsed, issues);
@@ -1522,6 +1523,101 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     checkLeasingCapital(t, issues, at);
     const share = checkRecoveryTerms(t, issues, at);
     checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
+  }
+}
+
+// ─── §4.3 Student-housing bed counts (RFC 0069) ──────────────────────────────
+//
+// Two stated counts, each a complete fact only with the date it was measured
+// on. Nothing is derived: no rule infers one count from the other, compares
+// the two, or compares a date with the clock. An absent count draws nothing,
+// and the pack metric over it resolves to null (§VIII.2). The rules read the
+// property-level roll through the same RFC 0040 selection as the lease-clause
+// rules, so a `component` block is never the roll checked, and they read its
+// payload as the calc evaluator does, so a v2 `content` envelope is judged
+// like a flat block.
+
+/** The two stated counts, in the order their issues are reported. */
+const BED_COUNT_FIELDS = Object.freeze(['occupied_beds', 'preleased_beds'] as const);
+/** The pre-leasing dates `preleased_beds` is measured against. */
+const BED_PRELEASE_DATE_FIELDS = Object.freeze(['preleased_as_of', 'preleased_term_start'] as const);
+
+function bedIssue(
+  issues: ValidationMessage[], code: string, field: string, message: string, value?: unknown,
+): void {
+  issues.push({
+    code, severity: 'error', section: 'rent_roll', field, message,
+    ...(value !== undefined ? { value } : {}),
+  });
+}
+
+/** `null` is the template default and means absent (§4.3), not zero. */
+const bedStated = (v: unknown): boolean => v !== undefined && v !== null;
+const isBedCount = (v: unknown): v is number =>
+  typeof v === 'number' && Number.isInteger(v) && v >= 0;
+
+/** The property block CC-13 judges, without recording a cross-check skip. */
+function bedSizeProperty(parsed: ParsedUWFile): UWBlock | null {
+  const entry = parsed.sections['property'];
+  if (!entry) return null;
+  const roleBearing = (isVariantMap(entry) ? Object.values(entry) : [entry]).some(hasBlockRole);
+  return roleBearing ? roleAwareDirectRead(parsed, 'property')
+    : getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
+}
+
+function checkStudentBedCounts(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const block = resolveCrossCheckSection(parsed, 'rent_roll').block;
+  if (!block) return;
+  const payload = blockPayload(block);
+  if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) return;
+  const roll = payload as Record<string, unknown>;
+
+  const property = bedSizeProperty(parsed);
+  const rawTotal = property ? deepGet(blockPayload(property), 'total_beds') : undefined;
+  const total = typeof rawTotal === 'number' && Number.isFinite(rawTotal) ? rawTotal : null;
+
+  for (const field of BED_COUNT_FIELDS) {
+    const value = roll[field];
+    if (!bedStated(value)) continue;
+    if (!isBedCount(value)) {
+      bedIssue(issues, 'BED-01', field,
+        `BED-01: ${field} must be a finite, nonnegative integer count of beds`, value);
+      continue;
+    }
+    // CC-13 reports an absent or non-numeric total; only this comparison waits on it.
+    if (total !== null && value > total) {
+      bedIssue(issues, 'BED-02', field,
+        `BED-02: ${field} (${value}) exceeds property.total_beds (${total}); capacity a later phase delivers needs its own representation`, value);
+    }
+  }
+
+  if (bedStated(roll['occupied_beds']) && !isDate(roll['as_of_date'])) {
+    bedIssue(issues, 'BED-03', 'as_of_date',
+      'BED-03: occupied_beds is measured on the roll\'s as_of_date, which must be stated as a real YYYY-MM-DD date',
+      roll['as_of_date'] ?? null);
+  }
+
+  if (bedStated(roll['preleased_beds'])) {
+    for (const field of BED_PRELEASE_DATE_FIELDS) {
+      if (!bedStated(roll[field])) {
+        bedIssue(issues, 'BED-04', field,
+          `BED-04: preleased_beds requires ${field}; a pre-leased count is complete only with both pre-leasing dates`);
+      }
+    }
+  }
+
+  for (const field of BED_PRELEASE_DATE_FIELDS) {
+    const value = roll[field];
+    if (bedStated(value) && !isDate(value)) {
+      bedIssue(issues, 'BED-05', field, `BED-05: ${field} must be a real YYYY-MM-DD date`, value);
+    }
+  }
+
+  const asOf = roll['preleased_as_of'];
+  const termStart = roll['preleased_term_start'];
+  if (isDate(asOf) && isDate(termStart) && asOf >= termStart) {
+    bedIssue(issues, 'BED-06', 'preleased_as_of',
+      `BED-06: preleased_as_of (${asOf}) must be before preleased_term_start (${termStart}); a count taken once the term has begun is occupancy, not pre-leasing`, asOf);
   }
 }
 

@@ -120,10 +120,13 @@ pre-lease premium, not on current coupon.
     "notes": null
   },
   "_notes": "Student housing leases by the bed, not by the unit, so occupancy is a bed count. preleased_beds is the signed count for the COMING academic year and is the leading revenue indicator; occupied_beds is the current in-place count. The two are measured at different dates and are deliberately not derived from each other.",
+  "as_of_date": "2026-08-01",
   "total_units": 180,
   "total_beds": 600,
   "occupied_beds": 567,
   "preleased_beds": 573,
+  "preleased_as_of": "2026-08-01",
+  "preleased_term_start": "2026-08-15",
   "occupancy": 0.945,
   "pre_lease_rate": 0.955,
   "vacancy_pct": 0.055,

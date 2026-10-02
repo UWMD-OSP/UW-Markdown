@@ -20,6 +20,15 @@ same protocol version.
 
 ## Current matrix
 
+**Accepted, unreleased source contract:** Protocol **2.20.0** adds RFC 0069.
+The top-level student-housing `rent_roll` may state `occupied_beds`,
+`preleased_beds`, `preleased_as_of` and `preleased_term_start`, and the `BED-NN`
+family refuses a stated count that is malformed, undated or above
+`property.total_beds`. Jared accepted RFC 0069 on 2026-10-02 and authorized
+implementation. Format stays 2.0. Published core/CLI 2.15.0 implement Protocol
+2.19.0; package versions and release state below are unchanged, and Protocol
+2.20.0 has no release tag or package publication yet.
+
 Release 2.15.0 pairs core/CLI 2.15.0 with Protocol 2.19.0 and Format 2.0.
 Protocol 2.19.0 adds RFC 0066. Ordinary calc identifiers select one block of a
 variant-map section by §VIII.2: an explicit variant, then the calculation's
@@ -57,7 +66,7 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.19.0** | format ≥ 1.0 (RFC 0066 calc variant resolution on 2.18.0's RFC 0063 boundary opt-in and RFC 0062 2.17.1 errata; released in core/CLI 2.15.0) |
+| UW Protocol | **2.20.0** (accepted, unreleased) | format ≥ 1.0; RFC 0069 student bed counts (`BED-NN`) on 2.19.0, which added RFC 0066 calc variant resolution and was released in core/CLI 2.15.0; published core/CLI 2.15.0 implement 2.19.0 |
 | `@uwmd/core` | **2.15.0** | format 2.0 (reads 1.x), protocol 2.19.0 |
 | `@uwmd/cli` (CLI) | **2.15.0** | `@uwmd/core` 2.15.0 |
 | `@uwmd/excel` | **0.9.7** (unpublished; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.15.x, format 2.0, explicit contextual calculations |

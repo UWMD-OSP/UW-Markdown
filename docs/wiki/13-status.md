@@ -4,8 +4,10 @@ Reconciled **2026-10-02** for published release **v2.15.0** (see
 [Released in 2.15.0](#released-in-2150)). Core/CLI **2.15.0**, signing
 **0.2.19** and batch **0.8.14** publish to npm with SLSA provenance from the
 `v2.15.0` tag. That release pairs Format **2.0** with Protocol **2.19.0**,
-which adds RFC 0066 to 2.18.0. Draft RFCs 0064, 0065 and 0067–0069 are outside
-that contract.
+which adds RFC 0066 to 2.18.0. Draft RFCs 0064, 0065, 0067 and 0068 are
+outside that contract. RFC 0069 (student bed counts) was accepted on 2026-10-02
+and is implemented in source as the unreleased Protocol **2.20.0**; see
+[Accepted, unreleased student bed counts](#accepted-unreleased-student-bed-counts-rfc-0069).
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -426,11 +428,41 @@ with Protocol **2.19.0** and is `implemented`.
 - **Excel.** The workbook writes `#VALUE!` where the engine refuses.
 - **Refinement.** It reports excluded targets in `diagnostics.section_inputs`.
 
+## Accepted, unreleased student bed counts (RFC 0069)
+
+[RFC 0069](../rfcs/0069-student-rent-roll-bed-counts.md) was accepted on
+**2026-10-02**. It declares four OPTIONAL fields on the top-level §4.3
+`rent_roll`: `occupied_beds`, `preleased_beds`, `preleased_as_of` and
+`preleased_term_start`. The `STUDENT_HOUSING_PACK` already read the two counts,
+and its formulas do not change.
+
+- **A stated count is a complete fact.** It must be a nonnegative integer
+  (`BED-01`), within `property.total_beds` (`BED-02`), and dated:
+  - `occupied_beds` on a real roll `as_of_date` (`BED-03`);
+  - `preleased_beds` with both pre-leasing dates present (`BED-04`), real
+    (`BED-05`) and in order (`BED-06`).
+
+  Every `BED` code is an error.
+- **Absence is not an issue.** A roll without the counts draws nothing, and
+  `occupancy` and `pre_lease_rate` stay `null`.
+- **Nothing is derived.** No rule compares the two counts, or a date with the
+  clock.
+- **Scope.** The rules read the property-level roll's payload under RFC 0040
+  selection. They do not extend to `senior_housing` or to a `mixed_use`
+  component. Another class that states the fields draws no issue for doing
+  so, but the rules apply to what it states.
+- **Not in scope.** Future-phase capacity is deferred, and `BED-02` is not
+  weakened for it. CC-13's acceptance of any finite `total_beds` is a separate,
+  pre-existing size-validation concern.
+- **Version.** Protocol **2.20.0**, unreleased. Format stays 2.0.
+  `@uwmd/core` takes the rules in the next package generation, and the RFC
+  stays `accepted` until a release ships it.
+
 ## Remaining work
 
-- Accept or decline draft RFC 0069 (student bed counts) as a whole, then RFCs
-  0068 and 0067, in that order. No post-sale settlement category or lag is
-  authorized. Reserve-account, financing, investor-tax and post-sale work remain
+- Prepare a package generation for RFC 0069 when the owner wants it released.
+  Then decide RFCs 0068 and 0067, in that order. No post-sale settlement
+  category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes

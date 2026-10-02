@@ -60,6 +60,6 @@ created_by: "conformance"
     "input_hash": null,
     "notes": null
   },
-  "content": { "preleased_beds": 570 }
+  "content": { "preleased_beds": 570, "preleased_as_of": "2026-03-15", "preleased_term_start": "2026-08-15" }
 }
 ```
