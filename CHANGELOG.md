@@ -8,10 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-See the prepared 2.14.0 candidate below. No tag or package publication has
-occurred.
-
-## [2.14.0] - release candidate (unpublished)
+## [2.14.0] - 2026-10-02
 
 ### Prepared
 
@@ -19,8 +16,9 @@ Core/CLI **2.14.0** pair with accepted Protocol **2.18.0** and unchanged
 Format **2.0**. Signing **0.2.18** and batch **0.8.13** repin core; the
 unpublished Excel, report, lake and module manifests also receive exact local
 repins. Receipt issuance baselines and the frozen verification fixture use the
-new engine version. This section records a candidate, not a released package.
-RFCs 0062 and 0063 remain `accepted` until the capability ships.
+new engine version. Jared authorized the `v2.14.0` tag on 2026-10-02 after
+reconfirming the four npm trusted publishers. RFCs 0062 and 0063 remain
+`accepted` until the tagged packages are verified on npm.
 
 ### Fixed
 

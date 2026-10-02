@@ -1,9 +1,10 @@
 # HUMAN: deprecate the two stray registry packages
 
-> **Status 2026-09-15.** The four trusted publishers below are **confirmed set**
-> by the owner. What remains is the deprecation at the bottom, which needs an
-> `npm login` first — the token in `~/.npmrc` is expired (`npm whoami` returns
-> 401), which is why an agent could not run it.
+> **Status 2026-10-02.** The deprecation at the bottom is **done**. Jared ran it,
+> and the registry shows the message on `@uwmd/excel@0.3.0` and
+> `@uwmd/report@0.3.0`. The four trusted publishers were confirmed on
+> 2026-09-15, and Jared reconfirmed all four on 2026-10-02 before authorizing
+> the `v2.14.0` tag ([release steps](HUMAN-release-2.14.0.md)).
 
 ## Original handoff: confirm npm trusted publishers before the next release tag
 

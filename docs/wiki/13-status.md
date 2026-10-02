@@ -1,6 +1,6 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-09-29** against canonical `main` at `615e6be`. The latest
+Reconciled **2026-10-01** against canonical `main` at `6ad146a`. The latest
 published release is **v2.13.0** (see
 [Released in 2.13.0](#released-in-2130)). Core/CLI **2.13.0**, signing
 **0.2.17** and batch **0.8.12** publish to npm with SLSA provenance from the
@@ -13,6 +13,16 @@ PR #221 repaired shared decimal quantization in source after the candidate
 merge; it did not create a release or change RFC 0064's draft status.
 PR #223 corrected GPR object value paths for student-housing and self-storage
 packs and Excel layouts; it also did not create a release.
+PRs #228 and #229 aligned the Excel office layout, chat renderer and
+`noi_model` view model with the Format §4.5 shape. On 2026-10-01 the owner
+confirmed 2.14.0 as the release point, and the release gates passed at
+`6ad146a` under the pinned Node 22.14.0/npm 11.5.1 toolchain
+([review](../reviews/2026-09-28-2.14.0-pre-release.md)). On 2026-10-02 the
+owner completed the npm steps and authorized the `v2.14.0` tag. Draft RFCs
+0064, 0065 and 0067–0069 are outside that contract. So is RFC 0066, which the
+owner accepted on 2026-10-02. Its accepted text and Protocol 2.19.0
+implementation, targeting core/CLI 2.15.0, wait on a separate branch until
+2.14.0 is published and the 2.15.0 generation is prepared.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 ## Built and released
@@ -35,7 +45,7 @@ Web editor/viewer, docs site and VS Code extension are implemented. Standalone
 Excel **0.9.6**, report **0.8.18**, lake **0.2.2** and hospitality/data-center
 module packages **0.1.6** are prepared in source but remain unpublished. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
-2026-08-16, pending deprecation; see [VERSIONS.md](../../VERSIONS.md). Core's
+2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
 from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
