@@ -42,6 +42,13 @@ fences. A reader that takes the first or the last fence must fail the case, not
 pass by fence order. `section-resolution.test.ts` in `@uwmd/core` enforces
 this for every context scenario.
 
+The four successful no-context scenarios (`variant-01`, `-02`, `-04`, `-10`)
+also put their selected block in the middle. Their distinct primary, default,
+declared-role and unclaimed-role fallback rules still select the original
+block, with no extra primary or matching role. The same guard rejects both
+fence orders and pins those selection reasons. Both runners read the same
+fixtures and unchanged expected results; no generated case or count changes.
+
 ### Dated same-day scenarios (RFC 0062)
 
 The four fixtures share one synthetic document. Its `cash_flow_series.series`

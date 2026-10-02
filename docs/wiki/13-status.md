@@ -438,6 +438,21 @@ with Protocol **2.19.0** and is `implemented`.
   - **Scope.** Conformance evidence only, unreleased. The rule, expected
     results and counts are unchanged.
 
+- **First-fence hardening after PR #240.** The successful no-context cases
+  `variant-01`, `-02`, `-04` and `-10` now prepend a non-selected
+  `producer-b-note` junior fence (2,000,000). The original selected block
+  (6,000,000) is in the middle, before the original junior (1,000,000).
+  - **Distinct rules preserved.** Unique primary, default key, unique declared
+    senior and an unclaimed senior falling back to primary still decide their
+    respective cases. No primary or matching-role collision is introduced.
+  - **Guard and mutants.** `section-resolution.test.ts` discovers every
+    successful non-null no-context variant case and pins the selection reason.
+    A built resolver that validates the selection and then returns the first
+    fence passed 43/43 default tier-3 checks and 42/42 portable cases before
+    this change. First- and last-fence mutants now fail all four in both runners.
+  - **Unchanged.** Expected 0.6, Protocol/RFC/package state, 675 default checks
+    and 101 portable cases. This is conformance evidence only, unreleased.
+
 ## Accepted, unreleased student bed counts (RFC 0069)
 
 [RFC 0069](../rfcs/0069-student-rent-roll-bed-counts.md) was accepted on
@@ -524,30 +539,6 @@ The guards:
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
-- **Harden the RFC 0066 generic-order fixtures against a first-fence
-  reader.** This is bounded conformance hardening, found during the
-  UPSTREAM-021 work (2026-10-02).
-  - **The gap.** Four tier-3 fixtures resolve to their first `debt_structure`
-    fence:
-    - `variant-01-primary-resolves`;
-    - `variant-02-default-resolves`;
-    - `variant-04-role-preference`;
-    - `variant-10-role-unclaimed`.
-
-    A resolver can validate the role, primary or default correctly and then
-    read the first fence. Mutating the built `resolveRoleBlock` that way still
-    passed all 43 default tier-3 checks. A non-TypeScript calc host could
-    therefore self-certify through the portable driver. Only core's own unit
-    test, "reads the declared role, whichever fence comes first", catches it
-    in the reference implementation.
-  - **The fix.** Follow UPSTREAM-021:
-    - put each selected block between two other fences, without a second
-      `primary` or a second block with the declared role;
-    - keep each fixture's role semantics and expected result;
-    - extend the `section-resolution.test.ts` fence-order suite to cover the
-      four fixtures.
-
-    It is conformance evidence only, with no rule, RFC or version change.
 - Speculative leasing needs explicit renewal/vacancy, rent reset and TI/LC timing
   rules with an adopter example. Array iteration alone does not supply them.
 - Reverse import, structural workbook edits, period defaults and cash-flow

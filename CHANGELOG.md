@@ -56,6 +56,16 @@ until a release ships it.
 
 ### Conformance
 
+- **RFC 0066's four successful no-context fixtures reject both fence orders.**
+  `variant-01`, `-02`, `-04` and `-10` prepend a non-selected junior
+  `producer-b-note` (2,000,000), putting the original selected block between
+  two junior fences. Unique primary, default, declared senior and unclaimed-role
+  fallback remain distinct; all expected results stay 0.6. The corpus guard
+  discovers these cases, pins their selection reasons and rejects first/last
+  fence readers. Actual built-resolver mutants fail all four in default and
+  portable tier-3 runs; the first-fence mutant passed both before this change.
+  No contract, version, baseline, generated case or conformance count changes.
+
 - **RFC 0066 fixtures `variant-05` and `variant-11` no longer pass a
   fence-order reader** (StackUW's UPSTREAM-021). Both used to put the block
   their `calc-context.json` names in the last fence. A reader that checked the

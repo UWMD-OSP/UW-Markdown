@@ -121,10 +121,10 @@ describe('resolveSectionBlock (Protocol §VIII.2, RFC 0066)', () => {
 // the last fence. A reader that checked the name and then kept the last fence
 // passed both, in both runners, because both read these same files (StackUW's
 // UPSTREAM-021). Swapping the fences would only move the blind spot: every
-// generic-order fixture already resolves to its first fence. So each context
-// fixture now puts the named block between two others, and this suite keeps it
-// there.
-describe('RFC 0066 tier-3 context fixtures are not satisfiable by fence order', () => {
+// generic-order fixture also resolved to its first fence. Both context and
+// successful no-context fixtures now put the selected block between two others;
+// this suite preserves their distinct selection reasons and rejects both orders.
+describe('RFC 0066 tier-3 fixtures are not satisfiable by fence order', () => {
   const TIER3 = resolve(process.cwd(), '../..', 'conformance/tier-3-calc-host/fixtures');
   const CONTEXT_FIXTURES = readdirSync(TIER3)
     .filter((name) => name.startsWith('variant-') && existsSync(join(TIER3, name, 'calc-context.json')))
@@ -135,7 +135,8 @@ describe('RFC 0066 tier-3 context fixtures are not satisfiable by fence order', 
     return {
       parsed: parseUWFile(readFileSync(join(TIER3, name, 'deal.uwx.md'), 'utf8')),
       decl: json('calc.json') as ModuleCalcDecl,
-      context: parseCalculationContext(json('calc-context.json')),
+      context: existsSync(join(TIER3, name, 'calc-context.json'))
+        ? parseCalculationContext(json('calc-context.json')) : {},
       expected: json('expected-result.json'),
     };
   }
@@ -157,6 +158,58 @@ describe('RFC 0066 tier-3 context fixtures are not satisfiable by fence order', 
     const blocks = Object.values(parsed.sections[section] as Record<string, UWBlock>);
     const block = pick === 'first' ? blocks[0]! : blocks[blocks.length - 1]!;
     return { ...parsed, sections: { ...parsed.sections, [section]: block } };
+  }
+
+
+  // Discover every successful non-null no-context case, including future ones.
+  const ORDER_FIXTURES = readdirSync(TIER3).filter((name) => {
+    if (!name.startsWith('variant-') || existsSync(join(TIER3, name, 'calc-context.json'))) return false;
+    const expected = JSON.parse(readFileSync(join(TIER3, name, 'expected-result.json'), 'utf8'));
+    return expected.ok && expected.value !== null;
+  }).sort();
+
+  it('finds all four successful no-context fixtures', () => {
+    expect(ORDER_FIXTURES).toEqual([
+      'variant-01-primary-resolves',
+      'variant-02-default-resolves',
+      'variant-04-role-preference',
+      'variant-10-role-unclaimed',
+    ]);
+  });
+
+  for (const name of ORDER_FIXTURES) {
+    it(`${name}: the §VIII.2 reader keeps the unchanged expected result`, () => {
+      const { parsed, decl, expected } = load(name);
+      expect(expected).toMatchObject({ ok: true, value: 0.6 });
+      expect(evaluate(parsed, decl)).toEqual(expected);
+    });
+
+    it(`${name}: both first-fence and last-fence readers fail`, () => {
+      const { parsed, decl, expected } = load(name);
+      expect(evaluate(fence(parsed, 'debt_structure', 'first'), decl)).not.toEqual(expected);
+      expect(evaluate(fence(parsed, 'debt_structure', 'last'), decl)).not.toEqual(expected);
+    });
+
+    it(`${name}: the middle fence resolves for its original reason`, () => {
+      const { parsed, decl } = load(name);
+      const blocks = parsed.sections['debt_structure'] as Record<string, UWBlock>;
+      const selected = name === 'variant-02-default-resolves' ? 'default' : 'producer-senior';
+      expect(Object.keys(blocks)).toEqual([
+        'producer-b-note', selected,
+        name === 'variant-02-default-resolves' ? 'mezzanine' : 'producer-mezz',
+      ]);
+      expect(resolveSectionBlock(parsed, 'debt_structure', { sectionRoles: decl.section_roles }))
+        .toBe(blocks[selected]);
+      const roles = Object.values(blocks).map((block) => block.content['_role']);
+      expect(roles).toEqual(['junior', name === 'variant-02-default-resolves'
+        || name === 'variant-04-role-preference' ? 'senior' : 'primary', 'junior']);
+      if (name === 'variant-04-role-preference' || name === 'variant-10-role-unclaimed') {
+        expect(decl.section_roles).toEqual({ debt_structure: 'senior' });
+        expect(roles.filter((role) => role === 'senior')).toHaveLength(
+          name === 'variant-04-role-preference' ? 1 : 0,
+        );
+      } else expect(decl.section_roles).toBeUndefined();
+    });
   }
 
   it('finds every context fixture, so the checks below cannot pass over an empty set', () => {
