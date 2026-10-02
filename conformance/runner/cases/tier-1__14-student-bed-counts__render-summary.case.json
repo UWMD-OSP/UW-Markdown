@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/14-student-bed-counts/render-summary",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "14-student-bed-counts.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/14-student-bed-counts.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

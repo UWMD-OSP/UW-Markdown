@@ -1,0 +1,65 @@
+{
+  "frontmatter": {
+    "uw_version": "1.1",
+    "deal_id": "TEST-BEDS",
+    "deal_name": "Student Bed Counts Fixture",
+    "created": "2026-10-02T00:00:00Z",
+    "last_modified": "2026-10-02T00:00:00Z",
+    "property_address": "1 Campus Way",
+    "city": "Tempe",
+    "state": "AZ",
+    "zip": "85281",
+    "asset_class": "student_housing",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "analyst",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-10-02T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "total_units": 180,
+        "total_beds": 600
+      }
+    },
+    "rent_roll": {
+      "meta": {
+        "section": "rent_roll",
+        "version": 1,
+        "superseded": false,
+        "source": "manual",
+        "timestamp": "2026-10-02T00:00:00Z",
+        "confidence": "high",
+        "human_review_required": false,
+        "flags": []
+      },
+      "content": {
+        "rent_roll_type": "multifamily",
+        "as_of_date": "2026-03-15",
+        "occupied_beds": 567,
+        "preleased_beds": 573,
+        "preleased_as_of": "2026-03-15",
+        "preleased_term_start": "2026-08-15"
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

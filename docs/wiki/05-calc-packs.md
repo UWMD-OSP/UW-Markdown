@@ -236,6 +236,14 @@ measured on different dates (next academic year vs. in place today), and the
 fixture carries different values for each so the distinction cannot silently
 collapse. A test asserts they differ.
 
+Format §4.3 declares both counts and the dates they are measured on (RFC 0069,
+accepted, unreleased). `occupied_beds` is measured on the roll's `as_of_date`;
+`preleased_beds` is measured on `preleased_as_of` for the term starting
+`preleased_term_start`. The validator's `BED-NN` rules refuse a stated count
+that is malformed, undated or above `property.total_beds`. An absent count
+draws nothing, and the metric over it is `null`. The pack formulas are
+unchanged.
+
 The operating statement also carries `turnover_make_ready` as its own expense
 line: turning nearly the whole property in one August window is a materially
 larger and less smoothable cost than conventional multifamily turnover, which is

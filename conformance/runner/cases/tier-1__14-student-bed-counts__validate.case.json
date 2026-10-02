@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/14-student-bed-counts/validate",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "14-student-bed-counts.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/14-student-bed-counts.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

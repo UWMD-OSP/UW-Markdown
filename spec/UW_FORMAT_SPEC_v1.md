@@ -870,6 +870,10 @@ Field notes:
   "net_effective_rent_monthly": 0.0,
   "month_to_month_units": 0,
   "month_to_month_pct": 0.0,
+  "occupied_beds": null,
+  "preleased_beds": null,
+  "preleased_as_of": null,
+  "preleased_term_start": null,
   "units": [
     {
       "unit_id": "string",
@@ -918,6 +922,72 @@ Field notes:
   ]
 }
 ```
+
+**Student-housing bed counts (RFC 0069).** `occupied_beds`, `preleased_beds`,
+`preleased_as_of` and `preleased_term_start` are OPTIONAL. They are meaningful
+when `asset_class` is `student_housing`; other classes SHOULD leave them `null`
+or absent. Student housing leases by the bed and re-leases nearly its whole roll
+on one date, so the roll carries two bed counts measured on different dates.
+
+- `occupied_beds` (integer, ≥ 0) — beds under a lease in place as of the roll's
+  `as_of_date`.
+- `preleased_beds` (integer, ≥ 0) — beds under a signed lease for the academic
+  term that begins on `preleased_term_start`, counted as of `preleased_as_of`.
+- `preleased_as_of` (`YYYY-MM-DD`) — the date `preleased_beds` was measured.
+- `preleased_term_start` (`YYYY-MM-DD`) — the first day of the term
+  `preleased_beds` describes. The term is in the future relative to
+  `preleased_as_of`, not relative to the date a tool reads the file.
+
+The fields describe the top-level `rent_roll` only:
+
+- They do not extend to `senior_housing`, which also states `total_beds`
+  (§4.1).
+- They give a `student_housing` component of a `mixed_use` deal (§4.23) no
+  bed-count semantics.
+- A class other than `student_housing` that states them draws no issue for
+  doing so. The rules below still apply to what it states.
+
+The fields are optional as a group. A roll may omit either count, and with
+`preleased_beds` the whole pre-leasing tuple. A count that is stated is a
+complete typed fact only with its measurement date:
+
+- A stated `occupied_beds` MUST be accompanied by the roll's `as_of_date` as a
+  real date.
+- A stated `preleased_beds` MUST be accompanied by both `preleased_as_of` and
+  `preleased_term_start`.
+
+The two counts are **stated, never derived**. Pre-leasing never sets occupancy,
+neither count is inferred from the other, and no rule compares the two.
+`property.total_beds` (§4.1) remains the size field and the denominator of
+every per-bed metric (Protocol §XIII.1). Neither count may exceed it, including
+for capacity a later phase will deliver. Future-phase capacity needs its own
+explicit representation, which this section does not define.
+
+An absent count is not an issue. A roll that omits a count draws no `BED-*`
+issue for it, and a pack metric over an absent count resolves to `null`
+(Protocol §VIII.2). Stage requirements for absent facts belong to
+incomplete-data policies, not to this family. A pre-leasing date stated without
+`preleased_beds` is inert context. It must still be a real date, and the pair
+must still be in order, but it requires nothing else. Every rule compares
+stated values with each other, never with the current date or file metadata.
+
+- `BED-01` — **error** when a stated `occupied_beds` or `preleased_beds` is not
+  a finite, nonnegative integer. This is checked whether or not
+  `property.total_beds` is stated.
+- `BED-02` — **error** when a valid `occupied_beds` or `preleased_beds` exceeds
+  `property.total_beds`. The comparison runs only when `property.total_beds` is
+  a finite number. Otherwise only this comparison is skipped; `CC-13` already
+  reports an absent or non-numeric primary size field.
+- `BED-03` — **error** when `occupied_beds` is stated and the roll's
+  `as_of_date` is absent or not a real `YYYY-MM-DD` date.
+- `BED-04` — **error** when `preleased_beds` is stated and `preleased_as_of` or
+  `preleased_term_start` is absent.
+- `BED-05` — **error** when a stated `preleased_as_of` or
+  `preleased_term_start` is not a real `YYYY-MM-DD` date. This is checked
+  whenever the date is stated, with or without `preleased_beds`.
+- `BED-06` — **error** when both pre-leasing dates are real and
+  `preleased_as_of` is on or after `preleased_term_start`. A count measured on
+  or after the day the term began describes occupancy, not pre-leasing.
 
 #### Commercial Variant
 

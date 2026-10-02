@@ -8,6 +8,52 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Accepted contract — Protocol 2.20.0 (RFC 0069, unreleased)
+
+Jared accepted RFC 0069 as a whole on **2026-10-02** and authorized
+implementation. Format stays **2.0**. Package versions for this contract are
+set when the next package generation is prepared, and the RFC stays `accepted`
+until a release ships it.
+
+- **Student-housing bed counts (Format §4.3).** The top-level `rent_roll` may
+  state four OPTIONAL fields:
+  - `occupied_beds`, measured on the roll's `as_of_date`;
+  - `preleased_beds`, measured on `preleased_as_of` for the term starting
+    `preleased_term_start`;
+  - those two pre-leasing dates.
+
+  `STUDENT_HOUSING_PACK` already read the two counts, and its formulas do not
+  change.
+- **`BED-NN`, a new error family (Protocol §III.6a).** It refuses a stated
+  count that is not a nonnegative integer (`BED-01`) or exceeds
+  `property.total_beds` (`BED-02`). It also refuses:
+  - an `occupied_beds` without a real `as_of_date` (`BED-03`);
+  - a `preleased_beds` missing a pre-leasing date (`BED-04`);
+  - a malformed pre-leasing date (`BED-05`);
+  - a `preleased_as_of` on or after `preleased_term_start` (`BED-06`).
+- **Absence and derivation.** An absent count draws nothing, and its pack
+  metric stays `null`. The counts are stated, never derived from or compared
+  with each other.
+- **Scope, per the owner's resolutions.**
+  - The fields do not extend to `senior_housing` or to a `mixed_use`
+    component.
+  - Another class that states them draws no issue for doing so, but the rules
+    apply to what it states.
+  - Future-phase capacity is deferred, and `BED-02` is not weakened for it.
+- **Reading the roll.** The rules read the property-level roll under RFC 0040
+  selection, and read its payload as the calc evaluator does, so a v2 `content`
+  envelope is judged like a flat block.
+- **Corpus.**
+  - The Mill Ave student example and the `student-housing-pre-lease-rate`
+    tier-3 fixture state the dates beside their counts. Their figures and the
+    fixture's expected `0.95` do not move.
+  - New tier-1 fixtures: `14-student-bed-counts` is clean, and
+    `15-student-bed-counts-inconsistent` draws `BED-02` and `BED-06`.
+  - Default conformance grows from 667 to 675 checks, and the portable runner
+    from 93 to 101 cases.
+  - The receipt issuance baselines' protocol label moves to 2.20.0, with
+    unchanged results.
+
 ## [2.15.0] - 2026-10-02
 
 ### Prepared

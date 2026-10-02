@@ -19,6 +19,8 @@ They MUST:
 | `fixtures/01-minimal-screening.uwx.md` | Single-section minimal file at the screening stage |
 | `fixtures/02-full-multifamily.uwx.md`  | Full multifamily deal across all 21 standard sections |
 | `fixtures/04-scope-only.uwx.md` | Back-of-napkin scope-stage file with provisional blocks + populated `gaps` section |
+| `fixtures/14-student-bed-counts.uwx.md` | Student-housing roll stating both bed counts with their dates (RFC 0069); no `BED-*` issue |
+| `fixtures/15-student-bed-counts-inconsistent.uwx.md` | The same roll with `preleased_beds` above `total_beds` and `preleased_as_of` after `preleased_term_start`; `BED-02` and `BED-06` errors, nothing for the valid `occupied_beds` |
 
 ### Malformed fixtures
 

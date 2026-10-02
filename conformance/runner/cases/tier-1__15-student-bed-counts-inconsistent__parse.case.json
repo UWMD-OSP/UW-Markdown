@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/15-student-bed-counts-inconsistent/parse",
+  "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "15-student-bed-counts-inconsistent.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/15-student-bed-counts-inconsistent.parsed.json"
+  }
+}
