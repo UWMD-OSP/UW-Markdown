@@ -22,7 +22,9 @@ created_by: "conformance"
 
 The calculation declares `section_roles: { debt_structure: senior }`, so it reads the senior block: 0.6.
 
-Two `debt_structure` blocks are a variant map only because each carries `_role` and a `variant=` key (RFC 0040's Markdown opt-in).
+The selected block sits between two non-selected junior fences; neither fence order returns the expected result.
+
+Three `debt_structure` blocks are a variant map only because each carries `_role` and a `variant=` key (RFC 0040's Markdown opt-in).
 
 
 ```json uw:section=valuation source=manual v=1
@@ -38,6 +40,23 @@ Two `debt_structure` blocks are a variant map only because each carries `_role` 
     "flags": []
   },
   "purchase_price": 10000000
+}
+```
+
+```json uw:section=debt_structure variant=producer-b-note source=manual v=1
+{
+  "_meta": {
+    "section": "debt_structure",
+    "version": 1,
+    "superseded": false,
+    "source": "manual",
+    "timestamp": "2026-10-02T00:00:00Z",
+    "confidence": "high",
+    "human_review_required": false,
+    "flags": []
+  },
+  "_role": "junior",
+  "loan_amount": 2000000
 }
 ```
 
