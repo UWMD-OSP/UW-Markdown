@@ -8,28 +8,7 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-See the prepared 2.15.0 candidate below. No tag or package publication has
-occurred.
-
-### Conformance (after the 2.15.0 candidate)
-
-- **Portable-driver coverage for RFC 0062 same-day selection.** Four tier-3
-  fixtures, `period-09` through `period-12`, carry the Protocol §VIII.2a
-  same-day rule into the RFC 0004 driver (`conformance/runner/cases`). They
-  share one synthetic document whose cash-flow series and waterfall schedule
-  each repeat 2027-06-30:
-  - a unique cash-flow date resolves;
-  - the repeated date refuses `CALC-PERIOD-002`;
-  - an absent date is null;
-  - the waterfall schedule still refuses a unique date.
-
-  Before this change only the TypeScript suite pinned the rule
-  (`cash-flow/valid-same-day-selection`), so a non-TypeScript calc host could
-  self-certify while refusing every same-day series. The published core/CLI
-  2.13.0 engine fails the unique-date and absent-date cases. No behavior,
-  spec or schema changed; the portable driver now has 93 cases.
-
-## [2.15.0] - release candidate (unpublished)
+## [2.15.0] - 2026-10-02
 
 ### Prepared
 
@@ -39,8 +18,9 @@ Signing **0.2.19** and batch **0.8.14** repin core, and core's optional
 signing peer moves to 0.2.19. The unpublished Excel **0.9.7**, report
 **0.8.19**, lake **0.2.3** and module **0.1.7** manifests also receive exact
 local repins. Receipt issuance baselines and the frozen verification fixture
-use the new engine version. This section records a candidate, not a released
-package. RFC 0066 remains `accepted` until the capability ships.
+use the new engine version. The heading is dated for the `v2.15.0` tag, which
+the owner authorizes separately. RFC 0066 remains `accepted` until the tagged
+packages are verified on npm.
 
 ### Fixed
 
@@ -63,6 +43,24 @@ package. RFC 0066 remains `accepted` until the capability ships.
   parity on a wrapped document. Each fails on the previous code. No normative
   text, schema or conformance baseline changes. Published core/CLI 2.14.0
   still carries the defect; this candidate fixes it.
+
+### Conformance
+
+- **Portable-driver coverage for RFC 0062 same-day selection.** Four tier-3
+  fixtures, `period-09` through `period-12`, carry the Protocol §VIII.2a
+  same-day rule into the RFC 0004 driver (`conformance/runner/cases`). They
+  share one synthetic document whose cash-flow series and waterfall schedule
+  each repeat 2027-06-30:
+  - a unique cash-flow date resolves;
+  - the repeated date refuses `CALC-PERIOD-002`;
+  - an absent date is null;
+  - the waterfall schedule still refuses a unique date.
+
+  Before this change only the TypeScript suite pinned the rule
+  (`cash-flow/valid-same-day-selection`), so a non-TypeScript calc host could
+  self-certify while refusing every same-day series. The published core/CLI
+  2.13.0 engine fails the unique-date and absent-date cases. No behavior,
+  spec or schema changed; the portable driver now has 93 cases.
 
 ### Accepted contract — Protocol 2.19.0 (RFC 0066, unreleased)
 
