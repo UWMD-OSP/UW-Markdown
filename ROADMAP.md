@@ -1,24 +1,19 @@
 # Roadmap
 
-Reconciled **2026-09-29** against canonical `main` at `615e6be`, following
-[release 2.13.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.13.0)
-(see [Released in 2.13.0](#released-in-2130)).
+Reconciled **2026-10-02**, following
+[release 2.14.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.14.0)
+(see [Released in 2.14.0](#released-in-2140)).
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
-PR #221 subsequently repaired shared decimal quantization for stated-value
-checks; it did not change the 2.14.0 candidate's release status.
-PR #223 subsequently corrected GPR object value paths in student-housing and
-self-storage packs; it likewise did not change the candidate's release status.
 
 ## Current release
 
-Core/CLI **2.13.0**, signing **0.2.17** and batch **0.8.12** are published on
-npm from the `v2.13.0` tag with SLSA provenance. Format is **2.0** and Protocol
-is **2.17.0** in that release. PR #218 merged the prepared core/CLI **2.14.0**
-candidate into `main` with accepted, unreleased Protocol **2.18.0** for RFCs
-0062 and 0063; no `v2.14.0` tag or publication exists. Format stays **2.0**; the
-version streams are independent.
+Core/CLI **2.14.0**, signing **0.2.18** and batch **0.8.13** are published on
+npm from the `v2.14.0` tag with SLSA provenance. Format is **2.0** and Protocol
+is **2.18.0**; the version streams are independent. RFC 0066 (accepted
+2026-10-02) is not in this release; it targets core/CLI 2.15.0 with Protocol
+2.19.0.
 The [version matrix](VERSIONS.md) records exact compatibility and unpublished
 packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
@@ -74,7 +69,7 @@ Protocol **2.13.0**:
 
 The source CLI also gained `verify-cash-flows`, which checks stated cash-flow
 metrics without a custom script and distinguishes no claims from verified ones.
-See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+See the [workflow](docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
 
 ## Released in 2.12.0
 
@@ -126,6 +121,21 @@ For the lake adapter, a real load against a live PostgreSQL server ran on
 a managed-service run and the publication decision are still open. See the
 [adoption notes](docs/roadmap/2026-09-13-standalone-documents-and-lake.md) and
 the [data-lake guide](docs/DATA_LAKE.md).
+
+## Released in 2.14.0
+
+Released from the reviewed `v2.14.0` tag. The living detail is in the developer
+wiki's build-status page (`docs/wiki/13-status.md`); this section records only
+what changes a roadmap or status claim.
+
+| Change | Effect on this roadmap |
+|---|---|
+| **Same-day cash-flow rows (RFC 0062, Protocol 2.17.1 errata)** | `cash_flow_series.series` rows sharing a date stay distinct without PS-02. A unique date resolves; a repeated date refuses `CALC-PERIOD-002`. Other registered series keep whole-series refusal. Priority 1's DCF validation item no longer waits on this. |
+| **Final-period exclusive boundary (RFC 0063, Protocol 2.18.0)** | Explicit opt-in `disposition_period_rule: allow_exclusive_end` admits disposition at the final monthly/quarterly period's exclusive end. No settlement horizon, proration or new period. Reserve-account and financing assembly remain separate. |
+| **Decimal quantization for stated-value checks** | Cash-flow, net-sale, tax, escrow, hedge and capex comparisons share calc reporting's half-away-from-zero decimal algorithm. Correction only. |
+| **§4.5 `noi_model` read paths** | Student-housing and self-storage pack formulas, the office Excel layout, the chat renderer and the `noi_model` view model read the §4.5 object shape. Correction only; Excel ↔ calc parity is unchanged. |
+
+No forward candidate below moved.
 
 ## Released in 2.13.0
 
@@ -218,7 +228,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 integrated; 2.14.0 candidate merged for owner release review | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. Jared accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs remain **accepted** until shipped. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and Golden Deal probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. The merged 2.14.0 candidate has no release tag or publication; reserve-account and financing assembly remain separate. |
+| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 released in 2.14.0 | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. Jared accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs shipped in 2.14.0 and are **implemented**. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and Golden Deal probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. Reserve-account and financing assembly remain separate. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |

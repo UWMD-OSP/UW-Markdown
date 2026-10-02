@@ -12,13 +12,18 @@ protocol, and each package each carry an independent semver).
 
 ### Prepared
 
-Core/CLI **2.14.0** pair with accepted Protocol **2.18.0** and unchanged
+Core/CLI **2.14.0** pair with Protocol **2.18.0** and unchanged
 Format **2.0**. Signing **0.2.18** and batch **0.8.13** repin core; the
 unpublished Excel, report, lake and module manifests also receive exact local
 repins. Receipt issuance baselines and the frozen verification fixture use the
 new engine version. Jared authorized the `v2.14.0` tag on 2026-10-02 after
-reconfirming the four npm trusted publishers. RFCs 0062 and 0063 remain
-`accepted` until the tagged packages are verified on npm.
+reconfirming the four npm trusted publishers.
+
+### Released
+
+The `v2.14.0` tag published core/CLI **2.14.0**, signing **0.2.18** and batch
+**0.8.13** to npm with SLSA provenance through trusted publishing (OIDC). RFCs
+0062 and 0063 are now `implemented`.
 
 ### Fixed
 
@@ -60,7 +65,7 @@ reconfirming the four npm trusted publishers. RFCs 0062 and 0063 remain
   figures. Example drift and the open owner decisions are recorded in
   `docs/reviews/2026-10-01-noi-model-read-paths.md`.
 
-### Accepted additive contract — Protocol 2.18.0 (RFC 0063, unreleased)
+### Accepted additive contract — Protocol 2.18.0 (RFC 0063)
 
 - Jared accepted RFC 0063 at `f04b34ab5606264424bddc02b09ced256a09bbcc` on
   **2026-09-24**. The optional closed `disposition_period_rule` plan member
@@ -69,15 +74,15 @@ reconfirming the four npm trusted publishers. RFCs 0062 and 0063 remain
   `allow_exclusive_end`. No later date, new period, proration or settlement
   horizon is admitted. All cash and disposition-slot anchoring rules remain.
 - The reference implementation, synthetic conformance and API/schema/browser/CLI
-  tests are integrated on canonical `main` at `413a645`. RFC status remains
-  **accepted**, not implemented,
-  until shipped. Reserve, financing, investor-tax and RFC 0062 behavior remain.
-- Protocol 2.18.0 is the next additive minor after the unreleased 2.17.1 errata
+  tests are integrated on canonical `main` at `413a645` and shipped in this
+  release; RFC status is **implemented**. Reserve, financing, investor-tax and
+  RFC 0062 behavior remain.
+- Protocol 2.18.0 is the next additive minor after the 2.17.1 errata
   recorded below, which it includes without changing that acceptance decision.
-  Format remains 2.0; candidate package versions and exact workspace pins are
-  recorded above. Published core/CLI 2.13.0 still implement Protocol 2.17.0.
+  Format remains 2.0; package versions and exact workspace pins are recorded
+  above. Core/CLI 2.13.0 implement Protocol 2.17.0.
 
-### Accepted normative errata — Protocol 2.17.1 (RFC 0062, unreleased)
+### Accepted normative errata — Protocol 2.17.1 (RFC 0062)
 
 - Same-day `cash_flow_series.series` rows remain distinct and no longer emit
   PS-02 merely for sharing a valid date. Ordinary date selection still refuses
@@ -85,11 +90,10 @@ reconfirming the four npm trusted publishers. RFCs 0062 and 0063 remain
   when another date repeats. Other registered series and whole-column Excel
   duplicate guards retain their existing rules.
 - Jared accepted RFC 0062 on **2026-09-24**, retaining **2.17.1** as normative
-  errata. Status is **accepted**, not implemented: the reference implementation
-  and tests are integrated on canonical `main` at `e49eb43` but have not shipped.
-  Format stays 2.0; candidate package versions and exact workspace pins are
-  recorded above. Published core/CLI 2.13.0 continue to pair with Protocol
-  2.17.0.
+  errata. The reference implementation and tests integrated on canonical `main`
+  at `e49eb43` shipped in this release; status is **implemented**. Format stays
+  2.0; package versions and exact workspace pins are recorded above. Core/CLI
+  2.13.0 pair with Protocol 2.17.0.
 
 ## [2.13.0] - 2026-09-21
 
@@ -3840,7 +3844,8 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.13.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.14.0...HEAD
+[2.14.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.12.0...v2.13.0
 [2.6.2]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.1...v2.6.2
 [2.6.1]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.6.0...v2.6.1

@@ -1,7 +1,9 @@
 ---
 rfc: 0063
 title: Admit disposition at the final calendar period's exclusive boundary
-status: accepted
+status: implemented
+accepted: 2026-09-24
+implemented: 2026-10-02
 author: codex
 created: 2026-09-24
 affects:
@@ -23,16 +25,14 @@ quarterly cadences. The absent/default rule remains `within_final_period`.
 Every cash date still lies inside the closed acquisition/disposition interval;
 there is no post-sale settlement horizon, new operating period or proration.
 
-**Accepted, unreleased.** Jared accepted this RFC's final text at
+**Implemented; released in 2.14.0.** Jared accepted this RFC's final text at
 `f04b34ab5606264424bddc02b09ced256a09bbcc` on 2026-09-24 and authorized
-implementation. Status remains `accepted`, not `implemented`, until the
-capability ships. The preceding [design review](../reviews/2026-09-24-terminal-boundary-design.md)
+implementation. The capability shipped in core/CLI **2.14.0**, published from
+the `v2.14.0` tag on 2026-10-02. The preceding [design review](../reviews/2026-09-24-terminal-boundary-design.md)
 was integrated in canonical `main` at `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`.
-The implementation integrated on canonical `main` at `413a645` prepares Protocol
-**2.18.0**, including the unreleased
-RFC 0062 errata selected as 2.17.1. Format is unchanged; the 2.14.0 package
-candidate was prepared separately and merged to `main` by PR #218. No next
-release tag, publication or release has occurred.
+The implementation integrated on canonical `main` at `413a645` is Protocol
+**2.18.0**, including the RFC 0062 errata selected as 2.17.1. Format is
+unchanged; the 2.14.0 package generation was merged to `main` by PR #218.
 
 ## Motivation
 
@@ -286,7 +286,7 @@ No numeric-index expression syntax or other calc-grammar change is authorized.
 | [0044](0044-explicit-lease-up-cash-flow-projection.md) | Explicit dates can differ from accrual periods; complete projection and exact copying remain. The option belongs to assembly and MUST NOT be forwarded as a new projection-plan member. |
 | [0045](0045-explicit-property-cash-flow-assembly.md) | Only final-period disposition admission expands on opt-in; acquisition, closed cash horizon, slots, signs, coverage, assertions, snapshots and provenance remain. |
 | [0052](0052-named-exit-sale-deductions.md) | Named cost rows remain disposition-date cash; verify stated net proceeds without an extra cash row. No late costs or financing exception. |
-| [0062](0062-same-day-cash-flow-selection.md) | Remains accepted/unreleased and unchanged. Same-day legality, ambiguous-selector refusal, unique selection and other-series protections remain. |
+| [0062](0062-same-day-cash-flow-selection.md) | Unchanged; shipped with this RFC in 2.14.0. Same-day legality, ambiguous-selector refusal, unique selection and other-series protections remain. |
 
 ## Compatibility analysis
 
@@ -429,10 +429,8 @@ No unresolved semantic decision remains for this scope. Jared accepted the
 public enum, both cadences, exact boundary, representability limit, unchanged
 cash horizon and compatibility rules at `f04b34a` on 2026-09-24.
 
-The completed implementation is integrated on canonical `main` and awaits
-release. RFC status stays `accepted` until shipped. Package versions have been
-prepared in the candidate merged by PR #218; no next release tag or publication
-has occurred. Reserve roll-forward, financing, investor tax, speculative
+The implementation shipped in core/CLI 2.14.0, published from the `v2.14.0`
+tag on 2026-10-02; RFC status is `implemented`. Reserve roll-forward, financing, investor tax, speculative
 leasing and actual post-sale settlement remain separate future contracts.
 
 ## Prior art

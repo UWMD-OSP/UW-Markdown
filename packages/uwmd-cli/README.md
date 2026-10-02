@@ -43,7 +43,7 @@ The source checkout also implements the **unreleased** read-only command
 dated-cash-flow metrics with the existing verifier. Exit 0 means nonempty verified
 claims, 1 means failure/input refusal, and 3 means unverifiable or no stated
 metrics. This command is not included in CLI 2.9.0. See the
-[workflow and limitations](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli-unreleased).
+[workflow and limitations](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
 
 The source checkout also implements the **unreleased** read-only command
 `uwmd inspect-property-cash-flows <file> [--json]`. It inventories exact

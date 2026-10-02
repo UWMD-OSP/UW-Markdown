@@ -1,8 +1,9 @@
 ---
 rfc: 0062
 title: Permit same-day cash-flow rows while refusing ambiguous selectors
-status: accepted
+status: implemented
 accepted: 2026-09-24
+implemented: 2026-10-02
 author: codex
 created: 2026-09-24
 affects:
@@ -26,9 +27,10 @@ keep their existing duplicate rules.
 This is an accepted normative reconciliation, not an implementation bug fix.
 **Accepted by Jared on 2026-09-24.** Protocol **2.17.1 — normative errata**
 remains the owner-selected version. The reference implementation, protocol
-mirrors and conformance are integrated on canonical `main` at `e49eb43`, but
-have not shipped. Status is
-`accepted`, not `implemented`, until release. No schema or public type changes.
+mirrors and conformance were integrated on canonical `main` at `e49eb43` and
+**shipped in core/CLI 2.14.0** (Protocol 2.18.0, which includes these errata),
+published from the `v2.14.0` tag on 2026-10-02. Status is `implemented`. No
+schema or public type changes.
 
 The owner explicitly accepted legal, separate same-day cash-flow rows without
 PS-02; deterministic refusal of selectors matching multiple rows; selectable
@@ -155,7 +157,8 @@ Unreleased changelog distinguish this accepted, unreleased source contract from 
 core/CLI 2.13.0 and Protocol 2.17.0. Format remains 2.0. The errata
 implementation made no package-version, dependency, lockfile, tag or
 publication change. The 2.14.0 candidate, merged to `main` by PR #218, repins
-packages for the combined 2.18.0 contract; it has not shipped. The version
+packages for the combined 2.18.0 contract; it shipped from the `v2.14.0` tag
+on 2026-10-02. The version
 choice preceded the owner's separate acceptance recorded above.
 
 ## Conformance impact
@@ -205,7 +208,7 @@ Updated Protocol §VIII.2a's selection and validation paragraphs and clarified t
 existing Format §4.26 row-addressability statement with a reference to unique
 date selection. The executable validation-code description, period-addressing
 wiki and living status are updated together. Historical RFC 0034/0041 release
-statements are preserved and link this accepted, unreleased reconciliation.
+statements are preserved and link this reconciliation, released in 2.14.0.
 
 Focused tests must cover scanner duplicate reporting, every active variant,
 malformed-date/CF retention, repeated versus unique selectors, missing and
@@ -257,8 +260,8 @@ decision is recorded above. These results do not constitute a release.
 ## Unresolved questions
 
 None for this reconciliation. Jared accepted the normative resolution, and
-the 2.17.1 errata version is settled. Integration is complete; the RFC stays
-`accepted` until it ships. Terminal settlement, reserve
+the 2.17.1 errata version is settled. It shipped in core/CLI 2.14.0 on
+2026-10-02 and is `implemented`. Terminal settlement, reserve
 rollforward, levered assembly and any other protocol feature are excluded.
 
 ## Prior art
