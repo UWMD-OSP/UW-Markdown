@@ -14,3 +14,8 @@ RFC 0071's implementation is complete in PR #250. Its verified specification and
 task matrix are archived at `specs/archive/rfc-0071-calendar-date-predicate.md`.
 RFC 0071 remains `accepted`. No release, version or adoption work is active under
 that authorization, and RFC 0068 work has not started.
+
+CLI reporting clarity (implemented 2026-10-03, rebased onto `main` after
+2.17.0) is archived in [the completed contract](../archive/cli-reporting-clarity.md)
+with its [review report](../../docs/reviews/2026-10-03-cli-reporting-clarity.md).
+It is unreleased and changes no normative contract.
