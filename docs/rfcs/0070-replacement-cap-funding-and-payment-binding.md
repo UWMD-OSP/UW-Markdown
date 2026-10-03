@@ -1,7 +1,8 @@
 ---
 rfc: 0070
 title: Bind outright replacement-cap funding to an exact modeled cash payment
-status: draft
+status: accepted
+accepted: 2026-10-02
 author: codex
 created: 2026-10-02
 depends_on:
@@ -31,13 +32,34 @@ separately verified binding digest. Date and amount remain in that cash row. Exi
 valid RFC 0056 documents remain valid without edits. This is a modeled future
 purchase, never evidence of an executed successor trade.
 
-**Authorization:** Jared selected this semantic direction on 2026-10-02 and
-authorized drafting only. This RFC remains **draft**. It does not authorize
-acceptance, normative edits, validator implementation, conformance changes,
-version bumps, release preparation, or StackUW admission. The subsequent owner
-review approves revision only. Its decisions on structural/async separation,
-zero-cost rows, payment timing, ESC-04 coverage and optional currency are
-incorporated below; acceptance is still pending.
+**Status: accepted, not implemented.** Jared accepted this RFC on 2026-10-02
+under owner-led governance, with the semantics frozen at commit
+`29c42c79e855fca4f97d82ec71596857370ca4b6`. Implementation requires separate
+explicit authorization. Acceptance does not change the released contract,
+versions, conformance behavior or StackUW admission.
+
+## Owner acceptance record
+
+- **Decision:** Jared, the project owner, explicitly accepted RFC 0070 as a whole
+  on 2026-10-02 (America/Phoenix), under the owner-led process in
+  [GOVERNANCE.md](../../GOVERNANCE.md). No public-comment waiting period or
+  waiver is required in that mode.
+- **Frozen contract:** [draft commit
+  `29c42c79e855fca4f97d82ec71596857370ca4b6`](https://github.com/UWMD-OSP/UW-Markdown/commit/29c42c79e855fca4f97d82ec71596857370ca4b6).
+  The accepted wire shape, binding scope, validation/verification contract,
+  economic semantics and fixture matrix are unchanged by this status record.
+- **Disposition:** `accepted`; intent to implement is recorded, but the owner
+  expressly withheld implementation authorization. This is not `implemented`
+  and adds no released outright-funding capability.
+- **Authorization boundary:** record acceptance and required documentation only.
+  No normative spec/schema/protocol edits, validators, conformance changes,
+  version bumps or release preparation are authorized. No active implementation
+  spec/task matrix is started by this record.
+- **Version direction:** retain Format 2.0; likely Protocol 2.21.0 and core/CLI
+  2.17.0, subject to sequence reconciliation when separately authorized.
+  Published Format 2.0 / Protocol 2.20.0 / core/CLI 2.16.0 remain unchanged.
+- **Next decision:** separately authorize implementation using the sequence below.
+  Release preparation and StackUW adoption remain later decisions and gates.
 
 ## Motivation
 
@@ -573,8 +595,8 @@ The owner-selected direction permits an old tool to refuse new-feature files;
 it does not promise that every new file validates under every prior protocol.
 The missing-section coverage correction enforces existing normative behavior.
 
-No version is selected or bumped by this draft. Acceptance should reaffirm the
-versioning interpretation; preparation must reconcile actual versions anew.
+No version is selected or bumped by this acceptance record. The owner accepted
+this versioning direction; later preparation must reconcile actual versions anew.
 
 ### Static/Excel and representation fidelity
 
@@ -657,8 +679,8 @@ authenticity and prevents a claim that hashing proves purpose.
 
 ## Reference implementation
 
-Implementation is a follow-up **only after explicit owner acceptance and
-authorization**. No source change is authorized by this draft.
+Implementation remains a follow-up **only after separate explicit owner
+authorization**. Acceptance is recorded above; no source change is authorized.
 
 Planned files/surfaces:
 
@@ -688,10 +710,9 @@ Planned files/surfaces:
 
 ### Acceptance and implementation sequence
 
-1. **Owner review/acceptance:** review the exact union, digest scope, zero-row
-   and date semantics, optional-currency preimage, RFC 0056 defect repair,
-   separate async API/result contract and versioning analysis. Record acceptance separately. The semantic drafting
-   direction is not acceptance of these proposed details.
+1. **Owner acceptance — complete:** Jared accepted the frozen `29c42c7` contract
+   on 2026-10-02. The acceptance record above pins the full source commit.
+   This completed decision does not authorize the remaining implementation steps.
 2. **Explicit implementation authorization:** after acceptance, reconcile main
    and create `specs/active/SPEC.md` and its ordered `TASKS.md` only if this
    feature is the selected active work. Do not displace another active spec.
@@ -761,10 +782,10 @@ strictly after initial effective date with no expiration constraint, repair of t
 released ESC-04 coverage defect, byte-valid legacy escrow funding and optional
 authored currency with canonical null.
 
-Acceptance still requires explicit review of the final proposed wire shape,
-canonical scope, exact API/result contract, matrices and versioning analysis.
-That acceptance is not implied by approval to revise; no implementation is
-authorized yet.
+The owner accepted the final wire shape, canonical scope, exact API/result
+contract, matrices and versioning analysis at frozen commit `29c42c7`.
+No genuine owner questions block implementation planning. Implementation
+remains subject to separate explicit authorization.
 
 Mixed funding, multiple replacements, successor coverage, post-sale financing
 assembly and executed-trade records remain deferred to separate adopter-backed

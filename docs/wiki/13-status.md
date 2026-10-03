@@ -8,8 +8,8 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067, 0068 and 0070
-remain outside this contract. The historical publication is
+Draft RFCs 0064, 0065, 0067 and 0068, plus accepted but unimplemented RFC 0070,
+remain outside this released contract. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
@@ -554,13 +554,16 @@ The guards:
 
 ## Remaining work
 
-- Review draft [RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md):
-  StackUW's future outright replacement-cap purchase uses a separate funding
-  discriminator and an exact, digest-qualified section 4.26 cash-row binding.
-  The revised draft preserves synchronous structural validation and adds a
-  separate async binding verifier; unchecked bindings cannot claim verification.
-  The owner selected this drafting direction on 2026-10-02; the RFC remains
-  draft, with no implementation, version bump or release authorization.
+- Await separate implementation authorization for accepted
+  [RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md).
+  Jared accepted the frozen `29c42c79e855fca4f97d82ec71596857370ca4b6` contract
+  on 2026-10-02 under owner-led governance. It separates replacement funding
+  from the hedge-lifecycle assumption and binds an outright modeled payment
+  to an exact section 4.26 variant/row with a non-circular digest.
+  Synchronous validation remains structural; complete outright claims require
+  the separate async verifier's `verified` result. Legacy valid RFC 0056 escrow
+  documents require no edits. The RFC is accepted but unimplemented, with no
+  normative edits, version bump or release preparation authorized.
   TASK-3294 remains SCOPED pending a released upstream contract; TASK-3295 is
   downstream.
 
