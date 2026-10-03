@@ -4,6 +4,7 @@
 Canonical repository: UWMD-OSP/UW-Markdown.
 Implementation base: `48fa1086671c0c229562457b98efd0a378969f78`.
 Frozen accepted semantics: `29c42c79e855fca4f97d82ec71596857370ca4b6`.
+Atomic implementation commit: `678c31a68495d8b22ef92f5f3d12e5521ab7cd17`.
 Branch: `codex/implement-rfc-0070`. The review PR's head identifies the final
 implementation and planning-record commits. This document records local evidence;
 the PR's checks are the authoritative CI state.
