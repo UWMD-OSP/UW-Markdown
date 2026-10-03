@@ -1,0 +1,10 @@
+{
+  "codes": [
+    "HDG-07"
+  ],
+  "verification": {
+    "state": "unverifiable",
+    "reason": "invalid_structure",
+    "codes": []
+  }
+}

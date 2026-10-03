@@ -1,0 +1,10 @@
+{
+  "codes": [],
+  "verification": {
+    "state": "failed",
+    "reason": "stale_binding",
+    "codes": [
+      "HDG-09"
+    ]
+  }
+}

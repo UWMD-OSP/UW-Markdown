@@ -175,3 +175,24 @@ interface ValidationResult {
 threshold?, title?, remediation?, spec_ref?, legacy_code? }` — `title`/
 `remediation`/`spec_ref` are filled from `BUILTIN_REMEDIATIONS` when a matching
 code exists.
+
+## Replacement funding (RFC 0070, development tree; unreleased)
+
+§4.7 adds optional nullable `rate_hedge.replacement_funding`:
+`{mode:"escrow"}` or
+`{mode:"outright",cash_flow_ref:{variant,row_index,binding_digest}}`.
+The union/reference are closed. Non-null funding requires the lifecycle
+assumption `replace`; unhedged/loan_matures_first cannot carry it.
+
+Absent/null funding preserves valid RFC 0056 escrow documents unchanged.
+Explicit escrow still requires the named replacement escrow. Outright forbids
+that escrow and binds an exact current explicit §4.26 variant and safe zero-based
+row index. Date and amount remain solely in that row: amount <= 0, date strictly
+after the initial effective_date, with no expiration constraint. A zero premium
+needs an explicit zero row. This is a modeled future payment, never an executed
+replacement trade. No pricing, derived cash flow or reserve roll-forward exists.
+
+The JCS/SHA-256 preimage contains exactly currency_code (authored or null),
+row_index, fixed cash_flow_series section, complete ordered series and variant.
+Same-day rows retain their ordinals; no search, fallback or silent rebind occurs.
+HDG-07/08/10 are structural; HDG-09 is an actual async mismatch only.

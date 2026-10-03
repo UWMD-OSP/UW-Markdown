@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/debt-rate-hedge.schema.json",
   "title": "debt-rate-hedge",
-  "description": "RFC 0056 / format 4.7. Shape only. The rate_type gate (HDG-03), the rate_cap_pct agreement (HDG-04) and the rate_cap_cost agreement (HDG-05) are semantic checks. rate_swap and rate_collar are reserved by HDG-02 and are deliberately absent from the instrument enum.",
+  "description": "RFC 0056 / format 4.7. Shape only. The rate_type gate (HDG-03), the rate_cap_pct agreement (HDG-04) and the rate_cap_cost agreement (HDG-05) are semantic checks. rate_swap and rate_collar are reserved by HDG-02 and are deliberately absent from the instrument enum. RFC 0070 adds optional replacement funding; exact reference/payment/digest consistency are semantic checks.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -16,7 +16,9 @@
   ],
   "properties": {
     "instrument": {
-      "enum": ["rate_cap"]
+      "enum": [
+        "rate_cap"
+      ]
     },
     "notional": {
       "description": "What the cap is written on. A loan larger than this is partly unhedged.",
@@ -31,7 +33,12 @@
     },
     "index": {
       "description": "The rate_index vocabulary minus `fixed`, which a cap is not struck against.",
-      "enum": ["sofr", "prime", "treasury_5yr", "treasury_10yr"]
+      "enum": [
+        "sofr",
+        "prime",
+        "treasury_5yr",
+        "treasury_10yr"
+      ]
     },
     "effective_date": {
       "type": "string",
@@ -46,16 +53,103 @@
     },
     "premium": {
       "description": "Upfront cash paid. null means genuinely none. Never priced from a curve.",
-      "type": ["number", "null"],
+      "type": [
+        "number",
+        "null"
+      ],
       "minimum": 0
     },
     "post_expiration_assumption": {
       "description": "What happens in the month after the cap expires. No default: unstated is the answer that hides the cliff.",
-      "enum": ["replace", "unhedged", "loan_matures_first"]
+      "enum": [
+        "replace",
+        "unhedged",
+        "loan_matures_first"
+      ]
     },
     "counterparty": {
       "description": "Author narrative. Nothing is inferred from it.",
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "replacement_funding": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "const": "escrow"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "cash_flow_ref"
+          ],
+          "properties": {
+            "mode": {
+              "const": "outright"
+            },
+            "cash_flow_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "variant",
+                "row_index",
+                "binding_digest"
+              ],
+              "properties": {
+                "variant": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "row_index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "binding_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[0-9a-f]{64}$"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "replacement_funding"
+        ],
+        "properties": {
+          "replacement_funding": {
+            "type": "object"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "post_expiration_assumption": {
+            "const": "replace"
+          }
+        }
+      }
+    }
+  ]
 }

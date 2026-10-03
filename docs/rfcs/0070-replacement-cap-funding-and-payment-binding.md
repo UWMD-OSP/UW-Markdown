@@ -34,8 +34,9 @@ purchase, never evidence of an executed successor trade.
 
 **Status: accepted, not implemented.** Jared accepted this RFC on 2026-10-02
 under owner-led governance, with the semantics frozen at commit
-`29c42c79e855fca4f97d82ec71596857370ca4b6`. Implementation requires separate
-explicit authorization. Acceptance does not change the released contract,
+`29c42c79e855fca4f97d82ec71596857370ca4b6`. Implementation was separately
+ authorized on 2026-10-03; the source implementation awaits PR review and remains
+unreleased. Acceptance does not change the released contract,
 versions, conformance behavior or StackUW admission.
 
 ## Owner acceptance record
@@ -60,6 +61,20 @@ versions, conformance behavior or StackUW admission.
   Published Format 2.0 / Protocol 2.20.0 / core/CLI 2.16.0 remain unchanged.
 - **Next decision:** separately authorize implementation using the sequence below.
   Release preparation and StackUW adoption remain later decisions and gates.
+
+## Owner implementation authorization (2026-10-03)
+
+Jared explicitly authorized implementation of the frozen contract from canonical
+main `48fa1086671c0c229562457b98efd0a378969f78`. The authorization covers the synchronized
+normative/core/consumer/conformance/documentation changes and their full gates.
+The implementation specification and completed task matrix are archived at
+`specs/archive/rfc-0070-replacement-funding.md` in the repository.
+The historical acceptance boundary above records the earlier decision.
+
+RFC status remains `accepted` until a separately authorized release ships.
+No version number is consumed, release prepared, tag changed, package published
+or StackUW adoption authorized. Implementation review and actual version/release
+selection remain owner decisions.
 
 ## Motivation
 

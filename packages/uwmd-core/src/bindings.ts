@@ -1,3 +1,4 @@
+import { verifyReplacementFundingBindings } from './replacement-funding.js';
 import type { CodecRegistry } from './codec.js';
 import { CORE_CODEC_REGISTRY } from './codecs.js';
 import {
@@ -284,13 +285,19 @@ export async function createUWMCPValidationResult(
   assertUWEnvelope(envelope);
   const stamped = await stampEnvelopeDigest(envelope);
   assertDealIdentity(stamped, dealId);
-  const validation = validateUWFile(fromUWEnvelope(stamped));
-  return dualMCPResult({
+  const parsed = fromUWEnvelope(stamped);
+  const validation = validateUWFile(parsed);
+  const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
+  const result = dualMCPResult({
     deal_id: dealId,
     resource_uri: uwmdDealResourceURI(dealId),
     semantic_digest: stamped.semantic_digest,
     ...validation,
+    replacement_funding_verification,
   });
+  const bindingRefuses = replacement_funding_verification.state !== 'verified'
+    && !(replacement_funding_verification.state === 'not_checked' && replacement_funding_verification.reason === 'not_applicable');
+  return { ...result, isError: validation.errors.length > 0 || bindingRefuses };
 }
 
 export function createUWMCPListRepresentationsResult(

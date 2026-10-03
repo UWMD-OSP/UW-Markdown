@@ -431,3 +431,17 @@ to 2.17.1; engine/package versions are unchanged. Run the focused suites with:
 ```sh
 npm run conformance -- --tier=cash-flow,property-cash-flow-assembly
 ```
+
+## RFC 0070 replacement funding (development tree; unreleased)
+
+`hedge/0070-*` adds 57 cases: legacy/explicit escrow, outright/zero payments,
+same-day identity, expiration-independent timing, malformed or ambiguous references,
+contradictory escrows, stale series/index/variant/currency, reviewed rebind and the
+missing sources_uses/uses ESC-04 regressions. Existing 17 hedge fixtures are
+unchanged. expected.json carries structural codes separately from verification
+state/reason/codes; HDG-09 occurs only in the latter.
+
+Unit controls cover unavailable crypto, pre-await immutability, known-answer
+Node/browser parity and explicitly unchecked consumers. The reviewed-rebind
+case intentionally targets an unrelated outflow with a fresh digest: UWMD can
+verify consistency, while producer purpose evidence must reject that mapping.

@@ -1624,7 +1624,35 @@ crossing is projected.
 - `HDG-06` — `post_expiration_assumption` is stated and from the closed set.
   It has no default on purpose: a cap's term is the fact the reader came for,
   and leaving it unstated is the answer that hides the cliff. `replace` is tied
-  to a funded escrow line by `ESC-04` (§ 4.8).
+  to a valid replacement-funding path by ESC-04 (§ 4.8) and RFC 0070.
+
+**Replacement funding (RFC 0070; accepted, implementation pending release).**
+The OPTIONAL `rate_hedge.replacement_funding` is null/absent, or one closed
+object: `{ "mode": "escrow" }` or `{ "mode": "outright", "cash_flow_ref":
+{ "variant": "cap-cash", "row_index": 1, "binding_digest": "sha256:<64 lowercase hex>" } }`.
+It MUST be stated only under `post_expiration_assumption: "replace"`.
+The assumption remains the post-expiration lifecycle statement; funding is
+separate. No other modes/members, inline date/amount or successor terms exist.
+
+- `HDG-07` — refuse invalid union shape/unknown members/missing reference
+  members and funding under a nonreplacement assumption.
+- `HDG-08` — require unambiguous property-level debt/sources selection (RFC
+  0040), exact current explicitly named §4.26 variant, no fallback, safe
+  nonnegative in-range zero-based row index, legal ordered nonempty series,
+  real dates/finite amounts/row kinds and digest syntax.
+- `HDG-10` — bound payment MUST be nonpositive (explicit zero is valid) and
+  strictly after the initial hedge effective_date. Payment may precede, equal
+  or follow expiration. Invalid anchors retain HDG-01; no date is inferred.
+- `HDG-09` — only the separate async verifier reports an actual recomputed
+  digest mismatch; synchronous validation MUST NOT report an unchecked digest
+  as an error. Complete outright claims require async `verified`.
+
+The reference designates a dedicated modeled future replacement payment,
+not an executed trade, commencement or settlement assertion. Amount/date
+remain solely in the cash row. Do not add/derive/net/reallocate cash, invent
+funding, price a cap, project payoff, fetch curves, value MTM, expand swaps/
+collars or roll escrow balances. Advisory row labels/kinds do not prove purpose.
+See Protocol §V.12 for exact commitment bytes and separate verification states.
 
 `notional` is the member that makes partial hedging legible. A $40M loan with a
 $30M notional is 75% hedged; without it, that deal and a fully hedged one read
@@ -1727,11 +1755,14 @@ consumer.
 - `ESC-03` — `uses.interest_reserve` and `uses.operating_reserves` agree with
   the `interest` and `operating` escrows' `upfront` at the currency quantum
   (protocol § VIII.5) when both are stated.
-- `ESC-04` — `debt_structure.rate_hedge.post_expiration_assumption: "replace"`
-  requires a `rate_cap_replacement` escrow, and a `rate_cap_replacement` escrow
-  requires that assumption. This is the rule that turns "the cap expires in year
-  three" from a note into a funded line; a replacement bought into a higher-rate
-  environment is routinely the larger of the two premiums.
+- `ESC-04` — `replace` MUST have a valid replacement-funding path.
+  Absent/null replacement_funding and explicit escrow mode MUST state the
+  lawful existing `rate_cap_replacement` escrow (ESC-01/02/03 unchanged).
+  Explicit outright mode requires the exact RFC 0070 payment binding and
+  MUST NOT coexist with a replacement escrow, even a zero-funded one.
+  A replacement escrow requires `replace`. Missing sources_uses or uses is
+  not an exemption: correcting that skip enforces released RFC 0056 behavior.
+  Existing valid escrow-funded documents need no edits or new currency field.
 
 **The renovation draw (RFC 0057).** `uses.renovation` is OPTIONAL and types what
 `renovation_budget` and `renovation_contingency` leave unsaid: whether either was
