@@ -412,3 +412,20 @@ New derived metric | the relevant file in `packs/` (one place, all tools pick it
 New agent layer | `context.ts` (`BANCROFT_LAYERS`) + `agents/`
 New edit semantics | `editor.ts` + `protocol.ts` (`EditOperation`/policy)
 New display formatter | `format.ts` + the relevant `BUILTIN_VIEW_MODELS` entry
+
+## RFC 0070 development-tree binding verification (unreleased)
+
+`validateUWFile` remains synchronous and checks funding shape, selection,
+rows, digest syntax, sign, timing and escrow consistency. It reports no error
+solely because hashing has not run. New Node/browser exports
+`computeReplacementCashFlowBindingDigest(series, variant, rowIndex, currencyCode)`
+and `verifyReplacementFundingBindings(parsed)` use the existing JCS/SHA-256
+seam, snapshot before awaiting, and return a separate result.
+
+States are `verified`, `failed / stale_binding` (HDG-09),
+`unverifiable` (invalid_structure, unresolvable_source or crypto_unavailable),
+and `not_checked`. The verifier returns not_applicable for lawful legacy
+funding; not_invoked is a consumer's initial status. Unchecked never means
+verified. Complete outright success requires structural success plus verified.
+The digest protects consistency, not payment purpose or executed-trade evidence.
+RFC remains accepted; versions and released guarantees are unchanged.

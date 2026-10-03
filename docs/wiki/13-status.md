@@ -8,7 +8,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068, plus accepted but unimplemented RFC 0070,
+Draft RFCs 0064, 0065, 0067 and 0068, plus accepted, unreleased RFC 0070,
 remain outside this released contract. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -554,18 +554,21 @@ The guards:
 
 ## Remaining work
 
-- Await separate implementation authorization for accepted
+- Review the separately authorized development-tree implementation of
   [RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md).
-  Jared accepted the frozen `29c42c79e855fca4f97d82ec71596857370ca4b6` contract
-  on 2026-10-02 under owner-led governance. It separates replacement funding
-  from the hedge-lifecycle assumption and binds an outright modeled payment
-  to an exact section 4.26 variant/row with a non-circular digest.
-  Synchronous validation remains structural; complete outright claims require
-  the separate async verifier's `verified` result. Legacy valid RFC 0056 escrow
-  documents require no edits. The RFC is accepted but unimplemented, with no
-  normative edits, version bump or release preparation authorized.
-  TASK-3294 remains SCOPED pending a released upstream contract; TASK-3295 is
-  downstream.
+  The owner authorized implementation on 2026-10-03 against canonical
+  `48fa1086671c0c229562457b98efd0a378969f78` and frozen `29c42c7`.
+  Funding is a closed escrow/outright union; outright binds the exact current
+  §4.26 variant/row and ordered series/currency snapshot. Structural validation
+  remains synchronous; complete outright claims require the separate async
+  verifier's `verified` result. CLI validate/verify and MCP enforce that split;
+  the web panel explicitly displays unchecked structural validation.
+  Existing legacy fixtures preserve their bytes. ESC-04 now also refuses
+  missing sources_uses/uses under the already-released escrow requirement.
+  RFC status remains accepted. Released Format 2.0 / Protocol 2.20.0 /
+  core-CLI 2.16.0 and v2.16.0 are unchanged; no release is prepared.
+  TASK-3294 remains SCOPED pending a separately authorized released pairing;
+  TASK-3295 remains downstream.
 
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain

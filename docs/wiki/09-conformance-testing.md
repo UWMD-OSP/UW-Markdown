@@ -432,3 +432,17 @@ green) and `conformance:v2`, uploading its JSON manifest as an artifact.
 
 > `--update` overwrites baselines from current library output — only use it when
 > you intend to change the contract, and always eyeball the resulting diff.
+
+## RFC 0070 replacement-funding controls (unreleased)
+
+The hedge suite adds 57 source/expected pairs and retains all 17 RFC 0056
+pairs unchanged. Expected structural codes and separate verifier state/reason/code
+projections are compared independently. Portable validate--json cases exercise
+the same separation and exit behavior. Run the default suite, generated-case
+freshness, portable --no-skip driver and capability profiles after building.
+
+Focused unit tests additionally pin USD/null JCS known answers, real Node/Web
+Crypto parity, pre-await snapshots, key-order/numeric-spelling normalization,
+row absence/null distinction, unavailable crypto and qualified browser output.
+A deliberately rehashed unrelated outflow verifies consistency while failing a
+producer purpose assertion. Hashing supplies no economic authenticity proof.

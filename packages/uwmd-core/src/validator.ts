@@ -1,3 +1,4 @@
+import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
 // .uw.md validator — financial validity checks (§5.2) + cross-section consistency (§5.3)
 // Spec: UW_FORMAT_SPEC_v1.md Part V
 
@@ -1861,10 +1862,8 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
     }
   }
 
-  if (!su) return;
-  const uses = deepGet(su.content, 'uses');
-  if (uses === null || typeof uses !== 'object' || Array.isArray(uses)) return;
-  const u = uses as Record<string, unknown>;
+  const uses = su ? deepGet(su.content, 'uses') : undefined;
+  const u = uses !== null && typeof uses === 'object' && !Array.isArray(uses) ? uses as Record<string, unknown> : {};
   const escrows = u['escrows'];
   const names = escrows === undefined || escrows === null
     ? new Set<string>()
@@ -1874,12 +1873,15 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
   // into a funded line. Both directions, so neither side can drift alone.
   const wantsReplacement = hedgeStated && assumption === 'replace';
   const hasReplacement = names.has('rate_cap_replacement');
-  if (wantsReplacement && !hasReplacement) {
+  const funding = checkReplacementFundingStructure(parsed);
+  issues.push(...funding.issues);
+  const outright = funding.funding === 'outright';
+  if (wantsReplacement && !hasReplacement && !outright) {
     hedgeIssue(issues, 'ESC-04', 'sources_uses', 'uses.escrows',
-      'ESC-04: rate_hedge.post_expiration_assumption "replace" requires a rate_cap_replacement escrow');
-  } else if (hasReplacement && !wantsReplacement) {
+      'ESC-04: rate_hedge.post_expiration_assumption "replace" requires a rate_cap_replacement escrow unless a valid outright branch is stated');
+  } else if (hasReplacement && (!wantsReplacement || outright)) {
     hedgeIssue(issues, 'ESC-04', 'sources_uses', 'uses.escrows',
-      `ESC-04: a rate_cap_replacement escrow requires rate_hedge.post_expiration_assumption "replace" (found ${JSON.stringify(assumption)})`,
+      `ESC-04: a rate_cap_replacement escrow requires replace and cannot coexist with outright funding (found ${JSON.stringify(assumption)})`,
       assumption);
   }
 }

@@ -78,8 +78,8 @@ describe('RFC 0056 — the quiet path', () => {
     expect(codes({ rate_type: 'floating', rate_cap_pct: 0.035 })).toEqual([]);
   });
 
-  it('says nothing about escrows when sources_uses is absent', () => {
-    expect(codes(debt({}, { post_expiration_assumption: 'replace' }))).toEqual([]);
+  it('enforces released ESC-04 even when sources_uses is absent', () => {
+    expect(codes(debt({}, { post_expiration_assumption: 'replace' }))).toEqual(['ESC-04']);
   });
 });
 

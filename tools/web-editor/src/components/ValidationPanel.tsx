@@ -24,7 +24,7 @@ export function ValidationPanel({ validation }: { validation: ValidationResult }
         className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-canvas"
       >
         <span className="text-muted">{expanded ? '▾' : '▸'}</span>
-        <span className="font-semibold">Validation</span>
+        <span className="font-semibold">Structural validation</span>
         <span className="text-xs text-muted">
           {errors} error{errors === 1 ? '' : 's'} · {warnings} warning{warnings === 1 ? '' : 's'}
           {infos > 0 ? ` · ${infos} info` : ''}
@@ -34,11 +34,12 @@ export function ValidationPanel({ validation }: { validation: ValidationResult }
         </span>
       </button>
 
+      <p className="px-4 py-1 text-xs text-muted">Replacement funding binding: not_checked / not_invoked. This synchronous panel does not claim complete verification.</p>
       {expanded && (
         <ul className="max-h-56 overflow-y-auto border-t border-rule">
           {validation.issues.length === 0 && (
             <li className="px-4 py-3 text-sm text-muted">
-              No issues. The file conforms to the format spec.
+              No structural issues. Replacement funding binding: not_checked / not_invoked. Complete verification requires the async binding verifier.
             </li>
           )}
           {validation.issues.map((issue) => (

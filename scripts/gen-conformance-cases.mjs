@@ -208,6 +208,15 @@ for (const scenario of dirs(T3)) {
   });
 }
 
+// RFC 0070 complete-validation contract: independent of structural result.
+for (const scenario of dirs(join(CONFORMANCE, 'hedge')).filter(n => n.startsWith('0070-'))) {
+  const dir = join(CONFORMANCE, 'hedge', scenario);
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  add(`replacement-funding/${scenario}`, '1', 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json', project: 'replacement-funding',
+    exit_code: expected.codes.length > 0 || expected.verification.state === 'failed' || expected.verification.state === 'unverifiable' ? 1 : 0,
+  });
+}
 // ── Emit (or, under --check, compare) ───────────────────────────────────────
 //
 // `--check` exists because these files are generated but committed. A fixture

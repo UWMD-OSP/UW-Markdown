@@ -6,7 +6,7 @@
 // backwards either cries tampering after every keystroke or hides a real
 // mismatch behind a soft word.
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { assess, issueForSource, loadReceiptJson, receiptFilename, serializeReceipt } from './receipts.js';
@@ -138,8 +138,7 @@ describe('receiptFilename', () => {
 // Node path. This forces the branch a real browser actually takes.
 describe('browser crypto path', () => {
   it('issues and verifies with Web Crypto when Node crypto is unavailable', async () => {
-    const realProcess = globalThis.process;
-    delete (globalThis as { process?: unknown }).process;
+    vi.stubGlobal('process', { ...process, versions: { ...process.versions, node: undefined } });
     try {
       expect(globalThis.crypto?.subtle).toBeTruthy();
       const outcome = await issueForSource(source(), FILENAME);
@@ -148,7 +147,7 @@ describe('browser crypto path', () => {
       const result = await assess(outcome.held, source(), FILENAME);
       expect(result.status).toBe('verified');
     } finally {
-      (globalThis as { process?: unknown }).process = realProcess;
+      vi.unstubAllGlobals();
     }
   });
 });
