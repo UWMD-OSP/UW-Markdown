@@ -49,6 +49,18 @@ import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
  */
 const UNREGISTERED_CLASS = '__unregistered_test_class__';
 
+
+// Evaluate only the emitted arithmetic/IF subset used by these pack tests.
+// A blank named cell is represented by null; Excel distinguishes blank from 0.
+function excelValue(formula: string): number | null {
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  // eslint-disable-next-line no-new-func
+  return new Function('IF', `return (${expression});`)(
+    (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+  ) as number | null;
+}
+
 const EXAMPLES = resolve(__dirname, '../../../examples');
 
 const CASES: ReadonlyArray<{ file: string; layout: WorkbookLayout }> = [
@@ -155,6 +167,13 @@ for (const { file, layout } of CASES) {
         for (const p of input.source.path.split('.')) {
           cur = cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[p] : undefined;
         }
+        // The corrected multifamily pack binds the stated year-1 leveraged flow.
+        // Select its year label independently of array ordering; this is an
+        // input oracle, not a calculation of the cash-on-cash return.
+        if (layout.assetClass === 'multifamily' && input.name === 'levered_cash_flow_y1') {
+          const flows = sec?.content['annual_cash_flows'] as Record<string, unknown>[] | undefined;
+          cur = flows?.find((row) => row['year'] === 1)?.['net_cash_flow_levered'];
+        }
         const expected = typeof cur === 'number' ? cur : null;
         expect(namedNumber(wb, input.name), `${input.name}`).toBe(expected);
       }
@@ -209,11 +228,11 @@ for (const { file, layout } of CASES) {
 
       // values keyed by named-range name: inputs read from the workbook,
       // subtotals from the (footing) stored values.
-      const values: Record<string, number> = {};
+      const values: Record<string, number | null> = {};
       for (const input of layout.namedInputs) {
         const n = namedNumber(wb, input.name);
-        expect(n, `${input.name} resolved`).not.toBeNull();
-        values[input.name] = n as number;
+        if (layout.assetClass !== 'multifamily' || !['levered_cash_flow_y1', 'equity_total'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
+        values[input.name] = n;
       }
       for (const line of layout.incomeLines) {
         if (line.name) {
@@ -237,14 +256,19 @@ for (const { file, layout } of CASES) {
         for (const name of Object.keys(values)) {
           formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
         }
-        expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
-        // eslint-disable-next-line no-new-func
-        const excelLike = new Function(`return (${formula});`)() as number;
+        let excelLike: number | null;
+        if (layout.assetClass === 'multifamily' && decl.id === 'cash_on_cash') {
+          excelLike = excelValue(formula);
+        } else {
+          expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
+          // eslint-disable-next-line no-new-func
+          excelLike = new Function(`return (${formula});`)() as number;
+        }
         // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
         // (§VIII.5), so the simulated result is quantized the same way. Parity is
         // then *exact* rather than approximate: one identical rounding rule on
         // both sides, which is the whole point of having a quantization boundary.
-        const excelCell = quantizeDecimal(excelLike, resolveRoundTo(decl));
+        const excelCell = excelLike === null ? null : quantizeDecimal(excelLike, resolveRoundTo(decl));
         expect(excelCell, decl.id).toBe(direct.value as number);
       }
     });
@@ -546,11 +570,11 @@ describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', (
   it('keeps Excel ↔ evaluateCalc parity on a wrapped document', async () => {
     const parsed = parseUWFile(toContentEnvelope(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8')));
     const wb = await toWorkbook(parsed);
-    const values: Record<string, number> = {};
+    const values: Record<string, number | null> = {};
     for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
       const n = namedNumber(wb, input.name);
       expect(n, input.name).not.toBeNull();
-      values[input.name] = n as number;
+      values[input.name] = n;
     }
     const payload = blockPayload(parsed.sections['noi_model'] as UWBlock) as Record<string, unknown>;
     values[SUBTOTAL_RANGES.egi] = (payload['income'] as Record<string, number>)['effective_gross_income']!;
@@ -564,7 +588,7 @@ describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', (
       let formula = emitExcelFormula(decl.formula, { namedRanges: map });
       for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       // eslint-disable-next-line no-new-func
-      const excelCell = quantizeDecimal(new Function(`return (${formula});`)() as number, resolveRoundTo(decl));
+      const excelCell = (() => { const value = excelValue(formula); return value === null ? null : quantizeDecimal(value, resolveRoundTo(decl)); })();
       expect(excelCell, decl.id).toBe(direct.value);
     }
   });
@@ -598,7 +622,9 @@ async function splitDebt(
     tranche(keys.senior, seniorRole, 5_040_000, 357_612),
     tranche(keys.junior, juniorRole, 720_000, 86_400),
   ].join('\n\n');
-  return parseUWFile(raw.slice(0, start) + tranches + raw.slice(end));
+  const parsed = parseUWFile(raw.slice(0, start) + tranches + raw.slice(end));
+  delete parsed.sections['dcf']; // This scenario exercises the debt-service fallback.
+  return parsed;
 }
 
 /** Every pack metric: its workbook cell against evaluateCalc on the same document. */
@@ -607,14 +633,14 @@ async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
   const ws = wb.getWorksheet('Underwriting')!;
   const rows = rowByLabel(ws);
   const noi = blockPayload(parsed.sections['noi_model'] as UWBlock) as Record<string, unknown>;
-  const values: Record<string, number> = {
+  const values: Record<string, number | null> = {
     [SUBTOTAL_RANGES.egi]: (noi['income'] as Record<string, number>)['effective_gross_income']!,
     [SUBTOTAL_RANGES.opex]: (noi['expenses'] as Record<string, number>)['total_operating_expenses']!,
     [SUBTOTAL_RANGES.noi]: noi['net_operating_income'] as number,
   };
   for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
     const n = namedNumber(wb, input.name);
-    if (n !== null) values[input.name] = n;
+    values[input.name] = n;
   }
   const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
   const map = buildNamedRangeMap(MULTIFAMILY_LAYOUT);
@@ -628,9 +654,9 @@ async function metricParity(parsed: ReturnType<typeof parseUWFile>) {
     }
     let formula = emitExcelFormula(decl.formula, { namedRanges: map });
     for (const name of Object.keys(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
-    expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id}: ${formula}`).toBe(true);
+
     // eslint-disable-next-line no-new-func
-    const excelCell = quantizeDecimal(new Function(`return (${formula});`)() as number, resolveRoundTo(decl));
+    const excelCell = (() => { const value = excelValue(formula); return value === null ? null : quantizeDecimal(value, resolveRoundTo(decl)); })();
     expect(excelCell, decl.id).toBe(direct.value);
     out[decl.id] = { calc: direct.value, cell: (cell.value as { formula?: string })?.formula ? 'formula' : cell.value };
   }
@@ -693,8 +719,51 @@ describe('toWorkbook — variant maps in the content envelope (RFC 0066 with the
     const split = raw.slice(0, start)
       + [tranche('senior-loan', 'senior', 5_040_000, 357_612), tranche('mezz-loan', 'junior', 720_000, 86_400)].join('\n\n')
       + raw.slice(end);
-    const wrapped = await metricParity(parseUWFile(toContentEnvelope(split)));
+    const wrappedParsed = parseUWFile(toContentEnvelope(split));
+    delete wrappedParsed.sections['dcf'];
+    const wrapped = await metricParity(wrappedParsed);
     expect(namedNumber(wrapped.wb, 'loan_amount')).toBe(5_040_000);
     expect(wrapped.out).toEqual(flat.out);
+  });
+});
+
+describe('toWorkbook — deal-level multifamily cash-on-cash', () => {
+  const fixture = resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md');
+  const decl = MULTIFAMILY_LAYOUT.pack.calculations!.find((c) => c.id === 'cash_on_cash')!;
+
+  it.each([false, true])('binds aggregate equity and labeled year-1 flow without sponsor/LP allocation (envelope=%s)', async (wrapped) => {
+    const raw = await readFile(fixture, 'utf8');
+    const parsed = parseUWFile(wrapped ? toContentEnvelope(raw) : raw);
+    const wb = await toWorkbook(parsed);
+    expect(namedNumber(wb, 'equity_total')).toBe(3_000_000);
+    expect(namedNumber(wb, 'levered_cash_flow_y1')).toBe(600_000);
+    expect(wb.definedNames.getRanges('equity_sponsor').ranges).toEqual([]);
+    const ws = wb.getWorksheet('Underwriting')!;
+    const cell = ws.getCell(`B${rowByLabel(ws).get(decl.label)}`);
+    expect(cell.value).toMatchObject({ formula: expect.stringContaining('ROUND(IF((equity_total="")') });
+    let formula = emitExcelFormula(decl.formula, { namedRanges: buildNamedRangeMap(MULTIFAMILY_LAYOUT) });
+    const values = { equity_total: namedNumber(wb, 'equity_total'), levered_cash_flow_y1: namedNumber(wb, 'levered_cash_flow_y1'),
+      noi: 1_300_000, annual_debt_service: namedNumber(wb, 'annual_debt_service') };
+    for (const [name, value] of Object.entries(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(value));
+    const excel = excelValue(formula)!;
+    expect(quantizeDecimal(excel, 6)).toBe(evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' }).value);
+  });
+
+  it('does not read ambiguous debt blocks when a year-1 leveraged flow is already stated', async () => {
+    const parsed = await splitDebt('senior', 'junior');
+    const original = parseUWFile(await readFile(resolve(EXAMPLES, PARKVIEW), 'utf8'));
+    parsed.sections['dcf'] = original.sections['dcf']!;
+    const { out } = await metricParity(parsed);
+    expect(out['cash_on_cash']).toMatchObject({ cell: 'formula' });
+  });
+
+  it('leaves missing aggregate equity blank, without a sponsor-only substitution', async () => {
+    const parsed = parseUWFile(await readFile(fixture, 'utf8'));
+    const su = blockPayload(parsed.sections['sources_uses'] as UWBlock) as Record<string, unknown>;
+    su['equity_metrics'] = { equity_total: null };
+    su['sources'] = { equity_sponsor: 3_000_000 };
+    const { wb, out } = await metricParity(parsed);
+    expect(namedNumber(wb, 'equity_total')).toBeNull();
+    expect(out['cash_on_cash']?.calc).toBeNull();
   });
 });

@@ -608,3 +608,17 @@ The guards:
 
 Historical implementation/preparation details are [archived](13-status-history-2.8.0-preparation.md).
 They do not describe current release status.
+
+## 2026-10-03 — Multifamily deal-level cash-on-cash correction
+
+The multifamily pack is 1.0.1 in source. Generic `cash_on_cash` uses total
+invested equity (`sources_uses.equity_metrics.equity_total`) and the stated
+year-1 DCF levered cash flow, falling back to NOI minus debt service when the
+year-1 flow is absent. Missing sponsor/LP allocation does not block it; missing
+aggregate equity leaves it uncomputed. The debt fallback keeps RFC 0066's
+role-free refusal on ambiguous multi-tranche maps. Excel uses the same formula.
+
+This corrects implementation drift from Format §4.19. No sponsor/LP metrics,
+format/protocol/schema changes or package release are included. Other packs'
+sponsor-denominator formulas remain follow-up work. Synthetic GD05-style
+coverage uses public invented inputs, never private corpus amounts.

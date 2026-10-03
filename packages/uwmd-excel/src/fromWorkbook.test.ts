@@ -60,7 +60,12 @@ function expectedSections(parsed: ReturnType<typeof parseUWFile>, layout: Workbo
   for (const input of layout.namedInputs) {
     const target = sectionFor(sections, input.source.section);
     const source = parsed.sections[input.source.section]?.content as Record<string, unknown>;
-    setPath(target, input.source.path, valueAt(source, input.source.path));
+    // The corrected generic cash-on-cash input is selected by stated year,
+    // while the import still returns the layout's ordinary editable fragment.
+    const value = layout.assetClass === 'multifamily' && input.name === 'levered_cash_flow_y1'
+      ? (source['annual_cash_flows'] as Record<string, unknown>[]).find((row) => row['year'] === 1)?.['net_cash_flow_levered']
+      : valueAt(source, input.source.path);
+    setPath(target, input.source.path, value);
   }
   const noi = parsed.sections.noi_model!.content as Record<string, unknown>;
   const noiTarget = sectionFor(sections, 'noi_model');

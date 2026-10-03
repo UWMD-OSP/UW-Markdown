@@ -67,8 +67,11 @@ describe('extractDependencyGraph — multifamily pack', () => {
     expect(g.formulas.get('dscr')).toBe('noi_model.net_operating_income / debt_structure.annual_debt_service');
   });
 
-  it('cash_on_cash picks up the deep equity_sponsor path', () => {
+  it('cash_on_cash requires aggregate equity rather than sponsor/LP allocation', () => {
     const deps = g.outputs.get('cash_on_cash')!;
-    expect(deps.has('sources_uses.sources.equity_sponsor')).toBe(true);
+    expect(deps.has('sources_uses.equity_metrics.equity_total')).toBe(true);
+    expect(deps.has('dcf.annual_cash_flows.Y1.net_cash_flow_levered')).toBe(true);
+    expect(deps.has('sources_uses.sources.equity_sponsor')).toBe(false);
+    expect(deps.has('sources_uses.sources.equity_lp')).toBe(false);
   });
 });

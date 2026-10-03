@@ -5,11 +5,11 @@
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
     "canonicalization_version": "1.0",
-    "digest": "sha256:caa73f0e1dc38cf536149ff5dbdfbd72e21fad6263f6574adeea99f8803822f2"
+    "digest": "sha256:f0d53809101ab8bafd0a135f3e71b4ca073b8dc15c78c431780bb3bd82ae33bd"
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
-    "pack_version": "1.0.0",
+    "pack_version": "1.0.1",
     "engine": "@uwmd/core",
     "engine_version": "2.16.0",
     "protocol_version": "2.20.0",

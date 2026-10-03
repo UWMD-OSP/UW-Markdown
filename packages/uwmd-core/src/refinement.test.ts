@@ -105,10 +105,15 @@ describe('rankGaps — minimal multifamily file', () => {
     expect(r.by_voi.length).toBeLessThanOrEqual(2);
   });
 
-  it('flags no non-monotonic outputs for the standard multifamily pack', () => {
+  it('flags only cash_on_cash for the existing conservative conditional-AST policy', () => {
     const r = rankGaps(parsed);
-    // The eight built-in multifamily metrics are all pure ratios — monotonic.
-    expect(r.diagnostics.non_monotonic).toEqual([]);
+    // Generic cash-on-cash now guards missing aggregate equity and selects its
+    // year-1 input. Refinement already refuses to bracket conditional ASTs.
+    // All other built-in multifamily metrics retain the same ratio diagnostics.
+    expect(r.diagnostics.non_monotonic).toEqual([{
+      output_id: 'cash_on_cash',
+      reason: 'AST contains non-monotonic op (mod / call / cond)',
+    }]);
   });
 });
 

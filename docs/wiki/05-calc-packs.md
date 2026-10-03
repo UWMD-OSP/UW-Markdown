@@ -62,7 +62,26 @@ id | label | formula | unit
 `price_per_unit` | Price / Unit | `valuation.purchase_price / property.total_units` | `$`
 `loan_per_unit` | Loan / Unit | `debt_structure.loan_amount / property.total_units` | `$`
 `loan_per_sqft` | Loan / SqFt | `debt_structure.loan_amount / property.total_nra_sqft` | `$`
-`cash_on_cash` | Cash-on-Cash | `(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.equity_sponsor` | `%`
+`cash_on_cash` | Cash-on-Cash | `year-1 levered cash flow / sources_uses.equity_metrics.equity_total` | `%`
+
+### Deal-level cash-on-cash (multifamily pack 1.0.1)
+
+Format §4.19 defines cash-on-cash as levered cash flow divided by total equity
+invested. The multifamily pack selects `dcf.annual_cash_flows.Y1.net_cash_flow_levered`
+by its stated year, independently of array order. When that input is absent or
+null, it retains the existing `noi_model.net_operating_income - debt_structure.annual_debt_service`
+fallback. The denominator is `sources_uses.equity_metrics.equity_total`.
+Missing total equity stays uncomputed; zero follows `CALC-DIV-ZERO`.
+
+Sponsor/LP allocation is optional for this generic metric. A sponsor contribution
+alone never substitutes for aggregate equity. No `sponsor_cash_on_cash` or
+`lp_cash_on_cash` declaration is added: those need separately named metrics,
+attributable sponsor/LP cash flows and contribution inputs. The other asset-class
+packs retain their existing formulas pending separate corrections.
+
+The Excel layout binds total equity and the stated year-1 flow to the same pack
+expression; absent total equity emits a blank, and stated zero cash flow is kept.
+See [the classification and scope note](../reviews/2026-10-03-deal-cash-on-cash.md).
 
 ### Debt metrics over several debt blocks (RFC 0066)
 
@@ -78,8 +97,9 @@ block it means (Protocol §VIII.2).
   declaration rather than inherited.
 - **`cash_on_cash` declares no role.** Equity cash flow deducts all debt
   service, so a senior-only cash-on-cash would overstate the return. On a
-  multi-tranche map it refuses `CALC-RESOLVE-002` until a total-debt-service
-  input is contracted (over `capital_stack`, never by summing blocks).
+  multi-tranche map the debt-service fallback refuses `CALC-RESOLVE-002`.
+  Multifamily can use its stated year-1 DCF levered cash flow without reading
+  that fallback; the pack never sums debt blocks.
 - **A standalone block is unaffected.** A `primary` + `junior` map reads the
   `primary` block, because an unclaimed declared role falls through to the
   generic order.

@@ -8,6 +8,14 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- Multifamily pack 1.0.1: generic `cash_on_cash` now divides year-1 levered
+  cash flow by total invested equity, independent of sponsor/LP allocation.
+  It prefers the stated year-1 DCF flow and retains NOI minus debt service as
+  the fallback. Missing aggregate equity stays uncomputed. Matching Excel
+  bindings and synthetic GD05-style regressions cover the correction.
+
 ## [2.16.0] - 2026-10-02
 
 ### Released

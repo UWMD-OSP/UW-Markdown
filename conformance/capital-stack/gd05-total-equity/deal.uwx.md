@@ -1,6 +1,6 @@
 ---
 uw_version: "1.1"
-deal_id: TEST-CS-NO-STACK
+deal_id: TEST-GD05-TOTAL-EQUITY
 deal_name: "Single-Loan Deal Without A Capital Stack"
 created: "2026-08-22T10:00:00Z"
 last_modified: "2026-08-22T10:00:00Z"
@@ -139,9 +139,24 @@ exactly as it did before the RFC, and trips none of the CS-* validator rules.
     "notes": null
   },
   "_notes": null,
-  "sources": { "loan_amount": 14000000, "equity_sponsor": 6000000 },
-  "equity_metrics": { "equity_total": 6000000 },
+  "sources": { "loan_amount": 14000000 },
+  "equity_metrics": { "equity_total": 3000000 },
   "total_sources": 20000000,
   "total_uses": 20000000
+}
+```
+
+```json uw:section=dcf source=manual ts=2026-08-22T10:00:00Z v=1 confidence=high
+{
+  "annual_cash_flows": [
+    {
+      "year": 2,
+      "net_cash_flow_levered": 900000
+    },
+    {
+      "year": 1,
+      "net_cash_flow_levered": 600000
+    }
+  ]
 }
 ```

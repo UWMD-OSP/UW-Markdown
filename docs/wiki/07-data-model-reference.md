@@ -110,7 +110,8 @@ Path | Used by
 `debt_structure.annual_debt_service` | dscr, cash_on_cash
 `property.total_units` | price_per_unit, loan_per_unit
 `property.total_nra_sqft` | loan_per_sqft
-`sources_uses.sources.equity_sponsor` | cash_on_cash
+`sources_uses.equity_metrics.equity_total` | cash_on_cash (aggregate invested equity)
+`dcf.annual_cash_flows.Y1.net_cash_flow_levered` | cash_on_cash (preferred year-1 numerator)
 
 > Note the calc-engine resolution rule: an identifier like `noi_model` resolves to
 > the section's *inner* user data; `.net_operating_income` then drills in. See

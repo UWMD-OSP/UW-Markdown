@@ -16,7 +16,7 @@ import { writeCustomCalculations, type ToWorkbookOptions } from './custom-calcul
 import {
   blockPayload,
   CalcError,
-  deepGet,
+  evaluate,
   evaluateCalc,
   emitCalcExcelFormula,
   ExcelEmitError,
@@ -100,7 +100,33 @@ function refusalOf(e: unknown): Refusal {
 
 /** The sections a calculation reads, by the head of each dotted dependency. */
 function sectionsRead(parsed: ParsedUWFile, decl: ModuleCalcDecl): string[] {
-  const heads = getExprDependencies(parseExpression(decl.formula))
+  // A ternary reads its test and only its selected branch. In particular, a
+  // stated year-1 cash flow does not read an ambiguous debt_structure fallback.
+  const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
+  const deps = new Set<string>();
+  const collect = (expr: ReturnType<typeof parseExpression>): void => {
+    if (expr.kind === 'cond') {
+      collect(expr.test);
+      // Resolve only the test's section choices, so an unused branch can refuse
+      // without blocking a metric computed from the selected branch.
+      const variants: Record<string, string> = {};
+      for (const dep of getExprDependencies(expr.test)) {
+        const section = dep.split('.')[0]!;
+        const block = resolveSectionBlock(parsed, section, { sectionRoles: decl.section_roles });
+        if (block?.annotation.variant) variants[section] = block.annotation.variant;
+      }
+      const test = evaluate(expr.test, { ...ctx, sectionVariants: variants });
+      if (test === true) collect(expr.consequent);
+      else if (test === false) collect(expr.else);
+      return;
+    }
+    if (expr.kind === 'binary') { collect(expr.left); collect(expr.right); return; }
+    if (expr.kind === 'unary') { collect(expr.operand); return; }
+    if (expr.kind === 'call') { expr.args.forEach(collect); return; }
+    for (const dep of getExprDependencies(expr)) deps.add(dep);
+  };
+  collect(parseExpression(decl.formula));
+  const heads = [...deps]
     .map((dep) => dep.split('.')[0]!)
     .filter((head) => Object.hasOwn(parsed.sections, head));
   return [...new Set(heads)];
@@ -155,10 +181,16 @@ class SectionReader {
   }
 
   number(section: string, path: string): number | null | Refusal {
-    const read = this.content(section);
+    // Use the evaluator's path traversal (including Y1), without quantization.
+    const read = this.read(section);
     if ('refused' in read) return read;
-    const v = deepGet(read.content, path);
-    return typeof v === 'number' && Number.isFinite(v) ? v : null;
+    const sectionVariants = read.block?.annotation.variant ? { [section]: read.block.annotation.variant } : {};
+    try {
+      const v = evaluate(parseExpression(`${section}.${path}`), { parsed: this.parsed, prior_results: {}, locale: 'en-US', sectionVariants });
+      return typeof v === 'number' && Number.isFinite(v) ? v : null;
+    } catch (e) {
+      return refusalOf(e);
+    }
   }
 
   /**
@@ -167,7 +199,10 @@ class SectionReader {
    * calculation reads a block other than the one its named inputs hold.
    */
   metricRefusal(decl: ModuleCalcDecl): Refusal | null {
-    for (const section of sectionsRead(this.parsed, decl)) {
+    let sections: string[];
+    try { sections = sectionsRead(this.parsed, decl); }
+    catch (e) { return refusalOf(e); }
+    for (const section of sections) {
       let own: UWBlock | null;
       try {
         own = resolveSectionBlock(this.parsed, section, decl.section_roles ? { sectionRoles: decl.section_roles } : {});

@@ -158,6 +158,7 @@ outputs follow from these inputs, not that the inputs are true.
       "senior_debt": 15600000,
       "equity_sponsor": 9200000
     },
+    "equity_metrics": { "equity_total": 9200000 },
     "uses": {
       "purchase_price": 24000000,
       "closing_costs": 800000

@@ -15,7 +15,7 @@ export const MULTIFAMILY_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.multifamily',
   name: 'Multifamily Starter Pack',
-  version: '1.0.0',
+  version: '1.0.1',
   description:
     'Eight derived metrics for multifamily underwriting: cap rate, LTV, DSCR, debt yield, $/unit, $/sqft, price/unit, cash-on-cash.',
   authors: ['UW Markdown Working Group'],
@@ -82,8 +82,10 @@ export const MULTIFAMILY_PACK: ModuleManifest = {
     {
       id: 'cash_on_cash',
       label: 'Cash-on-Cash',
+      // Format §4.19: deal-level levered cash flow / total invested equity.
+      // Y1 selects the stated year, independent of array ordering. No sponsor fallback.
       formula:
-        '(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.equity_sponsor',
+        'sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total',
       unit: '%',
       deterministic: true,
     },

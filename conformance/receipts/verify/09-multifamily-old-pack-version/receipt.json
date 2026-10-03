@@ -9,7 +9,7 @@
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
-    "pack_version": "1.0.1",
+    "pack_version": "1.0.0",
     "engine": "@uwmd/core",
     "engine_version": "2.16.0",
     "protocol_version": "2.20.0",
@@ -34,7 +34,7 @@
       },
       {
         "calc_id": "dscr",
-        "value": 1.95,
+        "value": 1.2637,
         "unit": "x",
         "computed": true
       },
@@ -63,7 +63,7 @@
         "computed": true
       }
     ],
-    "results_digest": "sha256:e9e8c41a918a853da7d9a10bfed8c5eb4c44f59cc327906fad5bff7ac8e4206d"
+    "results_digest": "sha256:acd7d621846a448196409c6a5e241ccfed91162943c170e1ec7e0623b3ff26e6"
   },
   "policy": {
     "policy_set": "builtin",

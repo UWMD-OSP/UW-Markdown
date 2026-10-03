@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { parseUWFile } from '../parser.js';
+import { blockPayload, parseUWFile } from '../parser.js';
 import { evaluateCalc } from '../calc/index.js';
 import { MULTIFAMILY_PACK } from './multifamily.js';
 import {
@@ -26,6 +26,18 @@ import { emitExcelFormula, ExcelEmitError, emitFromAst } from './excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
+
+
+// Evaluate only the emitted arithmetic/IF subset used by these pack tests.
+// A blank named cell is represented by null; Excel distinguishes blank from 0.
+function excelValue(formula: string): number | null {
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  // eslint-disable-next-line no-new-func
+  return new Function('IF', `return (${expression});`)(
+    (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+  ) as number | null;
+}
 
 const PARKVIEW = resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
@@ -71,7 +83,8 @@ describe('emitExcelFormula', () => {
     ['debt_structure.annual_debt_service', 'annual_debt_service'],
     ['property.total_units', 'total_units'],
     ['property.total_nra_sqft', 'total_nra_sqft'],
-    ['sources_uses.sources.equity_sponsor', 'equity_sponsor'],
+    ['sources_uses.equity_metrics.equity_total', 'equity_total'],
+    ['dcf.annual_cash_flows.Y1.net_cash_flow_levered', 'levered_cash_flow_y1'],
   ]);
 
   it('emits arithmetic with named-range substitution', () => {
@@ -84,10 +97,10 @@ describe('emitExcelFormula', () => {
 
   it('emits cash-on-cash with parens around the subtraction', () => {
     const f = emitExcelFormula(
-      '(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.equity_sponsor',
+      MULTIFAMILY_PACK.calculations!.find((c) => c.id === 'cash_on_cash')!.formula,
       { namedRanges },
     );
-    expect(f).toBe('((noi-annual_debt_service)/equity_sponsor)');
+    expect(f).toBe('IF((equity_total=""),"",(IF((levered_cash_flow_y1<>""),levered_cash_flow_y1,(noi-annual_debt_service))/equity_total))');
   });
 
   it('emits literals correctly', () => {
@@ -155,7 +168,8 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
       ['debt_structure.annual_debt_service', 'annual_debt_service'],
       ['property.total_units', 'total_units'],
       ['property.total_nra_sqft', 'total_nra_sqft'],
-      ['sources_uses.sources.equity_sponsor', 'equity_sponsor'],
+      ['sources_uses.equity_metrics.equity_total', 'equity_total'],
+    ['dcf.annual_cash_flows.Y1.net_cash_flow_levered', 'levered_cash_flow_y1'],
     ]);
 
     // Resolve each named-range placeholder to its Parkview value.
@@ -172,7 +186,8 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
       annual_debt_service: debtContent.content['annual_debt_service'] as number,
       total_units: propertyContent.content['total_units'] as number,
       total_nra_sqft: propertyContent.content['total_nra_sqft'] as number,
-      equity_sponsor: (susContent.content['sources'] as Record<string, number>)['equity_sponsor']!,
+      equity_total: (susContent.content['equity_metrics'] as Record<string, number>)['equity_total']!,
+      levered_cash_flow_y1: ((blockPayload(parsed.sections['dcf'] as import('../types.js').UWBlock) as Record<string, unknown>)['annual_cash_flows'] as Record<string, number>[]).find((row) => row['year'] === 1)!['net_cash_flow_levered']!,
     };
 
     for (const c of MULTIFAMILY_PACK.calculations ?? []) {
@@ -188,15 +203,15 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
         formula = formula.replace(re, String(values[name]));
       }
       // Safe: at this point `formula` contains only digits, dots, parens, and +-*/.
-      expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+
       // eslint-disable-next-line no-new-func
-      const excelLike = new Function(`return (${formula});`)() as number;
+      const excelLike = excelValue(formula);
 
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
       // (§VIII.5), so the simulated result is quantized the same way. Parity is
       // then *exact* rather than approximate: one identical rounding rule on both
       // sides, which is the whole point of having a quantization boundary.
-      const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));
+      const excelCell = excelLike === null ? null : quantizeDecimal(excelLike, resolveRoundTo(c));
       expect(excelCell, c.id).toBe(direct.value as number);
     }
   });
