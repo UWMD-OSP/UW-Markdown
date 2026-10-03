@@ -1,0 +1,361 @@
+{
+  "verification_date": "2026-10-02",
+  "verified_at": "2026-10-02T23:18:59.351Z",
+  "canonical_repository": "https://github.com/UWMD-OSP/UW-Markdown",
+  "reconciliation_base": "233a6177e554391ae7acd3e42ae2327bda212a6d",
+  "tag": {
+    "name": "v2.16.0",
+    "object": "4b06768892c96c1a854d7f9763c6833eab5b7a66",
+    "commit": "a1ca815e2aee5da374caf7627ba3702849ecd257",
+    "message": "UWMD 2.16.0 (Protocol 2.20.0, Format 2.0)",
+    "annotated": true,
+    "unchanged": true
+  },
+  "workflow": {
+    "run": 37075007121,
+    "attempt": 1,
+    "event": "push",
+    "conclusion": "success",
+    "path": ".github/workflows/release.yml",
+    "ref": "refs/tags/v2.16.0",
+    "url": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37075007121"
+  },
+  "format": "2.0",
+  "protocol": "2.20.0",
+  "verification": {
+    "node": "22.14.0",
+    "npm": "11.5.1",
+    "sigstore": "3.1.0",
+    "tuf_trust_root_verified": true,
+    "fulcio_chain_and_scts_verified": true,
+    "certificate_identity_policy": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v2.16.0",
+    "certificate_oidc_issuer_policy": "https://token.actions.githubusercontent.com",
+    "rekor_signed_entry_timestamps_merkle_proofs_and_checkpoints_verified": true,
+    "npm_audit_signatures": {
+      "installed_packages_audited": 13,
+      "registry_signatures_verified": 13,
+      "packages_with_verified_attestations": 8
+    },
+    "published_cli_portable": {
+      "passed": 101,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "packages": [
+    {
+      "name": "@uwmd/core",
+      "version": "2.16.0",
+      "gitHead": "a1ca815e2aee5da374caf7627ba3702849ecd257",
+      "dist_tags": {
+        "latest": "2.16.0"
+      },
+      "integrity": "sha512-eDzwlhHHURWlg3hlIP9LP1aL1bP3NMLODq9dDoQZBDj7GfwXd1+BHqM9aeJEY9u1EI6x8loL80JGEHcQ2Wc2Iw==",
+      "shasum": "1d7c1b63a854d5ea232a00021af052cfccc533b1",
+      "sha256": "f2a8dfba19d30ee6a32f31d1f884c6c808086d5c07cdf1d971d764d51d9c0fa7",
+      "npm_registry_signatures_verified": 2,
+      "attestations": [
+        {
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063651014"
+          ],
+          "certificate_identity": null
+        },
+        {
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063611466"
+          ],
+          "certificate_identity": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v2.16.0",
+          "certificate_issuer": "O=sigstore.dev\nCN=sigstore-intermediate",
+          "certificate_fingerprint256": "92:E5:AE:BC:8F:B2:6B:6B:1C:09:FB:97:88:02:F1:92:FE:1C:BA:15:7D:04:24:E8:9A:E4:D1:F1:09:3A:17:28"
+        }
+      ],
+      "trust_initialization_error": null,
+      "published_at": "2026-10-02T22:59:17.122Z",
+      "registry_url": "https://registry.npmjs.org/%40uwmd%2Fcore/2.16.0",
+      "attestation_url": "https://registry.npmjs.org/-/npm/v1/attestations/@uwmd%2fcore@2.16.0",
+      "file_comparison": {
+        "name": "@uwmd/core",
+        "version": "2.16.0",
+        "files": 422,
+        "all_files_equal_prepared_pack_and_local_build": true,
+        "tarball_bytes_equal_prepared_pack": true,
+        "sha256": "f2a8dfba19d30ee6a32f31d1f884c6c808086d5c07cdf1d971d764d51d9c0fa7"
+      },
+      "rekor_records": [
+        {
+          "package": "@uwmd/core",
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "logIndex": "3063651014",
+          "uuid": "108e9186e8c5677afbecc7ef5e6c45d25d9afd11907289b22893f187834575166192a2f37f9ecacc",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063651014",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        },
+        {
+          "package": "@uwmd/core",
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "logIndex": "3063611466",
+          "uuid": "108e9186e8c5677a6426aa74585cbb80843ec0198e3a75c1d51dc6e3ce102f87095ca7ca15f19e76",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063611466",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/cli",
+      "version": "2.16.0",
+      "gitHead": "a1ca815e2aee5da374caf7627ba3702849ecd257",
+      "dist_tags": {
+        "latest": "2.16.0"
+      },
+      "integrity": "sha512-BJdkc+YHfXCwAZcPCAstFRtYRG1Mb8iBFnWnz8pzn22fTHNLytb+hpVQdc8b3lP30w4v9bZZin4wYTOkGtMGAg==",
+      "shasum": "879f360ba4836b5549af973ff828410e37fe3939",
+      "sha256": "7d0f148ef6748d51fb56cabd778a79be5c462ca488cc4360ff8287531197d005",
+      "npm_registry_signatures_verified": 2,
+      "attestations": [
+        {
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063680044"
+          ],
+          "certificate_identity": null
+        },
+        {
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063629703"
+          ],
+          "certificate_identity": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v2.16.0",
+          "certificate_issuer": "O=sigstore.dev\nCN=sigstore-intermediate",
+          "certificate_fingerprint256": "12:7C:42:29:97:F5:A6:03:C5:21:D2:47:27:85:99:02:2C:C2:96:A3:F0:6D:A8:62:82:1D:EC:B4:9B:60:92:55"
+        }
+      ],
+      "trust_initialization_error": null,
+      "published_at": "2026-10-02T23:00:50.836Z",
+      "registry_url": "https://registry.npmjs.org/%40uwmd%2Fcli/2.16.0",
+      "attestation_url": "https://registry.npmjs.org/-/npm/v1/attestations/@uwmd%2fcli@2.16.0",
+      "file_comparison": {
+        "name": "@uwmd/cli",
+        "version": "2.16.0",
+        "files": 3,
+        "all_files_equal_prepared_pack_and_local_build": true,
+        "tarball_bytes_equal_prepared_pack": false,
+        "sha256": "7d0f148ef6748d51fb56cabd778a79be5c462ca488cc4360ff8287531197d005"
+      },
+      "rekor_records": [
+        {
+          "package": "@uwmd/cli",
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "logIndex": "3063680044",
+          "uuid": "108e9186e8c5677a8991ed12d36325931a37367511614cfda6605267c39ac8e603d3d405d1fed525",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063680044",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        },
+        {
+          "package": "@uwmd/cli",
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "logIndex": "3063629703",
+          "uuid": "108e9186e8c5677a8bf318b26c7aa8ea2daf129f9468f375d02159eb3f113295233aa7b9395bf516",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063629703",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/signing",
+      "version": "0.2.20",
+      "gitHead": "a1ca815e2aee5da374caf7627ba3702849ecd257",
+      "dist_tags": {
+        "latest": "0.2.20"
+      },
+      "integrity": "sha512-YHer1XF3w7COroODs38yCldwL6qrkR3hUsDM5KDb/9WfSZfpC3miSwMzbXHnQBiUDwiPGoTM44gk0JrYuJQGGQ==",
+      "shasum": "118801b1702dfe0297279f5ddc2bbc53f81627d3",
+      "sha256": "b2da9938a8c15e171fccb90dca5086db6533d4eca1ee61b7738d83396933e697",
+      "npm_registry_signatures_verified": 2,
+      "attestations": [
+        {
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063672880"
+          ],
+          "certificate_identity": null
+        },
+        {
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063631805"
+          ],
+          "certificate_identity": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v2.16.0",
+          "certificate_issuer": "O=sigstore.dev\nCN=sigstore-intermediate",
+          "certificate_fingerprint256": "70:FF:00:C4:16:AC:94:10:83:85:DD:2A:93:A3:EA:7A:F3:A5:7D:BE:6A:8A:88:A8:46:8C:F0:89:94:92:18:B2"
+        }
+      ],
+      "trust_initialization_error": null,
+      "published_at": "2026-10-02T23:00:26.342Z",
+      "registry_url": "https://registry.npmjs.org/%40uwmd%2Fsigning/0.2.20",
+      "attestation_url": "https://registry.npmjs.org/-/npm/v1/attestations/@uwmd%2fsigning@0.2.20",
+      "file_comparison": {
+        "name": "@uwmd/signing",
+        "version": "0.2.20",
+        "files": 24,
+        "all_files_equal_prepared_pack_and_local_build": true,
+        "tarball_bytes_equal_prepared_pack": true,
+        "sha256": "b2da9938a8c15e171fccb90dca5086db6533d4eca1ee61b7738d83396933e697"
+      },
+      "rekor_records": [
+        {
+          "package": "@uwmd/signing",
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "logIndex": "3063672880",
+          "uuid": "108e9186e8c5677a6b740467b66ea2a33c806963021380212824a4034c543fec62e65e74060f5a68",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063672880",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        },
+        {
+          "package": "@uwmd/signing",
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "logIndex": "3063631805",
+          "uuid": "108e9186e8c5677ae36d1b3aa207b87f32f6af9890f3977e28a9f33f6598bd43713ff2f71c11a34b",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063631805",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/batch",
+      "version": "0.8.15",
+      "gitHead": "a1ca815e2aee5da374caf7627ba3702849ecd257",
+      "dist_tags": {
+        "latest": "0.8.15"
+      },
+      "integrity": "sha512-2h1DMBdqGjIx9NYct4pg4fwupxutYFgyZUWp/GBI17eC5a3VBRMnzb/qDUueYpkpmD+9b+HGzmYWHVGrUi30lA==",
+      "shasum": "82a70fab0b73020ba73d741f45a80e8e6de78ab7",
+      "sha256": "7caabb18249a5a473ef4f7d7e1fdc52badf517d9d4c5ea410629343dba7becda",
+      "npm_registry_signatures_verified": 2,
+      "attestations": [
+        {
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063691975"
+          ],
+          "certificate_identity": null
+        },
+        {
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "dsse_verified": true,
+          "subject_digest_matches": true,
+          "full_sigstore_trust_verified": true,
+          "rekor_log_indexes": [
+            "3063633704"
+          ],
+          "certificate_identity": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v2.16.0",
+          "certificate_issuer": "O=sigstore.dev\nCN=sigstore-intermediate",
+          "certificate_fingerprint256": "BF:D5:A8:5F:90:14:44:D6:22:C2:DC:DE:4C:D8:F6:4A:E6:F7:61:8D:93:EA:15:87:18:C0:F3:73:6D:9D:08:A9"
+        }
+      ],
+      "trust_initialization_error": null,
+      "published_at": "2026-10-02T23:01:33.831Z",
+      "registry_url": "https://registry.npmjs.org/%40uwmd%2Fbatch/0.8.15",
+      "attestation_url": "https://registry.npmjs.org/-/npm/v1/attestations/@uwmd%2fbatch@0.8.15",
+      "file_comparison": {
+        "name": "@uwmd/batch",
+        "version": "0.8.15",
+        "files": 5,
+        "all_files_equal_prepared_pack_and_local_build": true,
+        "tarball_bytes_equal_prepared_pack": false,
+        "sha256": "7caabb18249a5a473ef4f7d7e1fdc52badf517d9d4c5ea410629343dba7becda"
+      },
+      "rekor_records": [
+        {
+          "package": "@uwmd/batch",
+          "predicateType": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "logIndex": "3063691975",
+          "uuid": "108e9186e8c5677a1b1b6b26e95dc1386505a88153b9da27b3134ddcf06b3d9fa2f767e7e2de05fe",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063691975",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        },
+        {
+          "package": "@uwmd/batch",
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "logIndex": "3063633704",
+          "uuid": "108e9186e8c5677a31ebbe79bf97318e77c4129fa0cd9b0257a385c5b520dba2f52494a9884bdc8b",
+          "url": "https://rekor.sigstore.dev/api/v1/log/entries?logIndex=3063633704",
+          "live_body_matches_bundle": true,
+          "live_signed_entry_timestamp_verified": true,
+          "signed_entry_timestamp_bytes_equal_bundle": false
+        }
+      ]
+    }
+  ],
+  "archive_metadata_differences": [
+    {
+      "package": "cli",
+      "uncompressed_tar_equal": false,
+      "entry_order_equal": true,
+      "metadata_differences": [
+        {
+          "path": "package/bin/uwmd.mjs",
+          "fields": {
+            "mode": {
+              "prepared": "420",
+              "published": "493"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "package": "batch",
+      "uncompressed_tar_equal": false,
+      "entry_order_equal": true,
+      "metadata_differences": [
+        {
+          "path": "package/bin/uwmd-batch.mjs",
+          "fields": {
+            "mode": {
+              "prepared": "420",
+              "published": "493"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,19 +1,20 @@
 # Roadmap
 
-Reconciled **2026-10-02** for the release-prepared **2.16.0** generation,
-following [release 2.15.0](https://github.com/UWMD-OSP/UW-Markdown/releases/tag/v2.15.0)
-(see [Released in 2.15.0](#released-in-2150)).
+Reconciled **2026-10-02** after verified publication of **2.16.0**, pairing
+core/CLI 2.16.0 with stable Protocol 2.20.0 and Format 2.0.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Current prepared generation
+## Current release: 2.16.0
 
-Core/CLI **2.16.0** pair with accepted Protocol **2.20.0** and Format **2.0**.
-Signing **0.2.20** and batch **0.8.15** pin core 2.16.0 exactly. The generation
-carries RFC 0069's student bed-count contract, RFC 0066 fence-order evidence
-hardening and the final publication-neutral release-record checks. RFC 0069
-remains `accepted`. Preparation evidence is in
+Published core/CLI **2.16.0** pair with stable Protocol **2.20.0** and Format
+**2.0**. Published signing **0.2.20** and batch **0.8.15** pin core 2.16.0
+exactly. The generation carries RFC 0069's student bed-count contract, RFC 0066 fence-order evidence
+hardening and the final publication-neutral tagged-tree checks. RFC 0069
+is `implemented`. Release run 37075007121 and independent registry/provenance/
+published-CLI checks verify the publication. Preparation and publication
+evidence are recorded separately in
 `docs/releases/2.16.0-candidate.md`.
 
 ## Historical publication: 2.15.0
@@ -213,7 +214,7 @@ surfaces usable for the next producer wave.
 | 2 | Per-lease monthly ledger | **RFC 0054, `decided` (terminal); the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
 | 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
 | 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
-| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), accepted 2026-10-02 and included in the core/CLI 2.16.0 generation (accepted Protocol 2.20.0 release contract, Format 2.0).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **Still demand-gated:** the manufactured-housing module (draft RFC 0068) and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
+| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), implemented and released in core/CLI 2.16.0 (stable Protocol 2.20.0, Format 2.0; accepted 2026-10-02).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **Still demand-gated:** the manufactured-housing module (draft RFC 0068) and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. |
 | 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction was the RFC's load-bearing claim, and it was accepted: RFC 0058 shipped in 2.12.0 with the `REC-NN` family and its own conformance suite. |
 | 2 | Ground lease / leasehold tenure | **Not a tranche class ([RFC 0060](docs/rfcs/0060-tranche-class-candidates.md)); the tenure contract remains demand-gated.** The earlier "reserve `ground_lease` as a tranche concept" framing conflated the leasehold estate and its ground-rent obligation with financing merely secured by a leasehold, which is already `senior_debt`. A `Tranche` has no field for tenure, and no honest `amount` exists for one. **The format does not model ground leases today:** §4.4 has no `ground_rent` key (only the generic `other_expenses`), §4.5 `noi_model.expenses` has no ground-rent line *and no generic bucket at all*, and no section types the leasehold as an object — term, resets, extension options, fee relationship and subordination are all untyped. Where the underwriting does include ground rent in OpEx, adding it again as a debt tranche would double-count it. The open work is a property/tenure contract against its own section, gated on a demonstrated consumer. |
 | 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, swaps and collars each require a concrete engine scope and module/RFC pair. **PACE-specific mechanics** stay on this demand-gated list: RFC 0060 closed the *enum* question — it is stated as `other_debt` where the existing fields suffice — but assessment servicing above or below NOI, jurisdictional lien behaviour and transferability are unmodelled and would need their own contract. |

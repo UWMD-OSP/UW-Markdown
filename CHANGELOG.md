@@ -10,23 +10,37 @@ protocol, and each package each carry an independent semver).
 
 ## [2.16.0] - 2026-10-02
 
-### Prepared
+### Released
+
+Published core/CLI **2.16.0**, signing **0.2.20** and batch **0.8.15** from
+annotated `v2.16.0` on `a1ca815e2aee5da374caf7627ba3702849ecd257`.
+[Release run 37075007121](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37075007121)
+succeeded through trusted publishing with provenance. Each registry version
+and `latest` matches, and every `gitHead` names the tagged commit. Integrity,
+registry/DSSE signatures, Fulcio trust, Rekor timestamps/inclusion proofs and
+published file comparisons verify; the delivered CLI passes **101/101**
+portable cases. RFC 0069 is `implemented`; Protocol **2.20.0** is Stable.
+The immutable tag retains its publication-neutral preparation records. Exact
+evidence is in `docs/releases/2.16.0-publication-evidence.json`.
+
+### Prepared package pairing
 
 Core/CLI **2.16.0** pair with Protocol **2.20.0** and Format **2.0**.
 Signing **0.2.20**, batch **0.8.15**, Excel **0.9.8**, report **0.8.20**,
 lake **0.2.4** and both reference modules **0.1.8** pin core **2.16.0**.
 Core's optional signing peer is **0.2.20**. The release workflow publishes
 core, CLI, signing and batch; the other packages remain source-only.
-RFC 0069 stays `accepted` under the three-state release model. The final
-contract, package pairings and preparation evidence are recorded in
+RFC 0069 stayed `accepted` in the tagged preparation state; the Released
+record above adds its verified lifecycle transition. Package pairings and
+preparation evidence are recorded in
 `docs/releases/2.16.0-candidate.md`.
 
-### Accepted contract — Protocol 2.20.0 (RFC 0069)
+### Implemented contract — Protocol 2.20.0 (RFC 0069)
 
 Jared accepted RFC 0069 as a whole on **2026-10-02** and authorized
-implementation. Format stays **2.0**. Core/CLI **2.16.0** carry the accepted
-Protocol **2.20.0** release contract. The RFC remains `accepted`; its status
-transition belongs to the verified post-publication reconciliation.
+implementation. Format stays **2.0**. Published core/CLI **2.16.0** carry
+stable Protocol **2.20.0**. RFC 0069 is `implemented` following independent
+post-publication verification.
 
 - **Student-housing bed counts (Format §4.3).** The top-level `rent_roll` may
   state four OPTIONAL fields:

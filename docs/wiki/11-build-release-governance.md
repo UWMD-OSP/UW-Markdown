@@ -36,8 +36,8 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (accepted release
-  contract 2.20.0 for RFC 0069; core/CLI 2.16.0 pair with 2.20.0 and Format 2.0).
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (stable 2.20.0 for
+  implemented RFC 0069; published core/CLI 2.16.0 pair with it and Format 2.0).
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
@@ -162,8 +162,9 @@ The guards:
   A tag on a stale, undated or prematurely "released" tree publishes nothing.
 - **`release:check`.** It fails if that step goes missing.
 
-Source may still run ahead between releases, as Protocol 2.20.0 does against
-published 2.15.0's 2.19.0. Run the tag check yourself before tagging:
+Source may still run ahead between releases, as Protocol 2.20.0 did against
+published 2.15.0's 2.19.0 before 2.16.0 shipped. Run the tag check on the
+release-prepared tree before tagging:
 
 ```
 node scripts/verify-release.mjs --tag vX.Y.Z

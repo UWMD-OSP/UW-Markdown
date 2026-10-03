@@ -1,12 +1,14 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-02** for the release-prepared **2.16.0** generation.
-Core/CLI **2.16.0** pair with accepted Protocol **2.20.0** and Format **2.0**.
-Signing **0.2.20** and batch **0.8.15** pin core 2.16.0 exactly. RFC 0069
-stays `accepted`; see [Accepted student bed-count release contract](#accepted-student-bed-count-release-contract-rfc-0069).
+Reconciled **2026-10-02** for published and verified **2.16.0**. Core/CLI
+**2.16.0**, signing **0.2.20** and batch **0.8.15** are published from the
+immutable `v2.16.0` tag with verified provenance. Stable Protocol **2.20.0**
+pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
+[Released student bed-count contract](#released-student-bed-count-contract-rfc-0069).
 The generation includes both RFC 0066 fence-order conformance repairs and
-PR #240's publication-neutral release-state guards. The preparation record
-is `docs/releases/2.16.0-candidate.md`. Draft RFCs 0064, 0065, 0067 and 0068
+PR #240's publication-neutral release-state guards. The preparation and
+publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
+Draft RFCs 0064, 0065, 0067 and 0068
 remain outside this contract. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -37,6 +39,16 @@ from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
+
+Release run 37075007121 succeeded on tagged commit
+`a1ca815e2aee5da374caf7627ba3702849ecd257`. All four npm versions/`latest`
+and registry `gitHead` values match. Registry/DSSE signatures, Fulcio chain/
+identity/SCTs, authenticated TUF trust and Rekor timestamps/inclusion proofs
+verify; all eight live log entries match. All 454 published file contents
+equal the prepared build. The registry-installed CLI passes **101/101**
+portable cases with zero skips. `npm audit signatures` verifies registry
+signatures for 13 installed packages and attestations for 8 packages. Exact
+public evidence is in `docs/releases/2.16.0-publication-evidence.json`.
 
 The 2.16.0 prepared tree passes pinned Node 22.14.0/npm 11.5.1 verification:
 **2,690 workspace tests / 140 files**, test typechecks, core coverage floors,
@@ -472,7 +484,7 @@ with Protocol **2.19.0** and is `implemented`.
   - **Unchanged.** Expected 0.6, Protocol/RFC/package state, 675 default checks
     and 101 portable cases. This conformance evidence is included in the 2.16.0 generation.
 
-## Accepted student bed-count release contract (RFC 0069)
+## Released student bed-count contract (RFC 0069)
 
 [RFC 0069](../rfcs/0069-student-rent-roll-bed-counts.md) was accepted on
 **2026-10-02**. It declares four OPTIONAL fields on the top-level §4.3
@@ -498,9 +510,10 @@ and its formulas do not change.
 - **Not in scope.** Future-phase capacity is deferred, and `BED-02` is not
   weakened for it. CC-13's acceptance of any finite `total_beds` is a separate,
   pre-existing size-validation concern.
-- **Version.** Core/CLI **2.16.0** pair with the accepted Protocol **2.20.0**
-  release contract and unchanged Format **2.0**. The RFC stays `accepted`;
-  its status transition belongs to verified post-publication reconciliation.
+- **Version.** Published core/CLI **2.16.0** pair with stable Protocol
+  **2.20.0** and unchanged Format **2.0**. RFC 0069 is `implemented` after
+  independent post-publication verification. The tag retains its accepted
+  release-prepared lifecycle wording.
 
 ## Release records true of their tag (UPSTREAM-020)
 
