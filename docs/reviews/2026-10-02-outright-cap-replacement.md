@@ -3,6 +3,10 @@
 Research date: **2026-10-02** (America/Phoenix). Status: **analysis only; owner review required**.
 This is not an RFC, acceptance, implementation authorization, or release plan.
 
+Follow-up: Jared selected a funding discriminator plus exact cash-row binding
+for drafting. See [draft RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md).
+This brief preserves the preceding research findings and decision comparison.
+
 ## Finding and bounded requirement
 
 **There is a real representation gap in the released hedge contract.**

@@ -8,7 +8,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068
+Draft RFCs 0064, 0065, 0067, 0068 and 0070
 remain outside this contract. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -553,6 +553,14 @@ The guards:
   `v2.15.0` tags as unmoved.
 
 ## Remaining work
+
+- Review draft [RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md):
+  StackUW's future outright replacement-cap purchase uses a separate funding
+  discriminator and an exact, digest-qualified section 4.26 cash-row binding.
+  The owner selected this drafting direction on 2026-10-02; the RFC remains
+  draft, with no implementation, version bump or release authorization.
+  TASK-3294 remains SCOPED pending a released upstream contract; TASK-3295 is
+  downstream.
 
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
