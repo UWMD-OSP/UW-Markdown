@@ -557,6 +557,8 @@ The guards:
 - Review draft [RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md):
   StackUW's future outright replacement-cap purchase uses a separate funding
   discriminator and an exact, digest-qualified section 4.26 cash-row binding.
+  The revised draft preserves synchronous structural validation and adds a
+  separate async binding verifier; unchecked bindings cannot claim verification.
   The owner selected this drafting direction on 2026-10-02; the RFC remains
   draft, with no implementation, version bump or release authorization.
   TASK-3294 remains SCOPED pending a released upstream contract; TASK-3295 is

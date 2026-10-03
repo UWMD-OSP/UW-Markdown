@@ -27,14 +27,17 @@ underwriting assumes after the initial cap expires. Funding is separately
 `escrow` or `outright`. Escrow retains RFC 0056's existing
 `rate_cap_replacement` line; outright references one exact, already-stated
 §4.26 payment row through its explicit variant, zero-based index, and a
-recomputed binding digest. Date and amount remain in that cash row. Existing
+separately verified binding digest. Date and amount remain in that cash row. Existing
 valid RFC 0056 documents remain valid without edits. This is a modeled future
 purchase, never evidence of an executed successor trade.
 
 **Authorization:** Jared selected this semantic direction on 2026-10-02 and
 authorized drafting only. This RFC remains **draft**. It does not authorize
 acceptance, normative edits, validator implementation, conformance changes,
-version bumps, release preparation, or StackUW admission.
+version bumps, release preparation, or StackUW admission. The subsequent owner
+review approves revision only. Its decisions on structural/async separation,
+zero-cost rows, payment timing, ESC-04 coverage and optional currency are
+incorporated below; acceptance is still pending.
 
 ## Motivation
 
@@ -81,7 +84,10 @@ does not exist and fails to identify the future premium or its timing.
 
 RFC 0056 explicitly made escrow mandatory in the released rule. No repository
 evidence establishes that the owner considered and rejected outright funding.
-The new branch is an additive requirement, not permission to ignore ESC-04.
+The new outright branch is additive. Separately, missing `sources_uses`/`uses`
+currently bypasses ESC-04 despite RFC 0056's released requirement. That skip is
+an implementation/conformance defect of RFC 0056, not a newly imposed RFC 0070
+economic rule. The regression plan below closes it.
 
 ## Proposed change
 
@@ -200,13 +206,15 @@ A conforming implementation MUST:
    when a consumer claims their correctness.
 4. Require an in-range, nonnegative safe-integer `row_index`. Its identity is
    its ordinal in that exact ordered series, not a date selector or calc path.
-5. Recompute and compare `binding_digest` by the following **fixed scope**.
+5. Check the digest's syntax synchronously. Separately recompute and compare
+   it through the async verifier in section 7 using the following **fixed scope**.
+   Structural validation alone does not establish that the commitment matches.
 
 The digest preimage is exactly:
 
 ```ts
 {
-  currency_code: parsed.frontmatter.currency_code,
+  currency_code: parsed.frontmatter.currency_code ?? null,
   row_index: cash_flow_ref.row_index,
   section: 'cash_flow_series',
   series: selectedPayload.series,
@@ -214,9 +222,16 @@ The digest preimage is exactly:
 }
 ```
 
-`currency_code` MUST be stated and valid under RFC 0046 for the new outright
-branch. The funding declaration asserts that the bound payment is denominated
-in that document currency. No FX or per-row currency inference is introduced.
+`currency_code` is always a key in the canonical preimage. If authored as a
+non-null value, use that exact value without trimming, case conversion or
+inference; RFC 0046's existing CUR-01 rule still checks its validity. If absent
+or explicitly null, use JSON `null`. Absence and null therefore have the same
+canonical monetary identity. **No new requirement to author currency is added.**
+The declaration binds the payment to the document's stated monetary identity,
+including an explicitly unspecified identity. No currency is inferred from
+locale, symbol, property location or renderer behavior, and no FX or per-row
+currency rule is introduced. A malformed authored currency cannot be repaired
+by the digest helper or verifier.
 
 Serialize that preimage with exact RFC 8785 canonical JSON, UTF-8 encode, hash
 with SHA-256, and prepend `sha256:` to its lowercase 64-hex result. There is
@@ -224,6 +239,14 @@ no financial rounding/quantization and no metadata normalization in this scope.
 The entire ordered array and every authored row member are included. Absent
 optional row members stay absent; explicit null remains null. Numeric JSON
 spellings such as `360000` and `360000.0` canonicalize identically.
+
+For the section 2 example's identical series/variant/index, these known answers
+pin monetary identity:
+
+| Authored document currency | Canonical preimage value | Binding digest |
+|---|---|---|
+| `USD` | `"USD"` | `sha256:3add19b25a3adb3d8bfa3f02977ecd14a53ead000abc4ad1ae99cd3d39fdf1fa` |
+| absent or null | `null` (key retained) | `sha256:33072bf8b331730e37176a3fb1b1f80cb3fc1c398bed4746fcffc3d5b74ea63a` |
 
 The preimage excludes the binding object, debt, document ID, section prose,
 cash-series top-level label/day count/metrics, and all block metadata. Those
@@ -236,7 +259,9 @@ This scope is intentionally more conservative than a hash of the selected row:
 - Editing the index or variant without recommitting fails.
 - Inserting, deleting or reordering distinguishable rows anywhere in the
   selected vector fails, even when the selected date/amount happen to match.
-- Any authored row-content or document-currency change fails.
+- Any authored row-content or canonical document-currency change fails.
+  Removing a stated currency changes its canonical value to null; replacing
+  absent currency with explicit null alone does not change the commitment.
 - A different eligible cash row with the same date or amount cannot silently
   become the target while the old digest is retained.
 - Swapping literally identical JSON rows makes no observable change to the
@@ -244,7 +269,9 @@ This scope is intentionally more conservative than a hash of the selected row:
   proposal does not invent a durable identity for economically indistinguishable
   occurrences. Date/label/amount equality is never a search or deduplication rule.
 
-A stale binding MUST refuse. An editor/exporter MUST NOT silently scan for a
+Async verification of a stale binding MUST fail with HDG-09. A consumer claiming
+complete validation/verification MUST refuse it. Sync structural validation
+cannot determine staleness and MUST NOT pretend to have checked it. An editor/exporter MUST NOT silently scan for a
 similar row, renumber the reference, or refresh its digest during validation.
 An intentional source edit requires an explicit reviewed rebind, represented
 through the existing append-only edit/provenance rules. Validation is read-only.
@@ -273,9 +300,11 @@ For the outright branch:
   explicitly stated `effective_date`. “Future” is relative to this stated
   initial-hedge anchor, never the runtime clock, annotation timestamp, or a
   derived closing date.
-- Purchase/payment date is distinct from successor coverage commencement.
-  This RFC does not force payment equal to, or after, initial expiration:
-  a replacement may be purchased before the current cap expires.
+- The date is a **modeled payment date**. It is not a normative assertion of
+  trade execution, replacement-cap commencement, or settlement mechanics.
+  A payment may be before, on, or after initial `expiration_date`, provided
+  it is strictly after initial `effective_date`. No equality or ordering
+  constraint relative to expiration is imposed.
 - Nothing verifies continuous successor coverage or derives maturity/hold
   dates from `loan_term_years`. The author still states the post-expiration
   assumption. A binding does not prove successor terms or contractual commitment.
@@ -294,7 +323,7 @@ Let “replacement escrow” mean the existing named entry in the selected
 | `replace` | absent/null | absent | ESC-04. |
 | `replace` | `mode: escrow` | present and valid | Explicit escrow path. No cash-row reference allowed. |
 | `replace` | `mode: escrow` | absent | ESC-04. |
-| `replace` | `mode: outright` | absent | Require the full valid payment binding and digest verification. |
+| `replace` | `mode: outright` | absent | Sync: require valid binding structure/payment. Complete claim: also require async `verified`. |
 | `replace` | `mode: outright` | present, including zero-funded | ESC-04: contradictory funding. |
 | `unhedged` / `loan_matures_first` | absent/null | absent | Unchanged. |
 | `unhedged` / `loan_matures_first` | non-null | either | HDG-07; any replacement escrow also retains ESC-04. |
@@ -318,7 +347,9 @@ ESC-04 applicability check MUST occur independently of those early returns.
 Legacy `replace` without its escrow then refuses even when the section is
 missing. Existing normatively valid documents are unaffected; documents that
 passed only this implementation coverage gap change verdict. This limited
-correction is part of this RFC, not an invitation to suppress sections.
+correction is a planned repair of the already-released RFC 0056
+implementation/conformance defect, not a new RFC 0070 economic requirement.
+Add regression cases for both missing section and missing `uses`.
 An explicit outright declaration itself states the absence of replacement
 escrow; a missing optional sources/uses section is not a replacement-funding
 path by itself. If sources/uses is present but unresolvable, outright cannot
@@ -326,79 +357,172 @@ claim its conflict check passed.
 
 ### 6. Proposed validation/error rules
 
-These are proposed new rules, not current emitted codes. All are errors.
+The phase is part of the contract. HDG-07/08/10 are proposed synchronous
+validation errors; HDG-09 is a proposed **async verification** error. No HDG-11
+rule is proposed. Lack of hashing is not a structural error.
 
-| Code | Deterministic refusal |
-|---|---|
-| `ESC-04` | Required escrow branch lacks its named escrow; named replacement escrow lacks `replace`; or named replacement escrow conflicts with `outright`. |
-| `HDG-07` | Non-null replacement-funding object has illegal shape/mode, unknown members, missing required union members, forbidden reference under escrow, or is stated without `replace`. |
-| `HDG-08` | Exact source/reference cannot resolve, a required section selection is ambiguous, index is invalid/out of range, digest string has invalid shape, or selected cash row/series has illegal structure. Preserve applicable existing CF codes. |
-| `HDG-09` | Recomputed binding digest differs from the stated digest. Include expected/stated and recomputed digests plus the exact source variant/index in the message/evidence. |
-| `HDG-10` | Validly addressed payment has positive amount, does not follow a valid stated initial effective date, or lacks valid stated document currency. Preserve applicable HDG-01/CUR-01 findings rather than inventing date or currency. |
-| `HDG-11` | A structurally eligible outright binding has not undergone required digest verification, or the hash provider is unavailable. This is not a successful funding verdict. |
+| Phase | Condition | Exact finding/result |
+|---|---|---|
+| Sync | Escrow branch (legacy absent/null funding or explicit escrow) lacks the named replacement escrow, including missing sources/uses | ESC-04. This includes the RFC 0056 coverage-defect regression. |
+| Sync | Named replacement escrow without `replace`, or alongside outright mode, even if zero funded | ESC-04. Preserve existing ESC-01/02/03 for invalid escrow data. |
+| Sync | Non-null funding object has illegal shape/mode, unknown members, missing required union members, reference under escrow, or is stated without `replace` | HDG-07. Missing `cash_flow_ref` or one of its required members is a shape failure; an authored member with invalid type/value is checked by HDG-08. |
+| Sync | Exact cash variant missing/wrong/superseded, required section selection ambiguous/unresolvable, invalid/out-of-range index, malformed digest value, or illegal selected row/series structure | HDG-08. Preserve applicable existing CF findings. Never use fallback selection. |
+| Sync | Validly addressed amount is positive, or valid payment date is on/before a valid stated initial effective date | HDG-10. Amount zero is valid; before/on/after expiration is valid when after effective date. |
+| Sync | Invalid/missing initial hedge dates or other existing hedge facts | Existing HDG-01 through HDG-06, as applicable. Do not invent an anchor or add HDG-10 when its prerequisite anchor is invalid. |
+| Sync | Authored non-null currency is malformed | Existing CUR-01. Absent/null currency has no currency finding and canonicalizes to null. |
+| Sync | Binding digest has not been recomputed, or hashing is unavailable | **No error solely for this condition.** A clean structural result carries no claim of digest verification. Consumer status is `not_checked` until the separate verifier runs. |
+| Async | Structurally eligible binding recomputes to stated digest | `verified`; no verification issue. |
+| Async | Structurally eligible binding recomputes to another digest | `failed`, reason `stale_binding`; HDG-09 with stated/computed digests and exact variant/index. Sync may still be clean. |
+| Async | Invalid prerequisites or unresolved source prevent verification | `unverifiable`, reason `invalid_structure` or `unresolvable_source`; expose relevant structural findings without claiming a digest comparison. |
+| Async | Supported hash provider cannot perform the check | `unverifiable`, reason `crypto_unavailable`; no fabricated HDG-09 and no new structural error. |
+| Consumer | Outright verifier not invoked | `not_checked`, reason `not_invoked`; cannot claim complete success. |
+| Consumer | Outright structurally valid but verification `failed`, `unverifiable` or `not_checked` | Complete claim refuses, independently of the synchronous `ValidationResult` status. |
+| Async | No outright binding is applicable and funding structure is lawful | `not_checked`, reason `not_applicable`; legacy funding relies on synchronous RFC 0056 checks. |
 
-Existing HDG-01 through HDG-06 remain unchanged, including initial-premium/use
-agreement. The successor purchase does not become part of `premium` or
-`uses.rate_cap_cost`.
+Initial-premium/use agreement remains unchanged. The successor payment does not
+become part of `premium` or `uses.rate_cap_cost`.
 
-Within a selected new funding object, check shape/assumption first, selection
-and reference next, then series structure and payment semantics, then digest.
-Stop this binding's deeper checks when their inputs are invalid; retain all
-independent legacy/CF/CUR errors. A malformed explicit mode yields HDG-07;
-it never creates a successful alternate funding path. ESC-04 independently
-reports an applicable escrow conflict/absence. Use existing deterministic
-validator order for the document and replace the digest-pending issue at its
-position when completing verification.
+Within a selected funding object, check shape/assumption first, selection and
+reference next, then series structure and payment semantics. Stop that binding's
+deeper checks when prerequisites are invalid; retain independent legacy/CF/CUR
+errors. HDG-07 never creates a successful alternate funding path. ESC-04
+independently reports applicable escrow conflict/absence; a well-formed outright
+branch is exempt from **escrow-absence** ESC-04 but must pass its own HDG rules.
+Preserve existing deterministic validation ordering. The async result is separate;
+it does not remove, insert or reorder synchronous findings.
 
-### 7. Synchronous structural validation and complete verification
+### 7. Synchronous validation and separate async binding verification
 
-Existing `validateUWFile` is synchronous; the existing portable SHA-256
-helpers are asynchronous to support Web Crypto. This draft proposes **one
-additive complete-validation entry point**, not a breaking conversion of the
-existing API:
+`validateUWFile(parsed, thresholdOverrides?)` retains its synchronous signature,
+`ValidationResult` shape and structural purpose. Existing portable SHA-256 helpers
+are asynchronous for Node/Web Crypto. Add a separate verifier following
+`verifyChain`'s stronger-verification architecture; do not add an async replacement
+for structural validation.
+
+Proposed exact public API and result contract:
 
 ```ts
-validateUWFileAsync(
-  parsed: ParsedUWFile,
-  thresholdOverrides?: Partial<FinancialThresholds>
-): Promise<ValidationResult>;
+interface ReplacementFundingBindingContext {
+  debt_variant: string | null; // selected property-level debt; null if unvariant
+  cash_flow_variant: string;
+  row_index: number;
+  currency_code: string | null; // exact authored value, or canonical null
+}
 
-computeReplacementCashFlowBindingDigest(
+interface ReplacementFundingVerificationIssue {
+  code: 'HDG-09';
+  severity: 'error';
+  section: 'debt_structure';
+  field: 'rate_hedge.replacement_funding.cash_flow_ref.binding_digest';
+  message: string;
+  context: ReplacementFundingBindingContext;
+  stated_digest: string;
+  computed_digest: string;
+}
+
+type ReplacementFundingVerificationResult =
+  | {
+      state: 'not_checked';
+      reason: 'not_invoked' | 'not_applicable';
+      issues: readonly [];
+    }
+  | {
+      state: 'unverifiable';
+      reason: 'invalid_structure' | 'unresolvable_source' | 'crypto_unavailable';
+      context: ReplacementFundingBindingContext | null;
+      structural_issues: readonly ValidationMessage[];
+      issues: readonly [];
+    }
+  | {
+      state: 'failed';
+      reason: 'stale_binding';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [ReplacementFundingVerificationIssue];
+    }
+  | {
+      state: 'verified';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [];
+    };
+
+export declare function verifyReplacementFundingBindings(
+  parsed: ParsedUWFile
+): Promise<ReplacementFundingVerificationResult>;
+
+export declare function computeReplacementCashFlowBindingDigest(
   series: readonly CashFlowRow[],
   variant: string,
   rowIndex: number,
-  currencyCode: string
+  currencyCode: string | null
 ): Promise<string>;
 ```
 
-The helper uses the exact preimage above, checks its supported inputs, and
-returns the prefixed digest. It does not author a funding object or stamp
-`_meta`. Invalid inputs must use a typed `ProtocolError`, not a bare error.
+These functions/types MUST be exported from `index.ts` and the browser-safe
+entry. Reuse `canonicalizeExact` and the existing Node/Web Crypto hash seam.
+No new dependency or synchronous crypto implementation is required. The digest
+helper validates supported inputs, uses the fixed preimage in section 3 and
+returns the prefixed digest. Its explicit null parameter represents absent/null
+document currency. It never guesses currency, authors a funding object, stamps
+metadata, searches rows or mutates input. Invalid helper arguments use a typed
+`ProtocolError`; they are not silently normalized.
 
-`validateUWFile` MUST perform the new synchronous funding/selection/payment
-checks and emit HDG-11 for an otherwise eligible outright binding. It MUST NOT
-return a clean complete-funding verdict while leaving a commitment unchecked.
-Documents with no outright branch do not acquire a pending finding.
+The verifier MUST capture an immutable snapshot before its first await, resolve
+the selected property-level hedge and exact source against that snapshot, and
+apply the same relevant structural prerequisites as the synchronous validator.
+Relevant prerequisites are the funding rules, hedge facts needed for the binding,
+escrow conflict check, exact reference selection, selected series structure,
+payment semantics and currency validity. Unrelated financial validation findings
+remain the caller's responsibility; a verified binding is not a verified deal.
 
-`validateUWFileAsync` MUST capture one immutable snapshot of the parsed
-document and thresholds before awaiting hashing. On that snapshot it runs the
-same structural validation and completes each eligible digest check. It removes
-only the HDG-11 finding it has actually resolved, substituting HDG-09 on
-mismatch, or retaining HDG-11 if hashing is unavailable. It rebuilds the normal
-`ValidationResult` issue/severity/status/readiness aggregates consistently;
-no result field may claim success against a different snapshot or hide an
-unrelated error. It performs no writes and no financial calculations.
+Result semantics are exact:
 
-Both functions/types must be exposed through `index.ts` and the browser-safe
-entry. Reuse `canonicalizeExact` and the existing Node/Web Crypto hashing
-seam; introduce no external npm dependency or separate SHA-256 implementation.
+- `verified` occurs only after successful recomputation and equality. Both
+  digests are present and equal; context identifies the checked source snapshot.
+- `failed` occurs only after recomputation and inequality. Both digests
+  are present and unequal; its single HDG-09 issue reports that comparison.
+- `unverifiable` has no computed-digest success claim. Invalid structural
+  prerequisites use `invalid_structure`; missing/ambiguous required selection
+  uses `unresolvable_source`. The latter takes precedence when source
+  selection prevents assessment. Both expose applicable structural findings.
+  A hash-provider failure uses `crypto_unavailable` with a resolved context
+  and no structural findings. It must not manufacture a mismatch.
+- `not_checked/not_applicable` is returned when the selected funding path
+  is lawfully escrow-funded, or no outright requirement applies. Malformed
+  stated new funding or unresolved required selections return `unverifiable`
+  instead; they cannot be hidden as not applicable.
+- `not_checked/not_invoked` is a consumer's initial status before invocation,
+  not an outcome returned after the verifier checks an applicable binding.
+  Consumers retaining only synchronous validation MUST expose this status
+  for outright documents. Omitting the async call never establishes `verified`.
 
-Protocol §II validation surfaces, the CLI `validate` command in both output
-modes, the MCP validation result, and any built-in validation consumer advertising
-this new outright capability MUST use complete validation. Older synchronous
-callers can retain their API and receive the explicit HDG-11 refusal on a new
-outright document; they cannot claim successful adoption by inspecting only
-the absence of ESC-04. No feature flag may silently disable the required check.
+No result changes synchronous `overall_status`, readiness or error arrays.
+No verification outcome changes the file. Digest equality proves consistency of
+the declared source snapshot, not payment purpose, executed-trade status,
+authenticity or a calculation.
+
+For any consumer claiming complete validation/verification of outright funding,
+success requires **both** successful structural validation **and**
+`replacement_funding_verification.state === 'verified'`. Call both against
+one immutable parsed snapshot; caller mutations while hashing must not change
+the verdict. Legacy escrow funding needs no digest and can complete through its
+unchanged structural rules, with `not_applicable` binding status.
+
+During implementation, CLI `validate` text/JSON, MCP validation results and
+built-in web validation consumers claiming this capability MUST invoke the
+verifier. Preserve existing root `ValidationResult` fields; add a separate
+`replacement_funding_verification` result member on the claimed-complete
+consumer payload, rather than folding verification into structural issues.
+Text output labels structural status and binding-verification state separately.
+CLI exit status MUST be nonzero for applicable outright `failed`,
+`unverifiable` or `not_checked`, and for existing structural refusal;
+a clean structural report alone cannot produce complete-success output. No
+feature flag may silently disable verification while retaining that claim.
+A sync-only editor may report structural validation plus explicit not-checked
+status; it must qualify its result and cannot advertise complete verification.
 
 ## Compatibility analysis
 
@@ -407,22 +531,25 @@ the absence of ESC-04. No feature flag may silently disable the required check.
 - Valid legacy escrow-funded replacement files are unchanged byte-for-byte and
   remain valid without a funding object, row binding or document currency.
 - Existing `unhedged`, `loan_matures_first`, hedge-absent and no-cap documents
-  acquire no new funding data or pending errors.
+  acquire no new funding data or hashing errors.
 - Files exploiting the missing-sources/uses ESC-04 coverage gap become errors
   under the already-required funding rule. No valid legacy document is redefined.
 - Old schema consumers reject the new hedge member; old validators report
   ESC-04 for the new no-escrow branch. That is expected capability mismatch,
   not permission to fabricate an escrow.
 - Tier-1 readers retain parsing/display of optional data; normative funding
-  validation requires the new complete checks. Tier-2 editors preserve bytes
+  validation uses the structural checks; complete outright verification also
+  requires the separate async result. Tier-2 editors preserve bytes
   outside edits and must flag stale bindings after source changes rather than
   silently repair them. Tier-3 calculations are unchanged. Tier-4 hosts extract
   stated facts and host-owned provenance; they do not price or derive funding.
 - Modules gain no manifest/section/calc-grammar change. Component hedges and
   multiple-tranche ownership are not added. The existing property-level
   selection seam remains authoritative.
-- The existing synchronous validation ABI remains. New successful outright
-  validation uses the additive async API. No deprecation/removal is proposed.
+- The existing synchronous validation ABI remains. Structurally valid outright
+  documents can have a clean synchronous result; that result does not check the
+  digest. Complete outright claims require the separate async verifier's
+  `verified` result. No deprecation/removal or unchecked-binding error is added.
 - Stated series metrics, waterfalls and property assembly remain their current
   contracts. A valid financing binding never makes RFC 0045's unlevered stream
   eligible to include the hedge expenditure.
@@ -451,8 +578,11 @@ versioning interpretation; preparation must reconcile actual versions anew.
 
 ### Static/Excel and representation fidelity
 
-No pack formula, financial total, rate scaling, tolerance, currency quantum or
-Excel calculation changes. The declaration is a link, not an additional cash
+No cap pricing, payoff projection, forward-curve data, mark-to-market,
+swap/collar expansion, escrow roll-forward or invented funding is introduced.
+The adopter's cash flows are not modified, and a modeled future payment does
+not imply an executed replacement trade. No pack formula, financial total,
+rate scaling, tolerance, currency quantum or Excel calculation changes. The declaration is a link, not an additional cash
 charge. Static/Excel consumers must display/copy source facts without adding
 the linked payment twice; any future financial cash-assembly consumer requires
 its own contract and parity proof. Generic lossless JSON/XML/CSV representations
@@ -461,54 +591,69 @@ omission reporting. No swap/collar, curve, payoff, MTM or account-state semantic
 
 ## Conformance impact
 
-No fixture is added or changed by this draft. On implementation:
-
-**Retain unchanged** all 17 existing `conformance/hedge/` scenarios, including
+No fixture is added or changed by this draft. On implementation, **retain
+unchanged** all 17 existing `conformance/hedge/` scenarios, including
 `accept-full-hedge-and-escrows`, `accept-no-hedge-stated`,
-`reject-replace-without-escrow`, `reject-replacement-escrow-without-assumption`,
+`reject-replace-without-escrow`, `reject-replacement-escrow-without-assumption`
 and both reserved-instrument refusals. Existing cash-flow/period cases remain
-unchanged. Update the core unit assertion that currently exempts absent
-sources/uses, because it contradicts the normative requirement above.
+unchanged. Pin legacy accepted file bytes/digests before and after validation;
+do not add the new member or currency to those fixtures.
 
-Add named scenarios under `conformance/hedge/` and dispatch them through
-complete validation. The existing default hedge driver must adopt that entry
-point; the portable driver/manifest must cover the new contract rather than
-testing only parser preservation.
+Update the unit assertion exempting missing sources/uses: it pins the RFC 0056
+implementation/conformance defect. Add separate regressions for missing section
+and missing `uses`. The default hedge driver and portable driver/manifest must
+exercise synchronous findings and separate async results; neither may treat
+structural success as complete outright success.
 
-| Proposed scenario(s) | Required result / negative control |
-|---|---|
-| `accept-explicit-escrow-funding` | New escrow mode plus existing named escrow; no new purchase obligation. |
-| `accept-outright-replacement-payment` | Exact bound $360,000 future row, no replacement escrow; no HDG/ESC errors after complete verification. |
-| `accept-outright-same-day-distinct-rows` | Two eligible same-day outflows; reference addresses its exact ordinal and leaves both rows unchanged. |
-| `accept-explicit-zero-premium-row` | Explicit future zero row allowed; absent row does not count as zero. |
-| `accept-early-replacement-purchase` | Payment after initial effective date but before expiration; no inferred successor coverage. |
-| `reject-escrow-mode-without-escrow`, `reject-legacy-replace-without-uses` | ESC-04, including absent source section/object. |
-| `reject-outright-with-replacement-escrow` | ESC-04 for positive or zero-funded replacement escrow; unrelated tax/insurance escrows permitted. |
-| `reject-funding-under-nonreplacement` | Both nonreplacement assumptions with either mode produce HDG-07; replacement escrow also produces ESC-04. |
-| `reject-funding-shape` | Unknown mode/member, null/missing outright reference, reference under escrow; HDG-07. |
-| `reject-payment-source`, `reject-payment-index` | Missing/wrong/superseded variant, role-only fallback, ambiguous required sections, omitted/noninteger/negative/out-of-range index; HDG-08. |
-| `reject-payment-digest-shape` | Omitted/malformed/uppercase/unprefixed digest; HDG-07 if required member absent, otherwise HDG-08. |
-| `reject-payment-retargeted-index` | Change only index to another valid same-day outflow, retaining old digest; HDG-09. |
-| `reject-payment-retargeted-variant` | Change to another present variant with equal row data, retaining old digest; HDG-09. |
-| `reject-payment-stale-series` | Insert/delete/edit rows while preserving structure, or reorder distinct same-day rows, with the old digest; HDG-09 even when the addressed date/amount match. Illegal ordering instead follows HDG-08/CF-02. |
-| `reject-payment-stale-currency` | Change valid document currency with old digest; HDG-09. |
-| `reject-payment-row-structure` | Bad date/nonfinite value/unknown row kind/unordered vector; HDG-08 with existing CF findings. |
-| `reject-payment-direction-or-anchor` | Positive row or date on/before initial effective date; HDG-10. No wall-clock comparison. |
-| `reject-payment-currency` | Missing/malformed document currency; HDG-10, preserving applicable CUR-01. |
-| `reject-unchecked-binding` | Sync validator emits HDG-11; async mismatch emits HDG-09; unavailable crypto remains HDG-11. CLI/MCP must expose the complete result and fail appropriately. |
-| `accept-binding-insensitive-to-unrelated-edit` | Provenance/prose/metrics/unrelated-block edit preserves digest; selected row/label change does not. |
-| `accept-reviewed-rebind` | Deliberate index/source edit with newly computed commitment; original monetary values/provenance preserved. |
+All rows below assume other existing requirements are valid. `not_applicable`
+means `not_checked` with that reason; `failed` always means `stale_binding`
+with the single async HDG-09 issue.
 
-Pin the example commitment as a portable known-answer vector. Include key-order,
-JSON numeric-spelling, null-versus-absence and Node/browser digest agreement
-controls. Verify a caller mutating its original document while the async hash is
-pending cannot change the verdict's snapshot.
+| Proposed scenario(s) | Synchronous result | Async/consumer result |
+|---|---|---|
+| `accept-legacy-escrow-byte-valid` | Existing escrow document accepted with no edits, new object or currency requirement | `not_applicable`; file bytes/digest unchanged |
+| `accept-explicit-escrow-funding` | Existing named escrow plus new escrow mode accepted | `not_applicable`; no new payment obligation |
+| `accept-outright-replacement-payment` | Exact $360,000 bound row with no replacement escrow accepted | `verified`; complete consumer succeeds |
+| `accept-outright-same-day-distinct-rows` | Same-day outflows retained; exact ordinal addresses the stated payment | `verified`; both source rows unchanged |
+| `accept-explicit-zero-premium-row` | Explicit future zero row accepted; no fabricated negative amount | `verified` with its zero-row commitment |
+| `accept-payment-before-expiration`, `accept-payment-on-expiration`, `accept-payment-after-expiration` | All accepted if strictly after effective date | `verified`; no execution/commencement assertion |
+| `accept-outright-currency-absent`, `accept-outright-currency-null` | Both accepted; no currency error or inferred USD | `verified` with the same canonical-null commitment |
+| `reject-escrow-mode-without-escrow` | ESC-04 | `unverifiable/invalid_structure` |
+| `reject-legacy-replace-without-sources-uses`, `reject-legacy-replace-without-uses` | ESC-04; regression of released RFC 0056 defect | `unverifiable/invalid_structure` |
+| `reject-outright-with-replacement-escrow` | ESC-04 for positive or zero-funded replacement escrow; unrelated escrow allowed | `unverifiable/invalid_structure` |
+| `reject-funding-under-nonreplacement` | Both modes under either nonreplacement assumption: HDG-07; any replacement escrow also ESC-04 | `unverifiable/invalid_structure` |
+| `reject-funding-shape` | Unknown mode/member, missing/null reference or missing required member, reference under escrow: HDG-07 | `unverifiable/invalid_structure` |
+| `reject-payment-source` | Missing/wrong/superseded variant, role-only fallback or ambiguous required selection: HDG-08 | `unverifiable/unresolvable_source` |
+| `reject-zero-payment-row-missing` | Missing row/empty source does not count as zero: HDG-08 and applicable CF findings | `unverifiable/invalid_structure` |
+| `reject-payment-index` | Noninteger/negative/unsafe/out-of-range index: HDG-08; omitted member: HDG-07 | `unverifiable/invalid_structure` |
+| `reject-payment-digest-shape` | Malformed/uppercase/unprefixed/nonstring digest: HDG-08; omitted member: HDG-07 | `unverifiable/invalid_structure` |
+| `reject-payment-retargeted-index` | Another valid same-day outflow plus old digest: structurally accepted | `failed`; complete consumer refuses |
+| `reject-payment-retargeted-variant` | Another present variant with equal row data plus old digest: structurally accepted | `failed`; complete consumer refuses |
+| `reject-payment-stale-series` | Structurally legal row insertion/deletion/edit or distinct same-day reorder with old digest: accepted structurally | `failed`, even if addressed date/amount still match |
+| `reject-payment-stale-currency` | Valid currency change or stated currency removal with old digest: accepted structurally | `failed`; absent-to-null alone stays `verified` |
+| `reject-payment-row-structure` | Bad date/nonfinite value/unknown kind/unordered vector: HDG-08 and existing CF findings | `unverifiable/invalid_structure` |
+| `reject-payment-direction-or-anchor` | Positive amount or date on/before valid effective date: HDG-10 | `unverifiable/invalid_structure` |
+| `reject-payment-invalid-effective-date` | Existing HDG date finding; no invented anchor or downstream HDG-10 | `unverifiable/invalid_structure` |
+| `reject-payment-currency-malformed` | CUR-01 for malformed authored non-null currency | `unverifiable/invalid_structure` |
+| `binding-not-invoked` | Otherwise clean; no hashing/pending error | Consumer explicitly `not_checked/not_invoked`; cannot claim complete success |
+| `binding-crypto-unavailable` | Otherwise clean; no hashing error | `unverifiable/crypto_unavailable`; CLI complete verdict refuses |
+| `accept-binding-insensitive-to-unrelated-edit` | Metadata/prose/metrics/unrelated block edit accepted | `verified`; selected row/label change instead stales |
+| `accept-reviewed-rebind` | Deliberate source/index edit with recomputed commitment accepted | `verified`; preserve source amounts and append-only provenance |
 
-The adopter acceptance proof must also mutate the reference to a structurally
-valid unrelated outflow **and recompute its digest**. UWMD can validate that
-new statement's structure, but cannot know it misstates the source economics;
-the adopter's source-mapping test must fail. This negative control distinguishes
-consistency from authenticity and prevents a claim that hashing proves purpose.
+Pin both authored-USD and canonical-null known-answer vectors. Include object
+key-order, JSON numeric-spelling, row-member null-versus-absence, frontmatter
+currency absence-versus-null and Node/browser digest agreement controls.
+Mutation of the caller's original parsed document while hashing must not change
+the checked snapshot. Complete consumer tests cover CLI text/JSON exit statuses,
+MCP state and browser state for verified, stale, unchecked and unavailable cases.
+Tests must prove sync results contain no digest-pending error and no async
+mismatch finding, while the separate verification result reports HDG-09.
+
+The adopter acceptance proof must also retarget the reference to a structurally
+valid unrelated outflow **and recompute its digest**. UWMD can check that new
+statement's consistency but cannot know it misstates source economics; the
+adopter's source-mapping test must fail. This distinguishes consistency from
+authenticity and prevents a claim that hashing proves purpose.
 
 ## Reference implementation
 
@@ -523,17 +668,20 @@ Planned files/surfaces:
 - `spec/UW_PROTOCOL_v1.md`: refined validation applicability, commitment
   procedure, complete-validation obligations and HDG family descriptions.
 - `packages/uwmd-core/src/protocol.ts`: executable declarations/rules and
-  remediation entries synchronized with protocol/schema; no package/version bump
+  remediation entries synchronized with protocol/schema, including distinct
+  validation and verification applicability for proposed HDG codes; no version bump
   during draft work. Proposed types `ReplacementFunding` and
   `ReplacementCashFlowRef` are additive.
 - `validator.ts` and `validator.hedge.test.ts`: funding truth table,
-  missing-section coverage and synchronous pending finding.
+  missing-section regression repair and synchronous structural/payment checks.
+  No digest-pending error.
 - New focused `replacement-funding.ts` / `replacement-funding.test.ts`:
-  exact selection, immutable snapshots, digest helper and complete-validation
-  integration. Reuse existing canonicalization/hashing; no new dependencies.
+  exact selection, immutable snapshots, digest helper and separate async verifier.
+  Reuse existing canonicalization/hashing; no new dependencies.
 - `index.ts` / `browser.ts`: export additive functions/types.
 - `cli.ts`, `bindings.ts`, relevant built-in web validation consumers and
-  their tests: await complete validation wherever the new capability is claimed.
+  their tests: invoke the verifier, expose its separate state and require
+  `verified` wherever complete outright capability is claimed.
 - `scripts/run-conformance.mjs`, portable cases/driver, new hedge scenarios,
   wiki data model/testing/status and user-facing adoption documentation.
   Ordinary financial packs and Excel formulas are untouched.
@@ -541,8 +689,8 @@ Planned files/surfaces:
 ### Acceptance and implementation sequence
 
 1. **Owner review/acceptance:** review the exact union, digest scope, zero-row
-   and date semantics, missing-section correction, async completion contract,
-   and versioning below. Record acceptance separately. The semantic drafting
+   and date semantics, optional-currency preimage, RFC 0056 defect repair,
+   separate async API/result contract and versioning analysis. Record acceptance separately. The semantic drafting
    direction is not acceptance of these proposed details.
 2. **Explicit implementation authorization:** after acceptance, reconcile main
    and create `specs/active/SPEC.md` and its ordered `TASKS.md` only if this
@@ -550,13 +698,15 @@ Planned files/surfaces:
    Exactly one task is in flight; check it off only after applicable gates
    and its commit.
 3. **Atomic normative implementation:** land synchronized format/schema/protocol,
-   executable declarations, validator/complete-check code and conformance.
+   executable declarations, structural validator, separate verifier and conformance.
    Include the shared known-answer digest and immutable-snapshot tests.
    No temporary release may accept outright funding while skipping its digest.
 4. **Consumer integration:** prove core async, browser crypto, CLI text/JSON
-   exit status, MCP result and built-in claimed consumers agree. Existing sync
-   callers must explicitly refuse an unchecked new branch; legacy controls
-   preserve behavior except the disclosed coverage correction.
+   exit status, MCP result and built-in claimed consumers agree. Sync-only callers
+   retain clean structural results when appropriate and
+   expose `not_checked`; they cannot claim complete verification. Legacy
+   controls preserve byte-validity except for documents exploiting the disclosed
+   RFC 0056 implementation defect.
 5. **Deterministic gates:** build; full tests; all default conformance suites;
    schema validation; lint; verify-lockfile; verify-packages; verify-versions;
    verify-indexes; verify-codes; docs build, plus release-readiness checks when
@@ -574,9 +724,9 @@ Planned files/surfaces:
 
 TASK-3294 remains **SCOPED**, and TASK-3295 remains downstream, until a released,
 declared Protocol/core/CLI pairing includes this accepted funding union,
-complete digest verification and conformance for both funding paths and their
-refusals. Stack must vendor that release and use complete validation for the
-new binding. An unaccepted draft, accepted-but-unreleased implementation or
+separate async digest verification and conformance for both funding paths
+and their refusals. Stack must vendor that release and invoke both structural
+validation and the separate async verifier for the new binding. An unaccepted draft, accepted-but-unreleased implementation or
 absence of ESC-04 alone does not unblock export.
 
 Stack's own task then needs an actual stated calendar anchor, exact copying of
@@ -599,33 +749,27 @@ This RFC authorizes neither named export refusal nor silent purchase omission.
 | Whole-document digest inside the funding object | Self-referential because the document contains that digest. Existing RFC 0045 output evidence avoids this cycle; an authored binding needs a nonrecursive scope. |
 | Full block hash/revision plus index | Depends on metadata/provenance churn and optional stamps; would require separate stamp verification. The cash-vector/index/currency commitment is narrower and recomputed directly. |
 | New row IDs or generic event section | Widens §4.26 or introduces a lifecycle carrier beyond the demonstrated single-payment requirement. |
-| Trust the stated digest or keep sync validation silently clean | Permits stale/retargeted bindings to pass. Existing async hashing is reused through an additive complete-validation path. |
+| Claim complete success from the stated digest or sync result alone | A structurally clean result cannot detect stale commitments. Keep sync structural validation and require the separate async verifier for complete outright claims. |
 | New synchronous crypto implementation | Duplicates the browser/Node hashing seam and increases maintenance for no semantic gain. |
 | Weaken ESC-04, fabricate escrow, or change financial cash | Erases the actual funding distinction and violates the adopter requirement. |
 
 ## Unresolved questions
 
-The owner has settled the **funding discriminator plus exact cash-row binding**
-direction. No additional question blocks drafting. Acceptance still needs
-affirmation or amendment of these proposed details:
+**No genuine economic or semantic owner questions remain for this revision.**
+The owner review settles structural/async separation, explicit zero cost, timing
+strictly after initial effective date with no expiration constraint, repair of the
+released ESC-04 coverage defect, byte-valid legacy escrow funding and optional
+authored currency with canonical null.
 
-1. **Completion API:** the additive async validation wrapper plus explicit
-   HDG-11 synchronous refusal is this draft's solution to portable hashing.
-   It preserves the sync ABI but requires Stack and claimed built-in consumers
-   to use the complete path. This interface choice needs review with the RFC.
-2. **Zero premium and temporal scope:** this draft permits an explicit zero
-   row and anchors “future” strictly after the stated initial effective date,
-   without an expiration-date equality requirement. Those are stated proposed
-   semantics, not accepted owner decisions.
-3. **Coverage correction:** this draft closes the missing-sources/uses legacy
-   ESC-04 skip as enforcement of the existing normative rule. The known unit
-   assertion must change; it is not concealed as wholly identical validator
-   behavior.
+Acceptance still requires explicit review of the final proposed wire shape,
+canonical scope, exact API/result contract, matrices and versioning analysis.
+That acceptance is not implied by approval to revise; no implementation is
+authorized yet.
 
 Mixed funding, multiple replacements, successor coverage, post-sale financing
-assembly and trade execution records are deferred to separate adopter-backed
-contracts. No new numerical formula, pricing tolerance or root bracket needs
-an owner decision here.
+assembly and executed-trade records remain deferred to separate adopter-backed
+contracts. No pricing formula, tolerance or numerical convergence choice is
+introduced.
 
 ## Prior art
 
@@ -642,7 +786,7 @@ an owner decision here.
 
 ## Draft verification record
 
-This RFC/index/status-only change modifies no normative file, implementation,
+This documentation-only draft revision modifies no normative file, implementation,
 conformance fixture, version or release record. The original research
 reproduced ESC-04 from current released code; those results remain historical
 evidence, not tests of an unimplemented proposal. Draft verification results
