@@ -152,6 +152,15 @@ def project(actual, name: str | None):
             "overall_status": actual.get("overall_status"),
             "issues": sorted(seen.values(), key=lambda i: (i["code"] or "", i["severity"] or "")),
         }
+    if name == "replacement-funding":
+        verification = actual.get("replacement_funding_verification", {})
+        result = {"state": verification.get("state")}
+        if "reason" in verification:
+            result["reason"] = verification["reason"]
+        result["codes"] = [i.get("code") for i in verification.get("issues", [])]
+        return {"codes": sorted(i["code"] for i in actual.get("issues", [])
+                                 if i["code"].startswith(("HDG-", "ESC-"))),
+                "verification": result}
     raise Failure(f"unknown projection '{name}'")
 
 

@@ -268,7 +268,7 @@ language, runtime, or packaging is observable across that boundary.
 |---|---|
 | `<bin> manifest` | The implementation's `ImplementationManifest`. |
 | `<bin> parse <file>` | The parsed file, keyed as `ParsedUWFile`. |
-| `<bin> validate <file> --json` | A `ValidationResult`. |
+| `<bin> validate <file> --json` | A structural `ValidationResult`, plus separate `replacement_funding_verification` (RFC 0070). |
 | `<bin> render <file> --format <chat\|summary\|json\|csv>` | The rendered body, as text. |
 | `<bin> edit <file> <operation.json> --json` | `{ ok, content?, error? }`. |
 | `<bin> calc <file> <calc.json> --json` | A `CalcResult`, or an array of them for an array input. |
@@ -581,7 +581,7 @@ capability is unconditional: every implementation owes it.
 | `CUR-NN` | Document currency identity (§III.1b, RFC 0046). | `validate` | `error` |
 | `TAX-NN` | Property-tax reassessment basis and abatement schedule (format §4.5 and §4.9, RFC 0053). | `validate` | `error` |
 | `LSE-NN` | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (format §4.3, RFC 0055). | `validate` | `error` |
-| `HDG-NN` | Interest-rate hedges — cap strike, notional, term and post-expiration assumption (format §4.7, RFC 0056). `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`. | `validate` | `error` |
+| `HDG-NN` | RFC 0070 adds HDG-07/08/10 structural funding rules and HDG-09 solely for async digest mismatch. Interest-rate hedges — cap strike, notional, term and post-expiration assumption (format §4.7, RFC 0056). `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`. | `validate` | `error` |
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `REC-10` warning; otherwise `error` |
@@ -1168,6 +1168,285 @@ An implementation that verifies signatures adds `signing` to its
 does not claim `signing` skips the suite and remains conformant.
 
 ---
+
+### V.12 Replacement-funding binding verification (RFC 0070)
+
+Accepted implementation contract; version/release selection remains pending.
+This section changes no current version label. Synchronous validateUWFile
+retains its result shape. CLI complete validation exits nonzero for structural
+errors or applicable outright binding states other than verified, in both modes.
+
+#### V.12.1 Exact row-reference semantics and consistency commitment
+
+Use [RFC 0045](../docs/rfcs/0045-explicit-property-cash-flow-assembly.md)'s source-snapshot,
+explicit-variant and zero-based-row binding posture. That RFC's whole-document
+digest lives in its output. Here the binding is stored **inside the document**,
+so committing to the containing whole-document digest would be circular.
+
+A conforming implementation MUST:
+
+1. Resolve the current property-level `debt_structure` and
+   `sources_uses` under existing RFC 0040 selection. This RFC does not extend
+   hedge checks to component financing or introduce tranche-specific hedges.
+   If a selection needed for a stated new funding object is ambiguous or
+   unresolvable, refuse; never treat it as absence or choose by fence order.
+2. Select the same document's current, nonsuperseded `cash_flow_series` block
+   whose explicit variant identifier equals `cash_flow_ref.variant` exactly.
+   No primary/base/default/sole-variant, role, date, label, cross-document,
+   historical-block or first/last-fence fallback is permitted. A single block
+   is eligible only when it explicitly declares the matching variant.
+3. Structurally validate that selected series under §4.26. It must be nonempty;
+   all rows must have real dates, finite amounts, legal row shapes/kinds and
+   nondecreasing dates. Existing CF findings remain applicable. Metrics are
+   outside binding verification; existing metric verification still applies
+   when a consumer claims their correctness.
+4. Require an in-range, nonnegative safe-integer `row_index`. Its identity is
+   its ordinal in that exact ordered series, not a date selector or calc path.
+5. Check the digest's syntax synchronously. Separately recompute and compare
+   it through the async verifier in §V.12.3 using the following **fixed scope**.
+   Structural validation alone does not establish that the commitment matches.
+
+The digest preimage is exactly:
+
+```ts
+{
+  currency_code: parsed.frontmatter.currency_code ?? null,
+  row_index: cash_flow_ref.row_index,
+  section: 'cash_flow_series',
+  series: selectedPayload.series,
+  variant: cash_flow_ref.variant
+}
+```
+
+`currency_code` is always a key in the canonical preimage. If authored as a
+non-null value, use that exact value without trimming, case conversion or
+inference; RFC 0046's existing CUR-01 rule still checks its validity. If absent
+or explicitly null, use JSON `null`. Absence and null therefore have the same
+canonical monetary identity. **No new requirement to author currency is added.**
+The declaration binds the payment to the document's stated monetary identity,
+including an explicitly unspecified identity. No currency is inferred from
+locale, symbol, property location or renderer behavior, and no FX or per-row
+currency rule is introduced. A malformed authored currency cannot be repaired
+by the digest helper or verifier.
+
+Serialize that preimage with exact RFC 8785 canonical JSON, UTF-8 encode, hash
+with SHA-256, and prepend `sha256:` to its lowercase 64-hex result. There is
+no financial rounding/quantization and no metadata normalization in this scope.
+The entire ordered array and every authored row member are included. Absent
+optional row members stay absent; explicit null remains null. Numeric JSON
+spellings such as `360000` and `360000.0` canonicalize identically.
+
+For RFC 0070's §2 example (cap-cash, row_index 1), these known answers
+pin monetary identity:
+
+| Authored document currency | Canonical preimage value | Binding digest |
+|---|---|---|
+| `USD` | `"USD"` | `sha256:3add19b25a3adb3d8bfa3f02977ecd14a53ead000abc4ad1ae99cd3d39fdf1fa` |
+| absent or null | `null` (key retained) | `sha256:33072bf8b331730e37176a3fb1b1f80cb3fc1c398bed4746fcffc3d5b74ea63a` |
+
+The preimage excludes the binding object, debt, document ID, section prose,
+cash-series top-level label/day count/metrics, and all block metadata. Those
+are not row identity. The fixed section value, exact variant, index, document
+currency and ordered row content are the identity commitment. A metadata-only
+revision or an unrelated document edit does not invalidate it.
+
+This scope is intentionally more conservative than a hash of the selected row:
+
+- Editing the index or variant without recommitting fails.
+- Inserting, deleting or reordering distinguishable rows anywhere in the
+  selected vector fails, even when the selected date/amount happen to match.
+- Any authored row-content or canonical document-currency change fails.
+  Removing a stated currency changes its canonical value to null; replacing
+  absent currency with explicit null alone does not change the commitment.
+- A different eligible cash row with the same date or amount cannot silently
+  become the target while the old digest is retained.
+- Swapping literally identical JSON rows makes no observable change to the
+  ordered value vector. The binding still addresses the exact ordinal; this
+  contract does not invent a durable identity for economically indistinguishable
+  occurrences. Date/label/amount equality is never a search or deduplication rule.
+
+Async verification of a stale binding MUST fail with HDG-09. A consumer claiming
+complete validation/verification MUST refuse it. Sync structural validation
+cannot determine staleness and MUST NOT pretend to have checked it. An editor/exporter MUST NOT silently scan for a
+similar row, renumber the reference, or refresh its digest during validation.
+An intentional source edit requires an explicit reviewed rebind, represented
+through the existing append-only edit/provenance rules. Validation is read-only.
+
+The hash detects inconsistency, not malicious coordinated rewriting. It is not
+a signature, original-source authenticity proof, executed-trade receipt, or
+proof that an author has disclosed every cost. Existing signatures, provenance,
+and adopter-source comparison retain those separate responsibilities.
+
+#### V.12.2 Validation/error rules
+
+The phase is part of the contract. HDG-07/08/10 are synchronous
+validation errors; HDG-09 is an **async verification** error. There is no HDG-11
+rule. Lack of hashing is not a structural error.
+
+| Phase | Condition | Exact finding/result |
+|---|---|---|
+| Sync | Escrow branch (legacy absent/null funding or explicit escrow) lacks the named replacement escrow, including missing sources/uses | ESC-04. This includes the RFC 0056 coverage-defect regression. |
+| Sync | Named replacement escrow without `replace`, or alongside outright mode, even if zero funded | ESC-04. Preserve existing ESC-01/02/03 for invalid escrow data. |
+| Sync | Non-null funding object has illegal shape/mode, unknown members, missing required union members, reference under escrow, or is stated without `replace` | HDG-07. Missing `cash_flow_ref` or one of its required members is a shape failure; an authored member with invalid type/value is checked by HDG-08. |
+| Sync | Exact cash variant missing/wrong/superseded, required section selection ambiguous/unresolvable, invalid/out-of-range index, malformed digest value, or illegal selected row/series structure | HDG-08. Preserve applicable existing CF findings. Never use fallback selection. |
+| Sync | Validly addressed amount is positive, or valid payment date is on/before a valid stated initial effective date | HDG-10. Amount zero is valid; before/on/after expiration is valid when after effective date. |
+| Sync | Invalid/missing initial hedge dates or other existing hedge facts | Existing HDG-01 through HDG-06, as applicable. Do not invent an anchor or add HDG-10 when its prerequisite anchor is invalid. |
+| Sync | Authored non-null currency is malformed | Existing CUR-01. Absent/null currency has no currency finding and canonicalizes to null. |
+| Sync | Binding digest has not been recomputed, or hashing is unavailable | **No error solely for this condition.** A clean structural result carries no claim of digest verification. Consumer status is `not_checked` until the separate verifier runs. |
+| Async | Structurally eligible binding recomputes to stated digest | `verified`; no verification issue. |
+| Async | Structurally eligible binding recomputes to another digest | `failed`, reason `stale_binding`; HDG-09 with stated/computed digests and exact variant/index. Sync may still be clean. |
+| Async | Invalid prerequisites or unresolved source prevent verification | `unverifiable`, reason `invalid_structure` or `unresolvable_source`; expose relevant structural findings without claiming a digest comparison. |
+| Async | Supported hash provider cannot perform the check | `unverifiable`, reason `crypto_unavailable`; no fabricated HDG-09 and no new structural error. |
+| Consumer | Outright verifier not invoked | `not_checked`, reason `not_invoked`; cannot claim complete success. |
+| Consumer | Outright structurally valid but verification `failed`, `unverifiable` or `not_checked` | Complete claim refuses, independently of the synchronous `ValidationResult` status. |
+| Async | No outright binding is applicable and funding structure is lawful | `not_checked`, reason `not_applicable`; legacy funding relies on synchronous RFC 0056 checks. |
+
+Initial-premium/use agreement remains unchanged. The successor payment does not
+become part of `premium` or `uses.rate_cap_cost`.
+
+Within a selected funding object, check shape/assumption first, selection and
+reference next, then series structure and payment semantics. Stop that binding's
+deeper checks when prerequisites are invalid; retain independent legacy/CF/CUR
+errors. HDG-07 never creates a successful alternate funding path. ESC-04
+independently reports applicable escrow conflict/absence; a well-formed outright
+branch is exempt from **escrow-absence** ESC-04 but must pass its own HDG rules.
+Preserve existing deterministic validation ordering. The async result is separate;
+it does not remove, insert or reorder synchronous findings.
+
+#### V.12.3 Separate async API and consumer obligations
+
+`validateUWFile(parsed, thresholdOverrides?)` retains its synchronous signature,
+`ValidationResult` shape and structural purpose. Existing portable SHA-256 helpers
+are asynchronous for Node/Web Crypto. Add a separate verifier following
+`verifyChain`'s stronger-verification architecture; do not add an async replacement
+for structural validation.
+
+Proposed exact public API and result contract:
+
+```ts
+interface ReplacementFundingBindingContext {
+  debt_variant: string | null; // selected property-level debt; null if unvariant
+  cash_flow_variant: string;
+  row_index: number;
+  currency_code: string | null; // exact authored value, or canonical null
+}
+
+interface ReplacementFundingVerificationIssue {
+  code: 'HDG-09';
+  severity: 'error';
+  section: 'debt_structure';
+  field: 'rate_hedge.replacement_funding.cash_flow_ref.binding_digest';
+  message: string;
+  context: ReplacementFundingBindingContext;
+  stated_digest: string;
+  computed_digest: string;
+}
+
+type ReplacementFundingVerificationResult =
+  | {
+      state: 'not_checked';
+      reason: 'not_invoked' | 'not_applicable';
+      issues: readonly [];
+    }
+  | {
+      state: 'unverifiable';
+      reason: 'invalid_structure' | 'unresolvable_source' | 'crypto_unavailable';
+      context: ReplacementFundingBindingContext | null;
+      structural_issues: readonly ValidationMessage[];
+      issues: readonly [];
+    }
+  | {
+      state: 'failed';
+      reason: 'stale_binding';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [ReplacementFundingVerificationIssue];
+    }
+  | {
+      state: 'verified';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [];
+    };
+
+export declare function verifyReplacementFundingBindings(
+  parsed: ParsedUWFile
+): Promise<ReplacementFundingVerificationResult>;
+
+export declare function computeReplacementCashFlowBindingDigest(
+  series: readonly CashFlowRow[],
+  variant: string,
+  rowIndex: number,
+  currencyCode: string | null
+): Promise<string>;
+```
+
+These functions/types MUST be exported from `index.ts` and the browser-safe
+entry. Reuse `canonicalizeExact` and the existing Node/Web Crypto hash seam.
+No new dependency or synchronous crypto implementation is required. The digest
+helper validates supported inputs, uses the fixed preimage in section 3 and
+returns the prefixed digest. Its explicit null parameter represents absent/null
+document currency. It never guesses currency, authors a funding object, stamps
+metadata, searches rows or mutates input. Invalid helper arguments use a typed
+`ProtocolError`; they are not silently normalized.
+
+The verifier MUST capture an immutable snapshot before its first await, resolve
+the selected property-level hedge and exact source against that snapshot, and
+apply the same relevant structural prerequisites as the synchronous validator.
+Relevant prerequisites are the funding rules, hedge facts needed for the binding,
+escrow conflict check, exact reference selection, selected series structure,
+payment semantics and currency validity. Unrelated financial validation findings
+remain the caller's responsibility; a verified binding is not a verified deal.
+
+Result semantics are exact:
+
+- `verified` occurs only after successful recomputation and equality. Both
+  digests are present and equal; context identifies the checked source snapshot.
+- `failed` occurs only after recomputation and inequality. Both digests
+  are present and unequal; its single HDG-09 issue reports that comparison.
+- `unverifiable` has no computed-digest success claim. Invalid structural
+  prerequisites use `invalid_structure`; missing/ambiguous required selection
+  uses `unresolvable_source`. The latter takes precedence when source
+  selection prevents assessment. Both expose applicable structural findings.
+  A hash-provider failure uses `crypto_unavailable` with a resolved context
+  and no structural findings. It must not manufacture a mismatch.
+- `not_checked/not_applicable` is returned when the selected funding path
+  is lawfully escrow-funded, or no outright requirement applies. Malformed
+  stated new funding or unresolved required selections return `unverifiable`
+  instead; they cannot be hidden as not applicable.
+- `not_checked/not_invoked` is a consumer's initial status before invocation,
+  not an outcome returned after the verifier checks an applicable binding.
+  Consumers retaining only synchronous validation MUST expose this status
+  for outright documents. Omitting the async call never establishes `verified`.
+
+No result changes synchronous `overall_status`, readiness or error arrays.
+No verification outcome changes the file. Digest equality proves consistency of
+the declared source snapshot, not payment purpose, executed-trade status,
+authenticity or a calculation.
+
+For any consumer claiming complete validation/verification of outright funding,
+success requires **both** successful structural validation **and**
+`replacement_funding_verification.state === 'verified'`. Call both against
+one immutable parsed snapshot; caller mutations while hashing must not change
+the verdict. Legacy escrow funding needs no digest and can complete through its
+unchanged structural rules, with `not_applicable` binding status.
+
+During implementation, CLI `validate` text/JSON, MCP validation results and
+built-in web validation consumers claiming this capability MUST invoke the
+verifier. Preserve existing root `ValidationResult` fields; add a separate
+`replacement_funding_verification` result member on the claimed-complete
+consumer payload, rather than folding verification into structural issues.
+Text output labels structural status and binding-verification state separately.
+CLI exit status MUST be nonzero for applicable outright `failed`,
+`unverifiable` or `not_checked`, and for existing structural refusal;
+a clean structural report alone cannot produce complete-success output. No
+feature flag may silently disable verification while retaining that claim.
+A sync-only editor may report structural validation plus explicit not-checked
+status; it must qualify its result and cannot advertise complete verification.
+
+
 
 ## VI. Extensibility
 

@@ -149,3 +149,10 @@ See [protocol §II.6a](../../spec/UW_PROTOCOL_v1.md) for the normative
 definition. The short version: six subcommands, exactly one JSON document on
 stdout (except `render`, which emits text), stderr free for logging, exit `0`
 success / `1` protocol error with parseable stdout / `2` unrecoverable.
+
+### Replacement-funding projection (RFC 0070, unreleased)
+
+The generated hedge cases use `project: "replacement-funding"`.
+The driver compares structural HDG/ESC codes and a separate verification
+state/reason/code projection, plus the process exit code. It never merges async
+HDG-09 into structural errors. Cases preserve exact authored source bytes.

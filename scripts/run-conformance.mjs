@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
 // Conformance runner — exercises every fixture against the @uwmd/core
 // reference library and reports pass/fail per scenario.
 //
@@ -2414,7 +2415,15 @@ async function runHedge() {
         record('hedge', entry.name, 'fail', `emitted [${got.join(', ')}], expected [${want.join(', ')}]`);
         continue;
       }
-      record('hedge', entry.name, 'pass', want.length ? want.join(', ') : 'clean');
+      if (expected.verification) {
+        const result = await verifyReplacementFundingBindings(parsed);
+        const projection = { state: result.state, ...('reason' in result ? { reason: result.reason } : {}), codes: result.issues.map(i => i.code) };
+        if (JSON.stringify(projection) !== JSON.stringify(expected.verification)) {
+          record('hedge', entry.name, 'fail', `binding verification ${JSON.stringify(projection)}`); continue;
+        }
+      }
+      record('hedge', entry.name, 'pass', (want.length ? want.join(', ') : 'structurally clean')
+        + (expected.verification ? `; binding ${expected.verification.state}` : ''));
     } catch (error) {
       record('hedge', entry.name, 'fail', error.message);
     }

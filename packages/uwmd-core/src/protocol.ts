@@ -2027,6 +2027,8 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
+  { prefix: 'HDG', description: 'Hedge structure and separate replacement binding verification (RFC 0070)', capabilities: ['validate'] },
+  { prefix: 'ESC', description: 'Escrow funding', capabilities: ['validate'] },
   { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
   { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
   { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
@@ -2114,6 +2116,46 @@ export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
  * every conforming implementation.
  */
 export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
+  {
+    code: 'HDG-07',
+    severity: 'error',
+    title: 'Invalid replacement funding',
+    description: 'Invalid replacement funding',
+    remediation: 'State only the closed escrow or outright funding union under replace.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'HDG-08',
+    severity: 'error',
+    title: 'Invalid replacement payment reference',
+    description: 'Invalid replacement payment reference',
+    remediation: 'Select the exact current cash-flow variant and in-range row with legal series and digest syntax.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'HDG-09',
+    severity: 'error',
+    title: 'Stale replacement payment commitment',
+    description: 'Stale replacement payment commitment',
+    remediation: 'Review the source change and explicitly rebind; never silently refresh a digest.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'HDG-10',
+    severity: 'error',
+    title: 'Invalid replacement payment sign or date',
+    description: 'Invalid replacement payment sign or date',
+    remediation: 'State a negative or explicit zero payment strictly after initial effective_date.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'ESC-04',
+    severity: 'error',
+    title: 'Replacement funding missing or contradictory',
+    description: 'Replacement funding missing or contradictory',
+    remediation: 'Provide the existing replacement escrow or the exact outright payment binding, without conflicting funding.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
   // CC-01..CC-10 mirror the §5.3 table and the rules in validator.ts: the same
   // sections, the same tolerance, the same default severity. Until 2.6.2 these
   // ten entries described an earlier quick_metrics-reconciliation draft that
@@ -2936,3 +2978,61 @@ export interface PropertyCashFlowAssemblyIssue {
     verification?: import('./cash-flow-series.js').CashFlowVerification;
   };
 }
+
+// RFC 0070 accepted, unreleased implementation contract. Version selection deferred.
+export interface ReplacementCashFlowRef {
+  variant: string;        // exact same-document cash_flow_series variant
+  row_index: number;      // nonnegative safe integer, zero-based, in range
+  binding_digest: string; // sha256:<64 lowercase hex>; scope defined below
+}
+
+export type ReplacementFunding =
+  | { mode: 'escrow' }
+  | { mode: 'outright'; cash_flow_ref: ReplacementCashFlowRef };
+
+export interface ReplacementFundingBindingContext {
+  debt_variant: string | null; // selected property-level debt; null if unvariant
+  cash_flow_variant: string;
+  row_index: number;
+  currency_code: string | null; // exact authored value, or canonical null
+}
+
+export interface ReplacementFundingVerificationIssue {
+  code: 'HDG-09';
+  severity: 'error';
+  section: 'debt_structure';
+  field: 'rate_hedge.replacement_funding.cash_flow_ref.binding_digest';
+  message: string;
+  context: ReplacementFundingBindingContext;
+  stated_digest: string;
+  computed_digest: string;
+}
+
+export type ReplacementFundingVerificationResult =
+  | {
+      state: 'not_checked';
+      reason: 'not_invoked' | 'not_applicable';
+      issues: readonly [];
+    }
+  | {
+      state: 'unverifiable';
+      reason: 'invalid_structure' | 'unresolvable_source' | 'crypto_unavailable';
+      context: ReplacementFundingBindingContext | null;
+      structural_issues: readonly ValidationMessage[];
+      issues: readonly [];
+    }
+  | {
+      state: 'failed';
+      reason: 'stale_binding';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [ReplacementFundingVerificationIssue];
+    }
+  | {
+      state: 'verified';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [];
+    };

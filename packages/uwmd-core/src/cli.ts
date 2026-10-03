@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { verifyReplacementFundingBindings } from './replacement-funding.js';
 // uwmd CLI — command-line interface for .uw.md files
 // Commands: parse, validate, compact, diff, init, summary, render
 // Usage: uwmd <command> <file> [options]
@@ -218,7 +219,7 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
   console.log(JSON.stringify(output, null, flags['compact'] ? 0 : 2));
 }
 
-function cmdValidate(file: string, flags: Record<string, string | boolean>): void {
+async function cmdValidate(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
   const detection = detectUWSourceRepresentation(content, file);
   if (detection.representation !== UWX_REPRESENTATION_ID) {
@@ -254,7 +255,11 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
   const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
-  const result = validateUWFile(parsed, instCfg?.thresholds);
+  const structural = validateUWFile(parsed, instCfg?.thresholds);
+  const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
+  const result = { ...structural, replacement_funding_verification };
+  const fundingRefuses = replacement_funding_verification.state !== 'verified'
+    && !(replacement_funding_verification.state === 'not_checked' && replacement_funding_verification.reason === 'not_applicable');
 
   if (flags['json']) {
     console.log(JSON.stringify(result, null, 2));
@@ -262,7 +267,7 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
     // branch returned before the exit line below, so `--json` exited 0 on a
     // document with errors — the human-readable path did not, and the
     // tier-1 corpus (fixture 09, RFC 0038) pinned the bug as the baseline.
-    process.exit(result.errors.length > 0 ? 1 : 0);
+    process.exit(result.errors.length > 0 || fundingRefuses ? 1 : 0);
   }
 
   const statusEmoji = {
@@ -272,8 +277,12 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
     blocking: '🚫',
   }[result.overall_status];
 
-  console.log(`\n${statusEmoji}  ${result.overall_status.toUpperCase()} — ${basename(file)}\n`);
+  console.log(`\n${fundingRefuses ? '✗' : statusEmoji}  ${fundingRefuses ? 'REFUSED' : result.overall_status.toUpperCase()} — ${basename(file)}\n`);
 
+  console.log(`Complete validation: ${result.errors.length > 0 || fundingRefuses ? 'refused' : 'passed'}`);
+  console.log(`Structural validation: ${result.overall_status}`);
+  console.log(`Replacement funding verification: ${replacement_funding_verification.state}${'reason' in replacement_funding_verification ? ` / ${replacement_funding_verification.reason}` : ''}`);
+  for (const issue of replacement_funding_verification.issues) console.log(issue.message);
   console.log('Stage Readiness:');
   for (const [stage, ready] of Object.entries(result.stage_readiness)) {
     console.log(`  ${ready ? '✓' : '✗'}  ${stage}`);
@@ -299,7 +308,7 @@ function cmdValidate(file: string, flags: Record<string, string | boolean>): voi
   }
   console.log('');
 
-  process.exit(result.errors.length > 0 ? 1 : 0);
+  process.exit(result.errors.length > 0 || fundingRefuses ? 1 : 0);
 }
 
 /**
@@ -361,13 +370,18 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   const onlyPolicy = flags['policy'] === true;
   const runAll = !onlyValidate && !onlyIntegrity && !onlyPolicy;
 
-  const sections: Record<string, unknown> = {};
+  const sections: Record<string, unknown> = {
+    replacement_funding_verification: { state: 'not_checked', reason: 'not_invoked', issues: [] },
+  };
   let hadError = false;
 
   if (runAll || onlyValidate) {
     const v = validateUWFile(parsed);
     sections['validation'] = v;
-    if (v.errors.length > 0) hadError = true;
+    const funding = await verifyReplacementFundingBindings(parsed);
+    sections['replacement_funding_verification'] = funding;
+    if (v.errors.length > 0 || (funding.state !== 'verified'
+      && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
@@ -388,13 +402,17 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     console.log(`\n${hadError ? '✗' : '✓'}  ${hadError ? 'FAIL' : 'OK'} — ${basename(file)}\n`);
     if ('validation' in sections) {
       const v = sections['validation'] as ReturnType<typeof validateUWFile>;
-      console.log(`Validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
+      console.log(`Structural validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
       for (const issue of v.issues) {
         const tag = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN] ' : '[INFO] ';
         const loc = issue.section ? ` [${issue.section}${issue.field ? `.${issue.field}` : ''}]` : '';
         console.log(`  ${tag}${loc} ${issue.code ? `${issue.code}: ` : ''}${issue.message}`);
       }
     }
+    const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>>;
+    console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
+    for (const issue of funding.issues) console.log(issue.message);
+    if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
     if (chain) {
       console.log(`\nIntegrity: ${chain.ok ? 'ok' : 'FAIL'} — chains_with_hashes=${chain.chains_with_hashes}, chains_verified=${chain.chains_verified}`);
       if (chain.signatures_present > 0) {
@@ -1362,7 +1380,7 @@ switch (command) {
 
   case 'validate':
     if (!positional[0]) { console.error('Usage: uwmd validate <file> [--stage <stage>] [--institution <config.json>] [--json]'); process.exit(1); }
-    cmdValidate(positional[0], flags);
+    await cmdValidate(positional[0], flags);
     break;
 
   case 'verify':

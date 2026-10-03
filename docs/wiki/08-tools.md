@@ -496,3 +496,21 @@ Success exits 0. Typed refusals exit 1; `--json` retains the nested verifier or
 structural evidence in an `error` object. Unsupported write flags refuse.
 See the [workflow](../LEASE_UP_CASH_FLOW_WORKFLOW.md) for the supplied plan,
 browser-safe API and economic limits. Included in published core/CLI 2.8.0.
+
+## RFC 0070 validation split (development tree; unreleased)
+
+`uwmd validate` text/JSON invokes the separate async funding verifier.
+JSON retains the structural result at root and adds
+`replacement_funding_verification`; HDG-09 never enters its structural errors.
+`uwmd verify` with validation enabled exposes the same separate result.
+Structural errors or applicable failed/unverifiable/unchecked funding exit 1;
+a lawful not_applicable legacy path does not itself refuse. Integrity/policy-only
+verification exposes not_checked/not_invoked and claims no complete binding check.
+MCP validation uses the same split and sets isError when complete validation refuses.
+
+The web editor remains synchronous: its panel is labeled Structural validation
+and explicitly reports not_checked/not_invoked, with no complete verification
+claim. VS Code diagnostics and collection validity are structural diagnostics;
+they do not establish replacement-payment binding verification. Producers and
+other clients claiming this capability must call the async verifier and require
+verified. These source changes do not change published versions.
