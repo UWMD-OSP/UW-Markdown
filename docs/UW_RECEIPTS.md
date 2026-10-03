@@ -67,9 +67,48 @@ In the [reference editor](https://www.uwmd.org/editor/), the **Receipt** tab doe
 the same thing in the browser. Nothing is uploaded: issuance and verification run
 entirely client-side.
 
-Issuance either produces a complete receipt or refuses with a reason. It will not
-emit a partial or hedged one. It refuses when the document has parse errors, when
-the asset class has no registered pack, or when the pack cannot evaluate.
+Issuance either produces a complete receipt or refuses with a reason. Complete
+means that every pack output is recorded, including its computed/uncomputed
+status; metric coverage can be partial. It refuses when the document has parse
+errors, when the asset class has no registered pack, or when a pack calculation
+fails to evaluate. Missing structured inputs that evaluate successfully to
+`null` are recorded as `computed: false`, not treated as an evaluation failure.
+
+## Validation, completeness and hashes
+
+These checks answer different questions:
+
+| Surface | Question |
+|---|---|
+| `validate` | Is this valid UWMD under the applicable representation and validation rules? |
+| Stage Readiness | Are this stage's required sections and fields present? |
+| Receipt-pack metric completeness | Which declared metrics deterministically compute from the structured inputs? |
+| Canonicalization | Which exact semantic structure/UTF-8 bytes are committed to under the named canonicalization rules? |
+| Hashing | What fingerprint identifies that canonical document or result/status set? |
+| `receipt issue` | Can a detached proof of that document and pack result/status set be created? |
+| `receipt verify` | Does the current document match the prior receipt's hashes, result statuses/values and applicable signature checks? |
+
+Source CLI reporting (implemented, unreleased as of 2026-10-03) makes these
+distinctions explicit. For example, a multifamily document without asset-level
+equity inputs can issue with:
+
+```text
+Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.0)
+Metric completeness: partial
+Computed: 7/8
+Uncomputed: cash_on_cash
+```
+
+The receipt records both computed and uncomputed result statuses. Matching
+uncomputed statuses can verify; they do not indicate a hash mismatch. Portfolio
+capitalization is not automatically allocated to an asset to fill this gap.
+`validate` reports receipt readiness and receipt/hash verification as **not
+checked** because it performs neither operation. Issuance prints the named
+canonicalization and document/results hashes but does not compare a prior receipt.
+Missing packs still refuse with `RCP_PACK_UNRESOLVED`; resolver failures retain
+available metric, section, variant and path diagnostics. A later hash mismatch is
+a separate verification result, reported with its existing code and expected/
+actual digests. JSON output and receipt payload semantics are unchanged.
 
 ## Verifying one
 

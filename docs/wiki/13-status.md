@@ -23,6 +23,24 @@ remain outside the current released contract. RFC 0070 shipped subsequently in 2
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
+## CLI reporting clarity — implemented, unreleased (2026-10-03)
+
+Human-readable CLI validation distinguishes validity, Stage Readiness (workflow
+section/field completeness), cross-check coverage and unchecked receipt readiness.
+Receipt issuance names computed/uncomputed metrics and prints canonicalization
+and document/results hashes. A complete receipt can cover partial metrics;
+verification compares recorded statuses and hashes independently. Typed refusals
+retain available resolver details; missing packs still refuse. JSON payloads,
+exit behavior and normative contracts are unchanged. Regression tests cover clean
+but incomplete workflow, partial/complete receipts, unresolved pack and variant
+selection, and verified/mismatched receipts using only repo-owned synthetic data.
+
+The [element/package design candidate](../roadmap/element-package-validation.md)
+builds on existing RFC 0018 packages, RFC 0021 composition/rollups and RFC 0048's
+standalone kit. Standalone rent-roll/T-12/debt-schedule/property profiles,
+ZIP/folder stitching, canonical package hashes, assembly provenance and receipt
+scope need a future RFC; this reporting work implements none of those extensions.
+
 ## Built and released
 
 - Reader/editor/calc/agent-host foundations; Format 2.0 metadata, provenance,

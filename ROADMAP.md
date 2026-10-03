@@ -49,6 +49,18 @@ packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
 ## Completed capabilities
 
+### CLI reporting clarity — implemented, unreleased (2026-10-03)
+
+Validation now separates validity, Stage Readiness (workflow completeness),
+skipped cross-checks and unchecked receipt readiness. Issuance reports partial
+metric coverage explicitly, canonicalization and document/results hashes;
+refusals retain available calc diagnostics. Verification labels the independent
+receipt verdict. Missing structured inputs can be recorded as uncomputed and
+later verify; absent calc packs still refuse. No financial, validation,
+receipt, canonicalization or conformance contract changes. Regression coverage
+uses public synthetic fixtures; external audit evidence supplied requirements
+only. See [CLI guidance](docs/UW_RECEIPTS.md#validation-completeness-and-hashes).
+
 | Area | State | Scope |
 |---|---|---|
 | Format, reader, editor and calc host | Released | UW Lite / UWX, Format 2.0 authoring with legacy readers, byte-preserving edits, deterministic evaluation, validation and stage readiness. |
@@ -285,6 +297,7 @@ the owner accepts a source-backed property-cash boundary mapping.
 | Work | State | Next evidence |
 |---|---|---|
 | Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
+| Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See [candidate brief](docs/roadmap/element-package-validation.md). |
 | PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16** (`@uwmd/lake` 0.2.0, unpublished) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency, and the publication decision. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 

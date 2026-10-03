@@ -430,7 +430,12 @@ export function computeReceiptResults(
   for (const decl of decls) {
     const result = evaluateCalc(decl, ctx);
     if (!result.ok) {
-      failures.push(`${decl.id} (${result.error?.code ?? 'unknown'})`);
+      const error = result.error;
+      const message = error?.message ? `: ${error.message}` : '';
+      const pointer = error?.pointer ? ` [path: ${error.pointer}]` : '';
+      failures.push(
+        `${decl.id} (${error?.code ?? 'unknown'})${message}${pointer}`,
+      );
       continue;
     }
     // The engine reports "inputs absent" as a successful evaluation to null.

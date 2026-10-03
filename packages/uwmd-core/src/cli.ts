@@ -73,7 +73,7 @@ import type { ParsedUWFile, UWBlock } from './types.js';
 import { createDocumentMarketData, parseMarketDataDocument } from './market-data.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
-import { issueReceipt, verifyReceipt, assertUWReceipt } from './receipts.js';
+import { issueReceipt, verifyReceipt, assertUWReceipt, ReceiptError } from './receipts.js';
 import type { UWReceipt } from './receipts.js';
 import { CORE_VERSION } from './version.js';
 import {
@@ -237,7 +237,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
       console.log(JSON.stringify(result, null, 2));
       return;
     }
-    console.log(`\n${result.overall_status.toUpperCase()} - ${basename(file)}\n`);
+    console.log(`\nValidation result: ${result.overall_status.toUpperCase()} - ${basename(file)}\n`);
     if (result.issues.length === 0) {
       console.log('No Lite syntax issues found.');
     } else {
@@ -249,6 +249,10 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
         );
       }
     }
+    console.log('\nStage Readiness (workflow completeness): not checked for Lite syntax validation.');
+    console.log('Cross-checks: not checked for Lite syntax validation.');
+    console.log('Receipt readiness: not checked. Use uwmd receipt issue to evaluate receipt-pack metrics.');
+    console.log('Receipt/hash verification: not checked. Use uwmd receipt verify with a prior receipt.');
     console.log('');
     process.exit(errors.length > 0 ? 1 : 0);
   }
@@ -277,15 +281,16 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
     blocking: '🚫',
   }[result.overall_status];
 
-  console.log(`\n${fundingRefuses ? '✗' : statusEmoji}  ${fundingRefuses ? 'REFUSED' : result.overall_status.toUpperCase()} — ${basename(file)}\n`);
+  console.log(`\n${fundingRefuses ? '✗' : statusEmoji}  Validation result: ${fundingRefuses ? 'REFUSED' : result.overall_status.toUpperCase()} — ${basename(file)}\n`);
 
   console.log(`Complete validation: ${result.errors.length > 0 || fundingRefuses ? 'refused' : 'passed'}`);
   console.log(`Structural validation: ${result.overall_status}`);
   console.log(`Replacement funding verification: ${replacement_funding_verification.state}${'reason' in replacement_funding_verification ? ` / ${replacement_funding_verification.reason}` : ''}`);
   for (const issue of replacement_funding_verification.issues) console.log(issue.message);
-  console.log('Stage Readiness:');
+  console.log('Stage Readiness (workflow completeness):');
+  console.log('  Required-section and field checks by stage; incomplete later stages do not by themselves fail validation.');
   for (const [stage, ready] of Object.entries(result.stage_readiness)) {
-    console.log(`  ${ready ? '✓' : '✗'}  ${stage}`);
+    console.log(`  ${stage}: ${ready ? 'complete' : 'incomplete'}`);
   }
 
   // §5.3 coverage (RFC 0037): "checked and clean" is not "never looked".
@@ -295,6 +300,9 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   for (const c of coverage) if (c.status === 'skipped' && c.reason) reasons.set(c.reason, (reasons.get(c.reason) ?? 0) + 1);
   const reasonText = [...reasons].map(([r, n]) => `${n} ${r}`).join(', ');
   console.log(`\nCross-checks: ${evaluated} evaluated, ${coverage.length - evaluated} skipped${reasonText ? ` (${reasonText})` : ''}`);
+  console.log('  Skipped cross-checks were not evaluated; a clean result does not establish their agreement.');
+  console.log('\nReceipt readiness: not checked. Use uwmd receipt issue to evaluate receipt-pack metrics.');
+  console.log('Receipt/hash verification: not checked. Use uwmd receipt verify with a prior receipt.');
 
   if (result.issues.length > 0) {
     console.log(`\nIssues (${result.issues.length}):`);
@@ -825,11 +833,19 @@ async function cmdReceiptIssue(
   file: string,
   flags: Record<string, string | boolean>,
 ): Promise<void> {
-  const receipt = await issueReceipt(readFile(file), {
-    filename: file,
-    issuer: `uwmd-cli@${CORE_VERSION}`,
-    ...(typeof flags['issued-at'] === 'string' ? { issued_at: flags['issued-at'] } : {}),
-  });
+  let receipt: UWReceipt;
+  try {
+    receipt = await issueReceipt(readFile(file), {
+      filename: file,
+      issuer: `uwmd-cli@${CORE_VERSION}`,
+      ...(typeof flags['issued-at'] === 'string' ? { issued_at: flags['issued-at'] } : {}),
+    });
+  } catch (error) {
+    if (!(error instanceof ReceiptError)) throw error;
+    console.error(`Receipt refused [${error.code}]: ${error.message}`);
+    console.error('No receipt was issued. Receipt/hash verification was not performed.');
+    process.exit(1);
+  }
   const serialized = `${JSON.stringify(receipt, null, 2)}\n`;
 
   if (flags['stdout']) {
@@ -842,11 +858,22 @@ async function cmdReceiptIssue(
   writeFileSync(outPath, serialized, 'utf-8');
 
   const computed = receipt.computation.results.filter((r) => r.computed).length;
+  const uncomputed = receipt.computation.results.filter((r) => !r.computed).map((r) => r.calc_id);
   console.log(
-    `Issued receipt for ${basename(file)} → ${basename(outPath)} ` +
-      `(${receipt.computation.pack}@${receipt.computation.pack_version}, ` +
-      `${computed}/${receipt.computation.results.length} outputs computed)`,
+    `Receipt issued for ${basename(file)} → ${basename(outPath)} ` +
+      `(${receipt.computation.pack}@${receipt.computation.pack_version})`,
   );
+  console.log(`Metric completeness: ${uncomputed.length === 0 ? 'complete' : 'partial'}`);
+  console.log(`Computed: ${computed}/${receipt.computation.results.length}`);
+  console.log(`Uncomputed: ${uncomputed.length === 0 ? 'none' : uncomputed.join(', ')}`);
+  if (uncomputed.length > 0) {
+    console.log('Uncomputed metrics lack structured inputs. The receipt records both computed and uncomputed result statuses.');
+    console.log('Missing inputs are a completeness gap; they do not indicate a receipt/hash verification failure.');
+  }
+  console.log(`Canonicalization: ${receipt.subject.canonicalization}@${receipt.subject.canonicalization_version}`);
+  console.log(`Document hash: ${receipt.subject.digest}`);
+  console.log(`Results hash: ${receipt.computation.results_digest}`);
+  console.log('Receipt/hash verification: not checked against a prior receipt.');
   console.log(
     'A receipt attests that these outputs follow from this record. It does not attest that the inputs are true.',
   );
@@ -967,7 +994,7 @@ async function cmdReceiptVerify(
   if (flags['json']) {
     console.log(JSON.stringify(result, null, 2));
   } else {
-    console.log(`Verdict: ${result.verdict.toUpperCase()}`);
+    console.log(`Receipt verification verdict: ${result.verdict.toUpperCase()}`);
     for (const issue of result.issues) {
       const detail =
         issue.expected !== undefined || issue.actual !== undefined
@@ -982,6 +1009,9 @@ async function cmdReceiptVerify(
       );
     } else if (result.verdict === 'unverifiable') {
       console.log('\nThis verifier could not decide. That is not a negative result.');
+    } else {
+      console.log('\nReceipt verification failed. The issues above identify the mismatch or recomputation failure.');
+      console.log('An uncomputed metric alone is a completeness gap; matching uncomputed statuses can verify.');
     }
   }
 

@@ -306,6 +306,25 @@ protocol, and each package each carry an independent semver).
   - **Unaffected.** `30/360us`, `is_calendar_date` and every version label.
   - **Conformance.** Three `conformance/cash-flow` fixtures were added.
 
+### CLI reporting
+
+- Human-readable validation separates the validation result, Stage Readiness
+  (workflow section/field completeness), evaluated/skipped cross-checks and
+  unchecked receipt readiness/verification. Optional later-stage gaps no longer
+  display failure marks. The public `stage_readiness` name stays unchanged.
+- Receipt issuance explicitly reports metric completeness, computed counts,
+  uncomputed IDs, canonicalization and document/results hashes. A complete
+  receipt can record partial metric coverage; matching uncomputed statuses can
+  verify. Typed refusals retain calc metric/section/variant details and any
+  supplied error pointer. Missing packs still refuse without substitution.
+- Receipt verification labels its verdict and explains mismatches independently
+  of missing-input completeness. JSON/stdout payloads, codes, exit behavior,
+  financial rules, canonicalization and conformance obligations are unchanged.
+- Roadmap records an incremental element/package validation and deterministic
+  stitching RFC candidate over the existing RFC 0018/0021/0048 surfaces; no new
+  package contract is implemented. Tests use repo-owned synthetic fixtures,
+  with no imported external audit/source deal files.
+
 ## [2.17.0] - 2026-10-03
 
 ### Released
