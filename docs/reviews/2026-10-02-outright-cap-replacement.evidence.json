@@ -1,0 +1,266 @@
+{
+  "root": "C:\\Users\\jared\\OneDrive\\Desktop\\uwmd-codex\\",
+  "versions": {
+    "format": "2.0",
+    "protocol": "2.20.0",
+    "core": "2.16.0"
+  },
+  "interpretation": "Synthetic calendar dates; original StackUW export fixture has a default forecast anchor. No full-deal validation claim.",
+  "attempted_document": "---\n\nuw_version: \"2.0\"\n\ndeal_id: OUTRIGHT-REPLACEMENT-RESEARCH\n\nasset_class: office\n\ncurrency_code: USD\n\n---\n\n\n\n```json uw:section=debt_structure variant=base source=manual ts=2026-10-02T00:00:00Z v=1\n{\n  \"_meta\": {\n    \"section\": \"debt_structure\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"timestamp\": \"2026-10-02T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    }\n  },\n  \"loan_amount\": 32500000,\n  \"rate_type\": \"floating\",\n  \"rate_index\": \"sofr\",\n  \"rate_cap_pct\": 0.055,\n  \"rate_hedge\": {\n    \"instrument\": \"rate_cap\",\n    \"notional\": 32500000,\n    \"strike_rate\": 0.055,\n    \"index\": \"sofr\",\n    \"effective_date\": \"2026-01-01\",\n    \"expiration_date\": \"2028-01-01\",\n    \"premium\": 400000,\n    \"post_expiration_assumption\": \"replace\"\n  }\n}\n```\n\n```json uw:section=sources_uses variant=base source=manual ts=2026-10-02T00:00:00Z v=1\n{\n  \"_meta\": {\n    \"section\": \"sources_uses\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"timestamp\": \"2026-10-02T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    }\n  },\n  \"uses\": {\n    \"rate_cap_cost\": 400000\n  }\n}\n```\n\n```json uw:section=cash_flow_series variant=base source=manual ts=2026-10-02T00:00:00Z v=1\n{\n  \"_meta\": {\n    \"section\": \"cash_flow_series\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"timestamp\": \"2026-10-02T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    }\n  },\n  \"label\": \"Interest-rate cap cash flows\",\n  \"series\": [\n    {\n      \"date\": \"2026-01-01\",\n      \"amount\": -400000,\n      \"kind\": \"debt_service\",\n      \"label\": \"rate_cap_premium\"\n    },\n    {\n      \"date\": \"2028-01-01\",\n      \"amount\": -360000,\n      \"kind\": \"debt_service\",\n      \"label\": \"rate_cap_replacement_purchase\"\n    }\n  ]\n}\n```\n\n",
+  "results": [
+    {
+      "name": "replace_no_escrow",
+      "relevant_codes": [
+        "ESC-04"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-04"
+      ],
+      "issues": [
+        {
+          "code": "ESC-04",
+          "severity": "error",
+          "message": "ESC-04: rate_hedge.post_expiration_assumption \"replace\" requires a rate_cap_replacement escrow"
+        }
+      ]
+    },
+    {
+      "name": "replace_labeled_future_cash",
+      "relevant_codes": [
+        "ESC-04"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-04"
+      ],
+      "issues": [
+        {
+          "code": "ESC-04",
+          "severity": "error",
+          "message": "ESC-04: rate_hedge.post_expiration_assumption \"replace\" requires a rate_cap_replacement escrow"
+        }
+      ]
+    },
+    {
+      "name": "replace_escrow_funded_control",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "replace_fake_future_amount_as_upfront",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "replace_zero_escrow_loophole",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "replace_null_escrow_amounts",
+      "relevant_codes": [
+        "ESC-01"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-01"
+      ],
+      "issues": [
+        {
+          "code": "ESC-01",
+          "severity": "error",
+          "message": "ESC-01: an escrow must state at least one of upfront or monthly"
+        }
+      ]
+    },
+    {
+      "name": "replace_missing_escrow_amounts",
+      "relevant_codes": [
+        "ESC-01"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-01"
+      ],
+      "issues": [
+        {
+          "code": "ESC-01",
+          "severity": "error",
+          "message": "ESC-01: an escrow must state at least one of upfront or monthly"
+        }
+      ]
+    },
+    {
+      "name": "replace_other_escrow",
+      "relevant_codes": [
+        "ESC-04"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-04"
+      ],
+      "issues": [
+        {
+          "code": "ESC-04",
+          "severity": "error",
+          "message": "ESC-04: rate_hedge.post_expiration_assumption \"replace\" requires a rate_cap_replacement escrow"
+        }
+      ]
+    },
+    {
+      "name": "replace_initial_premium_inflated",
+      "relevant_codes": [
+        "ESC-04",
+        "HDG-05"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-04",
+        "HDG-05"
+      ],
+      "issues": [
+        {
+          "code": "HDG-05",
+          "severity": "error",
+          "message": "HDG-05: rate_hedge.premium 760000 disagrees with sources_uses.uses.rate_cap_cost 400000"
+        },
+        {
+          "code": "ESC-04",
+          "severity": "error",
+          "message": "ESC-04: rate_hedge.post_expiration_assumption \"replace\" requires a rate_cap_replacement escrow"
+        }
+      ]
+    },
+    {
+      "name": "replace_unsupported_inline_object",
+      "relevant_codes": [
+        "ESC-04"
+      ],
+      "all_codes": [
+        "CC-14",
+        "ESC-04"
+      ],
+      "issues": [
+        {
+          "code": "ESC-04",
+          "severity": "error",
+          "message": "ESC-04: rate_hedge.post_expiration_assumption \"replace\" requires a rate_cap_replacement escrow"
+        }
+      ]
+    },
+    {
+      "name": "replace_unsupported_purchase_kind",
+      "relevant_codes": [
+        "CF-01",
+        "ESC-04"
+      ],
+      "all_codes": [
+        "CC-14",
+        "CF-01",
+        "ESC-04"
+      ],
+      "issues": [
+        {
+          "code": "CF-01",
+          "severity": "error",
+          "message": "CF-01: kind \"rate_cap_replacement_purchase\" (variant \"base\") is not a registered flow kind (acquisition, operating, capex, debt_service, refinance, disposition, other)"
+        },
+        {
+          "code": "ESC-04",
+          "severity": "error",
+          "message": "ESC-04: rate_hedge.post_expiration_assumption \"replace\" requires a rate_cap_replacement escrow"
+        }
+      ]
+    },
+    {
+      "name": "cash_series_only_omits_hedge",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "falsely_unhedged_with_purchase",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "falsely_matures_first_with_purchase",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "replace_omitted_sources_uses_bypass",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    },
+    {
+      "name": "replace_omitted_uses_bypass",
+      "relevant_codes": [],
+      "all_codes": [
+        "CC-14"
+      ],
+      "issues": []
+    }
+  ],
+  "schema_results": [
+    {
+      "name": "released_hedge_shape",
+      "valid": true,
+      "errors": null
+    },
+    {
+      "name": "unsupported_inline_shape",
+      "valid": false,
+      "errors": [
+        {
+          "instancePath": "",
+          "schemaPath": "#/additionalProperties",
+          "keyword": "additionalProperties",
+          "params": {
+            "additionalProperty": "replacement_purchase"
+          },
+          "message": "must NOT have additional properties"
+        }
+      ]
+    },
+    {
+      "name": "zero_escrow_shape",
+      "valid": true,
+      "errors": null
+    },
+    {
+      "name": "null_escrow_shape_not_semantics",
+      "valid": true,
+      "errors": null
+    },
+    {
+      "name": "cash_flow_row_shape",
+      "valid": true,
+      "errors": null
+    }
+  ],
+  "existing_fixture_codes": [
+    "ESC-04"
+  ]
+}
