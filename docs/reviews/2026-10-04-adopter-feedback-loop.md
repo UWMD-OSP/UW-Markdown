@@ -81,26 +81,30 @@ Protocol 2.21.0, core/CLI 2.17.0.
 The taxonomy is in the guide. The one rule that carries the weight, quoted
 from GOVERNANCE.md's definition of normative, is: **does resolving the report
 change what a conforming implementation must do?** If not, it is a defect
-(`bug`, `drift` settled by clear normative text, `conformance-gap`,
-`documentation`) and goes through an ordinary PR. If so, it gets `needs-rfc`.
-Two cases default to `needs-rfc`: choosing between readings that different
-conforming implementations follow, and settling a disagreement between
-normative artifacts when the text doesn't say which one wins.
+(`bug`, `drift` reconciled to already-established behavior,
+`conformance-gap`, `documentation`) and goes through an ordinary PR. If so, it
+gets `needs-rfc`. That includes any fix that has to select new semantics
+because the existing contract is genuinely ambiguous, such as choosing between
+readings that different conforming implementations follow.
 
-For drift the guide follows existing precedent and goes no further. In 2.3.0,
-UPSTREAM-003 found the implementation-manifest schema's `required` array
-contradicting §II.5's clear prose. "The spec wins", so the schema was brought
-back to the prose without an RFC. The guide treats clear spec prose the same
-way. It does **not** set a general precedence between spec, schema and corpus
-for cases where the prose itself is unclear. That would be a normative
-decision, and those cases go to `needs-rfc`.
+**No source hierarchy.** The specs, the normative schemas and the normative
+conformance corpus are one joint conformance contract. The guide declares
+none of them superior to the others. A disagreement among them is drift.
+Triage first establishes the behavior the contract already governs, reading
+all the normative sources together with the introducing RFC, its fixtures,
+the CHANGELOG and the release records. It then corrects whichever artifact
+departs from that behavior. When the evidence doesn't establish the behavior,
+or reconciling the sources would change required behavior, the report gets
+`needs-rfc`. UPSTREAM-003 (2.3.0) is one case where the spec text held the
+intended behavior and the schema was corrected. It sets no general rule that
+the spec prevails.
 
 Every previous StackUW finding classifies cleanly under this test:
 
 | Finding | Classification under the new taxonomy | What happened |
 |---|---|---|
 | UPSTREAM-002 | `spec` → `needs-rfc` | RFC 0032 |
-| UPSTREAM-003 | `drift` (an array contradicted the spec) | Fixed by PR |
+| UPSTREAM-003 | `drift` (a schema `required` array disagreed with the intended manifest behavior) | Fixed by PR |
 | UPSTREAM-005 | `spec-ambiguity` + `needs-rfc` | RFC 0037 |
 | UPSTREAM-006 | `spec-ambiguity` + `needs-rfc` | RFC 0038 |
 | UPSTREAM-014 | `enhancement` + `needs-rfc` | RFC 0069 |

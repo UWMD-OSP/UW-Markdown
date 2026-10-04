@@ -7,9 +7,10 @@ problem so a maintainer can reproduce it, how to keep confidential deal data
 out of public issues, and how to follow a report through to a fix, a release or
 an RFC.
 
-Reports from adopters are requirements evidence. They decide where the format
-and protocol go next. A report is not a contract, though: what UWMD requires is
-still decided through the [RFC process](../docs/rfcs/README.md).
+Reports from adopters are requirements evidence. They inform, and can help
+determine, where the format and protocol go next. They do not define UWMD
+semantics, and no adopter, however large, sets what the standard requires.
+That is decided through the [RFC process](../docs/rfcs/README.md).
 
 ## Where to report
 
@@ -138,7 +139,7 @@ resolving it changes what conforming implementations must do. While
 | Label | Meaning | RFC? |
 |---|---|---|
 | `bug` | The implementation departs from behavior the spec already requires. | No |
-| `drift` | Spec, schemas, `protocol.ts`, implementation or conformance corpus disagree with each other. | No, when clear spec text settles it and the stray artifact is brought back to it. Yes, when the text doesn't say which one is right. |
+| `drift` | Spec, schemas, `protocol.ts`, implementation or conformance corpus disagree with each other. | No, when the intended behavior is already established and the fix brings the inconsistent artifact back to it. Yes, when resolving it changes required behavior or needs new semantics. |
 | `conformance-gap` | The behavior is specified, but the corpus does not pin it, so a wrong implementation could still pass. | No (governance: a fixture for already-specified behavior is an ordinary PR) |
 | `documentation` | Documentation is wrong or missing. Behavior is unchanged. | No |
 | `spec` | A spec question the form set, which triage always replaces with a category. | Not decided yet |
@@ -163,20 +164,41 @@ report change what a conforming implementation must do?** Changes of that kind
 touch MUST/SHOULD requirements, standard fields, schemas, calc grammar,
 conformance expectations or breaking public API.
 
-- **No: it restores already-specified behavior.** Fixing an implementation
+- **No: it restores already-established behavior.** Fixing an implementation
   bug, adding a fixture that pins existing requirements, correcting
-  documentation, and bringing a stray artifact back in line with clear
-  normative text all go through an ordinary pull request. Recent examples are
-  the early-year day-count fix (Protocol §VIII.9.1 already said proleptic
-  Gregorian), the RFC 0066 fixtures that a fence-order reader used to pass,
-  and the 2.3.0 implementation-manifest schema, whose `required` array
-  contradicted §II.5's clear text ("the spec wins").
+  documentation, and correcting an inconsistent artifact back to behavior the
+  normative contract already establishes all go through an ordinary pull
+  request. Recent examples are the early-year day-count fix (Protocol
+  §VIII.9.1 already said proleptic Gregorian) and the RFC 0066 fixtures that a
+  fence-order reader used to pass.
 - **Yes: it changes the contract.** That covers a new field or code, a changed
-  severity or result, or a new calc behavior. It also covers picking one
-  reading of ambiguous text when conforming implementations follow different
-  readings, and settling a disagreement between normative artifacts when the
-  text doesn't say which one is right. Each of these gets `needs-rfc`, and
-  maintainers don't change the spec until an RFC is accepted.
+  severity or result, or a new calc behavior. It also covers any fix that
+  changes what conforming implementations must do, and any fix that has to
+  select new semantics because the existing contract is genuinely ambiguous.
+  That includes picking one reading when conforming implementations follow
+  different readings. Each of these gets `needs-rfc`, and maintainers don't
+  change normative artifacts until an RFC is accepted.
+
+### Drift between normative sources
+
+The format and protocol specs, the normative JSON Schemas and the normative
+conformance corpus form **one joint conformance contract**. None of them
+outranks the others in general. When they disagree, that disagreement is
+repository drift to reconcile, not a contest one source wins by default.
+
+Triage first establishes the behavior the contract already governs. It reads
+all of the normative sources together, along with the accepted RFC that
+introduced the behavior, its conformance fixtures, the CHANGELOG and the
+release records. Then:
+
+- **If that evidence establishes the intended behavior,** the artifacts that
+  disagree with it are corrected by an ordinary pull request. Which artifact
+  is wrong depends on the case. A precedent where the spec text held the
+  intended behavior (UPSTREAM-003 in 2.3.0, where a schema's `required` array
+  was corrected) shows only that it did in that case.
+- **If the evidence doesn't establish it,** or every way of reconciling the
+  sources changes what some conforming implementation must do, the report
+  gets `needs-rfc`.
 
 The report's evidence (versions, reproduction, readings, who is affected)
 becomes the RFC's Motivation, and the RFC links the issue.
@@ -193,7 +215,10 @@ becomes the RFC's Motivation, and the RFC links the issue.
    they differ. Comment with the commit and command, and add `reproduced`.
    If it doesn't reproduce, say what you ran.
 4. **Classify.** Keep or replace the category label so exactly one remains,
-   and decide `needs-rfc` with the test above. Remove `needs-triage` and
+   and decide `needs-rfc` with the test above. For `drift`, first establish
+   the already-governed behavior as
+   [Drift between normative sources](#drift-between-normative-sources)
+   describes, and cite the evidence in the comment. Remove `needs-triage` and
    comment with the classification and the next step.
 5. **Resolve.** Link the fixing pull request with `Fixes #N`. If the fix is
    to a package or Protocol version that has not shipped, add

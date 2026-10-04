@@ -29,7 +29,11 @@ protocol, and each package each carry an independent semver).
   says what evidence makes a report reproducible, how to reduce a
   confidential deal to a public reproduction, what each label means, and when
   a report needs an RFC: only when resolving it changes what a conforming
-  implementation must do.
+  implementation must do, or has to select new semantics. Disagreements
+  among the specs, schemas and conformance corpus are reconciled against the
+  behavior the joint contract already establishes; no source outranks the
+  others in general. Adopter reports are requirements evidence and do not
+  define UWMD semantics.
 - **The issue forms ask for reproducible evidence.** The three forms are
   rewritten as *Bug or interoperability report*, *Spec question or
   ambiguity* and *Capability request*. They ask for the reporting

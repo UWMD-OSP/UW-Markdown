@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        UWMD adds normative surface (fields, calcs, validation codes) when a **demonstrated consumer** needs it. A concrete case is therefore the strongest evidence a request can carry. Requests that change what conforming implementations must do go through an [RFC](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md), which can start from this issue. See the [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md).
+        UWMD considers new normative surface (fields, calcs, validation codes) only when a **demonstrated consumer** needs it, so a concrete case is the strongest evidence a request can carry. A request is evidence, not a decision. It does not by itself change the standard. Anything that changes what conforming implementations must do goes through an [RFC](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md), which can start from this issue. See the [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md).
 
         > [!WARNING]
         > **This issue is public.** Use synthetic or de-identified examples only.

@@ -345,7 +345,13 @@ What a maintainer must remember:
 
 - **Classify with the RFC test.** Exactly one category label remains after
   triage. Add `needs-rfc` only when resolving the report changes what a
-  conforming implementation must do (the table below).
+  conforming implementation must do, or has to select new semantics because
+  the contract is genuinely ambiguous (the table below).
+- **Treat drift as reconciliation, not a ranking.** The specs, normative
+  schemas and normative conformance corpus are one joint contract, and none
+  outranks the others in general. Establish the already-governed behavior
+  from all of them plus the introducing RFC and the release evidence, then
+  correct whichever artifact departs from it.
 - **Comment on every change of state.** Label changes don't notify the
   reporter, so a label change alone tells them nothing.
 - **Close the loop at release.** After a release publishes, comment on every
