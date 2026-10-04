@@ -1,5 +1,5 @@
 {
-  "receipt_version": "1.1",
+  "receipt_version": "1.0",
   "subject": {
     "representation": "uwx-markdown",
     "representation_version": "1.0",
@@ -12,7 +12,6 @@
     "pack_version": "1.0.1",
     "engine": "@uwmd/core",
     "engine_version": "2.16.0",
-    "protocol_version": "2.20.0",
     "results": [
       {
         "calc_id": "cap_rate",
