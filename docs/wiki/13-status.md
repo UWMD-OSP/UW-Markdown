@@ -18,7 +18,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068 remain outside the current released
+Draft RFCs 0064, 0065, 0067, 0068 and 0071 remain outside the current released
 contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -595,6 +595,10 @@ The guards:
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
+- Review draft [RFC 0071](../rfcs/0071-calendar-date-predicate.md), a
+  `is_calendar_date` §VIII.3 predicate. It would let RFC 0068's `as_of_date`
+  rule detect a malformed or impossible date. RFC 0071 is not accepted and has
+  no implementation, and RFC 0068 does not yet depend on it.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
