@@ -98,7 +98,7 @@ and how it gets accepted.
 | [0068](./0068-manufactured-housing-module.md) | Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line | draft | core, conformance, tooling |
 | [0069](./0069-student-rent-roll-bed-counts.md) | Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads | implemented | format, protocol, core, conformance |
 | [0070](./0070-replacement-cap-funding-and-payment-binding.md) | Bind outright replacement-cap funding to an exact modeled cash payment | implemented | format, protocol, core, conformance, tooling |
-| [0071](./0071-calendar-date-predicate.md) | A calendar-date validity predicate for safe expressions | draft | protocol, core, conformance, documentation |
+| [0071](./0071-calendar-date-predicate.md) | A calendar-date validity predicate for safe expressions | accepted | protocol, core, conformance, documentation |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

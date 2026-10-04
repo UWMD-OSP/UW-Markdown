@@ -1,7 +1,8 @@
 ---
 rfc: 0071
 title: A calendar-date validity predicate for safe expressions
-status: draft
+status: accepted
+accepted: 2026-10-04
 author: claude-code (agent proposal)
 created: 2026-10-03
 depends_on:
@@ -16,9 +17,10 @@ affects:
 
 # RFC 0071: A calendar-date validity predicate for safe expressions
 
-**Draft agent proposal.** A coding agent wrote this RFC for owner review. It is
-not accepted, and it authorizes no implementation, no spec or schema edit, and
-no version change.
+**Accepted, not implemented.** A coding agent wrote this RFC, and the owner
+accepted it on 2026-10-04 (see the
+[owner acceptance record](#owner-acceptance-record-2026-10-04)). Acceptance
+authorizes no implementation, no spec or schema edit, and no version change.
 
 ## Summary
 
@@ -53,6 +55,54 @@ With it, RFC 0068's `CC-MOD-MH-05` can be written as
 `mhc_sites == null || is_calendar_date(mhc_sites.as_of_date)`. A malformed
 `as_of_date` then reports `CC-MOD-MH-05` through an ordinary rule evaluating
 `false`, and no module-specific runtime is needed.
+
+## Owner acceptance record (2026-10-04)
+
+- **Decision.** Jared, the project owner, accepted RFC 0071 on 2026-10-04,
+  under the owner-led process in [GOVERNANCE.md](../../GOVERNANCE.md). In that
+  mode no public-comment period or waiver is required.
+- **Frozen contract.** The accepted form is PR #249 head
+  [`bf57e6037032cbcb32964fcde071a9c75c611e45`](https://github.com/UWMD-OSP/UW-Markdown/commit/bf57e6037032cbcb32964fcde071a9c75c611e45).
+  This record changes no contract text. The accepted contract is:
+  - `is_calendar_date(value) → boolean` is part of the shared §VIII.3
+    safe-expression builtin set.
+  - The lexical form is exactly `YYYY-MM-DD`, in ASCII.
+  - Validity follows the proleptic Gregorian calendar for years `0000`–`9999`.
+  - The predicate returns `false` for:
+    - `null` and absent values;
+    - non-strings, arrays and objects;
+    - malformed strings;
+    - impossible dates;
+    - date-times.
+  - There is no coercion or trimming, and no use of locale, time zone, host
+    clock or `Date.parse`.
+  - A call with the wrong number of arguments raises `CALC-TYPE-001`.
+  - An error raised while evaluating the argument propagates normally.
+  - A module rule whose predicate returns `false` reports the rule's own code.
+  - A module that uses the predicate **MUST** set `requires_protocol` to
+    exclude every Protocol version without the builtin.
+- **Disposition.** The status is `accepted`, and intent to implement is
+  recorded. Implementation needs separate authorization. This is not
+  `implemented`, and no released capability is added.
+- **Authorization boundary.** This record covers acceptance and the required
+  documentation only. It does not authorize:
+  - Protocol, spec or schema edits;
+  - builtin or test code;
+  - conformance changes;
+  - version bumps or release preparation;
+  - any change to RFC 0068;
+  - a fix to `actualDays()`.
+- **Related decisions.**
+  - RFC 0068 is intended to adopt the predicate in its own later revision.
+  - No numeric-type predicate is authorized.
+  - The `actualDays()` early-year defect stays a separate implementation bug
+    that needs no RFC (see
+    [Existing implementation drift](#existing-implementation-drift-non-scope)).
+- **Version direction.** Format stays 2.0. Protocol and core each take a
+  minor version. The exact numbers are deferred to release preparation;
+  2.22.0 and 2.18.0 are provisional only. Published Format 2.0, Protocol
+  2.21.0 and core/CLI 2.17.0 are unchanged.
+- **Next decision.** Whether to authorize implementation.
 
 ## Motivation
 
@@ -449,7 +499,8 @@ still cannot grow by accretion.
 
 ## Reference implementation
 
-Not authorized by this draft. If accepted:
+This plan is accepted but not yet authorized. Once implementation is
+authorized:
 
 - **Builtin.** `packages/uwmd-core/src/calc/builtins.ts` gains
   `is_calendar_date`, about ten lines:
@@ -658,7 +709,7 @@ The owner also directed:
 
 | Item | Direction | State |
 |---|---|---|
-| Acceptance | Accept once these corrections are in and CI is green | **Pending.** Status stays `draft` until the owner records acceptance |
+| Acceptance | Accept once these corrections are in and CI is green | **Accepted 2026-10-04** at `bf57e60` (see [Owner acceptance record](#owner-acceptance-record-2026-10-04)) |
 | Implementation | Authorize separately, after acceptance | Not authorized |
 | RFC 0068 | Adopt `is_calendar_date` in RFC 0068's own revision | Directed. RFC 0068 is not edited here |
 | Numeric type predicate | No RFC at this time | Decided: none |
