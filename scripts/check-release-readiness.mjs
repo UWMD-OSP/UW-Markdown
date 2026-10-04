@@ -1,6 +1,6 @@
 // Pre-flight check for npm Trusted Publishers (OIDC) automated publishing.
 // Verifies:
-// 1. Package version synchronization across @uwmd/core, @uwmd/cli, @uwmd/signing, and @uwmd/batch.
+// 1. Package versions and exact core pins across all six official publishing packages.
 // 2. Export targets, binaries, and production build artifacts exist and resolve.
 // 3. OIDC provenance eligibility (repository metadata, public access, zero hardcoded tokens).
 // 4. .github/workflows/release.yml triggers on tag pushes and includes id-token: write,
@@ -11,6 +11,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { OFFICIAL_MODULE_PACKAGES, RELEASE_PACKAGES } from './release-packages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -18,13 +19,6 @@ const passes = [];
 
 const read = (path) => readFileSync(resolve(root, path), 'utf8');
 const readJson = (path) => JSON.parse(read(path));
-
-const RELEASE_PACKAGES = [
-  { name: '@uwmd/core', dir: 'packages/uwmd-core' },
-  { name: '@uwmd/cli', dir: 'packages/uwmd-cli' },
-  { name: '@uwmd/signing', dir: 'packages/uwmd-signing' },
-  { name: '@uwmd/batch', dir: 'packages/uwmd-batch' },
-];
 
 // ── 1. Workflow Verification ──────────────────────────────────────────────────
 try {
@@ -60,17 +54,19 @@ try {
     failures.push(`${workflowPath}: checkout needs fetch-depth: 0 and fetch-tags: true for verify-release`);
   }
 
-  // Check publish steps for all 4 packages with --provenance
+  // Each package's own step must probe the registry and publish with provenance.
   for (const pkg of RELEASE_PACKAGES) {
-    const pkgPublishRegex = new RegExp(
-      `working-directory:\\s*${pkg.dir}[\\s\\S]*?npm publish[^\\n]*--provenance`,
-      'm',
-    );
-    if (!pkgPublishRegex.test(workflow)) {
-      failures.push(
-        `${workflowPath}: missing publish step with --provenance for ${pkg.name} (${pkg.dir})`,
-      );
+    const step = workflow.split(/\n {6}- name:/).find((part) =>
+      part.includes(`working-directory: ${pkg.dir}\n`));
+    if (!step || !/npm publish[^\n]*--provenance[^\n]*--access public/.test(step)) {
+      failures.push(`${workflowPath}: missing public provenance publish step for ${pkg.name}`);
     }
+    if (!step?.includes(`scripts/registry-version-state.mjs" "${pkg.name}" "$VER"`)) {
+      failures.push(`${workflowPath}: ${pkg.name} must use the fail-closed registry version probe`);
+    }
+  }
+  if (/workflow_dispatch:/.test(workflow)) {
+    failures.push(`${workflowPath}: ordinary releases must remain tag-triggered; no module-only dispatch`);
   }
 
   passes.push(
@@ -84,8 +80,6 @@ try {
 try {
   const corePkg = readJson('packages/uwmd-core/package.json');
   const cliPkg = readJson('packages/uwmd-cli/package.json');
-  const signingPkg = readJson('packages/uwmd-signing/package.json');
-  const batchPkg = readJson('packages/uwmd-batch/package.json');
 
   // Core and CLI must be in lockstep
   if (corePkg.version !== cliPkg.version) {
@@ -94,28 +88,11 @@ try {
     );
   }
 
-  // CLI dep on core
-  const cliCoreDep = cliPkg.dependencies?.['@uwmd/core'];
-  if (cliCoreDep !== corePkg.version) {
-    failures.push(
-      `@uwmd/cli depends on @uwmd/core@${cliCoreDep}, expected exact ${corePkg.version}`,
-    );
-  }
-
-  // Signing dep on core
-  const signingCoreDep = signingPkg.dependencies?.['@uwmd/core'];
-  if (signingCoreDep !== corePkg.version) {
-    failures.push(
-      `@uwmd/signing depends on @uwmd/core@${signingCoreDep}, expected exact ${corePkg.version}`,
-    );
-  }
-
-  // Batch dep on core
-  const batchCoreDep = batchPkg.dependencies?.['@uwmd/core'];
-  if (batchCoreDep !== corePkg.version) {
-    failures.push(
-      `@uwmd/batch depends on @uwmd/core@${batchCoreDep}, expected exact ${corePkg.version}`,
-    );
+  for (const pkg of RELEASE_PACKAGES.filter((pkg) => pkg.name !== '@uwmd/core')) {
+    const pin = readJson(`${pkg.dir}/package.json`).dependencies?.['@uwmd/core'];
+    if (pin !== corePkg.version) {
+      failures.push(`${pkg.name} depends on @uwmd/core@${pin}, expected exact ${corePkg.version}`);
+    }
   }
 
   // Matrix check against VERSIONS.md
@@ -125,23 +102,21 @@ try {
     const matrixEnd = versionsDoc.indexOf('\n## ', matrixStart + 1);
     const matrixSection = versionsDoc.slice(matrixStart, matrixEnd === -1 ? undefined : matrixEnd);
 
+    const rows = matrixSection.split('\n').filter((line) => line.trimStart().startsWith('|'))
+      .map((line) => line.split('|').slice(1, -1).map((cell) => cell.replaceAll('*', '').replaceAll('`', '').trim()));
     for (const pkg of RELEASE_PACKAGES) {
-      const labelEscaped = pkg.name.replace(/[/@]/g, '\\$&');
-      const rowRegex = new RegExp(
-        `\\|\\s*${labelEscaped}(?:\\s*\\([^)]*\\))?\\s*\\|\\s*\\*\\*?([0-9a-zA-Z.-]+)\\*\\*?\\s*\\|`,
-      );
-      const match = matrixSection.match(rowRegex);
+      const stated = rows.find((cells) => cells[0] === pkg.row)?.[1]?.split(/\s+/)[0];
       const declaredVersion = readJson(`${pkg.dir}/package.json`).version;
-      if (match && match[1] !== declaredVersion) {
-        failures.push(
-          `VERSIONS.md matrix lists ${pkg.name} as ${match[1]}, but manifest declares ${declaredVersion}`,
-        );
+      if (stated !== declaredVersion) {
+        failures.push(`VERSIONS.md matrix lists ${pkg.name} as ${stated ?? 'missing'}, but manifest declares ${declaredVersion}`);
       }
     }
+  } else {
+    failures.push('VERSIONS.md: missing Current matrix');
   }
 
   passes.push(
-    'Version synchronization: @uwmd/core, @uwmd/cli, @uwmd/signing, @uwmd/batch and VERSIONS.md match',
+    'Version synchronization: six package versions, exact core pins and VERSIONS.md match',
   );
 } catch (err) {
   failures.push(`Version synchronization check failed: ${err.message}`);
@@ -151,6 +126,23 @@ try {
 try {
   for (const pkg of RELEASE_PACKAGES) {
     const manifest = readJson(`${pkg.dir}/package.json`);
+
+    if (manifest.name !== pkg.name) failures.push(`${pkg.dir}: expected package name ${pkg.name}, got ${manifest.name}`);
+    if (OFFICIAL_MODULE_PACKAGES.some((module) => module.name === pkg.name)) {
+      if (manifest.type !== 'module' || manifest.main !== './dist/index.js' || manifest.types !== './dist/index.d.ts'
+        || manifest.exports?.['.']?.import !== manifest.main || manifest.exports?.['.']?.types !== manifest.types) {
+        failures.push(`${pkg.name}: public ESM and TypeScript entry exports are required`);
+      }
+      if (manifest.exports?.['./manifest.json'] !== './dist/manifest.json') {
+        failures.push(`${pkg.name}: exported ./manifest.json must resolve to ./dist/manifest.json`);
+      }
+      for (const artifact of ['dist/view-models.js', 'dist/view-models.d.ts', 'dist/manifest.json', 'LICENSE']) {
+        if (!existsSync(resolve(root, pkg.dir, artifact))) failures.push(`${pkg.name}: missing ${artifact}`);
+      }
+      if (manifest.publishConfig?.access !== 'public' || manifest.license !== 'MIT') {
+        failures.push(`${pkg.name}: public publication and MIT license metadata are required`);
+      }
+    }
 
     // Check main entrypoint
     if (manifest.main) {
@@ -222,7 +214,7 @@ try {
     if (
       !manifest.repository ||
       !manifest.repository.url ||
-      !manifest.repository.url.includes('UWMD-OSP/UW-Markdown')
+      !['git+https://github.com/UWMD-OSP/UW-Markdown.git', 'https://github.com/UWMD-OSP/UW-Markdown.git', 'https://github.com/UWMD-OSP/UW-Markdown'].includes(manifest.repository.url)
     ) {
       failures.push(`${pkg.name}: missing or invalid repository.url for OIDC provenance attestation`);
     }
@@ -261,5 +253,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  '\n[PASS] Release readiness check complete: all 4 publishing packages are OIDC ready.',
+  `\n[PASS] Release readiness check complete: all ${RELEASE_PACKAGES.length} packages have repository/workflow OIDC prerequisites. Account-side publishers require owner confirmation.`,
 );

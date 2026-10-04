@@ -57,7 +57,7 @@
 // precedent. Its CHANGELOG said Released, its tag was never pushed, and no 1.4.0
 // of any package exists.
 
-const PUBLISHED_ROWS = ['@uwmd/core', '@uwmd/cli (CLI)', '@uwmd/signing', '@uwmd/batch'];
+import { OFFICIAL_MODULE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
 /** Wording that describes a generation as not yet final. */
 const NOT_FINAL = /\b(candidate|unreleased|unpublished)\b/i;
 /** A row annotation that names a publication, e.g. the stale "published 2.14.0". */
@@ -151,6 +151,7 @@ export function checkReleaseState({
   const checks = [];
   const failures = [];
   const tagged = tag !== undefined;
+  const publishedRows = releasePackagesForGeneration(coreVersion).map((pkg) => pkg.row);
   const section = changelogReleaseSections(changelog).find((s) => s.version === coreVersion) ?? null;
   const dated = section !== null && /^## \[[^\]]+\] - \d{4}-\d{2}-\d{2}\s*$/.test(section.heading);
 
@@ -195,14 +196,22 @@ export function checkReleaseState({
     return { applies: true, checks, failures };
   }
   const row = (label) => matrix.rows.find((r) => r.label === label);
-  for (const label of PUBLISHED_ROWS) {
+  for (const label of publishedRows) {
     const found = row(label);
     if (!found) {
       failures.push(`VERSIONS.md: no "Current matrix" row for ${label}.`);
-    } else if (NOT_FINAL.test(found.annotation) || NAMES_PUBLICATION.test(found.annotation)) {
+    } else if (NOT_FINAL.test(found.annotation) || /\bsource[ -]only\b/i.test(found.annotation) || NAMES_PUBLICATION.test(found.annotation)) {
       failures.push(
         `VERSIONS.md: ${label} ${found.version} is still annotated "${found.annotation}"; the ${coreVersion} generation's row states its version only.`,
       );
+    }
+  }
+
+  for (const { row: label } of OFFICIAL_MODULE_PACKAGES) {
+    if (!publishedRows.includes(label)) continue;
+    const moduleRow = row(label);
+    if (moduleRow && !new RegExp(`@uwmd/core\\s+${escapeRegExp(coreVersion)}(?![\\d.])`).test(moduleRow.pairsWith)) {
+      failures.push(`VERSIONS.md: ${label} pairs with "${moduleRow.pairsWith}", not exactly @uwmd/core ${coreVersion}.`);
     }
   }
 
@@ -244,7 +253,7 @@ export function checkReleaseState({
   // ── The matrix prose ──────────────────────────────────────────────────────
   for (const line of matrix.text.split('\n')) {
     const label = isTableLine(line) ? plain(line.split('|')[1] ?? '') : null;
-    if (PUBLISHED_ROWS.includes(label)) continue; // reported per row above
+    if (publishedRows.includes(label)) continue; // reported per row above
     const stale = /\bcandidate\b/i.test(line)
       || (carriesProtocol && label === null && /\bunreleased\b|\bno release tag\b/i.test(line));
     if (stale) {

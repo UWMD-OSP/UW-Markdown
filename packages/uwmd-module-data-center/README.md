@@ -2,7 +2,7 @@
 
 The **first product module on a module-declared asset class** for
 [UW Markdown](https://uwmd.org) — the implementation of
-[RFC 0039](../../docs/rfcs/0039-data-center-module.md).
+[RFC 0039](https://github.com/UWMD-OSP/UW-Markdown/blob/214adbfa2734cd472deaedefebbbdf90aab245bd/docs/rfcs/0039-data-center-module.md).
 
 RFC 0003 opened the asset-class enum to modules and RFC 0006 shipped the first
 module, but hospitality is a *builtin* class, so the module system's two halves
@@ -19,6 +19,23 @@ module, it is built against the published surface of `@uwmd/core` and nothing
 else.
 
 ## Use
+
+This is an approved official first-party public npm package. First publication is
+pending the next ordinary owner-authorized UWMD release; the current `0.1.9`
+package generation is still source-only. After publication, install the exact
+published package/core pairing and commit your application's lockfile. For this
+source generation the pairing is:
+
+```sh
+npm install --save-exact @uwmd/core@2.17.0 @uwmd/module-data-center@0.1.9
+```
+
+Update both pins to the actual first published generation before running this
+example. npm package `0.1.9`, manifest contract `0.1.0`, and manifest schema
+`manifest_version: "1"` are independent versions. A core repin changes the
+package version without changing the module contract.
+
+Load the module explicitly through the public API:
 
 ```ts
 import {
@@ -44,10 +61,36 @@ const issues = validateAgainstModules(parsed, registry);
 A host **without** this module resolves a data-center document as `degraded`
 under `industrial` with `MOD-FALLBACK-001` (if it holds the declaration) or
 `unresolved` with `MOD-MISSING-001` (if it does not). The document's
-`modules:` frontmatter names what to load.
+`modules:` frontmatter declares the module contract the host must explicitly load.
 
-Hosts without a TypeScript toolchain read `dist/manifest.json`, generated from
-the typed manifest at build time so the two cannot disagree.
+Browser hosts use the same module import and public APIs from `@uwmd/core/browser`
+instead of `@uwmd/core`. Installation and registration are explicit host actions;
+document `modules[].version` selects the manifest contract (`0.1.0`), not the npm
+package version, and never fetches or installs a package.
+
+The JSON manifest is exported as `@uwmd/module-data-center/manifest.json`.
+It is generated from the typed manifest during the build. A Node host can read
+that public export without a TypeScript toolchain:
+
+```js
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const manifest = JSON.parse(readFileSync(
+  require.resolve('@uwmd/module-data-center/manifest.json'), 'utf8',
+));
+```
+
+The loader checks `requires_protocol`, `requires_format`, and `requires_tier`.
+These modules require a Tier-3 calc host or higher. Registering a manifest alone
+is insufficient: hosts evaluate its calculations and validations through the
+existing runtime and apply section schemas when they have a JSON Schema validator.
+
+npm integrity, signatures and Sigstore provenance authenticate the distributed
+package; they do not create a `ModuleManifest.signature`. This manifest remains
+unsigned. A host requiring signed manifests may refuse it under existing policy;
+manifest verification retains the existing async API boundary.
 
 ## Units
 
@@ -118,7 +161,7 @@ permanent below-market warning.
 
 ## The example
 
-[`examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md`](../../examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md)
+[`examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/214adbfa2734cd472deaedefebbbdf90aab245bd/examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md)
 is the corpus's first custom-class example — 10,000 kW commissioned, 12,500
 planned, 11,000 contracted, PUE 1.25, $150/kW-month against a $187.50 comp —
 chosen so every calculation is an exact decimal. It is deliberately imperfect:
@@ -126,7 +169,7 @@ a pre-leased phase 2 and a below-market contract, so `CC-MOD-DC-04` and
 `CC-MOD-DC-07` both fire on one file and nothing else does.
 `test/fixtures/mesa-gateway-data-center.uwx.md` is the same bytes, and a test
 keeps it that way. The
-[`conformance/modules/runtime/`](../../conformance/modules/runtime/) suite
+[`conformance/modules/runtime/`](https://github.com/UWMD-OSP/UW-Markdown/tree/214adbfa2734cd472deaedefebbbdf90aab245bd/conformance/modules/runtime/) suite
 derives five more scenarios from it — PUE below one, no comp set, the required
 section removed, the same file relabelled `industrial` (where the module must
 not run at all), and the module absent (the RFC 0003 fallback path on a

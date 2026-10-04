@@ -300,8 +300,13 @@ product specification; lease economics and cash timing are.
   corpus fact table and SQL; an embedding pipeline is not required for that.
 - **Investor profiles and portfolio/relationship agent layers:** the data
   surfaces exist, but reference consumers need concrete adoption requirements.
-- **Standalone Excel/report/module publication:** implemented packages remain
-  unpublished until a consumer and supported distribution scope are chosen.
+- **Official module publication:** hospitality and data-center are approved together
+  as public npm packages. Distribution support uses the ordinary release workflow;
+  first publication awaits account bootstrap/trusted-publisher confirmation and the
+  next owner-authorized UWMD generation. Package semver is separate from the 0.1.0
+  manifest contracts; exact core pins and explicit host loading remain.
+- **Standalone Excel/report publication:** implemented current packages remain
+  source-only until a consumer and supported distribution scope are chosen.
 - **DOCX output:** scoped out by the owner; reconsider on an actual adopter ask.
 - **Native bps units:** deferred until a pack demonstrates the required unit
   and precision contract. This is not an unresolved Excel ROUND-parity defect.

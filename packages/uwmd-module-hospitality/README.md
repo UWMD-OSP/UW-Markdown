@@ -1,7 +1,7 @@
 # @uwmd/module-hospitality
 
 The **reference module** for [UW Markdown](https://uwmd.org) — the
-implementation of [RFC 0006](../../docs/rfcs/0006-hospitality-module.md), and
+implementation of [RFC 0006](https://github.com/UWMD-OSP/UW-Markdown/blob/214adbfa2734cd472deaedefebbbdf90aab245bd/docs/rfcs/0006-hospitality-module.md), and
 the first real consumer of the protocol §X module system.
 
 It does two things, and the first is why the second exists.
@@ -24,6 +24,23 @@ grow a section per vertical for whoever asked most recently.
 
 ## Use
 
+This is an approved official first-party public npm package. First publication is
+pending the next ordinary owner-authorized UWMD release; the current `0.1.9`
+package generation is still source-only. After publication, install the exact
+published package/core pairing and commit your application's lockfile. For this
+source generation the pairing is:
+
+```sh
+npm install --save-exact @uwmd/core@2.17.0 @uwmd/module-hospitality@0.1.9
+```
+
+Update both pins to the actual first published generation before running this
+example. npm package `0.1.9`, manifest contract `0.1.0`, and manifest schema
+`manifest_version: "1"` are independent versions. A core repin changes the
+package version without changing the module contract.
+
+Load the module explicitly through the public API:
+
 ```ts
 import { createModuleRegistry, evaluateModuleCalculations, validateAgainstModules, parseUWFile } from '@uwmd/core';
 import { HOSPITALITY_MODULE } from '@uwmd/module-hospitality';
@@ -38,8 +55,34 @@ const calcs = evaluateModuleCalculations(parsed, registry);
 const issues = validateAgainstModules(parsed, registry);
 ```
 
-Hosts without a TypeScript toolchain read `dist/manifest.json`, which is
-generated from the typed manifest at build time so the two cannot disagree.
+Browser hosts use the same module import and public APIs from `@uwmd/core/browser`
+instead of `@uwmd/core`. Installation and registration are explicit host actions;
+document `modules[].version` selects the manifest contract (`0.1.0`), not the npm
+package version, and never fetches or installs a package.
+
+The JSON manifest is exported as `@uwmd/module-hospitality/manifest.json`.
+It is generated from the typed manifest during the build. A Node host can read
+that public export without a TypeScript toolchain:
+
+```js
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const manifest = JSON.parse(readFileSync(
+  require.resolve('@uwmd/module-hospitality/manifest.json'), 'utf8',
+));
+```
+
+The loader checks `requires_protocol`, `requires_format`, and `requires_tier`.
+These modules require a Tier-3 calc host or higher. Registering a manifest alone
+is insufficient: hosts evaluate its calculations and validations through the
+existing runtime and apply section schemas when they have a JSON Schema validator.
+
+npm integrity, signatures and Sigstore provenance authenticate the distributed
+package; they do not create a `ModuleManifest.signature`. This manifest remains
+unsigned. A host requiring signed manifests may refuse it under existing policy;
+manifest verification retains the existing async API boundary.
 
 ## What it contributes
 
@@ -93,7 +136,7 @@ too large. Only the rule catches it.
 Congress, and it is deliberately **not** a clean deal: RevPAR runs below the
 comp set and the flag's fee burden is over 13%, so both warning rules fire and
 both branches are covered by one file. The
-[`conformance/modules/runtime/`](../../conformance/modules/runtime/) suite
+[`conformance/modules/runtime/`](https://github.com/UWMD-OSP/UW-Markdown/tree/214adbfa2734cd472deaedefebbbdf90aab245bd/conformance/modules/runtime/) suite
 derives four more scenarios from it — no comp set, occupancy as a percentage,
 the required section removed, and the same file relabelled as office (where the
 module must not run at all).

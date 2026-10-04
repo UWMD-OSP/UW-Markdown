@@ -287,6 +287,16 @@ is published as `@uwmd/module-data-center@0.1.0`, the first module
 package after hospitality; the release ritual's package list grows by
 one.
 
+**Editorial implementation-history clarification.** The preceding 0.1.0 npm
+publication sentence was the original release intent, not a completed publication.
+The implementation notes below record the deferred publish-matrix work. At the
+verified 2.17.0 baseline the npm package is source-only 0.1.9, pinned to core
+2.17.0; its independent manifest contract remains 0.1.0. The owner now approves
+hospitality and data-center together for ordinary-release public distribution,
+with first publication pending the next authorized generation and account setup.
+See [release governance](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md#official-first-party-module-distribution).
+No accepted module semantics or identifiers change.
+
 ## Conformance impact
 
 New in `conformance/modules/runtime/` (beside the hospitality suite):

@@ -86,7 +86,7 @@ exception. `### Released` is added only after the tag exists, so `main` can
 never claim a release that has no tag.
 
 Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
-all four published packages (core, CLI, signing and batch)** (below). The tag is the trigger, so a missing
+all six supported publishing packages (core, CLI, signing, batch, hospitality and data-center)** (below). The tag is the trigger, so a missing
 publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
@@ -117,8 +117,8 @@ when the release workflow runs.
    - **Required:**
      - the dated heading `## [X.Y.Z] - YYYY-MM-DD`, with the complete release
        contents;
-     - bare matrix version cells for core, CLI, signing and batch, with exact
-       pairings;
+     - bare matrix version cells for the generation's publishing packages, with exact
+       pairings (four through 2.17.0; six afterward);
      - a core row that pairs with `PROTOCOL_VERSION`, and a CLI that pins core
        exactly;
      - a Protocol row with no annotation;
@@ -178,15 +178,19 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   (Node 20 & 22 matrix) that installs, builds, tests, and runs conformance
   tiers 1–3. Tier 4 is excluded (non-deterministic / operator-driven).
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
-  `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, and `@uwmd/batch`. Authentication is **npm trusted publishing
+  `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`,
+  `@uwmd/module-hospitality`, and `@uwmd/module-data-center`. Authentication is **npm trusted publishing
   (OIDC)** — no `NPM_TOKEN`, no secret of any kind. The runner trades the
   `id-token: write` permission for a short-lived token scoped to this repo and
   workflow, and provenance is attached automatically.
 
   It needs a trusted publisher configured **per package** on npmjs.com (org
-  `UWMD-OSP`, repo `UW-Markdown`, workflow `release.yml`). npm allows only one
-  per package, which is the reason `publish-cli-recovery.yml` needs the
-  temporary repoint documented in its header. Node stays pinned at 22.14.0
+  `UWMD-OSP`, repo `UW-Markdown`, workflow `release.yml`, allowed action
+  `publish`, environment blank). Current npm web settings support multiple
+  trusted publishers (up to ten); a separately authorized recovery workflow does
+  not require replacing the ordinary release publisher. Confirm actual account
+  settings before recovery, and prefer rerunning the ordinary release after a
+  partial failure. Node stays pinned at 22.14.0
   because that is npm's documented minimum for OIDC, and the job upgrades npm
   to 11.5.1 for the same reason — the bundled 10.x cannot do it.
 
@@ -196,6 +200,105 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   hand instead. A credential that expires silently between releases is one that
   is always broken exactly when it is needed.
 - **`CODEOWNERS`** routes spec / schema / reference-library paths to the BDFL.
+
+## Official first-party module distribution
+
+The owner approves `@uwmd/module-hospitality` and `@uwmd/module-data-center`
+together as official public npm packages. This is packaging/release governance,
+not a new normative feature: Format 2.0, Protocol 2.21.0, accepted module contracts,
+IDs, compatibility fields and runtime/signature behavior are unchanged. No RFC
+is required solely to distribute these existing implementations.
+
+**Ordinary releases only.** Both join the existing four packages in `release.yml`.
+First official publication waits for the next ordinary owner-authorized UWMD
+generation; no module-only trigger or new tag family exists. Releases through
+2.17.0 retain their actual four-package publication scope. `release-packages.mjs`
+selects four rows for generations at or below 2.17.0 and six afterward, including
+patch generations; this boundary does not select the next release version.
+Historical tags and publication records stay immutable.
+
+**Independent versions and explicit loading.** npm package semver identifies the
+artifact; manifest `version` identifies its contract; `manifest_version` identifies
+the schema. Document `modules[].version` and manifest `depends_on` refer to the
+contract, not npm package semver, and install nothing. The host installs exact
+package/core versions, commits its application lockfile, imports the module and
+calls the existing public registry/runtime APIs. Browser hosts use
+`@uwmd/core/browser`. The JSON manifest is available through each package's
+`/manifest.json` export. There is no discovery, automatic download/update, or
+remote execution service. Both current manifest contracts stay 0.1.0.
+
+**Package releases.** Exact core pins remain mandatory. Every core bump changes
+those pins and therefore requires each module's own package-version bump. Other
+module releases occur when package contents/pins change; a repin or packaging
+change alone does not change the manifest contract version. Before first
+publication, the current never-published 0.1.9 artifacts can be prepared without
+resetting their versions. Future generation preparation must update the module
+READMEs' installation examples and pending-first-publication wording to the
+selected exact versions, using publication-neutral wording in the tagged tree.
+
+**Build and verification.** Build before packing: module builds generate
+`dist/manifest.json` from the typed object. Tarballs include ESM, declarations,
+view models, exported JSON, README, package metadata and the complete root MIT
+notice. `verify-packages` checks artifacts, license equality and manifest parity;
+`verify-versions` checks the package/contract/schema/ID/ranges/tier/core columns
+in `VERSIONS.md` without a build. `release:check` covers all six supported
+packages, including exact core dependencies, public exports and OIDC metadata.
+Repository workspace-link rules remain unchanged; external consumers correctly
+resolve published npm packages rather than repository workspace links.
+
+**Registry and recovery.** Each publish step uses the tested public-registry probe.
+Only a recognized package 404 or an absent version in valid package metadata means
+`absent`; HTTP authentication/throttling/server errors, timeouts, redirects,
+malformed responses and network failures stop the job. A confirmed existing
+version is skipped without republishing or changing its dist-tags. npm publication
+is sequential, not atomic. After a partial failure, record what landed, correct
+only the documented prerequisite, and rerun the ordinary workflow. Do not move a
+tag or manually publish to bypass a failed gate.
+
+**Account prerequisite / bootstrap.** Confirm publish rights in the npm `@uwmd`
+scope and public visibility for each module. An anonymous 404 alone does not prove
+name availability or account ownership. npm requires a package to exist before
+configuring its trusted publisher. Its documented staged-publishing bootstrap can
+create a public `0.0.0-stage` placeholder while leaving the staged artifact
+unavailable until human 2FA approval. Staging requires npm >=11.15.0 and Node
+>=22.14.0, newer npm than the ordinary workflow's 11.5.1 pin. Use separate owner
+account tooling; this workflow performs no staging/bootstrap.
+
+If either name is genuinely new, the owner may stage a disposable bootstrap
+prerelease containing no module implementation, never the intended module release
+version (staged versions reserve their version). Do not approve that bootstrap
+artifact as an official module release. Confirm the placeholder permits the
+package Settings → Trusted Publisher configuration, with GitHub Actions,
+`UWMD-OSP`, `UW-Markdown`, `release.yml`, allowed action `publish`, environment
+blank. If placeholder ownership/settings do not work as documented, stop for an
+account decision; do not improvise a real-module manual publication. Provisioning
+and its placeholder/stage evidence must be recorded before authorizing the next
+tag. Account actions and 2FA are performed by the human owner.
+
+Current official references, checked for this implementation:
+[npm trusted publishers](https://docs.npmjs.com/trusted-publishers/),
+[npm trust prerequisites](https://docs.npmjs.com/cli/v11/commands/npm-trust/),
+[staged publishing](https://docs.npmjs.com/staged-publishing/), and
+[staged version reservation](https://docs.npmjs.com/cli/v11/commands/npm-stage/).
+The trusted-publisher overview now documents multiple publishers; the CLI trust
+page still contains older single-configuration language. Use the current web
+settings and confirm the account state rather than relying on the old restriction.
+
+**Independent post-publication verification.** Extend the existing
+[2.17.0 procedure](../releases/2.17.0-publication.md) to both module packages:
+registry versions, `latest`, `gitHead`, tarball hashes/integrity, npm signatures,
+DSSE/SLSA attestations, authenticated Sigstore trust, Rekor timestamps/inclusion
+proofs/checkpoints, and file-by-file comparison against the tagged build. Run an
+isolated consumer with exact registry-installed core/modules through Node,
+browser-safe exports, TypeScript declarations, JSON parity, compatibility checks
+and existing module fixtures. Retain durable evidence under `docs/releases/`.
+For a skipped unchanged artifact, verify its original publication commit and
+provenance rather than claiming it was republished by the new run. Confirm no
+Excel/report/lake or other package was unintentionally published.
+
+npm/Sigstore package provenance and `ModuleManifest.signature` are distinct trust
+layers. These manifests remain unsigned; a host requiring signed manifests may
+refuse them. Preserve the existing synchronous/async verification boundary.
 
 ## Governance & RFCs
 

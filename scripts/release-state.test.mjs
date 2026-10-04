@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkReleasedTags, checkReleaseState } from './release-state.mjs';
+import { releasePackagesForGeneration } from './release-packages.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TAGS_BEFORE = ['v2.13.0', 'v2.14.0'];
@@ -250,5 +251,63 @@ test('6. the historical v2.14.0 and v2.15.0 tags stay where they were, with thei
       tag,
     }).failures;
     assert.equal(failures.length, problems, `${tag}: ${failures.join('\n')}`);
+  }
+});
+
+
+// Hypothetical fixture versions exercise the boundary; they select no next release.
+const NEXT_PREPARED = {
+  ...PREPARED,
+  changelog: PREPARED.changelog.replaceAll('2.15.0', '2.17.1'),
+  versions: PREPARED.versions.replaceAll('2.15.0', '2.17.1').replaceAll('2.15.x', '2.17.x')
+    .replace('## Historical 1.1+', '| `@uwmd/module-hospitality` | **0.1.10** | `@uwmd/core` 2.17.1 |\n| `@uwmd/module-data-center` | **0.1.10** | `@uwmd/core` 2.17.1 |\n\n## Historical 1.1+'),
+  coreVersion: '2.17.1',
+  cliVersion: '2.17.1',
+  cliCoreDependency: '2.17.1',
+};
+
+test('publication scope expands only after the verified four-package 2.17.0 generation', () => {
+  for (const version of ['1.8.0', '2.16.0', '2.17.0', '2.17.0-rc.1']) {
+    assert.equal(releasePackagesForGeneration(version).length, 4);
+  }
+  for (const version of ['2.17.1', '2.17.1-rc.1', '2.18.0', '3.0.0']) {
+    assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), [
+      '@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch', '@uwmd/module-hospitality', '@uwmd/module-data-center',
+    ]);
+  }
+  assert.throws(() => releasePackagesForGeneration('not-a-version'), /Invalid release generation/);
+});
+
+test('future prepared/tagged generations require both official module rows and exact core pairings', () => {
+  for (const tag of [undefined, 'v2.17.1']) {
+    assert.deepEqual(checkReleaseState({ ...NEXT_PREPARED, tag }).failures, []);
+    for (const name of ['@uwmd/module-hospitality', '@uwmd/module-data-center']) {
+      const row = `| \`${name}\` | **0.1.10** | \`@uwmd/core\` 2.17.1 |`;
+      const missing = NEXT_PREPARED.versions.replace(row, '');
+      assert.match(checkReleaseState({ ...NEXT_PREPARED, versions: missing, tag }).failures.join('\n'), /no "Current matrix" row/);
+      for (const annotation of ['(candidate)', '(unpublished)', '(source only)', '(source-only)', '(published 0.1.9)']) {
+        const stale = NEXT_PREPARED.versions.replace(row, row.replace('**0.1.10**', `**0.1.10** ${annotation}`));
+        assert.match(checkReleaseState({ ...NEXT_PREPARED, versions: stale, tag }).failures.join('\n'), /is still annotated/);
+      }
+      const wrongPin = NEXT_PREPARED.versions.replace(row, row.replace('2.17.1 |', '2.17.x |'));
+      assert.match(checkReleaseState({ ...NEXT_PREPARED, versions: wrongPin, tag }).failures.join('\n'), /not exactly @uwmd\/core 2\.17\.1/);
+    }
+  }
+});
+
+test('actual 2.16.0 and 2.17.0 tag trees remain valid with their four-package source-only module scope', () => {
+  const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
+  for (const tag of ['v2.16.0', 'v2.17.0']) {
+    const show = (path) => git('show', `${tag}:${path}`);
+    const cli = JSON.parse(show('packages/uwmd-cli/package.json'));
+    const state = checkReleaseState({
+      changelog: show('CHANGELOG.md'), versions: show('VERSIONS.md'), protocolDoc: show('spec/UW_PROTOCOL_v1.md'),
+      coreVersion: JSON.parse(show('packages/uwmd-core/package.json')).version,
+      protocolVersion: show('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)[1],
+      cliVersion: cli.version, cliCoreDependency: cli.dependencies['@uwmd/core'], tag,
+    });
+    assert.deepEqual(state.failures, [], `${tag}: ${state.failures.join('\n')}`);
+    assert.match(show('VERSIONS.md'), /module-hospitality/);
+    assert.match(show('VERSIONS.md'), /source only/);
   }
 });
