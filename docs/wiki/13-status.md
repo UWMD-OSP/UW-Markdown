@@ -599,12 +599,15 @@ The guards:
   (2026-10-04), and its implementation is authorized. It defines an
   `is_calendar_date` §VIII.3 predicate, with a mandatory §X
   `requires_protocol` floor for modules that call it.
-  - **On `claude/implement-rfc-0071`:**
+  - **Source implementation (PR #250, commit `493811e`):**
     - the builtin, which reuses `parseISODate` behind a string check;
     - Protocol §VIII.3, §VIII.9 and §X text, and the manifest-schema note;
     - 48 tier-3 `date-NN` fixtures;
     - unit, module-runtime, browser-parity, Excel-refusal and exhaustive
       oracle tests.
+
+    The completed matrix is archived at
+    `specs/archive/rfc-0071-calendar-date-predicate.md`.
   - **Not released.** No version label moves, and the RFC stays `accepted`.
   - **Release preparation assigns the §X floor.** It is `>=` the first
     Protocol release that contains RFC 0071. Release preparation also moves

@@ -123,9 +123,11 @@ With it, RFC 0068's `CC-MOD-MH-05` can be written as
 
 ## Implementation notes
 
-Implemented on `claude/implement-rfc-0071` from `a1b3a74`. The notes below
-record where the implementation differs from the text above, or makes it more
-specific.
+This source implementation was made in PR #250, implementation commit
+`493811eb6d4be60a39a9d60eea9d51107012fd88`, from canonical base `a1b3a74`. Its
+completed matrix is archived at `specs/archive/rfc-0071-calendar-date-predicate.md`.
+It is not yet released. The notes below record where the implementation
+differs from the text above, or makes it more specific.
 
 1. **The builtin.** `BUILTINS.is_calendar_date` in `calc/builtins.ts` checks
    arity, then returns `typeof value === 'string' && parseISODate(value) !== null`.
