@@ -18,8 +18,8 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068 remain outside the current released
-contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
+Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unimplemented RFC 0071,
+remain outside the current released contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
@@ -595,6 +595,21 @@ The guards:
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
+- [RFC 0071](../rfcs/0071-calendar-date-predicate.md) is **accepted**
+  (2026-10-04) and not implemented. It defines an `is_calendar_date` §VIII.3
+  predicate, with a mandatory §X `requires_protocol` floor for modules that
+  call it.
+  - Implementation needs separate authorization. No spec, code, version or
+    release change has been made.
+  - RFC 0068 is to adopt the predicate in a later revision of its own.
+  - No numeric-type predicate is authorized.
+- Repair the early-year day-count drift in `calc/day-count.ts`.
+  - `actualDays()` uses `Date.UTC`, which maps years 0–99 to 1900–1999. So
+    the §VIII.9.1 `actual/365f` and `actual/360` conventions are wrong for
+    dates in `0000`–`0099`: `0000-01-01`→`0001-01-01` is 365 days, not 366.
+  - The defect predates RFC 0071, which records it as non-scope.
+  - This is an ordinary calc bug fix against the existing proleptic-Gregorian
+    contract, with early-year tests. No RFC is needed.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
