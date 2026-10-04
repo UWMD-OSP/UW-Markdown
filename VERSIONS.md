@@ -105,6 +105,32 @@ versions advance independently.
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 
+
+### Official module compatibility
+
+The owner approves hospitality and data-center together as official first-party
+public npm packages. Distribution support is in the ordinary tag workflow;
+first publication is pending the next owner-authorized generation. Neither
+module was published in 2.17.0. Their current package versions remain source-only.
+
+Package semver identifies an immutable npm artifact. Contract `version` identifies
+the manifest contract required by document `modules[].version` and module
+`depends_on`; it is not an npm version or an installation instruction.
+`manifest_version` identifies the manifest schema. These three do not move in
+lockstep. Exact core repins require new package versions, while contract versions
+stay unchanged absent an actual contract change. The ranges below are the existing
+manifest compatibility requirements, not a new loader policy.
+
+| Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_tier | Core pin |
+|---|---|---|---|---|---|---|---|---|
+| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.9** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.17.0` |
+| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.9** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.17.0` |
+
+Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
+its module ID. `verify-versions` reads typed source literals and package manifests
+to check every column without requiring a build. `verify-packages` additionally
+checks the built manifest against emitted JSON and the typed metadata.
+
 ## Historical 1.1+ interchange release plan
 
 The table below preserves the original RFC 0014 release plan and its then-current

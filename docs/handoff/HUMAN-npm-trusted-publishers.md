@@ -26,7 +26,7 @@ trusted publisher, and the only four:
 | `@uwmd/signing` | **Yes** |
 | `@uwmd/batch` | **Yes** |
 | `@uwmd/excel` | **No — nothing publishes it.** See the decision below. |
-| `@uwmd/report`, `@uwmd/module-*` | **No** — unpublished by design. |
+| `@uwmd/report`, `@uwmd/module-*` | **No for this historical handoff** — modules now have a separate approved future-publication prerequisite. |
 
 A trusted publisher authorizes one repo + workflow to publish one package.
 Setting one up for a package no workflow publishes authorizes a release that
@@ -47,10 +47,12 @@ For **each** of `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`:
      Environment, and naming one here makes the OIDC claim fail to match.
 3. Save.
 
-npm allows **one** trusted publisher per package. That single-slot limit is why
-`publish-cli-recovery.yml` exists and documents a temporary repoint in its
-header — if you ever need that recovery path, the publisher has to be pointed at
-it and then pointed back.
+**Current correction:** npm's web settings permit multiple trusted publishers
+(up to ten), so a separately authorized recovery workflow need not replace the
+ordinary `release.yml` publisher. Confirm the actual account settings before
+recovery. The four-package list above records this original historical handoff;
+future ordinary generations also support the two official modules, whose separate
+bootstrap prerequisite is documented in [wiki 11](../wiki/11-build-release-governance.md#official-first-party-module-distribution).
 
 ## What "done" looks like
 

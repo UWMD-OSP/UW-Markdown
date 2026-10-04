@@ -122,6 +122,10 @@ jobs:
         if: matrix.node == 20
         run: npm run verify-packages
 
+      - name: Verify six-package release readiness
+        if: matrix.node == 20
+        run: npm run release:check
+
 
       - name: Type-check the test suite
         # `npm test` does not type-check: vitest transforms through esbuild,

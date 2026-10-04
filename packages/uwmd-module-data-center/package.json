@@ -20,7 +20,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc && node scripts/emit-manifest.mjs",
@@ -47,5 +48,8 @@
     "colocation",
     "pue",
     "module"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

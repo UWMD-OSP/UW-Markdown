@@ -8,6 +8,19 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Tooling and official module distribution
+
+- Approve `@uwmd/module-hospitality` and `@uwmd/module-data-center` together as
+  official first-party public npm packages in future ordinary UWMD releases.
+  Neither module is published by this change; 2.17.0 keeps its four-package scope.
+- Add fail-closed public-registry version probing, six-package release readiness,
+  and generation-aware release-record checks, preserving historical validation.
+- Package the existing MIT notices, verify JSON/typed manifest parity and view-model
+  artifacts, and document external installation, exact core pins and public exports.
+- Mechanically distinguish package semver, manifest contract version/schema, module
+  IDs and compatibility fields. Manifest contracts remain 0.1.0; Format 2.0,
+  Protocol 2.21.0, runtime behavior and financial semantics are unchanged.
+
 ## [2.17.0] - 2026-10-03
 
 ### Released

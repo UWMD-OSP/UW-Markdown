@@ -381,6 +381,16 @@ RFC 0047 is released in 2.10.0:
 source shape needed for RFC 0045 authoring without classifying rows or inferring
 expense, reserve, or payment timing.
 
+Hospitality and data-center are now approved together as official first-party
+public npm packages. Ordinary release infrastructure supports six publishing
+packages for generations after 2.17.0; historical 2.17.0 publication remains four.
+Neither module is published by this tooling change. Current package versions are
+0.1.9 with exact core 2.17.0 pins, independent manifest contract 0.1.0 and schema
+`manifest_version: "1"`. First publication awaits human npm name/bootstrap and
+trusted-publisher confirmation, then the next owner-authorized ordinary release.
+See [wiki 11](11-build-release-governance.md#official-first-party-module-distribution).
+No Format/Protocol, loader, signature-policy or financial behavior changes.
+
 Data-center conformance is structurally complete as a reference module: six
 dedicated runtime scenarios, 26 module tests, 11 calculations, seven
 validations, and explicit fallback/degraded behavior. The Mesa Gateway fixture

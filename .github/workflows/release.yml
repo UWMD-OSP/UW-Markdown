@@ -2,10 +2,11 @@ name: Release
 
 # Publishes @uwmd/core (library), @uwmd/cli (CLI installer),
 # @uwmd/signing (RFC 0010 signing companion), and @uwmd/batch (collection
-# indexer + corpus fact table) to npm when a version tag (v*) is pushed.
+# indexer + corpus fact table), @uwmd/module-hospitality and
+# @uwmd/module-data-center to npm on the next ordinary v<core-version> release.
 # Core and cli share the tag — they version in lockstep because the CLI
-# re-exposes the library's CLI module. Signing and batch version
-# independently (their manifest versions, not the tag) and publish only when
+# re-exposes the library's CLI module. Signing, batch and module packages version
+# independently (package.json versions, not the tag or module contract) and publish only when
 # that version is not already on npm, so a release that didn't bump one is a
 # no-op for it.
 #
@@ -15,7 +16,7 @@ name: Release
 # write` below is load-bearing rather than decoration.
 #
 # Prerequisites (one-time, on npmjs.com — nothing to configure in this repo):
-#   For EACH of @uwmd/core, @uwmd/cli, @uwmd/signing, and @uwmd/batch:
+#   For EACH of the six packages named above:
 #   package page -> Settings -> Trusted publisher -> GitHub Actions, with
 #     Organization or user: UWMD-OSP
 #     Repository:           UW-Markdown
@@ -23,17 +24,13 @@ name: Release
 #     Allowed actions:      publish
 #     Environment:          (leave blank)
 #
-# All four are required (see docs/handoff/HUMAN-configure-batch-trusted-publisher.md
-# for the batch one). Configure only some and the run fails partway,
-# publishing an incomplete set — recoverable, because every publish step below
-# skips a version that is already live, so re-running the job after fixing the
-# publisher finishes the remainder without EPUBLISHCONFLICT on the ones that
-# landed. A missing or mismatched trusted publisher surfaces as ENEEDAUTH,
-# exactly as a missing token used to.
-#
-# npm allows ONE trusted publisher per package, which is why
-# publish-cli-recovery.yml cannot authenticate without a temporary repoint —
-# see the note in that file before reaching for it.
+# All six need confirmed package ownership/public access and a trusted publisher.
+# First-time module provisioning is a human prerequisite (wiki 11); it is not
+# performed here. npm allows multiple trusted publishers per package; recovery
+# can use a separately authorized workflow without replacing the release entry.
+# Registry probes fail closed on network/authentication/service errors. Only a
+# confirmed missing public package/version permits publication. Existing versions
+# are skipped, so a rerun can finish a partial release without republishing.
 #
 # The `uwmd` unscoped name is NOT used by this workflow; the CLI publishes as
 # @uwmd/cli. An earlier version of this note said otherwise.
@@ -52,7 +49,7 @@ on:
 
 jobs:
   publish:
-    name: Publish @uwmd/core + @uwmd/cli + @uwmd/signing + @uwmd/batch
+    name: Publish six official UWMD packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -109,6 +106,9 @@ jobs:
         run: npm run verify-packages
 
 
+      - name: Verify six-package release readiness and registry-probe tests
+        run: npm run release:check
+
       - name: Run unit tests
         run: npm test
 
@@ -145,7 +145,7 @@ jobs:
       # attached automatically under OIDC; `--provenance` stays explicit so the
       # intent survives a future edit.
       #
-      # This requires a trusted publisher configured on npmjs.com for BOTH
+      # This requires a trusted publisher configured on npmjs.com for all six
       # packages, naming org `UWMD-OSP`, repo `UW-Markdown`, workflow
       # `release.yml`. Without it the publish fails with ENEEDAUTH, the same way
       # a missing token did.
@@ -157,50 +157,90 @@ jobs:
         working-directory: packages/uwmd-core
         run: |
           VER=$(node -p "require('./package.json').version")
-          if npm view "@uwmd/core@$VER" version >/dev/null 2>&1; then
+          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/core" "$VER")
+          if [ "$STATE" = "published" ]; then
             echo "@uwmd/core@$VER is already on npm — skipping"
-          else
+          elif [ "$STATE" = "absent" ]; then
             npm publish --provenance --access public
+          else
+            echo "Unexpected registry state: $STATE" >&2
+            exit 1
           fi
 
       - name: Publish @uwmd/cli to npm with provenance
         working-directory: packages/uwmd-cli
         run: |
           VER=$(node -p "require('./package.json').version")
-          if npm view "@uwmd/cli@$VER" version >/dev/null 2>&1; then
+          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/cli" "$VER")
+          if [ "$STATE" = "published" ]; then
             echo "@uwmd/cli@$VER is already on npm — skipping"
-          else
+          elif [ "$STATE" = "absent" ]; then
             npm publish --provenance --access public
+          else
+            echo "Unexpected registry state: $STATE" >&2
+            exit 1
           fi
 
       # @uwmd/signing versions independently of the tag (owner decision
-      # 2026-09-01: publish it). First publish requires its trusted publisher
-      # to exist — docs/handoff/HUMAN-configure-signing-trusted-publisher.md.
-      # Deliberately last: if its publisher is missing, core+cli are already
-      # fully published as a matched pair before this step fails.
+      # 2026-09-01: publish it). Its trusted publisher must be confirmed first.
+      # It follows core+cli so those are a matched pair if a later step fails.
       - name: Publish @uwmd/signing to npm with provenance
         working-directory: packages/uwmd-signing
         run: |
           VER=$(node -p "require('./package.json').version")
-          if npm view "@uwmd/signing@$VER" version >/dev/null 2>&1; then
+          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/signing" "$VER")
+          if [ "$STATE" = "published" ]; then
             echo "@uwmd/signing@$VER is already on npm — skipping"
-          else
+          elif [ "$STATE" = "absent" ]; then
             npm publish --provenance --access public
+          else
+            echo "Unexpected registry state: $STATE" >&2
+            exit 1
           fi
 
       # @uwmd/batch versions independently of the tag (owner decision
       # 2026-09-03: publish it, so the underwriter.cc screener needn't clone
-      # the repo). First publish requires its trusted publisher to exist —
-      # docs/handoff/HUMAN-configure-batch-trusted-publisher.md. Deliberately
-      # last: if its publisher is missing, core+cli+signing are already fully
-      # published before this step fails, and a re-run after binding finishes
-      # batch alone (every step above skips versions already live).
+      # the repo). Its trusted publisher must be confirmed first. Reruns skip
+      # already-published versions and finish remaining packages after fixing
+      # the documented prerequisite; publication is sequential, not atomic.
       - name: Publish @uwmd/batch to npm with provenance
         working-directory: packages/uwmd-batch
         run: |
           VER=$(node -p "require('./package.json').version")
-          if npm view "@uwmd/batch@$VER" version >/dev/null 2>&1; then
+          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/batch" "$VER")
+          if [ "$STATE" = "published" ]; then
             echo "@uwmd/batch@$VER is already on npm — skipping"
-          else
+          elif [ "$STATE" = "absent" ]; then
             npm publish --provenance --access public
+          else
+            echo "Unexpected registry state: $STATE" >&2
+            exit 1
+          fi
+
+      - name: Publish @uwmd/module-hospitality to npm with provenance
+        working-directory: packages/uwmd-module-hospitality
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/module-hospitality" "$VER")
+          if [ "$STATE" = "published" ]; then
+            echo "@uwmd/module-hospitality@$VER is already on npm — skipping"
+          elif [ "$STATE" = "absent" ]; then
+            npm publish --provenance --access public
+          else
+            echo "Unexpected registry state: $STATE" >&2
+            exit 1
+          fi
+
+      - name: Publish @uwmd/module-data-center to npm with provenance
+        working-directory: packages/uwmd-module-data-center
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/module-data-center" "$VER")
+          if [ "$STATE" = "published" ]; then
+            echo "@uwmd/module-data-center@$VER is already on npm — skipping"
+          elif [ "$STATE" = "absent" ]; then
+            npm publish --provenance --access public
+          else
+            echo "Unexpected registry state: $STATE" >&2
+            exit 1
           fi

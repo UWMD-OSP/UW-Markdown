@@ -1,4 +1,9 @@
 import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { OFFICIAL_MODULE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
 
 const npmCli = process.env.npm_execpath;
 const npmCommand = npmCli ? process.execPath : (process.platform === 'win32' ? 'npm.cmd' : 'npm');
@@ -54,13 +59,20 @@ const reportFiles = packedFiles('@uwmd/report');
 requireFiles('@uwmd/report', reportFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts']);
 rejectSourceOrTests('@uwmd/report', reportFiles);
 
-const hospitalityFiles = packedFiles('@uwmd/module-hospitality');
-requireFiles('@uwmd/module-hospitality', hospitalityFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/manifest.json']);
-rejectSourceOrTests('@uwmd/module-hospitality', hospitalityFiles);
-
-const dataCenterFiles = packedFiles('@uwmd/module-data-center');
-requireFiles('@uwmd/module-data-center', dataCenterFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/manifest.json']);
-rejectSourceOrTests('@uwmd/module-data-center', dataCenterFiles);
+for (const pkg of OFFICIAL_MODULE_PACKAGES) {
+  const files = packedFiles(pkg.name);
+  requireFiles(pkg.name, files, ['package.json', 'README.md', 'LICENSE', 'dist/index.js', 'dist/index.d.ts', 'dist/view-models.js', 'dist/view-models.d.ts', 'dist/manifest.json']);
+  rejectSourceOrTests(pkg.name, files);
+  const emitted = JSON.parse(readFileSync(resolve(pkg.dir, 'dist/manifest.json'), 'utf8'));
+  const built = (await import(pathToFileURL(resolve(pkg.dir, 'dist/index.js')).href))[pkg.manifestExport];
+  assert.deepStrictEqual(emitted, JSON.parse(JSON.stringify(built)), `${pkg.name}: emitted JSON differs from typed manifest build`);
+  const sourceMetadata = moduleMetadataFromSource(readFileSync(resolve(pkg.dir, 'src/index.ts'), 'utf8'), pkg.constantPrefix);
+  for (const [field, expected] of Object.entries(sourceMetadata)) {
+    assert.strictEqual(emitted[field], expected, `${pkg.name}: emitted ${field} differs from typed source`);
+  }
+  assert.strictEqual(readFileSync(resolve(pkg.dir, 'LICENSE'), 'utf8'), readFileSync('LICENSE', 'utf8'), `${pkg.name}: packaged license differs from repository notice`);
+  console.log(`[PASS] ${pkg.name} package: ${files.size} files, license and manifest/source parity verified`);
+}
 
 const signingFiles = packedFiles('@uwmd/signing');
 requireFiles('@uwmd/signing', signingFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/keystore-file.js']);
@@ -73,5 +85,3 @@ console.log(`[PASS] @uwmd/lake package: ${lakeFiles.size} files, production arti
 console.log(`[PASS] @uwmd/excel package: ${excelFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/report package: ${reportFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/signing package: ${signingFiles.size} files, production artifacts present`);
-console.log(`[PASS] @uwmd/module-hospitality package: ${hospitalityFiles.size} files, manifest.json emitted`);
-console.log(`[PASS] @uwmd/module-data-center package: ${dataCenterFiles.size} files, manifest.json emitted`);

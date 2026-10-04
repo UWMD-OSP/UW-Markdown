@@ -76,20 +76,14 @@ jobs:
       # No NODE_AUTH_TOKEN — npm trusted publishing (OIDC), authenticated by the
       # `id-token: write` permission above.
       #
-      # READ THIS BEFORE RUNNING. npm allows exactly one trusted publisher per
-      # package, and @uwmd/cli's names `release.yml`. So this workflow cannot
-      # authenticate as configured: it will fail with ENEEDAUTH until you
-      # temporarily repoint it.
-      #
-      #   1. npmjs.com -> @uwmd/cli -> Settings -> Trusted publisher
-      #   2. Change Workflow filename to `publish-cli-recovery.yml`
-      #   3. Run this workflow
-      #   4. Change it back to `release.yml`
-      #
-      # Step 4 is not optional. Leaving it pointed here means the next tag
-      # cannot publish the CLI, which is the same outage this workflow exists to
-      # repair. The swap is deliberate friction on a path that should be rare;
-      # if it stops being rare, that is the signal to fix release.yml instead.
+      # READ THIS BEFORE RUNNING. Prefer rerunning the ordinary release after
+      # fixing its documented prerequisite. This separately authorized CLI-only
+      # recovery needs its own npm trusted publisher naming UWMD-OSP/UW-Markdown,
+      # publish-cli-recovery.yml, allowed action publish, environment blank.
+      # Current npm web settings allow multiple publishers: add the recovery
+      # authorization while preserving release.yml, rather than repointing it.
+      # Confirm actual account settings before dispatching; account changes are
+      # human actions. See wiki 11's release governance for verification.
       - name: Publish @uwmd/cli with provenance
         working-directory: packages/uwmd-cli
         run: npm publish --provenance --access public
