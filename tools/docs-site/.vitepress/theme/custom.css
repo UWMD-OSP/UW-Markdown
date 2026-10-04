@@ -70,7 +70,7 @@ body { text-rendering: optimizeLegibility; }
 }
 
 .VPNavBarTitle .title::before {
-  content: ".uw.md";
+  content: ".uwx.md";
   display: grid;
   height: 27px;
   place-items: center;
@@ -90,6 +90,16 @@ body { text-rendering: optimizeLegibility; }
 }
 
 .VPNavBarMenuLink.active { color: var(--vp-c-brand-1); }
+
+/* VitePress shows the full menu from 768px. Between there and a wide desktop,
+   tighten the items and collapse search to its icon so the bar never overflows. */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .VPNavBarMenuLink,
+  .VPNavBarMenuGroup .button { padding: 0 7px !important; }
+  .VPNavBarSearch { padding-left: 12px !important; }
+  .VPNavBarSearch .DocSearch-Button-Placeholder,
+  .VPNavBarSearch .DocSearch-Button-Keys { display: none !important; }
+}
 
 .VPButton {
   border-radius: 2px !important;

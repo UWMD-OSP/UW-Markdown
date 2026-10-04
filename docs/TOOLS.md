@@ -1,13 +1,35 @@
-# Which tool should I use?
+# Tools and packages
 
-Six tools ship with the UW Markdown reference stack. They overlap on
-purpose: the format is the contract, the tools are interchangeable.
-Pick the one that matches what you're trying to do.
+This is the integrator's reference for the UW Markdown reference stack. If you
+just want to create and validate a first record, start with the
+[quickstart](/tutorials/quickstart) instead.
+
+The tools overlap on purpose: the format is the contract, and the tools are
+interchangeable. Pick the one that matches what you're trying to do.
 
 Two file extensions appear below. `.uwx.md` is the complete structured
-record every tool works on; `.uw.md` is the UW Lite summary, which only
+record every tool works on. `.uw.md` is the UW Lite summary, which only
 the editor, the CLI, and the VS Code extension read. See
 [UW Lite and UWX](UW_LITE_AND_UWX.md).
+
+## What is published
+
+The [version matrix](../VERSIONS.md) is authoritative for versions and
+publication state. At the time of writing:
+
+| Package or tool | How to get it |
+|---|---|
+| `@uwmd/core` (library) | `npm install @uwmd/core` |
+| `@uwmd/cli` (`uwmd` command) | `npx @uwmd/cli <command>` or `npm install @uwmd/cli` |
+| `@uwmd/signing` (block and receipt signatures) | `npm install @uwmd/signing` |
+| `@uwmd/batch` (collection index and fact table) | `npx @uwmd/batch <dir> --out <dir>` |
+| `@uwmd/excel`, `@uwmd/report`, `@uwmd/lake`, official modules | Source only: build from a clone of the repository |
+| Web viewer | Hosted at [uwmd.org/viewer](/viewer/), or download the single HTML file |
+| Web editor | Hosted public preview at [uwmd.org/editor](https://www.uwmd.org/editor/) |
+| VS Code extension | Source only: package with `vsce package` |
+
+The registry also serves a stale `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
+Both are deprecated and pinned to core 1.3.0; do not install them.
 
 For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants
@@ -16,8 +38,8 @@ and exact overrides in calc, refinement and explicit Excel export.
 For the next modeling step, the [lease-up cash-flow example](LEASE_UP_CASH_FLOW_WORKFLOW.md)
 verifies an explicitly dated partial stream using existing APIs.
 
-The source checkout's **unreleased** `verify-cash-flows` command checks stated
-cash-flow metrics without a custom script; see the
+The `verify-cash-flows` command checks stated cash-flow metrics without a
+custom script; see the
 [workflow](PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
 It checks mathematical consistency, not economic completeness.
 
@@ -45,7 +67,8 @@ If you're not sure what conformance tier means, see the
 
 **[`tools/web-viewer/`](../tools/web-viewer/) — single-file HTML, drag-and-drop.**
 
-Open `index.html` in any browser. Drop a `.uwx.md` record on the page.
+Use the hosted copy at [uwmd.org/viewer](/viewer/), or open `index.html` in any
+browser. Drop a `.uwx.md` record on the page; it is read locally and never uploaded.
 See it rendered. (It does not read `.uw.md` Lite summaries — use the
 web editor for those.)
 
@@ -108,7 +131,8 @@ unfamiliar with the format.
 Skip it for: bulk authoring (the VS Code extension is faster for
 keyboard-heavy work). Server-side workflows (use the CLI).
 
-Static deploy — no backend needed.
+Static deploy, no backend needed. A public preview is hosted at
+[uwmd.org/editor](https://www.uwmd.org/editor/).
 
 ---
 
@@ -117,14 +141,19 @@ Static deploy — no backend needed.
 **[`packages/uwmd-cli`](../packages/uwmd-cli/) — programmatic entry point.**
 
 ```bash
-npx uwmd init my-deal.uwx.md          # scaffold a format-2.0 record
-npx uwmd validate my-deal.uwx.md      # check
-npx uwmd parse my-deal.uwx.md         # to JSON
-npx uwmd render my-deal.uwx.md --html # to HTML
-npx uwmd run my-deal.uwx.md L6        # invoke a Bancroft layer
-npx uwmd receipt issue my-deal.uwx.md # issue a verification receipt
-npx uwmd receipt verify my-deal.uwx.md my-deal.receipt.json
+npx @uwmd/cli init --output my-deal.uwx.md   # scaffold a format-2.0 record
+npx @uwmd/cli validate my-deal.uwx.md        # check structure, rules, stage readiness
+npx @uwmd/cli summary my-deal.uwx.md         # print quick metrics
+npx @uwmd/cli parse my-deal.uwx.md           # to JSON
+npx @uwmd/cli report my-deal.uwx.md          # lender package / credit memo HTML
+npx @uwmd/cli convert my-deal.uwx.md --to uw-json   # or uw-xml, uw-csv-bundle, lite
+npx @uwmd/cli receipt issue my-deal.uwx.md   # issue a verification receipt
+npx @uwmd/cli receipt verify my-deal.uwx.md my-deal.receipt.json
 ```
+
+Run `npx @uwmd/cli` with no arguments for the complete command list,
+including `diff`, `edit`, `calc`, `scope`, `refine`, `verify-cash-flows`,
+`package`, `portfolio`, and `run` (a Bancroft agent layer).
 
 `receipt verify` exits 0 for `verified`, 1 for `failed`, and **3 for
 `unverifiable`** — "cannot decide" is a distinct outcome, not a pass
@@ -135,9 +164,11 @@ where you need a script, not a UI.
 
 Skip it for: interactive editing.
 
-Thin wrapper over `@uwmd/core`. Published on npm as `@uwmd/cli` —
-`npx uwmd <cmd>` works with no clone; from a clone,
-`npm run cli -- <cmd>` runs it from source.
+Thin wrapper over `@uwmd/core`. Published on npm as `@uwmd/cli`, so
+`npx @uwmd/cli <cmd>` works with no clone. Once the package is installed
+locally the shorter `npx uwmd <cmd>` also works. (A bare `npx uwmd` with
+nothing installed does not, because no npm package is named `uwmd`.) From a
+clone, `npm run cli -- <cmd>` runs it from source.
 
 ---
 
@@ -145,10 +176,17 @@ Thin wrapper over `@uwmd/core`. Published on npm as `@uwmd/cli` —
 
 **[`packages/uwmd-excel`](../packages/uwmd-excel/) — `.uwx.md` → `.xlsx`.**
 
+**Source only.** Not published to npm at its current version; build it from a
+clone (`npm run build`, then `node packages/uwmd-excel/bin/uwmd-excel.mjs
+deal.uwx.md -o deal.xlsx`).
+
 Emits a live underwriting workbook. Derived metrics ship as Excel
 formulas, not pre-computed values, so the workbook stays in sync with
 the calc engine by construction. The asset class's calc pack drives
-both paths; a parity test asserts they agree to six decimals.
+both paths, and both quantize at the same declared precision. For the
+metrics the workbook covers, native recalculation tests require the
+workbook to match the engine's quantized value exactly
+([protocol §VIII.5](../spec/UW_PROTOCOL_v1.md)).
 
 Best for: handing a deal to someone who lives in Excel. Producing
 deliverables for credit committee. Bridging legacy review processes.
@@ -201,18 +239,25 @@ Bancroft is UW Markdown's optional reference suite of staged underwriting agents
 **[`packages/uwmd-core/src/agents/bancroft.ts`](../packages/uwmd-core/src/agents/bancroft.ts)
 — Tier-4 reference implementation.**
 
-`runBancroftAgent(file, layerId)` runs a single Bancroft layer
-(`L1`–`L7`) over the deal using Claude as the LLM. Edits are dispatched
-through the same `applyEdit` gate that the web editor uses, so an
-agent can never violate an edit policy.
+`runBancroftAgent(file, layerId, opts)` runs a single Bancroft layer
+(`L1`–`L7`) over the deal. Edits are dispatched through the same
+`applyEdit` gate that the web editor uses, so an agent can never violate
+an edit policy, and agents write extracted data and narrative only; they
+never supply financial math.
+
+The model is pluggable through the `provider` option. With no provider,
+the built-in Anthropic adapter loads the optional `@anthropic-ai/sdk` peer
+and needs an `ANTHROPIC_API_KEY`. `createRecordingProvider` and
+`createReplayProvider` record real exchanges once and replay them with no
+network and no key, which makes a Tier-4 run deterministic and testable.
+The protocol §IX contract is provider-neutral; any `AgentProvider`
+implementation can stand in.
 
 Best for: building a custom underwriting pipeline. Researching what
 LLM-driven underwriting looks like end-to-end.
 
-Skip it for: deterministic workflows. (The protocol §IX contract is
-provider-neutral; a deterministic backend is on the v2 roadmap.)
-
-Requires an `ANTHROPIC_API_KEY`.
+Skip it for: anything that needs no extraction or narrative. Validation,
+calculation, and receipts never involve an agent.
 
 ---
 

@@ -1,21 +1,26 @@
 # UW Markdown
 
-> Open, vendor-neutral text format for commercial real-estate underwriting documents. Files combine readable Markdown, structured JSON, deterministic calculations, validation, and provenance.
+> Open, vendor-neutral standard for commercial real-estate underwriting. A `.uwx.md` record keeps typed deal facts, underwriting assumptions, calculation inputs, narrative, and provenance in one plain-text file. AI extracts and explains; deterministic code calculates and verifies financial results.
 
 Canonical site: https://uwmd.org
 Repository: https://github.com/UWMD-OSP/UW-Markdown
 License: MIT
+Current versions: https://uwmd.org/about/versions
 
 ## Start
 
-- First file: https://uwmd.org/tutorials/your-first-uwmd-file
+- Quickstart: https://uwmd.org/tutorials/quickstart
+- First record, by hand: https://uwmd.org/tutorials/your-first-uwmd-file
+- UWX and UW Lite: https://uwmd.org/guide/lite-and-uwx
 - Downloads: https://uwmd.org/downloads/
 - AI guide: https://uwmd.org/ai/
 
 ## Contracts
 
-- UW Format 1.1: https://uwmd.org/spec/format
-- UW Protocol 1.2: https://uwmd.org/spec/protocol
+- Format specification (v1.1 base): https://uwmd.org/spec/format
+- Format 2.0 delta (current authoring version): https://uwmd.org/spec/format-v2
+- Protocol: https://uwmd.org/spec/protocol
+- UW Lite specification: https://uwmd.org/spec/lite
 - Schemas: https://uwmd.org/spec/schemas/
 - Conformance: https://uwmd.org/conformance/
 

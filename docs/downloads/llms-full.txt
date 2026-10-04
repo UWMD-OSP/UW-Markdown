@@ -1,29 +1,38 @@
 # UW Markdown — expanded AI index
 
-UW Markdown is an open `.uw.md` standard for commercial real-estate underwriting. It is a library and specification, not a hosted deal database. AI systems can work directly with the text file; HTTP and MCP profiles are optional.
+UW Markdown is an open standard for commercial real-estate underwriting. Its primary artifact is the `.uwx.md` record: Markdown narrative plus typed JSON sections for deal facts, assumptions, calculation inputs, and provenance. UW Lite (`.uw.md`) is a compact summary representation with its own specification. The project is a library and specification, not a hosted deal database. AI systems can work directly with the text file; HTTP and MCP profiles are optional.
 
 ## Canonical resources
 
 - Home: https://uwmd.org/
+- About: https://uwmd.org/about/
 - Repository: https://github.com/UWMD-OSP/UW-Markdown
 - Architecture: https://uwmd.org/about/architecture
 - Changelog: https://uwmd.org/about/changelog
-- Versions: https://uwmd.org/about/versions
+- Versions (authoritative for current format, protocol, and package versions): https://uwmd.org/about/versions
+- Roadmap: https://uwmd.org/about/roadmap
 - Governance: https://uwmd.org/about/governance
 - Contributing: https://uwmd.org/about/contributing
 
 ## Learn and download
 
-- First file: https://uwmd.org/tutorials/your-first-uwmd-file
+- Quickstart: https://uwmd.org/tutorials/quickstart
+- First record, by hand: https://uwmd.org/tutorials/your-first-uwmd-file
+- UWX and UW Lite: https://uwmd.org/guide/lite-and-uwx
 - Glossary: https://uwmd.org/guide/glossary
-- Tools: https://uwmd.org/guide/tools
+- Tools and packages: https://uwmd.org/guide/tools
+- Verification receipts: https://uwmd.org/guide/receipts
+- Data lake: https://uwmd.org/guide/data-lake
 - Downloads: https://uwmd.org/downloads/
 - AI information: https://uwmd.org/ai/
 
 ## Normative and interoperability documentation
 
-- Format 1.1: https://uwmd.org/spec/format
-- Protocol 1.2: https://uwmd.org/spec/protocol
+- Format specification (v1.1 base): https://uwmd.org/spec/format
+- Format 2.0 delta (current authoring version): https://uwmd.org/spec/format-v2
+- Protocol: https://uwmd.org/spec/protocol
+- UW Lite 1.0: https://uwmd.org/spec/lite
+- Verification receipt 1.0: https://uwmd.org/spec/receipt
 - XML mapping 1.0: https://uwmd.org/spec/xml
 - CSV bundle 1.0: https://uwmd.org/spec/csv
 - Schemas: https://uwmd.org/spec/schemas/
@@ -34,7 +43,7 @@ UW Markdown is an open `.uw.md` standard for commercial real-estate underwriting
 
 ## AI invariants
 
-AI extracts source facts, classifies information, identifies gaps, and writes narrative. AI does not calculate NOI, DSCR, LTV, debt yield, cap rate, IRR, NPV, or DCF. Those values come from deterministic calculation packs. Scoped Tier-2 edits preserve bytes outside the edited region. Provenance is append-only. Rates are fractions. Missing source values remain missing and should be recorded as gaps.
+AI extracts source facts, classifies information, identifies gaps, and writes narrative. AI does not calculate NOI, DSCR, LTV, debt yield, cap rate, IRR, NPV, or DCF. Those values come from deterministic calculation packs. Scoped Tier-2 edits preserve bytes outside the edited region. Provenance is append-only. Rates are fractions. Missing source values remain missing and should be recorded as gaps. A verification receipt shows that stated outputs follow from a record under a named pack; it does not show that the inputs are true.
 
 ## Optional MCP tool names
 

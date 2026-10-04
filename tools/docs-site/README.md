@@ -42,6 +42,8 @@ For other new pages, add a `COPIES` entry in `scripts/prebuild.mjs` and a nav or
 sidebar entry in `.vitepress/config.ts`. The home release card, protocol sidebar
 label, and generated protocol title read the package manifest and protocol
 constants through `scripts/docs-site-sources.mjs`; they do not carry version pins.
+The "on npm" package list (home release card, Downloads page) comes from the
+release workflow scope in `scripts/release-packages.mjs` the same way.
 
 ## Deploy
 
@@ -50,7 +52,7 @@ The repository-root `vercel.json` builds this package and serves
 
 ## Roadmap
 
-- Interactive playground — drop a `.uw.md`, see parse + render output.
+- Interactive playground — drop a `.uwx.md`, see parse + render output.
   Requires bundling `@uwmd/core` for the browser.
 - Versioned spec navigation — once v2 RFCs land.
 - Search backed by Algolia DocSearch (currently uses local search).

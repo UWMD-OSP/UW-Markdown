@@ -478,9 +478,19 @@ The **published, human-facing** documentation site. A prebuild step
 schemas, examples) into the site tree and rewrites links — repo root stays the
 single source of truth. All `docs/rfcs/*.md` files are discovered automatically;
 the RFC index and template retain their special URLs. Release labels read the
-core manifest and protocol constants via `scripts/docs-site-sources.mjs`.
+core manifest and protocol constants via `scripts/docs-site-sources.mjs`, and
+the "on npm" list on the home release card and Downloads page comes from
+`docsNpmPackages()`, which reads the release workflow's scope in
+`scripts/release-packages.mjs`, so a source-only package is never shown as
+published. Prebuild writes all of these to `about/versions.json`.
 Config: `.vitepress/config.ts`. Dev: `npm run dev`;
 build: `npm run build`.
+
+Public positioning (home page, `/about`, quickstart) leads with the `.uwx.md`
+record and the AI boundary; UW Lite is introduced as the compact summary
+representation. The home page and `/ai` share `theme/AiBoundary.vue`, the
+"AI extracts, code calculates" workflow diagram. Nav follows the visitor
+journey: Why UWMD → Examples → Get started → Integrate → Reference.
 
 > This wiki (`docs/wiki/`) is deliberately **not** wired into the docs-site nav —
 > it is internal dev/agent documentation, not part of the published standard.

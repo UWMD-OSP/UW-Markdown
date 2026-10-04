@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { rfcCopies, docsVersions } from './docs-site-sources.mjs';
+import { rfcCopies, docsVersions, docsNpmPackages } from './docs-site-sources.mjs';
 
 test('new RFCs are discovered without script edits; special routes survive', () => {
   const root = mkdtempSync(join(tmpdir(), 'uwmd-docs-'));
@@ -47,4 +47,10 @@ test('site versions track independent package and standard versions', () => {
     // root is the exact directory returned by mkdtempSync, under the OS temp directory.
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test('the npm package list follows the release scope of the core generation', () => {
+  assert.deepEqual(docsNpmPackages('2.17.0'), ['@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch']);
+  assert.ok(docsNpmPackages('2.18.0').includes('@uwmd/module-hospitality'));
+  assert.ok(!docsNpmPackages('2.17.0').includes('@uwmd/excel'));
 });

@@ -44,8 +44,9 @@ the questions that actually require judgment.
 
 UW Markdown has a rule that AI never does financial math. Extraction and
 narrative are model work; every NOI, DSCR, LTV, and IRR is computed
-deterministically by a calculation pack, with parity to six decimals against the
-Excel export.
+deterministically by a calculation pack. The protocol fixes the rounding rule
+and precision, and the Excel export's formulas match the pack's quantized values
+exactly for the metrics the workbook covers.
 
 That determinism is what makes a receipt meaningful. The same pack over the same
 canonical inputs produces the same outputs on any conforming implementation — so

@@ -25,8 +25,9 @@ underwrite. To see a full deal, look at
 [`examples/Parkview-Apts-Glendale-AZ.uwx.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/main/examples/Parkview-Apts-Glendale-AZ.uwx.md)
 once you're done here.
 
-> **The zero-effort path:** `npx @uwmd/cli init` scaffolds a complete
-> format-2.0 file with every standard section stubbed out. This tutorial
+> **The fast path:** the [quickstart](/tutorials/quickstart) runs
+> `npx @uwmd/cli init --output deal.uwx.md`, which scaffolds a complete
+> format-2.0 record with every standard section stubbed out. This tutorial
 > builds a file by hand instead, so you understand what each piece is.
 
 ## Step 1 — Create the file
@@ -182,10 +183,9 @@ If it complains instead:
 
 ## Step 5 — Open it in a viewer
 
-Drag `hello-deal.uwx.md` into the
-[reference web viewer](https://github.com/UWMD-OSP/UW-Markdown/tree/main/tools/web-viewer)
-(`tools/web-viewer/index.html`). You'll see the deal rendered with
-the property section as a card.
+Drag `hello-deal.uwx.md` into the [reference viewer](/viewer/). The file
+is read in your browser and never uploaded. You'll see the deal rendered
+with the property section as a card.
 
 ## Where to go next
 

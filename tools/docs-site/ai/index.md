@@ -1,31 +1,48 @@
 ---
-title: UW Markdown for AI and code
-description: The interoperability contract for AI agents, deterministic services, and underwriting software.
+title: Building with AI
+description: How AI agents work with UW Markdown records — they extract and explain, while deterministic code calculates and verifies.
 ---
 
-# UW Markdown for AI and code
+# Building with AI
 
-UW Markdown is an open interoperability standard, not a hosted AI service or a
-single application. AI agents, deterministic calculation services, internal
-underwriting systems, and compatible editors or viewers can load the same deal
-record directly. No custom connector or MCP server is required.
+UW Markdown is an open standard, not a hosted AI service or a single application.
+An AI agent works with the same `.uwx.md` record that calculation engines,
+underwriting systems, and editors use, and loads it directly. No custom
+connector or MCP server is required.
 
-## Core rules
+The standard draws one firm line. **AI can extract, classify, and explain.
+Deterministic code calculates and verifies the financial results.** An agent
+reads the rent roll and T-12, writes facts and narrative into the record, and
+leaves every NOI, DSCR, and IRR to the calculation engine.
+
+<AiBoundary />
+
+## Rules for agents
 
 1. Preserve the Markdown narrative and labeled JSON blocks.
-2. AI may extract source facts, classify information, identify gaps, and draft narrative.
-3. AI must not calculate financial results. Use deterministic code or formulas
-   for NOI, DSCR, LTV, debt yield, cap rate, IRR, NPV, and DCF.
-4. Preserve bytes outside the requested edit region for Tier-2 edits.
-5. Preserve provenance. Append or supersede; do not silently destroy history.
+2. Extract source facts, classify information, identify gaps, and draft narrative.
+3. Never calculate financial results. NOI, DSCR, LTV, debt yield, cap rate, IRR,
+   NPV, and DCF come from deterministic code or formulas.
+4. For Tier-2 edits, preserve bytes outside the requested edit region.
+5. Preserve provenance. Append or supersede; never silently destroy history.
+   The host, not the agent, writes each block's `_meta`.
 6. Rates are fractions (`0.055` means `5.5%`).
-7. Treat the format spec, protocol, schemas, and conformance fixtures as the contract.
+7. Treat the format specification, protocol, schemas, and conformance fixtures
+   as the contract.
+
+The [protocol's agent-host section](/spec/protocol) makes these rules normative,
+and the [Tier 4 conformance fixtures](/conformance/tier-4) test them. The
+reference agent host in `@uwmd/core` takes any model provider, including a
+recorded-replay provider that makes agent runs deterministic for testing. See
+[tools and packages](/guide/tools#programmatic-agent-host).
 
 ## Best context order
 
 1. [`llms.txt`](/llms.txt) for discovery.
-2. [First-file tutorial](/tutorials/your-first-uwmd-file) for orientation.
-3. [Format specification](/spec/format) for document syntax and semantics.
+2. [Quickstart](/tutorials/quickstart) and the
+   [first-record tutorial](/tutorials/your-first-uwmd-file) for orientation.
+3. [Format specification](/spec/format) (the v1.1 base) and the
+   [2.0 delta](/spec/format-v2) for document syntax and semantics.
 4. [Protocol specification](/spec/protocol) for reader, editor, calc-host, and agent-host behavior.
 5. [Schemas](/spec/schemas/) and [conformance fixtures](/conformance/) for implementation testing.
 6. [`llms-full.txt`](/llms-full.txt) for the expanded link map.
@@ -46,6 +63,8 @@ The MCP profile defines `uwmd.get_document`, `uwmd.validate`, `uwmd.convert`,
 - <a href="/downloads/ai/chatgpt-project-instructions.txt" download="chatgpt-project-instructions.txt">ChatGPT project instructions</a>
 - <a href="/downloads/ai/GEMINI.md" download="GEMINI.md">Gemini instructions</a>
 - <a href="/downloads/ai/UWMD-AI-GUIDE.md" download="UWMD-AI-GUIDE.md">Platform-neutral guide</a>
+
+[Bounded agent skills](/ai/skills) describes narrower, task-specific skills.
 
 ## Canonical project
 
