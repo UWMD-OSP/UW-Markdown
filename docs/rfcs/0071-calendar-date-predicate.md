@@ -42,8 +42,12 @@ returns `null`, and no argument value makes it raise an error.
   module evaluation path that the calc engine lacks.
 - **One calendar.** It uses the calendar that §VIII.2a period selectors and
   §VIII.9 dated series already use.
-- **Additive.** It is one new function. The grammar, value types, schemas,
-  error codes and Format are unchanged.
+- **Additive.** It is one new function. The grammar, value types, error codes
+  and Format are unchanged. The only schema edit is description text.
+- **Mandatory protocol floor.** A module that calls the predicate MUST
+  require a Protocol version that has it. An older host then refuses the
+  manifest at load under the existing §VII.2 step 3, instead of loading it and
+  failing its rules.
 
 With it, RFC 0068's `CC-MOD-MH-05` can be written as
 `mhc_sites == null || is_calendar_date(mhc_sites.as_of_date)`. A malformed
@@ -209,12 +213,57 @@ Nor is `MOD-RULE-ERROR` the intended signal for bad document data:
 > real day. A converter refuses a formula that calls `is_calendar_date`, as the
 > reference emitter already refuses `avg` and `coalesce` (`EXCEL-EMIT-FN`).
 >
-> A module manifest whose calculation or rule calls `is_calendar_date`
-> **SHOULD** declare a `requires_protocol` range that excludes protocol
-> versions without it. An older host then refuses the manifest at load,
-> instead of reporting a rule failure on every document.
+> A module that calls `is_calendar_date` is subject to the protocol floor in
+> §X.
 
-### 3. Protocol §VIII.9: one sentence amended
+### 3. Protocol §X: a mandatory protocol floor
+
+This text is added to §X, after the "A registered module must actually run"
+list:
+
+> **Protocol floor for `is_calendar_date` (RFC 0071).** A module manifest
+> whose `calculations[].formula` or `validations[].rule` calls
+> `is_calendar_date` anywhere in its expression **MUST** declare a
+> `requires_protocol` range that excludes every Protocol version in which
+> `is_calendar_date` is unavailable. No version earlier than the one that
+> introduced it may satisfy the range.
+>
+> The range is what lets an older host decline the module. Under §VII.2
+> step 3, a host refuses a manifest whose `requires_protocol` its own
+> versions do not satisfy, with a `ProtocolError` of category `module`. It
+> therefore never registers a rule it cannot evaluate. Without the floor,
+> that host would load the module and report each such rule as a failure to
+> evaluate (`CALC-RESOLVE-001`) on every document.
+>
+> This requirement adds no loader check and no error code. §VII.2 step 3 is
+> the enforcement, and the reference library already reports it as
+> `PROTO-MOD-030`. A manifest that violates the requirement is
+> non-conforming. A host is not required to detect the violation.
+
+This follows the existing semantics of `requires_protocol`:
+
+- §VII.2 step 3 refuses on a version mismatch.
+- §XII.4 refuses a module that requires a later major.
+- The manifest schema's description of `requires_protocol` already tells
+  authors which floor a feature needs: `>=1.3.0` for honoured `round_to`, and
+  `>=1.4.0` for the normative `irr`.
+
+RFC 0071 turns that advice into a MUST for the one builtin it adds. The
+reason is that an unknown function is not an engine-specific difference in
+a result; the rule cannot run at all. The requirement is not generalized to
+other builtins here.
+
+### 4. `module-manifest.schema.json`: description text only
+
+The `requires_protocol` description gains a sentence beside its 1.3.0 and
+1.4.0 notes:
+
+> Protocol `<RFC 0071 release>` adds `is_calendar_date` in section VIII.3;
+> a module calling it must require that version or later (section X).
+
+The schema's validation behaviour does not change.
+
+### 5. Protocol §VIII.9: one sentence amended
 
 The §VIII.9 introduction says the §VIII.1 grammar and the §VIII.3 table are
 unchanged by RFC 0034. That sentence gains:
@@ -223,7 +272,7 @@ unchanged by RFC 0034. That sentence gains:
 > calendar. No day count, `yearfrac`, date arithmetic or date value type is
 > reachable from an expression.
 
-### 4. Header and labels
+### 6. Header and labels
 
 At release, the Protocol status line, `PROTOCOL_VERSION`, and the RFC 0061
 synchronized labels move to the selected minor version (see
@@ -274,7 +323,8 @@ variants, because the bare string is listed as valid.
 | Argument is anything else, including `null` and absent | `false` | **the rule's own code** (if nothing else in the rule makes it `true`) |
 | Wrong number of arguments | raises `CALC-TYPE-001` | `MOD-RULE-ERROR`: an authoring defect |
 | The argument expression itself fails (`CALC-RESOLVE-002`, `CALC-FORBIDDEN-PROP`, a type error inside it) | that error propagates | `MOD-RULE-ERROR`: an authoring or document-shape defect the predicate does not hide |
-| Host predates this RFC | `CALC-RESOLVE-001` | `MOD-RULE-ERROR`, unless `requires_protocol` made the host refuse the manifest at load (`PROTO-MOD-030`) |
+| Host predates this RFC, conforming manifest | — | The rule never runs. The host refuses the manifest at load (§VII.2 step 3; `PROTO-MOD-030` in the reference library), because the §X floor excludes its version |
+| Host predates this RFC, non-conforming manifest that omits the floor | `CALC-RESOLVE-001` | `MOD-RULE-ERROR` on every document: the failure the §X MUST exists to prevent |
 
 These follow the existing convention unchanged. A rule fires on `false` and is
 silent on `null`, and the predicate itself never produces `null`. The patterns
@@ -326,8 +376,9 @@ pack is changed to use it.
   - The shipped hospitality and data-centre modules do not call the
     predicate, so their behaviour and `requires_protocol` floors are
     unchanged.
-  - A module that adopts the predicate raises its floor (see
-    [Relationship to RFC 0068](#relationship-to-rfc-0068)).
+  - A module that adopts the predicate MUST raise its `requires_protocol`
+    floor (§X, item 3 above). See
+    [Relationship to RFC 0068](#relationship-to-rfc-0068).
 - **Excel.** `FUNCTION_MAP` gains no entry, so emission refuses with
   `EXCEL-EMIT-FN`. Invariant 4 is untouched: no pack formula uses the
   predicate, and refusing a formula is how parity is already kept for `avg`
@@ -339,16 +390,18 @@ pack is changed to use it.
 
 | Surface | Change | Recommended |
 |---|---|---|
-| Protocol | Additive §VIII.3 builtin and a new Tier-3 obligation | **Minor.** Likely 2.22.0, if no other RFC takes that minor first |
+| Protocol | Additive §VIII.3 builtin, a new Tier-3 obligation, and a §X manifest requirement that applies only to manifests calling the new builtin | **Minor.** Provisionally 2.22.0, if no intervening release claims it |
 | Format | none | stays 2.0 |
-| `spec/schemas/*` | none (`calc-result` already admits `boolean`) | unchanged |
+| `spec/schemas/*` | Description text of `module-manifest` `requires_protocol` only. `calc-result` already admits `boolean` | no validation change |
 | Error codes | none (reuses `CALC-TYPE-001`; `EXCEL-EMIT-FN` already exists) | `verify-codes` unaffected |
-| `@uwmd/core` | `BUILTINS` gains a key; new evaluation behaviour | **Minor.** Likely 2.18.0, paired with the CLI |
+| `@uwmd/core` | `BUILTINS` gains a key; new evaluation behaviour | **Minor.** Provisionally 2.18.0, paired with the CLI, if no intervening release claims it |
 | Excel, report, batch, signing, lake, both modules | no source change | exact-pin repins only, per release practice |
 | Module manifest contracts | none | unchanged (0.1.0) |
 
-The owner selects the exact numbers at release, as RFC 0070's were. Draft RFCs
-0064, 0065 and 0067 may claim a minor first.
+The exact Protocol and core numbers are a release-preparation decision, as
+RFC 0070's were. Draft RFCs 0064, 0065 and 0067 may claim a minor first. The
+§X floor and the schema description name the release that actually ships
+RFC 0071, whatever its number.
 
 ## Conformance impact
 
@@ -417,8 +470,9 @@ Not authorized by this draft. If accepted:
   identically.
 - **Exports.** No new public symbol. `BUILTINS` gains a key, and
   `parseISODate` is already public.
-- **Spec.** §VIII.3 row and paragraph, the §VIII.9 sentence, and the version
-  labels, under RFC 0061's synchronization guard.
+- **Spec.** The §VIII.3 row and paragraph, the §X protocol floor, the
+  §VIII.9 sentence, the `module-manifest.schema.json` description sentence,
+  and the version labels, under RFC 0061's synchronization guard.
 - **Docs.**
   - `docs/wiki/04-calc-engine.md` and `tools/docs-site/guide/calc-conventions.md`
     list the builtin and the emitter refusal;
@@ -470,16 +524,57 @@ That one rule reports `CC-MOD-MH-05` for a date that is:
 Its message would read "`as_of_date` is missing or not a valid `YYYY-MM-DD`
 date". The other consequences for RFC 0068:
 
-- **Manifest floor.** `requires_protocol` must rise from `>=2.5.0` to the
-  RFC 0071 minor. RFC 0068's "uses no later feature" would no longer hold.
+- **Manifest floor.** If RFC 0068 adopts the predicate, its current
+  `requires_protocol: '>=2.5.0'` **must** rise to the release containing RFC
+  0071, as §X (item 3 above) requires. RFC 0068's statement that the module
+  "uses no later feature" would no longer hold.
 - **Calculations.** None reads the date, so none changes.
 - **Fixtures.** RFC 0068 gains malformed, impossible, date-time and numeric
   date fixtures, each reporting `CC-MOD-MH-05` alone.
 
 **Sequence.** This RFC must be accepted, implemented and released before RFC
 0068 can rely on it. This PR does not edit RFC 0068, change its rules, or
-change manufactured-housing semantics. RFC 0068 adopts the predicate, if the
-owner wants it, in RFC 0068's own revision.
+change manufactured-housing semantics. The owner directed on 2026-10-03 that
+RFC 0068 adopt `is_calendar_date` in its own revision.
+
+## Existing implementation drift (non-scope)
+
+Checking the year range exposed a separate defect. It predates this RFC, and
+this RFC does not change it.
+
+- **RFC 0071's domain is unchanged.** Years run from `0000` to `9999`, and
+  `0000` is a leap year. That matches `parseISODate` and `parsePeriodSelector`
+  today: §VIII.2a selectors and §VIII.9 dates already admit years
+  `0000`–`0099`.
+- **The predicate reads validity only.** It calls `parseISODate` and nothing
+  else in `day-count.ts`. It does no day counting or other date arithmetic.
+- **The defect.** `actualDays()` in `packages/uwmd-core/src/calc/day-count.ts`
+  counts days with `Date.UTC(year, month - 1, day)`. ECMAScript maps a numeric
+  year from 0 to 99 to 1900–1999. So for dates in years `0000`–`0099`, the
+  `actual/365f` and `actual/360` conventions of §VIII.9.1 do not literally
+  follow the proleptic-Gregorian contract. That error carries through
+  `yearfrac` into `xnpv`, `xirr`, and their verifiers in
+  `cash-flow-series.ts` and `waterfall.ts`. `30/360us` uses date parts
+  directly and is unaffected. Observed on `2df048c`:
+
+  | From | To | `actualDays` today | Proleptic Gregorian |
+  |---|---|---|---|
+  | `0000-01-01` | `0001-01-01` | 365 | 366 |
+  | `0000-02-28` | `0000-03-01` | 1 | 2 |
+  | `0099-12-31` | `0100-01-01` | −693,959 | 1 |
+
+- **Origin.** The defect arrived with the RFC 0034 day-count implementation.
+  No conformance fixture uses a year below `0100`, which is why it has not
+  been caught.
+- **RFC 0071 neither changes nor legitimizes it.** The predicate's validity
+  domain is not narrowed to avoid it, and the `0000` case stays in the case
+  matrix. The §VIII.9.1 contract already says "proleptic Gregorian", so no
+  normative decision is needed.
+- **Repair.** Fix it separately, as an ordinary calc bug (wiki/11: "Fix a
+  parser/validator/calc bug — No RFC"), against the existing §VIII.9.1 text.
+  Add early-year unit and conformance cases at the same time. The fix is
+  recorded in `docs/wiki/13-status.md` under Remaining work, and is not made
+  in this PR.
 
 ## Alternatives considered
 
@@ -544,21 +639,31 @@ owner can overturn any of them in review.
 | Shared grammar or rules only | Shared §VIII.3 table | Protocol §X MUST NOT; RFC 0006 |
 | `null` and absent | `false`, never `null` | A type question, as with `==` and `!=` |
 | Non-string | `false`, no coercion, no error | The RFC's purpose; the array-coercion hazard |
-| Year range | `0000`–`9999`, with `0000` a leap year | Same as `parseISODate`, §VIII.2a and §VIII.9.1 |
+| Year range | `0000`–`9999`, with `0000` a leap year | Same as `parseISODate`, §VIII.2a and §VIII.9.1. See [the drift note](#existing-implementation-drift-non-scope) for `actualDays` |
+| Module compatibility | **MUST** set a `requires_protocol` floor | Owner revision, 2026-10-03; §VII.2 step 3 |
 | Whitespace and date-times | Rejected, no trimming | One strict form protocol-wide |
 | Wrong arity | `CALC-TYPE-001` | Existing builtin arity errors |
 | Excel | Refuse emission (`EXCEL-EMIT-FN`) | Same as `avg` and `coalesce`; Excel's 1900 leap bug |
 | Version | Protocol minor, core minor | Additive builtin; RFC 0070 precedent |
 
-Only the owner can decide:
+### Owner direction (2026-10-03)
 
-1. **Acceptance** of this RFC, and separately, authorization to implement it.
-2. **The exact Protocol and core version numbers** at release, relative to
-   draft RFCs 0064, 0065 and 0067.
-3. **Whether RFC 0068 adopts the predicate.** That decision is made in RFC
-   0068's own revision, after this RFC ships.
-4. **A total numeric predicate** for RFC 0068's Unresolved question 2. It is
-   not proposed here, and would be its own RFC.
+The owner approved the draft's direction, subject to two revisions. Both are
+now incorporated:
+
+- the §X protocol floor is a MUST;
+- the early-year `actualDays` drift is recorded as non-scope.
+
+The owner also directed:
+
+| Item | Direction | State |
+|---|---|---|
+| Acceptance | Accept once these corrections are in and CI is green | **Pending.** Status stays `draft` until the owner records acceptance |
+| Implementation | Authorize separately, after acceptance | Not authorized |
+| RFC 0068 | Adopt `is_calendar_date` in RFC 0068's own revision | Directed. RFC 0068 is not edited here |
+| Numeric type predicate | No RFC at this time | Decided: none |
+| Protocol and core numbers | A release-preparation decision; 2.22.0 and 2.18.0 are provisional only | Deferred to release |
+| `actualDays` early-year drift | Repair separately against §VIII.9.1, with no RFC | Recorded in `13-status.md` |
 
 ## Draft verification record
 
@@ -578,6 +683,8 @@ not committed. No repository code was changed.
 - **Array coercion.** Without the `typeof` check, `parseISODate(['2026-10-03'])`
   returns a date, because the regex coerces its argument through `String()`.
   The type condition is therefore load-bearing, not defensive.
+- **Early-year day counts.** The three `actualDays` results in the drift
+  table were observed through the built `@uwmd/core` exports.
 
 ## Prior art
 

@@ -595,10 +595,21 @@ The guards:
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
-- Review draft [RFC 0071](../rfcs/0071-calendar-date-predicate.md), a
-  `is_calendar_date` §VIII.3 predicate. It would let RFC 0068's `as_of_date`
-  rule detect a malformed or impossible date. RFC 0071 is not accepted and has
-  no implementation, and RFC 0068 does not yet depend on it.
+- Draft [RFC 0071](../rfcs/0071-calendar-date-predicate.md) proposes an
+  `is_calendar_date` §VIII.3 predicate, with a mandatory §X
+  `requires_protocol` floor for modules that call it.
+  - The owner approved the direction on 2026-10-03, subject to revisions that
+    are now incorporated.
+  - Acceptance and implementation authorization are still pending, and
+    nothing is implemented.
+  - RFC 0068 is to adopt the predicate in its own revision.
+- Repair the early-year day-count drift in `calc/day-count.ts`.
+  - `actualDays()` uses `Date.UTC`, which maps years 0–99 to 1900–1999. So
+    the §VIII.9.1 `actual/365f` and `actual/360` conventions are wrong for
+    dates in `0000`–`0099`: `0000-01-01`→`0001-01-01` is 365 days, not 366.
+  - The defect predates RFC 0071, which records it as non-scope.
+  - This is an ordinary calc bug fix against the existing proleptic-Gregorian
+    contract, with early-year tests. No RFC is needed.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
