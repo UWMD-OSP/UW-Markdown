@@ -21,8 +21,10 @@ drafting narrative. They are not a dependable source of financial arithmetic,
 and a figure a model "calculated" cannot be audited.
 
 UW Markdown makes the record itself the interface. Facts, reasoning, and
-history travel together in one file. Every financial result is something any
-conforming tool can recompute, rather than something you have to trust.
+history travel together in one file. Financial outputs covered by a registered
+calculation pack or verifier can be recomputed by any conforming tool instead of
+taken on trust. Everything else the record states remains a represented fact or
+claim, attributed through its provenance.
 
 ## What a UWX record contains
 
@@ -63,10 +65,12 @@ computing from it.
 ## How deterministic calculation works
 
 **AI never does the financial math.** Agents and parsers may extract facts,
-classify them, flag gaps, and draft narrative. NOI, DSCR, LTV, debt yield, cap
-rate, IRR, and waterfall splits are computed by deterministic code: a sandboxed
-expression engine evaluating versioned **calculation packs**, one per asset
-class.
+classify them, flag gaps, and draft narrative. They never calculate NOI, DSCR,
+LTV, debt yield, cap rate, IRR, or waterfall splits. Where the standard defines a
+calculation, deterministic code performs it: a sandboxed expression engine
+evaluating versioned **calculation packs**, one per asset class. The
+multifamily pack, for example, derives cap rate, LTV, DSCR, debt yield,
+per-unit figures, and cash-on-cash from inputs stated in the record.
 
 The protocol pins the numeric model, including the rounding rule and the
 precision each kind of figure is quantized to (Protocol §VIII.5). Any conforming
@@ -75,10 +79,13 @@ the same quantized values. The [conformance corpus](/conformance/) states those
 expectations as fixture and expected-output pairs, and its language-agnostic
 runner can test an implementation written in any language.
 
-Complex structures such as capital stacks, lease-up schedules, dated cash-flow
-series, and distribution waterfalls are *stated* in the record and *recomputed
-in full* by verifiers that never trust the stated totals. The verdict is
-`verified`, `failed`, or `unverifiable`.
+Where the protocol defines a verifier, for example for typed capital stacks,
+lease-up schedules, dated cash-flow series, and distribution waterfalls, the
+stated figures are recomputed from their stated inputs rather than trusted, and
+the verdict is `verified`, `failed`, or `unverifiable`. A record may also state
+values that no registered pack or verifier covers. Those remain represented
+facts and claims, not verified calculations, and validator cross-checks can
+only test them for consistency.
 
 The Excel exporter writes derived metrics as live workbook formulas driven by
 the same pack. Where the export covers a metric, the recalculated workbook
@@ -119,7 +126,8 @@ detail it leaves out.
   hosts, [JSON Schemas](/spec/schemas/) for every cross-boundary type, and the
   [conformance corpus](/conformance/).
 - **The reference library and CLI.** `@uwmd/core` parses, validates, renders,
-  edits byte-for-byte, calculates, converts, and verifies. `@uwmd/cli` wraps it
+  edits with byte preservation (a Tier-2 edit leaves every byte outside the
+  edited region unchanged), calculates, converts, and verifies. `@uwmd/cli` wraps it
   as the `uwmd` command. Both are on npm.
 - **Companion packages on npm.** `@uwmd/signing` for block and receipt
   signatures, and `@uwmd/batch`, which indexes a folder of deals into a corpus

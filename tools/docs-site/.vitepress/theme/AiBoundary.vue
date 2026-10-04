@@ -19,12 +19,12 @@
       <li class="uw-flow-step uw-flow-engine">
         <span class="uw-flow-label">04 · Engine</span>
         <strong>Validate and calculate</strong>
-        <p>Check structure and rules, then compute every metric from a named calculation pack</p>
+        <p>Check structure and rules, then compute the metrics a registered calculation pack or verifier defines</p>
       </li>
       <li class="uw-flow-step uw-flow-results">
         <span class="uw-flow-label">05 · Results</span>
         <strong>Recomputed figures</strong>
-        <p>NOI · DSCR · debt yield · LTV · returns, with an optional verification receipt</p>
+        <p>DSCR · debt yield · LTV · cap rate · verified cash-flow returns, with an optional verification receipt</p>
       </li>
       <li class="uw-flow-step uw-flow-consumers">
         <span class="uw-flow-label">06 · Consumers</span>

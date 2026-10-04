@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { rfcCopies, docsVersions, docsNpmPackages, docsPublishedGeneration } from './docs-site-sources.mjs';
+import { rfcCopies, docsVersions, docsNpmPackages, docsPublishedGeneration, docsSiteVersions } from './docs-site-sources.mjs';
 
 test('new RFCs are discovered without script edits; special routes survive', () => {
   const root = mkdtempSync(join(tmpdir(), 'uwmd-docs-'));
@@ -74,6 +74,38 @@ test('the npm list names the published generation, never a prepared one', () => 
     // A heading that merely starts with "Released" is not the publication marker.
     write(['## [2.17.0] - 2026-10-03', '', '### Released contract — Protocol 2.21.0', ''].join('\n'));
     assert.throws(() => docsPublishedGeneration(root), /Cannot find a released generation/);
+  } finally {
+    // root is the exact directory returned by mkdtempSync, under the OS temp directory.
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('a prepared-but-unpublished core version is kept apart from publication state', () => {
+  const root = mkdtempSync(join(tmpdir(), 'uwmd-site-versions-'));
+  const ORIGINAL = ['@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch'];
+  const manifest = (version) =>
+    writeFileSync(join(root, 'packages/uwmd-core/package.json'), JSON.stringify({ version }));
+  try {
+    mkdirSync(join(root, 'packages/uwmd-core/src'), { recursive: true });
+    writeFileSync(join(root, 'packages/uwmd-core/src/protocol.ts'),
+      "export const FORMAT_VERSION = '2.0' as const;\nexport const PROTOCOL_VERSION = '2.22.0' as const;");
+    writeFileSync(join(root, 'CHANGELOG.md'), [
+      '## [2.18.0] - 2026-11-01', '', '### Added', '',
+      '## [2.17.0] - 2026-10-03', '', '### Released', '',
+    ].join('\n'));
+
+    // Release-prepared tree: the source carries 2.18.0, npm still serves 2.17.0's scope.
+    manifest('2.18.0');
+    assert.deepEqual(docsSiteVersions(root), {
+      format: '2.0', protocol: '2.22.0', core: '2.18.0',
+      published: '2.17.0', npm: ORIGINAL, unpublishedSource: true,
+    });
+
+    // Published tree: source and publication agree.
+    manifest('2.17.0');
+    const published = docsSiteVersions(root);
+    assert.equal(published.published, '2.17.0');
+    assert.equal(published.unpublishedSource, false);
   } finally {
     // root is the exact directory returned by mkdtempSync, under the OS temp directory.
     rmSync(root, { recursive: true, force: true });

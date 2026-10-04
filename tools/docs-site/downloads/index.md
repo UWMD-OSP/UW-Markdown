@@ -42,7 +42,7 @@ change `asset_class` when appropriate.
 
 ## Programs
 
-- **npm packages.** Published: <span v-for="(name, i) in versions.npm" :key="name"><code>{{ name }}</code><template v-if="i < versions.npm.length - 1">, </template></span>. See [tools and packages](/guide/tools) for what
+- **npm packages.** Published in release {{ versions.published }}: <span v-for="(name, i) in versions.npm" :key="name"><code>{{ name }}</code><template v-if="i < versions.npm.length - 1">, </template></span>. See [tools and packages](/guide/tools) for what
   each one does and which packages are source-only.
 - <a href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download the browser viewer (<code>.html</code>)</a>
   — save it, open it in a browser, and drop a `.uwx.md` record onto the page.

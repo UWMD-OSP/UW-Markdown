@@ -10,7 +10,7 @@ import { mkdir, copyFile, readFile, writeFile, rm, readdir, stat } from 'node:fs
 import { existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { rfcCopies, docsVersions, docsNpmPackages } from '../../../scripts/docs-site-sources.mjs';
+import { rfcCopies, docsVersions, docsSiteVersions } from '../../../scripts/docs-site-sources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
@@ -328,10 +328,7 @@ for (const c of COPIES) {
 
 console.log(`\nCopied ${count} files.`);
 
-// The release card uses the same source constants as the generated spec title.
+// The version card uses the same source constants as the generated spec title,
+// plus the published generation and its npm scope, kept as separate fields.
 await mkdir(join(SITE_ROOT, 'about'), { recursive: true });
-await writeFile(
-  join(SITE_ROOT, 'about/versions.json'),
-  JSON.stringify({ ...versions, npm: docsNpmPackages(REPO_ROOT) }),
-  'utf8',
-);
+await writeFile(join(SITE_ROOT, 'about/versions.json'), JSON.stringify(docsSiteVersions(REPO_ROOT)), 'utf8');

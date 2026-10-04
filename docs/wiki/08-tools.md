@@ -484,7 +484,9 @@ the "on npm" list on the home release card and Downloads page comes from
 only by post-publication reconciliation) names the published generation, and
 `releasePackagesForGeneration()` gives its scope. A release-prepared tree, whose
 manifest already carries the next version and possibly a wider scope, therefore
-never shows unpublished packages as on npm. Prebuild writes all of these to `about/versions.json`.
+never shows unpublished packages as on npm. `docsSiteVersions()` writes the
+source-tree versions and this publication state as separate fields, and the
+home card shows them under separate headings. Prebuild writes all of these to `about/versions.json`.
 Config: `.vitepress/config.ts`. Dev: `npm run dev`;
 build: `npm run build`.
 

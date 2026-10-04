@@ -50,3 +50,19 @@ export function docsPublishedGeneration(repoRoot) {
 export function docsNpmPackages(repoRoot) {
   return releasePackagesForGeneration(docsPublishedGeneration(repoRoot)).map((pkg) => pkg.name);
 }
+
+// Everything the home version card and Downloads page show, written by prebuild
+// to about/versions.json. `format`, `protocol` and `core` are source-tree values;
+// `published` and `npm` are publication state. `unpublishedSource` is true while
+// a release-prepared core version has not been published, so the UI can say so
+// instead of placing that version beside the npm list.
+export function docsSiteVersions(repoRoot) {
+  const source = docsVersions(repoRoot);
+  const published = docsPublishedGeneration(repoRoot);
+  return {
+    ...source,
+    published,
+    npm: releasePackagesForGeneration(published).map((pkg) => pkg.name),
+    unpublishedSource: source.core !== published,
+  };
+}
