@@ -1,0 +1,6 @@
+{
+  "id": "date_09_invalid_february_30",
+  "label": "RFC 0071: Day beyond the length of February",
+  "formula": "is_calendar_date('2026-02-30')",
+  "deterministic": true
+}

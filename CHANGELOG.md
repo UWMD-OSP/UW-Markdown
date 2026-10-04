@@ -21,6 +21,39 @@ protocol, and each package each carry an independent semver).
   IDs and compatibility fields. Manifest contracts remain 0.1.0; Format 2.0,
   Protocol 2.21.0, runtime behavior and financial semantics are unchanged.
 
+### Calendar-date predicate (RFC 0071, accepted; not yet released)
+
+- Add `is_calendar_date(value) → boolean` to the shared §VIII.3 builtin set.
+  - It returns `true` only for a string in the exact ASCII form `YYYY-MM-DD`
+    that names a real proleptic Gregorian date, for years `0000`–`9999`.
+  - It returns `false` for every other value, including `null`, absent
+    values, non-strings, padded strings, date-times and impossible dates.
+  - It never returns `null`, and no argument value raises. A wrong argument
+    count raises `CALC-TYPE-001`, and an error inside the argument expression
+    propagates.
+  - It reuses `parseISODate` behind an explicit string check. No second
+    calendar parser was written.
+- **Module rules.** A module rule now reports its own code for a bad date,
+  instead of having no way to detect one.
+- **Excel.** Emission refuses the predicate with `EXCEL-EMIT-FN`.
+  - In the `@uwmd/excel` custom-calculation export, any unsupported function
+    call now refuses with `EXCEL-EMIT-FN`, as the core emitter's do. It was
+    `EXCEL-EMIT-PATH`. Conditionals and the other unsupported forms keep
+    `EXCEL-EMIT-PATH`.
+- **Spec.** The Protocol gains the §VIII.3 row and paragraph, a §VIII.9
+  cross-reference, and a §X MUST: a module that calls the predicate must
+  require a Protocol version at or above the first release that contains
+  RFC 0071.
+  - Release preparation assigns that exact floor.
+  - The existing load-time refusal enforces it, with no new code.
+  - The `module-manifest` `requires_protocol` description gains a matching
+    note.
+- **Conformance.** 48 tier-3 `date-NN` fixtures, with their generated cases.
+- **Versions.** No version label moves; release preparation selects them.
+  Format, error codes and financial semantics are unchanged.
+- **Not changed.** The separate `actualDays()` early-year defect is not
+  addressed.
+
 ## [2.17.0] - 2026-10-03
 
 ### Released

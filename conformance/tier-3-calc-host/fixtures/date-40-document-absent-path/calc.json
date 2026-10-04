@@ -1,0 +1,6 @@
+{
+  "id": "date_40_document_absent_path",
+  "label": "RFC 0071: Absent path resolves to null",
+  "formula": "is_calendar_date(date_probe.missing)",
+  "deterministic": true
+}

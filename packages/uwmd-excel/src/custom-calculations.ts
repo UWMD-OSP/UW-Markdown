@@ -111,10 +111,15 @@ function leaves(expr: Expr): Expr[] {
       if (!['+', '-', '*', '/'].includes(expr.op))
         refuse('Custom Excel calculations currently support +, -, *, / only.');
       return [...leaves(expr.left), ...leaves(expr.right)];
-    default:
-      refuse(
-        'Function calls and conditionals need a separate numeric/null-parity contract for custom Excel export.'
+    case 'call':
+      // An unsupported function is EXCEL-EMIT-FN, the core emitter's code for an
+      // unmapped builtin, so both export paths classify it alike (RFC 0071).
+      throw new ExcelEmitError(
+        'EXCEL-EMIT-FN',
+        `Function '${expr.name}' needs a separate numeric/null-parity contract for custom Excel export.`
       );
+    default:
+      refuse('Conditionals need a separate numeric/null-parity contract for custom Excel export.');
   }
 }
 interface PeriodGroup {

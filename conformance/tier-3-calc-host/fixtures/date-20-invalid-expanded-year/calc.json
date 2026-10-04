@@ -1,0 +1,6 @@
+{
+  "id": "date_20_invalid_expanded_year",
+  "label": "RFC 0071: ISO 8601 expanded year",
+  "formula": "is_calendar_date('+002026-10-03')",
+  "deterministic": true
+}

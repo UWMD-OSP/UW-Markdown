@@ -1,0 +1,6 @@
+{
+  "id": "date_27_invalid_date_time_local",
+  "label": "RFC 0071: Local date-time",
+  "formula": "is_calendar_date('2026-10-03T00:00:00')",
+  "deterministic": true
+}

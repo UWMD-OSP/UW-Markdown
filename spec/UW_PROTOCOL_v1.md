@@ -1858,6 +1858,7 @@ to establish supported-case parity; formula snapshots alone are insufficient.
 | `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. Closed-form; see the note below. |
 | `npv(rate, ...flows)` | Net present value. |
 | `irr(...flows)` | Internal rate of return; null if no real root. See the convergence note below. |
+| `is_calendar_date(value)` | `(any) → boolean` | `true` only for a valid `YYYY-MM-DD` calendar-date string; see below. Never `null`. No argument value raises. |
 
 **Closed-form functions (normative).** `pmt`, `fv`, `pv`, and `nper` **MUST** be
 evaluated in closed form — `nper` as
@@ -1911,6 +1912,56 @@ Two consequences an implementer must not read past:
   decides whether step 2 brackets at all. Step 3 is therefore reachable at `hi`,
   where `1.0 + 10.0` is exact, and effectively unreachable at `lo`. Callers
   **SHOULD NOT** build on behavior at the low endpoint.
+
+**Calendar-date predicate (normative, RFC 0071).** Accepted implementation
+contract; version/release selection remains pending, and this paragraph changes
+no current version label. Protocol 2.21.0 and every earlier version lack
+`is_calendar_date`.
+
+`is_calendar_date(value)` takes exactly one argument; a call with any other
+number of arguments raises `CALC-TYPE-001`. The argument is evaluated like any
+other argument (§VIII.2), and an error raised while evaluating it propagates
+unchanged. The function returns `true` if and only if all three conditions
+hold, and `false` otherwise:
+
+1. **Type.** `value` is a string. `null` (including a missing path, §VIII.2), a
+   number, a boolean, and any object- or array-valued resolution are not
+   strings. A host **MUST NOT** convert a non-string to a string before testing
+   it.
+2. **Lexical form.** `value` is exactly ten characters of the form
+   `YYYY-MM-DD`, where each `Y`, `M` and `D` is an ASCII digit `0`–`9`
+   (U+0030–U+0039) and each `-` is U+002D. No other character may appear
+   anywhere: no leading, trailing or internal whitespace of any kind, sign,
+   expanded year, time, `T` designator, zone designator (`Z`, `±hh:mm`) or
+   fractional part. A host **MUST NOT** trim, case-fold or Unicode-normalize
+   `value` first.
+3. **Calendar.** Let `y`, `m` and `d` be the decimal values of the year, month
+   and day digits. Then `1 ≤ m ≤ 12` and `1 ≤ d ≤ L(y, m)`, where:
+   - `L` is 31 for months 1, 3, 5, 7, 8, 10 and 12;
+   - `L` is 30 for months 4, 6, 9 and 11;
+   - for month 2, `L` is 29 when `y` is a leap year and 28 otherwise.
+
+   `y` is a leap year when it is divisible by 400, or divisible by 4 and not
+   by 100. This is the proleptic Gregorian calendar of §VIII.9.1, under which
+   year `0000` is a leap year. Every year from `0000` to `9999` is in range.
+
+The result **MUST** be computed from the characters of `value` alone, by
+integer comparison. A host **MUST NOT** consult a date parser (`Date.parse` or
+equivalent), a time zone, a locale, the host clock, or any environment setting
+(§VIII.4). The calendar is the one §VIII.2a `YYYY-MM-DD` selectors and §VIII.9
+dates already use.
+
+Unlike the arithmetic builtins, `is_calendar_date` does not propagate `null`.
+It answers whether its argument is a calendar date, and `null` is not one. An
+expression that accepts an absent value says so explicitly:
+`x == null || is_calendar_date(x)`.
+
+No Excel emission is defined. Excel's date functions depend on locale and on
+the workbook date system, and its 1900 date system treats `1900-02-29` as a
+real day. A converter refuses a formula that calls `is_calendar_date`, as the
+reference emitter already refuses `avg` and `coalesce` (`EXCEL-EMIT-FN`).
+
+A module that calls `is_calendar_date` is subject to the protocol floor in §X.
 
 `xirr` and day-count conventions remain deferred to v2.
 
@@ -2264,7 +2315,9 @@ must agree on when they read one: how a pair of dates becomes a year
 fraction, how a rate discounts a dated flow, and how the one searched
 number (`xirr`) is found. Everything here is reachable only through a
 declaration or the verifier (§VIII.9.4) — the §VIII.1 grammar and the
-§VIII.3 expression-callable table are unchanged.
+§VIII.3 expression-callable table are unchanged. RFC 0071 later added
+`is_calendar_date`, a validity predicate over the same calendar. No day count,
+`yearfrac`, date arithmetic or date value type is reachable from an expression.
 
 #### VIII.9.1 Day-count registry (normative, closed)
 
@@ -3129,6 +3182,31 @@ nothing. A host that loads modules:
   SHOULD report a rule or calculation that fails to *evaluate* rather
   than silently skipping it. A skipped rule is a rule its author believes
   is protecting them.
+
+**Protocol floor for `is_calendar_date` (RFC 0071).** A module manifest
+whose `calculations[].formula` or `validations[].rule` calls
+`is_calendar_date` anywhere in its expression **MUST** declare a
+`requires_protocol` range that excludes every Protocol version in which
+`is_calendar_date` is unavailable. That is, the range must require a Protocol
+version at or above the first release that contains RFC 0071, and no earlier
+version may satisfy it.
+
+The exact semver floor is assigned at release preparation, when that first
+release's version is selected. A comparator that only excludes the current
+label, such as `>2.21.0`, does not meet the requirement, because a later 2.21.x
+release without RFC 0071 would satisfy it.
+
+The range is what lets an older host decline the module. Under §VII.2 step 3,
+a host refuses a manifest whose `requires_protocol` its own versions do not
+satisfy, with a `ProtocolError` of category `module`. It therefore never
+registers a rule it cannot evaluate. Without the floor, that host would load
+the module and report each such rule as a failure to evaluate
+(`CALC-RESOLVE-001`) on every document.
+
+This requirement adds no loader check and no error code. §VII.2 step 3 is the
+enforcement, and the reference library already reports it as `PROTO-MOD-030`.
+A manifest that violates the requirement is non-conforming. A host is not
+required to detect the violation.
 
 Section `schema` fragments are normative JSON Schema. A host holding a
 JSON Schema validator SHOULD apply them; one that does not is still

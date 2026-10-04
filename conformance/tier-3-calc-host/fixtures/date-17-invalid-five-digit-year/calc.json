@@ -1,0 +1,6 @@
+{
+  "id": "date_17_invalid_five_digit_year",
+  "label": "RFC 0071: Year field five digits wide",
+  "formula": "is_calendar_date('02026-10-03')",
+  "deterministic": true
+}

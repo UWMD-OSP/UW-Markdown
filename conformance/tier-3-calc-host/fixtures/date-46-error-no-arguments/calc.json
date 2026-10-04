@@ -1,0 +1,6 @@
+{
+  "id": "date_46_error_no_arguments",
+  "label": "RFC 0071: Zero arguments refuse",
+  "formula": "is_calendar_date()",
+  "deterministic": true
+}

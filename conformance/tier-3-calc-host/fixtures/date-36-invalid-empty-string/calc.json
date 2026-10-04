@@ -1,0 +1,6 @@
+{
+  "id": "date_36_invalid_empty_string",
+  "label": "RFC 0071: Empty string",
+  "formula": "is_calendar_date('')",
+  "deterministic": true
+}

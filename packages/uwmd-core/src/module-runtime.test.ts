@@ -204,3 +204,110 @@ describe('checkModuleSections', () => {
     expect(checkModuleSections(HOTEL, withSections)).toEqual([]);
   });
 });
+
+// RFC 0071: a bad authored date is document data, not a broken rule. The
+// predicate returns `false`, so the rule reports its own code through the
+// ordinary path; MOD-RULE-ERROR stays reserved for evaluation failures.
+describe('is_calendar_date in module rules (RFC 0071)', () => {
+  // HYPOTHETICAL — NOT THE RFC 0071 SHIPPING FLOOR. Nobody has selected the
+  // first Protocol release that contains RFC 0071; release preparation assigns
+  // it. This stand-in exists only to drive the existing semver refusal path
+  // (§VII.2 step 3) in a toy manifest, and to show why `>=` that release is
+  // required where `>2.21.0` would wrongly admit a hypothetical 2.21.1 that
+  // lacks the builtin. It appears in no real manifest, version matrix or
+  // protocol constant.
+  const HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY = '2.22.0';
+  const RULES: ModuleManifest = {
+    ...BASE,
+    requires_protocol: `>=${HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY}`,
+    validations: [
+      // Required and valid, section-guarded as RFC 0068 writes its rules.
+      { code: 'CC-TOY-DATE', severity: 'error', message: 'as_of_date missing or not a valid date', rule: 'site_facts == null || is_calendar_date(site_facts.as_of_date)' },
+      // Valid when present.
+      { code: 'CC-TOY-OPT', severity: 'error', message: 'closing_date not a valid date', rule: 'site_facts.closing_date == null || is_calendar_date(site_facts.closing_date)' },
+    ],
+  };
+  const host = () => createModuleRegistry({ modules: [RULES], hostTier: 'tier-4-agent-host', protocolVersion: HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY });
+  const codes = (content: Record<string, unknown>) =>
+    validateAgainstModules(file({ site_facts: block('site_facts', content) }), host()).map((i) => i.code);
+
+  it('is silent on a valid date and when the optional date is absent', () => {
+    expect(codes({ as_of_date: '2024-02-29' })).toEqual([]);
+  });
+
+  it.each([
+    ['impossible', '2026-02-30'],
+    ['not a leap year', '2023-02-29'],
+    ['malformed', '2026-1-01'],
+    ['a date-time', '2026-10-03T00:00:00Z'],
+    ['padded', ' 2026-10-03'],
+    ['a number', 20261003],
+    ['a boolean', true],
+    ['an array', ['2026-10-03']],
+    ['an object', { date: '2026-10-03' }],
+    ['null', null],
+  ])('reports the rule’s own code, not MOD-RULE-ERROR, when the date is %s', (_label, value) => {
+    expect(codes({ as_of_date: value })).toEqual(['CC-TOY-DATE']);
+  });
+
+  it('reports a required date that is absent under its own code', () => {
+    expect(codes({})).toEqual(['CC-TOY-DATE']);
+  });
+
+  it('applies the optional-date pattern: silent on absence, fires on a bad value', () => {
+    expect(codes({ as_of_date: '2026-10-03', closing_date: null })).toEqual([]);
+    expect(codes({ as_of_date: '2026-10-03', closing_date: '2026-13-01' })).toEqual(['CC-TOY-OPT']);
+  });
+
+  it('is silent when the guarded section is absent', () => {
+    expect(validateAgainstModules(file({}), host())).toEqual([]);
+  });
+
+  it('reports a wrong-arity call and an argument failure as MOD-RULE-ERROR', () => {
+    const broken: ModuleManifest = {
+      ...RULES,
+      validations: [
+        { code: 'CC-TOY-ARITY', severity: 'error', message: 'x', rule: 'is_calendar_date()' },
+        { code: 'CC-TOY-ARG', severity: 'error', message: 'x', rule: 'is_calendar_date(1 / 0)' },
+      ],
+    };
+    const issues = validateAgainstModules(
+      file({}),
+      createModuleRegistry({ modules: [broken], hostTier: 'tier-4-agent-host', protocolVersion: HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY }),
+    );
+    expect(issues.map((i) => i.code)).toEqual(['MOD-RULE-ERROR', 'MOD-RULE-ERROR']);
+    expect(issues[0]?.message).toContain('CC-TOY-ARITY');
+    expect(issues[0]?.message).toContain('CALC-TYPE-001');
+    expect(issues[1]?.message).toContain('CC-TOY-ARG');
+    expect(issues[1]?.message).toContain('CALC-DIV-ZERO');
+  });
+
+  it('evaluates in a module calculation through the same evaluator', () => {
+    const withCalc: ModuleManifest = {
+      ...RULES,
+      validations: [],
+      calculations: [{ id: 'as_of_valid', label: 'As-of valid', formula: 'is_calendar_date(site_facts.as_of_date)', deterministic: true }],
+    };
+    const registry = createModuleRegistry({ modules: [withCalc], hostTier: 'tier-4-agent-host', protocolVersion: HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY });
+    const run = (as_of_date: unknown) =>
+      evaluateModuleCalculations(file({ site_facts: block('site_facts', { as_of_date }) }), registry)[0]?.result.value;
+    expect(run('0000-02-29')).toBe(true);
+    expect(run('1900-02-29')).toBe(false);
+  });
+
+  it('is refused at load by a host whose protocol the §X floor excludes, through the existing path', () => {
+    // No new loader check: the manifest's own `requires_protocol` range does
+    // the work under §VII.2 step 3, reported as the existing PROTO-MOD-030.
+    // 2.21.1 is a hypothetical later patch that lacks the builtin.
+    for (const older of ['2.21.0', '2.21.1']) {
+      expect(() => createModuleRegistry({ modules: [RULES], hostTier: 'tier-4-agent-host', protocolVersion: older }))
+        .toThrow(/PROTO-MOD-030/);
+    }
+  });
+
+  it('shows why `>2.21.0` is not a §X floor: it admits a hypothetical 2.21.1 that lacks the builtin', () => {
+    const wrongFloor: ModuleManifest = { ...RULES, requires_protocol: '>2.21.0' };
+    expect(() => createModuleRegistry({ modules: [wrongFloor], hostTier: 'tier-4-agent-host', protocolVersion: '2.21.1' }))
+      .not.toThrow();
+  });
+});

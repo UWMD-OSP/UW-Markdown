@@ -104,7 +104,12 @@ uwmd-excel deal.uwx.md --calculations year_three_noi_per_unit -o deal.xlsx
 ```
 
 Only requested IDs export. Numeric literals, paths, period selectors, unary
-minus and arithmetic +, -, *, / are supported. Existing pack sheets are unchanged.
+minus and arithmetic +, -, *, / are supported. Any other construct is refused:
+- a function call, `is_calendar_date` included, with `EXCEL-EMIT-FN`, the code
+  the core emitter uses for an unmapped builtin;
+- anything else with `EXCEL-EMIT-PATH`.
+
+Existing pack sheets are unchanged.
 Shared inputs are editable and period lookup survives whole-row sorting. Missing
 values are #N/A, invalid identities/nonnumeric inputs are #VALUE!, and zero stays
 zero. Change the period set in the source document and re-export. Exact variants

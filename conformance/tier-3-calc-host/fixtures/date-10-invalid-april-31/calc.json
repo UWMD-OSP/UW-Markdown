@@ -1,0 +1,6 @@
+{
+  "id": "date_10_invalid_april_31",
+  "label": "RFC 0071: Day beyond a 30-day month",
+  "formula": "is_calendar_date('2026-04-31')",
+  "deterministic": true
+}

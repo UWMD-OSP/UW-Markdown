@@ -1,6 +1,7 @@
 // Tier-3 Calc Host — built-in function implementations.
 // Signatures and semantics per UW_PROTOCOL_v1.md §VIII.3.
 
+import { parseISODate } from './day-count.js';
 import { CalcError } from './errors.js';
 import { quantizeDecimal } from './quantize.js';
 
@@ -365,5 +366,19 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
       'CALC-IRR-DIVERGE',
       `irr: bisection did not meet a stopping condition within ${IRR_MAX_ITER} iterations.`,
     );
+  },
+
+  // is_calendar_date(value) — RFC 0071. A total predicate: `true` only for a
+  // string spelling a real proleptic Gregorian `YYYY-MM-DD` date, `false` for
+  // everything else (null included), and never a throw on the value. Validity
+  // is `parseISODate`'s, so selectors, dated series and this predicate share
+  // one calendar. The string check comes first and is load-bearing: the regex
+  // inside `parseISODate` coerces its argument, so `['2026-10-03']` would match.
+  is_calendar_date(args) {
+    if (args.length !== 1) {
+      throw new CalcError('CALC-TYPE-001', `is_calendar_date: expected 1 argument, got ${args.length}.`);
+    }
+    const value: unknown = args[0];
+    return typeof value === 'string' && parseISODate(value) !== null;
   },
 });

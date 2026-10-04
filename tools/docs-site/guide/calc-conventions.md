@@ -49,11 +49,24 @@ conditional are also supported. Available builtins are:
 | Logic and rounding | `coalesce`, `if`, `round` |
 | Math | `abs`, `floor`, `ceil`, `sqrt`, `pow`, `log`, `exp` |
 | Finance | `pmt`, `fv`, `pv`, `nper`, `npv`, `irr` |
+| Validity | `is_calendar_date` |
 
 `sum` treats null inputs as zero. `avg`, `min`, and `max` ignore null inputs and
 return null if every input is null. `coalesce` returns its first non-null
 argument. Other arithmetic propagates null, which keeps incomplete-data state
 visible instead of manufacturing a result.
+
+`is_calendar_date(value)` is the exception. It answers a yes-or-no question and
+never returns null:
+
+- It returns `true` only for a string in the exact form `YYYY-MM-DD` that names
+  a real date, such as `'2024-02-29'`.
+- It returns `false` for null, absent values, numbers, padded or date-time
+  strings, and impossible dates such as `'2026-02-30'`.
+- To allow an absent date, write `x == null || is_calendar_date(x)`.
+- A module that calls it must require a Protocol version at or above the first
+  release that contains it. That floor is assigned when the release is
+  prepared.
 
 ## Excel-emittable pack formulas
 
@@ -65,7 +78,9 @@ sum min max if round abs floor ceil sqrt pow log exp pmt npv irr fv pv nper
 ```
 
 The emitter deliberately rejects `coalesce` and `avg` with `EXCEL-EMIT-FN`.
-Their null semantics do not have a portable Excel equivalent. A missing named
+Their null semantics do not have a portable Excel equivalent. It rejects
+`is_calendar_date` the same way: Excel's date functions depend on locale and on
+the workbook date system, and its 1900 system accepts `1900-02-29`. A missing named
 range produces `EXCEL-EMIT-PATH` instead. Treat either result as a pack-design
 error: add the required input mapping or rewrite the formula with equivalent
 Excel-safe logic.

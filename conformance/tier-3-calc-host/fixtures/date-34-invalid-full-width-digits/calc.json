@@ -1,0 +1,6 @@
+{
+  "id": "date_34_invalid_full_width_digits",
+  "label": "RFC 0071: Full-width digits; no normalization",
+  "formula": "is_calendar_date('\uff12\uff10\uff12\uff16-10-03')",
+  "deterministic": true
+}

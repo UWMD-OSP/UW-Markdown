@@ -1,0 +1,6 @@
+{
+  "id": "date_12_invalid_month_13",
+  "label": "RFC 0071: Month 13",
+  "formula": "is_calendar_date('2026-13-01')",
+  "deterministic": true
+}

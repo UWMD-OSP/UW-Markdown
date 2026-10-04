@@ -1,0 +1,6 @@
+{
+  "id": "date_24_invalid_leading_tab",
+  "label": "RFC 0071: Leading tab",
+  "formula": "is_calendar_date('\t2026-10-03')",
+  "deterministic": true
+}

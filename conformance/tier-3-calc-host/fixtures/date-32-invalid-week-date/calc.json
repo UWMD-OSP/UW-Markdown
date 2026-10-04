@@ -1,0 +1,6 @@
+{
+  "id": "date_32_invalid_week_date",
+  "label": "RFC 0071: ISO 8601 week date",
+  "formula": "is_calendar_date('2026-W40-6')",
+  "deterministic": true
+}

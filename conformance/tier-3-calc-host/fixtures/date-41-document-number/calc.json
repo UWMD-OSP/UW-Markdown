@@ -1,0 +1,6 @@
+{
+  "id": "date_41_document_number",
+  "label": "RFC 0071: Number; no coercion",
+  "formula": "is_calendar_date(probe_number)",
+  "deterministic": true
+}

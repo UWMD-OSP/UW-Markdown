@@ -1,0 +1,9 @@
+{
+  "calc_id": "date_48_error_argument_propagates",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-DIV-ZERO",
+    "category": "calc"
+  }
+}

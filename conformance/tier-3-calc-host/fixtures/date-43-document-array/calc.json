@@ -1,0 +1,6 @@
+{
+  "id": "date_43_document_array",
+  "label": "RFC 0071: One-element array; no coercion",
+  "formula": "is_calendar_date(date_probe.array)",
+  "deterministic": true
+}

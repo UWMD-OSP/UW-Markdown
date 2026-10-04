@@ -10,8 +10,12 @@ A Tier-3 host MUST:
   arbitrary code execution).
 - Resolve variable references via `parser.deepGet` semantics against the
   parsed file.
-- Implement the built-in functions: `sum`, `avg`, `npv`, `irr`, `pmt`,
-  `if`, `coalesce`, `round`.
+- Implement the whole Protocol §VIII.3 built-in function set:
+  - aggregation: `sum`, `avg`, `min`, `max`;
+  - logic and rounding: `coalesce`, `if`, `round`;
+  - math: `abs`, `floor`, `ceil`, `sqrt`, `pow`, `log`, `exp`;
+  - finance: `pmt`, `fv`, `pv`, `nper`, `npv`, `irr`;
+  - validity: `is_calendar_date` (RFC 0071).
 - Be deterministic: same inputs → same outputs, every run.
 - Surface `CalcError` objects per the taxonomy in Part XI.
 
@@ -61,6 +65,36 @@ and one on 2028-06-30.
 | `fixtures/period-10-same-day-repeated` | The repeated cash-flow date refuses `CALC-PERIOD-002`; rows are never summed or chosen |
 | `fixtures/period-11-same-day-absent` | An absent cash-flow date is null, not a refusal |
 | `fixtures/period-12-other-series-duplicate` | Other registered series keep whole-series refusal: a unique waterfall date still refuses `CALC-PERIOD-002` |
+
+### Calendar-date predicate scenarios (RFC 0071)
+
+`fixtures/date-01` … `date-48` pin `is_calendar_date` to the accepted case
+matrix. All 48 share one synthetic deal and write each expected result from
+the matrix, not from a captured run.
+
+- **Literal scenarios (`date-01`–`date-36`)** call the predicate on a
+  single-quoted literal, so the deal does not affect them:
+  - `date-01`–`06` are valid dates (`true`). They include the leap rules
+    divisible by 4 and by 400, `0000-02-29` and `9999-12-31`.
+  - `date-07`–`36` are invalid (`false`):
+    - impossible dates, including `1900-02-29` and `2026-02-30`;
+    - month `00` and `13`, and day `00`;
+    - fields of the wrong width;
+    - signed and expanded years;
+    - leading, trailing and internal whitespace, a tab and a newline;
+    - date-times, and zone and offset suffixes;
+    - slash, compact, week and ordinal forms;
+    - full-width digits and a U+2010 hyphen;
+    - the empty string.
+- **Document scenarios (`date-37`–`45`)** read values from the deal:
+  - frontmatter extension keys (§XII.1): a quoted and an unquoted YAML date,
+    both `true`, then `null`, a number and a boolean, each `false`;
+  - a `date_probe` section: an absent path, a one-element array, an object and
+    an impossible date, each `false`.
+- **Error scenarios (`date-46`–`48`):**
+  - zero arguments and two arguments refuse with `CALC-TYPE-001`;
+  - `is_calendar_date(1 / 0)` refuses with the argument's own
+    `CALC-DIV-ZERO`, not `false`.
 
 ### Refinement scenarios
 

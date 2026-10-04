@@ -1,0 +1,6 @@
+{
+  "id": "date_01_valid_leap_divisible_by_4",
+  "label": "RFC 0071: Leap day in a year divisible by 4, not 100",
+  "formula": "is_calendar_date('2024-02-29')",
+  "deterministic": true
+}

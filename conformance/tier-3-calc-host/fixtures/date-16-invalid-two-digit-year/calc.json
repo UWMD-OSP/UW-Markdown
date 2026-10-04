@@ -1,0 +1,6 @@
+{
+  "id": "date_16_invalid_two_digit_year",
+  "label": "RFC 0071: Year field two digits wide",
+  "formula": "is_calendar_date('26-10-03')",
+  "deterministic": true
+}

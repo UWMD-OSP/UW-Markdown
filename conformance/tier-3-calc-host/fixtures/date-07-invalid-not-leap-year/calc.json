@@ -1,0 +1,6 @@
+{
+  "id": "date_07_invalid_not_leap_year",
+  "label": "RFC 0071: February 29 in a non-leap year",
+  "formula": "is_calendar_date('2023-02-29')",
+  "deterministic": true
+}
