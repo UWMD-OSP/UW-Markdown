@@ -1927,6 +1927,16 @@ switch (command) {
     console.log(JSON.stringify(REFERENCE_IMPLEMENTATION_MANIFEST, null, 2));
     break;
 
+  case '--version':
+  case '-V':
+  case 'version':
+    // Read from the manifest so `--version` and `manifest` cannot disagree.
+    // These used to fall through to `default` and print the help text.
+    console.log(`@uwmd/core ${REFERENCE_IMPLEMENTATION_MANIFEST.version}`);
+    console.log(`Protocol ${REFERENCE_IMPLEMENTATION_MANIFEST.protocol_version}`);
+    console.log(`Format ${REFERENCE_IMPLEMENTATION_MANIFEST.format_version}`);
+    break;
+
   case 'portfolio': {
     const sub = positional[0];
     const target = positional[1];
@@ -1997,6 +2007,7 @@ Commands:
   package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
   portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
   manifest                     Print this implementation's ImplementationManifest (conformance protocol)
+  --version, -V                Print the @uwmd/core, Protocol and Format versions
   layers                       List Bancroft agent layers
 
 Options:

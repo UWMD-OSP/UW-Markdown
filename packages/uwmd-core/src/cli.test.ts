@@ -66,3 +66,19 @@ describe('RFC 0070 verify command', () => {
     });
   });
 });
+
+describe('uwmd --version', () => {
+  const run = (...args: string[]) => spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
+  const manifest = JSON.parse(run('manifest').stdout);
+
+  it.each(['--version', '-V', 'version'])('%s prints the manifest versions, not the help text', (flag) => {
+    const result = run(flag);
+    expect(result.status).toBe(0);
+    expect(result.stdout.trim().split('\n')).toEqual([
+      `@uwmd/core ${manifest.version}`,
+      `Protocol ${manifest.protocol_version}`,
+      `Format ${manifest.format_version}`,
+    ]);
+    expect(result.stdout).not.toContain('Commands:');
+  });
+});

@@ -89,6 +89,14 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- **`uwmd --version` prints the version.** `--version`, `-V` and `version`
+  used to fall through to the help text and exit 0, so no version was
+  printed. They now print three lines: `@uwmd/core <version>`,
+  `Protocol <version>` and `Format <version>`. The values are read from the
+  same implementation manifest `uwmd manifest` prints, so the two commands
+  can't disagree. This is CLI tooling only. The §II.6a conformance commands
+  are unchanged.
+
 - **The `ProtocolError` category enum lists `package` and `portfolio` (§XI).**
   - **The drift.** Deal-package validation has used the `package` category
     since RFC 0018 shipped. The 2.1.0 release added `portfolio` as a "new
