@@ -31,7 +31,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.20.0' as const;
+export const PROTOCOL_VERSION = '2.21.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -2979,7 +2979,7 @@ export interface PropertyCashFlowAssemblyIssue {
   };
 }
 
-// RFC 0070 accepted, unreleased implementation contract. Version selection deferred.
+// RFC 0070 accepted release contract, carried by Protocol 2.21.0 / core 2.17.0.
 export interface ReplacementCashFlowRef {
   variant: string;        // exact same-document cash_flow_series variant
   row_index: number;      // nonnegative safe integer, zero-based, in range

@@ -433,7 +433,7 @@ green) and `conformance:v2`, uploading its JSON manifest as an artifact.
 > `--update` overwrites baselines from current library output — only use it when
 > you intend to change the contract, and always eyeball the resulting diff.
 
-## RFC 0070 replacement-funding controls (unreleased)
+## RFC 0070 replacement-funding controls (Protocol 2.21.0)
 
 The hedge suite adds 57 source/expected pairs and retains all 17 RFC 0056
 pairs unchanged. Expected structural codes and separate verifier state/reason/code

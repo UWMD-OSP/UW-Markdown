@@ -32,14 +32,17 @@ separately verified binding digest. Date and amount remain in that cash row. Exi
 valid RFC 0056 documents remain valid without edits. This is a modeled future
 purchase, never evidence of an executed successor trade.
 
-**Status: accepted, not implemented.** Jared accepted this RFC on 2026-10-02
-under owner-led governance, with the semantics frozen at commit
-`29c42c79e855fca4f97d82ec71596857370ca4b6`. Implementation was separately
- authorized on 2026-10-03; the source implementation awaits PR review and remains
-unreleased. Acceptance does not change the released contract,
-versions, conformance behavior or StackUW admission.
+**Status: accepted; implementation merged.** Jared accepted this RFC on
+2026-10-02 with semantics frozen at `29c42c79e855fca4f97d82ec71596857370ca4b6`
+and separately authorized implementation on 2026-10-03. PR #245 merged on
+canonical `UWMD-OSP/UW-Markdown` main at
+`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. Owner-authorized release preparation
+pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0, including the later
+multifamily deal-level cash-on-cash correction. Under the repository lifecycle,
+this RFC stays `accepted` until the release ships and publication is independently
+verified. This preparation changes no accepted semantics or StackUW admission.
 
-## Owner acceptance record
+## Historical owner acceptance record (2026-10-02)
 
 - **Decision:** Jared, the project owner, explicitly accepted RFC 0070 as a whole
   on 2026-10-02 (America/Phoenix), under the owner-led process in
@@ -71,10 +74,20 @@ The implementation specification and completed task matrix are archived at
 `specs/archive/rfc-0070-replacement-funding.md` in the repository.
 The historical acceptance boundary above records the earlier decision.
 
-RFC status remains `accepted` until a separately authorized release ships.
-No version number is consumed, release prepared, tag changed, package published
-or StackUW adoption authorized. Implementation review and actual version/release
-selection remain owner decisions.
+The implementation is merged via PR #245 at
+`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`; implementation review is complete.
+
+## Owner release-preparation direction (2026-10-03)
+
+The owner selected core/CLI **2.17.0**, Protocol **2.21.0**, Format **2.0**
+for the complete current main generation, including the subsequently merged
+multifamily deal-level cash-on-cash correction. Release preparation follows
+[wiki 11](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md) and is recorded in
+[the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-preparation.md).
+RFC 0070 remains `accepted` throughout preparation; it becomes `implemented`
+only after shipment and independent publication verification. Tagging,
+publication and StackUW adoption require separate owner action. The frozen
+wire shape, binding scope, structural/async boundary and economics are unchanged.
 
 ## Motivation
 
@@ -799,8 +812,9 @@ authored currency with canonical null.
 
 The owner accepted the final wire shape, canonical scope, exact API/result
 contract, matrices and versioning analysis at frozen commit `29c42c7`.
-No genuine owner questions block implementation planning. Implementation
-remains subject to separate explicit authorization.
+Implementation authorization and merge are recorded above. No semantic owner
+questions remain; shipment and independently verified publication gate the
+`implemented` lifecycle transition.
 
 Mixed funding, multiple replacements, successor coverage, post-sale financing
 assembly and executed-trade records remain deferred to separate adopter-backed

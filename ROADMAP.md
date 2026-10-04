@@ -1,12 +1,23 @@
 # Roadmap
 
-Reconciled **2026-10-02** after verified publication of **2.16.0**, pairing
+Reconciled **2026-10-03** for release-prepared **2.17.0** (Protocol **2.21.0**,
+Format **2.0**). The current published release remains **2.16.0**, pairing
 core/CLI 2.16.0 with stable Protocol 2.20.0 and Format 2.0.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Current release: 2.16.0
+## Prepared generation: 2.17.0
+
+Core/CLI **2.17.0** pair with Protocol **2.21.0** and Format **2.0**. The
+complete generation includes RFC 0070 (merged via PR #245 at
+`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`) and the later multifamily
+pack 1.0.1 deal-level cash-on-cash correction. RFC 0070 remains `accepted`
+until shipment and independently verified publication. The frozen funding
+semantics and synchronous/async verification boundary are unchanged.
+See [the release preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-preparation.md).
+
+## Current published release: 2.16.0
 
 Published core/CLI **2.16.0** pair with stable Protocol **2.20.0** and Format
 **2.0**. Published signing **0.2.20** and batch **0.8.15** pin core 2.16.0

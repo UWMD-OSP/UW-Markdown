@@ -497,7 +497,7 @@ structural evidence in an `error` object. Unsupported write flags refuse.
 See the [workflow](../LEASE_UP_CASH_FLOW_WORKFLOW.md) for the supplied plan,
 browser-safe API and economic limits. Included in published core/CLI 2.8.0.
 
-## RFC 0070 validation split (development tree; unreleased)
+## RFC 0070 validation split (Protocol 2.21.0)
 
 `uwmd validate` text/JSON invokes the separate async funding verifier.
 JSON retains the structural result at root and adds
@@ -513,4 +513,5 @@ and explicitly reports not_checked/not_invoked, with no complete verification
 claim. VS Code diagnostics and collection validity are structural diagnostics;
 they do not establish replacement-payment binding verification. Producers and
 other clients claiming this capability must call the async verifier and require
-verified. These source changes do not change published versions.
+verified. The release-prepared core/CLI 2.17.0 carry Protocol 2.21.0;
+RFC 0070 remains accepted until shipment and verified publication.

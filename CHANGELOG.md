@@ -8,6 +8,48 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.17.0] - 2026-10-03
+
+### Prepared package pairing
+
+Core/CLI **2.17.0** pair with Protocol **2.21.0** and Format **2.0**.
+Signing **0.2.21**, batch **0.8.16**, Excel **0.9.9**, report **0.8.21**,
+lake **0.2.5** and both reference modules **0.1.9** pin core **2.17.0**.
+Core's optional signing peer is **0.2.21**. Each dependent takes its existing
+patch-version step for the exact repin. The workflow scope remains core, CLI,
+signing and batch; the other package generations remain source-only. Module
+manifest contracts stay **0.1.0**. RFC 0070 remains `accepted` until shipment
+and independent publication verification. See `docs/releases/2.17.0-preparation.md`.
+
+### Accepted contract — Protocol 2.21.0 (RFC 0070)
+
+The frozen RFC 0070 implementation merged on canonical main through PR #245
+at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. This generation carries that
+contract and the later multifamily correction below; Format stays **2.0**.
+
+- Optional nullable `rate_hedge.replacement_funding` is a closed escrow/outright
+  union. Legacy absent/null funding and explicit escrow retain the named
+  `rate_cap_replacement` escrow requirement. Outright forbids that escrow,
+  including zero-funded escrow, and binds one exact current explicit §4.26
+  variant and safe zero-based row index. No escrow fallback, row search,
+  automatic rebind or duplicated date/amount is introduced.
+- The binding digest commits to RFC 8785 canonical JSON/UTF-8/SHA-256 of the
+  full ordered cash series, exact variant/index, fixed section and authored
+  currency (absent/null canonicalizes to null). Payment must be finite and
+  nonpositive, including explicitly stated zero, and strictly after the initial
+  hedge's effective date. Before/on/after expiration is permitted. The binding
+  describes modeled cash, never an executed successor trade or continuous coverage.
+- Structural validation stays synchronous: HDG-07 checks funding shape and
+  assumption, HDG-08 checks exact references/series/digest syntax, and HDG-10
+  checks payment sign/date. Separate async verification alone emits HDG-09
+  on an actual stale digest. Complete outright success requires structural
+  success and `verified`; unchecked, unavailable or unresolved verification
+  cannot claim complete success.
+- CLI validate/verify and MCP validation expose and enforce the separate result.
+  The synchronous web panel explicitly displays unchecked binding status.
+  Node/browser helpers capture snapshots before their first await. Existing
+  valid legacy documents preserve their bytes and behavior.
+
 ### Fixed
 
 - Multifamily pack 1.0.1: generic `cash_on_cash` now divides year-1 levered
@@ -15,6 +57,28 @@ protocol, and each package each carry an independent semver).
   It prefers the stated year-1 DCF flow and retains NOI minus debt service as
   the fallback. Missing aggregate equity stays uncomputed. Matching Excel
   bindings and synthetic GD05-style regressions cover the correction.
+
+- ESC-04 now also refuses legacy replacement escrow absence when
+  `sources_uses` or `uses` is missing, correcting the released RFC 0056
+  early-return coverage defect. This does not weaken any funding requirement.
+
+### Conformance and maintenance
+
+- RFC 0070 adds 57 hedge cases and portable replacement-funding descriptors,
+  including malformed/ambiguous references, escrow contradictions, explicit zero,
+  expiration-independent timing, stale ordered snapshots/currency, same-day rows
+  and reviewed rebinds. Structural and verification findings remain separate.
+- Synthetic GD05-style capital-stack coverage and Excel regressions prove the
+  deal-level equity denominator and year-1 selection. Multifamily receipt
+  examples now state aggregate equity without changing their financial results;
+  an old pack-1.0.0 receipt explicitly refuses as unverifiable under pack 1.0.1.
+- Release issuance baselines record engine **2.17.0** / Protocol **2.21.0**;
+  the result-disagreement negative baseline records the current engine. Other
+  historical receipt identities remain intact.
+- RFC/status records reconcile merged implementation versus the post-shipment
+  `implemented` lifecycle transition. The earlier 2.16.0 publication evidence,
+  RFC 0070 research/acceptance records and archived implementation/correction
+  tasks remain attributable history, without adding a new normative feature.
 
 ## [2.16.0] - 2026-10-02
 
