@@ -21,6 +21,35 @@ protocol, and each package each carry an independent semver).
   IDs and compatibility fields. Manifest contracts remain 0.1.0; Format 2.0,
   Protocol 2.21.0, runtime behavior and financial semantics are unchanged.
 
+### Issue intake and adopter feedback
+
+- **Adopters and implementers have a defined reporting path.** It runs from
+  report to triage, classification, fix or RFC, and release, and
+  [Reporting problems and feedback](docs/FEEDBACK.md) defines it. The guide
+  says what evidence makes a report reproducible, how to reduce a
+  confidential deal to a public reproduction, what each label means, and when
+  a report needs an RFC: only when resolving it changes what a conforming
+  implementation must do.
+- **The issue forms ask for reproducible evidence.** The three forms are
+  rewritten as *Bug or interoperability report*, *Spec question or
+  ambiguity* and *Capability request*. They ask for the reporting
+  implementation, the `uwmd manifest` versions with the document's
+  `uw_version`, a spec citation, a minimal de-identified reproduction,
+  diagnostics JSON and the reporter's own tracker ID. Each requires a
+  confirmation that attached material contains no confidential deal data.
+  A new chooser config disables blank issues and routes vulnerabilities to
+  SECURITY.md.
+- **Fixed: form labels that did not exist.** The old forms applied
+  `needs-triage`, `spec` and `needs-discussion`, none of which existed on
+  GitHub, so GitHub dropped them silently. `.github/labels.json` now lists
+  all 16 labels, and the new `labels.yml` workflow creates them on merge. A
+  `verify-issue-forms` CI guard holds the forms, the manifest and the guide to
+  each other. On its first run it caught invalid YAML in the new bug form.
+- **No contract change.** No feedback envelope or diagnostic object was
+  added: the implementation manifest, validation codes, `ProtocolError`,
+  receipts and the conformance runner report already carry what a report
+  needs. Format 2.0, Protocol 2.21.0 and every package version are unchanged.
+
 ### Calendar-date predicate (RFC 0071, accepted; not yet released)
 
 - Add `is_calendar_date(value) → boolean` to the shared §VIII.3 builtin set.

@@ -6,11 +6,30 @@ spec proposals, conformance fixtures, and tools are all welcome.
 
 ## Ways to contribute
 
-- **Report a bug** in `@uwmd/core` or a starter tool — open an issue with the *Bug* template.
-- **Propose a spec change** — open an issue with the *Spec question* template (see "Filing a spec change" below).
-- **Add a conformance fixture** — see "Adding a conformance fixture."
-- **Build a new tool** — propose it via the *Feature* issue template before opening a PR; tools live in `tools/` or as separate `packages/<tool-name>/` directories.
-- **Implement against the spec** — third-party implementers self-certify against the conformance corpus and are listed in the README.
+- **Report a bug or an interoperability problem** in a UWMD package, tool or
+  conformance fixture: use the
+  [*Bug or interoperability report*](https://github.com/UWMD-OSP/UW-Markdown/issues/new?template=bug.yml) form.
+- **Ask about the spec, or propose a spec change**: use the
+  [*Spec question or ambiguity*](https://github.com/UWMD-OSP/UW-Markdown/issues/new?template=spec-question.yml)
+  form (see "Filing a spec change" below).
+- **Request a capability or propose a new tool**: use the
+  [*Capability request*](https://github.com/UWMD-OSP/UW-Markdown/issues/new?template=feature.yml)
+  form before opening a PR. Tools live in `tools/` or as separate
+  `packages/<tool-name>/` directories.
+- **Add a conformance fixture**: see "Adding a conformance fixture."
+- **Implement against the spec**: third-party implementers self-certify against
+  the conformance corpus and are listed in the README.
+
+Security vulnerabilities go to security@uwmd.org ([SECURITY.md](./SECURITY.md)),
+never to a public issue.
+
+### If you build on UW Markdown
+
+If you produce or consume UWMD documents in your own product, read
+[Reporting problems and feedback](./docs/FEEDBACK.md) before filing. It covers
+what evidence makes a report reproducible, how to reduce a confidential deal to
+a public reproduction, what each issue label means, and how a report becomes a
+fix, a release or an RFC.
 
 ## Repository layout
 
@@ -20,7 +39,7 @@ packages/                     npm workspaces — reference library and starter p
 examples/                     Sample .uw.md deal files
 conformance/                  Per-tier fixtures + expected outputs
 tools/                        Starter tools (web-viewer, future: excel converter, etc.)
-.github/                      CI, issue/PR templates
+.github/                      CI, issue forms, issue labels (labels.json), PR template
 ```
 
 ## Local development

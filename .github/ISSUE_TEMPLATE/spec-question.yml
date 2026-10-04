@@ -1,46 +1,97 @@
-name: Spec question or proposal
-description: A question, ambiguity, or proposed change to UW_FORMAT_SPEC_v1.md, UW_PROTOCOL_v1.md, or the JSON schemas.
-labels: ["spec", "needs-discussion"]
+name: Spec question or ambiguity
+description: The specification is unclear, contradicts itself or a schema, is silent on a case, or you want to propose a change to required behavior.
+labels: ["spec", "needs-triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Spec changes are higher-stakes than code changes because third parties build on top of these documents. Please be thorough.
+        Third parties build on the specification, so questions about it are worth asking early. A maintainer will decide whether the answer is a clarification or a change to what conforming implementations must do. A change of that second kind needs an [RFC](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md), which can start from this issue. See the [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md).
+
+        > [!WARNING]
+        > **This issue is public.** Use synthetic or de-identified examples only. Security-relevant spec gaps go to security@uwmd.org ([SECURITY.md](https://github.com/UWMD-OSP/UW-Markdown/blob/main/SECURITY.md)).
 
   - type: dropdown
-    id: spec
+    id: documents
     attributes:
-      label: Which spec?
+      label: Which document?
+      multiple: true
       options:
-        - "UW_FORMAT_SPEC_v1.md (the file format)"
-        - "UW_PROTOCOL_v1.md (the implementer contract)"
-        - "module-manifest.schema.json"
-        - "Cross-cutting / not sure"
+        - "Format spec (UW_FORMAT_SPEC_v1.md / v2.md)"
+        - "UW Lite spec (UW_LITE_SPEC_v1.md)"
+        - "Protocol spec (UW_PROTOCOL_v1.md)"
+        - "Receipt spec (UW_RECEIPT_v1.md)"
+        - "Composition spec (UW_COMPOSITION_v1.md)"
+        - "XML mapping, CSV bundle, or HTTP/MCP bindings"
+        - "JSON Schemas (spec/schemas)"
+        - "Conformance corpus expectations"
+        - "Not sure"
     validations:
       required: true
 
   - type: input
     id: section
     attributes:
-      label: Section or paragraph
-      description: e.g. "§4.7 Operating Statement", "Part V.3", "schema property `calculations[].deterministic`".
+      label: Section, field or fixture
+      description: e.g. "Protocol §VIII.2", "Format v2 §1.3", "schema property `rate_hedge.post_expiration_assumption`", or a fixture path.
+    validations:
+      required: true
 
-  - type: textarea
-    id: question
+  - type: dropdown
+    id: kind
     attributes:
-      label: Question or ambiguity
-      description: What's unclear, missing, or contradictory in the current spec?
+      label: Kind of question
+      options:
+        - "Ambiguity: the text supports more than one reading"
+        - "Contradiction: two normative artifacts disagree (spec, schema, protocol.ts, conformance corpus)"
+        - "Gap: the spec is silent on a case implementations must handle"
+        - "Proposed change to required behavior"
+        - "Question about intent"
     validations:
       required: true
 
   - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Quote the text in question. Say what is unclear, contradictory or missing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: readings
+    attributes:
+      label: Readings and who follows them
+      description: List each plausible reading, and which implementation (the reference library, yours or another) behaves which way. This decides whether the answer is a clarification or a normative change.
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: A minimal synthetic or de-identified document, fragment or calc declaration where the readings diverge. Put it in a fenced code block.
+
+  - type: textarea
     id: proposal
     attributes:
-      label: Proposed clarification or change (optional)
-      description: If you have a specific edit in mind, paste the proposed text or describe the change.
+      label: Proposed answer or text
+      description: Proposed wording, if you have it.
 
   - type: textarea
     id: compatibility
     attributes:
-      label: Compatibility impact (if proposing a change)
-      description: Does this break existing implementers? If so, what's the deprecation path?
+      label: Compatibility impact
+      description: Which conforming implementations or existing documents would behave differently under your proposal?
+
+  - type: input
+    id: related
+    attributes:
+      label: Related links
+      description: Your own tracker ID, if you have one, plus any related issues, PRs or RFCs.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: Any example here is synthetic or de-identified. It contains no confidential deal data.
+          required: true
+        - label: I searched open and closed issues and the RFC index for an existing answer.

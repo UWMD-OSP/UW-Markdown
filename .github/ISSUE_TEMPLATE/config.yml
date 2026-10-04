@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/UWMD-OSP/UW-Markdown/blob/main/SECURITY.md
+    about: Email security@uwmd.org. Do not open a public issue for a vulnerability.
+  - name: How to report a problem without exposing deal data
+    url: https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md
+    about: What evidence to include, how to reduce a confidential document to a public reproduction, and what each issue label means.
+  - name: Propose a normative change (RFC process)
+    url: https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md
+    about: Changes to what conforming implementations must do need an RFC.

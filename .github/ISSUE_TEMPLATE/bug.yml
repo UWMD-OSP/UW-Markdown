@@ -1,58 +1,152 @@
-name: Bug report
-description: A defect in @uwmd/core, the CLI, or a starter tool.
+name: Bug or interoperability report
+description: A UWMD package, tool or conformance fixture misbehaves, or two implementations disagree about a document.
 labels: ["bug", "needs-triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for filing a bug. Spec ambiguities go in the *Spec question* template instead.
+        Use this form when something does not do what the specification already says it should. If you can't tell what the spec requires, use the **Spec question** form instead. The [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md) covers what to include and what happens next.
 
-  - type: input
-    id: package
+        > [!WARNING]
+        > **This issue is public.** Don't attach real deal documents, rent rolls, borrower or tenant names, addresses or internal identifiers. Reduce the problem to a minimal synthetic or de-identified document first. The guide shows how. If you can't reproduce it without confidential data, say so here and describe its structure instead.
+        >
+        > **Security vulnerabilities** go to security@uwmd.org, not here. See [SECURITY.md](https://github.com/UWMD-OSP/UW-Markdown/blob/main/SECURITY.md).
+
+  - type: dropdown
+    id: kind
     attributes:
-      label: Package or tool
-      description: Which package, CLI command, or tool is affected?
-      placeholder: "@uwmd/core, uwmd CLI (parse), tools/web-viewer, etc."
+      label: Kind of problem
+      options:
+        - "A UWMD package, CLI command or tool misbehaves"
+        - "Interoperability: two implementations read, accept or compute the same document differently"
+        - "A conformance fixture, expected output or runner looks wrong"
+        - "Not sure"
     validations:
       required: true
 
   - type: input
-    id: version
+    id: implementation
     attributes:
-      label: Version
-      description: Output of `npm ls @uwmd/core` or the commit SHA you're on.
+      label: Reporting implementation
+      description: The product or tool that hit this, with its version or commit. Write `none` if you called a UWMD package directly.
+      placeholder: "ExampleUW engine 4.2.0 (commit abc1234), vendoring @uwmd/core 2.17.0"
     validations:
       required: true
 
   - type: textarea
-    id: repro
+    id: versions
     attributes:
-      label: Reproduction
-      description: Minimal steps to reproduce. A small `.uw.md` snippet that triggers the bug is ideal.
-      render: markdown
+      label: UWMD versions
+      description: |
+        Paste the output of `npx @uwmd/cli manifest`, which gives the @uwmd/core version and the Protocol and Format versions it implements. If you implement UWMD yourself, paste your own implementation manifest (Protocol §II.6a). In both cases add the `uw_version` from the document's frontmatter, and the version of any other affected package.
+      render: json
     validations:
       required: true
+
+  - type: dropdown
+    id: components
+    attributes:
+      label: Affected components
+      description: Choose every component that applies. Pick "Not sure" if you can't tell.
+      multiple: true
+      options:
+        - "@uwmd/core (parser, validator, calc engine, packs, editor)"
+        - "uwmd CLI (@uwmd/cli)"
+        - "@uwmd/excel"
+        - "@uwmd/report"
+        - "@uwmd/lake"
+        - "@uwmd/signing"
+        - "@uwmd/batch"
+        - "Reference module (hospitality, data center)"
+        - "Conformance corpus or runner"
+        - "Format spec or JSON Schemas"
+        - "Protocol spec"
+        - "Web viewer, web editor, VS Code extension or docs site"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: input
+    id: context
+    attributes:
+      label: Asset class, module or profile
+      description: "Fill this in if the problem depends on one, e.g. `asset_class: hospitality`, a module ID, or a deal-package or portfolio profile."
 
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: Expected behavior, and where the spec says so
+      description: Cite the section, schema property or conformance fixture that requires it (e.g. Protocol §VIII.9.1, Format §4.26, `conformance/cash-flow/...`). If no text requires it, the Spec question or Capability request form fits better.
     validations:
       required: true
 
   - type: textarea
-    id: actual
+    id: observed
     attributes:
-      label: Actual behavior
-      description: Include error messages, stack traces, or unexpected output.
+      label: Observed behavior
+      description: What happened instead. Include the exact error, issue codes and any wrong value.
     validations:
       required: true
 
   - type: textarea
-    id: env
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: |
+        A minimal synthetic or de-identified `.uw.md` / `.uwx.md` document (or calc declaration, edit operation or plan) and the exact commands to run. Start from `npx @uwmd/cli init` or a file in `examples/`, and keep only what triggers the problem. Put files in fenced code blocks.
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: |
+        Machine output if you have it: `uwmd validate <file> --json`, `uwmd verify <file> --json`, `uwmd receipt verify ... --json`, a thrown error's `code`, or a conformance runner report (`--manifest-out`). Codes such as `CF-02` or `CALC-XIRR-DIVERGE` are the most useful part. If the output came from a real deal, remove the figures in `value` and `message` first.
+      render: json
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - "Wrong deterministic result: a computed or verified number differs"
+        - "Rejects or flags a document that should be valid"
+        - "Accepts a document that should be rejected"
+        - "Crash, hang or unusable output"
+        - "Blocks producing or consuming UWMD documents"
+        - "Minor: a workaround exists"
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Your workaround, if you have one.
+
+  - type: textarea
+    id: environment
     attributes:
       label: Environment
-      description: Node version, OS, anything else relevant.
+      description: Runtime details if they could matter.
       placeholder: |
-        Node: 20.10.0
-        OS: macOS 14.4
+        Node: 22.14.0
+        OS: Ubuntu 24.04
+
+  - type: input
+    id: related
+    attributes:
+      label: Related links
+      description: Your own tracker ID, if you have one (e.g. an internal `UPSTREAM-NNN`), plus any related issues, PRs or RFCs.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: Everything attached is synthetic or de-identified. It contains no confidential deal data, names, addresses or internal identifiers.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
+        - label: I searched open and closed issues for a duplicate.

@@ -206,6 +206,10 @@ project's existing rules: additive and opt-in fields, stated figures verified
 where practical, explicit "stated, not recomputed" notes where not, custom
 asset classes as namespaced modules, and fund mechanics as document profiles.
 
+New findings from StackUW or any other adopter enter through the issue forms in
+[Reporting problems and feedback](docs/FEEDBACK.md), with the adopter's own
+tracker ID (StackUW's `UPSTREAM-NNN`) under *Related links*.
+
 ### Reuse before extending
 
 The brief explicitly asks us not to duplicate capabilities already present:

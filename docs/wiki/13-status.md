@@ -696,3 +696,23 @@ The early-year day-count bug is corrected in source; the fix is unreleased.
   - `calc-early-year-day-count`;
   - `valid-early-year-ordering`;
   - `reject-early-year-unordered`.
+
+## 2026-10-04 — Adopter feedback intake
+
+Adopters and independent implementers now report through three structured
+issue forms: bug or interoperability, spec question, and capability request.
+[`docs/FEEDBACK.md`](../FEEDBACK.md) defines the evidence, the deal-data
+boundary, the label taxonomy and the lifecycle. The rest is in the
+[review](../reviews/2026-10-04-adopter-feedback-loop.md).
+- **Drift repaired.** Three of the five labels the old forms applied did not
+  exist on GitHub, so they were silently dropped. `.github/labels.json` now
+  lists all 16 labels; `labels.yml` creates them on merge, and the
+  `verify-issue-forms` CI guard holds the forms and the guide to the manifest.
+- **Not yet exercised.** No issue has been filed through the new forms, and
+  the labels exist on GitHub only after the merge runs `labels.yml`.
+- **No protocol change.** No report envelope or diagnostic object was added.
+  The manifest, validation codes, `ProtocolError`, receipts and the runner
+  report already carry what a report needs.
+- **Owner decisions left open:** whether to offer a private channel for
+  confidential, non-security reproductions, and whether to enable GitHub
+  private vulnerability reporting alongside the security mailbox.

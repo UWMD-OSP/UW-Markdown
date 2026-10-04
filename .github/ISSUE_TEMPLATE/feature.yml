@@ -1,44 +1,81 @@
-name: Feature request
-description: Propose a new tool, library feature, or capability.
+name: Capability request
+description: Something you need to express, verify or do with UWMD that has no home today. Covers a field, calc, validation, module, package API or tool.
 labels: ["enhancement", "needs-triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        For changes to the format spec or protocol spec, use the *Spec question* template instead.
+        UWMD adds normative surface (fields, calcs, validation codes) when a **demonstrated consumer** needs it. A concrete case is therefore the strongest evidence a request can carry. Requests that change what conforming implementations must do go through an [RFC](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/rfcs/README.md), which can start from this issue. See the [feedback guide](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/FEEDBACK.md).
+
+        > [!WARNING]
+        > **This issue is public.** Use synthetic or de-identified examples only.
 
   - type: textarea
     id: problem
     attributes:
-      label: What problem does this solve?
-      description: Describe the use case. Who is affected? What are they trying to do that's currently hard or impossible?
+      label: What can't you do today?
+      description: The underwriting fact, check or workflow that UWMD can't currently express or verify, and what you do instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: consumer
+    attributes:
+      label: Who needs it
+      description: The implementation, workflow or document type that would produce or consume this, and what it would do with it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: existing
+    attributes:
+      label: Existing surfaces checked
+      description: The sections, calcs, profiles, modules or RFCs that come closest, and why they fall short. The roadmap's "Reuse before extending" note and the RFC index are good starting points.
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Where would it live?
+      options:
+        - "Format: a new or changed document field (needs an RFC)"
+        - "Protocol: calc, validation, edit or conformance behavior (needs an RFC)"
+        - "A module: asset class, pack or manifest"
+        - "@uwmd/core library API or the uwmd CLI"
+        - "Another package (excel, report, lake, signing, batch)"
+        - "A tool (viewer, editor, VS Code extension, docs site)"
+        - "Not sure"
     validations:
       required: true
 
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed solution
-      description: Sketch the API, UX, or behavior you have in mind. Code snippets and examples welcome.
-    validations:
-      required: true
+      label: Proposed shape
+      description: Field names, API or behavior you have in mind.
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: A minimal synthetic or de-identified document showing the case. Put it in a fenced code block.
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives considered
-      description: Other approaches you thought about and why this one is better.
+      label: Alternatives and workarounds
+      description: Other approaches you considered, and what you do today.
 
-  - type: dropdown
-    id: scope
+  - type: input
+    id: related
     attributes:
-      label: Where would this live?
+      label: Related links
+      description: Your own tracker ID, if you have one, plus any related issues, PRs or RFCs.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
       options:
-        - "@uwmd/core (reference library)"
-        - "uwmd CLI"
-        - "tools/web-viewer"
-        - "A new starter tool (excel-converter, vscode-extension, etc.)"
-        - "Conformance corpus"
-        - "Not sure"
-    validations:
-      required: true
+        - label: Any example here is synthetic or de-identified. It contains no confidential deal data.
+          required: true
+        - label: I searched open and closed issues and the RFC index for an existing request.
