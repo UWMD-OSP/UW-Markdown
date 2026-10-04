@@ -294,3 +294,56 @@ describe('verifyCashFlowSeries', () => {
     expect(CASH_FLOW_VERIFY_DECIMALS).toEqual({ currency: 2, rate: 6, ratio: 4 });
   });
 });
+
+// Early years reach xnpv/xirr through yearfrac -> actualDays. A series shifted
+// by exactly 2400 years (six 400-year Gregorian cycles) lands on an identical
+// calendar, so every exponent, and therefore every result, must match bit for
+// bit. Before the Date.UTC fix, the year-0000 series counted 0000 as common.
+describe('dated flows in years 0000-0099 (proleptic Gregorian)', () => {
+  const shifted = (series: CashFlowSeries, years: number): CashFlowSeries => ({
+    ...series,
+    series: series.series.map((row) => ({
+      ...row,
+      date: `${String(Number(row.date.slice(0, 4)) + years).padStart(4, '0')}${row.date.slice(4)}`,
+    })),
+  });
+  const EARLY: CashFlowSeries = {
+    series: [
+      { date: '0000-01-01', amount: -100 },
+      { date: '0000-02-29', amount: 10 },
+      { date: '0001-03-01', amount: 10 },
+      { date: '0099-12-31', amount: 10 },
+      { date: '0100-01-01', amount: 100 },
+    ],
+  };
+
+  for (const day_count of ['actual/365f', 'actual/360'] as const) {
+    it(`${day_count}: flows, xnpv and xirr equal the same series 2400 years later`, () => {
+      const early = datedFlowsOf({ ...EARLY, day_count })!;
+      const modern = datedFlowsOf(shifted({ ...EARLY, day_count }, 2400))!;
+      expect(early).not.toBeNull();
+      expect(early).toEqual(modern);
+      expect(xnpvOf(early, 0.05)).toBe(xnpvOf(modern, 0.05));
+      expect(xirrOf(early)).toBe(xirrOf(modern));
+    });
+  }
+
+  it('orders across the 0099/0100 boundary and refuses an early-year reversal', () => {
+    const flows = datedFlowsOf({
+      day_count: 'actual/365f',
+      series: [
+        { date: '0099-12-31', amount: -1 },
+        { date: '0100-01-01', amount: 1 },
+      ],
+    });
+    expect(flows?.map((f) => f.t)).toEqual([0, 1 / 365]);
+    expect(
+      datedFlowsOf({
+        series: [
+          { date: '0150-01-01', amount: -1 },
+          { date: '0050-01-01', amount: 1 },
+        ],
+      }),
+    ).toBeNull();
+  });
+});

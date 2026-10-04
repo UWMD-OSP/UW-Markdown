@@ -615,13 +615,6 @@ The guards:
     calls the predicate, so no manifest needs a floor yet.
   - RFC 0068 is to adopt the predicate in a later revision of its own.
   - No numeric-type predicate is authorized.
-- Repair the early-year day-count drift in `calc/day-count.ts`.
-  - `actualDays()` uses `Date.UTC`, which maps years 0–99 to 1900–1999. So
-    the §VIII.9.1 `actual/365f` and `actual/360` conventions are wrong for
-    dates in `0000`–`0099`: `0000-01-01`→`0001-01-01` is 365 days, not 366.
-  - The defect predates RFC 0071, which records it as non-scope.
-  - This is an ordinary calc bug fix against the existing proleptic-Gregorian
-    contract, with early-year tests. No RFC is needed.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
@@ -672,3 +665,34 @@ format/protocol/schema changes were included in that correction. The correction
 is carried by the 2.17.0 generation above. Other packs'
 sponsor-denominator formulas remain follow-up work. Synthetic GD05-style
 coverage uses public invented inputs, never private corpus amounts.
+
+## 2026-10-04 — Early-year day-count correction
+
+The early-year day-count bug is corrected in source; the fix is unreleased.
+- **Contract.** Protocol §VIII.9.1 already states actual-day counts on the
+  proleptic Gregorian calendar. The fix moves no version, and no RFC was
+  needed.
+- **Root cause.** `actualDays()` in `calc/day-count.ts` counted through
+  `Date.UTC`, which ECMAScript defines to read a numeric year 0–99 as
+  1900–1999. The `CF-02` date-ordering check in `validator.ts` used the same
+  call.
+- **What it broke.** For dates in years `0000`–`0099`:
+  - `actual/365f` and `actual/360` were wrong, and so were `xnpv`, `xirr`, the
+    cash-flow verifier and the waterfall accrual that build on them;
+  - `0000-01-01`→`0001-01-01` counted 365 days instead of 366;
+  - `0099-12-31`→`0100-01-01` counted −693,959 days instead of 1;
+  - correctly ordered early-year series were refused, and reversed ones were
+    accepted.
+- **Fix.** Both sites now use one integer `dayOrdinal`, built on the same leap
+  rule and month lengths `parseISODate` validates against. Neither uses
+  `Date` any more.
+- **Scope of the change.**
+  - Every valid date in years `0100`–`9999` gives exactly the same result as
+    before.
+  - `30/360us` reads date parts directly and was never affected.
+  - `is_calendar_date` (RFC 0071) only checks validity and is unchanged.
+- **Coverage.** Regression and independent-oracle tests, plus three
+  `conformance/cash-flow` fixtures:
+  - `calc-early-year-day-count`;
+  - `valid-early-year-ordering`;
+  - `reject-early-year-unordered`.

@@ -243,9 +243,10 @@ and impossible dates.
   later 2.21.x patch would satisfy it.
 - **Excel.** There is no Excel mapping. Both the core emitter and the
   `@uwmd/excel` custom-calculation export refuse it with `EXCEL-EMIT-FN`.
-- **Validity only.** The predicate does no date arithmetic. The separate
-  early-year `actualDays()` defect is tracked in `13-status.md` and is not
-  part of it.
+- **Validity only.** The predicate does no date arithmetic. Day counts are a
+  separate path (§VIII.9.1): `actualDays()` uses an integer proleptic-Gregorian
+  `dayOrdinal` from `calc/day-count.ts`, not `Date`, so years `0000`–`0099`
+  count correctly. The early-year fix is recorded in `13-status.md`.
 
 > Argument counts are validated; type mismatches raise `CALC-TYPE-001`. See
 > `calc/builtins.ts` for exact per-function rules.

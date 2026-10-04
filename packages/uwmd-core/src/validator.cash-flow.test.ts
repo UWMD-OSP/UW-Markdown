@@ -79,6 +79,20 @@ describe('CF-01 — row grammar', () => {
 });
 
 describe('CF-02 — ordering and presence', () => {
+  it('orders early years on the proleptic Gregorian calendar, not Date.UTC', () => {
+    // Date.UTC read 0050 as 1950, so 0150 -> 0050 looked ascending and
+    // 0099-12-31 -> 0100-01-01 looked descending.
+    expect(cfIssues(`{ "series": [
+      { "date": "0099-12-31", "amount": -1 },
+      { "date": "0100-01-01", "amount": 1 }
+    ] }`)).toEqual([]);
+    const reversed = cfIssues(`{ "series": [
+      { "date": "0150-01-01", "amount": -1 },
+      { "date": "0050-01-01", "amount": 1 }
+    ] }`);
+    expect(reversed.map((i) => i.code)).toEqual(['CF-02']);
+    expect(reversed[0]!.field).toBe('series[1].date');
+  });
   it('rejects an empty or missing series', () => {
     expect(cfIssues(`{ "series": [] }`).map((i) => i.code)).toEqual(['CF-02']);
     expect(cfIssues('{}').map((i) => i.code)).toEqual(['CF-02']);
