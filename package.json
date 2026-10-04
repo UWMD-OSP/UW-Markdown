@@ -25,6 +25,7 @@
     "verify-versions": "node scripts/verify-versions.mjs",
     "verify-indexes": "node --test scripts/docs-site-sources.test.mjs && node scripts/verify-indexes.mjs",
     "verify-codes": "node scripts/verify-codes.mjs",
+    "verify-issue-forms": "node --test scripts/issue-forms.test.mjs && node scripts/verify-issue-forms.mjs",
     "verify-release": "node --test scripts/release-state.test.mjs && node scripts/verify-release.mjs",
     "release:check": "node --test scripts/registry-version-state.test.mjs && node scripts/check-release-readiness.mjs",
     "typecheck:tests": "npm run typecheck:tests --workspaces --if-present",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.9.1"
   }
 }

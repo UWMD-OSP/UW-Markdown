@@ -1,0 +1,21 @@
+[
+  { "name": "needs-triage", "color": "fbca04", "description": "Received; not yet classified by a maintainer" },
+  { "name": "needs-info", "color": "d876e3", "description": "Waiting on the reporter for the information a maintainer comment names" },
+  { "name": "reproduced", "color": "0e8a16", "description": "A maintainer reproduced the report on current main" },
+  { "name": "awaiting-release", "color": "5319e7", "description": "Fixed on main; the fix ships in the next release of the named surface" },
+
+  { "name": "bug", "color": "d73a4a", "description": "Implementation departs from already-specified behavior" },
+  { "name": "drift", "color": "b60205", "description": "Spec, schemas, protocol.ts, implementation or corpus disagree with each other" },
+  { "name": "conformance-gap", "color": "c2e0c6", "description": "Already-specified behavior the conformance corpus does not pin" },
+  { "name": "documentation", "color": "0075ca", "description": "Documentation is wrong or missing; behavior is unchanged" },
+  { "name": "spec", "color": "1d76db", "description": "Specification question awaiting classification" },
+  { "name": "spec-ambiguity", "color": "0052cc", "description": "Spec text supports more than one conforming reading" },
+  { "name": "enhancement", "color": "a2eeef", "description": "Requested capability" },
+  { "name": "adopter-specific", "color": "bfd4f2", "description": "Behavior belongs to the reporting implementation, not to UWMD" },
+
+  { "name": "needs-rfc", "color": "e99695", "description": "Resolving it changes what a conforming implementation must do" },
+
+  { "name": "working-as-specified", "color": "ededed", "description": "Closed: the reported behavior is what the spec requires" },
+  { "name": "duplicate", "color": "cfd3d7", "description": "Closed: tracked in another issue" },
+  { "name": "wontfix", "color": "ffffff", "description": "Closed: out of scope or declined" }
+]

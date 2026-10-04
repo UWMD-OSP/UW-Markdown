@@ -234,6 +234,7 @@ export default defineConfig({
             { text: 'Maintainers', link: '/about/maintainers' },
             { text: 'Security', link: '/about/security' },
             { text: 'Contributing', link: '/about/contributing' },
+            { text: 'Reporting problems', link: '/about/feedback' },
             { text: 'Code of Conduct', link: '/about/code-of-conduct' },
             { text: 'Changelog', link: '/about/changelog' },
           ],

@@ -141,7 +141,10 @@ when the release workflow runs.
    - the comparison of published files with a local build;
    - the portable driver against the published CLI;
    - the RFC moving from `accepted` to `implemented`;
-   - the protocol status line moving to `Stable`.
+   - the protocol status line moving to `Stable`;
+   - a comment on each closed `awaiting-release` issue naming the released
+     version, and removal of the label
+     ([Issue intake](#issue-intake-and-adopter-reports)).
 
 At `v2.14.0` and `v2.15.0`, the release commit only dated the heading, so
 their tagged trees still call their own packages candidates and their
@@ -200,6 +203,11 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   hand instead. A credential that expires silently between releases is one that
   is always broken exactly when it is needed.
 - **`CODEOWNERS`** routes spec / schema / reference-library paths to the BDFL.
+- **`labels.yml`**: on a push to `main` that changes `.github/labels.json`,
+  creates or updates every label it lists. It never deletes a label. The
+  `verify-issue-forms` CI job holds the issue forms and `docs/FEEDBACK.md` to
+  that manifest, because GitHub silently drops a form label that doesn't
+  exist. Three labels were missing that way until 2026-10-04.
 
 ## Official first-party module distribution
 
@@ -319,9 +327,44 @@ refuse them. Preserve the existing synchronous/async verification boundary.
   Protocol 2.11.0; their RFC status is `implemented`. Standalone Excel remains
   unpublished. RFCs 0062 and 0063 shipped in core/CLI 2.14.0 with Protocol
   2.18.0; their RFC status is `implemented`.
-- Other process docs: [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
+- Other process docs: [`docs/FEEDBACK.md`](../FEEDBACK.md),
+  [`CONTRIBUTING.md`](../../CONTRIBUTING.md),
   [`MAINTAINERS.md`](../../MAINTAINERS.md), [`SECURITY.md`](../../SECURITY.md),
   [`ROADMAP.md`](../../ROADMAP.md).
+
+## Issue intake and adopter reports
+
+Adopters, independent implementers and users report through three issue forms:
+bug or interoperability, spec question, and capability request. Security
+reports go to `security@uwmd.org` instead. The lifecycle, the label taxonomy,
+the deal-data boundary and the maintainer triage steps live in one place,
+[`docs/FEEDBACK.md`](../FEEDBACK.md). Change them there, together with
+`.github/labels.json`, and the `verify-issue-forms` guard keeps them in step.
+
+What a maintainer must remember:
+
+- **Classify with the RFC test.** Exactly one category label remains after
+  triage. Add `needs-rfc` only when resolving the report changes what a
+  conforming implementation must do, or has to select new semantics because
+  the contract is genuinely ambiguous (the table below).
+- **Treat drift as reconciliation, not a ranking.** The specs, normative
+  schemas and normative conformance corpus are one joint contract, and none
+  outranks the others in general. Establish the already-governed behavior
+  from all of them plus the introducing RFC and the release evidence, then
+  correct whichever artifact departs from it.
+- **Comment on every change of state.** Label changes don't notify the
+  reporter, so a label change alone tells them nothing.
+- **Close the loop at release.** After a release publishes, comment on every
+  `is:issue is:closed label:awaiting-release` issue with the version, then
+  remove the label.
+- **Cite both IDs.** A fix, CHANGELOG entry or RFC that came from a report
+  cites the issue and the reporter's own tracker ID, if one was given, the way
+  earlier entries cite StackUW's `UPSTREAM-NNN`.
+- **Keep deal data out of fixtures.** Fixtures are synthetic even when a real
+  deal exposed the problem.
+
+The machine-readable report question was evaluated and declined for now; see
+the [adopter feedback review](../reviews/2026-10-04-adopter-feedback-loop.md).
 
 ## When does my change need an RFC?
 

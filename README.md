@@ -97,7 +97,9 @@ If you're building a tool on the format, open a PR to add yourself here.
 
 Patches, spec proposals, conformance fixtures, and tools are all welcome.
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to file a spec change, add a
-conformance fixture, or propose a new tool.
+conformance fixture, or propose a new tool. If you build on the format, see
+[Reporting problems and feedback](./docs/FEEDBACK.md) for how to file a
+reproducible report without exposing deal data.
 
 This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 

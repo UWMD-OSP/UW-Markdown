@@ -1,6 +1,9 @@
 ## What this changes
 
-<!-- One paragraph: what's being changed and why. Link the issue this resolves. -->
+<!-- One paragraph: what's being changed and why. Write `Fixes #N` for the issue
+this resolves so it closes on merge. If the fix ships in a package or Protocol
+version that is not released yet, label the issue `awaiting-release`
+(docs/FEEDBACK.md). -->
 
 ## Type of change
 

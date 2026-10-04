@@ -1,0 +1,39 @@
+name: Labels
+
+# Creates or updates every label in .github/labels.json on GitHub, so the labels
+# the issue forms apply and docs/FEEDBACK.md describes actually exist. Before
+# this, three of the labels the forms applied had never been created, and GitHub
+# dropped them without an error.
+#
+# It never deletes a label. A label removed from the manifest stays on GitHub,
+# with the issues that carry it, until a maintainer deletes it by hand.
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/labels.json
+      - .github/workflows/labels.yml
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    name: Sync labels from .github/labels.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Create or update each label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          jq -c '.[]' .github/labels.json | while read -r label; do
+            name=$(jq -r '.name' <<<"$label")
+            gh label create "$name" \
+              --repo "$GITHUB_REPOSITORY" \
+              --color "$(jq -r '.color' <<<"$label")" \
+              --description "$(jq -r '.description' <<<"$label")" \
+              --force
+            echo "synced: $name"
+          done

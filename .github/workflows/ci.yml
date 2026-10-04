@@ -64,6 +64,23 @@ jobs:
           node-version: 20
       - run: npm run verify-codes
 
+  verify-issue-forms:
+    name: Verify issue forms and labels
+    runs-on: ubuntu-latest
+    # Holds the issue forms, .github/labels.json and docs/FEEDBACK.md to each
+    # other. GitHub silently drops a form label that does not exist, and it
+    # validates a form only when someone opens the issue page, so neither
+    # failure would otherwise show up anywhere. Unlike the guards above this one
+    # installs, because it parses YAML.
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run verify-issue-forms
+
   verify-release:
     name: Verify release record
     runs-on: ubuntu-latest
