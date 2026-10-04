@@ -1,8 +1,9 @@
 ---
 rfc: 0070
 title: Bind outright replacement-cap funding to an exact modeled cash payment
-status: accepted
+status: implemented
 accepted: 2026-10-02
+implemented: 2026-10-03
 author: codex
 created: 2026-10-02
 depends_on:
@@ -32,15 +33,18 @@ separately verified binding digest. Date and amount remain in that cash row. Exi
 valid RFC 0056 documents remain valid without edits. This is a modeled future
 purchase, never evidence of an executed successor trade.
 
-**Status: accepted; implementation merged.** Jared accepted this RFC on
-2026-10-02 with semantics frozen at `29c42c79e855fca4f97d82ec71596857370ca4b6`
-and separately authorized implementation on 2026-10-03. PR #245 merged on
-canonical `UWMD-OSP/UW-Markdown` main at
-`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. Owner-authorized release preparation
-pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0, including the later
-multifamily deal-level cash-on-cash correction. Under the repository lifecycle,
-this RFC stays `accepted` until the release ships and publication is independently
-verified. This preparation changes no accepted semantics or StackUW admission.
+**Status: implemented; released and independently verified.** Jared accepted this
+RFC on 2026-10-02 with semantics frozen at
+`29c42c79e855fca4f97d82ec71596857370ca4b6` and separately authorized
+implementation on 2026-10-03. PR #245 merged on canonical
+`UWMD-OSP/UW-Markdown` main at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`.
+The owner-authorized `v2.17.0` release on `98dc5e4a040cf04f7b907a76e3d83825868d1d9f`
+published core/CLI 2.17.0 with Stable Protocol 2.21.0 and Format 2.0,
+including the later multifamily deal-level cash-on-cash correction. Independent
+registry, provenance, published-file and delivered-CLI verification passed;
+see [the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md). The RFC remained `accepted` in the
+immutable tagged preparation tree. This lifecycle record changes no frozen
+semantics or StackUW admission.
 
 ## Historical owner acceptance record (2026-10-02)
 
@@ -88,6 +92,20 @@ RFC 0070 remains `accepted` throughout preparation; it becomes `implemented`
 only after shipment and independent publication verification. Tagging,
 publication and StackUW adoption require separate owner action. The frozen
 wire shape, binding scope, structural/async boundary and economics are unchanged.
+
+## Owner-authorized publication and verification (2026-10-03 America/Phoenix)
+
+The owner authorized annotated `v2.17.0` exactly on canonical main
+`98dc5e4a040cf04f7b907a76e3d83825868d1d9f` after exact-main push CI run 37169227124
+succeeded. Tag object `d9b52227ed6df8dbcb97d6c9d5cb0b1c04559c44` is unchanged.
+[Release run 37172975077](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37172975077)
+succeeded and published only core 2.17.0, CLI 2.17.0, signing 0.2.21 and
+batch 0.8.16. Independent versions/`latest`/`gitHead`, integrity, registry
+signatures, SLSA/npm attestations, authenticated Fulcio/TUF/Rekor evidence,
+462 published file contents and all 158 delivered-CLI portable cases passed.
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section below
+remain unchanged. [Durable evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md) records the checks.
 
 ## Motivation
 

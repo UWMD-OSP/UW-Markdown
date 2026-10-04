@@ -1,12 +1,14 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-03** for release-prepared **2.17.0**. Core/CLI
-**2.17.0** pair with the accepted release contract Protocol **2.21.0** and
-unchanged Format **2.0**. RFC 0070 implementation merged via PR #245 at
-`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`; the later multifamily deal-level
-cash-on-cash correction is also included. RFC 0070 remains `accepted` until
-shipment and independently verified publication. The preparation record is
-[2.17.0](../releases/2.17.0-preparation.md); tagging remains an owner decision.
+Reconciled **2026-10-03** (America/Phoenix) for published and independently
+verified **2.17.0**. Core/CLI **2.17.0**, signing **0.2.21** and batch **0.8.16**
+are published from immutable annotated `v2.17.0` on
+`98dc5e4a040cf04f7b907a76e3d83825868d1d9f`. Stable Protocol **2.21.0** pairs with
+unchanged Format **2.0**. RFC 0070 is `implemented`; its frozen replacement-funding
+contract and synchronous/async boundary are unchanged. This complete generation
+also includes the later multifamily pack 1.0.1 deal-level cash-on-cash correction.
+[Publication evidence](../releases/2.17.0-publication.md) is separate from
+[preparation](../releases/2.17.0-preparation.md).
 
 Reconciled **2026-10-02** for published and verified **2.16.0**. Core/CLI
 **2.16.0**, signing **0.2.20** and batch **0.8.15** are published from the
@@ -16,8 +18,8 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068, plus accepted, unreleased RFC 0070,
-remain outside this released contract. The historical publication is
+Draft RFCs 0064, 0065, 0067 and 0068 remain outside the current released
+contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
@@ -57,7 +59,13 @@ change only engine/Protocol identity. All accepted RFC 0070 normative/API/
 conformance bytes and merged financial runtime remain unchanged. The initial
 CLI worker-reporting timeout and docs-link failures are resolved; full results,
 environment and limitations are in [the preparation record](../releases/2.17.0-preparation.md).
-Owner review, final-head CI and trusted-publisher confirmation precede tagging.
+Exact-main push CI run 37169227124 succeeded before owner-authorized tagging.
+Release run 37172975077 succeeded; all four versions/`latest`/`gitHead` match.
+Independent registry/DSSE signatures, authenticated TUF/Fulcio/SCT trust, all
+eight Rekor bundles/live records and 462 delivered file contents verify.
+The registry-installed CLI passes **158/158**, with zero failures or skips;
+`npm audit signatures` verifies 13 package signatures and 8 package attestations.
+See [the publication evidence](../releases/2.17.0-publication.md).
 The 2.16.0 evidence below remains historical publication evidence.
 
 Release run 37075007121 succeeded on tagged commit
@@ -573,13 +581,6 @@ The guards:
   `v2.15.0` tags as unmoved.
 
 ## Remaining work
-
-- Owner review and tagging of the complete 2.17.0 prepared generation follow
-  [the release record](../releases/2.17.0-preparation.md). RFC 0070 implementation
-  is merged via PR #245 at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`;
-  its accepted semantics and synchronous/async verification boundary are frozen.
-  Publication and independent verification must precede the `implemented`
-  lifecycle transition. No StackUW adoption is authorized here.
 
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
