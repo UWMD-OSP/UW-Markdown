@@ -177,7 +177,7 @@ threshold?, title?, remediation?, spec_ref?, legacy_code? }` — `title`/
 `remediation`/`spec_ref` are filled from `BUILTIN_REMEDIATIONS` when a matching
 code exists.
 
-## Replacement funding (RFC 0070, development tree; unreleased)
+## Replacement funding (RFC 0070, Protocol 2.21.0)
 
 §4.7 adds optional nullable `rate_hedge.replacement_funding`:
 `{mode:"escrow"}` or

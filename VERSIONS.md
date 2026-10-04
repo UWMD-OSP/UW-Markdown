@@ -20,6 +20,19 @@ same protocol version.
 
 ## Current matrix
 
+Release 2.17.0 pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0.
+Protocol 2.21.0 carries RFC 0070's closed replacement-funding union and exact
+modeled-payment binding, with synchronous structural validation and separate
+async digest verification. RFC 0070 is accepted; its implementation merged
+via PR #245 at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. The generation also
+includes the subsequently merged multifamily pack 1.0.1 deal-level cash-on-cash
+correction. Signing 0.2.21, batch 0.8.16, Excel 0.9.9, report 0.8.21, lake
+0.2.5 and both module packages 0.1.9 pin core 2.17.0 exactly. Core's optional
+signing peer is 0.2.21. The workflow scope remains core, CLI, signing and
+batch; the other package generations remain source-only. Module manifest
+contracts remain 0.1.0. Release preparation and subsequent publication evidence
+are separate records.
+
 Release 2.16.0 pairs core/CLI 2.16.0 with Protocol 2.20.0 and Format 2.0.
 Protocol 2.20.0 adds RFC 0069's four optional top-level student-housing
 `rent_roll` fields: `occupied_beds`, `preleased_beds`, `preleased_as_of`
@@ -71,17 +84,17 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.20.0** | format ≥ 1.0; RFC 0069 student bed counts (`BED-NN`) on 2.19.0; carried by core/CLI 2.16.0 |
-| `@uwmd/core` | **2.16.0** | format 2.0 (reads 1.x), protocol 2.20.0 |
-| `@uwmd/cli` (CLI) | **2.16.0** | `@uwmd/core` 2.16.0 |
-| `@uwmd/excel` | **0.9.8** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.16.0, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.20** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.16.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.15** | `@uwmd/core` 2.16.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.4** (source only) | `@uwmd/core` 2.16.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.20** | `@uwmd/core` 2.16.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.8** (source only) | `@uwmd/core` 2.16.0, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.8** (source only) | `@uwmd/core` 2.16.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.16.0 browser entry |
+| UW Protocol | **2.21.0** | format ≥ 1.0; RFC 0070 replacement funding and exact payment binding on 2.20.0; carried by core/CLI 2.17.0 |
+| `@uwmd/core` | **2.17.0** | format 2.0 (reads 1.x), protocol 2.21.0 |
+| `@uwmd/cli` (CLI) | **2.17.0** | `@uwmd/core` 2.17.0 |
+| `@uwmd/excel` | **0.9.9** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.17.0, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.21** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.17.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.16** | `@uwmd/core` 2.17.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.5** (source only) | `@uwmd/core` 2.17.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.21** | `@uwmd/core` 2.17.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.9** (source only) | `@uwmd/core` 2.17.0, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.9** (source only) | `@uwmd/core` 2.17.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.17.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 

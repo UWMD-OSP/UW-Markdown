@@ -150,7 +150,7 @@ definition. The short version: six subcommands, exactly one JSON document on
 stdout (except `render`, which emits text), stderr free for logging, exit `0`
 success / `1` protocol error with parseable stdout / `2` unrecoverable.
 
-### Replacement-funding projection (RFC 0070, unreleased)
+### Replacement-funding projection (RFC 0070, Protocol 2.21.0)
 
 The generated hedge cases use `project: "replacement-funding"`.
 The driver compares structural HDG/ESC codes and a separate verification

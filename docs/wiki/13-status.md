@@ -1,5 +1,13 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-03** for release-prepared **2.17.0**. Core/CLI
+**2.17.0** pair with the accepted release contract Protocol **2.21.0** and
+unchanged Format **2.0**. RFC 0070 implementation merged via PR #245 at
+`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`; the later multifamily deal-level
+cash-on-cash correction is also included. RFC 0070 remains `accepted` until
+shipment and independently verified publication. The preparation record is
+[2.17.0](../releases/2.17.0-preparation.md); tagging remains an owner decision.
+
 Reconciled **2026-10-02** for published and verified **2.16.0**. Core/CLI
 **2.16.0**, signing **0.2.20** and batch **0.8.15** are published from the
 immutable `v2.16.0` tag with verified provenance. Stable Protocol **2.20.0**
@@ -30,8 +38,8 @@ See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.8**, report **0.8.20**, lake **0.2.4** and hospitality/data-center
-module packages **0.1.8** are source-only package generations. The
+Excel **0.9.9**, report **0.8.21**, lake **0.2.5** and hospitality/data-center
+module packages **0.1.9** are source-only package generations. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
@@ -39,6 +47,18 @@ from source. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
+
+The 2.17.0 prepared generation passes build, **2,801 workspace tests / 144
+files**, test typechecks, **734 default conformance checks**, **158/158 portable
+cases with no skips**, all three capability profiles, schema/package/lockfile/
+version/index/code/release-record guards, the intended `v2.17.0` tag check,
+static release readiness, lint and the documentation build. Receipt updates
+change only engine/Protocol identity. All accepted RFC 0070 normative/API/
+conformance bytes and merged financial runtime remain unchanged. The initial
+CLI worker-reporting timeout and docs-link failures are resolved; full results,
+environment and limitations are in [the preparation record](../releases/2.17.0-preparation.md).
+Owner review, final-head CI and trusted-publisher confirmation precede tagging.
+The 2.16.0 evidence below remains historical publication evidence.
 
 Release run 37075007121 succeeded on tagged commit
 `a1ca815e2aee5da374caf7627ba3702849ecd257`. All four npm versions/`latest`
@@ -554,21 +574,12 @@ The guards:
 
 ## Remaining work
 
-- Review the separately authorized development-tree implementation of
-  [RFC 0070](../rfcs/0070-replacement-cap-funding-and-payment-binding.md).
-  The owner authorized implementation on 2026-10-03 against canonical
-  `48fa1086671c0c229562457b98efd0a378969f78` and frozen `29c42c7`.
-  Funding is a closed escrow/outright union; outright binds the exact current
-  §4.26 variant/row and ordered series/currency snapshot. Structural validation
-  remains synchronous; complete outright claims require the separate async
-  verifier's `verified` result. CLI validate/verify and MCP enforce that split;
-  the web panel explicitly displays unchecked structural validation.
-  Existing legacy fixtures preserve their bytes. ESC-04 now also refuses
-  missing sources_uses/uses under the already-released escrow requirement.
-  RFC status remains accepted. Released Format 2.0 / Protocol 2.20.0 /
-  core-CLI 2.16.0 and v2.16.0 are unchanged; no release is prepared.
-  TASK-3294 remains SCOPED pending a separately authorized released pairing;
-  TASK-3295 remains downstream.
+- Owner review and tagging of the complete 2.17.0 prepared generation follow
+  [the release record](../releases/2.17.0-preparation.md). RFC 0070 implementation
+  is merged via PR #245 at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`;
+  its accepted semantics and synchronous/async verification boundary are frozen.
+  Publication and independent verification must precede the `implemented`
+  lifecycle transition. No StackUW adoption is authorized here.
 
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
@@ -619,6 +630,7 @@ aggregate equity leaves it uncomputed. The debt fallback keeps RFC 0066's
 role-free refusal on ambiguous multi-tranche maps. Excel uses the same formula.
 
 This corrects implementation drift from Format §4.19. No sponsor/LP metrics,
-format/protocol/schema changes or package release are included. Other packs'
+format/protocol/schema changes were included in that correction. The correction
+is carried by the 2.17.0 generation above. Other packs'
 sponsor-denominator formulas remain follow-up work. Synthetic GD05-style
 coverage uses public invented inputs, never private corpus amounts.

@@ -432,7 +432,7 @@ to 2.17.1; engine/package versions are unchanged. Run the focused suites with:
 npm run conformance -- --tier=cash-flow,property-cash-flow-assembly
 ```
 
-## RFC 0070 replacement funding (development tree; unreleased)
+## RFC 0070 replacement funding (Protocol 2.21.0)
 
 `hedge/0070-*` adds 57 cases: legacy/explicit escrow, outright/zero payments,
 same-day identity, expiration-independent timing, malformed or ambiguous references,
