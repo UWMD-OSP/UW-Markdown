@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { rfcCopies, docsVersions, docsNpmPackages } from './docs-site-sources.mjs';
+import { rfcCopies, docsVersions, docsNpmPackages, docsPublishedGeneration } from './docs-site-sources.mjs';
 
 test('new RFCs are discovered without script edits; special routes survive', () => {
   const root = mkdtempSync(join(tmpdir(), 'uwmd-docs-'));
@@ -49,8 +49,33 @@ test('site versions track independent package and standard versions', () => {
   }
 });
 
-test('the npm package list follows the release scope of the core generation', () => {
-  assert.deepEqual(docsNpmPackages('2.17.0'), ['@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch']);
-  assert.ok(docsNpmPackages('2.18.0').includes('@uwmd/module-hospitality'));
-  assert.ok(!docsNpmPackages('2.17.0').includes('@uwmd/excel'));
+test('the npm list names the published generation, never a prepared one', () => {
+  const root = mkdtempSync(join(tmpdir(), 'uwmd-npm-'));
+  const write = (text) => writeFileSync(join(root, 'CHANGELOG.md'), text);
+  const ORIGINAL = ['@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch'];
+  try {
+    // Release-prepared 2.18.0: wider scope, but nothing published yet.
+    write([
+      '## [Unreleased]', '',
+      '## [2.18.0] - 2026-11-01', '', '### Added', '- modules', '',
+      '## [2.17.0] - 2026-10-03', '', '### Released', '- core, CLI, signing, batch', '',
+      '### Released contract — Protocol 2.21.0', '',
+      '## [2.16.0] - 2026-10-02', '', '### Released', '',
+    ].join('\n'));
+    assert.equal(docsPublishedGeneration(root), '2.17.0');
+    assert.deepEqual(docsNpmPackages(root), ORIGINAL);
+
+    // Post-publication reconciliation adds `### Released`; the modules now count.
+    write(['## [2.18.0] - 2026-11-01', '', '### Released', '', '## [2.17.0] - 2026-10-03', '', '### Released', ''].join('\n'));
+    assert.equal(docsPublishedGeneration(root), '2.18.0');
+    assert.ok(docsNpmPackages(root).includes('@uwmd/module-hospitality'));
+    assert.ok(!docsNpmPackages(root).includes('@uwmd/excel'));
+
+    // A heading that merely starts with "Released" is not the publication marker.
+    write(['## [2.17.0] - 2026-10-03', '', '### Released contract — Protocol 2.21.0', ''].join('\n'));
+    assert.throws(() => docsPublishedGeneration(root), /Cannot find a released generation/);
+  } finally {
+    // root is the exact directory returned by mkdtempSync, under the OS temp directory.
+    rmSync(root, { recursive: true, force: true });
+  }
 });

@@ -480,9 +480,11 @@ single source of truth. All `docs/rfcs/*.md` files are discovered automatically;
 the RFC index and template retain their special URLs. Release labels read the
 core manifest and protocol constants via `scripts/docs-site-sources.mjs`, and
 the "on npm" list on the home release card and Downloads page comes from
-`docsNpmPackages()`, which reads the release workflow's scope in
-`scripts/release-packages.mjs`, so a source-only package is never shown as
-published. Prebuild writes all of these to `about/versions.json`.
+`docsNpmPackages()`: the newest CHANGELOG section carrying `### Released` (added
+only by post-publication reconciliation) names the published generation, and
+`releasePackagesForGeneration()` gives its scope. A release-prepared tree, whose
+manifest already carries the next version and possibly a wider scope, therefore
+never shows unpublished packages as on npm. Prebuild writes all of these to `about/versions.json`.
 Config: `.vitepress/config.ts`. Dev: `npm run dev`;
 build: `npm run build`.
 

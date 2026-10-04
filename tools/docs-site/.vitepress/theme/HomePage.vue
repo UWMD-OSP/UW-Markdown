@@ -20,9 +20,9 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
         </nav>
       </div>
 
-      <aside class="uw-release-card" aria-label="Current release status">
+      <aside class="uw-release-card" aria-label="Version summary">
         <div class="uw-panel-bar">
-          <span>CURRENT RELEASE</span>
+          <span>VERSIONS</span>
           <span class="uw-status uw-status-valid">MIT</span>
         </div>
         <dl>

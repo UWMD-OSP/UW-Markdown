@@ -332,6 +332,6 @@ console.log(`\nCopied ${count} files.`);
 await mkdir(join(SITE_ROOT, 'about'), { recursive: true });
 await writeFile(
   join(SITE_ROOT, 'about/versions.json'),
-  JSON.stringify({ ...versions, npm: docsNpmPackages(versions.core) }),
+  JSON.stringify({ ...versions, npm: docsNpmPackages(REPO_ROOT) }),
   'utf8',
 );
