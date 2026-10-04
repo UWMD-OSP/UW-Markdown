@@ -1,9 +1,9 @@
 # UW Lite and UWX
 
-UW Markdown supports two complementary Markdown files.
+UW Markdown supports two complementary Markdown files. Both are current representations with their own specifications.
 
-- **`.uw.md` — UW Lite** is a compact, readable deal summary for simple hand authoring, review, and dependable machine extraction through explicit `uw:` field anchors.
 - **`.uwx.md` — UWX** is the complete structured underwriting record. It carries the full section model, append-only provenance, detailed assumptions, calc inputs, and the structured editor workflow.
+- **`.uw.md` — UW Lite** is a compact, readable deal summary for simple hand authoring, review, and dependable machine extraction through explicit `uw:` field anchors.
 
 Use Lite when a person needs a lean, familiar-looking underwriting summary. Use UWX as the working record whenever the deal needs full structured underwriting.
 
@@ -33,12 +33,9 @@ uwmd convert broker-summary.uw.md --to uwx
 
 # Create a readable Lite summary from a UWX record
 uwmd convert underwriting.uwx.md --to lite --projection-report lite-loss.json
-
-# Rename a legacy structured .uw.md without changing its bytes
-uwmd migrate-source legacy-structured.uw.md
 ```
 
-A legacy structured `.uw.md` is detected from its fenced UWX content and can be migrated byte-for-byte to `.uwx.md`. Lite files remain `.uw.md`.
+A legacy structured `.uw.md` (one whose sections are `uw:section` JSON fences) is UWX content under the old extension. Current readers detect it and report it as legacy. Rename it to `.uwx.md` without changing its bytes. `migrateLegacyUWMarkdown` in `@uwmd/core` plans exactly that rename and refuses files that are not UWX content. Lite files remain `.uw.md`.
 
 ## A minimal Lite field
 

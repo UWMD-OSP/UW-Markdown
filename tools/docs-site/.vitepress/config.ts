@@ -3,11 +3,12 @@ import { fileURLToPath } from 'node:url';
 import { docsVersions } from '../../../scripts/docs-site-sources.mjs';
 
 const versions = docsVersions(fileURLToPath(new URL('../../../', import.meta.url)));
+const SITE_DESCRIPTION =
+  'One verifiable underwriting record for every CRE deal: the open .uwx.md standard that keeps deal facts, assumptions, narrative, and provenance together, with financial results computed by deterministic code.';
 
 export default defineConfig({
   title: 'UW Markdown',
-  description:
-    'An open, AI- and code-native interoperability standard for commercial real-estate underwriting.',
+  description: SITE_DESCRIPTION,
   cleanUrls: true,
   lastUpdated: true,
   // XSD is copied to public/ as a downloadable static asset.
@@ -20,7 +21,7 @@ export default defineConfig({
     ['meta', { property: 'og:title', content: 'UW Markdown' }],
     ['meta', {
       property: 'og:description',
-      content: 'An open, AI- and code-native interoperability standard for commercial real-estate underwriting.',
+      content: SITE_DESCRIPTION,
     }],
     ['meta', { property: 'og:site_name', content: 'UW Markdown' }],
     ['meta', { property: 'og:image', content: 'https://www.uwmd.org/og-v2.png' }],
@@ -28,7 +29,7 @@ export default defineConfig({
     ['meta', { name: 'twitter:title', content: 'UW Markdown' }],
     ['meta', {
       name: 'twitter:description',
-      content: 'An open, AI- and code-native interoperability standard for commercial real-estate underwriting.',
+      content: SITE_DESCRIPTION,
     }],
     ['meta', { name: 'twitter:image', content: 'https://www.uwmd.org/og-v2.png' }],
   ],
@@ -37,38 +38,84 @@ export default defineConfig({
     siteTitle: 'UW Markdown',
 
     nav: [
-      { text: 'About', link: '/about/' },
-      { text: 'Specification', link: '/spec/format' },
-      { text: 'Protocol', link: '/spec/protocol' },
-      { text: 'Examples', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
-      { text: 'Viewer', link: '/viewer/' },
+      { text: 'Why UWMD', link: '/about/', activeMatch: '^/about/$' },
       {
-        text: 'Tools',
+        text: 'Examples',
         items: [
-          { text: 'Getting started', link: '/tutorials/your-first-uwmd-file' },
-          { text: 'Downloads', link: '/downloads/' },
-          { text: 'CLI and library', link: '/guide/tools' },
-          { text: 'Cookbook', link: '/guide/cookbook' },
-          { text: 'Calc conventions', link: '/guide/calc-conventions' },
+          { text: 'Open a deal in the viewer', link: '/viewer/' },
+          { text: 'Edit a deal in the reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
+          { text: 'All example records (GitHub)', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
+        ],
+      },
+      {
+        text: 'Get started',
+        activeMatch: '^/(tutorials|downloads)/',
+        items: [
+          { text: 'Quickstart', link: '/tutorials/quickstart' },
+          { text: 'Your first record, by hand', link: '/tutorials/your-first-uwmd-file' },
+          { text: 'Templates and downloads', link: '/downloads/' },
+          { text: 'UWX and UW Lite', link: '/guide/lite-and-uwx' },
+          { text: 'Glossary', link: '/guide/glossary' },
           { text: 'FAQ', link: '/guide/faq' },
-          { text: 'Verification receipts', link: '/guide/receipts' },
-          { text: 'Data lake on-ramp', link: '/guide/data-lake' },
-          { text: 'Reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
-          { text: 'For AI and agents', link: '/ai/' },
-          { text: 'Bounded agent skills', link: '/ai/skills' },
-          { text: 'Schemas', link: '/spec/schemas/' },
-          { text: 'Conformance', link: '/conformance/' },
         ],
       },
       {
-        text: 'v2.0',
+        text: 'Integrate',
+        activeMatch: '^/(guide|ai)/',
         items: [
-          { text: 'Version matrix', link: '/about/versions' },
-          { text: 'Changelog', link: '/about/changelog' },
-          { text: 'Roadmap', link: '/about/roadmap' },
+          {
+            items: [
+              { text: 'Tools and packages', link: '/guide/tools' },
+              { text: 'Cookbook', link: '/guide/cookbook' },
+              { text: 'Verification receipts', link: '/guide/receipts' },
+              { text: 'Portfolio and data lake', link: '/guide/data-lake' },
+            ],
+          },
+          {
+            text: 'Calculation',
+            items: [
+              { text: 'Calc conventions', link: '/guide/calc-conventions' },
+              { text: 'Calculation context', link: '/guide/calculation-context' },
+              { text: 'Property cash flows', link: '/guide/property-cash-flow' },
+              { text: 'Lease-up cash flows', link: '/guide/lease-up-cash-flow' },
+            ],
+          },
+          {
+            text: 'AI and services',
+            items: [
+              { text: 'Building with AI', link: '/ai/' },
+              { text: 'Bounded agent skills', link: '/ai/skills' },
+              { text: 'HTTP and MCP bindings', link: '/spec/bindings/' },
+            ],
+          },
         ],
       },
-      { text: 'Source', link: 'https://github.com/UWMD-OSP/UW-Markdown' },
+      {
+        text: 'Reference',
+        activeMatch: '^/(spec|conformance)/',
+        items: [
+          {
+            text: 'Normative contract',
+            items: [
+              { text: `Format specification (v${versions.format})`, link: '/spec/format-v2' },
+              { text: `Protocol (${versions.protocol})`, link: '/spec/protocol' },
+              { text: 'UW Lite specification', link: '/spec/lite' },
+              { text: 'Schemas', link: '/spec/schemas/' },
+              { text: 'Conformance corpus', link: '/conformance/' },
+            ],
+          },
+          {
+            text: 'Project',
+            items: [
+              { text: 'Version matrix', link: '/about/versions' },
+              { text: 'Changelog', link: '/about/changelog' },
+              { text: 'Roadmap', link: '/about/roadmap' },
+              { text: 'RFCs', link: '/about/rfcs/' },
+              { text: 'Governance', link: '/about/governance' },
+            ],
+          },
+        ],
+      },
     ],
 
     sidebar: {
@@ -76,36 +123,69 @@ export default defineConfig({
         {
           text: 'Get started',
           items: [
-            { text: 'Your first .uw.md', link: '/tutorials/your-first-uwmd-file' },
+            { text: 'Quickstart', link: '/tutorials/quickstart' },
+            { text: 'Your first record, by hand', link: '/tutorials/your-first-uwmd-file' },
+            { text: 'Templates and downloads', link: '/downloads/' },
+            { text: 'UWX and UW Lite', link: '/guide/lite-and-uwx' },
             { text: 'Glossary', link: '/guide/glossary' },
-            { text: 'Tools comparison', link: '/guide/tools' },
-            { text: 'Calculation context', link: '/guide/calculation-context' },
-            { text: 'Lease-up cash flows', link: '/guide/lease-up-cash-flow' },
-            { text: 'UW Lite and UWX', link: '/guide/lite-and-uwx' },
-            { text: 'Verification receipts', link: '/guide/receipts' },
-            { text: 'Cookbook', link: '/guide/cookbook' },
-            { text: 'Calc conventions', link: '/guide/calc-conventions' },
             { text: 'FAQ', link: '/guide/faq' },
+          ],
+        },
+        {
+          text: 'Next',
+          items: [
+            { text: 'Tools and packages', link: '/guide/tools' },
+            { text: 'Verification receipts', link: '/guide/receipts' },
+            { text: 'Building with AI', link: '/ai/' },
           ],
         },
       ],
       '/guide/': [
         {
-          text: 'Reference',
+          text: 'Get started',
           items: [
+            { text: 'Quickstart', link: '/tutorials/quickstart' },
+            { text: 'UWX and UW Lite', link: '/guide/lite-and-uwx' },
             { text: 'Glossary', link: '/guide/glossary' },
-            { text: 'Tools comparison', link: '/guide/tools' },
-            { text: 'Calculation context', link: '/guide/calculation-context' },
-            { text: 'Lease-up cash flows', link: '/guide/lease-up-cash-flow' },
-            { text: 'UW Lite and UWX', link: '/guide/lite-and-uwx' },
-            { text: 'Verification receipts', link: '/guide/receipts' },
-            { text: 'Feeding .uw.md to an LLM', link: '/guide/feeding-uwmd-to-an-llm' },
+            { text: 'FAQ', link: '/guide/faq' },
           ],
         },
         {
-          text: 'Get started',
+          text: 'Integrate',
           items: [
-            { text: 'Your first .uw.md', link: '/tutorials/your-first-uwmd-file' },
+            { text: 'Tools and packages', link: '/guide/tools' },
+            { text: 'Cookbook', link: '/guide/cookbook' },
+            { text: 'Verification receipts', link: '/guide/receipts' },
+            { text: 'Portfolio and data lake', link: '/guide/data-lake' },
+            { text: 'Building with AI', link: '/ai/' },
+          ],
+        },
+        {
+          text: 'Calculation',
+          items: [
+            { text: 'Calc conventions', link: '/guide/calc-conventions' },
+            { text: 'Calculation context', link: '/guide/calculation-context' },
+            { text: 'Property cash flows', link: '/guide/property-cash-flow' },
+            { text: 'Lease-up cash flows', link: '/guide/lease-up-cash-flow' },
+          ],
+        },
+      ],
+      '/ai/': [
+        {
+          text: 'AI and agents',
+          items: [
+            { text: 'Building with AI', link: '/ai/' },
+            { text: 'Bounded agent skills', link: '/ai/skills' },
+            { text: 'MCP binding', link: '/spec/mcp' },
+            { text: 'HTTP binding', link: '/spec/http' },
+          ],
+        },
+        {
+          text: 'Related',
+          items: [
+            { text: 'Verification receipts', link: '/guide/receipts' },
+            { text: 'Calc conventions', link: '/guide/calc-conventions' },
+            { text: 'Tools and packages', link: '/guide/tools' },
           ],
         },
       ],
@@ -113,14 +193,15 @@ export default defineConfig({
         {
           text: 'Specifications',
           items: [
-            { text: 'Format spec (v1.1)', link: '/spec/format' },
             { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
+            { text: 'Format spec (v1.1)', link: '/spec/format' },
             { text: `Protocol spec (${versions.protocol})`, link: '/spec/protocol' },
+            { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
             { text: 'XML mapping (v1.0)', link: '/spec/xml' },
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
-            { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
             { text: 'Verification receipt (v1.0)', link: '/spec/receipt' },
             { text: 'Composition spec (v1.0)', link: '/spec/composition' },
+            { text: 'Transport bindings', link: '/spec/bindings/' },
             { text: 'HTTP binding (v1.0)', link: '/spec/http' },
             { text: 'MCP binding (v1.0)', link: '/spec/mcp' },
             { text: 'OpenAPI 3.1 contract', link: '/spec/UW_HTTP_API_v1.openapi.json' },

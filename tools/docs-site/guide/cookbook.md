@@ -88,7 +88,8 @@ report before treating the Lite output as a complete representation.
    layout, or Excel export will reject it with `EXCEL-EMIT-PATH`.
 3. Use only Excel-mappable builtins in pack formulas; `coalesce` and null-aware
    `avg` intentionally reject with `EXCEL-EMIT-FN`.
-4. Add a pack test and confirm Excel-to-engine parity to six decimals.
+4. Add a pack test and confirm exact Excel-to-engine parity at the declaration's
+   effective `round_to` (protocol §VIII.5); a native recalculation test is the evidence.
 
 Pack and asset-class changes require normal project coordination; they are not
 edits to a single deal file.

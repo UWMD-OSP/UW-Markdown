@@ -7,9 +7,11 @@ outline: false
 
 # Reference Web Viewer
 
-Open a `.uw.md` underwriting file without installing anything. The reference
-viewer reads the file locally in your browser and presents its deal summary,
-quick metrics, major sections, pipeline state, flags, and supersede history.
+Open a `.uwx.md` underwriting record without installing anything. The
+reference viewer reads the file locally in your browser and presents its deal
+summary, quick metrics, major sections, pipeline state, flags, and supersede
+history. It reads UWX records only; open a UW Lite `.uw.md` summary in the
+[reference editor](https://www.uwmd.org/editor/){target="_self"} instead.
 
 <div class="viewer-actions">
   <a class="viewer-action viewer-action--primary" href="https://www.uwmd.org/editor/?sample=/viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md" target="_self">Edit this sample</a>

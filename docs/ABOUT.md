@@ -1,94 +1,179 @@
 # About UW Markdown
 
-UW Markdown is an open standard for commercial real-estate underwriting
-data: one canonical, human-readable record per deal that AI agents,
-deterministic calculation engines, spreadsheets, and underwriting platforms
-can all read, verify, and extend without losing provenance. The format is
-Markdown with typed JSON sections (`.uwx.md`, plus a minimal `.uw.md` Lite),
-governed by a normative format spec, a protocol for conforming tools, JSON
-Schemas, and a conformance corpus that pins behavior with hundreds of
-executable assertions.
+UW Markdown is an open standard for commercial real-estate underwriting. Its
+central artifact is the **`.uwx.md` record**: one plain-text file per deal that
+holds the structured deal facts, the underwriting assumptions, the calculation
+inputs, the credit narrative, and the provenance of each piece. Spreadsheets,
+AI agents, underwriting applications, and data pipelines can all read the same
+record and check one another's work.
 
-## The problem it solves
+## The problem
 
-Underwriting data today lives in spreadsheets, PDFs, and proprietary
-platforms that cannot check each other's work. Numbers get retyped, models
-disagree, and the reasoning behind an assumption is lost the moment a file
-is exported. UW Markdown makes the *record itself* the interface: facts,
-narrative, and provenance in one portable file, with math that any
-conforming engine reproduces exactly.
+A typical deal passes through a rent roll in one spreadsheet, a T-12 in a PDF,
+an underwriting model in another workbook, a credit memo in a word processor,
+and eventually a row in someone's database. Each hand-off retypes numbers. Each
+copy can disagree with the others. The reason behind an assumption, such as why
+vacancy was normalized to 7% or why taxes were reassessed, lives in an email or
+in the analyst's head, and it is lost on export.
 
-## Three design commitments
+AI makes this both better and worse. Models are good at reading documents and
+drafting narrative. They are not a dependable source of financial arithmetic,
+and a figure a model "calculated" cannot be audited.
 
-**AI never does financial math.** Agents extract data and write narrative;
-every NOI, DSCR, LTV, IRR, and waterfall number is computed by
-deterministic calculation packs that the protocol pins to the digit. Two
-independent implementations produce identical results — including
-iterative ones like IRR and XIRR, whose bisection procedures are specified
-normatively.
+UW Markdown makes the record itself the interface. Facts, reasoning, and
+history travel together in one file. Financial outputs covered by a registered
+calculation pack or verifier can be recomputed by any conforming tool instead of
+taken on trust. Everything else the record states remains a represented fact or
+claim, attributed through its provenance.
 
-**State and verify, don't trust.** Complex structures — capital stacks,
-lease-up schedules, dated cash-flow series, distribution waterfalls — are
-*stated* in the document and *recomputed in full* by verifiers that never
-trust the stated aggregates. A verdict is `verified`, `failed`, or
-`unverifiable`; a promote split or an XIRR either reproduces or the
-document says so.
+## What a UWX record contains
 
-**Provenance is append-only.** Edits supersede prior blocks rather than
-destroying them; every block carries its `_meta` history. Verification
-receipts attest that a deal's outputs follow from its inputs under a named,
-versioned calculation pack, and blocks and receipts can be
-cryptographically signed.
+A `.uwx.md` file is Markdown with typed JSON blocks. A person can read it top
+to bottom like a memo, and software can parse each block against a published
+schema.
 
-## What ships today
+| Underwriting concept | Where it lives in the record |
+|---|---|
+| Property, ownership, rent roll, T-12 | Typed sections such as `property`, `rent_roll`, `operating_statement` |
+| Market and underwritten assumptions | `noi_model`, `assumptions`, `market_analysis`, with a rationale beside each figure |
+| Debt structure and sizing | `debt_structure`, `preliminary_sizing`, `capital_stack` |
+| Cash flows and returns | `dcf`, `lease_up_schedule`, `distribution_waterfall` |
+| Credit narrative | Ordinary Markdown prose between the blocks, plus `risk_assessment` |
+| Who wrote what, when, from which source | The `_meta` object on every block, with append-only revisions |
 
-- **Format 2.0** and **Protocol 2.3.0** — the normative specs, with JSON
-  Schemas for every cross-boundary type.
-- **`@uwmd/core`** — the reference TypeScript library: parser, validator,
-  renderer, byte-preserving editor, sandboxed calc engine, and every
-  verifier. **`@uwmd/cli`** wraps it as the `uwmd` command.
-  **`@uwmd/signing`** adds block and receipt signing.
-  **`@uwmd/batch`** indexes a directory of deals and emits a corpus-level
-  fact table for data-lake ingestion. All four are on npm.
-- **Representations** — the same record round-trips through UW JSON,
-  UW XML, and a CSV bundle, each with semantic digests; HTTP and MCP
-  bindings define how services and AI agents exchange it.
-- **Portfolio profiles** — a sidecar that relates deals, borrowers, loans,
-  and properties across files, with registry-validated edges.
-- **A conformance corpus** of executable fixture/expected pairs (396
-  assertions and growing) that any implementation, in any language, can run
-  through the language-agnostic conformance driver.
+The [format specification](/spec/format-v2) defines every section. The
+[UWX and UW Lite guide](/guide/lite-and-uwx) explains how the complete record
+relates to the compact Lite summary.
 
-## The backbone, not the lake
+## Where it fits in an underwriting stack
 
-UW Markdown deliberately stops at the record. It defines no storage
-contract, no warehouse loaders, and no lake-layer aggregate math — those
-belong to the platforms that consume the standard. What it contributes is
-exactly what a data lake cannot retrofit later: canonical facts, stable
-identity (semantic digests), and a verifiable trust chain (receipts) for
-every row. The [data-lake guide](/guide/data-lake) shows the full pipeline
-with nothing but the published CLI and DuckDB.
+```text
+ Source documents ─┐
+ Analyst or AI ────┼──▶  .uwx.md record  ──▶  Deterministic calculation  ──▶  Excel workbook
+ Applications ─────┘    (facts, assumptions,   and verification               Credit memo / lender package
+                         narrative, provenance)  (validate, compute,           Underwriting platform
+                                                  issue receipts)              APIs and services
+                                                                               Portfolio analytics / data lake
+```
 
-Commercial products build on the standard — [underwriter.cc](https://underwriter.cc)
-is the first — but the standard itself is MIT-licensed and
-vendor-neutral: no part of it depends on any vendor SDK, service, or
-model provider.
+UW Markdown does not replace the spreadsheet, the underwriting platform, or the
+warehouse. It is the record those systems exchange. An analyst can keep
+modeling in Excel, an application can keep its own interface, and an agent can
+keep its own prompts. What they share is the deal record and the rules for
+computing from it.
 
-## How it's governed
+## How deterministic calculation works
 
-Changes to the specs go through an RFC process ([process and index](/about/rfcs/)),
-currently under owner-led governance with a published
-[roadmap](/about/roadmap) and [governance rules](/about/governance) that
-define the path to collaborative governance. Every accepted RFC is
-implemented against the conformance corpus before it is called done — and
-when implementation contradicts the RFC, the RFC records the erratum.
+**AI never does the financial math.** Agents and parsers may extract facts,
+classify them, flag gaps, and draft narrative. They never calculate NOI, DSCR,
+LTV, debt yield, cap rate, IRR, or waterfall splits. Where the standard defines a
+calculation, deterministic code performs it: a sandboxed expression engine
+evaluating versioned **calculation packs**, one per asset class. The
+multifamily pack, for example, derives cap rate, LTV, DSCR, debt yield,
+per-unit figures, and cash-on-cash from inputs stated in the record.
+
+The protocol pins the numeric model, including the rounding rule and the
+precision each kind of figure is quantized to (Protocol §VIII.5). Any conforming
+implementation that evaluates the same pack over the same inputs must produce
+the same quantized values. The [conformance corpus](/conformance/) states those
+expectations as fixture and expected-output pairs, and its language-agnostic
+runner can test an implementation written in any language.
+
+Where the protocol defines a verifier, for example for typed capital stacks,
+lease-up schedules, dated cash-flow series, and distribution waterfalls, the
+stated figures are recomputed from their stated inputs rather than trusted, and
+the verdict is `verified`, `failed`, or `unverifiable`. A record may also state
+values that no registered pack or verifier covers. Those remain represented
+facts and claims, not verified calculations, and validator cross-checks can
+only test them for consistency.
+
+The Excel exporter writes derived metrics as live workbook formulas driven by
+the same pack. Where the export covers a metric, the recalculated workbook
+matches the engine's quantized value exactly.
+
+## How provenance and verification work
+
+**Provenance is append-only.** Each block's `_meta` records the source, the
+actor (a person, the system, or an agent), the timestamp, and the confidence. An
+edit supersedes the earlier block instead of overwriting it, so the history
+stays in the file.
+
+**Verification receipts** are detached JSON files issued on request. A receipt
+binds the record's financial content to the outputs of a named, versioned
+calculation pack. Anyone can recompute it offline. A verified receipt shows two
+things: the financial content is unchanged since issuance, and the stated
+metrics follow from it. It does not show that the inputs are true, complete, or
+reasonable; whether the rent roll is real is still a diligence question. Editing
+a record never issues a receipt automatically. See
+[verification receipts](/guide/receipts).
+
+**Signing** is a separate capability. The optional `@uwmd/signing` package signs
+individual blocks and receipts so a recipient can check who issued them.
+
+## UWX and UW Lite
+
+`.uwx.md` is the complete structured record and the working file for
+underwriting. `.uw.md` (**UW Lite**) is a compact, readable deal summary with a
+small set of anchored fields, suited to hand authoring and quick review. Both
+are current representations with their own specifications. A Lite file compiles
+into UWX. A UWX record projects into Lite, and that projection reports any
+detail it leaves out.
+
+## What is available today
+
+- **The normative contract.** The [format specification](/spec/format-v2), the
+  [protocol](/spec/protocol) for readers, editors, calculation hosts, and agent
+  hosts, [JSON Schemas](/spec/schemas/) for every cross-boundary type, and the
+  [conformance corpus](/conformance/).
+- **The reference library and CLI.** `@uwmd/core` parses, validates, renders,
+  edits with byte preservation (a Tier-2 edit leaves every byte outside the
+  edited region unchanged), calculates, converts, and verifies. `@uwmd/cli` wraps it
+  as the `uwmd` command. Both are on npm.
+- **Companion packages on npm.** `@uwmd/signing` for block and receipt
+  signatures, and `@uwmd/batch`, which indexes a folder of deals into a corpus
+  fact table.
+- **Open-source packages not yet published to npm.** The Excel exporter, the
+  report renderer, the PostgreSQL lake adapter, and the hospitality and
+  data-center modules all build from source in the repository.
+- **Representations and bindings.** The same record round-trips through UW
+  JSON, UW XML, and a CSV bundle, each with a semantic digest. Optional HTTP and
+  MCP profiles describe how services and AI agents exchange it.
+- **Tools.** A [browser viewer](/viewer/), a calculation-aware
+  [reference editor](https://www.uwmd.org/editor/), and a VS Code extension.
+
+The [version matrix](/about/versions) is the authoritative list of current
+versions and of which packages are published.
+
+## The record, not the warehouse
+
+The standard stops at the record. It defines no storage contract and no
+lake-level aggregate math; those belong to the platforms that consume it. What
+it contributes is what a data lake cannot retrofit later: canonical facts,
+stable identity through semantic digests, and a verifiable trust chain through
+receipts. The [data-lake guide](/guide/data-lake) runs the whole pipeline with
+the published CLI and DuckDB. A source-only reference adapter, `@uwmd/lake`,
+shows one way to project records into PostgreSQL.
+
+Commercial products build on the standard, and
+[underwriter.cc](https://underwriter.cc) is the first. The standard itself is
+MIT-licensed and vendor-neutral. No part of it depends on a vendor SDK,
+service, or model provider.
 
 ## Start here
 
-- [Build your first file](/tutorials/your-first-uwmd-file) — the hands-on
-  introduction.
-- [Format spec](/spec/format) and [protocol](/spec/protocol) — the
-  normative contracts.
-- [For AI and agents](/ai/) — prompts, skills, and the MCP binding.
-- [Version matrix](/about/versions) — what version of what is current.
-- [Source on GitHub](https://github.com/UWMD-OSP/UW-Markdown).
+- [Quickstart](/tutorials/quickstart): create, validate, and verify a record in
+  a few commands.
+- [Open a complete deal](/viewer/) in the browser viewer.
+- [Building with AI](/ai/): the rules an agent follows, plus ready-made
+  instruction files.
+- [Tools and packages](/guide/tools): the integrator's reference.
+
+## How it is governed
+
+Changes to the specifications go through an [RFC process](/about/rfcs/). The
+project is currently under owner-led governance, with published
+[governance rules](/about/governance) that define the path to collaborative
+governance. An accepted RFC is implemented against the conformance corpus
+before it is called done. When implementation contradicts an RFC, the RFC
+records the erratum. Direction is tracked in the [roadmap](/about/roadmap) and
+releases in the [changelog](/about/changelog).

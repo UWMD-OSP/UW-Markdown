@@ -10,7 +10,7 @@ import { mkdir, copyFile, readFile, writeFile, rm, readdir, stat } from 'node:fs
 import { existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { rfcCopies, docsVersions } from '../../../scripts/docs-site-sources.mjs';
+import { rfcCopies, docsVersions, docsSiteVersions } from '../../../scripts/docs-site-sources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
@@ -86,7 +86,7 @@ const COPIES = [
   { from: 'docs/LEASE_UP_CASH_FLOW_WORKFLOW.md', to: 'guide/lease-up-cash-flow.md', title: 'Lease-up cash-flow workflow' },
   { from: 'docs/CALCULATION_CONTEXT.md', to: 'guide/calculation-context.md', title: 'Calculation context files' },
   { from: 'docs/GLOSSARY.md',    to: 'guide/glossary.md', title: 'Glossary' },
-  { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools comparison' },
+  { from: 'docs/TOOLS.md',       to: 'guide/tools.md',    title: 'Tools and packages' },
   { from: 'docs/UW_LITE_AND_UWX.md', to: 'guide/lite-and-uwx.md', title: 'UW Lite and UWX' },
   { from: 'docs/UW_RECEIPTS.md',     to: 'guide/receipts.md',     title: 'Verification receipts' },
   { from: 'docs/DATA_LAKE.md',       to: 'guide/data-lake.md',    title: 'UW Markdown → data lake' },
@@ -328,6 +328,7 @@ for (const c of COPIES) {
 
 console.log(`\nCopied ${count} files.`);
 
-// The release card uses the same source constants as the generated spec title.
+// The version card uses the same source constants as the generated spec title,
+// plus the published generation and its npm scope, kept as separate fields.
 await mkdir(join(SITE_ROOT, 'about'), { recursive: true });
-await writeFile(join(SITE_ROOT, 'about/versions.json'), JSON.stringify(versions), 'utf8');
+await writeFile(join(SITE_ROOT, 'about/versions.json'), JSON.stringify(docsSiteVersions(REPO_ROOT)), 'utf8');
