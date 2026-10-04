@@ -10,6 +10,22 @@ protocol, and each package each carry an independent semver).
 
 ## [2.17.0] - 2026-10-03
 
+### Released
+
+Published core/CLI **2.17.0**, signing **0.2.21** and batch **0.8.16** from
+annotated `v2.17.0` on `98dc5e4a040cf04f7b907a76e3d83825868d1d9f`.
+[Release run 37172975077](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37172975077)
+succeeded through trusted publishing with provenance. Every intended registry
+version and `latest` matches; all four `gitHead` values name the authorized
+commit. Integrity, registry/DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps/inclusion proofs/checkpoints and all 462 published file contents
+verify. The registry-installed CLI passes **158/158** portable cases, no skips.
+RFC 0070 is `implemented`; Protocol **2.21.0** is Stable, paired with Format
+**2.0**. No other package generation was published. The immutable tagged tree
+retains its neutral preparation records. Exact evidence is in
+`docs/releases/2.17.0-publication-evidence.json` and the verification method in
+`docs/releases/2.17.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **2.17.0** pair with Protocol **2.21.0** and Format **2.0**.
@@ -18,10 +34,11 @@ lake **0.2.5** and both reference modules **0.1.9** pin core **2.17.0**.
 Core's optional signing peer is **0.2.21**. Each dependent takes its existing
 patch-version step for the exact repin. The workflow scope remains core, CLI,
 signing and batch; the other package generations remain source-only. Module
-manifest contracts stay **0.1.0**. RFC 0070 remains `accepted` until shipment
-and independent publication verification. See `docs/releases/2.17.0-preparation.md`.
+manifest contracts stay **0.1.0**. RFC 0070 stayed `accepted` in the tagged
+preparation state; the Released evidence above records its verified lifecycle
+transition. See `docs/releases/2.17.0-preparation.md`.
 
-### Accepted contract — Protocol 2.21.0 (RFC 0070)
+### Released contract — Protocol 2.21.0 (RFC 0070)
 
 The frozen RFC 0070 implementation merged on canonical main through PR #245
 at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. This generation carries that

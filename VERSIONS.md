@@ -23,15 +23,22 @@ same protocol version.
 Release 2.17.0 pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0.
 Protocol 2.21.0 carries RFC 0070's closed replacement-funding union and exact
 modeled-payment binding, with synchronous structural validation and separate
-async digest verification. RFC 0070 is accepted; its implementation merged
-via PR #245 at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. The generation also
+async digest verification. RFC 0070 is implemented; Protocol 2.21.0 is Stable.
+Its implementation merged via PR #245 at
+`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`. The generation also
 includes the subsequently merged multifamily pack 1.0.1 deal-level cash-on-cash
 correction. Signing 0.2.21, batch 0.8.16, Excel 0.9.9, report 0.8.21, lake
 0.2.5 and both module packages 0.1.9 pin core 2.17.0 exactly. Core's optional
 signing peer is 0.2.21. The workflow scope remains core, CLI, signing and
 batch; the other package generations remain source-only. Module manifest
-contracts remain 0.1.0. Release preparation and subsequent publication evidence
-are separate records.
+contracts remain 0.1.0. Core/CLI 2.17.0, signing 0.2.21 and batch 0.8.16 are
+published from immutable annotated `v2.17.0` on
+`98dc5e4a040cf04f7b907a76e3d83825868d1d9f` through trusted publishing with provenance.
+Release run 37172975077 succeeded; all registry versions, `latest`, `gitHead`,
+signatures, attestations, Rekor checks, 462 published files and 158 delivered-CLI
+portable cases were independently verified. No other package generation shipped.
+Preparation and [publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md)
+remain separate records.
 
 Release 2.16.0 pairs core/CLI 2.16.0 with Protocol 2.20.0 and Format 2.0.
 Protocol 2.20.0 adds RFC 0069's four optional top-level student-housing
