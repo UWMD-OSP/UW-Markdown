@@ -207,7 +207,7 @@ describe('RFC 0043 contextual workbook export', () => {
     );
   });
 
-  it.each(['sum(dcf.annual_cash_flows@Y3.noi, 1)', '1 > 0', 'null', 'true', "'text'"])(
+  it.each(['1 > 0', 'null', 'true', "'text'", 'dcf.annual_cash_flows@Y3.noi > 0 ? 1 : 0'])(
     'explicitly refuses unsupported custom expression %s',
     async (expr) => {
       await expect(toWorkbook(file([expr]), { calculations: ['custom_0'] })).rejects.toThrowError(
@@ -215,6 +215,20 @@ describe('RFC 0043 contextual workbook export', () => {
       );
     }
   );
+
+  // RFC 0071: an unsupported function call is EXCEL-EMIT-FN here too, the code the
+  // core emitter gives an unmapped builtin. No Excel form of is_calendar_date exists.
+  it.each([
+    'sum(dcf.annual_cash_flows@Y3.noi, 1)',
+    'if(dcf.annual_cash_flows@Y3.noi > 0, 1, 0)',
+    "is_calendar_date('2026-10-03')",
+    'is_calendar_date(dcf.annual_cash_flows@Y3.noi)',
+    "dcf.annual_cash_flows@Y3.noi * is_calendar_date('2026-10-03')",
+  ])('refuses the unsupported function call in %s with EXCEL-EMIT-FN', async (expr) => {
+    await expect(toWorkbook(file([expr]), { calculations: ['custom_0'] })).rejects.toThrowError(
+      expect.objectContaining({ name: 'ExcelEmitError', code: 'EXCEL-EMIT-FN' })
+    );
+  });
 
   it('refuses missing and duplicate IDs and ambiguous ordinary path aliases', async () => {
     await expect(toWorkbook(file(), { calculations: ['absent'] })).rejects.toThrow('exactly one');

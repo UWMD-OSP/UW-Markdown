@@ -1,0 +1,6 @@
+{
+  "id": "date_45_document_impossible_date",
+  "label": "RFC 0071: Impossible date read from a section",
+  "formula": "is_calendar_date(date_probe.impossible)",
+  "deterministic": true
+}

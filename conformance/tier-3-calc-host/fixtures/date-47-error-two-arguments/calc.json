@@ -1,0 +1,6 @@
+{
+  "id": "date_47_error_two_arguments",
+  "label": "RFC 0071: Two arguments refuse",
+  "formula": "is_calendar_date('2026-10-03', '2026-10-04')",
+  "deterministic": true
+}

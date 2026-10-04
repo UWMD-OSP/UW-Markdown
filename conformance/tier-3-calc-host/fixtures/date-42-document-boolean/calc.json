@@ -1,0 +1,6 @@
+{
+  "id": "date_42_document_boolean",
+  "label": "RFC 0071: Boolean",
+  "formula": "is_calendar_date(probe_bool)",
+  "deterministic": true
+}

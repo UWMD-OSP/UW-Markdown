@@ -18,7 +18,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unimplemented RFC 0071,
+Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unreleased RFC 0071,
 remain outside the current released contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -596,11 +596,20 @@ The guards:
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
 - [RFC 0071](../rfcs/0071-calendar-date-predicate.md) is **accepted**
-  (2026-10-04) and not implemented. It defines an `is_calendar_date` §VIII.3
-  predicate, with a mandatory §X `requires_protocol` floor for modules that
-  call it.
-  - Implementation needs separate authorization. No spec, code, version or
-    release change has been made.
+  (2026-10-04), and its implementation is authorized. It defines an
+  `is_calendar_date` §VIII.3 predicate, with a mandatory §X
+  `requires_protocol` floor for modules that call it.
+  - **On `claude/implement-rfc-0071`:**
+    - the builtin, which reuses `parseISODate` behind a string check;
+    - Protocol §VIII.3, §VIII.9 and §X text, and the manifest-schema note;
+    - 48 tier-3 `date-NN` fixtures;
+    - unit, module-runtime, browser-parity, Excel-refusal and exhaustive
+      oracle tests.
+  - **Not released.** No version label moves, and the RFC stays `accepted`.
+  - **Release preparation assigns the §X floor.** It is `>=` the first
+    Protocol release that contains RFC 0071. Release preparation also moves
+    the reference host's Protocol label to that release. No current module
+    calls the predicate, so no manifest needs a floor yet.
   - RFC 0068 is to adopt the predicate in a later revision of its own.
   - No numeric-type predicate is authorized.
 - Repair the early-year day-count drift in `calc/day-count.ts`.

@@ -1,0 +1,6 @@
+{
+  "id": "date_30_invalid_slash_form",
+  "label": "RFC 0071: Slash-separated date",
+  "formula": "is_calendar_date('2026/10/03')",
+  "deterministic": true
+}

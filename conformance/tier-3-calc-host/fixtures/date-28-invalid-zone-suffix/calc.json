@@ -1,0 +1,6 @@
+{
+  "id": "date_28_invalid_zone_suffix",
+  "label": "RFC 0071: Date with a zone designator",
+  "formula": "is_calendar_date('2026-10-03Z')",
+  "deterministic": true
+}

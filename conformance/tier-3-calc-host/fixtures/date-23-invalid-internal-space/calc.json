@@ -1,0 +1,6 @@
+{
+  "id": "date_23_invalid_internal_space",
+  "label": "RFC 0071: Internal space",
+  "formula": "is_calendar_date('2026- 10-03')",
+  "deterministic": true
+}

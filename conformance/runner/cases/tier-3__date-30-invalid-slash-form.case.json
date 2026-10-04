@@ -1,0 +1,19 @@
+{
+  "id": "tier-3/date-30-invalid-slash-form",
+  "tier": "3",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/date-30-invalid-slash-form",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

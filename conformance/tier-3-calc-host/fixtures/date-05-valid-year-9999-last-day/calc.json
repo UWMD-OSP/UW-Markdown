@@ -1,0 +1,6 @@
+{
+  "id": "date_05_valid_year_9999_last_day",
+  "label": "RFC 0071: The last day of the range",
+  "formula": "is_calendar_date('9999-12-31')",
+  "deterministic": true
+}

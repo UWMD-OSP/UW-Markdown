@@ -1,0 +1,6 @@
+{
+  "id": "date_33_invalid_ordinal_date",
+  "label": "RFC 0071: ISO 8601 ordinal date",
+  "formula": "is_calendar_date('2026-276')",
+  "deterministic": true
+}

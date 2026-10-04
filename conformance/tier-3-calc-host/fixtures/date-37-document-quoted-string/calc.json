@@ -1,0 +1,6 @@
+{
+  "id": "date_37_document_quoted_string",
+  "label": "RFC 0071: Quoted YAML date string",
+  "formula": "is_calendar_date(probe_quoted)",
+  "deterministic": true
+}

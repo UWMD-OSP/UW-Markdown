@@ -17,10 +17,13 @@ affects:
 
 # RFC 0071: A calendar-date validity predicate for safe expressions
 
-**Accepted, not implemented.** A coding agent wrote this RFC, and the owner
-accepted it on 2026-10-04 (see the
-[owner acceptance record](#owner-acceptance-record-2026-10-04)). Acceptance
-authorizes no implementation, no spec or schema edit, and no version change.
+**Accepted; implementation authorized, not released.** A coding agent wrote
+this RFC, and the owner accepted it on 2026-10-04 (see the
+[owner acceptance record](#owner-acceptance-record-2026-10-04)). The owner
+separately authorized implementation the same day (see
+[Owner implementation authorization](#owner-implementation-authorization-2026-10-04)).
+The RFC stays `accepted` until the implementation ships and publication is
+verified.
 
 ## Summary
 
@@ -103,6 +106,83 @@ With it, RFC 0068's `CC-MOD-MH-05` can be written as
   2.22.0 and 2.18.0 are provisional only. Published Format 2.0, Protocol
   2.21.0 and core/CLI 2.17.0 are unchanged.
 - **Next decision.** Whether to authorize implementation.
+
+## Owner implementation authorization (2026-10-04)
+
+- **Decision.** Jared separately authorized implementation of the frozen
+  accepted contract on 2026-10-04, after PR #249 merged at canonical `main`
+  `a1b3a747f5dcd3c42f6d8159305bba0774d71366`.
+- **Scope.** RFC 0071 only. The authorization excludes:
+  - the `actualDays()` years-0000–0099 fix;
+  - any change to RFC 0068;
+  - a numeric-type predicate;
+  - release preparation and final version selection;
+  - changes to unrelated financial semantics.
+- **Status.** The RFC stays `accepted` until the implementation ships in a
+  release and its publication is independently verified.
+
+## Implementation notes
+
+Implemented on `claude/implement-rfc-0071` from `a1b3a74`. The notes below
+record where the implementation differs from the text above, or makes it more
+specific.
+
+1. **The builtin.** `BUILTINS.is_calendar_date` in `calc/builtins.ts` checks
+   arity, then returns `typeof value === 'string' && parseISODate(value) !== null`.
+   - Custom calculations, module calculations, module rules, and both the
+     `@uwmd/core` and `@uwmd/core/browser` entry points reach this one
+     function through the one evaluator.
+   - No rule-specific machinery was added, and no new public symbol.
+2. **Publication-neutral floor wording.** The §X text and the schema note
+   require a Protocol version at or above the first release that contains
+   RFC 0071. Release preparation assigns the exact first compatible version;
+   nothing in this implementation selects it.
+   - No version label moves outside release preparation, following the RFC
+     0070 implementation precedent.
+   - A comparator such as `>2.21.0` is explicitly ruled out, because a later
+     2.21.x release without RFC 0071 would satisfy it.
+3. **No module needs a floor yet.** No current module calls the predicate, so
+   this PR changes no manifest's `requires_protocol`.
+   - **Test-only floor.** `module-runtime.test.ts` uses a toy manifest whose
+     floor is a constant named `HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY`.
+     The constant is not a selected version. It exists only to drive the
+     existing semver refusal path.
+   - **What the test shows.** Hosts at `2.21.0` and at a hypothetical
+     `2.21.1` refuse that manifest through `PROTO-MOD-030`, while a
+     `>2.21.0` range wrongly admits `2.21.1`.
+   - **Until release preparation moves the label**, the reference host
+     advertises 2.21.0. An adopting module, RFC 0068 included,
+   therefore loads by default only from the first release that contains RFC
+   0071, which is the intended §X behaviour.
+4. **Conformance.** The tier-3 corpus gained 48 fixtures, `date-01` to
+   `date-48`, with generated v2 cases:
+   - literal matrix rows;
+   - document-sourced type and absence rows;
+   - the arity and argument-propagation errors.
+
+   The module-rule mapping is covered by unit tests on a toy manifest in
+   `module-runtime.test.ts`, as proposed:
+   - a bad date reports the rule's own code;
+   - the optional pattern is silent on absence;
+   - arity and argument errors report `MOD-RULE-ERROR`;
+   - the §X floor is refused through `PROTO-MOD-030`.
+5. **Excel.** No Excel form of the predicate is added.
+   - The core emitter refuses it with `EXCEL-EMIT-FN` on `emitFromAst`,
+     `emitExcelFormula` and `emitCalcExcelFormula`.
+   - The standalone `@uwmd/excel` custom-calculation export refuses every
+     function call before emission. It used to classify that refusal as
+     `EXCEL-EMIT-PATH`. It now classifies an unsupported function call,
+     `is_calendar_date` included, as `EXCEL-EMIT-FN`, so both export paths
+     agree.
+   - Conditionals and the other unsupported constructs keep
+     `EXCEL-EMIT-PATH`.
+   - Regression tests cover both paths: the predicate alone, the predicate
+     nested in arithmetic, and `sum` and `if` calls.
+6. **Oracle.** The property tests compare the builtin with a character-code
+   oracle that uses neither `parseISODate` nor `Date`. The comparison runs
+   exhaustively over 4,620,000 strings (year `0000`–`9999`, month `00`–`13`,
+   day `00`–`32`), which yields 3,652,425 valid dates. It also runs over
+   arbitrary strings and over non-string JSON values.
 
 ## Motivation
 

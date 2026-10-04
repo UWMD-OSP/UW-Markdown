@@ -1,0 +1,6 @@
+{
+  "id": "date_44_document_object",
+  "label": "RFC 0071: Object",
+  "formula": "is_calendar_date(date_probe.object)",
+  "deterministic": true
+}

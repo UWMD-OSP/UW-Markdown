@@ -219,6 +219,34 @@ array's own `length` still resolves; an inherited `map` does not.
 > same receipt digest. Newton's iterates depend on the association order of a
 > derivative sum no document pins.
 
+**Validity predicate:** `is_calendar_date(value)` ([RFC 0071](../rfcs/0071-calendar-date-predicate.md),
+accepted; Protocol §VIII.3). It returns `true` only for a string in the exact
+ASCII form `YYYY-MM-DD` that names a real proleptic Gregorian date, for years
+`0000`–`9999`, with `0000` a leap year. Everything else is `false`: `null`,
+absent paths, numbers, booleans, arrays, objects, padded or date-time strings,
+and impossible dates.
+- **Total.** It never returns `null`, and no argument value raises. A wrong
+  argument count is `CALC-TYPE-001`. An error inside the argument expression
+  propagates unchanged.
+- **Implementation.** It checks `typeof value === 'string'` first, then calls
+  the existing `parseISODate` from `calc/day-count.ts`. There is no second
+  calendar parser, and nothing uses `Date.parse`, a locale, a time zone or the
+  clock.
+- **Why the string check comes first.** `parseISODate`'s regex coerces its
+  argument, so `['2026-10-03']` would otherwise match.
+- **Modules.** Because the predicate never returns `null`, a module rule
+  calling it fires its own code on a bad date, not `MOD-RULE-ERROR`.
+- **Optional dates.** Use `x == null || is_calendar_date(x)`.
+- **Protocol floor.** A module that calls it must require a Protocol version
+  at or above the first release that contains RFC 0071 (Protocol §X).
+  Release preparation assigns that floor. `>2.21.0` would not do, because a
+  later 2.21.x patch would satisfy it.
+- **Excel.** There is no Excel mapping. Both the core emitter and the
+  `@uwmd/excel` custom-calculation export refuse it with `EXCEL-EMIT-FN`.
+- **Validity only.** The predicate does no date arithmetic. The separate
+  early-year `actualDays()` defect is tracked in `13-status.md` and is not
+  part of it.
+
 > Argument counts are validated; type mismatches raise `CALC-TYPE-001`. See
 > `calc/builtins.ts` for exact per-function rules.
 

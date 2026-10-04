@@ -1,0 +1,6 @@
+{
+  "id": "date_25_invalid_trailing_newline",
+  "label": "RFC 0071: Trailing newline",
+  "formula": "is_calendar_date('2026-10-03\n')",
+  "deterministic": true
+}

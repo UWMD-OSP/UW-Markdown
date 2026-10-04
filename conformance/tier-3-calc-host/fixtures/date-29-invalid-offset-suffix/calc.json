@@ -1,0 +1,6 @@
+{
+  "id": "date_29_invalid_offset_suffix",
+  "label": "RFC 0071: Date with a UTC offset",
+  "formula": "is_calendar_date('2026-10-03+00:00')",
+  "deterministic": true
+}

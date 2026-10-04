@@ -1,0 +1,6 @@
+{
+  "id": "date_26_invalid_date_time_zulu",
+  "label": "RFC 0071: Date-time with a Z designator",
+  "formula": "is_calendar_date('2026-10-03T00:00:00Z')",
+  "deterministic": true
+}

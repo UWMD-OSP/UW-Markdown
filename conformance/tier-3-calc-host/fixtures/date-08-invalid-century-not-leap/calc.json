@@ -1,0 +1,6 @@
+{
+  "id": "date_08_invalid_century_not_leap",
+  "label": "RFC 0071: Divisible by 100, not 400 (the Excel 1900 system accepts it)",
+  "formula": "is_calendar_date('1900-02-29')",
+  "deterministic": true
+}

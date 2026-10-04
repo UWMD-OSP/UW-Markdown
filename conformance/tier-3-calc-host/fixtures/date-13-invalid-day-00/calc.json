@@ -1,0 +1,6 @@
+{
+  "id": "date_13_invalid_day_00",
+  "label": "RFC 0071: Day 00",
+  "formula": "is_calendar_date('2026-10-00')",
+  "deterministic": true
+}

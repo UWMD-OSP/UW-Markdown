@@ -1,0 +1,6 @@
+{
+  "id": "date_21_invalid_leading_space",
+  "label": "RFC 0071: Leading space; no trimming",
+  "formula": "is_calendar_date(' 2026-10-03')",
+  "deterministic": true
+}

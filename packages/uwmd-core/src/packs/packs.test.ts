@@ -22,7 +22,7 @@ import {
   SENIOR_HOUSING_PACK,
   STUDENT_HOUSING_PACK,
 } from './index.js';
-import { emitExcelFormula, ExcelEmitError, emitFromAst } from './excel-emit.js';
+import { emitCalcExcelFormula, emitExcelFormula, ExcelEmitError, emitFromAst } from './excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
@@ -148,6 +148,21 @@ describe('emitExcelFormula', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(ExcelEmitError);
       expect((e as ExcelEmitError).code).toBe('EXCEL-EMIT-FN');
+    }
+  });
+
+  // RFC 0071: no Excel date function is locale-free, and Excel's 1900 date
+  // system treats 1900-02-29 as a real day. The predicate has no FUNCTION_MAP
+  // entry, so every emission path refuses it the way it refuses coalesce/avg.
+  it('refuses is_calendar_date with EXCEL-EMIT-FN on every emission path', () => {
+    const ranges = new Map([['deal.as_of_date', 'AsOfDate']]);
+    const attempts = [
+      () => emitFromAst(parseExpression('is_calendar_date(deal.as_of_date)'), { namedRanges: ranges }),
+      () => emitExcelFormula("deal.as_of_date == null || is_calendar_date(deal.as_of_date)", { namedRanges: ranges }),
+      () => emitCalcExcelFormula({ formula: 'if(is_calendar_date(deal.as_of_date), 1, 0)' }, { namedRanges: ranges }),
+    ];
+    for (const attempt of attempts) {
+      expect(attempt).toThrowError(expect.objectContaining({ name: 'ExcelEmitError', code: 'EXCEL-EMIT-FN' }));
     }
   });
 });

@@ -1,0 +1,6 @@
+{
+  "id": "date_03_valid_ordinary_date",
+  "label": "RFC 0071: An ordinary date",
+  "formula": "is_calendar_date('2026-10-03')",
+  "deterministic": true
+}

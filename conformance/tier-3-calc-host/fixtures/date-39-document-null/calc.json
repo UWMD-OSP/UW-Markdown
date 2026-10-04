@@ -1,0 +1,6 @@
+{
+  "id": "date_39_document_null",
+  "label": "RFC 0071: Explicit null; the result is false, never null",
+  "formula": "is_calendar_date(probe_null)",
+  "deterministic": true
+}

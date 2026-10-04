@@ -1,0 +1,6 @@
+{
+  "id": "date_04_valid_year_0000_leap",
+  "label": "RFC 0071: Year 0000 is a proleptic Gregorian leap year",
+  "formula": "is_calendar_date('0000-02-29')",
+  "deterministic": true
+}

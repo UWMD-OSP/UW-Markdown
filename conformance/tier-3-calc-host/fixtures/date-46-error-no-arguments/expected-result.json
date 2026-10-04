@@ -1,0 +1,9 @@
+{
+  "calc_id": "date_46_error_no_arguments",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-TYPE-001",
+    "category": "calc"
+  }
+}

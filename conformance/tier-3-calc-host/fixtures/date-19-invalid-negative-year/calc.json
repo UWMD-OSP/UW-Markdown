@@ -1,0 +1,6 @@
+{
+  "id": "date_19_invalid_negative_year",
+  "label": "RFC 0071: Negative year",
+  "formula": "is_calendar_date('-2026-10-03')",
+  "deterministic": true
+}

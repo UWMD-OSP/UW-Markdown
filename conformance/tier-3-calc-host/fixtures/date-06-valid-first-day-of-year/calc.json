@@ -1,0 +1,6 @@
+{
+  "id": "date_06_valid_first_day_of_year",
+  "label": "RFC 0071: Month and day lower bounds",
+  "formula": "is_calendar_date('2026-01-01')",
+  "deterministic": true
+}

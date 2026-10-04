@@ -19,9 +19,10 @@
 //      namedRanges.
 
 import fc from 'fast-check';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import type { ParsedUWFile } from '../types.js';
+import { BUILTINS } from './builtins.js';
 import { CalcError } from './errors.js';
 import { evaluate } from './evaluator.js';
 import { parseExpression, type Expr } from './parser.js';
@@ -255,6 +256,83 @@ describe('irr — the returned value is a root', () => {
         },
       ),
       { numRuns: 300 },
+    );
+  });
+});
+
+// ─── RFC 0071: is_calendar_date against an independent oracle ───────────────
+//
+// The oracle reads character codes and does integer arithmetic. It shares no
+// code with the implementation: it does not call `parseISODate`, and it does
+// not touch `Date` at all — `Date.UTC` maps years 0–99 to 1900–1999, which is
+// exactly the early-year range this predicate must get right.
+
+function oracleIsCalendarDate(value: unknown): boolean {
+  if (typeof value !== 'string' || value.length !== 10) return false;
+  const digit = (i: number): number => {
+    const c = value.charCodeAt(i);
+    return c >= 48 && c <= 57 ? c - 48 : -1;
+  };
+  for (const i of [0, 1, 2, 3, 5, 6, 8, 9]) if (digit(i) < 0) return false;
+  if (value.charCodeAt(4) !== 45 || value.charCodeAt(7) !== 45) return false;
+  const y = digit(0) * 1000 + digit(1) * 100 + digit(2) * 10 + digit(3);
+  const m = digit(5) * 10 + digit(6);
+  const d = digit(8) * 10 + digit(9);
+  if (m < 1 || m > 12 || d < 1) return false;
+  const leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+  const length = m === 2 ? (leap ? 29 : 28) : [4, 6, 9, 11].includes(m) ? 30 : 31;
+  return d <= length;
+}
+
+describe('is_calendar_date agrees with an independent calendar oracle (RFC 0071)', () => {
+  const isCalendarDate = (v: unknown) => BUILTINS.is_calendar_date!([v as never]);
+
+  it('on every YYYY-MM-DD string with year 0000–9999, month 00–13 and day 00–32', () => {
+    const pad = (n: number, w: number) => String(n).padStart(w, '0');
+    let checked = 0;
+    let valid = 0;
+    for (let y = 0; y <= 9999; y++) {
+      const yy = pad(y, 4);
+      for (let m = 0; m <= 13; m++) {
+        const mm = pad(m, 2);
+        for (let d = 0; d <= 32; d++) {
+          const s = `${yy}-${mm}-${pad(d, 2)}`;
+          const want = oracleIsCalendarDate(s);
+          if (isCalendarDate(s) !== want) expect.fail(`is_calendar_date('${s}') should be ${want}`);
+          if (want) valid++;
+          checked++;
+        }
+      }
+    }
+    expect(checked).toBe(10_000 * 14 * 33);
+    // 10,000 proleptic Gregorian years hold 2,425 leap years.
+    expect(valid).toBe(10_000 * 365 + 2_425);
+    // 4.62 million strings: about two seconds locally, given room for
+    // instrumented coverage runs and slower CI hosts.
+  }, 60_000);
+
+  it('on arbitrary strings, including near-miss date shapes', () => {
+    const chars = fc.constantFrom(
+      '0', '1', '2', '9', '-', ' ', '\t', '\n', 'T', 'Z', ':', '+', '/', '\uFF10', '\u2010', '\u00A0',
+    );
+    fc.assert(
+      fc.property(
+        fc.oneof(
+          fc.string(),
+          fc.string({ unit: chars, minLength: 8, maxLength: 12 }),
+          fc.date({ min: new Date('0000-01-01T00:00:00Z'), max: new Date('9999-12-31T00:00:00Z'), noInvalidDate: true })
+            .map((dt) => dt.toISOString().slice(0, 10)),
+        ),
+        (s) => isCalendarDate(s) === oracleIsCalendarDate(s),
+      ),
+      { numRuns: 2000 },
+    );
+  });
+
+  it('on non-string values of every JSON shape', () => {
+    fc.assert(
+      fc.property(fc.jsonValue().filter((v) => typeof v !== 'string'), (v) => isCalendarDate(v) === false),
+      { numRuns: 500 },
     );
   });
 });

@@ -1,0 +1,6 @@
+{
+  "id": "date_38_document_unquoted_yaml_date",
+  "label": "RFC 0071: Unquoted YAML date stays a string",
+  "formula": "is_calendar_date(probe_unquoted)",
+  "deterministic": true
+}

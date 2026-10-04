@@ -16,6 +16,11 @@ import {
 } from './index.js';
 import type { CalcEvaluationContext, ModuleCalcDecl } from '../protocol.js';
 import { computeResultsDigest, type UWReceiptResult } from '../receipts.js';
+import {
+  BUILTINS as BROWSER_BUILTINS,
+  evaluateCalc as browserEvaluateCalc,
+  parseUWFile as browserParseUWFile,
+} from '../browser.js';
 
 const FIXTURE = `---
 uw_version: "1.1"
@@ -809,6 +814,7 @@ describe('Tier-3 surface is closed to the spec', () => {
       'sum', 'avg', 'min', 'max', 'coalesce', 'if', 'round',
       'abs', 'floor', 'ceil', 'sqrt', 'pow', 'log', 'exp',
       'pmt', 'fv', 'pv', 'nper', 'npv', 'irr',
+      'is_calendar_date',
     ].sort();
     expect(Object.keys(BUILTINS).sort()).toEqual(spec);
   });
@@ -892,5 +898,183 @@ describe('§VIII.2 ordinary identifiers over a variant map (RFC 0066)', () => {
 
   it('never consults a role from the public evaluate() context', () => {
     expect(() => evaluate(parseExpression('debt_structure.loan_amount'), ctx())).toThrow(/CALC-RESOLVE-002/);
+  });
+});
+
+// ─── RFC 0071: is_calendar_date ──────────────────────────────────────────────
+
+describe('is_calendar_date (RFC 0071)', () => {
+  // Frontmatter extension keys (§XII.1) carry the scalar probes, including an
+  // unquoted YAML date the strict subset must keep as a string; a JSON section
+  // carries the shapes YAML cannot (arrays, objects).
+  const DATE_DOC = `---
+uw_version: "2.0"
+deal_id: "uw_date_probe"
+asset_class: office
+probe_quoted: "2026-10-03"
+probe_unquoted: 2026-10-03
+probe_null: null
+probe_number: 20261003
+probe_bool: true
+---
+
+\`\`\`json uw:section=date_probe source=manual confidence=high
+{
+  "section_id": "date_probe",
+  "_meta": { "section_id": "date_probe", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual", "actor": "tester", "confidence": "high" },
+  "content": {
+    "valid": "2024-02-29",
+    "impossible": "2026-02-30",
+    "date_time": "2026-10-03T00:00:00Z",
+    "number": 20261003,
+    "boolean": false,
+    "null_value": null,
+    "array": ["2026-10-03"],
+    "object": { "date": "2026-10-03" }
+  }
+}
+\`\`\`
+`;
+  const dateCtx = (): CalcEvaluationContext => ({ parsed: parseUWFile(DATE_DOC), prior_results: {}, locale: 'en-US' });
+  const run = (formula: string) => evaluateCalc(decl('d', formula), dateCtx());
+  const literal = (s: string) => `is_calendar_date('${s}')`;
+
+  // The accepted case matrix, as literals. Every row is a boolean; none raises.
+  const VALID = ['2024-02-29', '2000-02-29', '2026-10-03', '2026-01-01', '2026-12-31', '0000-02-29', '9999-12-31'];
+  const INVALID: Array<[string, string]> = [
+    ['2023-02-29', 'not a leap year'],
+    ['1900-02-29', 'divisible by 100, not 400'],
+    ['2026-02-30', 'day beyond February'],
+    ['2026-04-31', '30-day month'],
+    ['2026-00-10', 'month 00'],
+    ['2026-13-01', 'month 13'],
+    ['2026-10-00', 'day 00'],
+    ['2026-1-01', 'one-digit month'],
+    ['2026-10-3', 'one-digit day'],
+    ['26-10-03', 'two-digit year'],
+    ['02026-10-03', 'five-digit year'],
+    ['+2026-10-03', 'signed year'],
+    ['-2026-10-03', 'negative year'],
+    ['+002026-10-03', 'expanded year'],
+    [' 2026-10-03', 'leading space'],
+    ['2026-10-03 ', 'trailing space'],
+    ['2026- 10-03', 'internal space'],
+    ['\t2026-10-03', 'leading tab'],
+    ['2026-10-03\n', 'trailing newline'],
+    ['2026-10-03\r\n', 'trailing CRLF'],
+    ['2026-10-03\u00A0', 'trailing no-break space'],
+    ['\uFEFF2026-10-03', 'leading byte-order mark'],
+    ['2026-10-03T00:00:00Z', 'date-time with zone'],
+    ['2026-10-03T00:00:00', 'local date-time'],
+    ['2026-10-03 00:00', 'space-separated time'],
+    ['2026-10-03Z', 'zone suffix'],
+    ['2026-10-03+00:00', 'offset suffix'],
+    ['2026/10/03', 'slash form'],
+    ['20261003', 'compact form'],
+    ['2026-W40-6', 'week date'],
+    ['2026-276', 'ordinal date'],
+    ['\uFF12\uFF10\uFF12\uFF16-10-03', 'full-width digits'],
+    ['\u0662\u0660\u0662\u0666-10-03', 'Arabic-Indic digits'],
+    ['2026\u201010\u201003', 'U+2010 hyphen'],
+    ['2026\u221210\u221203', 'U+2212 minus'],
+    ['', 'empty string'],
+    ['2026-1O-03', 'letter O for zero'],
+  ];
+
+  it('is true for every valid calendar date in the accepted matrix', () => {
+    for (const s of VALID) {
+      expect(run(literal(s)), s).toMatchObject({ ok: true, value: true });
+    }
+  });
+
+  it.each(INVALID)('is false, not an error, for %j (%s)', (s) => {
+    expect(run(literal(s))).toMatchObject({ ok: true, value: false });
+  });
+
+  it('reads document values without coercion: strings are tested, everything else is false', () => {
+    const cases: Array<[string, boolean]> = [
+      ['probe_quoted', true],
+      // The strict YAML subset keeps an unquoted date a string (format Appendix A).
+      ['probe_unquoted', true],
+      ['probe_null', false],
+      ['probe_number', false],
+      ['probe_bool', false],
+      ['date_probe.valid', true],
+      ['date_probe.impossible', false],
+      ['date_probe.date_time', false],
+      ['date_probe.number', false],
+      ['date_probe.boolean', false],
+      ['date_probe.null_value', false],
+      // A one-element array would match parseISODate's regex through String();
+      // the predicate's string check is what refuses it.
+      ['date_probe.array', false],
+      ['date_probe.object', false],
+      // Absent paths resolve to null (§VIII.2), and null is not a date.
+      ['date_probe.missing', false],
+      ['no_such_root', false],
+      ['no_such_root.deeper', false],
+    ];
+    for (const [path, expected] of cases) {
+      expect(run(`is_calendar_date(${path})`), path).toMatchObject({ ok: true, value: expected });
+    }
+  });
+
+  it('never returns null, so a rule fires on absence unless it opts out', () => {
+    expect(run('is_calendar_date(null)')).toMatchObject({ ok: true, value: false });
+    expect(run('date_probe.missing == null || is_calendar_date(date_probe.missing)')).toMatchObject({ ok: true, value: true });
+    expect(run('date_probe.impossible == null || is_calendar_date(date_probe.impossible)')).toMatchObject({ ok: true, value: false });
+  });
+
+  it('refuses the wrong arity with CALC-TYPE-001', () => {
+    for (const formula of ['is_calendar_date()', "is_calendar_date('2026-10-03', '2026-10-04')"]) {
+      const r = run(formula);
+      expect(r.ok, formula).toBe(false);
+      expect(r.error?.code, formula).toBe('CALC-TYPE-001');
+    }
+  });
+
+  it('lets an argument-evaluation error propagate unchanged', () => {
+    expect(run('is_calendar_date(1 / 0)').error?.code).toBe('CALC-DIV-ZERO');
+    expect(run('is_calendar_date(date_probe.__proto__)').error?.code).toBe('CALC-FORBIDDEN-PROP');
+    expect(run('is_calendar_date(1 && true)').error?.code).toBe('CALC-TYPE-001');
+  });
+
+  it('does not depend on the host time zone or the requested locale', () => {
+    const before = process.env.TZ;
+    try {
+      for (const tz of ['UTC', 'Pacific/Kiritimati', 'Pacific/Pago_Pago']) {
+        process.env.TZ = tz;
+        expect(run(literal('2024-02-29')).value).toBe(true);
+        expect(run(literal('2023-02-29')).value).toBe(false);
+      }
+    } finally {
+      if (before === undefined) delete process.env.TZ;
+      else process.env.TZ = before;
+    }
+    expect(evaluateCalc(decl('d', literal('2024-02-29')), { ...dateCtx(), locale: 'de-DE' }).value).toBe(true);
+  });
+
+  it('composes with existing string ordering once the value is known to be a date', () => {
+    expect(run("is_calendar_date(probe_quoted) && probe_quoted >= '2000-01-01'")).toMatchObject({ ok: true, value: true });
+    // `&&` short-circuits, so the ordered comparison never sees the number.
+    expect(run("is_calendar_date(probe_number) && probe_number >= '2000-01-01'")).toMatchObject({ ok: true, value: false });
+  });
+
+  it('is the same function, with the same answers, through the browser entry point', () => {
+    expect(BROWSER_BUILTINS).toBe(BUILTINS);
+    expect(BROWSER_BUILTINS.is_calendar_date).toBe(BUILTINS.is_calendar_date);
+    const browserCtx: CalcEvaluationContext = { parsed: browserParseUWFile(DATE_DOC), prior_results: {}, locale: 'en-US' };
+    const formulas = [
+      ...VALID.map(literal),
+      ...INVALID.map(([s]) => literal(s)),
+      'is_calendar_date(probe_unquoted)',
+      'is_calendar_date(date_probe.array)',
+      'is_calendar_date(date_probe.missing)',
+      'is_calendar_date()',
+      'is_calendar_date(1 / 0)',
+    ];
+    for (const formula of formulas) {
+      expect(browserEvaluateCalc(decl('d', formula), browserCtx), formula).toEqual(run(formula));
+    }
   });
 });

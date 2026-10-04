@@ -1,0 +1,6 @@
+{
+  "id": "date_35_invalid_non_ascii_hyphen",
+  "label": "RFC 0071: U+2010 hyphen separators",
+  "formula": "is_calendar_date('2026\u201010\u201003')",
+  "deterministic": true
+}

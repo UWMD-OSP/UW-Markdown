@@ -1,0 +1,6 @@
+{
+  "id": "date_15_invalid_one_digit_day",
+  "label": "RFC 0071: Day field one digit wide",
+  "formula": "is_calendar_date('2026-10-3')",
+  "deterministic": true
+}

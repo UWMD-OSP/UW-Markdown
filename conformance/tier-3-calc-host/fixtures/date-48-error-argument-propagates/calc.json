@@ -1,0 +1,6 @@
+{
+  "id": "date_48_error_argument_propagates",
+  "label": "RFC 0071: An argument-evaluation error propagates unchanged",
+  "formula": "is_calendar_date(1 / 0)",
+  "deterministic": true
+}

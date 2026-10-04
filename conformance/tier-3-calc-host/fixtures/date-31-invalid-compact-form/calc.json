@@ -1,0 +1,6 @@
+{
+  "id": "date_31_invalid_compact_form",
+  "label": "RFC 0071: ISO 8601 basic (compact) form",
+  "formula": "is_calendar_date('20261003')",
+  "deterministic": true
+}
