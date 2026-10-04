@@ -54,6 +54,23 @@ protocol, and each package each carry an independent semver).
 - **Not changed.** The separate `actualDays()` early-year defect is not
   addressed.
 
+### Fixed
+
+- **Early-year day counts follow the proleptic Gregorian calendar (§VIII.9.1).**
+  - **The bug.** `actualDays()` counted through `Date.UTC`, which ECMAScript
+    defines to read a numeric year 0–99 as 1900–1999. For dates in
+    `0000`–`0099`, `actual/365f` and `actual/360` were therefore wrong, and so
+    were `yearfrac`, `xnpv`, `xirr`, the cash-flow verifier and the waterfall
+    accrual. For example, `0000-01-01`→`0001-01-01` counted 365 days instead of
+    366, and `0099-12-31`→`0100-01-01` counted −693,959 days instead of 1.
+  - **Same cause in validation.** The `CF-02` date-ordering check used the same
+    call, so it refused ordered early-year series and accepted reversed ones.
+  - **The fix.** Both sites now use one integer `dayOrdinal`, built on the
+    calendar `parseISODate` already validates against, with no `Date`. Every
+    valid date in years `0100`–`9999` gives exactly the same result as before.
+  - **Unaffected.** `30/360us`, `is_calendar_date` and every version label.
+  - **Conformance.** Three `conformance/cash-flow` fixtures were added.
+
 ## [2.17.0] - 2026-10-03
 
 ### Released

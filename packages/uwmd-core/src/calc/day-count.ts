@@ -8,8 +8,9 @@
 // documented here rather than discovered in a mismatch.
 //
 // Dates are ISO-8601 `YYYY-MM-DD` strings on the proleptic Gregorian
-// calendar. Day arithmetic runs on UTC epoch-day integers, so `yearfrac` is
-// an exact integer divided last, in binary64, as §VIII.9.1 requires.
+// calendar. Day arithmetic runs on integer day ordinals (`dayOrdinal`), so
+// `yearfrac` is an exact integer divided last, in binary64, as §VIII.9.1
+// requires.
 // Browser-safe; no I/O, no locale, no system clock.
 
 import { CalcError } from './errors.js';
@@ -65,18 +66,34 @@ export function parseISODate(s: string): CalendarDate | null {
   return { year, month, day };
 }
 
+/** Days in the months before month `m` of a common year: [0, 31, 59, …, 334]. */
+const DAYS_BEFORE_MONTH: readonly number[] = MONTH_DAYS.map((_, i) =>
+  MONTH_DAYS.slice(0, i).reduce((acc, n) => acc + n, 0),
+);
+
 /**
- * Epoch-day ordinal (days since 1970-01-01, negative before). Date.UTC handles
- * the proleptic Gregorian rules; the millisecond count divides exactly because
- * UTC days here carry no leap seconds or DST.
+ * Day ordinal on the proleptic Gregorian calendar: days since `0000-01-01`
+ * (which is ordinal 0), for any date `parseISODate` accepts.
+ *
+ * Integer arithmetic only, on the same leap rule and month lengths that
+ * `parseISODate` validates against, so there is one calendar, not two. This
+ * replaced `Date.UTC`, which ECMAScript defines to read a numeric year 0–99 as
+ * 1900–1999: dates in `0000`–`0099` landed nineteen centuries late, so
+ * `0000-01-01`→`0001-01-01` counted 365 days and `0099-12-31`→`0100-01-01`
+ * counted −693,959. No `Date`, time zone, locale or clock is consulted.
  */
-function epochDay(d: CalendarDate): number {
-  return Date.UTC(d.year, d.month - 1, d.day) / 86_400_000;
+export function dayOrdinal(d: CalendarDate): number {
+  const y = d.year;
+  // Leap years in [0, y): multiples of 4, less multiples of 100, plus
+  // multiples of 400, each counted as ceil(y / k) because year 0 is one of each.
+  const leapYearsBefore = Math.floor((y + 3) / 4) - Math.floor((y + 99) / 100) + Math.floor((y + 399) / 400);
+  const leapDayThisYear = d.month > 2 && isLeapYear(y) ? 1 : 0;
+  return 365 * y + leapYearsBefore + DAYS_BEFORE_MONTH[d.month - 1]! + leapDayThisYear + (d.day - 1);
 }
 
 /** Calendar days from `d1` to `d2` (signed; positive when `d2` is later). */
 export function actualDays(d1: CalendarDate, d2: CalendarDate): number {
-  return epochDay(d2) - epochDay(d1);
+  return dayOrdinal(d2) - dayOrdinal(d1);
 }
 
 /**

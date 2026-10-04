@@ -24,7 +24,7 @@ import { readGapsContent } from './gaps.js';
 import { LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
 import { checkLeaseUpContent } from './lease-up-structure.js';
 import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from './cash-flow-series.js';
-import { isDayCountConvention, parseISODate } from './calc/day-count.js';
+import { dayOrdinal, isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
 import { isV2File } from './meta-shape.js';
@@ -2648,7 +2648,9 @@ function checkCashFlowContent(
       });
       prevOrdinal = null;
     } else {
-      const ordinal = Date.UTC(parsed.year, parsed.month - 1, parsed.day);
+      // Integer proleptic-Gregorian ordinal, not Date.UTC, which reads years
+      // 0000-0099 as 1900-1999 and mis-orders early dates.
+      const ordinal = dayOrdinal(parsed);
       if (prevOrdinal !== null && ordinal < prevOrdinal) {
         issues.push({
           code: 'CF-02', severity: 'error', section, field: `series[${i}].date`,

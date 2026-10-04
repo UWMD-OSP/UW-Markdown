@@ -47,3 +47,6 @@ holds verbatim so the spec and the verifier cannot drift apart.
 | `calc-missing-variant` | An explicit variant that does not exist → `CALC-CF-SERIES` (no default fallback). |
 | `calc-diverge` | Declaration xirr over all-positive flows → `CALC-XIRR-DIVERGE`. |
 | `calc-day-count-trio` | The same two-flow series under all three §VIII.9.1 conventions: three distinct pinned roots. |
+| `calc-early-year-day-count` | `0000-01-01`→`0001-01-01` spans 366 days, because year `0000` is a proleptic Gregorian leap year; xirr pinned under `actual/365f` and `actual/360`. |
+| `valid-early-year-ordering` | `0099-12-31` then `0100-01-01` is ascending; no CF code fires. |
+| `reject-early-year-unordered` | `0150-01-01` then `0050-01-01` is descending, so CF-02 fires. |
