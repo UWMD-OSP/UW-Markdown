@@ -89,6 +89,28 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- **The `ProtocolError` category enum lists `package` and `portfolio` (§XI).**
+  - **The drift.** Deal-package validation has used the `package` category
+    since RFC 0018 shipped. The 2.1.0 release added `portfolio` as a "new
+    `portfolio` error category" for RFC 0015. `ProtocolErrorCategory` gained
+    both, but §XI and `protocol-error.schema.json` still listed eight
+    categories. So errors from `validateUWDealPackageManifest`,
+    `validatePortfolioProfile`, and `uwmd package|portfolio … --json` failed
+    the normative schema.
+  - **The fix.** Both mirrors now list the ten categories `protocol.ts`
+    defines and the reference implementation has emitted since those
+    releases.
+  - **Why no RFC or version change.** The repair only widens the enum. No
+    conforming implementation must now do anything new. Neither RFC binds a
+    refusal code to a category, and the conformance suites pin `PORT-*` and
+    `PKG-*` codes, not categories. Nothing was removed from emitted errors.
+    Protocol stays 2.21.0. Precedent: the 2.4.0 fix that brought the
+    implementation-manifest schema back into line, also with no RFC and no
+    version change.
+  - **Guard.** `protocol.test.ts` now holds the TypeScript union, the schema
+    enum and the §XI interface to each other. It also validates real package
+    and portfolio refusals against the schema.
+
 - **Early-year day counts follow the proleptic Gregorian calendar (§VIII.9.1).**
   - **The bug.** `actualDays()` counted through `Date.UTC`, which ECMAScript
     defines to read a numeric year 0–99 as 1900–1999. For dates in

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { Ajv2020 } from 'ajv/dist/2020.js';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,7 +18,10 @@ import {
   ACTOR_NAMESPACES,
   ACTOR_SOURCE_RE,
   parseActorSource,
+  type ProtocolErrorCategory,
 } from './protocol.js';
+import { validateUWDealPackageManifest } from './deal-package.js';
+import { validatePortfolioProfile } from './portfolio.js';
 import { CORE_VERSION } from './version.js';
 import { deepGet, getSection, parseUWFile } from './parser.js';
 import { formatCurrency, formatPercent } from './format.js';
@@ -365,5 +369,52 @@ describe('BUILTIN_VIEW_MODELS.noi_model reads Format §4.5 paths', () => {
     const content = getSection(parseUWFile(readFileSync(fixture, 'utf-8')), 'noi_model')!.content;
     expect(formatCurrency(deepGet(content, 'income.gross_potential_rent'))).toBe('n/a');
     expect(formatCurrency(deepGet(content, 'income.gross_potential_rent.value'))).toBe('$655,200');
+  });
+});
+
+// §XI and protocol-error.schema.json each describe themselves as a mirror of
+// the `ProtocolError` interface. `package` (RFC 0018 deal packages) and
+// `portfolio` (RFC 0015, released in 2.1.0 as a new error category) were
+// emitted for releases while both mirrors still listed eight categories, so
+// the reference implementation produced errors its own schema rejected. These
+// tests hold the three copies, and real emitted errors, to each other.
+describe('protocol — ProtocolError category lockstep (§XI)', () => {
+  // Exhaustive over the union: adding or removing a member without updating
+  // this map is a type error under `npm run typecheck:tests`.
+  const TS_CATEGORIES: Record<ProtocolErrorCategory, true> = {
+    parse: true,
+    validate: true,
+    render: true,
+    edit: true,
+    calc: true,
+    agent: true,
+    module: true,
+    version: true,
+    package: true,
+    portfolio: true,
+  };
+  const repoFile = (path: string) => readFileSync(fileURLToPath(new URL(`../../../${path}`, import.meta.url)), 'utf8');
+  const errorSchema = JSON.parse(repoFile('spec/schemas/protocol-error.schema.json'));
+  const schemaCategories: string[] = errorSchema.properties.category.enum;
+
+  it('the schema enum lists exactly the ProtocolErrorCategory members', () => {
+    expect([...schemaCategories].sort()).toEqual(Object.keys(TS_CATEGORIES).sort());
+  });
+
+  it('the §XI interface lists exactly the schema enum', () => {
+    const section = repoFile('spec/UW_PROTOCOL_v1.md').split('## XI. Error Taxonomy')[1]?.split('\n## ')[0] ?? '';
+    const union = section.match(/category:\s*((?:'[a-z]+'\s*\|?\s*)+),/)?.[1] ?? '';
+    const specCategories = [...union.matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
+    expect(specCategories.sort()).toEqual([...schemaCategories].sort());
+  });
+
+  it('package and portfolio refusals validate against the normative schema', () => {
+    const ajv = new Ajv2020({ strict: false });
+    const validate = ajv.compile(errorSchema);
+    const emitted = [...validateUWDealPackageManifest({}), ...validatePortfolioProfile({})];
+    expect(new Set(emitted.map((e) => e.category))).toEqual(new Set(['package', 'portfolio']));
+    for (const error of emitted) {
+      expect(validate(error), `${error.code}: ${JSON.stringify(validate.errors)}`).toBe(true);
+    }
   });
 });
