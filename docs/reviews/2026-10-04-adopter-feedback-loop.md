@@ -55,6 +55,9 @@ Protocol 2.21.0, core/CLI 2.17.0.
   two missing are `package` and `portfolio`. This is `drift` under the new
   taxonomy. Whether the fix is editorial or needs an RFC depends on whether
   RFCs 0015/0018 specified those categories. Flagged as a separate task.
+  **Resolved later on 2026-10-04.** Neither RFC binds a category. The
+  shipped categories were added to §XI and the schema as a lockstep repair,
+  with no RFC.
 - README "Who's building on it" still names underwriter.cc, while ROADMAP
   calls it "StackUW (formerly underwriter.cc)". Left for the owner, because
   naming an adopter's product publicly is the adopter's call.

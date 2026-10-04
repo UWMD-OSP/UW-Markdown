@@ -3434,7 +3434,8 @@ All protocol-level errors MUST be expressible as a `ProtocolError`:
 
 ```ts
 {
-  category: 'parse' | 'validate' | 'render' | 'edit' | 'calc' | 'agent' | 'module' | 'version',
+  category: 'parse' | 'validate' | 'render' | 'edit' | 'calc' | 'agent' | 'module' | 'version'
+          | 'package' | 'portfolio',
   code: string,           // e.g. "PROTO-EDIT-001"
   message: string,
   pointer?: string,       // dot-path into the file

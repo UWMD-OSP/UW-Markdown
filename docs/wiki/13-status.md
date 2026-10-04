@@ -716,3 +716,17 @@ boundary, the label taxonomy and the lifecycle. The rest is in the
 - **Owner decisions left open:** whether to offer a private channel for
   confidential, non-security reproductions, and whether to enable GitHub
   private vulnerability reporting alongside the security mailbox.
+
+## 2026-10-04 — ProtocolError category lockstep
+
+Protocol §XI and `protocol-error.schema.json` now list the `package` and
+`portfolio` categories that `ProtocolErrorCategory` and the reference
+implementation have used since RFC 0018 and RFC 0015 (2.1.0) shipped.
+- **Classification.** Schema and protocol-text omission (`drift`) of
+  already-shipped behavior. The 2.1.0 release record announced `portfolio`
+  as a new error category, but neither mirror was updated.
+- **No RFC, no version change.** The fix only widens the enum. No
+  conformance case changes, and no implementation gains a new obligation,
+  because neither RFC binds its codes to a category.
+- **Guard.** A `protocol.test.ts` suite checks the union, the schema and §XI
+  against each other, and validates emitted refusals against the schema.

@@ -8,7 +8,7 @@
   "additionalProperties": false,
   "properties": {
     "category": {
-      "enum": ["parse", "validate", "render", "edit", "calc", "agent", "module", "version"],
+      "enum": ["parse", "validate", "render", "edit", "calc", "agent", "module", "version", "package", "portfolio"],
       "description": "Top-level error class. Drives which subsystem the implementer surfaces it to."
     },
     "code": {
