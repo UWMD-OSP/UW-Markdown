@@ -1,0 +1,14 @@
+{
+  "description": "A applies to multifamily; B overrides shared_calc but applies only to hospitality. On a multifamily document, such as the shared deal, A's declaration would be suppressed and B's would not run. The registry refuses.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-084"
+      ]
+    }
+  ]
+}

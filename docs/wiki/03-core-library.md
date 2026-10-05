@@ -308,13 +308,21 @@ registry and read through `declarationOwnersOf` in `modules.ts`. It is not on
   order (§X): an override sees the dependent's earlier calcs, and the
   dependent's later calcs see it. Modules run in registry order. Required
   sections follow the same rule.
-- **Later readers refuse the override** (`PROTO-MOD-083`). If a calc the
-  overridden module declares after the id reads it as a prior result, the
-  registry refuses: that reader would run before the override and get
-  `null`. `priorResultReads` walks the parsed expression for identifier
-  and path heads only. String literals, later path segments, bracket keys
-  and period-path heads never reach `prior_results`. Earlier calcs and
-  validation rules are not affected; rules run after every calc.
+- **Unserved readers refuse the override** (`PROTO-MOD-083`).
+  - Every calc that reads an overridden id as a prior result must run after
+    the replacement. The only guarantee of that is dependency order, so the
+    reader must be the overrider's own calc declared after the id, or belong
+    to a module depending on the overrider, directly or transitively.
+  - The exemption is a calc the first declarer declares before the id.
+  - Both sides are checked, whichever loads second (`unservedReader` and the
+    reading-side loop in `claimDeclarations`), so the verdict does not depend
+    on listing order.
+  - `priorResultReads` walks the parsed expression for identifier and path
+    heads only.
+  - Validation rules are not affected, because they run after every calc.
+- **Scope** (`PROTO-MOD-084`). The overrider must apply wherever the
+  overridden module applies, by the runtime's own scoping (`moduleScope`
+  mirrors `applicableModules`). This applies to all three namespaces.
 - **Within one manifest.** Two view models for one `section_id` are outside
   §VII.3 and are not refused. Sections and calculations already refuse
   duplicates (`-036`, `-015`).

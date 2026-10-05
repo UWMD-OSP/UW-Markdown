@@ -104,8 +104,8 @@ declaring module to its declared class — the gap RFC 0039 found.
 
 ## `registry/` — two modules declaring one id (Protocol §VII.3)
 
-Each scenario holds two synthetic manifests, `a.module.json` and
-`b.module.json`, and an `expected.json` listing cases. A case names a load
+Each scenario holds two or more synthetic manifests, `<key>.module.json`,
+and an `expected.json` listing cases. A case names a load
 `order`. It expects either a refusal, as the exact set of codes the registry
 reports, or a loaded registry. A loaded registry is checked for which module's
 declaration is in effect, and for calc values, view-model names and module
@@ -125,6 +125,10 @@ public API.
 | `03-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
 | `04-calculation-dependent` | B declares `b_first`, then overrides `shared_calc` with `b_first * 10`. A's declaration is suppressed. B's runs once, where B declares it, so it reads `b_first` (20), and B's later `b_after` reads the override (21). Each module keeps its declaration order. A's later `a_after` does not read `shared_calc`, so the override is allowed. B listed first: `PROTO-MOD-027`. |
 | `07-calculation-override-reader-refused` | As 04, but A declares `reads_shared = shared_calc + 10` after `shared_calc`. B's override would run after it and leave it with no value, so the registry refuses: `PROTO-MOD-083`. B listed first: `PROTO-MOD-027`. |
+| `08-calculation-override-other-reader-refused` | B and C both depend on A. C reads `shared_calc`, and B overrides it. C does not depend on B, so it is not guaranteed to run after the replacement: `PROTO-MOD-083`, in the order A, C, B and in A, B, C. |
+| `09-calculation-override-chain-reader-allowed` | C depends on B, the current owner, so it always runs after the replacement and reads B's value (3). |
+| `10-override-scope-narrower-refused` | A applies to multifamily, and B overrides but applies only to hospitality. On the multifamily deal, neither declaration would run: `PROTO-MOD-084`. |
+| `11-override-scope-covering-allowed` | B names no asset class, so it applies everywhere A does. Its declaration runs on the multifamily deal. |
 | `05-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
 | `06-view-model-dependent` | B's view model is in effect. B listed first: `PROTO-MOD-027`. |
 

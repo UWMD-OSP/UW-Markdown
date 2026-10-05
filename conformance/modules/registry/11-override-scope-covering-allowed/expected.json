@@ -1,0 +1,23 @@
+{
+  "description": "A applies to multifamily; B overrides shared_calc and names no asset class, so it applies to every class. On the multifamily deal B's declaration runs in place of A's.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_owners": {
+        "calculations": {
+          "shared_calc": "org.example.registry-b"
+        }
+      },
+      "expected_evaluation_order": [
+        "org.example.registry-b:shared_calc"
+      ],
+      "expected_calcs": {
+        "shared_calc": 2
+      },
+      "expected_codes": []
+    }
+  ]
+}

@@ -1503,19 +1503,30 @@ or view-model `section_id`:
 - If one module declares the other in `depends_on`, the dependent
   module's declarations override.
 
-A calculation override MUST preserve the overridden module's own
-author-declared calculation dependencies (§X: declaration order, each
-calculation seeing the ones before it). The overridden declaration does
-not run, and the dependent's runs where the dependent declares it. A host
-MUST therefore refuse an override when a calculation the overridden module
-declares after the overridden ID reads that ID as a prior result: the
-override would leave that read with no value. This section defines no
-cross-module evaluation order beyond that.
+An overridden declaration does not take effect, and the dependent's
+declaration takes effect where the dependent declares it. For a
+calculation, that means in the dependent's own declaration order (§X).
+This section defines no cross-module evaluation order beyond §VII.2's: a
+module follows the modules it depends on.
+
+A dependent override MUST NOT make a declaration unavailable to anything
+that, under the existing module dependency and applicability rules, would
+otherwise use it:
+
+- not to a calculation that would otherwise consume it as a prior result;
+- not on a document where the overridden module applies and the overriding
+  module does not.
+
+A host MUST refuse a set of modules containing such an override. The
+decision is static, made from the manifests and independent of the order
+the modules are listed in.
 
 The reference library refuses with `PROTO-MOD-080` (section ID),
 `PROTO-MOD-081` (calculation ID) and `PROTO-MOD-082` (view-model
-`section_id`), and refuses an override that would remove a consumed prior
-result with `PROTO-MOD-083`.
+`section_id`). It refuses an override that would leave a prior-result
+consumer without a value with `PROTO-MOD-083`, and one whose module does
+not apply wherever the overridden module does with `PROTO-MOD-084`. The
+exact static rules are pinned by `conformance/modules/registry/`.
 
 ### VII.4 Capability negotiation
 

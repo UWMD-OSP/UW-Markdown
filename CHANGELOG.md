@@ -81,21 +81,35 @@ protocol, and each package each carry an independent semver).
   - Modules run in registry order, as before.
   - The same rule applies to required sections and to
     `getModuleCalculationsForAssetClass`.
-- **An override may not remove a prior result its dependency still reads**
-  (owner decision, 2026-10-05).
-  - The rule: if a calculation that the overridden module declares *after*
-    the overridden id reads that id as a prior result, the registry refuses
-    the combination at load with `PROTO-MOD-083`. The reader would otherwise
-    run before the override and silently get `null`.
-  - What counts as a read: an identifier or a path head, found by walking the
-    parsed expression. A string literal, a later path segment, a bracket key
-    and a period-path head never reach `prior_results`, so they don't count.
-    Calculations declared before the overridden id are not affected.
-  - Chains: each edge is checked against the module whose declaration it
-    replaces.
+- **An override may not make a declaration unavailable** (owner decision,
+  2026-10-05). Protocol §VII.3 states the invariant: an override must not
+  leave a prior-result consumer without a value, and must not suppress a
+  declaration on a document where the overriding module does not apply. The
+  registry refuses violations at load. The static rules:
+  - **`PROTO-MOD-083` (prior results).** Every calculation that reads an
+    overridden calculation id as a prior result must be guaranteed to run
+    after the replacement. The only cross-module ordering guarantee is
+    dependency order, so the reader must qualify in one of two ways:
+    - it is the overriding module's own calculation, declared after the id;
+    - it belongs to a module that depends on the overriding module, directly
+      or transitively.
+    The one exemption is a calculation that the first declaring module
+    declares before the id: it never had a value to read. The rule covers
+    the overridden module's later calculations, other dependents, the
+    overriding module's own earlier calculations, and readers loaded after
+    the override. The verdict is a property of the module set, not of
+    listing order.
+  - **`PROTO-MOD-084` (scope).** The overriding module must apply to every
+    asset class that the overridden module applies to, using the module
+    runtime's scoping: `asset_classes` plus `declares_asset_classes`, and a
+    module naming neither applies everywhere. This holds for sections,
+    calculations and view models.
+  - **What counts as a read:** an identifier or a path head, found by walking
+    the parsed expression, never regex. String literals, later path segments,
+    bracket keys and period-path heads never reach `prior_results`.
   - There is no cross-module scheduling: modules still run in registry order.
-  - Protocol §VII.3 states the rule. This is a new MUST, set by the owner as
-    the resolution of what §VII.3 left unspecified.
+  - `getModuleCalculationsForAssetClass` lists the declaration in effect even
+    when the overriding module is not among the modules it lists.
 - **No public API change.** Declaration ownership is internal, kept beside
   the registry. `ModuleRegistry`, `@uwmd/core` and `@uwmd/core/browser`
   exports are unchanged, and a hand-built `ModuleRegistry` still compiles.
@@ -103,9 +117,11 @@ protocol, and each package each carry an independent semver).
 - **Conformance:** the new `conformance/modules/registry/` suite covers
   refusal in both orders and a successful override for sections,
   calculations and view models, plus a refused override whose dependency
-  reads the id later (`07`). All six original scenarios fail against the
-  previous registry, and `07` fails against an implementation without the
-  check.
+  reads the id later (`07`). Further scenarios cover another dependent that
+  reads the id (`08`), a reader that depends on the overriding module
+  (`09`), and scope refusal and acceptance (`10`, `11`). All six original
+  scenarios fail against the previous registry, and `07`, `08` and `10`
+  each fail against the revision before their rule.
 - No RFC: this restores an existing MUST, plus the owner-directed
   clarification above. Format 2.0, Protocol 2.21.0 and every package version
   are unchanged; versioning is decided at release preparation. Protocol §VII.3

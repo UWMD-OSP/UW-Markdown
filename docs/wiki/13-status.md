@@ -744,10 +744,18 @@ review found.
   fail against the previous registry. The ordering tests also fail against
   the first draft of this fix, which ran an override in the dependency's
   position.
-- **Owner decision (2026-10-05, option c).** An override is refused at load
-  (`PROTO-MOD-083`) when a calculation the overridden module declares after
-  the id reads it as a prior result. Reads are found with the expression
-  parser, and there is no cross-module scheduling. §VII.3 states the rule.
+- **Owner decision (2026-10-05).** An override may not make a declaration
+  unavailable. The registry refuses at load:
+  - with `PROTO-MOD-083` when any prior-result reader of the id is not
+    guaranteed to run after the replacement, that is, is not the overrider's
+    own later calculation or a calculation of a module depending on the
+    overrider;
+  - with `PROTO-MOD-084` when the overrider does not apply wherever the
+    overridden module applies.
+
+  Reads are found with the expression parser, and there is no cross-module
+  scheduling. §VII.3 states the invariant, and `conformance/modules/registry/`
+  pins the rules.
 - **Left open.** Two view models for one `section_id` inside one manifest
   are not refused; that is outside §VII.3.
 

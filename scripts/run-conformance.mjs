@@ -1700,8 +1700,8 @@ async function runModuleRuntime() {
 /**
  * Registry declaration conflicts (protocol §VII.3).
  *
- * Each `registry/<scenario>/` holds `a.module.json`, `b.module.json` and an
- * `expected.json` listing cases. A case names a load `order` and expects
+ * Each `registry/<scenario>/` holds two or more `<key>.module.json` files and
+ * an `expected.json` listing cases; a case orders the modules by key. A case names a load `order` and expects
  * either a refusal (`expected_refusal`: the exact set of codes the registry
  * reports) or a loaded registry. A loaded registry asserts which module's
  * declaration is in effect (`expected_owners`), and may assert calc values in
@@ -1733,13 +1733,15 @@ async function runModuleRegistry() {
     .sort();
   for (const id of scenarios) {
     const scenarioDir = join(dir, id);
-    const files = ['a', 'b'].map((k) => join(scenarioDir, `${k}.module.json`));
+    const moduleFiles = readdirSync(scenarioDir).filter((name) => name.endsWith('.module.json')).sort();
     const expectedPath = join(scenarioDir, 'expected.json');
-    if (![...files, expectedPath].every((p) => existsSync(p))) {
-      record('modules', `registry/${id}`, 'fail', 'scenario needs a.module.json, b.module.json and expected.json');
+    if (moduleFiles.length < 2 || !existsSync(expectedPath)) {
+      record('modules', `registry/${id}`, 'fail', 'scenario needs two or more <key>.module.json files and expected.json');
       continue;
     }
-    const manifests = { a: JSON.parse(readFileSync(files[0], 'utf8')), b: JSON.parse(readFileSync(files[1], 'utf8')) };
+    const manifests = Object.fromEntries(
+      moduleFiles.map((name) => [basename(name, '.module.json'), JSON.parse(readFileSync(join(scenarioDir, name), 'utf8'))]),
+    );
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
     const problems = [];
 
@@ -1754,6 +1756,11 @@ async function runModuleRegistry() {
 
     for (const c of expected.cases ?? []) {
       const label = c.order.join('→');
+      const unknown = c.order.filter((k) => !(k in manifests));
+      if (unknown.length) {
+        problems.push(`${label}: no module file for ${unknown.join(', ')}`);
+        continue;
+      }
       let registry;
       let refusal = null;
       try {

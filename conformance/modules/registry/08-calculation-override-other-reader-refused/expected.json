@@ -1,0 +1,25 @@
+{
+  "description": "B and C both depend on A. C reads shared_calc as a prior result; B overrides it. C does not depend on B, so nothing guarantees C runs after B's replacement: in the order A, C, B it would read no value. The registry refuses the set in every valid order, so the verdict is a property of the modules, not of their listing.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "c",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    },
+    {
+      "order": [
+        "a",
+        "b",
+        "c"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    }
+  ]
+}
