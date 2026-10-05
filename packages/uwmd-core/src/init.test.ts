@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
+import { parse as parseYaml } from 'yaml';
+import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { parseUWFile } from './parser.js';
 import { resolvePolicy } from './editor.js';
+import type { UWFrontmatter } from './types.js';
 
 describe('generateBlankUWFile', () => {
   it('honors supplied frontmatter values and produces the standard section scaffold', () => {
@@ -104,5 +106,154 @@ describe('generateBlankUWFile — every stamped source is governed by a policy',
     const property = parsed.sections.property as { meta?: { source?: string } };
     expect(property?.meta?.source).toBe('manual');
     expect(resolvePolicy('manual')?.authority).toBe('either');
+  });
+});
+
+describe('generateBlankUWFile — frontmatter serialization', () => {
+  /** The frontmatter lines between the opening and closing `---`. */
+  const frontmatterOf = (content: string): string => content.split('\n---\n')[0]!.slice('---\n'.length);
+  const lineOf = (content: string, key: string): string | undefined =>
+    frontmatterOf(content).split('\n').find((l) => l.startsWith(`${key}: `));
+
+  it('keeps the existing bytes for values that need no quoting change', () => {
+    const content = generateBlankUWFile({
+      dealId: 'uw_2026_BYTES',
+      dealName: 'Sunrise Senior Living',
+      address: '123 Care Way',
+      city: 'Phoenix',
+      state: 'AZ',
+      zip: '85001',
+      assetClass: 'senior_housing',
+      assetSubtype: 'assisted_living',
+      dealStage: 'full_underwrite',
+      scenario: 'value_add',
+      tier: 'analyst',
+    });
+    expect(frontmatterOf(content)).toContain(
+      [
+        'uw_version: "2.0"',
+        'deal_id: "uw_2026_BYTES"',
+        'deal_name: "Sunrise Senior Living"',
+      ].join('\n'),
+    );
+    expect(frontmatterOf(content)).toContain(
+      [
+        'property_address: "123 Care Way"',
+        'city: "Phoenix"',
+        'state: "AZ"',
+        'zip: "85001"',
+        'asset_class: senior_housing',
+        'asset_subtype: assisted_living',
+        'loan_type: null',
+        'scenario: value_add',
+      ].join('\n'),
+    );
+    expect(lineOf(content, 'deal_stage')).toBe('deal_stage: full_underwrite');
+    expect(lineOf(content, 'tier')).toBe('tier: analyst');
+
+    const defaults = generateBlankUWFile({ dealId: 'uw_2026_DEFAULTS' });
+    expect(lineOf(defaults, 'property_address')).toBe('property_address: ""');
+    expect(lineOf(defaults, 'asset_subtype')).toBe('asset_subtype: null');
+    expect(lineOf(defaults, 'scenario')).toBe('scenario: null');
+  });
+
+  const QUOTED_FIELDS = [
+    ['dealId', 'deal_id'],
+    ['dealName', 'deal_name'],
+    ['address', 'property_address'],
+    ['city', 'city'],
+    ['state', 'state'],
+    ['zip', 'zip'],
+  ] as const;
+
+  const AWKWARD_VALUES = [
+    'He said "hi"',
+    'C:\\deals\\north',
+    "O'Brien Plaza",
+    'Suite 4: North',
+    'Lot #12 # not a comment',
+    '  padded  ',
+    '\tleading tab',
+    '',
+    'null',
+    '~',
+    'true',
+    'false',
+    'yes',
+    '123',
+    '-5',
+    '0x10',
+    '1e3',
+    'Infinity',
+    '[]',
+    '{a: 1}',
+    '- item',
+    '---',
+    'Café Société — 東京 🏢',
+  ];
+
+  it.each(QUOTED_FIELDS.flatMap(([option, key]) => AWKWARD_VALUES.map((value) => [option, key, value] as const)))(
+    '%s %j reads back exactly, in the reference reader and in a YAML library',
+    (option, key, value) => {
+      const content = generateBlankUWFile({ dealId: 'uw_2026_RT', [option]: value });
+      expect(parseUWFile(content, { strict: true }).frontmatter[key as keyof UWFrontmatter]).toBe(value);
+      expect((parseYaml(frontmatterOf(content)) as Record<string, unknown>)[key]).toBe(value);
+    },
+  );
+
+  it.each([
+    ['garden_style', 'garden_style'],
+    ['com.example.data_center', 'com.example.data_center'],
+    ['Garden Style', '"Garden Style"'],
+    ['null', '"null"'],
+    ['yes', '"yes"'],
+    ['1960s', '"1960s"'],
+    ['', '""'],
+    ['mid-rise', '"mid-rise"'],
+  ])('asset_subtype %j is written as %s and reads back exactly', (value, written) => {
+    const content = generateBlankUWFile({ dealId: 'uw_2026_PLAIN', assetSubtype: value });
+    expect(lineOf(content, 'asset_subtype')).toBe(`asset_subtype: ${written}`);
+    expect(parseUWFile(content, { strict: true }).frontmatter.asset_subtype).toBe(value);
+    expect((parseYaml(frontmatterOf(content)) as Record<string, unknown>).asset_subtype).toBe(value);
+  });
+
+  it('writes the deal name as a single heading line', () => {
+    const content = generateBlankUWFile({ dealId: 'uw_2026_HEAD', dealName: 'Lot #12 "North" {#property}' });
+    expect(content.split('\n').filter((l) => l.startsWith('# '))).toEqual(['# Lot #12 "North" {#property}']);
+  });
+
+  it.each([
+    ['dealName', 'line\nbreak'],
+    ['dealName', 'carriage\rreturn'],
+    ['address', 'next\u0085line'],
+    ['city', 'line\u2028separator'],
+    ['zip', 'nul\u0000byte'],
+    ['state', 'del\u007f'],
+    ['dealName', 'lone \ud800 surrogate'],
+    ['dealName', `O'Brien "North"`],
+    ['address', "O'Brien \\ North"],
+    ['assetSubtype', 'two\nlines'],
+  ])('refuses %s %j', (option, value) => {
+    expect(() => generateBlankUWFile({ dealId: 'uw_2026_BAD', [option]: value })).toThrow(UWInitError);
+  });
+
+  it('refuses a non-string value', () => {
+    expect(() =>
+      generateBlankUWFile({ dealId: 'uw_2026_BAD', dealName: true as unknown as string }),
+    ).toThrow(/deal_name: must be a string/);
+  });
+
+  it('refuses quoted content the reference reader would reject, rather than writing it', () => {
+    // `: &x` inside quotes is legal YAML, but the reader's pre-pass reads it as
+    // an anchor. Writing it would produce a file the reference reader refuses.
+    let caught: unknown;
+    try {
+      generateBlankUWFile({ dealId: 'uw_2026_BAD', dealName: 'Smith: &Co' });
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(UWInitError);
+    expect((caught as UWInitError).code).toBe('INIT_UNREPRESENTABLE_VALUE');
+    expect((caught as UWInitError).field).toBe('frontmatter');
   });
 });

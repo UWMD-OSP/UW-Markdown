@@ -580,6 +580,45 @@ describe('uwmd CLI', () => {
       }
     });
 
+    it('init writes awkward values so they read back exactly', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-quote-'));
+      try {
+        const r = spawnSync(
+          process.execPath,
+          [CLI_BIN, 'init', '--name', 'He said "hi"', '--address', 'C:\\deals #4: North', '--output', 'q.uwx.md'],
+          { encoding: 'utf8', cwd: temp },
+        );
+        expect(r.status).toBe(0);
+        const parsed = runCli(['parse', resolve(temp, 'q.uwx.md')]);
+        expect(parsed.status).toBe(0);
+        const frontmatter = JSON.parse(parsed.stdout).frontmatter;
+        expect(frontmatter.deal_name).toBe('He said "hi"');
+        expect(frontmatter.property_address).toBe('C:\\deals #4: North');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it.each([
+      [['--name', 'two\nlines'], 'deal_name: line breaks'],
+      [['--name'], 'deal_name: must be a string'],
+    ])('init %j refuses with a one-line error and writes nothing', (extra, message) => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-bad-value-'));
+      try {
+        const r = spawnSync(process.execPath, [CLI_BIN, 'init', ...extra, '--output', 'bad.uwx.md'], {
+          encoding: 'utf8',
+          cwd: temp,
+        });
+        expect(r.status).toBe(1);
+        expect(r.stderr).toContain('[INIT_UNREPRESENTABLE_VALUE]');
+        expect(r.stderr).toContain(message);
+        expect(r.stderr).not.toContain('    at ');
+        expect(existsSync(resolve(temp, 'bad.uwx.md'))).toBe(false);
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
     it('export replaces the .uwx.md suffix rather than appending to it', () => {
       // Regression: `replaceUWExtension` did not list .uwx.md, so a UWX input
       // fell through to the append branch and produced deal.uwx.md.uw.json.
