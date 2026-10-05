@@ -302,6 +302,11 @@ product specification; lease economics and cash timing are.
 - **Semantic corpus retrieval (RFC 0013):** remains draft until an adopter needs
   find-similar-deals or risk-pattern recall. Portfolio analytics already use the
   corpus fact table and SQL; an embedding pipeline is not required for that.
+- **Renamed asset-class identifiers (draft RFC 0073, #263):** a module that
+  moves its namespace can already keep old documents resolvable by continuing
+  to declare each retired class id. RFC 0073 would declare the old and new ids
+  one class. It waits on StackUW's answers in the
+  [review](docs/reviews/2026-10-04-renamed-identifiers.md) and owner acceptance.
 - **Investor profiles and portfolio/relationship agent layers:** the data
   surfaces exist, but reference consumers need concrete adoption requirements.
 - **Official module publication:** hospitality and data-center are approved together

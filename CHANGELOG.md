@@ -54,6 +54,29 @@ protocol, and each package each carry an independent semver).
   receipts and the conformance runner report already carry what a report
   needs. Format 2.0, Protocol 2.21.0 and every package version are unchanged.
 
+### Renamed identifiers (draft RFC 0073; no contract change)
+
+- **Issue #263 is triaged against the current contract** (StackUW
+  `UPSTREAM-023`). The
+  [renamed-identifier review](docs/reviews/2026-10-04-renamed-identifiers.md)
+  and its reproduction script show three things:
+  - Renaming only a module id leaves old documents resolved. Protocol §X.2.2
+    resolves `asset_class` by the declared class id and never compares a
+    document's `modules` list with what is loaded.
+  - Renaming a class id makes old documents `MOD-MISSING-001`, unless the
+    renamed module keeps declaring the retired id. Keeping it works on every
+    current host.
+  - Nothing resolves by an implementation id.
+- **Draft [RFC 0073](docs/rfcs/0073-previous-asset-class-identifiers.md)**
+  proposes `previous_ids` on module-declared asset classes only, so that a
+  retired class id is declared the same class. It is gated on the reporter's
+  answers and the owner's acceptance.
+- **Tests:** three `asset-class.test.ts` tests pin current rename behavior.
+- **Editorial:** the implementation-manifest schema description's
+  double-encoded `§` is corrected. Validation is unchanged.
+- **No contract change.** Format 2.0, Protocol 2.21.0 and every package
+  version are unchanged.
+
 ### Calendar-date predicate (RFC 0071, accepted; not yet released)
 
 - Add `is_calendar_date(value) → boolean` to the shared §VIII.3 builtin set.

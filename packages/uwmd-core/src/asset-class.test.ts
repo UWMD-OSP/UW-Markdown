@@ -196,6 +196,40 @@ describe('assetClassDeclarationConflicts', () => {
   });
 });
 
+// Issue #263 asks for renamed ids. These pin what the current contract already
+// does, so a later RFC changes them deliberately rather than by accident.
+// See docs/reviews/2026-10-04-renamed-identifiers.md.
+describe('renamed identifiers under the current contract', () => {
+  const OLD_CLASS = 'com.example_old.data_center';
+  const NEW_CLASS = 'com.example_new.data_center';
+  const renamed = (decls: ModuleAssetClassDecl[]) =>
+    createModuleRegistry({
+      modules: [{ ...BASE, id: 'com.example-new.datacenters', declares_asset_classes: decls }],
+      hostTier: 'tier-4-agent-host',
+    });
+
+  it('resolves by the class id alone, so renaming only the module id changes nothing', () => {
+    // §X.2.2 never reads the document's `modules` list; it names what to load.
+    const result = resolveAssetClass(OLD_CLASS, renamed([{ ...DECL, id: OLD_CLASS }]));
+    expect(result.status).toBe('resolved');
+  });
+
+  it('leaves an old document unresolved once the class id itself is renamed', () => {
+    const result = resolveAssetClass(OLD_CLASS, renamed([{ ...DECL, id: NEW_CLASS }]));
+    expect(result.status === 'unresolved' && result.issue.code).toBe('MOD-MISSING-001');
+  });
+
+  it('resolves old and new ids when one module keeps declaring both, as two classes', () => {
+    const registry = renamed([{ ...DECL, id: NEW_CLASS }, { ...DECL, id: OLD_CLASS }]);
+    const old = resolveAssetClass(OLD_CLASS, registry);
+    expect(old.status === 'resolved' && old.declaration?.id).toBe(OLD_CLASS);
+    expect(resolveAssetClass(NEW_CLASS, registry).status).toBe('resolved');
+    // Nothing states the two are one class; a shared display name is reported
+    // even within one module.
+    expect(assetClassDeclarationConflicts(registry).map((i) => i.code)).toEqual(['MOD-DISPLAY-CONFLICT-001']);
+  });
+});
+
 describe('declaredModuleDependencies', () => {
   it('reads both the string and object forms', () => {
     expect(
