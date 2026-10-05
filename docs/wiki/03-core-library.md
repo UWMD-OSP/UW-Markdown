@@ -288,9 +288,11 @@ never executed, and `sections` were declared and never looked for.
 - `checkModuleSections(parsed, manifest)` — presence only. Validating contents
   against the declared JSON Schema needs a validator core does not depend on.
 
-**Declaration conflicts (Protocol §VII.3).** `createModuleRegistry` keeps one
-declaration per section id, calculation id and view-model `section_id`,
-exposed as `registry.effectiveDeclarations` with the module each came from.
+**Declaration conflicts (Protocol §VII.3).** `createModuleRegistry` records
+which module owns each section id, calculation id and view-model
+`section_id`. The record is internal: it is held in a `WeakMap` beside the
+registry and read through `declarationOwnersOf` in `modules.ts`. It is not on
+`ModuleRegistry` and not exported, so a hand-built registry has no overrides.
 - **Unrelated modules.** A module redeclaring an id that another loaded module
   already declares is refused, and so is the registry: `PROTO-MOD-080`
   (section), `-081` (calculation), `-082` (view model). The code is the same
@@ -301,12 +303,17 @@ exposed as `registry.effectiveDeclarations` with the module each came from.
   conflict. A transitive dependency is not a declared one.
 - **Order.** A dependent must still follow its dependency (`PROTO-MOD-027`),
   so an override has one possible outcome.
-- **Runtime.** It evaluates each calculation id once, using the effective
-  declaration, at the position of the first applicable module that declares
-  it. A dependency's later calcs therefore read the override. A required
-  section is checked once, against the effective declaration.
-- **Within one manifest.** Two view models for one `section_id` are not
-  refused, and the first applies. Sections and calculations already refuse
+- **Runtime.** An overridden declaration does not run. The overriding one
+  runs where its own module declares it, so every module keeps its declaration
+  order (§X): an override sees the dependent's earlier calcs, and the
+  dependent's later calcs see it. Modules run in registry order. Required
+  sections follow the same rule.
+- **Undecided.** §VII.3 does not say what a dependency's *own* later calc
+  that reads an overridden id should see. Today it runs before the dependent
+  and reads the id as absent (`null`). A test in `module-runtime.test.ts` pins
+  this as undecided, and conformance does not pin it.
+- **Within one manifest.** Two view models for one `section_id` are outside
+  §VII.3 and are not refused. Sections and calculations already refuse
   duplicates (`-036`, `-015`).
 
 No new evaluation machinery: a rule is a §VIII.1 safe expression run through

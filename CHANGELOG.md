@@ -72,23 +72,27 @@ protocol, and each package each carry an independent semver).
     dependency conflict, and a transitive dependency is not a declared one.
   - A dependent must still follow its dependency (`PROTO-MOD-027`), so an
     override has one possible outcome.
-  - The runtime evaluates each calculation id once, with the effective
-    declaration, at the position of the first applicable module declaring
-    it, so a dependency's later calculations read the override. A redeclared
-    required section is checked once, against the effective declaration.
-    `getModuleCalculationsForAssetClass` returns one declaration per id.
-- **API (additive):**
-  - `ModuleRegistry.effectiveDeclarations` exposes the declaration in effect
-    for each id and the module it came from.
-  - New exported types `EffectiveDeclaration` and `EffectiveDeclarations`.
-  - Code that builds a `ModuleRegistry` object by hand must now supply
-    `effectiveDeclarations`; `createModuleRegistry` does this.
+- **Execution order.** The runtime keeps §X's rule that each module's
+  calculations run in its own declaration order.
+  - A declaration that a dependent overrides does not run.
+  - The overriding declaration runs once, where the dependent declares it. So
+    it sees the dependent's own earlier calculations, and the dependent's later
+    calculations see it.
+  - Modules run in registry order, as before.
+  - The same rule applies to required sections and to
+    `getModuleCalculationsForAssetClass`.
+- **Owner decision pending.** §VII.3 does not say what a dependency's own
+  later calculation that reads an overridden id should see. Today it runs
+  before the dependent and reads the id as absent (`null`). A unit test pins
+  that outcome, labelled undecided, and conformance leaves it unpinned.
+- **No public API change.** Declaration ownership is internal, kept beside
+  the registry. `ModuleRegistry`, `@uwmd/core` and `@uwmd/core/browser`
+  exports are unchanged, and a hand-built `ModuleRegistry` still compiles.
+  Such a registry has no overrides.
 - **Conformance:** the new `conformance/modules/registry/` suite covers
   refusal in both orders and a successful override for sections,
   calculations and view models. All six scenarios fail against the previous
   registry.
-- **Not changed:** two view models for one `section_id` inside a single
-  manifest are still accepted, and the first applies.
 - No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
   every package version are unchanged. Protocol §VII.3 now names the
   reference codes, which is editorial.

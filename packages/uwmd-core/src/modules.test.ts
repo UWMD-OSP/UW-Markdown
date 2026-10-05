@@ -5,6 +5,7 @@ import type { ModuleManifest } from './protocol.js';
 import {
   ModuleRegistryError,
   createModuleRegistry,
+  declarationOwnersOf,
   getModuleCalculationsForAssetClass,
   loadModuleManifest,
 } from './modules.js';
@@ -321,11 +322,11 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
       it('lets a dependent override the declaration of its dependency', () => {
         const registry = createModuleRegistry({ modules: [a, bDependent] });
         const map = {
-          section: registry.effectiveDeclarations.sections,
-          calculation: registry.effectiveDeclarations.calculations,
-          'view model': registry.effectiveDeclarations.view_models,
+          section: declarationOwnersOf(registry)!.sections,
+          calculation: declarationOwnersOf(registry)!.calculations,
+          'view model': declarationOwnersOf(registry)!.view_models,
         }[ns.name];
-        expect(map.get('shared')?.module_id).toBe('org.example.b');
+        expect(map.get('shared')).toBe('org.example.b');
       });
 
       it('refuses the reversed order through the existing dependency rule, not by picking a winner', () => {
@@ -347,7 +348,7 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
     const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
     const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
     const registry = createModuleRegistry({ modules: [a, b, c] });
-    expect(registry.effectiveDeclarations.calculations.get('x')?.module_id).toBe('org.example.c');
+    expect(declarationOwnersOf(registry)!.calculations.get('x')).toBe('org.example.c');
   });
 
   it('refuses two siblings that both override one dependency, in either order', () => {
@@ -383,13 +384,7 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
     );
   });
 
-  it('applies the first of two view models one manifest declares for a section_id, which the loader accepts', () => {
-    const a = module('org.example.a', { view_models: [viewModel('s', 'First'), viewModel('s', 'Second')] });
-    const registry = createModuleRegistry({ modules: [a] });
-    expect(registry.effectiveDeclarations.view_models.get('s')?.declaration.display_name).toBe('First');
-  });
-
-  it('returns one effective declaration per id from getModuleCalculationsForAssetClass', () => {
+  it('drops an overridden declaration from getModuleCalculationsForAssetClass, keeping module order', () => {
     const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1'), calc('y', 'x + 1')] });
     const b = module('org.example.b', {
       asset_classes: ['office'],
@@ -397,6 +392,20 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
       ...dep('org.example.a'),
     });
     const decls = getModuleCalculationsForAssetClass(createModuleRegistry({ modules: [a, b] }), 'office');
-    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['x=2', 'y=x + 1']);
+    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['y=x + 1', 'x=2']);
+  });
+});
+
+describe('ModuleRegistry public shape', () => {
+  it('is unchanged by §VII.3: ownership is internal, not a registry field', () => {
+    const registry = createModuleRegistry({ modules: [BASE] });
+    expect(Object.keys(registry).sort()).toEqual(['byAssetClass', 'byId', 'calculationsByAssetClass', 'modules']);
+    expect(declarationOwnersOf(registry)?.calculations.get('rev_per_nrsf')).toBe(BASE.id);
+  });
+
+  it('treats a hand-built registry as having no overrides', () => {
+    const handBuilt = { ...createModuleRegistry({ modules: [BASE] }) };
+    expect(declarationOwnersOf(handBuilt)).toBeUndefined();
+    expect(getModuleCalculationsForAssetClass(handBuilt, 'self_storage')).toHaveLength(1);
   });
 });

@@ -13,15 +13,21 @@
   "requires_tier": "tier-3-calc-host",
   "calculations": [
     {
+      "id": "a_before",
+      "label": "a_before",
+      "formula": "5",
+      "deterministic": true
+    },
+    {
       "id": "shared_calc",
       "label": "shared_calc",
       "formula": "1",
       "deterministic": true
     },
     {
-      "id": "reads_shared",
-      "label": "reads_shared",
-      "formula": "shared_calc + 10",
+      "id": "a_after",
+      "label": "a_after",
+      "formula": "a_before + 1",
       "deterministic": true
     }
   ]

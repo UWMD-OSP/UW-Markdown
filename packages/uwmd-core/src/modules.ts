@@ -12,12 +12,9 @@ import {
   BLOCK_ROLES,
   SUPPORTED_FORMAT_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
-  type ModuleCalcDecl,
   type ModuleLoadResult,
   type ModuleManifest,
-  type ModuleSectionDecl,
   type ProtocolError,
-  type SectionViewModel,
   type ViewerTier,
 } from './protocol.js';
 import { parseAssetClass } from './asset-class.js';
@@ -92,30 +89,48 @@ const NAME_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 2000;
 const AGENT_LAYER_ID_PATTERN = /^L\d+(?:_[a-z_]+)?$/;
 
-/** The declaration in effect for one id, and the module it came from (§VII.3). */
-export interface EffectiveDeclaration<T> {
-  module_id: string;
-  declaration: T;
-}
-
 /**
- * One declaration per section id, calculation id and view-model `section_id`
- * across the whole registry (§VII.3). Where a dependent module redeclares an
- * id its dependency declares, the dependent's declaration is the one here.
+ * Internal (§VII.3), not exported from the package entry points: for each
+ * section id, calculation id and view-model `section_id`, the id of the module
+ * whose declaration is in effect. Where a dependent redeclares an id its
+ * dependency declares, that is the dependent.
  */
-export interface EffectiveDeclarations {
-  sections: ReadonlyMap<string, EffectiveDeclaration<ModuleSectionDecl>>;
-  calculations: ReadonlyMap<string, EffectiveDeclaration<ModuleCalcDecl>>;
-  view_models: ReadonlyMap<string, EffectiveDeclaration<SectionViewModel>>;
+export interface DeclarationOwners {
+  sections: ReadonlyMap<string, string>;
+  calculations: ReadonlyMap<string, string>;
+  view_models: ReadonlyMap<string, string>;
 }
 
 export interface ModuleRegistry {
   modules: readonly ModuleManifest[];
   byId: ReadonlyMap<string, ModuleManifest>;
   byAssetClass: ReadonlyMap<string, readonly ModuleManifest[]>;
-  /** Registry-wide declarations after §VII.3 dependent overrides. */
-  effectiveDeclarations: EffectiveDeclarations;
   calculationsByAssetClass(asset_class: string): ModuleManifest[];
+}
+
+// §VII.3 ownership lives beside the registry rather than on it, so the public
+// `ModuleRegistry` shape is unchanged and a host that builds one by hand keeps
+// compiling. Only registries from `createModuleRegistry` have an entry.
+const OWNERS = new WeakMap<ModuleRegistry, DeclarationOwners>();
+
+/**
+ * Internal (§VII.3): declaration owners after dependent overrides. `undefined`
+ * for a registry this library did not build, in which case every declaration
+ * is its own module's.
+ */
+export function declarationOwnersOf(registry: ModuleRegistry): DeclarationOwners | undefined {
+  return OWNERS.get(registry);
+}
+
+/** Internal (§VII.3): false when a dependent module overrides this module's declaration of `id`. */
+export function ownsDeclaration(
+  registry: ModuleRegistry,
+  namespace: keyof DeclarationOwners,
+  id: string,
+  moduleId: string,
+): boolean {
+  const owner = OWNERS.get(registry)?.[namespace].get(id);
+  return owner === undefined || owner === moduleId;
 }
 
 export interface LoadModuleOptions {
@@ -232,10 +247,10 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
   const errors: ProtocolError[] = [];
 
   const seenIds = new Set<string>();
-  const effective = {
-    sections: new Map<string, EffectiveDeclaration<ModuleSectionDecl>>(),
-    calculations: new Map<string, EffectiveDeclaration<ModuleCalcDecl>>(),
-    view_models: new Map<string, EffectiveDeclaration<SectionViewModel>>(),
+  const owners: MutableOwners = {
+    sections: new Map<string, string>(),
+    calculations: new Map<string, string>(),
+    view_models: new Map<string, string>(),
   };
   for (const candidate of opts.modules) {
     const result = loadModuleManifest(candidate, { ...opts, alreadyLoaded: loaded });
@@ -251,7 +266,7 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
         ));
         continue;
       }
-      const conflicts = claimDeclarations(effective, result.manifest);
+      const conflicts = claimDeclarations(owners, result.manifest);
       if (conflicts.length > 0) {
         errors.push(...conflicts);
         continue;
@@ -281,39 +296,29 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
     [...byAssetClassMutable.entries()].map(([k, v]) => [k, Object.freeze([...v])]),
   );
 
-  return Object.freeze({
+  const registry: ModuleRegistry = Object.freeze({
     modules: Object.freeze([...loaded]),
     byId,
     byAssetClass,
-    effectiveDeclarations: Object.freeze({
-      sections: effective.sections as ReadonlyMap<string, EffectiveDeclaration<ModuleSectionDecl>>,
-      calculations: effective.calculations as ReadonlyMap<string, EffectiveDeclaration<ModuleCalcDecl>>,
-      view_models: effective.view_models as ReadonlyMap<string, EffectiveDeclaration<SectionViewModel>>,
-    }),
     calculationsByAssetClass(asset_class: string): ModuleManifest[] {
       return [...(byAssetClass.get(asset_class) ?? [])].filter(
         (m) => (m.calculations ?? []).length > 0,
       );
     },
   });
+  OWNERS.set(registry, Object.freeze(owners));
+  return registry;
 }
 
 export function getModuleCalculationsForAssetClass(
   registry: ModuleRegistry,
   asset_class: string,
 ) {
-  // One declaration per id: an id a dependent overrides yields the dependent's
-  // declaration, in the position of the first module that declares it.
-  const seen = new Set<string>();
-  const out: ModuleCalcDecl[] = [];
-  for (const m of registry.calculationsByAssetClass(asset_class)) {
-    for (const decl of m.calculations ?? []) {
-      if (seen.has(decl.id)) continue;
-      seen.add(decl.id);
-      out.push(registry.effectiveDeclarations.calculations.get(decl.id)?.declaration ?? decl);
-    }
-  }
-  return out;
+  // §VII.3: a declaration a dependent overrides is dropped; the dependent's
+  // stays where its own module declares it.
+  return registry
+    .calculationsByAssetClass(asset_class)
+    .flatMap((m) => (m.calculations ?? []).filter((decl) => ownsDeclaration(registry, 'calculations', decl.id, m.id)));
 }
 
 /**
@@ -332,56 +337,37 @@ export function getModuleCalculationsForAssetClass(
  * otherwise), so an override has one possible outcome. Nothing is claimed
  * unless the whole module is accepted.
  */
-function claimDeclarations(
-  effective: {
-    sections: Map<string, EffectiveDeclaration<ModuleSectionDecl>>;
-    calculations: Map<string, EffectiveDeclaration<ModuleCalcDecl>>;
-    view_models: Map<string, EffectiveDeclaration<SectionViewModel>>;
-  },
-  manifest: ModuleManifest,
-): ProtocolError[] {
+function claimDeclarations(owners: MutableOwners, manifest: ModuleManifest): ProtocolError[] {
   const dependsOn = new Set((manifest.depends_on ?? []).map((d) => d.id));
+  const namespaces: readonly [Map<string, string>, readonly string[], string, string, string][] = [
+    [owners.sections, (manifest.sections ?? []).map((d) => d.id), 'PROTO-MOD-080', 'section', 'sections'],
+    [owners.calculations, (manifest.calculations ?? []).map((d) => d.id), 'PROTO-MOD-081', 'calculation', 'calculations'],
+    [owners.view_models, (manifest.view_models ?? []).map((d) => d.section_id), 'PROTO-MOD-082', 'view model for section', 'view_models'],
+  ];
+
   const errors: ProtocolError[] = [];
-  const check = <T>(
-    map: Map<string, EffectiveDeclaration<T>>,
-    decls: readonly T[],
-    idOf: (decl: T) => string,
-    code: string,
-    noun: string,
-    pointer: string,
-  ): void => {
-    for (const decl of decls) {
-      const owner = map.get(idOf(decl))?.module_id;
-      if (owner === undefined || owner === manifest.id || dependsOn.has(owner)) continue;
+  for (const [map, ids, code, noun, pointer] of namespaces) {
+    for (const id of new Set(ids)) {
+      const owner = map.get(id);
+      if (owner === undefined || dependsOn.has(owner)) continue;
       errors.push(moduleError(
         code,
-        `Module '${manifest.id}' declares ${noun} '${idOf(decl)}', which module '${owner}' already declares; ` +
+        `Module '${manifest.id}' declares ${noun} '${id}', which module '${owner}' already declares; ` +
           `only a module that names '${owner}' in depends_on may override it.`,
         pointer,
       ));
     }
-  };
-  check(effective.sections, manifest.sections ?? [], (d) => d.id, 'PROTO-MOD-080', 'section', 'sections');
-  check(effective.calculations, manifest.calculations ?? [], (d) => d.id, 'PROTO-MOD-081', 'calculation', 'calculations');
-  check(effective.view_models, manifest.view_models ?? [], (d) => d.section_id, 'PROTO-MOD-082', 'view model for section', 'view_models');
+  }
   if (errors.length > 0) return errors;
 
-  // Within one manifest a section or calculation id is already unique
-  // (PROTO-MOD-036, PROTO-MOD-015). View-model section_ids are not checked
-  // there, so the manifest's first entry for an id is the one that applies.
-  const claimed = new Set<string>();
-  for (const decl of manifest.sections ?? []) {
-    effective.sections.set(decl.id, { module_id: manifest.id, declaration: decl });
-  }
-  for (const decl of manifest.calculations ?? []) {
-    effective.calculations.set(decl.id, { module_id: manifest.id, declaration: decl });
-  }
-  for (const decl of manifest.view_models ?? []) {
-    if (claimed.has(decl.section_id)) continue;
-    claimed.add(decl.section_id);
-    effective.view_models.set(decl.section_id, { module_id: manifest.id, declaration: decl });
-  }
+  for (const [map, ids] of namespaces) for (const id of ids) map.set(id, manifest.id);
   return [];
+}
+
+interface MutableOwners {
+  sections: Map<string, string>;
+  calculations: Map<string, string>;
+  view_models: Map<string, string>;
 }
 
 function validateModuleManifest(

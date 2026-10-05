@@ -19,9 +19,21 @@
   ],
   "calculations": [
     {
+      "id": "b_first",
+      "label": "b_first",
+      "formula": "2",
+      "deterministic": true
+    },
+    {
       "id": "shared_calc",
       "label": "shared_calc",
-      "formula": "2",
+      "formula": "b_first * 10",
+      "deterministic": true
+    },
+    {
+      "id": "b_after",
+      "label": "b_after",
+      "formula": "shared_calc + 1",
       "deterministic": true
     }
   ]

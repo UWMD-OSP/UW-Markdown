@@ -318,8 +318,6 @@ export {
 } from './modules.js';
 export type {
   ModuleRegistry,
-  EffectiveDeclaration,
-  EffectiveDeclarations,
   LoadModuleOptions,
   LoadModuleAsyncOptions,
   CreateModuleRegistryOptions,

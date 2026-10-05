@@ -730,17 +730,26 @@ review found.
   calculation id or view-model `section_id` refuse the registry with
   `PROTO-MOD-080`, `-081` or `-082`, in either order.
 - **Dependents.** A dependent's declaration overrides its dependency's,
-  checked against the declaration in effect. `registry.effectiveDeclarations`
-  exposes the result.
-- **Runtime.** It evaluates each calculation id once, with the effective
-  declaration, so `prior_results` no longer depends on registry order.
+  checked against the declaration in effect.
+- **Runtime.** An overridden declaration does not run. The overriding one
+  runs once, where the dependent declares it, so each module keeps its own
+  declaration order (§X). `prior_results` no longer depends on registry
+  order.
+- **API.** Ownership is internal (`declarationOwnersOf` in `modules.ts`, not
+  exported from either entry point). `ModuleRegistry` is unchanged.
 - **Classification.** `bug` plus `conformance-gap` against an existing MUST.
   No RFC and no version change.
-- **Guard.** 17 `modules.test.ts` and 3 `module-runtime.test.ts` tests. The
+- **Guard.** 18 `modules.test.ts` and 6 `module-runtime.test.ts` tests. The
   new `conformance/modules/registry/` suite has six scenarios, and all six
-  fail against the previous registry.
-- **Left open.** Two view models for one `section_id` inside one manifest are
-  still accepted, and the first applies. The loader has never refused them.
+  fail against the previous registry. The ordering tests also fail against
+  the first draft of this fix, which ran an override in the dependency's
+  position.
+- **Owner decision pending.** §VII.3 does not say what a dependency's own
+  later calculation that reads an overridden id sees. Today it reads the id
+  as absent (`null`). That outcome is pinned as undecided and is not in
+  conformance.
+- **Left open.** Two view models for one `section_id` inside one manifest
+  are not refused; that is outside §VII.3.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 

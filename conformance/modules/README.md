@@ -109,15 +109,21 @@ Each scenario holds two synthetic manifests, `a.module.json` and
 `order`. It expects either a refusal, as the exact set of codes the registry
 reports, or a loaded registry. A loaded registry is checked for which module's
 declaration is in effect, and for calc values, view-model names and module
-findings on the shared `registry/deal.uwx.md`. Every manifest must also satisfy
-the schema and load alone, so a refusal can only come from the interaction.
+findings on the shared `registry/deal.uwx.md`, and optionally for calculation
+evaluation order. Every manifest must also satisfy the schema and load alone,
+so a refusal can only come from the interaction.
+
+The runner reads ownership through the reference library's internal
+`declarationOwnersOf`. The protocol gives a view model no consumer through
+which an override would otherwise be observable, and the accessor is not
+public API.
 
 | Scenario | Pins |
 |---|---|
 | `01-section-unrelated` | Same section id, no dependency: `PROTO-MOD-080` in both orders. |
 | `02-section-dependent` | B depends on A and makes the section optional: B's declaration applies, so there is no `MOD-SECTION-MISSING`. B listed first: `PROTO-MOD-027`. |
 | `03-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
-| `04-calculation-dependent` | B overrides `shared_calc`; it runs once, so A's later `reads_shared` sees B's value (12). B listed first: `PROTO-MOD-027`. |
+| `04-calculation-dependent` | B declares `b_first`, then overrides `shared_calc` with `b_first * 10`. A's declaration is suppressed. B's runs once, where B declares it, so it reads `b_first` (20), and B's later `b_after` reads the override (21). Each module keeps its declaration order. What a later calculation of A that reads `shared_calc` should see is undecided, so it is not pinned. B listed first: `PROTO-MOD-027`. |
 | `05-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
 | `06-view-model-dependent` | B's view model is in effect. B listed first: `PROTO-MOD-027`. |
 

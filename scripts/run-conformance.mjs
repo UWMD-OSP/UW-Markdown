@@ -1704,14 +1704,20 @@ async function runModuleRuntime() {
  * `expected.json` listing cases. A case names a load `order` and expects
  * either a refusal (`expected_refusal`: the exact set of codes the registry
  * reports) or a loaded registry. A loaded registry asserts which module's
- * declaration is in effect (`expected_owners`), and may assert calc values,
- * view-model display names and the module findings for the shared
- * `registry/deal.uwx.md`. Every manifest must also load alone and satisfy the
- * normative schema, so a refusal can only come from the interaction.
+ * declaration is in effect (`expected_owners`), and may assert calc values in
+ * evaluation order, view-model display names and the module findings for the
+ * shared `registry/deal.uwx.md`. Every manifest must also load alone and
+ * satisfy the normative schema, so a refusal can only come from the interaction.
+ *
+ * Ownership is read through the reference library's internal accessor
+ * (`dist/modules.js`), because the protocol gives a view model no consumer
+ * through which an override is otherwise observable. It is deliberately not
+ * public API.
  */
 async function runModuleRegistry() {
   const dir = join(MODULES_DIR, 'registry');
   if (!existsSync(dir)) return;
+  const { declarationOwnersOf } = await import('../packages/uwmd-core/dist/modules.js');
 
   const { default: Ajv2020 } = await import('ajv/dist/2020.js');
   const readSchema = (name) => JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));
@@ -1771,15 +1777,22 @@ async function runModuleRegistry() {
 
       for (const [namespace, owners] of Object.entries(c.expected_owners ?? {})) {
         for (const [declId, moduleId] of Object.entries(owners)) {
-          const got = registry.effectiveDeclarations?.[namespace]?.get(declId)?.module_id;
+          const got = declarationOwnersOf?.(registry)?.[namespace]?.get(declId);
           if (got !== moduleId) problems.push(`${label}: ${namespace}.${declId} owned by ${got} != ${moduleId}`);
         }
       }
       for (const [sectionId, want] of Object.entries(c.expected_view_model_display_names ?? {})) {
-        const got = registry.effectiveDeclarations?.view_models.get(sectionId)?.declaration.display_name;
+        const owner = declarationOwnersOf?.(registry)?.view_models.get(sectionId);
+        const got = registry.byId.get(owner)?.view_models?.find((v) => v.section_id === sectionId)?.display_name;
         if (got !== want) problems.push(`${label}: view model ${sectionId} display_name ${got} != ${want}`);
       }
       const outcomes = evaluateModuleCalculations(parsed, registry);
+      if (c.expected_evaluation_order) {
+        const got = outcomes.map(({ module_id, result }) => `${module_id}:${result.calc_id}`);
+        if (got.join(',') !== c.expected_evaluation_order.join(',')) {
+          problems.push(`${label}: evaluation order [${got.join(', ')}] != [${c.expected_evaluation_order.join(', ')}]`);
+        }
+      }
       const perId = new Map();
       for (const { result } of outcomes) perId.set(result.calc_id, (perId.get(result.calc_id) ?? 0) + 1);
       for (const [calcId, n] of perId) if (n > 1) problems.push(`${label}: ${calcId} evaluated ${n} times`);

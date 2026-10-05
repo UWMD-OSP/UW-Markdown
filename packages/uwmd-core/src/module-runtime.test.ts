@@ -313,45 +313,84 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
 });
 
 // Protocol §VII.3: where a dependent redeclares a calculation or section id
-// its dependency declares, one declaration applies, and it is the dependent's.
+// its dependency declares, the dependency's declaration is suppressed and the
+// dependent's applies, in the dependent's own declaration order (§X).
 describe('dependent overrides at runtime (§VII.3)', () => {
-  const BASE_DEP = { depends_on: [{ id: BASE.id, version: '^1.0.0' }] };
   const calc = (id: string, formula: string) => ({ id, label: id, formula, deterministic: true });
+  const mod = (id: string, calculations: ReturnType<typeof calc>[], dependsOn?: string): ModuleManifest => ({
+    ...BASE,
+    id,
+    calculations,
+    ...(dependsOn ? { depends_on: [{ id: dependsOn, version: '^1.0.0' }] } : {}),
+  });
+  const trace = (...modules: ModuleManifest[]) =>
+    evaluateModuleCalculations(file({}), registryOf(...modules)).map(
+      (o) => `${o.module_id}:${o.result.calc_id}=${o.result.value}`,
+    );
 
-  it("runs the dependent's formula once, where the dependency declared it, so later reads see it", () => {
-    const base: ModuleManifest = { ...BASE, calculations: [calc('x', '1'), calc('y', 'x + 10')] };
-    const dependent: ModuleManifest = {
-      ...BASE,
-      id: 'org.example.toy-override',
-      ...BASE_DEP,
-      calculations: [calc('x', '2'), calc('z', 'x + 100')],
-    };
-    const outcomes = evaluateModuleCalculations(file({}), registryOf(base, dependent));
-    expect(outcomes.map((o) => `${o.module_id}:${o.result.calc_id}=${o.result.value}`)).toEqual([
-      'org.example.toy-override:x=2',
-      'org.example.toy:y=12',
-      'org.example.toy-override:z=102',
-    ]);
+  it("runs an override after the dependent's own earlier calculations it reads", () => {
+    // B declares y, then overrides x with a formula reading y. Running B's x
+    // anywhere before B's y would read y as absent.
+    const a = mod('org.example.a', [calc('x', '1')]);
+    const b = mod('org.example.b', [calc('y', '2'), calc('x', 'y * 100')], 'org.example.a');
+    expect(trace(a, b)).toEqual(['org.example.b:y=2', 'org.example.b:x=200']);
   });
 
-  it('feeds validation rules the overriding value and reports one outcome per id', () => {
+  it('keeps both modules in declaration order around the overridden id, with one outcome for it', () => {
+    const a = mod('org.example.a', [calc('a_before', '5'), calc('x', '1'), calc('a_after', 'a_before + 1')]);
+    const b = mod(
+      'org.example.b',
+      [calc('b_before', '2'), calc('x', 'b_before * 100'), calc('b_after', 'x + 1')],
+      'org.example.a',
+    );
+    const outcomes = trace(a, b);
+    expect(outcomes).toEqual([
+      'org.example.a:a_before=5',
+      'org.example.a:a_after=6',
+      'org.example.b:b_before=2',
+      'org.example.b:x=200',
+      'org.example.b:b_after=201',
+    ]);
+    expect(outcomes.filter((o) => o.includes(':x='))).toHaveLength(1);
+  });
+
+  it('runs only the last override in a chain A <- B <- C, where C declares it', () => {
+    const a = mod('org.example.a', [calc('x', '1'), calc('a_tail', '7')]);
+    const b = mod('org.example.b', [calc('x', '2')], 'org.example.a');
+    const c = mod('org.example.c', [calc('c_head', '3'), calc('x', 'c_head * 10')], 'org.example.b');
+    expect(trace(a, b, c)).toEqual(['org.example.a:a_tail=7', 'org.example.c:c_head=3', 'org.example.c:x=30']);
+  });
+
+  // UNDECIDED (owner decision, PR #267): §VII.3 says the dependent's
+  // declaration overrides but not what the dependency's own later readers of
+  // the id see. Suppressing A's x and running B's x in B's order means A's
+  // reader runs first and reads x as absent. This pins today's outcome so a
+  // decision changes it deliberately; it is not a statement of intent.
+  it("currently gives a dependency's later reader of an overridden id null (undecided)", () => {
+    const a = mod('org.example.a', [calc('x', '1'), calc('reads_x', 'x + 10')]);
+    const b = mod('org.example.b', [calc('x', '2')], 'org.example.a');
+    expect(trace(a, b)).toEqual(['org.example.a:reads_x=null', 'org.example.b:x=2']);
+  });
+
+  it('feeds validation rules the overriding value', () => {
     const base: ModuleManifest = {
       ...BASE,
       calculations: [calc('x', '1')],
       validations: [{ code: 'CC-TOY-01', severity: 'warning', message: 'x is not 2', rule: 'x == 2' }],
     };
-    const dependent: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...BASE_DEP, calculations: [calc('x', '2')] };
+    const dependent = mod('org.example.toy-override', [calc('x', '2')], BASE.id);
     expect(validateAgainstModules(file({}), registryOf(base, dependent))).toEqual([]);
   });
 
   it("checks a redeclared section once, against the dependent's declaration", () => {
     const section = (required: boolean) => ({ id: 'hotel_extra', display_name: 'Extra', schema: { type: 'object' }, required });
+    const dep = { depends_on: [{ id: BASE.id, version: '^1.0.0' }] };
     const base: ModuleManifest = { ...BASE, sections: [section(true)] };
-    const relaxed: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...BASE_DEP, sections: [section(false)] };
+    const relaxed: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...dep, sections: [section(false)] };
     expect(validateAgainstModules(file({}), registryOf(base, relaxed))).toEqual([]);
 
     const plain: ModuleManifest = { ...BASE, sections: [section(false)] };
-    const strict: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...BASE_DEP, sections: [section(true)] };
+    const strict: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...dep, sections: [section(true)] };
     const issues = validateAgainstModules(file({}), registryOf(plain, strict));
     expect(issues.map((i) => i.code)).toEqual(['MOD-SECTION-MISSING']);
     expect(issues[0]?.message).toContain("'org.example.toy-override'");
