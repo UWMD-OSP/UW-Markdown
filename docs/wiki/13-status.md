@@ -744,10 +744,10 @@ review found.
   fail against the previous registry. The ordering tests also fail against
   the first draft of this fix, which ran an override in the dependency's
   position.
-- **Owner decision pending.** §VII.3 does not say what a dependency's own
-  later calculation that reads an overridden id sees. Today it reads the id
-  as absent (`null`). That outcome is pinned as undecided and is not in
-  conformance.
+- **Owner decision (2026-10-05, option c).** An override is refused at load
+  (`PROTO-MOD-083`) when a calculation the overridden module declares after
+  the id reads it as a prior result. Reads are found with the expression
+  parser, and there is no cross-module scheduling. §VII.3 states the rule.
 - **Left open.** Two view models for one `section_id` inside one manifest
   are not refused; that is outside §VII.3.
 

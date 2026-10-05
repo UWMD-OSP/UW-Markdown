@@ -308,10 +308,13 @@ registry and read through `declarationOwnersOf` in `modules.ts`. It is not on
   order (§X): an override sees the dependent's earlier calcs, and the
   dependent's later calcs see it. Modules run in registry order. Required
   sections follow the same rule.
-- **Undecided.** §VII.3 does not say what a dependency's *own* later calc
-  that reads an overridden id should see. Today it runs before the dependent
-  and reads the id as absent (`null`). A test in `module-runtime.test.ts` pins
-  this as undecided, and conformance does not pin it.
+- **Later readers refuse the override** (`PROTO-MOD-083`). If a calc the
+  overridden module declares after the id reads it as a prior result, the
+  registry refuses: that reader would run before the override and get
+  `null`. `priorResultReads` walks the parsed expression for identifier
+  and path heads only. String literals, later path segments, bracket keys
+  and period-path heads never reach `prior_results`. Earlier calcs and
+  validation rules are not affected; rules run after every calc.
 - **Within one manifest.** Two view models for one `section_id` are outside
   §VII.3 and are not refused. Sections and calculations already refuse
   duplicates (`-036`, `-015`).

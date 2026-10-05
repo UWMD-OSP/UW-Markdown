@@ -361,15 +361,13 @@ describe('dependent overrides at runtime (§VII.3)', () => {
     expect(trace(a, b, c)).toEqual(['org.example.a:a_tail=7', 'org.example.c:c_head=3', 'org.example.c:x=30']);
   });
 
-  // UNDECIDED (owner decision, PR #267): §VII.3 says the dependent's
-  // declaration overrides but not what the dependency's own later readers of
-  // the id see. Suppressing A's x and running B's x in B's order means A's
-  // reader runs first and reads x as absent. This pins today's outcome so a
-  // decision changes it deliberately; it is not a statement of intent.
-  it("currently gives a dependency's later reader of an overridden id null (undecided)", () => {
+  // Owner decision (PR #267, option c): a dependency's later reader of an
+  // overridden id would run before the override and read it as absent, so the
+  // combination is refused at load rather than evaluated with a silent null.
+  it("never evaluates a dependency's later reader of an overridden id: the registry refuses", () => {
     const a = mod('org.example.a', [calc('x', '1'), calc('reads_x', 'x + 10')]);
     const b = mod('org.example.b', [calc('x', '2')], 'org.example.a');
-    expect(trace(a, b)).toEqual(['org.example.a:reads_x=null', 'org.example.b:x=2']);
+    expect(() => registryOf(a, b)).toThrow(/PROTO-MOD-083/);
   });
 
   it('feeds validation rules the overriding value', () => {

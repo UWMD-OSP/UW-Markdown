@@ -123,8 +123,9 @@ public API.
 | `01-section-unrelated` | Same section id, no dependency: `PROTO-MOD-080` in both orders. |
 | `02-section-dependent` | B depends on A and makes the section optional: B's declaration applies, so there is no `MOD-SECTION-MISSING`. B listed first: `PROTO-MOD-027`. |
 | `03-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
-| `04-calculation-dependent` | B declares `b_first`, then overrides `shared_calc` with `b_first * 10`. A's declaration is suppressed. B's runs once, where B declares it, so it reads `b_first` (20), and B's later `b_after` reads the override (21). Each module keeps its declaration order. What a later calculation of A that reads `shared_calc` should see is undecided, so it is not pinned. B listed first: `PROTO-MOD-027`. |
+| `04-calculation-dependent` | B declares `b_first`, then overrides `shared_calc` with `b_first * 10`. A's declaration is suppressed. B's runs once, where B declares it, so it reads `b_first` (20), and B's later `b_after` reads the override (21). Each module keeps its declaration order. A's later `a_after` does not read `shared_calc`, so the override is allowed. B listed first: `PROTO-MOD-027`. |
+| `07-calculation-override-reader-refused` | As 04, but A declares `reads_shared = shared_calc + 10` after `shared_calc`. B's override would run after it and leave it with no value, so the registry refuses: `PROTO-MOD-083`. B listed first: `PROTO-MOD-027`. |
 | `05-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
 | `06-view-model-dependent` | B's view model is in effect. B listed first: `PROTO-MOD-027`. |
 
-Against the registry before this suite existed, all six fail.
+Against the registry before this suite existed, all six original scenarios fail.

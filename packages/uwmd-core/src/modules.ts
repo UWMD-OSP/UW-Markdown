@@ -6,7 +6,7 @@
 // registry. It deliberately does not perform dynamic imports or introduce new
 // asset-class identifiers; those remain v2/RFC concerns.
 
-import { parseExpression } from './calc/parser.js';
+import { parseExpression, type Expr } from './calc/parser.js';
 import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
   BLOCK_ROLES,
@@ -266,7 +266,7 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
         ));
         continue;
       }
-      const conflicts = claimDeclarations(owners, result.manifest);
+      const conflicts = claimDeclarations(owners, result.manifest, new Map(loaded.map((m) => [m.id, m])));
       if (conflicts.length > 0) {
         errors.push(...conflicts);
         continue;
@@ -337,7 +337,11 @@ export function getModuleCalculationsForAssetClass(
  * otherwise), so an override has one possible outcome. Nothing is claimed
  * unless the whole module is accepted.
  */
-function claimDeclarations(owners: MutableOwners, manifest: ModuleManifest): ProtocolError[] {
+function claimDeclarations(
+  owners: MutableOwners,
+  manifest: ModuleManifest,
+  loaded: ReadonlyMap<string, ModuleManifest>,
+): ProtocolError[] {
   const dependsOn = new Set((manifest.depends_on ?? []).map((d) => d.id));
   const namespaces: readonly [Map<string, string>, readonly string[], string, string, string][] = [
     [owners.sections, (manifest.sections ?? []).map((d) => d.id), 'PROTO-MOD-080', 'section', 'sections'],
@@ -349,19 +353,94 @@ function claimDeclarations(owners: MutableOwners, manifest: ModuleManifest): Pro
   for (const [map, ids, code, noun, pointer] of namespaces) {
     for (const id of new Set(ids)) {
       const owner = map.get(id);
-      if (owner === undefined || dependsOn.has(owner)) continue;
-      errors.push(moduleError(
-        code,
-        `Module '${manifest.id}' declares ${noun} '${id}', which module '${owner}' already declares; ` +
-          `only a module that names '${owner}' in depends_on may override it.`,
-        pointer,
-      ));
+      if (owner === undefined) continue;
+      if (!dependsOn.has(owner)) {
+        errors.push(moduleError(
+          code,
+          `Module '${manifest.id}' declares ${noun} '${id}', which module '${owner}' already declares; ` +
+            `only a module that names '${owner}' in depends_on may override it.`,
+          pointer,
+        ));
+        continue;
+      }
+      if (map === owners.calculations) {
+        const reader = laterReaderOf(loaded.get(owner), id);
+        if (reader !== undefined) {
+          errors.push(moduleError(
+            'PROTO-MOD-083',
+            `Module '${manifest.id}' overrides calculation '${id}' of '${owner}', whose later calculation ` +
+              `'${reader}' reads '${id}' as a prior result. Overriding it would leave that read with no value.`,
+            pointer,
+          ));
+        }
+      }
     }
   }
   if (errors.length > 0) return errors;
 
   for (const [map, ids] of namespaces) for (const id of ids) map.set(id, manifest.id);
   return [];
+}
+
+/**
+ * §VII.3: an override suppresses the overridden declaration and runs the
+ * dependent's where the dependent declares it, which is after every
+ * calculation of the overridden module. So a calculation the overridden module
+ * declares after `id` that reads `id` as a prior result would lose that value.
+ * The first such calculation is returned, and the override is refused.
+ *
+ * Only an identifier or a path head reaches `prior_results` (§VIII.2). A
+ * period-path head, a function name, a string literal and a later path
+ * segment never do, so they are not reads. A head that frontmatter or a
+ * section would shadow in some document still counts, because the check
+ * cannot depend on a document. Calculations declared before `id` are
+ * unaffected: they ran before it under either declaration.
+ */
+function laterReaderOf(module: ModuleManifest | undefined, id: string): string | undefined {
+  const calcs = module?.calculations ?? [];
+  const at = calcs.findIndex((c) => c.id === id);
+  if (at < 0) return undefined;
+  for (const later of calcs.slice(at + 1)) {
+    if (priorResultReads(later.formula).has(id)) return later.id;
+  }
+  return undefined;
+}
+
+/** Identifiers a formula can resolve through `prior_results` (§VIII.2): identifier and path heads. */
+function priorResultReads(formula: string): Set<string> {
+  const out = new Set<string>();
+  const walk = (expr: Expr): void => {
+    switch (expr.kind) {
+      case 'ident':
+        out.add(expr.name);
+        return;
+      case 'path':
+        out.add(expr.head);
+        return;
+      case 'call':
+        for (const arg of expr.args) walk(arg);
+        return;
+      case 'unary':
+        walk(expr.operand);
+        return;
+      case 'binary':
+        walk(expr.left);
+        walk(expr.right);
+        return;
+      case 'cond':
+        walk(expr.test);
+        walk(expr.consequent);
+        walk(expr.else);
+        return;
+      case 'literal':
+      case 'period_path':
+        return;
+    }
+  };
+  // Formulas already parsed at load (PROTO-MOD-018), so this cannot throw for
+  // a loaded module.
+  walk(parseExpression(formula));
+  return out;
 }
 
 interface MutableOwners {

@@ -81,21 +81,35 @@ protocol, and each package each carry an independent semver).
   - Modules run in registry order, as before.
   - The same rule applies to required sections and to
     `getModuleCalculationsForAssetClass`.
-- **Owner decision pending.** §VII.3 does not say what a dependency's own
-  later calculation that reads an overridden id should see. Today it runs
-  before the dependent and reads the id as absent (`null`). A unit test pins
-  that outcome, labelled undecided, and conformance leaves it unpinned.
+- **An override may not remove a prior result its dependency still reads**
+  (owner decision, 2026-10-05).
+  - The rule: if a calculation that the overridden module declares *after*
+    the overridden id reads that id as a prior result, the registry refuses
+    the combination at load with `PROTO-MOD-083`. The reader would otherwise
+    run before the override and silently get `null`.
+  - What counts as a read: an identifier or a path head, found by walking the
+    parsed expression. A string literal, a later path segment, a bracket key
+    and a period-path head never reach `prior_results`, so they don't count.
+    Calculations declared before the overridden id are not affected.
+  - Chains: each edge is checked against the module whose declaration it
+    replaces.
+  - There is no cross-module scheduling: modules still run in registry order.
+  - Protocol §VII.3 states the rule. This is a new MUST, set by the owner as
+    the resolution of what §VII.3 left unspecified.
 - **No public API change.** Declaration ownership is internal, kept beside
   the registry. `ModuleRegistry`, `@uwmd/core` and `@uwmd/core/browser`
   exports are unchanged, and a hand-built `ModuleRegistry` still compiles.
   Such a registry has no overrides.
 - **Conformance:** the new `conformance/modules/registry/` suite covers
   refusal in both orders and a successful override for sections,
-  calculations and view models. All six scenarios fail against the previous
-  registry.
-- No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
-  every package version are unchanged. Protocol §VII.3 now names the
-  reference codes, which is editorial.
+  calculations and view models, plus a refused override whose dependency
+  reads the id later (`07`). All six original scenarios fail against the
+  previous registry, and `07` fails against an implementation without the
+  check.
+- No RFC: this restores an existing MUST, plus the owner-directed
+  clarification above. Format 2.0, Protocol 2.21.0 and every package version
+  are unchanged; versioning is decided at release preparation. Protocol §VII.3
+  now names the reference codes.
 
 ### Renamed identifiers (draft RFC 0073; no contract change)
 

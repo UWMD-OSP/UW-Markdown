@@ -385,14 +385,79 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
   });
 
   it('drops an overridden declaration from getModuleCalculationsForAssetClass, keeping module order', () => {
-    const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1'), calc('y', 'x + 1')] });
+    const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1'), calc('y', '3')] });
     const b = module('org.example.b', {
       asset_classes: ['office'],
       calculations: [calc('x', '2')],
       ...dep('org.example.a'),
     });
     const decls = getModuleCalculationsForAssetClass(createModuleRegistry({ modules: [a, b] }), 'office');
-    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['y=x + 1', 'x=2']);
+    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['y=3', 'x=2']);
+  });
+
+  // Owner decision (PR #267, option c): an override may not remove a prior
+  // result that a later calculation of the overridden module reads.
+  describe("calculation overrides and the overridden module's later readers", () => {
+    const A = 'org.example.a';
+    const B = 'org.example.b';
+    const C = 'org.example.c';
+    const withCalcs = (id: string, calcs: ReturnType<typeof calc>[], dependsOn?: string) =>
+      module(id, { calculations: calcs, ...(dependsOn ? dep(dependsOn) : {}) });
+
+    it('allows an override when no later calculation of the dependency reads the id', () => {
+      const a = withCalcs(A, [calc('x', '1'), calc('other', '5')]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual([]);
+    });
+
+    it('refuses an override when a later calculation of the dependency reads the id', () => {
+      const a = withCalcs(A, [calc('x', '1'), calc('reads_x', 'x + 1')]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual(['PROTO-MOD-083']);
+    });
+
+    it('counts a path head as a read, wherever it sits in the expression', () => {
+      for (const formula of ['x.amount', 'max(1, x)', 'flag ? 0 : -x', 'other == 1 && x > 0']) {
+        const a = withCalcs(A, [calc('x', '1'), calc('flag', 'true'), calc('other', '1'), calc('later', formula)]);
+        expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)]), formula).toEqual(['PROTO-MOD-083']);
+      }
+    });
+
+    it('ignores calculations declared before the overridden id, whatever they read', () => {
+      const a = withCalcs(A, [calc('early', 'property.units'), calc('early_x', 'x'), calc('x', '1'), calc('tail', 'early + 1')]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual([]);
+    });
+
+    it('does not count the id as text in a string, a later path segment, a bracket key or a period-path head', () => {
+      const a = withCalcs(A, [
+        calc('x', '1'),
+        calc('as_string', "'x'"),
+        calc('as_segment', 'property.x'),
+        calc('as_bracket', "property['x']"),
+        // A period path resolves through the document's sections, never prior_results.
+        calc('as_period_head', 'x.annual_cash_flows@Y1.noi'),
+      ]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual([]);
+    });
+
+    it("allows an override that reads the dependent's own earlier calculation (evaluated in module-runtime.test.ts)", () => {
+      const a = withCalcs(A, [calc('x', '1')]);
+      const b = withCalcs(B, [calc('y', '4'), calc('x', 'y * 10')], A);
+      expect(codesOf([a, b])).toEqual([]);
+    });
+
+    it('checks each edge of a chain against the module whose declaration it replaces', () => {
+      const a = withCalcs(A, [calc('x', '1'), calc('a_tail', '7')]);
+      const bOk = withCalcs(B, [calc('x', '2'), calc('b_other', '3')], A);
+      const bReads = withCalcs(B, [calc('x', '2'), calc('b_reads', 'x * 2')], A);
+      const c = withCalcs(C, [calc('x', '3')], B);
+      // Valid: neither A nor B reads x after declaring it.
+      expect(codesOf([a, bOk, c])).toEqual([]);
+      // Refused at C's edge: B, whose declaration C replaces, reads x later.
+      expect(codesOf([a, bReads, c])).toEqual(['PROTO-MOD-083']);
+      // Refused at B's edge: A reads x later, so B never claims it.
+      const aReads = withCalcs(A, [calc('x', '1'), calc('a_reads', 'x')]);
+      // C then has no loaded B to depend on.
+      expect(codesOf([aReads, bOk, c])).toEqual(['PROTO-MOD-083', 'PROTO-MOD-027']);
+    });
   });
 });
 

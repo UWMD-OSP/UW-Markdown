@@ -1503,9 +1503,19 @@ or view-model `section_id`:
 - If one module declares the other in `depends_on`, the dependent
   module's declarations override.
 
+A calculation override MUST preserve the overridden module's own
+author-declared calculation dependencies (§X: declaration order, each
+calculation seeing the ones before it). The overridden declaration does
+not run, and the dependent's runs where the dependent declares it. A host
+MUST therefore refuse an override when a calculation the overridden module
+declares after the overridden ID reads that ID as a prior result: the
+override would leave that read with no value. This section defines no
+cross-module evaluation order beyond that.
+
 The reference library refuses with `PROTO-MOD-080` (section ID),
 `PROTO-MOD-081` (calculation ID) and `PROTO-MOD-082` (view-model
-`section_id`).
+`section_id`), and refuses an override that would remove a consumed prior
+result with `PROTO-MOD-083`.
 
 ### VII.4 Capability negotiation
 
