@@ -1,0 +1,6 @@
+{
+  "description": "A flow-style sequence is a sequence; Lite 1.0 frontmatter values are scalars.",
+  "expected_codes": [
+    "LITE_FRONTMATTER_NESTING_UNSUPPORTED"
+  ]
+}

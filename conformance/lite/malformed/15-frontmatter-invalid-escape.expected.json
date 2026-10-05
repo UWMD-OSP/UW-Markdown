@@ -1,0 +1,6 @@
+{
+  "description": "A double-quoted scalar uses YAML 1.2 escapes (format Appendix D); \\d is not one, so the entry is malformed.",
+  "expected_codes": [
+    "LITE_FRONTMATTER_SYNTAX"
+  ]
+}

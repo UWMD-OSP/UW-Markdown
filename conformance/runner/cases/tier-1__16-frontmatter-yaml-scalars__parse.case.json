@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/16-frontmatter-yaml-scalars/parse",
+  "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "16-frontmatter-yaml-scalars.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/16-frontmatter-yaml-scalars.parsed.json"
+  }
+}

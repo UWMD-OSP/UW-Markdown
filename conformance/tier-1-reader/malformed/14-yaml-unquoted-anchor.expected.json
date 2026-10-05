@@ -1,0 +1,7 @@
+{
+  "description": "An anchor outside a quoted scalar is still rejected (D.2); quoting only makes & content inside quotes.",
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_YAML_FEATURE"
+  ]
+}

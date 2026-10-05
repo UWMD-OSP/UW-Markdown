@@ -29,7 +29,7 @@ const KV_RE = /(\w+)=([^\s]+)/g;
 
 // ─── YAML frontmatter parser ──────────────────────────────────────────────────
 // Deliberately implements a strict YAML SUBSET — see UW_FORMAT_SPEC_v1.md
-// Appendix A "YAML subset" for the full grammar. The supported surface:
+// Appendix D "YAML Subset (Frontmatter)" for the full grammar. The supported surface:
 //
 //   - Scalars: string (bare or single/double-quoted), number, boolean, null, ~
 //   - Mappings: `key: value` and one-level nested `key:` + indented children
@@ -90,7 +90,7 @@ function rejectUnsupportedYaml(lines: string[]): void {
       if (pattern.test(codePart)) {
         throw new UWMDParseError(
           'UNSUPPORTED_YAML_FEATURE',
-          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix A).`,
+          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix D).`,
           { line: n + 1, feature },
         );
       }

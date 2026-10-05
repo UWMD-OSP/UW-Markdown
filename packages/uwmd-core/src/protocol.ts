@@ -2801,8 +2801,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'UNSUPPORTED_YAML_FEATURE', severity: 'error',
     title: 'Unsupported YAML feature in frontmatter',
     description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',
-    remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC_v1.md Appendix A — scalars, simple mappings, and dash-prefixed sequences.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md Appendix A',
+    remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC_v1.md Appendix D — scalars, simple mappings, and dash-prefixed sequences.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md Appendix D',
   },
 ]);
 

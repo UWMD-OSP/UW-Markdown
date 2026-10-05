@@ -401,20 +401,28 @@ async function runTier1Malformed() {
       continue;
     }
 
-    let parsed;
-    try {
-      parsed = parseUWFile(fixtureContent);
-    } catch (e) {
-      if (mustParse) {
-        record('1', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
-      } else {
-        record('1', `malformed/${id}`, 'pass', 'parse threw as expected');
+    if (!mustParse) {
+      // A parse refusal is pinned by its code, as the Lite suite does:
+      // "threw something" would let a reader that refuses for the wrong
+      // reason pass.
+      try {
+        parseUWFile(fixtureContent);
+        record('1', `malformed/${id}`, 'fail', 'expected parse to throw, but it succeeded');
+      } catch (e) {
+        if (expectedCodes.includes(e.code)) {
+          record('1', `malformed/${id}`, 'pass', `parse refused with ${e.code}`);
+        } else {
+          record('1', `malformed/${id}`, 'fail', `threw ${e.code ?? '(no code)'}, expected one of ${expectedCodes.join(', ')}: ${e.message}`);
+        }
       }
       continue;
     }
 
-    if (!mustParse) {
-      record('1', `malformed/${id}`, 'fail', 'expected parse to throw, but it succeeded');
+    let parsed;
+    try {
+      parsed = parseUWFile(fixtureContent);
+    } catch (e) {
+      record('1', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
       continue;
     }
 

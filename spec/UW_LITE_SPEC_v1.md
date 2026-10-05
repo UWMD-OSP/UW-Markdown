@@ -47,6 +47,9 @@ The document begins with frontmatter delimited by lines containing only `---`.
 Lite 1.0 supports unique top-level `key: value` entries whose values are
 strings, finite numbers, booleans, or null. Nested mappings, sequences, anchors,
 tags, directives, and block scalars are not supported in the initial profile.
+Quoted scalars and comments follow the scalar semantics of the format
+specification's Appendix D: YAML 1.2 escapes in double quotes, `''` in single
+quotes, and a whitespace-preceded `#` outside quotes begins a comment.
 
 `uw_lite_version` is required and must resolve to `1.0`. A YAML numeric
 spelling of `1.0` and the string `"1.0"` identify the same representation

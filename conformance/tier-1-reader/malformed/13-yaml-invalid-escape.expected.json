@@ -1,0 +1,7 @@
+{
+  "description": "A double-quoted scalar uses YAML 1.2 escapes; \\d is not one, so the scalar is outside the subset (Appendix D scalar semantics).",
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_YAML_FEATURE"
+  ]
+}
