@@ -1,0 +1,23 @@
+{
+  "description": "Two unrelated modules declare a view model for shared_section. The second is refused in either order.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-082"
+      ]
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-082"
+      ]
+    }
+  ]
+}

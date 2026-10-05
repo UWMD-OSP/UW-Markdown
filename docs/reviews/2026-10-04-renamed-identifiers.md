@@ -189,6 +189,10 @@ These are outside #263 and are recorded, not fixed, here.
    error. The module runtime then threads both results into one
    `prior_results` map by calc id (`module-runtime.ts:61-77`), so the later
    module's value wins by registry order. §VII.3 forbids exactly that.
+   **Resolved on 2026-10-05** on branch `claude/vii3-module-conflicts`. The
+   registry refuses with `PROTO-MOD-080`–`082` and applies dependent
+   overrides, and `conformance/modules/registry/` pins all three namespaces.
+   R1 in the repro now asserts the refusal.
 2. **`MOD-ASSET-CLASS-CONFLICT-001` has no conformance fixture
    (conformance gap).** It is covered only by `asset-class.test.ts`.
 3. **Editorial: fixed in this change.** The implementation-manifest schema

@@ -1,0 +1,26 @@
+{
+  "description": "B depends on A and redeclares shared_section as optional. B's declaration applies, so the deal, which lacks the section, raises no MOD-SECTION-MISSING. Listed before its dependency, B is refused by the existing dependency rule rather than winning or losing by order.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_owners": {
+        "sections": {
+          "shared_section": "org.example.registry-b"
+        }
+      },
+      "expected_codes": []
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-027"
+      ]
+    }
+  ]
+}

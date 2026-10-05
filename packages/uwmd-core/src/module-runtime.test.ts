@@ -311,3 +311,49 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
       .not.toThrow();
   });
 });
+
+// Protocol §VII.3: where a dependent redeclares a calculation or section id
+// its dependency declares, one declaration applies, and it is the dependent's.
+describe('dependent overrides at runtime (§VII.3)', () => {
+  const BASE_DEP = { depends_on: [{ id: BASE.id, version: '^1.0.0' }] };
+  const calc = (id: string, formula: string) => ({ id, label: id, formula, deterministic: true });
+
+  it("runs the dependent's formula once, where the dependency declared it, so later reads see it", () => {
+    const base: ModuleManifest = { ...BASE, calculations: [calc('x', '1'), calc('y', 'x + 10')] };
+    const dependent: ModuleManifest = {
+      ...BASE,
+      id: 'org.example.toy-override',
+      ...BASE_DEP,
+      calculations: [calc('x', '2'), calc('z', 'x + 100')],
+    };
+    const outcomes = evaluateModuleCalculations(file({}), registryOf(base, dependent));
+    expect(outcomes.map((o) => `${o.module_id}:${o.result.calc_id}=${o.result.value}`)).toEqual([
+      'org.example.toy-override:x=2',
+      'org.example.toy:y=12',
+      'org.example.toy-override:z=102',
+    ]);
+  });
+
+  it('feeds validation rules the overriding value and reports one outcome per id', () => {
+    const base: ModuleManifest = {
+      ...BASE,
+      calculations: [calc('x', '1')],
+      validations: [{ code: 'CC-TOY-01', severity: 'warning', message: 'x is not 2', rule: 'x == 2' }],
+    };
+    const dependent: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...BASE_DEP, calculations: [calc('x', '2')] };
+    expect(validateAgainstModules(file({}), registryOf(base, dependent))).toEqual([]);
+  });
+
+  it("checks a redeclared section once, against the dependent's declaration", () => {
+    const section = (required: boolean) => ({ id: 'hotel_extra', display_name: 'Extra', schema: { type: 'object' }, required });
+    const base: ModuleManifest = { ...BASE, sections: [section(true)] };
+    const relaxed: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...BASE_DEP, sections: [section(false)] };
+    expect(validateAgainstModules(file({}), registryOf(base, relaxed))).toEqual([]);
+
+    const plain: ModuleManifest = { ...BASE, sections: [section(false)] };
+    const strict: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...BASE_DEP, sections: [section(true)] };
+    const issues = validateAgainstModules(file({}), registryOf(plain, strict));
+    expect(issues.map((i) => i.code)).toEqual(['MOD-SECTION-MISSING']);
+    expect(issues[0]?.message).toContain("'org.example.toy-override'");
+  });
+});

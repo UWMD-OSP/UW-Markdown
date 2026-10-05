@@ -1,0 +1,31 @@
+{
+  "description": "B depends on A and redeclares shared_calc. B's formula runs once, in A's position, so A's later reads_shared sees B's value.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_owners": {
+        "calculations": {
+          "shared_calc": "org.example.registry-b",
+          "reads_shared": "org.example.registry-a"
+        }
+      },
+      "expected_calcs": {
+        "shared_calc": 2,
+        "reads_shared": 12
+      },
+      "expected_codes": []
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-027"
+      ]
+    }
+  ]
+}

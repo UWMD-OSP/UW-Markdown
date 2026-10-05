@@ -722,6 +722,26 @@ boundary, the label taxonomy and the lifecycle. The rest is in the
   confidential, non-security reproductions, and whether to enable GitHub
   private vulnerability reporting alongside the security mailbox.
 
+## 2026-10-05 — Module declaration conflicts enforced (Protocol §VII.3)
+
+The reference registry now enforces §VII.3, the defect the renamed-identifier
+review found.
+- **Unrelated modules.** Two unrelated modules declaring one section id,
+  calculation id or view-model `section_id` refuse the registry with
+  `PROTO-MOD-080`, `-081` or `-082`, in either order.
+- **Dependents.** A dependent's declaration overrides its dependency's,
+  checked against the declaration in effect. `registry.effectiveDeclarations`
+  exposes the result.
+- **Runtime.** It evaluates each calculation id once, with the effective
+  declaration, so `prior_results` no longer depends on registry order.
+- **Classification.** `bug` plus `conformance-gap` against an existing MUST.
+  No RFC and no version change.
+- **Guard.** 17 `modules.test.ts` and 3 `module-runtime.test.ts` tests. The
+  new `conformance/modules/registry/` suite has six scenarios, and all six
+  fail against the previous registry.
+- **Left open.** Two view models for one `section_id` inside one manifest are
+  still accepted, and the first applies. The loader has never refused them.
+
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 
 Issue #263 (StackUW `UPSTREAM-023`) asks for previous ids on module and

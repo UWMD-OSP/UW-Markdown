@@ -1,0 +1,23 @@
+{
+  "description": "Two unrelated modules declare calculation shared_calc. Before §VII.3 was enforced both loaded and registry order decided the threaded value; now the second is refused in either order.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    }
+  ]
+}

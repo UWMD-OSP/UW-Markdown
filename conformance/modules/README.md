@@ -55,10 +55,11 @@ always a bug, and the suite fails on it with no opt-out.
 
 ## What this suite does not cover
 
-Registry-level behavior (dependency load order, version-range satisfaction,
-duplicate module ids) is asserted in `packages/uwmd-core/src/modules.test.ts`
-rather than here, because a fixture file holds one manifest and those properties
-are about how several interact.
+Dependency load order, version-range satisfaction and duplicate module ids are
+asserted in `packages/uwmd-core/src/modules.test.ts` rather than here, because
+a fixture file holds one manifest and those properties are about how several
+interact. Protocol §VII.3 declaration conflicts are the exception: see
+`registry/` below.
 
 `accept/` fixtures load against `tier-4-agent-host`, the maximal host, so they
 assert manifest validity rather than host capability. Tier gating has its own
@@ -100,3 +101,24 @@ The two families differ in one thing that matters: hospitality is a
 the data center is a *declared* class (`declares_asset_classes`, RFC 0003)
 the module owns. `10-…` is the scenario that pins the runtime scoping a
 declaring module to its declared class — the gap RFC 0039 found.
+
+## `registry/` — two modules declaring one id (Protocol §VII.3)
+
+Each scenario holds two synthetic manifests, `a.module.json` and
+`b.module.json`, and an `expected.json` listing cases. A case names a load
+`order`. It expects either a refusal, as the exact set of codes the registry
+reports, or a loaded registry. A loaded registry is checked for which module's
+declaration is in effect, and for calc values, view-model names and module
+findings on the shared `registry/deal.uwx.md`. Every manifest must also satisfy
+the schema and load alone, so a refusal can only come from the interaction.
+
+| Scenario | Pins |
+|---|---|
+| `01-section-unrelated` | Same section id, no dependency: `PROTO-MOD-080` in both orders. |
+| `02-section-dependent` | B depends on A and makes the section optional: B's declaration applies, so there is no `MOD-SECTION-MISSING`. B listed first: `PROTO-MOD-027`. |
+| `03-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
+| `04-calculation-dependent` | B overrides `shared_calc`; it runs once, so A's later `reads_shared` sees B's value (12). B listed first: `PROTO-MOD-027`. |
+| `05-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
+| `06-view-model-dependent` | B's view model is in effect. B listed first: `PROTO-MOD-027`. |
+
+Against the registry before this suite existed, all six fail.

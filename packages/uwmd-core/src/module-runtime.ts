@@ -22,7 +22,7 @@
 // thing the module system must never become.
 
 import { evaluateCalc } from './calc/index.js';
-import type { ModuleManifest, ModuleValidationDecl, CalcResult } from './protocol.js';
+import type { ModuleManifest, ModuleSectionDecl, ModuleValidationDecl, CalcResult } from './protocol.js';
 import type { ModuleRegistry } from './modules.js';
 import type { ParsedUWFile, ValidationMessage } from './types.js';
 
@@ -58,11 +58,20 @@ export function evaluateModuleCalculations(
 ): ModuleCalcOutcome[] {
   const outcomes: ModuleCalcOutcome[] = [];
   const prior: Record<string, number | string | boolean | null> = {};
+  const evaluated = new Set<string>();
 
   for (const manifest of applicableModules(parsed, registry, options)) {
-    for (const decl of manifest.calculations ?? []) {
+    for (const own of manifest.calculations ?? []) {
+      // §VII.3: one declaration per calculation id. Where a dependent overrides
+      // a dependency's calculation, the dependent's formula runs once, in the
+      // dependency's position, so the dependency's later calculations that
+      // read the id see the override, as an override intends.
+      if (evaluated.has(own.id)) continue;
+      evaluated.add(own.id);
+      const { module_id, declaration: decl } =
+        registry.effectiveDeclarations.calculations.get(own.id) ?? { module_id: manifest.id, declaration: own };
       const result = evaluateCalc(decl, { parsed, prior_results: prior, locale: 'en-US' });
-      outcomes.push({ module_id: manifest.id, result });
+      outcomes.push({ module_id, result });
       // Only successful results are published. This is principle rather than
       // effect: an unresolved identifier already evaluates to `null` (§VIII.2),
       // so a dependent sees `null` either way — but presenting a failed
@@ -104,8 +113,17 @@ export function validateAgainstModules(
   const issues: ValidationMessage[] = [];
   const modules = applicableModules(parsed, registry, options);
 
+  // §VII.3: a section id a dependent redeclares is checked once, against the
+  // dependent's declaration.
+  const checked = new Set<string>();
   for (const manifest of modules) {
-    issues.push(...checkModuleSections(parsed, manifest));
+    for (const own of manifest.sections ?? []) {
+      if (checked.has(own.id)) continue;
+      checked.add(own.id);
+      const { module_id, declaration } =
+        registry.effectiveDeclarations.sections.get(own.id) ?? { module_id: manifest.id, declaration: own };
+      issues.push(...missingRequiredSection(parsed, module_id, declaration));
+    }
   }
 
   const prior: Record<string, number | string | boolean | null> = {};
@@ -148,20 +166,24 @@ export function checkModuleSections(
   parsed: ParsedUWFile,
   manifest: ModuleManifest,
 ): ValidationMessage[] {
-  const issues: ValidationMessage[] = [];
-  for (const section of manifest.sections ?? []) {
-    if (!section.required) continue;
-    if (parsed.sections[section.id] === undefined) {
-      issues.push({
-        code: 'MOD-SECTION-MISSING',
-        severity: 'error',
-        section: section.id,
-        message: `Module '${manifest.id}' requires section '${section.id}' (${section.display_name}), which is missing.`,
-        remediation: `Add a '${section.id}' block, or stop loading '${manifest.id}' for this document.`,
-      });
-    }
-  }
-  return issues;
+  return (manifest.sections ?? []).flatMap((section) => missingRequiredSection(parsed, manifest.id, section));
+}
+
+function missingRequiredSection(
+  parsed: ParsedUWFile,
+  moduleId: string,
+  section: ModuleSectionDecl,
+): ValidationMessage[] {
+  if (!section.required || parsed.sections[section.id] !== undefined) return [];
+  return [
+    {
+      code: 'MOD-SECTION-MISSING',
+      severity: 'error',
+      section: section.id,
+      message: `Module '${moduleId}' requires section '${section.id}' (${section.display_name}), which is missing.`,
+      remediation: `Add a '${section.id}' block, or stop loading '${moduleId}' for this document.`,
+    },
+  ];
 }
 
 function runRule(

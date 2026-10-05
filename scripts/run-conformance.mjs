@@ -1698,6 +1698,108 @@ async function runModuleRuntime() {
 
 
 /**
+ * Registry declaration conflicts (protocol §VII.3).
+ *
+ * Each `registry/<scenario>/` holds `a.module.json`, `b.module.json` and an
+ * `expected.json` listing cases. A case names a load `order` and expects
+ * either a refusal (`expected_refusal`: the exact set of codes the registry
+ * reports) or a loaded registry. A loaded registry asserts which module's
+ * declaration is in effect (`expected_owners`), and may assert calc values,
+ * view-model display names and the module findings for the shared
+ * `registry/deal.uwx.md`. Every manifest must also load alone and satisfy the
+ * normative schema, so a refusal can only come from the interaction.
+ */
+async function runModuleRegistry() {
+  const dir = join(MODULES_DIR, 'registry');
+  if (!existsSync(dir)) return;
+
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
+  const readSchema = (name) => JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));
+  const ajv = new Ajv2020({ strict: false });
+  ajv.addSchema(readSchema('module-signature.schema.json'));
+  const schemaCheck = ajv.compile(readSchema('module-manifest.schema.json'));
+  const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+  const HOST = { hostTier: 'tier-4-agent-host' };
+  const sameSet = (got, want) => [...new Set(got)].sort().join(',') === [...new Set(want)].sort().join(',');
+
+  const scenarios = readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort();
+  for (const id of scenarios) {
+    const scenarioDir = join(dir, id);
+    const files = ['a', 'b'].map((k) => join(scenarioDir, `${k}.module.json`));
+    const expectedPath = join(scenarioDir, 'expected.json');
+    if (![...files, expectedPath].every((p) => existsSync(p))) {
+      record('modules', `registry/${id}`, 'fail', 'scenario needs a.module.json, b.module.json and expected.json');
+      continue;
+    }
+    const manifests = { a: JSON.parse(readFileSync(files[0], 'utf8')), b: JSON.parse(readFileSync(files[1], 'utf8')) };
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const problems = [];
+
+    for (const [key, manifest] of Object.entries(manifests)) {
+      if (!schemaCheck(manifest)) problems.push(`${key}.module.json fails the manifest schema`);
+      // Alone, a dependent cannot load (its dependency is absent), so the
+      // standalone check is structural: no code other than PROTO-MOD-027.
+      const alone = loadModuleManifest(manifest, HOST);
+      const stray = alone.errors.map((e) => e.code).filter((c) => c !== 'PROTO-MOD-027');
+      if (stray.length) problems.push(`${key}.module.json does not load alone: ${stray.join(', ')}`);
+    }
+
+    for (const c of expected.cases ?? []) {
+      const label = c.order.join('→');
+      let registry;
+      let refusal = null;
+      try {
+        registry = createModuleRegistry({ modules: c.order.map((k) => manifests[k]), ...HOST });
+      } catch (e) {
+        refusal = (e.errors ?? []).map((err) => err.code);
+        if (!e.errors) problems.push(`${label}: threw ${e}`);
+      }
+
+      if (c.expected_refusal) {
+        if (refusal === null) problems.push(`${label}: loaded, expected refusal [${c.expected_refusal.join(', ')}]`);
+        else if (!sameSet(refusal, c.expected_refusal)) {
+          problems.push(`${label}: refused with [${refusal.join(', ')}] != [${c.expected_refusal.join(', ')}]`);
+        }
+        continue;
+      }
+      if (refusal !== null) {
+        problems.push(`${label}: refused with [${refusal.join(', ')}], expected to load`);
+        continue;
+      }
+
+      for (const [namespace, owners] of Object.entries(c.expected_owners ?? {})) {
+        for (const [declId, moduleId] of Object.entries(owners)) {
+          const got = registry.effectiveDeclarations?.[namespace]?.get(declId)?.module_id;
+          if (got !== moduleId) problems.push(`${label}: ${namespace}.${declId} owned by ${got} != ${moduleId}`);
+        }
+      }
+      for (const [sectionId, want] of Object.entries(c.expected_view_model_display_names ?? {})) {
+        const got = registry.effectiveDeclarations?.view_models.get(sectionId)?.declaration.display_name;
+        if (got !== want) problems.push(`${label}: view model ${sectionId} display_name ${got} != ${want}`);
+      }
+      const outcomes = evaluateModuleCalculations(parsed, registry);
+      const perId = new Map();
+      for (const { result } of outcomes) perId.set(result.calc_id, (perId.get(result.calc_id) ?? 0) + 1);
+      for (const [calcId, n] of perId) if (n > 1) problems.push(`${label}: ${calcId} evaluated ${n} times`);
+      const computed = Object.fromEntries(outcomes.map(({ result }) => [result.calc_id, result.value]));
+      for (const [calcId, want] of Object.entries(c.expected_calcs ?? {})) {
+        if (computed[calcId] !== want) problems.push(`${label}: ${calcId} ${computed[calcId]} != ${want}`);
+      }
+      if (c.expected_codes) {
+        const codes = validateAgainstModules(parsed, registry).map((i) => i.code);
+        if (!sameSet(codes, c.expected_codes)) {
+          problems.push(`${label}: codes [${codes.join(', ')}] != [${c.expected_codes.join(', ')}]`);
+        }
+      }
+    }
+
+    record('modules', `registry/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+/**
  * Module-declared asset classes (RFC 0003, protocol §X.2).
  *
  * Three of the four scenarios are the SAME BYTES with a different host: module
@@ -4227,7 +4329,7 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
-  'modules': async () => { await runModules(); await runModuleRuntime(); await runAssetClasses(); },
+  'modules': async () => { await runModules(); await runModuleRuntime(); await runModuleRegistry(); await runAssetClasses(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },

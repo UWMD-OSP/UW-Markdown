@@ -260,3 +260,143 @@ describe('createModuleRegistry', () => {
     }
   });
 });
+
+// Protocol §VII.3: two unrelated modules may not declare the same section id,
+// calculation id or view-model section_id; a dependent's declaration overrides
+// its dependency's. No outcome may depend on registry order.
+describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
+  const module = (id: string, extra: Partial<ModuleManifest> = {}): ModuleManifest => ({
+    manifest_version: '1',
+    id,
+    name: id,
+    version: '1.0.0',
+    description: 'Synthetic §VII.3 module.',
+    authors: ['test'],
+    license: 'MIT',
+    requires_protocol: '>=1.0.0',
+    requires_format: '>=1.0',
+    requires_tier: 'tier-3-calc-host',
+    ...extra,
+  });
+  const section = (id: string, required = false) => ({ id, display_name: id, schema: { type: 'object' }, required });
+  const calc = (id: string, formula: string) => ({ id, label: id, formula, deterministic: true });
+  const viewModel = (section_id: string, display_name: string) => ({
+    section_id,
+    display_name,
+    display_order: 30,
+    description: display_name,
+    primary_fields: [],
+  });
+  const dep = (id: string) => ({ depends_on: [{ id, version: '^1.0.0' }] });
+  const codesOf = (modules: ModuleManifest[]): string[] => {
+    try {
+      createModuleRegistry({ modules });
+      return [];
+    } catch (e) {
+      return (e as ModuleRegistryError).errors.map((err) => err.code);
+    }
+  };
+
+  const NAMESPACES = [
+    { name: 'section', code: 'PROTO-MOD-080', decl: (v: string) => ({ sections: [section('shared', v === 'b')] }) },
+    {
+      name: 'calculation',
+      code: 'PROTO-MOD-081',
+      decl: (v: string) => ({ calculations: [calc('shared', v === 'a' ? '1' : '2')] }),
+    },
+    { name: 'view model', code: 'PROTO-MOD-082', decl: (v: string) => ({ view_models: [viewModel('shared', v)] }) },
+  ] as const;
+
+  for (const ns of NAMESPACES) {
+    describe(ns.name, () => {
+      const a = module('org.example.a', ns.decl('a'));
+      const b = module('org.example.b', ns.decl('b'));
+      const bDependent = module('org.example.b', { ...ns.decl('b'), ...dep('org.example.a') });
+
+      it('refuses two unrelated modules in either order, with the same code', () => {
+        expect(codesOf([a, b])).toEqual([ns.code]);
+        expect(codesOf([b, a])).toEqual([ns.code]);
+      });
+
+      it('lets a dependent override the declaration of its dependency', () => {
+        const registry = createModuleRegistry({ modules: [a, bDependent] });
+        const map = {
+          section: registry.effectiveDeclarations.sections,
+          calculation: registry.effectiveDeclarations.calculations,
+          'view model': registry.effectiveDeclarations.view_models,
+        }[ns.name];
+        expect(map.get('shared')?.module_id).toBe('org.example.b');
+      });
+
+      it('refuses the reversed order through the existing dependency rule, not by picking a winner', () => {
+        // A dependent listed before its dependency has never loaded
+        // (PROTO-MOD-027), so an override has exactly one possible outcome.
+        expect(codesOf([bDependent, a])).toEqual(['PROTO-MOD-027']);
+      });
+    });
+  }
+
+  it('reports every conflicting namespace of a refused module', () => {
+    const a = module('org.example.a', { sections: [section('s')], calculations: [calc('c', '1')] });
+    const b = module('org.example.b', { sections: [section('s')], calculations: [calc('c', '2'), calc('own', '3')] });
+    expect(codesOf([a, b]).sort()).toEqual(['PROTO-MOD-080', 'PROTO-MOD-081']);
+  });
+
+  it('follows a chain: C overrides B, which overrides A', () => {
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
+    const registry = createModuleRegistry({ modules: [a, b, c] });
+    expect(registry.effectiveDeclarations.calculations.get('x')?.module_id).toBe('org.example.c');
+  });
+
+  it('refuses two siblings that both override one dependency, in either order', () => {
+    // The second sibling names A, but B's override of A is in effect, and
+    // replacing it would silently undo B.
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.a') });
+    expect(codesOf([a, b, c])).toEqual(['PROTO-MOD-081']);
+    expect(codesOf([a, c, b])).toEqual(['PROTO-MOD-081']);
+  });
+
+  it('does not treat a transitive dependency as a declared one', () => {
+    // C depends on B, B on A; B does not declare x. §VII.3 relates modules
+    // that declare one another in depends_on, so C may not override A's x.
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+    const b = module('org.example.b', dep('org.example.a'));
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
+    expect(codesOf([a, b, c])).toEqual(['PROTO-MOD-081']);
+  });
+
+  it('refuses a dependency cycle through the existing dependency rule', () => {
+    const a = module('org.example.a', { calculations: [calc('x', '1')], ...dep('org.example.b') });
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    expect(codesOf([a, b])).toContain('PROTO-MOD-027');
+    expect(codesOf([b, a])).toContain('PROTO-MOD-027');
+  });
+
+  it('keeps refusing duplicates inside one manifest where it already did', () => {
+    expect(codesOf([module('org.example.a', { sections: [section('s'), section('s')] })])).toContain('PROTO-MOD-036');
+    expect(codesOf([module('org.example.a', { calculations: [calc('x', '1'), calc('x', '2')] })])).toContain(
+      'PROTO-MOD-015',
+    );
+  });
+
+  it('applies the first of two view models one manifest declares for a section_id, which the loader accepts', () => {
+    const a = module('org.example.a', { view_models: [viewModel('s', 'First'), viewModel('s', 'Second')] });
+    const registry = createModuleRegistry({ modules: [a] });
+    expect(registry.effectiveDeclarations.view_models.get('s')?.declaration.display_name).toBe('First');
+  });
+
+  it('returns one effective declaration per id from getModuleCalculationsForAssetClass', () => {
+    const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1'), calc('y', 'x + 1')] });
+    const b = module('org.example.b', {
+      asset_classes: ['office'],
+      calculations: [calc('x', '2')],
+      ...dep('org.example.a'),
+    });
+    const decls = getModuleCalculationsForAssetClass(createModuleRegistry({ modules: [a, b] }), 'office');
+    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['x=2', 'y=x + 1']);
+  });
+});

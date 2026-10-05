@@ -54,6 +54,45 @@ protocol, and each package each carry an independent semver).
   receipts and the conformance runner report already carry what a report
   needs. Format 2.0, Protocol 2.21.0 and every package version are unchanged.
 
+### Fixed — module declaration conflicts (Protocol §VII.3)
+
+- **Two unrelated modules can no longer both declare one id.** Protocol
+  §VII.3 has always said a host MUST refuse the second module, but the
+  reference registry refused only duplicate module ids. Both modules loaded,
+  and for calculations the module runtime threaded both results into one
+  `prior_results` map, so registry order decided the value. The registry now
+  refuses, and refuses the whole registry rather than keeping part of it. The
+  code is the same in either order:
+  - `PROTO-MOD-080` for a section id;
+  - `PROTO-MOD-081` for a calculation id;
+  - `PROTO-MOD-082` for a view-model `section_id`.
+- **A dependent's declaration overrides its dependency's**, as §VII.3 says.
+  - The registry checks against the declaration currently in effect. In a
+    chain, C overrides B by naming B. Two siblings that both override one
+    dependency conflict, and a transitive dependency is not a declared one.
+  - A dependent must still follow its dependency (`PROTO-MOD-027`), so an
+    override has one possible outcome.
+  - The runtime evaluates each calculation id once, with the effective
+    declaration, at the position of the first applicable module declaring
+    it, so a dependency's later calculations read the override. A redeclared
+    required section is checked once, against the effective declaration.
+    `getModuleCalculationsForAssetClass` returns one declaration per id.
+- **API (additive):**
+  - `ModuleRegistry.effectiveDeclarations` exposes the declaration in effect
+    for each id and the module it came from.
+  - New exported types `EffectiveDeclaration` and `EffectiveDeclarations`.
+  - Code that builds a `ModuleRegistry` object by hand must now supply
+    `effectiveDeclarations`; `createModuleRegistry` does this.
+- **Conformance:** the new `conformance/modules/registry/` suite covers
+  refusal in both orders and a successful override for sections,
+  calculations and view models. All six scenarios fail against the previous
+  registry.
+- **Not changed:** two view models for one `section_id` inside a single
+  manifest are still accepted, and the first applies.
+- No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
+  every package version are unchanged. Protocol §VII.3 now names the
+  reference codes, which is editorial.
+
 ### Renamed identifiers (draft RFC 0073; no contract change)
 
 - **Issue #263 is triaged against the current contract** (StackUW

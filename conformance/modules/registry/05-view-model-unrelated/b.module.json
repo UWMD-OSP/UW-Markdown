@@ -1,0 +1,23 @@
+{
+  "manifest_version": "1",
+  "id": "org.example.registry-b",
+  "name": "Synthetic registry-b module",
+  "version": "1.0.0",
+  "description": "Synthetic module for the Protocol §VII.3 registry fixtures. Contributes to every asset class.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": ">=1.0.0",
+  "requires_format": ">=1.0",
+  "requires_tier": "tier-3-calc-host",
+  "view_models": [
+    {
+      "section_id": "shared_section",
+      "display_name": "B",
+      "display_order": 30,
+      "description": "B view of the shared section.",
+      "primary_fields": []
+    }
+  ]
+}
