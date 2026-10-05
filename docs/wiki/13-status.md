@@ -622,9 +622,13 @@ The guards:
   - **Carrier selected.** On 2026-09-29 the owner selected a direct, RFC-created
     standard `reserve_accounts` §4.28 carrier
     ([owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)).
-  - **Still draft.** RFC 0064 is not accepted, its implementation (PR #219) is
-    not authorized to merge, no version is selected, and it is outside the
-    2.15.0 release.
+  - **Still draft.** RFC 0064 is not accepted, no version is selected, and no
+    released generation (through 2.17.0) contains it.
+  - **PR #219 closed, unmerged (2026-10-04).** The owner closed the proposed
+    implementation without a recorded reason. Its branch (`f78fc54`) remains
+    for reference, but its provisional Protocol 2.19.0 label has since shipped
+    with RFC 0066, so an implementation after acceptance starts from current
+    `main`. Draft RFC 0065 depends on RFC 0064 and is blocked with it.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -741,6 +745,8 @@ anything else; before this fix it dropped the flag and always wrote `null`.
 - **Still undefined.** No `scenario` value has a defined meaning, and no
   validator, pack or cross-check reads one. Defining them, including
   `build_to_rent` and a rule for a deal that fits several values, is issue
-  #255 (StackUW `UPSTREAM-022`) and needs an RFC.
+  #255 (StackUW `UPSTREAM-022`) and needs an RFC. Draft
+  [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) maps the
+  surfaces and isolates the owner decisions (D1–D6); it defines nothing yet.
 - **Guard.** `init.test.ts` holds the accepted list to the §2.2 line, and the
   CLI smoke suite covers a written value, an unlisted value and a bare flag.

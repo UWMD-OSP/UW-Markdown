@@ -35,10 +35,16 @@ the carrier only:
 - **Carrier:** decided.
 - **The RFC as a whole:** not accepted. Status remains `draft`.
 - **Implementation:** not authorized. No Protocol or Format version is
-  selected, and RFC 0064 is outside the current 2.14.0 release candidate.
+  selected, and no released generation (through 2.17.0) contains RFC 0064.
 
 The normative proposal on PR #219 (a Protocol 2.19.0 label, schema, `RSV-NN`
 codes, verifier API and conformance) is not part of this decision.
+
+**PR #219 is closed, unmerged (2026-10-04).** The owner closed it without a
+recorded reason; its branch `feat/rfc-0064-reserve-accounts` (`f78fc54`)
+remains as a reference. Its provisional Protocol 2.19.0 label has since
+shipped with RFC 0066, so any implementation after acceptance starts again
+from current `main`. The closure does not change this RFC's `draft` status.
 
 ## Motivation and demonstrated consumer
 
@@ -240,7 +246,7 @@ What is and is not decided:
 | Statement carrier | **Decided 2026-09-29:** a direct, RFC-created standard section, `reserve_accounts` (Format §4.28). It is asset-class-independent, and `lender_reserve` remains outside this property-reserve contract. |
 | Acceptance of the RFC as a whole | **Not decided.** Status remains `draft`. |
 | Implementation | **Not authorized.** No normative text, schema, code, export, conformance fixture or version change may merge on the strength of this RFC. |
-| Version | **None selected.** No Protocol or Format version is chosen. RFC 0064 is outside the current 2.14.0 release candidate. |
+| Version | **None selected.** No Protocol or Format version is chosen. No released generation (through 2.17.0) contains RFC 0064. |
 
 The carrier decision does not resolve RFC 0045. Verifying a reserve account
 does not cure its `reserve_spending_excluded` refusal. It also does not
