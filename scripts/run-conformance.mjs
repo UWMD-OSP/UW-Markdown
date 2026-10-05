@@ -1701,30 +1701,25 @@ async function runModuleRuntime() {
  * Registry declaration conflicts (protocol §VII.3).
  *
  * Each `registry/<scenario>/` holds two or more `<key>.module.json` files and
- * an `expected.json` listing cases; a case orders the modules by key. A case names a load `order` and expects
- * either a refusal (`expected_refusal`: the exact set of codes the registry
- * reports) or a loaded registry. A loaded registry asserts which module's
- * declaration is in effect (`expected_owners`), and may assert calc values in
- * evaluation order, view-model display names and the module findings for the
- * shared `registry/deal.uwx.md`. Every manifest must also load alone and
- * satisfy the normative schema, so a refusal can only come from the interaction.
+ * an `expected.json` listing cases. A case names a load `order` by key and
+ * expects either a refusal (`expected_refusal`: the exact set of codes the
+ * registry reports) or a registry that loads (`expected_loads: true`). Every
+ * manifest must also satisfy the normative schema and load alone, so a
+ * refusal can only come from the interaction.
  *
- * Ownership is read through the reference library's internal accessor
- * (`dist/modules.js`), because the protocol gives a view model no consumer
- * through which an override is otherwise observable. It is deliberately not
- * public API.
+ * The suite pins only what §VII.3 already requires: unrelated modules
+ * declaring one id are refused. What an override by a dependent means is
+ * draft RFC 0074's question, so no case asserts which declaration applies.
  */
 async function runModuleRegistry() {
   const dir = join(MODULES_DIR, 'registry');
   if (!existsSync(dir)) return;
-  const { declarationOwnersOf } = await import('../packages/uwmd-core/dist/modules.js');
 
   const { default: Ajv2020 } = await import('ajv/dist/2020.js');
   const readSchema = (name) => JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));
   const ajv = new Ajv2020({ strict: false });
   ajv.addSchema(readSchema('module-signature.schema.json'));
   const schemaCheck = ajv.compile(readSchema('module-manifest.schema.json'));
-  const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
   const HOST = { hostTier: 'tier-4-agent-host' };
   const sameSet = (got, want) => [...new Set(got)].sort().join(',') === [...new Set(want)].sort().join(',');
 
@@ -1761,57 +1756,22 @@ async function runModuleRegistry() {
         problems.push(`${label}: no module file for ${unknown.join(', ')}`);
         continue;
       }
-      let registry;
       let refusal = null;
       try {
-        registry = createModuleRegistry({ modules: c.order.map((k) => manifests[k]), ...HOST });
+        createModuleRegistry({ modules: c.order.map((k) => manifests[k]), ...HOST });
       } catch (e) {
         refusal = (e.errors ?? []).map((err) => err.code);
         if (!e.errors) problems.push(`${label}: threw ${e}`);
       }
-
       if (c.expected_refusal) {
         if (refusal === null) problems.push(`${label}: loaded, expected refusal [${c.expected_refusal.join(', ')}]`);
         else if (!sameSet(refusal, c.expected_refusal)) {
           problems.push(`${label}: refused with [${refusal.join(', ')}] != [${c.expected_refusal.join(', ')}]`);
         }
-        continue;
-      }
-      if (refusal !== null) {
-        problems.push(`${label}: refused with [${refusal.join(', ')}], expected to load`);
-        continue;
-      }
-
-      for (const [namespace, owners] of Object.entries(c.expected_owners ?? {})) {
-        for (const [declId, moduleId] of Object.entries(owners)) {
-          const got = declarationOwnersOf?.(registry)?.[namespace]?.get(declId);
-          if (got !== moduleId) problems.push(`${label}: ${namespace}.${declId} owned by ${got} != ${moduleId}`);
-        }
-      }
-      for (const [sectionId, want] of Object.entries(c.expected_view_model_display_names ?? {})) {
-        const owner = declarationOwnersOf?.(registry)?.view_models.get(sectionId);
-        const got = registry.byId.get(owner)?.view_models?.find((v) => v.section_id === sectionId)?.display_name;
-        if (got !== want) problems.push(`${label}: view model ${sectionId} display_name ${got} != ${want}`);
-      }
-      const outcomes = evaluateModuleCalculations(parsed, registry);
-      if (c.expected_evaluation_order) {
-        const got = outcomes.map(({ module_id, result }) => `${module_id}:${result.calc_id}`);
-        if (got.join(',') !== c.expected_evaluation_order.join(',')) {
-          problems.push(`${label}: evaluation order [${got.join(', ')}] != [${c.expected_evaluation_order.join(', ')}]`);
-        }
-      }
-      const perId = new Map();
-      for (const { result } of outcomes) perId.set(result.calc_id, (perId.get(result.calc_id) ?? 0) + 1);
-      for (const [calcId, n] of perId) if (n > 1) problems.push(`${label}: ${calcId} evaluated ${n} times`);
-      const computed = Object.fromEntries(outcomes.map(({ result }) => [result.calc_id, result.value]));
-      for (const [calcId, want] of Object.entries(c.expected_calcs ?? {})) {
-        if (computed[calcId] !== want) problems.push(`${label}: ${calcId} ${computed[calcId]} != ${want}`);
-      }
-      if (c.expected_codes) {
-        const codes = validateAgainstModules(parsed, registry).map((i) => i.code);
-        if (!sameSet(codes, c.expected_codes)) {
-          problems.push(`${label}: codes [${codes.join(', ')}] != [${c.expected_codes.join(', ')}]`);
-        }
+      } else if (c.expected_loads) {
+        if (refusal !== null) problems.push(`${label}: refused with [${refusal.join(', ')}], expected to load`);
+      } else {
+        problems.push(`${label}: case names neither expected_refusal nor expected_loads`);
       }
     }
 

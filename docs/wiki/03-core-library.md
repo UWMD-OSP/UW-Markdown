@@ -288,42 +288,18 @@ never executed, and `sections` were declared and never looked for.
 - `checkModuleSections(parsed, manifest)` — presence only. Validating contents
   against the declared JSON Schema needs a validator core does not depend on.
 
-**Declaration conflicts (Protocol §VII.3).** `createModuleRegistry` records
-which module owns each section id, calculation id and view-model
-`section_id`. The record is internal: it is held in a `WeakMap` beside the
-registry and read through `declarationOwnersOf` in `modules.ts`. It is not on
-`ModuleRegistry` and not exported, so a hand-built registry has no overrides.
-- **Unrelated modules.** A module redeclaring an id that another loaded module
-  already declares is refused, and so is the registry: `PROTO-MOD-080`
-  (section), `-081` (calculation), `-082` (view model). The code is the same
-  in either load order.
-- **Dependents.** A module that names the current declarer in `depends_on`
-  overrides it. The check is against the declaration in effect, so in a chain
-  C overrides B by naming B. Two siblings both overriding one dependency
-  conflict. A transitive dependency is not a declared one.
-- **Order.** A dependent must still follow its dependency (`PROTO-MOD-027`),
-  so an override has one possible outcome.
-- **Runtime.** An overridden declaration does not run. The overriding one
-  runs where its own module declares it, so every module keeps its declaration
-  order (§X): an override sees the dependent's earlier calcs, and the
-  dependent's later calcs see it. Modules run in registry order. Required
-  sections follow the same rule.
-- **Unserved readers refuse the override** (`PROTO-MOD-083`).
-  - Every calc that reads an overridden id as a prior result must run after
-    the replacement. The only guarantee of that is dependency order, so the
-    reader must be the overrider's own calc declared after the id, or belong
-    to a module depending on the overrider, directly or transitively.
-  - The exemption is a calc the first declarer declares before the id.
-  - Both sides are checked, whichever loads second (`unservedReader` and the
-    reading-side loop in `claimDeclarations`), so the verdict does not depend
-    on listing order.
-  - `priorResultReads` walks the parsed expression for identifier and path
-    heads only.
-  - Validation rules are not affected, because they run after every calc.
-- **Scope** (`PROTO-MOD-084`). The overrider must apply wherever the
-  overridden module applies, by the runtime's own scoping (`moduleScope`
-  mirrors `applicableModules`). This applies to all three namespaces.
-- **Within one manifest.** Two view models for one `section_id` are outside
+**Declaration conflicts (Protocol §VII.3).** `createModuleRegistry` refuses
+a module that declares a section id, calculation id or view-model
+`section_id` that an *unrelated* loaded module already declares:
+`PROTO-MOD-080`, `-081` or `-082`, and the whole registry is refused.
+- **Unrelated** means that no `depends_on` path joins the two in either
+  direction. Since a dependency always loads first, the check is whether
+  the new module depends on the earlier declarer, directly or
+  transitively, so the code is the same in either listing order.
+- **Related pairs** load as they always have, and the runtime runs both
+  declarations in registry order. What "the dependent module's
+  declarations override" means is draft RFC 0074's question.
+- **Within one manifest**, two view models for one `section_id` are outside
   §VII.3 and are not refused. Sections and calculations already refuse
   duplicates (`-036`, `-015`).
 

@@ -6,13 +6,12 @@
 // registry. It deliberately does not perform dynamic imports or introduce new
 // asset-class identifiers; those remain v2/RFC concerns.
 
-import { parseExpression, type Expr } from './calc/parser.js';
+import { parseExpression } from './calc/parser.js';
 import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
   BLOCK_ROLES,
   SUPPORTED_FORMAT_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
-  type ModuleCalcDecl,
   type ModuleLoadResult,
   type ModuleManifest,
   type ProtocolError,
@@ -90,48 +89,11 @@ const NAME_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 2000;
 const AGENT_LAYER_ID_PATTERN = /^L\d+(?:_[a-z_]+)?$/;
 
-/**
- * Internal (§VII.3), not exported from the package entry points: for each
- * section id, calculation id and view-model `section_id`, the id of the module
- * whose declaration is in effect. Where a dependent redeclares an id its
- * dependency declares, that is the dependent.
- */
-export interface DeclarationOwners {
-  sections: ReadonlyMap<string, string>;
-  calculations: ReadonlyMap<string, string>;
-  view_models: ReadonlyMap<string, string>;
-}
-
 export interface ModuleRegistry {
   modules: readonly ModuleManifest[];
   byId: ReadonlyMap<string, ModuleManifest>;
   byAssetClass: ReadonlyMap<string, readonly ModuleManifest[]>;
   calculationsByAssetClass(asset_class: string): ModuleManifest[];
-}
-
-// §VII.3 ownership lives beside the registry rather than on it, so the public
-// `ModuleRegistry` shape is unchanged and a host that builds one by hand keeps
-// compiling. Only registries from `createModuleRegistry` have an entry.
-const OWNERS = new WeakMap<ModuleRegistry, DeclarationOwners>();
-
-/**
- * Internal (§VII.3): declaration owners after dependent overrides. `undefined`
- * for a registry this library did not build, in which case every declaration
- * is its own module's.
- */
-export function declarationOwnersOf(registry: ModuleRegistry): DeclarationOwners | undefined {
-  return OWNERS.get(registry);
-}
-
-/** Internal (§VII.3): false when a dependent module overrides this module's declaration of `id`. */
-export function ownsDeclaration(
-  registry: ModuleRegistry,
-  namespace: keyof DeclarationOwners,
-  id: string,
-  moduleId: string,
-): boolean {
-  const owner = OWNERS.get(registry)?.[namespace].get(id);
-  return owner === undefined || owner === moduleId;
 }
 
 export interface LoadModuleOptions {
@@ -248,14 +210,6 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
   const errors: ProtocolError[] = [];
 
   const seenIds = new Set<string>();
-  const owners: MutableOwners = {
-    sections: new Map<string, string>(),
-    calculations: new Map<string, string>(),
-    view_models: new Map<string, string>(),
-  };
-  // The module that first declared each calculation id. Its calculations
-  // declared before that id never read a value for it, override or not.
-  const firstCalcDeclarer = new Map<string, string>();
   for (const candidate of opts.modules) {
     const result = loadModuleManifest(candidate, { ...opts, alreadyLoaded: loaded });
     if (result.ok && result.manifest) {
@@ -270,7 +224,7 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
         ));
         continue;
       }
-      const conflicts = claimDeclarations(owners, firstCalcDeclarer, result.manifest, new Map(loaded.map((m) => [m.id, m])));
+      const conflicts = unrelatedDeclarationConflicts(result.manifest, loaded);
       if (conflicts.length > 0) {
         errors.push(...conflicts);
         continue;
@@ -300,7 +254,7 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
     [...byAssetClassMutable.entries()].map(([k, v]) => [k, Object.freeze([...v])]),
   );
 
-  const registry: ModuleRegistry = Object.freeze({
+  return Object.freeze({
     modules: Object.freeze([...loaded]),
     byId,
     byAssetClass,
@@ -310,172 +264,60 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
       );
     },
   });
-  OWNERS.set(registry, Object.freeze(owners));
-  return registry;
 }
 
 export function getModuleCalculationsForAssetClass(
   registry: ModuleRegistry,
   asset_class: string,
 ) {
-  // §VII.3: one declaration per id, the one in effect. This helper lists only
-  // modules that name the class in `asset_classes`, so an overriding module
-  // may not be among them (an unscoped one never is). Its declaration then
-  // stands where the declaration it replaces was, rather than the id vanishing.
-  const modules = registry.calculationsByAssetClass(asset_class);
-  const listed = new Set(modules.map((m) => m.id));
-  const owners = OWNERS.get(registry)?.calculations;
-  const out: ModuleCalcDecl[] = [];
-  for (const m of modules) {
-    for (const decl of m.calculations ?? []) {
-      const owner = owners?.get(decl.id) ?? m.id;
-      if (owner === m.id) out.push(decl);
-      else if (!listed.has(owner)) {
-        const effective = registry.byId.get(owner)?.calculations?.find((c) => c.id === decl.id);
-        if (effective) out.push(effective);
-      }
-    }
-  }
-  return out;
+  return registry
+    .calculationsByAssetClass(asset_class)
+    .flatMap((m) => m.calculations ?? []);
 }
 
 /**
- * §VII.3: a module may not redeclare a section id, calculation id or
- * view-model `section_id` that a loaded module already declares, unless it
- * declares that module in `depends_on`, in which case its declaration
- * overrides.
+ * §VII.3: two unrelated loaded modules may not declare the same section id,
+ * calculation id or view-model `section_id`; the host refuses the second.
  *
- * Checked against the declaration currently in effect, not every earlier
- * declarer. In a chain where B overrides A and C overrides B, C names B, the
- * module whose declaration it replaces. A module that names only A while B's
- * declaration is in effect is refused: it would silently undo B's override.
+ * "Unrelated" here is the case every reading of §VII.3 agrees on: no
+ * `depends_on` path joins the two modules in either direction. A loaded module
+ * can never depend on one loading after it (`PROTO-MOD-027`), so that means
+ * the new module does not depend on the earlier declarer, directly or
+ * transitively. The refusal is therefore the same in either listing order.
  *
- * An override suppresses the replaced declaration everywhere, so it must not
- * make that declaration unavailable to anything that would otherwise use it:
- *
- * - **Scope** (`PROTO-MOD-084`). The overriding module must apply to every
- *   asset class the replaced declaration's module applies to (the module
- *   runtime's scoping, `applicableModules`). Otherwise, on a document only the
- *   replaced module applies to, neither declaration would take effect.
- * - **Prior results** (`PROTO-MOD-083`). Every calculation that reads an
- *   overridden calculation id as a prior result must be guaranteed to run
- *   after the replacement, and the only cross-module ordering guarantee is
- *   that a module follows what it depends on (§VII.2). So such a reader must
- *   be the overriding module's own calculation declared after the id, or a
- *   calculation of a module that depends on the overriding module, directly
- *   or transitively. The one exception is a calculation the first declaring
- *   module declares before the id: it never had a value to read.
- *
- * Both rules are checked whichever of the overriding module and the reader
- * loads second, so the verdict is a property of the set of modules, not of
- * the order they are listed in. Nothing is claimed unless the whole module is
- * accepted.
+ * Pairs joined by `depends_on` load as they always have, both declarations
+ * included. What "the dependent module's declarations override" means for
+ * them, including whether a transitive path counts, is draft RFC 0074's
+ * question and is deliberately not decided here.
  */
-function claimDeclarations(
-  owners: MutableOwners,
-  firstCalcDeclarer: Map<string, string>,
+function unrelatedDeclarationConflicts(
   manifest: ModuleManifest,
-  loaded: ReadonlyMap<string, ModuleManifest>,
+  loaded: readonly ModuleManifest[],
 ): ProtocolError[] {
-  const dependsOn = new Set((manifest.depends_on ?? []).map((d) => d.id));
-  const namespaces: readonly [Map<string, string>, readonly string[], string, string, string][] = [
-    [owners.sections, (manifest.sections ?? []).map((d) => d.id), 'PROTO-MOD-080', 'section', 'sections'],
-    [owners.calculations, (manifest.calculations ?? []).map((d) => d.id), 'PROTO-MOD-081', 'calculation', 'calculations'],
-    [owners.view_models, (manifest.view_models ?? []).map((d) => d.section_id), 'PROTO-MOD-082', 'view model for section', 'view_models'],
+  const byId = new Map(loaded.map((m) => [m.id, m]));
+  const related = (earlier: string): boolean => dependsTransitively(manifest, earlier, byId);
+  const namespaces: readonly [string, string, string, (m: ModuleManifest) => string[]][] = [
+    ['PROTO-MOD-080', 'section', 'sections', (m) => (m.sections ?? []).map((d) => d.id)],
+    ['PROTO-MOD-081', 'calculation', 'calculations', (m) => (m.calculations ?? []).map((d) => d.id)],
+    ['PROTO-MOD-082', 'view model for section', 'view_models', (m) => (m.view_models ?? []).map((d) => d.section_id)],
   ];
 
   const errors: ProtocolError[] = [];
-  const overriddenCalcs: string[] = [];
-  for (const [map, ids, code, noun, pointer] of namespaces) {
-    for (const id of new Set(ids)) {
-      const owner = map.get(id);
-      if (owner === undefined) continue;
-      if (!dependsOn.has(owner)) {
+  for (const [code, noun, pointer, idsOf] of namespaces) {
+    const own = new Set(idsOf(manifest));
+    for (const earlier of loaded) {
+      if (related(earlier.id)) continue;
+      for (const id of new Set(idsOf(earlier))) {
+        if (!own.has(id)) continue;
         errors.push(moduleError(
           code,
-          `Module '${manifest.id}' declares ${noun} '${id}', which module '${owner}' already declares; ` +
-            `only a module that names '${owner}' in depends_on may override it.`,
-          pointer,
-        ));
-        continue;
-      }
-      const replaced = loaded.get(owner);
-      if (replaced && !coversScope(manifest, replaced)) {
-        errors.push(moduleError(
-          'PROTO-MOD-084',
-          `Module '${manifest.id}' overrides ${noun} '${id}' of '${owner}', but does not apply to every asset class ` +
-            `'${owner}' applies to (${describeScope(replaced)}); on those documents neither declaration would take effect.`,
+          `Module '${manifest.id}' declares ${noun} '${id}', which unrelated module '${earlier.id}' already declares.`,
           pointer,
         ));
       }
-      if (map === owners.calculations) overriddenCalcs.push(id);
     }
   }
-
-  // Prior results, from the overriding side: readers already loaded, and the
-  // overriding module's own calculations declared before its replacement.
-  for (const id of overriddenCalcs) {
-    const reader = unservedReader(id, manifest, loaded, firstCalcDeclarer);
-    if (reader !== undefined) {
-      errors.push(moduleError(
-        'PROTO-MOD-083',
-        `Module '${manifest.id}' overrides calculation '${id}', but '${reader}' reads it as a prior result and is not guaranteed to run after the replacement; it would read no value.`,
-        'calculations',
-      ));
-    }
-  }
-
-  // Prior results, from the reading side: this module reads a calculation id
-  // a loaded module has already overridden, without depending on that module.
-  const declared = new Set((manifest.calculations ?? []).map((c) => c.id));
-  for (const calc of manifest.calculations ?? []) {
-    for (const id of priorResultReads(calc.formula)) {
-      if (declared.has(id)) continue;
-      const owner = owners.calculations.get(id);
-      if (owner === undefined || owner === firstCalcDeclarer.get(id)) continue;
-      if (dependsTransitively(manifest, owner, loaded)) continue;
-      errors.push(moduleError(
-        'PROTO-MOD-083',
-        `Module '${manifest.id}' calculation '${calc.id}' reads '${id}' as a prior result, but '${id}' is overridden by ` +
-          `'${owner}', which '${manifest.id}' does not depend on; it is not guaranteed to run after the replacement.`,
-        'calculations',
-      ));
-    }
-  }
-  if (errors.length > 0) return errors;
-
-  for (const [map, ids] of namespaces) for (const id of ids) map.set(id, manifest.id);
-  for (const id of declared) if (!firstCalcDeclarer.has(id)) firstCalcDeclarer.set(id, manifest.id);
-  return [];
-}
-
-/**
- * The first calculation, as `module:calc`, that reads `id` as a prior result
- * and would not be served by `overrider`'s replacement. Loaded modules cannot
- * depend on `overrider`, which loads after them, so any reader among them
- * counts, except a calculation the first declaring module declares before
- * `id`. The overrider's own readers count when declared before its `id`.
- */
-function unservedReader(
-  id: string,
-  overrider: ModuleManifest,
-  loaded: ReadonlyMap<string, ModuleManifest>,
-  firstCalcDeclarer: ReadonlyMap<string, string>,
-): string | undefined {
-  for (const module of [...loaded.values(), overrider]) {
-    const calcs = module.calculations ?? [];
-    const own = calcs.findIndex((c) => c.id === id);
-    for (const [index, calc] of calcs.entries()) {
-      if (calc.id === id || !priorResultReads(calc.formula).has(id)) continue;
-      if (module === overrider) {
-        if (index > own) continue;
-      } else if (module.id === firstCalcDeclarer.get(id) && index < own) {
-        continue;
-      }
-      return `${module.id}:${calc.id}`;
-    }
-  }
-  return undefined;
+  return errors;
 }
 
 /** True when `module` depends on `target`, directly or through loaded modules. */
@@ -494,76 +336,6 @@ function dependsTransitively(
     for (const dep of loaded.get(next)?.depends_on ?? []) pending.push(dep.id);
   }
   return false;
-}
-
-/**
- * Asset classes a module applies to, mirroring the module runtime's
- * `applicableModules`: `null` when the module names none (every class),
- * otherwise the builtin classes it enhances plus the classes it declares.
- */
-function moduleScope(module: ModuleManifest): ReadonlySet<string> | null {
-  const classes = [
-    ...((module.asset_classes ?? []) as readonly string[]),
-    ...(module.declares_asset_classes ?? []).map((d) => d.id),
-  ];
-  return classes.length === 0 ? null : new Set(classes);
-}
-
-/** True when `overrider` applies wherever `replaced` does. */
-function coversScope(overrider: ModuleManifest, replaced: ModuleManifest): boolean {
-  const over = moduleScope(overrider);
-  const under = moduleScope(replaced);
-  if (over === null) return true;
-  if (under === null) return false;
-  return [...under].every((c) => over.has(c));
-}
-
-function describeScope(module: ModuleManifest): string {
-  const scope = moduleScope(module);
-  return scope === null ? 'every asset class' : [...scope].join(', ');
-}
-
-/** Identifiers a formula can resolve through `prior_results` (§VIII.2): identifier and path heads. */
-function priorResultReads(formula: string): Set<string> {
-  const out = new Set<string>();
-  const walk = (expr: Expr): void => {
-    switch (expr.kind) {
-      case 'ident':
-        out.add(expr.name);
-        return;
-      case 'path':
-        out.add(expr.head);
-        return;
-      case 'call':
-        for (const arg of expr.args) walk(arg);
-        return;
-      case 'unary':
-        walk(expr.operand);
-        return;
-      case 'binary':
-        walk(expr.left);
-        walk(expr.right);
-        return;
-      case 'cond':
-        walk(expr.test);
-        walk(expr.consequent);
-        walk(expr.else);
-        return;
-      case 'literal':
-      case 'period_path':
-        return;
-    }
-  };
-  // Formulas already parsed at load (PROTO-MOD-018), so this cannot throw for
-  // a loaded module.
-  walk(parseExpression(formula));
-  return out;
-}
-
-interface MutableOwners {
-  sections: Map<string, string>;
-  calculations: Map<string, string>;
-  view_models: Map<string, string>;
 }
 
 function validateModuleManifest(

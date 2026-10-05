@@ -102,34 +102,24 @@ the data center is a *declared* class (`declares_asset_classes`, RFC 0003)
 the module owns. `10-…` is the scenario that pins the runtime scoping a
 declaring module to its declared class — the gap RFC 0039 found.
 
-## `registry/` — two modules declaring one id (Protocol §VII.3)
+## `registry/` — unrelated modules declaring one id (Protocol §VII.3)
 
 Each scenario holds two or more synthetic manifests, `<key>.module.json`,
-and an `expected.json` listing cases. A case names a load
-`order`. It expects either a refusal, as the exact set of codes the registry
-reports, or a loaded registry. A loaded registry is checked for which module's
-declaration is in effect, and for calc values, view-model names and module
-findings on the shared `registry/deal.uwx.md`, and optionally for calculation
-evaluation order. Every manifest must also satisfy the schema and load alone,
-so a refusal can only come from the interaction.
+and an `expected.json` listing cases. A case names a load `order` and
+expects either a refusal, as the exact set of codes the registry reports, or
+a registry that loads. Every manifest must also satisfy the schema and load
+alone, so a refusal can only come from the interaction.
 
-The runner reads ownership through the reference library's internal
-`declarationOwnersOf`. The protocol gives a view model no consumer through
-which an override would otherwise be observable, and the accessor is not
-public API.
+The suite pins only what §VII.3 already requires. What an override by a
+dependent means is draft RFC 0074's question, so no case asserts which
+declaration applies.
 
 | Scenario | Pins |
 |---|---|
 | `01-section-unrelated` | Same section id, no dependency: `PROTO-MOD-080` in both orders. |
-| `02-section-dependent` | B depends on A and makes the section optional: B's declaration applies, so there is no `MOD-SECTION-MISSING`. B listed first: `PROTO-MOD-027`. |
-| `03-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
-| `04-calculation-dependent` | B declares `b_first`, then overrides `shared_calc` with `b_first * 10`. A's declaration is suppressed. B's runs once, where B declares it, so it reads `b_first` (20), and B's later `b_after` reads the override (21). Each module keeps its declaration order. A's later `a_after` does not read `shared_calc`, so the override is allowed. B listed first: `PROTO-MOD-027`. |
-| `07-calculation-override-reader-refused` | As 04, but A declares `reads_shared = shared_calc + 10` after `shared_calc`. B's override would run after it and leave it with no value, so the registry refuses: `PROTO-MOD-083`. B listed first: `PROTO-MOD-027`. |
-| `08-calculation-override-other-reader-refused` | B and C both depend on A. C reads `shared_calc`, and B overrides it. C does not depend on B, so it is not guaranteed to run after the replacement: `PROTO-MOD-083`, in the order A, C, B and in A, B, C. |
-| `09-calculation-override-chain-reader-allowed` | C depends on B, the current owner, so it always runs after the replacement and reads B's value (3). |
-| `10-override-scope-narrower-refused` | A applies to multifamily, and B overrides but applies only to hospitality. On the multifamily deal, neither declaration would run: `PROTO-MOD-084`. |
-| `11-override-scope-covering-allowed` | B names no asset class, so it applies everywhere A does. Its declaration runs on the multifamily deal. |
-| `05-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
-| `06-view-model-dependent` | B's view model is in effect. B listed first: `PROTO-MOD-027`. |
+| `02-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
+| `03-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
+| `04-sibling-dependents-unrelated` | B and C both depend on A but not on each other, so they are unrelated: `PROTO-MOD-081` in both orders. |
+| `05-dependent-pair-not-a-conflict` | B depends on A, so shared declarations are not a conflict and the registry loads. B listed first: `PROTO-MOD-027`. |
 
-Against the registry before this suite existed, all six original scenarios fail.
+Against the registry before this suite existed, scenarios 01–04 fail.

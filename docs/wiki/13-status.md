@@ -722,42 +722,26 @@ boundary, the label taxonomy and the lifecycle. The rest is in the
   confidential, non-security reproductions, and whether to enable GitHub
   private vulnerability reporting alongside the security mailbox.
 
-## 2026-10-05 — Module declaration conflicts enforced (Protocol §VII.3)
+## 2026-10-05 — Unrelated module declaration conflicts enforced (Protocol §VII.3)
 
-The reference registry now enforces §VII.3, the defect the renamed-identifier
-review found.
-- **Unrelated modules.** Two unrelated modules declaring one section id,
-  calculation id or view-model `section_id` refuse the registry with
+The reference registry now enforces §VII.3's existing MUST, the defect the
+renamed-identifier review found.
+- **What is refused.** Two unrelated modules declaring one section id,
+  calculation id or view-model `section_id` refuse the whole registry with
   `PROTO-MOD-080`, `-081` or `-082`, in either order.
-- **Dependents.** A dependent's declaration overrides its dependency's,
-  checked against the declaration in effect.
-- **Runtime.** An overridden declaration does not run. The overriding one
-  runs once, where the dependent declares it, so each module keeps its own
-  declaration order (§X). `prior_results` no longer depends on registry
-  order.
-- **API.** Ownership is internal (`declarationOwnersOf` in `modules.ts`, not
-  exported from either entry point). `ModuleRegistry` is unchanged.
-- **Classification.** `bug` plus `conformance-gap` against an existing MUST.
-  No RFC and no version change.
-- **Guard.** 18 `modules.test.ts` and 6 `module-runtime.test.ts` tests. The
-  new `conformance/modules/registry/` suite has six scenarios, and all six
-  fail against the previous registry. The ordering tests also fail against
-  the first draft of this fix, which ran an override in the dependency's
-  position.
-- **Owner decision (2026-10-05).** An override may not make a declaration
-  unavailable. The registry refuses at load:
-  - with `PROTO-MOD-083` when any prior-result reader of the id is not
-    guaranteed to run after the replacement, that is, is not the overrider's
-    own later calculation or a calculation of a module depending on the
-    overrider;
-  - with `PROTO-MOD-084` when the overrider does not apply wherever the
-    overridden module applies.
-
-  Reads are found with the expression parser, and there is no cross-module
-  scheduling. §VII.3 states the invariant, and `conformance/modules/registry/`
-  pins the rules.
+- **What "unrelated" means here.** No `depends_on` path joins the two in
+  either direction. Sibling dependents of one module count as unrelated.
+- **Classification.** `bug` plus `conformance-gap`. No RFC and no version
+  change.
+- **Deferred to draft RFC 0074.** A pair joined by `depends_on`, directly or
+  through a chain, loads as before. So do the dependent-override semantics:
+  which declaration runs, where, and the safety rules for prior-result
+  consumers and module scope. They were explored in earlier revisions of
+  PR #267 and split out at the normative boundary.
+- **Guard.** `modules.test.ts` covers this, along with the five-scenario
+  `conformance/modules/registry/` suite.
 - **Left open.** Two view models for one `section_id` inside one manifest
-  are not refused; that is outside §VII.3.
+  are outside §VII.3 and are not refused.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": "1",
-  "id": "org.example.registry-c",
-  "name": "Synthetic c module",
+  "id": "org.example.registry-a",
+  "name": "Synthetic a module",
   "version": "1.0.0",
   "description": "Synthetic module for the Protocol §VII.3 registry fixtures.",
   "authors": [
@@ -11,18 +11,13 @@
   "requires_protocol": ">=1.0.0",
   "requires_format": ">=1.0",
   "requires_tier": "tier-3-calc-host",
-  "depends_on": [
+  "view_models": [
     {
-      "id": "org.example.registry-a",
-      "version": "^1.0.0"
-    }
-  ],
-  "calculations": [
-    {
-      "id": "c_reads",
-      "label": "c_reads",
-      "formula": "shared_calc + 1",
-      "deterministic": true
+      "section_id": "shared_section",
+      "display_name": "A",
+      "display_order": 30,
+      "description": "A view of the shared section.",
+      "primary_fields": []
     }
   ]
 }

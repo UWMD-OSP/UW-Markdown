@@ -22,8 +22,8 @@
 // thing the module system must never become.
 
 import { evaluateCalc } from './calc/index.js';
-import type { ModuleManifest, ModuleSectionDecl, ModuleValidationDecl, CalcResult } from './protocol.js';
-import { ownsDeclaration, type ModuleRegistry } from './modules.js';
+import type { ModuleManifest, ModuleValidationDecl, CalcResult } from './protocol.js';
+import type { ModuleRegistry } from './modules.js';
 import type { ParsedUWFile, ValidationMessage } from './types.js';
 
 export interface ModuleRuntimeOptions {
@@ -61,10 +61,6 @@ export function evaluateModuleCalculations(
 
   for (const manifest of applicableModules(parsed, registry, options)) {
     for (const decl of manifest.calculations ?? []) {
-      // §VII.3: a declaration a dependent module overrides does not run. The
-      // dependent's declaration runs where the dependent declares it, so each
-      // module's own calculations keep their declaration order.
-      if (!ownsDeclaration(registry, 'calculations', decl.id, manifest.id)) continue;
       const result = evaluateCalc(decl, { parsed, prior_results: prior, locale: 'en-US' });
       outcomes.push({ module_id: manifest.id, result });
       // Only successful results are published. This is principle rather than
@@ -108,13 +104,8 @@ export function validateAgainstModules(
   const issues: ValidationMessage[] = [];
   const modules = applicableModules(parsed, registry, options);
 
-  // §VII.3: a section declaration a dependent overrides is not checked; the
-  // dependent's is.
   for (const manifest of modules) {
-    for (const section of manifest.sections ?? []) {
-      if (!ownsDeclaration(registry, 'sections', section.id, manifest.id)) continue;
-      issues.push(...missingRequiredSection(parsed, manifest.id, section));
-    }
+    issues.push(...checkModuleSections(parsed, manifest));
   }
 
   const prior: Record<string, number | string | boolean | null> = {};
@@ -157,24 +148,20 @@ export function checkModuleSections(
   parsed: ParsedUWFile,
   manifest: ModuleManifest,
 ): ValidationMessage[] {
-  return (manifest.sections ?? []).flatMap((section) => missingRequiredSection(parsed, manifest.id, section));
-}
-
-function missingRequiredSection(
-  parsed: ParsedUWFile,
-  moduleId: string,
-  section: ModuleSectionDecl,
-): ValidationMessage[] {
-  if (!section.required || parsed.sections[section.id] !== undefined) return [];
-  return [
-    {
-      code: 'MOD-SECTION-MISSING',
-      severity: 'error',
-      section: section.id,
-      message: `Module '${moduleId}' requires section '${section.id}' (${section.display_name}), which is missing.`,
-      remediation: `Add a '${section.id}' block, or stop loading '${moduleId}' for this document.`,
-    },
-  ];
+  const issues: ValidationMessage[] = [];
+  for (const section of manifest.sections ?? []) {
+    if (!section.required) continue;
+    if (parsed.sections[section.id] === undefined) {
+      issues.push({
+        code: 'MOD-SECTION-MISSING',
+        severity: 'error',
+        section: section.id,
+        message: `Module '${manifest.id}' requires section '${section.id}' (${section.display_name}), which is missing.`,
+        remediation: `Add a '${section.id}' block, or stop loading '${manifest.id}' for this document.`,
+      });
+    }
+  }
+  return issues;
 }
 
 function runRule(
