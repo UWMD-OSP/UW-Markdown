@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parse as parseYaml } from 'yaml';
-import { maskQuotedScalar, readYamlScalar } from './yaml-scalar.js';
+import { maskQuotedScalar, readYamlScalar, writeDoubleQuotedScalar } from './yaml-scalar.js';
 
 /** The decoded text of a scalar that must read. */
 const text = (raw: string): string => {
@@ -87,6 +87,33 @@ describe('readYamlScalar — plain scalars', () => {
 
   it.each([' {a: 1}', ' {}', ' [1, 2]', ' [ ]', ' [a] # comment'])('refuses flow style %j', (raw) => {
     expect(readYamlScalar(raw)).toEqual({ ok: false, failure: 'flow' });
+  });
+});
+
+describe('writeDoubleQuotedScalar', () => {
+  it.each([
+    ['', '""'],
+    ['plain', '"plain"'],
+    [`O'Brien "North"`, `"O'Brien \\"North\\""`],
+    ['C:\\deals\\North', '"C:\\\\deals\\\\North"'],
+    ['\\\\server\\', '"\\\\\\\\server\\\\"'],
+    [`'"\\`, `"'\\"\\\\"`],
+  ])('writes %j as %s', (value, written) => {
+    expect(writeDoubleQuotedScalar(value)).toBe(written);
+  });
+
+  it.each([
+    `O'Brien "North"`,
+    'C:\\deals\\North',
+    `He said "it's ready"`,
+    'Lot #4: Phase "A" # not a comment',
+    '\\"\\\\"',
+    '{a: 1} [b] null true 1e3 ~',
+    'Café 東京 🏢\ttab',
+  ])('round-trips %j through the reader and a YAML library', (value) => {
+    const written = writeDoubleQuotedScalar(value);
+    expect(readYamlScalar(` ${written}`)).toEqual({ ok: true, quoted: true, text: value });
+    expect(parseYaml(`k: ${written}`).k).toBe(value);
   });
 });
 

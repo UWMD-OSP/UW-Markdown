@@ -123,18 +123,20 @@ protocol, and each package each carry an independent semver).
     order:
     - a bare token when the field is unquoted and the value is a safe
       lowercase identifier;
-    - otherwise `"value"`;
-    - otherwise `'value'`;
-    - otherwise refusal.
-  - **No escape sequences.** Format Appendix D allows quoted strings but
-    does not say whether YAML escapes apply inside them. The reference
-    reader keeps quoted content verbatim, while YAML libraries unescape it,
-    so the serializer emits only forms that both read the same way.
-  - **Refusals.** Line breaks, non-printable characters, non-strings, and a
-    value containing both `'` and either `"` or `\` are refused with the new
-    `UWInitError` (`INIT_UNREPRESENTABLE_VALUE`). The generated file is also
-    parsed back, and any field that does not read back exactly is refused.
-    `uwmd init` prints the error and exits 1 without writing.
+    - otherwise `"value"`, if it has no `"` or `\`;
+    - otherwise `'value'`, if it has no `'`;
+    - otherwise a double-quoted scalar with `\"` and `\\` escapes. These use
+      the shared reader's Appendix D semantics (below), so a value such as
+      `O'Brien "North"` or `C:\deals\North` round-trips exactly.
+  - **Refusals.** Init writes single-line metadata, and the deal name is also
+    the document heading. Non-strings are refused, and so are characters that
+    are physical line breaks (`\n`, `\r`, U+0085, U+2028, U+2029), other
+    non-printable characters (NUL, C0 and C1 controls other than tab, DEL)
+    and lone surrogates. The refusal is the new `UWInitError`
+    (`INIT_UNREPRESENTABLE_VALUE`). YAML could encode these characters, but
+    no use case asks for them. The generated file is also parsed back, and
+    any field that does not read back exactly is refused. `uwmd init` prints
+    the error and exits 1 without writing.
   - **Bytes.** Values that need no quoting change are written exactly as
     before.
   - **No new public API.** `UWInitError` is internal to `init.ts`; callers

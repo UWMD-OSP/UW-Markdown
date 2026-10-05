@@ -763,6 +763,12 @@ anything else; before this fix it dropped the flag and always wrote `null`.
 through one serializer, and checks that the generated file reads back to
 exactly the supplied strings. Before, values were pasted in unescaped. See the
 CHANGELOG for the rule.
+- **Relaxed after the reader repair.** A value with both quote kinds, or
+  quotes and backslashes together, used to be refused. It is now written as
+  one escaped double-quoted scalar by `writeDoubleQuotedScalar`, which sits
+  beside the shared reader in `yaml-scalar.ts`. Physical line breaks,
+  non-printable characters and lone surrogates are still refused: init
+  writes single-line metadata, and the deal name is also the heading.
 - **Classification.** Robustness defect in the writer. No spec or version
   change.
 - **Coverage.** Each quoted field round-trips quotes, backslashes, colons,

@@ -4,6 +4,7 @@
 import type { AssetClass, DealStage, UWMeta } from './types.js';
 import { stampMetaIntoBlockContent } from './meta-shape.js';
 import { parseUWFile } from './parser.js';
+import { writeDoubleQuotedScalar } from './yaml-scalar.js';
 
 export interface InitOptions {
   /**
@@ -88,16 +89,17 @@ function isSingleLinePrintable(cp: number): boolean {
 }
 
 /**
- * Serializes one user-supplied frontmatter value. Format Appendix D allows
- * quoted strings but does not say whether YAML escapes apply inside them, and
- * the reference reader takes quoted content verbatim while YAML libraries
- * unescape it. So no escape sequence is ever emitted. The rule, in order:
+ * Serializes one user-supplied frontmatter value under Format Appendix D's
+ * scalar semantics (YAML 1.2), in a fixed order:
  *
- * 1. a non-string, a line break or a non-printable character is refused;
- * 2. a `plain` field that is a safe token is written bare (today's bytes);
- * 3. otherwise `"value"` if it has no `"` or `\` (today's bytes for quoted fields);
+ * 1. a non-string, a line break or a non-printable character is refused:
+ *    init writes single-line metadata, and the deal name is also a heading;
+ * 2. a `plain` field that is a safe token is written bare;
+ * 3. otherwise `"value"` if it has no `"` or `\`;
  * 4. otherwise `'value'` if it has no `'`;
- * 5. otherwise it is refused: no form reads back the same everywhere.
+ * 5. otherwise a double-quoted scalar with `\"` and `\\` escapes.
+ *
+ * Steps 2–4 keep the bytes init has always written for those values.
  */
 function frontmatterScalar(field: string, value: string, style: 'plain' | 'quoted'): string {
   // A bare CLI flag (`--name` with no value) arrives as `true`.
@@ -110,10 +112,7 @@ function frontmatterScalar(field: string, value: string, style: 'plain' | 'quote
   if (style === 'plain' && PLAIN_SCALAR_RE.test(value) && !PLAIN_RESERVED.has(value)) return value;
   if (!value.includes('"') && !value.includes('\\')) return `"${value}"`;
   if (!value.includes("'")) return `'${value}'`;
-  throw new UWInitError(
-    field,
-    "a value containing both ' and either \" or \\ has no frontmatter form every reader recovers exactly.",
-  );
+  return writeDoubleQuotedScalar(value);
 }
 
 export function generateBlankUWFile(opts: InitOptions = {}): string {
