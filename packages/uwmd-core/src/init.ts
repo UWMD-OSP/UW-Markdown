@@ -20,8 +20,31 @@ export interface InitOptions {
   assetClass?: AssetClass;
   assetSubtype?: string;
   dealStage?: DealStage;
+  /** Frontmatter `scenario`; `uwmd init` accepts only {@link INIT_SCENARIOS}. */
+  scenario?: string;
   tier?: 'screener' | 'analyst';
 }
+
+/**
+ * The frontmatter `scenario` values Format §2.2 lists, in its order. `uwmd init
+ * --scenario` (§6.7) writes one of these and refuses anything else. The list
+ * assigns no meaning to any value; the format defines none yet (issue #255).
+ * `init.test.ts` holds it to the spec line.
+ */
+export const INIT_SCENARIOS: readonly string[] = [
+  'stabilized_acquisition',
+  'ground_up_development',
+  'value_add',
+  'lease_up',
+  'nnn_single_tenant',
+  'lihtc_section8',
+  'house_flip',
+  'commercial_flip',
+  'property_conversion',
+  'build_to_rent',
+  'distressed_reo',
+  'land_banking',
+];
 
 function generateDealId(): string {
   const year = new Date().getFullYear();
@@ -57,7 +80,7 @@ zip: "${opts.zip ?? ''}"
 asset_class: ${assetClass}
 asset_subtype: ${opts.assetSubtype ?? 'null'}
 loan_type: null
-scenario: null
+scenario: ${opts.scenario ?? 'null'}
 
 pipeline_state:
   L0_ingestion: pending

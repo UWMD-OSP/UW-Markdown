@@ -730,3 +730,17 @@ implementation have used since RFC 0018 and RFC 0015 (2.1.0) shipped.
   because neither RFC binds its codes to a category.
 - **Guard.** A `protocol.test.ts` suite checks the union, the schema and §XI
   against each other, and validates emitted refusals against the schema.
+
+## 2026-10-04 — `uwmd init --scenario`
+
+`uwmd init --scenario <value>` now writes frontmatter `scenario`, as Format
+§6.7 documents. It accepts only the twelve values §2.2 lists and refuses
+anything else; before this fix it dropped the flag and always wrote `null`.
+- **Classification.** Implementation drift from §6.7. No RFC and no version
+  change.
+- **Still undefined.** No `scenario` value has a defined meaning, and no
+  validator, pack or cross-check reads one. Defining them, including
+  `build_to_rent` and a rule for a deal that fits several values, is issue
+  #255 (StackUW `UPSTREAM-022`) and needs an RFC.
+- **Guard.** `init.test.ts` holds the accepted list to the §2.2 line, and the
+  CLI smoke suite covers a written value, an unlisted value and a bare flag.

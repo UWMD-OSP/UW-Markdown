@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { generateBlankUWFile } from './init.js';
+import { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 import { parseUWFile } from './parser.js';
 import { resolvePolicy } from './editor.js';
 
@@ -43,6 +45,28 @@ describe('generateBlankUWFile', () => {
     expect(parsed.frontmatter.deal_stage).toBe('screening');
     expect(parsed.frontmatter.tier).toBe('screener');
     expect(parsed.frontmatter.pipeline_state?.L0_ingestion).toBe('pending');
+    expect(parsed.frontmatter.scenario).toBeNull();
+  });
+
+  it('writes a supplied scenario into the frontmatter (Format §6.7)', () => {
+    // `uwmd init --scenario` was documented but dropped: the template
+    // hardcoded `scenario: null`.
+    const parsed = parseUWFile(
+      generateBlankUWFile({ dealId: 'uw_2026_SCENARIO', scenario: 'value_add' }),
+    );
+    expect(parsed.frontmatter.scenario).toBe('value_add');
+  });
+});
+
+describe('INIT_SCENARIOS', () => {
+  it('lists exactly the frontmatter scenario values Format §2.2 lists, in order', () => {
+    const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+    const line = readFileSync(specPath, 'utf-8')
+      .split(/\r?\n/)
+      .find((l) => l.startsWith('scenario: "'));
+    expect(line).toBeDefined();
+    const listed = /^scenario: "([^"]+)"/.exec(line ?? '')?.[1]?.split(' | ');
+    expect(INIT_SCENARIOS).toEqual(listed);
   });
 });
 

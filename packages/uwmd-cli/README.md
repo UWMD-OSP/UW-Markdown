@@ -23,7 +23,7 @@ uwmd <command> [args]
 
 | Command | What it does |
 |---|---|
-| `uwmd init <file>` | Scaffold a blank `.uwx.md` deal file |
+| `uwmd init [--output <file>]` | Scaffold a blank `.uwx.md` deal file |
 | `uwmd parse <file>` | Parse and emit canonical JSON |
 | `uwmd validate <file>` | Run the full Tier-1 validator and print issues |
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |

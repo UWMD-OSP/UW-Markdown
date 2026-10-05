@@ -23,7 +23,7 @@ Command | Purpose
 `calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula (Tier-3)
 `compact <file>` | Strip superseded blocks (`--dry-run`, `--output`)
 `diff <a> <b>` | Section-by-section comparison
-`init` | Scaffold a blank `.uw.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--tier`)
+`init` | Scaffold a blank `.uwx.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--scenario`, `--tier`, `--output`); `--scenario` takes only a Format §2.2 value
 `summary <file>` | Print quick metrics to terminal
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
 `formats` | List Lite, UWX, and registered model representations/media types (`--json`)

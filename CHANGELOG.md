@@ -97,6 +97,21 @@ protocol, and each package each carry an independent semver).
   can't disagree. This is CLI tooling only. The §II.6a conformance commands
   are unchanged.
 
+- **`uwmd init --scenario` writes the scenario (Format §6.7).** §6.7 names
+  the flag, but `init` dropped it, so every scaffold said `scenario: null`.
+  - The flag now writes the value to frontmatter `scenario`.
+  - It accepts only the twelve values Format §2.2 lists. Any other value, or
+    the flag with no value, exits 1 and writes nothing. A test holds the
+    accepted list to the spec line.
+  - `InitOptions` gains an optional `scenario`.
+  - **What it does not do.** It gives no `scenario` value a meaning; the format
+    defines none yet. Issue #255 (StackUW `UPSTREAM-022`) asks for that, and it
+    needs an RFC. The validator still does not read the field.
+  - The `@uwmd/cli` README listed `uwmd init <file>`; `init` takes no
+    positional, so it now reads `uwmd init [--output <file>]`.
+  - No RFC and no version change: this restores behavior §6.7 already
+    specifies.
+
 - **The `ProtocolError` category enum lists `package` and `portfolio` (§XI).**
   - **The drift.** Deal-package validation has used the `package` category
     since RFC 0018 shipped. The 2.1.0 release added `portfolio` as a "new
