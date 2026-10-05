@@ -722,6 +722,30 @@ boundary, the label taxonomy and the lifecycle. The rest is in the
   confidential, non-security reproductions, and whether to enable GitHub
   private vulnerability reporting alongside the security mailbox.
 
+## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
+
+Issue #263 (StackUW `UPSTREAM-023`) asks for previous ids on module and
+implementation manifests after a namespace move. The
+[review](../reviews/2026-10-04-renamed-identifiers.md) finds:
+
+- **Module ids.** Only the asset-class id resolves a document. Renaming a
+  module id alone leaves old documents resolved.
+- **Class ids.** Renaming one breaks old documents unless the renamed module
+  keeps declaring the retired id. Keeping it works on every current host.
+- **Implementation ids.** Nothing resolves, persists or verifies by one.
+
+Draft [RFC 0073](../rfcs/0073-previous-asset-class-identifiers.md) proposes
+`previous_ids` on `declares_asset_classes[]` entries only. It waits on the
+reporter's answers and owner acceptance. Nothing is defined or shipped.
+
+- **Found on the way:** the reference registry does not enforce Protocol
+  §VII.3. Two unrelated modules declaring one calculation id both load, and
+  registry order decides the threaded result. This is recorded in the review
+  and not fixed here. `MOD-ASSET-CLASS-CONFLICT-001` has no conformance
+  fixture.
+- **Guard.** Three `asset-class.test.ts` tests pin current rename behavior.
+  The review's `.repro.mjs` exits 1 if any finding stops reproducing.
+
 ## 2026-10-04 — ProtocolError category lockstep
 
 Protocol §XI and `protocol-error.schema.json` now list the `package` and
