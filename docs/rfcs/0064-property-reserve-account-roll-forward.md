@@ -40,11 +40,13 @@ the carrier only:
 The normative proposal on PR #219 (a Protocol 2.19.0 label, schema, `RSV-NN`
 codes, verifier API and conformance) is not part of this decision.
 
-**PR #219 is closed, unmerged (2026-10-04).** The owner closed it without a
-recorded reason; its branch `feat/rfc-0064-reserve-accounts` (`f78fc54`)
-remains as a reference. Its provisional Protocol 2.19.0 label has since
-shipped with RFC 0066, so any implementation after acceptance starts again
-from current `main`. The closure does not change this RFC's `draft` status.
+**PR #219 is closed, unmerged (2026-10-04).** The owner confirmed the same
+day that closing it neither rejected nor withdrew this RFC: #219 is an
+abandoned, stale implementation attempt. Its branch
+`feat/rfc-0064-reserve-accounts` (`f78fc54`) remains only as a reference and
+is not to be revived as is. Its provisional Protocol 2.19.0 label has since
+shipped with RFC 0066, so any implementation after acceptance starts from
+current `main`. This RFC stays `draft`, and RFC 0065 stays blocked on it.
 
 ## Motivation and demonstrated consumer
 
