@@ -624,11 +624,12 @@ The guards:
     ([owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)).
   - **Still draft.** RFC 0064 is not accepted, no version is selected, and no
     released generation (through 2.17.0) contains it.
-  - **PR #219 closed, unmerged (2026-10-04).** The owner closed the proposed
-    implementation without a recorded reason. Its branch (`f78fc54`) remains
-    for reference, but its provisional Protocol 2.19.0 label has since shipped
-    with RFC 0066, so an implementation after acceptance starts from current
-    `main`. Draft RFC 0065 depends on RFC 0064 and is blocked with it.
+  - **PR #219 closed, unmerged (2026-10-04).** The owner confirmed that the
+    closure neither rejected nor withdrew RFC 0064: #219 is an abandoned,
+    stale implementation attempt, not to be revived as is. Its branch
+    (`f78fc54`) remains for reference; its provisional Protocol 2.19.0 label
+    has since shipped with RFC 0066, so an implementation after acceptance
+    starts from current `main`. Draft RFC 0065 stays blocked on RFC 0064.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -746,7 +747,12 @@ anything else; before this fix it dropped the flag and always wrote `null`.
   validator, pack or cross-check reads one. Defining them, including
   `build_to_rent` and a rule for a deal that fits several values, is issue
   #255 (StackUW `UPSTREAM-022`) and needs an RFC. Draft
-  [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) maps the
-  surfaces and isolates the owner decisions (D1–D6); it defines nothing yet.
+  [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) carries the
+  owner's 2026-10-04 direction: `scenario` names the business plan, stays
+  single-valued with a closed vocabulary, and is descriptive only;
+  `build_to_rent` is not a scenario but a product/subtype on `multifamily`.
+  Field design, vocabulary and migration (R1–R8) remain RFC work, and the
+  current free-string `asset_subtype` is not ready to carry a defined value as
+  is. Nothing is defined or shipped.
 - **Guard.** `init.test.ts` holds the accepted list to the §2.2 line, and the
   CLI smoke suite covers a written value, an unlisted value and a bare flag.
