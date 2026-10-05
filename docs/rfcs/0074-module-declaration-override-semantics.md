@@ -32,8 +32,10 @@ never make a declaration unavailable to anything that would otherwise use
 it**. The protocol enforces this with static load-time refusals, not by
 scheduling calculations across modules.
 
-This RFC is `draft`. Its presence authorizes no normative text, schema, code,
-fixture or version change.
+This RFC is `draft`. The owner settled its three open questions on
+2026-10-05 ([Owner decisions](#owner-decisions-2026-10-05)), but it is not
+accepted. Its presence authorizes no normative text, schema, code, fixture or
+version change.
 
 ## Motivation
 
@@ -106,8 +108,9 @@ That is load-order threading, not a declared rule.
   other, are unrelated. Both redeclaring one of A's ids is a conflict. #267
   already refuses this as unrelated.
 - **P1.4 Transitive-only pairs.** In A ← B ← C where only A and C declare `x`,
-  C does not name A. Under P1.1 this is a conflict. See
-  [owner decision O1](#owner-decisions).
+  C does not name A. A transitive path alone does not authorize an override,
+  so this is a conflict (`PROTO-MOD-080`–`082` by namespace). Owner
+  decision O1.
 
 ### P2. What an override does
 
@@ -227,6 +230,29 @@ verdict and, if accepted, the same effective declarations.
 The allocation is reconciled against `main` after #267. That PR takes
 `080`–`082`. Draft RFC 0073's candidates are `085`–`086`.
 
+### P6. Protocol floor for modules that override (owner decision O3)
+
+A module manifest that redeclares a section ID, calculation ID or view-model
+`section_id` declared by a module it names in `depends_on` uses this RFC's
+override semantics. It **MUST** declare a `requires_protocol` range that
+excludes every Protocol version before the first release that implements this
+RFC.
+
+- **Why.** A pre-RFC host runs both declarations instead of one effective
+  declaration, and it may accept a module set this RFC refuses. Calculation
+  outcomes and validation behavior can therefore differ materially. The
+  collision with a named dependency is itself sufficient evidence that the
+  override feature is in use.
+- **The floor.** The exact floor is assigned at release preparation, when that
+  release's version is selected. As with RFC 0071, a comparator that only
+  excludes the current label does not meet the requirement.
+- **Enforcement.** This follows RFC 0071's precedent for
+  `is_calendar_date`. §VII.2 step 3 is the enforcement: an older host
+  refuses the manifest's range with `PROTO-MOD-030`, so it never loads an
+  override it would run as two declarations. A manifest that violates P6 is
+  non-conforming. A host is not required to detect the violation, and the
+  requirement adds no loader check or code.
+
 ## Compatibility analysis
 
 - **Unrelated conflicts.** #267 repairs these against the existing MUST. They
@@ -247,8 +273,12 @@ The allocation is reconciled against `main` after #267. That PR takes
 - **Pre-RFC hosts.**
   - They run both declarations, so they report two outcomes for one id.
   - They load sets this RFC refuses.
-  - A module author relying on override semantics cannot express that in
-    the manifest today. See owner decision O3.
+  - P6 keeps a conforming overriding module off those hosts entirely. Its
+    `requires_protocol` range excludes them, so they refuse it under
+    §VII.2 step 3.
+- **Existing overriding modules.** A module that already redeclares a
+  dependency's id becomes non-conforming until it declares the P6 floor.
+  No first-party or corpus module does this.
 - **Documents.** Unaffected.
 
 ## Conformance impact
@@ -275,7 +305,7 @@ evaluation order and values on a shared deal, and exact refusal-code sets.
 | Same, broader and unscoped override scope | loads |
 | Narrower, disjoint, and scoped-over-unscoped scope | `084` |
 | Section and view-model scope mismatch | `084` for each |
-| Transitive-only pair (P1.4) | per O1 |
+| Transitive-only pair (P1.4): A and C declare `x`, C names only B | `081` |
 | Text `x` in a string, later segment, bracket key or period-path head | not a read; loads |
 
 ## Reference implementation
@@ -288,9 +318,9 @@ evaluation order and values on a shared deal, and exact refusal-code sets.
 
 | Part | Where in `31ccff4` | Reusable? |
 |---|---|---|
-| Owner tracking and P1.2 chain checks | `claimDeclarations` | Yes, subject to O1 |
+| Owner tracking and P1.2 chain checks | `claimDeclarations` | Yes; its direct-`depends_on` check already matches O1 |
 | Internal ownership | `OWNERS` `WeakMap`, `declarationOwnersOf`, `ownsDeclaration` | Yes |
-| P3.1 | `unservedReader`, the reading-side loop, `priorResultReads` | Yes, subject to O2 |
+| P3.1 | `unservedReader`, the reading-side loop, `priorResultReads` | Yes; already the conservative rule O2 keeps |
 | P3.2 | `moduleScope`, `coversScope` | Yes |
 | Runtime suppression (P2.2, P2.3) | `module-runtime.ts` | Yes |
 | P4 | `getModuleCalculationsForAssetClass` | Yes |
@@ -325,34 +355,35 @@ evaluation order and values on a shared deal, and exact refusal-code sets.
 
 ## Unresolved questions
 
-### Owner decisions
+No semantic question remains open. The owner decisions are recorded below, and the exact Protocol floor (P6) is assigned at release preparation. P6 adds no code, and its `requires_protocol` ranges are set by module authors.
 
-These are genuine semantic choices that the repository evidence does not
-settle.
+### Owner decisions (2026-10-05)
 
-- **O1. Direct or transitive relation.** Does a transitive `depends_on`
-  path make two declarers related (P1.4)?
-  - §VII.3 says "declares the other in `depends_on`", which reads as direct.
-  - #267 refuses only pairs with no path at all and leaves transitive-only
-    pairs loading as today.
-  - Recommendation: direct only. An override names the module it replaces,
-    which makes it explicit and lets P1.2's chain rule work.
-- **O2. How conservative P3.1 is.** P3.1 refuses two cases that the minimal
-  wording ("an already-loaded module that depends on the declaration")
-  would not:
-  - a reader loaded after the override that does not depend on the
-    overriding module;
-  - a reader with no `depends_on` at all, including one listed before the
-    dependency, whose read was already `null` before any override.
+Jared decided these on 2026-10-05. The RFC stays `draft` until accepted.
 
-  Both are needed for the verdict to be independent of listing order.
-  Recommendation: keep them. A relaxation is possible later.
-- **O3. Versioning and the manifest floor.** These are new MUSTs, so the
-  next Protocol label is a minor bump. Should a module that overrides
-  another's declaration be REQUIRED to declare a `requires_protocol` floor,
-  as RFC 0071 does for `is_calendar_date`? A pre-RFC host would otherwise run
-  both declarations. Recommendation: SHOULD, not MUST. The manifest cannot
-  mark an override as intended, so a host has nothing to check.
+- **O1. Direct dependency only.** An override is permitted only when the
+  overriding module names, in its own `depends_on`, the module whose
+  declaration is currently in effect for that id. A transitive path alone
+  does not authorize an override.
+  - In A ← B ← C, B overrides A by naming A, and C overrides B by naming B.
+  - If only A and C declare `x`, C naming only B does not authorize C to
+    override A's `x`. That is a conflict (P1.4).
+  - This keeps override intent explicit and matches §VII.3's "declares the
+    other in `depends_on`."
+- **O2. The conservative reader rule stays.** A prior-result reader is
+  valid only when the dependency graph guarantees that it runs after the
+  effective replacement. A module set is never accepted merely because one
+  listing order happens to produce the desired value. P3.1 therefore keeps
+  refusing:
+  - readers loaded after the override that do not depend on the overriding
+    module;
+  - readers with no dependency relationship that guarantees ordering;
+  - equivalent order-dependent cases.
+
+  The verdict remains a property of the valid module and dependency set.
+- **O3. The Protocol floor is REQUIRED.** This changes the recommendation
+  from SHOULD to MUST. See P6. The exact floor is assigned at release
+  preparation.
 
 ### Settled from repository evidence
 

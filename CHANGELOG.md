@@ -74,8 +74,13 @@ protocol, and each package each carry an independent semver).
   found four ways a plausible reading of "override" silently produced
   `null`. #267 keeps only the existing-contract repair: refusing unrelated
   conflicts.
-- **Owner decisions remain:** whether a transitive dependency counts as
-  related, how conservative the reader rule is, and versioning.
+- **Owner decisions (2026-10-05):**
+  - O1: only a direct `depends_on` on the current owner authorizes an
+    override; a transitive path does not.
+  - O2: the conservative, order-independent reader rule stays.
+  - O3: an overriding module MUST declare a `requires_protocol` floor that
+    excludes pre-RFC Protocol versions.
+- The RFC stays `draft`.
 - **No contract change.** Nothing is implemented or versioned.
 
 ### Renamed identifiers (draft RFC 0073; no contract change)

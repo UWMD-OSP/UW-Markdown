@@ -734,9 +734,11 @@ keeps only the refusal of unrelated conflicts.
   Static refusals cover an unserved prior-result reader (`PROTO-MOD-083`)
   and an override narrower than the overridden module's scope
   (`PROTO-MOD-084`).
-- **Owner decisions.** O1, whether a transitive dependency counts as
-  related. O2, how conservative the reader rule is. O3, the version label
-  and whether overriding modules declare a `requires_protocol` floor.
+- **Owner decisions (2026-10-05).**
+  - O1: overrides require a direct `depends_on` on the current owner.
+  - O2: the conservative reader rule stays.
+  - O3: an overriding module MUST declare a `requires_protocol` floor (P6).
+  - The RFC stays `draft` and is not implemented.
 - **Until accepted.** A pair joined by `depends_on` loads as before, with
   both declarations running in registry order.
 
