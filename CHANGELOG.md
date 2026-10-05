@@ -54,6 +54,25 @@ protocol, and each package each carry an independent semver).
   receipts and the conformance runner report already carry what a report
   needs. Format 2.0, Protocol 2.21.0 and every package version are unchanged.
 
+### Dependent declaration overrides (draft RFC 0074; no contract change)
+
+- **Draft [RFC 0074](docs/rfcs/0074-module-declaration-override-semantics.md)**
+  proposes what Protocol §VII.3 means by "the dependent module's
+  declarations override":
+  - one effective declaration per id;
+  - the replacement runs where the dependent declares it;
+  - static load-time refusals when an override would leave a prior-result
+    consumer without a value (proposed `PROTO-MOD-083`);
+  - refusals when the overriding module does not apply wherever the
+    overridden one does (proposed `PROTO-MOD-084`).
+- **Split from PR #267.** Its later revisions implemented these rules and
+  found four ways a plausible reading of "override" silently produced
+  `null`. #267 keeps only the existing-contract repair: refusing unrelated
+  conflicts.
+- **Owner decisions remain:** whether a transitive dependency counts as
+  related, how conservative the reader rule is, and versioning.
+- **No contract change.** Nothing is implemented or versioned.
+
 ### Renamed identifiers (draft RFC 0073; no contract change)
 
 - **Issue #263 is triaged against the current contract** (StackUW
