@@ -722,6 +722,24 @@ boundary, the label taxonomy and the lifecycle. The rest is in the
   confidential, non-security reproductions, and whether to enable GitHub
   private vulnerability reporting alongside the security mailbox.
 
+## 2026-10-05 — Dependent declaration overrides (draft RFC 0074)
+
+Draft [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md)
+defines what Protocol §VII.3's "the dependent module's declarations
+override" means. PR #267 implemented and tested the design in its later
+revisions (commit `31ccff4`), then split at the normative boundary: #267
+keeps only the refusal of unrelated conflicts.
+- **Proposed.** One effective declaration per id. The replacement runs in
+  the dependent's own declaration order, with no cross-module scheduler.
+  Static refusals cover an unserved prior-result reader (`PROTO-MOD-083`)
+  and an override narrower than the overridden module's scope
+  (`PROTO-MOD-084`).
+- **Owner decisions.** O1, whether a transitive dependency counts as
+  related. O2, how conservative the reader rule is. O3, the version label
+  and whether overriding modules declare a `requires_protocol` floor.
+- **Until accepted.** A pair joined by `depends_on` loads as before, with
+  both declarations running in registry order.
+
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 
 Issue #263 (StackUW `UPSTREAM-023`) asks for previous ids on module and
