@@ -72,6 +72,7 @@ const COPIES = [
   { from: 'docs/reviews/2026-09-24-terminal-boundary-design.md', to: 'about/reviews/terminal-boundary-design.md', title: 'Terminal-boundary design review' },
   { from: 'docs/reviews/2026-09-24-rfc-0063-implementation.md', to: 'about/reviews/rfc-0063-implementation.md', title: 'RFC 0063 implementation verification' },
   { from: 'docs/reviews/2026-09-29-rfc-0064-owner-review.md', to: 'about/reviews/rfc-0064-owner-review.md', title: 'RFC 0064 owner review: statement carrier' },
+  { from: 'docs/reviews/2026-10-04-renamed-identifiers.md', to: 'about/reviews/renamed-identifiers.md', title: 'Renamed identifiers review' },
   { from: 'GOVERNANCE.md',       to: 'about/governance.md' },
   { from: 'MAINTAINERS.md',      to: 'about/maintainers.md' },
   { from: 'SECURITY.md',         to: 'about/security.md' },
@@ -133,6 +134,10 @@ const NORMALIZED_LINK_MAP = new Map([
   ['2026-09-24-rfc-0063-implementation.md', '/about/reviews/rfc-0063-implementation'],
   ['docs/reviews/2026-09-29-rfc-0064-owner-review.md', '/about/reviews/rfc-0064-owner-review'],
   ['reviews/2026-09-29-rfc-0064-owner-review.md', '/about/reviews/rfc-0064-owner-review'],
+  ['docs/reviews/2026-10-04-renamed-identifiers.md', '/about/reviews/renamed-identifiers'],
+  ['reviews/2026-10-04-renamed-identifiers.md', '/about/reviews/renamed-identifiers'],
+  // The review links its sibling reproduction script, which is code, not a page.
+  ['2026-10-04-renamed-identifiers.repro.mjs', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-04-renamed-identifiers.repro.mjs'],
   ['docs/reviews/2026-09-12-release-2.8.0.md', '/about/reviews/release-2.8.0'],
   ['docs/reviews/2026-09-12-release-2.9.0.md', '/about/reviews/release-2.9.0'],
   ['reviews/2026-09-12-release-2.8.0.md', '/about/reviews/release-2.8.0'],
