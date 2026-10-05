@@ -3,6 +3,7 @@
 
 import type { AssetClass, DealStage, UWMeta } from './types.js';
 import { stampMetaIntoBlockContent } from './meta-shape.js';
+import { parseUWFile } from './parser.js';
 
 export interface InitOptions {
   /**
@@ -56,6 +57,65 @@ function isoNow(): string {
   return new Date().toISOString();
 }
 
+/**
+ * Thrown when an `InitOptions` value cannot be written as a frontmatter scalar
+ * that every reader recovers exactly.
+ */
+export class UWInitError extends Error {
+  readonly code = 'INIT_UNREPRESENTABLE_VALUE';
+  readonly field: string;
+  constructor(field: string, message: string) {
+    super(`[INIT_UNREPRESENTABLE_VALUE] ${field}: ${message}`);
+    this.name = 'UWInitError';
+    this.field = field;
+  }
+}
+
+// A value written without quotes must read back as the same string in both the
+// reference reader and a YAML 1.1/1.2 library: a lowercase snake_case token,
+// dotted for namespaced identifiers, that no reader takes for null or a boolean.
+const PLAIN_SCALAR_RE = /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*$/;
+const PLAIN_RESERVED = new Set(['null', 'true', 'false', 'yes', 'no', 'on', 'off', 'y', 'n']);
+
+/** YAML 1.2 printable characters, minus every line break: one value, one line. */
+function isSingleLinePrintable(cp: number): boolean {
+  if (cp === 0x09) return true;
+  if (cp >= 0x20 && cp <= 0x7e) return true;
+  if (cp === 0x2028 || cp === 0x2029) return false;
+  if (cp >= 0xa0 && cp <= 0xd7ff) return true;
+  if (cp >= 0xe000 && cp <= 0xfffd) return true;
+  return cp >= 0x10000 && cp <= 0x10ffff;
+}
+
+/**
+ * Serializes one user-supplied frontmatter value. Format Appendix D allows
+ * quoted strings but does not say whether YAML escapes apply inside them, and
+ * the reference reader takes quoted content verbatim while YAML libraries
+ * unescape it. So no escape sequence is ever emitted. The rule, in order:
+ *
+ * 1. a non-string, a line break or a non-printable character is refused;
+ * 2. a `plain` field that is a safe token is written bare (today's bytes);
+ * 3. otherwise `"value"` if it has no `"` or `\` (today's bytes for quoted fields);
+ * 4. otherwise `'value'` if it has no `'`;
+ * 5. otherwise it is refused: no form reads back the same everywhere.
+ */
+function frontmatterScalar(field: string, value: string, style: 'plain' | 'quoted'): string {
+  // A bare CLI flag (`--name` with no value) arrives as `true`.
+  if (typeof value !== 'string') throw new UWInitError(field, 'must be a string.');
+  for (const ch of value) {
+    if (!isSingleLinePrintable(ch.codePointAt(0)!)) {
+      throw new UWInitError(field, 'line breaks and non-printable characters cannot be written to frontmatter.');
+    }
+  }
+  if (style === 'plain' && PLAIN_SCALAR_RE.test(value) && !PLAIN_RESERVED.has(value)) return value;
+  if (!value.includes('"') && !value.includes('\\')) return `"${value}"`;
+  if (!value.includes("'")) return `'${value}'`;
+  throw new UWInitError(
+    field,
+    "a value containing both ' and either \" or \\ has no frontmatter form every reader recovers exactly.",
+  );
+}
+
 export function generateBlankUWFile(opts: InitOptions = {}): string {
   const dealId = opts.dealId ?? generateDealId();
   const dealName = opts.dealName ?? 'Untitled Deal';
@@ -66,21 +126,42 @@ export function generateBlankUWFile(opts: InitOptions = {}): string {
   const formatVersion = opts.formatVersion ?? '2.0';
   const v2 = formatVersion === '2.0';
 
+  // Every caller-supplied frontmatter value goes through frontmatterScalar;
+  // the expected parse of each is checked against the result before return.
+  const supplied: [key: string, value: string | null, style: 'plain' | 'quoted'][] = [
+    ['uw_version', formatVersion, 'quoted'],
+    ['deal_id', dealId, 'quoted'],
+    ['deal_name', dealName, 'quoted'],
+    ['property_address', opts.address ?? '', 'quoted'],
+    ['city', opts.city ?? '', 'quoted'],
+    ['state', opts.state ?? '', 'quoted'],
+    ['zip', opts.zip ?? '', 'quoted'],
+    ['asset_class', assetClass, 'plain'],
+    ['asset_subtype', opts.assetSubtype ?? null, 'plain'],
+    ['scenario', opts.scenario ?? null, 'plain'],
+    ['deal_stage', dealStage, 'plain'],
+    ['tier', tier, 'plain'],
+  ];
+  const fm: Record<string, string> = {};
+  for (const [key, value, style] of supplied) {
+    fm[key] = value === null ? 'null' : frontmatterScalar(key, value, style);
+  }
+
   const frontmatter = `---
-uw_version: "${formatVersion}"
-deal_id: "${dealId}"
-deal_name: "${dealName}"
+uw_version: ${fm.uw_version}
+deal_id: ${fm.deal_id}
+deal_name: ${fm.deal_name}
 created: "${now}"
 last_modified: "${now}"
 
-property_address: "${opts.address ?? ''}"
-city: "${opts.city ?? ''}"
-state: "${opts.state ?? ''}"
-zip: "${opts.zip ?? ''}"
-asset_class: ${assetClass}
-asset_subtype: ${opts.assetSubtype ?? 'null'}
+property_address: ${fm.property_address}
+city: ${fm.city}
+state: ${fm.state}
+zip: ${fm.zip}
+asset_class: ${fm.asset_class}
+asset_subtype: ${fm.asset_subtype}
 loan_type: null
-scenario: ${opts.scenario ?? 'null'}
+scenario: ${fm.scenario}
 
 pipeline_state:
   L0_ingestion: pending
@@ -92,7 +173,7 @@ pipeline_state:
   L7_assembly: pending
 
 status: draft
-deal_stage: ${dealStage}
+deal_stage: ${fm.deal_stage}
 recommendation: null
 
 quick_metrics:
@@ -109,7 +190,7 @@ quick_metrics:
 flags: []
 blocking_flags: []
 
-tier: ${tier}
+tier: ${fm.tier}
 institution_config_id: null
 created_by: wizard
 source_documents: []
@@ -226,7 +307,7 @@ ${metaStub(s.id)}
     ],
   }, null, 2);
 
-  return `${frontmatter}
+  const content = `${frontmatter}
 
 # ${dealName}
 
@@ -239,4 +320,19 @@ ${sectionBlocks}
 ${pipelineLogEntry}
 \`\`\`
 `;
+
+  // The reference reader rejects some quoted content it should not (for
+  // example `: &x` read as an anchor), so the guarantee is checked, not assumed.
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = parseUWFile(content, { strict: true }).frontmatter as Record<string, unknown>;
+  } catch (err) {
+    throw new UWInitError('frontmatter', `the generated frontmatter does not parse: ${String(err)}`);
+  }
+  for (const [key, value] of supplied) {
+    if (parsed[key] !== value) {
+      throw new UWInitError(key, 'the generated frontmatter does not read back as the supplied value.');
+    }
+  }
+  return content;
 }

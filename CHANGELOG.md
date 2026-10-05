@@ -112,6 +112,36 @@ protocol, and each package each carry an independent semver).
   - No RFC and no version change: this restores behavior §6.7 already
     specifies.
 
+- **`uwmd init` writes frontmatter values that read back exactly.**
+  - **The bug.** `generateBlankUWFile` pasted every caller value into the
+    YAML template unescaped: the deal ID, name, address, city, state, zip,
+    asset class, subtype, scenario, stage, tier and format line. So a deal
+    name with a `"` wrote invalid YAML, a line break let the value start a
+    new key or a section fence, and a bare subtype such as `null` or `yes`
+    read back as null or a boolean.
+  - **The fix.** One serializer now writes every caller value, in a fixed
+    order:
+    - a bare token when the field is unquoted and the value is a safe
+      lowercase identifier;
+    - otherwise `"value"`;
+    - otherwise `'value'`;
+    - otherwise refusal.
+  - **No escape sequences.** Format Appendix D allows quoted strings but
+    does not say whether YAML escapes apply inside them. The reference
+    reader keeps quoted content verbatim, while YAML libraries unescape it,
+    so the serializer emits only forms that both read the same way.
+  - **Refusals.** Line breaks, non-printable characters, non-strings, and a
+    value containing both `'` and either `"` or `\` are refused with the new
+    `UWInitError` (`INIT_UNREPRESENTABLE_VALUE`). The generated file is also
+    parsed back, and any field that does not read back exactly is refused.
+    `uwmd init` prints the error and exits 1 without writing.
+  - **Bytes.** Values that need no quoting change are written exactly as
+    before.
+  - **No new public API.** `UWInitError` is internal to `init.ts`; callers
+    of `generateBlankUWFile` see an `Error` whose message starts with
+    `[INIT_UNREPRESENTABLE_VALUE]`.
+  - No spec change and no version change.
+
 - **The `ProtocolError` category enum lists `package` and `portfolio` (§XI).**
   - **The drift.** Deal-package validation has used the `package` category
     since RFC 0018 shipped. The 2.1.0 release added `portfolio` as a "new

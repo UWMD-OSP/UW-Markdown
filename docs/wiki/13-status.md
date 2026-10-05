@@ -756,3 +756,39 @@ anything else; before this fix it dropped the flag and always wrote `null`.
   is. Nothing is defined or shipped.
 - **Guard.** `init.test.ts` holds the accepted list to the §2.2 line, and the
   CLI smoke suite covers a written value, an unlisted value and a bare flag.
+
+## 2026-10-04 — `uwmd init` frontmatter serialization
+
+`generateBlankUWFile` now writes every caller-supplied frontmatter value
+through one serializer, and checks that the generated file reads back to
+exactly the supplied strings. Before, values were pasted in unescaped. See the
+CHANGELOG for the rule.
+- **Classification.** Robustness defect in the writer. No spec or version
+  change.
+- **Coverage.** Each quoted field round-trips quotes, backslashes, colons,
+  `#`, padding, YAML-looking scalars and non-ASCII text, checked against both
+  the reference reader and the `yaml` library (a root dev dependency, used by
+  the test only). Refusals and the CLI are covered too. With the old
+  behavior, 29 of the new tests fail.
+- **Writer → reader dependency, checked 2026-10-04.** The round-trip check
+  makes `init.ts` import `parser.ts` at runtime. The runtime import closure
+  of `init.ts` is `meta-shape.ts`, `parser.ts` and `types.ts`. None of them
+  imports `init.ts`, so there is no cycle, and none imports a `node:` module
+  or a package. `parseUWFile` is already exported from `@uwmd/core/browser`,
+  so the browser entry gains no module. The check is pure, with no I/O or
+  clock, and only adds refusals of values that would not read back.
+  `UWInitError` stays internal to `init.ts`; it is not exported from either
+  entry.
+- **Found, not fixed (follow-up):**
+  - **Contract gap.** Format Appendix D lists single- and double-quoted
+    scalars but does not say whether YAML escapes (`\"`, `\\`, `''`) apply
+    inside them. The reference reader (`parseScalar` in `parser.ts`) keeps
+    quoted content verbatim, while any YAML library unescapes it, so the same
+    file reads differently. A separate review classifies this and the two
+    items below; no parser change is part of this fix.
+  - **False rejections.** The reader's unsupported-feature pre-pass scans
+    inside quoted values, so a legal value such as `"Smith: &Co"` is rejected
+    as an anchor. `init` refuses such values instead of writing them.
+  - **Stale citation.** `parser.ts` and its `UNSUPPORTED_YAML_FEATURE`
+    message cite "Appendix A" for the YAML subset. Appendix A is file
+    naming; the subset is Appendix D.

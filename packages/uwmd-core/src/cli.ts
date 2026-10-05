@@ -10,7 +10,7 @@ import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
 import { migrateSourceTags } from './migrate-source-tags.js';
-import { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
+import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
 import { stringifyUWEnvelope } from './uwjson.js';
@@ -607,18 +607,25 @@ function cmdInit(flags: Record<string, string | boolean>): void {
     );
     process.exit(1);
   }
-  const content = generateBlankUWFile({
-    formatVersion: requestedFormat as '2.0' | '1.1' | undefined,
-    dealName: flags['name'] as string | undefined,
-    address: flags['address'] as string | undefined,
-    city: flags['city'] as string | undefined,
-    state: flags['state'] as string | undefined,
-    zip: flags['zip'] as string | undefined,
-    assetClass: flags['asset-class'] as AssetClass | undefined,
-    dealStage: flags['stage'] as DealStage | undefined,
-    scenario: scenario as string | undefined,
-    tier: (flags['tier'] as 'screener' | 'analyst' | undefined) ?? 'screener',
-  });
+  let content: string;
+  try {
+    content = generateBlankUWFile({
+      formatVersion: requestedFormat as '2.0' | '1.1' | undefined,
+      dealName: flags['name'] as string | undefined,
+      address: flags['address'] as string | undefined,
+      city: flags['city'] as string | undefined,
+      state: flags['state'] as string | undefined,
+      zip: flags['zip'] as string | undefined,
+      assetClass: flags['asset-class'] as AssetClass | undefined,
+      dealStage: flags['stage'] as DealStage | undefined,
+      scenario: scenario as string | undefined,
+      tier: (flags['tier'] as 'screener' | 'analyst' | undefined) ?? 'screener',
+    });
+  } catch (err) {
+    if (!(err instanceof UWInitError)) throw err;
+    console.error(err.message);
+    process.exit(1);
+  }
 
   // generateBlankUWFile() emits structured UWX content, so the default filename
   // must be .uwx.md. Writing it as .uw.md produced a file the format spec
