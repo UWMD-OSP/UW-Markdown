@@ -525,7 +525,7 @@ export {
 } from './context.js';
 export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js';
 
-export { generateBlankUWFile, UWInitError } from './init.js';
+export { generateBlankUWFile } from './init.js';
 
 // ─── Intelligence surfaces (browser-safe: no node, no SDK) ───────────────────
 // Cascade resolution, value-of-information gap ranking, completeness gaps,

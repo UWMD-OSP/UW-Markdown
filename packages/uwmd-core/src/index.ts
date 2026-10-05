@@ -521,7 +521,7 @@ export {
   CASSETTE_VERSION,
 } from './agents/providers/replay.js';
 export type { AgentCassette, RecordedExchange, RecordingProvider } from './agents/providers/replay.js';
-export { generateBlankUWFile, UWInitError } from './init.js';
+export { generateBlankUWFile } from './init.js';
 
 // ─── Section footing (line items → section totals) ────────────────────────────
 export { deriveRentRoll, rentRollVariant } from './rentroll.js';

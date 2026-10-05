@@ -137,8 +137,9 @@ protocol, and each package each carry an independent semver).
     `uwmd init` prints the error and exits 1 without writing.
   - **Bytes.** Values that need no quoting change are written exactly as
     before.
-  - **Exports.** `UWInitError` is exported from `@uwmd/core` and
-    `@uwmd/core/browser`.
+  - **No new public API.** `UWInitError` is internal to `init.ts`; callers
+    of `generateBlankUWFile` see an `Error` whose message starts with
+    `[INIT_UNREPRESENTABLE_VALUE]`.
   - No spec change and no version change.
 
 - **The `ProtocolError` category enum lists `package` and `portfolio` (§XI).**
