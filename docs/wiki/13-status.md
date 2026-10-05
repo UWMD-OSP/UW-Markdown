@@ -630,6 +630,15 @@ The guards:
     (`f78fc54`) remains for reference; its provisional Protocol 2.19.0 label
     has since shipped with RFC 0066, so an implementation after acceptance
     starts from current `main`. Draft RFC 0065 stays blocked on RFC 0064.
+- Frontmatter YAML subset: the
+  [2026-10-04 review](../reviews/2026-10-04-frontmatter-yaml-subset.md)
+  finds the readers keep quoted scalars verbatim while the Tier-2 editor and
+  `stringifyUWX` write YAML escapes, so an edit or conversion round trip
+  corrupts quoted values. It also finds the pre-pass rejects legal quoted
+  content, flow style is accepted, and trailing comments are kept. Its
+  classification is drift plus an Appendix D documentation gap, with no RFC
+  needed. Waiting on the owner to confirm YAML quoted-scalar semantics
+  before the reader repairs.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
