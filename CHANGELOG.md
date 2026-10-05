@@ -49,6 +49,11 @@ protocol, and each package each carry an independent semver).
   all 16 labels, and the new `labels.yml` workflow creates them on merge. A
   `verify-issue-forms` CI guard holds the forms, the manifest and the guide to
   each other. On its first run it caught invalid YAML in the new bug form.
+- **Closing-keyword hygiene.** The guide's triage steps and the PR template
+  now warn that GitHub closes an issue whenever "fixes", "closes" or
+  "resolves" precedes `#N`, even in a negated sentence. That happened to #255
+  when #257 merged with the text "does not resolve #255". Mention an issue a
+  change does not resolve as "see #N".
 - **No contract change.** No feedback envelope or diagnostic object was
   added: the implementation manifest, validation codes, `ProtocolError`,
   receipts and the conformance runner report already carry what a report

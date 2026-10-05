@@ -225,6 +225,15 @@ becomes the RFC's Motivation, and the RFC links the issue.
    `awaiting-release` when the issue closes. For a normative change, open
    the RFC and cite the issue and the reporter's tracker ID in its
    Motivation.
+
+   **Use a closing keyword only for the issue a change actually resolves.**
+   GitHub closes an issue when a merged PR description or a commit on the
+   default branch contains "close", "fix" or "resolve" (in any form)
+   followed by `#N`. It ignores the words around them. "This PR does not
+   resolve #255" closed #255 on merge. To mention an issue a change does
+   *not* resolve, write "see #N", "related: #N" or "part of #N". If an
+   issue closes by mistake, reopen it with a comment explaining why, and
+   keep its labels.
 6. **Close the loop at release.** When a release ships, search
    `is:issue is:closed label:awaiting-release`. Comment on each with the
    version and its CHANGELOG entry, then remove the label.

@@ -3,7 +3,9 @@
 <!-- One paragraph: what's being changed and why. Write `Fixes #N` for the issue
 this resolves so it closes on merge. If the fix ships in a package or Protocol
 version that is not released yet, label the issue `awaiting-release`
-(docs/FEEDBACK.md). -->
+(docs/FEEDBACK.md). Never put "fixes/closes/resolves #N" next to an issue
+this does NOT resolve, even in a negated sentence: GitHub closes it anyway.
+Write "see #N" instead. -->
 
 ## Type of change
 
