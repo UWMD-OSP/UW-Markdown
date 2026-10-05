@@ -321,8 +321,7 @@ ${pipelineLogEntry}
 \`\`\`
 `;
 
-  // The reference reader rejects some quoted content it should not (for
-  // example `: &x` read as an anchor), so the guarantee is checked, not assumed.
+  // The guarantee is checked against the reference reader, not assumed.
   let parsed: Record<string, unknown>;
   try {
     parsed = parseUWFile(content, { strict: true }).frontmatter as Record<string, unknown>;

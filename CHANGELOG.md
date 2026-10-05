@@ -142,6 +142,51 @@ protocol, and each package each carry an independent semver).
     `[INIT_UNREPRESENTABLE_VALUE]`.
   - No spec change and no version change.
 
+- **Frontmatter scalars keep their YAML 1.2 meaning (Format Appendix D).**
+  - **The drift.**
+    - Both readers (`parser.ts`, `lite.ts`) returned quoted values verbatim:
+      `"a \"b\""` read as `a \"b\"`, and `'O''Brien'` read as `O''Brien`.
+    - The Tier-2 editor and `stringifyUWX` write JSON/YAML escapes, so a
+      `frontmatter_set` edit or a UW JSON → UWX conversion read back as a
+      different string.
+    - The unsupported-feature scan also rejected `&`, `*` and `!` inside
+      quotes.
+    - Flow-style values, which Appendix D.2 says MUST be rejected, were
+      accepted as strings.
+    - A trailing `# comment` became part of a plain value.
+  - **The contract.**
+    - The owner confirmed on 2026-10-04 that admitted constructs keep their
+      YAML 1.2 semantics unless the Format narrows them. That reconciles the
+      existing contract; it does not change it, so there is no RFC.
+    - Appendix D gains a "Scalar semantics" paragraph, and Lite §3 points to
+      it.
+    - The Protocol error table and the reader's messages now cite Appendix D,
+      not §2.2 or Appendix A.
+  - **The fix.** One internal module, `yaml-scalar.ts`, shared by both readers:
+    - decodes double-quoted escapes and single-quoted `''`;
+    - blanks quoted content before the feature scan;
+    - strips whitespace-preceded comments;
+    - refuses flow values.
+
+    Plain-scalar typing is unchanged.
+  - **Now refused.** Quoted values that are not valid YAML are refused with
+    `UNSUPPORTED_YAML_FEATURE`, or `LITE_FRONTMATTER_SYNTAX` in Lite:
+    - an undefined escape such as `"C:\deals"`;
+    - an unescaped inner quote;
+    - an unterminated quote;
+    - content after the closing quote.
+
+    Flow values are refused with `UNSUPPORTED_YAML_FEATURE`, or
+    `LITE_FRONTMATTER_NESTING_UNSUPPORTED` in Lite. No corpus document was
+    affected.
+  - **Conformance.**
+    - tier-1 `16-frontmatter-yaml-scalars`, whose parsed baseline is a YAML
+      library's reading of the fixture;
+    - tier-1 malformed `11`–`14`;
+    - Lite `08` and Lite malformed `13`–`15`;
+    - the tier-1 runner now checks a refusal's code.
+  - No version change, and no new public API.
+
 - **The `ProtocolError` category enum lists `package` and `portfolio` (§XI).**
   - **The drift.** Deal-package validation has used the `package` category
     since RFC 0018 shipped. The 2.1.0 release added `portfolio` as a "new
