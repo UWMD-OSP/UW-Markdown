@@ -585,15 +585,15 @@ describe('uwmd CLI', () => {
       try {
         const r = spawnSync(
           process.execPath,
-          [CLI_BIN, 'init', '--name', 'He said "hi"', '--address', 'C:\\deals #4: North', '--output', 'q.uwx.md'],
+          [CLI_BIN, 'init', '--name', `He said "it's ready"`, '--address', `O'Brien "C:\\deals\\North" #4: [x]`, '--output', 'q.uwx.md'],
           { encoding: 'utf8', cwd: temp },
         );
         expect(r.status).toBe(0);
         const parsed = runCli(['parse', resolve(temp, 'q.uwx.md')]);
         expect(parsed.status).toBe(0);
         const frontmatter = JSON.parse(parsed.stdout).frontmatter;
-        expect(frontmatter.deal_name).toBe('He said "hi"');
-        expect(frontmatter.property_address).toBe('C:\\deals #4: North');
+        expect(frontmatter.deal_name).toBe(`He said "it's ready"`);
+        expect(frontmatter.property_address).toBe(`O'Brien "C:\\deals\\North" #4: [x]`);
       } finally {
         rmSync(temp, { recursive: true, force: true });
       }

@@ -190,6 +190,14 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     '- item',
     '---',
     'Café Société — 東京 🏢',
+    `O'Brien "North"`,
+    'C:\\deals\\North',
+    `He said "it's ready"`,
+    'Lot #4: Phase "A"',
+    '\\\\server\\share\\\\',
+    `'"\\`,
+    `it's "C:\\deals" #4: {a: 1} [b] null`,
+    `"quoted" 'both' 🏢 é`,
   ];
 
   it.each(QUOTED_FIELDS.flatMap(([option, key]) => AWKWARD_VALUES.map((value) => [option, key, value] as const)))(
@@ -230,8 +238,11 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     ['zip', 'nul\u0000byte'],
     ['state', 'del\u007f'],
     ['dealName', 'lone \ud800 surrogate'],
-    ['dealName', `O'Brien "North"`],
-    ['address', "O'Brien \\ North"],
+    ['city', 'lone \udc00 low surrogate'],
+    ['address', 'bell\u0007'],
+    ['zip', 'escape\u001b'],
+    ['state', 'c1\u0090control'],
+    ['dealName', `O'Brien "North"\nsecond line`],
     ['assetSubtype', 'two\nlines'],
   ])('refuses %s %j', (option, value) => {
     expect(() => generateBlankUWFile({ dealId: 'uw_2026_BAD', [option]: value })).toThrow(UWInitError);
@@ -250,10 +261,22 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     expect(parseUWFile(content, { strict: true }).frontmatter.deal_name).toBe('Smith: &Co *x !y');
   });
 
-  it('reports a field that does not read back as a typed error', () => {
+  it('writes a value with both quote kinds as one escaped double-quoted scalar', () => {
+    const content = generateBlankUWFile({ dealId: 'uw_2026_BOTH', dealName: `He said "it's ready" at C:\\deals` });
+    expect(lineOf(content, 'deal_name')).toBe(`deal_name: "He said \\"it's ready\\" at C:\\\\deals"`);
+    // Values that already serialized keep their bytes.
+    expect(lineOf(generateBlankUWFile({ dealId: 'uw_2026_BOTH', dealName: 'He said "hi"' }), 'deal_name')).toBe(
+      `deal_name: 'He said "hi"'`,
+    );
+    expect(lineOf(generateBlankUWFile({ dealId: 'uw_2026_BOTH', dealName: "O'Brien" }), 'deal_name')).toBe(
+      `deal_name: "O'Brien"`,
+    );
+  });
+
+  it('reports a refused field as a typed error', () => {
     let caught: unknown;
     try {
-      generateBlankUWFile({ dealId: 'uw_2026_BAD', dealName: `O'Brien "North"` });
+      generateBlankUWFile({ dealId: 'uw_2026_BAD', dealName: `O'Brien "North"\nsecond line` });
     } catch (err) {
       caught = err;
     }

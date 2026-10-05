@@ -120,6 +120,17 @@ export function readYamlScalar(raw: string): YamlScalarResult {
 }
 
 /**
+ * Writes `text` as a double-quoted scalar that `readYamlScalar` (and any YAML
+ * 1.2 reader) decodes back to `text`. Only `"` and `\` are escaped, with the
+ * reader's own `\"` and `\\`, so the text must already be one line of
+ * printable characters; a caller that admits anything else must refuse it
+ * first.
+ */
+export function writeDoubleQuotedScalar(text: string): string {
+  return `"${text.replace(/["\\]/g, (ch) => `\\${ch}`)}"`;
+}
+
+/**
  * The line with any quoted scalar's content blanked out, for the reader's
  * unsupported-feature scan: inside quotes, `&`, `*` and `!` are content, not
  * YAML indicators. A line whose quoted scalar does not read is returned as is;
