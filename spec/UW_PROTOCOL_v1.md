@@ -594,7 +594,7 @@ capability is unconditional: every implementation owes it.
 | `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, §XIV). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
-| `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (§2.2). | `parse` | `error` |
+| `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (format Appendix D). | `parse` | `error` |
 | `PROTO-*` | Protocol-level refusal — a malformed request. | *(none)* | `error` |
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
 

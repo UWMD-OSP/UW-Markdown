@@ -630,15 +630,6 @@ The guards:
     (`f78fc54`) remains for reference; its provisional Protocol 2.19.0 label
     has since shipped with RFC 0066, so an implementation after acceptance
     starts from current `main`. Draft RFC 0065 stays blocked on RFC 0064.
-- Frontmatter YAML subset: the
-  [2026-10-04 review](../reviews/2026-10-04-frontmatter-yaml-subset.md)
-  finds the readers keep quoted scalars verbatim while the Tier-2 editor and
-  `stringifyUWX` write YAML escapes, so an edit or conversion round trip
-  corrupts quoted values. It also finds the pre-pass rejects legal quoted
-  content, flow style is accepted, and trailing comments are kept. Its
-  classification is drift plus an Appendix D documentation gap, with no RFC
-  needed. Waiting on the owner to confirm YAML quoted-scalar semantics
-  before the reader repairs.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -788,7 +779,7 @@ CHANGELOG for the rule.
   clock, and only adds refusals of values that would not read back.
   `UWInitError` stays internal to `init.ts`; it is not exported from either
   entry.
-- **Found, not fixed (follow-up):**
+- **Found, then resolved** by the frontmatter YAML scalar repair below:
   - **Contract gap.** Format Appendix D lists single- and double-quoted
     scalars but does not say whether YAML escapes (`\"`, `\\`, `''`) apply
     inside them. The reference reader (`parseScalar` in `parser.ts`) keeps
@@ -801,3 +792,37 @@ CHANGELOG for the rule.
   - **Stale citation.** `parser.ts` and its `UNSUPPORTED_YAML_FEATURE`
     message cite "Appendix A" for the YAML subset. Appendix A is file
     naming; the subset is Appendix D.
+
+## 2026-10-04 — Frontmatter YAML scalar semantics
+
+Both frontmatter readers now read admitted scalars with their YAML 1.2
+meaning. The owner confirmed on 2026-10-04 that supported constructs keep
+their YAML 1.2 semantics unless the Format narrows them. That reconciles the
+existing contract, so no RFC was needed. The
+[review](../reviews/2026-10-04-frontmatter-yaml-subset.md) has the analysis.
+- **Contract.** Format Appendix D gains a "Scalar semantics" paragraph, and
+  Lite §3 points to it. The Protocol error table and the reader's citations
+  now name Appendix D. No version moves.
+- **Readers.** `parser.ts` and `lite.ts` share `yaml-scalar.ts`:
+  - double-quoted escapes and single-quoted `''` are decoded;
+  - quoted `&`, `*` and `!` are content;
+  - a trailing comment is not part of a value;
+  - flow mappings and non-empty flow sequences are refused.
+
+  So a Tier-2 `frontmatter_set` or a UW JSON → UWX conversion now reads back
+  exactly.
+- **Conformance.** New tier-1 positive fixture `16` (its parsed baseline is a
+  YAML library's reading), tier-1 refusals `11`–`14`, Lite positive `08` and
+  Lite refusals `13`–`15`. Before the reader change, exactly the 8 new cases
+  failed. After it, no existing baseline changed.
+- **Compatibility.** A quoted value that is not valid YAML is now refused
+  with `UNSUPPORTED_YAML_FEATURE` (Lite: `LITE_FRONTMATTER_SYNTAX`). That
+  covers an undefined escape such as `"C:\deals"`, an unescaped inner quote
+  such as `"a"b"` or `'O'Brien'`, an unterminated quote, and content after
+  the closing quote. Flow values are refused too (Lite:
+  `LITE_FRONTMATTER_NESTING_UNSUPPORTED`). Plain values ending in ` # …` lose
+  the comment, and `key: # …` now opens a block or reads as null. No corpus
+  document was affected.
+- **Not changed.** The Lite reader still does not detect anchors or tags
+  outside quotes, and Lite `key: []` still reads as before. Plain-scalar
+  typing is unchanged in both readers.

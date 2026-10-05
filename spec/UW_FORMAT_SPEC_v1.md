@@ -3678,6 +3678,22 @@ The `.uwx.md` frontmatter (between the opening and closing `---` markers) is par
 | Sequence | dash-prefixed items under a `key:` line |
 | Comments | `# comment` to end of line |
 
+**Scalar semantics.** A supported construct keeps its YAML 1.2 meaning unless
+this appendix narrows it:
+
+- A double-quoted scalar decodes YAML 1.2 double-quoted escapes: `\"` is `"`,
+  `\\` is `\`, and `\n`, `\t`, `\uXXXX` and the other YAML 1.2 escapes keep
+  their YAML meaning.
+- A single-quoted scalar reads `''` as one `'`. Nothing else in it is an
+  escape.
+- Inside either kind of quoted scalar, `&`, `*`, `!`, `#`, `{`, `}`, `[` and
+  `]` are content, not YAML indicators.
+- A `#` preceded by whitespace, outside a quoted scalar, begins a comment. The
+  comment is not part of the value.
+- Each entry is one line (`key: value` per line, above). A quoted scalar that
+  does not close on its line, uses an escape YAML 1.2 does not define, or is
+  followed by anything other than a comment is outside the subset.
+
 ### D.2 — Rejected
 
 The following YAML features are NOT part of the subset and MUST cause the parser to throw `UNSUPPORTED_YAML_FEATURE`:

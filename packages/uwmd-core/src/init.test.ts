@@ -243,17 +243,22 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     ).toThrow(/deal_name: must be a string/);
   });
 
-  it('refuses quoted content the reference reader would reject, rather than writing it', () => {
-    // `: &x` inside quotes is legal YAML, but the reader's pre-pass reads it as
-    // an anchor. Writing it would produce a file the reference reader refuses.
+  it('writes quoted indicators, which the reader reads as content (Appendix D)', () => {
+    // `: &x` inside quotes was once misread by the reader's pre-pass as an
+    // anchor, so init refused it. Quoted indicators are content.
+    const content = generateBlankUWFile({ dealId: 'uw_2026_IND', dealName: 'Smith: &Co *x !y' });
+    expect(parseUWFile(content, { strict: true }).frontmatter.deal_name).toBe('Smith: &Co *x !y');
+  });
+
+  it('reports a field that does not read back as a typed error', () => {
     let caught: unknown;
     try {
-      generateBlankUWFile({ dealId: 'uw_2026_BAD', dealName: 'Smith: &Co' });
+      generateBlankUWFile({ dealId: 'uw_2026_BAD', dealName: `O'Brien "North"` });
     } catch (err) {
       caught = err;
     }
     expect(caught).toBeInstanceOf(UWInitError);
     expect((caught as UWInitError).code).toBe('INIT_UNREPRESENTABLE_VALUE');
-    expect((caught as UWInitError).field).toBe('frontmatter');
+    expect((caught as UWInitError).field).toBe('deal_name');
   });
 });

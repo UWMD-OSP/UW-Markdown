@@ -1,0 +1,7 @@
+{
+  "description": "A flow-style mapping is outside the Appendix D subset (D.2).",
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_YAML_FEATURE"
+  ]
+}

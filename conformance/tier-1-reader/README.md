@@ -21,6 +21,7 @@ They MUST:
 | `fixtures/04-scope-only.uwx.md` | Back-of-napkin scope-stage file with provisional blocks + populated `gaps` section |
 | `fixtures/14-student-bed-counts.uwx.md` | Student-housing roll stating both bed counts with their dates (RFC 0069); no `BED-*` issue |
 | `fixtures/15-student-bed-counts-inconsistent.uwx.md` | The same roll with `preleased_beds` above `total_beds` and `preleased_as_of` after `preleased_term_start`; `BED-02` and `BED-06` errors, nothing for the valid `occupied_beds` |
+| `fixtures/16-frontmatter-yaml-scalars.uwx.md` | Format Appendix D scalar semantics: double-quoted `\"`, `\\` and `\u` escapes, single-quoted `''`, quoted `&` `*` `!` `#` `{}` `[]` as content, and trailing comments on plain, nested and sequence values. The baseline's frontmatter is a YAML 1.2 library's reading of the fixture, not this reader's |
 
 ### Malformed fixtures
 
@@ -42,6 +43,13 @@ coverage requires fixture-bound policies).
 | `malformed/08-provisional-without-gap` | `DQ-01` | Validator (data quality) |
 | `malformed/09-partial-without-overrides` | `DQ-03` | Validator (data quality) |
 | `malformed/10-property-section-missing` | `CC-14`, `DQ-06` | Validator (RFC 0028: missing property warns; declared-stage section gaps report at info) |
+| `malformed/11-yaml-flow-mapping` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (Appendix D.2 flow mapping) |
+| `malformed/12-yaml-flow-sequence` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (Appendix D.2 non-empty flow sequence) |
+| `malformed/13-yaml-invalid-escape` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (`\d` is not a YAML 1.2 escape) |
+| `malformed/14-yaml-unquoted-anchor` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (an anchor outside quotes is still a YAML feature) |
+
+A fixture whose `expected.json` sets `"must_parse": false` must be refused by
+the parser itself, with one of its `expected_codes`.
 
 ## Expected outputs
 

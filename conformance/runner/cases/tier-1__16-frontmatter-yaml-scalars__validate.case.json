@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/16-frontmatter-yaml-scalars/validate",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "16-frontmatter-yaml-scalars.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/16-frontmatter-yaml-scalars.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

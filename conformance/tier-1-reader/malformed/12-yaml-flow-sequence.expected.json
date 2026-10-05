@@ -1,0 +1,7 @@
+{
+  "description": "A non-empty flow-style sequence is outside the Appendix D subset (D.2); only the literal [] is admitted.",
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_YAML_FEATURE"
+  ]
+}

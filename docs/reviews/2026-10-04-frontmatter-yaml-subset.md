@@ -5,6 +5,13 @@ No Format, Protocol, schema, conformance, parser or version change is made
 here. Reconciled against `main` at `f6eb3e7` (Format 2.0, Protocol 2.21.0,
 core/CLI 2.17.0).
 
+**Resolution (2026-10-04).** The owner confirmed that admitted frontmatter
+constructs keep their YAML 1.2 semantics, and follow-ups 1–4 below landed
+together on branch `claude/frontmatter-yaml-reconcile`, as one contract and
+evidence commit and one reader commit. The repro script records the state
+before that repair. Against a build that includes it, the script exits 1 by
+design, because no finding reproduces any longer.
+
 This follows up three items PR #260 recorded while fixing `uwmd init`'s
 frontmatter writer. Every finding below reproduces with
 [`2026-10-04-frontmatter-yaml-subset.repro.mjs`](2026-10-04-frontmatter-yaml-subset.repro.mjs)

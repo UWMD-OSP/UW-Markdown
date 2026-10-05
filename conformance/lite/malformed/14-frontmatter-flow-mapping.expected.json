@@ -1,0 +1,6 @@
+{
+  "description": "A flow-style mapping is a nested mapping; Lite 1.0 frontmatter values are scalars.",
+  "expected_codes": [
+    "LITE_FRONTMATTER_NESTING_UNSUPPORTED"
+  ]
+}

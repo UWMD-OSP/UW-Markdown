@@ -1,6 +1,7 @@
 import { canonicalizeExact } from './integrity-canonical.js';
 import { isBlockedSegment } from './parser.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
+import { readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
 export type UWLiteScalar = string | number | boolean | null;
 
@@ -321,7 +322,6 @@ function parseLiteFrontmatter(
       continue;
     }
     const key = raw.slice(0, separator).trim();
-    const value = raw.slice(separator + 1).trim();
     if (isBlockedSegment(key)) {
       issues.push({
         code: 'LITE_FRONTMATTER_KEY_RESERVED',
@@ -340,7 +340,28 @@ function parseLiteFrontmatter(
       });
       continue;
     }
-    values[key] = parseScalar(value);
+    const scalar = readYamlScalar(raw.slice(separator + 1));
+    if (!scalar.ok) {
+      // A flow mapping or sequence is a nested value, which Lite 1.0 does not
+      // support; anything else is a malformed entry.
+      issues.push(
+        scalar.failure === 'flow'
+          ? {
+              code: 'LITE_FRONTMATTER_NESTING_UNSUPPORTED',
+              severity: 'error',
+              message: 'Lite v1 frontmatter supports top-level scalar keys only.',
+              line: index + 2,
+            }
+          : {
+              code: 'LITE_FRONTMATTER_SYNTAX',
+              severity: 'error',
+              message: `Frontmatter value uses ${YAML_SCALAR_FAILURE_FEATURE[scalar.failure]}.`,
+              line: index + 2,
+            },
+      );
+      continue;
+    }
+    values[key] = scalar.quoted ? scalar.text : parseScalar(scalar.text);
   }
   return values;
 }
@@ -467,16 +488,11 @@ function parseLiteDisplayValue(display: string, explicitUnit?: string): ParsedDi
   return { ok: true, value, ...(explicitUnit ? { unit: explicitUnit } : {}) };
 }
 
+/** A plain scalar's text; quoted scalars are decoded by `readYamlScalar`. */
 function parseScalar(raw: string): UWLiteScalar {
   if (raw === '' || raw === 'null' || raw === '~') return null;
   if (raw === 'true') return true;
   if (raw === 'false') return false;
-  if (
-    (raw.startsWith('"') && raw.endsWith('"')) ||
-    (raw.startsWith("'") && raw.endsWith("'"))
-  ) {
-    return raw.slice(1, -1);
-  }
   const number = Number(raw);
   return Number.isFinite(number) ? number : raw;
 }

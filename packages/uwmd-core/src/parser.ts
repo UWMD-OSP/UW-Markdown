@@ -15,6 +15,7 @@ import type {
 import { SOURCE_TAGS } from './types.js';
 import type { UWMetaV2 } from './meta-shape.js';
 import { detectMetaShape, reshapeMetaV2toV1 } from './meta-shape.js';
+import { maskQuotedScalar, readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ const KV_RE = /(\w+)=([^\s]+)/g;
 
 // ─── YAML frontmatter parser ──────────────────────────────────────────────────
 // Deliberately implements a strict YAML SUBSET — see UW_FORMAT_SPEC_v1.md
-// Appendix A "YAML subset" for the full grammar. The supported surface:
+// Appendix D "YAML Subset (Frontmatter)" for the full grammar. The supported surface:
 //
 //   - Scalars: string (bare or single/double-quoted), number, boolean, null, ~
 //   - Mappings: `key: value` and one-level nested `key:` + indented children
@@ -84,13 +85,14 @@ export class UWMDParseError extends Error {
 function rejectUnsupportedYaml(lines: string[]): void {
   for (let n = 0; n < lines.length; n++) {
     const line = lines[n];
-    // Strip trailing comment so `# anchor` text doesn't false-positive.
-    const codePart = stripYamlComment(line);
+    // Blank quoted content (inside quotes `&`, `*` and `!` are content), then
+    // strip a trailing comment so `# anchor` text doesn't false-positive.
+    const codePart = stripYamlComment(maskQuotedScalar(line));
     for (const { pattern, feature } of UNSUPPORTED_YAML_PATTERNS) {
       if (pattern.test(codePart)) {
         throw new UWMDParseError(
           'UNSUPPORTED_YAML_FEATURE',
-          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix A).`,
+          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix D).`,
           { line: n + 1, feature },
         );
       }
@@ -125,9 +127,12 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
     if (colonIdx === -1) { i++; continue; }
 
     const key = line.slice(0, colonIdx).trim();
-    const rawVal = line.slice(colonIdx + 1).trim();
-
     if (!key || key.startsWith('#')) { i++; continue; }
+
+    const scalar = readFrontmatterScalar(line.slice(colonIdx + 1), i);
+    // A key with no inline value (a comment alone counts as none) opens a
+    // sequence or a nested mapping on the lines below.
+    const noInlineValue = scalar.raw === '';
 
     // A blocked key is still parsed like any other — including the indented
     // lines beneath it — and only dropped at assignment. Skipping it outright
@@ -135,15 +140,15 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
     const keep = !isBlockedSegment(key);
 
     // Array: next lines are "  - value" items (check BEFORE nested object)
-    if (rawVal === '' && i + 1 < lines.length && lines[i + 1].trim().startsWith('- ')) {
+    if (noInlineValue && i + 1 < lines.length && lines[i + 1].trim().startsWith('- ')) {
       const arr: unknown[] = [];
       i++;
       while (i < lines.length && lines[i].trim().startsWith('- ')) {
-        arr.push(parseScalar(lines[i].trim().slice(2)));
+        arr.push(readFrontmatterScalar(lines[i].trim().slice(2), i).value);
         i++;
       }
       if (keep) result[key] = arr;
-    } else if (rawVal === '' && i + 1 < lines.length && lines[i + 1].startsWith('  ') && !lines[i + 1].trim().startsWith('- ')) {
+    } else if (noInlineValue && i + 1 < lines.length && lines[i + 1].startsWith('  ') && !lines[i + 1].trim().startsWith('- ')) {
       // Nested object: next lines are indented key: value pairs (not array items)
       const nested: Record<string, unknown> = {};
       i++;
@@ -154,13 +159,13 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
         const nColon = nLine.indexOf(':');
         if (nColon === -1) { i++; continue; }
         const nKey = nLine.slice(0, nColon).trim();
-        const nRaw = nLine.slice(nColon + 1).trim();
-        if (!isBlockedSegment(nKey)) nested[nKey] = parseScalar(nRaw);
+        const nValue = readFrontmatterScalar(nLine.slice(nColon + 1), i).value;
+        if (!isBlockedSegment(nKey)) nested[nKey] = nValue;
         i++;
       }
       if (keep) result[key] = nested;
     } else {
-      if (keep) result[key] = parseScalar(rawVal);
+      if (keep) result[key] = scalar.value;
       i++;
     }
   }
@@ -168,15 +173,31 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
   return result;
 }
 
-function parseScalar(raw: string): unknown {
+/**
+ * One frontmatter scalar under Appendix D's scalar semantics. `raw` is the
+ * plain text with any comment removed ('' when there is no inline value), so
+ * callers can tell "no value" from a quoted empty string.
+ */
+function readFrontmatterScalar(rest: string, lineIndex: number): { value: unknown; raw: string | null } {
+  const scalar = readYamlScalar(rest);
+  if (!scalar.ok) {
+    const feature = YAML_SCALAR_FAILURE_FEATURE[scalar.failure];
+    throw new UWMDParseError(
+      'UNSUPPORTED_YAML_FEATURE',
+      `Frontmatter line ${lineIndex + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix D).`,
+      { line: lineIndex + 1, feature },
+    );
+  }
+  if (scalar.quoted) return { value: scalar.text, raw: null };
+  return { value: parsePlainScalar(scalar.text), raw: scalar.text };
+}
+
+/** A plain scalar's text, typed as this reader always has. */
+function parsePlainScalar(raw: string): unknown {
   if (raw === '' || raw === 'null' || raw === '~') return null;
   if (raw === 'true') return true;
   if (raw === 'false') return false;
   if (raw === '[]') return [];
-  // Quoted string
-  if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
-    return raw.slice(1, -1);
-  }
   // Number
   const num = Number(raw);
   if (!Number.isNaN(num) && raw !== '') return num;

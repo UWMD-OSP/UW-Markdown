@@ -48,9 +48,12 @@ Parsed into `UWFrontmatter`. Key fields: `uw_version` ("1.1"), `deal_id`,
 (`UWQuickMetrics` snapshot), `flags[]`, `blocking_flags[]`.
 
 > **YAML subset only.** Frontmatter MUST use the restricted YAML subset in the
-> spec's Appendix A — scalars, simple mappings, dash-prefixed sequences. Anchors,
-> tags, block scalars, complex keys, and directives are rejected with
-> `UNSUPPORTED_YAML_FEATURE`.
+> spec's Appendix D — scalars, simple mappings, dash-prefixed sequences. Anchors,
+> tags, block scalars, flow-style mappings and non-empty sequences, complex keys,
+> and directives are rejected with `UNSUPPORTED_YAML_FEATURE`. Admitted scalars
+> keep their YAML 1.2 meaning: escapes in double quotes, `''` in single quotes,
+> indicators inside quotes are content, and ` #` outside quotes starts a
+> comment. Both readers share this in `yaml-scalar.ts`.
 
 ## The fence annotation
 
