@@ -10,7 +10,7 @@ import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
 import { migrateSourceTags } from './migrate-source-tags.js';
-import { generateBlankUWFile } from './init.js';
+import { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
 import { stringifyUWEnvelope } from './uwjson.js';
@@ -597,6 +597,16 @@ function cmdInit(flags: Record<string, string | boolean>): void {
     console.error(`--format must be '2.0' (default, nested _meta) or '1.1' (legacy flat shape); got '${requestedFormat}'.`);
     process.exit(1);
   }
+  // Format §6.7 names `--scenario`. It used to be dropped, so every scaffold
+  // said `scenario: null` whatever was asked for. Only the values §2.2 lists
+  // are written; the CLI must not mint new ones.
+  const scenario = flags['scenario'];
+  if (scenario !== undefined && (typeof scenario !== 'string' || !INIT_SCENARIOS.includes(scenario))) {
+    console.error(
+      `--scenario must be one of the values Format §2.2 lists: ${INIT_SCENARIOS.join(', ')}; got ${scenario === true ? 'no value' : `'${scenario}'`}.`,
+    );
+    process.exit(1);
+  }
   const content = generateBlankUWFile({
     formatVersion: requestedFormat as '2.0' | '1.1' | undefined,
     dealName: flags['name'] as string | undefined,
@@ -606,6 +616,7 @@ function cmdInit(flags: Record<string, string | boolean>): void {
     zip: flags['zip'] as string | undefined,
     assetClass: flags['asset-class'] as AssetClass | undefined,
     dealStage: flags['stage'] as DealStage | undefined,
+    scenario: scenario as string | undefined,
     tier: (flags['tier'] as 'screener' | 'analyst' | undefined) ?? 'screener',
   });
 
@@ -2039,6 +2050,7 @@ Options:
   --state <s>        State code (init)
   --asset-class <ac> Asset class (init)
   --stage <s>        Deal stage (init)
+  --scenario <s>     A Format §2.2 frontmatter scenario value (init)
   --tier <t>         screener | analyst (init)
   --live             Actually call Claude (run command)
   --api-key <k>      Anthropic API key (run --live, or use ANTHROPIC_API_KEY)

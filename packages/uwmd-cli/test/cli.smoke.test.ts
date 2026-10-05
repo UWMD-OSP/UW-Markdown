@@ -544,6 +544,42 @@ describe('uwmd CLI', () => {
       }
     });
 
+    it('init --scenario writes the scenario into the frontmatter (Format §6.7)', () => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-scenario-'));
+      try {
+        const r = spawnSync(
+          process.execPath,
+          [CLI_BIN, 'init', '--scenario', 'stabilized_acquisition', '--address', '1 Main St'],
+          { encoding: 'utf8', cwd: temp },
+        );
+        expect(r.status).toBe(0);
+        const written = readFileSync(resolve(temp, 'new-deal.uwx.md'), 'utf8');
+        expect(written).toMatch(/^scenario: stabilized_acquisition$/m);
+        expect(written).toContain('property_address: "1 Main St"');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
+    it.each([
+      [['--scenario', 'stabilised_acquisition'], "got 'stabilised_acquisition'"],
+      [['--scenario'], 'got no value'],
+    ])('init %j refuses and writes nothing', (extra, message) => {
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-bad-scenario-'));
+      try {
+        const r = spawnSync(process.execPath, [CLI_BIN, 'init', ...extra], {
+          encoding: 'utf8',
+          cwd: temp,
+        });
+        expect(r.status).toBe(1);
+        expect(r.stderr).toContain('--scenario must be one of');
+        expect(r.stderr).toContain(message);
+        expect(existsSync(resolve(temp, 'new-deal.uwx.md'))).toBe(false);
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
     it('export replaces the .uwx.md suffix rather than appending to it', () => {
       // Regression: `replaceUWExtension` did not list .uwx.md, so a UWX input
       // fell through to the append branch and produced deal.uwx.md.uw.json.
