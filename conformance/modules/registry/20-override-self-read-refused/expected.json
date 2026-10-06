@@ -1,0 +1,14 @@
+{
+  "description": "B's replacement reads its own id. Only A's suppressed declaration could have supplied that value: before RFC 0074 B's shared_calc was 10, and with A's suppressed it would be null. The replacement is declared at the id, not after it, so it is an unserved reader (RFC 0074 P3.1).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    }
+  ]
+}

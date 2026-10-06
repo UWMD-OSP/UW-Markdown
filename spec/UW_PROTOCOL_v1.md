@@ -1503,9 +1503,77 @@ or view-model `section_id`:
 - If one module declares the other in `depends_on`, the dependent
   module's declarations override.
 
+**Dependent overrides (normative, RFC 0074).** Accepted implementation
+contract; version/release selection remains pending, and this paragraph
+changes no current version label. Hosts that implement Protocol 2.21.0 or
+earlier without it, the reference library among them, run both declarations
+instead of one effective declaration.
+
+*Who may override.* A module may redeclare an ID that a loaded module
+declares only if it names, in its own `depends_on`, the module whose
+declaration is currently in effect for that ID. Any other redeclaration is a
+conflict under the first rule above. In particular:
+
+- In a chain A ← B ← C, B overrides A by naming A, and C overrides B by
+  naming B. C naming only A while B's declaration is in effect is a
+  conflict, because it would silently undo B's override.
+- Two modules that both depend on A, but not on each other, are unrelated.
+  Both redeclaring one of A's IDs is a conflict.
+- A transitive path alone does not authorize an override. If only A and C
+  declare an ID and C names only B, that is a conflict.
+
+*What an override does.* An overridden declaration does not take effect, in
+any namespace.
+
+- **Calculations.** The replacement is evaluated once, where the overriding
+  module declares it. Every module keeps its own declaration order (§X), and
+  modules are evaluated in registry order. This section defines no
+  cross-module evaluation order beyond §VII.2's: a module follows the
+  modules it depends on.
+- **Sections.** The effective declaration's `required` flag is checked once,
+  as part of the module that owns it.
+- **View models.** The effective declaration is the view model for that
+  `section_id`. This protocol defines no view-model consumer; a host that
+  renders module view models MUST use the effective declaration.
+
+*Invariant.* A dependent override MUST NOT make a declaration unavailable to
+anything that, under the module dependency and applicability rules, would
+otherwise use it. A host MUST refuse a set of modules containing such an
+override. The decision is static, made from the manifests, and independent of
+the order the modules are listed in. Two rules implement it:
+
+1. **Prior-result readers.** A calculation that reads an overridden
+   calculation ID as a prior result (§VIII.2) MUST be either a calculation
+   of the overriding module declared after that ID, or a calculation of a
+   module that depends on the overriding module, directly or transitively.
+   A replacement that reads its own ID is not declared after that ID, so it
+   does not qualify. The one exemption is a calculation that the first
+   module to declare the ID declares before it, which never had a value to
+   read. A calculation reads an ID when the parsed expression contains it
+   as an identifier or as the head of a path. A string literal, a later
+   path segment, a bracket key, a period-path head and a function name are
+   not reads. A head that a document's frontmatter or sections might shadow
+   still counts. Validation rules are not readers, because they run after
+   every calculation.
+2. **Scope.** The overriding module MUST apply to every asset class to which
+   the module whose declaration it overrides applies. A module applies to
+   the builtin classes in its `asset_classes` and the custom classes in its
+   `declares_asset_classes`. A module naming neither applies to every class,
+   and only such a module reaches a document with no class. This rule
+   applies to sections, calculations and view models alike.
+
+Each rule is checked from whichever side loads second: the overriding module
+against readers already loaded, and a later reader against overrides already
+in effect. Listings of the same valid dependency graph therefore get the same
+verdict and, if accepted, the same effective declarations. A module that
+overrides is also subject to the Protocol floor in §X.
+
 The reference library refuses with `PROTO-MOD-080` (section ID),
 `PROTO-MOD-081` (calculation ID) and `PROTO-MOD-082` (view-model
-`section_id`).
+`section_id`). It refuses an override that would leave a prior-result reader
+without a value with `PROTO-MOD-083`, and one whose module does not apply
+wherever the overridden module does with `PROTO-MOD-084`. The registry is
+refused as a whole. `conformance/modules/registry/` pins these rules.
 
 ### VII.4 Capability negotiation
 
@@ -3211,6 +3279,23 @@ This requirement adds no loader check and no error code. §VII.2 step 3 is the
 enforcement, and the reference library already reports it as `PROTO-MOD-030`.
 A manifest that violates the requirement is non-conforming. A host is not
 required to detect the violation.
+
+**Protocol floor for modules that override (RFC 0074).** A module manifest
+that redeclares a section ID, calculation ID or view-model `section_id`
+declared by a module it names in `depends_on` uses the §VII.3 override rules.
+It **MUST** declare a `requires_protocol` range that excludes every Protocol
+version before the first release that contains RFC 0074. As with
+`is_calendar_date`, the exact floor is assigned at release preparation, and a
+comparator that only excludes the current label does not meet the
+requirement.
+
+A host without RFC 0074 runs both declarations, and it may accept a module set
+§VII.3 now refuses, so calculation outcomes and validation behavior can
+differ. The floor keeps such a host from loading the module at all: it
+refuses the manifest under §VII.2 step 3 (`PROTO-MOD-030` in the reference
+library). This requirement, too, adds no loader check and no error code. A
+manifest that violates it is non-conforming, and a host is not required to
+detect the violation.
 
 Section `schema` fragments are normative JSON Schema. A host holding a
 JSON Schema validator SHOULD apply them; one that does not is still

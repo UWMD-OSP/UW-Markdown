@@ -102,7 +102,7 @@ the data center is a *declared* class (`declares_asset_classes`, RFC 0003)
 the module owns. `10-…` is the scenario that pins the runtime scoping a
 declaring module to its declared class — the gap RFC 0039 found.
 
-## `registry/` — unrelated modules declaring one id (Protocol §VII.3)
+## `registry/` — declaration conflicts and overrides (Protocol §VII.3, RFC 0074)
 
 Each scenario holds two or more synthetic manifests, `<key>.module.json`,
 and an `expected.json` listing cases. A case names a load `order` and
@@ -110,9 +110,29 @@ expects either a refusal, as the exact set of codes the registry reports, or
 a registry that loads. Every manifest must also satisfy the schema and load
 alone, so a refusal can only come from the interaction.
 
-The suite pins only what §VII.3 already requires. What an override by a
-dependent means is draft RFC 0074's question, so no case asserts which
-declaration applies.
+A loaded case may also assert the following against the shared
+`registry/deal.uwx.md`:
+
+- `expected_owners`: which module's declaration is in effect, per namespace;
+- `expected_evaluation_order`: the module calculation outcomes, in order;
+- `expected_calcs`: calculation values;
+- `expected_view_model_display_names`;
+- `expected_codes`: the module findings.
+
+The runner also fails any case that evaluates one calculation id twice.
+
+Ownership is read through the reference library's internal accessor
+(`declarationOwnersOf` in `dist/modules.js`). The protocol gives view
+models no consumer through which an override is otherwise observable, and
+the accessor is deliberately not public API. Another implementation maps the
+assertion onto its own registry.
+
+**Protocol floor.** Under Protocol §X (RFC 0074 P6), a manifest that
+redeclares an id declared by a module it names in `depends_on` must declare
+a `requires_protocol` floor at the first release containing RFC 0074. Most
+scenarios from 05 on contain such a manifest. That release is not yet
+chosen, so these fixtures use `>=1.0.0`, and release preparation raises
+them.
 
 | Scenario | Pins |
 |---|---|
@@ -120,6 +140,27 @@ declaration applies.
 | `02-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
 | `03-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
 | `04-sibling-dependents-unrelated` | B and C both depend on A but not on each other, so they are unrelated: `PROTO-MOD-081` in both orders. |
-| `05-dependent-pair-not-a-conflict` | B depends on A, so shared declarations are not a conflict and the registry loads. B listed first: `PROTO-MOD-027`. |
+| `05-dependent-pair-not-a-conflict` | B depends on A: B's section, calculation and view model are all in effect, and the calculation is evaluated once. B listed first: `PROTO-MOD-027`. |
+| `06-section-override` | B makes A's required section optional: no `MOD-SECTION-MISSING`. |
+| `07-calculation-override` | The replacement runs where B declares it: A's calculations, then `b_first`, `shared_calc` = 20, `b_after` = 21. |
+| `08-view-model-override` | B's view model is in effect. |
+| `09-override-dependency-later-reader-refused` | A reads `shared_calc` after declaring it: `PROTO-MOD-083`. |
+| `10-override-sibling-reader-refused` | Another dependent of A reads `shared_calc`: `PROTO-MOD-083` in both valid orders. |
+| `11-override-reader-depends-on-overrider` | C depends on the overriding module, so it reads the replacement. |
+| `12-override-scope-narrower-refused` | The override applies to a disjoint class: `PROTO-MOD-084`. |
+| `13-override-scope-covering-allowed` | Unscoped and broader overrides both load. |
+| `14-override-reads-before-own-refused` | B reads `shared_calc` before its own replacement: `PROTO-MOD-083`. |
+| `15-unrelated-reader-refused` | A reader with no dependency on the overriding module: `PROTO-MOD-083` in every order, including listed before the dependency. |
+| `16-transitive-only-pair-refused` | A and C declare `shared_calc`, and C names only B: `PROTO-MOD-081` (P1.4). |
+| `17-override-text-not-a-read` | `shared_calc` as a string, later segment, bracket key and period-path head is not a read, so the override loads. |
+| `18-override-scope-section-refused` | Scope applies to a section override: `PROTO-MOD-084`. |
+| `19-override-scope-view-model-refused` | Scope applies to a view-model override: `PROTO-MOD-084`. Split from 18 because refusals compare code sets. |
+| `20-override-self-read-refused` | The replacement reads its own id (`x = x * 10`): `PROTO-MOD-083`. |
+| `21-chain-override-dependent-reader-refused` | C overrides B while D, a dependent of B, reads the id: `PROTO-MOD-083` in both valid orders. |
+| `22-override-past-current-owner-refused` | Two dependents of A both redeclare A's id: `PROTO-MOD-081` in either order (P1.2, P1.3). |
+| `23-first-declarer-earlier-reader-allowed` | A reads the id before declaring it, the one exemption: the override loads. |
+| `24-override-scope-narrower-and-unscoped-refused` | A narrower override, and a scoped override of an unscoped module: `PROTO-MOD-084` each. |
 
-Against the registry before this suite existed, scenarios 01–04 fail.
+Against the registry before #267, scenarios 01–04 fail. Against the registry
+before RFC 0074, scenarios 05–24 fail, except 22, a sibling refusal #267
+already made.

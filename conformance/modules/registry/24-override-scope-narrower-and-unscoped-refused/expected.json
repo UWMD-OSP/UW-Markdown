@@ -1,0 +1,23 @@
+{
+  "description": "A applies to multifamily and office, and B overrides it for multifamily only: narrower. U names no asset class, so it applies to every class, and V overrides it scoped to multifamily. Each override would leave documents where neither declaration runs (RFC 0074 P3.2).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-084"
+      ]
+    },
+    {
+      "order": [
+        "u",
+        "v"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-084"
+      ]
+    }
+  ]
+}

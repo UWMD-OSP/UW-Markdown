@@ -1,0 +1,15 @@
+{
+  "description": "C depends on B, and B on A. Only A and C declare shared_calc, and C does not name A in depends_on. A transitive path alone does not authorize an override (RFC 0074 P1.4, owner decision O1), so this is a §VII.3 conflict.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b",
+        "c"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    }
+  ]
+}

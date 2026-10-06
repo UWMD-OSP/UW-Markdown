@@ -1,0 +1,46 @@
+{
+  "manifest_version": "1",
+  "id": "org.example.registry-a",
+  "name": "Synthetic a module",
+  "version": "1.0.0",
+  "description": "Synthetic module for the Protocol §VII.3 registry fixtures.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": ">=1.0.0",
+  "requires_format": ">=1.0",
+  "requires_tier": "tier-3-calc-host",
+  "calculations": [
+    {
+      "id": "shared_calc",
+      "label": "shared_calc",
+      "formula": "1",
+      "deterministic": true
+    },
+    {
+      "id": "as_string",
+      "label": "as_string",
+      "formula": "'shared_calc'",
+      "deterministic": true
+    },
+    {
+      "id": "as_segment",
+      "label": "as_segment",
+      "formula": "property.shared_calc",
+      "deterministic": true
+    },
+    {
+      "id": "as_bracket",
+      "label": "as_bracket",
+      "formula": "property['shared_calc']",
+      "deterministic": true
+    },
+    {
+      "id": "as_period_head",
+      "label": "as_period_head",
+      "formula": "shared_calc.annual_cash_flows@Y1.noi",
+      "deterministic": true
+    }
+  ]
+}

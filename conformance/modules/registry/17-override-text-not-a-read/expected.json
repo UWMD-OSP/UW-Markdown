@@ -1,0 +1,21 @@
+{
+  "description": "A's later calculations name shared_calc only as a string literal, a later path segment, a bracket key and a period-path head. None reaches prior results (Protocol §VIII.2), so none is a reader and B's override loads (RFC 0074 P3.1: reads are decided by the expression parser, not by text search).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_owners": {
+        "calculations": {
+          "shared_calc": "org.example.registry-b",
+          "as_string": "org.example.registry-a"
+        }
+      },
+      "expected_calcs": {
+        "shared_calc": 2,
+        "as_string": "shared_calc"
+      }
+    }
+  ]
+}

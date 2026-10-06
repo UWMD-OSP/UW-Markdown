@@ -1,7 +1,8 @@
 ---
 rfc: 0074
 title: What a dependent module's declaration override means
-status: draft
+status: accepted
+accepted: 2026-10-05
 author: claude-code (agent proposal)
 created: 2026-10-05
 depends_on:
@@ -13,6 +14,11 @@ affects:
 ---
 
 # RFC 0074: What a dependent module's declaration override means
+
+**Accepted and implemented, not released.** A coding agent wrote this RFC.
+The owner settled O1–O3 on 2026-10-05 and directed its implementation the
+same day. The implementation PR carries the acceptance, and merging it
+records it. The RFC stays `accepted` until a release ships it.
 
 ## Summary
 
@@ -32,10 +38,10 @@ never make a declaration unavailable to anything that would otherwise use
 it**. The protocol enforces this with static load-time refusals, not by
 scheduling calculations across modules.
 
-This RFC is `draft`. The owner settled its three open questions on
-2026-10-05 ([Owner decisions](#owner-decisions-2026-10-05)), but it is not
-accepted. Its presence authorizes no normative text, schema, code, fixture or
-version change.
+The owner settled its three open questions on 2026-10-05
+([Owner decisions](#owner-decisions-2026-10-05)). Protocol §VII.3 and §X now
+carry the normative text, and [Implementation record](#implementation-record)
+describes the implementation.
 
 ## Motivation
 
@@ -158,6 +164,7 @@ reader:
 | A module that depends on the overriding module | allowed |
 | A module with no dependency on the overriding module | refuse |
 | The overriding module, before its own `x` | refuse, as it was reading the overridden value |
+| The overriding module's replacement `x` itself reading `x` | refuse, as it is declared at, not after, the id |
 | The overriding module, after its own `x` | allowed |
 | Chain A ← B ← C, where C overrides B's `x` | B's later readers and B's other dependents refuse; C's dependents are allowed |
 
@@ -200,8 +207,10 @@ These are manifest fields, so coverage is provable statically:
 
 A covering module can cover a custom class only by being unscoped or by
 declaring that class, and two modules declaring one class is
-`MOD-ASSET-CLASS-CONFLICT-001`. In practice, therefore, only an unscoped
-module overrides a custom-class module. P3.2 applies to sections,
+`MOD-ASSET-CLASS-CONFLICT-001`. Where the host runs that check
+(`assetClassDeclarationConflicts` in the reference library, which
+`createModuleRegistry` does not call), only an unscoped module can therefore
+override a custom-class module. P3.2 applies to sections,
 calculations and view models alike.
 
 **P3.3 Determinism.** Each rule is checked from whichever side loads second:
@@ -266,7 +275,9 @@ RFC.
     *before* the overridden id still reads nothing for it, as today. Every
     other reader either reads the replacement, as today, or causes a refusal.
     No accepted set changes a served value, except that the overridden
-    declaration's own outcome disappears.
+    declaration's own outcome disappears, and a replacement that fails to
+    evaluate on a document no longer leaves the overridden value in place:
+    readers see absence, as they would for any failed calculation.
 - **Modules that collide with nothing.** Unaffected.
 - **First-party modules.** Hospitality and data-center share no ids with each
   other, so they are unaffected.
@@ -359,7 +370,7 @@ No semantic question remains open. The owner decisions are recorded below, and t
 
 ### Owner decisions (2026-10-05)
 
-Jared decided these on 2026-10-05. The RFC stays `draft` until accepted.
+Jared decided these on 2026-10-05.
 
 - **O1. Direct dependency only.** An override is permitted only when the
   overriding module names, in its own `depends_on`, the module whose
@@ -394,6 +405,41 @@ Jared decided these on 2026-10-05. The RFC stays `draft` until accepted.
 - Scope is the runtime's existing applicability rule, which is static.
 - Two view models for one `section_id` inside a single manifest are outside
   §VII.3. They stay unrefused and are not decided here.
+
+## Implementation record
+
+- **Code.** It restores #267's `31ccff4` in `modules.ts`,
+  `module-runtime.ts`, their tests and the conformance runner. `main` was
+  byte-identical to the reduction `7dc78b8` on those paths. Checked against
+  this text: `claimDeclarations` already required a direct `depends_on` on
+  the current owner (O1), and the reader rule was already the conservative
+  one (O2). Beyond the restore, only comments that cited PR #267 changed,
+  and one P6 test was added.
+- **P6.** A module-runtime test shows an older host refusing an overriding
+  module through `PROTO-MOD-030`, as RFC 0071's floor does. Release
+  preparation assigns the floor and raises the overriding registry fixtures'
+  `requires_protocol` to it. Until then they use `>=1.0.0`.
+- **Conformance.** `conformance/modules/registry/` keeps #267's 01–04 and
+  makes 05 assert the effective owners. It adds 06–24, one or more per row
+  of [Conformance impact](#conformance-impact), plus the P1.2 sibling,
+  first-declarer exemption and self-read cases. Against the pre-RFC
+  implementation every scenario from 05 on fails, except 22: it pins a
+  sibling refusal that #267 already made.
+- **Defects found in `31ccff4` and fixed.** An independent review of this
+  branch found two:
+  - **Self-read.** `unservedReader` skipped the overriding module's own
+    declaration of the id, so a replacement `x = x * 10` loaded and
+    evaluated to `null`. Before the RFC that value was 10. It now refuses
+    with `083`, as P3.1 and the table above require (scenario 20).
+  - **Duplicate listing.** In a chain whose owner is not among the listed
+    modules, `getModuleCalculationsForAssetClass` listed the effective
+    declaration once per listed declarer. It now lists it once (P4).
+
+  The review also showed that scenario 18 could not pin both namespaces,
+  because refusals compare code sets. It is split into 18 (sections) and
+  19 (view models).
+- **Not changed.** Format, schemas, public exports, `ModuleRegistry` and
+  version labels.
 
 ## Prior art
 

@@ -1,0 +1,34 @@
+{
+  "manifest_version": "1",
+  "id": "org.example.registry-a",
+  "name": "Synthetic registry-a module",
+  "version": "1.0.0",
+  "description": "Synthetic module for the Protocol §VII.3 registry fixtures. Contributes to every asset class.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": ">=1.0.0",
+  "requires_format": ">=1.0",
+  "requires_tier": "tier-3-calc-host",
+  "calculations": [
+    {
+      "id": "a_before",
+      "label": "a_before",
+      "formula": "5",
+      "deterministic": true
+    },
+    {
+      "id": "shared_calc",
+      "label": "shared_calc",
+      "formula": "1",
+      "deterministic": true
+    },
+    {
+      "id": "a_after",
+      "label": "a_after",
+      "formula": "a_before + 1",
+      "deterministic": true
+    }
+  ]
+}

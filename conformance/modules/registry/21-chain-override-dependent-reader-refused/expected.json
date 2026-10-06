@@ -1,0 +1,27 @@
+{
+  "description": "B overrides A, and D, a dependent of B, reads shared_calc. C then overrides B, but D does not depend on C, so nothing orders D after C's replacement. Refused in both valid orders (RFC 0074 P3.1, chain row).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b",
+        "d",
+        "c"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    },
+    {
+      "order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    }
+  ]
+}

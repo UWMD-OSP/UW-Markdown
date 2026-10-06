@@ -1,0 +1,23 @@
+{
+  "description": "B depends on A and overrides shared_calc, but A declares reads_shared after shared_calc and reads it as a prior result. B's override runs where B declares it, after all of A, so A's reader would have no value. The registry refuses the set rather than evaluate a silent null or schedule calculations across modules (RFC 0074 P3.1). Compare 07, where A's later calculation does not read shared_calc and the override loads. Listed before its dependency, B is refused by the existing dependency rule.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-027"
+      ]
+    }
+  ]
+}

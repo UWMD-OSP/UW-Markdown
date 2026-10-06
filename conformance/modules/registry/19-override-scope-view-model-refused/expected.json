@@ -1,0 +1,14 @@
+{
+  "description": "B overrides the view model for shared_section but applies only to hospitality, while A applies to multifamily. Scope coverage applies to view models (RFC 0074 P3.2).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-084"
+      ]
+    }
+  ]
+}
