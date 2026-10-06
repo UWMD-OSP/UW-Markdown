@@ -41,6 +41,13 @@ standalone kit. Standalone rent-roll/T-12/debt-schedule/property profiles,
 ZIP/folder stitching, canonical package hashes, assembly provenance and receipt
 scope need a future RFC; this reporting work implements none of those extensions.
 
+Rebased onto `main` on 2026-10-05, after 2.17.0. `validate` keeps RFC 0070's
+complete/structural/replacement-funding lines under the new labels, and the
+receipt output names multifamily pack 1.0.1. **Release preparation** updates
+the docs-site quickstart (`tools/docs-site/tutorials/quickstart.md`). It runs
+`npx @uwmd/cli` and shows the published 2.17.0 receipt output (`Issued
+receipt …`, `Verdict: VERIFIED`), which this change replaces.
+
 ## Built and released
 
 - Reader/editor/calc/agent-host foundations; Format 2.0 metadata, provenance,
