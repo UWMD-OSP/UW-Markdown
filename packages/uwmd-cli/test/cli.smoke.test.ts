@@ -874,7 +874,9 @@ describe('calculation context files', () => {
       expect(ignored.stderr).toContain('canonical period overrides only');
       expect(ignored.stdout).toBe('');
     });
-  });
+    // About eight sequential CLI spawns: ~2s alone, but past vitest's 5s
+    // default when the full workspace suite runs in parallel.
+  }, 30_000);
   it('refuses malformed contexts and a missing flag value before emitting results', () => {
     scenario((file, context, write) => {
       write({ overides: {} });
