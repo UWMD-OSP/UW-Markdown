@@ -32,7 +32,7 @@ So a receipt replaces this conversation:
 with this one:
 
 > "Where did this 1.28x DSCR come from?"
-> "This record, under the multifamily pack v1.0.0. Here's the receipt — check it
+> "This record, under the multifamily pack v1.0.1. Here's the receipt — check it
 > yourself."
 
 What still needs human diligence is unchanged: whether the rent roll is real,
@@ -108,7 +108,8 @@ canonicalization and document/results hashes but does not compare a prior receip
 Missing packs still refuse with `RCP_PACK_UNRESOLVED`; resolver failures retain
 available metric, section, variant and path diagnostics. A later hash mismatch is
 a separate verification result, reported with its existing code and expected/
-actual digests. JSON output and receipt payload semantics are unchanged.
+actual digests. JSON output structure, codes and receipt payload semantics are
+unchanged; a failed recomputation's diagnostic `message` text is richer.
 
 ## Verifying one
 

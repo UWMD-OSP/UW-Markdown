@@ -49,18 +49,6 @@ packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 
 ## Completed capabilities
 
-### CLI reporting clarity — implemented, unreleased (2026-10-03)
-
-Validation now separates validity, Stage Readiness (workflow completeness),
-skipped cross-checks and unchecked receipt readiness. Issuance reports partial
-metric coverage explicitly, canonicalization and document/results hashes;
-refusals retain available calc diagnostics. Verification labels the independent
-receipt verdict. Missing structured inputs can be recorded as uncomputed and
-later verify; absent calc packs still refuse. No financial, validation,
-receipt, canonicalization or conformance contract changes. Regression coverage
-uses public synthetic fixtures; external audit evidence supplied requirements
-only. See [CLI guidance](docs/UW_RECEIPTS.md#validation-completeness-and-hashes).
-
 | Area | State | Scope |
 |---|---|---|
 | Format, reader, editor and calc host | Released | UW Lite / UWX, Format 2.0 authoring with legacy readers, byte-preserving edits, deterministic evaluation, validation and stage readiness. |
@@ -73,6 +61,18 @@ only. See [CLI guidance](docs/UW_RECEIPTS.md#validation-completeness-and-hashes)
 | Explicit lease-up projection — RFC 0044 | Released in 2.8.0 | Complete explicit cash-date mapping of verified stated amounts, semantic source digest and binding evidence; read-only API and CLI. |
 | Explicit property cash-flow assembly — RFC 0045 | Released in 2.9.0 | Read-only unlevered/pre-tax, single-currency candidate assembly with explicit coverage, acquisition/disposition and reserve assertions; synthetic engineering fixtures. |
 | Supporting tools and modules | Implemented | Web editor/viewer, docs site, VS Code extension, Excel/report packages and hospitality/data-center reference modules. Publication varies; see the matrix. |
+
+### CLI reporting clarity — implemented, unreleased (2026-10-03)
+
+Validation now separates validity, Stage Readiness (workflow completeness),
+skipped cross-checks and unchecked receipt readiness. Issuance reports partial
+metric coverage explicitly, canonicalization and document/results hashes;
+refusals retain available calc diagnostics. Verification labels the independent
+receipt verdict. Missing structured inputs can be recorded as uncomputed and
+later verify; absent calc packs still refuse. No financial, validation,
+receipt, canonicalization or conformance contract changes. Regression coverage
+uses public synthetic fixtures; external audit evidence supplied requirements
+only. See [CLI guidance](docs/UW_RECEIPTS.md#validation-completeness-and-hashes).
 
 See the [RFC index](docs/rfcs/README.md) and [changelog](CHANGELOG.md) for the
 individual contracts and releases. A module implementation landing in the repo

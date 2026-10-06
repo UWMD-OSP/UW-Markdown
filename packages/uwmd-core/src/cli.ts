@@ -300,7 +300,9 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   for (const c of coverage) if (c.status === 'skipped' && c.reason) reasons.set(c.reason, (reasons.get(c.reason) ?? 0) + 1);
   const reasonText = [...reasons].map(([r, n]) => `${n} ${r}`).join(', ');
   console.log(`\nCross-checks: ${evaluated} evaluated, ${coverage.length - evaluated} skipped${reasonText ? ` (${reasonText})` : ''}`);
-  console.log('  Skipped cross-checks were not evaluated; a clean result does not establish their agreement.');
+  if (coverage.length > evaluated) {
+    console.log('  Skipped cross-checks were not evaluated; a clean result does not establish their agreement.');
+  }
   console.log('\nReceipt readiness: not checked. Use uwmd receipt issue to evaluate receipt-pack metrics.');
   console.log('Receipt/hash verification: not checked. Use uwmd receipt verify with a prior receipt.');
 
@@ -842,7 +844,7 @@ async function cmdReceiptIssue(
     });
   } catch (error) {
     if (!(error instanceof ReceiptError)) throw error;
-    console.error(`Receipt refused [${error.code}]: ${error.message}`);
+    console.error(`Receipt refused [${error.code}]: ${error.message.replace(`[${error.code}] `, '')}`);
     console.error('No receipt was issued. Receipt/hash verification was not performed.');
     process.exit(1);
   }
@@ -867,7 +869,7 @@ async function cmdReceiptIssue(
   console.log(`Computed: ${computed}/${receipt.computation.results.length}`);
   console.log(`Uncomputed: ${uncomputed.length === 0 ? 'none' : uncomputed.join(', ')}`);
   if (uncomputed.length > 0) {
-    console.log('Uncomputed metrics lack structured inputs. The receipt records both computed and uncomputed result statuses.');
+    console.log('Uncomputed metrics evaluated to no value, typically because their structured inputs are absent. The receipt records both computed and uncomputed result statuses.');
     console.log('Missing inputs are a completeness gap; they do not indicate a receipt/hash verification failure.');
   }
   console.log(`Canonicalization: ${receipt.subject.canonicalization}@${receipt.subject.canonicalization_version}`);

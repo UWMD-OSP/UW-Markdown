@@ -15,7 +15,9 @@ function cli(...args: string[]) {
   return spawnSync(process.execPath, [bin, ...args], { encoding: 'utf8' });
 }
 
-describe('CLI validation and receipt reporting', () => {
+// Several tests spawn the CLI two or three times; under the parallel workspace
+// run that can exceed vitest's 5s default (see cli.smoke.test.ts's refine test).
+describe('CLI validation and receipt reporting', { timeout: 30_000 }, () => {
   let temp: string;
   let deal: string;
   let receipt: string;
@@ -81,7 +83,7 @@ describe('CLI validation and receipt reporting', () => {
 Metric completeness: partial
 Computed: 7/8
 Uncomputed: cash_on_cash
-Uncomputed metrics lack structured inputs. The receipt records both computed and uncomputed result statuses.
+Uncomputed metrics evaluated to no value, typically because their structured inputs are absent. The receipt records both computed and uncomputed result statuses.
 Missing inputs are a completeness gap; they do not indicate a receipt/hash verification failure.
 Canonicalization: uw-envelope-semantic@1.0
 Document hash: <digest>
@@ -115,6 +117,7 @@ A receipt attests that these outputs follow from this record. It does not attest
     expect(result.status).toBe(1);
     expect(result.stdout).toBe('');
     expect(result.stderr).toContain('Receipt refused [RCP_PACK_UNRESOLVED]');
+    expect(result.stderr).not.toContain('[RCP_PACK_UNRESOLVED]: [RCP_PACK_UNRESOLVED]');
     expect(result.stderr).toContain('manufactured_housing');
     expect(result.stderr).toContain('No receipt was issued. Receipt/hash verification was not performed.');
     expect(existsSync(receipt)).toBe(false);
@@ -131,7 +134,7 @@ A receipt attests that these outputs follow from this record. It does not attest
     writeFileSync(file, `${variants.trimEnd()}\n\n${sourcesUses}\n`);
     const result = cli('receipt', 'issue', file, '--output', receipt, '--issued-at', issuedAt);
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('Receipt refused [RCP_COMPUTATION_FAILED]');
+    expect(result.stderr).toContain('Receipt refused [RCP_COMPUTATION_FAILED]: Refusing to issue');
     expect(result.stderr).toContain('cash_on_cash (CALC-RESOLVE-002)');
     expect(result.stderr).toContain('Cannot select debt_structure');
     expect(result.stderr).toContain('producer-senior');

@@ -318,8 +318,11 @@ protocol, and each package each carry an independent semver).
   verify. Typed refusals retain calc metric/section/variant details and any
   supplied error pointer. Missing packs still refuse without substitution.
 - Receipt verification labels its verdict and explains mismatches independently
-  of missing-input completeness. JSON/stdout payloads, codes, exit behavior,
-  financial rules, canonicalization and conformance obligations are unchanged.
+  of missing-input completeness. JSON/stdout payload structure, codes, exit
+  behavior, financial rules, canonicalization and conformance obligations are
+  unchanged. A failed recomputation's diagnostic text is richer, including in
+  the `message` of `receipt verify --json` issues and in errors thrown by
+  `issueReceipt`.
 - Roadmap records an incremental element/package validation and deterministic
   stitching RFC candidate over the existing RFC 0018/0021/0048 surfaces; no new
   package contract is implemented. Tests use repo-owned synthetic fixtures,

@@ -63,7 +63,9 @@ message/pointer, including unresolved metric, section and variants. A missing
 pack remains `RCP_PACK_UNRESOLVED`; no other pack is substituted. `receipt verify`
 labels the independent verification verdict and retains expected/actual mismatch
 details. JSON modes and `receipt issue --stdout` remain payload-only; schemas,
-result semantics and exit behavior are unchanged.
+codes, result semantics and exit behavior are unchanged. A failed
+recomputation's diagnostic `message` text, including in `receipt verify
+--json`, now carries the calc message and pointer.
 
 **Terminology boundary:** Stage Readiness and `stage_readiness` are public,
 spec-described terms, so this change adds an explanation rather than renaming
