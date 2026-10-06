@@ -49,6 +49,11 @@ protocol, and each package each carry an independent semver).
   all 16 labels, and the new `labels.yml` workflow creates them on merge. A
   `verify-issue-forms` CI guard holds the forms, the manifest and the guide to
   each other. On its first run it caught invalid YAML in the new bug form.
+- **Closing-keyword hygiene.** The guide's triage steps and the PR template
+  now warn that GitHub closes an issue whenever "fixes", "closes" or
+  "resolves" precedes `#N`, even in a negated sentence. That happened to #255
+  when #257 merged with the text "does not resolve #255". Mention an issue a
+  change does not resolve as "see #N".
 - **No contract change.** No feedback envelope or diagnostic object was
   added: the implementation manifest, validation codes, `ProtocolError`,
   receipts and the conformance runner report already carry what a report
@@ -81,6 +86,25 @@ protocol, and each package each carry an independent semver).
 - No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
   every package version are unchanged. Protocol §VII.3 now names the
   reference codes, which is editorial.
+
+### Dependent declaration overrides (draft RFC 0074; no contract change)
+
+- **Draft [RFC 0074](docs/rfcs/0074-module-declaration-override-semantics.md)**
+  proposes what Protocol §VII.3 means by "the dependent module's
+  declarations override":
+  - one effective declaration per id;
+  - the replacement runs where the dependent declares it;
+  - static load-time refusals when an override would leave a prior-result
+    consumer without a value (proposed `PROTO-MOD-083`);
+  - refusals when the overriding module does not apply wherever the
+    overridden one does (proposed `PROTO-MOD-084`).
+- **Split from PR #267.** Its later revisions implemented these rules and
+  found four ways a plausible reading of "override" silently produced
+  `null`. #267 keeps only the existing-contract repair: refusing unrelated
+  conflicts.
+- **Owner decisions remain:** whether a transitive dependency counts as
+  related, how conservative the reader rule is, and versioning.
+- **No contract change.** Nothing is implemented or versioned.
 
 ### Renamed identifiers (draft RFC 0073; no contract change)
 
