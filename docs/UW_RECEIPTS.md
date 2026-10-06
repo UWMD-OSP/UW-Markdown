@@ -93,7 +93,7 @@ distinctions explicit. For example, a multifamily document without asset-level
 equity inputs can issue with:
 
 ```text
-Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.0)
+Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.1)
 Metric completeness: partial
 Computed: 7/8
 Uncomputed: cash_on_cash
