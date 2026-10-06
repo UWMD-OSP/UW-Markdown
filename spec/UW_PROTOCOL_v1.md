@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Stable — protocol **2.21.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Accepted release contract (RFCs 0071, 0074) — protocol **2.22.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -47,7 +47,7 @@ Three independent semvers are tracked:
 - **Format version** (`uw_version` in frontmatter, currently `2.0` for
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.21.0`) — the
+- **Protocol version** (this document, currently `2.22.0`) — the
   contract for implementations. Bumped on any normative change to
   required behavior.
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
@@ -1171,8 +1171,7 @@ does not claim `signing` skips the suite and remains conformant.
 
 ### V.12 Replacement-funding binding verification (RFC 0070)
 
-Accepted implementation contract; version/release selection remains pending.
-This section changes no current version label. Synchronous validateUWFile
+Released in Protocol 2.21.0 (RFC 0070). Synchronous validateUWFile
 retains its result shape. CLI complete validation exits nonzero for structural
 errors or applicable outright binding states other than verified, in both modes.
 
@@ -1503,11 +1502,9 @@ or view-model `section_id`:
 - If one module declares the other in `depends_on`, the dependent
   module's declarations override.
 
-**Dependent overrides (normative, RFC 0074).** Accepted implementation
-contract; version/release selection remains pending, and this paragraph
-changes no current version label. Hosts that implement Protocol 2.21.0 or
-earlier without it, the reference library among them, run both declarations
-instead of one effective declaration.
+**Dependent overrides (normative, RFC 0074).** Protocol 2.22.0 adds these
+rules. Hosts that implement Protocol 2.21.0 or earlier, the reference library
+among them, run both declarations instead of one effective declaration.
 
 *Who may override.* A module may redeclare an ID that a loaded module
 declares only if it names, in its own `depends_on`, the module whose
@@ -1985,10 +1982,8 @@ Two consequences an implementer must not read past:
   where `1.0 + 10.0` is exact, and effectively unreachable at `lo`. Callers
   **SHOULD NOT** build on behavior at the low endpoint.
 
-**Calendar-date predicate (normative, RFC 0071).** Accepted implementation
-contract; version/release selection remains pending, and this paragraph changes
-no current version label. Protocol 2.21.0 and every earlier version lack
-`is_calendar_date`.
+**Calendar-date predicate (normative, RFC 0071).** Protocol 2.22.0 adds
+`is_calendar_date`. Protocol 2.21.0 and every earlier version lack it.
 
 `is_calendar_date(value)` takes exactly one argument; a call with any other
 number of arguments raises `CALC-TYPE-001`. The argument is evaluated like any
@@ -3263,10 +3258,9 @@ whose `calculations[].formula` or `validations[].rule` calls
 version at or above the first release that contains RFC 0071, and no earlier
 version may satisfy it.
 
-The exact semver floor is assigned at release preparation, when that first
-release's version is selected. A comparator that only excludes the current
-label, such as `>2.21.0`, does not meet the requirement, because a later 2.21.x
-release without RFC 0071 would satisfy it.
+That release is Protocol 2.22.0, so the floor is `>=2.22.0`. A comparator that
+only excludes the previous label, such as `>2.21.0`, does not meet the
+requirement, because a 2.21.x release without RFC 0071 would satisfy it.
 
 The range is what lets an older host decline the module. Under §VII.2 step 3,
 a host refuses a manifest whose `requires_protocol` its own versions do not
@@ -3284,9 +3278,9 @@ required to detect the violation.
 that redeclares a section ID, calculation ID or view-model `section_id`
 declared by a module it names in `depends_on` uses the §VII.3 override rules.
 It **MUST** declare a `requires_protocol` range that excludes every Protocol
-version before the first release that contains RFC 0074. As with
-`is_calendar_date`, the exact floor is assigned at release preparation, and a
-comparator that only excludes the current label does not meet the
+version before the first release that contains RFC 0074. That release is
+Protocol 2.22.0, so the floor is `>=2.22.0`. As with `is_calendar_date`, a
+comparator that only excludes the previous label does not meet the
 requirement.
 
 A host without RFC 0074 runs both declarations, and it may accept a module set

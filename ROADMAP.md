@@ -1,11 +1,30 @@
 # Roadmap
 
-Reconciled **2026-10-03** (America/Phoenix) for published and independently
-verified **2.17.0**, pairing core/CLI 2.17.0 with Stable Protocol **2.21.0**
-and unchanged Format **2.0**.
+Reconciled **2026-10-05** for release-prepared **2.18.0** (Protocol **2.22.0**,
+Format **2.0**). The current published release remains **2.17.0**, pairing
+core/CLI 2.17.0 with Stable Protocol **2.21.0** and Format **2.0**.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 2.18.0
+
+Core/CLI **2.18.0** pair with Protocol **2.22.0** and Format **2.0**. The
+generation carries two accepted RFCs and four changes outside the contract:
+- **RFC 0071:** the `is_calendar_date` predicate.
+- **RFC 0074:** §VII.3 dependent declaration overrides. Each RFC brings a
+  `>=2.22.0` §X floor.
+- **Also included:**
+  - the refusal of unrelated §VII.3 declaration conflicts;
+  - CLI validation and receipt reporting clarity;
+  - the `uwmd init` and `--version` fixes;
+  - the early-year actual-days correction.
+
+It is the first six-package generation. `@uwmd/module-hospitality` and
+`@uwmd/module-data-center` 0.1.10 join core, CLI, signing 0.2.22 and batch
+0.8.17. RFCs 0071 and 0074 remain `accepted` until shipment and
+independently verified publication. See
+[the release preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md).
 
 ## Current published release: 2.17.0
 
@@ -62,7 +81,7 @@ packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 | Explicit property cash-flow assembly — RFC 0045 | Released in 2.9.0 | Read-only unlevered/pre-tax, single-currency candidate assembly with explicit coverage, acquisition/disposition and reserve assertions; synthetic engineering fixtures. |
 | Supporting tools and modules | Implemented | Web editor/viewer, docs site, VS Code extension, Excel/report packages and hospitality/data-center reference modules. Publication varies; see the matrix. |
 
-### CLI reporting clarity — implemented, unreleased (2026-10-03)
+### CLI reporting clarity (core/CLI 2.18.0)
 
 Validation now separates validity, Stage Readiness (workflow completeness),
 skipped cross-checks and unchecked receipt readiness. Issuance reports partial

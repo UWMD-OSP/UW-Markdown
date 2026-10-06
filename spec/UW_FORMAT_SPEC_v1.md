@@ -1626,7 +1626,7 @@ crossing is projected.
   and leaving it unstated is the answer that hides the cliff. `replace` is tied
   to a valid replacement-funding path by ESC-04 (§ 4.8) and RFC 0070.
 
-**Replacement funding (RFC 0070; accepted, implementation pending release).**
+**Replacement funding (RFC 0070; Protocol 2.21.0).**
 The OPTIONAL `rate_hedge.replacement_funding` is null/absent, or one closed
 object: `{ "mode": "escrow" }` or `{ "mode": "outright", "cash_flow_ref":
 { "variant": "cap-cash", "row_index": 1, "binding_digest": "sha256:<64 lowercase hex>" } }`.

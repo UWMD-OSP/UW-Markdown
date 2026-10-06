@@ -20,6 +20,20 @@ same protocol version.
 
 ## Current matrix
 
+Release 2.18.0 pairs core/CLI 2.18.0 with Protocol 2.22.0 and Format 2.0.
+Protocol 2.22.0 carries two accepted RFCs:
+RFC 0071's `is_calendar_date` predicate (§VIII.3), and RFC 0074's dependent
+declaration overrides (§VII.3). Each comes with a §X `requires_protocol` floor of
+`>=2.22.0`. The generation also includes the refusal of unrelated §VII.3
+declaration conflicts, CLI validation and receipt reporting clarity, and the
+`uwmd init` and `--version` fixes. Signing 0.2.22, batch 0.8.17, Excel
+0.9.10, report 0.8.22, lake 0.2.6 and both module packages 0.1.10 pin core
+2.18.0 exactly. Core's optional signing peer is 0.2.22. The workflow scope is
+core, CLI, signing, batch and both module packages. For the modules, 0.1.10
+is their first public generation. Excel, report and lake remain source-only.
+Module manifest contracts remain 0.1.0. Release preparation and subsequent
+publication evidence are separate records.
+
 Release 2.17.0 pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0.
 Protocol 2.21.0 carries RFC 0070's closed replacement-funding union and exact
 modeled-payment binding, with synchronous structural validation and separate
@@ -91,17 +105,17 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.21.0** | format ≥ 1.0; RFC 0070 replacement funding and exact payment binding on 2.20.0; carried by core/CLI 2.17.0 |
-| `@uwmd/core` | **2.17.0** | format 2.0 (reads 1.x), protocol 2.21.0 |
-| `@uwmd/cli` (CLI) | **2.17.0** | `@uwmd/core` 2.17.0 |
-| `@uwmd/excel` | **0.9.9** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.17.0, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.21** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.17.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.16** | `@uwmd/core` 2.17.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.5** (source only) | `@uwmd/core` 2.17.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.21** | `@uwmd/core` 2.17.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.9** (source only) | `@uwmd/core` 2.17.0, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.9** (source only) | `@uwmd/core` 2.17.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.17.0 browser entry |
+| UW Protocol | **2.22.0** | format ≥ 1.0; RFC 0071 `is_calendar_date` and RFC 0074 dependent overrides on 2.21.0; carried by core/CLI 2.18.0 |
+| `@uwmd/core` | **2.18.0** | format 2.0 (reads 1.x), protocol 2.22.0 |
+| `@uwmd/cli` (CLI) | **2.18.0** | `@uwmd/core` 2.18.0 |
+| `@uwmd/excel` | **0.9.10** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.18.0, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.22** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.18.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.17** | `@uwmd/core` 2.18.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.6** (source only) | `@uwmd/core` 2.18.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.22** | `@uwmd/core` 2.18.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.10** | `@uwmd/core` 2.18.0, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.10** | `@uwmd/core` 2.18.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.18.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 
@@ -109,9 +123,9 @@ versions advance independently.
 ### Official module compatibility
 
 The owner approves hospitality and data-center together as official first-party
-public npm packages. Distribution support is in the ordinary tag workflow;
-first publication is pending the next owner-authorized generation. Neither
-module was published in 2.17.0. Their current package versions remain source-only.
+public npm packages. Distribution support is in the ordinary tag workflow.
+Neither module was published in 2.17.0 or earlier; 0.1.10, pairing core 2.18.0,
+is their first public generation.
 
 Package semver identifies an immutable npm artifact. Contract `version` identifies
 the manifest contract required by document `modules[].version` and module
@@ -123,8 +137,8 @@ manifest compatibility requirements, not a new loader policy.
 
 | Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_tier | Core pin |
 |---|---|---|---|---|---|---|---|---|
-| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.9** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.17.0` |
-| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.9** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.17.0` |
+| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.10** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.18.0` |
+| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.10** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.18.0` |
 
 Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
 its module ID. `verify-versions` reads typed source literals and package manifests

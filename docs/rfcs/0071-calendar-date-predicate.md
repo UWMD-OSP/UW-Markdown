@@ -17,11 +17,14 @@ affects:
 
 # RFC 0071: A calendar-date validity predicate for safe expressions
 
-**Accepted; implementation authorized, not released.** A coding agent wrote
+**Accepted; implementation merged.** A coding agent wrote
 this RFC, and the owner accepted it on 2026-10-04 (see the
 [owner acceptance record](#owner-acceptance-record-2026-10-04)). The owner
 separately authorized implementation the same day (see
 [Owner implementation authorization](#owner-implementation-authorization-2026-10-04)).
+PR #250 merged the implementation. Release preparation pairs it with
+Protocol 2.22.0 (see the
+[release-preparation direction](#owner-release-preparation-direction-2026-10-05)).
 The RFC stays `accepted` until the implementation ships and publication is
 verified.
 
@@ -120,6 +123,19 @@ With it, RFC 0068's `CC-MOD-MH-05` can be written as
   - changes to unrelated financial semantics.
 - **Status.** The RFC stays `accepted` until the implementation ships in a
   release and its publication is independently verified.
+
+## Owner release-preparation direction (2026-10-05)
+
+The owner directed 2.18.0 release preparation on 2026-10-05. It pairs core/CLI
+**2.18.0** with Protocol **2.22.0** and Format **2.0**. Protocol takes a minor
+version for the normative addition, following this RFC's version direction and
+the RFC 0070 precedent. The §X floor is therefore `>=2.22.0`. The test-only constant described in the implementation notes is renamed `RFC_0071_FLOOR`, because 2.22.0 is now the selected floor. Preparation follows
+[wiki 11](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md),
+and [the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md)
+documents it. RFC 0071 remains `accepted` throughout preparation. It becomes
+`implemented` only after shipment and independent publication verification.
+Tagging and publication need separate owner action. The accepted semantics are
+unchanged.
 
 ## Implementation notes
 

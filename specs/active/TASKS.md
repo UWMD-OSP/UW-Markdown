@@ -5,19 +5,20 @@ archived in [the completed task record](../archive/rfc-0063-exclusive-boundary.m
 RFCs 0062 and 0063 shipped in core/CLI 2.14.0 on 2026-10-02 and are
 `implemented`. See the [release record](../../docs/releases/2.14.0-candidate.md).
 
-CLI reporting clarity is complete and unreleased; its task record is archived
-at `specs/archive/cli-reporting-clarity.md`.
+CLI reporting clarity is complete; its task record is archived at
+`specs/archive/cli-reporting-clarity.md`.
 
 RFC 0070's completed matrix is archived at
 `specs/archive/rfc-0070-replacement-funding.md`.
 
 RFC 0071's implementation is complete in PR #250. Its completed matrix is archived
 at `specs/archive/rfc-0071-calendar-date-predicate.md`. RFC 0071 remains
-`accepted`. No release, version or adoption work is active under that
-authorization.
+`accepted`.
 
-RFC 0074 is accepted and implemented in the PR that records its acceptance.
+RFC 0074 is accepted and implemented: the owner merged PR #273 on 2026-10-06.
 It restores #267's `31ccff4` against the final RFC text and adds registry
-scenarios 06–24. RFC 0074 remains `accepted`, and as with RFC 0071, release
-preparation assigns its §X `requires_protocol` floor. No release, version or
-adoption work is active under that authorization.
+scenarios 06–24. RFC 0074 remains `accepted`. The 2.18.0 preparation assigned
+both RFCs' §X `requires_protocol` floor, `>=2.22.0`.
+
+The only open milestone is the owner's review and tagging of the 2.18.0
+preparation ([record](../../docs/releases/2.18.0-preparation.md)).

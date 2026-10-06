@@ -20,18 +20,15 @@ else.
 
 ## Use
 
-This is an approved official first-party public npm package. First publication is
-pending the next ordinary owner-authorized UWMD release; the current `0.1.9`
-package generation is still source-only. After publication, install the exact
-published package/core pairing and commit your application's lockfile. For this
-source generation the pairing is:
+This is an official first-party public npm package. Its first public
+generation, `0.1.10`, pairs with `@uwmd/core` 2.18.0. Install the exact
+package/core pairing and commit your application's lockfile:
 
 ```sh
-npm install --save-exact @uwmd/core@2.17.0 @uwmd/module-data-center@0.1.9
+npm install --save-exact @uwmd/core@2.18.0 @uwmd/module-data-center@0.1.10
 ```
 
-Update both pins to the actual first published generation before running this
-example. npm package `0.1.9`, manifest contract `0.1.0`, and manifest schema
+npm package `0.1.10`, manifest contract `0.1.0`, and manifest schema
 `manifest_version: "1"` are independent versions. A core repin changes the
 package version without changing the module contract.
 
