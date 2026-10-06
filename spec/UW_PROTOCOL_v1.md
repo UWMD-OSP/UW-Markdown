@@ -1503,6 +1503,10 @@ or view-model `section_id`:
 - If one module declares the other in `depends_on`, the dependent
   module's declarations override.
 
+The reference library refuses with `PROTO-MOD-080` (section ID),
+`PROTO-MOD-081` (calculation ID) and `PROTO-MOD-082` (view-model
+`section_id`).
+
 ### VII.4 Capability negotiation
 
 A module's `requires_tier` declares the minimum host tier. A Tier-2

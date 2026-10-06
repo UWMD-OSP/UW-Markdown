@@ -260,3 +260,101 @@ describe('createModuleRegistry', () => {
     }
   });
 });
+
+// Protocol §VII.3: two unrelated loaded modules may not declare the same
+// section id, calculation id or view-model section_id. What an override by a
+// dependent means is draft RFC 0074's question; these tests pin only that a
+// related pair is not refused, as it never was.
+describe('createModuleRegistry — §VII.3 unrelated declaration conflicts', () => {
+  const module = (id: string, extra: Partial<ModuleManifest> = {}): ModuleManifest => ({
+    manifest_version: '1',
+    id,
+    name: id,
+    version: '1.0.0',
+    description: 'Synthetic §VII.3 module.',
+    authors: ['test'],
+    license: 'MIT',
+    requires_protocol: '>=1.0.0',
+    requires_format: '>=1.0',
+    requires_tier: 'tier-3-calc-host',
+    ...extra,
+  });
+  const section = (id: string) => ({ id, display_name: id, schema: { type: 'object' } });
+  const calc = (id: string, formula: string) => ({ id, label: id, formula, deterministic: true });
+  const viewModel = (section_id: string) => ({
+    section_id,
+    display_name: section_id,
+    display_order: 30,
+    description: section_id,
+    primary_fields: [],
+  });
+  const dep = (...ids: string[]) => ({ depends_on: ids.map((id) => ({ id, version: '^1.0.0' })) });
+  const codesOf = (modules: ModuleManifest[]): string[] => {
+    try {
+      createModuleRegistry({ modules });
+      return [];
+    } catch (e) {
+      return (e as ModuleRegistryError).errors.map((err) => err.code);
+    }
+  };
+
+  const NAMESPACES = [
+    { name: 'section', code: 'PROTO-MOD-080', decl: () => ({ sections: [section('shared')] }) },
+    { name: 'calculation', code: 'PROTO-MOD-081', decl: () => ({ calculations: [calc('shared', '1')] }) },
+    { name: 'view model', code: 'PROTO-MOD-082', decl: () => ({ view_models: [viewModel('shared')] }) },
+  ] as const;
+
+  for (const ns of NAMESPACES) {
+    describe(ns.name, () => {
+      const a = module('org.example.a', ns.decl());
+      const b = module('org.example.b', ns.decl());
+
+      it('refuses two unrelated modules in either order, with the same code', () => {
+        expect(codesOf([a, b])).toEqual([ns.code]);
+        expect(codesOf([b, a])).toEqual([ns.code]);
+      });
+
+      it('does not refuse a pair joined by depends_on', () => {
+        expect(codesOf([a, module('org.example.b', { ...ns.decl(), ...dep('org.example.a') })])).toEqual([]);
+      });
+    });
+  }
+
+  it('refuses the whole registry, reporting every conflicting namespace', () => {
+    const a = module('org.example.a', { sections: [section('s')], calculations: [calc('c', '1')] });
+    const b = module('org.example.b', { sections: [section('s')], calculations: [calc('c', '2'), calc('own', '3')] });
+    expect(() => createModuleRegistry({ modules: [a, b] })).toThrow(ModuleRegistryError);
+    expect(codesOf([a, b]).sort()).toEqual(['PROTO-MOD-080', 'PROTO-MOD-081']);
+  });
+
+  it('refuses two siblings of one dependency, which are unrelated to each other', () => {
+    const a = module('org.example.a');
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.a') });
+    expect(codesOf([a, b, c])).toEqual(['PROTO-MOD-081']);
+    expect(codesOf([a, c, b])).toEqual(['PROTO-MOD-081']);
+  });
+
+  it('leaves a pair joined only through a chain as it was, pending RFC 0074', () => {
+    // C depends on B, B on A; A and C declare x, B does not. Whether a
+    // transitive path makes them related is RFC 0074's question; this fix
+    // refuses only pairs with no dependency path at all.
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+    const b = module('org.example.b', dep('org.example.a'));
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
+    expect(codesOf([a, b, c])).toEqual([]);
+  });
+
+  it('keeps the existing dependency rule for a dependent listed first', () => {
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    expect(codesOf([b, a])).toEqual(['PROTO-MOD-027']);
+  });
+
+  it('keeps refusing duplicates inside one manifest where it already did', () => {
+    expect(codesOf([module('org.example.a', { sections: [section('s'), section('s')] })])).toContain('PROTO-MOD-036');
+    expect(codesOf([module('org.example.a', { calculations: [calc('x', '1'), calc('x', '2')] })])).toContain(
+      'PROTO-MOD-015',
+    );
+  });
+});

@@ -288,6 +288,21 @@ never executed, and `sections` were declared and never looked for.
 - `checkModuleSections(parsed, manifest)` — presence only. Validating contents
   against the declared JSON Schema needs a validator core does not depend on.
 
+**Declaration conflicts (Protocol §VII.3).** `createModuleRegistry` refuses
+a module that declares a section id, calculation id or view-model
+`section_id` that an *unrelated* loaded module already declares:
+`PROTO-MOD-080`, `-081` or `-082`, and the whole registry is refused.
+- **Unrelated** means that no `depends_on` path joins the two in either
+  direction. Since a dependency always loads first, the check is whether
+  the new module depends on the earlier declarer, directly or
+  transitively, so the code is the same in either listing order.
+- **Related pairs** load as they always have, and the runtime runs both
+  declarations in registry order. What "the dependent module's
+  declarations override" means is draft RFC 0074's question.
+- **Within one manifest**, two view models for one `section_id` are outside
+  §VII.3 and are not refused. Sections and calculations already refuse
+  duplicates (`-036`, `-015`).
+
 No new evaluation machinery: a rule is a §VIII.1 safe expression run through
 `evaluateCalc`. A module able to evaluate what the calc engine cannot would be
 a second unsandboxed language reachable from a third-party manifest.

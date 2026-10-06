@@ -1,0 +1,25 @@
+{
+  "description": "B and C both depend on A, and neither depends on the other, so they are unrelated to each other. Both declaring shared_calc is refused in either order.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b",
+        "c"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    },
+    {
+      "order": [
+        "a",
+        "c",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    }
+  ]
+}

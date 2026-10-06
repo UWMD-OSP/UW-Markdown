@@ -1,0 +1,23 @@
+{
+  "description": "Two unrelated modules declare section shared_section. The second is refused in either order; neither order picks a winner.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-080"
+      ]
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-080"
+      ]
+    }
+  ]
+}

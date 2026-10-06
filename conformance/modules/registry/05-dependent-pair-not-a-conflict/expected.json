@@ -1,0 +1,21 @@
+{
+  "description": "B declares A in depends_on, so their shared declarations are not a §VII.3 conflict and the registry loads. Which declaration applies, and when, is draft RFC 0074's question and is deliberately not asserted. Listed before its dependency, B is refused by the existing dependency rule.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_loads": true
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-027"
+      ]
+    }
+  ]
+}

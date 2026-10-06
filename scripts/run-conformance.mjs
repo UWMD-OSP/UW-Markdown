@@ -1698,6 +1698,88 @@ async function runModuleRuntime() {
 
 
 /**
+ * Registry declaration conflicts (protocol §VII.3).
+ *
+ * Each `registry/<scenario>/` holds two or more `<key>.module.json` files and
+ * an `expected.json` listing cases. A case names a load `order` by key and
+ * expects either a refusal (`expected_refusal`: the exact set of codes the
+ * registry reports) or a registry that loads (`expected_loads: true`). Every
+ * manifest must also satisfy the normative schema and load alone, so a
+ * refusal can only come from the interaction.
+ *
+ * The suite pins only what §VII.3 already requires: unrelated modules
+ * declaring one id are refused. What an override by a dependent means is
+ * draft RFC 0074's question, so no case asserts which declaration applies.
+ */
+async function runModuleRegistry() {
+  const dir = join(MODULES_DIR, 'registry');
+  if (!existsSync(dir)) return;
+
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
+  const readSchema = (name) => JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));
+  const ajv = new Ajv2020({ strict: false });
+  ajv.addSchema(readSchema('module-signature.schema.json'));
+  const schemaCheck = ajv.compile(readSchema('module-manifest.schema.json'));
+  const HOST = { hostTier: 'tier-4-agent-host' };
+  const sameSet = (got, want) => [...new Set(got)].sort().join(',') === [...new Set(want)].sort().join(',');
+
+  const scenarios = readdirSync(dir)
+    .filter((name) => statSync(join(dir, name)).isDirectory())
+    .sort();
+  for (const id of scenarios) {
+    const scenarioDir = join(dir, id);
+    const moduleFiles = readdirSync(scenarioDir).filter((name) => name.endsWith('.module.json')).sort();
+    const expectedPath = join(scenarioDir, 'expected.json');
+    if (moduleFiles.length < 2 || !existsSync(expectedPath)) {
+      record('modules', `registry/${id}`, 'fail', 'scenario needs two or more <key>.module.json files and expected.json');
+      continue;
+    }
+    const manifests = Object.fromEntries(
+      moduleFiles.map((name) => [basename(name, '.module.json'), JSON.parse(readFileSync(join(scenarioDir, name), 'utf8'))]),
+    );
+    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    const problems = [];
+
+    for (const [key, manifest] of Object.entries(manifests)) {
+      if (!schemaCheck(manifest)) problems.push(`${key}.module.json fails the manifest schema`);
+      // Alone, a dependent cannot load (its dependency is absent), so the
+      // standalone check is structural: no code other than PROTO-MOD-027.
+      const alone = loadModuleManifest(manifest, HOST);
+      const stray = alone.errors.map((e) => e.code).filter((c) => c !== 'PROTO-MOD-027');
+      if (stray.length) problems.push(`${key}.module.json does not load alone: ${stray.join(', ')}`);
+    }
+
+    for (const c of expected.cases ?? []) {
+      const label = c.order.join('→');
+      const unknown = c.order.filter((k) => !(k in manifests));
+      if (unknown.length) {
+        problems.push(`${label}: no module file for ${unknown.join(', ')}`);
+        continue;
+      }
+      let refusal = null;
+      try {
+        createModuleRegistry({ modules: c.order.map((k) => manifests[k]), ...HOST });
+      } catch (e) {
+        refusal = (e.errors ?? []).map((err) => err.code);
+        if (!e.errors) problems.push(`${label}: threw ${e}`);
+      }
+      if (c.expected_refusal) {
+        if (refusal === null) problems.push(`${label}: loaded, expected refusal [${c.expected_refusal.join(', ')}]`);
+        else if (!sameSet(refusal, c.expected_refusal)) {
+          problems.push(`${label}: refused with [${refusal.join(', ')}] != [${c.expected_refusal.join(', ')}]`);
+        }
+      } else if (c.expected_loads) {
+        if (refusal !== null) problems.push(`${label}: refused with [${refusal.join(', ')}], expected to load`);
+      } else {
+        problems.push(`${label}: case names neither expected_refusal nor expected_loads`);
+      }
+    }
+
+    record('modules', `registry/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
+/**
  * Module-declared asset classes (RFC 0003, protocol §X.2).
  *
  * Three of the four scenarios are the SAME BYTES with a different host: module
@@ -4227,7 +4309,7 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
-  'modules': async () => { await runModules(); await runModuleRuntime(); await runAssetClasses(); },
+  'modules': async () => { await runModules(); await runModuleRuntime(); await runModuleRegistry(); await runAssetClasses(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },

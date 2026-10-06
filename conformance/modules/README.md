@@ -55,10 +55,11 @@ always a bug, and the suite fails on it with no opt-out.
 
 ## What this suite does not cover
 
-Registry-level behavior (dependency load order, version-range satisfaction,
-duplicate module ids) is asserted in `packages/uwmd-core/src/modules.test.ts`
-rather than here, because a fixture file holds one manifest and those properties
-are about how several interact.
+Dependency load order, version-range satisfaction and duplicate module ids are
+asserted in `packages/uwmd-core/src/modules.test.ts` rather than here, because
+a fixture file holds one manifest and those properties are about how several
+interact. Protocol §VII.3 declaration conflicts are the exception: see
+`registry/` below.
 
 `accept/` fixtures load against `tier-4-agent-host`, the maximal host, so they
 assert manifest validity rather than host capability. Tier gating has its own
@@ -100,3 +101,25 @@ The two families differ in one thing that matters: hospitality is a
 the data center is a *declared* class (`declares_asset_classes`, RFC 0003)
 the module owns. `10-…` is the scenario that pins the runtime scoping a
 declaring module to its declared class — the gap RFC 0039 found.
+
+## `registry/` — unrelated modules declaring one id (Protocol §VII.3)
+
+Each scenario holds two or more synthetic manifests, `<key>.module.json`,
+and an `expected.json` listing cases. A case names a load `order` and
+expects either a refusal, as the exact set of codes the registry reports, or
+a registry that loads. Every manifest must also satisfy the schema and load
+alone, so a refusal can only come from the interaction.
+
+The suite pins only what §VII.3 already requires. What an override by a
+dependent means is draft RFC 0074's question, so no case asserts which
+declaration applies.
+
+| Scenario | Pins |
+|---|---|
+| `01-section-unrelated` | Same section id, no dependency: `PROTO-MOD-080` in both orders. |
+| `02-calculation-unrelated` | Same calculation id, no dependency: `PROTO-MOD-081` in both orders. Before §VII.3 was enforced, both loaded and registry order decided the value. |
+| `03-view-model-unrelated` | Same view-model `section_id`, no dependency: `PROTO-MOD-082` in both orders. |
+| `04-sibling-dependents-unrelated` | B and C both depend on A but not on each other, so they are unrelated: `PROTO-MOD-081` in both orders. |
+| `05-dependent-pair-not-a-conflict` | B depends on A, so shared declarations are not a conflict and the registry loads. B listed first: `PROTO-MOD-027`. |
+
+Against the registry before this suite existed, scenarios 01–04 fail.

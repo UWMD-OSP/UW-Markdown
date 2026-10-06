@@ -224,6 +224,11 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
         ));
         continue;
       }
+      const conflicts = unrelatedDeclarationConflicts(result.manifest, loaded);
+      if (conflicts.length > 0) {
+        errors.push(...conflicts);
+        continue;
+      }
       seenIds.add(result.manifest.id);
       loaded.push(result.manifest);
     } else {
@@ -231,6 +236,8 @@ export function createModuleRegistry(opts: CreateModuleRegistryOptions): ModuleR
     }
   }
 
+  // Any refusal refuses the registry: a partial registry would be one whose
+  // contents depend on which of two conflicting modules happened to come first.
   if (errors.length > 0) throw new ModuleRegistryError(errors);
 
   const byId = new Map<string, ModuleManifest>();
@@ -266,6 +273,69 @@ export function getModuleCalculationsForAssetClass(
   return registry
     .calculationsByAssetClass(asset_class)
     .flatMap((m) => m.calculations ?? []);
+}
+
+/**
+ * §VII.3: two unrelated loaded modules may not declare the same section id,
+ * calculation id or view-model `section_id`; the host refuses the second.
+ *
+ * "Unrelated" here is the case every reading of §VII.3 agrees on: no
+ * `depends_on` path joins the two modules in either direction. A loaded module
+ * can never depend on one loading after it (`PROTO-MOD-027`), so that means
+ * the new module does not depend on the earlier declarer, directly or
+ * transitively. The refusal is therefore the same in either listing order.
+ *
+ * Pairs joined by `depends_on` load as they always have, both declarations
+ * included. What "the dependent module's declarations override" means for
+ * them, including whether a transitive path counts, is draft RFC 0074's
+ * question and is deliberately not decided here.
+ */
+function unrelatedDeclarationConflicts(
+  manifest: ModuleManifest,
+  loaded: readonly ModuleManifest[],
+): ProtocolError[] {
+  const byId = new Map(loaded.map((m) => [m.id, m]));
+  const related = (earlier: string): boolean => dependsTransitively(manifest, earlier, byId);
+  const namespaces: readonly [string, string, string, (m: ModuleManifest) => string[]][] = [
+    ['PROTO-MOD-080', 'section', 'sections', (m) => (m.sections ?? []).map((d) => d.id)],
+    ['PROTO-MOD-081', 'calculation', 'calculations', (m) => (m.calculations ?? []).map((d) => d.id)],
+    ['PROTO-MOD-082', 'view model for section', 'view_models', (m) => (m.view_models ?? []).map((d) => d.section_id)],
+  ];
+
+  const errors: ProtocolError[] = [];
+  for (const [code, noun, pointer, idsOf] of namespaces) {
+    const own = new Set(idsOf(manifest));
+    for (const earlier of loaded) {
+      if (related(earlier.id)) continue;
+      for (const id of new Set(idsOf(earlier))) {
+        if (!own.has(id)) continue;
+        errors.push(moduleError(
+          code,
+          `Module '${manifest.id}' declares ${noun} '${id}', which unrelated module '${earlier.id}' already declares.`,
+          pointer,
+        ));
+      }
+    }
+  }
+  return errors;
+}
+
+/** True when `module` depends on `target`, directly or through loaded modules. */
+function dependsTransitively(
+  module: ModuleManifest,
+  target: string,
+  loaded: ReadonlyMap<string, ModuleManifest>,
+): boolean {
+  const seen = new Set<string>();
+  const pending = (module.depends_on ?? []).map((d) => d.id);
+  while (pending.length > 0) {
+    const next = pending.pop() as string;
+    if (next === target) return true;
+    if (seen.has(next)) continue;
+    seen.add(next);
+    for (const dep of loaded.get(next)?.depends_on ?? []) pending.push(dep.id);
+  }
+  return false;
 }
 
 function validateModuleManifest(

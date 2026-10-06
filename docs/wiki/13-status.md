@@ -722,6 +722,27 @@ boundary, the label taxonomy and the lifecycle. The rest is in the
   confidential, non-security reproductions, and whether to enable GitHub
   private vulnerability reporting alongside the security mailbox.
 
+## 2026-10-05 — Unrelated module declaration conflicts enforced (Protocol §VII.3)
+
+The reference registry now enforces §VII.3's existing MUST, the defect the
+renamed-identifier review found.
+- **What is refused.** Two unrelated modules declaring one section id,
+  calculation id or view-model `section_id` refuse the whole registry with
+  `PROTO-MOD-080`, `-081` or `-082`, in either order.
+- **What "unrelated" means here.** No `depends_on` path joins the two in
+  either direction. Sibling dependents of one module count as unrelated.
+- **Classification.** `bug` plus `conformance-gap`. No RFC and no version
+  change.
+- **Deferred to draft RFC 0074.** A pair joined by `depends_on`, directly or
+  through a chain, loads as before. So do the dependent-override semantics:
+  which declaration runs, where, and the safety rules for prior-result
+  consumers and module scope. They were explored in earlier revisions of
+  PR #267 and split out at the normative boundary.
+- **Guard.** `modules.test.ts` covers this, along with the five-scenario
+  `conformance/modules/registry/` suite.
+- **Left open.** Two view models for one `section_id` inside one manifest
+  are outside §VII.3 and are not refused.
+
 ## 2026-10-05 — Dependent declaration overrides (draft RFC 0074)
 
 Draft [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md)

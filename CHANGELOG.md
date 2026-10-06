@@ -59,6 +59,34 @@ protocol, and each package each carry an independent semver).
   receipts and the conformance runner report already carry what a report
   needs. Format 2.0, Protocol 2.21.0 and every package version are unchanged.
 
+### Fixed — unrelated module declaration conflicts (Protocol §VII.3)
+
+- **Two unrelated modules can no longer both declare one id.** Protocol
+  §VII.3 has always said a host MUST refuse the second, but the reference
+  registry refused only duplicate module ids. Both modules loaded, and for
+  calculations the module runtime threaded both results into one
+  `prior_results` map, so registry order decided the value. The registry now
+  refuses, and refuses the whole registry rather than keeping part of it. The
+  code is the same in either order:
+  - `PROTO-MOD-080` for a section id;
+  - `PROTO-MOD-081` for a calculation id;
+  - `PROTO-MOD-082` for a view-model `section_id`.
+- **"Unrelated" is the unambiguous case:** no `depends_on` path joins the
+  two modules in either direction. That includes two sibling dependents of
+  one module.
+- **Not changed:** a pair joined by `depends_on` loads exactly as before,
+  with both declarations. That includes a pair joined only through a chain.
+  What "the dependent module's declarations override" means is left to
+  draft RFC 0074. The module runtime, `ModuleRegistry` and the public
+  exports are unchanged.
+- **Conformance:** the new `conformance/modules/registry/` suite covers
+  refusal in both orders for all three namespaces and for sibling
+  dependents, and shows that a dependent pair is not a conflict. It asserts
+  nothing about which declaration applies.
+- No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
+  every package version are unchanged. Protocol §VII.3 now names the
+  reference codes, which is editorial.
+
 ### Dependent declaration overrides (draft RFC 0074; no contract change)
 
 - **Draft [RFC 0074](docs/rfcs/0074-module-declaration-override-semantics.md)**

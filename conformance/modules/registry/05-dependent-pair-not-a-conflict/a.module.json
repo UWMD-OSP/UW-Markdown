@@ -1,0 +1,40 @@
+{
+  "manifest_version": "1",
+  "id": "org.example.registry-a",
+  "name": "Synthetic a module",
+  "version": "1.0.0",
+  "description": "Synthetic module for the Protocol §VII.3 registry fixtures.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": ">=1.0.0",
+  "requires_format": ">=1.0",
+  "requires_tier": "tier-3-calc-host",
+  "sections": [
+    {
+      "id": "shared_section",
+      "display_name": "Shared Section",
+      "schema": {
+        "type": "object"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "id": "shared_calc",
+      "label": "shared_calc",
+      "formula": "1",
+      "deterministic": true
+    }
+  ],
+  "view_models": [
+    {
+      "section_id": "shared_section",
+      "display_name": "A",
+      "display_order": 30,
+      "description": "A view of the shared section.",
+      "primary_fields": []
+    }
+  ]
+}

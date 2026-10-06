@@ -154,21 +154,21 @@ const probe = (finding, observed, reproduces) => {
   );
 }
 
-// R1 (related defect, outside #263). Protocol §VII.3: two unrelated modules
-// declaring the same calculation id MUST refuse the second. The reference
-// registry loads both, and the runtime threads both results into one
-// prior_results map keyed by calc id, so registry order decides.
+// R1 (related defect, outside #263; fixed after this review). Protocol
+// §VII.3: two unrelated modules declaring the same calculation id MUST refuse
+// the second. The registry once loaded both and let registry order decide the
+// threaded value; it now refuses with PROTO-MOD-081 in either order.
 {
   const a = manifest(OLD_MODULE, []);
   const b = manifest(NEW_MODULE, []);
   delete a.declares_asset_classes;
   delete b.declares_asset_classes;
-  const codes = refusal(() => registry(a, b));
-  const outcomes = codes === null ? evaluateModuleCalculations(parseUWFile(fixture), registry(a, b)) : [];
+  const forward = refusal(() => registry(a, b));
+  const reverse = refusal(() => registry(b, a));
   probe(
-    'R1 duplicate calculation id across unrelated modules loads',
-    { registry_codes: codes, outcomes: outcomes.map((o) => o.module_id) },
-    codes === null && outcomes.length === 2,
+    'R1 duplicate calculation id across unrelated modules is refused',
+    { forward, reverse },
+    Array.isArray(forward) && forward.includes('PROTO-MOD-081') && Array.isArray(reverse) && reverse.includes('PROTO-MOD-081'),
   );
 }
 

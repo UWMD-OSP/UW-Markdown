@@ -111,10 +111,13 @@ strings, and each entry:
 2. equals no `id` and no other `previous_ids` entry anywhere in the same
    manifest.
 
-A manifest that violates either rule is refused at load. Candidate codes:
-`PROTO-MOD-080` for a malformed list or entry and `PROTO-MOD-081` for an entry
-that repeats an identifier the manifest already uses. The next free numbers are
-confirmed against `verify-codes` at implementation.
+A manifest that violates either rule is refused at load, with two new
+`PROTO-MOD` codes: one for a malformed list or entry, and one for an entry
+that repeats an identifier the manifest already uses. `PROTO-MOD-080`–`082`
+now hold the Protocol §VII.3 declaration conflicts, and draft RFC 0074
+proposes `PROTO-MOD-083`–`084`, so the candidates are `PROTO-MOD-085` and
+`PROTO-MOD-086`. The numbers are confirmed against
+`verify-codes` at implementation.
 
 Nothing requires an entry to share the declaration's namespace or final
 segment. A namespace move changes the prefix by definition, and equivalence is
