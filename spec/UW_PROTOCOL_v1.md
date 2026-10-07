@@ -1189,8 +1189,10 @@ A conforming implementation MUST:
    registered `senior` preference on `debt_structure` (format §5.3, RFC 0075).
    RFC 0070 does not extend hedge checks to component financing or introduce
    tranche-specific hedges.
-   If a selection needed for a stated new funding object is ambiguous or
-   unresolvable, refuse; never treat it as absence or choose by fence order.
+   If a selection needed for a stated `rate_hedge`, with or without a funding
+   object, is ambiguous or unresolvable, refuse with `HDG-08` and report
+   `unverifiable/unresolvable_source`; never treat it as absence or choose by
+   fence order (RFC 0076).
 2. Select the same document's current, nonsuperseded `cash_flow_series` block
    whose explicit variant identifier equals `cash_flow_ref.variant` exactly.
    No primary/base/default/sole-variant, role, date, label, cross-document,
@@ -1416,7 +1418,9 @@ Result semantics are exact:
 - `not_checked/not_applicable` is returned when the selected funding path
   is lawfully escrow-funded, or no outright requirement applies. Malformed
   stated new funding or unresolved required selections return `unverifiable`
-  instead; they cannot be hidden as not applicable.
+  instead; they cannot be hidden as not applicable. That includes a stated
+  hedge with no funding object whose loan or cash lines cannot be selected
+  (RFC 0076).
 - `not_checked/not_invoked` is a consumer's initial status before invocation,
   not an outcome returned after the verifier checks an applicable binding.
   Consumers retaining only synchronous validation MUST expose this status

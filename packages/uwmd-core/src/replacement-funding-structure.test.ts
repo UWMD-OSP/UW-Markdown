@@ -89,6 +89,39 @@ describe('RFC 0075 senior selection', () => {
   });
 });
 
+describe('RFC 0076 refused selections', () => {
+  const refused = (name: string) =>
+    parseUWFile(
+      readFileSync(resolve(process.cwd(), `../../conformance/hedge/0076-${name}/deal.uwx.md`), 'utf8')
+    );
+  it.each([
+    'two-seniors-hedge-unfunded',
+    'two-seniors-hedge-malformed',
+    'two-seniors-replace-escrow',
+    'components-only-hedge',
+    'sources-refused-replace',
+    'sources-refused-escrow-mode',
+    'sources-refused-malformed-hedge',
+  ])('%s is a refused selection', (name) => {
+    const result = checkReplacementFundingStructure(refused(name));
+    expect(result).toMatchObject({ unresolvable: true, selectionRefused: true });
+    expect(result.issues.map((i) => [i.code, i.field])).toEqual([['HDG-08', 'rate_hedge']]);
+  });
+  it('leaves a hedge-free refused document to ESC-04', () => {
+    const result = checkReplacementFundingStructure(refused('two-seniors-no-hedge-escrow'));
+    expect(result).toMatchObject({ issues: [], unresolvable: false, selectionRefused: false });
+  });
+  it.each(['missing-source', 'superseded-source', 'variant-fallback-forbidden'])(
+    'keeps %s unresolvable without refusing the selection',
+    (name) => {
+      expect(checkReplacementFundingStructure(parsed(name))).toMatchObject({
+        unresolvable: true,
+        selectionRefused: false,
+      });
+    }
+  );
+});
+
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { blockPayload } from './parser.js';

@@ -287,34 +287,72 @@ ${JSON.stringify(content, null, 2)}
   it('leaves role-free documents on RFC 0040 key order', () => {
     expect(tranches(['base', debt({}, { strike_rate: 3.5 })], ['mezz', { rate_type: 'floating' }])).toEqual(['HDG-01']);
   });
+});
 
-  // UNDECIDED (RFC 0075, unresolved question 1). When the debt selection
-  // refuses, the synchronous hedge checks other than RFC 0070's HDG-08 report
-  // nothing. The spec does not say what they should report; this pins today's
-  // outcome so a change to it is deliberate. It is not a conformance case.
-  it('undecided: two seniors silence the hedge checks', () => {
-    expect(tranches(['a', badHedge('senior')], ['b', unhedged('senior')])).toEqual([]);
-  });
-
-  it('undecided: two seniors make ESC-04 read no hedge', () => {
-    const replace = { ...debt({}, { post_expiration_assumption: 'replace' }), _role: 'senior' };
-    const doc = `---
+describe('RFC 0076 — a stated hedge whose loan or cash lines cannot be selected', () => {
+  type Blocks = Array<[string | null, Record<string, unknown>]>;
+  const fence = (section: string, variant: string | null, content: Record<string, unknown>) =>
+    `\`\`\`json uw:section=${section}${variant ? ` variant=${variant}` : ''} source=manual ts=2026-09-15T00:00:00Z v=1
+${JSON.stringify(content, null, 2)}
+\`\`\``;
+  const issuesOf = (debts: Blocks, sources: Blocks = []) =>
+    validateUWFile(parseUWFile(`---
 uw_version: "1.1"
 deal_id: TEST-HDG
 asset_class: office
 ---
 
-${[['a', replace], ['b', unhedged('senior')]].map(([variant, content]) => `\`\`\`json uw:section=debt_structure variant=${variant} source=manual ts=2026-09-15T00:00:00Z v=1
-${JSON.stringify(content, null, 2)}
-\`\`\``).join('\n\n')}
+${[...debts.map(([v, c]) => fence('debt_structure', v, c)), ...sources.map(([v, c]) => fence('sources_uses', v, c))].join('\n\n')}
+`)).issues.filter(i => i.code.startsWith('HDG-') || i.code.startsWith('ESC-'));
+  const codesOf = (debts: Blocks, sources?: Blocks) => issuesOf(debts, sources).map(i => i.code);
+  const loan = (role: string, hedge?: Record<string, unknown> | string) =>
+    ({ rate_type: 'floating', ...(hedge === undefined ? {} : { rate_hedge: hedge }), _role: role });
+  const replace = { ...HEDGE, post_expiration_assumption: 'replace' };
+  const escrowed = (role?: string) =>
+    ({ uses: { rate_cap_cost: 1, escrows: [{ name: 'rate_cap_replacement', upfront: 300_000 }] }, ...(role ? { _role: role } : {}) });
 
-\`\`\`json uw:section=sources_uses source=manual ts=2026-09-15T00:00:00Z v=1
-${JSON.stringify({ uses: { escrows: [{ name: 'rate_cap_replacement', upfront: 300_000 }] } }, null, 2)}
-\`\`\`
-`;
-    const esc = validateUWFile(parseUWFile(doc)).issues.filter(i => i.code === 'ESC-04');
-    expect(esc.map(i => i.message)).toEqual([
-      'ESC-04: a rate_cap_replacement escrow requires replace and cannot coexist with outright funding (found undefined)',
-    ]);
+  it('D1: refuses a malformed hedge on two seniors with one HDG-08 on rate_hedge', () => {
+    const issues = issuesOf([['a', loan('senior', 'a cap')], ['b', loan('senior')]]);
+    expect(issues.map(i => [i.code, i.field])).toEqual([['HDG-08', 'rate_hedge']]);
+  });
+
+  it('D1: reports HDG-08, not a misleading ESC-04, for a lawful replace escrow', () => {
+    expect(codesOf([['a', loan('senior', replace)], ['b', loan('senior')]], [[null, escrowed()]]))
+      .toEqual(['HDG-08']);
+  });
+
+  it('D2: counts a hedge on any current block when none is eligible', () => {
+    expect(codesOf([['a', loan('component', HEDGE)], ['b', loan('component')]])).toEqual(['HDG-08']);
+  });
+
+  it('D2: still does not read a component hedge beside a selectable senior', () => {
+    expect(codesOf([['a', loan('senior')], ['b', loan('component', { ...HEDGE, strike_rate: 3.5 })]])).toEqual([]);
+  });
+
+  it('D3: runs the debt-only rules, then one HDG-08, when sources_uses refuses', () => {
+    const issues = issuesOf([[null, { rate_type: 'floating', rate_hedge: { ...HEDGE, strike_rate: 3.5 } }]],
+      [['a', escrowed('primary')], ['b', escrowed('primary')]]);
+    expect(issues.map(i => i.code)).toEqual(['HDG-01', 'HDG-08']);
+  });
+
+  it('D3: does not judge HDG-05 or ESC-04 against unselectable cash lines', () => {
+    // Both blocks disagree with the premium and both hold a replacement escrow
+    // the unhedged assumption forbids; neither rule can say which block counts.
+    expect(codesOf([[null, { rate_type: 'floating', rate_hedge: HEDGE }]],
+      [['a', escrowed('primary')], ['b', escrowed('primary')]])).toEqual(['HDG-08']);
+  });
+
+  it('reports one HDG-08 when both selections refuse', () => {
+    expect(codesOf([['a', loan('senior', replace)], ['b', loan('senior')]],
+      [['a', escrowed('primary')], ['b', escrowed('primary')]])).toEqual(['HDG-08']);
+  });
+
+  it('D7: keeps ESC-04 for a replacement escrow when no block states a hedge', () => {
+    expect(codesOf([['a', loan('senior')], ['b', loan('senior')]], [[null, escrowed()]])).toEqual(['ESC-04']);
+  });
+
+  it('D7: keeps ESC-04 when sources_uses is absent, not refused', () => {
+    expect(codesOf([['a', loan('senior', replace)]])).toEqual(['ESC-04']);
   });
 });
+

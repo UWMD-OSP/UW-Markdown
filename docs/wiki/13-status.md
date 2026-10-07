@@ -630,12 +630,10 @@ The guards:
 
 ## Remaining work
 
-- [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266) is
-  accepted by merging its implementation PR and ships in the release after
-  2.18.0. Its one unresolved question, what the hedge rules report when the
-  debt selection refuses, is answered by draft
-  [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md), which
-  waits on owner acceptance of D1–D7.
+- [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266, merged as
+  PR #276) and [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
+  (PR #277; D1–D7 accepted 2026-10-06) are `accepted` and implemented. They
+  ship in the release after 2.18.0.
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
@@ -844,30 +842,38 @@ funding passed unchecked. All seven of the issue's documents reproduced on
 - **Conformance.** Six `hedge/0075-*` cases, also run by the v2 driver.
   Against the pre-RFC code, all but `0075-two-seniors` fail; that one pins the
   refusal this RFC keeps.
-- **Undecided.** What the hedge rules report when the debt selection still
-  refuses. Today ESC-04 reads no hedge then, so a `rate_cap_replacement`
-  escrow is reported as lacking `replace`. That is pinned in undecided unit
-  tests, kept out of conformance, and left to a follow-up RFC.
+- **Merged.** PR #276, 2026-10-06, which records the acceptance. Its one
+  unresolved question is answered by RFC 0076, next entry.
 - **Release.** Not part of 2.18.0. The version labels are assigned at the next
   release preparation.
 
-## 2026-10-06 — Hedge checks under a refused selection (draft RFC 0076)
+## 2026-10-06 — Hedge checks under a refused selection (RFC 0076 accepted and implemented)
 
-Draft [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
-answers RFC 0075's unresolved question. It measured every refusal path: two
-`senior`, two `primary`, two `junior`, and components only. A role-free
-`debt_structure` never refuses, because the parser keeps one block.
-- **Today.** On a refused selection, a stated hedge is checked only if it
-  states `replacement_funding` (HDG-08). Otherwise it is silent, malformed or
-  not; CC-16 is `info` and names only the cross-checks. ESC-04 misreports a
-  lawful replacement escrow. The same false ESC-04 occurs when `sources_uses`
-  is the refused selection.
-- **Proposed.** One `HDG-08` for any stated hedge whose loan or cash lines
-  cannot be selected, and no evaluation of the rules that need the refused
-  side. That applies RFC 0070's "never treat it as absence" to the whole
-  family. Absent sections and documents with no hedge are unchanged.
-- **Status.** Draft. Nothing is defined or shipped. It waits on owner
-  acceptance of D1–D7.
+[RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md) answers
+RFC 0075's unresolved question. The owner accepted D1–D7 as recommended on
+2026-10-06, and PR #277 implements them.
+- **Measured first.** Every refusal path behaved alike: two `senior`, two
+  `primary`, two `junior`, and components only. A role-free
+  `debt_structure` never refuses, because the parser keeps one block. A
+  stated hedge was checked only if it stated `replacement_funding`.
+  Otherwise it was silent, malformed or not, and ESC-04 misreported a lawful
+  replacement escrow. The same false ESC-04 occurred when `sources_uses` was
+  the refused selection.
+- **Contract.** One `HDG-08` for any stated hedge whose loan or cash lines
+  cannot be selected. No rule that needs the refused side is evaluated; on a
+  refused `sources_uses` the debt-only rules still run. The verifier reports
+  `unresolvable_source`. Format §4.7/§4.8 and Protocol §V.12.1 say so.
+- **Implemented.** `checkReplacementFundingStructure` sets an internal
+  `selectionRefused` flag, kept apart from `unresolvable` (which a missing
+  cash-flow variant also sets), and the validator skips ESC-04 on it. No
+  export or type changes.
+- **Not changed.** An absent `sources_uses` or `uses` still gets ESC-04.
+  Documents with no stated hedge, resolvable documents, CC-16 and coverage
+  are unchanged.
+- **Conformance.** Eight `hedge/0076-*` cases. Against the RFC 0075 code all
+  fail except the no-hedge control, which pins D7. Decided unit tests
+  replace RFC 0075's two `undecided:` pins.
+- **Release.** With RFC 0075, in the release after 2.18.0.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 

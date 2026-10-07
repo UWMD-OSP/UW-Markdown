@@ -47,6 +47,13 @@ export interface ReplacementFundingStructure {
   issues: ValidationMessage[];
   funding: 'absent' | 'escrow' | 'outright' | 'invalid';
   unresolvable: boolean;
+  /**
+   * A stated hedge's `debt_structure` or `sources_uses` selection refused
+   * (RFC 0076). The rules that compare the two sides, HDG-05 and ESC-04, are
+   * then not evaluated. A missing cash_flow_series variant is `unresolvable`
+   * but not this.
+   */
+  selectionRefused: boolean;
   context: ReplacementFundingBindingContext | null;
   ref: ReplacementCashFlowRef | null;
   series: CashFlowRow[] | null;
@@ -59,6 +66,7 @@ export function checkReplacementFundingStructure(
     issues: [],
     funding: 'absent',
     unresolvable: false,
+    selectionRefused: false,
     context: null,
     ref: null,
     series: null,
@@ -71,23 +79,42 @@ export function checkReplacementFundingStructure(
       field: suffix ? `${at}.${suffix}` : at,
       message: `${code}: ${message}`,
     });
+  // A stated hedge whose loan or cash lines cannot be selected is refused,
+  // never read as absent (RFC 0076, extending RFC 0070 §V.12.1 step 1).
+  const refuse = (message: string) => {
+    out.unresolvable = true;
+    out.selectionRefused = true;
+    out.issues.push({
+      code: 'HDG-08',
+      severity: 'error',
+      section: 'debt_structure',
+      field: 'rate_hedge',
+      message: `HDG-08: ${message}`,
+    });
+    return out;
+  };
   // The hedge rules share one senior-preferring selection (RFC 0075).
   const debt = resolveRoleBlock(parsed.sections.debt_structure, 'debt_structure', [], 'HDG-08');
   if (debt.state === 'unresolvable') {
-    if (
-      sectionBlocks(parsed.sections.debt_structure).some(
-        (b) => deepGet(blockPayload(b), at) != null
-      )
-    ) {
-      out.funding = 'invalid';
-      out.unresolvable = true;
-      issue('HDG-08', '', 'replacement funding requires unambiguous property-level debt selection');
-    }
+    // RFC 0076 D2: any current block stating a hedge, as RFC 0070 scanned for funding.
+    const payloads = sectionBlocks(parsed.sections.debt_structure).map(blockPayload);
+    if (payloads.some((p) => deepGet(p, at) != null)) out.funding = 'invalid';
+    if (payloads.some((p) => deepGet(p, 'rate_hedge') != null))
+      return refuse('a stated rate_hedge requires unambiguous property-level debt selection');
     return out;
   }
   if (!debt.block) return out;
   const hedge = deepGet(blockPayload(debt.block), 'rate_hedge');
-  if (!record(hedge) || hedge.replacement_funding == null) return out;
+  if (hedge == null) return out;
+  // RFC 0076 D3: HDG-05 and ESC-04 need the cash side for any stated hedge.
+  // The debt-only rules, HDG-07 here, still run first.
+  const sourcesRefused =
+    resolveRoleBlock(parsed.sections.sources_uses, 'sources_uses').state === 'unresolvable';
+  const done = () =>
+    sourcesRefused
+      ? refuse('a stated rate_hedge requires stated sources_uses to resolve')
+      : out;
+  if (!record(hedge) || hedge.replacement_funding == null) return done();
   const funding = hedge.replacement_funding;
   out.funding = 'invalid';
   if (
@@ -106,19 +133,14 @@ export function checkReplacementFundingStructure(
       '',
       'replacement funding must be the closed escrow/outright union with its required members'
     );
-    return out;
+    return done();
   }
   out.funding = funding.mode;
   if (hedge.post_expiration_assumption !== 'replace') {
     issue('HDG-07', '', 'replacement funding requires post_expiration_assumption replace');
-    return out;
+    return done();
   }
-  const su = resolveRoleBlock(parsed.sections.sources_uses, 'sources_uses');
-  if (su.state === 'unresolvable') {
-    out.unresolvable = true;
-    issue('HDG-08', '', 'stated sources_uses must resolve to check replacement funding');
-    return out;
-  }
+  if (sourcesRefused) return done();
   if (funding.mode === 'escrow') return out;
   const ref = funding.cash_flow_ref as Record<string, unknown>;
   if (

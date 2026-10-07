@@ -30,17 +30,37 @@ protocol, and each package each carry an independent semver).
   senior.
 - **Conformance:** six `hedge/0075-*` cases, also run by the v2 driver.
   Against the previous implementation, all but the two-senior refusal fail.
-- **Left open:** what the hedge rules report when the debt selection still
-  refuses. Today's outcome is pinned in undecided unit tests, outside
-  conformance. Versions are assigned at the next release preparation.
+- **Answered by RFC 0076** (below): what the hedge rules report when the
+  debt selection still refuses. Versions are assigned at the next release
+  preparation.
 
-### Hedge checks under a refused selection (draft RFC 0076; no contract change)
+### Hedge checks under a refused selection (RFC 0076)
 
-- **Draft [RFC 0076](docs/rfcs/0076-hedge-checks-under-refused-selection.md)**
-  answers RFC 0075's unresolved question. It proposes one `HDG-08` for any
-  stated hedge whose `debt_structure` or `sources_uses` selection refuses,
-  instead of today's silence or misleading `ESC-04`. Nothing is defined or
-  shipped until it is accepted.
+- **A stated hedge whose loan or cash lines cannot be selected now reports
+  one `HDG-08`.** When the `debt_structure` or `sources_uses` selection
+  refused (two seniors, two primaries, two juniors, components only), the
+  hedge was read as absent. A hedge that stated no `replacement_funding` went
+  unchecked, malformed or not; only CC-16 `info`, which names the
+  cross-checks, reported anything. ESC-04 then misreported a lawful
+  `rate_cap_replacement` escrow as lacking `replace` (`found undefined`), or
+  a `replace` hedge as lacking its escrow. Format §4.7 (HDG-08), §4.8
+  (ESC-04) and Protocol §V.12.1 step 1 apply RFC 0070's "never treat it as
+  absence" to the whole family.
+- **What runs:** on a refused `debt_structure`, no other hedge rule and no
+  ESC-04. On a refused `sources_uses`, the debt-only rules (HDG-01–04, 06,
+  07) still run, and HDG-05 and ESC-04 are not judged.
+- **Verifier:** such documents report `unverifiable/unresolvable_source`,
+  also when no funding object is stated.
+- **Findings change** for role-bearing documents with a stated hedge and a
+  refused selection: an error where there was silence, or `HDG-08` in place
+  of a misleading `ESC-04`. Two pari-passu senior blocks with a cap are now
+  an error, as they already are for every lender-side cross-check.
+- **Not changed:** an absent `sources_uses` or `uses` (ESC-04 is still
+  enforced), documents with no stated hedge, resolvable documents, CC-16 and
+  coverage. No export or type changes; `HDG-08`'s remediation copy names the
+  new case.
+- **Conformance:** eight `hedge/0076-*` cases, also run by the v2 driver.
+  Against the RFC 0075 implementation, all but the no-hedge control fail.
 
 ## [2.18.0] - 2026-10-05
 

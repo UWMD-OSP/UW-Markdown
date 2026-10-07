@@ -204,3 +204,11 @@ selected under §5.3 with a registered `senior` preference. That is the same
 preference CC-02/03/05/09 use. A unique `senior` wins over `primary`,
 `default` and `base`. Two seniors still refuse, and a hedge stated only on a
 junior is not read.
+
+**When the loan or cash lines cannot be selected (RFC 0076).** A stated
+`rate_hedge` on a refused `debt_structure` (any current block counts when
+none is selected), or a readable one beside a refused `sources_uses`, reports
+one HDG-08. The rules that need the refused side are not evaluated, so
+ESC-04 never misreports an escrow it cannot pair with a hedge. The verifier
+says `unverifiable/unresolvable_source`. An absent section is not a refusal:
+ESC-04 still applies.

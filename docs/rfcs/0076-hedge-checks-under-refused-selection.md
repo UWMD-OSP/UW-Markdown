@@ -1,7 +1,8 @@
 ---
 rfc: 0076
 title: Refuse a stated rate hedge whose loan or cash lines cannot be selected
-status: draft
+status: accepted
+accepted: 2026-10-06
 author: claude-code (agent proposal)
 created: 2026-10-06
 depends_on:
@@ -18,12 +19,15 @@ affects:
 
 # RFC 0076: Refuse a stated rate hedge whose loan or cash lines cannot be selected
 
-**Draft for owner review.** A coding agent wrote this RFC. It answers
-[RFC 0075](0075-hedge-senior-role-preference.md)'s one unresolved question,
-which issue #266 also raised (its point 3). It changes no normative text,
-code or fixture by being here. Every decision below has a recommended answer
-drawn from existing contracts. The owner accepts, changes or rejects them.
-The implementation follows acceptance.
+**Accepted; implemented, not released.** A coding agent wrote this RFC. It
+answers [RFC 0075](0075-hedge-senior-role-preference.md)'s one unresolved
+question, which issue #266 also raised (its point 3). Each decision below was
+answered from existing contracts. On 2026-10-06 the owner accepted D1–D7 as
+recommended and directed implementation (see the
+[owner acceptance record](#owner-acceptance-record-2026-10-06)). The pull
+request that carries the implementation records that acceptance when it
+merges. The RFC stays `accepted` until a release ships it and publication is
+verified.
 
 ## Summary
 
@@ -94,7 +98,7 @@ replacement escrow**:
 
 ### Decisions
 
-| # | Question | Recommended answer | Why |
+| # | Question | Answer (accepted) | Why |
 |---|---|---|---|
 | D1 | What does a stated hedge report when the `debt_structure` selection refuses? | One `HDG-08`, with field `rate_hedge`. No other HDG rule and no ESC-04 is evaluated. | HDG-08 already is "require unambiguous property-level debt/sources selection" (format §4.7). Step 1's "never treat it as absence" is the existing rule. Evaluating HDG-01–06 on an arbitrary block would be choosing by fence order, which step 1 forbids. |
 | D2 | What counts as "stated" when no block is selected? | Any current `debt_structure` block with a non-null `rate_hedge`. | This is the scope today's HDG-08 already scans for `replacement_funding` (`sectionBlocks`, every current block), widened from the member to the object. One rule, one scope. |
@@ -139,10 +143,13 @@ After:
 ### Library
 
 No export, type or parameter changes. `checkReplacementFundingStructure`
-flags a refused selection for any stated hedge, not only a stated funding
-object. The validator's hedge pass reads that flag and skips HDG-05 and
-ESC-04. `HDG-08`'s remediation copy in `BUILTIN_REMEDIATIONS` gains the
-general case.
+(internal, not exported) flags a refused selection for any stated hedge, not
+only a stated funding object, in a new internal `selectionRefused` field.
+That is separate from `unresolvable`, which a missing `cash_flow_series`
+variant also sets. The validator's hedge pass skips ESC-04 on that flag.
+HDG-05 already skips, because its block reads return nothing. `HDG-08`'s
+description and remediation copy in `BUILTIN_REMEDIATIONS` gain the general
+case.
 
 ## Compatibility analysis
 
@@ -172,24 +179,31 @@ general case.
 
 ## Conformance impact
 
-No existing fixture changes. New `conformance/hedge/0076-*` cases, in the
-RFC 0070 expected.json shape, derived from 0070/0075 cases by editing only
-roles, keys and the hedge:
+No existing fixture changes. Eight new `conformance/hedge/0076-*` cases, in
+the RFC 0070 expected.json shape, derived from `0070-explicit-escrow` or
+`0070-ambiguous-sources` by editing only roles, keys, escrow lines and the
+hedge. "Before" is the RFC 0075 implementation:
 
-| Case | Codes today | Proposed | Verifier (proposed) |
+| Case | Before | After | Verifier (after) |
 |---|---|---|---|
-| `0076-two-seniors-hedge-unfunded` | none | HDG-08 | `unverifiable/unresolvable_source` |
-| `0076-two-seniors-hedge-malformed` | none | HDG-08 | `unverifiable/unresolvable_source` |
+| `0076-two-seniors-hedge-unfunded` | ESC-04 | HDG-08 | `unverifiable/unresolvable_source` |
+| `0076-two-seniors-hedge-malformed` | ESC-04 | HDG-08 | `unverifiable/unresolvable_source` |
 | `0076-two-seniors-replace-escrow` | ESC-04 | HDG-08 | `unverifiable/unresolvable_source` |
-| `0076-components-only-hedge` | none | HDG-08 | `unverifiable/unresolvable_source` |
+| `0076-components-only-hedge` | ESC-04 | HDG-08 | `unverifiable/unresolvable_source` |
 | `0076-sources-refused-replace` | ESC-04 | HDG-08 | `unverifiable/unresolvable_source` |
 | `0076-sources-refused-escrow-mode` | HDG-08, ESC-04 | HDG-08 | `unverifiable/unresolvable_source` |
 | `0076-sources-refused-malformed-hedge` | HDG-01 | HDG-01, HDG-08 | `unverifiable/unresolvable_source` |
 | `0076-two-seniors-no-hedge-escrow` (control) | ESC-04 | ESC-04 | `unverifiable/invalid_structure` |
 
+The four `debt_structure` cases inherit their source's lawful
+`rate_cap_replacement` escrow. Before this RFC each therefore showed the
+misleading ESC-04, whatever the hedge said: the hedge was read as absent, so
+the escrow looked unrequested.
+
 CC-16 still accompanies each refused case and is not part of the hedge
-projection. The control pins D7. RFC 0075's two `undecided:` unit tests in
-`validator.hedge.test.ts` are replaced by these cases.
+projection. The control pins D7. Against the RFC 0075 implementation, every
+case fails except the control. RFC 0075's two `undecided:` unit tests in
+`validator.hedge.test.ts` are replaced by decided ones.
 
 ## Reference implementation
 
@@ -217,7 +231,7 @@ projection. The control pins D7. RFC 0075's two `undecided:` unit tests in
 
 ## Unresolved questions
 
-None for the owner, beyond accepting or changing D1–D7.
+None. D1–D7 are accepted.
 
 Out of scope, recorded so it is not mistaken for decided: when `sources_uses`
 refuses and **no** hedge is stated, ESC-01–03 also go unevaluated and only
@@ -232,3 +246,10 @@ this RFC leaves it as it is.
   fallback, and CC-16 records skipped cross-checks.
 - JSON Schema's distinction between an absent property and an invalid one
   (`required` versus a failing subschema) mirrors D7's absence/refusal line.
+
+## Owner acceptance record (2026-10-06)
+
+The draft opened as PR #277. On 2026-10-06 the owner accepted D1–D7 as
+recommended and directed implementation on the same branch. No decision was
+changed. The implementation is in that pull request, and merging it records
+the acceptance.

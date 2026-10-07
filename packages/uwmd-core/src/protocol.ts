@@ -2144,9 +2144,9 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'HDG-08',
     severity: 'error',
     title: 'Invalid replacement payment reference',
-    description: 'Invalid replacement payment reference',
-    remediation: 'Select the exact current cash-flow variant and in-range row with legal series and digest syntax.',
-    spec_ref: '§4.7 / §4.8 RFC 0070',
+    description: 'Invalid replacement payment reference, or a stated hedge whose loan or cash lines cannot be selected',
+    remediation: 'Select the exact current cash-flow variant and in-range row with legal series and digest syntax. For a stated rate_hedge, give its loan a unique senior role and resolve any role collision in debt_structure or sources_uses.',
+    spec_ref: '§4.7 / §4.8 RFC 0070 / RFC 0076',
   },
   {
     code: 'HDG-09',
