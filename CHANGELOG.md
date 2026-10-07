@@ -34,6 +34,14 @@ protocol, and each package each carry an independent semver).
   refuses. Today's outcome is pinned in undecided unit tests, outside
   conformance. Versions are assigned at the next release preparation.
 
+### Hedge checks under a refused selection (draft RFC 0076; no contract change)
+
+- **Draft [RFC 0076](docs/rfcs/0076-hedge-checks-under-refused-selection.md)**
+  answers RFC 0075's unresolved question. It proposes one `HDG-08` for any
+  stated hedge whose `debt_structure` or `sources_uses` selection refuses,
+  instead of today's silence or misleading `ESC-04`. Nothing is defined or
+  shipped until it is accepted.
+
 ## [2.18.0] - 2026-10-05
 
 ### Prepared package pairing

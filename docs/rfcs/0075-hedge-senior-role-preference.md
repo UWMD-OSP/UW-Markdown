@@ -216,6 +216,8 @@ Against the implementation before this RFC, every case fails except
    for any stated hedge, or to stay silent. Each is a new MUST. This RFC does
    not decide it. `validator.hedge.test.ts` pins today's outcome in tests
    labelled undecided, outside conformance. A follow-up RFC can choose.
+   Draft [RFC 0076](0076-hedge-checks-under-refused-selection.md) proposes
+   an answer. It also covers the same defect when `sources_uses` refuses.
 
 ## Prior art
 

@@ -633,7 +633,9 @@ The guards:
 - [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266) is
   accepted by merging its implementation PR and ships in the release after
   2.18.0. Its one unresolved question, what the hedge rules report when the
-  debt selection refuses, needs a follow-up RFC.
+  debt selection refuses, is answered by draft
+  [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md), which
+  waits on owner acceptance of D1–D7.
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
@@ -848,6 +850,24 @@ funding passed unchecked. All seven of the issue's documents reproduced on
   tests, kept out of conformance, and left to a follow-up RFC.
 - **Release.** Not part of 2.18.0. The version labels are assigned at the next
   release preparation.
+
+## 2026-10-06 — Hedge checks under a refused selection (draft RFC 0076)
+
+Draft [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
+answers RFC 0075's unresolved question. It measured every refusal path: two
+`senior`, two `primary`, two `junior`, and components only. A role-free
+`debt_structure` never refuses, because the parser keeps one block.
+- **Today.** On a refused selection, a stated hedge is checked only if it
+  states `replacement_funding` (HDG-08). Otherwise it is silent, malformed or
+  not; CC-16 is `info` and names only the cross-checks. ESC-04 misreports a
+  lawful replacement escrow. The same false ESC-04 occurs when `sources_uses`
+  is the refused selection.
+- **Proposed.** One `HDG-08` for any stated hedge whose loan or cash lines
+  cannot be selected, and no evaluation of the rules that need the refused
+  side. That applies RFC 0070's "never treat it as absence" to the whole
+  family. Absent sections and documents with no hedge are unchanged.
+- **Status.** Draft. Nothing is defined or shipped. It waits on owner
+  acceptance of D1–D7.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 
