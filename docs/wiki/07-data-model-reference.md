@@ -197,3 +197,10 @@ The JCS/SHA-256 preimage contains exactly currency_code (authored or null),
 row_index, fixed cash_flow_series section, complete ordered series and variant.
 Same-day rows retain their ordinals; no search, fallback or silent rebind occurs.
 HDG-07/08/10 are structural; HDG-09 is an actual async mismatch only.
+
+**Which loan carries the hedge (RFC 0075).** When `debt_structure` is a
+variant map, every HDG rule, ESC-04 and the binding verifier read one block,
+selected under §5.3 with a registered `senior` preference. That is the same
+preference CC-02/03/05/09 use. A unique `senior` wins over `primary`,
+`default` and `base`. Two seniors still refuse, and a hedge stated only on a
+junior is not read.

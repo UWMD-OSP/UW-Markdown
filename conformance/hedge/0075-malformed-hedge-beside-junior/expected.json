@@ -1,0 +1,11 @@
+{
+  "codes": [
+    "ESC-04",
+    "HDG-01"
+  ],
+  "verification": {
+    "state": "unverifiable",
+    "reason": "invalid_structure",
+    "codes": []
+  }
+}

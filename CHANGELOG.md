@@ -8,6 +8,32 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Rate hedges read from the senior loan (RFC 0075)
+
+- **The hedge and escrow rules now prefer `senior` on `debt_structure`.**
+  `HDG-01`–`HDG-10`, `ESC-04` and the RFC 0070 binding verifier read one
+  `debt_structure` block. They registered no role preference, so a hedged
+  senior beside a junior was refused (HDG-08) unless the senior was keyed
+  `default` or `base`. With the junior keyed `base`, the junior was read, and
+  the senior's outright replacement funding passed unchecked. They now share
+  the `senior` preference CC-02/03/05/09 already use (format §5.3 and §4.7,
+  protocol §V.12.1 step 1). Reported by StackUW as #266 (UPSTREAM-024).
+- **API.** `CROSS_CHECK_ROLE_PREFERENCE` gains eleven frozen entries,
+  `HDG-01`–`HDG-10` and `ESC-04`, each `{ debt_structure: "senior" }`. No
+  other export or type changes.
+- **Not changed:** `sources_uses` selection, refusal on two seniors,
+  component exclusion, RFC 0070's exact-variant reference, and documents with
+  one debt block or no roles. A hedge stated only on a non-selected junior is
+  not read, like any other field of that block.
+- **Findings can change** for a role-bearing `debt_structure` whose unique
+  senior was not the block read before. The real hedge checks now run on the
+  senior.
+- **Conformance:** six `hedge/0075-*` cases, also run by the v2 driver.
+  Against the previous implementation, all but the two-senior refusal fail.
+- **Left open:** what the hedge rules report when the debt selection still
+  refuses. Today's outcome is pinned in undecided unit tests, outside
+  conformance. Versions are assigned at the next release preparation.
+
 ## [2.18.0] - 2026-10-05
 
 ### Prepared package pairing

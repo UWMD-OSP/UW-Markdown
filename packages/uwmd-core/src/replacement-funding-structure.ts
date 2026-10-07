@@ -71,7 +71,8 @@ export function checkReplacementFundingStructure(
       field: suffix ? `${at}.${suffix}` : at,
       message: `${code}: ${message}`,
     });
-  const debt = resolveRoleBlock(parsed.sections.debt_structure, 'debt_structure');
+  // The hedge rules share one senior-preferring selection (RFC 0075).
+  const debt = resolveRoleBlock(parsed.sections.debt_structure, 'debt_structure', [], 'HDG-08');
   if (debt.state === 'unresolvable') {
     if (
       sectionBlocks(parsed.sections.debt_structure).some(

@@ -209,7 +209,8 @@ for (const scenario of dirs(T3)) {
 }
 
 // RFC 0070 complete-validation contract: independent of structural result.
-for (const scenario of dirs(join(CONFORMANCE, 'hedge')).filter(n => n.startsWith('0070-'))) {
+// RFC 0075's senior-preference cases carry the same expected.json shape.
+for (const scenario of dirs(join(CONFORMANCE, 'hedge')).filter(n => n.startsWith('0070-') || n.startsWith('0075-'))) {
   const dir = join(CONFORMANCE, 'hedge', scenario);
   const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
   add(`replacement-funding/${scenario}`, '1', 'validate', ['deal.uwx.md', '--json'], dir, {

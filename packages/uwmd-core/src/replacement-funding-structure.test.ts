@@ -68,6 +68,27 @@ describe('RFC 0070 synchronous structure', () => {
   });
 });
 
+describe('RFC 0075 senior selection', () => {
+  const tranche = (name: string) =>
+    parseUWFile(
+      readFileSync(resolve(process.cwd(), `../../conformance/hedge/0075-${name}/deal.uwx.md`), 'utf8')
+    );
+  it.each([
+    ['senior-junior-outright', 'outright'],
+    ['junior-keyed-base', 'outright'],
+    ['senior-junior-escrow', 'escrow'],
+    ['junior-only-hedge', 'absent'],
+  ])('%s reads the senior block (%s)', (name, funding) => {
+    const result = checkReplacementFundingStructure(tranche(name));
+    expect(result).toMatchObject({ issues: [], funding, unresolvable: false });
+  });
+  it('still refuses two seniors', () => {
+    const result = checkReplacementFundingStructure(tranche('two-seniors'));
+    expect(result.unresolvable).toBe(true);
+    expect(result.issues.map((i) => i.code)).toEqual(['HDG-08']);
+  });
+});
+
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { blockPayload } from './parser.js';

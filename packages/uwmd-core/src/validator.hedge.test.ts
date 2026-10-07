@@ -248,3 +248,73 @@ describe('RFC 0056 — the replacement tie (ESC-04)', () => {
     )).toEqual([]);
   });
 });
+
+describe('RFC 0075 — the hedge is read from the senior loan', () => {
+  /** A `debt_structure` variant map, one block per [variant, content]. */
+  const tranches = (...blocks: Array<[string, Record<string, unknown>]>): string[] =>
+    validateUWFile(parseUWFile(`---
+uw_version: "1.1"
+deal_id: TEST-HDG
+asset_class: office
+---
+
+${blocks.map(([variant, content]) => `\`\`\`json uw:section=debt_structure variant=${variant} source=manual ts=2026-09-15T00:00:00Z v=1
+${JSON.stringify(content, null, 2)}
+\`\`\``).join('\n\n')}
+`)).issues
+      .filter(i => i.code.startsWith('HDG-') || i.code.startsWith('ESC-'))
+      .map(i => i.code);
+  // A percent strike, so which block was read shows up as HDG-01.
+  const badHedge = (role: string) => ({ ...debt({}, { strike_rate: 3.5 }), _role: role });
+  const unhedged = (role: string) => ({ rate_type: 'floating', _role: role });
+
+  it('reads a unique senior beside a junior, whatever either is keyed', () => {
+    expect(tranches(['bridge', badHedge('senior')], ['mezz', unhedged('junior')])).toEqual(['HDG-01']);
+  });
+
+  it('does not let a junior keyed base capture the read', () => {
+    expect(tranches(['bridge', badHedge('senior')], ['base', unhedged('junior')])).toEqual(['HDG-01']);
+  });
+
+  it('prefers senior over a primary block', () => {
+    expect(tranches(['a', unhedged('primary')], ['b', badHedge('senior')])).toEqual(['HDG-01']);
+  });
+
+  it('does not read a hedge stated only on a non-selected junior', () => {
+    expect(tranches(['a', unhedged('senior')], ['b', badHedge('junior')])).toEqual([]);
+  });
+
+  it('leaves role-free documents on RFC 0040 key order', () => {
+    expect(tranches(['base', debt({}, { strike_rate: 3.5 })], ['mezz', { rate_type: 'floating' }])).toEqual(['HDG-01']);
+  });
+
+  // UNDECIDED (RFC 0075, unresolved question 1). When the debt selection
+  // refuses, the synchronous hedge checks other than RFC 0070's HDG-08 report
+  // nothing. The spec does not say what they should report; this pins today's
+  // outcome so a change to it is deliberate. It is not a conformance case.
+  it('undecided: two seniors silence the hedge checks', () => {
+    expect(tranches(['a', badHedge('senior')], ['b', unhedged('senior')])).toEqual([]);
+  });
+
+  it('undecided: two seniors make ESC-04 read no hedge', () => {
+    const replace = { ...debt({}, { post_expiration_assumption: 'replace' }), _role: 'senior' };
+    const doc = `---
+uw_version: "1.1"
+deal_id: TEST-HDG
+asset_class: office
+---
+
+${[['a', replace], ['b', unhedged('senior')]].map(([variant, content]) => `\`\`\`json uw:section=debt_structure variant=${variant} source=manual ts=2026-09-15T00:00:00Z v=1
+${JSON.stringify(content, null, 2)}
+\`\`\``).join('\n\n')}
+
+\`\`\`json uw:section=sources_uses source=manual ts=2026-09-15T00:00:00Z v=1
+${JSON.stringify({ uses: { escrows: [{ name: 'rate_cap_replacement', upfront: 300_000 }] } }, null, 2)}
+\`\`\`
+`;
+    const esc = validateUWFile(parseUWFile(doc)).issues.filter(i => i.code === 'ESC-04');
+    expect(esc.map(i => i.message)).toEqual([
+      'ESC-04: a rate_cap_replacement escrow requires replace and cannot coexist with outright funding (found undefined)',
+    ]);
+  });
+});

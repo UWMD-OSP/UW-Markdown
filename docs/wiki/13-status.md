@@ -630,6 +630,10 @@ The guards:
 
 ## Remaining work
 
+- [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266) is
+  accepted by merging its implementation PR and ships in the release after
+  2.18.0. Its one unresolved question, what the hedge rules report when the
+  debt selection refuses, needs a follow-up RFC.
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
@@ -814,6 +818,36 @@ the implementation, PR #273, on 2026-10-06.
     declaration twice.
 - **Release.** Protocol 2.22.0 carries the rules in the 2.18.0 preparation.
   The RFC stays `accepted` until that release ships.
+
+## 2026-10-06 — Rate hedges read from the senior loan (#266, RFC 0075)
+
+StackUW (UPSTREAM-024) reported that the hedge and escrow rules registered no
+role preference. With a `senior` and a `junior` `debt_structure`, neither keyed
+`default` or `base`, the hedge was refused (HDG-08). With the junior keyed
+`base`, the hedge rules read the junior, and the senior's outright replacement
+funding passed unchecked. All seven of the issue's documents reproduced on
+`main` at `b042af2`.
+- **Contract.** [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md)
+  registers `senior` on `debt_structure` for `HDG-01`–`HDG-10` and `ESC-04`,
+  as one shared selection. That is the preference CC-02/03/05/09 already use.
+  Format §5.3 and §4.7 and Protocol §V.12.1 step 1 say so. The PR that
+  carries the RFC also implements it, and merging it records the acceptance.
+- **Implemented.** `CROSS_CHECK_ROLE_PREFERENCE` gains eleven entries. The
+  validator's hedge pass and `checkReplacementFundingStructure` (which the
+  async verifier shares) pass a hedge rule code to the existing resolver. No
+  other API changes.
+- **Not changed.** `sources_uses` selection, refusal on two seniors,
+  component exclusion, RFC 0070's exact-variant reference, and role-free
+  documents. A hedge stated only on a non-selected junior is not read (D3).
+- **Conformance.** Six `hedge/0075-*` cases, also run by the v2 driver.
+  Against the pre-RFC code, all but `0075-two-seniors` fail; that one pins the
+  refusal this RFC keeps.
+- **Undecided.** What the hedge rules report when the debt selection still
+  refuses. Today ESC-04 reads no hedge then, so a `rate_cap_replacement`
+  escrow is reported as lacking `replace`. That is pinned in undecided unit
+  tests, kept out of conformance, and left to a follow-up RFC.
+- **Release.** Not part of 2.18.0. The version labels are assigned at the next
+  release preparation.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 

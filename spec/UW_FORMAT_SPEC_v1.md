@@ -1585,6 +1585,9 @@ from `jurisdiction`, which is a label.
 
 **Rate hedges (RFC 0056).** `rate_hedge` is OPTIONAL and types what
 `rate_cap_pct` only gestures at. A loan stating neither is unchanged.
+When `debt_structure` is a variant map, the hedge rules read the one block
+§5.3 selects for them, preferring `senior` (RFC 0075). A hedge on any other
+block is not read.
 
 ```json
 "rate_hedge": {
@@ -3305,7 +3308,10 @@ For eligible variants, try (1) explicit check preference (`t12` on CC-01's
 operating statement, `appraisal` on CC-08's due diligence); (2) unique check
 role; (3) unique `primary`; (4) `default`; (5) `base`; (6) sole eligible
 variant. CC-01 prefers `detail` on rent_roll; CC-02/03/05/09 prefer `senior`
-on debt_structure (`CROSS_CHECK_ROLE_PREFERENCE`). A consulted role collision
+on debt_structure. The rate-hedge and escrow rules `HDG-01`–`HDG-10` and
+`ESC-04` (§4.7/§4.8) also prefer `senior` on debt_structure, as one shared
+selection, so a hedge is read from the senior loan (RFC 0075). All of these
+are registered in `CROSS_CHECK_ROLE_PREFERENCE`. A consulted role collision
 MUST refuse immediately, without fallback. An earlier successful key selection
 does not consult later roles. Repeated components are allowed but excluded.
 

@@ -441,6 +441,11 @@ missing sources_uses/uses ESC-04 regressions. Existing 17 hedge fixtures are
 unchanged. expected.json carries structural codes separately from verification
 state/reason/codes; HDG-09 occurs only in the latter.
 
+`hedge/0075-*` adds 6 cases for RFC 0075's `senior` preference, in the same
+expected.json shape: a senior beside a junior (outright and escrow), a junior
+keyed `base`, two seniors (still refused), a malformed senior hedge beside a
+junior, and a hedge stated only on the junior (not read).
+
 Unit controls cover unavailable crypto, pre-await immutability, known-answer
 Node/browser parity and explicitly unchecked consumers. The reviewed-rebind
 case intentionally targets an unrelated outflow with a fresh digest: UWMD can
