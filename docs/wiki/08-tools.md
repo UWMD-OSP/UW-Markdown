@@ -41,6 +41,38 @@ Command | Purpose
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
+### Validation, completeness and receipt reporting
+
+The source CLI reporting changes are implemented but unreleased as of 2026-10-03.
+`validate` labels its validation result separately from **Stage Readiness
+(workflow completeness)**, the existing `stage_readiness` section/field checks.
+An incomplete later stage is informational; it does not by itself make a clean
+document invalid. Existing issue severities remain authoritative. Skipped
+cross-checks retain their reason counts and are not claimed to agree. Lite
+syntax validation explicitly leaves workflow and cross-checks unchecked.
+
+`validate` does not resolve receipt-pack metrics or verify an earlier receipt.
+Those lines say **not checked**. `receipt issue` reports **Receipt issued**,
+metric completeness, computed count, uncomputed calc IDs, canonicalization and
+document/results hashes. Partial metric coverage still produces the pack's
+complete result/status set. Missing inputs differ from verification failure;
+no asset equity allocation is inferred from portfolio capitalization.
+
+Issuance refusals print the existing `ReceiptError` code and available calc
+message/pointer, including unresolved metric, section and variants. A missing
+pack remains `RCP_PACK_UNRESOLVED`; no other pack is substituted. `receipt verify`
+labels the independent verification verdict and retains expected/actual mismatch
+details. JSON modes and `receipt issue --stdout` remain payload-only; schemas,
+codes, result semantics and exit behavior are unchanged. A failed
+recomputation's diagnostic `message` text, including in `receipt verify
+--json`, now carries the calc message and pointer.
+
+**Terminology boundary:** Stage Readiness and `stage_readiness` are public,
+spec-described terms, so this change adds an explanation rather than renaming
+the contract. A future terminology RFC could consider “workflow completeness”
+while deciding compatibility for the public field and documentation together.
+See [receipt semantics](../UW_RECEIPTS.md#validation-completeness-and-hashes).
+
 ### Cash-flow metric verification
 
 `verify-cash-flows <file> [--variant <name>] [--json]` uses the CLI-only
