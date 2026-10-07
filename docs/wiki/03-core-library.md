@@ -288,17 +288,42 @@ never executed, and `sections` were declared and never looked for.
 - `checkModuleSections(parsed, manifest)` — presence only. Validating contents
   against the declared JSON Schema needs a validator core does not depend on.
 
-**Declaration conflicts (Protocol §VII.3).** `createModuleRegistry` refuses
-a module that declares a section id, calculation id or view-model
-`section_id` that an *unrelated* loaded module already declares:
-`PROTO-MOD-080`, `-081` or `-082`, and the whole registry is refused.
-- **Unrelated** means that no `depends_on` path joins the two in either
-  direction. Since a dependency always loads first, the check is whether
-  the new module depends on the earlier declarer, directly or
-  transitively, so the code is the same in either listing order.
-- **Related pairs** load as they always have, and the runtime runs both
-  declarations in registry order. What "the dependent module's
-  declarations override" means is draft RFC 0074's question.
+**Declaration conflicts and overrides (Protocol §VII.3, RFC 0074).**
+`createModuleRegistry` tracks, per namespace, which module's declaration is
+in effect for each section id, calculation id and view-model `section_id`.
+Any refusal refuses the whole registry.
+- **Overrides.** A module may redeclare an id only if it names the current
+  owner in its own `depends_on`. It then becomes the owner. Otherwise the
+  code is `PROTO-MOD-080`, `-081` or `-082`. That covers unrelated
+  modules, sibling dependents, a transitive-only path, and a module that
+  names A while B's override of A is in effect.
+- **`PROTO-MOD-083`, prior-result readers.** A calculation reading an
+  overridden id must be the overriding module's own, declared after the
+  id, or belong to a module that depends on the overriding module. The
+  exemption is the first declarer's calculations before the id. A
+  replacement that reads its own id is refused. Reads come
+  from the parsed expression (`priorResultReads`: identifiers and path
+  heads only). The check runs from whichever side loads second, so the
+  verdict does not depend on listing order.
+- **`PROTO-MOD-084`, scope.** The overriding module must apply wherever
+  the overridden one does: `asset_classes` plus `declares_asset_classes`,
+  with none meaning every class (`coversScope`).
+- **Runtime.** `evaluateModuleCalculations` skips an overridden
+  calculation, so the replacement runs once, in its own module's
+  declaration order. `validateAgainstModules` checks only the effective
+  section declaration. `getModuleCalculationsForAssetClass` lists the
+  effective declaration once per id, and substitutes it when the owner
+  is not among the listed modules.
+- **Ownership is internal.** It lives in a `WeakMap` beside the registry
+  (`declarationOwnersOf`, `ownsDeclaration` in `modules.ts`, not
+  exported from `index.ts`). `ModuleRegistry` is unchanged, and a
+  hand-built registry has no overrides.
+- **`checkModuleSections(parsed, manifest)`** takes no registry, so it
+  checks one manifest's own `required` flags whether or not they are
+  overridden. Use `validateAgainstModules` for effective declarations.
+- **No new loader check for the Protocol floor.** An overriding manifest's
+  `requires_protocol` floor (§X, RFC 0074 P6) is enforced by the existing
+  `PROTO-MOD-030`.
 - **Within one manifest**, two view models for one `section_id` are outside
   §VII.3 and are not refused. Sections and calculations already refuse
   duplicates (`-036`, `-015`).

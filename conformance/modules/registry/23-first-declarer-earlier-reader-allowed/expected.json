@@ -1,0 +1,26 @@
+{
+  "description": "A's a_early reads shared_calc but is declared before it, so it never had a value to read. That is the one exemption in RFC 0074 P3.1, and the override loads.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_owners": {
+        "calculations": {
+          "shared_calc": "org.example.registry-b",
+          "a_early": "org.example.registry-a"
+        }
+      },
+      "expected_evaluation_order": [
+        "org.example.registry-a:a_early",
+        "org.example.registry-a:a_tail",
+        "org.example.registry-b:shared_calc"
+      ],
+      "expected_calcs": {
+        "a_tail": 7,
+        "shared_calc": 2
+      }
+    }
+  ]
+}

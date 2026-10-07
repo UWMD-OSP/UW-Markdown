@@ -114,8 +114,8 @@ strings, and each entry:
 A manifest that violates either rule is refused at load, with two new
 `PROTO-MOD` codes: one for a malformed list or entry, and one for an entry
 that repeats an identifier the manifest already uses. `PROTO-MOD-080`–`082`
-now hold the Protocol §VII.3 declaration conflicts, and draft RFC 0074
-proposes `PROTO-MOD-083`–`084`, so the candidates are `PROTO-MOD-085` and
+now hold the Protocol §VII.3 declaration conflicts, and RFC 0074 (accepted)
+takes `PROTO-MOD-083`–`084`, so the candidates are `PROTO-MOD-085` and
 `PROTO-MOD-086`. The numbers are confirmed against
 `verify-codes` at implementation.
 

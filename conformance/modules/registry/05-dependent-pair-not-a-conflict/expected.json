@@ -1,12 +1,31 @@
 {
-  "description": "B declares A in depends_on, so their shared declarations are not a §VII.3 conflict and the registry loads. Which declaration applies, and when, is draft RFC 0074's question and is deliberately not asserted. Listed before its dependency, B is refused by the existing dependency rule.",
+  "description": "B declares A in depends_on, so their shared section, calculation and view-model declarations are not a §VII.3 conflict. B's declarations override A's in all three namespaces (RFC 0074 P2), and shared_calc is evaluated once, as B's. Listed before its dependency, B is refused by the existing dependency rule.",
   "cases": [
     {
       "order": [
         "a",
         "b"
       ],
-      "expected_loads": true
+      "expected_owners": {
+        "sections": {
+          "shared_section": "org.example.registry-b"
+        },
+        "calculations": {
+          "shared_calc": "org.example.registry-b"
+        },
+        "view_models": {
+          "shared_section": "org.example.registry-b"
+        }
+      },
+      "expected_view_model_display_names": {
+        "shared_section": "B"
+      },
+      "expected_evaluation_order": [
+        "org.example.registry-b:shared_calc"
+      ],
+      "expected_calcs": {
+        "shared_calc": 2
+      }
     },
     {
       "order": [

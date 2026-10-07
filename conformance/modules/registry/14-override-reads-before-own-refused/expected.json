@@ -1,0 +1,14 @@
+{
+  "description": "B overrides shared_calc but declares b_early before its own shared_calc, reading it. B's override suppresses A's declaration, so b_early would read no value (RFC 0074 P3.1: the overriding module's reader must be declared after the id).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    }
+  ]
+}

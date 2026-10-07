@@ -311,3 +311,101 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
       .not.toThrow();
   });
 });
+
+// Protocol §VII.3: where a dependent redeclares a calculation or section id
+// its dependency declares, the dependency's declaration is suppressed and the
+// dependent's applies, in the dependent's own declaration order (§X).
+describe('dependent overrides at runtime (§VII.3)', () => {
+  const calc = (id: string, formula: string) => ({ id, label: id, formula, deterministic: true });
+  const mod = (id: string, calculations: ReturnType<typeof calc>[], dependsOn?: string): ModuleManifest => ({
+    ...BASE,
+    id,
+    calculations,
+    ...(dependsOn ? { depends_on: [{ id: dependsOn, version: '^1.0.0' }] } : {}),
+  });
+  const trace = (...modules: ModuleManifest[]) =>
+    evaluateModuleCalculations(file({}), registryOf(...modules)).map(
+      (o) => `${o.module_id}:${o.result.calc_id}=${o.result.value}`,
+    );
+
+  it("runs an override after the dependent's own earlier calculations it reads", () => {
+    // B declares y, then overrides x with a formula reading y. Running B's x
+    // anywhere before B's y would read y as absent.
+    const a = mod('org.example.a', [calc('x', '1')]);
+    const b = mod('org.example.b', [calc('y', '2'), calc('x', 'y * 100')], 'org.example.a');
+    expect(trace(a, b)).toEqual(['org.example.b:y=2', 'org.example.b:x=200']);
+  });
+
+  it('keeps both modules in declaration order around the overridden id, with one outcome for it', () => {
+    const a = mod('org.example.a', [calc('a_before', '5'), calc('x', '1'), calc('a_after', 'a_before + 1')]);
+    const b = mod(
+      'org.example.b',
+      [calc('b_before', '2'), calc('x', 'b_before * 100'), calc('b_after', 'x + 1')],
+      'org.example.a',
+    );
+    const outcomes = trace(a, b);
+    expect(outcomes).toEqual([
+      'org.example.a:a_before=5',
+      'org.example.a:a_after=6',
+      'org.example.b:b_before=2',
+      'org.example.b:x=200',
+      'org.example.b:b_after=201',
+    ]);
+    expect(outcomes.filter((o) => o.includes(':x='))).toHaveLength(1);
+  });
+
+  it('runs only the last override in a chain A <- B <- C, where C declares it', () => {
+    const a = mod('org.example.a', [calc('x', '1'), calc('a_tail', '7')]);
+    const b = mod('org.example.b', [calc('x', '2')], 'org.example.a');
+    const c = mod('org.example.c', [calc('c_head', '3'), calc('x', 'c_head * 10')], 'org.example.b');
+    expect(trace(a, b, c)).toEqual(['org.example.a:a_tail=7', 'org.example.c:c_head=3', 'org.example.c:x=30']);
+  });
+
+  // RFC 0074 P3.1: a dependency's later reader of an
+  // overridden id would run before the override and read it as absent, so the
+  // combination is refused at load rather than evaluated with a silent null.
+  it("never evaluates a dependency's later reader of an overridden id: the registry refuses", () => {
+    const a = mod('org.example.a', [calc('x', '1'), calc('reads_x', 'x + 10')]);
+    const b = mod('org.example.b', [calc('x', '2')], 'org.example.a');
+    expect(() => registryOf(a, b)).toThrow(/PROTO-MOD-083/);
+  });
+
+  it('feeds validation rules the overriding value', () => {
+    const base: ModuleManifest = {
+      ...BASE,
+      calculations: [calc('x', '1')],
+      validations: [{ code: 'CC-TOY-01', severity: 'warning', message: 'x is not 2', rule: 'x == 2' }],
+    };
+    const dependent = mod('org.example.toy-override', [calc('x', '2')], BASE.id);
+    expect(validateAgainstModules(file({}), registryOf(base, dependent))).toEqual([]);
+  });
+
+  it("checks a redeclared section once, against the dependent's declaration", () => {
+    const section = (required: boolean) => ({ id: 'hotel_extra', display_name: 'Extra', schema: { type: 'object' }, required });
+    const dep = { depends_on: [{ id: BASE.id, version: '^1.0.0' }] };
+    const base: ModuleManifest = { ...BASE, sections: [section(true)] };
+    const relaxed: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...dep, sections: [section(false)] };
+    expect(validateAgainstModules(file({}), registryOf(base, relaxed))).toEqual([]);
+
+    const plain: ModuleManifest = { ...BASE, sections: [section(false)] };
+    const strict: ModuleManifest = { ...BASE, id: 'org.example.toy-override', ...dep, sections: [section(true)] };
+    const issues = validateAgainstModules(file({}), registryOf(plain, strict));
+    expect(issues.map((i) => i.code)).toEqual(['MOD-SECTION-MISSING']);
+    expect(issues[0]?.message).toContain("'org.example.toy-override'");
+  });
+
+  it('keeps an overriding module off an older host through its own §VII.3 floor, via the existing path', () => {
+    // RFC 0074 P6, following RFC 0071: no new loader check. The overriding
+    // manifest's `requires_protocol` excludes pre-RFC hosts, which refuse it
+    // under §VII.2 step 3 instead of running both declarations. The floor is
+    // assigned at release preparation; 2.22.0 is a stand-in for this test only.
+    const HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY = '2.22.0';
+    const a = mod('org.example.a', [calc('x', '1')]);
+    const b = { ...mod('org.example.b', [calc('x', '2')], 'org.example.a'), requires_protocol: `>=${HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY}` };
+    const host = (protocolVersion: string) =>
+      createModuleRegistry({ modules: [a, b], hostTier: 'tier-4-agent-host', protocolVersion });
+    for (const older of ['2.21.0', '2.21.1']) expect(() => host(older)).toThrow(/PROTO-MOD-030/);
+    expect(evaluateModuleCalculations(file({}), host(HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY)).map((o) => o.result.value))
+      .toEqual([2]);
+  });
+});

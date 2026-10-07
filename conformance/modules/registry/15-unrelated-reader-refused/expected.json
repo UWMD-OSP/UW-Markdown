@@ -1,0 +1,35 @@
+{
+  "description": "R reads shared_calc and depends on neither A nor B. Nothing orders R after B's replacement, so the set is refused in every valid listing, including R listed before the dependency (RFC 0074 P3.1 and P3.3, owner decision O2). The verdict never depends on one listing happening to produce a value.",
+  "cases": [
+    {
+      "order": [
+        "r",
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    },
+    {
+      "order": [
+        "a",
+        "r",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    },
+    {
+      "order": [
+        "a",
+        "b",
+        "r"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-083"
+      ]
+    }
+  ]
+}

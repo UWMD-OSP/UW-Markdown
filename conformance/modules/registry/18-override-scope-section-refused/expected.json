@@ -1,0 +1,14 @@
+{
+  "description": "B overrides the section declaration for shared_section but applies only to hospitality, while A applies to multifamily. Scope coverage applies to sections (RFC 0074 P3.2). Kept apart from 19 because a refusal compares code sets, so one scenario could not show that both namespaces are checked.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-084"
+      ]
+    }
+  ]
+}

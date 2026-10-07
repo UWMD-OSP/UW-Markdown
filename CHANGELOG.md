@@ -74,42 +74,70 @@ protocol, and each package each carry an independent semver).
 - **"Unrelated" is the unambiguous case:** no `depends_on` path joins the
   two modules in either direction. That includes two sibling dependents of
   one module.
-- **Not changed:** a pair joined by `depends_on` loads exactly as before,
-  with both declarations. That includes a pair joined only through a chain.
-  What "the dependent module's declarations override" means is left to
-  draft RFC 0074. The module runtime, `ModuleRegistry` and the public
-  exports are unchanged.
+- **Pairs joined by `depends_on`** are governed by RFC 0074, below.
 - **Conformance:** the new `conformance/modules/registry/` suite covers
   refusal in both orders for all three namespaces and for sibling
-  dependents, and shows that a dependent pair is not a conflict. It asserts
-  nothing about which declaration applies.
+  dependents (scenarios 01–04).
 - No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
   every package version are unchanged. Protocol §VII.3 now names the
   reference codes, which is editorial.
 
-### Dependent declaration overrides (draft RFC 0074; no contract change)
+### Dependent declaration overrides (RFC 0074, accepted and implemented)
 
-- **Draft [RFC 0074](docs/rfcs/0074-module-declaration-override-semantics.md)**
-  proposes what Protocol §VII.3 means by "the dependent module's
-  declarations override":
-  - one effective declaration per id;
-  - the replacement runs where the dependent declares it;
-  - static load-time refusals when an override would leave a prior-result
-    consumer without a value (proposed `PROTO-MOD-083`);
-  - refusals when the overriding module does not apply wherever the
-    overridden one does (proposed `PROTO-MOD-084`).
-- **Split from PR #267.** Its later revisions implemented these rules and
-  found four ways a plausible reading of "override" silently produced
-  `null`. #267 keeps only the existing-contract repair: refusing unrelated
-  conflicts.
-- **Owner decisions (2026-10-05):**
-  - O1: only a direct `depends_on` on the current owner authorizes an
-    override; a transitive path does not.
-  - O2: the conservative, order-independent reader rule stays.
-  - O3: an overriding module MUST declare a `requires_protocol` floor that
-    excludes pre-RFC Protocol versions.
-- The RFC stays `draft`.
-- **No contract change.** Nothing is implemented or versioned.
+- **[RFC 0074](docs/rfcs/0074-module-declaration-override-semantics.md) is
+  accepted and implemented.** Protocol §VII.3 now defines what "the dependent
+  module's declarations override" means. Before, both declarations ran and
+  the last write won for later readers. Now:
+  - **One effective declaration per id**, in every namespace. An overridden
+    calculation is not evaluated, an overridden section's `required` flag
+    is not checked, and the dependent's view model is the one in effect.
+  - **The replacement runs where the dependent declares it.** Each module
+    keeps its own declaration order, and no cross-module scheduler is added.
+  - **Only a direct `depends_on` on the current owner authorizes an
+    override** (owner decision O1). A transitive path alone is a conflict,
+    `PROTO-MOD-080`–`082` by namespace, as is overriding past an
+    override already in effect.
+  - **`PROTO-MOD-083`** refuses an override that would leave a
+    prior-result reader without a value: a later reader in the overridden
+    module, a sibling dependent, an unrelated module, the overriding
+    module's own reader declared before its replacement, or a replacement
+    that reads its own id. Readers are found
+    by the expression parser, not text search. The verdict is the same in
+    every listing order (owner decision O2).
+  - **`PROTO-MOD-084`** refuses an override whose module does not apply
+    to every asset class the overridden module applies to.
+  - `getModuleCalculationsForAssetClass` lists one declaration per id, the
+    effective one, also in a chain whose owner is not among the listed
+    modules.
+- **Protocol floor (owner decision O3).** A module that overrides MUST
+  declare a `requires_protocol` range excluding every Protocol version
+  before the first release containing RFC 0074 (§X). The exact floor is
+  assigned at release preparation. As with RFC 0071, a pre-RFC host refuses
+  such a module through the existing `PROTO-MOD-030`; no loader check is
+  added.
+- **Compatibility.** A module set that loaded before can be refused now. In
+  an accepted set, no served value changes, except two cases. The overridden
+  declaration's own outcome disappears. And where a replacement fails to
+  evaluate, its readers now see absence instead of the overridden value. Modules that collide with nothing
+  are unaffected, and so are both first-party modules and every corpus
+  document.
+- **API.** Unchanged. Ownership is internal, kept beside the registry; the
+  conformance runner reads it through the library's internal accessor.
+- **Conformance.** `conformance/modules/registry/` grows from 5 to 24
+  scenarios. 05 now asserts that the dependent's declarations are in
+  effect. 06–24 cover:
+  - overrides in each namespace;
+  - each reader verdict in RFC 0074's table, including the first-declarer
+    exemption and a self-read;
+  - scope coverage per namespace;
+  - chain and sibling overrides, and the transitive-only pair;
+  - text that is not a read.
+
+  Against the pre-RFC implementation every scenario from 05 on fails,
+  except 22: it pins a sibling refusal that #267 already made.
+- **Versions.** Format 2.0 is unchanged. The Protocol label stays 2.21.0
+  until release preparation selects the version, and no package version
+  changes here.
 
 ### Renamed identifiers (draft RFC 0073; no contract change)
 

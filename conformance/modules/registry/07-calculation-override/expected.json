@@ -1,0 +1,42 @@
+{
+  "description": "B depends on A and redeclares shared_calc after its own b_first, with a formula reading b_first. A's shared_calc is suppressed; B's runs once, where B declares it, so it reads b_first (20) and B's later b_after reads the override (21). Each module keeps its declaration order (RFC 0074 P2.2). A's a_after does not read shared_calc; a later reader in A is refused instead (scenario 09). Listed before its dependency, B is refused by the existing dependency rule.",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b"
+      ],
+      "expected_owners": {
+        "calculations": {
+          "shared_calc": "org.example.registry-b",
+          "a_before": "org.example.registry-a",
+          "b_first": "org.example.registry-b"
+        }
+      },
+      "expected_evaluation_order": [
+        "org.example.registry-a:a_before",
+        "org.example.registry-a:a_after",
+        "org.example.registry-b:b_first",
+        "org.example.registry-b:shared_calc",
+        "org.example.registry-b:b_after"
+      ],
+      "expected_calcs": {
+        "a_before": 5,
+        "a_after": 6,
+        "b_first": 2,
+        "shared_calc": 20,
+        "b_after": 21
+      },
+      "expected_codes": []
+    },
+    {
+      "order": [
+        "b",
+        "a"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-027"
+      ]
+    }
+  ]
+}

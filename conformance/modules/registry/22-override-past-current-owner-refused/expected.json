@@ -1,0 +1,25 @@
+{
+  "description": "B and C both depend on A and both redeclare A's shared_calc. Whichever loads second names A while the other's override is in effect, so it would silently undo that override: a conflict in either order (RFC 0074 P1.2 and P1.3).",
+  "cases": [
+    {
+      "order": [
+        "a",
+        "b",
+        "c"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    },
+    {
+      "order": [
+        "a",
+        "c",
+        "b"
+      ],
+      "expected_refusal": [
+        "PROTO-MOD-081"
+      ]
+    }
+  ]
+}

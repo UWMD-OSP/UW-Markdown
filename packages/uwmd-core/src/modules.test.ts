@@ -5,6 +5,7 @@ import type { ModuleManifest } from './protocol.js';
 import {
   ModuleRegistryError,
   createModuleRegistry,
+  declarationOwnersOf,
   getModuleCalculationsForAssetClass,
   loadModuleManifest,
 } from './modules.js';
@@ -261,11 +262,10 @@ describe('createModuleRegistry', () => {
   });
 });
 
-// Protocol §VII.3: two unrelated loaded modules may not declare the same
-// section id, calculation id or view-model section_id. What an override by a
-// dependent means is draft RFC 0074's question; these tests pin only that a
-// related pair is not refused, as it never was.
-describe('createModuleRegistry — §VII.3 unrelated declaration conflicts', () => {
+// Protocol §VII.3: two unrelated modules may not declare the same section id,
+// calculation id or view-model section_id; a dependent's declaration overrides
+// its dependency's. No outcome may depend on registry order.
+describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
   const module = (id: string, extra: Partial<ModuleManifest> = {}): ModuleManifest => ({
     manifest_version: '1',
     id,
@@ -279,16 +279,16 @@ describe('createModuleRegistry — §VII.3 unrelated declaration conflicts', () 
     requires_tier: 'tier-3-calc-host',
     ...extra,
   });
-  const section = (id: string) => ({ id, display_name: id, schema: { type: 'object' } });
+  const section = (id: string, required = false) => ({ id, display_name: id, schema: { type: 'object' }, required });
   const calc = (id: string, formula: string) => ({ id, label: id, formula, deterministic: true });
-  const viewModel = (section_id: string) => ({
+  const viewModel = (section_id: string, display_name: string) => ({
     section_id,
-    display_name: section_id,
+    display_name,
     display_order: 30,
-    description: section_id,
+    description: display_name,
     primary_fields: [],
   });
-  const dep = (...ids: string[]) => ({ depends_on: ids.map((id) => ({ id, version: '^1.0.0' })) });
+  const dep = (id: string) => ({ depends_on: [{ id, version: '^1.0.0' }] });
   const codesOf = (modules: ModuleManifest[]): string[] => {
     try {
       createModuleRegistry({ modules });
@@ -299,56 +299,82 @@ describe('createModuleRegistry — §VII.3 unrelated declaration conflicts', () 
   };
 
   const NAMESPACES = [
-    { name: 'section', code: 'PROTO-MOD-080', decl: () => ({ sections: [section('shared')] }) },
-    { name: 'calculation', code: 'PROTO-MOD-081', decl: () => ({ calculations: [calc('shared', '1')] }) },
-    { name: 'view model', code: 'PROTO-MOD-082', decl: () => ({ view_models: [viewModel('shared')] }) },
+    { name: 'section', code: 'PROTO-MOD-080', decl: (v: string) => ({ sections: [section('shared', v === 'b')] }) },
+    {
+      name: 'calculation',
+      code: 'PROTO-MOD-081',
+      decl: (v: string) => ({ calculations: [calc('shared', v === 'a' ? '1' : '2')] }),
+    },
+    { name: 'view model', code: 'PROTO-MOD-082', decl: (v: string) => ({ view_models: [viewModel('shared', v)] }) },
   ] as const;
 
   for (const ns of NAMESPACES) {
     describe(ns.name, () => {
-      const a = module('org.example.a', ns.decl());
-      const b = module('org.example.b', ns.decl());
+      const a = module('org.example.a', ns.decl('a'));
+      const b = module('org.example.b', ns.decl('b'));
+      const bDependent = module('org.example.b', { ...ns.decl('b'), ...dep('org.example.a') });
 
       it('refuses two unrelated modules in either order, with the same code', () => {
         expect(codesOf([a, b])).toEqual([ns.code]);
         expect(codesOf([b, a])).toEqual([ns.code]);
       });
 
-      it('does not refuse a pair joined by depends_on', () => {
-        expect(codesOf([a, module('org.example.b', { ...ns.decl(), ...dep('org.example.a') })])).toEqual([]);
+      it('lets a dependent override the declaration of its dependency', () => {
+        const registry = createModuleRegistry({ modules: [a, bDependent] });
+        const map = {
+          section: declarationOwnersOf(registry)!.sections,
+          calculation: declarationOwnersOf(registry)!.calculations,
+          'view model': declarationOwnersOf(registry)!.view_models,
+        }[ns.name];
+        expect(map.get('shared')).toBe('org.example.b');
+      });
+
+      it('refuses the reversed order through the existing dependency rule, not by picking a winner', () => {
+        // A dependent listed before its dependency has never loaded
+        // (PROTO-MOD-027), so an override has exactly one possible outcome.
+        expect(codesOf([bDependent, a])).toEqual(['PROTO-MOD-027']);
       });
     });
   }
 
-  it('refuses the whole registry, reporting every conflicting namespace', () => {
+  it('reports every conflicting namespace of a refused module', () => {
     const a = module('org.example.a', { sections: [section('s')], calculations: [calc('c', '1')] });
     const b = module('org.example.b', { sections: [section('s')], calculations: [calc('c', '2'), calc('own', '3')] });
-    expect(() => createModuleRegistry({ modules: [a, b] })).toThrow(ModuleRegistryError);
     expect(codesOf([a, b]).sort()).toEqual(['PROTO-MOD-080', 'PROTO-MOD-081']);
   });
 
-  it('refuses two siblings of one dependency, which are unrelated to each other', () => {
-    const a = module('org.example.a');
+  it('follows a chain: C overrides B, which overrides A', () => {
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
+    const registry = createModuleRegistry({ modules: [a, b, c] });
+    expect(declarationOwnersOf(registry)!.calculations.get('x')).toBe('org.example.c');
+  });
+
+  it('refuses two siblings that both override one dependency, in either order', () => {
+    // The second sibling names A, but B's override of A is in effect, and
+    // replacing it would silently undo B.
+    const a = module('org.example.a', { calculations: [calc('x', '1')] });
     const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
     const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.a') });
     expect(codesOf([a, b, c])).toEqual(['PROTO-MOD-081']);
     expect(codesOf([a, c, b])).toEqual(['PROTO-MOD-081']);
   });
 
-  it('leaves a pair joined only through a chain as it was, pending RFC 0074', () => {
-    // C depends on B, B on A; A and C declare x, B does not. Whether a
-    // transitive path makes them related is RFC 0074's question; this fix
-    // refuses only pairs with no dependency path at all.
+  it('does not treat a transitive dependency as a declared one', () => {
+    // C depends on B, B on A; B does not declare x. §VII.3 relates modules
+    // that declare one another in depends_on, so C may not override A's x.
     const a = module('org.example.a', { calculations: [calc('x', '1')] });
     const b = module('org.example.b', dep('org.example.a'));
     const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
-    expect(codesOf([a, b, c])).toEqual([]);
+    expect(codesOf([a, b, c])).toEqual(['PROTO-MOD-081']);
   });
 
-  it('keeps the existing dependency rule for a dependent listed first', () => {
-    const a = module('org.example.a', { calculations: [calc('x', '1')] });
+  it('refuses a dependency cycle through the existing dependency rule', () => {
+    const a = module('org.example.a', { calculations: [calc('x', '1')], ...dep('org.example.b') });
     const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
-    expect(codesOf([b, a])).toEqual(['PROTO-MOD-027']);
+    expect(codesOf([a, b])).toContain('PROTO-MOD-027');
+    expect(codesOf([b, a])).toContain('PROTO-MOD-027');
   });
 
   it('keeps refusing duplicates inside one manifest where it already did', () => {
@@ -356,5 +382,242 @@ describe('createModuleRegistry — §VII.3 unrelated declaration conflicts', () 
     expect(codesOf([module('org.example.a', { calculations: [calc('x', '1'), calc('x', '2')] })])).toContain(
       'PROTO-MOD-015',
     );
+  });
+
+  it('drops an overridden declaration from getModuleCalculationsForAssetClass, keeping module order', () => {
+    const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1'), calc('y', '3')] });
+    const b = module('org.example.b', {
+      asset_classes: ['office'],
+      calculations: [calc('x', '2')],
+      ...dep('org.example.a'),
+    });
+    const decls = getModuleCalculationsForAssetClass(createModuleRegistry({ modules: [a, b] }), 'office');
+    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['y=3', 'x=2']);
+  });
+
+  it('lists the effective declaration when the overriding module is not among the listed modules', () => {
+    // B names no asset class, so the helper's office list holds only A; the id
+    // must not vanish from it.
+    const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1'), calc('y', '3')] });
+    const b = module('org.example.b', { calculations: [calc('x', '2')], ...dep('org.example.a') });
+    const decls = getModuleCalculationsForAssetClass(createModuleRegistry({ modules: [a, b] }), 'office');
+    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['x=2', 'y=3']);
+  });
+
+  it('lists an unlisted chain owner once, though two listed modules declared the id', () => {
+    // A <- B <- C: A and B name office, C names nothing and owns x.
+    const a = module('org.example.a', { asset_classes: ['office'], calculations: [calc('x', '1')] });
+    const b = module('org.example.b', { asset_classes: ['office'], calculations: [calc('x', '2')], ...dep('org.example.a') });
+    const c = module('org.example.c', { calculations: [calc('x', '3')], ...dep('org.example.b') });
+    const decls = getModuleCalculationsForAssetClass(createModuleRegistry({ modules: [a, b, c] }), 'office');
+    expect(decls.map((d) => `${d.id}=${d.formula}`)).toEqual(['x=3']);
+  });
+
+  // RFC 0074 P3.1: an override may not remove a prior result that a later
+  // calculation of the overridden module reads.
+  describe("calculation overrides and the overridden module's later readers", () => {
+    const A = 'org.example.a';
+    const B = 'org.example.b';
+    const C = 'org.example.c';
+    const withCalcs = (id: string, calcs: ReturnType<typeof calc>[], dependsOn?: string) =>
+      module(id, { calculations: calcs, ...(dependsOn ? dep(dependsOn) : {}) });
+
+    it('allows an override when no later calculation of the dependency reads the id', () => {
+      const a = withCalcs(A, [calc('x', '1'), calc('other', '5')]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual([]);
+    });
+
+    it('refuses an override when a later calculation of the dependency reads the id', () => {
+      const a = withCalcs(A, [calc('x', '1'), calc('reads_x', 'x + 1')]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual(['PROTO-MOD-083']);
+    });
+
+    it('counts a path head as a read, wherever it sits in the expression', () => {
+      for (const formula of ['x.amount', 'max(1, x)', 'flag ? 0 : -x', 'other == 1 && x > 0']) {
+        const a = withCalcs(A, [calc('x', '1'), calc('flag', 'true'), calc('other', '1'), calc('later', formula)]);
+        expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)]), formula).toEqual(['PROTO-MOD-083']);
+      }
+    });
+
+    it('ignores calculations declared before the overridden id, whatever they read', () => {
+      const a = withCalcs(A, [calc('early', 'property.units'), calc('early_x', 'x'), calc('x', '1'), calc('tail', 'early + 1')]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual([]);
+    });
+
+    it('does not count the id as text in a string, a later path segment, a bracket key or a period-path head', () => {
+      const a = withCalcs(A, [
+        calc('x', '1'),
+        calc('as_string', "'x'"),
+        calc('as_segment', 'property.x'),
+        calc('as_bracket', "property['x']"),
+        // A period path resolves through the document's sections, never prior_results.
+        calc('as_period_head', 'x.annual_cash_flows@Y1.noi'),
+      ]);
+      expect(codesOf([a, withCalcs(B, [calc('x', '2')], A)])).toEqual([]);
+    });
+
+    it("allows an override that reads the dependent's own earlier calculation (evaluated in module-runtime.test.ts)", () => {
+      const a = withCalcs(A, [calc('x', '1')]);
+      const b = withCalcs(B, [calc('y', '4'), calc('x', 'y * 10')], A);
+      expect(codesOf([a, b])).toEqual([]);
+    });
+
+    it('checks each edge of a chain against the module whose declaration it replaces', () => {
+      const a = withCalcs(A, [calc('x', '1'), calc('a_tail', '7')]);
+      const bOk = withCalcs(B, [calc('x', '2'), calc('b_other', '3')], A);
+      const bReads = withCalcs(B, [calc('x', '2'), calc('b_reads', 'x * 2')], A);
+      const c = withCalcs(C, [calc('x', '3')], B);
+      // Valid: neither A nor B reads x after declaring it.
+      expect(codesOf([a, bOk, c])).toEqual([]);
+      // Refused at C's edge: B, whose declaration C replaces, reads x later.
+      expect(codesOf([a, bReads, c])).toEqual(['PROTO-MOD-083']);
+      // Refused at B's edge: A reads x later, so B never claims it.
+      const aReads = withCalcs(A, [calc('x', '1'), calc('a_reads', 'x')]);
+      // C then has no loaded B to depend on.
+      expect(codesOf([aReads, bOk, c])).toEqual(['PROTO-MOD-083', 'PROTO-MOD-027']);
+    });
+  });
+
+  // An override suppresses the replaced calculation everywhere, so every reader
+  // of the id must be guaranteed to run after the replacement. The only
+  // cross-module ordering guarantee is a dependency (§VII.2).
+  describe('calculation overrides and readers in other modules', () => {
+    const A = 'org.example.a';
+    const B = 'org.example.b';
+    const C = 'org.example.c';
+    const D = 'org.example.d';
+    const withCalcs = (id: string, calcs: ReturnType<typeof calc>[], ...dependsOn: string[]) =>
+      module(id, {
+        calculations: calcs,
+        ...(dependsOn.length ? { depends_on: dependsOn.map((d) => ({ id: d, version: '^1.0.0' })) } : {}),
+      });
+    const a = withCalcs(A, [calc('x', '1')]);
+    const bOverride = withCalcs(B, [calc('x', '2')], A);
+
+    it('refuses an override when another dependent of the dependency reads the id, in either valid order', () => {
+      const cReads = withCalcs(C, [calc('c_reads', 'x + 1')], A);
+      // A, C, B: C was loaded first and would run before the replacement.
+      expect(codesOf([a, cReads, bOverride])).toEqual(['PROTO-MOD-083']);
+      // A, B, C: same set, so the same verdict; C does not depend on B.
+      expect(codesOf([a, bOverride, cReads])).toEqual(['PROTO-MOD-083']);
+    });
+
+    it('allows the same modules when the other dependent does not read the id', () => {
+      const cOther = withCalcs(C, [calc('c_other', '5')], A);
+      expect(codesOf([a, cOther, bOverride])).toEqual([]);
+      expect(codesOf([a, bOverride, cOther])).toEqual([]);
+    });
+
+    it('does not count the id appearing as text in another module', () => {
+      const cText = withCalcs(C, [calc('c_s', "'x'"), calc('c_seg', 'property.x'), calc('c_key', "property['x']")], A);
+      expect(codesOf([a, cText, bOverride])).toEqual([]);
+    });
+
+    it('allows a reader that depends on the overriding module, directly or transitively', () => {
+      const cDirect = withCalcs(C, [calc('c_reads', 'x + 1')], B);
+      expect(codesOf([a, bOverride, cDirect])).toEqual([]);
+      const cMid = withCalcs(C, [calc('c_other', '5')], B);
+      const dTransitive = withCalcs(D, [calc('d_reads', 'x * 2')], C);
+      expect(codesOf([a, bOverride, cMid, dTransitive])).toEqual([]);
+    });
+
+    it('checks a chain against the current owner: a reader of B must depend on C once C overrides', () => {
+      const cConsumesB = withCalcs(C, [calc('c_reads', 'x + 1')], B);
+      const dOverridesB = withCalcs(D, [calc('x', '4')], B);
+      // C reads B's x and is loaded; D replacing B's x would run after C.
+      expect(codesOf([a, bOverride, cConsumesB, dOverridesB])).toEqual(['PROTO-MOD-083']);
+      // A reader that depends on D, the current owner, is served.
+      const eReads = withCalcs('org.example.e', [calc('e_reads', 'x')], D);
+      expect(codesOf([a, bOverride, dOverridesB, eReads])).toEqual([]);
+    });
+
+    it("refuses an override whose own module reads the id before replacing it", () => {
+      // B's uses_x read A's x; with A's suppressed and B's not yet run, it would read nothing.
+      const bReadsFirst = withCalcs(B, [calc('uses_x', 'x * 2'), calc('x', '2')], A);
+      expect(codesOf([a, bReadsFirst])).toEqual(['PROTO-MOD-083']);
+    });
+
+    it('refuses a replacement that reads its own id, which only the suppressed declaration supplied', () => {
+      // Before RFC 0074 this was 10, A's x threaded into B's; with A's
+      // suppressed it would evaluate to null.
+      expect(codesOf([a, withCalcs(B, [calc('x', 'x * 10')], A)])).toEqual(['PROTO-MOD-083']);
+      // The same in a chain, against the current owner's declaration.
+      const bOver = withCalcs(B, [calc('x', '2')], A);
+      expect(codesOf([a, bOver, withCalcs(C, [calc('x', 'x + 1')], B)])).toEqual(['PROTO-MOD-083']);
+      // The first declarer's self-read never had a value and is not a reader.
+      expect(codesOf([withCalcs(A, [calc('x', 'x + 1')]), bOver])).toEqual([]);
+    });
+
+    it('refuses a reader listed before the dependency, so the verdict does not depend on order', () => {
+      const early = withCalcs(D, [calc('d_reads', 'x')]);
+      expect(codesOf([early, a, bOverride])).toEqual(['PROTO-MOD-083']);
+      expect(codesOf([a, bOverride, early])).toEqual(['PROTO-MOD-083']);
+      // Without the override nothing changes for that reader, and nothing refuses.
+      expect(codesOf([early, a])).toEqual([]);
+    });
+  });
+
+  // An override suppresses the replaced declaration on every document, so the
+  // overriding module must apply wherever the replaced module applies. Scope is
+  // the module runtime's: asset_classes plus declares_asset_classes, and a
+  // module naming neither applies to every class.
+  describe('override scope', () => {
+    const A = 'org.example.a';
+    const B = 'org.example.b';
+    const scoped = (id: string, extra: Partial<ModuleManifest>, dependsOn?: string) =>
+      module(id, { calculations: [calc('x', id === A ? '1' : '2')], ...extra, ...(dependsOn ? dep(dependsOn) : {}) });
+    const office = { asset_classes: ['office'] } as Partial<ModuleManifest>;
+
+    it('allows an override with the same scope', () => {
+      expect(codesOf([scoped(A, office), scoped(B, office, A)])).toEqual([]);
+    });
+
+    it('allows an override with a broader scope, or none', () => {
+      expect(codesOf([scoped(A, office), scoped(B, { asset_classes: ['office', 'retail'] }, A)])).toEqual([]);
+      expect(codesOf([scoped(A, office), scoped(B, {}, A)])).toEqual([]);
+      expect(codesOf([scoped(A, {}), scoped(B, {}, A)])).toEqual([]);
+    });
+
+    it('refuses an override with a narrower or disjoint scope', () => {
+      expect(codesOf([scoped(A, { asset_classes: ['office', 'retail'] }), scoped(B, office, A)])).toEqual(['PROTO-MOD-084']);
+      expect(codesOf([scoped(A, office), scoped(B, { asset_classes: ['hospitality'] }, A)])).toEqual(['PROTO-MOD-084']);
+    });
+
+    it('refuses a scoped override of an unscoped declaration', () => {
+      expect(codesOf([scoped(A, {}), scoped(B, office, A)])).toEqual(['PROTO-MOD-084']);
+    });
+
+    it('treats a declared custom asset class as part of the scope', () => {
+      const declares = (id: string) => ({
+        declares_asset_classes: [{ id, display_name: id }],
+      }) as Partial<ModuleManifest>;
+      const aCustom = scoped(A, declares('com.example.data_center'));
+      // Only a module that is unscoped, or declares the class itself, covers it.
+      expect(codesOf([aCustom, scoped(B, {}, A)])).toEqual([]);
+      expect(codesOf([aCustom, scoped(B, office, A)])).toEqual(['PROTO-MOD-084']);
+      expect(codesOf([aCustom, scoped(B, declares('com.example.cold_storage'), A)])).toEqual(['PROTO-MOD-084']);
+    });
+
+    it('applies to section and view-model overrides too', () => {
+      const s = { id: 'shared', display_name: 'Shared', schema: { type: 'object' } };
+      const vm = { section_id: 'shared', display_name: 'Shared', display_order: 30, description: 'd', primary_fields: [] };
+      const a = module(A, { ...office, sections: [s], view_models: [vm] });
+      const b = module(B, { asset_classes: ['hospitality'], sections: [s], view_models: [vm], ...dep(A) });
+      expect(codesOf([a, b])).toEqual(['PROTO-MOD-084', 'PROTO-MOD-084']);
+    });
+  });
+});
+
+describe('ModuleRegistry public shape', () => {
+  it('is unchanged by §VII.3: ownership is internal, not a registry field', () => {
+    const registry = createModuleRegistry({ modules: [BASE] });
+    expect(Object.keys(registry).sort()).toEqual(['byAssetClass', 'byId', 'calculationsByAssetClass', 'modules']);
+    expect(declarationOwnersOf(registry)?.calculations.get('rev_per_nrsf')).toBe(BASE.id);
+  });
+
+  it('treats a hand-built registry as having no overrides', () => {
+    const handBuilt = { ...createModuleRegistry({ modules: [BASE] }) };
+    expect(declarationOwnersOf(handBuilt)).toBeUndefined();
+    expect(getModuleCalculationsForAssetClass(handBuilt, 'self_storage')).toHaveLength(1);
   });
 });

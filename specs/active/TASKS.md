@@ -12,3 +12,9 @@ RFC 0071's implementation is complete in PR #250. Its completed matrix is archiv
 at `specs/archive/rfc-0071-calendar-date-predicate.md`. RFC 0071 remains
 `accepted`. No release, version or adoption work is active under that
 authorization.
+
+RFC 0074 is accepted and implemented in the PR that records its acceptance.
+It restores #267's `31ccff4` against the final RFC text and adds registry
+scenarios 06–24. RFC 0074 remains `accepted`, and as with RFC 0071, release
+preparation assigns its §X `requires_protocol` floor. No release, version or
+adoption work is active under that authorization.

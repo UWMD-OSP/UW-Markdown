@@ -18,7 +18,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unreleased RFC 0071,
+Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unreleased RFCs 0071 and 0074,
 remain outside the current released contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -615,6 +615,15 @@ The guards:
     calls the predicate, so no manifest needs a floor yet.
   - RFC 0068 is to adopt the predicate in a later revision of its own.
   - No numeric-type predicate is authorized.
+- [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) is
+  **accepted and implemented** (2026-10-05) but not released; see the
+  2026-10-05 dependent-overrides entry below.
+  - **Release preparation assigns its §X floor**, as for RFC 0071, in the
+    same release. It also raises `requires_protocol` on the overriding
+    fixture manifests in `conformance/modules/registry/` (those that
+    redeclare an id of a module they name in `depends_on`), which use
+    `>=1.0.0` until the floor exists. No first-party or corpus module overrides, so no shipped
+    manifest needs it.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
@@ -733,35 +742,48 @@ renamed-identifier review found.
   either direction. Sibling dependents of one module count as unrelated.
 - **Classification.** `bug` plus `conformance-gap`. No RFC and no version
   change.
-- **Deferred to draft RFC 0074.** A pair joined by `depends_on`, directly or
-  through a chain, loads as before. So do the dependent-override semantics:
-  which declaration runs, where, and the safety rules for prior-result
-  consumers and module scope. They were explored in earlier revisions of
-  PR #267 and split out at the normative boundary.
-- **Guard.** `modules.test.ts` covers this, along with the five-scenario
+- **Deferred to RFC 0074, now implemented (next entry).** Pairs joined by
+  `depends_on`, and the dependent-override semantics, were split out of
+  PR #267 at the normative boundary.
+- **Guard.** `modules.test.ts` covers this, along with scenarios 01–04 of the
   `conformance/modules/registry/` suite.
 - **Left open.** Two view models for one `section_id` inside one manifest
   are outside §VII.3 and are not refused.
 
-## 2026-10-05 — Dependent declaration overrides (draft RFC 0074)
+## 2026-10-05 — Dependent declaration overrides (RFC 0074 accepted and implemented)
 
-Draft [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md)
-defines what Protocol §VII.3's "the dependent module's declarations
-override" means. PR #267 implemented and tested the design in its later
-revisions (commit `31ccff4`), then split at the normative boundary: #267
-keeps only the refusal of unrelated conflicts.
-- **Proposed.** One effective declaration per id. The replacement runs in
-  the dependent's own declaration order, with no cross-module scheduler.
-  Static refusals cover an unserved prior-result reader (`PROTO-MOD-083`)
-  and an override narrower than the overridden module's scope
-  (`PROTO-MOD-084`).
-- **Owner decisions (2026-10-05).**
-  - O1: overrides require a direct `depends_on` on the current owner.
-  - O2: the conservative reader rule stays.
-  - O3: an overriding module MUST declare a `requires_protocol` floor (P6).
-  - The RFC stays `draft` and is not implemented.
-- **Until accepted.** A pair joined by `depends_on` loads as before, with
-  both declarations running in registry order.
+[RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) defines
+what Protocol §VII.3's "the dependent module's declarations override"
+means. The owner decided O1–O3 on 2026-10-05, and it is accepted with
+this implementation. Merging the implementation records the acceptance.
+- **Implemented.** The registry tracks one owner per id and namespace.
+  - Only a direct `depends_on` on the current owner authorizes an
+    override. Otherwise the code is `080`–`082` (O1).
+  - `PROTO-MOD-083` refuses an override that leaves a prior-result reader
+    unserved (O2, order-independent).
+  - `PROTO-MOD-084` refuses an override narrower than the overridden
+    module's scope.
+  - The runtime evaluates only the effective calculation and checks only
+    the effective section.
+- **Restored from design evidence.** The code and tests are #267's
+  `31ccff4`, which the reduction `7dc78b8` removed. `main` was
+  byte-identical to `7dc78b8` on those paths. They were checked against
+  the final RFC text and owner decisions: O1's direct-dependency rule and
+  O2's reader rule were already what `31ccff4` enforced.
+- **Specs.** Protocol §VII.3 states the rules, and §X states the O3 floor.
+  The floor follows RFC 0071's precedent: no loader check or code beyond
+  the existing `PROTO-MOD-030`.
+- **Conformance.** `conformance/modules/registry/` has 24 scenarios. Every
+  scenario from 05 on fails against the pre-RFC implementation, except
+  22, a sibling refusal #267 already made.
+- **Review fixes.** An independent review found two defects in `31ccff4`,
+  both now fixed with tests:
+  - a replacement that reads its own id loaded and evaluated to `null`.
+    It is now refused with `083` (scenario 20).
+  - in a chain, `getModuleCalculationsForAssetClass` listed the effective
+    declaration twice.
+- **Not released.** The Protocol label stays 2.21.0 and the RFC stays
+  `accepted` until a release carries it.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 
