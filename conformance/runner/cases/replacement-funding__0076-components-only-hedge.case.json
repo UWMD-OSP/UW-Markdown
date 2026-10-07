@@ -1,0 +1,19 @@
+{
+  "id": "replacement-funding/0076-components-only-hedge",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/hedge/0076-components-only-hedge",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "project": "replacement-funding",
+    "exit_code": 1
+  }
+}

@@ -1877,6 +1877,9 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
   const hasReplacement = names.has('rate_cap_replacement');
   const funding = checkReplacementFundingStructure(parsed);
   issues.push(...funding.issues);
+  // RFC 0076: with the hedge's loan or cash lines unselectable, HDG-08 says
+  // so and ESC-04 cannot be judged in either direction.
+  if (funding.selectionRefused) return;
   const outright = funding.funding === 'outright';
   if (wantsReplacement && !hasReplacement && !outright) {
     hedgeIssue(issues, 'ESC-04', 'sources_uses', 'uses.escrows',

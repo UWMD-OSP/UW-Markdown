@@ -1,0 +1,11 @@
+{
+  "codes": [
+    "HDG-01",
+    "HDG-08"
+  ],
+  "verification": {
+    "state": "unverifiable",
+    "reason": "unresolvable_source",
+    "codes": []
+  }
+}

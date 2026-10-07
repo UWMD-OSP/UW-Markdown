@@ -446,6 +446,12 @@ expected.json shape: a senior beside a junior (outright and escrow), a junior
 keyed `base`, two seniors (still refused), a malformed senior hedge beside a
 junior, and a hedge stated only on the junior (not read).
 
+`hedge/0076-*` adds 8 cases for RFC 0076: a stated hedge whose
+`debt_structure` (two seniors, components only) or `sources_uses` (two
+primaries) selection refuses reports one HDG-08 and verifies as
+`unverifiable/unresolvable_source`. The debt-only rules still run beside a
+refused `sources_uses`. A control with no hedge keeps ESC-04.
+
 Unit controls cover unavailable crypto, pre-await immutability, known-answer
 Node/browser parity and explicitly unchecked consumers. The reviewed-rebind
 case intentionally targets an unrelated outflow with a fresh digest: UWMD can

@@ -451,7 +451,11 @@ RFC 0075 adds six `hedge/0075-*` pairs in the same shape, each one a 0070 case
 with only roles, variant keys and one hedge edited. They pin the senior read
 beside a junior (outright and escrow), a junior keyed `base` that must not
 capture the read, a malformed senior hedge that keeps HDG-01, the junior-only
-hedge that is not read, and the two-senior refusal. The v2 generator picks up
-both prefixes. The `0070-*` and `0075-*` cases leave the 17 RFC 0056 pairs
+hedge that is not read, and the two-senior refusal. RFC 0076 adds eight
+`hedge/0076-*` pairs for refused selections: a stated hedge on two seniors or
+on components only, and one beside a refused `sources_uses`, each expecting a
+single HDG-08 in place of the old silence or false ESC-04. A no-hedge control
+keeps ESC-04. The v2 generator picks up all three prefixes. The RFC-numbered
+cases leave the 17 RFC 0056 pairs
 byte-identical; `replacement-funding.test.ts` checks this by excluding every
 RFC-numbered directory.

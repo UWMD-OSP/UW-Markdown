@@ -1643,6 +1643,12 @@ separate. No other modes/members, inline date/amount or successor terms exist.
   0040), exact current explicitly named §4.26 variant, no fallback, safe
   nonnegative in-range zero-based row index, legal ordered nonempty series,
   real dates/finite amounts/row kinds and digest syntax.
+  A stated `rate_hedge` (non-null, on any current `debt_structure` block when
+  none is selected) whose `debt_structure` or `sources_uses` selection is
+  ambiguous or unresolvable under §5.3 MUST report `HDG-08`, once. Rules that
+  read the refused section are not evaluated. Absent sections are not
+  refusals (§4.8 ESC-04). A section with no stated hedge reports nothing
+  here (RFC 0076).
 - `HDG-10` — bound payment MUST be nonpositive (explicit zero is valid) and
   strictly after the initial hedge effective_date. Payment may precede, equal
   or follow expiration. Invalid anchors retain HDG-01; no date is inferred.
@@ -1765,6 +1771,8 @@ consumer.
   MUST NOT coexist with a replacement escrow, even a zero-funded one.
   A replacement escrow requires `replace`. Missing sources_uses or uses is
   not an exemption: correcting that skip enforces released RFC 0056 behavior.
+  ESC-04 is not evaluated when a stated hedge's `debt_structure` or
+  `sources_uses` selection refuses. `HDG-08` reports that instead (RFC 0076).
   Existing valid escrow-funded documents need no edits or new currency field.
 
 **The renovation draw (RFC 0057).** `uses.renovation` is OPTIONAL and types what
