@@ -58,6 +58,15 @@ export function DcfModel(props: {
     ? (content['annual_cash_flows'] as Row[])
     : [];
 
+  // Footed when the redemption is stated; otherwise a stated figure is shown
+  // as stored, and a deal with neither shows no row.
+  const statedCommon = getNumeric(content, 'exit_analysis.net_proceeds_to_common_equity');
+  const commonProceeds =
+    footed('exit_analysis.net_proceeds_to_common_equity') ??
+    (statedCommon === undefined ? null : (
+      <span className="tabular-nums">{formatDerived(statedCommon, 'currency')}</span>
+    ));
+
   const addYear = () =>
     commit((c) => {
       const arr = (Array.isArray(c['annual_cash_flows']) ? c['annual_cash_flows'] : []) as Row[];
@@ -116,6 +125,16 @@ export function DcfModel(props: {
           <FootedRow label="Net proceeds to equity" emphatic>
             {footed('exit_analysis.net_proceeds_to_equity')}
           </FootedRow>
+          {/* RFC 0077: the whole equity stack above; common's residual after a
+              stated preferred redemption, which is never derived. */}
+          <InputRow
+            def={{ path: 'exit_analysis.preferred_equity_redemption_at_exit', label: 'Preferred equity redemption' }}
+            value={getNumeric(content, 'exit_analysis.preferred_equity_redemption_at_exit')}
+            onCommit={commitInput}
+          />
+          {commonProceeds !== null && (
+            <FootedRow label="Net proceeds to common equity">{commonProceeds}</FootedRow>
+          )}
         </div>
       </div>
 

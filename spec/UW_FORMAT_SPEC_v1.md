@@ -1902,6 +1902,8 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
     "exit_value_net": 0.0,
     "loan_balance_at_exit": 0.0,
     "net_proceeds_to_equity": 0.0,
+    "preferred_equity_redemption_at_exit": null,
+    "net_proceeds_to_common_equity": null,
     "exit_value_per_unit": null,
     "exit_value_per_sqft": null,
     "terminal_tax": {
@@ -1935,6 +1937,23 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
   }
 }
 ```
+
+**Exit proceeds (RFC 0077).** `exit_value_net` is the sale price less
+disposition costs. `loan_balance_at_exit` is the balance of every debt repaid
+from the sale. When a `capital_stack` (§ 4.24) is present, that is every
+`senior_debt`, `mezzanine_debt`, `bridge`, `seller_financing` and `other_debt`
+tranche, and never an equity-class tranche. `net_proceeds_to_equity` is the
+proceeds to the whole equity stack, preferred and common:
+`exit_value_net − loan_balance_at_exit`.
+
+`preferred_equity_redemption_at_exit` is OPTIONAL. It states the cash paid at
+the sale to retire every `preferred_equity` tranche, accrued return included.
+It is stated, never derived, and an agent MUST NOT invent it.
+`net_proceeds_to_common_equity` is OPTIONAL. When the redemption is stated, it
+is `net_proceeds_to_equity − preferred_equity_redemption_at_exit`. Without the
+redemption it is the producer's stated figure and is not footed. Splitting the
+equity stack's proceeds between partners belongs to `distribution_waterfall`
+(§ 4.27), not here.
 
 **`returns.tax_basis` (RFC 0038).** Declares the tax basis of every metric
 stated in `returns` — `levered_irr`, `unlevered_irr`, `equity_multiple`,

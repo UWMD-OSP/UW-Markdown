@@ -738,6 +738,13 @@ function exitAnalysis(ctx: Ctx): string | null {
     ['Net exit value', money(deepGet(exit, 'exit_value_net'))],
     ['Loan balance at exit', money(deepGet(exit, 'loan_balance_at_exit'))],
     ['Net proceeds to equity', money(deepGet(exit, 'net_proceeds_to_equity'))],
+    // RFC 0077: shown only when stated, so a single-loan report is unchanged.
+    ...(has(deepGet(exit, 'preferred_equity_redemption_at_exit'))
+      ? [['Preferred equity redemption', money(deepGet(exit, 'preferred_equity_redemption_at_exit'))] as [string, string]]
+      : []),
+    ...(has(deepGet(exit, 'net_proceeds_to_common_equity'))
+      ? [['Net proceeds to common equity', money(deepGet(exit, 'net_proceeds_to_common_equity'))] as [string, string]]
+      : []),
   ]);
 
   const returnTable = kvTable([

@@ -103,6 +103,40 @@ describe('DcfModel', () => {
     expect(deepGet(op.content, 'exit_analysis.net_proceeds_to_equity')).toBe(3_820_000);
   });
 
+  // RFC 0077: an unrelated edit keeps the whole-stack figure and re-foots common
+  // from the stated redemption, instead of overwriting a stated common residual.
+  it('re-foots proceeds to common equity from a stated preferred redemption', () => {
+    const dispatch = vi.fn();
+    const base = baseContent();
+    const content = {
+      ...base,
+      exit_analysis: { ...base.exit_analysis, preferred_equity_redemption_at_exit: 1_500_000 },
+    };
+    const { getByLabelText } = render(
+      <DcfModel sectionId="dcf" variant={undefined} block={block(content)} dispatch={dispatch} />,
+    );
+
+    editField(getByLabelText('Exit value (gross)'), '9000000');
+
+    const op = dispatchedOp(dispatch);
+    expect(deepGet(op.content, 'exit_analysis.preferred_equity_redemption_at_exit')).toBe(1_500_000);
+    expect(deepGet(op.content, 'exit_analysis.net_proceeds_to_equity')).toBe(3_820_000);
+    expect(deepGet(op.content, 'exit_analysis.net_proceeds_to_common_equity')).toBe(2_320_000);
+  });
+
+  it('takes the preferred redemption as an input', () => {
+    const dispatch = vi.fn();
+    const { getByLabelText } = render(
+      <DcfModel sectionId="dcf" variant={undefined} block={block(baseContent())} dispatch={dispatch} />,
+    );
+
+    editField(getByLabelText('Preferred equity redemption'), '1000000');
+
+    const op = dispatchedOp(dispatch);
+    // proceeds to equity = 8,000,000 × 0.98 − 5,000,000 = 2,840,000.
+    expect(deepGet(op.content, 'exit_analysis.net_proceeds_to_common_equity')).toBe(1_840_000);
+  });
+
   it('adds a projection year via a single dispatch', () => {
     const dispatch = vi.fn();
     const { getByText } = render(

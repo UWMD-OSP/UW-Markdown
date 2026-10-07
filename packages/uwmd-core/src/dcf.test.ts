@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { deriveDCF } from './dcf.js';
+import { parseUWFile } from './parser.js';
 
 function field(d: ReturnType<typeof deriveDCF>, path: string): number | undefined {
   return d.fields.find((f) => f.path === path)?.value;
@@ -68,6 +71,58 @@ describe('deriveDCF — exit waterfall', () => {
     expect(field(d, 'exit_analysis.disposition_costs')).toBeUndefined();
     expect(field(d, 'exit_analysis.exit_value_net')).toBe(975_000);
     expect(field(d, 'exit_analysis.net_proceeds_to_equity')).toBe(375_000);
+  });
+});
+
+describe('deriveDCF — proceeds to common equity (RFC 0077)', () => {
+  // Issue #278's synthetic exit: 10,000,000 gross, 2% costs, 6,000,000 of debt,
+  // and a preferred tranche retired at sale for 1,500,000.
+  const exit = (over: Record<string, unknown>) => ({
+    assumptions: { disposition_costs_pct: 0.02 },
+    exit_analysis: { exit_value_gross: 10_000_000, loan_balance_at_exit: 6_000_000, ...over },
+  });
+
+  it('keeps proceeds to equity as the whole stack and foots common after the pref', () => {
+    const d = deriveDCF(exit({ preferred_equity_redemption_at_exit: 1_500_000 }));
+    expect(field(d, 'exit_analysis.net_proceeds_to_equity')).toBe(3_800_000);
+    expect(field(d, 'exit_analysis.net_proceeds_to_common_equity')).toBe(2_300_000);
+  });
+
+  it('does not foot common without a stated redemption, and never derives one', () => {
+    const d = deriveDCF(exit({ net_proceeds_to_common_equity: 2_300_000 }));
+    expect(field(d, 'exit_analysis.net_proceeds_to_common_equity')).toBeUndefined();
+    expect(field(d, 'exit_analysis.preferred_equity_redemption_at_exit')).toBeUndefined();
+  });
+
+  it('foots common equal to the whole stack under a zero redemption', () => {
+    const d = deriveDCF(exit({ preferred_equity_redemption_at_exit: 0 }));
+    expect(field(d, 'exit_analysis.net_proceeds_to_common_equity')).toBe(3_800_000);
+  });
+
+  it('foots common from a stated proceeds-to-equity when the loan balance is absent', () => {
+    const d = deriveDCF({
+      exit_analysis: { net_proceeds_to_equity: 3_800_000, preferred_equity_redemption_at_exit: 1_500_000 },
+    });
+    expect(field(d, 'exit_analysis.net_proceeds_to_equity')).toBeUndefined();
+    expect(field(d, 'exit_analysis.net_proceeds_to_common_equity')).toBe(2_300_000);
+  });
+
+  it('foots exactly what the tier-1 fixture 17 states', () => {
+    const parsed = parseUWFile(readFileSync(resolve(process.cwd(),
+      '../../conformance/tier-1-reader/fixtures/17-exit-proceeds-junior-capital.uwx.md'), 'utf8'));
+    const content = (parsed.sections['dcf'] as { content: Record<string, unknown> }).content;
+    const stated = content['exit_analysis'] as Record<string, unknown>;
+    const d = deriveDCF(content);
+    expect(d.fields.map((f) => f.path)).toContain('exit_analysis.net_proceeds_to_common_equity');
+    for (const f of d.fields) expect([f.path, f.value]).toEqual([f.path, stated[f.path.replace('exit_analysis.', '')]]);
+  });
+
+  it('re-foots a stated common figure that disagrees with its inputs', () => {
+    const d = deriveDCF(exit({
+      preferred_equity_redemption_at_exit: 1_500_000,
+      net_proceeds_to_common_equity: 9_999,
+    }));
+    expect(field(d, 'exit_analysis.net_proceeds_to_common_equity')).toBe(2_300_000);
   });
 });
 

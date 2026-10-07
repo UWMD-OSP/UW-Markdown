@@ -14,6 +14,12 @@
 //     disposition_costs       = exit_value_gross × assumptions.disposition_costs_pct
 //     exit_value_net          = exit_value_gross − disposition_costs
 //     net_proceeds_to_equity  = exit_value_net − loan_balance_at_exit
+//     net_proceeds_to_common_equity
+//                             = net_proceeds_to_equity − preferred_equity_redemption_at_exit
+//
+//   net_proceeds_to_equity is the whole equity stack's (preferred and common)
+//   after every debt is repaid; the redemption is stated, never derived, since
+//   accrued pref needs conventions the format does not define (RFC 0077).
 //
 // Left as INPUTS on purpose (no unambiguous identity from stored fields):
 //   - exit_value_gross — capitalizes a *forward* NOI by convention (year N+1),
@@ -85,13 +91,27 @@ export function deriveDCF(content: Row): DCFDerivation {
       c.add('exit_analysis.exit_value_net', 'Exit Value (net of costs)', 'currency', net);
     }
 
+    let toEquity = num(exit['net_proceeds_to_equity']);
     const loanAtExit = num(exit['loan_balance_at_exit']);
     if (net != null && loanAtExit != null) {
+      toEquity = net - loanAtExit;
       c.add(
         'exit_analysis.net_proceeds_to_equity',
         'Net Sale Proceeds to Equity',
         'currency',
-        net - loanAtExit,
+        toEquity,
+      );
+    }
+
+    // Common's residual only when the producer states the redemption; without
+    // it a stated common figure stays an input.
+    const prefRedemption = num(exit['preferred_equity_redemption_at_exit']);
+    if (toEquity != null && prefRedemption != null) {
+      c.add(
+        'exit_analysis.net_proceeds_to_common_equity',
+        'Net Sale Proceeds to Common Equity',
+        'currency',
+        toEquity - prefRedemption,
       );
     }
   }

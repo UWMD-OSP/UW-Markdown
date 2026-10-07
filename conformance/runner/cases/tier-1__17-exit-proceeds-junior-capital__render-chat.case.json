@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/17-exit-proceeds-junior-capital/render-chat",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "17-exit-proceeds-junior-capital.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/17-exit-proceeds-junior-capital.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

@@ -24,5 +24,8 @@ The only open milestone is the owner's review and tagging of the 2.18.0
 preparation ([record](../../docs/releases/2.18.0-preparation.md)).
 
 RFC 0075 (#266, the hedge rules' `senior` preference) merged as PR #276.
-RFC 0076, which answers its one unresolved question, is implemented in PR #277,
-which records its acceptance. Neither is part of 2.18.0.
+RFC 0076, which answers its one unresolved question, merged as PR #277.
+Neither is part of 2.18.0.
+
+RFC 0077 (#278, exit proceeds with junior capital) is implemented in the PR
+that records its acceptance, for the same release.

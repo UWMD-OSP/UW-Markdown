@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/17-exit-proceeds-junior-capital/render-summary",
+  "tier": "1",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "17-exit-proceeds-junior-capital.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/17-exit-proceeds-junior-capital.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

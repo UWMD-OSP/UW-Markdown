@@ -1,0 +1,19 @@
+{
+  "id": "tier-1/17-exit-proceeds-junior-capital/validate",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "17-exit-proceeds-junior-capital.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/17-exit-proceeds-junior-capital.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

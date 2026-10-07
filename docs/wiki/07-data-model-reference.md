@@ -177,6 +177,17 @@ threshold?, title?, remediation?, spec_ref?, legacy_code? }` — `title`/
 `remediation`/`spec_ref` are filled from `BUILTIN_REMEDIATIONS` when a matching
 code exists.
 
+## Exit proceeds (RFC 0077)
+
+`dcf.exit_analysis` foots in one direction: gross sale, less disposition
+costs (`exit_value_net`), less `loan_balance_at_exit` (every debt repaid at
+sale, mezzanine included) gives `net_proceeds_to_equity`. That is the whole
+equity stack, preferred and common. Two optional fields split it.
+`preferred_equity_redemption_at_exit` is stated cash, never derived, because
+accrued pref needs conventions the format does not define.
+`net_proceeds_to_common_equity` is footed from it. Partner splits belong to
+§4.27, not here. `deriveDCF` is the single footing every tool shares.
+
 ## Replacement funding (RFC 0070, Protocol 2.21.0)
 
 §4.7 adds optional nullable `rate_hedge.replacement_funding`:
