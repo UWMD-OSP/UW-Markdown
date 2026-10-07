@@ -209,17 +209,14 @@ describe('checkModuleSections', () => {
 // predicate returns `false`, so the rule reports its own code through the
 // ordinary path; MOD-RULE-ERROR stays reserved for evaluation failures.
 describe('is_calendar_date in module rules (RFC 0071)', () => {
-  // HYPOTHETICAL — NOT THE RFC 0071 SHIPPING FLOOR. Nobody has selected the
-  // first Protocol release that contains RFC 0071; release preparation assigns
-  // it. This stand-in exists only to drive the existing semver refusal path
-  // (§VII.2 step 3) in a toy manifest, and to show why `>=` that release is
-  // required where `>2.21.0` would wrongly admit a hypothetical 2.21.1 that
-  // lacks the builtin. It appears in no real manifest, version matrix or
-  // protocol constant.
-  const HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY = '2.22.0';
+  // The §X floor: Protocol 2.22.0 is the first release that contains RFC
+  // 0071. It drives the existing semver refusal path (§VII.2 step 3) in a toy
+  // manifest, and shows why `>=` that release is required where `>2.21.0`
+  // would wrongly admit a hypothetical 2.21.1 that lacks the builtin.
+  const RFC_0071_FLOOR = '2.22.0';
   const RULES: ModuleManifest = {
     ...BASE,
-    requires_protocol: `>=${HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY}`,
+    requires_protocol: `>=${RFC_0071_FLOOR}`,
     validations: [
       // Required and valid, section-guarded as RFC 0068 writes its rules.
       { code: 'CC-TOY-DATE', severity: 'error', message: 'as_of_date missing or not a valid date', rule: 'site_facts == null || is_calendar_date(site_facts.as_of_date)' },
@@ -227,7 +224,7 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
       { code: 'CC-TOY-OPT', severity: 'error', message: 'closing_date not a valid date', rule: 'site_facts.closing_date == null || is_calendar_date(site_facts.closing_date)' },
     ],
   };
-  const host = () => createModuleRegistry({ modules: [RULES], hostTier: 'tier-4-agent-host', protocolVersion: HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY });
+  const host = () => createModuleRegistry({ modules: [RULES], hostTier: 'tier-4-agent-host', protocolVersion: RFC_0071_FLOOR });
   const codes = (content: Record<string, unknown>) =>
     validateAgainstModules(file({ site_facts: block('site_facts', content) }), host()).map((i) => i.code);
 
@@ -273,7 +270,7 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
     };
     const issues = validateAgainstModules(
       file({}),
-      createModuleRegistry({ modules: [broken], hostTier: 'tier-4-agent-host', protocolVersion: HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY }),
+      createModuleRegistry({ modules: [broken], hostTier: 'tier-4-agent-host', protocolVersion: RFC_0071_FLOOR }),
     );
     expect(issues.map((i) => i.code)).toEqual(['MOD-RULE-ERROR', 'MOD-RULE-ERROR']);
     expect(issues[0]?.message).toContain('CC-TOY-ARITY');
@@ -288,7 +285,7 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
       validations: [],
       calculations: [{ id: 'as_of_valid', label: 'As-of valid', formula: 'is_calendar_date(site_facts.as_of_date)', deterministic: true }],
     };
-    const registry = createModuleRegistry({ modules: [withCalc], hostTier: 'tier-4-agent-host', protocolVersion: HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY });
+    const registry = createModuleRegistry({ modules: [withCalc], hostTier: 'tier-4-agent-host', protocolVersion: RFC_0071_FLOOR });
     const run = (as_of_date: unknown) =>
       evaluateModuleCalculations(file({ site_facts: block('site_facts', { as_of_date }) }), registry)[0]?.result.value;
     expect(run('0000-02-29')).toBe(true);
@@ -397,15 +394,15 @@ describe('dependent overrides at runtime (§VII.3)', () => {
   it('keeps an overriding module off an older host through its own §VII.3 floor, via the existing path', () => {
     // RFC 0074 P6, following RFC 0071: no new loader check. The overriding
     // manifest's `requires_protocol` excludes pre-RFC hosts, which refuse it
-    // under §VII.2 step 3 instead of running both declarations. The floor is
-    // assigned at release preparation; 2.22.0 is a stand-in for this test only.
-    const HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY = '2.22.0';
+    // under §VII.2 step 3 instead of running both declarations. Protocol
+    // 2.22.0 is the first release that contains RFC 0074.
+    const RFC_0074_FLOOR = '2.22.0';
     const a = mod('org.example.a', [calc('x', '1')]);
-    const b = { ...mod('org.example.b', [calc('x', '2')], 'org.example.a'), requires_protocol: `>=${HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY}` };
+    const b = { ...mod('org.example.b', [calc('x', '2')], 'org.example.a'), requires_protocol: `>=${RFC_0074_FLOOR}` };
     const host = (protocolVersion: string) =>
       createModuleRegistry({ modules: [a, b], hostTier: 'tier-4-agent-host', protocolVersion });
     for (const older of ['2.21.0', '2.21.1']) expect(() => host(older)).toThrow(/PROTO-MOD-030/);
-    expect(evaluateModuleCalculations(file({}), host(HYPOTHETICAL_FIRST_RELEASE_FOR_TEST_ONLY)).map((o) => o.result.value))
+    expect(evaluateModuleCalculations(file({}), host(RFC_0074_FLOOR)).map((o) => o.result.value))
       .toEqual([2]);
   });
 });

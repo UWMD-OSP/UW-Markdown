@@ -257,7 +257,7 @@ fixture carries different values for each so the distinction cannot silently
 collapse. A test asserts they differ.
 
 Format §4.3 declares both counts and the dates they are measured on (RFC 0069,
-accepted, unreleased). `occupied_beds` is measured on the roll's `as_of_date`;
+Protocol 2.20.0). `occupied_beds` is measured on the roll's `as_of_date`;
 `preleased_beds` is measured on `preleased_as_of` for the term starting
 `preleased_term_start`. The validator's `BED-NN` rules refuse a stated count
 that is malformed, undated or above `property.total_beds`. An absent count

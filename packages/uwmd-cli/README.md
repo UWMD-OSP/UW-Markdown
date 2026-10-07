@@ -39,20 +39,18 @@ uwmd <command> [args]
 | `uwmd layers <file>` | Show the agent-context layer breakdown |
 | `uwmd manifest` | Print the implementation manifest JSON: core, Protocol and Format versions, and capabilities |
 
-The source checkout also implements `uwmd --version` (or `-V`), which prints
-the @uwmd/core, Protocol and Format versions. It is unreleased. Through
-2.17.0, `--version` printed the help text, so use `uwmd manifest` with
-published versions.
+`uwmd --version` (or `-V`) prints the @uwmd/core, Protocol and Format
+versions. Through 2.17.0, `--version` printed the help text; with those
+versions, use `uwmd manifest`.
 
-The source checkout also implements the **unreleased** read-only command
-`uwmd verify-cash-flows <file> [--variant <name>] [--json]`. It checks stated
-dated-cash-flow metrics with the existing verifier. Exit 0 means nonempty verified
-claims, 1 means failure/input refusal, and 3 means unverifiable or no stated
-metrics. This command is not included in CLI 2.9.0. See the
+The read-only command `uwmd verify-cash-flows <file> [--variant <name>] [--json]`
+checks stated dated-cash-flow metrics with the existing verifier. Exit 0 means
+nonempty verified claims, 1 means failure/input refusal, and 3 means
+unverifiable or no stated metrics. It is available from CLI 2.10.0. See the
 [workflow and limitations](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
 
-The source checkout also implements the **unreleased** read-only command
-`uwmd inspect-property-cash-flows <file> [--json]`. It inventories exact
+The read-only command `uwmd inspect-property-cash-flows <file> [--json]`,
+available from CLI 2.10.0, inventories exact
 lease-up variants, periods, supplemental rows and stated metric names so an
 author can prepare an RFC 0045 assembly plan without guessing the source
 shape. It never assigns cash-flow categories, dates, zeros or assertions. See

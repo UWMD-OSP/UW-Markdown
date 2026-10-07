@@ -43,7 +43,7 @@ CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
 
 ### Validation, completeness and receipt reporting
 
-The source CLI reporting changes are implemented but unreleased as of 2026-10-03.
+Core/CLI 2.18.0 carries these CLI reporting changes.
 `validate` labels its validation result separately from **Stage Readiness
 (workflow completeness)**, the existing `stage_readiness` section/field checks.
 An incomplete later stage is informational; it does not by itself make a clean

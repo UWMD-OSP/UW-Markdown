@@ -86,10 +86,14 @@ npx @uwmd/cli receipt verify Parkview-Apts-Glendale-AZ.uwx.md Parkview-Apts-Glen
 ```
 
 ```text
-Issued receipt … (org.uwmd.pack.multifamily@…, 8/8 outputs computed)
+Receipt issued for Parkview-Apts-Glendale-AZ.uwx.md → Parkview-Apts-Glendale-AZ.receipt.json (org.uwmd.pack.multifamily@…)
+Metric completeness: complete
+Computed: 8/8
+Uncomputed: none
+…
 A receipt attests that these outputs follow from this record. It does not attest that the inputs are true.
 
-Verdict: VERIFIED
+Receipt verification verdict: VERIFIED
 ```
 
 The multifamily calculation pack recomputed all eight metrics from the record's

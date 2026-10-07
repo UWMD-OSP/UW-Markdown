@@ -129,10 +129,9 @@ assertion onto its own registry.
 
 **Protocol floor.** Under Protocol §X (RFC 0074 P6), a manifest that
 redeclares an id declared by a module it names in `depends_on` must declare
-a `requires_protocol` floor at the first release containing RFC 0074. Most
-scenarios from 05 on contain such a manifest. That release is not yet
-chosen, so these fixtures use `>=1.0.0`, and release preparation raises
-them.
+a `requires_protocol` floor at the first release containing RFC 0074,
+Protocol 2.22.0. Each fixture manifest that does so declares `>=2.22.0`.
+Most scenarios from 05 on contain one.
 
 | Scenario | Pins |
 |---|---|

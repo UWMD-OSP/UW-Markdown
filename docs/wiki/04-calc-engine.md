@@ -120,8 +120,8 @@ This is why a multifamily formula like
 `noi_model.net_operating_income / valuation.purchase_price` works: `noi_model`
 resolves to the section's data, `.net_operating_income` drills in.
 
-**A section stated as a variant map** (RFC 0066, Protocol 2.19.0 source,
-unreleased) reads exactly one block. `resolveSectionBlock`
+**A section stated as a variant map** (RFC 0066, Protocol 2.19.0) reads
+exactly one block. `resolveSectionBlock`
 (`section-resolution.ts`) picks it in this order:
 
 1. the caller's `ctx.sectionVariants[<id>]`, with no fallback;
@@ -238,9 +238,9 @@ and impossible dates.
   calling it fires its own code on a bad date, not `MOD-RULE-ERROR`.
 - **Optional dates.** Use `x == null || is_calendar_date(x)`.
 - **Protocol floor.** A module that calls it must require a Protocol version
-  at or above the first release that contains RFC 0071 (Protocol §X).
-  Release preparation assigns that floor. `>2.21.0` would not do, because a
-  later 2.21.x patch would satisfy it.
+  at or above the first release that contains RFC 0071 (Protocol §X), so
+  `>=2.22.0`. `>2.21.0` would not do, because a 2.21.x patch would satisfy
+  it.
 - **Excel.** There is no Excel mapping. Both the core emitter and the
   `@uwmd/excel` custom-calculation export refuse it with `EXCEL-EMIT-FN`.
 - **Validity only.** The predicate does no date arithmetic. Day counts are a

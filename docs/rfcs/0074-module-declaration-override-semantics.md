@@ -2,7 +2,7 @@
 rfc: 0074
 title: What a dependent module's declaration override means
 status: accepted
-accepted: 2026-10-05
+accepted: 2026-10-06
 author: claude-code (agent proposal)
 created: 2026-10-05
 depends_on:
@@ -15,10 +15,13 @@ affects:
 
 # RFC 0074: What a dependent module's declaration override means
 
-**Accepted and implemented, not released.** A coding agent wrote this RFC.
-The owner settled O1–O3 on 2026-10-05 and directed its implementation the
-same day. The implementation PR carries the acceptance, and merging it
-records it. The RFC stays `accepted` until a release ships it.
+**Accepted and implemented.** A coding agent wrote this RFC. The owner
+settled O1–O3 on 2026-10-05 and directed its implementation the same day.
+The owner accepted it by merging the implementation, PR #273, on
+2026-10-06.
+Release preparation pairs it with Protocol 2.22.0 (see the
+[release-preparation direction](#owner-release-preparation-direction-2026-10-05)).
+The RFC stays `accepted` until a release ships it.
 
 ## Summary
 
@@ -252,8 +255,8 @@ RFC.
   outcomes and validation behavior can therefore differ materially. The
   collision with a named dependency is itself sufficient evidence that the
   override feature is in use.
-- **The floor.** The exact floor is assigned at release preparation, when that
-  release's version is selected. As with RFC 0071, a comparator that only
+- **The floor.** Release preparation assigned it: `>=2.22.0`, Protocol 2.22.0
+  being the first release that contains this RFC. As with RFC 0071, a comparator that only
   excludes the current label does not meet the requirement.
 - **Enforcement.** This follows RFC 0071's precedent for
   `is_calendar_date`. §VII.2 step 3 is the enforcement: an older host
@@ -366,7 +369,7 @@ evaluation order and values on a shared deal, and exact refusal-code sets.
 
 ## Unresolved questions
 
-No semantic question remains open. The owner decisions are recorded below, and the exact Protocol floor (P6) is assigned at release preparation. P6 adds no code, and its `requires_protocol` ranges are set by module authors.
+No semantic question remains open. The owner decisions are recorded below, and release preparation assigned the Protocol floor (P6): `>=2.22.0`. P6 adds no code, and its `requires_protocol` ranges are set by module authors.
 
 ### Owner decisions (2026-10-05)
 
@@ -418,7 +421,8 @@ Jared decided these on 2026-10-05.
 - **P6.** A module-runtime test shows an older host refusing an overriding
   module through `PROTO-MOD-030`, as RFC 0071's floor does. Release
   preparation assigns the floor and raises the overriding registry fixtures'
-  `requires_protocol` to it. Until then they use `>=1.0.0`.
+  `requires_protocol` to it. Until then they used `>=1.0.0`; the 2.18.0
+  preparation raised them to `>=2.22.0`.
 - **Conformance.** `conformance/modules/registry/` keeps #267's 01–04 and
   makes 05 assert the effective owners. It adds 06–24, one or more per row
   of [Conformance impact](#conformance-impact), plus the P1.2 sibling,
@@ -440,6 +444,19 @@ Jared decided these on 2026-10-05.
   19 (view models).
 - **Not changed.** Format, schemas, public exports, `ModuleRegistry` and
   version labels.
+
+## Owner release-preparation direction (2026-10-05)
+
+The owner directed 2.18.0 release preparation on 2026-10-05. It pairs core/CLI
+**2.18.0** with Protocol **2.22.0** and Format **2.0**. Protocol takes a minor
+version for the normative addition, following this RFC's version direction and
+the RFC 0070 precedent. The P6 floor is therefore `>=2.22.0`. The overriding manifests in `conformance/modules/registry/` (23 of them) now declare it, and so does the module-runtime P6 test. Preparation follows
+[wiki 11](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md),
+and [the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md)
+documents it. RFC 0074 remains `accepted` throughout preparation. It becomes
+`implemented` only after shipment and independent publication verification.
+Tagging and publication need separate owner action. The accepted semantics are
+unchanged.
 
 ## Prior art
 

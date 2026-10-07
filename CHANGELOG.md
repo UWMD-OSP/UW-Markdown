@@ -8,6 +8,37 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.18.0] - 2026-10-05
+
+### Prepared package pairing
+
+Core/CLI **2.18.0** pair with Protocol **2.22.0** and Format **2.0**.
+Signing **0.2.22**, batch **0.8.17**, Excel **0.9.10**, report **0.8.22**,
+lake **0.2.6** and both official modules **0.1.10** pin core **2.18.0**.
+Core's optional signing peer is **0.2.22**. Each dependent takes its existing
+patch-version step for the exact repin. The workflow scope is six packages:
+core, CLI, signing, batch, `@uwmd/module-hospitality` and
+`@uwmd/module-data-center`. For the two modules, 0.1.10 is their first
+public generation. Excel, report and lake remain source-only. Module manifest
+contracts stay **0.1.0**. RFCs 0071 and 0074 stay `accepted` in the tagged
+preparation state. See `docs/releases/2.18.0-preparation.md`.
+
+### Contract — Protocol 2.22.0 (RFCs 0071 and 0074)
+
+Protocol 2.22.0 carries two accepted RFCs. Format stays **2.0**.
+
+- **RFC 0071.** It adds the `is_calendar_date` §VIII.3 predicate. A module
+  that calls it MUST declare `requires_protocol` `>=2.22.0` (§X).
+- **RFC 0074.** It defines §VII.3 dependent declaration overrides: one
+  effective declaration per id, `PROTO-MOD-083` and `PROTO-MOD-084`. A
+  module that overrides MUST declare `requires_protocol` `>=2.22.0` (§X).
+- **The floors are enforced** by the existing §VII.2 step 3 refusal
+  (`PROTO-MOD-030`), with no new loader check. The
+  `conformance/modules/registry/` fixtures that override declare the
+  floor.
+
+The sections below give each change in full.
+
 ### Tooling and official module distribution
 
 - Approve `@uwmd/module-hospitality` and `@uwmd/module-data-center` together as
@@ -18,8 +49,8 @@ protocol, and each package each carry an independent semver).
 - Package the existing MIT notices, verify JSON/typed manifest parity and view-model
   artifacts, and document external installation, exact core pins and public exports.
 - Mechanically distinguish package semver, manifest contract version/schema, module
-  IDs and compatibility fields. Manifest contracts remain 0.1.0; Format 2.0,
-  Protocol 2.21.0, runtime behavior and financial semantics are unchanged.
+  IDs and compatibility fields. Manifest contracts remain 0.1.0. This changes no Format,
+  Protocol, runtime behavior or financial semantics.
 
 ### Issue intake and adopter feedback
 
@@ -57,7 +88,7 @@ protocol, and each package each carry an independent semver).
 - **No contract change.** No feedback envelope or diagnostic object was
   added: the implementation manifest, validation codes, `ProtocolError`,
   receipts and the conformance runner report already carry what a report
-  needs. Format 2.0, Protocol 2.21.0 and every package version are unchanged.
+  needs. This changes no Format, Protocol or package contract.
 
 ### Fixed — unrelated module declaration conflicts (Protocol §VII.3)
 
@@ -78,9 +109,9 @@ protocol, and each package each carry an independent semver).
 - **Conformance:** the new `conformance/modules/registry/` suite covers
   refusal in both orders for all three namespaces and for sibling
   dependents (scenarios 01–04).
-- No RFC: this restores an existing MUST. Format 2.0, Protocol 2.21.0 and
-  every package version are unchanged. Protocol §VII.3 now names the
-  reference codes, which is editorial.
+- No RFC: this restores an existing MUST, with no Format or Protocol
+  version change of its own. Protocol §VII.3 now names the reference
+  codes, which is editorial.
 
 ### Dependent declaration overrides (RFC 0074, accepted and implemented)
 
@@ -111,8 +142,8 @@ protocol, and each package each carry an independent semver).
     modules.
 - **Protocol floor (owner decision O3).** A module that overrides MUST
   declare a `requires_protocol` range excluding every Protocol version
-  before the first release containing RFC 0074 (§X). The exact floor is
-  assigned at release preparation. As with RFC 0071, a pre-RFC host refuses
+  before the first release containing RFC 0074 (§X), so `>=2.22.0`. As with
+  RFC 0071, a pre-RFC host refuses
   such a module through the existing `PROTO-MOD-030`; no loader check is
   added.
 - **Compatibility.** A module set that loaded before can be refused now. In
@@ -135,9 +166,7 @@ protocol, and each package each carry an independent semver).
 
   Against the pre-RFC implementation every scenario from 05 on fails,
   except 22: it pins a sibling refusal that #267 already made.
-- **Versions.** Format 2.0 is unchanged. The Protocol label stays 2.21.0
-  until release preparation selects the version, and no package version
-  changes here.
+- **Versions.** Format 2.0 is unchanged; Protocol 2.22.0 carries these rules.
 
 ### Renamed identifiers (draft RFC 0073; no contract change)
 
@@ -159,10 +188,9 @@ protocol, and each package each carry an independent semver).
 - **Tests:** three `asset-class.test.ts` tests pin current rename behavior.
 - **Editorial:** the implementation-manifest schema description's
   double-encoded `§` is corrected. Validation is unchanged.
-- **No contract change.** Format 2.0, Protocol 2.21.0 and every package
-  version are unchanged.
+- **No contract change.** This changes no Format or Protocol contract.
 
-### Calendar-date predicate (RFC 0071, accepted; not yet released)
+### Calendar-date predicate (RFC 0071)
 
 - Add `is_calendar_date(value) → boolean` to the shared §VIII.3 builtin set.
   - It returns `true` only for a string in the exact ASCII form `YYYY-MM-DD`
@@ -185,13 +213,13 @@ protocol, and each package each carry an independent semver).
   cross-reference, and a §X MUST: a module that calls the predicate must
   require a Protocol version at or above the first release that contains
   RFC 0071.
-  - Release preparation assigns that exact floor.
+  - That floor is `>=2.22.0`.
   - The existing load-time refusal enforces it, with no new code.
   - The `module-manifest` `requires_protocol` description gains a matching
     note.
 - **Conformance.** 48 tier-3 `date-NN` fixtures, with their generated cases.
-- **Versions.** No version label moves; release preparation selects them.
-  Format, error codes and financial semantics are unchanged.
+- **Versions.** Protocol 2.22.0 carries the predicate. Format, error codes and
+  financial semantics are unchanged.
 - **Not changed.** The separate `actualDays()` early-year defect is not
   addressed.
 
@@ -312,7 +340,7 @@ protocol, and each package each carry an independent semver).
     conforming implementation must now do anything new. Neither RFC binds a
     refusal code to a category, and the conformance suites pin `PORT-*` and
     `PKG-*` codes, not categories. Nothing was removed from emitted errors.
-    Protocol stays 2.21.0. Precedent: the 2.4.0 fix that brought the
+    It needs no Protocol version change of its own. Precedent: the 2.4.0 fix that brought the
     implementation-manifest schema back into line, also with no RFC and no
     version change.
   - **Guard.** `protocol.test.ts` now holds the TypeScript union, the schema

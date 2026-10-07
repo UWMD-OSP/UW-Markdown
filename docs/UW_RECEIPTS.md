@@ -88,7 +88,7 @@ These checks answer different questions:
 | `receipt issue` | Can a detached proof of that document and pack result/status set be created? |
 | `receipt verify` | Does the current document match the prior receipt's hashes, result statuses/values and applicable signature checks? |
 
-Source CLI reporting (implemented, unreleased as of 2026-10-03) makes these
+CLI reporting (core/CLI 2.18.0) makes these
 distinctions explicit. For example, a multifamily document without asset-level
 equity inputs can issue with:
 

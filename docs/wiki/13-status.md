@@ -1,5 +1,17 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-05** for release-prepared **2.18.0**. Core/CLI **2.18.0**
+pair with the accepted release contract Protocol **2.22.0** and unchanged Format
+**2.0**. The generation carries RFC 0071's `is_calendar_date` predicate and RFC
+0074's §VII.3 dependent overrides, each with a `>=2.22.0` §X floor. It also
+carries the unrelated-conflict refusal, CLI reporting clarity, the `uwmd init`
+and `--version` fixes, and the early-year actual-days correction. It is the
+first six-package generation, adding both official modules at 0.1.10. RFCs
+0071 and 0074 remain `accepted` until shipment and independently verified
+publication. The preparation record is
+[2.18.0](../releases/2.18.0-preparation.md), and tagging remains an owner
+decision.
+
 Reconciled **2026-10-03** (America/Phoenix) for published and independently
 verified **2.17.0**. Core/CLI **2.17.0**, signing **0.2.21** and batch **0.8.16**
 are published from immutable annotated `v2.17.0` on
@@ -18,12 +30,12 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unreleased RFCs 0071 and 0074,
+Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unreleased RFC 0071,
 remain outside the current released contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
-## CLI reporting clarity — implemented, unreleased (2026-10-03)
+## CLI reporting clarity (2026-10-03; core/CLI 2.18.0)
 
 Human-readable CLI validation distinguishes validity, Stage Readiness (workflow
 section/field completeness), cross-check coverage and unchecked receipt readiness.
@@ -43,10 +55,9 @@ scope need a future RFC; this reporting work implements none of those extensions
 
 Rebased onto `main` on 2026-10-05, after 2.17.0. `validate` keeps RFC 0070's
 complete/structural/replacement-funding lines under the new labels, and the
-receipt output names multifamily pack 1.0.1. **Release preparation** updates
-the docs-site quickstart (`tools/docs-site/tutorials/quickstart.md`). It runs
-`npx @uwmd/cli` and shows the published 2.17.0 receipt output (`Issued
-receipt …`, `Verdict: VERIFIED`), which this change replaces.
+receipt output names multifamily pack 1.0.1. The 2.18.0 preparation updated
+the docs-site quickstart (`tools/docs-site/tutorials/quickstart.md`) to the
+new receipt output.
 
 ## Built and released
 
@@ -65,8 +76,10 @@ receipt …`, `Verdict: VERIFIED`), which this change replaces.
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.9**, report **0.8.21**, lake **0.2.5** and hospitality/data-center
-module packages **0.1.9** are source-only package generations. The
+Excel **0.9.10**, report **0.8.22** and lake **0.2.6** are source-only package
+generations. The hospitality/data-center module packages **0.1.10** pair with
+core 2.18.0 and join the release workflow, so 0.1.10 is their first public
+generation. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
@@ -620,35 +633,27 @@ The guards:
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
-- [RFC 0071](../rfcs/0071-calendar-date-predicate.md) is **accepted**
-  (2026-10-04), and its implementation is authorized. It defines an
-  `is_calendar_date` §VIII.3 predicate, with a mandatory §X
-  `requires_protocol` floor for modules that call it.
-  - **Source implementation (PR #250, commit `493811e`):**
-    - the builtin, which reuses `parseISODate` behind a string check;
-    - Protocol §VIII.3, §VIII.9 and §X text, and the manifest-schema note;
-    - 48 tier-3 `date-NN` fixtures;
-    - unit, module-runtime, browser-parity, Excel-refusal and exhaustive
-      oracle tests.
-
-    The completed matrix is archived at
-    `specs/archive/rfc-0071-calendar-date-predicate.md`.
-  - **Not released.** No version label moves, and the RFC stays `accepted`.
-  - **Release preparation assigns the §X floor.** It is `>=` the first
-    Protocol release that contains RFC 0071. Release preparation also moves
-    the reference host's Protocol label to that release. No current module
-    calls the predicate, so no manifest needs a floor yet.
-  - RFC 0068 is to adopt the predicate in a later revision of its own.
-  - No numeric-type predicate is authorized.
-- [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) is
-  **accepted and implemented** (2026-10-05) but not released; see the
-  2026-10-05 dependent-overrides entry below.
-  - **Release preparation assigns its §X floor**, as for RFC 0071, in the
-    same release. It also raises `requires_protocol` on the overriding
-    fixture manifests in `conformance/modules/registry/` (those that
-    redeclare an id of a module they name in `depends_on`), which use
-    `>=1.0.0` until the floor exists. No first-party or corpus module overrides, so no shipped
-    manifest needs it.
+- Owner review and tagging of the complete 2.18.0 prepared generation follow
+  [the release record](../releases/2.18.0-preparation.md). Two owner steps
+  are new for this generation:
+  - **Module trusted publishers.** `@uwmd/module-hospitality` and
+    `@uwmd/module-data-center` have never been published, so each needs an
+    npm trusted publisher, through the wiki 11 bootstrap if the name is new,
+    before the tag.
+  - **Six-package confirmation.** Confirm trusted publishers for core, CLI,
+    signing and batch, as before, and for both modules.
+- [RFC 0071](../rfcs/0071-calendar-date-predicate.md) and
+  [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) stay
+  **accepted** until 2.18.0 ships and publication is independently verified.
+  Both §X floors are `>=2.22.0`.
+  - RFC 0071: PR #250, archived at
+    `specs/archive/rfc-0071-calendar-date-predicate.md`. No current module
+    calls the predicate.
+  - RFC 0074: see the 2026-10-05 dependent-overrides entry below. The 23
+    overriding registry fixture manifests declare the floor. No first-party
+    or corpus module overrides.
+  - RFC 0068 is to adopt the predicate in a later revision of its own. No
+    numeric-type predicate is authorized.
 - Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
   against source-backed property account movement classifications. It proposes
   deterministic account-state verification, not a relaxation of RFC 0045's
@@ -707,7 +712,7 @@ coverage uses public invented inputs, never private corpus amounts.
 
 ## 2026-10-04 — Early-year day-count correction
 
-The early-year day-count bug is corrected in source; the fix is unreleased.
+The early-year day-count bug is corrected; core/CLI 2.18.0 carries the fix.
 - **Contract.** Protocol §VIII.9.1 already states actual-day counts on the
   proleptic Gregorian calendar. The fix moves no version, and no RFC was
   needed.
@@ -779,8 +784,8 @@ renamed-identifier review found.
 
 [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) defines
 what Protocol §VII.3's "the dependent module's declarations override"
-means. The owner decided O1–O3 on 2026-10-05, and it is accepted with
-this implementation. Merging the implementation records the acceptance.
+means. The owner decided O1–O3 on 2026-10-05 and accepted it by merging
+the implementation, PR #273, on 2026-10-06.
 - **Implemented.** The registry tracks one owner per id and namespace.
   - Only a direct `depends_on` on the current owner authorizes an
     override. Otherwise the code is `080`–`082` (O1).
@@ -807,8 +812,8 @@ this implementation. Merging the implementation records the acceptance.
     It is now refused with `083` (scenario 20).
   - in a chain, `getModuleCalculationsForAssetClass` listed the effective
     declaration twice.
-- **Not released.** The Protocol label stays 2.21.0 and the RFC stays
-  `accepted` until a release carries it.
+- **Release.** Protocol 2.22.0 carries the rules in the 2.18.0 preparation.
+  The RFC stays `accepted` until that release ships.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 

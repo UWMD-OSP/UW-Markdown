@@ -8,7 +8,7 @@
     "UW Markdown contributors"
   ],
   "license": "MIT",
-  "requires_protocol": ">=1.0.0",
+  "requires_protocol": ">=2.22.0",
   "requires_format": ">=1.0",
   "requires_tier": "tier-3-calc-host",
   "asset_classes": [

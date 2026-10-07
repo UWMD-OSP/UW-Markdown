@@ -65,7 +65,7 @@ Type-checks (`tsc --noEmit`) then bundles; output lands in `tools/web-editor/dis
 
 ## Replacement payment checks
 
-The development-tree RFC 0070 panel performs synchronous structural validation
+The RFC 0070 panel (Protocol 2.21.0) performs synchronous structural validation
 and reports replacement funding as not_checked / not_invoked. It does not claim
 complete binding verification. Use the separate async core verifier, or CLI
-validate, for complete outright checks. This feature remains unreleased.
+validate, for complete outright checks.
