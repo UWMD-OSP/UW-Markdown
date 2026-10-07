@@ -1185,8 +1185,10 @@ so committing to the containing whole-document digest would be circular.
 A conforming implementation MUST:
 
 1. Resolve the current property-level `debt_structure` and
-   `sources_uses` under existing RFC 0040 selection. This RFC does not extend
-   hedge checks to component financing or introduce tranche-specific hedges.
+   `sources_uses` under existing RFC 0040 selection, with the hedge rules'
+   registered `senior` preference on `debt_structure` (format §5.3, RFC 0075).
+   RFC 0070 does not extend hedge checks to component financing or introduce
+   tranche-specific hedges.
    If a selection needed for a stated new funding object is ambiguous or
    unresolvable, refuse; never treat it as absence or choose by fence order.
 2. Select the same document's current, nonsuperseded `cash_flow_series` block

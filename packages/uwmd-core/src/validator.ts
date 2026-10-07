@@ -1834,7 +1834,9 @@ function checkEscrows(
 }
 
 function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
-  const debt = resolveCrossCheckSection(parsed, 'debt_structure').block;
+  // Every HDG/ESC rule registers the same `senior` preference (RFC 0075), so
+  // one selection serves them all; HDG-01 is the key it is read under.
+  const debt = resolveCrossCheckSection(parsed, 'debt_structure', [], 'HDG-01').block;
   const su = resolveCrossCheckSection(parsed, 'sources_uses').block;
 
   let assumption: unknown;

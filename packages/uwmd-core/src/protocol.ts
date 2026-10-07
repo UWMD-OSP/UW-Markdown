@@ -2094,13 +2094,29 @@ export const CROSS_CHECK_VARIANT_PREFERENCE: readonly string[] = Object.freeze([
 /** Closed, scalar vocabulary for the signed `_role` block annotation. */
 export const BLOCK_ROLES: readonly BlockRole[] = Object.freeze(['primary', 'senior', 'junior', 'summary', 'detail', 'component']);
 
-/** Per-check role preference, consulted before generic primary/default/base. */
+/**
+ * Per-check role preference, consulted before generic primary/default/base.
+ *
+ * The rate-hedge and escrow rules (RFC 0075) share one `debt_structure`
+ * selection, so their entries are identical: the hedge is the senior loan's.
+ */
 export const CROSS_CHECK_ROLE_PREFERENCE: Readonly<Record<string, Readonly<Record<string, BlockRole>>>> = Object.freeze({
   'CC-01': Object.freeze({ rent_roll: 'detail' as const }),
   'CC-02': Object.freeze({ debt_structure: 'senior' as const }),
   'CC-03': Object.freeze({ debt_structure: 'senior' as const }),
   'CC-05': Object.freeze({ debt_structure: 'senior' as const }),
   'CC-09': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-01': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-02': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-03': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-04': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-05': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-06': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-07': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-08': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-09': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-10': Object.freeze({ debt_structure: 'senior' as const }),
+  'ESC-04': Object.freeze({ debt_structure: 'senior' as const }),
 });
 
 /** The closed set for `dcf.returns.tax_basis` (format §4.9, RFC 0038). */

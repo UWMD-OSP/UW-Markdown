@@ -202,7 +202,8 @@ describe('RFC 0070 separate verification', () => {
   );
   it('keeps all 17 original RFC 0056 fixture bytes unchanged', async () => {
     const root = resolve(process.cwd(), '../../conformance/hedge');
-    const names = readdirSync(root).filter((n) => !n.startsWith('0070-'));
+    // Later RFCs' cases carry their number as a prefix (0070-, 0075-).
+    const names = readdirSync(root).filter((n) => !/^\d{4}-/.test(n));
     expect(names.length).toBe(17);
     for (const name of names) {
       const file = resolve(root, name, 'deal.uwx.md');

@@ -446,3 +446,12 @@ Crypto parity, pre-await snapshots, key-order/numeric-spelling normalization,
 row absence/null distinction, unavailable crypto and qualified browser output.
 A deliberately rehashed unrelated outflow verifies consistency while failing a
 producer purpose assertion. Hashing supplies no economic authenticity proof.
+
+RFC 0075 adds six `hedge/0075-*` pairs in the same shape, each one a 0070 case
+with only roles, variant keys and one hedge edited. They pin the senior read
+beside a junior (outright and escrow), a junior keyed `base` that must not
+capture the read, a malformed senior hedge that keeps HDG-01, the junior-only
+hedge that is not read, and the two-senior refusal. The v2 generator picks up
+both prefixes. The `0070-*` and `0075-*` cases leave the 17 RFC 0056 pairs
+byte-identical; `replacement-funding.test.ts` checks this by excluding every
+RFC-numbered directory.

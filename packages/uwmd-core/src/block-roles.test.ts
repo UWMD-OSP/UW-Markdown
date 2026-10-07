@@ -43,6 +43,17 @@ describe('RFC 0040 role selection', () => {
     expect(Object.isFrozen(CROSS_CHECK_ROLE_PREFERENCE)).toBe(true);
     expect(Object.isFrozen(CROSS_CHECK_ROLE_PREFERENCE['CC-03'])).toBe(true);
   });
+  it('registers exactly the format §5.3 preferences', () => {
+    // A surface test: a rule gaining or losing a preference is a §5.3 change.
+    const hedgeRules = ['HDG-01', 'HDG-02', 'HDG-03', 'HDG-04', 'HDG-05', 'HDG-06', 'HDG-07', 'HDG-08',
+      'HDG-09', 'HDG-10', 'ESC-04'];
+    expect(CROSS_CHECK_ROLE_PREFERENCE).toEqual({
+      'CC-01': { rent_roll: 'detail' },
+      ...Object.fromEntries(['CC-02', 'CC-03', 'CC-05', 'CC-09', ...hedgeRules]
+        .map((code) => [code, { debt_structure: 'senior' }])),
+    });
+    for (const code of hedgeRules) expect(Object.isFrozen(CROSS_CHECK_ROLE_PREFERENCE[code])).toBe(true);
+  });
   it('selects senior before primary/default and exposes evidence', () => {
     const senior = block({ _role: 'senior' });
     expect(resolveRoleBlock({ producer: senior, default: block({ _role: 'primary' }) }, 'debt_structure', [], 'CC-03'))
