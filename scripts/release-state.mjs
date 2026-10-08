@@ -50,7 +50,14 @@
 //     from this tree reports;
 //   - the heading is dated;
 //   - the generation's own section carries no `### Released`, because nothing
-//     has published yet.
+//     has published yet;
+//   - `## [Unreleased]` holds no entries. The release-prepared commit moves
+//     every entry into the dated section, so a tree with unreleased entries is
+//     a later commit. After 2.18.0 was prepared at 4e0a8c1, RFCs 0075–0077
+//     merged to main under `[Unreleased]`, and the tag-mode check passed
+//     main as v2.18.0: tagging the wrong commit would have published them
+//     under a version whose records omit them, and an npm version cannot be
+//     republished. Every v2.* tag through v2.17.0 has an empty `[Unreleased]`.
 //
 // `checkReleasedTags` enforces state 3's precondition: every section with
 // `### Released` has its tag, with no exception. The 1.4.0 release is the
@@ -79,6 +86,38 @@ export function changelogReleaseSections(changelog) {
       body: changelog.slice(heading.index + heading[0].length, headings[i + 1]?.index ?? changelog.length),
     }))
     .filter((section) => /^\d+\.\d+\.\d+$/.test(section.version));
+}
+
+/**
+ * The substantive lines under every `## [Unreleased]` heading, trimmed.
+ *
+ * A section runs to the next level-1 or level-2 heading. HTML comments, blank
+ * lines, headings (`### Added` with nothing under it is a template, not an
+ * entry), thematic breaks and link reference definitions are not entries. Any
+ * other line is, including prose and code: this fails closed.
+ *
+ * @param {string} changelog
+ * @returns {string[]}
+ */
+export function changelogUnreleasedEntries(changelog) {
+  const text = changelog.replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+  const headings = [...text.matchAll(/^#{1,2}[ \t][^\n]*$/gm)];
+  const entries = [];
+  headings.forEach((heading, i) => {
+    if (!/^##[ \t]+(?:\[unreleased\]|unreleased)(?![\w-])/i.test(heading[0])) return;
+    const body = text
+      .slice(heading.index + heading[0].length, headings[i + 1]?.index ?? text.length)
+      .replace(/<!--[\s\S]*?-->/g, ''); // an unterminated comment stays, and counts
+    for (const raw of body.split('\n')) {
+      const line = raw.trim();
+      if (line === '') continue;
+      if (/^#{1,6}(?:[ \t]|$)/.test(line)) continue; // an empty subsection heading
+      if (/^(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$/.test(line)) continue; // thematic break
+      if (/^\[[^\]]+\]:[ \t]*\S+/.test(line)) continue; // link reference definition
+      entries.push(line);
+    }
+  });
+  return entries;
 }
 
 /** The "## Current matrix" section of VERSIONS.md and its table rows. */
@@ -171,6 +210,12 @@ export function checkReleaseState({
         `CHANGELOG.md: the release commit for ${tag} must date its heading as \`## [${coreVersion}] - YYYY-MM-DD\`; found ${
           section ? `\`${section.heading}\`` : 'no section'
         }.`,
+      );
+    }
+    const unreleased = changelogUnreleasedEntries(changelog);
+    if (unreleased.length > 0) {
+      failures.push(
+        `CHANGELOG.md: [Unreleased] holds ${unreleased.length} line(s) in the tree being tagged ${tag}, starting "${unreleased[0].slice(0, 80)}". The release-prepared commit has an empty [Unreleased]; this tree is a later commit. Tag the preparation commit, or move the entries into [${coreVersion}] in a new preparation.`,
       );
     }
   }

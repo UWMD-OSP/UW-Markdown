@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { checkReleasedTags, checkReleaseState } from './release-state.mjs';
+import { changelogUnreleasedEntries, checkReleasedTags, checkReleaseState } from './release-state.mjs';
 import { releasePackagesForGeneration } from './release-packages.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -310,4 +310,98 @@ test('actual 2.16.0 and 2.17.0 tag trees remain valid with their four-package so
     assert.match(show('VERSIONS.md'), /module-hospitality/);
     assert.match(show('VERSIONS.md'), /source only/);
   }
+});
+
+// ── A tagged tree has an empty [Unreleased] ─────────────────────────────────
+// 2.18.0 was prepared at 4e0a8c1; RFCs 0075–0077 then merged to main under
+// [Unreleased], and main passed tag mode as v2.18.0.
+
+test('[Unreleased] entries: comments, headings, breaks and link definitions are not entries; text is', () => {
+  const empty = [
+    '## [Unreleased]\n\n## [2.15.0] - 2026-10-02\n\n- shipped\n',
+    '## [Unreleased]\r\n\r\n   \t\r\n## [2.15.0] - 2026-10-02\r\n',
+    '﻿## [Unreleased]\n<!-- Add entries here. -->\n\n### Added\n\n### Fixed\n\n---\n\n## [2.15.0] - 2026-10-02\n',
+    '## [Unreleased]\n<!--\n- a draft entry, commented out\n-->\n## [2.15.0] - 2026-10-02\n',
+    '## [Unreleased](https://github.com/UWMD-OSP/UW-Markdown/compare/v2.15.0...HEAD)\n\n## [2.15.0] - 2026-10-02\n',
+    '## [2.15.0] - 2026-10-02\n\n- shipped\n\n## [Unreleased]\n\n[Unreleased]: https://example.test/compare/v2.15.0...HEAD\n',
+    // Ordinary text that mentions Unreleased is not the section.
+    '## [2.15.0] - 2026-10-02\n\n### Accepted contract (unreleased)\n\nUnreleased work stays out.\n',
+    'No changelog sections at all.\n',
+  ];
+  for (const changelog of empty) assert.deepEqual(changelogUnreleasedEntries(changelog), [], JSON.stringify(changelog));
+
+  const entries = [
+    ['## [Unreleased]\n\n### Fixed\n\n- **A fix.** Detail.\n\n## [2.15.0] - 2026-10-02\n', ['- **A fix.** Detail.']],
+    ['## [Unreleased]\n\nOne line of prose.\n## [2.15.0] - 2026-10-02\n', ['One line of prose.']],
+    ['## [Unreleased]\n\n```bash\nuwmd validate\n```\n', ['```bash', 'uwmd validate', '```']],
+    ['## [Unreleased]\n<!-- open, never closed\n- hidden?\n', ['<!-- open, never closed', '- hidden?']],
+    ['## [Unreleased]\n\n  * indented item <!-- note -->\n', ['* indented item']],
+    ['## Unreleased\n\n- no brackets\n', ['- no brackets']],
+    ['## [Unreleased]\n\n#hashtag is text\n', ['#hashtag is text']],
+  ];
+  for (const [changelog, expected] of entries) {
+    assert.deepEqual(changelogUnreleasedEntries(changelog), expected, JSON.stringify(changelog));
+  }
+});
+
+test('tag mode refuses a tree whose [Unreleased] holds entries; ordinary CI does not', () => {
+  const later = {
+    ...PREPARED,
+    changelog: PREPARED.changelog.replace(
+      '## [Unreleased]\n',
+      '## [Unreleased]\n\n### Rate hedges read from the senior loan (RFC 0075)\n\n- **The hedge rules now prefer `senior`.**\n',
+    ),
+  };
+  assert.deepEqual(checkReleaseState(later).failures, []);
+  assert.deepEqual(checkReleaseState({ ...later, tag: 'v2.15.0' }).failures, [
+    'CHANGELOG.md: [Unreleased] holds 1 line(s) in the tree being tagged v2.15.0, starting "- **The hedge rules now prefer `senior`.**". The release-prepared commit has an empty [Unreleased]; this tree is a later commit. Tag the preparation commit, or move the entries into [2.15.0] in a new preparation.',
+  ]);
+  // A heading-only template is still a release-prepared tree.
+  const template = { ...PREPARED, changelog: PREPARED.changelog.replace('## [Unreleased]\n', '## [Unreleased]\n\n### Added\n\n<!-- next -->\n') };
+  assert.deepEqual(checkReleaseState({ ...template, tag: 'v2.15.0' }).failures, []);
+});
+
+test('every v2.* tag has an empty [Unreleased]; the 2.18.0 preparation passes and main after it does not', (t) => {
+  const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
+  const tree = (rev) => {
+    const show = (path) => git('show', `${rev}:${path}`);
+    const cli = JSON.parse(show('packages/uwmd-cli/package.json'));
+    return {
+      changelog: show('CHANGELOG.md'), versions: show('VERSIONS.md'), protocolDoc: show('spec/UW_PROTOCOL_v1.md'),
+      coreVersion: JSON.parse(show('packages/uwmd-core/package.json')).version,
+      protocolVersion: show('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)[1],
+      cliVersion: cli.version, cliCoreDependency: cli.dependencies['@uwmd/core'],
+    };
+  };
+  let tags;
+  try {
+    tags = git('tag', '--list', 'v2.*').split('\n').filter(Boolean);
+  } catch {
+    tags = [];
+  }
+  if (tags.length === 0) {
+    t.skip('this checkout has no v2.* tags');
+    return;
+  }
+  for (const tag of tags) {
+    assert.deepEqual(changelogUnreleasedEntries(git('show', `${tag}:CHANGELOG.md`)), [], tag);
+  }
+
+  let prepared;
+  let later;
+  try {
+    prepared = tree('4e0a8c1');
+    later = tree('c5138f0');
+  } catch {
+    t.skip('this checkout lacks 4e0a8c1 or c5138f0');
+    return;
+  }
+  // The preparation PR #275 merge: the commit v2.18.0 must name.
+  assert.deepEqual(checkReleaseState({ ...prepared, tag: 'v2.18.0' }).failures, []);
+  // Main after RFCs 0075–0077 (PR #279 merge) carries the same version
+  // records, so [Unreleased] is the only thing that refuses it.
+  const failures = checkReleaseState({ ...later, tag: 'v2.18.0' }).failures;
+  assert.equal(failures.length, 1, failures.join('\n'));
+  assert.match(failures[0], /^CHANGELOG\.md: \[Unreleased\] holds \d+ line\(s\) in the tree being tagged v2\.18\.0, starting "- \*\*The hedge and escrow rules now prefer `senior`/);
+  assert.deepEqual(checkReleaseState(later).failures, []);
 });

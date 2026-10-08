@@ -36,10 +36,12 @@
 //
 // `--tag vX.Y.Z` checks the tree as that release. The tag must name core/CLI,
 // the CLI must pin core exactly, the heading must be dated, the core row must
-// pair with PROTOCOL_VERSION, check 3 applies unconditionally, and the version's
-// own section must not yet claim `### Released`. release.yml passes the pushed
-// tag before it installs or publishes anything; the owner can pass the tag about
-// to be pushed.
+// pair with PROTOCOL_VERSION, check 3 applies unconditionally, the version's
+// own section must not yet claim `### Released`, and `## [Unreleased]` must hold
+// no entries, so a later commit of main cannot publish under the prepared
+// version. Ordinary CI, without --tag, accepts a non-empty `[Unreleased]`.
+// release.yml passes the pushed tag before it installs or publishes anything;
+// the owner can pass the tag about to be pushed.
 //
 // Deliberately NOT checked: whether the version exists on the npm registry. That
 // would need the network, which no other guard here does, and it would fail in
