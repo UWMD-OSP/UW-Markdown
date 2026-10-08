@@ -75,14 +75,16 @@ Merge it when its CI is green. The merge commit is the commit you tag.
 
 ## 5. Tag (only you can trigger the publish)
 
-From an up-to-date `main` whose head is the preparation merge:
+#275 merged as `4e0a8c1`. **Tag that commit, not the head of `main`.** RFCs
+0075–0077 merged after it, and `release.yml` publishes whatever commit the
+tag names; no check refuses a later one. Run the checks on that commit:
 
 ```bash
-git checkout main
+git fetch origin
 ```
 
 ```bash
-git pull --ff-only
+git checkout --detach 4e0a8c1
 ```
 
 ```bash
@@ -96,11 +98,15 @@ node scripts/verify-release.mjs --tag v2.18.0
 If both pass:
 
 ```bash
-git tag -a v2.18.0 -m "UWMD 2.18.0 (Protocol 2.22.0, Format 2.0)"
+git tag -a v2.18.0 4e0a8c1 -m "UWMD 2.18.0 (Protocol 2.22.0, Format 2.0)"
 ```
 
 ```bash
 git push origin v2.18.0
+```
+
+```bash
+git checkout main
 ```
 
 The tag push is the trigger. `release.yml` publishes the six packages

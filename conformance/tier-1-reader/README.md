@@ -22,6 +22,7 @@ They MUST:
 | `fixtures/14-student-bed-counts.uwx.md` | Student-housing roll stating both bed counts with their dates (RFC 0069); no `BED-*` issue |
 | `fixtures/15-student-bed-counts-inconsistent.uwx.md` | The same roll with `preleased_beds` above `total_beds` and `preleased_as_of` after `preleased_term_start`; `BED-02` and `BED-06` errors, nothing for the valid `occupied_beds` |
 | `fixtures/16-frontmatter-yaml-scalars.uwx.md` | Format Appendix D scalar semantics: double-quoted `\"`, `\\` and `\u` escapes, single-quoted `''`, quoted `&` `*` `!` `#` `{}` `[]` as content, and trailing comments on plain, nested and sequence values. The baseline's frontmatter is a YAML 1.2 library's reading of the fixture, not this reader's |
+| `fixtures/17-exit-proceeds-junior-capital.uwx.md` | Exit proceeds beside a senior, mezzanine, preferred and common stack (RFC 0077): `loan_balance_at_exit` repays both debts, `net_proceeds_to_equity` is the whole equity stack, and the stated `preferred_equity_redemption_at_exit` leaves `net_proceeds_to_common_equity`. Validates clean |
 
 ### Malformed fixtures
 

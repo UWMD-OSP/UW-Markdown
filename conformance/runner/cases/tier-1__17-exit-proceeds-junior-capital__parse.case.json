@@ -1,0 +1,16 @@
+{
+  "id": "tier-1/17-exit-proceeds-junior-capital/parse",
+  "tier": "1",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "17-exit-proceeds-junior-capital.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/17-exit-proceeds-junior-capital.parsed.json"
+  }
+}

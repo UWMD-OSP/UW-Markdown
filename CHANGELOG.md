@@ -62,6 +62,33 @@ protocol, and each package each carry an independent semver).
 - **Conformance:** eight `hedge/0076-*` cases, also run by the v2 driver.
   Against the RFC 0075 implementation, all but the no-hedge control fail.
 
+### Exit proceeds with junior capital (RFC 0077)
+
+- **`exit_analysis.net_proceeds_to_equity` now has a definition.** Format
+  §4.9 gave none. With a §4.24 `preferred_equity` tranche, a producer could
+  mean the whole equity stack or common's residual after the pref. The web
+  editor re-foots the block on every edit, so it overwrote a stated common
+  residual with `exit_value_net − loan_balance_at_exit`. Reported by StackUW
+  as #278 (UPSTREAM-025).
+- **Meaning (unchanged footing):** proceeds to the whole equity stack,
+  preferred and common, after all debt. `loan_balance_at_exit` is every debt
+  repaid from the sale, so mezzanine is included when a `capital_stack` is
+  present.
+- **New optional fields.** `preferred_equity_redemption_at_exit` is the cash
+  that retires the preferred tranches at sale, accrued return included. It
+  is stated, never derived; an agent MUST NOT invent it.
+  `net_proceeds_to_common_equity` is footed as the whole-stack figure less
+  that redemption. Without a redemption it stays a stated input.
+- **Tools.** `deriveDCF` foots the common residual. The web editor adds a
+  redemption input and a footed common row. The report shows both rows only
+  when present. No export or type changes.
+- **Producers** that state common's residual in `net_proceeds_to_equity`
+  move it to `net_proceeds_to_common_equity` and state the redemption.
+  Existing single-loan documents are unchanged.
+- **Conformance:** tier-1 fixture `17-exit-proceeds-junior-capital` (senior,
+  mezzanine, preferred and common) validates clean, and `deriveDCF` foots
+  exactly its stated figures. No existing baseline changed.
+
 ## [2.18.0] - 2026-10-05
 
 ### Prepared package pairing

@@ -186,3 +186,26 @@ describe('renderReportHtml — size intensives (RFC 0027)', () => {
     expect(html).toContain('<span>Units</span>');
   });
 });
+
+describe('renderReportHtml — exit proceeds with preferred equity (RFC 0077)', () => {
+  it('adds no preferred or common rows to a single-loan exit', () => {
+    const { html } = renderReportHtml(loadParkview(), { tier: 'screener' });
+    expect(html).not.toContain('Preferred equity redemption');
+    expect(html).not.toContain('Net proceeds to common equity');
+  });
+
+  it('shows the stated redemption and common proceeds as stored', () => {
+    const parsed = loadParkview();
+    const dcf = parsed.sections['dcf'] as { content: Record<string, Record<string, unknown>> };
+    dcf.content['exit_analysis'] = {
+      ...dcf.content['exit_analysis'],
+      preferred_equity_redemption_at_exit: 1_500_000,
+      net_proceeds_to_common_equity: 1_295_718,
+    };
+    const { html } = renderReportHtml(parsed, { tier: 'screener' });
+    expect(html).toContain('Preferred equity redemption');
+    expect(html).toContain('$1,500,000');
+    expect(html).toContain('Net proceeds to common equity');
+    expect(html).toContain('$1,295,718');
+  });
+});

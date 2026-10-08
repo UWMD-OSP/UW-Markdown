@@ -632,8 +632,15 @@ The guards:
 
 - [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266, merged as
   PR #276) and [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
-  (PR #277; D1–D7 accepted 2026-10-06) are `accepted` and implemented. They
-  ship in the release after 2.18.0.
+  (merged as PR #277; D1–D7 accepted 2026-10-06) are `accepted` and
+  implemented. They ship in the release after 2.18.0.
+- [RFC 0077](../rfcs/0077-exit-proceeds-with-junior-capital.md) (#278; D1–D6
+  accepted 2026-10-07) is implemented in the PR that records its acceptance,
+  for the same release. StackUW moves its common residual to
+  `net_proceeds_to_common_equity`.
+- **Tag 2.18.0 from `4e0a8c1`, not from the head of `main`.** RFCs
+  0075–0077 merged after the preparation, and `release.yml` publishes the
+  tagged commit.
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
@@ -874,6 +881,32 @@ RFC 0075's unresolved question. The owner accepted D1–D7 as recommended on
   fail except the no-hedge control, which pins D7. Decided unit tests
   replace RFC 0075's two `undecided:` pins.
 - **Release.** With RFC 0075, in the release after 2.18.0.
+
+## 2026-10-07 — Exit proceeds with junior capital (#278, RFC 0077 accepted and implemented)
+
+StackUW (UPSTREAM-025) asked what `exit_analysis.net_proceeds_to_equity`
+means beside a §4.24 `preferred_equity` tranche. §4.9 never said, and
+`deriveDCF` footed it as `exit_value_net − loan_balance_at_exit`.
+- **Verified, and more.** The repro gave 3,800,000 beside a stated
+  2,300,000. Only the web editor re-derives the field; the CLI and Excel
+  converter never read it, contrary to the report. The editor's footed
+  models write every footed value over the stated one on each edit, so a
+  stated common residual was silently replaced. Mezzanine debt left the
+  same ambiguity in `loan_balance_at_exit`.
+- **Contract.** [RFC 0077](../rfcs/0077-exit-proceeds-with-junior-capital.md),
+  D1–D6 accepted by the owner on 2026-10-07. `net_proceeds_to_equity` is the
+  whole equity stack after all debt (footing unchanged), and
+  `loan_balance_at_exit` repays every debt-class tranche. A stated, never
+  derived, `preferred_equity_redemption_at_exit` gives a footed
+  `net_proceeds_to_common_equity`. StackUW's reading (a), which redefined the
+  field as common's, was declined: it would make one field mean two things.
+- **Implemented.** `deriveDCF`, the editor's DCF model (redemption input,
+  common row; also checked in the running editor) and the report. Format
+  §4.9 states the definitions. No export or type changes.
+- **Proof.** Tier-1 fixture 17 validates clean, and `deriveDCF` foots
+  exactly its stated figures. Five new footing tests fail against the
+  previous code. No existing baseline changed.
+- **Release.** With RFCs 0075 and 0076, after 2.18.0.
 
 ## 2026-10-04 — Renamed identifiers (#263, draft RFC 0073)
 
