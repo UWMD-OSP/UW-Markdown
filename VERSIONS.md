@@ -21,7 +21,7 @@ same protocol version.
 ## Current matrix
 
 Release 2.18.0 pairs core/CLI 2.18.0 with Protocol 2.22.0 and Format 2.0.
-Protocol 2.22.0 carries two accepted RFCs:
+Protocol 2.22.0 carries two RFCs:
 RFC 0071's `is_calendar_date` predicate (§VIII.3), and RFC 0074's dependent
 declaration overrides (§VII.3). Each comes with a §X `requires_protocol` floor of
 `>=2.22.0`. The generation also includes the refusal of unrelated §VII.3
@@ -31,8 +31,16 @@ declaration conflicts, CLI validation and receipt reporting clarity, and the
 2.18.0 exactly. Core's optional signing peer is 0.2.22. The workflow scope is
 core, CLI, signing, batch and both module packages. For the modules, 0.1.10
 is their first public generation. Excel, report and lake remain source-only.
-Module manifest contracts remain 0.1.0. Release preparation and subsequent
-publication evidence are separate records.
+Module manifest contracts remain 0.1.0. RFCs 0071 and 0074 are implemented;
+Protocol 2.22.0 is Stable. Core/CLI 2.18.0, signing 0.2.22, batch 0.8.17 and
+both modules 0.1.10 are published from immutable annotated `v2.18.0` on
+`4e0a8c18091377fa25800dc2b16954a636be1d83` through trusted publishing with
+provenance. Release run 37795279528 succeeded; all registry versions, `latest`,
+`gitHead`, signatures, attestations, Rekor checks, 482 published files, 210
+delivered-CLI portable cases and an isolated consumer of both modules were
+independently verified. No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md)
+remain separate records.
 
 Release 2.17.0 pairs core/CLI 2.17.0 with Protocol 2.21.0 and Format 2.0.
 Protocol 2.21.0 carries RFC 0070's closed replacement-funding union and exact

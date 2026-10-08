@@ -1,5 +1,11 @@
 # HUMAN: release 2.18.0
 
+**Done 2026-10-08.** Both modules were bootstrapped and all six trusted
+publishers confirmed, `v2.18.0` was tagged on `4e0a8c1`, and release run
+37795279528 published all six packages. Independent verification is in
+[the publication record](../releases/2.18.0-publication.md). The steps below
+are kept as the record of what was asked.
+
 Everything an agent can do for 2.18.0 is prepared. The steps below need your
 GitHub merge rights, your npm account, or your authority to tag. Do them in
 order; each one says what to bring back.

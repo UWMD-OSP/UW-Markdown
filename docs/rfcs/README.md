@@ -98,10 +98,10 @@ and how it gets accepted.
 | [0068](./0068-manufactured-housing-module.md) | Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line | draft | core, conformance, tooling |
 | [0069](./0069-student-rent-roll-bed-counts.md) | Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads | implemented | format, protocol, core, conformance |
 | [0070](./0070-replacement-cap-funding-and-payment-binding.md) | Bind outright replacement-cap funding to an exact modeled cash payment | implemented | format, protocol, core, conformance, tooling |
-| [0071](./0071-calendar-date-predicate.md) | A calendar-date validity predicate for safe expressions | accepted | protocol, core, conformance, documentation |
+| [0071](./0071-calendar-date-predicate.md) | A calendar-date validity predicate for safe expressions | implemented | protocol, core, conformance, documentation |
 | [0072](./0072-frontmatter-scenario-semantics.md) | Give frontmatter `scenario` a defined meaning | draft | format, core, conformance, tooling |
 | [0073](./0073-previous-asset-class-identifiers.md) | Previous identifiers for module-declared asset classes | draft | protocol, core, conformance |
-| [0074](./0074-module-declaration-override-semantics.md) | What a dependent module's declaration override means | accepted | protocol, core, conformance |
+| [0074](./0074-module-declaration-override-semantics.md) | What a dependent module's declaration override means | implemented | protocol, core, conformance |
 | [0075](./0075-hedge-senior-role-preference.md) | Read a rate hedge from the senior loan when debt_structure is a role map | accepted | format, protocol, core, conformance |
 | [0076](./0076-hedge-checks-under-refused-selection.md) | Refuse a stated rate hedge whose loan or cash lines cannot be selected | accepted | format, protocol, core, conformance |
 | [0077](./0077-exit-proceeds-with-junior-capital.md) | Define exit proceeds to equity when the capital stack carries junior capital | accepted | format, core, conformance, tooling |
