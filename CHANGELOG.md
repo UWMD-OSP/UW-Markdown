@@ -89,6 +89,16 @@ protocol, and each package each carry an independent semver).
   mezzanine, preferred and common) validates clean, and `deriveDCF` foots
   exactly its stated figures. No existing baseline changed.
 
+### Release tooling
+
+- **A release tag must name a commit whose `## [Unreleased]` is empty.**
+  `verify-release --tag`, which `release.yml` runs before any publish, now
+  refuses a tree with unreleased entries. Before, it passed `main` after
+  RFCs 0075–0077 as `v2.18.0`, so a tag on the wrong commit would have
+  published them as 2.18.0. The `4e0a8c1` preparation and every `v2.*` tag
+  still pass. Ordinary CI is unchanged. No package version, contract or
+  conformance change. See wiki 11, "The three release states".
+
 ## [2.18.0] - 2026-10-05
 
 ### Prepared package pairing

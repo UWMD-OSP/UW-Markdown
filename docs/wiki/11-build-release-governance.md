@@ -123,7 +123,9 @@ when the release workflow runs.
        exactly;
      - a Protocol row with no annotation;
      - a protocol status line in publication-independent wording, such as
-       `Accepted release contract (RFC NNNN)`.
+       `Accepted release contract (RFC NNNN)`;
+     - an empty `## [Unreleased]`: every entry has moved into the dated
+       section. Subsection headings and HTML comments may stay.
    - **Forbidden:**
      - `candidate`, `unreleased` or `unpublished` anywhere describing the
        generation, in a section heading, a row or the matrix prose;
@@ -163,9 +165,22 @@ The guards:
   - Tag mode adds the tag/core/CLI/`PROTOCOL_VERSION` pairing and the dated
     heading.
   - It refuses a `### Released` in the tagged version's own section.
+  - It refuses any entry under `## [Unreleased]`.
 
   A tag on a stale, undated or prematurely "released" tree publishes nothing.
 - **`release:check`.** It fails if that step goes missing.
+
+**The release-cut invariant: a release tag names a commit whose
+`[Unreleased]` is empty.** Work can merge to `main` after the preparation
+under the same version records. 2.18.0 was prepared at `4e0a8c1`, then
+RFCs 0075–0077 merged under `[Unreleased]`, and tag mode passed that `main`
+as `v2.18.0`. Tagging it would have published them as 2.18.0, and npm never
+takes a version back. Every `v2.*` tag through `v2.17.0` already meets the
+invariant. Ordinary CI, without `--tag`, accepts a non-empty `[Unreleased]`,
+because that is how `main` looks between releases. Only prose, list items
+and code count as entries; blank lines, headings, comments, thematic breaks
+and link reference definitions do not. If a tag fails here, tag the
+preparation commit, or prepare again with the entries in the dated section.
 
 Source may still run ahead between releases, as Protocol 2.20.0 did against
 published 2.15.0's 2.19.0 before 2.16.0 shipped. Run the tag check on the

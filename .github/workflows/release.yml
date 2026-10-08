@@ -80,6 +80,8 @@ jobs:
       #   - Core, CLI and PROTOCOL_VERSION pair exactly.
       #   - Nothing yet claims `### Released`, which the post-publication
       #     reconciliation adds.
+      #   - `## [Unreleased]` holds no entries, so a later commit of main
+      #     cannot publish under the prepared version.
       # v2.14.0 and v2.15.0 were tagged on commits that still said "candidate"
       # and "unreleased". This runs before install, so such a tree fails before
       # anything publishes; the owner then fixes the release commit and tags
