@@ -1,5 +1,5 @@
-import { isScenarioId } from './scenario.js';
 #!/usr/bin/env node
+import { isScenarioId } from './scenario.js';
 import { verifyReplacementFundingBindings } from './replacement-funding.js';
 // uwmd CLI — command-line interface for .uw.md files
 // Commands: parse, validate, compact, diff, init, summary, render
