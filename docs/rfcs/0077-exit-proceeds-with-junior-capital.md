@@ -19,14 +19,15 @@ affects:
 
 # RFC 0077: Define exit proceeds to equity when the capital stack carries junior capital
 
-**Accepted; implemented, not released.** A coding agent wrote this RFC from
+**Accepted and implemented.** A coding agent wrote this RFC from
 issue #278 (StackUW UPSTREAM-025). Each decision below was answered from
 existing contracts. On 2026-10-07 the owner accepted D1–D6 as recommended and
 directed implementation (see the
-[owner acceptance record](#owner-acceptance-record-2026-10-07)). The pull
-request that carries the implementation records that acceptance when it
-merges. The RFC stays `accepted` until a release ships it and publication is
-verified.
+[owner acceptance record](#owner-acceptance-record-2026-10-07)). PR #279
+carries the implementation and recorded that acceptance when it merged.
+Release preparation pairs it with Format 2.0 and core/CLI 2.19.0; it needs no
+Protocol change. The RFC stays `accepted` until a release ships it and
+publication is verified.
 
 ## Summary
 

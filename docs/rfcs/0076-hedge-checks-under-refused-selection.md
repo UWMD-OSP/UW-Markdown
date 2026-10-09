@@ -19,15 +19,15 @@ affects:
 
 # RFC 0076: Refuse a stated rate hedge whose loan or cash lines cannot be selected
 
-**Accepted; implemented, not released.** A coding agent wrote this RFC. It
+**Accepted and implemented.** A coding agent wrote this RFC. It
 answers [RFC 0075](0075-hedge-senior-role-preference.md)'s one unresolved
 question, which issue #266 also raised (its point 3). Each decision below was
 answered from existing contracts. On 2026-10-06 the owner accepted D1–D7 as
 recommended and directed implementation (see the
-[owner acceptance record](#owner-acceptance-record-2026-10-06)). The pull
-request that carries the implementation records that acceptance when it
-merges. The RFC stays `accepted` until a release ships it and publication is
-verified.
+[owner acceptance record](#owner-acceptance-record-2026-10-06)). PR #277
+carries the implementation and recorded that acceptance when it merged.
+Release preparation pairs it with Protocol 2.23.0 and core/CLI 2.19.0. The
+RFC stays `accepted` until a release ships it and publication is verified.
 
 ## Summary
 
