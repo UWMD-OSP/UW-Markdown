@@ -12,6 +12,9 @@
 //      docs-site copy plan. New Markdown files are copied automatically;
 //      unindexed RFCs are reported as orphan pages without failing.
 //
+//   3. `CLAUDE.md` must stay a pointer to `AGENTS.md`, so agent guidance has
+//      one copy.
+//
 // Run: npm run verify-indexes
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
@@ -172,6 +175,29 @@ if (!failures.some((f) => f.includes('rfcs'))) {
 const orphans = [...copiedRfcs].filter((r) => !linkedRfcs.includes(r) && r !== '0000-template.md' && r !== 'README.md');
 if (orphans.length > 0) {
   checks.push(`note: copied but not linked from the index table: ${orphans.join(', ')}`);
+}
+
+// ── 3. Agent guidance has one source ─────────────────────────────────────────
+// Codex reads AGENTS.md and Claude Code reads CLAUDE.md. When both carried full
+// guidance they drifted: AGENTS.md went on telling Codex that core depended on
+// the Anthropic SDK and that Excel parity was "to 6 decimals" long after
+// CLAUDE.md was corrected. CLAUDE.md now only imports AGENTS.md.
+
+const claudeMd = read('CLAUDE.md');
+if (!/^@AGENTS\.md\s*$/m.test(claudeMd)) {
+  failures.push('CLAUDE.md: must import the shared guidance with an `@AGENTS.md` line.');
+}
+const guidanceLines = claudeMd.split('\n').filter((l) => l.trim() && !l.startsWith('# '));
+if (/^#{2,} /m.test(claudeMd) || guidanceLines.length > 8) {
+  failures.push(
+    'CLAUDE.md: carries guidance of its own. Put it in AGENTS.md, which every agent reads; two full copies drift apart.',
+  );
+}
+if (!existsSync(resolve(root, 'AGENTS.md'))) {
+  failures.push('AGENTS.md: missing — CLAUDE.md imports it.');
+}
+if (!failures.some((f) => f.startsWith('CLAUDE.md') || f.startsWith('AGENTS.md'))) {
+  checks.push('CLAUDE.md is a pointer to AGENTS.md, the single source of agent guidance');
 }
 
 // ── Report ───────────────────────────────────────────────────────────────────

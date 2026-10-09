@@ -1,46 +1,62 @@
 # AGENTS.md — UW Markdown
 
-Orientation for AI agents working in this repo. The deep reference is the
-**developer wiki** in [`docs/wiki/`](docs/wiki/README.md) — start there.
+The single source of guidance for every coding agent in this repo (Claude Code,
+Codex, or anything else). `CLAUDE.md` only points here; CI fails if it grows
+content of its own. The deep reference is the **developer wiki** in
+[`docs/wiki/`](docs/wiki/README.md) — read it for any non-trivial task.
 
 ## What this is
 
 UW Markdown is the open **`.uw.md`** standard (Markdown + JSON for commercial
-real-estate underwriting) plus its reference implementation. The primary product
-is a **library + specification**, supported by static tools including a React web
-editor. There is no Express server or database here. `underwriter.cc` is a
-separate product that consumes this standard.
+real-estate underwriting) plus its reference implementation. It is a **library +
+specification**, supported by static tools including a React web editor. There
+is no Express server and no database here. `underwriter.cc` is a separate
+product that consumes this standard.
 
 ## Where things live
 
 - `packages/uwmd-core` — `@uwmd/core`, the library and the heart of the repo.
-  Everything depends on it; it depends only on `@anthropic-ai/sdk`.
+  Everything depends on it. Runtime dependencies are `fast-xml-parser` and
+  `fflate`; `@anthropic-ai/sdk` is an **optional peer**, loaded by dynamic import
+  and excluded from the `@uwmd/core/browser` entry.
 - `packages/uwmd-cli` — the `uwmd` CLI (thin wrapper over core's `cli.ts`).
 - `packages/uwmd-excel` — `.uw.md → .xlsx` converter.
+- `packages/uwmd-lake` — `@uwmd/lake`, the RFC 0049 PostgreSQL/JSONB adapter.
+  Plans SQL; takes no database driver.
+- `packages/uwmd-signing`, `uwmd-batch`, `uwmd-report`, `uwmd-module-*` —
+  signing, batch runs, reports, and the official modules.
 - `tools/` — web-viewer, web-editor, vscode-uwmd, docs-site.
-- `spec/` — the normative format + protocol specs and JSON Schemas.
+- `spec/` — the normative specs and JSON Schemas.
 - `conformance/` — fixture/expected pairs that prove behavior.
-- `docs/wiki/` — **read this for any non-trivial task.**
+- `docs/rfcs/` — the standard's design record. `docs/wiki/` — developer reference.
 
-The public API is one file: `packages/uwmd-core/src/index.ts`. The contract is
-two files: `spec/UW_FORMAT_SPEC_v1.md` and `spec/UW_PROTOCOL_v1.md`
-(`packages/uwmd-core/src/protocol.ts` is the executable mirror of the latter).
+The public API is `packages/uwmd-core/src/index.ts` (browser-safe subset:
+`src/browser.ts`). The contract is `spec/UW_FORMAT_SPEC_v2.md`,
+`spec/UW_FORMAT_SPEC_v1.md` and `spec/UW_PROTOCOL_v1.md`;
+`packages/uwmd-core/src/protocol.ts` is the executable mirror of the protocol.
+Current state: [`docs/wiki/13-status.md`](docs/wiki/13-status.md) and
+[`VERSIONS.md`](VERSIONS.md).
 
-For a current "what's built vs. what needs work" snapshot, see the living status
-doc: [`docs/wiki/13-status.md`](docs/wiki/13-status.md) — keep it updated as
-features land.
+Some directories carry their own `CLAUDE.md` with package-specific notes
+(`packages/uwmd-core`, `packages/uwmd-excel`, `tools/`). Every agent should read
+the one for the directory it is working in.
 
 ## Invariants you must not break (full list: docs/wiki/10)
 
 1. **AI never does financial math.** Agents extract data and write narrative; all
    NOI/DSCR/LTV/IRR/DCF math is deterministic in `calc/` + `packs/`.
-2. **Layering:** spec→nothing; `@uwmd/core`→`@anthropic-ai/sdk` only (and excluded
-   from the `@uwmd/core/browser` entry); tools→core only, never other tools.
+2. **Layering:** spec → nothing; `@uwmd/core` → no vendor SDK as a hard
+   dependency; tools → core only, never another tool.
 3. **Tier-2 edits preserve bytes** outside the edited region.
-4. **Excel ↔ calc-engine parity** to 6 decimals (one pack drives both).
+4. **Excel ↔ calc-engine parity is exact.** One pack drives both; math runs
+   unrounded in IEEE-754 binary64 and both sides quantize once at the same
+   `round_to`, half-away-from-zero (protocol §VIII.5).
 5. **Append-only provenance:** supersede, don't destroy; the host owns `_meta`.
 6. **Semver-per-surface:** format, protocol, and each package version independently.
-7. **Spec/schema/protocol stay in lockstep.**
+7. **Spec/schema/protocol stay in lockstep:** `protocol.ts`, `spec/schemas/` and
+   `spec/UW_PROTOCOL_v1.md` change in the same PR or not at all.
+8. **Workspace isolation:** `@uwmd/*` always resolves through local workspace
+   links, never a registry tarball.
 
 ## Conventions
 
@@ -51,135 +67,124 @@ features land.
 - One `*.test.ts` per source file (Vitest). Lint is Biome, lint-only.
 - Use typed errors (`ProtocolError`, `CalcError`, `ExcelEmitError`), not bare `Error`.
 
-## Commands
+## Commands and gates
 
 ```bash
 npm run build            # tsc across workspaces (build before conformance!)
 npm test                 # vitest across workspaces
-npm run lint             # biome lint
-npm run conformance      # tiers 1,2,3 (imports dist/, so build first)
-npm run validate-schemas # ajv check of spec/schemas
+npm run typecheck:tests  # tests are not type-checked by build or npm test
+npm run conformance      # all tiers (imports dist/, so build first)
+npm run validate-schemas # ajv compile of spec/schemas
+npm run lint             # biome, lint-only
 npm run cli -- <cmd>     # run the uwmd CLI from source
 ```
 
-## Before you finish a change
-
-Run `npm run build && npm test && npm run conformance`. If you changed behavior a
-wiki page describes, update that page in the same change. Anything touching
-`spec/` or `spec/schemas/` is **normative and needs an RFC**
-(`docs/rfcs/`) — see `docs/wiki/11`.
+Before opening a PR, run `build`, `test`, `typecheck:tests` and `conformance`,
+plus whichever guards the change touches: `verify-packages`, `verify-lockfile`,
+`verify-versions`, `verify-indexes`, `verify-codes`, `verify-release`, and
+`npm --prefix tools/docs-site run build` when `docs/` or `spec/` changed.
+Run `npm ci` only when dependencies, lockfiles or workspace links changed.
+CI runs all of them; a red check is yours to fix before asking for review.
 
 ---
 
-# Agent Orchestration Protocol
+# How work gets done
 
-Everything above orients *one* agent in the repo. This section governs how
-several of them work together without stepping on each other.
+## Who does what
 
-## Role division
+**Claude Code and Codex are equal peers.** Either can take any kind of work —
+bug fixes, features, RFCs, releases — end to end, from reading the issue to a
+green PR. **Jared owns the repo** and is the only one who merges, tags,
+publishes, or changes accounts and credentials.
 
-| Role | Who | Owns |
+## Work in your own checkout, on your own branch
+
+- Each agent works in its own checkout or git worktree, never in another
+  agent's. Codex's usual worktree is `../uwmd-codex`; the primary checkout
+  (`UW Markdown`) belongs to whichever Claude Code session is running there.
+- Branch from current `origin/main`, one branch per PR, named
+  `claude/<topic>` or `codex/<topic>`. Don't reuse a branch for a second PR.
+- Before starting, check open PRs (`gh pr list`) for one already doing the same
+  work or touching the same files. Parallel PRs that each append to
+  `CHANGELOG.md` or `docs/wiki/13-status.md` conflict with each other even when
+  both are green; rebase on `main` before asking for a merge.
+- Commit before running long commands. Never leave changes staged while a
+  multi-minute test suite runs; another session's `git commit` can sweep them up.
+
+## One PR, one topic
+
+A PR does one thing, and everything it needs ships with it: the code, its tests,
+the wiki page it changes, the `CHANGELOG.md` `[Unreleased]` entry, and (for
+normative changes) the RFC, spec, schema and conformance updates. Anything you
+notice along the way that is out of scope goes in the PR description as a
+follow-up or into a separate issue, not into the diff.
+
+**Agents do not edit `AGENTS.md`, `CLAUDE.md`, `GOVERNANCE.md` or
+`CONTRIBUTING.md` inside other work.** If the guidance is wrong or stale, say so
+in the PR description, or open a separate PR that changes only the guidance.
+
+## Decide, record, ship
+
+When a task leaves a question open — naming, API shape, a code to emit, which of
+two compatible readings to implement — **decide it from repo precedent and keep
+going.** Existing RFCs, the spec, `protocol.ts`, the house patterns (closed
+vocabularies that refuse unknown values; the existing currency quantum; typed
+errors) answer most questions. Record every such call in the PR description:
+
+| Question | Decision | Why (precedent) |
 |---|---|---|
-| **Context hub & planner** | Gemini / ChatGPT | Ingests broad repo context, plans architectural changes, drafts `specs/active/SPEC.md`, reviews PRs adversarially. |
-| **Lead builder** | Claude Code / terminal agent | Executes `specs/active/TASKS.md` one item at a time, writes tests, runs the deterministic gates locally. |
-| **Human partner** | Jared | Resolves ambiguous business logic, approves schema changes, merges PRs once the gates are green. |
 
-The planner writes specs; the builder writes code. A builder that finds itself
-redesigning the contract has hit an escalation trigger, not a coding problem.
+Jared's merge is the acceptance. Don't stop work to ask, and don't end a task by
+listing "owner decisions remain."
 
-## The spec/task contract
+**Stop and ask** only for:
 
-- `specs/active/SPEC.md` — the current feature contract: scope, technical
-  decisions, and a definition of done. One active spec at a time.
-- `specs/active/TASKS.md` — the ordered task matrix derived from that spec.
-  Exactly one unchecked item is in flight at a time; the builder checks it off
-  only after the gates pass and the change is committed.
-- Completed specs move to `specs/archive/<name>.md` when their task matrix is
-  fully checked off.
+1. **Merge, tag, publish, deprecate**, or anything that touches npm, GitHub,
+   Vercel or other accounts and credentials.
+2. **A new financial convention** — a formula, day count, rounding rule,
+   convergence criterion or tolerance that no accepted RFC or the spec pins.
+   Never guess at numerics (invariant 1).
+3. **A breaking change to the format** that existing documents would fail.
+4. **A new external npm dependency.**
+5. **The same fix failing the same check twice.** Stop, leave the tree
+   committed, and report what you tried.
 
-**Reconcile before you build.** Task matrices are written from a snapshot and go
-stale — branches land, PRs merge. Before starting a stage, verify each item
-against the working tree and check off what is already true rather than redoing
-it. Reconciliation is cheap; a duplicate protocol bump is not.
+## RFCs
 
-## Deterministic verification gates
+Any change to what the standard means — `spec/`, `spec/schemas/`, protocol
+types — needs an RFC in `docs/rfcs/` (process: `docs/wiki/11`). RFCs are the
+standard's permanent record and adopters read them, so they are never skipped.
 
-Run every gate before checking off a task:
+- **Default: one RFC, one PR.** The RFC (status `accepted`), its Decisions
+  table, and the implementation, spec, schema and conformance changes land
+  together. Merging the PR accepts the RFC.
+- **Draft PR first** only when the RFC introduces a new financial convention or
+  a breaking format change (stop-and-ask items 2 and 3). Open the RFC alone as
+  `draft`, and implement after Jared merges it.
 
-```bash
-npm ci                   # only after dependency or lockfile changes
-npm run build            # tsc across workspaces — conformance imports dist/
-npm test                 # vitest across workspaces
-npm run conformance      # every default suite, all tiers
-npm run validate-schemas # ajv compile of spec/schemas/
-npm run lint             # biome, lint-only
-npm run verify-lockfile  # no @uwmd/* resolving to a registry tarball
-npm run verify-packages  # publishable package contents
-npm --prefix tools/docs-site run build   # docs build, when docs/ or spec/ changed
-```
+## Paperwork
 
-`npm ci` on every task is wasteful on a warm tree — run it when `package.json`,
-`package-lock.json`, or workspace links changed, and otherwise trust the build.
+The PR description carries scope, decisions and validation results. Don't write
+plan files (`specs/`), review documents (`docs/reviews/`), or standalone
+"reconcile" / "record" / "review" commits unless Jared asks for them. Existing
+files there are history, not instructions — reconcile them against `main`
+before trusting anything they say.
 
-## Escalation triggers — halt and ask
+The exception is release records: the release procedure in `docs/wiki/11`
+(prepare → tag → publish → reconcile) is enforced by `verify-release` and is
+followed exactly, one reconciliation PR per release.
 
-1. **Loop failure.** Any test, schema, or conformance check fails twice
-   consecutively on the same fix attempt.
-2. **Interface or schema drift.** The task needs a change to exported types in
-   `packages/uwmd-core/src/protocol.ts` or to `spec/schemas/` that the active
-   spec does not explicitly authorize. Normative changes need an RFC.
-3. **Dependency alteration.** The task needs a new external npm dependency or an
-   edit to workspace linking.
-4. **Financial ambiguity.** A formula, convergence criterion, root bracket, or
-   precision tolerance is not pinned by the spec. Never guess at numerics —
-   see invariant 1.
+## Human handoffs
 
-Halting means: stop, leave the tree in a committed or cleanly-stashed state,
-and state precisely what decision is needed.
+When a step needs Jared — a merge, a tag, an account setting, a credential —
+don't mention it mid-reply and keep working. Write it to a standalone Markdown
+file (what and why in two sentences; the exact commands or click path with
+literal values; what "done" looks like; what to bring back), say plainly that
+work is paused, and stop. Verify the result when he returns instead of assuming
+it succeeded. Handoff files go in your scratch space, not the repo.
 
-## Human handoffs — write a file, don't bury it in chat
+## Finishing
 
-Some steps an agent cannot do and should not try: entering credentials,
-changing account settings on an external service, approving a purchase,
-clicking through a provider's console. These are **handoffs**, and the failure
-mode is not that the agent attempts them — it is that the agent mentions them
-in the middle of a long reply, keeps working, and the human scrolls past.
-That happened twice in one session on 2026-08-16 (an expired `NPM_TOKEN`, then
-the npm trusted-publisher setup), and each time the loop closed late.
-
-When a task needs a human-only action:
-
-1. **Write it to a standalone Markdown file.** One file, one handoff,
-   self-contained — it will be read outside this session, with none of this
-   context available.
-2. **Contents, in this order:** what needs doing and why in two sentences; the
-   exact click path or command, field by field, with literal values; what
-   "done" looks like; and what to bring back.
-3. **Say plainly that work is paused**, and that the file should be finished
-   before returning with results. Do not continue past a handoff into work that
-   assumes it succeeded.
-4. **Verify on return.** Ask for the output or check the external state
-   directly. "I think I set it up" is a starting point for verification, not a
-   conclusion — and say so without turning it into an interrogation.
-
-Handoff files are transient: write them to the session scratchpad, not the
-repo, unless the steps are worth keeping (in which case they belong in
-`docs/wiki/` as a procedure, not as a handoff).
-
-The point is a hard stop with an artifact attached, not a politer paragraph.
-A handoff that lives only in a chat message is one the human is entitled to
-miss.
-
-## Cross-agent invariants
-
-- **Zero-drift triad.** `protocol.ts`, `spec/schemas/`, and
-  `spec/UW_PROTOCOL_v1.md` change in the same commit or not at all.
-- **Deterministic quantization.** Math runs unrounded in IEEE-754 `binary64`;
-  quantization happens once, at the `evaluateCalc` boundary, half-away-from-zero.
-- **Workspace isolation.** `@uwmd/*` always resolves through local workspace
-  links, never a registry tarball.
-- **Clean provider seam.** AI SDK orchestration stays out of document mechanics
-  and out of the `browser.ts` bundle.
-- **Worktree separation.** Codex works in `../uwmd-codex` on `codex/work`; the
-  primary checkout belongs to the lead builder. Two agents in one worktree is a
-  merge conflict waiting to happen.
+A task is done when its PR is open, CI is green, and the description lists what
+changed, the decisions table (if any), how it was validated, and any
+follow-ups. Report the PR link and stop. Don't merge.

@@ -99,6 +99,17 @@ protocol, and each package each carry an independent semver).
   still pass. Ordinary CI is unchanged. No package version, contract or
   conformance change. See wiki 11, "The three release states".
 
+### Contributor guidance for coding agents
+
+- **`AGENTS.md` is the single source of agent guidance; `CLAUDE.md` imports
+  it.** The two files had drifted, and `AGENTS.md` still described the
+  Anthropic SDK as a core dependency and Excel parity as "to 6 decimals".
+  `verify-indexes` now fails if `CLAUDE.md` carries guidance of its own. The
+  guidance itself now treats agents as peers, has them decide open questions
+  from repo precedent and record them in the PR, and lands an RFC together
+  with its implementation unless it introduces a new financial convention or a
+  breaking format change. No package, contract or conformance change.
+
 ## [2.18.0] - 2026-10-05
 
 ### Released
