@@ -26,6 +26,6 @@ scenario: entitled_land_acquisition
     "notes": null
   },
   "asset_class": "land",
-  "land_area_acres": 20
+  "gross_acres": 20
 }
 ```

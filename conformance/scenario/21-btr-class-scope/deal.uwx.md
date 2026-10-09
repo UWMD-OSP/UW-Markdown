@@ -35,6 +35,6 @@ scenario: ground_up_development
   },
   "asset_class": "land",
   "asset_subtype": "build_to_rent",
-  "land_area_acres": 20
+  "gross_acres": 20
 }
 ```
