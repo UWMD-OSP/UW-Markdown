@@ -1,8 +1,9 @@
 ---
 rfc: 0077
 title: Define exit proceeds to equity when the capital stack carries junior capital
-status: accepted
+status: implemented
 accepted: 2026-10-07
+implemented: 2026-10-09
 author: claude-code (agent proposal)
 created: 2026-10-07
 depends_on:
@@ -19,15 +20,16 @@ affects:
 
 # RFC 0077: Define exit proceeds to equity when the capital stack carries junior capital
 
-**Accepted and implemented.** A coding agent wrote this RFC from
-issue #278 (StackUW UPSTREAM-025). Each decision below was answered from
-existing contracts. On 2026-10-07 the owner accepted D1–D6 as recommended and
-directed implementation (see the
+**Implemented; released and independently verified.** A coding agent wrote
+this RFC from issue #278 (StackUW UPSTREAM-025). Each decision below was
+answered from existing contracts. On 2026-10-07 the owner accepted D1–D6 as
+recommended and directed implementation (see the
 [owner acceptance record](#owner-acceptance-record-2026-10-07)). PR #279
 carries the implementation and recorded that acceptance when it merged.
-Release preparation pairs it with Format 2.0 and core/CLI 2.19.0; it needs no
-Protocol change. The RFC stays `accepted` until a release ships it and
-publication is verified.
+Release preparation paired it with Format 2.0 and core/CLI 2.19.0; it needs no
+Protocol change. The `v2.19.0` release published it in core/CLI 2.19.0 with
+unchanged Format 2.0, and independent publication verification passed (see
+[Publication and verification](#publication-and-verification-2026-10-09)).
 
 ## Summary
 
@@ -224,3 +226,17 @@ Out of scope, recorded so it is not mistaken for decided: which equity the
   distribution waterfall splits the equity side.
 - Common CRE models present "net sale proceeds", less the loan payoff, as
   proceeds "to equity", then split them through the equity waterfall.
+
+## Publication and verification (2026-10-09)
+
+Annotated `v2.19.0` targets the release-prepared merge
+`139268f34be9550287d8782e44767a9f7e8273b1` (PR #284), not a later head of
+`main`.
+[Release run 37950962666](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37950962666)
+succeeded and published core/CLI 2.19.0, signing 0.2.23, batch 0.8.18 and
+both modules 0.1.11. Independent registry, provenance, published-file,
+delivered-CLI (228/228) and module-consumer checks passed; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section above
+remain unchanged.

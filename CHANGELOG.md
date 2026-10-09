@@ -10,6 +10,25 @@ protocol, and each package each carry an independent semver).
 
 ## [2.19.0] - 2026-10-08
 
+### Released
+
+Published core/CLI **2.19.0**, signing **0.2.23**, batch **0.8.18** and
+`@uwmd/module-hospitality` and `@uwmd/module-data-center` **0.1.11** from
+annotated `v2.19.0` on `139268f34be9550287d8782e44767a9f7e8273b1`.
+[Release run 37950962666](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37950962666)
+succeeded through trusted publishing with provenance. Every registry version
+and `latest` matches, and all six `gitHead` values name the authorized commit.
+Integrity, registry and DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps and inclusion proofs, and all 482 published file contents
+verify. The registry-installed CLI passes **228/228** portable cases with no
+skips, and an isolated consumer runs both modules' 11 runtime fixtures and
+compiles strict TypeScript with `skipLibCheck: false` and no Anthropic SDK.
+RFCs 0075, 0076 and 0077 are `implemented`; Protocol **2.23.0** is Stable,
+paired with Format **2.0**. No other package generation was published. The
+immutable tagged tree keeps its neutral preparation records. Exact evidence
+is in `docs/releases/2.19.0-publication-evidence.json` and the verification
+method in `docs/releases/2.19.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **2.19.0** pair with Protocol **2.23.0** and Format **2.0**.
@@ -19,10 +38,11 @@ Core's optional signing peer is **0.2.23**. Each dependent takes its existing
 patch-version step for the exact repin. The workflow scope is six packages:
 core, CLI, signing, batch, `@uwmd/module-hospitality` and
 `@uwmd/module-data-center`. Excel, report and lake remain source-only. Module
-manifest contracts stay **0.1.0**. RFCs 0075, 0076 and 0077 stay `accepted`
-in the tagged preparation state.
+manifest contracts stay **0.1.0**. RFCs 0075, 0076 and 0077 stayed
+`accepted` in the tagged preparation state; the Released evidence above
+records their verified lifecycle transition.
 
-### Contract — Protocol 2.23.0 (RFCs 0075 and 0076), Format 2.0 (RFC 0077)
+### Released contract — Protocol 2.23.0 (RFCs 0075 and 0076), Format 2.0 (RFC 0077)
 
 - **Protocol 2.23.0** carries RFC 0075's `senior` preference for the hedge
   and escrow rules and RFC 0076's `HDG-08` refusal under a refused selection,

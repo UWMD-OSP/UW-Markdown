@@ -102,9 +102,9 @@ and how it gets accepted.
 | [0072](./0072-frontmatter-scenario-semantics.md) | Give frontmatter `scenario` a defined meaning | draft | format, core, conformance, tooling |
 | [0073](./0073-previous-asset-class-identifiers.md) | Previous identifiers for module-declared asset classes | draft | protocol, core, conformance |
 | [0074](./0074-module-declaration-override-semantics.md) | What a dependent module's declaration override means | implemented | protocol, core, conformance |
-| [0075](./0075-hedge-senior-role-preference.md) | Read a rate hedge from the senior loan when debt_structure is a role map | accepted | format, protocol, core, conformance |
-| [0076](./0076-hedge-checks-under-refused-selection.md) | Refuse a stated rate hedge whose loan or cash lines cannot be selected | accepted | format, protocol, core, conformance |
-| [0077](./0077-exit-proceeds-with-junior-capital.md) | Define exit proceeds to equity when the capital stack carries junior capital | accepted | format, core, conformance, tooling |
+| [0075](./0075-hedge-senior-role-preference.md) | Read a rate hedge from the senior loan when debt_structure is a role map | implemented | format, protocol, core, conformance |
+| [0076](./0076-hedge-checks-under-refused-selection.md) | Refuse a stated rate hedge whose loan or cash lines cannot be selected | implemented | format, protocol, core, conformance |
+| [0077](./0077-exit-proceeds-with-junior-capital.md) | Define exit proceeds to equity when the capital stack carries junior capital | implemented | format, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

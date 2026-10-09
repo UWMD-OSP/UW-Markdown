@@ -21,7 +21,7 @@ same protocol version.
 ## Current matrix
 
 Release 2.19.0 pairs core/CLI 2.19.0 with Protocol 2.23.0 and Format 2.0.
-Protocol 2.23.0 carries two accepted RFCs: RFC 0075's `senior` preference
+Protocol 2.23.0 carries two RFCs: RFC 0075's `senior` preference
 when the hedge and escrow rules read `debt_structure`, and RFC 0076's
 `HDG-08` refusal of a stated hedge whose loan or cash lines cannot be selected
 (§V.12.1). Neither adds a module capability, so no new §X `requires_protocol`
@@ -32,8 +32,17 @@ the optional Anthropic provider. Signing 0.2.23, batch 0.8.18, Excel 0.9.11,
 report 0.8.23, lake 0.2.7 and both module packages 0.1.11 pin core 2.19.0
 exactly. Core's optional signing peer is 0.2.23. The workflow scope is core,
 CLI, signing, batch and both module packages. Excel, report and lake remain
-source-only. Module manifest contracts remain 0.1.0. Release preparation and
-subsequent publication evidence are separate records.
+source-only. Module manifest contracts remain 0.1.0. RFCs 0075, 0076 and 0077
+are implemented; Protocol 2.23.0 is Stable. Core/CLI 2.19.0, signing 0.2.23,
+batch 0.8.18 and both modules 0.1.11 are published from immutable annotated
+`v2.19.0` on `139268f34be9550287d8782e44767a9f7e8273b1` through trusted
+publishing with provenance. Release run 37950962666 succeeded; all registry
+versions, `latest`, `gitHead`, signatures, attestations, Rekor checks, 482
+published files, 228 delivered-CLI portable cases and an isolated consumer of
+both modules were independently verified. No other package generation
+shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md)
+remain separate records.
 
 Release 2.18.0 pairs core/CLI 2.18.0 with Protocol 2.22.0 and Format 2.0.
 Protocol 2.22.0 carries two RFCs:

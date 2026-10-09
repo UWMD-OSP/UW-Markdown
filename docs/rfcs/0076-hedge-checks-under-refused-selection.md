@@ -1,8 +1,9 @@
 ---
 rfc: 0076
 title: Refuse a stated rate hedge whose loan or cash lines cannot be selected
-status: accepted
+status: implemented
 accepted: 2026-10-06
+implemented: 2026-10-09
 author: claude-code (agent proposal)
 created: 2026-10-06
 depends_on:
@@ -19,15 +20,17 @@ affects:
 
 # RFC 0076: Refuse a stated rate hedge whose loan or cash lines cannot be selected
 
-**Accepted and implemented.** A coding agent wrote this RFC. It
+**Implemented; released and independently verified.** A coding agent wrote this RFC. It
 answers [RFC 0075](0075-hedge-senior-role-preference.md)'s one unresolved
 question, which issue #266 also raised (its point 3). Each decision below was
 answered from existing contracts. On 2026-10-06 the owner accepted D1–D7 as
 recommended and directed implementation (see the
 [owner acceptance record](#owner-acceptance-record-2026-10-06)). PR #277
 carries the implementation and recorded that acceptance when it merged.
-Release preparation pairs it with Protocol 2.23.0 and core/CLI 2.19.0. The
-RFC stays `accepted` until a release ships it and publication is verified.
+Release preparation paired it with Protocol 2.23.0 and core/CLI 2.19.0. The
+`v2.19.0` release published it in core/CLI 2.19.0 with Stable Protocol
+2.23.0, and independent publication verification passed (see
+[Publication and verification](#publication-and-verification-2026-10-09)).
 
 ## Summary
 
@@ -253,3 +256,17 @@ The draft opened as PR #277. On 2026-10-06 the owner accepted D1–D7 as
 recommended and directed implementation on the same branch. No decision was
 changed. The implementation is in that pull request, and merging it records
 the acceptance.
+
+## Publication and verification (2026-10-09)
+
+Annotated `v2.19.0` targets the release-prepared merge
+`139268f34be9550287d8782e44767a9f7e8273b1` (PR #284), not a later head of
+`main`.
+[Release run 37950962666](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37950962666)
+succeeded and published core/CLI 2.19.0, signing 0.2.23, batch 0.8.18 and
+both modules 0.1.11. Independent registry, provenance, published-file,
+delivered-CLI (228/228) and module-consumer checks passed; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section above
+remain unchanged.
