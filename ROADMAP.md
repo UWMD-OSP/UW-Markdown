@@ -1,17 +1,16 @@
 # Roadmap
 
-Reconciled **2026-10-08** (America/Phoenix) for release-prepared **2.19.0**
-(Protocol **2.23.0**, Format **2.0**). The current published release remains
-**2.18.0**, pairing core/CLI 2.18.0 with Stable Protocol **2.22.0** and Format
-**2.0**.
+Reconciled **2026-10-09** (America/Phoenix) for published and independently
+verified **2.19.0**, pairing core/CLI 2.19.0 with Stable Protocol **2.23.0**
+and unchanged Format **2.0**. No accepted RFC is waiting for a release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 2.19.0
+## Current published release: 2.19.0
 
 Core/CLI **2.19.0** pair with Protocol **2.23.0** and Format **2.0**. The
-generation carries three accepted RFCs and one change outside the contract:
+generation carries three RFCs and one change outside the contract:
 - **RFC 0075:** the hedge and escrow rules prefer the `senior`
   `debt_structure` (#266).
 - **RFC 0076:** a stated hedge whose loan or cash lines cannot be selected
@@ -23,10 +22,13 @@ generation carries three accepted RFCs and one change outside the contract:
   Anthropic SDK.
 
 Signing 0.2.23, batch 0.8.18 and both module packages 0.1.11 join core and
-CLI in the six-package workflow. No new §X floor applies. RFCs 0075–0077
-remain `accepted` until shipment and independently verified publication.
+CLI in the six-package workflow. No new §X floor applies. RFCs 0075–0077 are
+`implemented` after shipment and independently verified publication. Release
+run 37950962666 and independent registry/provenance/published-file/CLI/
+module-consumer checks pass. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.19.0-publication.md).
 
-## Current published release: 2.18.0
+## Historical publication: 2.18.0
 
 Core/CLI **2.18.0** pair with Protocol **2.22.0** and Format **2.0**. The
 generation carries two RFCs and four changes outside the contract:
@@ -365,7 +367,7 @@ product specification; lease economics and cash timing are.
 - **Official module publication:** hospitality and data-center are approved together
   as public npm packages. Both first published at 0.1.10 with core 2.18.0, through
   the ordinary release workflow after the account bootstrap and trusted-publisher
-  setup. Package semver is separate from the 0.1.0 manifest contracts; exact core
+  setup, and 0.1.11 followed with core 2.19.0. Package semver is separate from the 0.1.0 manifest contracts; exact core
   pins and explicit host loading remain.
 - **Standalone Excel/report publication:** implemented current packages remain
   source-only until a consumer and supported distribution scope are chosen.
