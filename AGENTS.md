@@ -86,116 +86,30 @@ plus whichever guards the change touches: `verify-packages`, `verify-lockfile`,
 Run `npm ci` only when dependencies, lockfiles or workspace links changed.
 CI runs all of them; a red check is yours to fix before asking for review.
 
----
 
-# How work gets done
+## Contributing a change
 
-## Who does what
+- **One PR, one topic.** A PR ships everything its change needs: code, tests,
+  the wiki page it changes, the `CHANGELOG.md` `[Unreleased]` entry, and (for
+  normative changes) the RFC, spec, schema and conformance updates. Anything
+  out of scope goes in the PR description or a separate issue, not the diff.
+- **Normative changes need an RFC** in `docs/rfcs/` (process: `docs/wiki/11`
+  and [GOVERNANCE.md](GOVERNANCE.md)). An RFC and its implementation can land
+  in one PR; merging it accepts the RFC.
+- **Decide open questions from precedent** (existing RFCs, the spec,
+  `protocol.ts`, house patterns such as closed vocabularies that refuse
+  unknown values) and record each call in the PR description:
+  question, decision, and the precedent behind it.
+- **Never guess at numerics.** A formula, day count, rounding rule or tolerance
+  that no accepted RFC or the spec pins is a question for the maintainers, not
+  a judgment call (invariant 1). The same goes for a breaking format change or
+  a new external dependency.
+- **Releases** follow the procedure in `docs/wiki/11` exactly; `verify-release`
+  enforces it.
+- **Parallel work:** use separate checkouts or worktrees, branch from current
+  `main`, and rebase before merging. PRs that each append to `CHANGELOG.md`
+  conflict even when both are green.
 
-**Claude Code and Codex are equal peers.** Either can take any kind of work —
-bug fixes, features, RFCs, releases — end to end, from reading the issue to a
-green PR. **Jared owns the repo** but does not want merge or release steps
-handed to him:
-
-- **Claude Code merges.** Its own PRs once CI is green and the branch is current
-  with `main`; Codex's PRs after reviewing them (fix-ups go back to Codex or into
-  a follow-up PR).
-- **Claude Code cuts releases**: prepare, merge, tag and reconcile, exactly as
-  `docs/wiki/11` describes. The tag publishes to npm, so run
-  `verify-release --tag` on the exact commit first.
-- **Codex** finishes at a green PR and reports it.
-- **Only Jared** changes accounts and credentials: npm, GitHub and Vercel
-  settings, trusted publishers, anything behind 2FA or a browser login.
-
-## Work in your own checkout, on your own branch
-
-- Each agent works in its own checkout or git worktree, never in another
-  agent's. Codex's usual worktree is `../uwmd-codex`; the primary checkout
-  (`UW Markdown`) belongs to whichever Claude Code session is running there.
-- Branch from current `origin/main`, one branch per PR, named
-  `claude/<topic>` or `codex/<topic>`. Don't reuse a branch for a second PR.
-- Before starting, check open PRs (`gh pr list`) for one already doing the same
-  work or touching the same files. Parallel PRs that each append to
-  `CHANGELOG.md` or `docs/wiki/13-status.md` conflict with each other even when
-  both are green; rebase on `main` before merging.
-- Commit before running long commands. Never leave changes staged while a
-  multi-minute test suite runs; another session's `git commit` can sweep them up.
-
-## One PR, one topic
-
-A PR does one thing, and everything it needs ships with it: the code, its tests,
-the wiki page it changes, the `CHANGELOG.md` `[Unreleased]` entry, and (for
-normative changes) the RFC, spec, schema and conformance updates. Anything you
-notice along the way that is out of scope goes in the PR description as a
-follow-up or into a separate issue, not into the diff.
-
-**Agents do not edit `AGENTS.md`, `CLAUDE.md`, `GOVERNANCE.md` or
-`CONTRIBUTING.md` inside other work.** If the guidance is wrong or stale, say so
-in the PR description, or open a separate PR that changes only the guidance.
-
-## Decide, record, ship
-
-When a task leaves a question open — naming, API shape, a code to emit, which of
-two compatible readings to implement — **decide it from repo precedent and keep
-going.** Existing RFCs, the spec, `protocol.ts`, the house patterns (closed
-vocabularies that refuse unknown values; the existing currency quantum; typed
-errors) answer most questions. Record every such call in the PR description:
-
-| Question | Decision | Why (precedent) |
-|---|---|---|
-
-The merge is the acceptance. Don't stop work to ask, and don't end a task by
-listing "owner decisions remain."
-
-**Stop and ask** only for:
-
-1. **Account and credential changes** — npm, GitHub or Vercel settings,
-   trusted publishers, deprecations, anything behind 2FA or a browser login.
-2. **A new financial convention** — a formula, day count, rounding rule,
-   convergence criterion or tolerance that no accepted RFC or the spec pins.
-   Never guess at numerics (invariant 1).
-3. **A breaking change to the format** that existing documents would fail.
-4. **A new external npm dependency.**
-5. **The same fix failing the same check twice.** Stop, leave the tree
-   committed, and report what you tried.
-
-## RFCs
-
-Any change to what the standard means — `spec/`, `spec/schemas/`, protocol
-types — needs an RFC in `docs/rfcs/` (process: `docs/wiki/11`). RFCs are the
-standard's permanent record and adopters read them, so they are never skipped.
-
-- **Default: one RFC, one PR.** The RFC (status `accepted`), its Decisions
-  table, and the implementation, spec, schema and conformance changes land
-  together. Merging the PR accepts the RFC.
-- **Draft PR first** only when the RFC introduces a new financial convention or
-  a breaking format change (stop-and-ask items 2 and 3). Open the RFC alone as
-  `draft`, and implement after Jared approves it.
-
-## Paperwork
-
-The PR description carries scope, decisions and validation results. Don't write
-plan files (`specs/`), review documents (`docs/reviews/`), or standalone
-"reconcile" / "record" / "review" commits unless Jared asks for them. Existing
-files there are history, not instructions — reconcile them against `main`
-before trusting anything they say.
-
-The exception is release records: the release procedure in `docs/wiki/11`
-(prepare → tag → publish → reconcile) is enforced by `verify-release` and is
-followed exactly, one reconciliation PR per release.
-
-## Human handoffs
-
-When a step needs Jared — an account setting, a credential, a 2FA approval —
-don't mention it mid-reply and keep working. Write it to a standalone Markdown
-file (what and why in two sentences; the exact commands or click path with
-literal values; what "done" looks like; what to bring back), say plainly that
-work is paused, and stop. Verify the result when he returns instead of assuming
-it succeeded. Handoff files go in your scratch space, not the repo.
-
-## Finishing
-
-A task is done when its PR is open, CI is green, and the description lists what
-changed, the decisions table (if any), how it was validated, and any
-follow-ups. Codex reports the PR link and stops. Claude Code merges its own
-green PR and, for a release, carries on through the tag and reconciliation.
+Maintainers keep their own team workflow outside this repo. It loads through
+gitignored local files (`CLAUDE.local.md`, a user-level Codex `AGENTS.md`), so
+this file stays the same for every contributor and fork.

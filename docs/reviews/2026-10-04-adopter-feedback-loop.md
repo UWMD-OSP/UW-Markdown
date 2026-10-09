@@ -21,7 +21,7 @@ Protocol 2.21.0, core/CLI 2.17.0.
 | `.github/ISSUE_TEMPLATE/config.yml` | Absent. Blank issues were enabled, and nothing steered a vulnerability away from a public issue. |
 | Repository labels | GitHub's nine defaults only |
 | Security reporting | SECURITY.md: email `security@uwmd.org`, 5-business-day acknowledgement. GitHub private vulnerability reporting is **disabled**. |
-| GitHub Discussions | Disabled. The public RFC comment venue is still an open owner decision ([handoff](../handoff/HUMAN-public-rfc-venue.md)). |
+| GitHub Discussions | Disabled. The public RFC comment venue is still an open owner decision ([handoff](https://github.com/UWMD-OSP/UW-Markdown/blob/e997d8291e96984d337aaa0c606b38448581f811/docs/handoff/HUMAN-public-rfc-venue.md)). |
 | PR template | Present. It said "Link the issue this resolves", without saying how. |
 | Issues filed | One ever (#146, closed). |
 | StackUW findings | Reached the repo as owner-relayed briefs and re-vendor findings carrying StackUW's own IDs (`UPSTREAM-002`…`UPSTREAM-021`). Those IDs are cited in the CHANGELOG, RFCs 0032/0037/0038/0066/0069, and test names. None went through an issue. |
@@ -175,5 +175,5 @@ solves.
 - **GitHub private vulnerability reporting.** It is disabled. SECURITY.md's
   email route is unchanged, and enabling the feature would add a second route.
 - **The public RFC comment venue.** It remains open
-  ([handoff](../handoff/HUMAN-public-rfc-venue.md)). Until it closes,
+  ([handoff](https://github.com/UWMD-OSP/UW-Markdown/blob/e997d8291e96984d337aaa0c606b38448581f811/docs/handoff/HUMAN-public-rfc-venue.md)). Until it closes,
   `needs-rfc` issues are where RFC discussion happens.
