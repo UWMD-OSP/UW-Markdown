@@ -42,7 +42,7 @@ jobs:
   verify-indexes:
     name: Verify hand-maintained indexes
     runs-on: ubuntu-latest
-    # Reads the schema README, the RFC index, and the prebuild copy list as
+    # Reads the schema README, the RFC index, the prebuild copy list and CLAUDE.md as
     # data — no install, no build, same rationale as the two guards above.
     steps:
       - uses: actions/checkout@v5
