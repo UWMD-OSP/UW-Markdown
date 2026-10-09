@@ -15,6 +15,12 @@ writer. **Agents extract and narrate; they never compute financial metrics.**
   `BANCROFT_LAYERS`, `WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`,
   `MULTI_SECTION_LAYERS`.
 
+The Anthropic provider loads its optional SDK only when sending a request.
+Its injected client option uses structural types for the methods the adapter
+calls, so strict TypeScript consumers can import core without installing that
+peer. Package verification compiles root and browser imports with
+skipLibCheck disabled and optional peers absent.
+
 ## The layer registry (`BANCROFT_LAYERS` in `context.ts`)
 
 Each `LayerDefinition` declares `id`, `layer` (number), `name`, `reads[]`,

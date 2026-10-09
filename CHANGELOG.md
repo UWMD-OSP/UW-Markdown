@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Optional SDK consumer types
+
+- Strict TypeScript consumers can import core without installing the optional
+  Anthropic SDK. The injected provider client uses a structural subset of the
+  methods the adapter calls; existing SDK clients remain compatible. Package
+  verification compiles both entry points without optional peers.
+
 ### Rate hedges read from the senior loan (RFC 0075)
 
 - **The hedge and escrow rules now prefer `senior` on `debt_structure`.**
