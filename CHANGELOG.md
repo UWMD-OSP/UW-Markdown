@@ -101,6 +101,25 @@ protocol, and each package each carry an independent semver).
 
 ## [2.18.0] - 2026-10-05
 
+### Released
+
+Published core/CLI **2.18.0**, signing **0.2.22**, batch **0.8.17** and the
+first public generation of `@uwmd/module-hospitality` and
+`@uwmd/module-data-center`, **0.1.10**, from annotated `v2.18.0` on
+`4e0a8c18091377fa25800dc2b16954a636be1d83`.
+[Release run 37795279528](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37795279528)
+succeeded through trusted publishing with provenance. Every registry version
+and `latest` matches, and all six `gitHead` values name the authorized commit.
+Integrity, registry and DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps and inclusion proofs, and all 482 published file contents
+verify. The registry-installed CLI passes **210/210** portable cases with no
+skips, and an isolated consumer runs both modules' 11 runtime fixtures. RFCs
+0071 and 0074 are `implemented`; Protocol **2.22.0** is Stable, paired with
+Format **2.0**. No other package generation was published. The immutable
+tagged tree keeps its neutral preparation records. Exact evidence is in
+`docs/releases/2.18.0-publication-evidence.json` and the verification method
+in `docs/releases/2.18.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **2.18.0** pair with Protocol **2.22.0** and Format **2.0**.
@@ -111,12 +130,13 @@ patch-version step for the exact repin. The workflow scope is six packages:
 core, CLI, signing, batch, `@uwmd/module-hospitality` and
 `@uwmd/module-data-center`. For the two modules, 0.1.10 is their first
 public generation. Excel, report and lake remain source-only. Module manifest
-contracts stay **0.1.0**. RFCs 0071 and 0074 stay `accepted` in the tagged
-preparation state. See `docs/releases/2.18.0-preparation.md`.
+contracts stay **0.1.0**. RFCs 0071 and 0074 stayed `accepted` in the
+tagged preparation state; the Released evidence above records their verified
+lifecycle transition. See `docs/releases/2.18.0-preparation.md`.
 
-### Contract — Protocol 2.22.0 (RFCs 0071 and 0074)
+### Released contract — Protocol 2.22.0 (RFCs 0071 and 0074)
 
-Protocol 2.22.0 carries two accepted RFCs. Format stays **2.0**.
+Protocol 2.22.0 carries two RFCs, now implemented. Format stays **2.0**.
 
 - **RFC 0071.** It adds the `is_calendar_date` §VIII.3 predicate. A module
   that calls it MUST declare `requires_protocol` `>=2.22.0` (§X).

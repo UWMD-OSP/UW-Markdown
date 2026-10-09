@@ -1,8 +1,9 @@
 ---
 rfc: 0074
 title: What a dependent module's declaration override means
-status: accepted
+status: implemented
 accepted: 2026-10-06
+implemented: 2026-10-08
 author: claude-code (agent proposal)
 created: 2026-10-05
 depends_on:
@@ -15,13 +16,15 @@ affects:
 
 # RFC 0074: What a dependent module's declaration override means
 
-**Accepted and implemented.** A coding agent wrote this RFC. The owner
+**Implemented; released and independently verified.** A coding agent wrote this RFC. The owner
 settled O1–O3 on 2026-10-05 and directed its implementation the same day.
 The owner accepted it by merging the implementation, PR #273, on
 2026-10-06.
-Release preparation pairs it with Protocol 2.22.0 (see the
+Release preparation paired it with Protocol 2.22.0 (see the
 [release-preparation direction](#owner-release-preparation-direction-2026-10-05)).
-The RFC stays `accepted` until a release ships it.
+The owner-authorized `v2.18.0` release published it in core/CLI 2.18.0 with
+Stable Protocol 2.22.0, and independent publication verification passed (see
+[Publication and verification](#owner-authorized-publication-and-verification-2026-10-08)).
 
 ## Summary
 
@@ -457,6 +460,19 @@ documents it. RFC 0074 remains `accepted` throughout preparation. It becomes
 `implemented` only after shipment and independent publication verification.
 Tagging and publication need separate owner action. The accepted semantics are
 unchanged.
+
+## Owner-authorized publication and verification (2026-10-08)
+
+The owner authorized annotated `v2.18.0` on the release-prepared merge
+`4e0a8c18091377fa25800dc2b16954a636be1d83`, not the later head of `main`.
+[Release run 37795279528](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37795279528)
+succeeded and published core/CLI 2.18.0, signing 0.2.22, batch 0.8.17 and
+both modules 0.1.10. Independent registry, provenance, published-file,
+delivered-CLI (210/210) and module-consumer checks passed; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section above
+remain unchanged.
 
 ## Prior art
 

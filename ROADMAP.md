@@ -1,16 +1,17 @@
 # Roadmap
 
-Reconciled **2026-10-05** for release-prepared **2.18.0** (Protocol **2.22.0**,
-Format **2.0**). The current published release remains **2.17.0**, pairing
-core/CLI 2.17.0 with Stable Protocol **2.21.0** and Format **2.0**.
+Reconciled **2026-10-08** (America/Phoenix) for published and independently
+verified **2.18.0**, pairing core/CLI 2.18.0 with Stable Protocol **2.22.0**
+and unchanged Format **2.0**. Accepted RFCs 0075–0077 are implemented on
+`main` after the 2.18.0 preparation and wait for the next release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 2.18.0
+## Current published release: 2.18.0
 
 Core/CLI **2.18.0** pair with Protocol **2.22.0** and Format **2.0**. The
-generation carries two accepted RFCs and four changes outside the contract:
+generation carries two RFCs and four changes outside the contract:
 - **RFC 0071:** the `is_calendar_date` predicate.
 - **RFC 0074:** §VII.3 dependent declaration overrides. Each RFC brings a
   `>=2.22.0` §X floor.
@@ -22,11 +23,13 @@ generation carries two accepted RFCs and four changes outside the contract:
 
 It is the first six-package generation. `@uwmd/module-hospitality` and
 `@uwmd/module-data-center` 0.1.10 join core, CLI, signing 0.2.22 and batch
-0.8.17. RFCs 0071 and 0074 remain `accepted` until shipment and
-independently verified publication. See
-[the release preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md).
+0.8.17. RFCs 0071 and 0074 are `implemented` after shipment and
+independently verified publication. Release run 37795279528 and independent
+registry/provenance/published-file/CLI/module-consumer checks pass. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-publication.md) and
+[the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.18.0-preparation.md).
 
-## Current published release: 2.17.0
+## Historical publication: 2.17.0
 
 Core/CLI **2.17.0** pair with Protocol **2.21.0** and Format **2.0**. The
 complete generation includes RFC 0070 (merged via PR #245 at
@@ -342,10 +345,10 @@ product specification; lease economics and cash timing are.
 - **Investor profiles and portfolio/relationship agent layers:** the data
   surfaces exist, but reference consumers need concrete adoption requirements.
 - **Official module publication:** hospitality and data-center are approved together
-  as public npm packages. Distribution support uses the ordinary release workflow;
-  first publication awaits account bootstrap/trusted-publisher confirmation and the
-  next owner-authorized UWMD generation. Package semver is separate from the 0.1.0
-  manifest contracts; exact core pins and explicit host loading remain.
+  as public npm packages. Both first published at 0.1.10 with core 2.18.0, through
+  the ordinary release workflow after the account bootstrap and trusted-publisher
+  setup. Package semver is separate from the 0.1.0 manifest contracts; exact core
+  pins and explicit host loading remain.
 - **Standalone Excel/report publication:** implemented current packages remain
   source-only until a consumer and supported distribution scope are chosen.
 - **DOCX output:** scoped out by the owner; reconsider on an actual adopter ask.

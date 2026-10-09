@@ -12,14 +12,14 @@ Protocol 2.21.0. Its verified specification and task matrix are archived at
 
 RFC 0071's implementation is complete in PR #250. Its verified specification and
 task matrix are archived at `specs/archive/rfc-0071-calendar-date-predicate.md`.
-RFC 0071 remains `accepted`, and RFC 0068 work has not started.
+RFC 0071 shipped in 2.18.0 and is `implemented`; RFC 0068 work has not started.
 
 CLI reporting clarity (implemented 2026-10-03, rebased onto `main` after
 2.17.0) is archived in [the completed contract](../archive/cli-reporting-clarity.md)
 with its [review report](../../docs/reviews/2026-10-03-cli-reporting-clarity.md).
 It changes no normative contract.
 
-The 2.18.0 release preparation pairs core/CLI 2.18.0 with Protocol 2.22.0 and
+Published 2.18.0 pairs core/CLI 2.18.0 with Stable Protocol 2.22.0 and
 Format 2.0, carrying RFCs 0071 and 0074 and the reporting work above. See
-[the preparation record](../../docs/releases/2.18.0-preparation.md). Both RFCs
-stay `accepted` until publication is independently verified.
+[the publication record](../../docs/releases/2.18.0-publication.md). Both RFCs
+are `implemented`.

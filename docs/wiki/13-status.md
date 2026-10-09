@@ -1,16 +1,16 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-05** for release-prepared **2.18.0**. Core/CLI **2.18.0**
-pair with the accepted release contract Protocol **2.22.0** and unchanged Format
-**2.0**. The generation carries RFC 0071's `is_calendar_date` predicate and RFC
+Reconciled **2026-10-08** (America/Phoenix) for published and independently
+verified **2.18.0**. Core/CLI **2.18.0**, signing **0.2.22**, batch **0.8.17**
+and both official modules **0.1.10** are published from immutable annotated
+`v2.18.0` on `4e0a8c18091377fa25800dc2b16954a636be1d83`. Stable Protocol
+**2.22.0** pairs with unchanged Format **2.0**. The generation carries RFC 0071's `is_calendar_date` predicate and RFC
 0074's §VII.3 dependent overrides, each with a `>=2.22.0` §X floor. It also
 carries the unrelated-conflict refusal, CLI reporting clarity, the `uwmd init`
 and `--version` fixes, and the early-year actual-days correction. It is the
 first six-package generation, adding both official modules at 0.1.10. RFCs
-0071 and 0074 remain `accepted` until shipment and independently verified
-publication. The preparation record is
-[2.18.0](../releases/2.18.0-preparation.md), and tagging remains an owner
-decision.
+0071 and 0074 are `implemented`. [Publication evidence](../releases/2.18.0-publication.md)
+is separate from [preparation](../releases/2.18.0-preparation.md).
 
 Reconciled **2026-10-03** (America/Phoenix) for published and independently
 verified **2.17.0**. Core/CLI **2.17.0**, signing **0.2.21** and batch **0.8.16**
@@ -78,8 +78,8 @@ new receipt output.
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
 Excel **0.9.10**, report **0.8.22** and lake **0.2.6** are source-only package
 generations. The hospitality/data-center module packages **0.1.10** pair with
-core 2.18.0 and join the release workflow, so 0.1.10 is their first public
-generation. The
+core 2.18.0 and are published through the release workflow; 0.1.10 is their
+first public generation. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
@@ -638,25 +638,14 @@ The guards:
   accepted 2026-10-07) is implemented in the PR that records its acceptance,
   for the same release. StackUW moves its common residual to
   `net_proceeds_to_common_equity`.
-- **Tag 2.18.0 from `4e0a8c1`, not from the head of `main`.** RFCs
-  0075–0077 merged after the preparation, and `release.yml` publishes the
-  tagged commit.
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
-- Owner review and tagging of the complete 2.18.0 prepared generation follow
-  [the release record](../releases/2.18.0-preparation.md). Two owner steps
-  are new for this generation:
-  - **Module trusted publishers.** `@uwmd/module-hospitality` and
-    `@uwmd/module-data-center` have never been published, so each needs an
-    npm trusted publisher, through the wiki 11 bootstrap if the name is new,
-    before the tag.
-  - **Six-package confirmation.** Confirm trusted publishers for core, CLI,
-    signing and batch, as before, and for both modules.
 - [RFC 0071](../rfcs/0071-calendar-date-predicate.md) and
-  [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) stay
-  **accepted** until 2.18.0 ships and publication is independently verified.
-  Both §X floors are `>=2.22.0`.
+  [RFC 0074](../rfcs/0074-module-declaration-override-semantics.md) shipped
+  in 2.18.0 and are **implemented**
+  ([publication record](../releases/2.18.0-publication.md)). Both §X floors
+  are `>=2.22.0`.
   - RFC 0071: PR #250, archived at
     `specs/archive/rfc-0071-calendar-date-predicate.md`. No current module
     calls the predicate.
