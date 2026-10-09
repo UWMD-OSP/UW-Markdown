@@ -18,7 +18,6 @@ scenario: distressed_reo
       "actor": "fixture",
       "agent_id": null,
       "agent_version": null,
-      "input_hash": null,
       "notes": null
     },
     "quality": {
@@ -27,10 +26,12 @@ scenario: distressed_reo
       "flags": []
     },
     "lifecycle": {
-      "version": 1,
-      "superseded": false
+      "superseded": false,
+      "revision": 1
     },
-    "integrity": {}
+    "integrity": {
+      "input_hash": null
+    }
   },
   "asset_class": "multifamily",
   "total_units": 20

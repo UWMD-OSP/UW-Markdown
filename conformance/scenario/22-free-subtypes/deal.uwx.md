@@ -27,7 +27,7 @@ asset_subtype: entitled_residential
     "notes": null
   },
   "asset_class": "land",
-  "total_units": 20,
-  "asset_subtype": "suburban"
+  "asset_subtype": "suburban",
+  "land_area_acres": 20
 }
 ```

@@ -18,7 +18,6 @@ scenario: ground_up_development
       "actor": "fixture",
       "agent_id": null,
       "agent_version": null,
-      "input_hash": null,
       "notes": null
     },
     "quality": {
@@ -27,13 +26,15 @@ scenario: ground_up_development
       "flags": []
     },
     "lifecycle": {
-      "version": 1,
-      "superseded": false
+      "superseded": false,
+      "revision": 1
     },
-    "integrity": {}
+    "integrity": {
+      "input_hash": null
+    }
   },
   "asset_class": "land",
-  "total_units": 20,
-  "asset_subtype": "build_to_rent"
+  "asset_subtype": "build_to_rent",
+  "land_area_acres": 20
 }
 ```
