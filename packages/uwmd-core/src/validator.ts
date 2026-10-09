@@ -224,15 +224,15 @@ function checkScenarioIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
   if (frontmatterSubtype != null && propertySubtype != null && frontmatterSubtype !== propertySubtype) {
     issues.push({
       code: 'DQ-08', severity: 'warning', section: 'property', field: 'asset_subtype',
-      message: 'The subtype carriers disagree on build_to_rent identity; frontmatter governs, and property is a fallback only when frontmatter is absent or null.',
-      value: propertySubtype, expected: frontmatterSubtype,
+      message: `The subtype carriers disagree on build_to_rent identity: frontmatter ${JSON.stringify(frontmatterSubtype)}, property ${JSON.stringify(propertySubtype)}; frontmatter governs, and property is a fallback only when frontmatter is absent or null.`,
+      value: propertySubtype,
     });
   }
   if (parsed.frontmatter.asset_class !== 'multifamily') {
     issues.push({
       code: 'DQ-09', severity: 'warning', section: 'frontmatter', field: 'asset_class',
       message: 'The defined build_to_rent subtype is scoped to asset_class multifamily.',
-      value: parsed.frontmatter.asset_class, expected: 'multifamily',
+      value: parsed.frontmatter.asset_class,
     });
   }
 }
