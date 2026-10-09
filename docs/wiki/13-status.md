@@ -657,8 +657,7 @@ The guards:
   in 2.18.0 and are **implemented**
   ([publication record](../releases/2.18.0-publication.md)). Both §X floors
   are `>=2.22.0`.
-  - RFC 0071: PR #250, archived at
-    `specs/archive/rfc-0071-calendar-date-predicate.md`. No current module
+  - RFC 0071: PR #250. No current module
     calls the predicate.
   - RFC 0074: see the 2026-10-05 dependent-overrides entry below. The 23
     overriding registry fixture manifests declare the floor. No first-party

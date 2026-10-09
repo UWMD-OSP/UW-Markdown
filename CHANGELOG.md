@@ -2591,7 +2591,7 @@ not agreement with the reference C implementation at pcg-random.org, which
 nobody has diffed against. Recorded in `prng.ts`, in RFC 0005, and here rather
 than left to be assumed away; it should be closed before the RFC is accepted.
 The steps are in
-[`docs/handoff/HUMAN-verify-pcg64-vector.md`](docs/handoff/HUMAN-verify-pcg64-vector.md).
+[`docs/handoff/HUMAN-verify-pcg64-vector.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/e997d8291e96984d337aaa0c606b38448581f811/docs/handoff/HUMAN-verify-pcg64-vector.md).
 Until then, port the TypeScript rather than re-deriving pcg64 from the paper.
 
 ### Added — RFC 0007 implemented: sensitivity tables, without touching the grammar (corpus 289 → 294)

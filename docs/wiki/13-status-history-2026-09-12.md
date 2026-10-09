@@ -241,7 +241,7 @@ not core gaps.
   reproducibility is asserted in-process without a baseline. **Known gap:** the
   PCG test vector is self-generated and not yet diffed against the reference C
   implementation — see
-  [`docs/handoff/HUMAN-verify-pcg64-vector.md`](../handoff/HUMAN-verify-pcg64-vector.md).
+  [`docs/handoff/HUMAN-verify-pcg64-vector.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/e997d8291e96984d337aaa0c606b38448581f811/docs/handoff/HUMAN-verify-pcg64-vector.md).
 - **Sensitivity tables (RFC 0007, protocol §VIII.7):** two-axis grids as a JSON
   `SensitivityDecl` — **the §VIII.1 grammar is unchanged**, because the RFC's
   proposed builtin would have needed object literals, array literals, and an
@@ -1354,7 +1354,7 @@ remains review-flagged.
     `release.yml` now publishes it on any `v*` tag whose manifest version is
     not yet on npm — so 0.1.0 goes live with the 1.9.0 tag, *provided* the
     one-time npm trusted-publisher step in
-    [`docs/handoff/HUMAN-configure-signing-trusted-publisher.md`](../handoff/HUMAN-configure-signing-trusted-publisher.md)
+    [`docs/handoff/HUMAN-configure-signing-trusted-publisher.md`](https://github.com/UWMD-OSP/UW-Markdown/blob/a4d2de4b2a70678d42389ba177d5ea50e41e1198/docs/handoff/HUMAN-configure-signing-trusted-publisher.md)
     is done first (it is owner-only). Every publish step in the workflow is
     now idempotent (skip-if-live), so a partial run is recoverable by re-run.
     `@uwmd/module-hospitality` deliberately stays unpublished — it is a
