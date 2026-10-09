@@ -48,9 +48,8 @@ describe.each(['1.1', '2.0'] as const)('RFC 0072 in format %s', version => {
     for (const [fm, property] of [['build_to_rent', 'garden_style'], ['garden_style', 'build_to_rent']]) {
       file.frontmatter.asset_subtype = fm;
       setPropertySubtype(file, property);
-      expect(identityIssues(file)).toMatchObject([{ code: 'DQ-08', severity: 'warning', value: property }]
-      );
-      expect(identityIssues(file)[0]!.message).toContain(`frontmatter ${JSON.stringify(fm)}`));
+      expect(identityIssues(file)).toMatchObject([{ code: 'DQ-08', severity: 'warning', value: property }]);
+      expect(identityIssues(file)[0]!.message).toContain(`frontmatter ${JSON.stringify(fm)}`);
       expect(validateUWFile(file).errors).toEqual([]);
     }
   });
