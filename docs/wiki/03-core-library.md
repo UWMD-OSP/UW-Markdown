@@ -89,6 +89,8 @@ walks a dot-path into a content object.
 - `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
 - `FV-01..FV-14` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex…).
+- `DQ-07..DQ-09` — scenario vocabulary, BTR subtype agreement and class scope
+  (RFC 0072); warnings in both format generations, no stage or math changes.
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.
 
 ## editor.ts (Tier-2)

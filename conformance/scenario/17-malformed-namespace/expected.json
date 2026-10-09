@@ -1,0 +1,9 @@
+{
+  "overall_status": "warnings",
+  "issues": [
+    {
+      "code": "DQ-07",
+      "severity": "warning"
+    }
+  ]
+}

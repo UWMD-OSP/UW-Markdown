@@ -31,6 +31,7 @@ import { createHash } from 'node:crypto';
 
 import {
   parseUWFile,
+  blockPayload,
   applyEdit,
   applyEditAsync,
   getSection,
@@ -126,7 +127,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,scenario,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -250,6 +251,41 @@ function isMultiVariant(entry) {
 
 function normalize(text) {
   return `${text.replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trimEnd()}\n`;
+}
+
+// RFC 0072 — warning-only identity, with no stage/financial side effects.
+function runScenario() {
+  const base = join(CONFORMANCE_DIR, 'scenario');
+  for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(base, entry.name);
+    const raw = readFileSync(join(dir, 'deal.uwx.md'), 'utf8');
+    const parsed = parseUWFile(raw);
+    const before = JSON.stringify(parsed);
+    const expected = readCase(dir, 'expected.json');
+    const result = validateUWFile(parsed);
+    const actual = {
+      overall_status: result.overall_status,
+      issues: result.issues.map(({ code, severity }) => ({ code, severity })).sort((a, b) => a.code.localeCompare(b.code)),
+    };
+    const problems = [];
+    if (JSON.stringify(actual) !== JSON.stringify(expected)) problems.push(`validation ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
+    if (result.errors.length) problems.push('identity introduced a validation error');
+    if (JSON.stringify(parsed) !== before || parsed.raw !== raw) problems.push('validation changed source bytes');
+    const baseline = parseUWFile(raw);
+    delete baseline.frontmatter.scenario;
+    delete baseline.frontmatter.asset_subtype;
+    for (const property of baseline.sections.property ? ('annotation' in baseline.sections.property ? [baseline.sections.property] : Object.values(baseline.sections.property)) : []) {
+      const payload = blockPayload(property);
+      if (payload && typeof payload === 'object') delete payload.asset_subtype;
+    }
+    const withoutIdentity = validateUWFile(baseline);
+    for (const key of ['errors', 'coverage', 'stage_readiness']) {
+      if (JSON.stringify(result[key]) !== JSON.stringify(withoutIdentity[key])) problems.push(`${key} changed with identity`);
+    }
+    const otherIssues = result.issues.filter(i => !['DQ-07', 'DQ-08', 'DQ-09'].includes(i.code));
+    if (JSON.stringify(otherIssues) !== JSON.stringify(withoutIdentity.issues)) problems.push('unrelated findings changed');
+    record('scenario', entry.name, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
 }
 
 // ─── Tier 1: Reader ──────────────────────────────────────────────────────────
@@ -4373,6 +4409,7 @@ const dispatch = {
   'sensitivity': async () => { await runSensitivity(); },
   'stochastic': async () => { await runStochastic(); },
   'source': async () => { await runSource(); },
+  'scenario': async () => { runScenario(); },
   'meta-v2': async () => { await runMetaV2(); },
   'migrate': async () => { await runMigrate(); },
 };

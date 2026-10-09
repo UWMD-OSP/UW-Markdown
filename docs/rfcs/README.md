@@ -99,7 +99,7 @@ and how it gets accepted.
 | [0069](./0069-student-rent-roll-bed-counts.md) | Declare the student rent-roll bed counts and pre-leasing dates the student pack already reads | implemented | format, protocol, core, conformance |
 | [0070](./0070-replacement-cap-funding-and-payment-binding.md) | Bind outright replacement-cap funding to an exact modeled cash payment | implemented | format, protocol, core, conformance, tooling |
 | [0071](./0071-calendar-date-predicate.md) | A calendar-date validity predicate for safe expressions | implemented | protocol, core, conformance, documentation |
-| [0072](./0072-frontmatter-scenario-semantics.md) | Give frontmatter `scenario` a defined meaning | draft | format, core, conformance, tooling |
+| [0072](./0072-frontmatter-scenario-semantics.md) | Give frontmatter `scenario` a defined meaning | accepted | format, core, conformance, tooling |
 | [0073](./0073-previous-asset-class-identifiers.md) | Previous identifiers for module-declared asset classes | draft | protocol, core, conformance |
 | [0074](./0074-module-declaration-override-semantics.md) | What a dependent module's declaration override means | implemented | protocol, core, conformance |
 | [0075](./0075-hedge-senior-role-preference.md) | Read a rate hedge from the senior loan when debt_structure is a role map | implemented | format, protocol, core, conformance |

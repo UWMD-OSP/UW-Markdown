@@ -13,6 +13,8 @@
 // helpers, protocol surface, types — is identical to the main entry.
 
 export { parseUWFile, getSection, getSectionVariant, deepGet, blockPayload } from './parser.js';
+export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
+export type { Scenario, UWScenarioId } from './scenario.js';
 export { validateUWFile, lookupRemediation } from './validator.js';
 // RFC 0053 — the reassessment and abatement vocabularies.
 export { REASSESSMENT_TRIGGERS, TAX_ABATEMENT_KINDS } from './validator.js';
@@ -525,7 +527,7 @@ export {
 } from './context.js';
 export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js';
 
-export { generateBlankUWFile } from './init.js';
+export { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 
 // ─── Intelligence surfaces (browser-safe: no node, no SDK) ───────────────────
 // Cascade resolution, value-of-information gap ranking, completeness gaps,

@@ -10,7 +10,7 @@
     "code": {
       "type": "string",
       "pattern": "^[A-Z][A-Z0-9_-]{2,}$",
-      "description": "Stable validation code (e.g. 'CC-01'). MUST match the code on a ValidationMessage / ProtocolError for the renderer to look it up."
+      "description": "Stable validation code (e.g. 'CC-01'). MUST match the code on a ValidationMessage / ProtocolError for the renderer to look it up. RFC 0072 adds DQ-07 (scenario vocabulary), DQ-08 (BTR carrier agreement) and DQ-09 (BTR class scope), all warnings in both format generations."
     },
     "severity": {
       "enum": ["error", "warning", "info"],

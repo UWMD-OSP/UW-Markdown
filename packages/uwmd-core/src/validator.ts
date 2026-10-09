@@ -1,3 +1,4 @@
+import { isScenarioId, RETIRED_SCENARIOS } from './scenario.js';
 import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
 // .uw.md validator — financial validity checks (§5.2) + cross-section consistency (§5.3)
 // Spec: UW_FORMAT_SPEC_v1.md Part V
@@ -149,6 +150,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
+  checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
   checkBlockRoles(parsed, issues);
@@ -199,6 +201,40 @@ export function validateUWFile(
     info,
     coverage: orderedCoverage(ledger),
   };
+}
+
+// Format §2.2b/c and §5.4: compatibility warnings only, in every format version.
+function checkScenarioIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const scenario: unknown = parsed.frontmatter.scenario;
+  if (scenario != null && !isScenarioId(scenario)) {
+    const retired = typeof scenario === 'string'
+      && (RETIRED_SCENARIOS as readonly string[]).includes(scenario);
+    issues.push({
+      code: 'DQ-07', severity: 'warning', section: 'frontmatter', field: 'scenario',
+      message: retired
+        ? `Retired scenario ${scenario} names a product, program or acquisition circumstance, not a business plan; preserve it when reading and restate the plan separately.`
+        : `Scenario ${JSON.stringify(scenario)} is not a standard business plan or a reverse-DNS extension identifier.`,
+      value: scenario,
+    });
+  }
+  const frontmatterSubtype = parsed.frontmatter.asset_subtype;
+  const property = resolveRoleBlock(parsed.sections['property'], 'property').block;
+  const propertySubtype = property ? deepGet(blockPayload(property), 'asset_subtype') : undefined;
+  if (frontmatterSubtype !== 'build_to_rent' && propertySubtype !== 'build_to_rent') return;
+  if (frontmatterSubtype != null && propertySubtype != null && frontmatterSubtype !== propertySubtype) {
+    issues.push({
+      code: 'DQ-08', severity: 'warning', section: 'property', field: 'asset_subtype',
+      message: `The subtype carriers disagree on build_to_rent identity: frontmatter ${JSON.stringify(frontmatterSubtype)}, property ${JSON.stringify(propertySubtype)}; frontmatter governs, and property is a fallback only when frontmatter is absent or null.`,
+      value: propertySubtype,
+    });
+  }
+  if (parsed.frontmatter.asset_class !== 'multifamily') {
+    issues.push({
+      code: 'DQ-09', severity: 'warning', section: 'frontmatter', field: 'asset_class',
+      message: 'The defined build_to_rent subtype is scoped to asset_class multifamily.',
+      value: parsed.frontmatter.asset_class,
+    });
+  }
 }
 
 // ─── §5.2 Financial validity thresholds ──────────────────────────────────────

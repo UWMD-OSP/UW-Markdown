@@ -1,3 +1,5 @@
+import type { UWScenarioId } from './scenario.js';
+
 // .uw.md format — TypeScript type definitions
 // Spec: UW_FORMAT_SPEC_v1.md v1.1
 
@@ -457,9 +459,11 @@ export interface UWFrontmatter {
   locale?: string;
   /** Optional document-level monetary denomination (RFC 0046). */
   currency_code?: string;
+  /** Open descriptive subtype; build_to_rent is defined only on multifamily (§2.2c). */
   asset_subtype?: string | null;
   loan_type?: string | null;
-  scenario?: string | null;
+  /** Single business plan (§2.2b), independent of product, program and hold strategy. */
+  scenario?: UWScenarioId | null;
   pipeline_state?: UWPipelineState;
   status?: string;
   deal_stage?: DealStage;

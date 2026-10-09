@@ -1,0 +1,19 @@
+{
+  "id": "scenario/22-free-subtypes",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/scenario/22-free-subtypes",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

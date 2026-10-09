@@ -218,6 +218,13 @@ for (const scenario of dirs(join(CONFORMANCE, 'hedge')).filter(n => /^00(70|75|7
     exit_code: expected.codes.length > 0 || expected.verification.state === 'failed' || expected.verification.state === 'unverifiable' ? 1 : 0,
   });
 }
+// RFC 0072: an interoperable validator must retain warning severity and exit 0.
+for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
+  const dir = join(CONFORMANCE, 'scenario', scenario);
+  add(`scenario/${scenario}`, '1', 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code: 0,
+  });
+}
 // ── Emit (or, under --check, compare) ───────────────────────────────────────
 //
 // `--check` exists because these files are generated but committed. A fixture

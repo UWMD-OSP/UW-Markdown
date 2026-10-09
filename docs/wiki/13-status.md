@@ -970,6 +970,30 @@ anything else; before this fix it dropped the flag and always wrote `null`.
 - **Guard.** `init.test.ts` holds the accepted list to the §2.2 line, and the
   CLI smoke suite covers a written value, an unlisted value and a bare flag.
 
+
+## 2026-10-09 — RFC 0072 business plans and single-site BTR identity
+
+The dated 2026-10-04 “Still undefined” note above is superseded by this entry.
+
+[RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) is `accepted` with
+its implementation in the same PR; the merge is acceptance. `scenario` now
+names one execution strategy from eight standard plans or a reverse-DNS
+extension. `INIT_SCENARIOS` narrows from 12 to 8 values; init also accepts
+reverse-DNS extensions and refuses retired/unlisted bare arguments.
+`--asset-subtype build_to_rent` identifies single-site BTR on multifamily,
+independently of its actual plan. No new class/module or financial behavior.
+
+- **Compatibility.** DQ-07–09 are warnings only in both format generations.
+  No existing valid document gains errors. Subtypes remain open; the 28
+  pre-RFC free-value corpus files and Sundance's unlisted plan are not migrated.
+- **Identity.** Frontmatter subtype governs; property is a fallback when
+  absent/null. Only BTR agreement and class scope add checks.
+- **Guards.** Core/CLI tests and the default `scenario` conformance suite pin
+  standard/extension, absent/null, retired/malformed and BTR behavior. The v2
+  CLI driver exercises the same fixtures. D5 regressions preserve stage,
+  coverage, default and pack results.
+- **Deferred.** General subtype taxonomy and legacy Appendix B terminology.
+
 ## 2026-10-04 — `uwmd init` frontmatter serialization
 
 `generateBlankUWFile` now writes every caller-supplied frontmatter value

@@ -63,6 +63,13 @@ together reflexively — bump the surface that actually changed.
 cascade order, source tags, view models, and edit policies are defined once in
 `protocol.ts`. Change them in one place; run `npm run validate-schemas`.
 
+### 8. Descriptive identity does not select underwriting behavior
+Frontmatter `scenario` is the single business plan (RFC 0072, Format §2.2b).
+Subtype remains open, with a defined multifamily `build_to_rent` identity.
+These may route descriptive workflows, but never choose calculations, defaults,
+packs or underwriting rules. DQ-07–09 are structural/vocabulary warnings only,
+in both format generations. Do not infer a plan from a subtype or vice versa.
+
 ## Coding conventions
 
 - **Language/module:** TypeScript, ESM only (`"type": "module"`). Targets ES2022.

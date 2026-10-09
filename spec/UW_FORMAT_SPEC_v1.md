@@ -157,7 +157,7 @@ zip: "string"
 asset_class: "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land | <namespaced custom identifier, see §2.2a>"
 asset_subtype: "string | null"      # e.g. "garden_style", "strip_center", "warehouse"
 loan_type: "permanent | bridge | construction | value_add | refinance"
-scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up | nnn_single_tenant | lihtc_section8 | house_flip | commercial_flip | property_conversion | build_to_rent | distressed_reo | land_banking"
+scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up | house_flip | commercial_flip | property_conversion | land_banking"  # optional; null or reverse-DNS extension also admitted (§2.2b)
 
 # ── Pipeline State ────────────────────────────────────────
 # Layer keys correspond 1:1 to BANCROFT_LAYERS in the reference library.
@@ -283,6 +283,79 @@ Resolution — what a host does when it encounters a custom class — is
 Protocol §X.2. It is deliberately not in this document: the identifier
 is a property of the file, while resolution depends on what a particular
 reader has loaded.
+
+### 2.2b Business-plan identity (`scenario`, RFC 0072)
+
+`scenario` is an OPTIONAL single-valued description of the deal's business
+plan / execution strategy. Absent or null makes no assertion. The standard
+vocabulary is closed:
+
+| Value | Business plan / execution strategy |
+|---|---|
+| `stabilized_acquisition` | Acquire an already stabilized income property and operate it without a material repositioning plan. |
+| `ground_up_development` | Create new improvements through ground-up construction before sale or stabilized operation. |
+| `value_add` | Reposition an existing property through improvements or operating changes. |
+| `lease_up` | Execute initial or renewed leasing to bring an existing property to stabilized occupancy. |
+| `house_flip` | Improve an existing home for resale rather than continuing rental operation. |
+| `commercial_flip` | Improve or reposition an existing commercial property for resale rather than continuing operation. |
+| `property_conversion` | Convert existing improvements to a different property use. |
+| `land_banking` | Hold land for a future development or disposition opportunity without a current construction plan. |
+
+New producers SHOULD use one standard plan or a reverse-DNS extension under
+§2.2a's identifier grammar: `segment ('.' segment){2,}`, with
+`segment := [a-z][a-z0-9_]*`. A scenario extension requires no module declaration;
+it supplies no executable behavior. Preserve the whole identifier and do not
+interpret its suffix as a standard plan.
+
+Product/lease form, regulatory/capital program and acquisition circumstance
+are independent of this axis. `deal_context.hold_strategy` (§4.0) states the
+hold/exit strategy, not the execution plan; neither field implies the other.
+The author states the plan and explains any composite strategy in narrative;
+there is no automatic precedence among axes or inference of an unstated plan.
+Stress tests, custom scenarios and analytical section variants keep their
+separate meanings.
+
+`build_to_rent`, `nnn_single_tenant`, `lihtc_section8` and `distressed_reo` are
+**retired scenario vocabulary**, not standard business plans. A reader MUST
+preserve them and emit `DQ-07` (warning), never reject or rewrite them solely
+for this reason. The same warning applies to any other unlisted bare value
+(including `entitled_land_acquisition`) or non-null malformed structure.
+There is no automatic migration: a retired value alone cannot identify the
+actual execution plan. Existing documents remain admissible in both 1.x and
+2.x; no later-format escalation is specified.
+
+Scenario and subtype identity are **descriptive and routable only**. No
+calculation, default, pack or underwriting behavior MAY depend on either
+identity. Validation is limited to the structural/vocabulary guidance in
+§5.4; identity does not change stage requirements or financial cross-checks.
+
+### 2.2c Single-site BTR subtype (`asset_subtype`, RFC 0072)
+
+Frontmatter `asset_subtype` and `property.asset_subtype` (§4.1) remain OPTIONAL,
+open strings. This RFC defines only `build_to_rent`, scoped to frontmatter
+`asset_class: multifamily`: a community of detached or attached homes
+purpose-built to be leased by the home, on one site and under one loan.
+Scattered-site single-family portfolios are outside this defined identity.
+It asserts product identity; it introduces no loan-count or financial check,
+new asset class, module or pack. Physical-form details can coexist in the
+property fields and narrative.
+
+For descriptive identity, frontmatter governs; the canonical property block's
+subtype is a fallback when frontmatter is absent or null. If either carrier
+states `build_to_rent` and both non-null carriers are present, they SHOULD
+agree (`DQ-08`, warning); if either states it outside multifamily, warn
+`DQ-09`. Neither carrier is rewritten. Renderers may retain section-local
+display text; display preference does not override identity authority.
+All other free subtype values retain their prior admissibility, with no new
+agreement or class-scope checks and no corpus migration.
+
+A stabilized BTR acquisition states independent axes:
+
+```yaml
+asset_class: multifamily
+asset_subtype: build_to_rent
+scenario: stabilized_acquisition
+```
 
 ### 2.3 Section Headers
 
@@ -432,7 +505,7 @@ the cascade step that produced the value.
 | `ai_extracted` | Extracted from a source document by an AI agent. |
 | `agent_computed` | Computed by an agent from prior agent outputs. |
 | `asset_class_default` | Pulled from the published asset-class default table for the deal's asset class. |
-| `scenario_default` | A value derived from a named scenario in this file or institution config. |
+| `scenario_default` | A value derived from a named analytical scenario in this file or institution config; never selected by frontmatter `scenario` (§2.2b). |
 | `global_default` | Pulled from a non-asset-class fallback table. |
 | `system_default` | Hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
 
@@ -705,6 +778,11 @@ The `ai_synthesis` sub-object is populated by `agent/L7-01` after the full under
 ---
 
 ### § 4.1 — Property
+
+`asset_subtype` remains an open descriptive string. The defined single-site
+`build_to_rent` identity and frontmatter/property agreement rules are in §2.2c.
+Frontmatter governs identity; the canonical property value supplies an absent/null
+frontmatter fallback. Other free values are unchanged.
 
 **ID:** `property`  
 **Header:** `## Property {#property}`  
@@ -3443,6 +3521,22 @@ model, not a second.
 
 ---
 
+### 5.4 Descriptive identity guidance (RFC 0072)
+
+These diagnostics MUST be warnings in **both** format generations, never errors.
+No new error is introduced for a document that was valid before this RFC.
+
+- `DQ-07`: non-null `scenario` outside the eight standard plans and reverse-DNS
+  extension grammar, including unlisted or retired values and non-string
+  structures (§2.2b). Absent/null is valid and emits nothing.
+- `DQ-08`: either subtype carrier states `build_to_rent` and both non-null
+  carriers differ (§2.2c). Frontmatter governs; preserve both values.
+- `DQ-09`: either subtype carrier states `build_to_rent` outside frontmatter
+  `asset_class: multifamily` (§2.2c).
+
+Other free subtype values add no diagnostics. These checks do not alter
+calculations, default resolution, packs, financial validation or stage readiness.
+
 ## Part VI — Toolchain Interface
 
 The `uwmd` command-line tool is the reference implementation. Other tools (AI agents, API consumers, rendering pipelines) implement a subset of this interface.
@@ -3523,6 +3617,14 @@ Removes all blocks where `_meta.superseded === true`. Preserves the pipeline log
 Compares two `.uwx.md` files (or two versions of the same file at different timestamps) and outputs a structured diff showing which sections changed, what values changed, and which source produced the change.
 
 ### 6.7 `uwmd init --scenario <scenario> --address <address>`
+
+`--scenario` writes a standard business plan (§2.2b) or a well-formed
+reverse-DNS extension; omitted means null. It refuses retired, unlisted bare
+or malformed values before writing. Readers still preserve these values and
+warn rather than reject (§5.4). `--asset-subtype` writes the open subtype
+carrier; for single-site BTR use `--asset-class multifamily --asset-subtype
+build_to_rent --scenario stabilized_acquisition` (or the actual plan).
+The library generator remains able to serialize legacy strings losslessly.
 
 Creates a new `.uwx.md` file with:
 - Populated frontmatter
@@ -3606,6 +3708,12 @@ uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uwx.md
 ---
 
 ## Appendix B — Scenario Default Keys
+
+**RFC 0072 clarification:** this legacy heading and `scenario_defaults.json`
+reference do not refer to frontmatter `scenario` (§2.2b). That field MUST NOT
+select defaults. The operative cascade/default contract is Protocol §V.7,
+whose published defaults are keyed by asset class. Repair of the vestigial
+file reference and broader terminology is deferred separately.
 
 The following keys MUST exist in the `assumptions` section for every deal, populated from `scenario_defaults.json` when no higher-authority source provides them:
 

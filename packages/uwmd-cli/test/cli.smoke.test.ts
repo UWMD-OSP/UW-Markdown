@@ -544,17 +544,19 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('init --scenario writes the scenario into the frontmatter (Format §6.7)', () => {
+    it.each(['stabilized_acquisition', 'com.example.repositioning'])('init writes %s and independent BTR identity', scenario => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-scenario-'));
       try {
         const r = spawnSync(
           process.execPath,
-          [CLI_BIN, 'init', '--scenario', 'stabilized_acquisition', '--address', '1 Main St'],
+          [CLI_BIN, 'init', '--scenario', scenario, '--asset-class', 'multifamily', '--asset-subtype', 'build_to_rent', '--address', '1 Main St'],
           { encoding: 'utf8', cwd: temp },
         );
         expect(r.status).toBe(0);
         const written = readFileSync(resolve(temp, 'new-deal.uwx.md'), 'utf8');
-        expect(written).toMatch(/^scenario: stabilized_acquisition$/m);
+        expect(written).toContain(`scenario: ${scenario}\n`);
+        expect(written).toMatch(/^asset_subtype: build_to_rent$/m);
+        expect(written).toMatch(/^asset_class: multifamily$/m);
         expect(written).toContain('property_address: "1 Main St"');
       } finally {
         rmSync(temp, { recursive: true, force: true });
@@ -563,6 +565,11 @@ describe('uwmd CLI', () => {
 
     it.each([
       [['--scenario', 'stabilised_acquisition'], "got 'stabilised_acquisition'"],
+      [['--scenario', 'build_to_rent'], "got 'build_to_rent'"],
+      [['--scenario', 'nnn_single_tenant'], "got 'nnn_single_tenant'"],
+      [['--scenario', 'lihtc_section8'], "got 'lihtc_section8'"],
+      [['--scenario', 'distressed_reo'], "got 'distressed_reo'"],
+      [['--scenario', 'com.plan'], "got 'com.plan'"],
       [['--scenario'], 'got no value'],
     ])('init %j refuses and writes nothing', (extra, message) => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-bad-scenario-'));
