@@ -57,6 +57,21 @@ const MESSAGE = {
 };
 
 describe('createAnthropicProvider', () => {
+  it('accepts a structural client without an SDK cast', async () => {
+    const client = {
+      messages: {
+        create: async () => MESSAGE,
+        stream: () => ({ finalMessage: async () => MESSAGE }),
+      },
+    };
+    const provider = createAnthropicProvider({ apiKey: 'unused', client });
+    expect(await provider.complete(REQUEST)).toEqual({
+      tool_calls: [{ name: 'write_uw_section', input: { section_id: 'risk_assessment' } }],
+      usage: { input_tokens: 42, output_tokens: 7 },
+    });
+    expect(await provider.stream?.(REQUEST)).toEqual(await provider.complete(REQUEST));
+  });
+
   it('identifies itself as anthropic', () => {
     expect(createAnthropicProvider({ apiKey: 'k', client: fakeClient(MESSAGE) }).id).toBe('anthropic');
   });

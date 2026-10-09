@@ -8,13 +8,12 @@
 // and a static SDK import would make merely importing `@uwmd/core` load the
 // vendor SDK, defeating the dynamic import in `bancroft.ts`.
 //
-// The type import below is erased at compile time and costs a consumer nothing
-// at runtime.
+// Public client types describe only the methods used here. SDK types stay
+// private so strict consumers can read core's declarations without this peer.
 //
 // The layering rule from CLAUDE.md still applies: nothing re-exported by
 // `browser.ts` may reach this file.
 
-import type Anthropic from '@anthropic-ai/sdk';
 import {
   AgentProviderError,
   type AgentCompletion,
@@ -23,6 +22,23 @@ import {
 } from '../provider.js';
 
 type AnthropicConstructor = typeof import('@anthropic-ai/sdk').default;
+
+// Structural subsets keep real SDK clients assignable without publishing a
+// dependency on the optional SDK in AnthropicProviderOptions.
+type ClientRequest = Omit<AgentRequest, 'tool_choice'> & {
+  tool_choice: { type: AgentRequest['tool_choice'] };
+};
+type ToolUse = { type: 'tool_use'; name: string; input: unknown };
+interface ClientMessage {
+  content: ({ type: string } | ToolUse)[];
+  usage: { input_tokens: number; output_tokens: number };
+}
+interface AnthropicClient {
+  messages: {
+    create(request: ClientRequest): PromiseLike<ClientMessage>;
+    stream(request: ClientRequest): { finalMessage(): PromiseLike<ClientMessage> };
+  };
+}
 
 /**
  * Load the vendor SDK, once, on demand. An absent SDK is a packaging problem
@@ -53,7 +69,7 @@ export interface AnthropicProviderOptions {
    * Inject a pre-built client — a custom base URL, a gateway, a proxy with
    * different retry behaviour. Tests use it to avoid constructing a real one.
    */
-  client?: Anthropic;
+  client?: AnthropicClient;
 }
 
 /**
@@ -68,27 +84,26 @@ export function createAnthropicProvider(opts: AnthropicProviderOptions): AgentPr
   // Constructing the client is what needs the SDK, so it happens on the first
   // request rather than here. `createAnthropicProvider()` stays synchronous and
   // stays callable in a process that never sends one.
-  let pending: Promise<Anthropic> | undefined;
-  const getClient = async (): Promise<Anthropic> => {
+  let pending: Promise<AnthropicClient> | undefined;
+  const getClient = async (): Promise<AnthropicClient> => {
     if (opts.client) return opts.client;
     pending ??= loadSdk().then((Ctor) => new Ctor({ apiKey: opts.apiKey }));
     return pending;
   };
 
-  const toSdkRequest = (request: AgentRequest) => ({
+  const toSdkRequest = (request: AgentRequest): ClientRequest => ({
     model: request.model,
     max_tokens: request.max_tokens,
     temperature: request.temperature,
     system: request.system,
     messages: request.messages.map((m) => ({ role: m.role, content: m.content })),
-    // Our AgentToolSchema is the JSON-Schema subset the SDK's Tool expects.
-    tools: request.tools as unknown as Anthropic.Tool[],
-    tool_choice: { type: request.tool_choice } as Anthropic.ToolChoice,
+    tools: request.tools,
+    tool_choice: { type: request.tool_choice },
   });
 
-  const fromSdkMessage = (message: Anthropic.Message): AgentCompletion => ({
+  const fromSdkMessage = (message: ClientMessage): AgentCompletion => ({
     tool_calls: message.content
-      .filter((block): block is Anthropic.ToolUseBlock => block.type === 'tool_use')
+      .filter((block): block is ToolUse => block.type === 'tool_use')
       .map((block) => ({ name: block.name, input: block.input as Record<string, unknown> })),
     usage: {
       input_tokens: message.usage.input_tokens,
