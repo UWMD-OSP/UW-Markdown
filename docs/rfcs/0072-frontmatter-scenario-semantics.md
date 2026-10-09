@@ -67,7 +67,7 @@ carrier or changing rendering.
 | R5 — BTR definition | A community of detached or attached homes purpose-built to be leased by the home, on one site and under one loan. Scattered-site single-family portfolios are outside this defined identity. The label asserts identity only; no loan-count or financial cross-check is added. | Issue #255 (StackUW UPSTREAM-022) supplies the product boundary; D4 retains multifamily and D5 forbids underwriting behavior driven by the label. |
 | R6 — Retired values' homes | Retire `build_to_rent`, `nnn_single_tenant`, `lihtc_section8`, `distressed_reo` from the standard plan list. BTR uses the defined subtype. The other facts may remain in existing lease, compliance and acquisition narratives; do not invent new canonical carriers or lossless automatic mappings. | D1 separates lease/product, program and acquisition circumstance from execution. RFC 0031 documents retired vocabulary and refuses to guess a migration; a new carrier needs adopter evidence. |
 | R7 — Default wording | Add narrow disclaimers to Appendix B and `scenario_default`: neither refers to frontmatter `scenario` or selects defaults from it. Leave the vestigial file reference and wider repair for a separate RFC/PR. | D5–D6; Protocol §V.7 already keys published defaults by asset class, not frontmatter business plan. |
-| R8 — Version | Keep Format 2.0 and Protocol 2.22.0 labels. This clarifies existing optional scalar fields and adds warnings without changing syntax, admission, math or protocol procedures. Extend the existing remediation registry/schema documentation together; package/release version assignment remains release preparation. | Independent surface versioning in VERSIONS.md; prior additive section work retained the Format label, and RFCs 0075–0076 defer release version assignment. No new protocol procedure or major-boundary escalation is introduced. |
+| R8 — Version | Format stays 2.0. Adding normative Protocol remediation entries and `BUILTIN_REMEDIATIONS` codes requires the Protocol label to advance to the next minor at release preparation, following released 2.23.0. This PR does not bump `PROTOCOL_VERSION` or the current version matrix. | The CHANGELOG “Protocol 2.13.0 → 2.15.0” correction records RFC 0055's unlabelled code-table additions as drift. RFCs 0075–0076 assigned their Protocol label at release preparation; independent surface versioning leaves Format unchanged. |
 
 ## Normative change
 
@@ -128,6 +128,11 @@ scenario: stabilized_acquisition
 | `DQ-07` | warning | Non-null scenario is not a standard plan or well-formed reverse-DNS extension, including retired values and non-string structures. |
 | `DQ-08` | warning | Either subtype carrier states BTR and both non-null carriers disagree. |
 | `DQ-09` | warning | Either subtype carrier states BTR outside frontmatter `asset_class: multifamily`. |
+
+DQ-08 checks agreement on the one defined vocabulary identity, and DQ-09
+checks that value's class scope; both are vocabulary-scope checks permitted
+under D5, warnings only and scoped to `build_to_rent`, rather than
+underwriting consistency rules.
 
 These are structural/vocabulary checks only. No stage requirements, defaults,
 financial cross-checks, calculation selection or underwriting rules depend on

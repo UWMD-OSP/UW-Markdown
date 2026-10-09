@@ -19,6 +19,9 @@ protocol, and each package each carry an independent semver).
 - Init accepts standard/namespaced plans and `--asset-subtype`; retired or
   malformed plan arguments are refused before output. Calculations, defaults,
   packs, underwriting rules and financial math are unchanged.
+- Format stays 2.0; the new normative Protocol remediation codes require the
+  next Protocol minor at release preparation after released 2.23.0. This PR
+  leaves `PROTOCOL_VERSION` unchanged.
 - RFC status is accepted (merge is acceptance), with all R1–R8 decisions recorded.
   Adds warning-only conformance and CLI/core regressions. Resolves #255
   (StackUW UPSTREAM-022); broader subtype and legacy-default wording work is deferred.

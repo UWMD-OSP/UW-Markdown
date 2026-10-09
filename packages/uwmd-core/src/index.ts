@@ -1,9 +1,9 @@
-export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
-export type { Scenario, UWScenarioId } from './scenario.js';
 // uwmd — .uw.md file format library
 // Public API surface
 
 export { parseUWFile, getSection, getSectionVariant, deepGet, blockPayload } from './parser.js';
+export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
+export type { Scenario, UWScenarioId } from './scenario.js';
 export { validateUWFile, lookupRemediation, getReturnTaxBasis } from './validator.js';
 // RFC 0053 — the reassessment and abatement vocabularies.
 export { REASSESSMENT_TRIGGERS, TAX_ABATEMENT_KINDS } from './validator.js';

@@ -1,5 +1,3 @@
-export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
-export type { Scenario, UWScenarioId } from './scenario.js';
 // uwmd — browser-safe subset of the public API.
 //
 // This entry point excludes everything that pulls in node-only modules or the
@@ -15,6 +13,8 @@ export type { Scenario, UWScenarioId } from './scenario.js';
 // helpers, protocol surface, types — is identical to the main entry.
 
 export { parseUWFile, getSection, getSectionVariant, deepGet, blockPayload } from './parser.js';
+export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
+export type { Scenario, UWScenarioId } from './scenario.js';
 export { validateUWFile, lookupRemediation } from './validator.js';
 // RFC 0053 — the reassessment and abatement vocabularies.
 export { REASSESSMENT_TRIGGERS, TAX_ABATEMENT_KINDS } from './validator.js';
