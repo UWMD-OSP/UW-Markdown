@@ -1,3 +1,4 @@
+import { isScenarioId } from './scenario.js';
 #!/usr/bin/env node
 import { verifyReplacementFundingBindings } from './replacement-funding.js';
 // uwmd CLI — command-line interface for .uw.md files
@@ -607,13 +608,11 @@ function cmdInit(flags: Record<string, string | boolean>): void {
     console.error(`--format must be '2.0' (default, nested _meta) or '1.1' (legacy flat shape); got '${requestedFormat}'.`);
     process.exit(1);
   }
-  // Format §6.7 names `--scenario`. It used to be dropped, so every scaffold
-  // said `scenario: null` whatever was asked for. Only the values §2.2 lists
-  // are written; the CLI must not mint new ones.
+  // Writers use standard plans or owned extensions; legacy documents still read.
   const scenario = flags['scenario'];
-  if (scenario !== undefined && (typeof scenario !== 'string' || !INIT_SCENARIOS.includes(scenario))) {
+  if (scenario !== undefined && !isScenarioId(scenario)) {
     console.error(
-      `--scenario must be one of the values Format §2.2 lists: ${INIT_SCENARIOS.join(', ')}; got ${scenario === true ? 'no value' : `'${scenario}'`}.`,
+      `--scenario must be one of the standard plans (${INIT_SCENARIOS.join(', ')}) or a reverse-DNS identifier (e.g. com.example.repositioning); got ${scenario === true ? 'no value' : `'${scenario}'`}.`,
     );
     process.exit(1);
   }
@@ -627,6 +626,7 @@ function cmdInit(flags: Record<string, string | boolean>): void {
       state: flags['state'] as string | undefined,
       zip: flags['zip'] as string | undefined,
       assetClass: flags['asset-class'] as AssetClass | undefined,
+      assetSubtype: flags['asset-subtype'] as string | undefined,
       dealStage: flags['stage'] as DealStage | undefined,
       scenario: scenario as string | undefined,
       tier: (flags['tier'] as 'screener' | 'analyst' | undefined) ?? 'screener',
@@ -2089,7 +2089,8 @@ Options:
   --state <s>        State code (init)
   --asset-class <ac> Asset class (init)
   --stage <s>        Deal stage (init)
-  --scenario <s>     A Format §2.2 frontmatter scenario value (init)
+  --scenario <s>     A standard business plan or reverse-DNS extension (init)
+  --asset-subtype <s> Descriptive subtype; build_to_rent on multifamily (init)
   --tier <t>         screener | analyst (init)
   --live             Actually call Claude (run command)
   --api-key <k>      Anthropic API key (run --live, or use ANTHROPIC_API_KEY)

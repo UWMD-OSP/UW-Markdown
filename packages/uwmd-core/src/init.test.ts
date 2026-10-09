@@ -61,6 +61,12 @@ describe('generateBlankUWFile', () => {
 });
 
 describe('INIT_SCENARIOS', () => {
+  it('continues to serialize legacy plans without silently migrating them', () => {
+    const parsed = parseUWFile(generateBlankUWFile({ scenario: 'build_to_rent', assetSubtype: 'garden_style' }));
+    expect(parsed.frontmatter.scenario).toBe('build_to_rent');
+    expect(parsed.frontmatter.asset_subtype).toBe('garden_style');
+  });
+
   it('lists exactly the frontmatter scenario values Format §2.2 lists, in order', () => {
     const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
     const line = readFileSync(specPath, 'utf-8')

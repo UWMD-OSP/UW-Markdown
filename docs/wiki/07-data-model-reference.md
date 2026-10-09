@@ -78,7 +78,9 @@ interface UWFrontmatter {
   created: string; last_modified: string;
   property_address: string; city: string; state: string; zip: string;
   asset_class: AssetClass; asset_subtype?: string | null;
-  loan_type?: string | null; scenario?: string | null;
+  // UWScenarioId stays open for namespaced extensions and legacy reads;
+  // Scenario enumerates the eight standard business plans.
+  loan_type?: string | null; scenario?: UWScenarioId | null;
   pipeline_state?: UWPipelineState; status?: string;
   deal_stage?: DealStage; recommendation?: string | null;
   quick_metrics?: UWQuickMetrics;

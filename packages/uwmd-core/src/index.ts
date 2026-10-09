@@ -1,3 +1,5 @@
+export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
+export type { Scenario, UWScenarioId } from './scenario.js';
 // uwmd — .uw.md file format library
 // Public API surface
 
@@ -521,7 +523,7 @@ export {
   CASSETTE_VERSION,
 } from './agents/providers/replay.js';
 export type { AgentCassette, RecordedExchange, RecordingProvider } from './agents/providers/replay.js';
-export { generateBlankUWFile } from './init.js';
+export { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 
 // ─── Section footing (line items → section totals) ────────────────────────────
 export { deriveRentRoll, rentRollVariant } from './rentroll.js';

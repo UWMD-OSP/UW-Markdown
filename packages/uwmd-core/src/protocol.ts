@@ -2502,6 +2502,29 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: 'UW_FORMAT_SPEC_v1.md §5.1',
   },
 
+  // RFC 0072 — descriptive identity, warnings in both format generations.
+  {
+    code: 'DQ-07', severity: 'warning',
+    title: 'Unrecognized business plan',
+    description: 'Scenario is unlisted, retired or structurally invalid.',
+    remediation: 'Use a standard business plan or reverse-DNS scenario identifier; do not rewrite historical documents automatically.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2b',
+  },
+  {
+    code: 'DQ-08', severity: 'warning',
+    title: 'BTR subtype carriers disagree',
+    description: 'The two subtype carriers disagree when either states build_to_rent.',
+    remediation: 'State the same subtype in both carriers or omit the property duplicate; frontmatter governs identity.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2c',
+  },
+  {
+    code: 'DQ-09', severity: 'warning',
+    title: 'BTR subtype outside multifamily',
+    description: 'The defined build_to_rent subtype is stated outside multifamily.',
+    remediation: 'Use multifamily for the defined single-site BTR identity; other free subtype values remain open.',
+    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2c',
+  },
+
   // ─── Integrity (INT-NN) — content_hash / parent_hash chain checks ──────────
   {
     code: 'INT-01', severity: 'error',

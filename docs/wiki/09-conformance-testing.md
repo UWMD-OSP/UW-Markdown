@@ -407,6 +407,14 @@ green) and `conformance:v2`, uploading its JSON manifest as an artifact.
 `release.yml` publishes
 `@uwmd/core` and `uwmd` on `v*` tags. (See [11 — Build, release & governance](11-build-release-governance.md).)
 
+## Scenario identity suite (RFC 0072)
+
+`conformance/scenario/` pins all standard plans, owned extensions, absent/null,
+unlisted/retired/malformed values and narrow BTR subtype rules. It runs in the
+default suite and the v2 CLI driver. Code/severity and overall-status expectations
+require zero errors; read-only, stage, coverage and unrelated-finding comparisons
+ensure identity remains descriptive. See its README for the case list.
+
 ## Adding fixtures (quick reference)
 
 - **Tier 1:** drop a `.uw.md` in `fixtures/`, then `--tier=1 --update` to mint the

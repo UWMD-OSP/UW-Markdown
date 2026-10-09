@@ -4,6 +4,7 @@
 import type { AssetClass, DealStage, UWMeta } from './types.js';
 import { stampMetaIntoBlockContent } from './meta-shape.js';
 import { parseUWFile } from './parser.js';
+import { SCENARIOS } from './scenario.js';
 import { writeDoubleQuotedScalar } from './yaml-scalar.js';
 
 export interface InitOptions {
@@ -22,31 +23,13 @@ export interface InitOptions {
   assetClass?: AssetClass;
   assetSubtype?: string;
   dealStage?: DealStage;
-  /** Frontmatter `scenario`; `uwmd init` accepts only {@link INIT_SCENARIOS}. */
+  /** Frontmatter `scenario`; `uwmd init` accepts {@link INIT_SCENARIOS} or reverse-DNS extensions. */
   scenario?: string;
   tier?: 'screener' | 'analyst';
 }
 
-/**
- * The frontmatter `scenario` values Format §2.2 lists, in its order. `uwmd init
- * --scenario` (§6.7) writes one of these and refuses anything else. The list
- * assigns no meaning to any value; the format defines none yet (issue #255).
- * `init.test.ts` holds it to the spec line.
- */
-export const INIT_SCENARIOS: readonly string[] = [
-  'stabilized_acquisition',
-  'ground_up_development',
-  'value_add',
-  'lease_up',
-  'nnn_single_tenant',
-  'lihtc_section8',
-  'house_flip',
-  'commercial_flip',
-  'property_conversion',
-  'build_to_rent',
-  'distressed_reo',
-  'land_banking',
-];
+/** Standard plans accepted by init; namespaced plans also pass isScenarioId. */
+export const INIT_SCENARIOS: readonly string[] = SCENARIOS;
 
 function generateDealId(): string {
   const year = new Date().getFullYear();

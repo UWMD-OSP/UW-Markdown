@@ -1,0 +1,19 @@
+{
+  "id": "scenario/20-btr-carrier-conflict",
+  "tier": "1",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/scenario/20-btr-carrier-conflict",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

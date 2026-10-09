@@ -12,6 +12,12 @@ appendices — continues to govern 2.0 files **except as amended below**. A
 statement in this document supersedes the corresponding v1 statement for 2.0
 files only; v1.x files are governed by the v1 document alone, unamended.
 
+**RFC 0072 (non-breaking clarification):** the incorporated v1 §2.2b/c and
+§5.4 business-plan/subtype rules also govern 2.x files. DQ-07–09 remain warnings
+at every admitted format version; no retired scenario becomes an error at the
+2.0 boundary. These optional descriptive identities select no calculations,
+defaults, packs or underwriting behavior.
+
 The changes at 2.0 were designed in [RFC 0009](../docs/rfcs/0009-meta-v2-reorg.md)
 (accepted 2026-09-01) with vocabulary groundwork from
 [RFC 0031](../docs/rfcs/0031-source-vocabulary.md) and boundary decisions

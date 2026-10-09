@@ -949,26 +949,25 @@ implementation have used since RFC 0018 and RFC 0015 (2.1.0) shipped.
 - **Guard.** A `protocol.test.ts` suite checks the union, the schema and §XI
   against each other, and validates emitted refusals against the schema.
 
-## 2026-10-04 — `uwmd init --scenario`
+## RFC 0072 — Business plans and single-site BTR identity
 
-`uwmd init --scenario <value>` now writes frontmatter `scenario`, as Format
-§6.7 documents. It accepts only the twelve values §2.2 lists and refuses
-anything else; before this fix it dropped the flag and always wrote `null`.
-- **Classification.** Implementation drift from §6.7. No RFC and no version
-  change.
-- **Still undefined.** No `scenario` value has a defined meaning, and no
-  validator, pack or cross-check reads one. Defining them, including
-  `build_to_rent` and a rule for a deal that fits several values, is issue
-  #255 (StackUW `UPSTREAM-022`) and needs an RFC. Draft
-  [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) carries the
-  owner's 2026-10-04 direction: `scenario` names the business plan, stays
-  single-valued with a closed vocabulary, and is descriptive only;
-  `build_to_rent` is not a scenario but a product/subtype on `multifamily`.
-  Field design, vocabulary and migration (R1–R8) remain RFC work, and the
-  current free-string `asset_subtype` is not ready to carry a defined value as
-  is. Nothing is defined or shipped.
-- **Guard.** `init.test.ts` holds the accepted list to the §2.2 line, and the
-  CLI smoke suite covers a written value, an unlisted value and a bare flag.
+[RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) is `accepted` with
+its implementation in the same PR; the merge is acceptance. `scenario` now
+names one execution strategy from eight standard plans or a reverse-DNS
+extension. Init writes these and refuses retired/unlisted bare arguments.
+`--asset-subtype build_to_rent` identifies single-site BTR on multifamily,
+independently of its actual plan. No new class/module or financial behavior.
+
+- **Compatibility.** DQ-07–09 are warnings only in both format generations.
+  No existing valid document gains errors. Subtypes remain open; the 28
+  pre-RFC free-value corpus files and Sundance's unlisted plan are not migrated.
+- **Identity.** Frontmatter subtype governs; property is a fallback when
+  absent/null. Only BTR agreement and class scope add checks.
+- **Guards.** Core/CLI tests and the default `scenario` conformance suite pin
+  standard/extension, absent/null, retired/malformed and BTR behavior. The v2
+  CLI driver exercises the same fixtures. D5 regressions preserve stage,
+  coverage, default and pack results.
+- **Deferred.** General subtype taxonomy and legacy Appendix B terminology.
 
 ## 2026-10-04 — `uwmd init` frontmatter serialization
 

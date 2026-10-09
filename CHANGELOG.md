@@ -8,6 +8,21 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Business-plan and single-site BTR identity (RFC 0072)
+
+- Defines eight frontmatter business plans and owned reverse-DNS extensions;
+  retires mixed-axis scenario labels with `DQ-07` warnings only. Existing valid
+  documents gain no errors in either format generation; Sundance remains intact.
+- Defines `asset_subtype: build_to_rent` on multifamily without closing or
+  migrating other free subtypes. Frontmatter governs identity, with a property
+  fallback; BTR disagreement/scope diagnostics `DQ-08`/`DQ-09` are warnings.
+- Init accepts standard/namespaced plans and `--asset-subtype`; retired or
+  malformed plan arguments are refused before output. Calculations, defaults,
+  packs, underwriting rules and financial math are unchanged.
+- RFC status is accepted (merge is acceptance), with all R1–R8 decisions recorded.
+  Adds warning-only conformance and CLI/core regressions. Resolves #255
+  (StackUW UPSTREAM-022); broader subtype and legacy-default wording work is deferred.
+
 ## [2.19.0] - 2026-10-08
 
 ### Released

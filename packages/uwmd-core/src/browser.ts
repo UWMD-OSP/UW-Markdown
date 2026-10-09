@@ -1,3 +1,5 @@
+export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
+export type { Scenario, UWScenarioId } from './scenario.js';
 // uwmd — browser-safe subset of the public API.
 //
 // This entry point excludes everything that pulls in node-only modules or the
@@ -525,7 +527,7 @@ export {
 } from './context.js';
 export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js';
 
-export { generateBlankUWFile } from './init.js';
+export { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 
 // ─── Intelligence surfaces (browser-safe: no node, no SDK) ───────────────────
 // Cascade resolution, value-of-information gap ranking, completeness gaps,

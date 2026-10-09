@@ -633,6 +633,13 @@ right. The hyphenated `META-*` family (RFC 0009) is a separate concern
 under the same registry prefix — it polices which `_meta` *shape* a
 file's `uw_version` admits, not provenance completeness.
 
+RFC 0072 extends the existing data-quality sequence with `DQ-07`
+(scenario structure/vocabulary), `DQ-08` (BTR subtype carrier disagreement)
+and `DQ-09` (BTR class scope), all **warning** in both format generations.
+Their rules live in Format §2.2b/c and §5.4; they introduce no calculation,
+default-selection or underwriting procedure. Their canonical copy is in
+`BUILTIN_REMEDIATIONS`; the remediation schema already admits these entries.
+
 `CC-NN`, `FV-NN`, `DQ-NN`, `MU-NN`, and `SRC-NN` are closed sequences extended by
 RFC without renumbering. `MOD-*` and `CS-*` are open extension points:
 modules MAY add their own, and adopters MUST treat an unknown code

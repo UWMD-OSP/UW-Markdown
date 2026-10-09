@@ -1,7 +1,7 @@
 ---
 rfc: 0072
 title: Give frontmatter `scenario` a defined meaning
-status: draft
+status: accepted
 author: claude-code (agent proposal)
 created: 2026-10-04
 affects:
@@ -15,24 +15,20 @@ affects:
 
 ## Summary
 
-Frontmatter `scenario` lists twelve values (Format §2.2), but the format
-defines none of them, and no validator, pack, default table or cross-check
-reads the field. Issue #255 (StackUW `UPSTREAM-022`) asks for `scenario` to
-mean the deal's business plan and for `build_to_rent` to be defined.
+Frontmatter `scenario` describes one business plan / execution strategy. It
+uses eight standard plans or an owned reverse-DNS extension. Product identity,
+program and acquisition circumstance are separate axes. Single-site BTR is
+`asset_class: multifamily` and `asset_subtype: build_to_rent`, paired with its
+actual plan (for example `stabilized_acquisition`).
 
-The owner set the direction on 2026-10-04 ([Owner direction](#owner-direction-2026-10-04)):
-`scenario` names the business plan, stays single-valued, takes a closed
-standard vocabulary with an existing extension mechanism, and is descriptive
-only; `build_to_rent` is not a scenario. The exact field design, vocabulary,
-severities and migration remain RFC work ([Open RFC questions](#open-rfc-questions)).
-
-The RFC stays `draft`. No normative text, schema, code, fixture or version
-change is authorized by this RFC's presence, and no `scenario` semantics have
-shipped.
+This RFC and its implementation ship in one PR. Status is `accepted`; the
+merge is acceptance. All new identity diagnostics are warnings in both format
+generations: existing valid documents gain no errors. No calculation, default,
+pack or underwriting behavior depends on either label.
 
 ## Owner direction (2026-10-04)
 
-These decisions bind the RFC. They set direction; they are not acceptance.
+These owner decisions bind the RFC. The merge of this RFC and its implementation is acceptance.
 
 | # | Decision |
 |---|---|
@@ -43,212 +39,157 @@ These decisions bind the RFC. They set direction; they are not acceptance.
 | D5 | Scenario and subtype identity are **descriptive and routable only**. They must not alter calculations, defaults, underwriting semantics, or validation beyond structural/vocabulary validity. Any such behavior needs separately governed semantics. |
 | D6 | The vestigial Appendix B `scenario_defaults.json` and `scenario_default` wording is repaired **separately**, unless this RFC needs a narrow edit to avoid contradicting D5. |
 
-## Motivation
+## Motivation and existing evidence
 
-### Evidence
+Issue #255 (StackUW `UPSTREAM-022`) needs a defined single-site BTR identity.
+The original twelve-value scenario list mixed plans with product/lease form
+(`build_to_rent`, `nnn_single_tenant`), regulatory/capital program
+(`lihtc_section8`) and acquisition circumstance (`distressed_reo`). It defined
+none. Core admitted `string | null`; PR #257 made init write listed values,
+but no validator or calculation consumed the field.
 
-- **The list.** `spec/UW_FORMAT_SPEC_v1.md` line 160:
-  `stabilized_acquisition | ground_up_development | value_add | lease_up |
-  nnn_single_tenant | lihtc_section8 | house_flip | commercial_flip |
-  property_conversion | build_to_rent | distressed_reo | land_banking`.
-  There is no definition, no rule for choosing among values, and no statement
-  of whether the list is closed. Format v2 does not change the field.
-- **No consumer.** `UWFrontmatter.scenario` is `string | null`
-  (`packages/uwmd-core/src/types.ts`). No validator, pack, default table or
-  cross-check reads it. No JSON Schema covers frontmatter.
-- **Tooling.** Since PR #257, `uwmd init --scenario` (§6.7) writes only a
-  listed value and refuses anything else. That is CLI hygiene; it assigns no
-  meaning.
-- **Corpus.** In examples, conformance fixtures and package fixtures, the
-  values in use are `stabilized_acquisition` (19 files), `value_add`
-  (`examples/Riverside-Office-Phoenix-AZ.uwx.md`), `null`, and one
-  value that is **not listed**: `entitled_land_acquisition`
-  (`examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md`). That example validates
-  today, so in practice the list is not enforced as closed.
-- **Adopter need.** StackUW is adding a build-to-rent product: the stabilized
-  acquisition of a community of detached or attached homes leased by the home,
-  underwritten as multifamily. It is holding emission of
-  `scenario: build_to_rent` until the value is defined, so that one producer's
-  meaning does not become the default. Under D4 the eventual answer is not a
-  `scenario` value.
+The pre-RFC corpus uses `stabilized_acquisition`, `value_add`, null and the
+unlisted `entitled_land_acquisition` in Sundance. Twenty-eight corpus files
+carry free subtype values spanning form, location, service and product; this
+RFC neither rewrites nor closes them. The property renderer historically
+prefers its local subtype; that display behavior does not resolve document
+identity. This RFC specifies identity authority without rewriting either
+carrier or changing rendering.
 
-### The twelve values are not one axis
+## Decisions
 
-| Axis | Values | Under D1 |
+| Question | Decision | Why (precedent) |
 |---|---|---|
-| Business plan / execution | `stabilized_acquisition`, `value_add`, `lease_up`, `ground_up_development`, `property_conversion`, `house_flip`, `commercial_flip`, `land_banking` | Candidates for the closed vocabulary (R1). |
-| Product or lease form | `build_to_rent`, `nnn_single_tenant` | Leave `scenario` (D1, D4). |
-| Regulatory or capital program | `lihtc_section8` | Leaves `scenario` (D1). |
-| Acquisition circumstance | `distressed_reo` | Leaves `scenario` (D1). |
+| R1 — Plan vocabulary and hold strategy | Retain the eight execution plans: `stabilized_acquisition`, `ground_up_development`, `value_add`, `lease_up`, `house_flip`, `commercial_flip`, `property_conversion`, `land_banking`, with the definitions below. `deal_context.hold_strategy` remains the independent hold/exit axis; no automatic precedence or inference between axes. | D1–D2; the original list already contains these plans. Format §4.0 distinguishes execution narrative from hold/exit strategy; RFC 0060 keeps distinct concepts on separate axes. |
+| R2 — Extensions | Accept reverse-DNS identifiers using Format §2.2a's three-or-more lowercase segment grammar. No module declaration, label field or bare `other` is added. | §2.2a fixes namespace ownership. Unlike an asset class, a descriptive plan needs no module-provided calculations or resolution. RFC 0052's `other` requires a label-bearing object; adding that structure to this scalar is unnecessary. |
+| R3 — Unlisted and retired values | `DQ-07` warning for any non-null value outside the standard vocabulary and extension grammar, including malformed types and all four retired values, in both 1.x and 2.x. Absence/null stays valid. Preserve bytes; no escalation or automatic migration. `entitled_land_acquisition` remains unlisted and warns; an author may deliberately restate it as a namespaced plan. | Existing `DQ-NN` family covers data-quality guidance; RFC 0031 warns on legacy vocabulary and preserves raw bytes. Its later major-boundary escalation is deliberately not adopted: this RFC must preserve today's valid documents. |
+| R4 — Subtype carrier | Keep both `asset_subtype` carriers open and optional. Define only `build_to_rent`, scoped to frontmatter `asset_class: multifamily`. Frontmatter governs identity; property is a fallback when frontmatter is absent/null. If either carrier states BTR and both non-null carriers differ, warn `DQ-08`; BTR outside multifamily warns `DQ-09`. No checks or migrations for other free subtype values. | D4; existing Format §2.2/§4.1 carriers suffice. RFC 0052's opt-in additions preserve absent-field behavior. A closed subtype taxonomy would exceed the evidence and disturb the 28 existing free-value corpus files. |
+| R5 — BTR definition | A community of detached or attached homes purpose-built to be leased by the home, on one site and under one loan. Scattered-site single-family portfolios are outside this defined identity. The label asserts identity only; no loan-count or financial cross-check is added. | Issue #255 (StackUW UPSTREAM-022) supplies the product boundary; D4 retains multifamily and D5 forbids underwriting behavior driven by the label. |
+| R6 — Retired values' homes | Retire `build_to_rent`, `nnn_single_tenant`, `lihtc_section8`, `distressed_reo` from the standard plan list. BTR uses the defined subtype. The other facts may remain in existing lease, compliance and acquisition narratives; do not invent new canonical carriers or lossless automatic mappings. | D1 separates lease/product, program and acquisition circumstance from execution. RFC 0031 documents retired vocabulary and refuses to guess a migration; a new carrier needs adopter evidence. |
+| R7 — Default wording | Add narrow disclaimers to Appendix B and `scenario_default`: neither refers to frontmatter `scenario` or selects defaults from it. Leave the vestigial file reference and wider repair for a separate RFC/PR. | D5–D6; Protocol §V.7 already keys published defaults by asset class, not frontmatter business plan. |
+| R8 — Version | Keep Format 2.0 and Protocol 2.22.0 labels. This clarifies existing optional scalar fields and adds warnings without changing syntax, admission, math or protocol procedures. Extend the existing remediation registry/schema documentation together; package/release version assignment remains release preparation. | Independent surface versioning in VERSIONS.md; prior additive section work retained the Format label, and RFCs 0075–0076 defer release version assignment. No new protocol procedure or major-boundary escalation is introduced. |
 
-The axis assignment of each value is this RFC's reading, to be confirmed with
-the definitions (R1). `entitled_land_acquisition` reads as a plan value but is
-unlisted (R3).
+## Normative change
 
-### "Scenario" already has other meanings
+### Business plans (Format §2.2b)
 
-| Surface | Meaning |
+`scenario` is optional and single-valued. Absent or null makes no assertion.
+For new production, use one standard plan or a namespaced extension. The
+standard vocabulary is closed:
+
+| Value | Business plan / execution strategy |
 |---|---|
-| Frontmatter `scenario` (§2.2) | Undefined; the subject of this RFC. |
-| `scenario_default` source tag (§2.6) | "A value derived from a named scenario in this file or institution config." |
-| Appendix B, "Scenario Default Keys" | Assumptions "populated from `scenario_defaults.json`". No such file exists in the repository; Protocol §V.7 defaults are keyed by **asset class**. |
-| `stress_tests`, `custom_scenarios` (§4.20), section variants (`base`/`upside`/`downside`) | Analytical what-if cases inside one deal. |
-| Lite `scenario=` attribute (`UW_LITE_SPEC_v1.md`) | Field identity qualifier; only `base` is accepted today. |
+| `stabilized_acquisition` | Acquire an already stabilized income property and operate it without a material repositioning plan. |
+| `ground_up_development` | Create new improvements through ground-up construction before sale or stabilized operation. |
+| `value_add` | Reposition an existing property through improvements or operating changes. |
+| `lease_up` | Execute initial or renewed leasing to bring an existing property to stabilized occupancy. |
+| `house_flip` | Improve an existing home for resale rather than continuing rental operation. |
+| `commercial_flip` | Improve or reposition an existing commercial property for resale rather than continuing operation. |
+| `property_conversion` | Convert existing improvements to a different property use. |
+| `land_banking` | Hold land for a future development or disposition opportunity without a current construction plan. |
 
-Defining frontmatter `scenario` as a business plan does not define any of the
-others. Appendix B's wording can be read as frontmatter `scenario` selecting
-defaults, which D5 forbids; see R7.
+The author states the execution strategy; no precedence, class inference or
+hold-strategy inference resolves overlapping descriptions. Product form,
+program and acquisition circumstance go on their own axes; narrative can
+explain a composite execution strategy. Analytical stress cases, custom
+scenarios and section variants retain their separate meanings.
 
-## Existing surfaces checked
+An extension uses `segment ('.' segment){2,}`, with
+`segment := [a-z][a-z0-9_]*`, as in Format §2.2a. It needs no module declaration
+because it conveys no executable semantics. Preserve the full identifier;
+never interpret a suffix as a standard plan or infer defaults from it.
 
-| Surface | What it carries | Bearing |
+### Single-site BTR (Format §2.2c and §4.1)
+
+Both subtype fields stay free strings. The sole value defined here is
+`build_to_rent` on `multifamily`: a community of detached or attached homes
+purpose-built to be leased by the home, on one site and under one loan.
+Scattered-site single-family portfolios are outside this definition. Other
+physical-form details remain in property fields or narrative; this identity
+is not a new asset class, module, pack or subtype taxonomy.
+
+Frontmatter is authoritative for descriptive subtype identity. The canonical
+property block supplies a fallback only if frontmatter is absent or null.
+When either carrier states BTR, two non-null carriers SHOULD agree; disagreement
+warns without overwriting either. This authority rule does not force a display
+renderer to discard section-local text. No other free-value agreement or class
+scope check is introduced.
+
+```yaml
+asset_class: multifamily
+asset_subtype: build_to_rent
+scenario: stabilized_acquisition
+```
+
+### Validation (Format §5.4)
+
+| Code | Severity | Condition |
 |---|---|---|
-| `asset_class` (§2.2, §2.2a) | Closed builtin list plus reverse-DNS namespaced, module-declared classes (RFC 0003). | Single-site BTR stays `multifamily` (D4). §2.2a is one existing extension mechanism for D3. |
-| `asset_subtype` (§2.2 and §4.1) | Free string, "e.g. garden_style, strip_center, warehouse". | The candidate product/subtype home under D4; see [the subtype finding](#the-product-or-subtype-carrier-is-not-ready-as-is). |
-| `loan_type` (§2.2) | `permanent | bridge | construction | value_add | refinance`. | Financing, not plan; `value_add` overlaps by name only. |
-| `deal_context.hold_strategy` (§4.0) | Closed: `exit_at_stabilization | long_term_hold | develop_and_sell | refinance_and_hold | 1031_exchange | portfolio_addition | flip | other`. | Hold/exit strategy, a neighboring axis inside a section. Its relation to `scenario` needs stating (R1). |
-| `deal_context.value_creation_strategy` (§4.0) | Free string. | Narrative; not routable. |
-| Closed vocabulary with a label-bearing `other` (RFC 0052, reused by RFC 0056) | A closed list plus `other` carrying a required label. | The second existing extension mechanism for D3. |
-| Document profiles and deal packages (RFC 0018), modules (RFC 0003) | Composition; asset-class declarations. | Not needed for single-site BTR (D4). |
-| ROADMAP "Nearest asset-class extensions" | Demand-gated scattered-site SFR/BTR decision. | Out of scope; #255 asks only for single-site BTR. |
+| `DQ-07` | warning | Non-null scenario is not a standard plan or well-formed reverse-DNS extension, including retired values and non-string structures. |
+| `DQ-08` | warning | Either subtype carrier states BTR and both non-null carriers disagree. |
+| `DQ-09` | warning | Either subtype carrier states BTR outside frontmatter `asset_class: multifamily`. |
 
-### The product or subtype carrier is not ready as is
+These are structural/vocabulary checks only. No stage requirements, defaults,
+financial cross-checks, calculation selection or underwriting rules depend on
+scenario/subtype identity. They never escalate with the file's format version.
+Absent/null values and all other free subtype values add no diagnostics.
 
-D4 points BTR at "an appropriate product/subtype representation". The current
-contract for `asset_subtype` does not yet support a defined value:
+### Retired vocabulary and migration
 
-1. **What it names is unstated.** §2.2's comment examples are physical forms
-   (`garden_style`, `strip_center`, `warehouse`). BTR is a product or tenure
-   form: the same community can also be physically `garden_style` or
-   detached homes. With one single-valued field, BTR would compete with the
-   physical form, which recreates D2's overlap one level down.
-2. **The corpus already mixes axes in it.** Values in use include physical
-   form (`garden_style`, `garden`, `midrise`), location (`suburban`),
-   entitlement state (`entitled_residential`), product (`purpose_built_off_campus`),
-   service level (`select_service`, `boutique`) and composition
-   (`apartments_over_retail_with_hotel`). `garden` and `garden_style` appear to
-   name the same form under two spellings.
-3. **Two carriers, no agreement rule.** `asset_subtype` exists in frontmatter
-   (§2.2) and in the `property` section (§4.1). Nothing says which governs or
-   that they must agree. The renderer prefers the section value
-   (`renderer.ts`); five examples state it only in frontmatter.
-4. **No schema and no class scope.** No JSON Schema covers either carrier, and
-   subtype values are implicitly class-relative (`strip_center` is retail).
+The four non-plan values leave the standard scenario vocabulary. Readers retain
+and warn on them; they never reject or rewrite historical documents. New init
+output accepts the eight plans and namespaced extensions, and refuses retired,
+unlisted or malformed plan arguments before writing a file. Existing library
+callers can still serialize legacy strings for lossless round-trips.
 
-So formalizing a product/subtype vocabulary needs more than adding a value to
-the free string. At minimum the RFC must state what the carrier names, how the
-two carriers relate, whether values are class-scoped, and what happens to
-existing free values. Whether that is done by defining `asset_subtype` or by a
-separate product-form carrier is R4; this RFC does not assume either.
-
-## Proposed change
-
-**Partially directed, not yet specified.** Under D1–D6 the change will:
-
-1. define frontmatter `scenario` as the deal's business plan / execution
-   strategy, single-valued, with a closed standard vocabulary and a one-line
-   definition per value (R1);
-2. name the existing mechanism through which non-standard plan values are
-   expressed (R2);
-3. state the structural/vocabulary validation, with code and severity, for an
-   unlisted or retired value (R3); no other validation (D5);
-4. remove `build_to_rent`, `nnn_single_tenant`, `lihtc_section8` and
-   `distressed_reo` from the standard `scenario` vocabulary, with a migration
-   note (R3, R6);
-5. give single-site BTR a defined product/subtype representation on
-   `multifamily` (R4, R5), with the carrier contract that requires;
-6. update `INIT_SCENARIOS` and `uwmd init` to the new vocabulary;
-7. select the Format version label (R8).
-
-Invariants: no calculation, default, pack or underwriting semantics depend on
-`scenario` or the subtype (D5); existing documents keep parsing; rates and
-financial math are untouched.
-
-## Compatibility analysis
-
-- **`stabilized_acquisition`** (19 files) and **`value_add`** (1 file) are
-  plan values and should survive any vocabulary.
-- **`entitled_land_acquisition`** (Sundance example) is unlisted; under D3 it
-  becomes either a standard plan value, an extension-form value, or an
-  invalid/flagged value (R3).
-- **Retired values** (`build_to_rent`, `nnn_single_tenant`, `lihtc_section8`,
-  `distressed_reo`) appear in no corpus file, and StackUW is holding BTR
-  emission, so retiring them now costs little. Third-party documents may still
-  carry them; R3 sets how they are reported.
-- **`asset_subtype`** carries free values in 28 corpus files. Any
-  closed or class-scoped vocabulary there is a migration (R4).
-- **Readers.** Under D5, Tier-1–4 behavior changes only by the vocabulary
-  check; no calculation or default changes.
+There is no automatic conversion: `scenario: build_to_rent` does not identify
+an execution strategy. An author who knows the facts can state the subtype and
+actual plan independently. Sundance remains unchanged and gains only `DQ-07`;
+restating its label requires an explicit author choice. NNN lease form, LIHTC/
+Section 8 program and REO acquisition circumstances can be described in existing
+lease/compliance/acquisition narratives pending evidence for a canonical field.
 
 ## Conformance impact
 
-Sketch only; files land with an implementation:
+The `scenario` suite contains one valid fixture per standard plan, including a
+stabilized multifamily BTR acquisition on separate axes; absent and null
+scenario cases; unlisted, all four retired, namespaced, malformed namespace and
+non-string values; subtype fallback, disagreement, class scope and existing
+free-value cases. Expectations freeze code and warning severity and require
+zero errors. They run in the default corpus and through the v2 CLI driver.
 
-- one valid fixture per standard plan value class, including a stabilized
-  multifamily BTR acquisition that states its plan and its product form on
-  separate axes;
-- an absent-field fixture proving a document without `scenario` validates as
-  it does today;
-- fixtures for an unlisted bare value, a retired value and an extension-form
-  value, at the severities R3 selects;
-- if R4 defines a subtype contract, fixtures for the carrier-agreement rule.
+Unit regressions additionally exercise both format generations, preserve raw
+source bytes, compare stage readiness/coverage and unrelated findings, and
+check unchanged pack calculation and default-resolution results under varied
+identity labels. CLI smoke tests pin namespaced plans, BTR scaffolding and
+refusal before output for retired or malformed arguments.
 
 ## Reference implementation
 
-Likely files: `spec/UW_FORMAT_SPEC_v1.md` §2.2, §4.1, §5 (validation code),
-§6.7 and possibly Appendix B (R7); `packages/uwmd-core/src/types.ts`;
-`init.ts` (`INIT_SCENARIOS` and its spec-line test); `validator.ts` for the
-vocabulary check only; the Sundance example if R3 changes its status;
-`docs/wiki/10-conventions-invariants.md`. The test plan follows from R1–R8.
+`scenario.ts` exports the closed vocabulary and grammar predicate; `types.ts`
+keeps the document boundary open. `validator.ts` emits only DQ-07–09.
+`INIT_SCENARIOS` derives from the standard vocabulary; `uwmd init` also accepts
+reverse-DNS extensions and exposes the existing `--asset-subtype` carrier.
+Canonical remediation entries, schema documentation and protocol code guidance
+land together. No frontmatter/property schema exists, and none is introduced
+solely to close otherwise open metadata.
 
-## Alternatives considered
+## Alternatives and follow-ups
 
-The owner direction settles the main fork. For the record:
-
-- **Mixed field with a precedence rule.** Rejected by D2.
-- **Multi-valued `scenario`.** Rejected by D2.
-- **`build_to_rent` as a `scenario` value.** Rejected by D4.
-- **A new asset class or module for single-site BTR.** Rejected by D4 absent
-  new evidence.
-- **Status quo plus an `x_` section.** Rejected by the reporter as defining
-  protocol meaning outside the protocol, and invisible to other readers.
-
-Still open, under R4: define what `asset_subtype` names and give it a
-vocabulary, or add a separate product-form carrier and leave `asset_subtype`
-physical.
-
-## Open RFC questions
-
-These are RFC work under the owner direction, to be justified from the current
-contract before any normative text is written.
-
-- **R1 — Plan vocabulary.** Which plan values are standard, their one-line
-  definitions, and how `scenario` relates to `deal_context.hold_strategy`.
-- **R2 — Extension mechanism.** §2.2a reverse-DNS namespaced identifiers, or
-  RFC 0052's label-bearing `other`. If namespaced, whether a value must be
-  declared by a module as custom asset classes are.
-- **R3 — Unlisted and retired values.** Validation code, severity, and the
-  deprecation path; the fate of `entitled_land_acquisition`.
-- **R4 — Product/subtype carrier.** Define `asset_subtype` (what it names,
-  class scope, closed or open, frontmatter/§4.1 agreement, migration of current
-  free values), or add a separate product-form carrier.
-- **R5 — The BTR definition.** #255 proposes: a community of detached or
-  attached homes built to be leased by the home, on one site and under one
-  loan; scattered-site SFR out of scope.
-- **R6 — Homes for retired values.** Whether `nnn_single_tenant`,
-  `lihtc_section8` and `distressed_reo` need a carrier now, or retire with no
-  replacement until an adopter asks.
-- **R7 — Appendix B contradiction.** Whether a narrow edit is needed so
-  Appendix B and the `scenario_default` tag cannot be read as `scenario`
-  selecting defaults (D5, D6).
-- **R8 — Version.** The Format version label and whether a Protocol change is
-  needed (D5 suggests not, if the vocabulary check lives in Format §5).
+- A precedence rule, multi-valued scenario, BTR scenario, and new BTR class or
+  module are excluded by D1–D4.
+- Label-bearing `other` is unnecessary for a namespaced scalar and would add a
+  second field solely to name an extension.
+- A closed subtype taxonomy, physical-form/product split, normalization of
+  `garden`/`garden_style`, general agreement rules and migration of the 28
+  existing free subtype values are deferred. They need separate evidence and
+  an additive compatibility design.
+- Full repair of Appendix B's vestigial `scenario_defaults.json` and the broader
+  `scenario_default` terminology remains separate under D6.
 
 ## Prior art
 
-Institutional real-estate indices classify funds by investment style (core,
-value-add, opportunistic) separately from property type, which supports
-treating plan and product form as different axes. RFC 0060 is the in-repo
-precedent for refusing to merge distinct concepts into one enum, and RFC 0003
-(§2.2a) and RFC 0052 are the in-repo precedents for extending a closed
-vocabulary.
+Format §2.2a / RFC 0003 fixes namespace ownership; RFC 0052 supplies the
+label-bearing `other` alternative; RFC 0031 demonstrates explicit vocabulary
+retirement and preservation of raw legacy bytes; RFC 0060 keeps independent
+semantic axes separate. None requires this descriptive identity to drive math.

@@ -47,6 +47,14 @@ Parsed into `UWFrontmatter`. Key fields: `uw_version` ("1.1"), `deal_id`,
 (per-layer `PipelineStatus`), `deal_stage` (`DealStage`), `quick_metrics`
 (`UWQuickMetrics` snapshot), `flags[]`, `blocking_flags[]`.
 
+`scenario` is an optional single business plan: eight standard plans or a
+reverse-DNS extension (RFC 0072, Format §2.2b). Unlisted, retired or malformed
+values warn `DQ-07`, including in 2.x files. `asset_subtype` stays open;
+`build_to_rent` is defined only on `multifamily`. Frontmatter governs subtype
+identity, with the property value as an absent/null fallback. BTR carrier
+conflict or class scope warns `DQ-08`/`DQ-09`. All are descriptive identities;
+no calculations or defaults depend on them.
+
 > **YAML subset only.** Frontmatter MUST use the restricted YAML subset in the
 > spec's Appendix D — scalars, simple mappings, dash-prefixed sequences. Anchors,
 > tags, block scalars, flow-style mappings and non-empty sequences, complex keys,
