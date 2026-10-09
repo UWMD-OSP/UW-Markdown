@@ -94,8 +94,18 @@ CI runs all of them; a red check is yours to fix before asking for review.
 
 **Claude Code and Codex are equal peers.** Either can take any kind of work —
 bug fixes, features, RFCs, releases — end to end, from reading the issue to a
-green PR. **Jared owns the repo** and is the only one who merges, tags,
-publishes, or changes accounts and credentials.
+green PR. **Jared owns the repo** but does not want merge or release steps
+handed to him:
+
+- **Claude Code merges.** Its own PRs once CI is green and the branch is current
+  with `main`; Codex's PRs after reviewing them (fix-ups go back to Codex or into
+  a follow-up PR).
+- **Claude Code cuts releases**: prepare, merge, tag and reconcile, exactly as
+  `docs/wiki/11` describes. The tag publishes to npm, so run
+  `verify-release --tag` on the exact commit first.
+- **Codex** finishes at a green PR and reports it.
+- **Only Jared** changes accounts and credentials: npm, GitHub and Vercel
+  settings, trusted publishers, anything behind 2FA or a browser login.
 
 ## Work in your own checkout, on your own branch
 
@@ -107,7 +117,7 @@ publishes, or changes accounts and credentials.
 - Before starting, check open PRs (`gh pr list`) for one already doing the same
   work or touching the same files. Parallel PRs that each append to
   `CHANGELOG.md` or `docs/wiki/13-status.md` conflict with each other even when
-  both are green; rebase on `main` before asking for a merge.
+  both are green; rebase on `main` before merging.
 - Commit before running long commands. Never leave changes staged while a
   multi-minute test suite runs; another session's `git commit` can sweep them up.
 
@@ -134,13 +144,13 @@ errors) answer most questions. Record every such call in the PR description:
 | Question | Decision | Why (precedent) |
 |---|---|---|
 
-Jared's merge is the acceptance. Don't stop work to ask, and don't end a task by
+The merge is the acceptance. Don't stop work to ask, and don't end a task by
 listing "owner decisions remain."
 
 **Stop and ask** only for:
 
-1. **Merge, tag, publish, deprecate**, or anything that touches npm, GitHub,
-   Vercel or other accounts and credentials.
+1. **Account and credential changes** — npm, GitHub or Vercel settings,
+   trusted publishers, deprecations, anything behind 2FA or a browser login.
 2. **A new financial convention** — a formula, day count, rounding rule,
    convergence criterion or tolerance that no accepted RFC or the spec pins.
    Never guess at numerics (invariant 1).
@@ -160,7 +170,7 @@ standard's permanent record and adopters read them, so they are never skipped.
   together. Merging the PR accepts the RFC.
 - **Draft PR first** only when the RFC introduces a new financial convention or
   a breaking format change (stop-and-ask items 2 and 3). Open the RFC alone as
-  `draft`, and implement after Jared merges it.
+  `draft`, and implement after Jared approves it.
 
 ## Paperwork
 
@@ -176,7 +186,7 @@ followed exactly, one reconciliation PR per release.
 
 ## Human handoffs
 
-When a step needs Jared — a merge, a tag, an account setting, a credential —
+When a step needs Jared — an account setting, a credential, a 2FA approval —
 don't mention it mid-reply and keep working. Write it to a standalone Markdown
 file (what and why in two sentences; the exact commands or click path with
 literal values; what "done" looks like; what to bring back), say plainly that
@@ -187,4 +197,5 @@ it succeeded. Handoff files go in your scratch space, not the repo.
 
 A task is done when its PR is open, CI is green, and the description lists what
 changed, the decisions table (if any), how it was validated, and any
-follow-ups. Report the PR link and stop. Don't merge.
+follow-ups. Codex reports the PR link and stops. Claude Code merges its own
+green PR and, for a release, carries on through the tag and reconciliation.
