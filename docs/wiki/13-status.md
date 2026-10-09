@@ -1,5 +1,16 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-08** for release-prepared **2.19.0**. Core/CLI **2.19.0**
+pair with the accepted release contract Protocol **2.23.0** and unchanged Format
+**2.0**. The generation carries RFC 0075's `senior` preference and RFC 0076's
+refused-selection `HDG-08` for the hedge and escrow rules (Protocol §V.12.1),
+RFC 0077's definition of exit proceeds to equity with junior capital (Format
+§4.9, two optional fields), and SDK-free strict TypeScript declarations for the
+optional Anthropic provider. No new §X floor applies. Signing **0.2.23**, batch
+**0.8.18** and both official modules **0.1.11** pin core 2.19.0. RFCs 0075,
+0076 and 0077 remain `accepted` until shipment and independently verified
+publication, and tagging remains an owner decision.
+
 Reconciled **2026-10-08** (America/Phoenix) for published and independently
 verified **2.18.0**. Core/CLI **2.18.0**, signing **0.2.22**, batch **0.8.17**
 and both official modules **0.1.10** are published from immutable annotated
@@ -633,10 +644,10 @@ The guards:
 - [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266, merged as
   PR #276) and [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
   (merged as PR #277; D1–D7 accepted 2026-10-06) are `accepted` and
-  implemented. They ship in the release after 2.18.0.
+  implemented, and prepared for 2.19.0 with Protocol 2.23.0.
 - [RFC 0077](../rfcs/0077-exit-proceeds-with-junior-capital.md) (#278; D1–D6
-  accepted 2026-10-07) is implemented in the PR that records its acceptance,
-  for the same release. StackUW moves its common residual to
+  accepted 2026-10-07) is implemented (PR #279) and prepared for 2.19.0
+  under Format 2.0. StackUW moves its common residual to
   `net_proceeds_to_common_equity`.
 - Decide RFCs 0068 and 0067, in that order. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
@@ -840,8 +851,7 @@ funding passed unchecked. All seven of the issue's documents reproduced on
   refusal this RFC keeps.
 - **Merged.** PR #276, 2026-10-06, which records the acceptance. Its one
   unresolved question is answered by RFC 0076, next entry.
-- **Release.** Not part of 2.18.0. The version labels are assigned at the next
-  release preparation.
+- **Release.** Prepared for core/CLI 2.19.0 with Protocol 2.23.0.
 
 ## 2026-10-06 — Hedge checks under a refused selection (RFC 0076 accepted and implemented)
 
@@ -869,7 +879,7 @@ RFC 0075's unresolved question. The owner accepted D1–D7 as recommended on
 - **Conformance.** Eight `hedge/0076-*` cases. Against the RFC 0075 code all
   fail except the no-hedge control, which pins D7. Decided unit tests
   replace RFC 0075's two `undecided:` pins.
-- **Release.** With RFC 0075, in the release after 2.18.0.
+- **Release.** With RFC 0075, prepared for core/CLI 2.19.0 with Protocol 2.23.0.
 
 ## 2026-10-07 — Exit proceeds with junior capital (#278, RFC 0077 accepted and implemented)
 

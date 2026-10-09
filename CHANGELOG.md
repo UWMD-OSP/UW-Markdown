@@ -8,6 +8,32 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.19.0] - 2026-10-08
+
+### Prepared package pairing
+
+Core/CLI **2.19.0** pair with Protocol **2.23.0** and Format **2.0**.
+Signing **0.2.23**, batch **0.8.18**, Excel **0.9.11**, report **0.8.23**,
+lake **0.2.7** and both official modules **0.1.11** pin core **2.19.0**.
+Core's optional signing peer is **0.2.23**. Each dependent takes its existing
+patch-version step for the exact repin. The workflow scope is six packages:
+core, CLI, signing, batch, `@uwmd/module-hospitality` and
+`@uwmd/module-data-center`. Excel, report and lake remain source-only. Module
+manifest contracts stay **0.1.0**. RFCs 0075, 0076 and 0077 stay `accepted`
+in the tagged preparation state.
+
+### Contract — Protocol 2.23.0 (RFCs 0075 and 0076), Format 2.0 (RFC 0077)
+
+- **Protocol 2.23.0** carries RFC 0075's `senior` preference for the hedge
+  and escrow rules and RFC 0076's `HDG-08` refusal under a refused selection,
+  both in §V.12.1. Validation findings can change for role-bearing documents
+  (below); no calculation changes. Neither RFC adds a module capability, so
+  there is no new §X `requires_protocol` floor.
+- **Format stays 2.0.** RFC 0077 defines `net_proceeds_to_equity` in §4.9 and
+  adds two optional fields. Existing documents keep their meaning.
+
+The sections below give each change in full.
+
 ### Optional SDK consumer types
 
 - Strict TypeScript consumers can import core without installing the optional
@@ -38,8 +64,7 @@ protocol, and each package each carry an independent semver).
 - **Conformance:** six `hedge/0075-*` cases, also run by the v2 driver.
   Against the previous implementation, all but the two-senior refusal fail.
 - **Answered by RFC 0076** (below): what the hedge rules report when the
-  debt selection still refuses. Versions are assigned at the next release
-  preparation.
+  debt selection still refuses.
 
 ### Hedge checks under a refused selection (RFC 0076)
 

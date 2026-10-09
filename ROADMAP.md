@@ -1,12 +1,30 @@
 # Roadmap
 
-Reconciled **2026-10-08** (America/Phoenix) for published and independently
-verified **2.18.0**, pairing core/CLI 2.18.0 with Stable Protocol **2.22.0**
-and unchanged Format **2.0**. Accepted RFCs 0075–0077 are implemented on
-`main` after the 2.18.0 preparation and wait for the next release.
+Reconciled **2026-10-08** (America/Phoenix) for release-prepared **2.19.0**
+(Protocol **2.23.0**, Format **2.0**). The current published release remains
+**2.18.0**, pairing core/CLI 2.18.0 with Stable Protocol **2.22.0** and Format
+**2.0**.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 2.19.0
+
+Core/CLI **2.19.0** pair with Protocol **2.23.0** and Format **2.0**. The
+generation carries three accepted RFCs and one change outside the contract:
+- **RFC 0075:** the hedge and escrow rules prefer the `senior`
+  `debt_structure` (#266).
+- **RFC 0076:** a stated hedge whose loan or cash lines cannot be selected
+  reports one `HDG-08`.
+- **RFC 0077:** `net_proceeds_to_equity` is defined as whole-stack proceeds,
+  with optional `preferred_equity_redemption_at_exit` and
+  `net_proceeds_to_common_equity` (#278). Format stays 2.0.
+- **Also included:** strict TypeScript consumers compile without the optional
+  Anthropic SDK.
+
+Signing 0.2.23, batch 0.8.18 and both module packages 0.1.11 join core and
+CLI in the six-package workflow. No new §X floor applies. RFCs 0075–0077
+remain `accepted` until shipment and independently verified publication.
 
 ## Current published release: 2.18.0
 

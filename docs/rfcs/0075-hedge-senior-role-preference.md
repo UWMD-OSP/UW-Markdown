@@ -17,12 +17,11 @@ affects:
 
 # RFC 0075: Read a rate hedge from the senior loan when debt_structure is a role map
 
-**Accepted by merge.** A coding agent wrote this RFC from issue #266
-(StackUW UPSTREAM-024) and implemented it in the same pull request. It
-reaches `main` only when the owner merges that pull request. The merge
-records the acceptance. The RFC stays `accepted` until a release ships it and
-publication is verified. If the pull request closes unmerged, the RFC was
-never accepted.
+**Accepted and implemented.** A coding agent wrote this RFC from issue #266
+(StackUW UPSTREAM-024) and implemented it in the same pull request. The owner
+accepted it by merging that pull request, PR #276, on 2026-10-06.
+Release preparation pairs it with Protocol 2.23.0 and core/CLI 2.19.0. The
+RFC stays `accepted` until a release ships it and publication is verified.
 
 ## Summary
 
