@@ -98,3 +98,10 @@ real calendar dates, source-order timing, verified amounts and digest agreement.
 
 Schemas check shape; source identity, complete coverage and economic assertions
 need semantic validation. Declared completeness is not verified economics.
+
+## Reserve draw bindings (RFC 0065)
+
+- [Plan](reserve-draw-binding-plan.schema.json): optional digested selected-draw/expenditure inventories and explicit allocation edges.
+- [Verification](reserve-draw-binding-verification.schema.json): independent state, digest, finite source evidence and RDB findings.
+
+Shapes alone do not establish exact references, producer gross meaning, complete draw allocation or currency-quantum agreement. No assembly admission changes.

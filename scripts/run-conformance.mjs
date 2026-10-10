@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
 // Conformance runner — exercises every fixture against the @uwmd/core
@@ -128,7 +129,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,scenario,reserve-accounts,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,scenario,reserve-accounts,reserve-draw-bindings,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -4393,6 +4394,22 @@ const dispatch = {
   'tax': async () => { await runTax(); },
   'lease': async () => { await runLease(); },
   'recoveries': async () => { await runRecoveries(); },
+  'reserve-draw-bindings': async () => {
+    const base = join(CONFORMANCE_DIR, 'reserve-draw-bindings');
+    for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a,b) => a.name.localeCompare(b.name))) {
+      const dir = join(base, entry.name);
+      try {
+        const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+        const plan = existsSync(join(dir, 'plan.json')) ? readCase(dir, 'plan.json') : undefined;
+        const before = JSON.stringify({ parsed, plan });
+        const wanted = readCase(dir, 'expected.json');
+        const got = await verifyReserveDrawBindings(parsed, plan);
+        const projection = { state: got.state, issues: got.issues.map(i => ({ code: i.code })) };
+        if (JSON.stringify(projection) !== JSON.stringify(wanted) || before !== JSON.stringify({ parsed, plan })) throw new Error(`Draw binding mismatch: ${JSON.stringify(projection)}`);
+        record('reserve-draw-bindings', entry.name, 'pass', got.state);
+      } catch (error) { record('reserve-draw-bindings', entry.name, 'fail', error.message); }
+    }
+  },
   'reserve-accounts': async () => {
     const base = join(CONFORMANCE_DIR, 'reserve-accounts');
     for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a,b) => a.name.localeCompare(b.name))) {

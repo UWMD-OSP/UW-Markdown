@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
 import { verifyReserveAccounts } from './reserve-accounts.js';
 import { verifyReplacementFundingBindings } from './replacement-funding.js';
 // uwmd CLI — command-line interface for .uw.md files
@@ -1739,6 +1740,23 @@ switch (command) {
     break;
   }
 
+  case 'verify-reserve-draws': {
+    if (positional.length < 1 || positional.length > 2 || Object.keys(flags).some(k => k !== 'json')) {
+      console.error('Usage: uwmd verify-reserve-draws <file> [plan.json] [--json]'); process.exit(1);
+    }
+    const parsed = parseUWFile(readFile(positional[0]!));
+    let plan: unknown;
+    if (positional[1]) {
+      const text = readFile(positional[1]);
+      try { plan = JSON.parse(text); }
+      catch { plan = { invalid_json: true }; }
+    }
+    const result = await verifyReserveDrawBindings(parsed, plan);
+    if (flags['json']) console.log(JSON.stringify(result, null, 2));
+    else { console.log(`Reserve draw binding verification: ${result.state}`); for (const issue of result.issues) console.log(issue.message); }
+    process.exitCode = result.state === 'failed' || result.state === 'unverifiable' ? 1 : 0;
+    break;
+  }
   case 'verify-reserve-accounts': {
     if (!positional[0]) { console.error('Usage: uwmd verify-reserve-accounts <file> [--json]'); process.exit(1); }
     const result = await verifyReserveAccounts(parseUWFile(readFile(positional[0])));
@@ -2045,6 +2063,7 @@ Commands:
   migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
   migrate  <file> --to-v2        Convert the whole file to the v2 nested _meta shape, uw_version "2.0" (RFC 0009;
                                  re-stamps hashes; signed blocks need --resign or --strip-signatures)
+  verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
   assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)

@@ -979,3 +979,6 @@ export type { ReplacementCashFlowRef, ReplacementFunding, ReplacementFundingBind
 
 export { verifyReserveAccounts } from './reserve-accounts.js';
 export type { ReserveSource, ReserveMovementKind, ReserveMovement, ReservePeriod, PropertyReserveAccount, ReserveAccounts, ReservePeriodEvidence, ReserveAccountsVerificationIssue, ReserveAccountsVerification } from './protocol.js';
+
+export { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
+export type { ReserveDrawReference, ReserveGrossExpenditureReference, ReserveGrossExpenditure, ReserveDrawBinding, ReserveDrawBindingPlan, ReserveDrawBindingEvidence, ReserveDrawBindingVerification } from './protocol.js';

@@ -234,6 +234,16 @@ for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
     exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
   }, ['parse', 'calc-evaluate']);
 }
+// RFC 0065 optional draw-to-gross-expenditure binding plans.
+for (const scenario of dirs(join(CONFORMANCE, 'reserve-draw-bindings'))) {
+  const dir = join(CONFORMANCE, 'reserve-draw-bindings', scenario);
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  const args = ['deal.uwx.md', ...(existsSync(join(dir, 'plan.json')) ? ['plan.json'] : []), '--json'];
+  add(`reserve-draw-bindings/${scenario}`, '3', 'verify-reserve-draws', args, dir, {
+    kind: 'json-subset', file: 'expected.json',
+    exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
+  }, ['parse', 'calc-evaluate']);
+}
 // ── Emit (or, under --check, compare) ───────────────────────────────────────
 //
 // `--check` exists because these files are generated but committed. A fixture

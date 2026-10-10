@@ -348,7 +348,8 @@ no additional financial assumptions are supplied by the released adapter.
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
 | 5 | Property reserve-account state | RFC 0064 accepted and implemented; prepared for 2.20.0 | Optional `reserve_accounts` §4.28; separately invoked balance identity/claimed-continuity verification at the existing currency quantum. Gross expenditure and RFC 0045 refusal unchanged; RFC 0065 binding is out of scope. |
-| 6 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
+| 6 | Reserve draw-to-gross-expenditure binding | RFC 0065 accepted and implemented for next release | Optional digested plan and §VIII.12 verifier, exact source identities, full selected-draw allocation, explicit funded shares and RDB-01–09 findings. No netting or RFC 0045 admission change; external transfers and owner-cash/financing assembly remain separate. |
+| 7 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
 
 [RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md) is accepted
 and implemented (PR #290), and prepared for 2.20.0 with Protocol 2.24.0. Its

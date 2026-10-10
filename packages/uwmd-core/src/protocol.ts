@@ -2028,6 +2028,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
+  { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
   { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate'] },
   { prefix: 'HDG', description: 'Hedge structure and separate replacement binding verification (RFC 0070)', capabilities: ['validate'] },
   { prefix: 'ESC', description: 'Escrow funding', capabilities: ['validate'] },
@@ -2134,6 +2135,15 @@ export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
  * every conforming implementation.
  */
 export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
+  { code: 'RDB-01', severity: 'error', title: 'Invalid reserve draw binding plan shape or declaration', description: 'Invalid reserve draw binding plan shape or declaration.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-02', severity: 'error', title: 'Reserve draw binding source digest is stale', description: 'Reserve draw binding source digest is stale.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-03', severity: 'error', title: 'Exact reserve draw or gross expenditure reference is unresolved', description: 'Exact reserve draw or gross expenditure reference is unresolved.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-04', severity: 'error', title: 'Selected reserve or expenditure source is invalid or unverified', description: 'Selected reserve or expenditure source is invalid or unverified.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-05', severity: 'error', title: 'Duplicate reserve draw, expenditure identity or allocation edge', description: 'Duplicate reserve draw, expenditure identity or allocation edge.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-06', severity: 'error', title: 'Draw class, gross sign, category or currency disagrees', description: 'Draw class, gross sign, category or currency disagrees.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-07', severity: 'error', title: 'Selected reserve draw is not fully allocated', description: 'Selected reserve draw is not fully allocated.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-08', severity: 'error', title: 'Stated expenditure funding disagrees or exceeds gross expenditure', description: 'Stated expenditure funding disagrees or exceeds gross expenditure.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-09', severity: 'error', title: 'Reserve draw allocation arithmetic is nonfinite', description: 'Reserve draw allocation arithmetic is nonfinite.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
   { code: 'RSV-01', severity: 'error', title: 'Invalid reserve-account shape, amount, currency or source provenance', description: 'Invalid reserve-account shape, amount, currency or source provenance.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
   { code: 'RSV-02', severity: 'error', title: 'Duplicate reserve account, period or movement identity', description: 'Duplicate reserve account, period or movement identity.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
   { code: 'RSV-03', severity: 'error', title: 'Invalid reserve statement or movement calendar dates', description: 'Invalid reserve statement or movement calendar dates.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
@@ -3139,4 +3149,71 @@ export interface ReserveAccountsVerification {
   source_digest: string | null;
   evidence: ReservePeriodEvidence[];
   issues: ReserveAccountsVerificationIssue[];
+}
+
+// RFC 0065 / Protocol §VIII.12: optional external binding plan, no cash assembly.
+export interface ReserveDrawReference {
+  variant: string | null;
+  account_id: string;
+  period_id: string;
+  movement_id: string;
+}
+export type ReserveGrossExpenditureReference =
+  | { section: 'lease_up_schedule'; variant: string | null; period: string; field: 'ti_lc_capex' }
+  | { section: 'cash_flow_series'; variant: string | null; row_index: number };
+export interface ReserveGrossExpenditure {
+  expenditure_id: string;
+  ref: ReserveGrossExpenditureReference;
+  category: 'ti_lc' | 'other_capex' | 'operating_expenses';
+  gross: true;
+  currency_code: string;
+  funded_amount: number;
+  source: ReserveSource;
+}
+export interface ReserveDrawBinding {
+  draw: ReserveDrawReference;
+  expenditure_id: string;
+  funded_amount: number;
+}
+export interface ReserveDrawBindingPlan {
+  source_digest: string;
+  currency_code: string;
+  coverage: 'declared_complete';
+  selected_draws: ReserveDrawReference[];
+  expenditures: ReserveGrossExpenditure[];
+  bindings: ReserveDrawBinding[];
+}
+export interface ReserveDrawBindingEvidence {
+  binding_index: number;
+  currency_code: string;
+  funded_amount: number;
+  draw: {
+    ref: ReserveDrawReference;
+    source_path: string;
+    amount: number;
+    date: string;
+    source: ReserveSource;
+    meta: import('./types.js').UWMeta;
+  };
+  expenditure: {
+    expenditure_id: string;
+    ref: ReserveGrossExpenditureReference;
+    category: ReserveGrossExpenditure['category'];
+    source_path: string;
+    gross_amount: number;
+    stated_funded_amount: number;
+    /** Lease-up states a period, not a cash date; never synthesize one. */
+    date: string | null;
+    period: string | null;
+    source: ReserveSource;
+    meta: import('./types.js').UWMeta;
+  };
+}
+export interface ReserveDrawBindingVerification {
+  state: 'not_checked' | 'unverifiable' | 'verified' | 'failed';
+  reason?: 'not_applicable' | 'invalid_structure' | 'digest_unavailable' | 'stale_binding' | 'invalid_source' | 'nonfinite_arithmetic';
+  source_digest: string | null;
+  stated_digest?: string;
+  evidence: ReserveDrawBindingEvidence[];
+  issues: ValidationMessage[];
 }

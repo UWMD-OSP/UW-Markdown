@@ -8,6 +8,12 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Reserve draw to gross expenditure bindings (RFC 0065)
+
+- Accepts and implements an optional digested plan, browser-safe `verifyReserveDrawBindings` and read-only `verify-reserve-draws` CLI. Exact references bind selected property-reserve internal draws to existing gross TI/LC components or declared capital/operating expenditure rows.
+- Requires full allocation of selected draws, unique many-to-many edges, explicit funded shares and existing shared currency-quantum comparisons (`RDB-01`–`RDB-09`); retains gross source amounts and finite source evidence. Adds schemas, default/portable conformance, cent quantizer regressions and negative controls.
+- No owner cash, transfer/financing assembly, netting or RFC 0045 reserve admission change. Absence remains inert. Format stays 2.0; Protocol label advances at subsequent release preparation.
+
 ## [2.20.0] - 2026-10-10
 
 ### Prepared package pairing

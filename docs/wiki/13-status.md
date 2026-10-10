@@ -1075,3 +1075,7 @@ existing contract, so no RFC was needed. The
 ## 2026-10-09 — RFC 0064 property reserve accounts
 
 Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. RFC status is accepted pending shipment. Release: prepared for core/CLI 2.20.0 with Protocol 2.24.0; Format stays 2.0.
+
+## RFC 0065 accepted and implemented for the next release
+
+The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0064 account identities and exact source variants, complete selected-draw allocation, explicit expenditure funded shares and the shared currency quantum. `RDB-01`–09 codes, schemas, browser/API exports and a read-only CLI ship with synthetic conformance and cent negative controls. Ordinary validation, gross expenditure and RFC 0045 reserve refusal are unchanged. External-transfer verification and owner-cash/financing assembly remain future contracts. Format remains 2.0; current Protocol/package labels are unchanged until subsequent release preparation.

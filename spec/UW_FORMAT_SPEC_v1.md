@@ -3399,6 +3399,13 @@ release is provided.
 
 ---
 
+RFC 0065 supplies an optional external draw-to-gross-expenditure binding plan
+and separately invoked verifier (Protocol §VIII.12), using the stated §4.28
+identities. It adds no document field or section requirement and changes no
+gross amount or RFC 0045 reserve refusal. See the
+[plan schema](schemas/reserve-draw-binding-plan.schema.json) and
+[result schema](schemas/reserve-draw-binding-verification.schema.json).
+
 ## Part V — Validation Rules
 
 ### 5.1 Pipeline Stage Completeness Requirements

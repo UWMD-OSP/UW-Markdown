@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/reserve-draw-binding-verification.schema.json",
+  "title": "Reserve draw binding verification (RFC 0065)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state",
+    "source_digest",
+    "evidence",
+    "issues"
+  ],
+  "properties": {
+    "state": {
+      "enum": [
+        "not_checked",
+        "unverifiable",
+        "verified",
+        "failed"
+      ]
+    },
+    "source_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "binding_index",
+          "currency_code",
+          "funded_amount",
+          "draw",
+          "expenditure"
+        ],
+        "properties": {
+          "binding_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency_code": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "funded_amount": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "draw": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ref",
+              "source_path",
+              "amount",
+              "date",
+              "source",
+              "meta"
+            ],
+            "properties": {
+              "ref": {
+                "$ref": "https://uwmd.org/schemas/reserve-draw-binding-plan.schema.json#/$defs/draw"
+              },
+              "source_path": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "amount": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "source": {
+                "$ref": "https://uwmd.org/schemas/reserve-draw-binding-plan.schema.json#/$defs/source"
+              },
+              "meta": {
+                "type": "object"
+              }
+            }
+          },
+          "expenditure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "expenditure_id",
+              "ref",
+              "category",
+              "source_path",
+              "gross_amount",
+              "stated_funded_amount",
+              "date",
+              "period",
+              "source",
+              "meta"
+            ],
+            "properties": {
+              "expenditure_id": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "ref": {
+                "$ref": "https://uwmd.org/schemas/reserve-draw-binding-plan.schema.json#/$defs/ref"
+              },
+              "category": {
+                "enum": [
+                  "ti_lc",
+                  "other_capex",
+                  "operating_expenses"
+                ]
+              },
+              "source_path": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "gross_amount": {
+                "type": "number",
+                "exclusiveMaximum": 0
+              },
+              "stated_funded_amount": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "period": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "source": {
+                "$ref": "https://uwmd.org/schemas/reserve-draw-binding-plan.schema.json#/$defs/source"
+              },
+              "meta": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "severity",
+          "section",
+          "field",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "RDB-01",
+              "RDB-02",
+              "RDB-03",
+              "RDB-04",
+              "RDB-05",
+              "RDB-06",
+              "RDB-07",
+              "RDB-08",
+              "RDB-09"
+            ]
+          },
+          "severity": {
+            "const": "error"
+          },
+          "section": {
+            "const": "reserve_draw_bindings"
+          },
+          "field": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "message": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "value": {}
+        }
+      }
+    },
+    "reason": {
+      "enum": [
+        "not_applicable",
+        "invalid_structure",
+        "digest_unavailable",
+        "stale_binding",
+        "invalid_source",
+        "nonfinite_arithmetic"
+      ]
+    },
+    "stated_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}
