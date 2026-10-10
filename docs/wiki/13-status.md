@@ -1,14 +1,16 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-10** for release-prepared **2.21.0**. Core/CLI **2.21.0**
-pair with the accepted release contract Protocol **2.25.0** and unchanged Format
-**2.0**. The generation carries RFC 0065's optional external, digested plan
-binding selected RFC 0064 internal reserve draws to already-stated gross
-expenditures, with `RDB-01`–`RDB-09` codes, the separately invoked §VIII.12
-verifier and the read-only `verify-reserve-draws` CLI. No new §X floor
-applies. Signing **0.2.25**, batch **0.8.20** and both official modules
-**0.1.13** pin core 2.21.0. RFC 0065 remains `accepted` until shipment and
-independently verified publication.
+Reconciled **2026-10-10** (America/Phoenix) for published and independently
+verified **2.21.0**. Core/CLI **2.21.0**, signing **0.2.25**, batch **0.8.20**
+and both official modules **0.1.13** are published from immutable annotated
+`v2.21.0` on `6e5ffaf75425d35554c57d72bea28c59c6047839`. Stable Protocol
+**2.25.0** pairs with unchanged Format **2.0**. The generation carries RFC
+0065's optional external, digested plan binding selected RFC 0064 internal
+reserve draws to already-stated gross expenditures, with `RDB-01`–`RDB-09`
+codes, the separately invoked §VIII.12 verifier and the read-only
+`verify-reserve-draws` CLI. No new §X floor applies. RFC 0065 is
+`implemented`. See the
+[publication evidence](../releases/2.21.0-publication.md).
 
 Reconciled **2026-10-10** (America/Phoenix) for published and independently
 verified **2.20.0**. Core/CLI **2.20.0**, signing **0.2.24**, batch **0.8.19**
@@ -111,9 +113,9 @@ new receipt output.
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.12**, report **0.8.24** and lake **0.2.8** are source-only package
-generations. The hospitality/data-center module packages **0.1.12** pair with
-core 2.20.0 and are published through the release workflow; 0.1.10 was their
+Excel **0.9.13**, report **0.8.25** and lake **0.2.9** are source-only package
+generations. The hospitality/data-center module packages **0.1.13** pair with
+core 2.21.0 and are published through the release workflow; 0.1.10 was their
 first public generation. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
@@ -694,8 +696,8 @@ The guards:
   shipped in 2.20.0 with Stable Protocol 2.24.0 under Format 2.0 and is
   **implemented**.
 - [RFC 0065](../rfcs/0065-reserve-draw-gross-expenditure-binding.md) (PR #293)
-  is accepted and implemented, and prepared for 2.21.0 with Protocol 2.25.0
-  under Format 2.0.
+  shipped in 2.21.0 with Stable Protocol 2.25.0 under Format 2.0 and is
+  **implemented** ([publication record](../releases/2.21.0-publication.md)).
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -1093,4 +1095,4 @@ Optional `reserve_accounts` records explicit property custody facts across asset
 
 ## 2026-10-10 — RFC 0065 reserve draw bindings
 
-The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0064 account identities and exact source variants, complete selected-draw allocation, explicit expenditure funded shares and the shared currency quantum. `RDB-01`–09 codes, schemas, browser/API exports and a read-only CLI ship with synthetic conformance and cent negative controls. Ordinary validation, gross expenditure and RFC 0045 reserve refusal are unchanged. External-transfer verification and owner-cash/financing assembly remain future contracts. RFC status is accepted pending shipment. Release: prepared for core/CLI 2.21.0 with Protocol 2.25.0; Format stays 2.0.
+The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0064 account identities and exact source variants, complete selected-draw allocation, explicit expenditure funded shares and the shared currency quantum. `RDB-01`–09 codes, schemas, browser/API exports and a read-only CLI ship with synthetic conformance and cent negative controls. Ordinary validation, gross expenditure and RFC 0045 reserve refusal are unchanged. External-transfer verification and owner-cash/financing assembly remain future contracts. Release: published in core/CLI 2.21.0 with Stable Protocol 2.25.0; Format stays 2.0. `implemented` after independent verification.
