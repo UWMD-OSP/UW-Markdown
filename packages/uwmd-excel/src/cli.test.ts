@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// These tests exercise built executables, stdout/stderr and exit codes.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 import { readFileSync, mkdtempSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
+import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import ExcelJS from 'exceljs';
 const bin = fileURLToPath(new URL('../bin/uwmd-excel.mjs', import.meta.url));
 const source = readFileSync(
@@ -13,7 +16,7 @@ const source = readFileSync(
   ),
   'utf8'
 );
-const run = (args: string[]) => spawnSync(process.execPath, [bin, ...args], { encoding: 'utf8' });
+const run = (args: string[]) => spawnCli(process.execPath, [bin, ...args], { encoding: 'utf8' });
 describe('explicit custom-calculation CLI export', () => {
   it('writes canonical .uwx.md output with selector formulas and refuses reverse import', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'uwmd-excel-period-'));
@@ -33,7 +36,7 @@ describe('explicit custom-calculation CLI export', () => {
           '',
         ].join('\n')
       );
-      const result = run([input, '--calculations', 'period_total']);
+      const result = await run([input, '--calculations', 'period_total']);
       expect(result.status).toBe(0);
       const output = join(dir, 'period.xlsx');
       expect(existsSync(output)).toBe(true);
@@ -43,20 +46,20 @@ describe('explicit custom-calculation CLI export', () => {
         (wb.getWorksheet('Custom Calculations')!.getCell('C6').value as ExcelJS.CellFormulaValue)
           .formula
       ).toContain('MATCH("year:3"');
-      const reverse = run(['--import', output]);
+      const reverse = await run(['--import', output]);
       expect(reverse.status).toBe(1);
       expect(reverse.stderr).toContain('export-only');
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
   });
-  it('requires an explicit ID list', () => {
-    const result = run(['--calculations']);
+  it('requires an explicit ID list', async () => {
+    const result = await run(['--calculations']);
     expect(result.status).toBe(2);
     expect(result.stderr).toContain('requires comma-separated');
   });
-  it('advertises the new option', () => {
-    const result = run(['--help']);
+  it('advertises the new option', async () => {
+    const result = await run(['--help']);
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('--calculations');
   });
@@ -76,7 +79,7 @@ describe('calculation context CLI export', () => {
         JSON.stringify({ id: 'total', formula: 'dcf.annual_cash_flows@Y3.noi + property.total_units' }), '```', ''].join('\n');
       writeFileSync(input, raw);
       writeFileSync(context, JSON.stringify({ sectionVariants: { dcf: 'stress' }, overrides: { 'property.total_units': 0 } }));
-      const result = run([input, '--calculations', 'total', '--calc-context', context]);
+      const result = await run([input, '--calculations', 'total', '--calc-context', context]);
       expect(result.status).toBe(0);
       const wb = new ExcelJS.Workbook(); await wb.xlsx.readFile(output);
       expect(wb.getWorksheet('Periods DCF')!.getCell('B6').value).toBe(900);
@@ -84,17 +87,17 @@ describe('calculation context CLI export', () => {
       expect(readFileSync(input, 'utf8')).toBe(raw);
       const invalidOutput = join(dir, 'invalid.xlsx');
       writeFileSync(context, JSON.stringify({ overrides: { x: {} } }));
-      const invalid = run([input, '--calculations', 'total', '--calc-context', context, '-o', invalidOutput]);
+      const invalid = await run([input, '--calculations', 'total', '--calc-context', context, '-o', invalidOutput]);
       expect(invalid.status).toBe(1);
       expect(invalid.stderr).toContain('CALC-TYPE-001');
       expect(existsSync(invalidOutput)).toBe(false);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
-  it('refuses context without explicit calculations or a file path', () => {
-    const noCalculations = run(['deal.uwx.md', '--calc-context', 'context.json']);
+  it('refuses context without explicit calculations or a file path', async () => {
+    const noCalculations = await run(['deal.uwx.md', '--calc-context', 'context.json']);
     expect(noCalculations.status).toBe(2);
     expect(noCalculations.stderr).toContain('requires --calculations');
-    const noPath = run(['deal.uwx.md', '--calc-context']);
+    const noPath = await run(['deal.uwx.md', '--calc-context']);
     expect(noPath.status).toBe(2);
     expect(noPath.stderr).toContain('requires a JSON file path');
   });

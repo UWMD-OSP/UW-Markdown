@@ -44,6 +44,34 @@ this one — runs to prove behavior). CI runs both.
   parity. `packs/packs.test.ts` asserts every pack metric evaluates against the
   Parkview fixture and that the Excel emission matches exactly.
 
+### Runs under concurrent load
+
+Root `npm test` runs the workspaces in order and caps each Vitest fork pool at
+two workers. Core uses the same cap for standalone tests and coverage. This
+keeps concurrent suites from each filling the machine with workers; file
+isolation and all test cases remain enabled. For a deliberate concurrency
+experiment, run a package with `npm test -- --maxWorkers=4`.
+
+CLI test files use a 30-second test budget and await the shared
+[`test/cli.mts`](../../test/cli.mts) runner. It launches the existing built
+executable asynchronously, preserves binary stdout and nonzero exit codes,
+and rejects launch errors, signals, output overflow and its 20-second child
+deadline. Test cleanup terminates outstanding children. The default unit-test
+budget remains five seconds; existing integration-test budgets and worker
+RPC deadlines are unchanged.
+Build before testing because executable tests consume `dist/`.
+
+Use library APIs for calculation assertions and reuse CLI-generated setup
+fixtures with an independent copy per test. Keep real subprocesses for
+argument parsing, stdout/stderr, exit status, packaging and file-writing
+behavior. A shared setup must retain its success assertion, and copied
+fixtures must preserve tampering and missing-file negative controls.
+
+To check reliability on a busy machine, build a second worktree and run full
+`npm test` suites continuously there while running the full root suite three
+times in the first worktree. Record wall time and exit status for each run;
+keep the competing revision fixed when comparing before and after.
+
 ## Conformance corpus (`conformance/`)
 
 Runner: [`scripts/run-conformance.mjs`](../../scripts/run-conformance.mjs). It

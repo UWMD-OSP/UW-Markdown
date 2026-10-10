@@ -6,6 +6,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
+    // Include shared test helpers without adding them to the published build.
+    "rootDir": "../..",
     "declaration": false,
     "declarationMap": false,
     "sourceMap": false

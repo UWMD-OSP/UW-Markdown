@@ -8,6 +8,12 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Test reliability under concurrent load
+
+- Caps root Vitest runs and core coverage at two isolated fork workers, and replaces blocking CLI test spawns with a shared asynchronous runner with child deadlines and cleanup.
+- Reuses independent copies of CLI-generated package/composition fixtures, batches the worked example's calculation declarations, and checks refinement endpoints through the existing evaluator. Real executable tests have explicit file-local budgets; assertions and negative controls remain enforced.
+- Changes tests, test configuration and testing documentation only; no product code or dependencies change.
+
 ## [2.21.0] - 2026-10-10
 
 ### Released

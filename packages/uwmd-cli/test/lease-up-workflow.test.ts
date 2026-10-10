@@ -1,15 +1,18 @@
 // Exercise the worked example and production projection CLI through built artifacts.
-import { spawnSync } from 'node:child_process';
+import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// These tests exercise built executables, stdout/stderr and exit codes.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 describe('lease-up dated cash-flow worked example', () => {
-  it('verifies every authored binding and reports the explicit partial-stream scope', () => {
+  it('verifies every authored binding and reports the explicit partial-stream scope', async () => {
     const script = fileURLToPath(
       new URL('../../../scripts/verify-lease-up-workflow.mjs', import.meta.url)
     );
-    const result = spawnSync(process.execPath, [script], { encoding: 'utf8' });
+    const result = await spawnCli(process.execPath, [script], { encoding: 'utf8' });
     expect(result.status, result.stderr).toBe(0);
     const report = JSON.parse(result.stdout);
     expect(report.source_envelope_digest).toMatch(/^sha256:[a-f0-9]{64}$/);
@@ -41,10 +44,10 @@ describe('project-lease-up CLI', () => {
     new URL('../../../docs/examples/lease-up-cash-dates.json', import.meta.url)
   );
   const run = (args: string[]) =>
-    spawnSync(process.execPath, [cli, 'project-lease-up', ...args], { encoding: 'utf8' });
-  it('prints a reviewable candidate and preserves both input files', () => {
+    spawnCli(process.execPath, [cli, 'project-lease-up', ...args], { encoding: 'utf8' });
+  it('prints a reviewable candidate and preserves both input files', async () => {
     const before = [readFileSync(source, 'utf8'), readFileSync(plan, 'utf8')];
-    const result = run([source, plan, '--json']);
+    const result = await run([source, plan, '--json']);
     expect(result.status, result.stderr).toBe(0);
     expect(result.stderr).toBe('');
     const projection = JSON.parse(result.stdout);
@@ -54,24 +57,24 @@ describe('project-lease-up CLI', () => {
     ]);
     expect([readFileSync(source, 'utf8'), readFileSync(plan, 'utf8')]).toEqual(before);
   });
-  it('returns typed JSON for malformed plan JSON', () => {
-    const result = run([source, source, '--json']);
+  it('returns typed JSON for malformed plan JSON', async () => {
+    const result = await run([source, source, '--json']);
     expect(result.status).toBe(1);
     expect(JSON.parse(result.stdout).error).toMatchObject({
       code: 'CALC-LU-PROJECTION',
       pointer: 'plan',
     });
   });
-  it('retains verifier evidence in CLI refusal JSON', () => {
+  it('retains verifier evidence in CLI refusal JSON', async () => {
     const invalid = fileURLToPath(
       new URL('../../../conformance/lease-up-projection/failed/deal.uwx.md', import.meta.url)
     );
-    const result = run([invalid, plan, '--json']);
+    const result = await run([invalid, plan, '--json']);
     expect(result.status).toBe(1);
     expect(JSON.parse(result.stdout).error.evidence.verification.verdict).toBe('failed');
   });
-  it('refuses unsupported write flags', () => {
-    const result = run([source, plan, '--in-place']);
+  it('refuses unsupported write flags', async () => {
+    const result = await run([source, plan, '--in-place']);
     expect(result.status).toBe(1);
     expect(result.stdout).toBe('');
   });

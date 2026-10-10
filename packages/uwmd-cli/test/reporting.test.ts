@@ -1,9 +1,12 @@
-import { spawnSync } from 'node:child_process';
+import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+// These tests exercise built executables, stdout/stderr and exit codes.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const bin = resolve(root, 'packages/uwmd-cli/bin/uwmd.mjs');
@@ -12,12 +15,10 @@ const partial = fixture.replace(/```json uw:section=sources_uses[^\n]*\r?\n[\s\S
 const issuedAt = '2026-08-09T00:00:00Z';
 
 function cli(...args: string[]) {
-  return spawnSync(process.execPath, [bin, ...args], { encoding: 'utf8' });
+  return spawnCli(process.execPath, [bin, ...args], { encoding: 'utf8' });
 }
 
-// Several tests spawn the CLI two or three times; under the parallel workspace
-// run that can exceed vitest's 5s default (see cli.smoke.test.ts's refine test).
-describe('CLI validation and receipt reporting', { timeout: 30_000 }, () => {
+describe('CLI validation and receipt reporting', () => {
   let temp: string;
   let deal: string;
   let receipt: string;
@@ -33,7 +34,7 @@ describe('CLI validation and receipt reporting', { timeout: 30_000 }, () => {
     return cli('receipt', 'issue', deal, '--output', receipt, '--issued-at', issuedAt);
   }
 
-  it('keeps clean validation separate from incomplete optional later stages and skipped checks', () => {
+  it('keeps clean validation separate from incomplete optional later stages and skipped checks', async () => {
     const minimal = readFileSync(resolve(root, 'conformance/tier-1-reader/fixtures/01-minimal-screening.uwx.md'), 'utf8');
     // The historical fixture intentionally warns about its v1 meta spelling.
     // Correct only that spelling in a temporary copy, retaining its stage gaps.
@@ -41,8 +42,8 @@ describe('CLI validation and receipt reporting', { timeout: 30_000 }, () => {
     expect(clean).not.toBe(minimal);
     const file = resolve(temp, 'clean.uwx.md');
     writeFileSync(file, clean);
-    const human = cli('validate', file);
-    const json = cli('validate', file, '--json');
+    const human = await cli('validate', file);
+    const json = await cli('validate', file, '--json');
     expect(human.status).toBe(0);
     expect(json.status).toBe(0);
     expect(JSON.parse(json.stdout)).toMatchObject({
@@ -59,8 +60,8 @@ describe('CLI validation and receipt reporting', { timeout: 30_000 }, () => {
     expect(human.stdout).toContain('Receipt/hash verification: not checked.');
   });
 
-  it('does not imply Lite syntax validation evaluates workflow or receipt metrics', () => {
-    const result = cli('validate', resolve(root, 'conformance/lite/fixtures/01-minimal.uw.md'));
+  it('does not imply Lite syntax validation evaluates workflow or receipt metrics', async () => {
+    const result = await cli('validate', resolve(root, 'conformance/lite/fixtures/01-minimal.uw.md'));
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Validation result: CLEAN');
     expect(result.stdout).toContain('not checked for Lite syntax validation');
@@ -68,9 +69,9 @@ describe('CLI validation and receipt reporting', { timeout: 30_000 }, () => {
     expect(result.stdout).toContain('Receipt readiness: not checked.');
   });
 
-  it('issues a complete receipt with one explicitly uncomputed metric', () => {
+  it('issues a complete receipt with one explicitly uncomputed metric', async () => {
     expect(partial).not.toBe(fixture);
-    const result = issue();
+    const result = await issue();
     expect(result.status).toBe(0);
     const payload = JSON.parse(readFileSync(receipt, 'utf8'));
     expect(payload.issued_at).toBe(issuedAt);
@@ -94,15 +95,15 @@ A receipt attests that these outputs follow from this record. It does not attest
 `);
   });
 
-  it('reports complete metric coverage when all structured inputs exist', () => {
+  it('reports complete metric coverage when all structured inputs exist', async () => {
     writeFileSync(deal, fixture);
-    const result = issue();
+    const result = await issue();
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Metric completeness: complete\nComputed: 8/8\nUncomputed: none');
   });
 
-  it('keeps --stdout machine readable without adding presentation fields', () => {
-    const result = cli('receipt', 'issue', deal, '--stdout', '--issued-at', issuedAt);
+  it('keeps --stdout machine readable without adding presentation fields', async () => {
+    const result = await cli('receipt', 'issue', deal, '--stdout', '--issued-at', issuedAt);
     expect(result.status).toBe(0);
     expect(result.stderr).toBe('');
     const payload = JSON.parse(result.stdout);
@@ -111,9 +112,9 @@ A receipt attests that these outputs follow from this record. It does not attest
     expect(existsSync(receipt)).toBe(false);
   });
 
-  it('refuses manufactured housing without substituting a pack', () => {
+  it('refuses manufactured housing without substituting a pack', async () => {
     writeFileSync(deal, fixture.replace('asset_class: multifamily', 'asset_class: manufactured_housing'));
-    const result = issue();
+    const result = await issue();
     expect(result.status).toBe(1);
     expect(result.stdout).toBe('');
     expect(result.stderr).toContain('Receipt refused [RCP_PACK_UNRESOLVED]');
@@ -123,7 +124,7 @@ A receipt attests that these outputs follow from this record. It does not attest
     expect(existsSync(receipt)).toBe(false);
   });
 
-  it('names the unresolved calculation, section and variants in a calc refusal', () => {
+  it('names the unresolved calculation, section and variants in a calc refusal', async () => {
     // Two debt_structure variants and no selectable one. Pack 1.0.1's
     // cash_on_cash returns null without stated equity, so add the fixture's
     // sources_uses to reach its debt_structure read.
@@ -132,7 +133,7 @@ A receipt attests that these outputs follow from this record. It does not attest
     expect(sourcesUses).toBeDefined();
     const file = resolve(temp, 'unresolvable.uwx.md');
     writeFileSync(file, `${variants.trimEnd()}\n\n${sourcesUses}\n`);
-    const result = cli('receipt', 'issue', file, '--output', receipt, '--issued-at', issuedAt);
+    const result = await cli('receipt', 'issue', file, '--output', receipt, '--issued-at', issuedAt);
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('Receipt refused [RCP_COMPUTATION_FAILED]: Refusing to issue');
     expect(result.stderr).toContain('cash_on_cash (CALC-RESOLVE-002)');
@@ -142,27 +143,27 @@ A receipt attests that these outputs follow from this record. It does not attest
     expect(existsSync(receipt)).toBe(false);
   });
 
-  it('verifies matching uncomputed statuses without treating missing equity as failure', () => {
-    expect(issue().status).toBe(0);
-    const result = cli('receipt', 'verify', deal, receipt);
+  it('verifies matching uncomputed statuses without treating missing equity as failure', async () => {
+    expect((await issue()).status).toBe(0);
+    const result = await cli('receipt', 'verify', deal, receipt);
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Receipt verification verdict: VERIFIED');
     expect(result.stdout).not.toContain('[RCP-');
-    const json = cli('receipt', 'verify', deal, receipt, '--json');
+    const json = await cli('receipt', 'verify', deal, receipt, '--json');
     expect(JSON.parse(json.stdout)).toMatchObject({ verdict: 'verified', issues: [] });
   });
 
-  it('reports a document hash mismatch independently of partial metric coverage', () => {
-    expect(issue().status).toBe(0);
+  it('reports a document hash mismatch independently of partial metric coverage', async () => {
+    expect((await issue()).status).toBe(0);
     writeFileSync(deal, partial.replace('"total_units": 160', '"total_units": 161'));
-    const result = cli('receipt', 'verify', deal, receipt);
+    const result = await cli('receipt', 'verify', deal, receipt);
     expect(result.status).toBe(1);
     expect(result.stdout).toContain('Receipt verification verdict: FAILED');
     expect(result.stdout).toContain('[RCP-01]');
     expect(result.stdout).toContain('expected sha256:');
     expect(result.stdout).toContain('got sha256:');
     expect(result.stdout).toContain('An uncomputed metric alone is a completeness gap');
-    const json = cli('receipt', 'verify', deal, receipt, '--json');
+    const json = await cli('receipt', 'verify', deal, receipt, '--json');
     expect(json.status).toBe(1);
     expect(JSON.parse(json.stdout)).toMatchObject({ verdict: 'failed', issues: [expect.objectContaining({ code: 'RCP-01' })] });
   });
