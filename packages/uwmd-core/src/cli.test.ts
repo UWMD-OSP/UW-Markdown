@@ -84,7 +84,7 @@ describe('uwmd --version', () => {
 });
 
 describe('RFC 0064 read-only reserve CLI',()=>{
-  it.each([[], ['--json']])('reports a missing file without a stack trace (%j)', (flags) => {
+  it.each([{ flags: [] }, { flags: ['--json'] }])('reports a missing file without a stack trace ($flags)', ({ flags }) => {
     const missing = resolve(process.cwd(), 'missing-reserve-fixture.uwx.md');
     const result = spawnSync(process.execPath, [cli, 'verify-reserve-accounts', missing, ...flags], { encoding: 'utf8' });
     expect(result.status).toBe(1);
