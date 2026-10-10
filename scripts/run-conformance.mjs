@@ -4403,7 +4403,7 @@ const dispatch = {
         const wanted = readCase(dir, 'expected.json');
         const got = await verifyReserveAccounts(parsed);
         const projection = { state: got.state, issues: got.issues.map(i => ({ code: i.code })) };
-        if (JSON.stringify(projection) !== JSON.stringify(wanted) || before !== JSON.stringify(parsed)) throw new Error('Reserve verifier mismatch: ' + JSON.stringify(projection));
+        if (JSON.stringify(projection) !== JSON.stringify(wanted) || before !== JSON.stringify(parsed)) throw new Error(`Reserve verifier mismatch: ${JSON.stringify(projection)}`);
         if (entry.name === 'verified-source-classes' && blockPayload(getSection(parsed, 'sources_uses')).uses.capex_projects[0].amount !== 30) throw new Error('Gross expenditure changed');
         record('reserve-accounts', entry.name, 'pass', got.state);
       } catch (error) { record('reserve-accounts', entry.name, 'fail', error.message); }

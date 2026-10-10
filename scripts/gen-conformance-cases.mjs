@@ -229,7 +229,7 @@ for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
 for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
   const dir = join(CONFORMANCE, 'reserve-accounts', scenario);
   const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
-  add('reserve-accounts/' + scenario, '3', 'verify-reserve-accounts', ['deal.uwx.md', '--json'], dir, {
+  add(`reserve-accounts/${scenario}`, '3', 'verify-reserve-accounts', ['deal.uwx.md', '--json'], dir, {
     kind: 'json-subset', file: 'expected.json',
     exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
   }, ['parse', 'calc-evaluate']);
