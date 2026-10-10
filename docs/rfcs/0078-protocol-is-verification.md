@@ -80,8 +80,9 @@ complete in its definitions.
 
 ## Owner direction (2026-10-10)
 
-The owner agreed with each proposal below (session of 2026-10-10). They bind
-this RFC.
+The owner agreed with each proposal below (session of 2026-10-10). D1–D8 were
+agreed first; D9–D13 resolved the draft's open questions the same day, each as
+recommended. They bind this RFC.
 
 | # | Question | Direction |
 |---|---|---|
@@ -93,6 +94,11 @@ this RFC.
 | D6 | Excel ↔ engine parity | A quality bar for the Excel starter product, not a Protocol requirement. The dictionary keeps them on one set of definitions. |
 | D7 | Levered and after-tax returns | "In the standard" means fields, canonical definitions and verification of stated figures. Computing them from loan terms or tax law is starter-product or vendor work. |
 | D8 | Packaging | Split later: a small `@uwmd/verify` reference implementation of the standard, with `@uwmd/core` as the starter toolkit on top that still re-exports it. Separate follow-up. |
+| D9 | Sensitivity tables (§VIII.7) and stochastic results (§VIII.8) | Optional **verification profiles** in the standard: a document that states a sensitivity grid or a seeded distribution must be reproducible, so the grid rules and the exact sampler (PCG64, RFC 0005) stay normative for those profiles. Authoring sensitivities and simulations is starter-product work. |
+| D10 | Capability tokens (§XIV) | **Starter guide.** They govern what tools may write, not how a document is verified. Signatures (§V.11) stay normative. |
+| D11 | Display conventions (§III.1 number formatting, §III.1a locales) | **Starter guide.** Verification is defined over values; display strings carry no meaning. §III.1b currency identity and §III.6a code taxonomy stay normative. |
+| D12 | Spec file naming | Keep `UW_PROTOCOL_v1.md` during 3.0 so links do not break; retitle it "UW Protocol — verification"; rename in a later editorial pass. |
+| D13 | Starter products' versioning | Package semver only. There is no starter-spec version. |
 
 Related principles recorded the same day (maintainers' process file):
 scope is completeness-driven, not demand-gated; earlier "closed / never"
@@ -127,15 +133,15 @@ change without a Protocol version.
 |---|---|
 | §0 Front matter, §I Scope and Conformance | **Rewritten**: the standard is verification. New scope statement and the boundary test above. §I.5 representation negotiation stays normative (exchange). |
 | §II Capability Tiers | **Rewritten** (see Conformance impact): Reader and Verifier, plus optional verification profiles. Editor, Calc Host and Agent Host are retired as Protocol tiers. §II.6a conformance CLI protocol stays (it runs the verifier corpus). |
-| §III Display conventions | **Starter guide**, except §III.1b document currency identity (format semantics) and §III.6a validator code taxonomy, which move under §XI Error taxonomy. |
+| §III Display conventions | **Starter guide** (D11), except §III.1b document currency identity (format semantics) and §III.6a validator code taxonomy, which move under §XI Error taxonomy. |
 | §IV View models | **Starter guide.** |
 | §V Edit semantics | **Split.** Normative: §V.2 replace vs supersede, §V.3 source authority, §V.4 `_meta` authorship, §V.9 canonical block JSON, §V.10 integrity chains, §V.11 signatures, §V.12 replacement-funding verification. Starter guide: §V.1 byte-preserving round trip, §V.5 multi-variant edits, §V.6 frontmatter update rules, §V.7 fallback cascade, §V.8 default tables. Integrity hashes are computed over canonical JSON (§V.9), not raw bytes, so byte preservation is an editor guarantee, not a verification requirement. |
 | §VI Extensibility, §VII Module system, §X Module manifest | **Normative**: how third parties extend the standard. |
-| §VIII Calc engine contract | **Split.** Normative: §VIII.1 grammar, §VIII.2 variable resolution and §VIII.3 built-in functions as the *notation* of the dictionary and of module metrics; §VIII.4 determinism; §VIII.5 numeric model (binary64, half-away-from-zero quantization); §VIII.6 error taxonomy; the stated-figure verifiers §VIII.9 (cash flows), §VIII.9.6 (assembly), §VIII.10 (waterfall), §VIII.11 (reserves), §VIII.12 (draw binding); the IRR procedure. Starter guide: §VIII.2b refinement and §VIII.2c workbook bindings. §VIII.7 sensitivity and §VIII.8 stochastic: see Unresolved questions. |
+| §VIII Calc engine contract | **Split.** Normative: §VIII.1 grammar, §VIII.2 variable resolution and §VIII.3 built-in functions as the *notation* of the dictionary and of module metrics; §VIII.4 determinism; §VIII.5 numeric model (binary64, half-away-from-zero quantization); §VIII.6 error taxonomy; the stated-figure verifiers §VIII.9 (cash flows), §VIII.9.6 (assembly), §VIII.10 (waterfall), §VIII.11 (reserves), §VIII.12 (draw binding); the IRR procedure. Starter guide: §VIII.2b refinement and §VIII.2c workbook bindings. §VIII.7 sensitivity and §VIII.8 stochastic: **normative optional verification profiles** (D9). |
 | §IX AI Host Contract | **Starter guide.** Invariant 1 ("AI never does financial math; agents never invent values") stays a project rule for every tool, and the standard keeps its "MUST NOT be inferred" field rules. |
 | §XI Error taxonomy, §XII Versioning | **Normative.** |
 | §XIII Size-intensive registry | **Normative**, moves into the metric dictionary. The "closed for protocol 1.x" wording is removed (stale, and contrary to principle 1). |
-| §XIV Capability tokens | See Unresolved questions. |
+| §XIV Capability tokens | **Starter guide** (D10). |
 | §XV Portfolio profiles | **Normative, optional profile** (descriptive data exchanged between parties). |
 | §XVI, Appendices | Updated to match. Appendix D's "Tier-1 Reader in <500 LOC" becomes a reader-and-verifier example. |
 
@@ -209,6 +215,8 @@ reopened backlog items from the audit.
     - **Integrity:** chains and signatures.
     - **Representations:** Lite/XML/CSV.
     - **Portfolio.**
+    - **Sensitivity** and **Stochastic** (D9): reproduce stated grids and
+      seeded distributions.
 - **Corpus.** `conformance/tier-1-*` and the verifier-relevant tier-3 fixtures
   become the Reader and Verifier corpora. Tier-2 and tier-4 fixtures move to
   starter-product test suites under `docs/starter/` ownership, still run in CI
@@ -261,27 +269,10 @@ In phases, each its own PR once this RFC is accepted:
 
 ## Unresolved questions
 
-Owner review is requested on each; the agent's recommendation is given.
-
-1. **Sensitivity tables (§VIII.7) and stochastic results (§VIII.8).** A
-   document can *state* a sensitivity grid or a seeded distribution.
-   Verifying those means re-running them, and the stochastic sampler (PCG64,
-   RFC 0005) must be exact for that. *Recommendation:* keep both as optional
-   **verification profiles** in the standard, because stated results must be
-   reproducible, while the authoring of sensitivities and simulations is
-   starter-product work.
-2. **Capability tokens (§XIV).** These limit what an editor or agent may
-   write. *Recommendation:* starter guide, since they govern tools rather
-   than verification. Signatures (§V.11) stay normative.
-3. **Display conventions (§III.1 number formatting, §III.1a locales).**
-   *Recommendation:* starter guide. Verification is defined over values, and
-   display strings never carry meaning.
-4. **Spec file naming.** `UW_PROTOCOL_v1.md` already carries Protocol 2.x.
-   *Recommendation:* keep the file name during 3.0 to avoid breaking links,
-   retitle it "UW Protocol — verification", and rename it in a later
-   editorial pass.
-5. **Starter products' own versioning.** *Recommendation:* package semver
-   only; no "starter spec version".
+None. The five questions the first draft left open (sensitivity and
+stochastic results, capability tokens, display conventions, spec file naming,
+starter-product versioning) were resolved by the owner on 2026-10-10 as
+recommended; see D9–D13.
 
 ## Prior art
 
