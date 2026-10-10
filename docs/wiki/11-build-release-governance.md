@@ -36,11 +36,10 @@ Script | Does
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 2.23.0 after
-  RFCs 0075 and 0076 shipped and publication was independently verified;
-  published core/CLI 2.19.0 pair with it and Format 2.0. Historical core/CLI
-  2.18.0 retain Stable Protocol 2.22.0, and 2.17.0 retain Stable Protocol
-  2.21.0).
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (2.24.0, the accepted
+  release contract for RFCs 0064 and 0072, paired with core/CLI 2.20.0 and
+  Format 2.0. Published core/CLI 2.19.0 retain Stable Protocol 2.23.0, and
+  2.18.0 retain Stable Protocol 2.22.0).
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went

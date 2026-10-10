@@ -25,9 +25,10 @@ It does not create economic cash flows or net draws against gross expenditure.
 RFC 0045's `reserve_spending_excluded` refusal remains exactly as released.
 
 The owner authorized acceptance and implementation together on 2026-10-09.
-Merge accepts the RFC; status remains `accepted` until shipment and independent
-release verification. Format stays 2.0 and Protocol labeling happens at release
-preparation, following RFC 0072 R8. No package or version matrix changes occur here.
+PR #290 carries the implementation and recorded that acceptance when it merged.
+Format stays 2.0. Release preparation pairs it with Protocol 2.24.0 and
+core/CLI 2.20.0. The RFC stays `accepted` until a release ships it and
+publication is verified.
 PR #219 is abandoned, closed unmerged, and is not revived by this implementation.
 The carrier and exclusion of lender reserves were settled on 2026-09-29.
 

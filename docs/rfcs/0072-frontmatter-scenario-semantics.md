@@ -21,10 +21,13 @@ program and acquisition circumstance are separate axes. Single-site BTR is
 `asset_class: multifamily` and `asset_subtype: build_to_rent`, paired with its
 actual plan (for example `stabilized_acquisition`).
 
-This RFC and its implementation ship in one PR. Status is `accepted`; the
-merge is acceptance. All new identity diagnostics are warnings in both format
-generations: existing valid documents gain no errors. No calculation, default,
-pack or underwriting behavior depends on either label.
+This RFC and its implementation landed in one pull request. The owner accepted
+it by merging that pull request, PR #285, on 2026-10-09. Format stays 2.0.
+Release preparation pairs it with Protocol 2.24.0 and core/CLI 2.20.0. The RFC
+stays `accepted` until a release ships it and publication is verified. All new
+identity diagnostics are warnings in both format generations: existing valid
+documents gain no errors. No calculation, default, pack or underwriting
+behavior depends on either label.
 
 ## Owner direction (2026-10-04)
 

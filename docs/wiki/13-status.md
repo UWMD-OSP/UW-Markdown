@@ -1,5 +1,16 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-10** for release-prepared **2.20.0**. Core/CLI **2.20.0**
+pair with the accepted release contract Protocol **2.24.0** and unchanged Format
+**2.0**. The generation carries RFC 0072's business-plan `scenario` vocabulary
+and single-site `build_to_rent` identity with warning-only `DQ-07`–`DQ-09`,
+RFC 0064's optional `reserve_accounts` section (Format §4.28) with `RSV-NN`
+codes and the separately invoked §VIII.11 reserve-account verifier, and the
+§VIII.5 quantizer fix for an integral decimal shift. No new §X floor applies.
+Signing **0.2.24**, batch **0.8.19** and both official modules **0.1.12** pin
+core 2.20.0. RFCs 0064 and 0072 remain `accepted` until shipment and
+independently verified publication.
+
 Reconciled **2026-10-09** (America/Phoenix) for published and independently
 verified **2.19.0**. Core/CLI **2.19.0**, signing **0.2.23**, batch **0.8.18**
 and both official modules **0.1.11** are published from immutable annotated
@@ -666,7 +677,10 @@ The guards:
     or corpus module overrides.
   - RFC 0068 is to adopt the predicate in a later revision of its own. No
     numeric-type predicate is authorized.
-- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) is accepted and implemented for the next release: optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. RFC 0065 draw binding remains out of scope; PR #219 remains abandoned. Format is 2.0; Protocol label advances at release preparation.
+- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) is accepted and implemented (PR #290), and prepared for 2.20.0 with Protocol 2.24.0: optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. RFC 0065 draw binding remains out of scope; PR #219 remains abandoned. Format is 2.0.
+- [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) (#255; PR #285)
+  is accepted and implemented, and prepared for 2.20.0 with Protocol 2.24.0
+  under Format 2.0.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -979,6 +993,8 @@ independently of its actual plan. No new class/module or financial behavior.
   CLI driver exercises the same fixtures. D5 regressions preserve stage,
   coverage, default and pack results.
 - **Deferred.** General subtype taxonomy and legacy Appendix B terminology.
+- **Release.** Prepared for core/CLI 2.20.0 with Protocol 2.24.0; Format
+  stays 2.0.
 
 ## 2026-10-04 — `uwmd init` frontmatter serialization
 
@@ -1058,4 +1074,4 @@ existing contract, so no RFC was needed. The
 
 ## 2026-10-09 — RFC 0064 property reserve accounts
 
-Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. RFC status is accepted pending shipment; Format and current Protocol labels stay unchanged until release preparation.
+Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. RFC status is accepted pending shipment. Release: prepared for core/CLI 2.20.0 with Protocol 2.24.0; Format stays 2.0.
