@@ -115,9 +115,11 @@ The source block `_meta` remains host-owned and append-only.
 
 No optional plan means exactly the current document validation and assembly
 behavior, including reserve refusals. Existing files require no edits. Both
-format generations can be supplied to the companion verifier. Format stays 2.0;
-current version labels remain unchanged, with the new Protocol minor assigned
-at subsequent release preparation after current 2.24.0 (RFC 0072 R8).
+format generations can be supplied to the companion verifier. PR #293 carries
+the implementation and recorded acceptance when it merged on 2026-10-10.
+Format stays 2.0. Release preparation pairs it with Protocol 2.25.0 and
+core/CLI 2.21.0. The RFC stays `accepted` until a release ships it and
+publication is verified.
 
 `conformance/reserve-draw-bindings/` carries independently authored synthetic
 source/plan/expected triples. Cases cover one-to-one, one-to-many, many-to-many,

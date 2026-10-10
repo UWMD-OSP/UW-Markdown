@@ -8,11 +8,39 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.21.0] - 2026-10-10
+
+### Prepared package pairing
+
+Core/CLI **2.21.0** pair with Protocol **2.25.0** and Format **2.0**.
+Signing **0.2.25**, batch **0.8.20**, Excel **0.9.13**, report **0.8.25**,
+lake **0.2.9** and both official modules **0.1.13** pin core **2.21.0**.
+Core's optional signing peer is **0.2.25**. Each dependent takes its existing
+patch-version step for the exact repin. The workflow scope is six packages:
+core, CLI, signing, batch, `@uwmd/module-hospitality` and
+`@uwmd/module-data-center`. Excel, report and lake remain source-only. Module
+manifest contracts stay **0.1.0**. RFC 0065 stays `accepted` in the tagged
+preparation state.
+
+### Contract — Protocol 2.25.0 (RFC 0065), Format 2.0
+
+- **Protocol 2.25.0** carries RFC 0065's `RDB-01`–`RDB-09` code family and
+  its separately invoked reserve draw binding verifier (§VIII.12). The codes
+  apply only when a binding plan is supplied to that verifier; ordinary
+  document validation is unchanged, existing valid documents gain no errors,
+  and no calculation changes. RFC 0065 adds no module capability, so there is
+  no new §X `requires_protocol` floor.
+- **Format stays 2.0.** RFC 0065 adds only an optional external, digested
+  binding plan that Format §4.28 identifies, with no new section or required
+  field.
+
+The sections below give each change in full.
+
 ### Reserve draw to gross expenditure bindings (RFC 0065)
 
 - Accepts and implements an optional digested plan, browser-safe `verifyReserveDrawBindings` and read-only `verify-reserve-draws` CLI. Exact references bind selected property-reserve internal draws to existing gross TI/LC components or declared capital/operating expenditure rows.
 - Requires full allocation of selected draws, unique many-to-many edges, explicit funded shares and existing shared currency-quantum comparisons (`RDB-01`–`RDB-09`); retains gross source amounts and finite source evidence. Adds schemas, default/portable conformance, cent quantizer regressions and negative controls.
-- No owner cash, transfer/financing assembly, netting or RFC 0045 reserve admission change. Absence remains inert. Format stays 2.0; Protocol label advances at subsequent release preparation.
+- No owner cash, transfer/financing assembly, netting or RFC 0045 reserve admission change. Absence remains inert. Format stays 2.0; the `RDB-NN` family and §VIII.12 verifier are carried by Protocol 2.25.0.
 
 ## [2.20.0] - 2026-10-10
 

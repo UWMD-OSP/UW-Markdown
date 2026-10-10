@@ -1,5 +1,15 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-10** for release-prepared **2.21.0**. Core/CLI **2.21.0**
+pair with the accepted release contract Protocol **2.25.0** and unchanged Format
+**2.0**. The generation carries RFC 0065's optional external, digested plan
+binding selected RFC 0064 internal reserve draws to already-stated gross
+expenditures, with `RDB-01`–`RDB-09` codes, the separately invoked §VIII.12
+verifier and the read-only `verify-reserve-draws` CLI. No new §X floor
+applies. Signing **0.2.25**, batch **0.8.20** and both official modules
+**0.1.13** pin core 2.21.0. RFC 0065 remains `accepted` until shipment and
+independently verified publication.
+
 Reconciled **2026-10-10** (America/Phoenix) for published and independently
 verified **2.20.0**. Core/CLI **2.20.0**, signing **0.2.24**, batch **0.8.19**
 and both official modules **0.1.12** are published from immutable annotated
@@ -683,6 +693,9 @@ The guards:
 - [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) (#255; PR #285)
   shipped in 2.20.0 with Stable Protocol 2.24.0 under Format 2.0 and is
   **implemented**.
+- [RFC 0065](../rfcs/0065-reserve-draw-gross-expenditure-binding.md) (PR #293)
+  is accepted and implemented, and prepared for 2.21.0 with Protocol 2.25.0
+  under Format 2.0.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -1078,6 +1091,6 @@ existing contract, so no RFC was needed. The
 
 Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. Release: published in core/CLI 2.20.0 with Stable Protocol 2.24.0; Format stays 2.0. `implemented` after independent verification.
 
-## RFC 0065 accepted and implemented for the next release
+## 2026-10-10 — RFC 0065 reserve draw bindings
 
-The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0064 account identities and exact source variants, complete selected-draw allocation, explicit expenditure funded shares and the shared currency quantum. `RDB-01`–09 codes, schemas, browser/API exports and a read-only CLI ship with synthetic conformance and cent negative controls. Ordinary validation, gross expenditure and RFC 0045 reserve refusal are unchanged. External-transfer verification and owner-cash/financing assembly remain future contracts. Format remains 2.0; current Protocol/package labels are unchanged until subsequent release preparation.
+The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0064 account identities and exact source variants, complete selected-draw allocation, explicit expenditure funded shares and the shared currency quantum. `RDB-01`–09 codes, schemas, browser/API exports and a read-only CLI ship with synthetic conformance and cent negative controls. Ordinary validation, gross expenditure and RFC 0045 reserve refusal are unchanged. External-transfer verification and owner-cash/financing assembly remain future contracts. RFC status is accepted pending shipment. Release: prepared for core/CLI 2.21.0 with Protocol 2.25.0; Format stays 2.0.
