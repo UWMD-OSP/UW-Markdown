@@ -1,3 +1,5 @@
+import { mkdtempSync, writeFileSync, unlinkSync, rmdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -95,5 +97,34 @@ describe('RFC 0064 read-only reserve CLI',()=>{
     const file=resolve(process.cwd(),`../../conformance/reserve-accounts/${name}/deal.uwx.md`);
     const result=spawnSync(process.execPath,[cli,'verify-reserve-accounts',file,'--json'],{encoding:'utf8'});
     expect(result.status,result.stderr).toBe(status); expect(JSON.parse(result.stdout).state).toBe(state);
+  });
+});
+
+describe('RFC 0065 read-only binding CLI', () => {
+  it('returns a typed JSON result for malformed plan JSON', () => {
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-draw-json-'));
+    const file = resolve(dir, 'plan.json');
+    writeFileSync(file, '{ malformed');
+    try {
+      const deal = resolve(process.cwd(), '../../conformance/reserve-draw-bindings/one-to-one/deal.uwx.md');
+      const result = spawnSync(process.execPath, [cli, 'verify-reserve-draws', deal, file, '--json'], { encoding: 'utf8' });
+      expect(result.status).toBe(1);
+      expect(result.stderr).toBe('');
+      expect(JSON.parse(result.stdout)).toMatchObject({ state: 'unverifiable', reason: 'invalid_structure', issues: [{ code: 'RDB-01' }] });
+    } finally { unlinkSync(file); rmdirSync(dir); }
+  });
+  it.each([['one-to-one', 0, 'verified'], ['incomplete-draw', 1, 'failed'], ['missing-account', 1, 'unverifiable'], ['absent', 0, 'not_checked']] as const)('%s exposes its independent result', (name, status, state) => {
+    const dir = resolve(process.cwd(), `../../conformance/reserve-draw-bindings/${name}`);
+    const args = [cli, 'verify-reserve-draws', resolve(dir, 'deal.uwx.md'), ...(name === 'absent' ? [] : [resolve(dir, 'plan.json')]), '--json'];
+    const result = spawnSync(process.execPath, args, { encoding: 'utf8' });
+    expect(result.status, result.stderr).toBe(status);
+    expect(JSON.parse(result.stdout).state).toBe(state);
+  });
+  it('handles a missing plan file without a stack trace', () => {
+    const deal = resolve(process.cwd(), '../../conformance/reserve-draw-bindings/one-to-one/deal.uwx.md');
+    const missing = resolve(process.cwd(), 'missing-binding-plan.json');
+    const result = spawnSync(process.execPath, [cli, 'verify-reserve-draws', deal, missing, '--json'], { encoding: 'utf8' });
+    expect(result.status).toBe(1);
+    expect(result.stderr.trim()).toBe(`Error: file not found: ${missing}`);
   });
 });

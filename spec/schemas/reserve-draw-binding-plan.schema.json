@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/reserve-draw-binding-plan.schema.json",
+  "title": "Reserve draw binding plan (RFC 0065)",
+  "description": "Optional external companion. Shape only; exact source resolution, minimum positive currency quantum, full allocation and declared shares require semantic verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_digest",
+    "currency_code",
+    "coverage",
+    "selected_draws",
+    "expenditures",
+    "bindings"
+  ],
+  "properties": {
+    "source_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "currency_code": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "coverage": {
+      "const": "declared_complete"
+    },
+    "selected_draws": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/draw"
+      }
+    },
+    "expenditures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/expenditure"
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/binding"
+      }
+    }
+  },
+  "$defs": {
+    "draw": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant",
+        "account_id",
+        "period_id",
+        "movement_id"
+      ],
+      "properties": {
+        "variant": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "account_id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "period_id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "movement_id": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      }
+    },
+    "ref": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "section",
+            "variant",
+            "period",
+            "field"
+          ],
+          "properties": {
+            "section": {
+              "const": "lease_up_schedule"
+            },
+            "variant": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "period": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "field": {
+              "const": "ti_lc_capex"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "section",
+            "variant",
+            "row_index"
+          ],
+          "properties": {
+            "section": {
+              "const": "cash_flow_series"
+            },
+            "variant": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "row_index": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document",
+        "locator"
+      ],
+      "properties": {
+        "document": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "expenditure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expenditure_id",
+        "ref",
+        "category",
+        "gross",
+        "currency_code",
+        "funded_amount",
+        "source"
+      ],
+      "properties": {
+        "expenditure_id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "category": {
+          "enum": [
+            "ti_lc",
+            "other_capex",
+            "operating_expenses"
+          ]
+        },
+        "gross": {
+          "const": true
+        },
+        "currency_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "funded_amount": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draw",
+        "expenditure_id",
+        "funded_amount"
+      ],
+      "properties": {
+        "draw": {
+          "$ref": "#/$defs/draw"
+        },
+        "expenditure_id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "funded_amount": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  }
+}

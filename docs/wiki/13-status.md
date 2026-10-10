@@ -679,7 +679,7 @@ The guards:
     or corpus module overrides.
   - RFC 0068 is to adopt the predicate in a later revision of its own. No
     numeric-type predicate is authorized.
-- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) (PR #290) shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented** ([publication record](../releases/2.20.0-publication.md)): optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. RFC 0065 draw binding remains out of scope; PR #219 remains abandoned. Format is 2.0.
+- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) (PR #290) shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented** ([publication record](../releases/2.20.0-publication.md)): optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. Draw-to-expenditure binding is RFC 0065 (§VIII.12, below); PR #219 remains abandoned. Format is 2.0.
 - [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) (#255; PR #285)
   shipped in 2.20.0 with Stable Protocol 2.24.0 under Format 2.0 and is
   **implemented**.
@@ -1077,3 +1077,7 @@ existing contract, so no RFC was needed. The
 ## 2026-10-09 — RFC 0064 property reserve accounts
 
 Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. Release: published in core/CLI 2.20.0 with Stable Protocol 2.24.0; Format stays 2.0. `implemented` after independent verification.
+
+## RFC 0065 accepted and implemented for the next release
+
+The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0064 account identities and exact source variants, complete selected-draw allocation, explicit expenditure funded shares and the shared currency quantum. `RDB-01`–09 codes, schemas, browser/API exports and a read-only CLI ship with synthetic conformance and cent negative controls. Ordinary validation, gross expenditure and RFC 0045 reserve refusal are unchanged. External-transfer verification and owner-cash/financing assembly remain future contracts. Format remains 2.0; current Protocol/package labels are unchanged until subsequent release preparation.

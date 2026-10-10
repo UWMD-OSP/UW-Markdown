@@ -585,6 +585,7 @@ capability is unconditional: every implementation owes it.
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `REC-10` warning; otherwise `error` |
+| `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `calc-evaluate` | `error` |
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
@@ -3141,7 +3142,109 @@ claim arithmetic verification. A custody verifier neither writes the file
 nor alters gross expenditure or relaxes §VIII.9.6's
 `reserve_spending_excluded` refusal. Digest consistency and matching balances
 are not source authenticity, movement classification or economic completeness
-proofs. RFC 0065 draw-to-expenditure binding remains out of scope.
+proofs. Draw-to-expenditure binding is specified separately in §VIII.12
+(RFC 0065).
+
+### VIII.12 Reserve draw to gross expenditure binding verification (RFC 0065)
+
+`verifyReserveDrawBindings(parsed, plan?)` is a separately invoked, browser-safe,
+read-only verifier. The optional external plan is governed by
+[reserve-draw-binding-plan.schema.json](schemas/reserve-draw-binding-plan.schema.json).
+It changes no document section, source amount, metadata, owner-cash row or
+§VIII.9.6.4 rule. RFC 0045's `reserve_spending_excluded` refusal is unchanged.
+
+**Plan.** All plan and reference objects are closed. Require `source_digest`
+(the complete Envelope 1.0 semantic SHA-256 digest), uppercase three-letter
+`currency_code`, `coverage: "declared_complete"`, nonempty `selected_draws`,
+`expenditures` and `bindings` arrays. Selected draws name exact `variant`,
+`account_id`, `period_id`, `movement_id`. Explicit null means unlabelled;
+strings mean exactly that authored variant. Never fall back to a variant key,
+role, default/base preference or fence order. Every source must be current and
+nonsuperseded. Account/period/movement IDs resolve within that exact variant.
+
+Each expenditure declares unique `expenditure_id`, exact `ref`, `category`,
+`gross: true`, `currency_code`, positive `funded_amount` and source
+`{document, locator}`. A lease-up ref is
+`{section: "lease_up_schedule", variant, period, field: "ti_lc_capex"}`
+with category `ti_lc`; never bind its net/bundled cash row. A supplemental
+ref is `{section: "cash_flow_series", variant, row_index}` (nonnegative
+safe integer) with category `other_capex` or `operating_expenses`.
+The producer's gross/category/currency/source declaration establishes the
+selected row's meaning, as RFC 0045 explicitly declares coverage categories.
+An undifferentiated total, owner transfer or financing row has no admitted gross
+expenditure declaration here. Neither hashing nor labels authenticate this
+assertion. No classification is inferred from dates, labels, amounts, advisory
+cash-flow kinds or shared provenance.
+
+Each binding is `{draw, expenditure_id, funded_amount}`. Every selected draw
+and expenditure source address is unique. Draw/expenditure edge pairs are unique
+even when allocation amounts differ. Amounts MUST be finite and positive at the
+currency quantum. The inventory declares completeness of selected draws only;
+it does not prove external-source completeness. No omitted draw is selected.
+
+**Procedure, in source/plan order.**
+
+1. Snapshot both inputs before any await. Omitted plan (undefined) returns
+   `not_checked / not_applicable`, null digest and empty evidence/issues.
+   Stated null or malformed plan returns `unverifiable / invalid_structure`
+   with RDB-01; duplicate inventories or edges emit RDB-05 before arithmetic.
+2. Compute the whole Envelope semantic digest, including content, metadata and
+   history per RFC 0014. Unavailable digest returns
+   `unverifiable / digest_unavailable`. A stale stated digest returns
+   `failed / stale_binding` with RDB-02 and no arithmetic evidence.
+3. Resolve every exact source reference. Missing/ambiguous/superseded sources or
+   an undeclared edge endpoint emit RDB-03. Each selected reserve variant MUST
+   verify in full under §VIII.11; failure emits RDB-04, retaining source findings
+   in the issue value. Unselected reserve variants are not verified or selected.
+   Selected cash-flow series MUST contain closed finite, calendar-valid,
+   nondecreasing rows as RFC 0070's source binding does. Selected lease-up
+   structure MUST pass its shared structural checks and have a registered model.
+   Invalid source shape/order emits RDB-04.
+4. The movement MUST be a positive `internal_draw` in a `property_reserve`
+   account. The exact gross expenditure MUST be finite and negative at the
+   currency quantum; missing/null amounts are never zero. Category and source
+   shape MUST agree. Account, declared expenditure and plan currency MUST agree
+   with the document currency when stated. Violations emit RDB-06; no FX is
+   performed. Source/refusal findings return `unverifiable / invalid_source`
+   before allocation verdicts, retaining every finite fully resolved edge.
+5. In binding array order, sum positive allocations independently by draw and
+   by expenditure in IEEE-754 binary64 without intermediate rounding. Quantize
+   each final sum and each independently stated comparison amount separately at
+   the existing 2dp currency quantum, half-away-from-zero per §VIII.5.
+   Every selected draw's sum MUST equal its stated amount (RDB-07 otherwise).
+   Every expenditure's sum MUST equal its explicitly stated funded amount and
+   MUST NOT exceed its absolute gross amount (RDB-08 otherwise). An unbound
+   selected draw is a completeness failure, not a missing-zero source inference.
+   Sub-cent sums are judged in binary64; there is no decimal arithmetic override
+   or tolerance beyond the existing quantum.
+6. Nonfinite allocation sums emit RDB-09; continue checking all later finite
+   totals and retain all finite edge evidence. Return
+   `unverifiable / nonfinite_arithmetic` at the end if any sum is nonfinite;
+   otherwise `failed` for allocation/share disagreement, or `verified`.
+
+**Result.** The closed
+[reserve-draw-binding-verification.schema.json](schemas/reserve-draw-binding-verification.schema.json)
+names `state`, optional `reason`, computed `source_digest`, optional
+`stated_digest`, ordered `evidence` and typed `issues`. Each edge retains
+binding index, currency, allocation, exact draw and expenditure references,
+canonical source paths, independently stated draw and gross amounts, declared
+funded share, reserve source pointer, expenditure declaration's source pointer,
+and copied source block metadata. Cash rows retain authored dates; lease-up
+cells retain authored periods with date=null. Never invent a lease-up cash date,
+acquisition/disposition interval, owner-cash remainder, transfer, forecast or
+release. Findings carry dotted source/plan fields; inventories and edges are
+checked before source resolution, then draws, expenditures, edges, draw totals
+and expenditure totals in their authored order.
+
+The reference CLI `uwmd verify-reserve-draws <file> [plan.json] [--json]`
+returns this result, exits 1 on failed/unverifiable, and 0 on verified or omitted
+plan. Ordinary document validation remains unchanged, with no automatic binding
+verification. A verifying plan asserts only consistency of declared funding
+identity: it does not authenticate gross classification or evidence, admit
+reserve-dependent RFC 0045 assembly, bind external transfers, create owner cash,
+net expenditure or assemble financing.
+
+---
 
 ## IX. AI Host Contract (Tier 4)
 

@@ -1,0 +1,75 @@
+{
+  "source_digest": "sha256:ef5a3cdbe0afab1d1f8ea5ad14d1354e1d0db4b60e8107ab1cbf606b6e60e893",
+  "currency_code": "USD",
+  "coverage": "declared_complete",
+  "selected_draws": [
+    {
+      "variant": null,
+      "account_id": "property-capital",
+      "period_id": "jan",
+      "movement_id": "draw-1"
+    },
+    {
+      "variant": null,
+      "account_id": "property-capital",
+      "period_id": "jan",
+      "movement_id": "draw-2"
+    }
+  ],
+  "expenditures": [
+    {
+      "expenditure_id": "expense-1",
+      "ref": {
+        "section": "cash_flow_series",
+        "variant": "gross",
+        "row_index": 0
+      },
+      "category": "other_capex",
+      "gross": true,
+      "currency_code": "USD",
+      "funded_amount": 60,
+      "source": {
+        "document": "synthetic-reserve-and-invoices.pdf",
+        "locator": "Invoice 1: separately stated gross capital work; explicit reserve-funded share 60"
+      }
+    },
+    {
+      "expenditure_id": "expense-2",
+      "ref": {
+        "section": "cash_flow_series",
+        "variant": "gross",
+        "row_index": 1
+      },
+      "category": "other_capex",
+      "gross": true,
+      "currency_code": "USD",
+      "funded_amount": 40,
+      "source": {
+        "document": "synthetic-reserve-and-invoices.pdf",
+        "locator": "Invoice 2: separately stated gross capital work; explicit reserve-funded share 40"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "draw": {
+        "variant": null,
+        "account_id": "property-capital",
+        "period_id": "jan",
+        "movement_id": "draw-1"
+      },
+      "expenditure_id": "expense-1",
+      "funded_amount": 60
+    },
+    {
+      "draw": {
+        "variant": null,
+        "account_id": "property-capital",
+        "period_id": "jan",
+        "movement_id": "draw-2"
+      },
+      "expenditure_id": "expense-2",
+      "funded_amount": 40
+    }
+  ]
+}

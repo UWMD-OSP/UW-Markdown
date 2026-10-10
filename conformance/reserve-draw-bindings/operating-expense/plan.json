@@ -1,0 +1,43 @@
+{
+  "source_digest": "sha256:b64ff3afb0df8a6f51c4e571a3ef15e895f0f73358e7d950c40972deef19d6fe",
+  "currency_code": "USD",
+  "coverage": "declared_complete",
+  "selected_draws": [
+    {
+      "variant": null,
+      "account_id": "property-capital",
+      "period_id": "jan",
+      "movement_id": "draw-1"
+    }
+  ],
+  "expenditures": [
+    {
+      "expenditure_id": "expense-1",
+      "ref": {
+        "section": "cash_flow_series",
+        "variant": "gross",
+        "row_index": 0
+      },
+      "category": "operating_expenses",
+      "gross": true,
+      "currency_code": "USD",
+      "funded_amount": 100,
+      "source": {
+        "document": "synthetic-reserve-and-invoices.pdf",
+        "locator": "Gross maintenance invoice, operating expense 100"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "draw": {
+        "variant": null,
+        "account_id": "property-capital",
+        "period_id": "jan",
+        "movement_id": "draw-1"
+      },
+      "expenditure_id": "expense-1",
+      "funded_amount": 100
+    }
+  ]
+}

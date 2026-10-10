@@ -1,0 +1,20 @@
+{
+  "id": "reserve-draw-bindings/cent-one-cent-share",
+  "tier": "3",
+  "requires_capabilities": [
+    "parse",
+    "calc-evaluate"
+  ],
+  "command": "verify-reserve-draws",
+  "args": [
+    "deal.uwx.md",
+    "plan.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/reserve-draw-bindings/cent-one-cent-share",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 1
+  }
+}
