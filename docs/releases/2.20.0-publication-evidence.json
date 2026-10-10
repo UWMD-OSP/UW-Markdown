@@ -1,0 +1,629 @@
+{
+  "verified_at": "2026-10-10T15:57:45.939Z",
+  "verification_date_local": "2026-10-10",
+  "timezone": "America/Phoenix",
+  "canonical_repository": "https://github.com/UWMD-OSP/UW-Markdown",
+  "reconciliation_base": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+  "tag": {
+    "name": "v2.20.0",
+    "object": "0827c7c8d15e26b2dbccc3984f3375a713d522ce",
+    "commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+    "message": "UWMD 2.20.0 (Protocol 2.24.0, Format 2.0)",
+    "annotated": true,
+    "unchanged": true
+  },
+  "main_ci": {
+    "run": 38064228162,
+    "event": "push",
+    "conclusion": "success",
+    "commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+    "completed_at": "2026-10-10T15:42:26Z",
+    "completed_before_tag": true
+  },
+  "workflow": {
+    "run": 38064763014,
+    "attempt": 1,
+    "event": "push",
+    "conclusion": "success",
+    "path": ".github/workflows/release.yml",
+    "ref": "refs/tags/v2.20.0",
+    "commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+    "url": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014",
+    "started_at": "2026-10-10T15:43:33Z",
+    "completed_at": "2026-10-10T15:47:45Z",
+    "all_steps_successful": true,
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Checkout",
+        "conclusion": "success"
+      },
+      {
+        "name": "Setup Node.js",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify the tagged tree's release records are final",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upgrade npm for trusted publishing (OIDC needs >= 11.5.1)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Install dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify publishable package contents",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify six-package release readiness and registry-probe tests",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run unit tests",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run conformance suite (tiers 1-3 + lite + receipts)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate JSON Schemas",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify package versions match tag",
+        "conclusion": "success"
+      },
+      {
+        "name": "Publish @uwmd/core to npm with provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Publish @uwmd/cli to npm with provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Publish @uwmd/signing to npm with provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Publish @uwmd/batch to npm with provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Publish @uwmd/module-hospitality to npm with provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Publish @uwmd/module-data-center to npm with provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Setup Node.js",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Checkout",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "format": "2.0",
+  "protocol": {
+    "version": "2.24.0",
+    "status": "Stable",
+    "rfcs": [
+      "0064",
+      "0072"
+    ]
+  },
+  "format_rfcs": [
+    "0064",
+    "0072"
+  ],
+  "verification": {
+    "local_node": "v24.14.1",
+    "local_npm": "11.21.0",
+    "consumer_npm": "11.5.1",
+    "sigstore": "4.1.1",
+    "certificate_identity_policy": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v2.20.0",
+    "certificate_oidc_issuer_policy": "https://token.actions.githubusercontent.com",
+    "tuf_trust_root_verified": true,
+    "fulcio_chain_and_scts_verified": true,
+    "rekor_signed_entry_timestamps_and_inclusion_proofs_verified": true,
+    "npm_audit_signatures": {
+      "registry_signatures": 15,
+      "attestations": 10
+    },
+    "consumer_npm_audit_vulnerabilities": 0,
+    "published_cli_identity": {
+      "core": "2.20.0",
+      "protocol": "2.24.0",
+      "format": "2.0"
+    },
+    "published_cli_portable": {
+      "passed": 279,
+      "total": 279,
+      "skipped": 0,
+      "by_group": {
+        "replacement-funding": 71,
+        "reserve-accounts": 28,
+        "scenario": 23,
+        "tier-1": 64,
+        "tier-2": 3,
+        "tier-3": 90
+      },
+      "large_cent_reserve_cases": [
+        {
+          "id": "reserve-accounts/large-cent-draw-contribution",
+          "ok": true
+        },
+        {
+          "id": "reserve-accounts/large-cent-multiple-contributions",
+          "ok": true
+        },
+        {
+          "id": "reserve-accounts/large-cent-one-cent-mismatch",
+          "ok": true
+        },
+        {
+          "id": "reserve-accounts/overflow-then-finite-periods",
+          "ok": true
+        }
+      ]
+    },
+    "published_core_quantization": {
+      "expression": "quantizeDecimal(537196.21 - 188848.11 + 107395.8, 2)",
+      "expected": 455743.9,
+      "core_2_20_0_main_entry": 455743.9,
+      "core_2_20_0_browser_entry": 455743.9,
+      "core_2_20_0_equal": true,
+      "control_core_2_19_0_result": 455743.89999999997,
+      "control_core_2_19_0_equal": false
+    },
+    "module_consumer": {
+      "checks": 21,
+      "failed": 0,
+      "runtime_fixtures": 11
+    },
+    "strict_typescript_consumer": {
+      "typescript": "5.9.3",
+      "anthropic_sdk_installed": false,
+      "skipLibCheck_true": "pass",
+      "skipLibCheck_false": "pass"
+    },
+    "tagged_tree_release_check": {
+      "tests": 6,
+      "passed": 6
+    },
+    "tagged_tree_verify_release_tag": "pass",
+    "local_pack_install": "npm ci --ignore-scripts",
+    "published_file_count": 494,
+    "online_install_advisories": {
+      "total": 10,
+      "moderate": 4,
+      "high": 4,
+      "critical": 2
+    }
+  },
+  "packages": [
+    {
+      "name": "@uwmd/core",
+      "version": "2.20.0",
+      "latest": "2.20.0",
+      "gitHead": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+      "integrity": "sha512-BnlvWL37wt1YD72xHukk+i/FnAK6156ttEnWOuo+CStKu12p84daoT29I1AZtK+hE7DxWEs4AZcL8Jr8OkX7pQ==",
+      "shasum": "4bfaa1c93c363eded4ed86ae16f09109907d28e6",
+      "tarball_sha256": "b3c29e5a478feff8a456af1612f724ca6bbbbca4902004665633bfef83554425",
+      "tarball_bytes": 706024,
+      "files": 446,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      },
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/core@2.20.0",
+          "digest_matches": true,
+          "rekor_log_index": "3188650408",
+          "integrated_time": "2026-10-10T15:50:10.000Z",
+          "sigstore_verified": true,
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/core@2.20.0",
+          "digest_matches": true,
+          "rekor_log_index": "3188582989",
+          "integrated_time": "2026-10-10T15:45:53.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v2.20.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014/attempts/1"
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/cli",
+      "version": "2.20.0",
+      "latest": "2.20.0",
+      "gitHead": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+      "integrity": "sha512-yVo/xfMz02haR6XK8SZFFSOfuATibMM2covcsLXVcvzK0XDzmAUI9DSm1L671pyoyGbacYHs3LwqjAuy5bGWjA==",
+      "shasum": "661cbd0f44e1e7fec8fde5a501107fbce2cc22ee",
+      "tarball_sha256": "06ea9c5db19bee2df6954a0674b4c9fa52cc8840f1c1785e58abe1a58bfd5900",
+      "tarball_bytes": 3446,
+      "files": 3,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": false,
+        "mode_diffs": [
+          "package/bin/uwmd.mjs: published 0o755 local 0o644"
+        ]
+      },
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/cli@2.20.0",
+          "digest_matches": true,
+          "rekor_log_index": "3188614643",
+          "integrated_time": "2026-10-10T15:47:50.000Z",
+          "sigstore_verified": true,
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/cli@2.20.0",
+          "digest_matches": true,
+          "rekor_log_index": "3188602850",
+          "integrated_time": "2026-10-10T15:47:08.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v2.20.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014/attempts/1"
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/signing",
+      "version": "0.2.24",
+      "latest": "0.2.24",
+      "gitHead": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+      "integrity": "sha512-1HPxr0OP5MyhM0FOJVRb+CS8oTvQuQY4DbD4fsybqKWdftiYV358QtZGzUuV4PSOlElXOzvroyzlfGnXpIirxg==",
+      "shasum": "dac445435e35601810051f220fc10e031311a2bb",
+      "tarball_sha256": "7d57dee95c410969f99edfab61bd3da20bcc2e727d3be69977ac3846743b9747",
+      "tarball_bytes": 18630,
+      "files": 24,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      },
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/signing@0.2.24",
+          "digest_matches": true,
+          "rekor_log_index": "3188622172",
+          "integrated_time": "2026-10-10T15:48:19.000Z",
+          "sigstore_verified": true,
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/signing@0.2.24",
+          "digest_matches": true,
+          "rekor_log_index": "3188605257",
+          "integrated_time": "2026-10-10T15:47:17.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v2.20.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014/attempts/1"
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/batch",
+      "version": "0.8.19",
+      "latest": "0.8.19",
+      "gitHead": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+      "integrity": "sha512-26jIuPbZXeMmDrGj2CxELQMImOA+5lbVOfdo6H6shzKx7hpcNrRfbLnYqy/t9gpVJtvYBuPFL98lzFYH8rvBvQ==",
+      "shasum": "37136f51612c9a19b6149083f24e60d01e598613",
+      "tarball_sha256": "fea980436abe0c993ad5cc7f54330b55c3d4348fe0d820619c033ca21ecad25d",
+      "tarball_bytes": 5800,
+      "files": 5,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": false,
+        "mode_diffs": [
+          "package/bin/uwmd-batch.mjs: published 0o755 local 0o644"
+        ]
+      },
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/batch@0.8.19",
+          "digest_matches": true,
+          "rekor_log_index": "3188624171",
+          "integrated_time": "2026-10-10T15:48:26.000Z",
+          "sigstore_verified": true,
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/batch@0.8.19",
+          "digest_matches": true,
+          "rekor_log_index": "3188607713",
+          "integrated_time": "2026-10-10T15:47:26.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v2.20.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014/attempts/1"
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/module-hospitality",
+      "version": "0.1.12",
+      "latest": "0.1.12",
+      "gitHead": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+      "integrity": "sha512-Pzkr5kYu6oI3snrvbT0zziMqOO4BWzWIeq1pjfVAgxWBVEeGMDZu7Q6uJZjP5UqFGUH12Z90Qgoa0O3woxQJxA==",
+      "shasum": "9953070d7ca0dd9500e4fed19a7a4ee4aa01fb6b",
+      "tarball_sha256": "fab6f919bc152c076d4ef360895d3bfdf3db15f39118ef324e78fb4ce5c605ed",
+      "tarball_bytes": 8274,
+      "files": 8,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      },
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/module-hospitality@0.1.12",
+          "digest_matches": true,
+          "rekor_log_index": "3188644931",
+          "integrated_time": "2026-10-10T15:49:47.000Z",
+          "sigstore_verified": true,
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/module-hospitality@0.1.12",
+          "digest_matches": true,
+          "rekor_log_index": "3188609934",
+          "integrated_time": "2026-10-10T15:47:34.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v2.20.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014/attempts/1"
+        }
+      ]
+    },
+    {
+      "name": "@uwmd/module-data-center",
+      "version": "0.1.12",
+      "latest": "0.1.12",
+      "gitHead": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+      "integrity": "sha512-qEsATx2Y0T1ae8GOMQq1JvwdjE6lj09Z1YNFQKq3/zMyZ4S3Y9wOToxhdqTkYoOIiZf5BGtbJ0oxMJ1MF1A4SQ==",
+      "shasum": "b8b375c0064d33decbad5ecd5cea3bbedec2660f",
+      "tarball_sha256": "f4d95f0c582c8e6f64a50406a27405296fa0b5b07d8d3f91f6464e6f920820e1",
+      "tarball_bytes": 11507,
+      "files": 8,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      },
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/module-data-center@0.1.12",
+          "digest_matches": true,
+          "rekor_log_index": "3188627670",
+          "integrated_time": "2026-10-10T15:48:40.000Z",
+          "sigstore_verified": true,
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/module-data-center@0.1.12",
+          "digest_matches": true,
+          "rekor_log_index": "3188611714",
+          "integrated_time": "2026-10-10T15:47:40.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v2.20.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "020e8b088307ac53a0023bfc0b881c31fb40db91",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014/attempts/1"
+        }
+      ]
+    }
+  ],
+  "module_bootstrap": {
+    "note": "No bootstrap for 2.20.0: both module names already existed with trusted publishers from 2.18.0, and the release run published both through OIDC. The registry still lists each module's 0.0.0-stage stub.",
+    "@uwmd/module-hospitality": {
+      "registry_versions": [
+        "0.0.0-stage",
+        "0.1.10",
+        "0.1.11",
+        "0.1.12"
+      ]
+    },
+    "@uwmd/module-data-center": {
+      "registry_versions": [
+        "0.0.0-stage",
+        "0.1.10",
+        "0.1.11",
+        "0.1.12"
+      ]
+    }
+  },
+  "source_only_packages": {
+    "@uwmd/excel": {
+      "source": "0.9.12",
+      "registry": [
+        "0.3.0 (deprecated)"
+      ]
+    },
+    "@uwmd/report": {
+      "source": "0.8.24",
+      "registry": [
+        "0.3.0 (deprecated)"
+      ]
+    },
+    "@uwmd/lake": {
+      "source": "0.2.8",
+      "registry": []
+    }
+  },
+  "raw_evidence_file_sha256": {
+    "audit-signatures.txt": "44cda7f9aa5b04978a1c8d3b309d87bfdd93e8671ee208d7c91e58974cd2be80",
+    "audit.txt": "9f90fdc0120203f58870dacb61f619ed7b77056a24d699c9242d7ebca6b2f186",
+    "batch-0.8.19.tgz": "fea980436abe0c993ad5cc7f54330b55c3d4348fe0d820619c033ca21ecad25d",
+    "batch-attestations.json": "e9f454dfd2635b9c5b176ae64879b5ca5c934b193c840d4fa6ec381469e7ae94",
+    "batch-metadata.json": "1703cae60b417c1e61b680477f4a88583ba897f6f2394ac544585a2e3bcf5d32",
+    "batch-packument.json": "e611a9ab1ff8f82625f8b682ce0c0dea9578a2cf3063301865952bd1dece7622",
+    "cli-2.20.0.tgz": "06ea9c5db19bee2df6954a0674b4c9fa52cc8840f1c1785e58abe1a58bfd5900",
+    "cli-attestations.json": "ea8d7d8793b115f968b36d7577722820a48ca79c3b0026344ae5b78527a75fdc",
+    "cli-metadata.json": "6e8c440602bd4cf9f7185898d5091313058c82e68511442982400670b7839a63",
+    "cli-packument.json": "a688f04f616371493fac6fb38c13a9511bfdff8a1e4f99cff4e4b079d25bc64d",
+    "cli-version.txt": "cc53916ab60d46611f2b609e2897a8349856f547b19e6e90742aacc1d36eb59f",
+    "compare.py": "9132d8fa92b83a69b6dc95e7072ca533b8cc196fc6a53d46bc4471ff854beb0b",
+    "core-2.20.0.tgz": "b3c29e5a478feff8a456af1612f724ca6bbbbca4902004665633bfef83554425",
+    "core-attestations.json": "eb50c1841f7dfee67c3a062cf27789c522e202f1914ca12f7e8263cc6e4a3723",
+    "core-metadata.json": "42b5cfb7e56bbf47793f56f451567ed33b144450c133515b54b8edf3514abfe8",
+    "core-packument.json": "7c61c9db29ab5050531791db1ab3362da624d5dde90e6af8ee75cc785b646711",
+    "file-comparison.json": "8e5fe3f5735d2424d1751bed8f84e4329eb24dfb664f09a33b0edf6d8a8ff025",
+    "module-consumer.json": "21b0da1516ac14bb9a1c0e093a7912e00c04dadde92f4e31bd6e8db302c16b12",
+    "module-data-center-0.1.12.tgz": "f4d95f0c582c8e6f64a50406a27405296fa0b5b07d8d3f91f6464e6f920820e1",
+    "module-data-center-attestations.json": "94e429e8443261e1418da27e3c2d9d3496bb250192d58d306283a2f0bd445076",
+    "module-data-center-metadata.json": "fabc3be6180fd705a178b350f124c7c8802cfc1fcdb1015b2b45dc5de4210205",
+    "module-data-center-packument.json": "5894eee81082f84bd024ccae7e6d5d5ecab411662e0e38206891071838e779f4",
+    "module-hospitality-0.1.12.tgz": "fab6f919bc152c076d4ef360895d3bfdf3db15f39118ef324e78fb4ce5c605ed",
+    "module-hospitality-attestations.json": "41cdb61bd6d34d7dfe0b4d5eb9681585656b8321abdf84bea1871997ffb17552",
+    "module-hospitality-metadata.json": "21b800561bb92b48017679d47789d9f9e7c0bf8eb5bba87d0a61776566ce303e",
+    "module-hospitality-packument.json": "c2cd636eeec2d643f151ec0711f90c2b7f91a5e20f156f0615abcc439001a868",
+    "npm-keys.json": "dff0356b5cdf9708f149094bf06a71d9b0799a047179e1c1806dd559964baae1",
+    "published-cli-portable.json": "af1d61efde334ac87e616545eb4c477789a2ebcdce06c20a67267e36bbcf9033",
+    "quantize-check.json": "170d25492d26e269469c3f592539742f378456a51b82aa86d24275d70d3c5683",
+    "quantize-control-2.19.0.json": "3a097e283ec0ceee49001a9051dad16a4f603eed255570e159c1088adc551f57",
+    "registry-results.json": "29e32075d502d017c354f718c6406a00fd6d613170577e427cddabc3a3b3996a",
+    "registry-scope.cjs": "5e011e7fb1ec51d1cba8206ce61c6fc68e44a5c3feddc7ff9ccba5920c748743",
+    "registry-scope.json": "d0a4568e29137ecd1ebe6c6d253b15753f45d2d6e72cafb24db59d08092cc2d6",
+    "release-check.log": "a10cec8f997be414af15a6aa5a7e04a68d7b8e6f3016e366f1c62f079138d8f3",
+    "signing-0.2.24.tgz": "7d57dee95c410969f99edfab61bd3da20bcc2e727d3be69977ac3846743b9747",
+    "signing-attestations.json": "1d23f10ae26580e7fcca618d82c78e94c6f3cc67b6948e14f88bedf02384ea4d",
+    "signing-metadata.json": "d0070bdf1503c54e8179389eb23826e0f23f9057203c378d34605cbb5839c0f4",
+    "signing-packument.json": "8f760cb82d30d2950cf74c27cd2d353efe396d6a3e00352e70a008f1d43e6b08",
+    "tsc-skipLibCheck-false.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tsc-skipLibCheck-true.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verify-registry.cjs": "56512855e7bac00b63975215957002f7369a3c2204d867207b97897e24f56027",
+    "verify-release-tag.log": "bf1d7560be4d895998658137189842ae5e3c1e9d1e069001487c53b1aab97def"
+  }
+}

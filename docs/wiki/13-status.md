@@ -1,15 +1,17 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-10** for release-prepared **2.20.0**. Core/CLI **2.20.0**
-pair with the accepted release contract Protocol **2.24.0** and unchanged Format
-**2.0**. The generation carries RFC 0072's business-plan `scenario` vocabulary
-and single-site `build_to_rent` identity with warning-only `DQ-07`–`DQ-09`,
-RFC 0064's optional `reserve_accounts` section (Format §4.28) with `RSV-NN`
-codes and the separately invoked §VIII.11 reserve-account verifier, and the
-§VIII.5 quantizer fix for an integral decimal shift. No new §X floor applies.
-Signing **0.2.24**, batch **0.8.19** and both official modules **0.1.12** pin
-core 2.20.0. RFCs 0064 and 0072 remain `accepted` until shipment and
-independently verified publication.
+Reconciled **2026-10-10** (America/Phoenix) for published and independently
+verified **2.20.0**. Core/CLI **2.20.0**, signing **0.2.24**, batch **0.8.19**
+and both official modules **0.1.12** are published from immutable annotated
+`v2.20.0` on `020e8b088307ac53a0023bfc0b881c31fb40db91`. Stable Protocol
+**2.24.0** pairs with unchanged Format **2.0**. The generation carries RFC
+0072's business-plan `scenario` vocabulary and single-site `build_to_rent`
+identity with warning-only `DQ-07`–`DQ-09`, RFC 0064's optional
+`reserve_accounts` section (Format §4.28) with `RSV-NN` codes and the
+separately invoked §VIII.11 reserve-account verifier, and the §VIII.5
+quantizer fix for an integral decimal shift. No new §X floor applies. RFCs
+0064 and 0072 are `implemented`. See the
+[publication evidence](../releases/2.20.0-publication.md).
 
 Reconciled **2026-10-09** (America/Phoenix) for published and independently
 verified **2.19.0**. Core/CLI **2.19.0**, signing **0.2.23**, batch **0.8.18**
@@ -99,9 +101,9 @@ new receipt output.
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.11**, report **0.8.23** and lake **0.2.7** are source-only package
-generations. The hospitality/data-center module packages **0.1.11** pair with
-core 2.19.0 and are published through the release workflow; 0.1.10 was their
+Excel **0.9.12**, report **0.8.24** and lake **0.2.8** are source-only package
+generations. The hospitality/data-center module packages **0.1.12** pair with
+core 2.20.0 and are published through the release workflow; 0.1.10 was their
 first public generation. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
@@ -677,10 +679,10 @@ The guards:
     or corpus module overrides.
   - RFC 0068 is to adopt the predicate in a later revision of its own. No
     numeric-type predicate is authorized.
-- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) is accepted and implemented (PR #290), and prepared for 2.20.0 with Protocol 2.24.0: optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. RFC 0065 draw binding remains out of scope; PR #219 remains abandoned. Format is 2.0.
+- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) (PR #290) shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented** ([publication record](../releases/2.20.0-publication.md)): optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. RFC 0065 draw binding remains out of scope; PR #219 remains abandoned. Format is 2.0.
 - [RFC 0072](../rfcs/0072-frontmatter-scenario-semantics.md) (#255; PR #285)
-  is accepted and implemented, and prepared for 2.20.0 with Protocol 2.24.0
-  under Format 2.0.
+  shipped in 2.20.0 with Stable Protocol 2.24.0 under Format 2.0 and is
+  **implemented**.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -993,8 +995,8 @@ independently of its actual plan. No new class/module or financial behavior.
   CLI driver exercises the same fixtures. D5 regressions preserve stage,
   coverage, default and pack results.
 - **Deferred.** General subtype taxonomy and legacy Appendix B terminology.
-- **Release.** Prepared for core/CLI 2.20.0 with Protocol 2.24.0; Format
-  stays 2.0.
+- **Release.** Published in core/CLI 2.20.0 with Stable Protocol 2.24.0;
+  Format stays 2.0. `implemented` after independent verification.
 
 ## 2026-10-04 — `uwmd init` frontmatter serialization
 
@@ -1074,4 +1076,4 @@ existing contract, so no RFC was needed. The
 
 ## 2026-10-09 — RFC 0064 property reserve accounts
 
-Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. RFC status is accepted pending shipment. Release: prepared for core/CLI 2.20.0 with Protocol 2.24.0; Format stays 2.0.
+Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. Release: published in core/CLI 2.20.0 with Stable Protocol 2.24.0; Format stays 2.0. `implemented` after independent verification.

@@ -10,6 +10,27 @@ protocol, and each package each carry an independent semver).
 
 ## [2.20.0] - 2026-10-10
 
+### Released
+
+Published core/CLI **2.20.0**, signing **0.2.24**, batch **0.8.19** and
+`@uwmd/module-hospitality` and `@uwmd/module-data-center` **0.1.12** from
+annotated `v2.20.0` on `020e8b088307ac53a0023bfc0b881c31fb40db91`.
+[Release run 38064763014](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014)
+succeeded through trusted publishing with provenance. Every registry version
+and `latest` matches, and all six `gitHead` values name the authorized commit.
+Integrity, registry and DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps and inclusion proofs, and all 494 published file contents
+verify. The registry-installed CLI passes **279/279** portable cases with no
+skips, including RFC 0064's four large-cent reserve cases, and the published
+core quantizes `537196.21 - 188848.11 + 107395.8` to exactly `455743.9` at two
+places, which 2.19.0 did not. An isolated consumer runs both modules' 11
+runtime fixtures and compiles strict TypeScript with `skipLibCheck: false` and
+no Anthropic SDK. RFCs 0064 and 0072 are `implemented`; Protocol **2.24.0** is
+Stable, paired with Format **2.0**. No other package generation was published.
+The immutable tagged tree keeps its neutral preparation records. Exact
+evidence is in `docs/releases/2.20.0-publication-evidence.json` and the
+verification method in `docs/releases/2.20.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **2.20.0** pair with Protocol **2.24.0** and Format **2.0**.
@@ -19,10 +40,11 @@ Core's optional signing peer is **0.2.24**. Each dependent takes its existing
 patch-version step for the exact repin. The workflow scope is six packages:
 core, CLI, signing, batch, `@uwmd/module-hospitality` and
 `@uwmd/module-data-center`. Excel, report and lake remain source-only. Module
-manifest contracts stay **0.1.0**. RFCs 0064 and 0072 stay `accepted` in the
-tagged preparation state.
+manifest contracts stay **0.1.0**. RFCs 0064 and 0072 stayed `accepted` in
+the tagged preparation state; the Released evidence above records their
+verified lifecycle transition.
 
-### Contract — Protocol 2.24.0 (RFCs 0064 and 0072), Format 2.0
+### Released contract — Protocol 2.24.0 (RFCs 0064 and 0072), Format 2.0
 
 - **Protocol 2.24.0** carries RFC 0072's `DQ-07`–`DQ-09` warnings and their
   remediation entries, and RFC 0064's `RSV-NN` code family (both §III.6a)
