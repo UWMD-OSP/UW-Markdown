@@ -3322,6 +3322,14 @@ Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6
 
 ### § 4.28 — Property Reserve Accounts (RFC 0064)
 
+**ID:** `reserve_accounts`  
+**Header:** `## Property Reserve Accounts {#reserve_accounts}`  
+**Purpose:** Source-attributable stated property cash custody; asset-class independent and multi-variant.  
+**Written by:** `manual`, `wizard`, `agent/L4-*` — source extraction only; agents never reconcile balances or invent classifications.  
+**Required for pipeline stage:** Optional; never required.  
+**Dependencies:** None.  
+**Introduced by:** RFC 0064.
+
 The optional, asset-class-independent standard section `reserve_accounts`
 records property cash custody. Its closed payload is `{accounts: [...] }`
 (nonempty), beside the universal `_meta`, `_role` and `_notes` members.
