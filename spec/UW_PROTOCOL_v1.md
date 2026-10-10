@@ -3733,54 +3733,19 @@ host advertising protocol version `1.x.y`.
 
 ## XIII. Size-Intensive Registry
 
-Every asset class's calc pack divides by a **size intensive** — the denominator
-of its per-unit value metrics. This section is the single normative answer to
-"how big is this deal, and what do I call it?" for consumers that display,
-export, or index a deal's size. It is mirrored executably by `SIZE_INTENSIVES`
-/ `getSizeIntensive()` in `@uwmd/core`'s `protocol.ts`. (Added at protocol
-1.6.0 by RFC 0027; the RFC text refers to this section as §XI — see the errata
-note there.)
-
-| Asset class | Primary | Label | Unit | Secondary |
-|---|---|---|---|---|
-| `multifamily` | `total_units` | Units | `units` | `total_nra_sqft` |
-| `office` | `rentable_square_feet` | RSF | `sqft` | — |
-| `industrial` | `rentable_square_feet` | RSF | `sqft` | — |
-| `retail` | `gross_leasable_area` | GLA | `sqft` | — |
-| `self_storage` | `net_rentable_square_feet` | NRSF | `sqft` | `rentable_units` |
-| `hospitality` | `keys` | Keys | `keys` | — |
-| `student_housing` | `total_beds` | Beds | `beds` | `total_units` |
-| `senior_housing` | `total_units` | Units | `units` | `total_beds` |
-| `land` | `gross_acres` | Gross acres | `acres` | `usable_acres`, `entitled_units` |
-| `mixed_use` | *(none — per component, Format §4.23)* | — | — | — |
-
-All field paths are relative to the `property` section (Format §4.1).
+The normative size registry and its selection rules now live in the
+[metric dictionary](metrics/README.md#primary-size-selection), specifically
+`size_intensives` in `spec/metrics/builtin.json` (RFC 0078 Phase 2).
+`SIZE_INTENSIVES` / `getSizeIntensive()` remain executable mirrors. The
+registry originated in RFC 0027 at protocol 1.6.0 (called §XI in that RFC).
 
 ### XIII.1 Primary size field
 
-The **primary size field** of an asset class is the field its calc pack uses as
-the denominator of its per-unit value metrics. A conforming implementation that
-displays, exports, or indexes a deal's size MUST select the field through this
-table and MUST NOT assume `total_units`.
+See [primary-size selection](metrics/README.md#primary-size-selection).
 
 ### XIII.2 Mixed-use has no property-level size
 
-`mixed_use` has **no** property-level primary size field. A consumer needing a
-mixed-use deal's size MUST read the per-component intensives from the
-`components` section (Format §4.23) and MUST NOT synthesize a property-level
-total by summing across uses, because the components are denominated in
-different units — a bed and a square foot do not add.
-
-The lookup's return type is therefore nullable rather than total: a registry
-that forced every class to name one field would have forced a wrong answer
-here.
-
-### XIII.3 The table is closed for protocol 1.x
-
-A module declaring a custom asset class (RFC 0003, deferred) will declare its
-own entry; until that RFC lands, an unrecognized asset class has no primary
-size field and a consumer MUST degrade to stating no size rather than guessing
-one.
+See [mixed-use and unknown classes](metrics/README.md#mixed-use-and-unknown-classes).
 
 ---
 

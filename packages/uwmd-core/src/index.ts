@@ -358,7 +358,7 @@ export {
   getSizeIntensive,
   resolveDealSize,
 } from './protocol.js';
-export type { DocumentProfile, UWEdgeLayer, UWEdgeEndpointKind, UWEdgeTypeDef, SizeIntensive } from './protocol.js';
+export type { DocumentProfile, UWEdgeLayer, UWEdgeEndpointKind, UWEdgeTypeDef, SizeIntensive, MetricDictionary, MetricDictionaryCalculation, MetricDictionarySize } from './protocol.js';
 export {
   UW_PACKAGE_VERSION,
   UW_PACKAGE_ZIP_CODEC,

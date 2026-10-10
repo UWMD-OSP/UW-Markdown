@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/metric-dictionary.schema.json",
+  "title": "UW Metric Dictionary",
+  "description": "Normative class-scoped calculation definitions and unrounded primary-size selectors extracted under RFC 0078 Phase 2. Expression syntax, resolution and numeric semantics are Protocol VIII.1, VIII.2 and VIII.5. See spec/metrics/README.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "calculations",
+    "size_intensives"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://uwmd.org/schemas/metric-dictionary.schema.json"
+    },
+    "calculations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/calculation"
+      }
+    },
+    "size_intensives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/size"
+      }
+    }
+  },
+  "$defs": {
+    "calculation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "asset_classes",
+        "formula",
+        "input_paths",
+        "unit",
+        "section_roles",
+        "round_to",
+        "null_semantics",
+        "deterministic"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "multifamily",
+              "office",
+              "retail",
+              "industrial",
+              "self_storage",
+              "hospitality",
+              "mixed_use",
+              "senior_housing",
+              "student_housing",
+              "land"
+            ]
+          }
+        },
+        "formula": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "section_roles": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "enum": [
+              "primary",
+              "senior",
+              "junior",
+              "summary",
+              "detail"
+            ]
+          }
+        },
+        "round_to": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "null_semantics": {
+          "const": "expression"
+        },
+        "deterministic": {
+          "const": true
+        }
+      }
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "asset_classes",
+        "formula",
+        "input_paths",
+        "unit",
+        "section_roles",
+        "round_to",
+        "null_semantics",
+        "path",
+        "secondary"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "multifamily",
+              "office",
+              "retail",
+              "industrial",
+              "self_storage",
+              "hospitality",
+              "mixed_use",
+              "senior_housing",
+              "student_housing",
+              "land"
+            ]
+          }
+        },
+        "formula": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "section_roles": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "enum": [
+              "primary",
+              "senior",
+              "junior",
+              "summary",
+              "detail"
+            ]
+          }
+        },
+        "round_to": {
+          "type": "null"
+        },
+        "null_semantics": {
+          "const": "finite_stated_number"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "secondary": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          }
+        }
+      }
+    }
+  }
+}

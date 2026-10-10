@@ -253,6 +253,22 @@ In phases, each its own PR once this RFC is accepted:
    full builtins (principle 1, including data center and manufactured
    housing); levered and after-tax definitions (D7).
 
+### Phase 2 implementation decisions
+
+The [metric dictionary](../../spec/metrics/README.md) extracts the existing
+builtin calculations and primary-size selectors. The [lender fixture](../../conformance/metrics/README.md)
+records current example findings independently of the starter packs.
+
+| Question | Decision | Why (precedent) |
+|---|---|---|
+| Shared metric ids | Preserve one class-scoped entry per existing pack declaration; do not reconcile formulas, paths or labels. | RFC 0078 D1–D3; extraction of all ten builtin packs, including mixed-use components. |
+| Pack drift | Keep existing TypeScript declarations and Excel bindings; require exact bidirectional parity with the normative dictionary. | Existing pack/Excel parity and the approved Phase 2 test alternative; preserves runtime behavior. |
+| Effective precision and nulls | State current unit-derived `round_to` explicitly; use existing expression null/refusal semantics, including lazy cash-on-cash selection. | Protocol §VIII.1, §VIII.2, §VIII.5 and RFC 0066; no new tolerance or fallback. |
+| Size quantities | Use selector entries with `round_to: null`, raw finite-number semantics and existing secondary-path metadata. | RFC 0027 and `resolveDealSize()` select raw stated quantities without quantizing or inferring a denominator. |
+| Example statement addresses | Keep canonical current output fields and explicit existing field aliases in a fixture-only binding map; include Lite anchors and size selectors. | Existing example representations and the Lite bridge's stated-input section mapping; no new normative alias contract or financial defaults. |
+| Example disagreements | Freeze per-statement evidence and per-example counts as findings; preserve the examples and metric definitions. | RFC 0078 D1–D3; the approved lender-with-only-the-standard fixture reports failures rather than silently correcting them. |
+| Versioning | Add the dictionary contract without changing Format or `PROTOCOL_VERSION`; release preparation remains separate. | RFC 0078 Phase 2 scope and semver per surface. |
+
 ## Alternatives considered
 
 1. **Keep the four nested tiers.** It is the current state and needs no

@@ -1,0 +1,2487 @@
+{
+  "$schema": "https://uwmd.org/schemas/metric-dictionary.schema.json",
+  "calculations": [
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_unit",
+      "label": "Price / Unit",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "valuation.purchase_price / property.total_units",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.total_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_unit",
+      "label": "Loan / Unit",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "debt_structure.loan_amount / property.total_units",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.total_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_sqft",
+      "label": "Loan / SqFt",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "debt_structure.loan_amount / property.total_nra_sqft",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.total_nra_sqft"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
+      "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_sqft",
+      "label": "Price / SqFt",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "valuation.purchase_price / property.rentable_square_feet",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_sqft",
+      "label": "Loan / SqFt",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "debt_structure.loan_amount / property.rentable_square_feet",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_sqft",
+      "label": "NOI / SqFt",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "noi_model.net_operating_income / property.rentable_square_feet",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "occupancy",
+      "label": "Occupancy",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "rent_roll.occupied_sf / rent_roll.total_rentable_sf",
+      "input_paths": [
+        "rent_roll.occupied_sf",
+        "rent_roll.total_rentable_sf"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_sqft",
+      "label": "Price / SqFt",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "valuation.purchase_price / property.gross_leasable_area",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.gross_leasable_area"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_sqft",
+      "label": "Loan / SqFt",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "debt_structure.loan_amount / property.gross_leasable_area",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.gross_leasable_area"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_sqft",
+      "label": "NOI / SqFt",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "noi_model.net_operating_income / property.gross_leasable_area",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.gross_leasable_area"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_recovery_ratio",
+      "label": "Expense Recovery Ratio",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "noi_model.income.expense_reimbursements / noi_model.expenses.total_operating_expenses",
+      "input_paths": [
+        "noi_model.income.expense_reimbursements",
+        "noi_model.expenses.total_operating_expenses"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "occupancy",
+      "label": "Occupancy",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "rent_roll.occupied_gla / rent_roll.total_gla",
+      "input_paths": [
+        "rent_roll.occupied_gla",
+        "rent_roll.total_gla"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_sqft",
+      "label": "Price / SqFt",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "valuation.purchase_price / property.rentable_square_feet",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_sqft",
+      "label": "Loan / SqFt",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "debt_structure.loan_amount / property.rentable_square_feet",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_sqft",
+      "label": "NOI / SqFt",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "noi_model.net_operating_income / property.rentable_square_feet",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_recovery_ratio",
+      "label": "Expense Recovery Ratio",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "noi_model.income.expense_reimbursements / noi_model.expenses.total_operating_expenses",
+      "input_paths": [
+        "noi_model.income.expense_reimbursements",
+        "noi_model.expenses.total_operating_expenses"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "occupancy",
+      "label": "Occupancy",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "rent_roll.occupied_sf / rent_roll.total_rentable_sf",
+      "input_paths": [
+        "rent_roll.occupied_sf",
+        "rent_roll.total_rentable_sf"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_nrsf",
+      "label": "Price / NRSF",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "valuation.purchase_price / property.net_rentable_square_feet",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.net_rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_nrsf",
+      "label": "Loan / NRSF",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "debt_structure.loan_amount / property.net_rentable_square_feet",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.net_rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_nrsf",
+      "label": "NOI / NRSF",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "noi_model.net_operating_income / property.net_rentable_square_feet",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.net_rentable_square_feet"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "physical_occupancy",
+      "label": "Physical Occupancy",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "rent_roll.occupied_units / property.rentable_units",
+      "input_paths": [
+        "rent_roll.occupied_units",
+        "property.rentable_units"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "economic_occupancy",
+      "label": "Economic Occupancy",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "noi_model.income.effective_gross_income / noi_model.income.gross_potential_rent.value",
+      "input_paths": [
+        "noi_model.income.effective_gross_income",
+        "noi_model.income.gross_potential_rent.value"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_key",
+      "label": "Price / Key",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "valuation.purchase_price / property.keys",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.keys"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_key",
+      "label": "Loan / Key",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "debt_structure.loan_amount / property.keys",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.keys"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_key",
+      "label": "NOI / Key",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.net_operating_income / property.keys",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.keys"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "occupancy",
+      "label": "Occupancy",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "rent_roll.occupied_room_nights / rent_roll.available_room_nights",
+      "input_paths": [
+        "rent_roll.occupied_room_nights",
+        "rent_roll.available_room_nights"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "adr",
+      "label": "ADR",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.income.rooms_revenue / rent_roll.occupied_room_nights",
+      "input_paths": [
+        "noi_model.income.rooms_revenue",
+        "rent_roll.occupied_room_nights"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "revpar",
+      "label": "RevPAR",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.income.rooms_revenue / rent_roll.available_room_nights",
+      "input_paths": [
+        "noi_model.income.rooms_revenue",
+        "rent_roll.available_room_nights"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "gop_margin",
+      "label": "GOP Margin",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "noi_model.gross_operating_profit / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.gross_operating_profit",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate (going-in)",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.equity_sponsor",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.equity_sponsor"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "multifamily_noi_share",
+      "label": "Multifamily NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.multifamily.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.multifamily.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "retail_noi_share",
+      "label": "Retail NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.retail.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.retail.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "office_noi_share",
+      "label": "Office NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.office.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.office.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "industrial_noi_share",
+      "label": "Industrial NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.industrial.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.industrial.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "self_storage_noi_share",
+      "label": "Self-Storage NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.self_storage.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.self_storage.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "hospitality_noi_share",
+      "label": "Hospitality NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.hospitality.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.hospitality.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "senior_housing_noi_share",
+      "label": "Senior Housing NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.senior_housing.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.senior_housing.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "student_housing_noi_share",
+      "label": "Student Housing NOI Share",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.student_housing.net_operating_income / noi_model.net_operating_income",
+      "input_paths": [
+        "components.student_housing.net_operating_income",
+        "noi_model.net_operating_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "multifamily_price_per_unit",
+      "label": "Multifamily Price / Unit",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(valuation.purchase_price * components.multifamily.allocation_pct) / components.multifamily.total_units",
+      "input_paths": [
+        "valuation.purchase_price",
+        "components.multifamily.allocation_pct",
+        "components.multifamily.total_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "retail_price_psf",
+      "label": "Retail Price / SqFt",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(valuation.purchase_price * components.retail.allocation_pct) / components.retail.nra_sqft",
+      "input_paths": [
+        "valuation.purchase_price",
+        "components.retail.allocation_pct",
+        "components.retail.nra_sqft"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "office_price_psf",
+      "label": "Office Price / SqFt",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(valuation.purchase_price * components.office.allocation_pct) / components.office.nra_sqft",
+      "input_paths": [
+        "valuation.purchase_price",
+        "components.office.allocation_pct",
+        "components.office.nra_sqft"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "industrial_price_psf",
+      "label": "Industrial Price / SqFt",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(valuation.purchase_price * components.industrial.allocation_pct) / components.industrial.nra_sqft",
+      "input_paths": [
+        "valuation.purchase_price",
+        "components.industrial.allocation_pct",
+        "components.industrial.nra_sqft"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "self_storage_price_psf",
+      "label": "Self-Storage Price / SqFt",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(valuation.purchase_price * components.self_storage.allocation_pct) / components.self_storage.nra_sqft",
+      "input_paths": [
+        "valuation.purchase_price",
+        "components.self_storage.allocation_pct",
+        "components.self_storage.nra_sqft"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "student_housing_price_per_bed",
+      "label": "Student Housing Price / Bed",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "(valuation.purchase_price * components.student_housing.allocation_pct) / components.student_housing.total_beds",
+      "input_paths": [
+        "valuation.purchase_price",
+        "components.student_housing.allocation_pct",
+        "components.student_housing.total_beds"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "hospitality_gross_operating_profit",
+      "label": "Hospitality Gross Operating Profit",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.hospitality.gross_operating_profit",
+      "input_paths": [
+        "components.hospitality.gross_operating_profit"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "senior_housing_total_labor_expense",
+      "label": "Senior Housing Total Labor Expense",
+      "asset_classes": [
+        "mixed_use"
+      ],
+      "formula": "components.senior_housing.total_labor_expense",
+      "input_paths": [
+        "components.senior_housing.total_labor_expense"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_unit",
+      "label": "Price / Unit",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "valuation.purchase_price / property.total_units",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.total_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_unit",
+      "label": "Loan / Unit",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "debt_structure.loan_amount / property.total_units",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.total_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_unit",
+      "label": "NOI / Unit",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.net_operating_income / property.total_units",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.total_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "occupancy",
+      "label": "Occupancy",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "rent_roll.occupied_units / property.total_units",
+      "input_paths": [
+        "rent_roll.occupied_units",
+        "property.total_units"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "revpor",
+      "label": "RevPOR (Monthly)",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.income.effective_gross_income / (rent_roll.occupied_units * 12)",
+      "input_paths": [
+        "noi_model.income.effective_gross_income",
+        "rent_roll.occupied_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "labor_ratio",
+      "label": "Labor Ratio",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.total_labor_expense / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.total_labor_expense",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "care_revenue_ratio",
+      "label": "Care Revenue Ratio",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "noi_model.income.care_revenue / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.income.care_revenue",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cap_rate",
+      "label": "Cap Rate",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.net_operating_income / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "dscr",
+      "label": "DSCR",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.annual_debt_service",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "debt_yield",
+      "label": "Debt Yield",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.net_operating_income / debt_structure.loan_amount",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.loan_amount"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_bed",
+      "label": "Price / Bed",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "valuation.purchase_price / property.total_beds",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.total_beds"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_bed",
+      "label": "Loan / Bed",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "debt_structure.loan_amount / property.total_beds",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.total_beds"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "noi_per_bed",
+      "label": "NOI / Bed",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.net_operating_income / property.total_beds",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "property.total_beds"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "expense_ratio",
+      "label": "Operating Expense Ratio",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "noi_model.income.effective_gross_income"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "cash_on_cash",
+      "label": "Cash-on-Cash",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "input_paths": [
+        "noi_model.net_operating_income",
+        "debt_structure.annual_debt_service",
+        "sources_uses.sources.sponsor_equity"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "occupancy",
+      "label": "Occupancy (by Bed)",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "rent_roll.occupied_beds / property.total_beds",
+      "input_paths": [
+        "rent_roll.occupied_beds",
+        "property.total_beds"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "pre_lease_rate",
+      "label": "Pre-Lease Rate",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "rent_roll.preleased_beds / property.total_beds",
+      "input_paths": [
+        "rent_roll.preleased_beds",
+        "property.total_beds"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "revenue_per_bed",
+      "label": "Revenue / Bed",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.income.effective_gross_income / property.total_beds",
+      "input_paths": [
+        "noi_model.income.effective_gross_income",
+        "property.total_beds"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "rent_per_bed_monthly",
+      "label": "Rent / Bed (Monthly)",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "noi_model.income.gross_potential_rent.value / (property.total_beds * 12)",
+      "input_paths": [
+        "noi_model.income.gross_potential_rent.value",
+        "property.total_beds"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_acre",
+      "label": "Price / Gross Acre",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "valuation.purchase_price / property.gross_acres",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.gross_acres"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_usable_acre",
+      "label": "Price / Usable Acre",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "valuation.purchase_price / property.usable_acres",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.usable_acres"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "price_per_buildable_unit",
+      "label": "Price / Buildable Unit",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "valuation.purchase_price / property.entitled_units",
+      "input_paths": [
+        "valuation.purchase_price",
+        "property.entitled_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "usable_land_ratio",
+      "label": "Usable Land Ratio",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "property.usable_acres / property.gross_acres",
+      "input_paths": [
+        "property.usable_acres",
+        "property.gross_acres"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "density_per_usable_acre",
+      "label": "Density / Usable Acre",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "property.entitled_units / property.usable_acres",
+      "input_paths": [
+        "property.entitled_units",
+        "property.usable_acres"
+      ],
+      "unit": "x",
+      "round_to": 4,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltv",
+      "label": "LTV",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "ltc",
+      "label": "LTC",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "debt_structure.loan_amount / sources_uses.uses.total",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "sources_uses.uses.total"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "loan_per_acre",
+      "label": "Loan / Gross Acre",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "debt_structure.loan_amount / property.gross_acres",
+      "input_paths": [
+        "debt_structure.loan_amount",
+        "property.gross_acres"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {
+        "debt_structure": "senior"
+      },
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "basis_per_buildable_unit",
+      "label": "All-In Basis / Buildable Unit",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "sources_uses.uses.total / property.entitled_units",
+      "input_paths": [
+        "sources_uses.uses.total",
+        "property.entitled_units"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "carry_ratio",
+      "label": "Annual Carry Ratio",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / valuation.purchase_price",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "valuation.purchase_price"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "carry_cost_per_acre",
+      "label": "Annual Carry Cost / Gross Acre",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "noi_model.expenses.total_operating_expenses / property.gross_acres",
+      "input_paths": [
+        "noi_model.expenses.total_operating_expenses",
+        "property.gross_acres"
+      ],
+      "unit": "$",
+      "round_to": 2,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    },
+    {
+      "id": "land_to_sellout_ratio",
+      "label": "Land Basis / Projected Sellout",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "valuation.purchase_price / valuation.projected_gross_sellout",
+      "input_paths": [
+        "valuation.purchase_price",
+        "valuation.projected_gross_sellout"
+      ],
+      "unit": "%",
+      "round_to": 6,
+      "section_roles": {},
+      "null_semantics": "expression",
+      "deterministic": true
+    }
+  ],
+  "size_intensives": [
+    {
+      "id": "total_units",
+      "label": "Units",
+      "asset_classes": [
+        "multifamily"
+      ],
+      "formula": "property.total_units",
+      "input_paths": [
+        "property.total_units"
+      ],
+      "unit": "units",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "total_units",
+      "secondary": [
+        "total_nra_sqft"
+      ]
+    },
+    {
+      "id": "rentable_square_feet",
+      "label": "RSF",
+      "asset_classes": [
+        "office"
+      ],
+      "formula": "property.rentable_square_feet",
+      "input_paths": [
+        "property.rentable_square_feet"
+      ],
+      "unit": "sqft",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "rentable_square_feet",
+      "secondary": []
+    },
+    {
+      "id": "rentable_square_feet",
+      "label": "RSF",
+      "asset_classes": [
+        "industrial"
+      ],
+      "formula": "property.rentable_square_feet",
+      "input_paths": [
+        "property.rentable_square_feet"
+      ],
+      "unit": "sqft",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "rentable_square_feet",
+      "secondary": []
+    },
+    {
+      "id": "gross_leasable_area",
+      "label": "GLA",
+      "asset_classes": [
+        "retail"
+      ],
+      "formula": "property.gross_leasable_area",
+      "input_paths": [
+        "property.gross_leasable_area"
+      ],
+      "unit": "sqft",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "gross_leasable_area",
+      "secondary": []
+    },
+    {
+      "id": "net_rentable_square_feet",
+      "label": "NRSF",
+      "asset_classes": [
+        "self_storage"
+      ],
+      "formula": "property.net_rentable_square_feet",
+      "input_paths": [
+        "property.net_rentable_square_feet"
+      ],
+      "unit": "sqft",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "net_rentable_square_feet",
+      "secondary": [
+        "rentable_units"
+      ]
+    },
+    {
+      "id": "keys",
+      "label": "Keys",
+      "asset_classes": [
+        "hospitality"
+      ],
+      "formula": "property.keys",
+      "input_paths": [
+        "property.keys"
+      ],
+      "unit": "keys",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "keys",
+      "secondary": []
+    },
+    {
+      "id": "total_beds",
+      "label": "Beds",
+      "asset_classes": [
+        "student_housing"
+      ],
+      "formula": "property.total_beds",
+      "input_paths": [
+        "property.total_beds"
+      ],
+      "unit": "beds",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "total_beds",
+      "secondary": [
+        "total_units"
+      ]
+    },
+    {
+      "id": "total_units",
+      "label": "Units",
+      "asset_classes": [
+        "senior_housing"
+      ],
+      "formula": "property.total_units",
+      "input_paths": [
+        "property.total_units"
+      ],
+      "unit": "units",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "total_units",
+      "secondary": [
+        "total_beds"
+      ]
+    },
+    {
+      "id": "gross_acres",
+      "label": "Gross acres",
+      "asset_classes": [
+        "land"
+      ],
+      "formula": "property.gross_acres",
+      "input_paths": [
+        "property.gross_acres"
+      ],
+      "unit": "acres",
+      "round_to": null,
+      "section_roles": {},
+      "null_semantics": "finite_stated_number",
+      "path": "gross_acres",
+      "secondary": [
+        "usable_acres",
+        "entitled_units"
+      ]
+    }
+  ]
+}

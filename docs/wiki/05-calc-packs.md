@@ -1,14 +1,18 @@
 # 05 — Calc packs
 
 A **calc pack** is a `ModuleManifest` that bundles a set of derived-metric
-declarations for an asset class. It is the *single source of truth* for those
-metrics: define a formula once, and every consumer (web editor, Excel converter,
-CLI, conformance, refinement) picks it up.
+declarations for an asset class. Their normative source is now the
+[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2): 130
+class-scoped calculations across ten builtin packs, plus the primary-size
+registry. Packs derive their definitions from that contract as TypeScript
+mirrors, enforced by exact, bidirectional tests rather than runtime generation.
+Every consumer (web editor, Excel converter, CLI, conformance, refinement)
+continues to use the same pack objects and Excel bindings.
 
 - **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
   `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
-  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `LAND_PACK`,
+  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `LAND_PACK`, `MIXED_USE_PACK`,
   `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
@@ -25,6 +29,8 @@ File | Role
 `packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
 `packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
 `packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
+`packs/mixed-use.ts` | `MIXED_USE_PACK` — property metrics and component calculations
+`packs/metric-dictionary.test.ts` | Every pack declaration and size row equals its normative dictionary entry, in both directions
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
 `packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (exact)
@@ -44,7 +50,7 @@ File | Role
 `defaults.ts`. The CLI's `refine`/`scope` and any consumer should select the pack
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
 Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
-`hospitality`, `senior_housing`, `student_housing`, `land`.
+`hospitality`, `senior_housing`, `student_housing`, `land`, `mixed_use`.
 
 ## `MULTIFAMILY_PACK`
 
@@ -365,7 +371,7 @@ to Excel equivalents (`sum→SUM`, `pmt→PMT`, `npv→NPV`, `irr→IRR`, `round
 
 > **The invariant:** the calc engine and the Excel emitter are two renderings of
 > the *same* AST. `packs.test.ts` asserts that for every metric in the pack, the
-> evaluator's number and the Excel formula's number agree **to six decimals**.
+> evaluator's number and the Excel formula's number agree **exactly after §VIII.5 quantization**.
 > If you add or change a metric, both paths must still agree, or the test fails.
 
 **Variant-map inputs (RFC 0066).** `@uwmd/excel` reads every named input from
@@ -379,7 +385,9 @@ junior, two-senior and default-junior cases.
 
 ## Recipe: add a derived metric to the multifamily pack
 
-1. Add a `ModuleCalcDecl` to `MULTIFAMILY_PACK.calculations` in
+1. Record the accepted normative definition in `spec/metrics/builtin.json`,
+   including effective precision, potential inputs and declared section roles.
+   Mirror it as a `ModuleCalcDecl` in `MULTIFAMILY_PACK.calculations` in
    `packs/multifamily.ts` — pick an `id`, `label`, `unit` (`%`/`$`/`x`), and a
    `formula` referencing real section field paths (see [07 — Data model](07-data-model-reference.md)).
 2. Make sure every field path the formula reads has an Excel named range. If the
@@ -391,16 +399,16 @@ junior, two-senior and default-junior cases.
    today), decide which block it means: declare `section_roles` for a single
    tranche, or none when it needs every tranche (it then refuses on a map).
    Keep one role per section within a pack; the workbook holds one input per path.
-3. Run `npm test` (the parity test in `packs.test.ts` will exercise it) and, if
+3. Run `npm test` (dictionary completeness and Excel parity both exercise it) and, if
    you added a Tier-3 fixture, `npm run conformance -- --tier=3`.
 
 ## Recipe: add a new built-in asset-class pack
 
 `office` was the first pack to follow this recipe — model new packs on
 `packs/office.ts` + `packs/office.test.ts`. Adding a built-in pack for an asset
-class **already in the `AssetClass` enum** is a library-only change and does **not**
-need an RFC (no `spec/` change). Only declaring a brand-new asset-class identifier
-needs RFC 0003.
+class changes the normative metric dictionary and therefore needs an RFC.
+Official new classes follow the builtin class contract; private third-party
+extensions use modules.
 
 1. Create `packs/<assetclass>.ts` exporting `const <X>_PACK: ModuleManifest` with
    `asset_classes: ['<assetclass>']` and a `calculations[]` array. Reference real
@@ -413,7 +421,9 @@ needs RFC 0003.
    file's `REGISTRY` so the cascade and refinement engine can resolve its inputs.
 4. Decide the Excel layout (named inputs/ranges) in a corresponding Excel layout
    module if Excel export is in scope.
-5. Add a parity test analogous to `packs/office.test.ts` (and Tier-3 conformance
+5. Add its normative calculation and size entries to `spec/metrics/builtin.json`;
+   dictionary parity must prove completeness. Add a parity test analogous to
+   `packs/office.test.ts` (and Tier-3 conformance
    fixtures if needed).
 
 > **You should not have to touch the "unregistered class" negative tests.** They

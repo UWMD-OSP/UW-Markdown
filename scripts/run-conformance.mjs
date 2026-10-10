@@ -26,6 +26,9 @@ import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/ind
 //
 // Exit codes: 0 = all passed, 1 = at least one failure.
 
+import { isDeepStrictEqual } from 'node:util';
+import { verifyExamples } from '../conformance/metrics/verifier.mjs';
+import { controls as metricControls } from '../conformance/metrics/controls.mjs';
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve, join, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -129,7 +132,7 @@ const flagVal = (name) => {
   const a = args.find((x) => x.startsWith(`--${name}=`));
   return a ? a.slice(name.length + 3) : undefined;
 };
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,scenario,reserve-accounts,reserve-draw-bindings,meta-v2,migrate').split(',').map((s) => s.trim()).filter(Boolean);
+const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,scenario,reserve-accounts,reserve-draw-bindings,meta-v2,migrate,metrics').split(',').map((s) => s.trim()).filter(Boolean);
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -4438,6 +4441,21 @@ const dispatch = {
   'capability': async () => { await runCapability(); },
   'locale': async () => { await runLocale(); },
   'currency': async () => { await runCurrency(); },
+  'metrics': async () => {
+    const expected = readCase(join(CONFORMANCE_DIR, 'metrics'), 'expected.json');
+    const actual = verifyExamples(ROOT);
+    const wanted = new Map(expected.map(e => [e.example, e]));
+    for (const result of actual) {
+      record('metrics', result.example, isDeepStrictEqual(result, wanted.get(result.example)) ? 'pass' : 'fail',
+        `${result.counts.verified} verified, ${result.counts.failed} failed, ${result.counts.unverifiable} unverifiable (recorded findings)`);
+      wanted.delete(result.example);
+    }
+    for (const missing of wanted.keys()) record('metrics', missing, 'fail', 'Expected example missing');
+    for (const [name, run] of metricControls(ROOT)) {
+      try { run(); record('metrics', name, 'pass'); }
+      catch (error) { record('metrics', name, 'fail', error.message); }
+    }
+  },
   'size-intensive': async () => { await runSizeIntensive(); },
   'signing': async () => { await runSigning(); },
   'sensitivity': async () => { await runSensitivity(); },
