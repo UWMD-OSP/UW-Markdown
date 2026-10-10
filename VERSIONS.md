@@ -21,7 +21,7 @@ same protocol version.
 ## Current matrix
 
 Release 2.21.0 pairs core/CLI 2.21.0 with Protocol 2.25.0 and Format 2.0.
-Protocol 2.25.0 carries one accepted RFC: RFC 0065's `RDB-NN` reserve draw
+Protocol 2.25.0 carries one RFC: RFC 0065's `RDB-NN` reserve draw
 binding code family (§III.6a) with its separately invoked verifier binding
 reserve draws to gross expenditure (§VIII.12). It adds no module capability, so no
 new §X `requires_protocol` floor applies. Format stays 2.0: RFC 0065 adds only
@@ -30,8 +30,18 @@ section or required field. Signing 0.2.25, batch 0.8.20, Excel 0.9.13, report
 0.8.25, lake 0.2.9 and both module packages 0.1.13 pin core 2.21.0 exactly.
 Core's optional signing peer is 0.2.25. The workflow scope is core, CLI,
 signing, batch and both module packages. Excel, report and lake remain
-source-only. Module manifest contracts remain 0.1.0. Release preparation and
-subsequent publication evidence are separate records.
+source-only. Module manifest contracts remain 0.1.0. RFC 0065 is implemented;
+Protocol 2.25.0 is Stable. Core/CLI 2.21.0, signing 0.2.25, batch 0.8.20 and
+both modules 0.1.13 are published from immutable annotated `v2.21.0` on
+`6e5ffaf75425d35554c57d72bea28c59c6047839` through trusted publishing with
+provenance. Release run 38088657045 succeeded; all registry versions,
+`latest`, `gitHead`, signatures, attestations, Rekor checks, 498 published
+files, 325 delivered-CLI portable cases (46 of them RFC 0065 binding cases),
+the published `verify-reserve-draws` command and an isolated consumer of both
+modules were independently verified. No other package generation shipped.
+Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.21.0-publication.md)
+remain separate records.
 
 Release 2.20.0 pairs core/CLI 2.20.0 with Protocol 2.24.0 and Format 2.0.
 Protocol 2.24.0 carries two RFCs: RFC 0072's `DQ-07`–`DQ-09`

@@ -10,6 +10,28 @@ protocol, and each package each carry an independent semver).
 
 ## [2.21.0] - 2026-10-10
 
+### Released
+
+Published core/CLI **2.21.0**, signing **0.2.25**, batch **0.8.20** and
+`@uwmd/module-hospitality` and `@uwmd/module-data-center` **0.1.13** from
+annotated `v2.21.0` on `6e5ffaf75425d35554c57d72bea28c59c6047839`.
+[Release run 38088657045](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38088657045)
+succeeded through trusted publishing with provenance. Every registry version
+and `latest` matches, and all six `gitHead` values name the authorized commit.
+Integrity, registry and DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps and inclusion proofs, and all 498 published file contents
+verify. The registry-installed CLI passes **325/325** portable cases with no
+skips, including all 46 RFC 0065 `reserve-draw-bindings/*` cases, and its
+`verify-reserve-draws` verifies a synthetic split draw to the cent and refuses
+a one-cent funded-share mismatch with `RDB-08`. An isolated consumer runs both
+modules' 11 runtime fixtures and compiles strict TypeScript with
+`skipLibCheck: false` and no Anthropic SDK. RFC 0065 is `implemented`;
+Protocol **2.25.0** is Stable, paired with Format **2.0**. No other package
+generation was published. The immutable tagged tree keeps its neutral
+preparation records. Exact evidence is in
+`docs/releases/2.21.0-publication-evidence.json` and the verification method
+in `docs/releases/2.21.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **2.21.0** pair with Protocol **2.25.0** and Format **2.0**.
@@ -19,10 +41,11 @@ Core's optional signing peer is **0.2.25**. Each dependent takes its existing
 patch-version step for the exact repin. The workflow scope is six packages:
 core, CLI, signing, batch, `@uwmd/module-hospitality` and
 `@uwmd/module-data-center`. Excel, report and lake remain source-only. Module
-manifest contracts stay **0.1.0**. RFC 0065 stays `accepted` in the tagged
-preparation state.
+manifest contracts stay **0.1.0**. RFC 0065 stayed `accepted` in the tagged
+preparation state; the Released evidence above records its verified lifecycle
+transition.
 
-### Contract — Protocol 2.25.0 (RFC 0065), Format 2.0
+### Released contract — Protocol 2.25.0 (RFC 0065), Format 2.0
 
 - **Protocol 2.25.0** carries RFC 0065's `RDB-01`–`RDB-09` code family and
   its separately invoked reserve draw binding verifier (§VIII.12). The codes

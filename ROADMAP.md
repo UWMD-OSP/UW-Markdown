@@ -1,17 +1,16 @@
 # Roadmap
 
-Reconciled **2026-10-10** (America/Phoenix) for release-prepared **2.21.0**
-(Protocol **2.25.0**, Format **2.0**). The current published release remains
-**2.20.0**, pairing core/CLI 2.20.0 with Stable Protocol **2.24.0** and Format
-**2.0**.
+Reconciled **2026-10-10** (America/Phoenix) for published and independently
+verified **2.21.0**, pairing core/CLI 2.21.0 with Stable Protocol **2.25.0**
+and unchanged Format **2.0**. No accepted RFC is waiting for a release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 2.21.0
+## Current published release: 2.21.0
 
 Core/CLI **2.21.0** pair with Protocol **2.25.0** and Format **2.0**. The
-generation carries one accepted RFC:
+generation carries one RFC:
 - **RFC 0065:** an optional external, digested plan binds selected RFC 0064
   internal reserve draws to already-stated gross expenditures, checked by a
   separately invoked verifier (§VIII.12) with `RDB-01`–`RDB-09` findings and
@@ -20,10 +19,12 @@ generation carries one accepted RFC:
 
 Format stays 2.0. Signing 0.2.25, batch 0.8.20 and both module packages
 0.1.13 join core and CLI in the six-package workflow. No new §X floor applies.
-RFC 0065 remains `accepted` until shipment and independently verified
-publication.
+RFC 0065 is `implemented` after shipment and independently verified
+publication. Release run 38088657045 and independent registry/provenance/
+published-file/CLI/module-consumer checks pass. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.21.0-publication.md).
 
-## Current published release: 2.20.0
+## Historical publication: 2.20.0
 
 Core/CLI **2.20.0** pair with Protocol **2.24.0** and Format **2.0**. The
 generation carries two RFCs and one change outside the contract:
@@ -365,13 +366,15 @@ no additional financial assumptions are supplied by the released adapter.
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
 | 5 | Property reserve-account state | **RFC 0064 released in 2.20.0** and implemented | Optional `reserve_accounts` §4.28; separately invoked balance identity/claimed-continuity verification at the existing currency quantum. Gross expenditure and RFC 0045 refusal unchanged; draw binding is row 6 (RFC 0065). |
-| 6 | Reserve draw-to-gross-expenditure binding | RFC 0065 accepted and implemented (PR #293); prepared for 2.21.0 | Optional digested plan and §VIII.12 verifier, exact source identities, full selected-draw allocation, explicit funded shares and RDB-01–09 findings. No netting or RFC 0045 admission change; external transfers and owner-cash/financing assembly remain separate. |
+| 6 | Reserve draw-to-gross-expenditure binding | **RFC 0065 released in 2.21.0** and implemented (PR #293) | Optional digested plan and §VIII.12 verifier, exact source identities, full selected-draw allocation, explicit funded shares and RDB-01–09 findings. No netting or RFC 0045 admission change; external transfers and owner-cash/financing assembly remain separate. |
 | 7 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
 
 [RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md) (PR #290)
 shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented**. Its
-property-custody verifier leaves RFC 0045's reserve refusal intact. RFC 0065
-draw-to-expenditure binding and owner-cash assembly remain separate contracts.
+property-custody verifier leaves RFC 0045's reserve refusal intact.
+[RFC 0065](docs/rfcs/0065-reserve-draw-gross-expenditure-binding.md) (PR #293)
+draw-to-expenditure binding shipped separately in 2.21.0 with Stable Protocol
+2.25.0 and is **implemented**. Owner-cash assembly remains a separate contract.
 
 ### Adoption and integration candidates
 
@@ -406,7 +409,7 @@ product specification; lease economics and cash timing are.
 - **Official module publication:** hospitality and data-center are approved together
   as public npm packages. Both first published at 0.1.10 with core 2.18.0, through
   the ordinary release workflow after the account bootstrap and trusted-publisher
-  setup; 0.1.11 followed with core 2.19.0 and 0.1.12 with core 2.20.0. Package semver is separate from the 0.1.0 manifest contracts; exact core
+  setup; 0.1.11 followed with core 2.19.0, 0.1.12 with core 2.20.0 and 0.1.13 with core 2.21.0. Package semver is separate from the 0.1.0 manifest contracts; exact core
   pins and explicit host loading remain.
 - **Standalone Excel/report publication:** implemented current packages remain
   source-only until a consumer and supported distribution scope are chosen.

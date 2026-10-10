@@ -1,8 +1,9 @@
 ---
 rfc: 0065
 title: Bind a stated reserve draw to an already-stated gross expenditure
-status: accepted
+status: implemented
 accepted: 2026-10-10
+implemented: 2026-10-10
 author: codex
 created: 2026-09-29
 depends_on:
@@ -117,9 +118,11 @@ No optional plan means exactly the current document validation and assembly
 behavior, including reserve refusals. Existing files require no edits. Both
 format generations can be supplied to the companion verifier. PR #293 carries
 the implementation and recorded acceptance when it merged on 2026-10-10.
-Format stays 2.0. Release preparation pairs it with Protocol 2.25.0 and
-core/CLI 2.21.0. The RFC stays `accepted` until a release ships it and
-publication is verified.
+Format stays 2.0. Release preparation paired it with Protocol 2.25.0 and
+core/CLI 2.21.0. **Implemented; released and independently verified.** The
+`v2.21.0` release published it in core/CLI 2.21.0 with Stable Protocol 2.25.0,
+and independent publication verification passed (see
+[Publication and verification](#publication-and-verification-2026-10-10)).
 
 `conformance/reserve-draw-bindings/` carries independently authored synthetic
 source/plan/expected triples. Cases cover one-to-one, one-to-many, many-to-many,
@@ -143,3 +146,17 @@ transfers, not an internal draw. A source category or timestamp does not choose 
 variant. Inferring missing accounts, movements, expenses, dates or shares cannot
 establish an attributable binding. Release preparation and Claude Code's merge
 remain separate steps after this RFC and its implementation are reviewed.
+
+## Publication and verification (2026-10-10)
+
+Annotated `v2.21.0` targets the release-prepared merge
+`6e5ffaf75425d35554c57d72bea28c59c6047839` (PR #295).
+[Release run 38088657045](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38088657045)
+succeeded and published core/CLI 2.21.0, signing 0.2.25, batch 0.8.20 and
+both modules 0.1.13. Independent registry, provenance, published-file,
+delivered-CLI (325/325, including all 46 `reserve-draw-bindings/*` cases),
+published `verify-reserve-draws` and module-consumer checks passed; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.21.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section above
+remain unchanged.
