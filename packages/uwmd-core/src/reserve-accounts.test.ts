@@ -46,6 +46,15 @@ describe('RFC 0064 stated custody balances', () => {
         .map((i) => i.code),
     );
   });
+  it('retains later finite evidence and balance findings after nonfinite arithmetic', async () => {
+    const result = await verifyReserveAccounts(parseUWFile(fixture('overflow-then-finite-periods')));
+    expect(result.state).toBe('unverifiable');
+    expect(result.reason).toBe('nonfinite_arithmetic');
+    expect(result.issues.map((i) => i.code)).toEqual(['RSV-08', 'RSV-06']);
+    expect(result.evidence.map((e) => e.period_id)).toEqual(['feb', 'mar']);
+    expect(result.evidence.every((e) => Number.isFinite(e.computed_ending_balance))).toBe(true);
+    expect(result.source_digest).toBeTypeOf('string');
+  });
   it('preserves gross expenditure, source pointers, raw balances and the full semantic digest', async () => {
     const p = fresh();
     const result = await verifyReserveAccounts(p);

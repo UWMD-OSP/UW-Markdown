@@ -92,7 +92,7 @@ source rows, cash-flow series, gross expenditure or host provenance.
 | `RSV-05` | structural error | Period/movement order or explicit predecessor invalid. |
 | `RSV-06` | verifier error | Ending balance disagrees at the existing quantum. |
 | `RSV-07` | verifier error | Explicitly claimed continuity disagrees at that quantum. |
-| `RSV-08` | verifier error | Binary64 arithmetic/quantization is nonfinite. |
+| `RSV-08` | verifier error | Binary64 balance arithmetic is nonfinite. |
 
 Results are `not_checked / not_applicable` on absence, `unverifiable` on
 invalid structure, unavailable source digest or nonfinite arithmetic,

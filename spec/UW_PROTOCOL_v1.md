@@ -3111,14 +3111,17 @@ movements, project draws, accrue interest or derive releases.
    balance separately at the existing currency quantum (2dp), half-away-from-zero
    per §VIII.5. They MUST be equal; no tolerance beyond this quantum is added.
    A disagreement emits `RSV-06` at the period's `ending_balance`.
+   Sub-cent amounts are judged in binary64, so a half-cent sum can differ
+   from exact decimal arithmetic.
 5. Only when `previous_period_id` explicitly claims continuity, compare this
    opening balance with the immediately preceding stated ending balance at
    the same quantum. A disagreement emits `RSV-07` at `opening_balance`.
    This checks a claimed balance boundary, never source completeness or a
    financial timing convention. Gaps are never populated.
-6. Any nonfinite arithmetic or quantization returns `unverifiable /
+6. Any nonfinite balance arithmetic returns `unverifiable /
    nonfinite_arithmetic` with `RSV-08`; never serialize a nonfinite balance
-   as a result. Otherwise return `failed` if any balance disagrees, or
+   as a result; continue checking all remaining periods. Otherwise return
+   `failed` if any balance disagrees, or
    `verified`. Return all finite item-level evidence and typed findings.
 
 The wire types in `protocol.ts` and

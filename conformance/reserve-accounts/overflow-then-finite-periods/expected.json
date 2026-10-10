@@ -1,0 +1,11 @@
+{
+  "state": "unverifiable",
+  "issues": [
+    {
+      "code": "RSV-08"
+    },
+    {
+      "code": "RSV-06"
+    }
+  ]
+}

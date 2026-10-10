@@ -27,6 +27,7 @@ export async function verifyReserveAccounts(
   }
   const evidence: ReservePeriodEvidence[] = [];
   const issues: ReserveAccountsVerification['issues'] = [];
+  let nonfiniteArithmetic = false;
   for (const { variant, payload } of structure.sections) {
     for (const [ai, account] of payload.accounts.entries()) {
       for (const [pi, period] of account.periods.entries()) {
@@ -62,23 +63,18 @@ export async function verifyReserveAccounts(
             },
           });
         if (!Number.isFinite(ending)) {
-          issue('RSV-08', '', 'Balance arithmetic or currency quantization is nonfinite');
-          // A nonfinite number cannot enter a JSON verification result.
-          return {
-            state: 'unverifiable',
-            reason: 'nonfinite_arithmetic',
-            source_digest,
-            evidence,
-            issues,
-          };
+          nonfiniteArithmetic = true;
+          issue('RSV-08', '', 'Balance arithmetic is nonfinite');
+          // Omit this nonfinite balance, but retain later finite evidence and findings.
+        } else {
+          evidence.push(item);
+          if (quantizeAtDecimals(ending, 2) !== quantizeAtDecimals(period.ending_balance, 2))
+            issue(
+              'RSV-06',
+              '.ending_balance',
+              'Stated ending balance disagrees with opening plus stated movements at the currency quantum',
+            );
         }
-        evidence.push(item);
-        if (quantizeAtDecimals(ending, 2) !== quantizeAtDecimals(period.ending_balance, 2))
-          issue(
-            'RSV-06',
-            '.ending_balance',
-            'Stated ending balance disagrees with opening plus stated movements at the currency quantum',
-          );
         if (
           period.previous_period_id !== undefined &&
           quantizeAtDecimals(period.opening_balance, 2) !==
@@ -92,5 +88,11 @@ export async function verifyReserveAccounts(
       }
     }
   }
-  return { state: issues.length ? 'failed' : 'verified', source_digest, evidence, issues };
+  return {
+    state: nonfiniteArithmetic ? 'unverifiable' : issues.length ? 'failed' : 'verified',
+    ...(nonfiniteArithmetic ? { reason: 'nonfinite_arithmetic' as const } : {}),
+    source_digest,
+    evidence,
+    issues,
+  };
 }
