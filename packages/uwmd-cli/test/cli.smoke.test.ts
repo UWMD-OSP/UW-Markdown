@@ -1,10 +1,13 @@
-import { spawnSync } from 'node:child_process';
+import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { describe, it, expect } from 'vitest';
-import { quantizeDecimal } from '@uwmd/core';
+import { afterAll, beforeAll, describe, it, expect, vi } from 'vitest';
+import { quantizeDecimal, evaluateCalc, parseUWFile, parseCalculationContext } from '@uwmd/core';
+
+// These tests exercise built executables, stdout/stderr and exit codes.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI_BIN = resolve(__dirname, '..', 'bin', 'uwmd.mjs');
@@ -48,22 +51,22 @@ function exampleFixture(filename: string) {
 }
 
 function runCli(args: string[]) {
-  return spawnSync(process.execPath, [CLI_BIN, ...args], { encoding: 'utf8' });
+  return spawnCli(process.execPath, [CLI_BIN, ...args], { encoding: 'utf8' });
 }
 
 function runCliBinary(args: string[]) {
-  return spawnSync(process.execPath, [CLI_BIN, ...args]);
+  return spawnCli(process.execPath, [CLI_BIN, ...args]);
 }
 
 describe('uwmd CLI', () => {
-  it('prints help on --help with exit code 0', () => {
-    const r = runCli(['--help']);
+  it('prints help on --help with exit code 0', async () => {
+    const r = await runCli(['--help']);
     expect(r.status).toBe(0);
     expect(r.stdout).toMatch(/uwmd/i);
   });
 
-  it('parses the bundled Parkview fixture to JSON on stdout', () => {
-    const r = runCli(['parse', FIXTURE]);
+  it('parses the bundled Parkview fixture to JSON on stdout', async () => {
+    const r = await runCli(['parse', FIXTURE]);
     expect(r.status).toBe(0);
     const parsed = JSON.parse(r.stdout);
     expect(parsed).toMatchObject({
@@ -73,8 +76,8 @@ describe('uwmd CLI', () => {
     });
   });
 
-  it('parses a UW Lite document with typed anchored fields', () => {
-    const r = runCli(['parse', LITE_FIXTURE]);
+  it('parses a UW Lite document with typed anchored fields', async () => {
+    const r = await runCli(['parse', LITE_FIXTURE]);
     expect(r.status).toBe(0);
     const parsed = JSON.parse(r.stdout);
     expect(parsed).toMatchObject({
@@ -91,8 +94,8 @@ describe('uwmd CLI', () => {
     );
   });
 
-  it('validates a UW Lite document without treating it as UWX', () => {
-    const r = runCli(['validate', LITE_FIXTURE, '--json']);
+  it('validates a UW Lite document without treating it as UWX', async () => {
+    const r = await runCli(['validate', LITE_FIXTURE, '--json']);
     expect(r.status).toBe(0);
     expect(JSON.parse(r.stdout)).toMatchObject({
       representation: 'uw-lite-markdown',
@@ -101,8 +104,8 @@ describe('uwmd CLI', () => {
     });
   });
 
-  it('compiles UW Lite to structured UWX on stdout', () => {
-    const r = runCli(['convert', LITE_FIXTURE, '--to', 'uwx', '--stdout']);
+  it('compiles UW Lite to structured UWX on stdout', async () => {
+    const r = await runCli(['convert', LITE_FIXTURE, '--to', 'uwx', '--stdout']);
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('```json uw:section=valuation');
     expect(r.stdout).toContain('"purchase_price": 12500000');
@@ -110,8 +113,8 @@ describe('uwmd CLI', () => {
   });
 
   describe('the shipped UW Lite example', () => {
-    it('validates clean', () => {
-      const r = runCli(['validate', LITE_EXAMPLE, '--json']);
+    it('validates clean', async () => {
+      const r = await runCli(['validate', LITE_EXAMPLE, '--json']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout)).toMatchObject({
         representation: 'uw-lite-markdown',
@@ -120,8 +123,8 @@ describe('uwmd CLI', () => {
       });
     });
 
-    it('carries the same inputs as its .uwx.md twin', () => {
-      const r = runCli(['convert', LITE_EXAMPLE, '--to', 'uwx', '--stdout']);
+    it('carries the same inputs as its .uwx.md twin', async () => {
+      const r = await runCli(['convert', LITE_EXAMPLE, '--to', 'uwx', '--stdout']);
       expect(r.status).toBe(0);
       expect(r.stdout).toContain('"purchase_price": 7200000');
       expect(r.stdout).toContain('"net_operating_income": 396635');
@@ -133,12 +136,12 @@ describe('uwmd CLI', () => {
 
     // The example's prose states these four numbers. They are derived, never
     // stored, so this pins the claim to what the pack actually computes.
-    it('derives the metrics its prose quotes', () => {
+    it('derives the metrics its prose quotes', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-lite-example-'));
       try {
         const compiled = resolve(temp, 'compiled.uwx.md');
         expect(
-          runCli(['convert', LITE_EXAMPLE, '--to', 'uwx', '--output', compiled]).status,
+          (await runCli(['convert', LITE_EXAMPLE, '--to', 'uwx', '--output', compiled])).status,
         ).toBe(0);
 
         const cases: Array<[string, string]> = [
@@ -148,24 +151,24 @@ describe('uwmd CLI', () => {
           ['noi_model.net_operating_income / debt_structure.loan_amount', '0.0787'],
         ];
 
-        for (const [formula, expected] of cases) {
-          const calcPath = resolve(temp, 'calc.json');
-          writeFileSync(calcPath, JSON.stringify({ formula }));
-          const r = runCli(['calc', compiled, calcPath]);
-          expect(r.status).toBe(0);
-          expect(r.stdout).toContain(expected);
-        }
+        const calcPath = resolve(temp, 'metrics.json');
+        writeFileSync(calcPath, JSON.stringify(cases.map(([formula]) => ({ formula }))));
+        const result = await runCli(['calc', compiled, calcPath]);
+        expect(result.status).toBe(0);
+        const lines = result.stdout.trim().split('\n');
+        expect(lines).toHaveLength(cases.length);
+        for (const [index, [, expected]] of cases.entries()) expect(lines[index]).toContain(expected);
       } finally {
         rmSync(temp, { recursive: true, force: true });
       }
     });
   });
 
-  it('writes an explicit omission report for lossy UWX-to-Lite projection', () => {
+  it('writes an explicit omission report for lossy UWX-to-Lite projection', async () => {
     const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-lite-'));
     try {
       const reportPath = resolve(temp, 'projection.json');
-      const r = runCli([
+      const r = await runCli([
         'convert',
         FIXTURE,
         '--to',
@@ -192,8 +195,8 @@ describe('uwmd CLI', () => {
     const moduleFixture = (kind: string, name: string) =>
       resolve(__dirname, '..', '..', '..', 'conformance', 'modules', kind, name);
 
-    it('validates conforming manifests and exits 0', () => {
-      const r = runCli([
+    it('validates conforming manifests and exits 0', async () => {
+      const r = await runCli([
         'modules', 'validate',
         moduleFixture('accept', '01-minimal.module.json'),
         moduleFixture('accept', '02-full-surface.module.json'),
@@ -203,8 +206,8 @@ describe('uwmd CLI', () => {
       expect(r.stdout).toContain('2/2 manifest(s) loaded');
     });
 
-    it('exits non-zero and points at the failing declaration', () => {
-      const r = runCli([
+    it('exits non-zero and points at the failing declaration', async () => {
+      const r = await runCli([
         'modules', 'validate',
         moduleFixture('reject', '02-agent-layer-malformed.module.json'),
       ]);
@@ -214,8 +217,8 @@ describe('uwmd CLI', () => {
       expect(r.stdout).toContain('PROTO-MOD-060');
     });
 
-    it('lists the registry that a set of manifests forms', () => {
-      const r = runCli([
+    it('lists the registry that a set of manifests forms', async () => {
+      const r = await runCli([
         'modules', 'list',
         moduleFixture('accept', '02-full-surface.module.json'),
         '--tier', 'tier-4-agent-host',
@@ -232,8 +235,8 @@ describe('uwmd CLI', () => {
       ]);
     });
 
-    it('refuses to list a registry it could not build', () => {
-      const r = runCli([
+    it('refuses to list a registry it could not build', async () => {
+      const r = await runCli([
         'modules', 'list',
         moduleFixture('reject', '01-unknown-top-level-key.module.json'),
       ]);
@@ -243,7 +246,7 @@ describe('uwmd CLI', () => {
   });
 
   describe('deal packages (RFC 0018)', () => {
-    const buildPackage = (temp: string) => {
+    const createPackageFixture = async (temp: string) => {
       const { createHash } = require('node:crypto') as typeof import('node:crypto');
       const { mkdirSync } = require('node:fs') as typeof import('node:fs');
       mkdirSync(resolve(temp, 'records'), { recursive: true });
@@ -274,19 +277,27 @@ describe('uwmd CLI', () => {
       const manifestPath = resolve(temp, 'manifest.json');
       writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
       const zipPath = resolve(temp, 'smoke.uwpkg.zip');
-      expect(runCli(['package', 'create', manifestPath, '--output', zipPath]).status).toBe(0);
+      expect((await runCli(['package', 'create', manifestPath, '--output', zipPath])).status).toBe(0);
       return { manifestPath, zipPath };
     };
 
-    it('creates, lists, and verifies a package', () => {
+    // Build through the shipped CLI once; each test gets independent copies.
+    const template = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-template-'));
+    beforeAll(async () => { await createPackageFixture(template); });
+    afterAll(() => rmSync(template, { recursive: true, force: true }));
+    const buildPackage = (temp: string) => {
+      cpSync(template, temp, { recursive: true });
+      return { manifestPath: resolve(temp, 'manifest.json'), zipPath: resolve(temp, 'smoke.uwpkg.zip') };
+    };
+    it('creates, lists, and verifies a package', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
       try {
         const { zipPath } = buildPackage(temp);
-        const list = runCli(['package', 'list', zipPath, '--json']);
+        const list = await runCli(['package', 'list', zipPath, '--json']);
         expect(list.status).toBe(0);
         expect(JSON.parse(list.stdout).members).toHaveLength(2);
 
-        const verify = runCli(['package', 'verify', zipPath, '--json']);
+        const verify = await runCli(['package', 'verify', zipPath, '--json']);
         expect(verify.status).toBe(0);
         expect(JSON.parse(verify.stdout).status).toBe('verified');
       } finally {
@@ -295,11 +306,11 @@ describe('uwmd CLI', () => {
     });
 
     // The rule the context view exists to enforce.
-    it('never inlines source-evidence bytes into a context view', () => {
+    it('never inlines source-evidence bytes into a context view', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
       try {
         const { zipPath } = buildPackage(temp);
-        const ctx = runCli(['package', 'to-context', zipPath, '--stdout']);
+        const ctx = await runCli(['package', 'to-context', zipPath, '--stdout']);
         expect(ctx.status).toBe(0);
         const parsed = JSON.parse(ctx.stdout);
         expect(Object.keys(parsed.contents)).toEqual(['deal:smoke']);
@@ -312,11 +323,11 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('projects only entity-layer links, with synthesized provenance', () => {
+    it('projects only entity-layer links, with synthesized provenance', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
       try {
         const { zipPath } = buildPackage(temp);
-        const edges = JSON.parse(runCli(['package', 'edges', zipPath]).stdout);
+        const edges = JSON.parse((await runCli(['package', 'edges', zipPath])).stdout);
         expect(edges).toHaveLength(1);
         expect(edges[0].type).toBe('guarantees');
         expect(edges[0].provenance[0].source).toBe('pkg:smoke:1');
@@ -325,13 +336,13 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('exits non-zero when a member no longer matches the manifest', () => {
+    it('exits non-zero when a member no longer matches the manifest', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
       try {
         const { manifestPath, zipPath } = buildPackage(temp);
         // Change the payload after the manifest was written: encoding must refuse.
         writeFileSync(resolve(temp, 'records', 'deal.uwx.md'), 'tampered\n', 'utf8');
-        const rebuilt = runCli(['package', 'create', manifestPath, '--output', zipPath]);
+        const rebuilt = await runCli(['package', 'create', manifestPath, '--output', zipPath]);
         expect(rebuilt.status).toBe(1);
         expect(rebuilt.stderr).toContain('digest does not match');
       } finally {
@@ -340,16 +351,16 @@ describe('uwmd CLI', () => {
     });
   });
 
-  it('validates the bundled fixture without errors', () => {
-    const r = runCli(['validate', FIXTURE]);
+  it('validates the bundled fixture without errors', async () => {
+    const r = await runCli(['validate', FIXTURE]);
     expect(r.status).toBe(0);
   });
 
   describe('a role-bearing debt map (RFC 0066)', () => {
     const roles = resolve(__dirname, '..', '..', '..', 'conformance', 'tier-1-reader', 'fixtures', '10-declared-roles.uwx.md');
 
-    it('scope reports a debt field it cannot select as refused, not defaulted', () => {
-      const r = runCli(['scope', roles, '--json']);
+    it('scope reports a debt field it cannot select as refused, not defaulted', async () => {
+      const r = await runCli(['scope', roles, '--json']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout).resolved['debt_structure.rate_pct']).toMatchObject({
         value: null,
@@ -358,16 +369,16 @@ describe('uwmd CLI', () => {
       });
     });
 
-    it('refine excludes only cash_on_cash and names why', () => {
-      const r = runCli(['refine', roles, '--json']);
+    it('refine excludes only cash_on_cash and names why', async () => {
+      const r = await runCli(['refine', roles, '--json']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout).diagnostics.section_inputs).toEqual([
         expect.objectContaining({ output_id: 'cash_on_cash', section: 'debt_structure', code: 'CALC-RESOLVE-002' }),
       ]);
-      expect(runCli(['refine', roles]).stdout).toContain('Excluded cash_on_cash: debt_structure [CALC-RESOLVE-002]');
+      expect((await runCli(['refine', roles])).stdout).toContain('Excluded cash_on_cash: debt_structure [CALC-RESOLVE-002]');
     });
 
-    it('calc reads the senior block for a declared role and refuses without one', () => {
+    it('calc reads the senior block for a declared role and refuses without one', async () => {
       const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-rfc0066-'));
       try {
         const decl = { id: 'ltv', label: 'LTV', formula: 'debt_structure.loan_amount / valuation.underwritten_value', unit: '%', deterministic: true };
@@ -375,10 +386,10 @@ describe('uwmd CLI', () => {
         const plain = resolve(dir, 'plain.json');
         writeFileSync(senior, JSON.stringify({ ...decl, section_roles: { debt_structure: 'senior' } }));
         writeFileSync(plain, JSON.stringify(decl));
-        const ok = runCli(['calc', roles, senior, '--json']);
+        const ok = await runCli(['calc', roles, senior, '--json']);
         expect(ok.status).toBe(0);
         expect(JSON.parse(ok.stdout)).toMatchObject({ ok: true, value: 0.6 });
-        const refused = runCli(['calc', roles, plain, '--json']);
+        const refused = await runCli(['calc', roles, plain, '--json']);
         expect(refused.status).toBe(1);
         expect(JSON.parse(refused.stdout)).toMatchObject({ ok: false, error: { code: 'CALC-RESOLVE-002' } });
       } finally {
@@ -390,8 +401,8 @@ describe('uwmd CLI', () => {
   describe.each(ASSET_CLASS_FIXTURES)('%s example', (assetClass, filename) => {
     const fixture = exampleFixture(filename);
 
-    it('resolves scope with its registered default table', () => {
-      const r = runCli(['scope', fixture, '--json']);
+    it('resolves scope with its registered default table', async () => {
+      const r = await runCli(['scope', fixture, '--json']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout)).toMatchObject({
         asset_class: assetClass,
@@ -399,8 +410,8 @@ describe('uwmd CLI', () => {
       });
     });
 
-    it('ranks refinement gaps as JSON', () => {
-      const r = runCli(['refine', fixture, '--json']);
+    it('ranks refinement gaps as JSON', async () => {
+      const r = await runCli(['refine', fixture, '--json']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout)).toMatchObject({
         by_voi: expect.any(Array),
@@ -412,8 +423,8 @@ describe('uwmd CLI', () => {
       });
     });
 
-    it('exports a document envelope that retains the asset class', () => {
-      const r = runCli(['export', fixture, '--stdout']);
+    it('exports a document envelope that retains the asset class', async () => {
+      const r = await runCli(['export', fixture, '--stdout']);
       expect(r.status).toBe(0);
       expect(JSON.parse(r.stdout)).toMatchObject({
         frontmatter: { asset_class: assetClass },
@@ -422,8 +433,8 @@ describe('uwmd CLI', () => {
     });
   });
 
-  it('exports a digested UW Document Envelope to stdout', () => {
-    const r = runCli(['export', FIXTURE, '--stdout']);
+  it('exports a digested UW Document Envelope to stdout', async () => {
+    const r = await runCli(['export', FIXTURE, '--stdout']);
     expect(r.status).toBe(0);
     const exported = JSON.parse(r.stdout);
     expect(exported.envelope_version).toBe('1.0');
@@ -432,8 +443,8 @@ describe('uwmd CLI', () => {
     expect(exported).not.toHaveProperty('prose');
   });
 
-  it('exports a UW Lite document as a digested UW Document Envelope', () => {
-    const r = runCli(['export', LITE_FIXTURE, '--stdout']);
+  it('exports a UW Lite document as a digested UW Document Envelope', async () => {
+    const r = await runCli(['export', LITE_FIXTURE, '--stdout']);
     expect(r.status).toBe(0);
     const exported = JSON.parse(r.stdout);
     expect(exported.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
@@ -444,22 +455,22 @@ describe('uwmd CLI', () => {
   });
 
 
-  it('converts Markdown to deterministic UW XML on stdout', () => {
-    const r = runCli(['convert', FIXTURE, '--to', 'uw-xml', '--stdout']);
+  it('converts Markdown to deterministic UW XML on stdout', async () => {
+    const r = await runCli(['convert', FIXTURE, '--to', 'uw-xml', '--stdout']);
     expect(r.status).toBe(0);
     expect(r.stdout).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>/);
     expect(r.stdout).toContain('<uw:document xmlns:uw="https://uwmd.org/ns/document/1"');
     expect(r.stdout).toMatch(/<uw:semantic_digest uw:type="string">sha256:[0-9a-f]{64}<\/uw:semantic_digest>/);
   });
 
-  it('converts verified UW XML back to UW JSON', () => {
+  it('converts verified UW XML back to UW JSON', async () => {
     const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-'));
     try {
-      const xml = runCli(['convert', FIXTURE, '--to', 'xml', '--stdout']);
+      const xml = await runCli(['convert', FIXTURE, '--to', 'xml', '--stdout']);
       expect(xml.status).toBe(0);
       const xmlPath = resolve(temp, 'deal.uw.xml');
       writeFileSync(xmlPath, xml.stdout, 'utf8');
-      const json = runCli(['convert', xmlPath, '--to', 'json', '--stdout']);
+      const json = await runCli(['convert', xmlPath, '--to', 'json', '--stdout']);
       expect(json.status).toBe(0);
       const envelope = JSON.parse(json.stdout);
       expect(envelope.envelope_version).toBe('1.0');
@@ -468,15 +479,15 @@ describe('uwmd CLI', () => {
       rmSync(temp, { recursive: true, force: true });
     }
   });
-  it('converts Markdown to a CSV bundle ZIP and back to verified JSON', () => {
+  it('converts Markdown to a CSV bundle ZIP and back to verified JSON', async () => {
     const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-csv-'));
     try {
-      const zip = runCliBinary(['convert', FIXTURE, '--to', 'csv', '--stdout']);
+      const zip = await runCliBinary(['convert', FIXTURE, '--to', 'csv', '--stdout']);
       expect(zip.status).toBe(0);
       expect(zip.stdout.subarray(0, 4)).toEqual(Buffer.from([0x50, 0x4b, 0x03, 0x04]));
       const zipPath = resolve(temp, 'deal.uw.csv.zip');
       writeFileSync(zipPath, zip.stdout);
-      const json = runCli(['convert', zipPath, '--to', 'json', '--stdout']);
+      const json = await runCli(['convert', zipPath, '--to', 'json', '--stdout']);
       expect(json.status).toBe(0);
       const envelope = JSON.parse(json.stdout);
       expect(envelope.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
@@ -484,8 +495,8 @@ describe('uwmd CLI', () => {
       rmSync(temp, { recursive: true, force: true });
     }
   });
-  it('lists registered representations for API discovery', () => {
-    const r = runCli(['formats', '--json']);
+  it('lists registered representations for API discovery', async () => {
+    const r = await runCli(['formats', '--json']);
     expect(r.status).toBe(0);
     expect(JSON.parse(r.stdout)).toContainEqual(
       expect.objectContaining({ id: 'uw-json', fidelity: 'model' }),
@@ -503,8 +514,8 @@ describe('uwmd CLI', () => {
       expect.objectContaining({ id: 'uwx-markdown', fidelity: 'source' }),
     );
   });
-  it('exits non-zero on a missing file', () => {
-    const r = runCli(['parse', resolve(__dirname, 'this-file-does-not-exist.uw.md')]);
+  it('exits non-zero on a missing file', async () => {
+    const r = await runCli(['parse', resolve(__dirname, 'this-file-does-not-exist.uw.md')]);
     expect(r.status).not.toBe(0);
   });
 
@@ -512,13 +523,13 @@ describe('uwmd CLI', () => {
   // bugs below survived the .uwx.md migration. They are user-visible filenames,
   // so they are worth pinning.
   describe('default output paths use .uwx.md', () => {
-    it('init writes .uwx.md, not the legacy .uw.md', () => {
+    it('init writes .uwx.md, not the legacy .uw.md', async () => {
       // `generateBlankUWFile()` emits structured UWX content. Writing it to
       // .uw.md created exactly the file the format spec forbids — and every
       // deal a newcomer scaffolded was born legacy.
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-'));
       try {
-        const r = spawnSync(process.execPath, [CLI_BIN, 'init'], { encoding: 'utf8', cwd: temp });
+        const r = await spawnCli(process.execPath, [CLI_BIN, 'init'], { encoding: 'utf8', cwd: temp });
         expect(r.status).toBe(0);
         expect(r.stdout).toContain('new-deal.uwx.md');
         expect(r.stdout).not.toMatch(/new-deal\.uw\.md/);
@@ -530,10 +541,10 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('init --name derives a .uwx.md filename', () => {
+    it('init --name derives a .uwx.md filename', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-name-'));
       try {
-        const r = spawnSync(process.execPath, [CLI_BIN, 'init', '--name', 'Cedar Court'], {
+        const r = await spawnCli(process.execPath, [CLI_BIN, 'init', '--name', 'Cedar Court'], {
           encoding: 'utf8',
           cwd: temp,
         });
@@ -544,10 +555,10 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it.each(['stabilized_acquisition', 'com.example.repositioning'])('init writes %s and independent BTR identity', scenario => {
+    it.each(['stabilized_acquisition', 'com.example.repositioning'])('init writes %s and independent BTR identity', async scenario => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-scenario-'));
       try {
-        const r = spawnSync(
+        const r = await spawnCli(
           process.execPath,
           [CLI_BIN, 'init', '--scenario', scenario, '--asset-class', 'multifamily', '--asset-subtype', 'build_to_rent', '--address', '1 Main St'],
           { encoding: 'utf8', cwd: temp },
@@ -571,10 +582,10 @@ describe('uwmd CLI', () => {
       [['--scenario', 'distressed_reo'], "got 'distressed_reo'"],
       [['--scenario', 'com.plan'], "got 'com.plan'"],
       [['--scenario'], 'got no value'],
-    ])('init %j refuses and writes nothing', (extra, message) => {
+    ])('init %j refuses and writes nothing', async (extra, message) => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-bad-scenario-'));
       try {
-        const r = spawnSync(process.execPath, [CLI_BIN, 'init', ...extra], {
+        const r = await spawnCli(process.execPath, [CLI_BIN, 'init', ...extra], {
           encoding: 'utf8',
           cwd: temp,
         });
@@ -587,16 +598,16 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('init writes awkward values so they read back exactly', () => {
+    it('init writes awkward values so they read back exactly', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-quote-'));
       try {
-        const r = spawnSync(
+        const r = await spawnCli(
           process.execPath,
           [CLI_BIN, 'init', '--name', `He said "it's ready"`, '--address', `O'Brien "C:\\deals\\North" #4: [x]`, '--output', 'q.uwx.md'],
           { encoding: 'utf8', cwd: temp },
         );
         expect(r.status).toBe(0);
-        const parsed = runCli(['parse', resolve(temp, 'q.uwx.md')]);
+        const parsed = await runCli(['parse', resolve(temp, 'q.uwx.md')]);
         expect(parsed.status).toBe(0);
         const frontmatter = JSON.parse(parsed.stdout).frontmatter;
         expect(frontmatter.deal_name).toBe(`He said "it's ready"`);
@@ -609,10 +620,10 @@ describe('uwmd CLI', () => {
     it.each([
       [['--name', 'two\nlines'], 'deal_name: line breaks'],
       [['--name'], 'deal_name: must be a string'],
-    ])('init %j refuses with a one-line error and writes nothing', (extra, message) => {
+    ])('init %j refuses with a one-line error and writes nothing', async (extra, message) => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-bad-value-'));
       try {
-        const r = spawnSync(process.execPath, [CLI_BIN, 'init', ...extra, '--output', 'bad.uwx.md'], {
+        const r = await spawnCli(process.execPath, [CLI_BIN, 'init', ...extra, '--output', 'bad.uwx.md'], {
           encoding: 'utf8',
           cwd: temp,
         });
@@ -626,14 +637,14 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('export replaces the .uwx.md suffix rather than appending to it', () => {
+    it('export replaces the .uwx.md suffix rather than appending to it', async () => {
       // Regression: `replaceUWExtension` did not list .uwx.md, so a UWX input
       // fell through to the append branch and produced deal.uwx.md.uw.json.
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-export-'));
       try {
         const dealPath = resolve(temp, 'deal.uwx.md');
         writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
-        const r = runCli(['export', dealPath]);
+        const r = await runCli(['export', dealPath]);
         expect(r.status).toBe(0);
         expect(r.stdout).toContain('deal.uw.json');
         expect(r.stdout).not.toContain('deal.uwx.md.uw.json');
@@ -642,12 +653,12 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('report replaces the .uwx.md suffix rather than appending to it', () => {
+    it('report replaces the .uwx.md suffix rather than appending to it', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-report-'));
       try {
         const dealPath = resolve(temp, 'deal.uwx.md');
         writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
-        const r = runCli(['report', dealPath]);
+        const r = await runCli(['report', dealPath]);
         expect(r.status).toBe(0);
         expect(r.stdout).toContain('deal.report.html');
         expect(r.stdout).not.toContain('deal.uwx.md.report.html');
@@ -656,7 +667,7 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('refuses a legacy structured .uw.md input (sniffing sunset at 2.0)', () => {
+    it('refuses a legacy structured .uw.md input (sniffing sunset at 2.0)', async () => {
       // RFC 0025 / format v2 §6.1: structured content under the legacy
       // .uw.md name is SOURCE_LEGACY_STRUCTURED — the fix is a byte-identical
       // rename to .uwx.md, which the error message states.
@@ -664,7 +675,7 @@ describe('uwmd CLI', () => {
       try {
         const dealPath = resolve(temp, 'legacy.uw.md');
         writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
-        const r = runCli(['export', dealPath]);
+        const r = await runCli(['export', dealPath]);
         expect(r.status).not.toBe(0);
         expect(`${r.stdout}${r.stderr}`).toContain('SOURCE_LEGACY_STRUCTURED');
       } finally {
@@ -687,17 +698,23 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
     'inline.uwx.md',
   );
 
-  /** A scratch copy of the inline record, externalized in place. */
+  const template = mkdtempSync(resolve(tmpdir(), 'uwmd-compose-template-'));
+  beforeAll(async () => {
+    const record = resolve(template, 'deal.uwx.md');
+    writeFileSync(record, readFileSync(INLINE, 'utf8'), 'utf8');
+    const out = await runCli(['compose', record, '--externalize', 'rent_roll', '--part-prefix', 'lease-suite', '--in-place']);
+    expect(out.status).toBe(0);
+  });
+  afterAll(() => rmSync(template, { recursive: true, force: true }));
+
+  /** Copy the CLI-generated fixture; mutations cannot leak between tests. */
   function externalized(): { dir: string; record: string } {
     const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-compose-'));
-    const record = resolve(dir, 'deal.uwx.md');
-    writeFileSync(record, readFileSync(INLINE, 'utf8'), 'utf8');
-    const out = runCli(['compose', record, '--externalize', 'rent_roll', '--part-prefix', 'lease-suite', '--in-place']);
-    expect(out.status).toBe(0);
-    return { dir, record };
+    cpSync(template, dir, { recursive: true });
+    return { dir, record: resolve(dir, 'deal.uwx.md') };
   }
 
-  it('compose splits a section into fragments and leaves a directive', () => {
+  it('compose splits a section into fragments and leaves a directive', async () => {
     const { dir, record } = externalized();
     try {
       const text = readFileSync(record, 'utf8');
@@ -718,17 +735,17 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
     }
   });
 
-  it('resolve reassembles the record without moving its digest', () => {
+  it('resolve reassembles the record without moving its digest', async () => {
     const { dir, record } = externalized();
     try {
       const roundTrip = resolve(dir, 'roundtrip.uwx.md');
-      const out = runCli(['resolve', record, '--output', roundTrip]);
+      const out = await runCli(['resolve', record, '--output', roundTrip]);
       expect(out.status).toBe(0);
       expect(out.stdout).toContain('RESOLVED');
 
       // The claim `compose` prints to the user, checked rather than asserted.
-      const a = runCli(['export', INLINE, '--stdout']);
-      const b = runCli(['export', roundTrip, '--stdout']);
+      const a = await runCli(['export', INLINE, '--stdout']);
+      const b = await runCli(['export', roundTrip, '--stdout']);
       expect(a.status).toBe(0);
       expect(b.status).toBe(0);
       expect(JSON.parse(b.stdout).digest).toBe(JSON.parse(a.stdout).digest);
@@ -737,11 +754,11 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
     }
   });
 
-  it('resolve refuses, and does not under-resolve, when a fragment is missing', () => {
+  it('resolve refuses, and does not under-resolve, when a fragment is missing', async () => {
     const { dir, record } = externalized();
     try {
       rmSync(resolve(dir, 'parts', 'lease-suite-220.uwpart.md'));
-      const out = runCli(['resolve', record, '--json']);
+      const out = await runCli(['resolve', record, '--json']);
       expect(out.status).toBe(1);
       const report = JSON.parse(out.stdout);
       expect(report.status).toBe('unresolved');
@@ -751,10 +768,10 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
     }
   });
 
-  it('export --resolved inlines the rows; without it the directive survives', () => {
+  it('export --resolved inlines the rows; without it the directive survives', async () => {
     const { dir, record } = externalized();
     try {
-      const resolved = runCli(['export', record, '--resolved', '--stdout']);
+      const resolved = await runCli(['export', record, '--resolved', '--stdout']);
       expect(resolved.status).toBe(0);
       const withRows = JSON.parse(resolved.stdout);
       const section = withRows.sections.rent_roll.content ?? withRows.sections.rent_roll;
@@ -762,7 +779,7 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
       expect(section.units).toHaveLength(3);
       expect(section.external).toBeUndefined();
 
-      const plain = runCli(['export', record, '--stdout']);
+      const plain = await runCli(['export', record, '--stdout']);
       expect(plain.status).toBe(0);
       const asStored = JSON.parse(plain.stdout);
       const stored = asStored.sections.rent_roll.content ?? asStored.sections.rent_roll;
@@ -773,17 +790,17 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
     }
   });
 
-  it('verify --resolved and export --resolved refuse a record they cannot assemble', () => {
+  it('verify --resolved and export --resolved refuse a record they cannot assemble', async () => {
     const { dir, record } = externalized();
     try {
       rmSync(resolve(dir, 'parts', 'lease-suite-220.uwpart.md'));
 
-      const verified = runCli(['verify', record, '--resolved']);
+      const verified = await runCli(['verify', record, '--resolved']);
       expect(verified.status).toBe(1);
       expect(verified.stderr).toContain('COMP-UNRESOLVED');
 
       const leaked = resolve(dir, 'leaked.uw.json');
-      const exported = runCli(['export', record, '--resolved', '--output', leaked]);
+      const exported = await runCli(['export', record, '--resolved', '--output', leaked]);
       expect(exported.status).toBe(1);
       // Refusing must not leave a half-answer on disk.
       expect(existsSync(leaked)).toBe(false);
@@ -794,19 +811,19 @@ describe('composition — compose, resolve, and --resolved (RFC 0021)', () => {
 });
 
 
-it('refine displays unresolved period inputs in text and JSON without claiming completeness', () => {
+it('refine displays unresolved period inputs in text and JSON without claiming completeness', async () => {
   const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-refine-period-'));
   try {
     const input = resolve(temp, 'period.uwx.md');
     const source = readFileSync(FIXTURE, 'utf8');
     const calc = { id: 'missing_period', formula: 'dcf.annual_cash_flows@Y999.noi', label: 'Missing period' };
     writeFileSync(input, [source, '```json uw:section=custom_calculations source=manual v=1', JSON.stringify(calc), '```', ''].join('\n'));
-    const text = runCli(['refine', input, '--targets', 'missing_period']);
+    const text = await runCli(['refine', input, '--targets', 'missing_period']);
     expect(text.status).toBe(0);
     expect(text.stdout).toContain('Excluded missing_period: dcf.annual_cash_flows@Y999.noi [REFINE-PERIOD-MISSING]');
     expect(text.stdout).toContain('until their period inputs are resolved');
     expect(text.stdout).not.toContain('No gap-driven inputs found');
-    const json = runCli(['refine', input, '--targets', 'missing_period', '--json']);
+    const json = await runCli(['refine', input, '--targets', 'missing_period', '--json']);
     expect(json.status).toBe(0);
     expect(JSON.parse(json.stdout).diagnostics.period_inputs).toEqual([expect.objectContaining({ output_id: 'missing_period', code: 'REFINE-PERIOD-MISSING' })]);
   } finally {
@@ -815,7 +832,7 @@ it('refine displays unresolved period inputs in text and JSON without claiming c
 });
 
 describe('calculation context files', () => {
-  function scenario(run: (file: string, context: string, write: (value: unknown) => void) => void) {
+  async function scenario(run: (file: string, context: string, write: (value: unknown) => void) => Promise<void>) {
     const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-context-'));
     const file = resolve(dir, 'period.uwx.md');
     const context = resolve(dir, 'context.json');
@@ -827,33 +844,33 @@ describe('calculation context files', () => {
       JSON.stringify({ id: 'context_total', formula: 'dcf.annual_cash_flows@Y3.noi * noi_model.expense_ratio' }), '```', ''].join('\n');
     writeFileSync(file, source);
     try {
-      run(file, context, value => writeFileSync(context, JSON.stringify(value)));
+      await run(file, context, value => writeFileSync(context, JSON.stringify(value)));
       expect(readFileSync(file, 'utf8')).toBe(source);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
-  it('calc honors selected periods and ordinary overrides while preserving null and zero', () => {
-    scenario((file, context, write) => {
+  it('calc honors selected periods and ordinary overrides while preserving null and zero', async () => {
+    await scenario(async (file, context, write) => {
       write({ sectionVariants: { dcf: 'stress' }, overrides: { 'property.total_units': 0 } });
-      const selected = runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi + property.total_units', '--calc-context', context, '--json']);
+      const selected = await runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi + property.total_units', '--calc-context', context, '--json']);
       expect(selected.status).toBe(0);
       expect(JSON.parse(selected.stdout).value).toBe(900);
       write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': null } });
-      const missing = runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi', `--calc-context=${context}`, '--json']);
+      const missing = await runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi', `--calc-context=${context}`, '--json']);
       expect(missing.status).toBe(0);
       expect(JSON.parse(missing.stdout).value).toBeNull();
       write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': 0 } });
-      const zero = runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi', '--calc-context', context, '--json']);
+      const zero = await runCli(['calc', file, 'dcf.annual_cash_flows@Y3.noi', '--calc-context', context, '--json']);
       expect(zero.status).toBe(0);
       expect(JSON.parse(zero.stdout).value).toBe(0);
     });
   });
-  it('refine uses selected variants and reports explicit null period inputs', () => {
-    scenario((file, context, write) => {
+  it('refine uses selected variants and reports explicit null period inputs', async () => {
+    await scenario(async (file, context, write) => {
       const ranking = () => runCli(['refine', file, '--targets', 'context_total', '--calc-context', context, '--json']);
       write({ sectionVariants: { dcf: 'base' } });
-      const base = ranking(); expect(base.status).toBe(0);
+      const base = await ranking(); expect(base.status).toBe(0);
       write({ sectionVariants: { dcf: 'stress' } });
-      const stress = ranking(); expect(stress.status).toBe(0);
+      const stress = await ranking(); expect(stress.status).toBe(0);
       // Refinement keeps binary64 interval values; compare with calc only at
       // its existing six-decimal boundary (Protocol VIII.5), as core tests do.
       // Evaluate each actual endpoint instead of scaling an already-computed bound.
@@ -862,10 +879,10 @@ describe('calculation context files', () => {
         expect(gap.field_path).toBe('noi_model.expense_ratio');
         for (const bound of ['low', 'high'] as const) {
           write({ sectionVariants: { dcf: variant }, overrides: { 'noi_model.expense_ratio': gap.prior_range[bound] } });
-          const endpoint = runCli(['calc', file,
-            'dcf.annual_cash_flows@Y3.noi * noi_model.expense_ratio', '--calc-context', context, '--json']);
-          expect(endpoint.status).toBe(0);
-          const result = JSON.parse(endpoint.stdout);
+          const result = evaluateCalc({ id: 'inline', label: 'inline', deterministic: true,
+            formula: 'dcf.annual_cash_flows@Y3.noi * noi_model.expense_ratio' },
+          { parsed: parseUWFile(readFileSync(file, 'utf8')), prior_results: {}, locale: 'en-US',
+            ...parseCalculationContext(JSON.parse(readFileSync(context, 'utf8'))) });
           expect(result.ok).toBe(true);
           expect(result.round_to).toBe(6);
           expect(quantizeDecimal(gap.affected_outputs[0].range_today[bound], 6)).toBe(result.value);
@@ -874,23 +891,21 @@ describe('calculation context files', () => {
       expect(JSON.parse(stress.stdout).by_voi[0].affected_outputs[0].range_today.high)
         .toBeGreaterThan(JSON.parse(base.stdout).by_voi[0].affected_outputs[0].range_today.high);
       write({ overrides: { 'dcf.annual_cash_flows@Y3.noi': null } });
-      const missing = ranking(); expect(missing.status).toBe(0);
+      const missing = await ranking(); expect(missing.status).toBe(0);
       expect(JSON.parse(missing.stdout).diagnostics.period_inputs[0].code).toBe('REFINE-PERIOD-MISSING');
       write({ overrides: { 'property.total_units': 0 } });
-      const ignored = ranking(); expect(ignored.status).toBe(1);
+      const ignored = await ranking(); expect(ignored.status).toBe(1);
       expect(ignored.stderr).toContain('canonical period overrides only');
       expect(ignored.stdout).toBe('');
     });
-    // About eight sequential CLI spawns: ~2s alone, but past vitest's 5s
-    // default when the full workspace suite runs in parallel.
-  }, 30_000);
-  it('refuses malformed contexts and a missing flag value before emitting results', () => {
-    scenario((file, context, write) => {
+  });
+  it('refuses malformed contexts and a missing flag value before emitting results', async () => {
+    await scenario(async (file, context, write) => {
       write({ overides: {} });
-      const invalid = runCli(['calc', file, '1', '--calc-context', context, '--json']);
+      const invalid = await runCli(['calc', file, '1', '--calc-context', context, '--json']);
       expect(invalid.status).toBe(1); expect(invalid.stdout).toBe('');
       expect(invalid.stderr).toContain('Unknown calculation context option');
-      const missing = runCli(['calc', file, '1', '--calc-context', '--json']);
+      const missing = await runCli(['calc', file, '1', '--calc-context', '--json']);
       expect(missing.status).toBe(1); expect(missing.stdout).toBe('');
       expect(missing.stderr).toContain('requires a JSON file path');
     });
