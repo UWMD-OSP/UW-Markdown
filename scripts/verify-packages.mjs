@@ -7,6 +7,11 @@ import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { OFFICIAL_MODULE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
 
+// Verification includes the source-only MHC module; publication scope is unchanged.
+const CHECKED_MODULE_PACKAGES = [...OFFICIAL_MODULE_PACKAGES,
+  { name: '@uwmd/module-manufactured-housing', dir: 'packages/uwmd-module-manufactured-housing', manifestExport: 'MANUFACTURED_HOUSING_MODULE', constantPrefix: 'MANUFACTURED_HOUSING_MODULE' },
+];
+
 const ts = createRequire(new URL('../packages/uwmd-core/package.json', import.meta.url))('typescript');
 const npmCli = process.env.npm_execpath;
 const npmCommand = npmCli ? process.execPath : (process.platform === 'win32' ? 'npm.cmd' : 'npm');
@@ -112,7 +117,7 @@ const reportFiles = packedFiles('@uwmd/report');
 requireFiles('@uwmd/report', reportFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts']);
 rejectSourceOrTests('@uwmd/report', reportFiles);
 
-for (const pkg of OFFICIAL_MODULE_PACKAGES) {
+for (const pkg of CHECKED_MODULE_PACKAGES) {
   const files = packedFiles(pkg.name);
   requireFiles(pkg.name, files, ['package.json', 'README.md', 'LICENSE', 'dist/index.js', 'dist/index.d.ts', 'dist/view-models.js', 'dist/view-models.d.ts', 'dist/manifest.json']);
   rejectSourceOrTests(pkg.name, files);

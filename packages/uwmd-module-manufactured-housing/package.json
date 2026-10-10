@@ -1,0 +1,50 @@
+{
+  "name": "@uwmd/module-manufactured-housing",
+  "version": "0.1.0",
+  "description": "Manufactured-housing community module (RFC 0068): sites, pad rent, park-owned-home rent, six calculations and seven runtime rules.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",
+    "directory": "packages/uwmd-module-manufactured-housing"
+  },
+  "homepage": "https://uwmd.org",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./manifest.json": "./dist/manifest.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && node scripts/emit-manifest.mjs",
+    "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@uwmd/core": "2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.2.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "uwmd",
+    "underwriting",
+    "commercial-real-estate",
+    "manufactured-housing",
+    "module"
+  ]
+}

@@ -67,7 +67,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0065, 0067 and 0068, and accepted-but-unreleased RFC 0071,
+Draft RFC 0067 and the independent follow-ups for RFCs 0068 and 0071,
 remain outside the current released contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -676,7 +676,15 @@ The guards:
   accepted 2026-10-07; PR #279) shipped in 2.19.0 under Format 2.0 and is
   **implemented**. StackUW moves its common residual to
   `net_proceeds_to_common_equity`.
-- Decide RFCs 0068 and 0067, in that order. No post-sale settlement
+- RFC 0068 is accepted and implemented source-only as `@uwmd/module-manufactured-housing`
+  0.1.0, pinning core 2.21.0. Its permanent class is
+  `org.uwmd.manufactured_housing`; `mhc_sites` supplies six site-based
+  calculations and seven rules. Desert Palms and 49 runtime scenarios cover
+  nulls/zeros, counts, type errors, date presence and degraded `multifamily`.
+  The package is checked by all three workspace guards but is outside the
+  release workflow and publish set. StackUW MH-8 provides concrete demand
+  ([#263 adopter answer](https://github.com/UWMD-OSP/UW-Markdown/issues/263#issuecomment-6102180713)).
+- Decide RFC 0067 separately. No post-sale settlement
   category or lag is authorized. Reserve-account, financing, investor-tax and post-sale work remain
   separate contracts.
 - [RFC 0071](../rfcs/0071-calendar-date-predicate.md) and

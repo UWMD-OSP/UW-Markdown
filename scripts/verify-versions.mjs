@@ -32,6 +32,11 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { OFFICIAL_MODULE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
 
+// Verification includes the source-only MHC module; publication scope is unchanged.
+const CHECKED_MODULE_PACKAGES = [...OFFICIAL_MODULE_PACKAGES,
+  { name: '@uwmd/module-manufactured-housing', dir: 'packages/uwmd-module-manufactured-housing', manifestExport: 'MANUFACTURED_HOUSING_MODULE', constantPrefix: 'MANUFACTURED_HOUSING_MODULE' },
+];
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
 const checks = [];
@@ -98,6 +103,7 @@ const MANIFEST_ROWS = [
   { label: '@uwmd/signing', manifest: 'packages/uwmd-signing/package.json' },
   { label: '@uwmd/module-hospitality', manifest: 'packages/uwmd-module-hospitality/package.json' },
   { label: '@uwmd/module-data-center', manifest: 'packages/uwmd-module-data-center/package.json' },
+  { label: '@uwmd/module-manufactured-housing', manifest: 'packages/uwmd-module-manufactured-housing/package.json' },
   { label: 'tools/web-editor', manifest: 'tools/web-editor/package.json' },
   { label: 'tools/vscode-uwmd', manifest: 'tools/vscode-uwmd/package.json' },
 ];
@@ -212,7 +218,7 @@ for (const { label, pattern } of PROTOCOL_DOC_LABELS) {
 const moduleTable = matrix.match(/### Official module compatibility\n([\s\S]*?)(?=\n### |$)/)?.[1] ?? '';
 const moduleRows = moduleTable.split('\n').filter((line) => line.trimStart().startsWith('|'))
   .map((line) => line.split('|').slice(1, -1).map(plain));
-for (const pkg of OFFICIAL_MODULE_PACKAGES) {
+for (const pkg of CHECKED_MODULE_PACKAGES) {
   const packageManifest = readJson(`${pkg.dir}/package.json`);
   const metadata = moduleMetadataFromSource(read(`${pkg.dir}/src/index.ts`), pkg.constantPrefix);
   const expected = [pkg.name, metadata.id, packageManifest.version, metadata.version, metadata.manifest_version,

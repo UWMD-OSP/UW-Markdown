@@ -8,6 +8,12 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Manufactured-housing module (RFC 0068)
+
+- Accepts and implements `@uwmd/module-manufactured-housing` 0.1.0 source-only, with an exact core 2.21.0 pin. Declares permanent `org.uwmd.manufactured_housing`, required `mhc_sites`, and degraded `multifamily` view-model fallback.
+- Supplies the settled six site-based calculations and seven error rules, with stated pad/home rents, presence-only dates and existing `MOD-RULE-ERROR` / `MOD-CALC-ERROR` type failures. No core calc/grammar, Format or Protocol change.
+- Adds the synthetic Desert Palms example, 49 runtime scenarios and public-API negative controls. Extends `verify-versions`, `verify-lockfile` and `verify-packages`; publication scope and release workflow remain unchanged.
+
 ### Test reliability under concurrent load
 
 - Caps root Vitest runs and core coverage at two isolated fork workers, and replaces blocking CLI test spawns with a shared asynchronous runner with child deadlines and cleanup.

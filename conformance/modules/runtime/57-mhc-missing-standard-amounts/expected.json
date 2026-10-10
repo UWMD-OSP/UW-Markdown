@@ -1,0 +1,13 @@
+{
+  "description": "RFC 0068: missing-standard-amounts.",
+  "module": "@uwmd/module-manufactured-housing",
+  "expected_calcs": {
+    "physical_occupancy": 0.9,
+    "annual_pad_rent_potential": 1320000.0,
+    "poh_share": 0.1,
+    "annual_poh_home_rent_potential": 180000.0,
+    "price_per_site": null,
+    "noi_per_site": null
+  },
+  "expected_codes": []
+}

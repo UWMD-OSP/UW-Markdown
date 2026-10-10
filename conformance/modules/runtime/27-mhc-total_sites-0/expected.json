@@ -1,0 +1,18 @@
+{
+  "description": "RFC 0068: total_sites-0.",
+  "module": "@uwmd/module-manufactured-housing",
+  "expected_calcs": {
+    "physical_occupancy": null,
+    "annual_pad_rent_potential": 0.0,
+    "poh_share": null,
+    "annual_poh_home_rent_potential": 180000.0,
+    "price_per_site": null,
+    "noi_per_site": null
+  },
+  "expected_codes": [
+    "CC-MOD-MH-01",
+    "CC-MOD-MH-02",
+    "CC-MOD-MH-03",
+    "MOD-CALC-ERROR"
+  ]
+}

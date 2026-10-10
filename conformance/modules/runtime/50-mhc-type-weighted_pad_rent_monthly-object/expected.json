@@ -1,0 +1,17 @@
+{
+  "description": "RFC 0068: type-weighted_pad_rent_monthly-object.",
+  "module": "@uwmd/module-manufactured-housing",
+  "expected_calcs": {
+    "physical_occupancy": 0.9,
+    "annual_pad_rent_potential": null,
+    "poh_share": 0.1,
+    "annual_poh_home_rent_potential": 180000.0,
+    "price_per_site": 60000.0,
+    "noi_per_site": 3600.0
+  },
+  "expected_codes": [
+    "MOD-RULE-ERROR",
+    "MOD-CALC-ERROR"
+  ],
+  "type_error_field": "weighted_pad_rent_monthly"
+}

@@ -1,0 +1,12 @@
+{
+  "description": "RFC 0068: fallback.",
+  "module": "@uwmd/module-manufactured-housing",
+  "expected_calcs": {},
+  "expected_codes": [],
+  "load_module": false,
+  "known_declarations": true,
+  "expected_status": "degraded",
+  "expected_fallback": "multifamily",
+  "expected_issue_code": "MOD-FALLBACK-001",
+  "expected_display_name": null
+}

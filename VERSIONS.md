@@ -195,6 +195,7 @@ versions advance independently.
 | `@uwmd/signing` | **0.2.25** | `@uwmd/core` 2.21.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
 | `@uwmd/module-hospitality` | **0.1.13** | `@uwmd/core` 2.21.0, protocol §X module system |
 | `@uwmd/module-data-center` | **0.1.13** | `@uwmd/core` 2.21.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `@uwmd/module-manufactured-housing` | **0.1.0** (source only) | `@uwmd/core` 2.21.0, protocol �X module system + �X.2 permanent class `org.uwmd.manufactured_housing` (RFC 0068) |
 | `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.21.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
@@ -219,6 +220,12 @@ manifest compatibility requirements, not a new loader policy.
 |---|---|---|---|---|---|---|---|---|
 | `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.13** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.21.0` |
 | `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.13** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.21.0` |
+| `@uwmd/module-manufactured-housing` | `org.uwmd.manufactured_housing_module` | **0.1.0** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.21.0` |
+
+Manufactured-housing is **source-only**, outside the release workflow and publish
+set. Its permanent class ID is `org.uwmd.manufactured_housing`; a future builtin
+promotion needs an explicit equivalence contract (issue #263 / draft RFC 0073).
+All three workspace guards check it explicitly.
 
 Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
 its module ID. `verify-versions` reads typed source literals and package manifests

@@ -1,7 +1,7 @@
 ---
 rfc: 0068
 title: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
-status: draft
+status: accepted
 author: claude-code (agent proposal)
 created: 2026-09-29
 depends_on:
@@ -15,13 +15,11 @@ affects:
 
 # RFC 0068: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
 
-**Draft agent proposal.** A coding agent wrote this RFC. StackUW's
-manufactured-housing plan is adopter requirements evidence, not UWMD
-authority, and it is not verifiable in this repository.
-
-On 2026-10-01 the owner gave directions that narrow the first scope (see
-[Decision status](#decision-status)). Those directions do not accept the RFC or
-authorize implementation.
+Accepted for the settled first scope, with implementation in this PR. The
+2026-10-01 owner decisions below remain authoritative for its scope.
+StackUW's [MH-8 adopter answer on issue #263](https://github.com/UWMD-OSP/UW-Markdown/issues/263#issuecomment-6102180713)
+is concrete demand for park exports, not UWMD authority. The reference example
+is synthetic; this implementation does not claim that StackUW has adopted it.
 
 ## Summary
 
@@ -30,7 +28,7 @@ it leases a site to a resident who owns the home. Some sites also carry a
 park-owned home (POH), which earns home rent on top of the pad. No builtin class
 states either fact.
 
-This draft proposes `@uwmd/module-manufactured-housing`, on RFC 0039's
+This RFC adds `@uwmd/module-manufactured-housing`, on RFC 0039's
 data-centre pattern. The module declares the custom class
 `org.uwmd.manufactured_housing` (fallback `multifamily`) and one required
 section, `mhc_sites`.
@@ -47,7 +45,7 @@ section, `mhc_sites`.
 
 No Format or Protocol change is proposed, and no version moves.
 
-## What exists today (re-verified on `main` at `51afadc`)
+## Existing contract and runtime
 
 - **No MHC vocabulary.** The builtin classes are closed for protocol 1.x
   (§2.2). None states sites, pad rent or a park-owned home.
@@ -73,9 +71,10 @@ No Format or Protocol change is proposed, and no version moves.
   - **No collection iteration.** `sum(...nums)` and `avg(...nums)` take explicit
     arguments; given an array, `sum` refuses with `CALC-TYPE-001`, and a numeric
     index such as `site_types[0]` does not parse.
-  - **No string literals.** `"2026-06-30"` is `CALC-PARSE-001`, and there is no
-    date predicate. A rule can test that a date is present, not that it is
-    real.
+  - **No string literals.** `"2026-06-30"` is `CALC-PARSE-001`, and there was no
+    date predicate at the original `>=2.5.0` compatibility floor.
+    RFC 0071 later added `is_calendar_date` at Protocol 2.22.0; first scope
+    deliberately keeps the settled presence-only rule.
   - **`if()` is eager.** It evaluates both branches, so a guard such as
     `if(x > 0, 1 / x, null)` still raises `CALC-DIV-ZERO`.
   - **Type errors.** An ordered comparison or arithmetic on a non-number is
@@ -198,31 +197,20 @@ deterministically as `MOD-RULE-ERROR`, naming the rule, together with a
 `MOD-CALC-ERROR` for each calculation that reads the field. The rule's own code
 cannot be emitted for this case, because the grammar has no type predicate.
 
-**`as_of_date` validity is not enforceable.** `CC-MOD-MH-05` detects a missing
-date. A malformed or impossible one, such as `"2026-02-30"`, cannot be detected
-by the reference runtime: rule grammar has no string literals and no date
-predicate, and section schemas are not enforced. No calculation reads the date.
-Closing this gap needs a separate core capability, listed under
-[Unresolved questions](#unresolved-questions). This RFC does not rely on the
-manifest schema for it.
+**`as_of_date` is presence-only in this contract.** `CC-MOD-MH-05` detects a
+missing or null date. A malformed, impossible or non-string value that is
+present is not refused. RFC 0071 subsequently supplied the separate core
+`is_calendar_date` capability; adoption belongs to a later module revision
+with its own compatibility floor. This implementation does not call it or rely
+on runtime section-schema enforcement.
 
-**Verified on the real runtime.** While drafting, these calculation and rule
-tables were run unchanged through `evaluateModuleCalculations` and
-`validateAgainstModules` on the current core build, using synthetic documents in
-a scratch harness that is not committed. 27 cases were run, and in each the
-issues matched the tables above:
-
-- the manifest loads;
-- valid documents with and without park-owned homes draw no issue;
-- valid documents with zero pad rent, zero POH home rent with park-owned homes
-  present, or both, draw no issue. The annual potentials are `0`;
-- valid documents with a zero `loan_amount`, a zero `annual_debt_service`, or
-  zero EGI draw no issue;
-- a missing section reports only `MOD-SECTION-MISSING`;
-- each missing required field reports exactly its rule;
-- each numeric violation reports its rule;
-- non-numeric values report `MOD-RULE-ERROR`;
-- a malformed `as_of_date` draws no issue, as stated above.
+**Verified on the real runtime.** Committed public-API tests and 49 scenarios in
+`conformance/modules/runtime/12-mhc-*` through `60-mhc-*` pin all six results,
+every required field and rule, counts at and beyond their bounds, zero rents,
+no POH, absent standard-section amounts, zero debt/EGI, string/boolean/object
+numeric inputs, date presence, builtin isolation and degraded fallback.
+The cent-amount scenario pins existing currency quantization with no new
+rounding convention. No core calc or grammar changes are needed.
 
 ### What the module does not do
 
@@ -312,10 +300,10 @@ full read.
 - **No builtin changes.** No builtin calc pack, Excel layout or size-registry
   row changes.
 
-## Conformance impact (proposed)
+## Conformance impact
 
 A runtime suite under `conformance/modules/runtime/`, numbered after the
-data-centre scenarios at implementation. It would hold the example document
+data-centre scenarios. It holds the example document
 plus fixtures for:
 
 - **Valid documents:**
@@ -334,13 +322,13 @@ plus fixtures for:
   `MOD-FALLBACK-001`.
 
 Each fixture pins its calculation results and validation codes.
-`gen-conformance-cases` would regenerate the runner cases, and `verify-packages`
-would gain the package.
+`gen-conformance-cases` checks the runner cases (module runtime fixtures remain
+TypeScript-only, as before). `verify-packages`, `verify-lockfile` and
+`verify-versions` explicitly include this source-only workspace.
 
-## Reference implementation (if accepted)
+## Reference implementation
 
-This draft authorizes none. If accepted, the implementation would land on a
-separate branch, as RFC 0039's did:
+The implementation follows RFC 0039 on `codex/rfc-0068-mhc`:
 
 - `packages/uwmd-module-manufactured-housing`, laid out like
   `packages/uwmd-module-data-center` (manifest in `src/index.ts`,
@@ -373,36 +361,36 @@ StackUW's adoption is the adopter's own follow-up.
 - **Publishing class defaults.** The protocol has no mechanism; a core RFC would
   be separate.
 
-## Unresolved questions
+## Decisions
 
-1. **`as_of_date` validity: a module-runtime capability gap.** The reference
-   runtime can require the date but cannot detect a malformed one. That needs a
-   core capability, either:
-   - a date-validity predicate in §VIII.3, or
-   - runtime enforcement of module section schemas.
+| Question | Decision | Why (precedent) |
+|---|---|---|
+| Class identity | `org.uwmd.manufactured_housing` is permanent. Any future builtin promotion needs an explicit equivalence contract before documents or keyed series move; no alias or promotion is implemented here. | Issue #263's StackUW MH-8 answer: benchmark series key on the class string. RFC 0003 declares exact class identities; draft RFC 0073 records the future equivalence question. |
+| Builtin closure | The builtin set remains closed under current Format 2.0, which incorporates v1 �2.2a unchanged; remove the stale limitation to 1.x. | Format 2.0 is a delta specification incorporating v1, including the namespaced module-class path. RFC 0039 adds a vertical without changing the builtin set. |
+| Q1: `as_of_date` | Presence-only in first scope. Date validity belongs to the separate core RFC 0071; adopting its already-shipped predicate is a later module revision, not this implementation. | Owner's 2026-10-01 first scope and the seven settled rules; RFC 0071 / Protocol �VIII.3 supplies the separate capability, with a later compatibility floor. |
+| Q2: numeric type errors | Accept existing `MOD-RULE-ERROR`, naming the rule, and `MOD-CALC-ERROR` for affected calculations. Add no type predicate or new code family. | RFC 0039 and the public module runtime refuse expressions that cannot evaluate; section schemas are not enforced at runtime. |
+| Q3/Q4 and Deferred | Generic metrics for custom classes and possibly-zero-denominator ratios remain separate designs. Every item in Deferred remains out of scope. | Owner's 2026-10-01 decisions and the RFC's existing zero/null and eager-`if()` analysis. |
+| Implementation and distribution | Accept the settled six calculations, seven rules, `mhc_sites`, and `multifamily` fallback. Package and contract start at 0.1.0 with an exact core 2.21.0 pin; the package stays source-only and outside the release workflow/publish set. Format and Protocol versions do not move. | RFC 0039's typed manifest, generated JSON, public-runtime fixtures and independent package/contract versions; current official module distribution requires separate approval. |
 
-   Either is its own RFC. Until then this module enforces presence only.
-2. **Type errors.** Non-numeric values surface as `MOD-RULE-ERROR` naming the
-   rule, not under the rule's own code. A type predicate would need the same
-   kind of core change. Whether `MOD-RULE-ERROR` is acceptable as the
-   first-scope signal is the owner's call.
-3. **Generic metrics for custom classes:** how a module-declared class should
-   obtain debt metrics and the expense ratio without cloning formulas or
-   refusing true zeros. This is a shared design question, outside this RFC.
-4. **Ratios with a possibly-zero denominator** (`poh_rent_share`): whether the
-   calc contract should gain a denominator or conditional mechanism, or whether
-   a use case justifies one. Outside this RFC.
-5. **Acceptance** of RFC 0068 and authorization to implement.
+## Follow-ups
+
+- Adopt RFC 0071's date-validity predicate in a later module revision and raise
+  the manifest compatibility floor then. No new core predicate is built here.
+- Q3/Q4 (generic custom-class metrics and possibly-zero-denominator ratios)
+  remain outside this contract, with all other Deferred items unchanged.
+- StackUW's export integration and any public distribution approval are separate.
+- A future builtin promotion requires an explicit equivalence contract
+  (issue #263 / draft RFC 0073) before the permanent class identity can move.
 
 ## Decision status
 
-RFC 0068 remains `draft`.
+RFC 0068 is `accepted`; this PR implements its first scope source-only.
 
 | Item | Source | State |
 |---|---|---|
 | A custom class gets no builtin pack, layout, size row or defaults; the module supplies its own calculations | Protocol §X.2.4, RFC 0003 | Existing rule. |
 | The degraded fallback renders view models only and reports `MOD-FALLBACK-001` | Protocol §X.2.2 | Existing rule. |
-| No collection iteration; no string literals; `if()` is eager | Protocol §VIII.1, §VIII.3; evaluator | Existing behaviour. |
+| No collection iteration; no string literals; `if()` is eager (date predicate later added by RFC 0071) | Protocol §VIII.1, §VIII.3; evaluator | Existing behaviour. |
 | Module rules fire on `false` and are silent on `null`; failures report `MOD-RULE-ERROR` / `MOD-CALC-ERROR`; section schemas are not enforced at runtime | `module-runtime.ts`, `modules.ts` | Existing behaviour. |
 | Sites as the underwriting unit, with POH rent as a second stream | StackUW planning, 2026-09-29 | Adopter evidence. Not verified here. Not authority. |
 | `weighted_pad_rent_monthly` (site-weighted, all sites, vacant at stated asking rent; stated, not derived) is the first-scope pad-rent representation | Owner direction, 2026-10-01 | Selected for first scope. |
@@ -413,7 +401,7 @@ RFC 0068 remains `draft`.
 | `poh_home_rent_monthly` required (≥ 0) when `park_owned_homes > 0`, and absent or `null` when it is `0` | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-06`, `CC-MOD-MH-07`). |
 | `weighted_pad_rent_monthly` is finite and nonnegative (≥ 0), not strictly positive | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-04`). |
 | `poh_rent_share` deferred from first scope; `poh_share` is the POH-exposure metric | Owner decision, 2026-10-01 | Deferred. |
-| The class, fallback, section, six calculations and seven rules | This draft, within the owner directions above | Proposal. |
+| The class, fallback, section, six calculations and seven rules | Owner decisions above; acceptance direction, 2026-10-10 | Accepted first scope; implemented source-only in this PR. |
 | `as_of_date` validity; type errors under `MOD-RULE-ERROR` | — | **Unresolved.** A module-runtime capability gap. |
 | `site_types[]`, utilities, POH operating detail, RV sites, thresholds, defaults, generic metrics for custom classes, `poh_rent_share` | — | Deferred. |
 | Acceptance of RFC 0068 and implementation | — | Not decided. Not authorized. |

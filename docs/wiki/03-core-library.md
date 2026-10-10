@@ -481,3 +481,19 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 ## RFC 0065 reserve draw bindings
 
 `reserve-draw-bindings.ts` exports browser-safe `verifyReserveDrawBindings(parsed, plan?)`. Its optional external `ReserveDrawBindingPlan` uses exact variants, reserve account/period/movement identities, lease-up TI/LC components or gross cash-row addresses, declared selected-draw completeness and explicit funded shares. `RDB-01`–09 findings and the two companion schemas mirror Protocol §VIII.12. CLI: `uwmd verify-reserve-draws <file> [plan.json] --json`. Synthetic default/portable fixtures, shared-quantizer cent controls and regressions preserve gross rows and the unchanged RFC 0045 reserve refusal. No document field, transfer, owner cash or financing assembly is added.
+
+## Manufactured-housing reference module (RFC 0068)
+
+`packages/uwmd-module-manufactured-housing` is source-only, package/contract
+0.1.0 with an exact core 2.21.0 pin. It uses the existing public runtime to
+declare permanent class `org.uwmd.manufactured_housing`, required `mhc_sites`,
+and degraded `multifamily` fallback. It supplies six site-based calculations
+and seven error rules; no core calc/grammar, builtin pack, default, Excel layout
+or size row changes. Pad rent is one stated, source-backed monthly weighted
+scalar across all sites; POH home rent is separate and conditional on homes
+existing. Date rules check presence only. Non-numeric inputs report existing
+`MOD-RULE-ERROR` naming the rule and affected `MOD-CALC-ERROR` findings.
+RFC 0071 predicate adoption is a later module revision. Its synthetic Desert
+Palms example and runtime fixtures exercise these limits. All three workspace
+guards explicitly check it; the release workflow/publish set includes only the
+previously approved hospitality and data-center modules.

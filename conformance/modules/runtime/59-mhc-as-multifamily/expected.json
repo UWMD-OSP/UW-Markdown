@@ -1,0 +1,6 @@
+{
+  "description": "RFC 0068: as-multifamily.",
+  "module": "@uwmd/module-manufactured-housing",
+  "expected_calcs": {},
+  "expected_codes": []
+}

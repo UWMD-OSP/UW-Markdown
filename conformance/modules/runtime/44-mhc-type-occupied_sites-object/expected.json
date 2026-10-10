@@ -1,0 +1,17 @@
+{
+  "description": "RFC 0068: type-occupied_sites-object.",
+  "module": "@uwmd/module-manufactured-housing",
+  "expected_calcs": {
+    "physical_occupancy": null,
+    "annual_pad_rent_potential": 1320000.0,
+    "poh_share": 0.1,
+    "annual_poh_home_rent_potential": 180000.0,
+    "price_per_site": 60000.0,
+    "noi_per_site": 3600.0
+  },
+  "expected_codes": [
+    "MOD-RULE-ERROR",
+    "MOD-CALC-ERROR"
+  ],
+  "type_error_field": "occupied_sites"
+}

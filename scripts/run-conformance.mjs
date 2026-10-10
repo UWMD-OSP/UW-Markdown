@@ -1632,10 +1632,10 @@ async function runModules() {
  * its validation rules fire and stay silent in the right places, and its
  * required sections are enforced.
  *
- * Two modules are under test, each imported the way any host would import it:
+ * Three modules are under test, each imported the way any host would import it:
  * `@uwmd/module-hospitality` (RFC 0006, a builtin class) and
  * `@uwmd/module-data-center` (RFC 0039, a module-declared class). A scenario
- * names its module in `expected.module`; one naming anything else fails rather
+ * includes the source-only MHC module (RFC 0068) and names its module in `expected.module`; one naming anything else fails rather
  * than silently passing.
  *
  * A scenario may also assert the RFC 0003 resolution verdict (`expected_status`
@@ -1646,6 +1646,7 @@ async function runModules() {
 const RUNTIME_MODULES = {
   '@uwmd/module-hospitality': async () => (await import('@uwmd/module-hospitality')).HOSPITALITY_MODULE,
   '@uwmd/module-data-center': async () => (await import('@uwmd/module-data-center')).DATA_CENTER_MODULE,
+  '@uwmd/module-manufactured-housing': async () => (await import('@uwmd/module-manufactured-housing')).MANUFACTURED_HOUSING_MODULE,
 };
 
 async function runModuleRuntime() {
