@@ -20,6 +20,22 @@ same protocol version.
 
 ## Current matrix
 
+Release 2.20.0 pairs core/CLI 2.20.0 with Protocol 2.24.0 and Format 2.0.
+Protocol 2.24.0 carries two accepted RFCs: RFC 0072's `DQ-07`–`DQ-09`
+scenario and build-to-rent identity warnings with their remediation entries,
+and RFC 0064's `RSV-NN` reserve-account code family (§III.6a) with its
+separately invoked balance verifier (§VIII.11). Neither adds a module
+capability, so no new §X `requires_protocol` floor applies. Format stays 2.0:
+RFC 0072 defines the frontmatter `scenario` vocabulary and
+`asset_subtype: build_to_rent`, and RFC 0064 adds the optional
+`reserve_accounts` section (§4.28). The generation also includes the §VIII.5
+quantizer fix for an integral decimal shift. Signing 0.2.24, batch 0.8.19,
+Excel 0.9.12, report 0.8.24, lake 0.2.8 and both module packages 0.1.12 pin
+core 2.20.0 exactly. Core's optional signing peer is 0.2.24. The workflow
+scope is core, CLI, signing, batch and both module packages. Excel, report and
+lake remain source-only. Module manifest contracts remain 0.1.0. Release
+preparation and subsequent publication evidence are separate records.
+
 Release 2.19.0 pairs core/CLI 2.19.0 with Protocol 2.23.0 and Format 2.0.
 Protocol 2.23.0 carries two RFCs: RFC 0075's `senior` preference
 when the hedge and escrow rules read `debt_structure`, and RFC 0076's
@@ -137,17 +153,17 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
-| UW Protocol | **2.23.0** | format ≥ 1.0; RFC 0075 hedge `senior` preference and RFC 0076 refused-selection `HDG-08` on 2.22.0; carried by core/CLI 2.19.0 |
-| `@uwmd/core` | **2.19.0** | format 2.0 (reads 1.x), protocol 2.23.0 |
-| `@uwmd/cli` (CLI) | **2.19.0** | `@uwmd/core` 2.19.0 |
-| `@uwmd/excel` | **0.9.11** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.19.0, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.23** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.19.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.18** | `@uwmd/core` 2.19.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.7** (source only) | `@uwmd/core` 2.19.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.23** | `@uwmd/core` 2.19.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.11** | `@uwmd/core` 2.19.0, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.11** | `@uwmd/core` 2.19.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.19.0 browser entry |
+| UW Protocol | **2.24.0** | format ≥ 1.0; RFC 0072 `DQ-07`–`DQ-09` remediation entries and RFC 0064 `RSV-NN` codes + §VIII.11 reserve-account verifier on 2.23.0; carried by core/CLI 2.20.0 |
+| `@uwmd/core` | **2.20.0** | format 2.0 (reads 1.x), protocol 2.24.0 |
+| `@uwmd/cli` (CLI) | **2.20.0** | `@uwmd/core` 2.20.0 |
+| `@uwmd/excel` | **0.9.12** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.20.0, format 2.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.24** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.20.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.19** | `@uwmd/core` 2.20.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.8** (source only) | `@uwmd/core` 2.20.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.24** | `@uwmd/core` 2.20.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.1.12** | `@uwmd/core` 2.20.0, protocol §X module system |
+| `@uwmd/module-data-center` | **0.1.12** | `@uwmd/core` 2.20.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.20.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 
@@ -169,8 +185,8 @@ manifest compatibility requirements, not a new loader policy.
 
 | Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_tier | Core pin |
 |---|---|---|---|---|---|---|---|---|
-| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.11** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.19.0` |
-| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.11** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.19.0` |
+| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.12** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.20.0` |
+| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.12** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.20.0` |
 
 Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
 its module ID. `verify-versions` reads typed source literals and package manifests

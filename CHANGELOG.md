@@ -8,6 +8,37 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [2.20.0] - 2026-10-10
+
+### Prepared package pairing
+
+Core/CLI **2.20.0** pair with Protocol **2.24.0** and Format **2.0**.
+Signing **0.2.24**, batch **0.8.19**, Excel **0.9.12**, report **0.8.24**,
+lake **0.2.8** and both official modules **0.1.12** pin core **2.20.0**.
+Core's optional signing peer is **0.2.24**. Each dependent takes its existing
+patch-version step for the exact repin. The workflow scope is six packages:
+core, CLI, signing, batch, `@uwmd/module-hospitality` and
+`@uwmd/module-data-center`. Excel, report and lake remain source-only. Module
+manifest contracts stay **0.1.0**. RFCs 0064 and 0072 stay `accepted` in the
+tagged preparation state.
+
+### Contract — Protocol 2.24.0 (RFCs 0064 and 0072), Format 2.0
+
+- **Protocol 2.24.0** carries RFC 0072's `DQ-07`–`DQ-09` warnings and their
+  remediation entries, and RFC 0064's `RSV-NN` code family (both §III.6a)
+  with its separately invoked reserve-account verifier (§VIII.11). `RSV-01`–05
+  apply only to documents that state `reserve_accounts`; existing valid
+  documents gain no errors, and neither RFC changes a calculation. Neither adds
+  a module capability, so there is no new §X `requires_protocol` floor.
+- **Format stays 2.0.** RFC 0072 defines the frontmatter `scenario`
+  vocabulary and `asset_subtype: build_to_rent`; RFC 0064 adds the optional
+  `reserve_accounts` section (§4.28). Retired scenario labels draw `DQ-07`
+  warnings only.
+- **Also included:** the §VIII.5 quantizer now returns the half-away-from-zero
+  value when the decimal shift is integral, a defect present since RFC 0023.
+
+The sections below give each change in full.
+
 ### Fixed — quantization kept binary noise when the shift was integral (§VIII.5)
 
 - **Quantized values could keep a binary64 tail.** When the decimal shift of a
@@ -28,7 +59,7 @@ protocol, and each package each carry an independent semver).
 
 - Accepts and implements optional asset-class-independent `reserve_accounts` (§4.28), closed source-attributable custody records and browser-safe `verifyReserveAccounts` with read-only `verify-reserve-accounts` CLI.
 - Structural `RSV-01`–`RSV-05` checks are separate from balance/claimed-continuity verification (`RSV-06`–`RSV-08`); binary64 and existing 2dp half-away-from-zero comparison are unchanged. No periods, zero movements, interest or releases are inferred.
-- Preserves gross expenditure and RFC 0045’s reserve-spending refusal; RFC 0065 binding is outside scope. Adds synthetic default/portable conformance, schemas and source evidence. Format remains 2.0; advance the Protocol minor after 2.23.0 at release preparation (RFC 0072 R8), without changing current version labels here.
+- Preserves gross expenditure and RFC 0045’s reserve-spending refusal; RFC 0065 binding is outside scope. Adds synthetic default/portable conformance, schemas and source evidence. Format remains 2.0; the `RSV-NN` family and §VIII.11 verifier are carried by Protocol 2.24.0 (RFC 0072 R8).
 
 ### Business-plan and single-site BTR identity (RFC 0072)
 
@@ -41,9 +72,8 @@ protocol, and each package each carry an independent semver).
 - Init accepts standard/namespaced plans and `--asset-subtype`; retired or
   malformed plan arguments are refused before output. Calculations, defaults,
   packs, underwriting rules and financial math are unchanged.
-- Format stays 2.0; the new normative Protocol remediation codes require the
-  next Protocol minor at release preparation after released 2.23.0. This PR
-  leaves `PROTOCOL_VERSION` unchanged.
+- Format stays 2.0; the new normative Protocol remediation codes are carried
+  by Protocol 2.24.0.
 - RFC status is accepted (merge is acceptance), with all R1–R8 decisions recorded.
   Adds warning-only conformance and CLI/core regressions. Resolves #255
   (StackUW UPSTREAM-022); broader subtype and legacy-default wording work is deferred.

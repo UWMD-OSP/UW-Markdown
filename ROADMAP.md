@@ -1,11 +1,31 @@
 # Roadmap
 
-Reconciled **2026-10-09** (America/Phoenix) for published and independently
-verified **2.19.0**, pairing core/CLI 2.19.0 with Stable Protocol **2.23.0**
-and unchanged Format **2.0**. No accepted RFC is waiting for a release.
+Reconciled **2026-10-10** (America/Phoenix) for release-prepared **2.20.0**
+(Protocol **2.24.0**, Format **2.0**). The current published release remains
+**2.19.0**, pairing core/CLI 2.19.0 with Stable Protocol **2.23.0** and Format
+**2.0**.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 2.20.0
+
+Core/CLI **2.20.0** pair with Protocol **2.24.0** and Format **2.0**. The
+generation carries two accepted RFCs and one change outside the contract:
+- **RFC 0072:** frontmatter `scenario` names one of eight business plans or a
+  reverse-DNS extension, and single-site build-to-rent is
+  `asset_subtype: build_to_rent` on `multifamily` (#255). `DQ-07`–`DQ-09`
+  are warnings only.
+- **RFC 0064:** optional `reserve_accounts` (§4.28) with `RSV-NN` structure
+  codes and a separately invoked reserve-account balance verifier (§VIII.11).
+  RFC 0045's reserve refusal is unchanged.
+- **Also included:** the §VIII.5 quantizer returns the half-away-from-zero
+  value when the decimal shift is integral, a defect present since RFC 0023.
+
+Format stays 2.0. Signing 0.2.24, batch 0.8.19 and both module packages
+0.1.12 join core and CLI in the six-package workflow. No new §X floor applies.
+RFCs 0064 and 0072 remain `accepted` until shipment and independently verified
+publication.
 
 ## Current published release: 2.19.0
 
@@ -286,7 +306,7 @@ surfaces usable for the next producer wave.
 | 2 | Per-lease monthly ledger | **RFC 0054, `decided` (terminal); the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
 | 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
 | 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
-| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), implemented and released in core/CLI 2.16.0 (stable Protocol 2.20.0, Format 2.0; accepted 2026-10-02).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **Still demand-gated:** the manufactured-housing module (draft RFC 0068) and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. **Single-site build-to-rent identity** (#255, `UPSTREAM-022`): [RFC 0072](docs/rfcs/0072-frontmatter-scenario-semantics.md) is accepted and implemented on `main` (PR #285) for the next release. `scenario` is the business plan, from a closed vocabulary with warnings (`DQ-07`–`DQ-09`) for unlisted or retired values, and single-site BTR is a product/subtype on `multifamily`, not a scenario. |
+| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), implemented and released in core/CLI 2.16.0 (stable Protocol 2.20.0, Format 2.0; accepted 2026-10-02).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **Still demand-gated:** the manufactured-housing module (draft RFC 0068) and a decision between a parcel array and RFC 0021 composition for SFR/BTR scattered-site deals. **Single-site build-to-rent identity** (#255, `UPSTREAM-022`): [RFC 0072](docs/rfcs/0072-frontmatter-scenario-semantics.md) is accepted and implemented (PR #285) and prepared for 2.20.0 with Protocol 2.24.0. `scenario` is the business plan, from a closed vocabulary with warnings (`DQ-07`–`DQ-09`) for unlisted or retired values, and single-site BTR is a product/subtype on `multifamily`, not a scenario. |
 | 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction was the RFC's load-bearing claim, and it was accepted: RFC 0058 shipped in 2.12.0 with the `REC-NN` family and its own conformance suite. |
 | 2 | Ground lease / leasehold tenure | **Not a tranche class ([RFC 0060](docs/rfcs/0060-tranche-class-candidates.md)); the tenure contract remains demand-gated.** The earlier "reserve `ground_lease` as a tranche concept" framing conflated the leasehold estate and its ground-rent obligation with financing merely secured by a leasehold, which is already `senior_debt`. A `Tranche` has no field for tenure, and no honest `amount` exists for one. **The format does not model ground leases today:** §4.4 has no `ground_rent` key (only the generic `other_expenses`), §4.5 `noi_model.expenses` has no ground-rent line *and no generic bucket at all*, and no section types the leasehold as an object — term, resets, extension options, fee relationship and subordination are all untyped. Where the underwriting does include ground rent in OpEx, adding it again as a debt tranche would double-count it. The open work is a property/tenure contract against its own section, gated on a demonstrated consumer. |
 | 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, swaps and collars each require a concrete engine scope and module/RFC pair. **PACE-specific mechanics** stay on this demand-gated list: RFC 0060 closed the *enum* question — it is stated as `other_debt` where the existing fields suffice — but assessment servicing above or below NOI, jurisdictional lien behaviour and transferability are unmodelled and would need their own contract. |
@@ -327,13 +347,13 @@ no additional financial assumptions are supplied by the released adapter.
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
-| 5 | Property reserve-account state | RFC 0064 accepted and implemented for next release | Optional `reserve_accounts` §4.28; separately invoked balance identity/claimed-continuity verification at the existing currency quantum. Gross expenditure and RFC 0045 refusal unchanged; RFC 0065 binding is out of scope. |
+| 5 | Property reserve-account state | RFC 0064 accepted and implemented; prepared for 2.20.0 | Optional `reserve_accounts` §4.28; separately invoked balance identity/claimed-continuity verification at the existing currency quantum. Gross expenditure and RFC 0045 refusal unchanged; RFC 0065 binding is out of scope. |
 | 6 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
 
 [RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md) is accepted
-and implemented for the next release. Its property-custody verifier leaves
-RFC 0045's reserve refusal intact. RFC 0065 draw-to-expenditure binding and
-owner-cash assembly remain separate contracts.
+and implemented (PR #290), and prepared for 2.20.0 with Protocol 2.24.0. Its
+property-custody verifier leaves RFC 0045's reserve refusal intact. RFC 0065
+draw-to-expenditure binding and owner-cash assembly remain separate contracts.
 
 ### Adoption and integration candidates
 
