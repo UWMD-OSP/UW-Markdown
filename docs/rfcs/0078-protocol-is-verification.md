@@ -1,7 +1,8 @@
 ---
 rfc: 0078
 title: 'The protocol is verification: separate the standard from the starter products'
-status: draft
+status: accepted
+accepted: 2026-10-10
 author: claude-code (agent proposal, from owner direction 2026-10-10)
 created: 2026-10-10
 affects:
@@ -14,10 +15,12 @@ affects:
 
 # RFC 0078: The protocol is verification: separate the standard from the starter products
 
-**Draft for owner review.** This RFC records the owner's direction of
-2026-10-10 and proposes how to codify it. It is a breaking change to the
-Protocol's conformance model (Protocol 3.0.0), so it lands as a draft first.
-Nothing here is authorized for implementation until the owner merges it.
+**Accepted 2026-10-10.** A coding agent wrote this RFC from the owner's
+direction of 2026-10-10 (D1–D13). It is a breaking change to the Protocol's
+conformance model (Protocol 3.0.0), so it landed as a draft first; the owner
+accepted it in session the same day ("accept"), and merging PR #298 records
+that. Implementation follows in the phases under Reference implementation,
+each its own PR. The RFC stays `accepted` until Protocol 3.0.0 ships.
 
 ## Summary
 
