@@ -402,15 +402,19 @@ product specification; lease economics and cash timing are.
 - **Renamed asset-class identifiers (draft RFC 0073, #263):** a module that
   moves its namespace can already keep old documents resolvable by continuing
   to declare each retired class id. RFC 0073 would declare the old and new ids
-  one class. It waits on StackUW's answers in the
-  [review](docs/reviews/2026-10-04-renamed-identifiers.md) and owner acceptance.
+  one class. StackUW's [answer](https://github.com/UWMD-OSP/UW-Markdown/issues/263#issuecomment-6102180713)
+  identifies future module-to-builtin promotion as the possible series-splitting
+  case. RFC 0068 fixes `org.uwmd.manufactured_housing` permanently before park
+  exports ship; any future promotion needs an explicit equivalence contract.
+  RFC 0073 remains draft and does not block this module.
 - **Investor profiles and portfolio/relationship agent layers:** the data
   surfaces exist, but reference consumers need concrete adoption requirements.
 - **Official module publication:** hospitality and data-center are approved together
   as public npm packages. Both first published at 0.1.10 with core 2.18.0, through
   the ordinary release workflow after the account bootstrap and trusted-publisher
   setup; 0.1.11 followed with core 2.19.0, 0.1.12 with core 2.20.0 and 0.1.13 with core 2.21.0. Package semver is separate from the 0.1.0 manifest contracts; exact core
-  pins and explicit host loading remain.
+  pins and explicit host loading remain. RFC 0068's manufactured-housing package
+  is implemented source-only and is outside that release workflow/publish set.
 - **Standalone Excel/report publication:** implemented current packages remain
   source-only until a consumer and supported distribution scope are chosen.
 - **DOCX output:** scoped out by the owner; reconsider on an actual adopter ask.
