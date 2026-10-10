@@ -54,6 +54,42 @@ describe('quantizeDecimal', () => {
     expect(quantizeDecimal(-1250, -2)).toBe(-1300);
   });
 
+  // A noisy binary64 sum can shift to an exact integer. The value must still be
+  // rebuilt from that integer, or the noise survives quantization. RFC 0064's
+  // reserve verifier reported RSV-06 on a correctly stated balance this way.
+  it('removes binary noise when the decimal shift lands on an integer', () => {
+    const noisy = 537196.21 - 188848.11 + 107395.8;
+    expect(noisy).toBe(455743.89999999997); // the artifact itself
+    expect(quantizeDecimal(noisy, 2)).toBe(455743.9);
+    expect(quantizeDecimal(285810.09 + 69669.14 + 62507.8 - 27431.81, 2)).toBe(390555.22);
+    expect(quantizeDecimal(-noisy, 2)).toBe(-455743.9);
+    expect(quantizeDecimal(1200.0000000000002, -2)).toBe(1200);
+  });
+
+  // Seeded so a failure reproduces. Every sum of cent amounts must quantize to
+  // exactly the double nearest its exact integer-cent total.
+  it('agrees with exact integer-cent arithmetic for sums of cent amounts', () => {
+    let seed = 0x2f6e2b1;
+    const next = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed;
+    };
+    const mismatches: string[] = [];
+    for (let trial = 0; trial < 20000; trial++) {
+      const terms = 2 + (next() % 9);
+      let cents = 0;
+      let sum = 0;
+      for (let t = 0; t < terms; t++) {
+        const c = (next() % 100_000_000) * (next() % 3 === 0 ? -1 : 1);
+        cents += c;
+        sum += c / 100;
+      }
+      const got = quantizeDecimal(sum, 2);
+      if (got !== cents / 100) mismatches.push(`${sum} -> ${got}, want ${cents / 100}`);
+    }
+    expect(mismatches.slice(0, 5)).toEqual([]);
+  });
+
   it('returns magnitudes past 2^53 unchanged — no fractional part remains', () => {
     expect(quantizeDecimal(1e21, 2)).toBe(1e21);
     expect(quantizeDecimal(-1e21, 2)).toBe(-1e21);

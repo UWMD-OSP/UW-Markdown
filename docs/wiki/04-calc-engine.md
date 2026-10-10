@@ -61,7 +61,11 @@ reintroduces the artifact it removes: `1.005 * 100` is `100.49999999999999`, so
 that form gives `1.00` where Excel gives `1.01`. `quantizeDecimal` shifts through
 a decimal string (`Number('1.005e2')` → `100.5`) instead. Its shared internal
 routine also combines an existing exponent before shifting (`5e-7` at six
-places → `0.000001`). Stated-figure verifiers use that same routine; TAX-03's
+places → `0.000001`). The result is always rebuilt from the shifted integer,
+including when the shift lands exactly on one: a noisy sum such as
+`455743.89999999997` shifts to exactly `45574390`, and returning the input
+there (as the routine did until 2.19.0) kept the noise and failed an exact
+comparison with a stated `455743.90`. Stated-figure verifiers use that same routine; TAX-03's
 separately stated integer precision can exceed the calc declaration's ±12
 band. If you need to round a number anywhere in this repo, use the shared
 quantizer rather than writing another rounding algorithm.

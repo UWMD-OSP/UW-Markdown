@@ -8,6 +8,22 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed — quantization kept binary noise when the shift was integral (§VIII.5)
+
+- **Quantized values could keep a binary64 tail.** When the decimal shift of a
+  noisy sum landed exactly on an integer (`455743.89999999997` at two places
+  shifts to `45574390`), the quantizer returned its input unchanged instead of
+  `455743.9`. Protocol §VIII.5 requires the half-away-from-zero value, which is
+  what spreadsheet `ROUND` returns. The tail affected reported calculation
+  `value`s, `round()`, and every stated-figure comparison using the shared
+  routine. Present since RFC 0023 (core 1.x); found by RFC 0064's reserve
+  verifier, which falsely reported `RSV-06` on 1.8–4.8% of correct cent
+  balances in random trials.
+- **Fix:** the result is rebuilt from the shifted integer. Magnitudes past
+  `MAX_SAFE_INTEGER` are still returned unchanged. A seeded test now checks
+  20,000 random cent sums against exact integer-cent arithmetic. No spec,
+  export, or type change.
+
 ### Business-plan and single-site BTR identity (RFC 0072)
 
 - Defines eight frontmatter business plans and owned reverse-DNS extensions;
