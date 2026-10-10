@@ -56,8 +56,9 @@ CLI test files use a 30-second test budget and await the shared
 [`test/cli.mts`](../../test/cli.mts) runner. It launches the existing built
 executable asynchronously, preserves binary stdout and nonzero exit codes,
 and rejects launch errors, signals, output overflow and its 20-second child
-deadline. Test cleanup terminates outstanding children. Other test files keep
-Vitest's default five-second budget; worker RPC deadlines are unchanged.
+deadline. Test cleanup terminates outstanding children. The default unit-test
+budget remains five seconds; existing integration-test budgets and worker
+RPC deadlines are unchanged.
 Build before testing because executable tests consume `dist/`.
 
 Use library APIs for calculation assertions and reuse CLI-generated setup
