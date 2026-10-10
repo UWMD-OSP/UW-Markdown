@@ -1743,7 +1743,7 @@ switch (command) {
     if (!positional[0]) { console.error('Usage: uwmd verify-reserve-accounts <file> [--json]'); process.exit(1); }
     const result = await verifyReserveAccounts(parseUWFile(readFileSync(resolve(positional[0]), 'utf8')));
     if (flags['json']) console.log(JSON.stringify(result, null, 2));
-    else { console.log('Reserve account verification: ' + result.state); for (const issue of result.issues) console.log(issue.message); }
+    else { console.log(`Reserve account verification: ${result.state}`); for (const issue of result.issues) console.log(issue.message); }
     process.exit(result.state === 'failed' || result.state === 'unverifiable' ? 1 : 0);
     break;
   }

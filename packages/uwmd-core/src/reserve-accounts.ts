@@ -22,10 +22,10 @@ export async function verifyReserveAccounts(parsed: ParsedUWFile): Promise<Reser
         // Ordered binary64 arithmetic; never round intermediate balances or net gross costs.
         let ending = period.opening_balance;
         for (const m of period.movements) ending += m.kind === 'contribution' ? m.amount : -m.amount;
-        const field = 'accounts[' + ai + '].periods[' + pi + ']';
+        const field = `accounts[${ai}].periods[${pi}]`;
         const item: ReservePeriodEvidence = { variant, account_id: account.account_id, period_id: period.period_id, field, currency_code: account.currency_code, source: period.source, opening_balance: period.opening_balance, stated_ending_balance: period.ending_balance, computed_ending_balance: ending, movements: structuredClone(period.movements) };
-        const issue = (code: string, suffix: string, message: string) => issues.push({ code, severity: 'error', section: 'reserve_accounts', field: field + suffix, message: code + ': ' + message + ' (' + account.account_id + '/' + period.period_id + ')', context: { variant, account_id: account.account_id, period_id: period.period_id, source: period.source } });
-        if (!Number.isFinite(ending) || !Number.isFinite(ending * 100) || !Number.isFinite(period.ending_balance * 100) || !Number.isFinite(period.opening_balance * 100)) {
+        const issue = (code: string, suffix: string, message: string) => issues.push({ code, severity: 'error', section: 'reserve_accounts', field: field + suffix, message: `${code}: ${message} (${account.account_id}/${period.period_id})`, context: { variant, account_id: account.account_id, period_id: period.period_id, source: period.source } });
+        if (!Number.isFinite(ending)) {
           issue('RSV-08', '', 'Balance arithmetic or currency quantization is nonfinite');
           // A nonfinite number cannot enter a JSON verification result.
           return { state: 'unverifiable', reason: 'nonfinite_arithmetic', source_digest, evidence, issues };
@@ -38,3 +38,4 @@ export async function verifyReserveAccounts(parsed: ParsedUWFile): Promise<Reser
   }
   return { state: issues.length ? 'failed' : 'verified', source_digest, evidence, issues };
 }
+

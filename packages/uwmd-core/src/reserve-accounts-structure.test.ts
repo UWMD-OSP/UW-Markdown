@@ -6,12 +6,12 @@ import { parseUWFile } from './parser.js';
 import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
 import { lookupRemediation } from './validator.js';
 import { isStandardSectionId } from './protocol.js';
-const read = (p: string) => readFileSync(new URL('../../../' + p, import.meta.url),'utf8');
+const read = (p: string) => readFileSync(new URL(`../../../${p}`, import.meta.url),'utf8');
 const ajv=new Ajv2020({strict:false}); addFormats.default(ajv);
 const schema=ajv.compile(JSON.parse(read('spec/schemas/section-reserve-accounts.schema.json')));
 describe('RFC 0064 structural source profile',()=>{
   it.each(readdirSync(new URL('../../../conformance/reserve-accounts/',import.meta.url),{withFileTypes:true}).filter(e=>e.isDirectory()).map(e=>e.name))('%s keeps runtime/schema shape parity',name=>{
-    const parsed=parseUWFile(read('conformance/reserve-accounts/'+name+'/deal.uwx.md'));
+    const parsed=parseUWFile(read(`conformance/reserve-accounts/${name}/deal.uwx.md`));
     const structure=checkReserveAccountsStructure(parsed);
     for(const {payload} of structure.sections){
       const accepted=schema(payload);
@@ -24,12 +24,12 @@ describe('RFC 0064 structural source profile',()=>{
   });
   it('registers the optional standard section and every finding remediation',()=>{
     expect(isStandardSectionId('reserve_accounts')).toBe(true);
-    for(let n=1;n<=8;n++) expect(lookupRemediation('RSV-0'+n)?.code).toBe('RSV-0'+n);
+    for(let n=1;n<=8;n++) expect(lookupRemediation(`RSV-0${n}`)?.code).toBe(`RSV-0${n}`);
   });
   it('refuses nonfinite numeric inputs before arithmetic',()=>{
     const parsed=parseUWFile(read('conformance/reserve-accounts/verified-source-classes/deal.uwx.md'));
     const payload=checkReserveAccountsStructure(parsed).sections[0]!.payload;
-    payload.accounts[0]!.periods[0]!.movements[0]!.amount=Infinity;
+    payload.accounts[0]!.periods[0]!.movements[0]!.amount=Number.POSITIVE_INFINITY;
     expect(checkReserveAccountsStructure(parsed).issues.map(i=>i.code)).toEqual(['RSV-01']);
   });
 });

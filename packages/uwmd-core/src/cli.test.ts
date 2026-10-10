@@ -85,7 +85,7 @@ describe('uwmd --version', () => {
 
 describe('RFC 0064 read-only reserve CLI',()=>{
   it.each([['verified-source-classes',0,'verified'],['balance-mismatch',1,'failed'],['unclassified',1,'unverifiable'],['absent',0,'not_checked']] as const)('%s emits its independent result and exit status',(name,status,state)=>{
-    const file=resolve(process.cwd(),'../../conformance/reserve-accounts/'+name+'/deal.uwx.md');
+    const file=resolve(process.cwd(),`../../conformance/reserve-accounts/${name}/deal.uwx.md`);
     const result=spawnSync(process.execPath,[cli,'verify-reserve-accounts',file,'--json'],{encoding:'utf8'});
     expect(result.status,result.stderr).toBe(status); expect(JSON.parse(result.stdout).state).toBe(state);
   });
