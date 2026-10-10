@@ -43,13 +43,14 @@ the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
 
 ### Section count
 
-Part IV registers **28 numbered subsections (§ 4.0 – § 4.27)**:
+Part IV registers **29 numbered subsections (§ 4.0 – § 4.28)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content, the `gaps` inventory (§ 4.22), the mixed-use `components`
 section (§ 4.23), the `capital_stack` section (§ 4.24), the
 `lease_up_schedule` section (§ 4.25), the `cash_flow_series`
-section (§ 4.26), and the `distribution_waterfall` section (§ 4.27).
+section (§ 4.26), the `distribution_waterfall` section (§ 4.27), and the
+optional `reserve_accounts` section (§ 4.28).
 When this and the protocol document refer to "the 21 standard
 sections" they mean § 4.0 through § 4.20.
 
@@ -3316,6 +3317,85 @@ Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6
 - **Stated figures are verified, never trusted.** `verifyWaterfall` recomputes by Protocol § VIII.10, three-state, both sides quantized at the § VIII.9.4 quanta (`$` → 2, `x` → 4, `%` → 6): outcomes and schedule cells against the recomputed allocation; a stated `xirr` whose recomputation raises (§ VIII.9.3 refusal — e.g. a zero-contribution party) is `failed`; a `moic` over zero contributions is `unverifiable`; an unresolvable or structurally invalid referenced series makes every stated figure `unverifiable`, never a guess.
 
 **Deliberately deferred (RFC 0035, RFC 0036, RFC 0051, RFC 0059).** N-party splits, Excel emit (the § 4.26 literals posture), a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche), and GP-side hurdles (RFC 0051 lifted `hurdle_mode: "any"` into the normative contract; RFC 0059 took clawback as a terminal true-up, leaving per-period crystallization and interim promote escrows deferred).
+
+---
+
+### § 4.28 — Property Reserve Accounts (RFC 0064)
+
+**ID:** `reserve_accounts`  
+**Header:** `## Property Reserve Accounts {#reserve_accounts}`  
+**Purpose:** Source-attributable stated property cash custody; asset-class independent and multi-variant.  
+**Written by:** `manual`, `wizard`, `agent/L4-*` — source extraction only; agents never reconcile balances or invent classifications.  
+**Required for pipeline stage:** Optional; never required.  
+**Dependencies:** None.  
+**Introduced by:** RFC 0064.
+
+The optional, asset-class-independent standard section `reserve_accounts`
+records property cash custody. Its closed payload is `{accounts: [...] }`
+(nonempty), beside the universal `_meta`, `_role` and `_notes` members.
+The normative structural schema is
+[section-reserve-accounts.schema.json](schemas/section-reserve-accounts.schema.json).
+This section is available to v1.x and v2.x documents and is never required.
+
+Each account states `account_id`, `class: "property_reserve"`, `purpose`,
+`owner` (economic owner), `currency_code` (three uppercase letters),
+`source`, and a nonempty ordered `periods` array. Currency MUST agree with
+frontmatter currency when stated there; there is no FX or mixed-currency
+aggregation. Each account is verified independently. `lender_reserve` and
+lender financing escrows are outside this contract.
+
+Each period states `period_id`, real `start_date` and `end_date` calendar
+bounds, finite nonnegative `opening_balance` and `ending_balance`,
+`source`, and an explicit `movements` array. An empty array is an authored
+statement of no movements; omission or null is refused. Period dates MUST be
+ordered without overlap, with strictly increasing starts; adjacent statements
+MAY share a boundary. These are source dates, not generated period buckets.
+Optional `previous_period_id` explicitly claims opening/ending continuity
+with the immediately preceding stated period, whose ID it MUST name. Omission
+makes no continuity claim; no missing periods or dates are inferred.
+
+Each movement states `movement_id`, real `date` within the inclusive
+opening/closing bounds, `kind`, finite nonnegative `amount`,
+`counterparty`, and `source`. Dates MUST be nondecreasing; same-day rows
+stay separate, ordered, and counted once. Account IDs are unique within a
+section, period IDs within an account, and movement IDs within a period.
+Accounts and variants remain independent; no cross-account totals are derived.
+
+Every `source` is a closed `{document, locator}` object of nonblank strings.
+It identifies attributable evidence for the account identity/owner, the stated
+period balances, or the individual movement and its boundary/classification.
+The host-owned block `_meta` remains unchanged. The producer MUST establish
+movement meaning from the referenced source, never from labels or amounts:
+
+| Closed kind | Source-established meaning |
+|---|---|
+| `contribution` | Cash entering custody from outside the property reserve account, with its funding counterparty identified. |
+| `internal_draw` | Custody cash paying separately stated gross property expenditure, with the payee identified. The economic expenditure remains gross. |
+| `external_release` | Custody cash returned to the stated economic owner, separately from gross sale proceeds. |
+
+A source that does not establish a class MUST remain unclassified and refuse;
+unknown kinds (including bank interest), absent classes, and lender reserves
+MUST NOT be coerced into this vocabulary. Source pointers and an arithmetic
+match do not authenticate evidence or prove its completeness. Binding a draw
+to a gross expenditure row belongs to RFC 0065, outside this contract.
+
+Ordinary document validation performs structural checks only:
+
+- `RSV-01` — malformed closed object, missing explicit fact/provenance, invalid amount or currency.
+- `RSV-02` — duplicate account, period or movement identity.
+- `RSV-03` — invalid or out-of-bounds calendar dates.
+- `RSV-04` — unsupported account class or unclassified/unknown movement kind.
+- `RSV-05` — unordered/overlapping periods, unordered movements or invalid explicit predecessor.
+
+Separately invoked Protocol §VIII.11 verification checks the balance identity
+and any explicitly claimed continuity. It emits `RSV-06` for an ending
+balance disagreement, `RSV-07` for continuity disagreement and `RSV-08`
+for nonfinite arithmetic/quantization. These are verifier findings, never
+ordinary structural-validation findings. Absent account data emits no RSV
+finding and makes no account-state claim. Nothing alters RFC 0045's
+`reserve_spending_excluded` refusal, cash-flow rows, NOI deductions or gross
+expenditure. No interest accrual, forecast, cash-boundary assembly or derived
+release is provided.
 
 ---
 

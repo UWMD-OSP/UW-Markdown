@@ -24,6 +24,12 @@ protocol, and each package each carry an independent semver).
   20,000 random cent sums against exact integer-cent arithmetic. No spec,
   export, or type change.
 
+### Property reserve-account statements (RFC 0064)
+
+- Accepts and implements optional asset-class-independent `reserve_accounts` (§4.28), closed source-attributable custody records and browser-safe `verifyReserveAccounts` with read-only `verify-reserve-accounts` CLI.
+- Structural `RSV-01`–`RSV-05` checks are separate from balance/claimed-continuity verification (`RSV-06`–`RSV-08`); binary64 and existing 2dp half-away-from-zero comparison are unchanged. No periods, zero movements, interest or releases are inferred.
+- Preserves gross expenditure and RFC 0045’s reserve-spending refusal; RFC 0065 binding is outside scope. Adds synthetic default/portable conformance, schemas and source evidence. Format remains 2.0; advance the Protocol minor after 2.23.0 at release preparation (RFC 0072 R8), without changing current version labels here.
+
 ### Business-plan and single-site BTR identity (RFC 0072)
 
 - Defines eight frontmatter business plans and owned reverse-DNS extensions;

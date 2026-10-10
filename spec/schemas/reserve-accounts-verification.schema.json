@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/reserve-accounts-verification.schema.json",
+  "title": "Property reserve-account verification (RFC 0064)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state",
+    "source_digest",
+    "evidence",
+    "issues"
+  ],
+  "properties": {
+    "state": {
+      "enum": [
+        "not_checked",
+        "unverifiable",
+        "verified",
+        "failed"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "not_applicable",
+        "invalid_structure",
+        "digest_unavailable",
+        "nonfinite_arithmetic"
+      ]
+    },
+    "source_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variant",
+          "account_id",
+          "period_id",
+          "field",
+          "currency_code",
+          "source",
+          "opening_balance",
+          "stated_ending_balance",
+          "computed_ending_balance",
+          "movements"
+        ],
+        "properties": {
+          "variant": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "account_id": {
+            "type": "string"
+          },
+          "period_id": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "currency_code": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "source": {
+            "$ref": "https://uwmd.org/schemas/section-reserve-accounts.schema.json#/$defs/source"
+          },
+          "opening_balance": {
+            "type": "number",
+            "minimum": 0
+          },
+          "stated_ending_balance": {
+            "type": "number",
+            "minimum": 0
+          },
+          "computed_ending_balance": {
+            "type": "number"
+          },
+          "movements": {
+            "type": "array",
+            "items": {
+              "$ref": "https://uwmd.org/schemas/section-reserve-accounts.schema.json#/$defs/movement"
+            }
+          }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "severity",
+          "section",
+          "field",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "RSV-01",
+              "RSV-02",
+              "RSV-03",
+              "RSV-04",
+              "RSV-05",
+              "RSV-06",
+              "RSV-07",
+              "RSV-08"
+            ]
+          },
+          "severity": {
+            "const": "error"
+          },
+          "section": {
+            "const": "reserve_accounts"
+          },
+          "field": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "context": {
+            "type": "object",
+            "required": [
+              "variant",
+              "account_id",
+              "period_id",
+              "source"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "variant": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "account_id": {
+                "type": "string"
+              },
+              "period_id": {
+                "type": "string"
+              },
+              "source": {
+                "$ref": "https://uwmd.org/schemas/section-reserve-accounts.schema.json#/$defs/source"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

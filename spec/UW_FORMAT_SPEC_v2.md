@@ -12,6 +12,10 @@ appendices — continues to govern 2.0 files **except as amended below**. A
 statement in this document supersedes the corresponding v1 statement for 2.0
 files only; v1.x files are governed by the v1 document alone, unamended.
 
+**RFC 0064 (additive optional section):** incorporated v1 §4.28 also governs
+2.x documents. `reserve_accounts` records stated property custody and supports
+separate balance verification; absence adds no requirement or diagnostic.
+
 **RFC 0072 (non-breaking clarification):** the incorporated v1 §2.2b/c and
 §5.4 business-plan/subtype rules also govern 2.x files. DQ-07–09 remain warnings
 at every admitted format version; no retired scenario becomes an error at the

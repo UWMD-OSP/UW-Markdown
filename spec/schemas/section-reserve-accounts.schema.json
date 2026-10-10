@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-reserve-accounts.schema.json",
+  "title": "Property reserve-account stated facts (RFC 0064)",
+  "description": "Format §4.28. Structural schema only; balance identity and claimed continuity require separate Protocol §VIII.11 verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accounts"
+  ],
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/account"
+      }
+    },
+    "_meta": {
+      "type": "object"
+    },
+    "_role": {
+      "enum": [
+        "primary",
+        "senior",
+        "junior",
+        "summary",
+        "detail",
+        "component"
+      ]
+    },
+    "_notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document",
+        "locator"
+      ],
+      "properties": {
+        "document": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "movement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "movement_id",
+        "date",
+        "kind",
+        "amount",
+        "counterparty",
+        "source"
+      ],
+      "properties": {
+        "movement_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "kind": {
+          "enum": [
+            "contribution",
+            "internal_draw",
+            "external_release"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "counterparty": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period_id",
+        "start_date",
+        "end_date",
+        "opening_balance",
+        "ending_balance",
+        "source",
+        "movements"
+      ],
+      "properties": {
+        "period_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "opening_balance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ending_balance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "previous_period_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "movements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/movement"
+          }
+        }
+      }
+    },
+    "account": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_id",
+        "class",
+        "purpose",
+        "owner",
+        "currency_code",
+        "source",
+        "periods"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "class": {
+          "const": "property_reserve"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "currency_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "periods": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/period"
+          }
+        }
+      }
+    }
+  }
+}

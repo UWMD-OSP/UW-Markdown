@@ -1,0 +1,19 @@
+{
+  "id": "reserve-accounts/large-cent-draw-contribution",
+  "tier": "3",
+  "requires_capabilities": [
+    "parse",
+    "calc-evaluate"
+  ],
+  "command": "verify-reserve-accounts",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/reserve-accounts/large-cent-draw-contribution",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 0
+  }
+}

@@ -473,3 +473,7 @@ The digest protects consistency, not payment purpose or executed-trade evidence.
 RFC 0070 is implemented after shipment and independent publication verification.
 Published core/CLI 2.17.0 pair with Stable Protocol 2.21.0 and Format 2.0;
 see [the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md).
+
+## RFC 0064 property reserve accounts
+
+Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries closed source-attributable property custody facts. `reserve-accounts-structure.ts` checks ordinary `RSV-01`–05 structure; browser-safe `verifyReserveAccounts` in `reserve-accounts.ts` separately checks stated balances and claimed continuity using the existing 2dp half-away currency boundary. Results include the Envelope semantic source digest and ordered account/period/movement evidence; absent data is `not_checked`. CLI: `uwmd verify-reserve-accounts <file> --json`. The default and portable `conformance/reserve-accounts/` suite uses synthetic source-shaped classifications and typed refusals. Gross capex stays gross and RFC 0045 reserve refusal remains unchanged.

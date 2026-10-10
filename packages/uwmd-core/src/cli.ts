@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { verifyReserveAccounts } from './reserve-accounts.js';
 import { verifyReplacementFundingBindings } from './replacement-funding.js';
 // uwmd CLI — command-line interface for .uw.md files
 // Commands: parse, validate, compact, diff, init, summary, render
@@ -1738,6 +1739,14 @@ switch (command) {
     break;
   }
 
+  case 'verify-reserve-accounts': {
+    if (!positional[0]) { console.error('Usage: uwmd verify-reserve-accounts <file> [--json]'); process.exit(1); }
+    const result = await verifyReserveAccounts(parseUWFile(readFile(positional[0])));
+    if (flags['json']) console.log(JSON.stringify(result, null, 2));
+    else { console.log(`Reserve account verification: ${result.state}`); for (const issue of result.issues) console.log(issue.message); }
+    process.exit(result.state === 'failed' || result.state === 'unverifiable' ? 1 : 0);
+    break;
+  }
   case 'verify-cash-flows': {
     try {
       const options = parseCashFlowVerificationArgs(args);
@@ -2036,6 +2045,7 @@ Commands:
   migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
   migrate  <file> --to-v2        Convert the whole file to the v2 nested _meta shape, uw_version "2.0" (RFC 0009;
                                  re-stamps hashes; signed blocks need --resign or --strip-signatures)
+  verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
   assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
   inspect-property-cash-flows <file> [--json]  Inventory source inputs needed for an assembly plan (read-only)

@@ -244,6 +244,7 @@ const MULTI_VARIANT_SECTIONS = new Set([
   'lease_up_schedule',
   'cash_flow_series',
   'distribution_waterfall',
+  'reserve_accounts',
 ]);
 
 // Sections routed to dedicated collections rather than the main sections map

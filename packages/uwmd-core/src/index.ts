@@ -976,3 +976,6 @@ export { UNLEVERED_SALE_DEDUCTIONS, RESERVED_LEVERED_SALE_DEDUCTIONS } from './p
 
 export { computeReplacementCashFlowBindingDigest, verifyReplacementFundingBindings } from './replacement-funding.js';
 export type { ReplacementCashFlowRef, ReplacementFunding, ReplacementFundingBindingContext, ReplacementFundingVerificationIssue, ReplacementFundingVerificationResult } from './protocol.js';
+
+export { verifyReserveAccounts } from './reserve-accounts.js';
+export type { ReserveSource, ReserveMovementKind, ReserveMovement, ReservePeriod, PropertyReserveAccount, ReserveAccounts, ReservePeriodEvidence, ReserveAccountsVerificationIssue, ReserveAccountsVerification } from './protocol.js';
