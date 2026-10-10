@@ -47,8 +47,8 @@ No Format or Protocol change is proposed, and no version moves.
 
 ## Existing contract and runtime
 
-- **No MHC vocabulary.** The builtin classes are closed for protocol 1.x
-  (§2.2). None states sites, pad rent or a park-owned home.
+- **No MHC vocabulary.** The builtin set is closed under current Format 2.0, which
+  incorporates v1 §2.2a unchanged. None states sites, pad rent or a park-owned home.
 - **The module path.** A module-declared class (RFC 0003, Protocol §X.2) is the
   designed path. RFC 0039 shipped one (`@uwmd/module-data-center`) with no spec
   change, confirmed that module formulas may read standard sections (its
@@ -340,8 +340,8 @@ StackUW's adoption is the adopter's own follow-up.
 
 ## Alternatives considered
 
-- **A builtin `manufactured_housing` class.** The builtin set is closed for 1.x
-  (§2.2), and the module path needs no spec change.
+- **A builtin `manufactured_housing` class.** The builtin set remains closed in Format 2.0
+  (incorporated v1 §2.2a), and the module path needs no spec change.
 - **A `multifamily` document stating sites as units.** It loses the pad/home
   split and misstates the denominator.
 - **The original Σ over `site_types[]`.** Unreachable without collection
@@ -366,8 +366,8 @@ StackUW's adoption is the adopter's own follow-up.
 | Question | Decision | Why (precedent) |
 |---|---|---|
 | Class identity | `org.uwmd.manufactured_housing` is permanent. Any future builtin promotion needs an explicit equivalence contract before documents or keyed series move; no alias or promotion is implemented here. | Issue #263's StackUW MH-8 answer: benchmark series key on the class string. RFC 0003 declares exact class identities; draft RFC 0073 records the future equivalence question. |
-| Builtin closure | The builtin set remains closed under current Format 2.0, which incorporates v1 �2.2a unchanged; remove the stale limitation to 1.x. | Format 2.0 is a delta specification incorporating v1, including the namespaced module-class path. RFC 0039 adds a vertical without changing the builtin set. |
-| Q1: `as_of_date` | Presence-only in first scope. Date validity belongs to the separate core RFC 0071; adopting its already-shipped predicate is a later module revision, not this implementation. | Owner's 2026-10-01 first scope and the seven settled rules; RFC 0071 / Protocol �VIII.3 supplies the separate capability, with a later compatibility floor. |
+| Builtin closure | The builtin set remains closed under current Format 2.0, which incorporates v1 §2.2a unchanged; remove the stale limitation to 1.x. | Format 2.0 is a delta specification incorporating v1, including the namespaced module-class path. RFC 0039 adds a vertical without changing the builtin set. |
+| Q1: `as_of_date` | Presence-only in first scope. Date validity belongs to the separate core RFC 0071; adopting its already-shipped predicate is a later module revision, not this implementation. | Owner's 2026-10-01 first scope and the seven settled rules; RFC 0071 / Protocol §VIII.3 supplies the separate capability, with a later compatibility floor. |
 | Q2: numeric type errors | Accept existing `MOD-RULE-ERROR`, naming the rule, and `MOD-CALC-ERROR` for affected calculations. Add no type predicate or new code family. | RFC 0039 and the public module runtime refuse expressions that cannot evaluate; section schemas are not enforced at runtime. |
 | Q3/Q4 and Deferred | Generic metrics for custom classes and possibly-zero-denominator ratios remain separate designs. Every item in Deferred remains out of scope. | Owner's 2026-10-01 decisions and the RFC's existing zero/null and eager-`if()` analysis. |
 | Implementation and distribution | Accept the settled six calculations, seven rules, `mhc_sites`, and `multifamily` fallback. Package and contract start at 0.1.0 with an exact core 2.21.0 pin; the package stays source-only and outside the release workflow/publish set. Format and Protocol versions do not move. | RFC 0039's typed manifest, generated JSON, public-runtime fixtures and independent package/contract versions; current official module distribution requires separate approval. |
@@ -402,9 +402,9 @@ RFC 0068 is `accepted`; this PR implements its first scope source-only.
 | `weighted_pad_rent_monthly` is finite and nonnegative (≥ 0), not strictly positive | Owner decision, 2026-10-01 | Decided for first scope (`CC-MOD-MH-04`). |
 | `poh_rent_share` deferred from first scope; `poh_share` is the POH-exposure metric | Owner decision, 2026-10-01 | Deferred. |
 | The class, fallback, section, six calculations and seven rules | Owner decisions above; acceptance direction, 2026-10-10 | Accepted first scope; implemented source-only in this PR. |
-| `as_of_date` validity; type errors under `MOD-RULE-ERROR` | — | **Unresolved.** A module-runtime capability gap. |
+| `as_of_date` validity; type errors under `MOD-RULE-ERROR` | Decisions above | Presence-only date check; existing type-error signal accepted. RFC 0071 adoption is a later revision. |
 | `site_types[]`, utilities, POH operating detail, RV sites, thresholds, defaults, generic metrics for custom classes, `poh_rent_share` | — | Deferred. |
-| Acceptance of RFC 0068 and implementation | — | Not decided. Not authorized. |
+| Acceptance of RFC 0068 and implementation | Owner assignment, 2026-10-10; Decisions above | Accepted and implemented in one PR; publication remains outside scope. |
 
 ## Prior art
 

@@ -87,6 +87,7 @@ const MANIFEST: ModuleManifest = {
           'park_owned_homes'
         ]
       },
+      // biome-ignore lint/suspicious/noThenProperty: JSON Schema conditional keyword, not a thenable.
       'then': {
         'properties': {
           'poh_home_rent_monthly': {
@@ -106,6 +107,7 @@ const MANIFEST: ModuleManifest = {
           'park_owned_homes'
         ]
       },
+      // biome-ignore lint/suspicious/noThenProperty: JSON Schema conditional keyword, not a thenable.
       'then': {
         'required': [
           'poh_home_rent_monthly'

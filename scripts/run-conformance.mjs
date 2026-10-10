@@ -1633,9 +1633,10 @@ async function runModules() {
  * required sections are enforced.
  *
  * Three modules are under test, each imported the way any host would import it:
- * `@uwmd/module-hospitality` (RFC 0006, a builtin class) and
- * `@uwmd/module-data-center` (RFC 0039, a module-declared class). A scenario
- * includes the source-only MHC module (RFC 0068) and names its module in `expected.module`; one naming anything else fails rather
+ * `@uwmd/module-hospitality` (RFC 0006, a builtin class),
+ * `@uwmd/module-data-center` (RFC 0039), and source-only
+ * `@uwmd/module-manufactured-housing` (RFC 0068). A scenario
+ * names its module in `expected.module`; one naming anything else fails rather
  * than silently passing.
  *
  * A scenario may also assert the RFC 0003 resolution verdict (`expected_status`

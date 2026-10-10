@@ -60,7 +60,7 @@ it('keeps the package fixture byte-identical to the public example, with clean c
   expect(readFileSync(resolve(__dirname, '../../../examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'), 'utf8')).toBe(source);
   expect(validateUWFile(parsed).issues.filter((i) => i.severity === 'error')).toEqual([]);
   expect(validateAgainstModules(parsed, registry)).toEqual([]);
-  expect(parsed.sections.property?.content.total_units).toBeUndefined();
+  expect(parsed.sections.property?.content).not.toHaveProperty('total_units');
 });
 
 it('does not compute, report module rules, or reinterpret a document without this module', () => {
@@ -107,7 +107,8 @@ describe('committed runtime fixtures and negative controls', () => {
       } else if (resolution.status === 'degraded') {
         expect(resolution.fallback).toBe(expected.expected_fallback);
         expect(resolution.issue.code).toBe(expected.expected_issue_code);
-        expect(resolution.declaration?.display_name ?? null).toBe(expected.expected_display_name);
+        expect(expected.expected_display_name).toBeNull();
+        expect(resolution).not.toHaveProperty('declaration');
       }
     }
     if (expected.type_error_field) {
