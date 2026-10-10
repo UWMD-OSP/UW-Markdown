@@ -122,17 +122,27 @@ export function quantizeDecimalAtStatedPrecision(n: number, decimals: number): n
   const [coefficient, exponent] = magnitude.toExponential().split('e');
   const shifted = Number(`${coefficient}e${Number(exponent) + decimals}`);
 
-  // A nonzero integral shifted value has no fractional part to round, so `n`
-  // is already quantized and is returned unchanged. A shift that underflows to
-  // zero must instead return zero. This also covers large magnitudes: past
-  // 2^53 every double is integral, which is also the range where
-  // `${magnitude}` renders exponentially ("1e+21") and the string shift could
-  // not reassemble it. Guarding on integrality rather than on a magnitude
-  // threshold also avoids `MAX_SAFE_INTEGER + 0.5` rounding *up* to
-  // `MAX_SAFE_INTEGER + 1` before `Math.floor` ever sees it.
-  const result = !Number.isFinite(shifted) || (shifted !== 0 && Number.isInteger(shifted))
-    ? n
-    : sign * Number(`${Math.floor(shifted + 0.5)}e${-decimals}`);
+  // An integral shifted value has no fractional part left to round, but `n`
+  // itself is NOT necessarily quantized: the decimal shift rounds to the
+  // nearest double, so a binary64 sum such as 455743.89999999997 shifts to
+  // exactly 45574390. Returning `n` there kept the noise that quantization
+  // exists to remove (RFC 0064's reserve verifier found it). So the result is
+  // rebuilt from the integer, as the fractional path below does.
+  //
+  // Past MAX_SAFE_INTEGER every double is integral and `String(shifted)`
+  // renders exponentially ("1e+23"), so the string shift could not reassemble
+  // it; those magnitudes have no representable fractional part and `n` is
+  // returned unchanged. Below 2^52, `shifted + 0.5` is exact, so the
+  // fractional path never rounds `MAX_SAFE_INTEGER + 0.5` up before
+  // `Math.floor` sees it.
+  let result: number;
+  if (!Number.isFinite(shifted) || Math.abs(shifted) > Number.MAX_SAFE_INTEGER) {
+    result = n;
+  } else if (Number.isInteger(shifted)) {
+    result = sign * Number(`${shifted}e${-decimals}`);
+  } else {
+    result = sign * Number(`${Math.floor(shifted + 0.5)}e${-decimals}`);
+  }
 
   // `-0` would otherwise survive two ways: as input, and from a small negative
   // that quantizes to zero. The exact canonicalizer already renders it as "0",
