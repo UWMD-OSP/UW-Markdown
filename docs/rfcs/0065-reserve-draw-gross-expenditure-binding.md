@@ -30,8 +30,7 @@ expenditure and the draw, their identities and attributable source evidence.
 
 The [completed Golden Deal review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
 identified reserve-dependent spending that correctly refuses RFC 0045. RFC 0064
-is now accepted and implemented on main, with release preparation pairing it to
-Protocol 2.24.0 and core/CLI 2.20.0. Its custody identity does not establish which
+is implemented and was released in core/CLI 2.20.0 with Protocol 2.24.0. Its custody identity does not establish which
 internal draw funded which expenditure. Date, equal amount, label or shared
 provenance cannot supply that relationship. All public examples here are synthetic.
 

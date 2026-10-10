@@ -1,6 +1,6 @@
 # UW Protocol — v1
 
-**Status:** Accepted release contract (RFCs 0064, 0072) — protocol **2.24.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **2.24.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 This document specifies the contract that any conforming **viewer**,
 **editor**, **calc host**, or **agent host** must satisfy in order to
@@ -3142,7 +3142,8 @@ claim arithmetic verification. A custody verifier neither writes the file
 nor alters gross expenditure or relaxes §VIII.9.6's
 `reserve_spending_excluded` refusal. Digest consistency and matching balances
 are not source authenticity, movement classification or economic completeness
-proofs. RFC 0065 draw-to-expenditure binding remains out of scope.
+proofs. Draw-to-expenditure binding is specified separately in §VIII.12
+(RFC 0065).
 
 ### VIII.12 Reserve draw to gross expenditure binding verification (RFC 0065)
 

@@ -21,7 +21,7 @@ same protocol version.
 ## Current matrix
 
 Release 2.20.0 pairs core/CLI 2.20.0 with Protocol 2.24.0 and Format 2.0.
-Protocol 2.24.0 carries two accepted RFCs: RFC 0072's `DQ-07`–`DQ-09`
+Protocol 2.24.0 carries two RFCs: RFC 0072's `DQ-07`–`DQ-09`
 scenario and build-to-rent identity warnings with their remediation entries,
 and RFC 0064's `RSV-NN` reserve-account code family (§III.6a) with its
 separately invoked balance verifier (§VIII.11). Neither adds a module
@@ -33,8 +33,17 @@ quantizer fix for an integral decimal shift. Signing 0.2.24, batch 0.8.19,
 Excel 0.9.12, report 0.8.24, lake 0.2.8 and both module packages 0.1.12 pin
 core 2.20.0 exactly. Core's optional signing peer is 0.2.24. The workflow
 scope is core, CLI, signing, batch and both module packages. Excel, report and
-lake remain source-only. Module manifest contracts remain 0.1.0. Release
-preparation and subsequent publication evidence are separate records.
+lake remain source-only. Module manifest contracts remain 0.1.0. RFCs 0064
+and 0072 are implemented; Protocol 2.24.0 is Stable. Core/CLI 2.20.0, signing
+0.2.24, batch 0.8.19 and both modules 0.1.12 are published from immutable
+annotated `v2.20.0` on `020e8b088307ac53a0023bfc0b881c31fb40db91` through
+trusted publishing with provenance. Release run 38064763014 succeeded; all
+registry versions, `latest`, `gitHead`, signatures, attestations, Rekor
+checks, 494 published files, 279 delivered-CLI portable cases, the published
+core's cent quantization and an isolated consumer of both modules were
+independently verified. No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.20.0-publication.md)
+remain separate records.
 
 Release 2.19.0 pairs core/CLI 2.19.0 with Protocol 2.23.0 and Format 2.0.
 Protocol 2.23.0 carries two RFCs: RFC 0075's `senior` preference

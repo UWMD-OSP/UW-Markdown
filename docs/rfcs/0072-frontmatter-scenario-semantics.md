@@ -1,7 +1,8 @@
 ---
 rfc: 0072
 title: Give frontmatter `scenario` a defined meaning
-status: accepted
+status: implemented
+implemented: 2026-10-10
 author: claude-code (agent proposal)
 created: 2026-10-04
 affects:
@@ -21,10 +22,13 @@ program and acquisition circumstance are separate axes. Single-site BTR is
 `asset_class: multifamily` and `asset_subtype: build_to_rent`, paired with its
 actual plan (for example `stabilized_acquisition`).
 
-This RFC and its implementation landed in one pull request. The owner accepted
-it by merging that pull request, PR #285, on 2026-10-09. Format stays 2.0.
-Release preparation pairs it with Protocol 2.24.0 and core/CLI 2.20.0. The RFC
-stays `accepted` until a release ships it and publication is verified. All new
+**Implemented; released and independently verified.** This RFC and its
+implementation landed in one pull request. The owner accepted it by merging
+that pull request, PR #285, on 2026-10-09. Format stays 2.0. Release
+preparation paired it with Protocol 2.24.0 and core/CLI 2.20.0. The `v2.20.0`
+release published it in core/CLI 2.20.0 with Stable Protocol 2.24.0, and
+independent publication verification passed (see
+[Publication and verification](#publication-and-verification-2026-10-10)). All new
 identity diagnostics are warnings in both format generations: existing valid
 documents gain no errors. No calculation, default, pack or underwriting
 behavior depends on either label.
@@ -201,3 +205,16 @@ Format §2.2a / RFC 0003 fixes namespace ownership; RFC 0052 supplies the
 label-bearing `other` alternative; RFC 0031 demonstrates explicit vocabulary
 retirement and preservation of raw legacy bytes; RFC 0060 keeps independent
 semantic axes separate. None requires this descriptive identity to drive math.
+
+## Publication and verification (2026-10-10)
+
+Annotated `v2.20.0` targets the release-prepared merge
+`020e8b088307ac53a0023bfc0b881c31fb40db91` (PR #292).
+[Release run 38064763014](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014)
+succeeded and published core/CLI 2.20.0, signing 0.2.24, batch 0.8.19 and
+both modules 0.1.12. Independent registry, provenance, published-file,
+delivered-CLI (279/279) and module-consumer checks passed; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.20.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section above
+remain unchanged.
