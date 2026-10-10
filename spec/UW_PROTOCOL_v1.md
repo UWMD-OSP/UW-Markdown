@@ -585,6 +585,7 @@ capability is unconditional: every implementation owes it.
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `REC-10` warning; otherwise `error` |
+| `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
@@ -3084,6 +3085,60 @@ party's dated flow list. Walk the referenced series **in row order**:
 
 ---
 
+
+### VIII.11 Property reserve-account verification (RFC 0064)
+
+`verifyReserveAccounts(parsed)` is a separately invoked, browser-safe,
+read-only verifier for Format §4.28. It MUST snapshot the supplied parsed
+source before any await. It MUST inspect every current nonsuperseded
+`reserve_accounts` variant independently, preserving account/period/movement
+order, authored source pointers and block metadata. It MUST NOT choose a
+variant by fence order, aggregate variants, create periods, infer zero
+movements, project draws, accrue interest or derive releases.
+
+1. Absent section: return `not_checked / not_applicable`, null digest,
+   empty evidence and issues. No synthetic account or balance is produced.
+2. Apply §4.28 structural checks in block/account/period/movement source order;
+   refuse before arithmetic on any finding as `unverifiable / invalid_structure`.
+3. Compute `source_digest` using the existing complete Envelope 1.0 semantic
+   SHA-256 digest (RFC 0014), including source content, provenance and history,
+   excluding only the envelope's digest/generator/generated-at fields. A digest
+   failure returns `unverifiable / digest_unavailable`; never claim verified.
+4. For each period, start at its stated opening balance. In authored movement
+   order, add each contribution and subtract each internal draw or external
+   release exactly once. Use IEEE-754 binary64 with no intermediate rounding.
+   Quantize the computed ending balance and the independently stated ending
+   balance separately at the existing currency quantum (2dp), half-away-from-zero
+   per §VIII.5. They MUST be equal; no tolerance beyond this quantum is added.
+   A disagreement emits `RSV-06` at the period's `ending_balance`.
+5. Only when `previous_period_id` explicitly claims continuity, compare this
+   opening balance with the immediately preceding stated ending balance at
+   the same quantum. A disagreement emits `RSV-07` at `opening_balance`.
+   This checks a claimed balance boundary, never source completeness or a
+   financial timing convention. Gaps are never populated.
+6. Any nonfinite arithmetic or quantization returns `unverifiable /
+   nonfinite_arithmetic` with `RSV-08`; never serialize a nonfinite balance
+   as a result. Otherwise return `failed` if any balance disagrees, or
+   `verified`. Return all finite item-level evidence and typed findings.
+
+The wire types in `protocol.ts` and
+[reserve-accounts-verification.schema.json](schemas/reserve-accounts-verification.schema.json)
+name `state`, optional `reason`, `source_digest`, `evidence` and
+`issues`. Evidence identifies the variant (null if unstated), account,
+period, dotted source field, currency, period source, stated opening/ending,
+raw computed ending and copied movement rows. Verifier mismatches carry
+account/period/source context; structural issues carry variant context in
+`value`. Findings preserve deterministic source order; ending mismatch
+precedes continuity mismatch within a period.
+
+The reference CLI `uwmd verify-reserve-accounts <file> [--json]` returns this
+result, exits 1 on `failed` or `unverifiable`, and exits 0 on `verified`
+or absent/not-applicable. Ordinary `validate` checks structure and does not
+claim arithmetic verification. A custody verifier neither writes the file
+nor alters gross expenditure or relaxes §VIII.9.6's
+`reserve_spending_excluded` refusal. Digest consistency and matching balances
+are not source authenticity, movement classification or economic completeness
+proofs. RFC 0065 draw-to-expenditure binding remains out of scope.
 
 ## IX. AI Host Contract (Tier 4)
 

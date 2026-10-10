@@ -467,3 +467,7 @@ keeps ESC-04. The v2 generator picks up all three prefixes. The RFC-numbered
 cases leave the 17 RFC 0056 pairs
 byte-identical; `replacement-funding.test.ts` checks this by excluding every
 RFC-numbered directory.
+
+## RFC 0064 property reserve accounts
+
+Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries closed source-attributable property custody facts. `reserve-accounts-structure.ts` checks ordinary `RSV-01`–05 structure; browser-safe `verifyReserveAccounts` in `reserve-accounts.ts` separately checks stated balances and claimed continuity using the existing 2dp half-away currency boundary. Results include the Envelope semantic source digest and ordered account/period/movement evidence; absent data is `not_checked`. CLI: `uwmd verify-reserve-accounts <file> --json`. The default and portable `conformance/reserve-accounts/` suite uses synthetic source-shaped classifications and typed refusals. Gross capex stays gross and RFC 0045 reserve refusal remains unchanged.

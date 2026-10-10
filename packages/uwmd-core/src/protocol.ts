@@ -1321,6 +1321,7 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'lease_up_schedule',
   'cash_flow_series',
   'distribution_waterfall',
+  'reserve_accounts',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -2132,6 +2133,14 @@ export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
  * every conforming implementation.
  */
 export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
+  { code: 'RSV-01', severity: 'error', title: 'Invalid reserve-account shape, amount, currency or source provenance', description: 'Invalid reserve-account shape, amount, currency or source provenance.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-02', severity: 'error', title: 'Duplicate reserve account, period or movement identity', description: 'Duplicate reserve account, period or movement identity.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-03', severity: 'error', title: 'Invalid reserve statement or movement calendar dates', description: 'Invalid reserve statement or movement calendar dates.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-04', severity: 'error', title: 'Unsupported reserve class or unclassified movement', description: 'Unsupported reserve class or unclassified movement.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-05', severity: 'error', title: 'Unordered reserve periods/movements or invalid continuity claim', description: 'Unordered reserve periods/movements or invalid continuity claim.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-06', severity: 'error', title: 'Reserve ending balance disagrees at the currency quantum', description: 'Reserve ending balance disagrees at the currency quantum.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-07', severity: 'error', title: 'Claimed consecutive reserve opening balance disagrees', description: 'Claimed consecutive reserve opening balance disagrees.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'RSV-08', severity: 'error', title: 'Reserve arithmetic cannot be represented finitely', description: 'Reserve arithmetic cannot be represented finitely.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
   {
     code: 'HDG-07',
     severity: 'error',
@@ -3075,3 +3084,58 @@ export type ReplacementFundingVerificationResult =
       computed_digest: string;
       issues: readonly [];
     };
+
+// RFC 0064 / Format §4.28 and Protocol §VIII.11.
+export interface ReserveSource { document: string; locator: string; }
+export type ReserveMovementKind = 'contribution' | 'internal_draw' | 'external_release';
+export interface ReserveMovement {
+  movement_id: string;
+  date: string;
+  kind: ReserveMovementKind;
+  amount: number;
+  counterparty: string;
+  source: ReserveSource;
+}
+export interface ReservePeriod {
+  period_id: string;
+  start_date: string;
+  end_date: string;
+  opening_balance: number;
+  ending_balance: number;
+  /** Explicit source claim of continuity; omission makes no continuity claim. */
+  previous_period_id?: string;
+  source: ReserveSource;
+  movements: ReserveMovement[];
+}
+export interface PropertyReserveAccount {
+  account_id: string;
+  class: 'property_reserve';
+  purpose: string;
+  owner: string;
+  currency_code: string;
+  source: ReserveSource;
+  periods: ReservePeriod[];
+}
+export interface ReserveAccounts { accounts: PropertyReserveAccount[]; }
+export interface ReservePeriodEvidence {
+  variant: string | null;
+  account_id: string;
+  period_id: string;
+  field: string;
+  currency_code: string;
+  source: ReserveSource;
+  opening_balance: number;
+  stated_ending_balance: number;
+  computed_ending_balance: number;
+  movements: ReserveMovement[];
+}
+export interface ReserveAccountsVerificationIssue extends ValidationMessage {
+  context?: { variant: string | null; account_id: string; period_id: string; source: ReserveSource };
+}
+export interface ReserveAccountsVerification {
+  state: 'not_checked' | 'unverifiable' | 'verified' | 'failed';
+  reason?: 'not_applicable' | 'invalid_structure' | 'digest_unavailable' | 'nonfinite_arithmetic';
+  source_digest: string | null;
+  evidence: ReservePeriodEvidence[];
+  issues: ReserveAccountsVerificationIssue[];
+}

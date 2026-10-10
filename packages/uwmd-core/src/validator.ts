@@ -1,4 +1,5 @@
 import { isScenarioId, RETIRED_SCENARIOS } from './scenario.js';
+import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
 import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
 // .uw.md validator — financial validity checks (§5.2) + cross-section consistency (§5.3)
 // Spec: UW_FORMAT_SPEC_v1.md Part V
@@ -147,6 +148,7 @@ export function validateUWFile(
   checkStudentBedCounts(parsed, issues);
   checkHedgesAndEscrows(parsed, issues);
   checkRenovationDraw(parsed, issues);
+  issues.push(...checkReserveAccountsStructure(parsed).issues);
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);

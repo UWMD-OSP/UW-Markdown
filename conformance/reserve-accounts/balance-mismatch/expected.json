@@ -1,0 +1,11 @@
+{
+  "state": "failed",
+  "issues": [
+    {
+      "code": "RSV-06"
+    },
+    {
+      "code": "RSV-07"
+    }
+  ]
+}

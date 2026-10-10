@@ -327,12 +327,13 @@ no additional financial assumptions are supplied by the released adapter.
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |
+| 5 | Property reserve-account state | RFC 0064 accepted and implemented for next release | Optional `reserve_accounts` §4.28; separately invoked balance identity/claimed-continuity verification at the existing currency quantum. Gross expenditure and RFC 0045 refusal unchanged; RFC 0065 binding is out of scope. |
 | 5 | Currency-code disambiguation | RFC 0046 released in 2.10.0 | Document-level identity is explicit and display-safe. Per-value identity, FX, and mixed-currency arithmetic remain deferred. |
 
-The next reserve-account question is scoped in draft
-[RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md). It seeks
-an account-state verifier and leaves RFC 0045's reserve refusal intact until
-the owner accepts a source-backed property-cash boundary mapping.
+[RFC 0064](docs/rfcs/0064-property-reserve-account-roll-forward.md) is accepted
+and implemented for the next release. Its property-custody verifier leaves
+RFC 0045's reserve refusal intact. RFC 0065 draw-to-expenditure binding and
+owner-cash assembly remain separate contracts.
 
 ### Adoption and integration candidates
 

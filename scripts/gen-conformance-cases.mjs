@@ -225,6 +225,15 @@ for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
     kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code: 0,
   });
 }
+// RFC 0064 separately invoked, read-only custody verification.
+for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
+  const dir = join(CONFORMANCE, 'reserve-accounts', scenario);
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  add('reserve-accounts/' + scenario, '3', 'verify-reserve-accounts', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json',
+    exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
+  }, ['parse', 'calc-evaluate']);
+}
 // ── Emit (or, under --check, compare) ───────────────────────────────────────
 //
 // `--check` exists because these files are generated but committed. A fixture

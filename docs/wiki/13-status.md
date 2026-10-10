@@ -42,7 +42,7 @@ pairs with unchanged Format **2.0**. RFC 0069 is `implemented`; see
 The generation includes both RFC 0066 fence-order conformance repairs and
 PR #240's publication-neutral release-state guards. The preparation and
 publication records are separate sections in `docs/releases/2.16.0-candidate.md`.
-Draft RFCs 0064, 0065, 0067 and 0068, and accepted-but-unreleased RFC 0071,
+Draft RFCs 0065, 0067 and 0068, and accepted-but-unreleased RFC 0071,
 remain outside the current released contract. RFC 0070 shipped subsequently in 2.17.0 above. The historical publication is
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
@@ -666,21 +666,7 @@ The guards:
     or corpus module overrides.
   - RFC 0068 is to adopt the predicate in a later revision of its own. No
     numeric-type predicate is authorized.
-- Review draft [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md)
-  against source-backed property account movement classifications. It proposes
-  deterministic account-state verification, not a relaxation of RFC 0045's
-  reserve refusal.
-  - **Carrier selected.** On 2026-09-29 the owner selected a direct, RFC-created
-    standard `reserve_accounts` §4.28 carrier
-    ([owner review](../reviews/2026-09-29-rfc-0064-owner-review.md)).
-  - **Still draft.** RFC 0064 is not accepted, no version is selected, and no
-    released generation (through 2.17.0) contains it.
-  - **PR #219 closed, unmerged (2026-10-04).** The owner confirmed that the
-    closure neither rejected nor withdrew RFC 0064: #219 is an abandoned,
-    stale implementation attempt, not to be revived as is. Its branch
-    (`f78fc54`) remains for reference; its provisional Protocol 2.19.0 label
-    has since shipped with RFC 0066, so an implementation after acceptance
-    starts from current `main`. Draft RFC 0065 stays blocked on RFC 0064.
+- [RFC 0064](../rfcs/0064-property-reserve-account-roll-forward.md) is accepted and implemented for the next release: optional source-attributable `reserve_accounts` §4.28 and separate custody-balance verification. RFC 0045 reserve refusal stays unchanged. RFC 0065 draw binding remains out of scope; PR #219 remains abandoned. Format is 2.0; Protocol label advances at release preparation.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -1069,3 +1055,7 @@ existing contract, so no RFC was needed. The
 - **Not changed.** The Lite reader still does not detect anchors or tags
   outside quotes, and Lite `key: []` still reads as before. Plain-scalar
   typing is unchanged in both readers.
+
+## 2026-10-09 — RFC 0064 property reserve accounts
+
+Optional `reserve_accounts` records explicit property custody facts across asset classes. Ordinary validation checks closed shapes, sources, classes, dates and order (`RSV-01`–05); `verifyReserveAccounts` / `verify-reserve-accounts` separately checks the stated identity and explicitly claimed continuity at the existing currency quantum (`RSV-06`–08), preserving source digest and item evidence. No gross expenditure netting or RFC 0045 admission is added. RFC status is accepted pending shipment; Format and current Protocol labels stay unchanged until release preparation.

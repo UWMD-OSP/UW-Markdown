@@ -28,6 +28,8 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-capital-stack.schema.json`](section-capital-stack.schema.json) | `capital_stack` section (tranches + sizing) | Format §4.24 / RFC 0026 |
 | [`section-lease-up-schedule.schema.json`](section-lease-up-schedule.schema.json) | `lease_up_schedule` section (trajectory + stabilized summary) | Format §4.25 / RFC 0008 |
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
+| [section-reserve-accounts.schema.json](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
+| [reserve-accounts-verification.schema.json](reserve-accounts-verification.schema.json) | ReserveAccountsVerification | Protocol §VIII.11 / RFC 0064 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
 | [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |
 | [`lease-recovery-terms.schema.json`](lease-recovery-terms.schema.json) | commercial tenant expense-recovery terms | Format §4.3 / RFC 0058 |
