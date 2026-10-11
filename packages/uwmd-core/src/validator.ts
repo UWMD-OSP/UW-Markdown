@@ -2170,7 +2170,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
   }
 
   // Present components are every key that is not the _meta / _notes envelope.
-  const entries = Object.entries(blockPayload(components)).filter(([k]) => !k.startsWith('_'));
+  const entries = Object.entries(blockPayload(components) as Record<string, unknown>).filter(([k]) => !k.startsWith('_'));
   const admissible = entries.filter(([k]) => ADMISSIBLE_COMPONENT_CLASSES.has(k));
 
   // MU-01: at least two admissible components.

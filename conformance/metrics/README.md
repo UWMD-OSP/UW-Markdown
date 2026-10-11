@@ -7,9 +7,10 @@ It imports no packs, defaults, cascade or public core barrel; there are no prior
 results, overrides, inferred financial inputs or underwriting workflow.
 
 It discovers every `.uw.md` / `.uwx.md` below `examples/` whose stated class has
-dictionary calculations (17 documents, including Lite, market-data and the
-standalone package record). The custom data-center module example and standalone
-non-deal records have no builtin dictionary class and are excluded explicitly.
+dictionary calculations (19 documents, including Lite, market-data and the
+standalone package record). The builtin Mesa Gateway data-center and Desert
+Palms manufactured-housing examples are included. Standalone non-deal records
+without a builtin dictionary class are excluded explicitly.
 Current active section blocks and frontmatter `quick_metrics` are checked;
 superseded blocks, prose, scenarios, forecasts and market observations are not
 current metric claims. A numeric statement is counted separately at each address,
@@ -22,8 +23,8 @@ listed current output section roots are also found automatically. These are
 bindings to existing example fields, not a new normative alias contract. Lite
 anchors map only their explicitly stated input sections, using the published
 bridge's section mapping without any bridge defaults. Primary-size statements
-are also checked as unrounded raw finite selectors. The current examples state
-no numeric cash-on-cash outputs; controls exercise the shared definition in all nine income classes.
+are also checked as unrounded raw finite selectors. The two new builtin examples state cash-on-cash outputs; controls exercise the
+shared definition in every income class.
 
 `expected.json` records every selected address, stated value, quantized computed
 value, source decimals, comparison decimals and state. RFC 0079 compares the
@@ -50,7 +51,7 @@ replace this baseline.
 
 ## Current example findings
 
-There are **143 verified, 0 failed, 0 unverifiable** numeric statements.
+There are **187 verified, 0 failed, 0 unverifiable** numeric statements.
 All 35 former precision disagreements now verify. Riverside LTC remains the
 literal `0.6`; it verifies at the 1% leverage minimum. No tokens were padded to
 clear findings. Agave's original `0.4938` verifies against its stated $48.6M
