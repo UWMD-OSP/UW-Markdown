@@ -1049,6 +1049,16 @@ function validateCompatibility(
   }
 }
 
+/**
+ * True when a document's declared format version is `min` or later, compared
+ * numerically with the same normalization module `requires_format` ranges use
+ * (`"2.1"` → 2.1.0). Absent or unparseable versions are never "at least".
+ * Internal: not part of the public barrel.
+ */
+export function formatVersionAtLeast(version: unknown, min: string): boolean {
+  return typeof version === 'string' && versionSatisfies(version, `>=${min}`);
+}
+
 function versionSatisfies(version: string, range: string): boolean {
   const normalizedVersion = normalizeFormatVersion(version);
   const v = parseSemver(normalizedVersion);

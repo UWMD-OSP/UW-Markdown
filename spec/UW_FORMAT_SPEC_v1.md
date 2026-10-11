@@ -3446,8 +3446,12 @@ requirement. `stage_readiness` and `DQ-06` MUST resolve through the same
 overlay, and `CC-14` is unaffected: `property` is never exempt for any
 class. Section ids remain class-neutral containers otherwise: hospitality's
 `rent_roll` carries keys/ADR/segmentation, senior housing's carries
-unit/acuity mix, and no overlay entry exists for them because reuse is the
-design, not a gap.
+unit/acuity mix, a data center's carries its kW leases and a manufactured-housing
+community's its site/pad mix, and no overlay entry exists for them because
+reuse is the design, not a gap. The RFC 0080 builtins (`data_center`,
+`manufactured_housing`) take the base lists verbatim, exactly as multifamily
+does: their class sections (`dc_capacity`, `mhc_sites`) are required by the
+class (`CLS-03`), never substituted for `rent_roll`.
 
 ### 5.2 Financial Validity Thresholds
 
@@ -4082,6 +4086,7 @@ Rules use Protocol §VIII.1 safe expressions. A false result emits the listed fi
 | `CC-HOSP-01` | warning | `hotel_metrics.market_revpar == null &#124;&#124; revpar >= hotel_metrics.market_revpar * 0.85` |
 | `CC-HOSP-02` | error | `hotel_metrics.occupancy >= 0 && hotel_metrics.occupancy <= 1` |
 | `CC-HOSP-03` | warning | `hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13` |
+| `CC-HOSP-04` | warning | `hotel_metrics.market_revpar` is stated but RevPAR (`noi_model.income.rooms_revenue / rent_roll.available_room_nights`) is uncomputable, so `CC-HOSP-01` is not evaluated. The finding names the missing canonical inputs; RevPAR is never inferred from ADR × occupancy. |
 | `CC-MH-01` | error | `mhc_sites == null &#124;&#124; (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` |
 | `CC-MH-02` | error | `mhc_sites == null &#124;&#124; (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` |
 | `CC-MH-03` | error | `mhc_sites == null &#124;&#124; (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` |
@@ -4094,5 +4099,15 @@ Rules use Protocol §VIII.1 safe expressions. A false result emits the listed fi
 | `CLS-01` | warning | The exact legacy official data-center id is deprecated. |
 | `CLS-02` | info | An official module-list dependency is satisfied by core. |
 | `CLS-03` | error | A required official class section is absent. |
-| `CLS-04` | error | A stated official field violates its fixed field contract. |
-| `CLS-05` | error | New builtin class IDs require declared Format 2.1. The legacy official alias is exempt. |
+| `CLS-04` | error / warning | A stated official field violates its fixed field contract. Error on canonical-id documents declaring Format 2.1 or later; warning on documents using the legacy `org.uwmd.data_center` id or declaring an earlier format, which predate the contract (RFC 0080 §5). |
+| `CLS-05` | error | New builtin class IDs require declared Format 2.1 or later. The legacy official alias is exempt. |
+
+**Compatibility severities (RFC 0080 §5).** A document that predates the
+builtin content — one declaring a format before 2.1 that does not name the
+legacy official module (`org.uwmd.hospitality` or `org.uwmd.datacenters`) —
+receives any error-severity class finding above (a rule, `MOD-RULE-ERROR` or
+`MOD-CALC-ERROR`) as a warning, so a previously valid document gains no error.
+Hospitality calculations that predate RFC 0080 (`revpar`) fail as every
+builtin pack calculation does — uncomputed, with no finding — and the migrated
+hospitality calculations report `MOD-CALC-ERROR` only for documents naming
+`org.uwmd.hospitality`, as the module runtime did.

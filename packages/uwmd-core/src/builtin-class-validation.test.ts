@@ -130,3 +130,85 @@ describe('Format 2.1 builtin record shapes', () => {
     expect(validateUWFile(parsed).issues.filter(i => /^(MU-|CC-11$|CC-12$|CLS-05$)/.test(i.code))).toEqual([]);
   });
 });
+
+describe('RFC 0080 §5: pre-existing documents behave the same', () => {
+  const saguaro = readFileSync(resolve(root, 'examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md'), 'utf8');
+  const mutate = (source: string, from: string, to: string) => {
+    expect(source.includes(from), from).toBe(true);
+    return source.replace(from, to);
+  };
+  const errors = (source: string) => validateUWFile(parseUWFile(source)).issues.filter(i => i.severity === 'error');
+  const classIssues = (source: string) => checkBuiltinClassContent(parseUWFile(source));
+
+  // Both mutations were valid at 099e47e: the builtin RevPAR simply did not
+  // compute. They must not start failing because hospitality absorbed the
+  // official module's content.
+  it.each([
+    ['zero available room nights', '"available_room_nights": 51830', '"available_room_nights": 0'],
+    ['string rooms revenue', '"rooms_revenue": 6080000', '"rooms_revenue": "6080000"'],
+  ])('builtin hospitality with %s stays error-free and adds no class issue', (_label, from, to) => {
+    const source = mutate(saguaro, from, to);
+    expect(errors(source)).toEqual([]);
+    expect(classIssues(source)).toEqual([]);
+  });
+
+  it('keeps MOD-CALC-ERROR for a migrated calculation only where the legacy module ran it', () => {
+    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8');
+    const broken = mutate(fixture, '"fb_revenue": 900000', '"fb_revenue": 0');
+    const calcErrors = (source: string) => classIssues(source).filter(i => i.code === 'MOD-CALC-ERROR');
+    expect(calcErrors(broken)).toEqual([]);
+    const named = mutate(broken, 'asset_class: hospitality\n', 'asset_class: hospitality\nmodules:\n  - org.uwmd.hospitality\n');
+    expect(calcErrors(named).map(i => [i.severity, i.message.includes('fb_gross_margin')])).toEqual([['error', true]]);
+  });
+
+  it('CC-HOSP-04 names the missing canonical RevPAR inputs on the unedited module-era fixture', () => {
+    const source = readFileSync(resolve(root, 'conformance/modules/runtime/01-hospitality-fixture/deal.uwx.md'), 'utf8');
+    const issues = validateUWFile(parseUWFile(source)).issues;
+    const found = issues.filter(i => i.code === 'CC-HOSP-04');
+    expect(found).toHaveLength(1);
+    expect(found[0]).toMatchObject({ severity: 'warning', section: 'hotel_metrics', field: 'market_revpar' });
+    expect(found[0]!.message).toContain('noi_model.income.rooms_revenue');
+    expect(found[0]!.message).toContain('rent_roll.available_room_nights');
+    // No ADR x occupancy fallback: CC-HOSP-01 neither fires nor errors.
+    expect(issues.map(i => i.code)).not.toContain('CC-HOSP-01');
+    expect(issues.map(i => i.code)).not.toContain('MOD-RULE-ERROR');
+    expect(issues.filter(i => i.severity === 'error')).toEqual([]);
+  });
+
+  it('stays quiet when no comp set is stated, and when RevPAR computes', () => {
+    const source = readFileSync(resolve(root, 'conformance/modules/runtime/01-hospitality-fixture/deal.uwx.md'), 'utf8');
+    const noComp = source.replace(/"market_revpar":\s*[0-9.]+/, '"market_revpar": null');
+    expect(noComp).not.toBe(source);
+    expect(classIssues(noComp).map(i => i.code)).not.toContain('CC-HOSP-04');
+    expect(classIssues(saguaro).map(i => i.code)).not.toContain('CC-HOSP-04');
+  });
+
+  it('reports field-contract defects as warnings on legacy-alias and pre-2.1 documents', () => {
+    const legacy = readFileSync(resolve(root, 'conformance/modules/runtime/06-data-center-fixture/deal.uwx.md'), 'utf8');
+    expect(legacy).toContain('asset_class: "org.uwmd.data_center"');
+    const fractional = mutate(legacy, '"raised_floor_sf": 60000', '"raised_floor_sf": 60000.5');
+    const cls04 = classIssues(fractional).filter(i => i.code === 'CLS-04');
+    expect(cls04.map(i => [i.field, i.severity])).toEqual([['raised_floor_sf', 'warning']]);
+    expect(errors(fractional)).toEqual([]);
+    // Same alias at Format 2.1 is still the legacy identity: warning.
+    const legacy21 = mutate(fractional, 'uw_version: "1.1"', 'uw_version: "2.1"');
+    expect(classIssues(legacy21).filter(i => i.code === 'CLS-04').map(i => i.severity)).toEqual(['warning']);
+  });
+
+  it('keeps field-contract defects as errors on canonical Format 2.1 records', () => {
+    const mesa = readFileSync(resolve(root, 'examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'), 'utf8');
+    const fractional = mutate(mesa, '"raised_floor_sf": 60000', '"raised_floor_sf": 60000.5');
+    expect(classIssues(fractional).filter(i => i.code === 'CLS-04').map(i => i.severity)).toEqual(['error']);
+  });
+
+  it('accepts Format 2.1 and any later version for the new ids, refusing earlier ones (CLS-05)', () => {
+    const desert = readFileSync(resolve(root, 'examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'), 'utf8');
+    const cls05 = (version: string) => classIssues(mutate(desert, 'uw_version: "2.1"', `uw_version: "${version}"`))
+      .filter(i => i.code === 'CLS-05');
+    expect(cls05('2.1')).toEqual([]);
+    expect(cls05('2.10')).toEqual([]);
+    expect(cls05('3.0')).toEqual([]);
+    expect(cls05('2.0')).toHaveLength(1);
+    expect(cls05('1.1')).toHaveLength(1);
+  });
+});
