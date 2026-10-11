@@ -144,8 +144,9 @@ export function controls(root) {
       const p = simple(); p.sections.debt_structure.content.annual_debt_service = 1;
       p.sections.noi_model.content.net_operating_income = 1.7;
       assert.equal(verifyWithPrecision(metric('dscr'), p, 1.5, undefined, 1).state, 'failed');
+      p.sections.valuation.content.purchase_price = 1;
       for (const [raw, state] of [[0.07, 'verified'], [0.070499999, 'verified'], [0.0705, 'failed'], [0.08, 'failed']]) {
-        p.sections.noi_model.content.net_operating_income = raw * 100000.21;
+        p.sections.noi_model.content.net_operating_income = raw;
         assert.equal(verifyWithPrecision(metric('cap_rate'), p, 0.07, undefined, 2).state, state);
       }
       p.sections.sources_uses = block('sources_uses', { uses: { total: 124615.3846153846 } });
