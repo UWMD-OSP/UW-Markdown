@@ -3027,7 +3027,7 @@ file orders them so readers see the most recent run history at the bottom.
 
 **Live reference syntax:** `"source_ref": "noi_model.net_operating_income"` — the engine substitutes the current value of that field into the calculation. If the field is null or the section doesn't exist yet, `status` is set to `awaiting_inputs` and `result` remains null.
 
-```json uw:section=custom_calculations source=manual ts=ISO8601 v=1
+```json uw:section=custom_calculations source=manual ts=2026-10-11T00:00:00Z v=1
 {
   "_meta": {
   "section": "custom_calculations",
@@ -3109,7 +3109,7 @@ file orders them so readers see the most recent run history at the bottom.
 
 The `sensitivity_sweeps` array supports single-variable sweeps: the user specifies a range of values for one assumption and the engine computes the target metric at each point, producing a result series for charting or tabular display.
 
-```json uw:section=custom_scenarios source=manual ts=ISO8601 v=1
+```json uw:section=custom_scenarios source=manual ts=2026-10-11T00:00:00Z v=1
 {
   "_meta": {
   "section": "custom_scenarios",
@@ -3293,12 +3293,12 @@ The `content` object is entirely free-form. Any valid JSON is accepted.
 
 A gap entry names a missing or low-quality field by `(section, field_path)` and records *why* it is open (`missing | illegible | out_of_scope | deferred | blocked_by_dependency | awaiting_external`). Optional metadata declares the lowest stage the gap blocks, who owns resolving it, and how stale the entry is.
 
-```json uw:section=gaps source=system/gaps-maintainer ts=ISO8601 v=1 confidence=high
+```json uw:section=gaps source=system/gaps-maintainer ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
   "section": "gaps",
   "provenance": {
-    "source": "manual",
+    "source": "system/gaps-maintainer",
     "actor": "example-author",
     "timestamp": "2026-10-11T00:00:00Z"
   },
@@ -3372,7 +3372,7 @@ The section is a **bounded map keyed by the component's own asset class**, not a
 
 **Allocation.** One purchase price and one loan cover the whole property, so use-level intensive metrics (price per apartment, loan per retail square foot) require splitting those single figures across components. There is no deterministic way to derive that split — income share, area share, and appraised-value share all disagree, and the choice is an underwriter's judgment. Therefore `allocation_pct` is an **input**, never a derivation: it is user-supplied, MUST sum to `1.0` across present components within `0.0001`, and an agent MUST NOT populate it. When `allocation_pct` is absent, every use-level intensive metric MUST evaluate to `null` rather than fall back to an area- or income-share guess.
 
-```json uw:section=components source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=components source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
   "section": "components",
@@ -3463,7 +3463,7 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 
 An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you. A split preferred tranche contributes only its `cash_rate` service to coverage and its full stated rate to `weighted_cost`.
 
-```json uw:section=capital_stack source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=capital_stack source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
   "section": "capital_stack",
@@ -3530,7 +3530,7 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 - **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture): each period's `net_cash_flow` = `rent_revenue + concessions + ti_lc_capex` (a period omitting a stated component is `unverifiable` for that row, never `failed`); `stabilized_summary.occupied_sf` against the final period; and `stabilized_summary.occupancy_rate` = final occupied SF ÷ the § XIII size denominator (no resolvable square-foot denominator → `unverifiable`, never a guess).
 - **Endpoint agreement (`CC-15`, warning, § 5.3).** The **base** variant's `stabilized_summary.annualized_noi` MUST agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%, a named exported constant). The tolerance is deliberate, not softness: unlike `CC-01` (one number restated in two places, exact), the trajectory endpoint and the stabilized-year projection are two different models of stabilization, and demanding exact agreement would force producers to hand-tune one to echo the other — destroying the independent-model signal the check exists to read. Non-base variants are exempt: a downside scenario is *supposed* to disagree with stabilized NOI.
 
-```json uw:section=lease_up_schedule variant=base source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=lease_up_schedule variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
   "section": "lease_up_schedule",
@@ -3608,7 +3608,7 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 - **A stated `xirr` needs a sign change (`CF-03`, error).** A stated `xirr` on a series whose amounts do not include at least one negative and at least one positive value MUST be refused: the stated number cannot be the root of anything.
 - **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture; § VIII.9.4): `total_net` and `moic` directly; `xnpv` closed-form at the stated `rate` (§ VIII.9.2); `xirr` by the § VIII.9.3 procedure. A stated metric whose recomputation *raises* (an `xirr` that fails to bracket) is `failed` — the document asserts a number the procedure cannot produce. A `moic` stated on a series with no outflows is `unverifiable` (an undefined ratio is not evidence of tampering). A metric absent from `stated_metrics` is simply not checked.
 
-```json uw:section=cash_flow_series variant=base source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=cash_flow_series variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
   "section": "cash_flow_series",
