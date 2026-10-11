@@ -27,10 +27,11 @@ no numeric cash-on-cash outputs; controls exercise the shared definition in all 
 
 `expected.json` records every selected address, stated value, quantized computed
 value, source decimals, comparison decimals and state. RFC 0079 compares the
-unrounded result at source precision, capped at dictionary `round_to`;
-insufficient/unknown source precision, missing/null inputs, invalid operands,
-nonfinite results and resolution refusals
-are **unverifiable**. Definitions or inputs not stated are not invented or counted
+unrounded result at `min(max(source decimals, minimum), round_to)`. Coarse
+statements are checked at the minimum: exact `0.07` verifies and DSCR `1.5`
+versus `1.7` fails. Missing/null inputs, invalid operands, nonfinite results and
+resolution refusals are **unverifiable**. Missing source precision is a typed
+caller error, not an unverifiable precision state. Definitions or inputs not stated are not invented or counted
 as numeric claims. The market-data example therefore has zero claims; standalone
 deal examples each state one primary size.
 
@@ -49,30 +50,29 @@ replace this baseline.
 
 ## Current example findings
 
-There are **128 verified, 0 failed, 15 unverifiable** numeric statements.
-Of the 35 prior precision disagreements, 34 now verify. Riverside LTC `0.6`
-fails the proposed 1%-leverage minimum (two fractional decimals), so it remains
-unverifiable. Fourteen formerly matching statements also carry too few source
-decimals: cap-rate copies in Cactus, Riverside and Sonoran; LTV copies in
-Mill Ave, Parkview and parkview-after-L6, Saguaro and Sundance. No tokens were
-padded to clear these findings. Missing-input/type/refusal cases remain controls.
+There are **143 verified, 0 failed, 0 unverifiable** numeric statements.
+All 35 former precision disagreements now verify. Riverside LTC remains the
+literal `0.6`; it verifies at the 1% leverage minimum. No tokens were padded to
+clear findings. Agave's original `0.4938` verifies against its stated $48.6M
+underwritten value; validator CC-02 evaluates clean. Every other example's LTV
+is unchanged. Missing-input/type/refusal cases remain controls.
 
 | Example (relative to examples/) | Verified | Failed | Unverifiable |
 |---|---|---|---|
 | `Agave-Court-Apts-Scottsdale-AZ.uwx.md` | 9 | 0 | 0 |
-| `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` | 12 | 0 | 2 |
+| `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` | 14 | 0 | 0 |
 | `Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md` | 14 | 0 | 0 |
-| `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` | 12 | 0 | 2 |
+| `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` | 14 | 0 | 0 |
 | `Ocotillo-Senior-Living-Chandler-AZ.uwx.md` | 15 | 0 | 0 |
 | `Parkview-Apts-Glendale-AZ.uw.md` | 2 | 0 | 0 |
-| `Parkview-Apts-Glendale-AZ.uwx.md` | 8 | 0 | 1 |
-| `Riverside-Office-Phoenix-AZ.uwx.md` | 11 | 0 | 3 |
+| `Parkview-Apts-Glendale-AZ.uwx.md` | 9 | 0 | 0 |
+| `Riverside-Office-Phoenix-AZ.uwx.md` | 14 | 0 | 0 |
 | `Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md` | 5 | 0 | 0 |
-| `Saguaro-Select-Hotel-Tempe-AZ.uwx.md` | 13 | 0 | 2 |
-| `Sonoran-Self-Storage-Peoria-AZ.uwx.md` | 11 | 0 | 2 |
-| `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` | 5 | 0 | 2 |
+| `Saguaro-Select-Hotel-Tempe-AZ.uwx.md` | 15 | 0 | 0 |
+| `Sonoran-Self-Storage-Peoria-AZ.uwx.md` | 13 | 0 | 0 |
+| `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` | 7 | 0 | 0 |
 | `market-data/Phoenix-Multifamily-2026-Q2.uwx.md` | 0 | 0 | 0 |
-| `parkview-after-L6.uwx.md` | 8 | 0 | 1 |
+| `parkview-after-L6.uwx.md` | 9 | 0 | 0 |
 | `standalone/externalized-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/inline-deal.uwx.md` | 1 | 0 | 0 |
 | `standalone/package/records/externalized-deal.uwx.md` | 1 | 0 | 0 |
@@ -81,16 +81,18 @@ The only value corrections authorized by the examples' own inputs are:
 
 | Example | Address | Before | After | Evidence |
 |---|---|---|---|---|
-| Agave Court | `quick_metrics.ltv` | `0.4938` | `0.5000` | Stated loan 24,000,000 / stated purchase price 48,000,000. |
-| Agave Court | `debt_structure.ltv` | `0.4938` | `0.5000` | Same inputs; appraised value 49,000,000 is not the dictionary denominator. |
 | Sonoran Self-Storage | `quick_metrics.dscr` | `1.3153` | `1.3161` | Stated NOI 672,000 / stated annual debt service 510,606, quantized at 4 dp. |
 | Sonoran Self-Storage | `debt_structure.dscr` | `1.3153` | `1.3161` | Same inputs and quantization. |
 
 No cash-on-cash numeric claims are selected in these examples. The eight
-changed-class worked examples all lack `sources_uses.equity_metrics.equity_total`
-and Y1 levered flow, so their newly defined returns are uncomputed; no equity
-is inferred from sponsor contributions. The [RFC's audit](../../docs/rfcs/0079-metric-precision.md#example-evidence)
-lists the prior values and new nulls. Multifamily and land behavior is unchanged.
+examples with a sole sponsor-equity non-debt source now explicitly state
+`sources_uses.equity_metrics.equity_total`, equal to that source line. Each
+`_notes` identifies this as an identity of stated fields; the verifier never
+infers equity. Their cash-on-cash values stay unchanged under the common
+formula. Agave stays null because mezzanine and preferred equity make the total
+ambiguous. Non-multifamily producers now need an explicit `equity_total` for
+cash-on-cash. The [RFC's audit](../../docs/rfcs/0079-metric-precision.md#example-evidence)
+lists each source identity and computed value.
 
 ## Controls
 
@@ -102,6 +104,7 @@ common cash-on-cash across all nine income classes; lazy stated-year-1 selection
 zero); senior debt selection and unresolved equity debt service; stated mixed-use
 allocation; fractional raw sizes with missing, string and nonfinite controls;
 immutability; source-token trailing zeroes, exponents, escaped/nested keys,
-content envelopes and YAML comments; minimum precision, output ceilings and
+content envelopes and YAML comments; coarse exact/wrong statements, all ten LTV denominators and lazy fallbacks,
+minimum precision, output ceilings and
 no double rounding. Dictionary/pack/size completeness is separately enforced by
 `packages/uwmd-core/src/packs/metric-dictionary.test.ts`.

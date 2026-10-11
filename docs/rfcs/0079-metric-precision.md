@@ -169,7 +169,8 @@ Agave remains uncomputed for cash-on-cash: mezz plus preferred/common equity
 leave total equity ambiguous. Both Parkview Extended records remain unchanged.
 Riverside LTC remains literally `0.6` and is now checked at the 1% minimum.
 The [lender report](../../conformance/metrics/README.md) freezes every one of the
-original 143 selected addresses and reports verified/failed/unverifiable per
+original 143 selected addresses: **143 verified, 0 failed, 0 unverifiable**.
+All 35 former precision disagreements verify. The report gives counts per
 example; failures remain findings rather than being suppressed.
 
 ## Compatibility analysis

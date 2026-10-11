@@ -31,21 +31,21 @@
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
-        "stated": 0.5,
+        "stated": 0.4938,
         "stated_decimals": 4,
         "state": "verified",
-        "computed": 0.5,
-        "comparison": 0.5,
+        "computed": 0.4938,
+        "comparison": 0.4938,
         "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
-        "stated": 0.5,
+        "stated": 0.4938,
         "stated_decimals": 4,
         "state": "verified",
-        "computed": 0.5,
-        "comparison": 0.5,
+        "computed": 0.4938,
+        "comparison": 0.4938,
         "comparison_decimals": 4
       },
       {
@@ -103,9 +103,9 @@
     "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
     "asset_class": "retail",
     "counts": {
-      "verified": 12,
+      "verified": 14,
       "failed": 0,
-      "unverifiable": 2
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -113,18 +113,20 @@
         "path": "quick_metrics.cap_rate",
         "stated": 0.07,
         "stated_decimals": 2,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.07,
         "stated_decimals": 2,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "ltv",
@@ -401,9 +403,9 @@
     "example": "Mill-Ave-Commons-Student-Tempe-AZ.uwx.md",
     "asset_class": "student_housing",
     "counts": {
-      "verified": 12,
+      "verified": 14,
       "failed": 0,
-      "unverifiable": 2
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -431,18 +433,20 @@
         "path": "quick_metrics.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
@@ -739,9 +743,9 @@
     "example": "Parkview-Apts-Glendale-AZ.uwx.md",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 8,
+      "verified": 9,
       "failed": 0,
-      "unverifiable": 1
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -769,9 +773,10 @@
         "path": "debt_structure.sizing_metrics.ltv",
         "stated": 0.7,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.7,
+        "comparison": 0.7,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
@@ -838,9 +843,9 @@
     "example": "Riverside-Office-Phoenix-AZ.uwx.md",
     "asset_class": "office",
     "counts": {
-      "verified": 11,
+      "verified": 14,
       "failed": 0,
-      "unverifiable": 3
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -848,18 +853,20 @@
         "path": "quick_metrics.cap_rate",
         "stated": 0.06,
         "stated_decimals": 2,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.06,
+        "comparison": 0.06,
+        "comparison_decimals": 3
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.06,
         "stated_decimals": 2,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.06,
+        "comparison": 0.06,
+        "comparison_decimals": 3
       },
       {
         "id": "ltv",
@@ -886,9 +893,10 @@
         "path": "debt_structure.ltc",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
@@ -1046,9 +1054,9 @@
     "example": "Saguaro-Select-Hotel-Tempe-AZ.uwx.md",
     "asset_class": "hospitality",
     "counts": {
-      "verified": 13,
+      "verified": 15,
       "failed": 0,
-      "unverifiable": 2
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -1076,18 +1084,20 @@
         "path": "quick_metrics.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
@@ -1204,9 +1214,9 @@
     "example": "Sonoran-Self-Storage-Peoria-AZ.uwx.md",
     "asset_class": "self_storage",
     "counts": {
-      "verified": 11,
+      "verified": 13,
       "failed": 0,
-      "unverifiable": 2
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -1214,18 +1224,20 @@
         "path": "quick_metrics.cap_rate",
         "stated": 0.07,
         "stated_decimals": 2,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.07,
         "stated_decimals": 2,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "ltv",
@@ -1342,9 +1354,9 @@
     "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
     "asset_class": "land",
     "counts": {
-      "verified": 5,
+      "verified": 7,
       "failed": 0,
-      "unverifiable": 2
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -1382,18 +1394,20 @@
         "path": "quick_metrics.ltv",
         "stated": 0.5,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.5,
+        "comparison": 0.5,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.5,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.5,
+        "comparison": 0.5,
+        "comparison_decimals": 2
       },
       {
         "id": "carry_cost_per_acre",
@@ -1430,9 +1444,9 @@
     "example": "parkview-after-L6.uwx.md",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 8,
+      "verified": 9,
       "failed": 0,
-      "unverifiable": 1
+      "unverifiable": 0
     },
     "evidence": [
       {
@@ -1460,9 +1474,10 @@
         "path": "debt_structure.sizing_metrics.ltv",
         "stated": 0.7,
         "stated_decimals": 1,
-        "state": "unverifiable",
-        "reason": "insufficient_stated_precision",
-        "computed": null
+        "state": "verified",
+        "computed": 0.7,
+        "comparison": 0.7,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",

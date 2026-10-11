@@ -577,7 +577,13 @@ describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', (
     const values: Record<string, number | null> = {};
     for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
       const n = namedNumber(wb, input.name);
-      expect(n, input.name).not.toBeNull();
+      if (input.name === 'underwritten_value') {
+        // Parkview states no underwritten value; preserve the blank so the
+        // shared LTV formula exercises its purchase-price fallback.
+        expect(n, input.name).toBeNull();
+      } else {
+        expect(n, input.name).not.toBeNull();
+      }
       values[input.name] = n;
     }
     const payload = blockPayload(parsed.sections['noi_model'] as UWBlock) as Record<string, unknown>;

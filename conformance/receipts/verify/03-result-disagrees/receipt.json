@@ -9,7 +9,7 @@
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
-    "pack_version": "1.0.1",
+    "pack_version": "1.0.2",
     "engine": "@uwmd/core",
     "engine_version": "2.21.0",
     "results": [
