@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { parseUWFile } from '../../packages/uwmd-core/dist/parser.js';
-import { verifyStatedMetric as verifyWithPrecision } from './verifier.mjs';
+import { verifyExample, verifyStatedMetric as verifyWithPrecision } from './verifier.mjs';
 import { getStatedDecimals } from '../../packages/uwmd-core/dist/calc/stated-precision.js';
 import { jsonNumericTokens, jsonStatedDecimals, quickMetricDecimals } from './numeric-tokens.mjs';
 
@@ -139,6 +139,13 @@ export function controls(root) {
       assert.equal(verify('1.2').reason, 'insufficient_stated_precision');
       assert.equal(verify('1.245000000').state, 'verified');
       assert.equal(verifyWithPrecision(metric('dscr'), p, 1.2449).reason, 'unknown_stated_precision');
+    }],
+    ['Lite-ratio-token-retains-stated-precision', () => {
+      const bindings = JSON.parse(readFileSync(join(root, 'conformance/metrics/statement-bindings.json'), 'utf8'));
+      const source = '---\nuw_lite_version: 1.0\nasset_class: multifamily\n---\n- NOI: $120 <!-- uw:noi.net_operating_income -->\n- Debt service: $100 <!-- uw:debt.annual_debt_service -->\n- DSCR: 1.20x <!-- uw:debt.dscr -->\n';
+      const result = verifyExample(source, d, bindings);
+      assert.deepEqual(result.counts, { verified: 1, failed: 0, unverifiable: 0 });
+      assert.equal(result.evidence[0].stated_decimals, 2);
     }],
     ['inputs-and-definition-remain-unchanged' , () => {
       const m = metric('dscr');

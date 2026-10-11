@@ -63,6 +63,15 @@ describe('normative metric dictionary parity', () => {
     expect(validate(unknownNullRule)).toBe(false);
   });
 
+  it('pins every minimum to the RFC 0079 Decisions policy', () => {
+    for (const m of dictionary.calculations) {
+      const minimum = ['cap_rate', 'debt_yield', 'cash_on_cash'].includes(m.id) ? 4
+        : ['%', 'x'].includes(m.unit) || /sqft|psf|nrsf/.test(m.id) ? 2 : 0;
+      expect(m.minimum_stated_decimals, `${m.asset_classes}:${m.id}`).toBe(minimum);
+    }
+    for (const m of dictionary.size_intensives) expect(m.minimum_stated_decimals).toBe(0);
+  });
+
   it('matches every calculation in every builtin pack in both directions', () => {
     for (const m of dictionary.calculations) {
       expect(m.minimum_stated_decimals).toBeLessThanOrEqual(m.round_to);

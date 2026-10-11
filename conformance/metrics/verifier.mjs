@@ -53,7 +53,7 @@ function readExample(source, bindings) {
     payload[tail.at(-1)] = field.value;
     // In Lite, the anchored numeric spelling is the value token (§4), not
     // an optional UWX display string. Percent spelling shifts two places.
-    const token = field.display_value.replaceAll(',', '').replace(/^[$]/, '').replace(/%$/, '').trim();
+    const token = field.display_value.replaceAll(',', '').replace(/^[$]\s*/, '').replace(/[%xX]$/, '').trim();
     const places = getStatedDecimals(token);
     if (places !== undefined) litePrecision.set(`${section}.${tail.join('.')}`, places + (field.display_value.endsWith('%') ? 2 : 0));
   }

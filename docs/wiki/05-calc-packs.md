@@ -152,11 +152,11 @@ id | label | formula | unit
 `cash_on_cash` | Cash-on-Cash | `year-1 levered cash flow / sources_uses.equity_metrics.equity_total` | `%`
 `occupancy` | Occupancy | `rent_roll.occupied_sf / rent_roll.total_rentable_sf` | `%`
 
-Office diverges from multifamily on three field shapes: size is **rentable square
-feet** (`property.rentable_square_feet`, not `total_units`/`total_nra_sqft`),
-total equity is `sources_uses.equity_metrics.equity_total`,
-and the NOI model nests `income`/`expenses`. Verified against the
-`Riverside-Office-Phoenix-AZ.uwx.md` worked example.
+Office sizes by **rentable square feet** (`property.rentable_square_feet`,
+not `total_units`/`total_nra_sqft`), and its NOI model nests `income`/`expenses`.
+The cash-on-cash inputs are common to all income classes. The
+`Riverside-Office-Phoenix-AZ.uwx.md` worked example carries the office fields
+but lacks aggregate equity, so its standardized cash-on-cash remains uncomputed.
 
 ## `RETAIL_PACK`
 
@@ -291,8 +291,9 @@ line: turning nearly the whole property in one August window is a materially
 larger and less smoothable cost than conventional multifamily turnover, which is
 why the class expense-ratio band sits above multifamily's. Verified against the
 `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` worked example, which also
-demonstrates honest **negative leverage** — a 5.75% going-in cap against 6.25%
-debt, giving 3.0% year-one cash-on-cash.
+demonstrates **negative leverage** — a 5.75% going-in cap against 6.25% debt.
+The example lacks aggregate equity, so standardized cash-on-cash is uncomputed
+under RFC 0079; its sponsor contribution does not substitute for that input.
 
 ## `LAND_PACK`
 
@@ -345,17 +346,11 @@ the `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` worked example.
 > found to be zero*. A test pins the distinction, because every downstream reader
 > — renderer, Excel, receipt, agent — depends on it.
 
-These are the **nine asset-class packs today** (`multifamily`, `office`,
-`retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`,
-`student_housing`, `land`). Only `mixed_use` remains undefined, and it is the one
-class the recipe below does not fit: it composes other classes rather than
-standing alone. See [RFC 0019](../rfcs/0019-mixed-use-composition.md) — unlike
-the other nine, it needs a normative format change (a `components` section)
-before its pack can be written, because the calc engine cannot iterate over a
-variable-length component list. Adding another **built-in** pack for any other
-existing enum value remains a library-only change (follow the recipe below). Letting **third-party modules** declare entirely new
-asset-class identifiers is the separate v2 RFC topic — see
-`docs/rfcs/0003-module-asset-classes.md`.
+There are **ten builtin packs**. `mixed_use` composes stated component
+subtotals and allocations under RFC 0019 instead of blending incompatible
+sizes. Each class's metrics remain in the normative dictionary, including the
+shared cash-on-cash definition across the nine income classes. Official new
+classes follow the builtin contract; modules support private extensions.
 
 ## Who consumes the pack
 
