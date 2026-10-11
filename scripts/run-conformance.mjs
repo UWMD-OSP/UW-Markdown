@@ -1,5 +1,5 @@
-import { projectModuleContract } from './rfc-0081-schema-projections.mjs';
 #!/usr/bin/env node
+import { projectModuleContract } from './rfc-0081-schema-projections.mjs';
 import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
