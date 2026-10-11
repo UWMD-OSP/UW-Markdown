@@ -65,7 +65,7 @@ describe('RFC 0080 official builtin controls', () => {
       const runtime = structuredClone(section.schema);
       if (section.id === 'hotel_metrics') {
         delete runtime.required;
-        runtime.properties = { market_revpar: runtime.properties!.market_revpar };
+        runtime.properties = { market_revpar: (runtime.properties as Record<string, unknown>).market_revpar };
         runtime.additionalProperties = false;
       }
       expect(schema, section.id).toEqual(runtime);

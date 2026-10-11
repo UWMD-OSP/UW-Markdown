@@ -58,8 +58,7 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
 - **The public API is a single file:** [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts).
   If a symbol isn't exported there, tools can't use it.
 - **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
-  defines the authoring file (with [`UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
-  for Format 2.x), [`spec/UW_PROTOCOL.md`](../../spec/UW_PROTOCOL.md)
+  defines the single Format 3.0 contract, [`spec/UW_PROTOCOL.md`](../../spec/UW_PROTOCOL.md)
   ("UW Protocol — verification") defines how any party verifies a document,
   [`spec/metrics/`](../../spec/metrics/README.md) defines every builtin metric,
   [`spec/UW_RECEIPT.md`](../../spec/UW_RECEIPT.md) defines receipts, while [`spec/UW_XML_MAPPING.md`](../../spec/UW_XML_MAPPING.md)

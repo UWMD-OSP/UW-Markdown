@@ -7,7 +7,7 @@
 > to `.uwx.md`. Legacy structured `.uw.md` remains readable with a migration
 > warning. Lite's normative grammar is
 > [`spec/UW_LITE_SPEC.md`](../../spec/UW_LITE_SPEC.md). The linked
-> `UW_FORMAT_SPEC.md` remains the structured specification until its
+> `UW_FORMAT_SPEC.md` is the consolidated structured specification; its
 > compatibility rename is completed.
 
 > Normative source: [`spec/UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)

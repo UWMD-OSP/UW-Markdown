@@ -13,7 +13,7 @@ The project has five layers, each consuming the one above it:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Standard         spec/UW_FORMAT_SPEC.md (+ v2)          │  normative
+│  Standard         spec/UW_FORMAT_SPEC.md (3.0)          │  normative
 │  (normative)      spec/UW_PROTOCOL.md  (verification)    │  text
 │                   spec/UW_RECEIPT.md                     │
 │                   spec/metrics/builtin.json (dictionary)    │
