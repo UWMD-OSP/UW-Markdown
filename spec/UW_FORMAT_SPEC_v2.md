@@ -1,6 +1,6 @@
-# .uwx.md — UW Markdown Extended Format Specification, Version 2.0
+# .uwx.md — UW Markdown Extended Format Specification, Version 2.1
 
-## Version 2.0 | September 2026 | Delta specification
+## Version 2.1 | October 2026 | Delta specification
 
 This document is the normative text for **format 2.0** — files declaring
 `uw_version: "2.0"` (or a later 2.x) in their frontmatter. It is a **delta
@@ -376,3 +376,9 @@ The optional block-level `_role` annotation in the incorporated v1 §2.8 and
 the existing v2 canonical block hash, and is preserved through representation
 conversion. `_meta.role` has no role-selection meaning. The scalar vocabulary,
 eligibility, collision, trusted-host editing and coverage rules are identical.
+
+## §8 Official builtin classes (Format 2.1, RFC 0080)
+
+Format 2.1 adds `data_center` and `manufactured_housing` to the official builtin set in incorporated §2.2. Documents authored using these builtin IDs declare `uw_version: "2.1"`. Its metadata shape is exactly 2.0's nested shape; readers continue accepting 2.0 and 1.x unchanged. The standard and starter kits cover all twelve official classes.
+
+The standard class sections and field contracts are incorporated §4.29–§4.35. The exact legacy identifier `org.uwmd.data_center` reads as builtin `data_center` even in a 1.x/2.0 source, with CLS-01, without rewriting bytes or digest. Official module-list dependencies `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core (CLS-02). This exception admits no third-party suffix aliases.

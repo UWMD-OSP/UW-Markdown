@@ -992,3 +992,5 @@ export type { StatedMetricComparison } from './calc/stated-precision.js';
 export { toBuiltinAssetClass } from './types.js';
 
 export { DATA_CENTER_DEFAULTS, MANUFACTURED_HOUSING_DEFAULTS } from './defaults.js';
+
+export { checkBuiltinClassContent } from './builtin-class-validation.js';

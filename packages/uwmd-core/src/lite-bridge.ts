@@ -138,6 +138,8 @@ export const UW_LITE_FIELD_MAPPINGS: readonly UWLiteFieldMapping[] = [
     target_path: 'property.total_nra_sqft',
     label: 'Total NRA',
   },
+  { lite_path: 'property.critical_it_load_kw', target_path: 'property.critical_it_load_kw', label: 'Commissioned critical IT kW' },
+  { lite_path: 'property.total_sites', target_path: 'property.total_sites', label: 'Sites' },
   // RFC 0027: one anchor per size intensive (Protocol §XIII), so a Lite
   // summary can state any asset class's size, not only multifamily's.
   {

@@ -121,9 +121,11 @@ function rowByLabel(ws: ExcelJS.Worksheet): Map<string, number> {
 describe('layout registry', () => {
   it('supports the registered workbook-layout classes', () => {
     expect([...SUPPORTED_ASSET_CLASSES].sort()).toEqual([
+      'data_center',
       'hospitality',
       'industrial',
       'land',
+      'manufactured_housing',
       'mixed_use',
       'multifamily',
       'office',

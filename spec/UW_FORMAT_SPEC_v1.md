@@ -155,7 +155,7 @@ property_address: "string"          # * full street address
 city: "string"
 state: "XX"                         # 2-char state code
 zip: "string"
-asset_class: "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land | <namespaced custom identifier, see §2.2a>"
+asset_class: "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land | data_center | manufactured_housing | <namespaced custom identifier, see §2.2a>"
 asset_subtype: "string | null"      # e.g. "garden_style", "strip_center", "warehouse"
 loan_type: "permanent | bridge | construction | value_add | refinance"
 scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up | house_flip | commercial_flip | property_conversion | land_banking"  # optional; null or reverse-DNS extension also admitted (§2.2b)
@@ -224,7 +224,7 @@ setting `deal_stage: screening` or later.
 
 ### 2.2a Asset-class identifiers (RFC 0003)
 
-`asset_class` is one of the ten builtin values, **or** a
+`asset_class` is one of the twelve official builtin values (the two new values require Format 2.1), **or** a
 module-declared custom identifier.
 
 ```
@@ -232,16 +232,12 @@ asset_class := builtin | custom
 builtin     := 'multifamily' | 'office' | 'retail' | 'industrial'
              | 'self_storage' | 'hospitality' | 'mixed_use'
              | 'senior_housing' | 'student_housing' | 'land'
+             | 'data_center' | 'manufactured_housing'
 custom      := segment ('.' segment){2,}
 segment     := [a-z][a-z0-9_]*
 ```
 
-The builtin set stays **closed**. It answers "what does `data_center`
-mean?" by not allowing the question, and that is worth keeping. What
-RFC 0003 adds is a second, namespaced space so that an adopter who
-needs a class the standard does not have is not forced to lobby for a
-spec bump, misuse an existing class (a data center as `industrial`,
-which then fails industrial's validations), or fork.
+The official builtin set grows by RFC with full standard and starter support. Every official class is builtin (RFC 0080); the namespaced extension space is for third-party private or unofficial classes. Exactly `org.uwmd.data_center` is a legacy official alias; other ids ending in `.data_center` or `.manufactured_housing` remain refused.
 
 **Three segments minimum.** `com.data_center` reads as a namespace with
 no owner, and two segments is where squatting on a short prefix starts
@@ -3954,3 +3950,149 @@ so fence order cannot discard an unannotated peer. Superseded roles do not
 activate selection. Role-free Markdown retains its existing routing behavior;
 removing a section's last role ends this opt-in. UW JSON envelopes already
 represent variant maps on every section.
+
+## Official class sections (RFC 0080; Format 2.1)
+
+These additive sections use the same block envelope and role/variant resolution as existing standard sections. Fixed field contracts are enforced by core (CLS-03 missing required section, CLS-04 invalid stated field). The normative schemas below govern their payloads; additional annotations do not change the calculations. Primary size is always stated on property, never synthesized: `critical_it_load_kw` for data centers and `total_sites` for manufactured housing. The matching detailed-section quantity must agree exactly when both are stated.
+
+### 4.29 Capacity & Topology
+
+**ID:** `dc_capacity`
+
+**Class:** `data_center`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-dc_capacity.schema.json](schemas/section-dc_capacity.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `critical_it_load_kw` | number; {'minimum': 0} |
+| `planned_it_load_kw` | number; {'minimum': 0} |
+| `contracted_it_load_kw` | number; {'minimum': 0} |
+| `utility_feed_kw` | number; {'minimum': 0} |
+| `design_pue` | number; {'minimum': 1} |
+| `measured_pue` | ['number', 'null']; {'minimum': 1} |
+| `redundancy` | string; {'enum': ['n', 'n_plus_1', 'n_plus_2', '2n', '2n_plus_1']} |
+| `raised_floor_sf` | ['integer', 'null']; {'minimum': 0} |
+| `design_density_kw_per_rack` | ['number', 'null']; {'minimum': 0} |
+### 4.30 Power Economics
+
+**ID:** `dc_power`
+
+**Class:** `data_center`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-dc_power.schema.json](schemas/section-dc_power.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `utility_rate_per_kwh` | number; {'minimum': 0} |
+| `billing` | string; {'enum': ['metered_pass_through', 'all_in', 'breakered']} |
+| `power_margin` | ['number', 'null']; {'minimum': 0} |
+| `stated_annual_power_cost` | ['number', 'null']; {'minimum': 0} |
+### 4.31 Revenue
+
+**ID:** `dc_revenue`
+
+**Class:** `data_center`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-dc_revenue.schema.json](schemas/section-dc_revenue.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `lease_type` | string; {'enum': ['powered_shell', 'wholesale_turnkey', 'retail_colocation', 'hyperscale_build_to_suit']} |
+| `rent_per_kw_month` | number; {'minimum': 0} |
+| `interconnection_revenue_annual` | number; {'minimum': 0} |
+| `services_revenue_annual` | number; {'minimum': 0} |
+| `market_rent_per_kw_month` | ['number', 'null']; {'minimum': 0} |
+### 4.32 Hotel Operating Metrics
+
+**ID:** `hotel_metrics`
+
+**Class:** `hospitality`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-hotel_metrics.schema.json](schemas/section-hotel_metrics.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `adr` | number; {'minimum': 0} |
+| `occupancy` | number; {'minimum': 0, 'maximum': 1} |
+| `available_room_nights` | integer; {'minimum': 0} |
+| `key_count` | integer; {'minimum': 0} |
+| `market_revpar` | ['number', 'null']; {} |
+### 4.33 Brand & Franchise
+
+**ID:** `hotel_brand`
+
+**Class:** `hospitality`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-hotel_brand.schema.json](schemas/section-hotel_brand.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `flag` | ['string', 'null']; {} |
+| `franchise_fee_pct_of_rooms` | number; {'minimum': 0, 'maximum': 0.2} |
+| `marketing_fund_pct` | number; {'minimum': 0, 'maximum': 0.1} |
+| `loyalty_program_pct` | number; {'minimum': 0, 'maximum': 0.1} |
+| `term_years` | ['integer', 'null']; {'minimum': 0} |
+### 4.34 Food & Beverage
+
+**ID:** `hotel_food_beverage`
+
+**Class:** `hospitality`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-hotel_food_beverage.schema.json](schemas/section-hotel_food_beverage.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `fb_revenue` | number; {'minimum': 0} |
+| `fb_cogs` | number; {'minimum': 0} |
+| `fb_labor` | number; {'minimum': 0} |
+| `complimentary_breakfast_cost_per_occupied_room` | number; {'minimum': 0} |
+### 4.35 Manufactured Housing Sites
+
+**ID:** `mhc_sites`
+
+**Class:** `manufactured_housing`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
+
+**Normative schema:** [section-mhc_sites.schema.json](schemas/section-mhc_sites.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `total_sites` | integer; {'minimum': 1} |
+| `occupied_sites` | integer; {'minimum': 0} |
+| `park_owned_homes` | integer; {'minimum': 0} |
+| `weighted_pad_rent_monthly` | number; {'minimum': 0} |
+| `poh_home_rent_monthly` | ['number', 'null']; {'minimum': 0} |
+| `as_of_date` | presence only; calendar/date validity is deferred |
+
+POH home rent is required and numeric when `park_owned_homes > 0`; it is absent or null when no homes are park-owned. Zero pad or home rent is permitted. `as_of_date` is presence-only in this scope.
+
+### Class verification rules
+
+Rules use Protocol §VIII.1 safe expressions. A false result emits the listed finding; absent inputs do not become zero. A type/evaluation error emits MOD-RULE-ERROR. Reporting and statement comparisons use the dictionary and existing §VIII.5 quantizer.
+
+| Code | Severity | Assertion |
+|---|---|---|
+| `CC-DC-01` | error | `dc_capacity.design_pue >= 1` |
+| `CC-DC-02` | warning | `dc_capacity.design_pue <= 1.6` |
+| `CC-DC-03` | error | `dc_capacity.critical_it_load_kw <= dc_capacity.planned_it_load_kw` |
+| `CC-DC-04` | warning | `dc_capacity.contracted_it_load_kw <= dc_capacity.critical_it_load_kw` |
+| `CC-DC-05` | warning | `facility_load_kw <= dc_capacity.utility_feed_kw` |
+| `CC-DC-06` | warning | `dc_capacity.measured_pue == null &#124;&#124; dc_capacity.measured_pue <= dc_capacity.design_pue * 1.15` |
+| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; rent_index >= 0.85` |
+| `CC-HOSP-01` | warning | `hotel_metrics.market_revpar == null &#124;&#124; revpar >= hotel_metrics.market_revpar * 0.85` |
+| `CC-HOSP-02` | error | `hotel_metrics.occupancy >= 0 && hotel_metrics.occupancy <= 1` |
+| `CC-HOSP-03` | warning | `hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13` |
+| `CC-MH-01` | error | `mhc_sites == null &#124;&#124; (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` |
+| `CC-MH-02` | error | `mhc_sites == null &#124;&#124; (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` |
+| `CC-MH-03` | error | `mhc_sites == null &#124;&#124; (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` |
+| `CC-MH-04` | error | `mhc_sites == null &#124;&#124; (mhc_sites.weighted_pad_rent_monthly != null && mhc_sites.weighted_pad_rent_monthly >= 0)` |
+| `CC-MH-05` | error | `mhc_sites == null &#124;&#124; mhc_sites.as_of_date != null` |
+| `CC-MH-06` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes != 0 &#124;&#124; mhc_sites.poh_home_rent_monthly == null` |
+| `CC-MH-07` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes == null &#124;&#124; mhc_sites.park_owned_homes <= 0 &#124;&#124; (mhc_sites.poh_home_rent_monthly != null && mhc_sites.poh_home_rent_monthly >= 0)` |
+| `CC-DC-08` | error | Stated property critical IT kW equals stated dc_capacity critical IT kW. |
+| `CC-MH-08` | error | Stated property sites equal stated mhc_sites total_sites. |
+| `CLS-01` | warning | The exact legacy official data-center id is deprecated. |
+| `CLS-02` | info | An official module-list dependency is satisfied by core. |
+| `CLS-03` | error | A required official class section is absent. |
+| `CLS-04` | error | A stated official field violates its fixed field contract. |
+| `CLS-05` | error | New builtin class IDs require declared Format 2.1. The legacy official alias is exempt. |

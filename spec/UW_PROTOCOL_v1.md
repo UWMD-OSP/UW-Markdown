@@ -652,6 +652,10 @@ capability is unconditional: every implementation owes it.
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
+| `CLS-NN` | Official builtin identity compatibility and field contracts (RFC 0080). | `validate` | warning / info / error |
+| `CC-DC-NN` | Data-center class rules (Format §4.29–31). | `validate` | warning / error |
+| `CC-MH-NN` | Manufactured-housing class rules. | `validate` | error |
+| `CC-HOSP-NN` | Hospitality class rules. | `validate` | warning / error |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |
@@ -3480,11 +3484,11 @@ Two declarations sharing a **display name** is `MOD-DISPLAY-CONFLICT-001`
 confusing for a reader and irrelevant to a machine; a host SHOULD show
 the identifier alongside the name and otherwise carry on.
 
-#### X.2.4 What custom classes do not get
+#### X.2.4 Third-party custom classes and official builtins
 
 A custom class has no builtin calc pack, no Excel layout, and no entry
 in the §XIII size-intensive registry — those tables are keyed to the
-closed builtin set and stay that way. A module supplies its own
+official builtin set, which grows by RFC with full standard and starter support (RFC 0080). Every official asset class is builtin; only third-party private or unofficial classes use module declarations. A module supplies its own
 calculations for the classes it declares (§X, module runtime); anything
 the module does not supply, a custom class does not have.
 
@@ -3811,3 +3815,7 @@ validations:
 - **View model**: a per-section layout description used to render the
   section uniformly across implementations. A starter-product term
   (starter guide §IV).
+
+### Official builtin compatibility (RFC 0080)
+
+`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin.

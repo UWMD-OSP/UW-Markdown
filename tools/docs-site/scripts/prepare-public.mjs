@@ -11,6 +11,8 @@ const repoRoot = resolve(siteRoot, '..', '..');
 const files = [
   ['docs/site-assets/og-v2.png', 'og-v2.png'],
   ['tools/web-viewer/index.html', 'viewer/app/index.html'],
+  ['examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md', 'viewer/samples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'],
+  ['examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md', 'viewer/samples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'],
   ['examples/Parkview-Apts-Glendale-AZ.uwx.md', 'viewer/samples/Parkview-Apts-Glendale-AZ.uwx.md'],
   ['examples/Riverside-Office-Phoenix-AZ.uwx.md', 'viewer/samples/Riverside-Office-Phoenix-AZ.uwx.md'],
   ['examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md', 'viewer/samples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md'],

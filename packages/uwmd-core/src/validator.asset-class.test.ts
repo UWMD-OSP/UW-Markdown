@@ -35,10 +35,10 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
   });
 
   it('reports an unnamespaced unknown class as an error', () => {
-    const issue = find(file('data_center'), 'INVALID-ASSET-CLASS-001');
+    const issue = find(file('specialty_facility'), 'INVALID-ASSET-CLASS-001');
     expect(issue?.severity).toBe('error');
     expect(issue?.field).toBe('asset_class');
-    expect(issue?.value).toBe('data_center');
+    expect(issue?.value).toBe('specialty_facility');
   });
 
   it('reports a namespaced class shadowing a builtin', () => {

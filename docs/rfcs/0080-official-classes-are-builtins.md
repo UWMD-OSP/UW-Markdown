@@ -1,7 +1,7 @@
 ---
 rfc: 0080
 title: Every official asset class is a builtin; data center and manufactured housing join the builtin set
-status: draft
+status: accepted
 author: claude-code (agent proposal, from owner direction 2026-10-10)
 created: 2026-10-10
 depends_on:
@@ -23,7 +23,7 @@ affects:
 
 # RFC 0080: Every official asset class is a builtin; data center and manufactured housing join the builtin set
 
-**Draft written ahead of implementation.** The direction is the owner's
+**Accepted with its implementation.** The direction is the owner's
 (Product principle 1, 2026-10-10); this RFC turns it into a contract. It lands
 `accepted` together with its implementation in one PR, as RFCs 0064, 0065 and
 0072 did. Merging that PR is the acceptance.
@@ -244,7 +244,26 @@ Also in this change:
 3. **Bundle module manifests inside core but keep them as modules.** Rejected:
    it is still second-class, just packaged differently.
 
-## Unresolved questions
+## Decisions
+
+| Question | Decision | Why (precedent) |
+|---|---|---|
+| Primary sizes | Commissioned critical IT load is `property.critical_it_load_kw`; sites are `property.total_sites`. Retain the detailed section quantities and require exact equality when both are stated (`CC-DC-08`, `CC-MH-08`). Do not infer or default physical size. | RFC 0027 and every existing builtin put primary denominators on `property`; a mirrored quantity is an identity, not a financial tolerance. |
+| MHC per-site input addresses | Preserve the six calculation IDs and their operations; price/site and NOI/site read the canonical `property.total_sites`. `mhc_sites.total_sites` remains the operating-count source and is checked against it. Add `loan_per_site`. | The size-registry denominator and pack denominator must match (RFC 0027). The carried owner decision defines sites, not a different financial basis. |
+| Mixed-use slots | Admit `data_center` with `critical_it_load_kw`, and `manufactured_housing` with `total_sites`; add NOI-share and explicitly allocated purchase-price intensives. Never combine their sizes into a property size. | RFC 0019 admits income uses whose stated NOI is additive; both new classes use the same EGI-minus-operating-expenses basis. |
+| Standard income metrics | Copy cap rate, DSCR, LTV, LTC, debt yield and guarded cash-on-cash exactly from the accepted RFC 0079 dictionary. MHC generic-debt deferral is resolved by builtin support; other MHC deferrals remain. | RFC 0079 revised owner directions and RFC 0080 §3. |
+| Hospitality RevPAR | Keep the builtin `noi_model.income.rooms_revenue / rent_roll.available_room_nights`. The module used `hotel_metrics.adr * hotel_metrics.occupancy`; it has different stated inputs and can differ when those inputs are inconsistent. Only the builtin formula is in the dictionary. | The established builtin definition uses stated rooms revenue and available nights; preserve existing builtin examples rather than silently changing their denominator or source. |
+| Migrated dependencies | Inline a referenced module calculation with an explicit `round(..., its round_to)` wherever the module runtime previously passed its reported result to a later calculation. Preserve every original reporting precision. | RFC 0006/module runtime threads quantized prior results; Protocol §VIII.1 `round` reproduces that existing boundary without adding an evaluator or tolerance. |
+| Required hotel section | `hotel_metrics` remains required when the document explicitly names the legacy hospitality module. Existing builtin hospitality records without that dependency continue using their standard rent-roll/NOI sections. Optional brand and F&B sections remain optional. | RFC 0080 requires existing documents to remain valid; the module's explicit section requirement is preserved without imposing it on previously valid builtin records. |
+| Date and type checks | MHC `as_of_date` is presence-only, including the existing malformed-date negative controls that establish the boundary. Date validity stays a separate core follow-up. Rule evaluation type errors use `MOD-RULE-ERROR`; fixed field-shape defects additionally use `CLS-04`. Q3/Q4 and the other owner deferrals remain outside scope. | RFC 0068 first-scope decisions and RFC 0039 runtime precedent. |
+| Compatibility identity | Resolve exactly `org.uwmd.data_center` as `data_center` with `CLS-01`; never rewrite the parsed source or digest. Official module dependencies emit `CLS-02` and require no external module load. Third-party suffix shadows remain `INVALID-ASSET-CLASS-002`. | RFC 0080 narrow grandfathering, not a general equivalence or suffix-matching contract. |
+| Standard codes | Register `CC-DC-01..08`, `CC-MH-01..08`, `CC-HOSP-01..03` and `CLS-01..05`; class rules execute in ordinary core validation. Missing required class sections use `CLS-03`. | Existing closed code-family and safe-expression verification patterns. |
+| Defaults | Propose industrial starter ranges for data-center common financial assumptions, excluding per-square-foot TI; propose multifamily starter ranges for MHC, explicitly mapping the reserve basis from dwelling to site. Every low/central/high value is an owner-review proxy, not a claimed market estimate. No physical facts or POH rent are defaulted. Jared must review the tables at the top of the PR before merge. | RFC 0078 distinguishes starter assumptions from verification; RFC 0080 makes defaults the explicit owner gate. |
+| Official module packages | Keep package identities, core pins and publish membership. Retain API constants and empty view exports; the 0.2.0 compatibility manifests declare no class, section, calculation or rule. Retirement and npm deprecation occur separately at release. | RFC 0080 §6 and independent package/manifest versioning. |
+| RFC 0073 | Keep it draft for third-party identity renames. Official classes no longer depend on an identity-promotion contract. | RFC 0080 Alternatives and Product principle 1. |
+| Versions | Format 2.1 authors the additive builtin/section extension and reads all previously supported formats. Keep package versions/core pins and the Protocol label unchanged until release preparation. | RFC 0080 §7 and the RFC 0072/R8 release pattern. |
+
+## Owner review at merge
 
 1. **Defaults for data center and manufactured housing.** Defaults are a
    starter product (RFC 0078 D4), but they are still underwriting

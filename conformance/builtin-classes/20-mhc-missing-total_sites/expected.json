@@ -1,0 +1,16 @@
+{
+  "description": "RFC 0080 core builtin control. RFC 0068: missing-total_sites.",
+  "expected_calcs": {
+    "physical_occupancy": null,
+    "annual_pad_rent_potential": null,
+    "poh_share": null,
+    "annual_poh_home_rent_potential": 180000.0,
+    "price_per_site": null,
+    "noi_per_site": null
+  },
+  "expected_codes": [
+    "CC-MH-01",
+    "CLS-04"
+  ],
+  "builtin_class": "manufactured_housing"
+}

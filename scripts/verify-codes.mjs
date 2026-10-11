@@ -42,7 +42,7 @@ const checks = [];
 const read = (p) => readFileSync(resolve(root, p), 'utf8');
 
 /** `REC-09`, `CS-02b`, `WF-10` — a family prefix, a number, an optional suffix. */
-const CODE = /[A-Z][A-Z0-9]*-[0-9]+[a-z]?/;
+const CODE = /[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-[0-9]+[a-z]?/;
 
 // ── What the library can emit ────────────────────────────────────────────────
 //
@@ -78,7 +78,7 @@ const validationEmitted = new Set();
 for (const file of sourceFiles('packages/uwmd-core/src')) {
   const text = read(file);
   const isValidationSurface = text.includes('ValidationMessage');
-  for (const match of text.matchAll(new RegExp(`'(${CODE.source})'`, 'g'))) {
+  for (const match of text.matchAll(new RegExp(`[\"'](${CODE.source})[\"']`, 'g'))) {
     emitted.add(match[1]);
     if (isValidationSurface) validationEmitted.add(match[1]);
   }

@@ -109,7 +109,7 @@ export const MANUFACTURED_HOUSING_PACK: ModuleManifest = {
     {
       "id": "price_per_site",
       "label": "Price per Site",
-      "formula": "valuation.purchase_price / mhc_sites.total_sites",
+      "formula": "valuation.purchase_price / property.total_sites",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
@@ -117,27 +117,13 @@ export const MANUFACTURED_HOUSING_PACK: ModuleManifest = {
     {
       "id": "noi_per_site",
       "label": "NOI per Site",
-      "formula": "noi_model.net_operating_income / mhc_sites.total_sites",
+      "formula": "noi_model.net_operating_income / property.total_sites",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
     },
     {
-      "id": "price_per_property_site",
-      "label": "Price / Site",
-      "formula": "valuation.purchase_price / property.total_sites",
-      "unit": "$",
-      "deterministic": true
-    },
-    {
-      "id": "noi_per_property_site",
-      "label": "NOI / Site",
-      "formula": "noi_model.net_operating_income / property.total_sites",
-      "unit": "$",
-      "deterministic": true
-    },
-    {
-      "id": "loan_per_property_site",
+      "id": "loan_per_site",
       "label": "Loan / Site",
       "formula": "debt_structure.loan_amount / property.total_sites",
       "unit": "$",

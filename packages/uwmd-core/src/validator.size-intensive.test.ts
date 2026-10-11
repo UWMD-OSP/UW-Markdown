@@ -86,7 +86,7 @@ describe('validateUWFile — CC-13 primary size field (RFC 0027)', () => {
   });
 
   it('is silent for an unrecognized asset class (§XIII.3)', () => {
-    const parsed = file({ property: block('property', {}) }, 'data_center');
+    const parsed = file({ property: block('property', {}) }, 'specialty_facility');
     expect(find(parsed, 'CC-13')).toBeUndefined();
   });
 

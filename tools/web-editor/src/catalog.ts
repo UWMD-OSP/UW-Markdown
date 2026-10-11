@@ -10,6 +10,8 @@
 import { SIZE_INTENSIVES } from '@uwmd/core/browser';
 
 export const SECTION_DISPLAY_NAMES: Record<string, string> = {
+  dc_capacity: 'Capacity & Topology', dc_power: 'Power Economics', dc_revenue: 'Data Center Revenue', mhc_sites: 'Manufactured Housing Sites',
+  hotel_metrics: 'Hotel Metrics', hotel_brand: 'Hotel Brand', hotel_food_beverage: 'Food & Beverage',
   deal_context: 'Deal Context',
   property: 'Property',
   ownership: 'Ownership & Acquisition',

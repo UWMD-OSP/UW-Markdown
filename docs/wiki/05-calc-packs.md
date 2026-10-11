@@ -467,3 +467,9 @@ extensions use modules.
 > pack pass, something is wrong — those tests assert that an *unknown* class
 > resolves to nothing, which stays true no matter how many real classes ship.
 > `__unregistered_test_class__` must never be added to the `AssetClass` union.
+
+## Official builtin classes (RFC 0080, Unreleased)
+
+All twelve official classes are full builtins, including `data_center` and `manufactured_housing`. Their normative metric definitions and size selectors live in `spec/metrics/`, with bidirectional pack/registry parity tests. Both new packs use all six RFC 0079 standard income definitions, including equity_total-based cash-on-cash. Source size is `property.critical_it_load_kw` or `property.total_sites`, mirrored against the detailed capacity/site count. They have Excel layouts, stage overlays and starter defaults. Default tables are proposed proxies requiring Jared review before merge, never verification inputs.
+
+Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only, retained in the publish set until the transition release. Legacy `org.uwmd.data_center` reads without source/digest mutation (CLS-01); official module dependencies are satisfied by core (CLS-02). Third-party classes remain module extensions.

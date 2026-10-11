@@ -8,6 +8,20 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- RFC 0080: Format 2.1 adds full builtin `data_center` and `manufactured_housing` support: standard sections and rules, dictionary metrics, size registry, packs, Excel layouts, stage overlays, defaults and examples. Both new classes use all six RFC 0079 standard income definitions. Hospitality's official sections and four additional calculations now belong to its builtin pack; its existing rooms-revenue / available-room-nights RevPAR is canonical.
+- Proposed data-center and manufactured-housing starter default ranges are explicit proxy assumptions requiring Jared's review before merge; they are not verified economics or physical source facts.
+
+### Changed
+
+- The exact legacy `org.uwmd.data_center` identity remains valid with CLS-01. Official hospitality/data-center module dependencies are satisfied by core (CLS-02); their packages remain in the publish set as empty compatibility shells. Other third-party suffix shadows remain refused.
+
+### Fixed
+
+- Receipt lookup now resolves every official builtin pack instead of only five.
+
+
 ### RFC 0079 — stated metric precision and one cash-on-cash definition
 
 - Implements Jared's revised directions (2026-10-10): every dictionary entry gains a minimum comparison precision; Protocol §VIII.5.1 checks the unrounded result at `min(max(stated_decimals, minimum_stated_decimals), round_to)`. Coarse statements verify or fail at the minimum instead of becoming unverifiable. Cap rate/debt yield/cash-on-cash minimums are 3 fractional decimals (0.1%); no double rounding or new tolerance. Reporting/Excel rounding is unchanged.

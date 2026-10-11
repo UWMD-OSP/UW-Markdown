@@ -4,6 +4,7 @@ import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
 import { toBuiltinAssetClass, type ParsedUWFile, type ValidationMessage } from './types.js';
 import { blockPayload } from './parser.js';
 import { resolveRoleBlock } from './block-roles.js';
+import { declaredModuleDependencies } from './asset-class.js';
 import { evaluateCalc } from './calc/index.js';
 import { getPackForAssetClass } from './packs/index.js';
 
@@ -16,11 +17,13 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   const content = BUILTIN_CLASS_CONTENT[assetClass];
   if (!content) return [];
   const issues: ValidationMessage[] = [];
+  if (['data_center', 'manufactured_housing'].includes(parsed.frontmatter.asset_class) && parsed.frontmatter.uw_version !== '2.1') issues.push({ code: 'CLS-05', severity: 'error', field: 'uw_version', message: 'The new official builtin ids require Format 2.1; the exact legacy org.uwmd.data_center alias remains readable at its original version.' });
   for (const section of content.sections) {
-    const resolved = resolveRoleBlock(parsed.sections[section.id], section.id);
+    const resolved = resolveRoleBlock(parsed.sections[section.id], section.id, ['default', 'base']);
     if (!resolved.block) {
+      if (resolved.state === 'unresolvable') issues.push({ code: 'CC-16', severity: 'info', section: section.id, message: `Class field/rule checks could not resolve ${section.id}; choose an eligible primary/default/base block.` });
       // Existing hospitality records use the standard rent-roll/NOI inputs.
-      if (section.required && assetClass !== 'hospitality' && !parsed.sections[section.id]) {
+      if (section.required && (assetClass !== 'hospitality' || declaredModuleDependencies(parsed.frontmatter as Record<string, unknown>).some(d => d.id === 'org.uwmd.hospitality')) && !parsed.sections[section.id]) {
         issues.push({ code: 'CLS-03', severity: 'error', section: section.id,
           message: `${assetClass} requires ${section.id}.` });
       }
@@ -62,8 +65,8 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   }
   const size = assetClass === 'data_center' ? 'critical_it_load_kw' : assetClass === 'manufactured_housing' ? 'total_sites' : null;
   if (size) {
-    const property = resolveRoleBlock(parsed.sections.property, 'property').block;
-    const detail = resolveRoleBlock(parsed.sections[assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites'], assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites').block;
+    const property = resolveRoleBlock(parsed.sections.property, 'property', ['default', 'base']).block;
+    const detail = resolveRoleBlock(parsed.sections[assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites'], assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites', ['default', 'base']).block;
     const a = property ? (blockPayload(property) as Record<string, unknown>)[size] : undefined;
     const b = detail ? (blockPayload(detail) as Record<string, unknown>)[size] : undefined;
     if (typeof a === 'number' && Number.isFinite(a) && typeof b === 'number' && Number.isFinite(b) && a !== b) {

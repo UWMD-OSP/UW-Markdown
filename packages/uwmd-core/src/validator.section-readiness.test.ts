@@ -186,7 +186,7 @@ describe('requiredSectionsFor — class overlays (RFC 0029)', () => {
     for (const stage of STAGES) {
       const base = STAGE_REQUIREMENTS[stage].required_sections;
       expect(requiredSectionsFor(stage, 'office')).toEqual(base);
-      expect(requiredSectionsFor(stage, 'data_center')).toEqual(base);
+      expect(requiredSectionsFor(stage, 'specialty_facility')).toEqual(base);
       expect(requiredSectionsFor(stage)).toEqual(base);
     }
   });

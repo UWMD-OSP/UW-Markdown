@@ -106,16 +106,18 @@ describe('types — DEFAULT_THRESHOLDS', () => {
 });
 
 describe('types — AssetClass has no drifted mirrors', () => {
-  it('the union is exactly the ten v1 classes', () => {
+  it('the union is exactly the twelve official classes', () => {
     // Guards the exhaustiveness anchor itself: editing the union and
     // ASSET_CLASS_MEMBERS in lockstep keeps tsc quiet, and this is what
     // notices. Adding an asset class is a normative format change (RFC 0003),
     // never a silent addition.
-    expect(ALL_ASSET_CLASSES).toHaveLength(10);
+    expect(ALL_ASSET_CLASSES).toHaveLength(12);
     expect([...ALL_ASSET_CLASSES].sort()).toEqual([
+      'data_center',
       'hospitality',
       'industrial',
       'land',
+      'manufactured_housing',
       'mixed_use',
       'multifamily',
       'office',

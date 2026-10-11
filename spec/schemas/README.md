@@ -72,6 +72,14 @@ the canonical definition. When you change one of those types, update
 the matching schema here in the **same PR**. Drift between the two is
 a normative protocol bug.
 
+| [section-dc_capacity.schema.json](section-dc_capacity.schema.json) | RFC 0080 standard `dc_capacity` payload |
+| [section-dc_power.schema.json](section-dc_power.schema.json) | RFC 0080 standard `dc_power` payload |
+| [section-dc_revenue.schema.json](section-dc_revenue.schema.json) | RFC 0080 standard `dc_revenue` payload |
+| [section-hotel_metrics.schema.json](section-hotel_metrics.schema.json) | RFC 0080 standard `hotel_metrics` payload |
+| [section-hotel_brand.schema.json](section-hotel_brand.schema.json) | RFC 0080 standard `hotel_brand` payload |
+| [section-hotel_food_beverage.schema.json](section-hotel_food_beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload |
+| [section-mhc_sites.schema.json](section-mhc_sites.schema.json) | RFC 0080 standard `mhc_sites` payload |
+
 If you add a new schema:
 1. Place it next to the existing schemas, named `<thing>.schema.json`.
 2. Use the `https://uwmd.org/schemas/<thing>.schema.json` `$id`.

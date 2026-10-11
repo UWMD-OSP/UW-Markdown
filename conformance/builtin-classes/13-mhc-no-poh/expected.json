@@ -1,0 +1,13 @@
+{
+  "description": "RFC 0080 core builtin control. RFC 0068: no-poh.",
+  "expected_calcs": {
+    "physical_occupancy": 0.9,
+    "annual_pad_rent_potential": 1320000.0,
+    "poh_share": 0.0,
+    "annual_poh_home_rent_potential": null,
+    "price_per_site": 60000.0,
+    "noi_per_site": 3600.0
+  },
+  "expected_codes": [],
+  "builtin_class": "manufactured_housing"
+}

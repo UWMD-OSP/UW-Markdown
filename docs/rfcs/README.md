@@ -114,6 +114,8 @@ its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
+| [0080](./0080-official-classes-are-builtins.md) | Every official asset class is a builtin | accepted | format, protocol, core, conformance, tooling |
+
 ## Status values
 
 This is the authoritative list. An RFC's frontmatter `status:` must be one of

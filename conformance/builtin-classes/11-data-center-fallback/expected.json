@@ -1,0 +1,21 @@
+{
+  "description": "RFC 0080 core builtin control. Same bytes as the fixture, module NOT loaded, but the host holds the declaration out of band. The RFC 0003 resolution path on a PRODUCT module rather than the com.example fixture: degraded via the industrial fallback, MOD-FALLBACK-001, and no display name - a cached declaration can only ever degrade, never resolve. Nothing from the module runs, because nothing from the module is loaded.",
+  "expected_calcs": {
+    "utilization": 1.1,
+    "commissioned_share": 0.8,
+    "facility_load_kw": 12500,
+    "annual_facility_kwh_at_contract": 120450000,
+    "annual_power_cost": 9636000,
+    "power_cost_per_kw_month": 73,
+    "annual_rent_revenue": 19800000,
+    "blended_revenue_per_kw_month": 157,
+    "rent_index": 0.8,
+    "price_per_commissioned_kw": 16000,
+    "noi_per_commissioned_kw": 1120
+  },
+  "expected_codes": [
+    "CC-DC-04",
+    "CC-DC-07"
+  ],
+  "builtin_class": "data_center"
+}

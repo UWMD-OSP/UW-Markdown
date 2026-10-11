@@ -54,7 +54,7 @@ describe('parseAssetClass', () => {
       kind: 'custom',
       id: 'com.example.specialty_facility',
       namespace: 'com.example',
-      name: 'data_center',
+      name: 'specialty_facility',
     });
   });
 
@@ -65,10 +65,10 @@ describe('parseAssetClass', () => {
   });
 
   const REJECTED: Array<[string, string, string]> = [
-    ['an unnamespaced unknown', 'data_center', 'INVALID-ASSET-CLASS-001'],
+    ['an unnamespaced unknown', 'specialty_facility', 'INVALID-ASSET-CLASS-001'],
     // Two segments reads as a namespace with no owner, and is where squatting
     // on a short prefix starts to look attractive.
-    ['only two segments', 'example.data_center', 'INVALID-ASSET-CLASS-001'],
+    ['only two segments', 'example.specialty_facility', 'INVALID-ASSET-CLASS-001'],
     ['capital letters', 'com.Example.DataCenter', 'INVALID-ASSET-CLASS-001'],
     ['a hyphen', 'com.example.data-center', 'INVALID-ASSET-CLASS-001'],
     ['a leading digit in a segment', 'com.example.1data', 'INVALID-ASSET-CLASS-001'],
@@ -184,7 +184,7 @@ describe('assetClassDeclarationConflicts', () => {
   it('reports a shared display name separately, as the cosmetic problem it is', () => {
     const registry = registryWith(
       [DECL],
-      [{ id: 'org.other.data_center', display_name: 'Data Center' }],
+      [{ id: 'org.other.specialty_facility', display_name: 'Data Center' }],
     );
     const codes = assetClassDeclarationConflicts(registry).map((i) => i.code);
     expect(codes).toEqual(['MOD-DISPLAY-CONFLICT-001']);
@@ -200,8 +200,8 @@ describe('assetClassDeclarationConflicts', () => {
 // does, so a later RFC changes them deliberately rather than by accident.
 // See docs/reviews/2026-10-04-renamed-identifiers.md.
 describe('renamed identifiers under the current contract', () => {
-  const OLD_CLASS = 'com.example_old.data_center';
-  const NEW_CLASS = 'com.example_new.data_center';
+  const OLD_CLASS = 'com.example_old.specialty_facility';
+  const NEW_CLASS = 'com.example_new.specialty_facility';
   const renamed = (decls: ModuleAssetClassDecl[]) =>
     createModuleRegistry({
       modules: [{ ...BASE, id: 'com.example-new.datacenters', declares_asset_classes: decls }],
