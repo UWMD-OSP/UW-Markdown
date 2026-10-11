@@ -112,14 +112,14 @@ A receipt attests that these outputs follow from this record. It does not attest
     expect(existsSync(receipt)).toBe(false);
   });
 
-  it('refuses manufactured housing without substituting a pack', async () => {
-    writeFileSync(deal, fixture.replace('asset_class: multifamily', 'asset_class: manufactured_housing'));
+  it('refuses an unregistered class without substituting a pack', async () => {
+    writeFileSync(deal, fixture.replace('asset_class: multifamily', 'asset_class: __unregistered_test_class__'));
     const result = await issue();
     expect(result.status).toBe(1);
     expect(result.stdout).toBe('');
     expect(result.stderr).toContain('Receipt refused [RCP_PACK_UNRESOLVED]');
     expect(result.stderr).not.toContain('[RCP_PACK_UNRESOLVED]: [RCP_PACK_UNRESOLVED]');
-    expect(result.stderr).toContain('manufactured_housing');
+    expect(result.stderr).toContain('__unregistered_test_class__');
     expect(result.stderr).toContain('No receipt was issued. Receipt/hash verification was not performed.');
     expect(existsSync(receipt)).toBe(false);
   });
