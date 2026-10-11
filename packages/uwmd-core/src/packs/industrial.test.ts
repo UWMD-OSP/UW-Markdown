@@ -17,6 +17,15 @@ import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
 
+function excelValue(formula: string): number | null {
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  // eslint-disable-next-line no-new-func
+  return new Function('IF', `return (${expression});`)(
+    (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+  ) as number | null;
+}
+
 const IRONWOOD = resolve(
   __dirname,
   '../../../../examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md',
@@ -33,7 +42,8 @@ const NAMED_RANGES = new Map<string, string>([
   ['debt_structure.loan_amount', 'loan_amount'],
   ['debt_structure.annual_debt_service', 'annual_debt_service'],
   ['property.rentable_square_feet', 'rentable_square_feet'],
-  ['sources_uses.sources.sponsor_equity', 'sponsor_equity'],
+  ['sources_uses.equity_metrics.equity_total', 'equity_total'],
+  ['dcf.annual_cash_flows.Y1.net_cash_flow_levered', 'levered_cash_flow_y1'],
   ['sources_uses.uses.total', 'total_uses'],
   ['rent_roll.occupied_sf', 'occupied_sf'],
   ['rent_roll.total_rentable_sf', 'total_rentable_sf'],
@@ -76,7 +86,8 @@ describe('INDUSTRIAL_PACK', () => {
     for (const c of INDUSTRIAL_PACK.calculations ?? []) {
       const r = evaluateCalc(c, ctx);
       expect(r.ok, `${c.id}: ${r.error?.message ?? ''}`).toBe(true);
-      expect(typeof r.value).toBe('number');
+      if (c.id === 'cash_on_cash') expect(r.value).toBeNull();
+      else expect(typeof r.value).toBe('number');
     }
   });
 
@@ -105,10 +116,9 @@ describe('Industrial Excel emit ↔ evaluateCalc parity', () => {
 
     const income = noi.content['income'] as Record<string, number>;
     const expenses = noi.content['expenses'] as Record<string, number>;
-    const sources = sus.content['sources'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
-    const values: Record<string, number> = {
+    const values: Record<string, number | null> = {
       noi: noi.content['net_operating_income'] as number,
       effective_gross_income: income['effective_gross_income']!,
       expense_reimbursements: income['expense_reimbursements']!,
@@ -117,7 +127,8 @@ describe('Industrial Excel emit ↔ evaluateCalc parity', () => {
       loan_amount: debt.content['loan_amount'] as number,
       annual_debt_service: debt.content['annual_debt_service'] as number,
       rentable_square_feet: property.content['rentable_square_feet'] as number,
-      sponsor_equity: sources['sponsor_equity']!,
+      equity_total: null,
+      levered_cash_flow_y1: null,
       total_uses: uses['total']!,
       occupied_sf: rentRoll.content['occupied_sf'] as number,
       total_rentable_sf: rentRoll.content['total_rentable_sf'] as number,
@@ -132,15 +143,15 @@ describe('Industrial Excel emit ↔ evaluateCalc parity', () => {
         const re = new RegExp(`\\b${name}\\b`, 'g');
         formula = formula.replace(re, String(values[name]));
       }
-      expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (c.id !== 'cash_on_cash') expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
-      const excelLike = new Function(`return (${formula});`)() as number;
+      const excelLike = excelValue(formula);
 
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
       // (§VIII.5), so the simulated result is quantized the same way. Parity is
       // then *exact* rather than approximate: one identical rounding rule on both
       // sides, which is the whole point of having a quantization boundary.
-      const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));
+      const excelCell = excelLike === null ? null : quantizeDecimal(excelLike, resolveRoundTo(c));
       expect(excelCell, c.id).toBe(direct.value as number);
     }
   });

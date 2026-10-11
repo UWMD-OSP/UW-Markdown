@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### RFC 0079 — stated metric precision and one cash-on-cash definition
+
+- Every dictionary entry gains `minimum_stated_decimals`; Protocol §VIII.5.1 verifies the unrounded expression result at source numeric precision, capped at `round_to`, with the existing half-away quantizer and no double rounding. Core/browser export `getStatedDecimals` and `compareStatedMetric`; reporting/Excel rounding is unchanged.
+- All nine income-class cash-on-cash definitions use stated Y1 levered flow over total equity, with the existing lazy NOI-minus-debt-service fallback. Eight corrected packs move to 1.0.1 and their Excel bindings follow; missing total equity remains null. LTV remains loan / purchase price; land gains no income metric.
+- Corrects Agave's two LTV copies (`0.4938` → `0.5000`) and Sonoran's two DSCR copies (`1.3153` → `1.3161`) from their own inputs. The lender fixture records 128 verified, zero failed and 15 insufficient-precision statements; eight changed-class examples lack aggregate equity and become uncomputed for cash-on-cash. Findings remain visible.
+- Receipt §5.2 and the reference verifier require exact reported-value equality, removing the stale relative tolerance; the old public constant remains deprecated for source compatibility. Rehashed one-cent/subquantum negative controls, source-token precision tests, all-class cash-on-cash and exact Excel parity protect the change. Protocol/Format labels are unchanged pending release preparation.
+
 ### Protocol 3.0 contract: the Protocol is verification (RFC 0078 phase 1)
 
 Breaking for conformance claims. The label moves to Protocol 3.0.0 at release

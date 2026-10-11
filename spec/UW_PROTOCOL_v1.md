@@ -1937,7 +1937,7 @@ states one; otherwise the default for its `unit`:
 |---|---|---|
 | `$` | 2 | Money is quantized to cents. |
 | `%` | 6 | Rates are fractions (`0.0551`), so six places on the fraction is four on the percentage a reader sees. |
-| `x` | 4 | The precision lender term sheets quote ratios such as DSCR at. |
+| `x` | 4 | Ratio reporting precision; document statements may be coarser under §VIII.5.1. |
 | absent, or any other value | 6 | Residual case; matches the rate default rather than introducing a second convention. |
 
 There is deliberately no "unspecified precision" mode: the table is
@@ -1965,6 +1965,45 @@ reproduce across platforms.
 > spreadsheet `ROUND` yields `1.01`. Shifting through a decimal string
 > (`Number("1.005e2")` → `100.5`) is correctly rounded and agrees.
 > See `packages/uwmd-core/src/calc/quantize.ts`.
+
+### VIII.5.1 Stated metric precision (RFC 0079)
+
+The normative [metric dictionary](metrics/README.md) defines both a reporting
+`round_to` and `minimum_stated_decimals` for each calculation. A Verifier MUST
+check a document's stated metric at its **source numeric token's decimal
+precision**, in stored units. Rates are fractions: `0.0550` carries four
+fractional decimals (0.01%); `0.73` carries two (1%). Trailing zeroes count.
+For exponent notation, decimal places are the coefficient's fractional digits
+minus its exponent, floored at zero: `1.200e-2` carries five. A representation
+using percent tokens, such as Lite, shifts this precision by two when decoding
+the value to its stored fraction. Optional display strings do not set precision.
+
+A statement below its entry's minimum, or whose source precision is unavailable,
+is **unverifiable**, even if the numeric values happen to agree. A Verifier
+MUST NOT reconstruct precision from `String(parsedNumber)`, append zeroes,
+fill absent inputs, or change the dictionary definition to clear a finding.
+
+Evaluate the dictionary formula unrounded under §VIII.1–VIII.4. Let `s` be the
+statement's decimal places and `d = min(s, round_to)`. Quantize that **unrounded**
+result once at `d`, half away from zero under §VIII.5. Compare it to the stated
+value (quantized to `round_to` only when `s > round_to`). Equality is **verified**;
+a finite disagreement is **failed**. Null, invalid, nonfinite or refused inputs
+remain **unverifiable**. There is no additional absolute or relative tolerance.
+Quantizing first at `round_to` and then at `d` is forbidden double rounding.
+
+Raw primary-size selectors retain exact finite-number identity and have minimum
+zero; their `round_to: null` does not authorize rounding sizes. Receipt calc
+outputs, result digests and starter Excel parity still use the calculation's
+full effective `round_to`, independently of a document statement's precision.
+
+All nine income-class `cash_on_cash` entries use the same definition: stated
+`dcf.annual_cash_flows.Y1.net_cash_flow_levered` over
+`sources_uses.equity_metrics.equity_total`; when Y1 levered flow is absent/null,
+use `noi_model.net_operating_income - debt_structure.annual_debt_service` as
+the numerator. Missing total equity yields null; sponsor equity is not a
+substitute. No debt role or tranche summation is implied. LTV remains
+`debt_structure.loan_amount / valuation.purchase_price`. Land gains no income
+metric in this RFC.
 
 ### VIII.6 CalcError taxonomy
 

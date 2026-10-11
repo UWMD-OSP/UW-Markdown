@@ -32,8 +32,8 @@ export const MAX_ROUND_TO = 12;
  * calculation omits `round_to`. Table per UW_PROTOCOL_v1.md §VIII.5.
  *
  * The values follow from what the unit means rather than from taste. Money is
- * quantized to cents. A ratio (`x`, e.g. DSCR) is quoted to four places by
- * every lender term sheet the format targets. Rates are *fractions* everywhere
+ * quantized to cents. A ratio (`x`, e.g. DSCR) reports at four places;
+ * stated term-sheet ratios may be coarser under RFC 0079. Rates are *fractions* everywhere
  * in this repo (`0.0551`, not `5.51`), so six places on a fraction is four
  * places on the percentage a human reads — the same precision, one unit shift.
  */

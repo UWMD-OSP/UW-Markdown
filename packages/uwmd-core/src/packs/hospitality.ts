@@ -13,7 +13,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.hospitality',
   name: 'Hospitality Starter Pack',
-  version: '1.0.0',
+  version: '1.0.1',
   description:
     'Fourteen derived metrics for hospitality underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/key, loan/key, NOI/key, expense ratio, cash-on-cash, occupancy, ADR, RevPAR, and GOP margin.',
   authors: ['UW Markdown Working Group'],
@@ -96,7 +96,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
       id: 'cash_on_cash',
       label: 'Cash-on-Cash',
       formula:
-        '(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity',
+        'sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total',
       unit: '%',
       deterministic: true,
     },

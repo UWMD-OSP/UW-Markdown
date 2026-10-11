@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { parseUWFile } from '../parser.js';
 import { evaluateCalc } from '../calc/index.js';
 import { quantizeDecimal } from '../calc/quantize.js';
-import { MULTIFAMILY_PACK } from './multifamily.js';
+import { getPackForAssetClass } from './index.js';
+import { ASSET_CLASSES } from '../types.js';
 
-const cashOnCash = MULTIFAMILY_PACK.calculations!.find((c) => c.id === 'cash_on_cash')!;
 
 // Synthetic GD05-style shape: total equity and annual leveraged cash flow,
 // without an inferred sponsor/LP split. These are not private deal amounts.
@@ -25,11 +25,10 @@ function deal(equity: unknown = 3_000_000, allocation?: Record<string, unknown>,
   return parseUWFile(`---\nuw_version: "2.0"\nasset_class: multifamily\n---\n${blocks}`);
 }
 
-const result = (parsed: ReturnType<typeof deal>) => evaluateCalc(cashOnCash, {
-  parsed, prior_results: {}, locale: 'en-US',
-});
-
-describe('multifamily deal-level cash_on_cash', () => {
+describe.each(ASSET_CLASSES.filter(c => c !== 'land'))('%s deal-level cash_on_cash (RFC 0079)', assetClass => {
+  const pack = getPackForAssetClass(assetClass)!;
+  const cashOnCash = pack.calculations!.find(c => c.id === 'cash_on_cash')!;
+  const result = (parsed: ReturnType<typeof deal>) => evaluateCalc(cashOnCash, { parsed, prior_results: {}, locale: 'en-US' });
   it.each([undefined, { equity_sponsor: null, equity_lp: null },
     { equity_sponsor: 300_000, equity_lp: 2_700_000 },
     { equity_sponsor: 2_700_000, equity_lp: 300_000 },
@@ -79,7 +78,7 @@ describe('multifamily deal-level cash_on_cash', () => {
   });
 
   it('does not publish sponsor/LP-specific metrics without a separate input contract', () => {
-    const ids = MULTIFAMILY_PACK.calculations!.map((c) => c.id);
+    const ids = pack.calculations!.map((c) => c.id);
     expect(ids).not.toContain('sponsor_cash_on_cash');
     expect(ids).not.toContain('lp_cash_on_cash');
   });

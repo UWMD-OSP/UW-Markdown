@@ -1426,6 +1426,8 @@ export interface MetricDictionaryCalculation {
   readonly unit: string;
   /** Effective Protocol §VIII.5 decimal places, including unit defaults. */
   readonly round_to: number;
+  /** RFC 0079 minimum source-token precision, in stored units. */
+  readonly minimum_stated_decimals: number;
   readonly section_roles: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
   readonly null_semantics: 'expression';
   readonly deterministic: true;
@@ -1435,6 +1437,7 @@ export interface MetricDictionaryCalculation {
 export interface MetricDictionarySize extends Omit<MetricDictionaryCalculation,
   'round_to' | 'null_semantics' | 'deterministic'> {
   readonly round_to: null;
+  readonly minimum_stated_decimals: 0;
   readonly null_semantics: 'finite_stated_number';
   /** Primary and secondary paths relative to property, as in SIZE_INTENSIVES. */
   readonly path: string;

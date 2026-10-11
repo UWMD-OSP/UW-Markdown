@@ -106,6 +106,7 @@ and how it gets accepted.
 | [0076](./0076-hedge-checks-under-refused-selection.md) | Refuse a stated rate hedge whose loan or cash lines cannot be selected | implemented | format, protocol, core, conformance |
 | [0077](./0077-exit-proceeds-with-junior-capital.md) | Define exit proceeds to equity when the capital stack carries junior capital | implemented | format, core, conformance, tooling |
 | [0078](./0078-protocol-is-verification.md) | The protocol is verification: separate the standard from the starter products | accepted | protocol, format, conformance, core, tooling |
+| [0079](./0079-metric-precision.md) | Verify stated metrics at their stated precision; one cash-on-cash definition | implemented | protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

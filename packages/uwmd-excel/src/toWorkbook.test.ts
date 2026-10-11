@@ -170,7 +170,7 @@ for (const { file, layout } of CASES) {
         // The corrected multifamily pack binds the stated year-1 leveraged flow.
         // Select its year label independently of array ordering; this is an
         // input oracle, not a calculation of the cash-on-cash return.
-        if (layout.assetClass === 'multifamily' && input.name === 'levered_cash_flow_y1') {
+        if (input.name === 'levered_cash_flow_y1') {
           const flows = sec?.content['annual_cash_flows'] as Record<string, unknown>[] | undefined;
           cur = flows?.find((row) => row['year'] === 1)?.['net_cash_flow_levered'];
         }
@@ -231,7 +231,7 @@ for (const { file, layout } of CASES) {
       const values: Record<string, number | null> = {};
       for (const input of layout.namedInputs) {
         const n = namedNumber(wb, input.name);
-        if (layout.assetClass !== 'multifamily' || !['levered_cash_flow_y1', 'equity_total'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
+        if (!['levered_cash_flow_y1', 'equity_total'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
         values[input.name] = n;
       }
       for (const line of layout.incomeLines) {
@@ -257,7 +257,7 @@ for (const { file, layout } of CASES) {
           formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
         }
         let excelLike: number | null;
-        if (layout.assetClass === 'multifamily' && decl.id === 'cash_on_cash') {
+        if (decl.id === 'cash_on_cash') {
           excelLike = excelValue(formula);
         } else {
           expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
@@ -393,7 +393,8 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
     'valuation.purchase_price',
     'debt_structure.loan_amount',
     'debt_structure.annual_debt_service',
-    'sources_uses.sources.equity_sponsor',
+    'sources_uses.equity_metrics.equity_total',
+  'dcf.annual_cash_flows.Y1.net_cash_flow_levered',
   ];
 
   it('registers a mixed-use layout carrying the component spec', () => {
@@ -467,7 +468,8 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
         path === 'valuation.purchase_price' ||
         path === 'debt_structure.loan_amount' ||
         path === 'debt_structure.annual_debt_service' ||
-        path === 'sources_uses.sources.equity_sponsor'
+        path === 'sources_uses.equity_metrics.equity_total' ||
+        path === 'dcf.annual_cash_flows.Y1.net_cash_flow_levered'
           ? namedNumber(wb, name)
           : sectionPathNumber(parsed, path);
       if (v !== null) values[name] = v;
@@ -767,3 +769,34 @@ describe('toWorkbook — deal-level multifamily cash-on-cash', () => {
     expect(out['cash_on_cash']?.calc).toBeNull();
   });
 });
+
+// The same source-shaped aggregate-equity/Y1 contract works in every income layout.
+describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT].filter(l => l.assetClass !== 'land').map(l => [l.assetClass, l])).values()])(
+  'RFC 0079 cash-on-cash Excel binding: $assetClass', layout => {
+    it.each([600_000, 0, -600_000])('emits and evaluates the stated Y1 flow %s over total equity', async flow => {
+      const raw = await readFile(resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md'), 'utf8');
+      const parsed = parseUWFile(raw);
+      parsed.frontmatter.asset_class = layout.assetClass as typeof parsed.frontmatter.asset_class;
+      const dcf = blockPayload(parsed.sections['dcf'] as UWBlock) as Record<string, unknown>;
+      dcf['annual_cash_flows'] = [{ year: 2, net_cash_flow_levered: 999_999 }, { year: 1, net_cash_flow_levered: flow }];
+      const wb = await toWorkbook(parsed);
+      const mixed = layout.assetClass === 'mixed_use';
+      const equityName = mixed ? mixedUseName('sources_uses.equity_metrics.equity_total') : 'equity_total';
+      const flowName = mixed ? mixedUseName('dcf.annual_cash_flows.Y1.net_cash_flow_levered') : 'levered_cash_flow_y1';
+      expect(namedNumber(wb, equityName)).toBe(3_000_000);
+      expect(namedNumber(wb, flowName)).toBe(flow);
+      const decl = layout.pack.calculations!.find(c => c.id === 'cash_on_cash')!;
+      const ws = wb.getWorksheet('Underwriting')!;
+      expect(ws.getCell(`B${rowByLabel(ws).get(decl.label)}`).value).toMatchObject({ formula: expect.stringContaining(flowName) });
+      const map = mixed ? buildMixedUseNamedRangeMap() : buildNamedRangeMap(layout);
+      const values = { [equityName]: 3_000_000, [flowName]: flow,
+        [mixed ? mixedUseName('noi_model.net_operating_income') : 'noi']: 1_300_000,
+        [mixed ? mixedUseName('debt_structure.annual_debt_service') : 'annual_debt_service']: 700_000 };
+      let formula = emitExcelFormula(decl.formula, { namedRanges: map });
+      for (const [name, value] of Object.entries(values)) formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(value));
+      const direct = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
+      expect(direct.value).toBe(quantizeDecimal(flow / 3_000_000, 6));
+      expect(quantizeDecimal(excelValue(formula)!, resolveRoundTo(decl))).toBe(direct.value);
+    });
+  },
+);

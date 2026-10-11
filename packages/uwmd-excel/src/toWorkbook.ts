@@ -442,7 +442,8 @@ const MIXED_USE_PROPERTY_INPUTS: ReadonlyArray<{ label: string; path: string }> 
   { label: 'Purchase Price', path: 'valuation.purchase_price' },
   { label: 'Loan Amount', path: 'debt_structure.loan_amount' },
   { label: 'Annual Debt Service', path: 'debt_structure.annual_debt_service' },
-  { label: 'Sponsor Equity', path: 'sources_uses.sources.equity_sponsor' },
+  { label: 'Total Invested Equity', path: 'sources_uses.equity_metrics.equity_total' },
+  { label: 'Year 1 Levered Cash Flow', path: 'dcf.annual_cash_flows.Y1.net_cash_flow_levered' },
 ];
 
 function splitPath(path: string): { section: string; rest: string } {

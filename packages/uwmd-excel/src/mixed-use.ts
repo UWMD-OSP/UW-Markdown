@@ -76,7 +76,8 @@ export const MIXED_USE_PROPERTY_PATHS: readonly string[] = [
   'valuation.purchase_price',
   'debt_structure.loan_amount',
   'debt_structure.annual_debt_service',
-  'sources_uses.sources.equity_sponsor',
+  'sources_uses.equity_metrics.equity_total',
+  'dcf.annual_cash_flows.Y1.net_cash_flow_levered',
 ];
 
 /**

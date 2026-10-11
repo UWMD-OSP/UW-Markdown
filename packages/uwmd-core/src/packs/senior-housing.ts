@@ -14,7 +14,7 @@ export const SENIOR_HOUSING_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.senior_housing',
   name: 'Senior Housing Starter Pack',
-  version: '1.0.0',
+  version: '1.0.1',
   description:
     'Fourteen derived metrics for senior-housing underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/unit, loan/unit, NOI/unit, expense ratio, cash-on-cash, occupancy, RevPOR, labor ratio, and care-revenue ratio.',
   authors: ['UW Markdown Working Group'],
@@ -97,7 +97,7 @@ export const SENIOR_HOUSING_PACK: ModuleManifest = {
       id: 'cash_on_cash',
       label: 'Cash-on-Cash',
       formula:
-        '(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity',
+        'sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total',
       unit: '%',
       deterministic: true,
     },

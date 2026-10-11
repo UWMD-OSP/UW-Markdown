@@ -32,7 +32,7 @@ quick_metrics:
   loan_amount:       24000000
   noi_underwritten:  2600000
   dscr:              1.514
-  ltv:               0.4938
+  ltv:               0.5000
   debt_yield:        0.1083
   cap_rate:          0.0542
   equity_required:   16000000
@@ -246,7 +246,7 @@ same senior loan for single-loan consumers.
   "loan_type": "permanent",
   "lender_type": "life_co",
   "loan_amount": 24000000,
-  "ltv": 0.4938,
+  "ltv": 0.5000,
   "interest_rate_type": "fixed",
   "all_in_rate_at_close": 0.0595,
   "term_months": 120,

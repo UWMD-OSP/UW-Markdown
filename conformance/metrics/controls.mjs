@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { parseUWFile } from '../../packages/uwmd-core/dist/parser.js';
-import { verifyStatedMetric } from './verifier.mjs';
+import { verifyStatedMetric as verifyWithPrecision } from './verifier.mjs';
+import { getStatedDecimals } from '../../packages/uwmd-core/dist/calc/stated-precision.js';
+import { jsonNumericTokens, jsonStatedDecimals, quickMetricDecimals } from './numeric-tokens.mjs';
+
+// Synthetic controls explicitly declare the full dictionary output precision.
+const verifyStatedMetric = (metric, parsed, stated, variants) => verifyWithPrecision(metric, parsed, stated, variants, metric.round_to ?? 0);
 
 export function controls(root) {
   const d = JSON.parse(readFileSync(join(root, 'spec/metrics/builtin.json'), 'utf8'));
@@ -67,18 +72,20 @@ export function controls(root) {
       assert.equal(verifyStatedMetric(metric('price_per_unit'), p, -1.01).state, 'verified');
       assert.equal(verifyStatedMetric(metric('price_per_unit'), p, -1).state, 'failed');
     }],
-    ['class-scoped-cash-on-cash-does-not-reconcile', () => {
+    ['all-income-classes-require-total-equity', () => {
       const p = simple(); p.sections.sources_uses = block('sources_uses', { sources: { sponsor_equity: 100000 } });
-      assert.equal(verifyStatedMetric(metric('cash_on_cash', 'office'), p, 0.25).state, 'verified');
+      for (const m of d.calculations.filter(m => m.id === 'cash_on_cash')) {
+        assert.equal(verifyStatedMetric(m, p, 0.25).state, 'unverifiable');
+      }
       assert.equal(verifyStatedMetric(metric('cash_on_cash'), p, 0.25).state, 'unverifiable');
       assert.equal(verifyStatedMetric(metric('cash_on_cash', 'mixed_use'), p, 0.25).state, 'unverifiable');
     }],
-    ['multifamily-stated-Y1-and-lazy-fallback', () => {
+    ['all-income-classes-stated-Y1-and-lazy-fallback', () => {
       const p = simple(); p.sections.sources_uses = block('sources_uses', { equity_metrics: { equity_total: 100000 } });
-      assert.equal(verifyStatedMetric(metric('cash_on_cash'), p, 0.25).state, 'verified');
+      for (const m of d.calculations.filter(m => m.id === 'cash_on_cash')) assert.equal(verifyStatedMetric(m, p, 0.25).state, 'verified');
       p.sections.dcf = block('dcf', { annual_cash_flows: [{ year: 2, net_cash_flow_levered: 90000 }, { year: 1, net_cash_flow_levered: 0 }] });
       delete p.sections.noi_model;
-      assert.equal(verifyStatedMetric(metric('cash_on_cash'), p, 0).state, 'verified');
+      for (const m of d.calculations.filter(m => m.id === 'cash_on_cash')) assert.equal(verifyStatedMetric(m, p, 0).state, 'verified');
     }],
     ['declared-senior-selection-and-unresolved-equity', () => {
       const p = simple();
@@ -109,7 +116,31 @@ export function controls(root) {
       p.sections.property.content.gross_acres = Number.POSITIVE_INFINITY;
       assert.equal(verifyStatedMetric(m, p, 100).state, 'unverifiable');
     }],
-    ['inputs-and-definition-remain-unchanged', () => {
+    ['source-tokens-preserve-zeroes-exponents-and-addresses', () => {
+      const rawJson = '{"dscr":1.20,"other":{"dscr":1.2},"rows":[1.200e-2],"text":"1.2000","escaped\\u005fkey":2.00}';
+      const tokens = jsonNumericTokens(rawJson);
+      assert.equal(tokens.get('["dscr"]'), '1.20');
+      assert.equal(tokens.get('["other","dscr"]'), '1.2');
+      assert.equal(tokens.get('["rows","0"]'), '1.200e-2');
+      assert.equal(tokens.get('["escaped_key"]'), '2.00');
+      assert.equal(jsonStatedDecimals({ rawJson }, 'dscr', 1.2), 2);
+      assert.equal(jsonStatedDecimals({ rawJson }, 'dscr', 1.25), undefined);
+      assert.equal(jsonStatedDecimals({ rawJson: '{"_meta":{},"content":{"dscr":1.20}}', meta_shape: 'v2' }, 'dscr', 1.2), 2);
+      const yaml = '---\nquick_metrics:\n  dscr: 1.20 # comment\n  other: "1.2000"\n---\n';
+      assert.equal(quickMetricDecimals(yaml, 'dscr', 1.2), 2);
+      assert.equal(quickMetricDecimals(yaml, 'other', 1.2), undefined);
+    }],
+    ['stated-precision-minimum-and-no-double-rounding', () => {
+      const p = simple(); p.sections.noi_model.content.net_operating_income = 1.24495;
+      p.sections.debt_structure.content.annual_debt_service = 1;
+      const verify = token => verifyWithPrecision(metric('dscr'), p, Number(token), undefined, getStatedDecimals(token));
+      assert.equal(verify('1.24').state, 'verified');
+      assert.equal(verify('1.25').state, 'failed');
+      assert.equal(verify('1.2').reason, 'insufficient_stated_precision');
+      assert.equal(verify('1.245000000').state, 'verified');
+      assert.equal(verifyWithPrecision(metric('dscr'), p, 1.2449).reason, 'unknown_stated_precision');
+    }],
+    ['inputs-and-definition-remain-unchanged' , () => {
       const m = metric('dscr');
       const p = simple();
       const before = JSON.stringify({ m, p });

@@ -151,7 +151,7 @@ A verifier **MUST** report exactly one of three states, and **MUST NOT** collaps
 the third into either of the others:
 
 - **`verified`** — the digest matches, recomputation reproduces every stated
-  result to tolerance, and the signature (if present) validates.
+  quantized result exactly, and the signature (if present) validates.
 - **`failed`** — the digest, a result, or the signature disagrees.
 - **`unverifiable`** — the verifier lacks the named pack, pack version, engine,
   key, or a canonicalizable record, and therefore cannot decide. Absence of
@@ -189,15 +189,19 @@ Verifiers **MUST** apply these in order:
 
 ### 5.2 Tolerance
 
-Numeric results agree when
+Receipt results are the calculation's **reported outputs**, quantized once
+at its effective `round_to` under Protocol §VIII.5. Numeric and non-numeric
+results MUST agree by exact equality; there is no additional absolute or
+relative tolerance. Stated and recomputed results MUST also agree on `computed`.
+Result digests remain over those full-precision reported outputs. The historical
+`1e-6 × max(1, |stated|, |recomputed|)` comparison is superseded; a verifier MUST
+NOT accept a different result merely because it falls within that old bound.
 
-```
-|stated − recomputed| ≤ 1e-6 × max(1, |stated|, |recomputed|)
-```
-
-This is the repo's six-decimal calc/Excel parity bound expressed so it does not
-become vacuous for values in the millions. Non-numeric results compare by strict
-equality. A stated and recomputed result **MUST** also agree on `computed`.
+A document's **metric statement** is a different comparison boundary: RFC 0079
+and Protocol §VIII.5.1 compare the unrounded dictionary result at the statement's
+source precision, subject to its dictionary minimum and capped at `round_to`.
+This does not reduce the precision of issued receipt results or digests. No
+producer display string sets either comparison's precision.
 
 ### 5.2.1 Protocol version
 
@@ -241,7 +245,7 @@ would train users to ignore the state.
 | --- | --- | --- |
 | `RCP-01` | failed | Subject digest disagrees, or the signature did not validate |
 | `RCP-02` | failed | Stated results do not cover exactly the pack's declared outputs |
-| `RCP-03` | failed | A stated result disagrees with recomputation beyond tolerance |
+| `RCP-03` | failed | A stated result disagrees with its quantized recomputation |
 | `RCP-04` | failed | `results_digest` does not recompute over the stated results |
 | `RCP-05` | unverifiable | The named pack is unknown to this verifier |
 | `RCP-06` | unverifiable | The verifier holds a different version of the named pack |

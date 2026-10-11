@@ -33,7 +33,8 @@ const namedInputs: readonly NamedInput[] = [
   { name: 'loan_amount',                 label: 'Loan Amount',          source: { section: 'debt_structure', path: 'loan_amount' },                 format: 'currency' },
   { name: 'annual_debt_service',         label: 'Annual Debt Service',  source: { section: 'debt_structure', path: 'annual_debt_service' },         format: 'currency' },
   ...sizeNamedInputs('self_storage', { net_rentable_square_feet: 'Net Rentable SF', rentable_units: 'Rentable Units' }),
-  { name: 'sponsor_equity',              label: 'Sponsor Equity',       source: { section: 'sources_uses',   path: 'sources.sponsor_equity' },      format: 'currency' },
+  { name: 'equity_total', label: 'Total Invested Equity', source: { section: 'sources_uses', path: 'equity_metrics.equity_total' }, format: 'currency' },
+  { name: 'levered_cash_flow_y1', label: 'Year 1 Levered Cash Flow', source: { section: 'dcf', path: 'annual_cash_flows.Y1.net_cash_flow_levered' }, format: 'currency' },
   { name: 'total_uses',                  label: 'Total Project Cost',   source: { section: 'sources_uses',   path: 'uses.total' },                  format: 'currency' },
   { name: 'occupied_units',              label: 'Occupied Units',       source: { section: 'rent_roll',      path: 'occupied_units' },              format: 'count' },
 ];

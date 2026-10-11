@@ -460,6 +460,18 @@ describe('verifyReceipt', () => {
     expect(result.issues.map((i) => i.code)).not.toContain('RCP-07');
   });
 
+  it.each([['dscr', 0.0000001], ['price_per_unit', 0.01]])('refuses a rehashed %s change smaller than the obsolete relative tolerance', async (id, delta) => {
+    const raw = await parkview();
+    const receipt = await issueReceipt(raw, { filename: PARKVIEW, issued_at: ISSUED_AT });
+    const tampered = clone(receipt);
+    const stated = tampered.computation.results.find(r => r.calc_id === id)!;
+    stated.value = (stated.value as number) + delta;
+    tampered.computation.results_digest = await computeResultsDigest(tampered.computation.results);
+    const result = await verifyReceipt(tampered, raw, { filename: PARKVIEW });
+    expect(result.verdict).toBe('failed');
+    expect(result.issues).toContainEqual(expect.objectContaining({ code: 'RCP-03', calc_id: id }));
+  });
+
   it('flags a corrupted results_digest even when the numbers agree', async () => {
     const raw = await parkview();
     const receipt = await issueReceipt(raw, { filename: PARKVIEW, issued_at: ISSUED_AT });
@@ -788,12 +800,12 @@ describe('computeReceiptResults', () => {
   });
 
   // The defect RFC 0023 closes. A receipt runs two checks over the same
-  // numbers: `RECEIPT_RESULT_TOLERANCE` compares stated against recomputed at
-  // 1e-6, while `results_digest` hashes them bit-exactly. Before quantization
+  // numbers: result comparison and digests now use the same quantized values at
+  // their effective precision, while `results_digest` hashes them bit-exactly. Before quantization
   // those could disagree — a last-ULP difference passed the tolerant check and
   // failed the exact one, and the verdict said *corruption*. Quantized results
   // carry no tail for the two to disagree about.
-  it('states only quantized values, so the tolerant and exact checks cannot disagree', async () => {
+  it('states only quantized values, shared by exact comparison and digests', async () => {
     const receipt = await issueReceipt(await parkview(), {
       filename: PARKVIEW,
       issued_at: ISSUED_AT,

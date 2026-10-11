@@ -16,6 +16,22 @@ continues to use the same pack objects and Excel bindings.
   `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
+## Stated precision and output precision (RFC 0079)
+
+A dictionary entry's `minimum_stated_decimals` is a verification floor.
+`getStatedDecimals` reads a **source numeric token**, preserving trailing zeroes
+and exponents. `compareStatedMetric` takes the **unrounded** expression result,
+the stated number, its source decimals and the dictionary entry. It compares
+at `min(stated_decimals, round_to)` with the shared half-away quantizer, refuses
+missing/insufficient precision, and never double rounds. It imports no packs,
+defaults or cascade. Callers must preserve precision before numeric parsing;
+`String(parsedNumber)` cannot recover it.
+
+Calc/Excel reporting and receipt result digests still use full `round_to`.
+Receipts compare those quantized outputs exactly, with no old relative tolerance.
+The [lender fixture](../../conformance/metrics/README.md) reports all examples,
+including insufficient-precision claims and missing cash-on-cash inputs.
+
 ## File layout
 
 File | Role
@@ -70,10 +86,10 @@ id | label | formula | unit
 `loan_per_sqft` | Loan / SqFt | `debt_structure.loan_amount / property.total_nra_sqft` | `$`
 `cash_on_cash` | Cash-on-Cash | `year-1 levered cash flow / sources_uses.equity_metrics.equity_total` | `%`
 
-### Deal-level cash-on-cash (multifamily pack 1.0.1)
+### One deal-level cash-on-cash definition (RFC 0079)
 
 Format §4.19 defines cash-on-cash as levered cash flow divided by total equity
-invested. The multifamily pack selects `dcf.annual_cash_flows.Y1.net_cash_flow_levered`
+invested. Every income-class pack selects `dcf.annual_cash_flows.Y1.net_cash_flow_levered`
 by its stated year, independently of array order. When that input is absent or
 null, it retains the existing `noi_model.net_operating_income - debt_structure.annual_debt_service`
 fallback. The denominator is `sources_uses.equity_metrics.equity_total`.
@@ -82,8 +98,8 @@ Missing total equity stays uncomputed; zero follows `CALC-DIV-ZERO`.
 Sponsor/LP allocation is optional for this generic metric. A sponsor contribution
 alone never substitutes for aggregate equity. No `sponsor_cash_on_cash` or
 `lp_cash_on_cash` declaration is added: those need separately named metrics,
-attributable sponsor/LP cash flows and contribution inputs. The other asset-class
-packs retain their existing formulas pending separate corrections.
+attributable sponsor/LP cash flows and contribution inputs. RFC 0079 applies this definition to all nine income-class packs; land
+retains its omission of income metrics. The eight corrected packs move to 1.0.1.
 
 The Excel layout binds total equity and the stated year-1 flow to the same pack
 expression; absent total equity emits a blank, and stated zero cash flow is kept.
@@ -104,7 +120,7 @@ block it means (Protocol §VIII.2).
 - **`cash_on_cash` declares no role.** Equity cash flow deducts all debt
   service, so a senior-only cash-on-cash would overstate the return. On a
   multi-tranche map the debt-service fallback refuses `CALC-RESOLVE-002`.
-  Multifamily can use its stated year-1 DCF levered cash flow without reading
+  Every income class can use its stated year-1 DCF levered cash flow without reading
   that fallback; the pack never sums debt blocks.
 - **A standalone block is unaffected.** A `primary` + `junior` map reads the
   `primary` block, because an unclaimed declared role falls through to the
@@ -133,12 +149,12 @@ id | label | formula | unit
 `loan_per_sqft` | Loan / SqFt | `debt_structure.loan_amount / property.rentable_square_feet` | `$`
 `noi_per_sqft` | NOI / SqFt | `noi_model.net_operating_income / property.rentable_square_feet` | `$`
 `expense_ratio` | Operating Expense Ratio | `noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income` | `%`
-`cash_on_cash` | Cash-on-Cash | `(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity` | `%`
+`cash_on_cash` | Cash-on-Cash | `year-1 levered cash flow / sources_uses.equity_metrics.equity_total` | `%`
 `occupancy` | Occupancy | `rent_roll.occupied_sf / rent_roll.total_rentable_sf` | `%`
 
 Office diverges from multifamily on three field shapes: size is **rentable square
 feet** (`property.rentable_square_feet`, not `total_units`/`total_nra_sqft`),
-sponsor equity is `sources_uses.sources.sponsor_equity` (not `equity_sponsor`),
+total equity is `sources_uses.equity_metrics.equity_total`,
 and the NOI model nests `income`/`expenses`. Verified against the
 `Riverside-Office-Phoenix-AZ.uwx.md` worked example.
 

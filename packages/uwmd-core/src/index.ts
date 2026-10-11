@@ -984,3 +984,7 @@ export type { ReserveSource, ReserveMovementKind, ReserveMovement, ReservePeriod
 
 export { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
 export type { ReserveDrawReference, ReserveGrossExpenditureReference, ReserveGrossExpenditure, ReserveDrawBinding, ReserveDrawBindingPlan, ReserveDrawBindingEvidence, ReserveDrawBindingVerification } from './protocol.js';
+
+// RFC 0079 stated-metric comparison, independent of packs and defaults.
+export { getStatedDecimals, compareStatedMetric } from './calc/stated-precision.js';
+export type { StatedMetricComparison } from './calc/stated-precision.js';
