@@ -3961,7 +3961,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `data_center`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-dc_capacity.schema.json](schemas/section-dc_capacity.schema.json).
+**Normative schema:** [section-dc-capacity.schema.json](schemas/section-dc-capacity.schema.json).
 
 | Field | Type / constraint |
 |---|---|
@@ -3980,7 +3980,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `data_center`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-dc_power.schema.json](schemas/section-dc_power.schema.json).
+**Normative schema:** [section-dc-power.schema.json](schemas/section-dc-power.schema.json).
 
 | Field | Type / constraint |
 |---|---|
@@ -3994,7 +3994,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `data_center`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-dc_revenue.schema.json](schemas/section-dc_revenue.schema.json).
+**Normative schema:** [section-dc-revenue.schema.json](schemas/section-dc-revenue.schema.json).
 
 | Field | Type / constraint |
 |---|---|
@@ -4009,7 +4009,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `hospitality`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-hotel_metrics.schema.json](schemas/section-hotel_metrics.schema.json).
+**Normative schema:** [section-hotel-metrics.schema.json](schemas/section-hotel-metrics.schema.json).
 
 | Field | Type / constraint |
 |---|---|
@@ -4024,7 +4024,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `hospitality`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-hotel_brand.schema.json](schemas/section-hotel_brand.schema.json).
+**Normative schema:** [section-hotel-brand.schema.json](schemas/section-hotel-brand.schema.json).
 
 | Field | Type / constraint |
 |---|---|
@@ -4039,7 +4039,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `hospitality`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-hotel_food_beverage.schema.json](schemas/section-hotel_food_beverage.schema.json).
+**Normative schema:** [section-hotel-food-beverage.schema.json](schemas/section-hotel-food-beverage.schema.json).
 
 | Field | Type / constraint |
 |---|---|
@@ -4053,7 +4053,7 @@ These additive sections use the same block envelope and role/variant resolution 
 
 **Class:** `manufactured_housing`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
 
-**Normative schema:** [section-mhc_sites.schema.json](schemas/section-mhc_sites.schema.json).
+**Normative schema:** [section-mhc-sites.schema.json](schemas/section-mhc-sites.schema.json).
 
 | Field | Type / constraint |
 |---|---|

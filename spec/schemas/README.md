@@ -57,6 +57,14 @@ files live in this directory pending publication on `uwmd.org`.
 | [`period-excel-binding.schema.json`](period-excel-binding.schema.json) | `PeriodExcelBinding` | Protocol §VIII.2c / RFC 0043 |
 | [`period-column-snapshot.schema.json`](period-column-snapshot.schema.json) | `PeriodColumnSnapshot` | Protocol §VIII.2c / RFC 0043 |
 
+| [`section-dc-capacity.schema.json`](section-dc-capacity.schema.json) | RFC 0080 standard `dc_capacity` payload | RFC 0080 |
+| [`section-dc-power.schema.json`](section-dc-power.schema.json) | RFC 0080 standard `dc_power` payload | RFC 0080 |
+| [`section-dc-revenue.schema.json`](section-dc-revenue.schema.json) | RFC 0080 standard `dc_revenue` payload | RFC 0080 |
+| [`section-hotel-metrics.schema.json`](section-hotel-metrics.schema.json) | RFC 0080 standard `hotel_metrics` payload | RFC 0080 |
+| [`section-hotel-brand.schema.json`](section-hotel-brand.schema.json) | RFC 0080 standard `hotel_brand` payload | RFC 0080 |
+| [`section-hotel-food-beverage.schema.json`](section-hotel-food-beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload | RFC 0080 |
+| [`section-mhc-sites.schema.json`](section-mhc-sites.schema.json) | RFC 0080 standard `mhc_sites` payload | RFC 0080 |
+
 ## Validating a schema
 
 ```bash
@@ -72,13 +80,6 @@ the canonical definition. When you change one of those types, update
 the matching schema here in the **same PR**. Drift between the two is
 a normative protocol bug.
 
-| [`section-dc_capacity.schema.json`](section-dc_capacity.schema.json) | RFC 0080 standard `dc_capacity` payload |
-| [`section-dc_power.schema.json`](section-dc_power.schema.json) | RFC 0080 standard `dc_power` payload |
-| [`section-dc_revenue.schema.json`](section-dc_revenue.schema.json) | RFC 0080 standard `dc_revenue` payload |
-| [`section-hotel_metrics.schema.json`](section-hotel_metrics.schema.json) | RFC 0080 standard `hotel_metrics` payload |
-| [`section-hotel_brand.schema.json`](section-hotel_brand.schema.json) | RFC 0080 standard `hotel_brand` payload |
-| [`section-hotel_food_beverage.schema.json`](section-hotel_food_beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload |
-| [`section-mhc_sites.schema.json`](section-mhc_sites.schema.json) | RFC 0080 standard `mhc_sites` payload |
 
 If you add a new schema:
 1. Place it next to the existing schemas, named `<thing>.schema.json`.

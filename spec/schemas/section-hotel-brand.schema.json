@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://uwmd.org/schemas/section-hotel_brand.schema.json",
+  "$id": "https://uwmd.org/schemas/section-hotel-brand.schema.json",
   "title": "Brand & Franchise",
   "type": "object",
   "properties": {

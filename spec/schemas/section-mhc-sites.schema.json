@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://uwmd.org/schemas/section-mhc_sites.schema.json",
+  "$id": "https://uwmd.org/schemas/section-mhc-sites.schema.json",
   "title": "Manufactured Housing Sites",
   "type": "object",
   "required": [

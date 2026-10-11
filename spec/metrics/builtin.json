@@ -3192,42 +3192,6 @@
       "asset_classes": [
         "manufactured_housing"
       ],
-      "formula": "valuation.purchase_price / mhc_sites.total_sites",
-      "input_paths": [
-        "valuation.purchase_price",
-        "mhc_sites.total_sites"
-      ],
-      "unit": "$",
-      "round_to": 2,
-      "minimum_stated_decimals": 0,
-      "section_roles": {},
-      "null_semantics": "expression",
-      "deterministic": true
-    },
-    {
-      "id": "noi_per_site",
-      "label": "NOI per Site",
-      "asset_classes": [
-        "manufactured_housing"
-      ],
-      "formula": "noi_model.net_operating_income / mhc_sites.total_sites",
-      "input_paths": [
-        "noi_model.net_operating_income",
-        "mhc_sites.total_sites"
-      ],
-      "unit": "$",
-      "round_to": 2,
-      "minimum_stated_decimals": 0,
-      "section_roles": {},
-      "null_semantics": "expression",
-      "deterministic": true
-    },
-    {
-      "id": "price_per_property_site",
-      "label": "Price / Site",
-      "asset_classes": [
-        "manufactured_housing"
-      ],
       "formula": "valuation.purchase_price / property.total_sites",
       "input_paths": [
         "valuation.purchase_price",
@@ -3241,8 +3205,8 @@
       "deterministic": true
     },
     {
-      "id": "noi_per_property_site",
-      "label": "NOI / Site",
+      "id": "noi_per_site",
+      "label": "NOI per Site",
       "asset_classes": [
         "manufactured_housing"
       ],
@@ -3259,7 +3223,7 @@
       "deterministic": true
     },
     {
-      "id": "loan_per_property_site",
+      "id": "loan_per_site",
       "label": "Loan / Site",
       "asset_classes": [
         "manufactured_housing"

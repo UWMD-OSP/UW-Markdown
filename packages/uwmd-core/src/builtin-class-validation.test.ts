@@ -57,7 +57,7 @@ describe('RFC 0080 official builtin controls', () => {
   });
   it('mirrors every standard section schema without field-contract drift', () => {
     for (const content of Object.values(BUILTIN_CLASS_CONTENT)) for (const section of content.sections) {
-      const { $schema, $id, title, ...schema } = JSON.parse(readFileSync(resolve(root, 'spec/schemas/section-' + section.id + '.schema.json'), 'utf8'));
+      const { $schema, $id, title, ...schema } = JSON.parse(readFileSync(resolve(root, 'spec/schemas/section-' + section.id.replace(/_/g, '-') + '.schema.json'), 'utf8'));
       expect(schema, section.id).toEqual(section.schema);
     }
   });

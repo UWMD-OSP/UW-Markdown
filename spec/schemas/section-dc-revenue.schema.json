@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://uwmd.org/schemas/section-dc_revenue.schema.json",
+  "$id": "https://uwmd.org/schemas/section-dc-revenue.schema.json",
   "title": "Revenue",
   "type": "object",
   "required": [
@@ -39,7 +39,7 @@
         "null"
       ],
       "minimum": 0,
-      "description": "Comp rent, $/kW/month. Null means no comp set was obtained — which is different from a comp set showing zero."
+      "description": "Comp rent, $/kW/month. Null means no comp set was obtained \u00e2\u20ac\u201d which is different from a comp set showing zero."
     }
   }
 }

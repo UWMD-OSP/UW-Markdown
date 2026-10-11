@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://uwmd.org/schemas/section-dc_power.schema.json",
+  "$id": "https://uwmd.org/schemas/section-dc-power.schema.json",
   "title": "Power Economics",
   "type": "object",
   "required": [

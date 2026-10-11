@@ -253,7 +253,7 @@
     "example": "Desert-Palms-MHC-Apache-Junction-AZ.uwx.md",
     "asset_class": "manufactured_housing",
     "counts": {
-      "verified": 16,
+      "verified": 14,
       "failed": 0,
       "unverifiable": 0
     },
@@ -379,28 +379,8 @@
         "comparison_decimals": 0
       },
       {
-        "id": "price_per_property_site",
-        "path": "valuation.price_per_property_site",
-        "stated": 60000,
-        "stated_decimals": 0,
-        "state": "verified",
-        "computed": 60000,
-        "comparison": 60000,
-        "comparison_decimals": 0
-      },
-      {
-        "id": "noi_per_property_site",
-        "path": "valuation.noi_per_property_site",
-        "stated": 3600,
-        "stated_decimals": 0,
-        "state": "verified",
-        "computed": 3600,
-        "comparison": 3600,
-        "comparison_decimals": 0
-      },
-      {
-        "id": "loan_per_property_site",
-        "path": "valuation.loan_per_property_site",
+        "id": "loan_per_site",
+        "path": "valuation.loan_per_site",
         "stated": 36000,
         "stated_decimals": 0,
         "state": "verified",
