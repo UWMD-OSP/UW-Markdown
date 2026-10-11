@@ -60,6 +60,8 @@ export const ASSET_CLASSES = [
   'student_housing',
   'mixed_use',
   'land',
+  'data_center',
+  'manufactured_housing',
 ] as const;
 
 /** The asset classes this editor knows — mirrors the packs' `asset_classes`. */

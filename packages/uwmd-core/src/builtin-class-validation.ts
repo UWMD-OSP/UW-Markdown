@@ -1,0 +1,75 @@
+// RFC 0080 standard field contracts and class verification rules.
+// This checks the fixed official fields, not arbitrary third-party JSON Schema.
+import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
+import { toBuiltinAssetClass, type ParsedUWFile, type ValidationMessage } from './types.js';
+import { blockPayload } from './parser.js';
+import { resolveRoleBlock } from './block-roles.js';
+import { evaluateCalc } from './calc/index.js';
+import { getPackForAssetClass } from './packs/index.js';
+
+interface FieldContract { type?: string | string[]; minimum?: number; maximum?: number; enum?: unknown[] }
+interface SectionContract { required?: string[]; properties?: Record<string, FieldContract> }
+
+export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessage[] {
+  const assetClass = toBuiltinAssetClass(parsed.frontmatter.asset_class);
+  if (!assetClass) return [];
+  const content = BUILTIN_CLASS_CONTENT[assetClass];
+  if (!content) return [];
+  const issues: ValidationMessage[] = [];
+  for (const section of content.sections) {
+    const resolved = resolveRoleBlock(parsed.sections[section.id], section.id);
+    if (!resolved.block) {
+      // Existing hospitality records use the standard rent-roll/NOI inputs.
+      if (section.required && assetClass !== 'hospitality' && !parsed.sections[section.id]) {
+        issues.push({ code: 'CLS-03', severity: 'error', section: section.id,
+          message: `${assetClass} requires ${section.id}.` });
+      }
+      continue;
+    }
+    const payload = blockPayload(resolved.block);
+    const contract = section.schema as SectionContract;
+    for (const field of contract.required ?? []) {
+      if (payload[field] == null) issues.push({ code: 'CLS-04', severity: 'error', section: section.id,
+        field, message: `${section.id}.${field} must be stated.` });
+    }
+    for (const [field, rule] of Object.entries(contract.properties ?? {})) {
+      const value = payload[field];
+      if (value === undefined) continue;
+      const types = typeof rule.type === 'string' ? [rule.type] : rule.type;
+      const matches = !types || types.some(type => type === 'null' ? value === null
+        : type === 'integer' ? typeof value === 'number' && Number.isInteger(value)
+        : type === 'number' ? typeof value === 'number' && Number.isFinite(value)
+        : typeof value === type);
+      const bounds = typeof value !== 'number' ||
+        ((rule.minimum === undefined || value >= rule.minimum) && (rule.maximum === undefined || value <= rule.maximum));
+      if (!matches || !bounds || (rule.enum && !rule.enum.includes(value))) {
+        issues.push({ code: 'CLS-04', severity: 'error', section: section.id, field,
+          message: `${section.id}.${field} violates its standard field contract.` });
+      }
+    }
+  }
+  const prior: Record<string, number | string | boolean | null> = {};
+  for (const decl of getPackForAssetClass(assetClass)?.calculations ?? []) {
+    const result = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
+    if (result.ok) prior[decl.id] = result.value;
+  }
+  for (const rule of content.validations) {
+    const result = evaluateCalc({ id: rule.code, formula: rule.rule, deterministic: true },
+      { parsed, prior_results: prior, locale: 'en-US' });
+    if (!result.ok) issues.push({ code: 'MOD-RULE-ERROR', severity: 'error',
+      message: `Builtin ${assetClass} rule ${rule.code} failed: ${result.error?.message}` });
+    else if (result.value === false) issues.push({ code: rule.code, severity: rule.severity, message: rule.message });
+  }
+  const size = assetClass === 'data_center' ? 'critical_it_load_kw' : assetClass === 'manufactured_housing' ? 'total_sites' : null;
+  if (size) {
+    const property = resolveRoleBlock(parsed.sections.property, 'property').block;
+    const detail = resolveRoleBlock(parsed.sections[assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites'], assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites').block;
+    const a = property ? blockPayload(property)[size] : undefined;
+    const b = detail ? blockPayload(detail)[size] : undefined;
+    if (typeof a === 'number' && Number.isFinite(a) && typeof b === 'number' && Number.isFinite(b) && a !== b) {
+      issues.push({ code: assetClass === 'data_center' ? 'CC-DC-08' : 'CC-MH-08', severity: 'error',
+        message: `property.${size} must equal the stated class-section ${size}; these identify one physical quantity.` });
+    }
+  }
+  return issues;
+}

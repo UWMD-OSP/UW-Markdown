@@ -1,6 +1,7 @@
+import { toBuiltinAssetClass } from './types.js';
 // Asset-class default tables — Protocol §V.7-§V.8
 //
-// Published normative defaults for the cascade resolver. Each entry is a
+// Published starter defaults for the cascade resolver. Each entry is a
 // {low, central, high} range so refinement/VOI consumers can quantify what's
 // at stake before any document arrives.
 //
@@ -1202,6 +1203,20 @@ export const MIXED_USE_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/** RFC 0080 proposal: owner must review these starter assumptions before merge. */
+export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'data_center', version: '1.0.0', fields: Object.fromEntries(
+    Object.entries(INDUSTRIAL_DEFAULTS.fields).map(([path, range]) => [path, { ...range, citation: 'RFC 0080 owner-review proposal: '+path+' uses the existing industrial starter range as a transparent triage proxy; not a market estimate.' }]),
+  ),
+};
+
+/** RFC 0080 proposal: owner must review these starter assumptions before merge. */
+export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
+  asset_class: 'manufactured_housing', version: '1.0.0', fields: Object.fromEntries(
+    Object.entries(MULTIFAMILY_DEFAULTS.fields).map(([path, range]) => [path, { ...range, citation: 'RFC 0080 owner-review proposal: '+path+' uses the existing multifamily starter range as a transparent triage proxy; not a market estimate.' }]),
+  ),
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
@@ -1212,6 +1227,8 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   senior_housing: SENIOR_HOUSING_DEFAULTS,
   student_housing: STUDENT_HOUSING_DEFAULTS,
   land: LAND_DEFAULTS,
+  data_center: DATA_CENTER_DEFAULTS,
+  manufactured_housing: MANUFACTURED_HOUSING_DEFAULTS,
   mixed_use: MIXED_USE_DEFAULTS,
 });
 
@@ -1221,7 +1238,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
  * `system_default` per the cascade in protocol §V.7).
  */
 export function getAssetClassDefaults(asset_class: string): AssetClassDefaults | null {
-  return REGISTRY[asset_class] ?? null;
+  return REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
 }
 
 /**
@@ -1241,3 +1258,4 @@ export function listDefaultedFields(asset_class: string): string[] {
   const table = getAssetClassDefaults(asset_class);
   return table ? Object.keys(table.fields) : [];
 }
+

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-hotel_brand.schema.json",
+  "title": "Brand & Franchise",
+  "type": "object",
+  "properties": {
+    "flag": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Brand, or null for independent."
+    },
+    "franchise_fee_pct_of_rooms": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 0.2
+    },
+    "marketing_fund_pct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 0.1
+    },
+    "loyalty_program_pct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 0.1
+    },
+    "term_years": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    }
+  }
+}

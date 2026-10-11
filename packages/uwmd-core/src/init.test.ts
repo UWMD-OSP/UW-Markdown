@@ -217,7 +217,7 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
 
   it.each([
     ['garden_style', 'garden_style'],
-    ['com.example.data_center', 'com.example.data_center'],
+    ['com.example.specialty_facility', 'com.example.specialty_facility'],
     ['Garden Style', '"Garden Style"'],
     ['null', '"null"'],
     ['yes', '"yes"'],

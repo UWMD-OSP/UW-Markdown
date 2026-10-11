@@ -1,3 +1,5 @@
+import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
+import { toBuiltinAssetClass } from './types.js';
 // UW Protocol — TypeScript contract surface for conforming implementers.
 //
 // This module is the executable counterpart to spec/UW_PROTOCOL_v1.md.
@@ -38,7 +40,7 @@ export const PROTOCOL_VERSION = '2.25.0' as const;
  * The format version this implementation *authors* — what a fresh scaffold
  * declares. Reading is wider: see {@link SUPPORTED_FORMAT_VERSIONS}.
  */
-export const FORMAT_VERSION = '2.0' as const;
+export const FORMAT_VERSION = '2.1' as const;
 
 /**
  * Every format version this implementation reads and validates. Format 2.0
@@ -49,7 +51,7 @@ export const FORMAT_VERSION = '2.0' as const;
  * keeps loading, because the files it declared compatibility with are still
  * fully supported.
  */
-export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0'] as const);
+export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0', '2.1'] as const);
 
 /**
  * The protocol contracts this implementation honors. Protocol 2.0.0 keeps
@@ -776,6 +778,8 @@ export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
   exempt?: readonly string[];
   substitute?: Readonly<Record<string, string>>;
 }>> = {
+  data_center: { substitute: { rent_roll: 'dc_capacity' } },
+  manufactured_housing: { substitute: { rent_roll: 'mhc_sites' } },
   land:      { exempt: ['rent_roll', 'operating_statement'] },
   mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
 };
@@ -914,6 +918,7 @@ export const STAGE_CONTRACT: readonly StageContractEntry[] = buildStageContract(
  * can never disagree about what a stage requires.
  */
 export function requiredSectionsFor(stage: DealStage, assetClass?: string): readonly string[] {
+  if (assetClass) assetClass = toBuiltinAssetClass(assetClass) ?? assetClass;
   const out: string[] = [];
   const qualified = new Map<string, boolean>();
   if (assetClass) {
@@ -1221,7 +1226,7 @@ export interface ModuleManifest {
    * Custom asset classes this module introduces (§X.2, RFC 0003).
    *
    * Distinct from `asset_classes`, which names builtin classes the module
-   * *enhances*. A module may do both: declare `com.example.data_center` and
+   * *enhances*. A module may do both: declare `com.example.specialty_facility` and
    * also contribute calcs to `industrial`.
    */
   declares_asset_classes?: ModuleAssetClassDecl[];
@@ -1401,6 +1406,8 @@ export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
   'cash_flow_series',
   'distribution_waterfall',
   'reserve_accounts',
+  'dc_capacity', 'dc_power', 'dc_revenue', 'mhc_sites',
+  'hotel_metrics', 'hotel_brand', 'hotel_food_beverage',
 ]);
 
 const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
@@ -1486,6 +1493,8 @@ export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.f
   hospitality:     Object.freeze({ path: 'keys',                     label: 'Keys',        unit: 'keys',  secondary: Object.freeze([]) }),
   student_housing: Object.freeze({ path: 'total_beds',               label: 'Beds',        unit: 'beds',  secondary: Object.freeze(['total_units']) }),
   senior_housing:  Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_beds']) }),
+  data_center: Object.freeze({ path: 'critical_it_load_kw', label: 'Critical IT kW', unit: 'kW', secondary: Object.freeze([]) }),
+  manufactured_housing: Object.freeze({ path: 'total_sites', label: 'Sites', unit: 'sites', secondary: Object.freeze([]) }),
   land:            Object.freeze({ path: 'gross_acres',              label: 'Gross acres', unit: 'acres', secondary: Object.freeze(['usable_acres', 'entitled_units']) }),
 });
 
@@ -1494,7 +1503,7 @@ export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.f
  * unrecognized class (§XIII.3) — never a guess.
  */
 export function getSizeIntensive(assetClass: string): SizeIntensive | null {
-  return SIZE_INTENSIVES[assetClass] ?? null;
+  return SIZE_INTENSIVES[toBuiltinAssetClass(assetClass) ?? assetClass] ?? null;
 }
 
 /**
@@ -1741,6 +1750,7 @@ export interface ProtocolError {
  * override per-section by declaring their own `view_models` entry.
  */
 export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
+  ...Object.fromEntries(Object.values(BUILTIN_CLASS_CONTENT).flatMap(c => c.view_models.map(v => [v.section_id, v]))),
   property: {
     section_id: 'property',
     display_name: 'Property',
@@ -2726,7 +2736,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'INVALID-ASSET-CLASS-001', severity: 'error',
     title: 'Malformed asset-class identifier',
     description: 'frontmatter.asset_class is neither a builtin nor a well-formed namespaced identifier.',
-    remediation: 'Use a builtin, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. com.example.data_center).',
+    remediation: 'Use a builtin, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. com.example.specialty_facility).',
     spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
   },
   {

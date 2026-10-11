@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "2.1"
 deal_id: "uw_2026_dc7q4m1"
 deal_name: "Mesa Gateway Data Center — Mesa, AZ"
 created: "2026-09-09T08:00:00Z"
@@ -9,10 +9,7 @@ property_address: "6200 S Sossaman Rd"
 city: "Mesa"
 state: "AZ"
 zip: "85212"
-asset_class: "org.uwmd.data_center"
-modules:
-  - id: org.uwmd.datacenters
-    version: ">=0.1.0 <1.0.0"
+asset_class: "data_center"
 loan_type: "permanent"
 scenario: "stabilized_acquisition"
 
@@ -60,7 +57,7 @@ source_documents:
 > **10.0 MW Commissioned / 12.5 MW Planned** | **11.0 MW Contracted** | **PUE 1.25** | **$160,000,000 Purchase** | **$16,000/kW** | **7.00% Cap Rate (in-place)**
 
 This file is the corpus's **first custom-class example**: its `asset_class` is
-`org.uwmd.data_center`, declared by the `org.uwmd.datacenters` module ([RFC
+`data_center`, declared by the `org.uwmd.datacenters` module ([RFC
 0039](../docs/rfcs/0039-data-center-module.md)) rather than by the builtin enum.
 The standard sections read as ordinary industrial real estate — a building, a
 lease, an NOI, a loan — which is why the module states `industrial` as its
@@ -69,8 +66,8 @@ capacity in **kilowatts**, PUE, redundancy topology, power billing, and rent
 per kW-month.
 
 Like the hospitality fixture, it is deliberately **not** a clean deal: 1,000 kW
-of phase 2 is pre-leased ahead of commissioning (`CC-MOD-DC-04`), and the
-in-place rent runs 20% under the comp set (`CC-MOD-DC-07`). Both warnings fire
+of phase 2 is pre-leased ahead of commissioning (`CC-DC-04`), and the
+in-place rent runs 20% under the comp set (`CC-DC-07`). Both warnings fire
 on one file; nothing else does.
 
 ---
@@ -434,7 +431,7 @@ East Valley wholesale fundamentals as of 2026-08. Rent is quoted per kW-month; t
 
 ## Capacity & Topology {#dc_capacity}
 
-Every figure is in **kW** — capacity is quoted in MW and rent in $/kW-month, and one unit throughout is what prevents a x1000 error. Contracted load (11,000 kW) exceeds commissioned load (10,000 kW) because 1,000 kW of phase 2 is pre-leased; that is `CC-MOD-DC-04`, a schedule question and not a defect.
+Every figure is in **kW** — capacity is quoted in MW and rent in $/kW-month, and one unit throughout is what prevents a x1000 error. Contracted load (11,000 kW) exceeds commissioned load (10,000 kW) because 1,000 kW of phase 2 is pre-leased; that is `CC-DC-04`, a schedule question and not a defect.
 
 ```json uw:section=dc_capacity source=manual ts=2026-09-09T09:00:00Z v=1 confidence=high
 {
@@ -488,7 +485,7 @@ Metered pass-through: tenants pay their own metered power at cost, so the landlo
 
 ## Revenue {#dc_revenue}
 
-Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, against a $187.50 comp set — a 0.80 rent index, which is what fires `CC-MOD-DC-07` and is also the mark-to-market case at the anchor's 2029 roll.
+Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, against a $187.50 comp set — a 0.80 rent index, which is what fires `CC-DC-07` and is also the mark-to-market case at the anchor's 2029 roll.
 
 ```json uw:section=dc_revenue source=manual ts=2026-09-09T09:15:00Z v=1 confidence=high
 {

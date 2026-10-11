@@ -1,3 +1,4 @@
+import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId, RETIRED_SCENARIOS } from './scenario.js';
 import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
 import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
@@ -152,6 +153,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
+  issues.push(...checkBuiltinClassContent(parsed));
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
@@ -2134,7 +2136,7 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
 // excluded (its NOI model nets negative) and `mixed_use` cannot nest in itself.
 const ADMISSIBLE_COMPONENT_CLASSES: ReadonlySet<string> = new Set([
   'multifamily', 'retail', 'office', 'industrial', 'self_storage',
-  'hospitality', 'senior_housing', 'student_housing',
+  'hospitality', 'senior_housing', 'student_housing', 'data_center', 'manufactured_housing',
 ]);
 
 // Validates the `components` section: the CC-11 asset-class gate, the CC-12
@@ -3066,6 +3068,14 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     });
     return;
   }
+  for (const dependency of declaredModuleDependencies(parsed.frontmatter as Record<string, unknown>)) {
+    if (['org.uwmd.datacenters', 'org.uwmd.hospitality'].includes(dependency.id)) issues.push({
+      code: 'CLS-02', severity: 'info', field: 'modules',
+      message: `Module '${dependency.id}' is satisfied by core (RFC 0080).`,
+    });
+  }
+  if (raw === 'org.uwmd.data_center') issues.push({ code: 'CLS-01', severity: 'warning', field: 'asset_class',
+    message: "Deprecated official class id 'org.uwmd.data_center'; use 'data_center'. The source document is unchanged." });
   if (identity.kind === 'builtin') return;
 
   // A namespaced class with no `modules` list is unreadable by anyone who does

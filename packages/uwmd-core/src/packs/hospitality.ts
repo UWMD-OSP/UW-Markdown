@@ -13,7 +13,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.hospitality',
   name: 'Hospitality Starter Pack',
-  version: '1.0.1',
+  version: '1.0.2',
   description:
     'Fourteen derived metrics for hospitality underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/key, loan/key, NOI/key, expense ratio, cash-on-cash, occupancy, ADR, RevPAR, and GOP margin.',
   authors: ['UW Markdown Working Group'],
@@ -128,6 +128,38 @@ export const HOSPITALITY_PACK: ModuleManifest = {
         'noi_model.gross_operating_profit / noi_model.income.effective_gross_income',
       unit: '%',
       deterministic: true,
+    },
+    {
+      "id": "total_room_revenue",
+      "label": "Total Room Revenue",
+      "formula": "hotel_metrics.adr * hotel_metrics.occupancy * hotel_metrics.available_room_nights",
+      "unit": "$",
+      "round_to": 2,
+      "deterministic": true
+    },
+    {
+      "id": "room_revenue_per_key",
+      "label": "Room Revenue / Key",
+      "formula": "round((hotel_metrics.adr * hotel_metrics.occupancy * hotel_metrics.available_room_nights), 2) / hotel_metrics.key_count",
+      "unit": "$",
+      "round_to": 2,
+      "deterministic": true
+    },
+    {
+      "id": "revpar_index",
+      "label": "RevPAR Index vs Market",
+      "formula": "round((noi_model.income.rooms_revenue / rent_roll.available_room_nights), 2) / hotel_metrics.market_revpar",
+      "unit": "x",
+      "round_to": 4,
+      "deterministic": true
+    },
+    {
+      "id": "fb_gross_margin",
+      "label": "F&B Gross Margin",
+      "formula": "(hotel_food_beverage.fb_revenue - hotel_food_beverage.fb_cogs - hotel_food_beverage.fb_labor) / hotel_food_beverage.fb_revenue",
+      "unit": "%",
+      "round_to": 4,
+      "deterministic": true
     },
   ],
 };

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-hotel_food_beverage.schema.json",
+  "title": "Food & Beverage",
+  "type": "object",
+  "properties": {
+    "fb_revenue": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fb_cogs": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fb_labor": {
+      "type": "number",
+      "minimum": 0
+    },
+    "complimentary_breakfast_cost_per_occupied_room": {
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}

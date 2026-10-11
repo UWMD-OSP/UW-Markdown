@@ -8,7 +8,7 @@ property_address: "900 Server Way"
 city: "Mesa"
 state: "AZ"
 zip: "85201"
-asset_class: com.example.data_center
+asset_class: com.example.specialty_facility
 deal_stage: screening
 status: under_review
 recommendation: pending

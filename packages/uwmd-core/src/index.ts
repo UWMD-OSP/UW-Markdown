@@ -988,3 +988,7 @@ export type { ReserveDrawReference, ReserveGrossExpenditureReference, ReserveGro
 // RFC 0079 stated-metric comparison, independent of packs and defaults.
 export { getStatedDecimals, compareStatedMetric } from './calc/stated-precision.js';
 export type { StatedMetricComparison } from './calc/stated-precision.js';
+
+export { toBuiltinAssetClass } from './types.js';
+
+export { DATA_CENTER_DEFAULTS, MANUFACTURED_HOUSING_DEFAULTS } from './defaults.js';

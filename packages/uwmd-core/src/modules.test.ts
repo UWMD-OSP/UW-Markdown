@@ -591,7 +591,7 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
       const declares = (id: string) => ({
         declares_asset_classes: [{ id, display_name: id }],
       }) as Partial<ModuleManifest>;
-      const aCustom = scoped(A, declares('com.example.data_center'));
+      const aCustom = scoped(A, declares('com.example.specialty_facility'));
       // Only a module that is unscoped, or declares the class itself, covers it.
       expect(codesOf([aCustom, scoped(B, {}, A)])).toEqual([]);
       expect(codesOf([aCustom, scoped(B, office, A)])).toEqual(['PROTO-MOD-084']);

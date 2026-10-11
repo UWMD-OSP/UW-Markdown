@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-dc_power.schema.json",
+  "title": "Power Economics",
+  "type": "object",
+  "required": [
+    "utility_rate_per_kwh",
+    "billing"
+  ],
+  "properties": {
+    "utility_rate_per_kwh": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Blended $/kWh, all charges."
+    },
+    "billing": {
+      "type": "string",
+      "enum": [
+        "metered_pass_through",
+        "all_in",
+        "breakered"
+      ],
+      "description": "How power is billed to tenants."
+    },
+    "power_margin": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Landlord margin on power as a FRACTION of cost; meaningful only under all_in / breakered billing."
+    },
+    "stated_annual_power_cost": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "The operator's stated annual utility bill, when known. Takes precedence over the computed figure."
+    }
+  }
+}

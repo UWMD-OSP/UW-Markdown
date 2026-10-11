@@ -1,3 +1,4 @@
+import { toBuiltinAssetClass } from '@uwmd/core';
 // Workbook-layout registry — selects the per-asset-class layout.
 //
 // Mirrors `getPackForAssetClass` / `getAssetClassDefaults` in @uwmd/core: a
@@ -14,6 +15,8 @@ import { HOSPITALITY_LAYOUT } from './hospitality.js';
 import { SENIOR_HOUSING_LAYOUT } from './senior-housing.js';
 import { STUDENT_HOUSING_LAYOUT } from './student-housing.js';
 import { LAND_LAYOUT } from './land.js';
+import { DATA_CENTER_LAYOUT } from './data-center.js';
+import { MANUFACTURED_HOUSING_LAYOUT } from './manufactured-housing.js';
 import { MIXED_USE_LAYOUT } from './mixed-use.js';
 
 const LAYOUT_REGISTRY: Readonly<Record<string, WorkbookLayout>> = Object.freeze({
@@ -26,6 +29,8 @@ const LAYOUT_REGISTRY: Readonly<Record<string, WorkbookLayout>> = Object.freeze(
   senior_housing: SENIOR_HOUSING_LAYOUT,
   student_housing: STUDENT_HOUSING_LAYOUT,
   land: LAND_LAYOUT,
+  data_center: DATA_CENTER_LAYOUT,
+  manufactured_housing: MANUFACTURED_HOUSING_LAYOUT,
   mixed_use: MIXED_USE_LAYOUT,
 });
 
@@ -37,5 +42,5 @@ export const SUPPORTED_ASSET_CLASSES: readonly string[] = Object.keys(LAYOUT_REG
  * (the converter only supports the classes with a layout module).
  */
 export function getLayoutForAssetClass(asset_class: string): WorkbookLayout | null {
-  return LAYOUT_REGISTRY[asset_class] ?? null;
+  return LAYOUT_REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
 }
