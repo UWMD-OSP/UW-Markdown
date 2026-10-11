@@ -39,6 +39,9 @@ test('coverage fails closed on omitted, duplicate, unexpected or unclassified ca
 });
 test('Verifier includes Reader without profiles or starter checks', () => {
   const reader = selection(['--tier=reader']);
+  assert.deepEqual(reader, selection(['--tier', 'reader']));
+  assert.deepEqual(selection(['--profile', 'module']), selection(['--profile=module']));
+  assert.throws(() => selection(['--tier']), /Missing value/);
   const verifier = selection(['--tier=verifier']);
   assert.ok(reader.length && verifier.length > reader.length);
   assert.ok(reader.every(c => c.target === 'reader'));

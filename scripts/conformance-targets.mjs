@@ -20,7 +20,15 @@ export const portableReadings = { targets: CONFORMANCE_TARGETS, profiles: CONFOR
 export const publicOwner = target => ({ target, ...(target === 'reader' || target === 'verifier' ? { tier: target } : target === 'starter-products' ? { starter_product: true } : { profile: target }) });
 
 export function selection(args, warn = message => console.error(message)) {
-  const value = name => args.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+  const value = name => {
+    const equals = args.find(a => a.startsWith(`--${name}=`));
+    if (equals !== undefined) return equals.slice(name.length + 3);
+    const position = args.indexOf(`--${name}`);
+    if (position < 0) return undefined;
+    const next = args[position + 1];
+    if (!next || next.startsWith('--')) throw new Error(`Missing value for --${name}`);
+    return next;
+  };
   const split = text => text?.split(',').map(s => s.trim()).filter(Boolean) ?? [];
   const targets = new Set();
   const suites = new Set(split(value('suite')));

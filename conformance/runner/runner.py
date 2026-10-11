@@ -521,6 +521,8 @@ def main() -> int:
     }
     if args.manifest_out:
         Path(args.manifest_out).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    for target, counts in report["by_target"].items():
+        print(f"# {target}: {counts['passed']} passed, {counts['failed']} failed, {counts['skipped']} skipped, {counts['unverifiable']} unverifiable")
     print(f"# {report['summary']['passed']}/{report['summary']['total']} passed")
     if skipped:
         detail = ", ".join(f"{cap} x{n}" for cap, n in sorted(skipped_by_capability.items()))

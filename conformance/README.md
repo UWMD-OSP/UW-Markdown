@@ -317,9 +317,9 @@ size-intensive registry are *verified protocol surfaces*, and signing is an
 default; select one alone with `--suite=<name>` (e.g. `--suite=lite`,
 `--suite=signing`).
 
-`signing` is the one suite an implementation may skip and stay conformant: it
-gates the `signing` capability claim in `ImplementationManifest.capabilities`,
-and an implementation that does not claim signing is not asked to pass it. Two
+`signing` belongs to the optional Integrity profile. Its required capabilities
+remain explicit; an unclaimed profile is unverifiable and an unclaimed
+capability is a reported skip, never a pass. Two
 of its five scenarios exist to pin distinctions rather than happy paths —
 `blocks/03-signed-unknown-kid` must report `INT-06` and never `INT-07` ("I
 cannot check this" is not "this is forged"), and `blocks/05-signed-no-backend`
@@ -357,28 +357,28 @@ third-party implementer rather than a restatement of our implementation.
 
 1. Implement (or update) your tool against the published
    [`UW_PROTOCOL_v1.md`](../spec/UW_PROTOCOL_v1.md).
-2. For each tier you claim, run every fixture in that tier through your tool.
+2. Select your tier and explicitly claimed profiles; run their indexed cases through your tool.
 3. Compare your output to the corresponding `expected/` output.
 
-**Tiers 1–3 use byte-exact comparison** (after JSON canonicalization and
-volatile-field stripping where applicable). **Tier 4 uses shape assertions** —
-LLM nondeterminism makes byte equality impractical, so the expected output is
-a JSON Schema fragment describing the shape of an acceptable agent response.
+Frozen comparisons retain their existing subset, exact, normalized-byte or
+shape rules; re-tiering changes ownership, never an assertion. Publish the
+capability/profile claims and all skipped/unverifiable counts with the result.
+Starter-product results are separate compatibility claims, not conformance.
 
 ## Running the reference test runner
 
 The reference implementation ships a runner at
 [`scripts/run-conformance.mjs`](../scripts/run-conformance.mjs) that exercises
-the corpus against `@uwmd/core`. CI runs tiers 1–3 on every PR.
+the corpus against `@uwmd/core`. CI runs all indexed checks on every PR.
 
 ```bash
-# Default: tiers 1, 2, 3
+# Default: every indexed standard and starter check
 node scripts/run-conformance.mjs
 
-# Specific tiers
+# Reader + Verifier, plus the Module profile
 node scripts/run-conformance.mjs --tier=verifier --profile=module
 
-# Tier 4 is operator-driven (lint-only — does not invoke an LLM)
+# Agent starter checks (lint-only — does not invoke an LLM)
 node scripts/run-conformance.mjs --starter-products --suite=4
 
 # Bootstrap / refresh expected outputs from the current library
@@ -403,7 +403,7 @@ Ownership is explicit and closed; neither a directory name nor a legacy id
 assigns it. Coverage guards reject a fixture that has no indexed owner.
 
 
-Fixtures are normative once merged. To add one:
+Standard fixtures are normative once merged; product fixtures specify starter compatibility. To add one:
 
 1. Open a PR with the fixture file and its expected output.
 2. Explain in the PR description what scenario the fixture covers and why it
@@ -425,9 +425,10 @@ fixtures. To regenerate after a non-breaking improvement:
 node scripts/regen-conformance.mjs
 ```
 
-If a regeneration changes any expected output, that's a normative change to
-the protocol — call it out explicitly in the PR description and bump the
-protocol version in `UW_PROTOCOL_v1.md`.
+If a regeneration changes a standard expectation, identify the normative
+change in the RFC and PR; its version label moves at release preparation.
+A changed starter expectation is a package quality-bar change, not a
+Protocol change. Neither should be regenerated merely to hide a failure.
 
 ## Lease-up projection
 

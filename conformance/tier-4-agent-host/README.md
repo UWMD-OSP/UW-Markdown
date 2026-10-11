@@ -56,10 +56,10 @@ profile/<scenario-id>/
 
 ## Running
 
-Tier 4 is **operator-driven**, not part of CI — LLM calls cost money and
-are nondeterministic. The reference runner ships a lint-only pass that
-parses each `before.uwx.md`, validates each `expected-after-shape.json`
-as a well-formed JSON Schema, and runs the profile-contract assertion:
+The reference runner executes these starter checks by default, without live
+LLM calls. Its lint-only pass parses each `before.uwx.md`, validates each
+`expected-after-shape.json` as a well-formed JSON Schema, and runs the
+layer-profile contract. The same checks can be selected as a fixture family:
 
 ```bash
 node scripts/run-conformance.mjs --suite=4

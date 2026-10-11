@@ -4504,6 +4504,10 @@ if (JSON_OUT) {
   console.log(JSON.stringify({ results, summary: { pass: passes.length, fail: failures.length, updated: updates.length }, by_target: Object.fromEntries([...new Set(results.map(r => r.target))].map(target => [target, { pass: results.filter(r => r.target === target && r.status === 'pass').length, fail: results.filter(r => r.target === target && r.status === 'fail').length, updated: results.filter(r => r.target === target && r.status === 'updated').length }])) }, null, 2));
 } else {
   console.log('');
+  for (const target of [...new Set(results.map(r => r.target))]) {
+    const rows = results.filter(r => r.target === target);
+    console.log(`${target}: ${rows.filter(r => r.status === 'pass').length} pass, ${rows.filter(r => r.status === 'fail').length} fail, ${rows.filter(r => r.status === 'updated').length} updated`);
+  }
   console.log(`Summary: ${passes.length} pass, ${failures.length} fail${updates.length ? `, ${updates.length} updated` : ''}`);
 }
 
