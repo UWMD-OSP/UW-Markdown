@@ -114,14 +114,17 @@ const LEGACY_TIER_READINGS: Readonly<Record<ViewerTier, ConformanceTierReading>>
   'tier-1-reader': { tier: 'reader', legacy: 'tier-1-reader' },
   'tier-2-editor': { tier: 'reader', legacy: 'tier-2-editor', starter_product_claim: 'editor' },
   'tier-3-calc-host': { tier: 'verifier', legacy: 'tier-3-calc-host' },
-  'tier-4-agent-host': { tier: 'reader', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host' },
+  // Protocol 2.x tiers were cumulative: Tier 4 required Tier 3's calc engine,
+  // so an agent host could already reproduce metrics and reads as a verifier.
+  'tier-4-agent-host': { tier: 'verifier', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host' },
 });
 
 /**
  * Read an `ImplementationManifest.tier` under the Protocol 3.0 model
  * (§II.5, RFC 0078). Current values pass through; the four deprecated
  * Protocol 2.x values map as the RFC fixes them (tier-1 → reader,
- * tier-3 → verifier, tier-2/4 → reader plus a starter-product claim). The
+ * tier-2 → reader, tier-3 and tier-4 → verifier, with the editor and
+ * agent-host claims kept as starter-product claims). The
  * mapping never infers a profile. Anything else is outside the closed
  * vocabulary and returns `null` rather than a guess.
  */

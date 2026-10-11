@@ -211,7 +211,7 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
     });
     expect(readConformanceTier('tier-3-calc-host')).toEqual({ tier: 'verifier', legacy: 'tier-3-calc-host' });
     expect(readConformanceTier('tier-4-agent-host')).toEqual({
-      tier: 'reader', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host',
+      tier: 'verifier', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host',
     });
     for (const tier of LEGACY) expect(readConformanceTier(tier)).not.toHaveProperty('profiles');
   });

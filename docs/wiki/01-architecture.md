@@ -64,8 +64,9 @@ all six.
 
 The four Protocol 2.x tiers (Reader, Editor, Calc Host, Agent Host; the
 `ViewerTier` type) are retired as implementation tiers. Their manifest values
-stay readable, deprecated, during 3.x: tier-1 → reader, tier-3 → verifier,
-tier-2/4 → reader plus a non-normative starter-product claim
+stay readable, deprecated, during 3.x: tier-1 and tier-2 → reader, tier-3 and
+tier-4 → verifier (2.x Tier 4 included Tier 3), with the editor and agent-host
+claims kept as non-normative starter-product claims
 (`readConformanceTier` in `protocol.ts`). Module manifests keep `requires_tier`
 in the 2.x vocabulary. The corpus directories keep their 2.x names until the
 corpus is re-tiered (RFC 0078 phase 3).

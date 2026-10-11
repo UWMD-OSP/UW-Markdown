@@ -34,8 +34,9 @@ Format stays 2.0 and no document changes meaning or validity.
   §III.6a, and the `INT-NN` row now points at §V.10.
 - **`ImplementationManifest`.** `tier` is `reader | verifier`, with a new
   `profiles` array. The four Protocol 2.x values stay accepted, deprecated,
-  during 3.x and read as tier-1 → reader, tier-3 → verifier, tier-2/4 → reader
-  plus a non-normative product claim. `@uwmd/core` adds the `ConformanceTier`
+  during 3.x and read as tier-1 → reader, tier-2 → reader, tier-3 → verifier,
+  tier-4 → verifier (2.x Tier 4 included Tier 3); the editor and agent-host
+  claims become non-normative product claims. `@uwmd/core` adds the `ConformanceTier`
   and `ConformanceProfile` types and an internal `readConformanceTier` helper;
   the reference manifest (`uwmd manifest`) now claims `verifier` with all six
   profiles. The schema's capability enum gains `calc-cash-flow` and

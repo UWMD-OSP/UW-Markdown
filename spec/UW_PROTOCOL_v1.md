@@ -360,7 +360,7 @@ A consumer reading a legacy value SHOULD report that it is deprecated.
 | `tier-1-reader` | `reader` | — |
 | `tier-2-editor` | `reader` | The editing claim becomes a non-normative starter-product claim. |
 | `tier-3-calc-host` | `verifier` | An implementation that also evaluates module calculations claims the `module` profile. |
-| `tier-4-agent-host` | `reader` | The agent-host claim becomes a non-normative starter-product claim. |
+| `tier-4-agent-host` | `verifier` | Protocol 2.x Tier 4 included Tier 3's calc engine, so it reads as a verifier; the agent-host claim becomes a non-normative starter-product claim. |
 
 The mapping does not infer profiles. A legacy manifest that wants a
 profile recognized declares it in `profiles`. A module's
