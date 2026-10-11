@@ -26,7 +26,7 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
       }
       continue;
     }
-    const payload = blockPayload(resolved.block);
+    const payload = blockPayload(resolved.block) as Record<string, unknown>;
     const contract = section.schema as SectionContract;
     for (const field of contract.required ?? []) {
       if (payload[field] == null) issues.push({ code: 'CLS-04', severity: 'error', section: section.id,
@@ -54,7 +54,7 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
     if (result.ok) prior[decl.id] = result.value;
   }
   for (const rule of content.validations) {
-    const result = evaluateCalc({ id: rule.code, formula: rule.rule, deterministic: true },
+    const result = evaluateCalc({ id: rule.code, label: rule.code, formula: rule.rule, deterministic: true },
       { parsed, prior_results: prior, locale: 'en-US' });
     if (!result.ok) issues.push({ code: 'MOD-RULE-ERROR', severity: 'error',
       message: `Builtin ${assetClass} rule ${rule.code} failed: ${result.error?.message}` });
@@ -64,8 +64,8 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   if (size) {
     const property = resolveRoleBlock(parsed.sections.property, 'property').block;
     const detail = resolveRoleBlock(parsed.sections[assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites'], assetClass === 'data_center' ? 'dc_capacity' : 'mhc_sites').block;
-    const a = property ? blockPayload(property)[size] : undefined;
-    const b = detail ? blockPayload(detail)[size] : undefined;
+    const a = property ? (blockPayload(property) as Record<string, unknown>)[size] : undefined;
+    const b = detail ? (blockPayload(detail) as Record<string, unknown>)[size] : undefined;
     if (typeof a === 'number' && Number.isFinite(a) && typeof b === 'number' && Number.isFinite(b) && a !== b) {
       issues.push({ code: assetClass === 'data_center' ? 'CC-DC-08' : 'CC-MH-08', severity: 'error',
         message: `property.${size} must equal the stated class-section ${size}; these identify one physical quantity.` });

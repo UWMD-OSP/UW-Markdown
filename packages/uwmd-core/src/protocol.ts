@@ -2149,6 +2149,7 @@ export interface ValidatorCodeFamily {
  * neither owes neither — a claim §II.5 always allowed and nothing enforced.
  */
 export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.freeze([
+  { prefix: 'CLS', description: 'Official builtin compatibility and field contracts (RFC 0080)', capabilities: ['validate'] },
   { prefix: 'CC', description: 'Cross-section consistency', capabilities: ['validate'] },
   { prefix: 'FV', description: 'Single-section financial validity', capabilities: ['validate'] },
   { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },

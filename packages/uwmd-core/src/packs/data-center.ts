@@ -3,6 +3,7 @@ import type { ModuleManifest } from '../protocol.js';
 
 export const DATA_CENTER_PACK: ModuleManifest = {
   "manifest_version": "1",
+  "description": "RFC 0080 full builtin starter calculations, including RFC 0079 standard income metrics.",
   "id": "org.uwmd.pack.data_center",
   "name": "Data Center Starter Pack",
   "version": "1.0.0",

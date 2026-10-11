@@ -235,6 +235,9 @@ source_documents: []
     { id: 'custom_scenarios', header: 'Custom Scenarios', label: '§4.21' },
   ];
 
+  const officialSections = assetClass === 'data_center' ? ['dc_capacity', 'dc_power', 'dc_revenue']
+    : assetClass === 'manufactured_housing' ? ['mhc_sites'] : assetClass === 'hospitality' ? ['hotel_metrics', 'hotel_brand', 'hotel_food_beverage'] : [];
+  sections.push(...officialSections.map(id => ({ id, header: id.replace(/_/g, ' '), label: 'RFC 0080' })));
   const sectionBlocks = sections.map(s => `
 ## ${s.header} {#${s.id}}
 
