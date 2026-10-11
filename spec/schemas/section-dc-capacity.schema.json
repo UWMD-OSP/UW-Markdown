@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-dc-capacity.schema.json",
+  "title": "Capacity & Topology",
+  "type": "object",
+  "required": [
+    "critical_it_load_kw",
+    "planned_it_load_kw",
+    "contracted_it_load_kw",
+    "utility_feed_kw",
+    "design_pue",
+    "redundancy"
+  ],
+  "properties": {
+    "critical_it_load_kw": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Commissioned critical IT load, in kW — the capacity that can be sold today."
+    },
+    "planned_it_load_kw": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Full build-out critical load, in kW. Equals critical_it_load_kw when no further phases exist."
+    },
+    "contracted_it_load_kw": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Load under signed contract (leased or committed), in kW, including pre-leased future phases."
+    },
+    "utility_feed_kw": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Utility power available at the meter today, in kW."
+    },
+    "design_pue": {
+      "type": "number",
+      "minimum": 1,
+      "description": "Design power usage effectiveness: total facility power / IT power. Never below 1."
+    },
+    "measured_pue": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 1,
+      "description": "Trailing measured PUE. Null when the facility is not yet operating."
+    },
+    "redundancy": {
+      "type": "string",
+      "enum": [
+        "n",
+        "n_plus_1",
+        "n_plus_2",
+        "2n",
+        "2n_plus_1"
+      ],
+      "description": "Electrical/mechanical topology. The fact, not the Uptime tier — the tier is a claim about it."
+    },
+    "raised_floor_sf": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "White space, in SF. Null for powered shells."
+    },
+    "design_density_kw_per_rack": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Average design density, kW per rack."
+    }
+  }
+}

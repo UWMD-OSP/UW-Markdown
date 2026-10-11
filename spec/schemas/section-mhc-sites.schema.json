@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-mhc-sites.schema.json",
+  "title": "Manufactured Housing Sites",
+  "type": "object",
+  "required": [
+    "total_sites",
+    "occupied_sites",
+    "park_owned_homes",
+    "weighted_pad_rent_monthly",
+    "as_of_date"
+  ],
+  "properties": {
+    "total_sites": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Every manufactured-home site, occupied or vacant; the per-site denominator."
+    },
+    "occupied_sites": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sites under in-place leases, no more than total_sites."
+    },
+    "park_owned_homes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Homes owned by the community on its sites, no more than total_sites."
+    },
+    "weighted_pad_rent_monthly": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Stated, source-backed site-count-weighted monthly pad rent across all sites, vacant at stated asking rent; excludes home rent, fees and reimbursements. Document currency."
+    },
+    "poh_home_rent_monthly": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Monthly home rent per park-owned home across all owned homes, vacant at stated asking rent; excludes pad rent. Required when homes exist; absent or null otherwise."
+    },
+    "as_of_date": {
+      "description": "Presence only in first scope. Date validity is a separate core RFC.",
+      "not": {
+        "type": "null"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "park_owned_homes": {
+            "const": 0
+          }
+        },
+        "required": [
+          "park_owned_homes"
+        ]
+      },
+      "then": {
+        "properties": {
+          "poh_home_rent_monthly": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "park_owned_homes": {
+            "minimum": 1
+          }
+        },
+        "required": [
+          "park_owned_homes"
+        ]
+      },
+      "then": {
+        "required": [
+          "poh_home_rent_monthly"
+        ],
+        "properties": {
+          "poh_home_rent_monthly": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  ]
+}

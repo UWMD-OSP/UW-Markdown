@@ -97,6 +97,31 @@ describe('batch workflow projections', () => {
     ]);
   });
 
+  it('groups and filters a legacy org.uwmd.data_center record with canonical data_center (RFC 0080)', () => {
+    const dc = (path: string, asset_class: string) => ({
+      path, deal_id: path, deal_name: path, asset_class, deal_stage: 'screening',
+      semantic_digest: `sha256:${path}`, valid: true, error_count: 0, warning_count: 0,
+      flags: [], blocking_flags: [], quick_metrics: {},
+    });
+    const collection: UWMDCollectionIndex = {
+      ...COLLECTION,
+      files_scanned: 3,
+      valid_deals: 3,
+      invalid_deals: 0,
+      deals: [dc('legacy.uwx.md', 'org.uwmd.data_center'), dc('canonical.uwx.md', 'data_center'), dc('other.uwx.md', 'com.example.cold_storage')],
+    };
+    expect(summarizeUWMDCollection(collection).by_asset_class.map((g) => [g.key, g.deals])).toEqual([
+      ['com.example.cold_storage', 1],
+      ['data_center', 2],
+    ]);
+    for (const filter of ['data_center', 'org.uwmd.data_center']) {
+      expect(filterUWMDCollection(collection, { asset_class: filter }).map((d) => d.path))
+        .toEqual(['legacy.uwx.md', 'canonical.uwx.md']);
+    }
+    // The index keeps each record's stated identity; only the key resolves.
+    expect(collection.deals[0]!.asset_class).toBe('org.uwmd.data_center');
+  });
+
   it('projects a reproducible queue that prioritizes blocking flags, then issues, then path', () => {
     const first = projectUnderwritingQueue(COLLECTION);
     const second = projectUnderwritingQueue(COLLECTION);

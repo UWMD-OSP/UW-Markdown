@@ -8,7 +8,7 @@ import type { ParsedUWFile, UWBlock } from './types.js';
 
 const REGISTERED_CLASSES = [
   'multifamily', 'office', 'industrial', 'retail', 'self_storage',
-  'hospitality', 'student_housing', 'senior_housing', 'land',
+  'hospitality', 'student_housing', 'senior_housing', 'land', 'data_center', 'manufactured_housing',
 ] as const;
 
 function block(section: string, content: Record<string, unknown>): UWBlock {
@@ -39,7 +39,7 @@ describe('SIZE_INTENSIVES — the §XIII table', () => {
 
   it('mixed_use has no entry (§XIII.2) and an unrecognized class none (§XIII.3)', () => {
     expect(getSizeIntensive('mixed_use')).toBeNull();
-    expect(getSizeIntensive('data_center')).toBeNull();
+    expect(getSizeIntensive('specialty_facility')).toBeNull();
     expect(getSizeIntensive('')).toBeNull();
   });
 

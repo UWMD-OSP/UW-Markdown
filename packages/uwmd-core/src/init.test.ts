@@ -137,7 +137,7 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     });
     expect(frontmatterOf(content)).toContain(
       [
-        'uw_version: "2.0"',
+        'uw_version: "2.1"',
         'deal_id: "uw_2026_BYTES"',
         'deal_name: "Sunrise Senior Living"',
       ].join('\n'),
@@ -217,7 +217,7 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
 
   it.each([
     ['garden_style', 'garden_style'],
-    ['com.example.data_center', 'com.example.data_center'],
+    ['com.example.specialty_facility', 'com.example.specialty_facility'],
     ['Garden Style', '"Garden Style"'],
     ['null', '"null"'],
     ['yes', '"yes"'],

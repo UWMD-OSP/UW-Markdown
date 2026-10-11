@@ -1,0 +1,18 @@
+{
+  "description": "RFC 0080 core builtin control. RFC 0068: type-total_sites-boolean.",
+  "expected_calcs": {
+    "physical_occupancy": null,
+    "annual_pad_rent_potential": null,
+    "poh_share": null,
+    "annual_poh_home_rent_potential": 180000.0,
+    "price_per_site": null,
+    "noi_per_site": null
+  },
+  "expected_codes": [
+    "MOD-RULE-ERROR",
+    "MOD-CALC-ERROR",
+    "CLS-04"
+  ],
+  "type_error_field": "total_sites",
+  "builtin_class": "manufactured_housing"
+}

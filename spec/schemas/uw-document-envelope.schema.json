@@ -17,53 +17,192 @@
     "superseded"
   ],
   "properties": {
-    "envelope_version": { "const": "1.0" },
-    "format_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
-    "generated_at": { "type": "string", "format": "date-time" },
-    "generator": { "type": "string", "minLength": 1 },
+    "envelope_version": {
+      "const": "1.0"
+    },
+    "format_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generator": {
+      "type": "string",
+      "minLength": 1
+    },
     "semantic_digest": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
     },
     "frontmatter": {
       "type": "object",
-      "required": ["uw_version", "deal_id", "deal_name"],
+      "required": [
+        "uw_version",
+        "deal_id",
+        "deal_name"
+      ],
       "properties": {
-        "uw_version": { "type": "string" },
-        "deal_id": { "type": "string" },
-        "deal_name": { "type": "string" }
+        "uw_version": {
+          "type": "string"
+        },
+        "deal_id": {
+          "type": "string"
+        },
+        "deal_name": {
+          "type": "string"
+        },
+        "asset_class": {
+          "type": "string"
+        }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "asset_class"
+            ],
+            "properties": {
+              "asset_class": {
+                "enum": [
+                  "data_center",
+                  "manufactured_housing"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "uw_version": {
+                "const": "2.1"
+              }
+            }
+          }
+        }
+      ]
     },
     "sections": {
       "type": "object",
       "additionalProperties": {
         "oneOf": [
-          { "$ref": "#/$defs/block" },
-          { "$ref": "#/$defs/variantMap" }
+          {
+            "$ref": "#/$defs/block"
+          },
+          {
+            "$ref": "#/$defs/variantMap"
+          }
         ]
       }
     },
-    "pipeline_log": { "$ref": "#/$defs/blockArray" },
-    "custom_calculations": { "$ref": "#/$defs/blockArray" },
-    "custom_scenarios": { "$ref": "#/$defs/blockArray" },
+    "pipeline_log": {
+      "$ref": "#/$defs/blockArray"
+    },
+    "custom_calculations": {
+      "$ref": "#/$defs/blockArray"
+    },
+    "custom_scenarios": {
+      "$ref": "#/$defs/blockArray"
+    },
     "extensions": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/block" }
+      "additionalProperties": {
+        "$ref": "#/$defs/block"
+      }
     },
     "superseded": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/blockArray" }
+      "additionalProperties": {
+        "$ref": "#/$defs/blockArray"
+      }
     }
   },
   "$defs": {
     "annotation": {
       "type": "object",
-      "required": ["section"],
-      "properties": { "section": { "type": "string", "minLength": 1 } },
-      "additionalProperties": { "type": ["string", "number", "boolean"] }
+      "required": [
+        "section"
+      ],
+      "properties": {
+        "section": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
     },
     "meta": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/metaV1"
+        },
+        {
+          "$ref": "https://uwmd.org/schemas/uwmd-block-v2.schema.json#/$defs/UWMetaV2"
+        }
+      ]
+    },
+    "content": {
+      "type": "object",
+      "required": [
+        "_meta"
+      ],
+      "properties": {
+        "_meta": {
+          "$ref": "#/$defs/meta"
+        },
+        "_role": {
+          "enum": [
+            "primary",
+            "senior",
+            "junior",
+            "summary",
+            "detail",
+            "component"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "annotation",
+        "content"
+      ],
+      "properties": {
+        "annotation": {
+          "$ref": "#/$defs/annotation"
+        },
+        "content": {
+          "$ref": "#/$defs/content"
+        },
+        "prose": {
+          "type": "string"
+        }
+      }
+    },
+    "variantMap": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/block"
+      }
+    },
+    "blockArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/block"
+      }
+    },
+    "metaV1": {
       "type": "object",
       "required": [
         "section",
@@ -81,49 +220,155 @@
         "notes"
       ],
       "properties": {
-        "section": { "type": "string" },
-        "version": { "type": "integer", "minimum": 1 },
-        "superseded": { "type": "boolean" },
-        "source": { "type": "string" },
-        "agent_id": { "type": ["string", "null"] },
-        "agent_version": { "type": ["string", "null"] },
-        "actor": { "type": "string" },
-        "timestamp": { "type": "string", "format": "date-time" },
-        "confidence": { "enum": ["high", "medium", "low"] },
-        "human_review_required": { "type": "boolean" },
-        "flags": { "type": "array", "items": { "type": "string" } },
-        "input_hash": { "type": ["string", "null"] },
-        "notes": { "type": ["string", "null"] }
+        "section": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "superseded": {
+          "type": "boolean"
+        },
+        "source": {
+          "type": "string"
+        },
+        "agent_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "agent_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "actor": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "human_review_required": {
+          "type": "boolean"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "input_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       },
       "additionalProperties": true
     },
-    "content": {
+    "newComponentPayload": {
       "type": "object",
-      "required": ["_meta"],
-      "properties": {
-        "_meta": { "$ref": "#/$defs/meta" },
-        "_role": { "enum": ["primary", "senior", "junior", "summary", "detail", "component"] }
-      },
-      "additionalProperties": true
+      "anyOf": [
+        {
+          "required": [
+            "data_center"
+          ]
+        },
+        {
+          "required": [
+            "manufactured_housing"
+          ]
+        }
+      ]
     },
-    "block": {
+    "newComponentBlock": {
       "type": "object",
-      "additionalProperties": true,
-      "required": ["annotation", "content"],
+      "required": [
+        "content"
+      ],
       "properties": {
-        "annotation": { "$ref": "#/$defs/annotation" },
-        "content": { "$ref": "#/$defs/content" },
-        "prose": { "type": "string" }
+        "content": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/newComponentPayload"
+            },
+            {
+              "type": "object",
+              "required": [
+                "content"
+              ],
+              "properties": {
+                "content": {
+                  "$ref": "#/$defs/newComponentPayload"
+                }
+              }
+            }
+          ]
+        }
       }
-    },
-    "variantMap": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": { "$ref": "#/$defs/block" }
-    },
-    "blockArray": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/block" }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "sections"
+        ],
+        "properties": {
+          "sections": {
+            "required": [
+              "components"
+            ],
+            "properties": {
+              "components": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/newComponentBlock"
+                  },
+                  {
+                    "type": "object",
+                    "not": {
+                      "additionalProperties": {
+                        "not": {
+                          "$ref": "#/$defs/newComponentBlock"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "frontmatter": {
+            "properties": {
+              "uw_version": {
+                "const": "2.1"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

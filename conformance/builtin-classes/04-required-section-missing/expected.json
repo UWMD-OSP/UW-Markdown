@@ -1,0 +1,11 @@
+{
+  "description": "RFC 0080 core builtin control. hotel_metrics removed. The module declares it required, so MOD-SECTION-MISSING is an error naming the module that asked. The calcs that read it degrade to null rather than throwing. CC-HOSP-03 still fires: hotel_brand is untouched, and one missing section does not suppress findings about the sections that are present.",
+  "expected_calcs": {
+    "revpar": null
+  },
+  "expected_codes": [
+    "CC-HOSP-03",
+    "CLS-03"
+  ],
+  "builtin_class": "hospitality"
+}

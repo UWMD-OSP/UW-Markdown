@@ -10,6 +10,8 @@
 import { SIZE_INTENSIVES } from '@uwmd/core/browser';
 
 export const SECTION_DISPLAY_NAMES: Record<string, string> = {
+  dc_capacity: 'Capacity & Topology', dc_power: 'Power Economics', dc_revenue: 'Data Center Revenue', mhc_sites: 'Manufactured Housing Sites',
+  hotel_metrics: 'Hotel Metrics', hotel_brand: 'Hotel Brand', hotel_food_beverage: 'Food & Beverage',
   deal_context: 'Deal Context',
   property: 'Property',
   ownership: 'Ownership & Acquisition',
@@ -60,6 +62,8 @@ export const ASSET_CLASSES = [
   'student_housing',
   'mixed_use',
   'land',
+  'data_center',
+  'manufactured_housing',
 ] as const;
 
 /** The asset classes this editor knows — mirrors the packs' `asset_classes`. */
@@ -136,6 +140,8 @@ export interface NumericSectionField {
 // so the grid can never drift from the table the packs divide by. Only the
 // display label and input kind are the editor's own knowledge.
 const SIZE_FIELD_DISPLAY: Record<string, { label: string; kind: NumericFieldKind }> = {
+  critical_it_load_kw: { label: 'Commissioned critical IT kW', kind: 'number' },
+  total_sites: { label: 'Sites', kind: 'count' },
   total_units: { label: 'Total units', kind: 'count' },
   total_nra_sqft: { label: 'Total NRA (sqft)', kind: 'count' },
   rentable_square_feet: { label: 'Rentable area (sqft)', kind: 'count' },
@@ -166,6 +172,39 @@ function sizeIntensiveFields(): NumericSectionField[] {
 
 export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   ...sizeIntensiveFields(),
+  { section_id: 'dc_capacity', path: 'critical_it_load_kw', label: 'Critical It Load Kw', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'planned_it_load_kw', label: 'Planned It Load Kw', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'contracted_it_load_kw', label: 'Contracted It Load Kw', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'utility_feed_kw', label: 'Utility Feed Kw', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'design_pue', label: 'Design Pue', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'measured_pue', label: 'Measured Pue', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'raised_floor_sf', label: 'Raised Floor Sf', kind: 'count', asset_classes: ['data_center'] },
+  { section_id: 'dc_capacity', path: 'design_density_kw_per_rack', label: 'Design Density Kw Per Rack', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_power', path: 'utility_rate_per_kwh', label: 'Utility Rate Per Kwh', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_power', path: 'power_margin', label: 'Power Margin', kind: 'rate', asset_classes: ['data_center'] },
+  { section_id: 'dc_power', path: 'stated_annual_power_cost', label: 'Stated Annual Power Cost', kind: 'currency', asset_classes: ['data_center'] },
+  { section_id: 'dc_revenue', path: 'rent_per_kw_month', label: 'Rent Per Kw Month', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_revenue', path: 'interconnection_revenue_annual', label: 'Interconnection Revenue Annual', kind: 'currency', asset_classes: ['data_center'] },
+  { section_id: 'dc_revenue', path: 'services_revenue_annual', label: 'Services Revenue Annual', kind: 'currency', asset_classes: ['data_center'] },
+  { section_id: 'dc_revenue', path: 'market_rent_per_kw_month', label: 'Market Rent Per Kw Month', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'hotel_metrics', path: 'adr', label: 'Adr', kind: 'number', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_metrics', path: 'occupancy', label: 'Occupancy', kind: 'rate', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_metrics', path: 'available_room_nights', label: 'Available Room Nights', kind: 'count', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_metrics', path: 'key_count', label: 'Key Count', kind: 'count', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_metrics', path: 'market_revpar', label: 'Market Revpar', kind: 'number', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_brand', path: 'franchise_fee_pct_of_rooms', label: 'Franchise Fee Pct Of Rooms', kind: 'rate', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_brand', path: 'marketing_fund_pct', label: 'Marketing Fund Pct', kind: 'rate', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_brand', path: 'loyalty_program_pct', label: 'Loyalty Program Pct', kind: 'rate', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_brand', path: 'term_years', label: 'Term Years', kind: 'count', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_food_beverage', path: 'fb_revenue', label: 'Fb Revenue', kind: 'currency', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_food_beverage', path: 'fb_cogs', label: 'Fb Cogs', kind: 'currency', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_food_beverage', path: 'fb_labor', label: 'Fb Labor', kind: 'currency', asset_classes: ['hospitality'] },
+  { section_id: 'hotel_food_beverage', path: 'complimentary_breakfast_cost_per_occupied_room', label: 'Complimentary Breakfast Cost Per Occupied Room', kind: 'number', asset_classes: ['hospitality'] },
+  { section_id: 'mhc_sites', path: 'total_sites', label: 'Total Sites', kind: 'count', asset_classes: ['manufactured_housing'] },
+  { section_id: 'mhc_sites', path: 'occupied_sites', label: 'Occupied Sites', kind: 'count', asset_classes: ['manufactured_housing'] },
+  { section_id: 'mhc_sites', path: 'park_owned_homes', label: 'Park Owned Homes', kind: 'count', asset_classes: ['manufactured_housing'] },
+  { section_id: 'mhc_sites', path: 'weighted_pad_rent_monthly', label: 'Weighted Pad Rent Monthly', kind: 'number', asset_classes: ['manufactured_housing'] },
+  { section_id: 'mhc_sites', path: 'poh_home_rent_monthly', label: 'Poh Home Rent Monthly', kind: 'number', asset_classes: ['manufactured_housing'] },
   // Class-independent: every class may carry these, land included (a parcel can
   // hold an improvement slated for demolition), so neither is scoped.
   { section_id: 'property', path: 'year_built', label: 'Year built', kind: 'count' },

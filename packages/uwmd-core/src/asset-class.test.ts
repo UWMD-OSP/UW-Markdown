@@ -25,7 +25,7 @@ const BASE: ModuleManifest = {
 };
 
 const DECL: ModuleAssetClassDecl = {
-  id: 'com.example.data_center',
+  id: 'com.example.specialty_facility',
   display_name: 'Data Center',
   fallback: 'industrial',
 };
@@ -49,12 +49,12 @@ describe('parseAssetClass', () => {
   });
 
   it('accepts a three-segment reverse-DNS identifier and splits it', () => {
-    expect(parseAssetClass('com.example.data_center')).toEqual({
+    expect(parseAssetClass('com.example.specialty_facility')).toEqual({
       ok: true,
       kind: 'custom',
-      id: 'com.example.data_center',
+      id: 'com.example.specialty_facility',
       namespace: 'com.example',
-      name: 'data_center',
+      name: 'specialty_facility',
     });
   });
 
@@ -65,14 +65,14 @@ describe('parseAssetClass', () => {
   });
 
   const REJECTED: Array<[string, string, string]> = [
-    ['an unnamespaced unknown', 'data_center', 'INVALID-ASSET-CLASS-001'],
+    ['an unnamespaced unknown', 'specialty_facility', 'INVALID-ASSET-CLASS-001'],
     // Two segments reads as a namespace with no owner, and is where squatting
     // on a short prefix starts to look attractive.
-    ['only two segments', 'example.data_center', 'INVALID-ASSET-CLASS-001'],
+    ['only two segments', 'example.specialty_facility', 'INVALID-ASSET-CLASS-001'],
     ['capital letters', 'com.Example.DataCenter', 'INVALID-ASSET-CLASS-001'],
     ['a hyphen', 'com.example.data-center', 'INVALID-ASSET-CLASS-001'],
     ['a leading digit in a segment', 'com.example.1data', 'INVALID-ASSET-CLASS-001'],
-    ['a trailing dot', 'com.example.data_center.', 'INVALID-ASSET-CLASS-001'],
+    ['a trailing dot', 'com.example.specialty_facility.', 'INVALID-ASSET-CLASS-001'],
     ['an empty string', '', 'INVALID-ASSET-CLASS-001'],
     // The namespace already prevents collision, so this is stricter than
     // correctness needs — but it removes the ambiguity the closed enum exists
@@ -104,13 +104,13 @@ describe('resolveAssetClass', () => {
   });
 
   it('resolves a custom class when the declaring module is loaded', () => {
-    const result = resolveAssetClass('com.example.data_center', registryWith([DECL]));
+    const result = resolveAssetClass('com.example.specialty_facility', registryWith([DECL]));
     expect(result.status).toBe('resolved');
     expect(result.status === 'resolved' && result.declaration?.display_name).toBe('Data Center');
   });
 
   it('degrades to the fallback when the module is absent but a declaration is known', () => {
-    const result = resolveAssetClass('com.example.data_center', registryWith([]), {
+    const result = resolveAssetClass('com.example.specialty_facility', registryWith([]), {
       knownDeclarations: [DECL],
     });
     expect(result.status).toBe('degraded');
@@ -121,14 +121,14 @@ describe('resolveAssetClass', () => {
   it('does NOT treat a known declaration as though the module were loaded', () => {
     // The distinction is the whole point: a cached declaration gives a display
     // name and a fallback, not the module's calculations and validations.
-    const result = resolveAssetClass('com.example.data_center', registryWith([]), {
+    const result = resolveAssetClass('com.example.specialty_facility', registryWith([]), {
       knownDeclarations: [DECL],
     });
     expect(result.status).not.toBe('resolved');
   });
 
   it('is unresolved when neither the module nor a fallback is available', () => {
-    const result = resolveAssetClass('com.example.data_center', registryWith([]));
+    const result = resolveAssetClass('com.example.specialty_facility', registryWith([]));
     expect(result.status).toBe('unresolved');
     expect(result.status === 'unresolved' && result.issue.code).toBe('MOD-MISSING-001');
   });
@@ -150,8 +150,8 @@ describe('resolveAssetClass', () => {
 
   it('reaches the same verdict for every host holding the same modules', () => {
     // Determinism is the contract that makes an open extension point safe.
-    const a = resolveAssetClass('com.example.data_center', registryWith([DECL]));
-    const b = resolveAssetClass('com.example.data_center', registryWith([DECL]));
+    const a = resolveAssetClass('com.example.specialty_facility', registryWith([DECL]));
+    const b = resolveAssetClass('com.example.specialty_facility', registryWith([DECL]));
     expect(a).toEqual(b);
   });
 });
@@ -161,7 +161,7 @@ describe('declaredAssetClasses', () => {
     const registry = registryWith([DECL], [{ id: 'com.example.cold_storage', display_name: 'Cold Storage' }]);
     expect([...declaredAssetClasses(registry).keys()].sort()).toEqual([
       'com.example.cold_storage',
-      'com.example.data_center',
+      'com.example.specialty_facility',
     ]);
   });
 
@@ -184,7 +184,7 @@ describe('assetClassDeclarationConflicts', () => {
   it('reports a shared display name separately, as the cosmetic problem it is', () => {
     const registry = registryWith(
       [DECL],
-      [{ id: 'org.other.data_center', display_name: 'Data Center' }],
+      [{ id: 'org.other.specialty_facility', display_name: 'Data Center' }],
     );
     const codes = assetClassDeclarationConflicts(registry).map((i) => i.code);
     expect(codes).toEqual(['MOD-DISPLAY-CONFLICT-001']);
@@ -200,8 +200,8 @@ describe('assetClassDeclarationConflicts', () => {
 // does, so a later RFC changes them deliberately rather than by accident.
 // See docs/reviews/2026-10-04-renamed-identifiers.md.
 describe('renamed identifiers under the current contract', () => {
-  const OLD_CLASS = 'com.example_old.data_center';
-  const NEW_CLASS = 'com.example_new.data_center';
+  const OLD_CLASS = 'com.example_old.specialty_facility';
+  const NEW_CLASS = 'com.example_new.specialty_facility';
   const renamed = (decls: ModuleAssetClassDecl[]) =>
     createModuleRegistry({
       modules: [{ ...BASE, id: 'com.example-new.datacenters', declares_asset_classes: decls }],

@@ -1,0 +1,7 @@
+{
+  "id": "manufactured_housing_price_per_site",
+  "label": "manufactured_housing Price / site",
+  "formula": "(valuation.purchase_price * components.manufactured_housing.allocation_pct) / components.manufactured_housing.total_sites",
+  "unit": "$",
+  "deterministic": true
+}

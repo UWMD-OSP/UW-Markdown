@@ -8,7 +8,7 @@ property_address: "900 Server Way"
 city: "Mesa"
 state: "AZ"
 zip: "85201"
-asset_class: com.example.data_center
+asset_class: com.example.specialty_facility
 modules:
   - id: com.example.datacenters
     version: ">=0.1.0 <1.0.0"

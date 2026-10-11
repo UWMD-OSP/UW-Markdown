@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-hotel-metrics.schema.json",
+  "title": "Hotel Operating Metrics",
+  "type": "object",
+  "required": [
+    "adr",
+    "occupancy",
+    "available_room_nights",
+    "key_count"
+  ],
+  "properties": {
+    "adr": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average daily rate, in dollars."
+    },
+    "occupancy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "A FRACTION, not a percent: 0.72, never 72. Format-wide rule."
+    },
+    "available_room_nights": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Keys x days in the period. Not occupied room nights."
+    },
+    "key_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "market_revpar": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Comp-set RevPAR for the same period. Null means no comp set was obtained — which is different from a comp set showing zero."
+    }
+  }
+}

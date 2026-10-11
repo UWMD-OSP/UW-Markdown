@@ -42,7 +42,7 @@ export interface NamedInput {
   label: string;
   /** Source field path on the parsed UW file. */
   source: { section: string; path: string };
-  format: 'currency' | 'count';
+  format: 'currency' | 'count' | 'ratio' | 'decimal';
 }
 
 /**
@@ -75,7 +75,7 @@ export interface DerivedMetric {
   label: string;
   /** Excel formula, leading "=" included. */
   formula: string;
-  format: 'percent' | 'ratio' | 'currency' | 'count';
+  format: 'percent' | 'ratio' | 'currency' | 'count' | 'decimal';
 }
 
 /**
@@ -130,6 +130,7 @@ export const SUBTOTAL_RANGES = {
 
 /** Excel format keyed by a calc pack's unit string. */
 export function excelFormatFor(unit: string | undefined): DerivedMetric['format'] {
+  if (unit === 'kW') return 'decimal';
   switch (unit) {
     case '%':
       return 'percent';

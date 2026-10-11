@@ -3,7 +3,7 @@
   "id": "com.example.datacenters",
   "name": "Data Center Module",
   "version": "0.1.0",
-  "description": "Declares com.example.data_center with an industrial fallback, so a reader without this module renders degraded rather than refusing.",
+  "description": "Declares com.example.specialty_facility with an industrial fallback, so a reader without this module renders degraded rather than refusing.",
   "authors": [
     "UW Markdown contributors"
   ],
@@ -13,7 +13,7 @@
   "requires_tier": "tier-1-reader",
   "declares_asset_classes": [
     {
-      "id": "com.example.data_center",
+      "id": "com.example.specialty_facility",
       "display_name": "Data Center",
       "fallback": "industrial",
       "required_sections": [

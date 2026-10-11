@@ -1,3 +1,4 @@
+import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId, RETIRED_SCENARIOS } from './scenario.js';
 import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
 import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
@@ -152,6 +153,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
+  issues.push(...checkBuiltinClassContent(parsed));
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
@@ -2130,11 +2132,11 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
 
 // ─── §4.23 Mixed-use components (RFC 0019) ───────────────────────────────────
 
-// The eight income classes admissible as a mixed-use component. `land` is
+// The ten income classes admissible as a mixed-use component. `land` is
 // excluded (its NOI model nets negative) and `mixed_use` cannot nest in itself.
 const ADMISSIBLE_COMPONENT_CLASSES: ReadonlySet<string> = new Set([
   'multifamily', 'retail', 'office', 'industrial', 'self_storage',
-  'hospitality', 'senior_housing', 'student_housing',
+  'hospitality', 'senior_housing', 'student_housing', 'data_center', 'manufactured_housing',
 ]);
 
 // Validates the `components` section: the CC-11 asset-class gate, the CC-12
@@ -2168,7 +2170,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
   }
 
   // Present components are every key that is not the _meta / _notes envelope.
-  const entries = Object.entries(components.content).filter(([k]) => !k.startsWith('_'));
+  const entries = Object.entries(blockPayload(components) as Record<string, unknown>).filter(([k]) => !k.startsWith('_'));
   const admissible = entries.filter(([k]) => ADMISSIBLE_COMPONENT_CLASSES.has(k));
 
   // MU-01: at least two admissible components.
@@ -2182,7 +2184,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
 
   const allocations: number[] = [];
   for (const [key, raw] of entries) {
-    // MU-02: only the eight income classes are admissible; land and unknowns are not.
+    // MU-02: only the ten income classes are admissible; land and unknowns are not.
     if (!ADMISSIBLE_COMPONENT_CLASSES.has(key)) {
       issues.push({
         code: 'MU-02', severity: 'error', section: 'components', field: key,
@@ -2247,7 +2249,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
   }
   if (!noiModel && !ledger.coverage['CC-12']) markSkipped(ledger, 'CC-12', 'section_absent', 'noi_model');
   if (noiModel) {
-    const propNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
+    const propNOI = deepGet(blockPayload(noiModel), 'net_operating_income') as number | undefined;
     const compNOIs = admissible
       .map(([, raw]) =>
         raw && typeof raw === 'object'
@@ -3066,6 +3068,14 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     });
     return;
   }
+  for (const dependency of declaredModuleDependencies(parsed.frontmatter as Record<string, unknown>)) {
+    if (['org.uwmd.datacenters', 'org.uwmd.hospitality'].includes(dependency.id)) issues.push({
+      code: 'CLS-02', severity: 'info', field: 'modules',
+      message: `Module '${dependency.id}' is satisfied by core (RFC 0080).`,
+    });
+  }
+  if (raw === 'org.uwmd.data_center') issues.push({ code: 'CLS-01', severity: 'warning', field: 'asset_class',
+    message: "Deprecated official class id 'org.uwmd.data_center'; use 'data_center'. The source document is unchanged." });
   if (identity.kind === 'builtin') return;
 
   // A namespaced class with no `modules` list is unreadable by anyone who does

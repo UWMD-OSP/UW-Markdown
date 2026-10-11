@@ -24,6 +24,15 @@ const EXAMPLE = resolve(__dirname, '../../../../examples/Saguaro-Select-Hotel-Te
 
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.net_operating_income', 'noi'],
+  ['hotel_metrics.adr', 'hotel_metrics_adr'],
+  ['hotel_metrics.occupancy', 'hotel_metrics_occupancy'],
+  ['hotel_metrics.available_room_nights', 'hotel_metrics_available_room_nights'],
+  ['hotel_metrics.key_count', 'hotel_metrics_key_count'],
+  ['hotel_metrics.market_revpar', 'hotel_metrics_market_revpar'],
+  ['hotel_food_beverage.fb_revenue', 'hotel_food_beverage_fb_revenue'],
+  ['hotel_food_beverage.fb_cogs', 'hotel_food_beverage_fb_cogs'],
+  ['hotel_food_beverage.fb_labor', 'hotel_food_beverage_fb_labor'],
+
   ['noi_model.gross_operating_profit', 'gross_operating_profit'],
   ['noi_model.income.effective_gross_income', 'effective_gross_income'],
   ['noi_model.income.rooms_revenue', 'rooms_revenue'],
@@ -50,6 +59,7 @@ describe('HOSPITALITY_PACK', () => {
       'debt_yield',
       'dscr',
       'expense_ratio',
+      'fb_gross_margin',
       'gop_margin',
       'loan_per_key',
       'ltc',
@@ -58,6 +68,9 @@ describe('HOSPITALITY_PACK', () => {
       'occupancy',
       'price_per_key',
       'revpar',
+      'revpar_index',
+      'room_revenue_per_key',
+      'total_room_revenue',
     ]);
   });
 
@@ -109,6 +122,11 @@ describe('HOSPITALITY_PACK', () => {
       const direct = evaluateCalc(c, ctx);
       expect(direct.ok, `${c.id}: ${direct.error?.message ?? ''}`).toBe(true);
 
+      if (['total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(c.id)) {
+        expect(direct.value, c.id).toBeNull();
+        expect(emitExcelFormula(c.formula, { namedRanges: NAMED_RANGES })).toBeTruthy();
+        continue;
+      }
       let formula = emitExcelFormula(c.formula, { namedRanges: NAMED_RANGES });
       for (const [, name] of NAMED_RANGES) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));

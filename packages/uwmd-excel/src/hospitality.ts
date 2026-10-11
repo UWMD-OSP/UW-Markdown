@@ -33,6 +33,20 @@ const expenseLines: readonly ExpenseLine[] = [
 ];
 
 const namedInputs: readonly NamedInput[] = [
+  {"name": "hotel_metrics_adr", "label": "Adr", "source": {"section": "hotel_metrics", "path": "adr"}, "format": "currency"},
+  {"name": "hotel_metrics_occupancy", "label": "Occupancy", "source": {"section": "hotel_metrics", "path": "occupancy"}, "format": "decimal"},
+  {"name": "hotel_metrics_available_room_nights", "label": "Available Room Nights", "source": {"section": "hotel_metrics", "path": "available_room_nights"}, "format": "count"},
+  {"name": "hotel_metrics_key_count", "label": "Key Count", "source": {"section": "hotel_metrics", "path": "key_count"}, "format": "count"},
+  {"name": "hotel_metrics_market_revpar", "label": "Market Revpar", "source": {"section": "hotel_metrics", "path": "market_revpar"}, "format": "currency"},
+  {"name": "hotel_brand_franchise_fee_pct_of_rooms", "label": "Franchise Fee Pct Of Rooms", "source": {"section": "hotel_brand", "path": "franchise_fee_pct_of_rooms"}, "format": "decimal"},
+  {"name": "hotel_brand_marketing_fund_pct", "label": "Marketing Fund Pct", "source": {"section": "hotel_brand", "path": "marketing_fund_pct"}, "format": "decimal"},
+  {"name": "hotel_brand_loyalty_program_pct", "label": "Loyalty Program Pct", "source": {"section": "hotel_brand", "path": "loyalty_program_pct"}, "format": "decimal"},
+  {"name": "hotel_brand_term_years", "label": "Term Years", "source": {"section": "hotel_brand", "path": "term_years"}, "format": "count"},
+  {"name": "hotel_food_beverage_fb_revenue", "label": "Fb Revenue", "source": {"section": "hotel_food_beverage", "path": "fb_revenue"}, "format": "currency"},
+  {"name": "hotel_food_beverage_fb_cogs", "label": "Fb Cogs", "source": {"section": "hotel_food_beverage", "path": "fb_cogs"}, "format": "currency"},
+  {"name": "hotel_food_beverage_fb_labor", "label": "Fb Labor", "source": {"section": "hotel_food_beverage", "path": "fb_labor"}, "format": "currency"},
+  {"name": "hotel_food_beverage_complimentary_breakfast_cost_per_occupied_room", "label": "Complimentary Breakfast Cost Per Occupied Room", "source": {"section": "hotel_food_beverage", "path": "complimentary_breakfast_cost_per_occupied_room"}, "format": "currency"},
+
   { name: 'purchase_price',         label: 'Purchase Price',          source: { section: 'valuation',      path: 'purchase_price' },          format: 'currency' },
   { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },
   { name: 'loan_amount',            label: 'Loan Amount',             source: { section: 'debt_structure', path: 'loan_amount' },             format: 'currency' },

@@ -6,6 +6,8 @@
 // so it's worth pinning.
 
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   deepGet,
   deepSet,
@@ -225,5 +227,52 @@ describe('catalog — the size grid derives from the Protocol §XIII registry (R
       const field = NUMERIC_SECTION_FIELDS.find((f) => f.path === path);
       expect(field!.label, path).not.toBe(path);
     }
+  });
+});
+
+describe('catalog — RFC 0080 class-section fields keep their stated precision', () => {
+  // The quick-edit grid rounds `count` on parse and rounds `count`/`currency`
+  // for display, so a sub-unit value (a $0.08/kWh tariff, a $157.50 kW-month
+  // rent, a 0.15 power margin) must never be typed as either. Each field's
+  // kind is checked against its standard section schema.
+  const SCHEMA_FILES: Record<string, string> = {
+    dc_capacity: 'section-dc-capacity', dc_power: 'section-dc-power', dc_revenue: 'section-dc-revenue',
+    hotel_metrics: 'section-hotel-metrics', hotel_brand: 'section-hotel-brand',
+    hotel_food_beverage: 'section-hotel-food-beverage', mhc_sites: 'section-mhc-sites',
+  };
+  // Annual dollar totals keep the editor's whole-dollar `currency` convention
+  // (as `noi_model.net_operating_income` does); unit prices and tariffs do not.
+  const WHOLE_DOLLAR = new Set([
+    'stated_annual_power_cost', 'interconnection_revenue_annual', 'services_revenue_annual',
+    'fb_revenue', 'fb_cogs', 'fb_labor',
+  ]);
+
+  it('types integers as count and every other number so it round-trips unrounded', () => {
+    let checked = 0;
+    for (const [section, file] of Object.entries(SCHEMA_FILES)) {
+      const schema = JSON.parse(readFileSync(
+        resolve(__dirname, `../../../spec/schemas/${file}.schema.json`), 'utf8')) as {
+        properties: { content?: { properties: Record<string, { type?: string | string[] }> } } & Record<string, { type?: string | string[] }>;
+      };
+      const props = schema.properties.content?.properties ?? schema.properties;
+      for (const field of NUMERIC_SECTION_FIELDS.filter((f) => f.section_id === section)) {
+        const types = ([] as string[]).concat(props[field.path]?.type ?? []);
+        expect(types.length, `${section}.${field.path} is in its schema`).toBeGreaterThan(0);
+        if (types.includes('integer')) expect(field.kind, `${section}.${field.path}`).toBe('count');
+        else if (WHOLE_DOLLAR.has(field.path)) expect(field.kind, `${section}.${field.path}`).toBe('currency');
+        else expect(['number', 'rate'], `${section}.${field.path}`).toContain(field.kind);
+        checked += 1;
+      }
+    }
+    expect(checked).toBeGreaterThanOrEqual(30);
+  });
+
+  it('edits the reviewer-found sub-unit fields as unrounded numbers', () => {
+    const kind = (section: string, path: string) =>
+      NUMERIC_SECTION_FIELDS.find((f) => f.section_id === section && f.path === path)?.kind;
+    expect(kind('dc_power', 'utility_rate_per_kwh')).toBe('number');
+    expect(kind('dc_power', 'power_margin')).toBe('rate');
+    expect(kind('hotel_metrics', 'adr')).toBe('number');
+    expect(kind('hotel_metrics', 'market_revpar')).toBe('number');
   });
 });

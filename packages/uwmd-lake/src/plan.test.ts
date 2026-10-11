@@ -69,6 +69,18 @@ describe('planDocument', () => {
     });
   });
 
+  it('indexes a legacy org.uwmd.data_center record under the builtin key, envelope untouched (RFC 0080)', () => {
+    const envelope = { frontmatter: { asset_class: 'org.uwmd.data_center' } };
+    const legacy = planDocument('public', { semantic_digest: DIGEST, envelope, asset_class: 'org.uwmd.data_center' });
+    const canonical = planDocument('public', { semantic_digest: DIGEST, envelope, asset_class: 'data_center' });
+    expect(legacy.params[4]).toBe('data_center');
+    expect(canonical.params[4]).toBe('data_center');
+    expect(JSON.parse(legacy.params[13] as string)).toEqual(envelope);
+    expect(planDocument('public', { semantic_digest: DIGEST, envelope, asset_class: 'com.example.cold_storage' }).params[4])
+      .toBe('com.example.cold_storage');
+    expect(planFact('public', { ...FACT, asset_class: 'org.uwmd.data_center' }).params[11]).toBe('data_center');
+  });
+
   it('never inlines a value into the SQL text', () => {
     const statement = planDocument('public', { semantic_digest: DIGEST, envelope: {}, deal_name: "O'Hare Logistics" });
     expect(statement.sql).not.toContain("O'Hare");

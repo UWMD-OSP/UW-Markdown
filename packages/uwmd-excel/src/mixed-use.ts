@@ -28,6 +28,8 @@ import type { WorkbookLayout, MixedUseComponentSpec } from './layout.js';
  * (`hospitality_gross_operating_profit`, `senior_housing_total_labor_expense`).
  */
 export const MIXED_USE_COMPONENT_SPECS: readonly MixedUseComponentSpec[] = [
+  { componentClass: 'data_center', label: 'Data Center', denom: { field: 'critical_it_load_kw', label: 'Critical IT kW' } },
+  { componentClass: 'manufactured_housing', label: 'Manufactured Housing', denom: { field: 'total_sites', label: 'Sites' } },
   {
     componentClass: 'multifamily',
     label: 'Multifamily',

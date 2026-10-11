@@ -35,10 +35,10 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
   });
 
   it('reports an unnamespaced unknown class as an error', () => {
-    const issue = find(file('data_center'), 'INVALID-ASSET-CLASS-001');
+    const issue = find(file('specialty_facility'), 'INVALID-ASSET-CLASS-001');
     expect(issue?.severity).toBe('error');
     expect(issue?.field).toBe('asset_class');
-    expect(issue?.value).toBe('data_center');
+    expect(issue?.value).toBe('specialty_facility');
   });
 
   it('reports a namespaced class shadowing a builtin', () => {
@@ -46,7 +46,7 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
   });
 
   it('accepts a well-formed custom class that names its modules', () => {
-    const parsed = file('com.example.data_center', {
+    const parsed = file('com.example.specialty_facility', {
       modules: [{ id: 'com.example.datacenters', version: '>=0.1.0 <1.0.0' }],
     });
     const issues = validateUWFile(parsed).issues;
@@ -59,13 +59,13 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
     // who does not already happen to hold the right module. A warning, not an
     // error: the document is well-formed, and a host that does hold the module
     // reads it correctly — the cost falls on everyone else.
-    const issue = find(file('com.example.data_center'), 'MOD-DEPENDENCY-UNDECLARED');
+    const issue = find(file('com.example.specialty_facility'), 'MOD-DEPENDENCY-UNDECLARED');
     expect(issue?.severity).toBe('warning');
     expect(issue?.field).toBe('modules');
   });
 
   it('accepts the bare-string form of the modules list', () => {
-    const parsed = file('com.example.data_center', { modules: ['com.example.datacenters'] });
+    const parsed = file('com.example.specialty_facility', { modules: ['com.example.datacenters'] });
     expect(find(parsed, 'MOD-DEPENDENCY-UNDECLARED')).toBeUndefined();
   });
 

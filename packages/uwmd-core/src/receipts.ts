@@ -1,3 +1,4 @@
+import { ASSET_CLASSES } from './types.js';
 // Verification receipts — RFC 0016 / `spec/UW_RECEIPT_v1.md`.
 //
 // A receipt is a small, detached JSON document that binds a canonical digest of
@@ -847,13 +848,7 @@ export async function verifyReceipt(
 
 function lookupPack(id: string, packs?: readonly ModuleManifest[]): ModuleManifest | null {
   if (packs) return packs.find((pack) => pack.id === id) ?? null;
-  for (const assetClass of [
-    'multifamily',
-    'office',
-    'retail',
-    'industrial',
-    'self_storage',
-  ] as const) {
+  for (const assetClass of ASSET_CLASSES) {
     const pack = getPackForAssetClass(assetClass);
     if (pack?.id === id) return pack;
   }

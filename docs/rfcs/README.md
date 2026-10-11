@@ -108,6 +108,8 @@ and how it gets accepted.
 | [0078](./0078-protocol-is-verification.md) | The protocol is verification: separate the standard from the starter products | accepted | protocol, format, conformance, core, tooling |
 | [0079](./0079-metric-precision.md) | Verify stated metrics at their stated precision; one cash-on-cash definition | implemented | protocol, core, conformance, tooling |
 
+| [0080](./0080-official-classes-are-builtins.md) | Every official asset class is a builtin | accepted | format, protocol, core, conformance, tooling |
+
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
 its RFC was written, and records that process failure rather than hiding it. See

@@ -250,6 +250,156 @@
     ]
   },
   {
+    "example": "Desert-Palms-MHC-Apache-Junction-AZ.uwx.md",
+    "asset_class": "manufactured_housing",
+    "counts": {
+      "verified": 14,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "valuation.cap_rate",
+        "stated": 0.06,
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.06,
+        "comparison": 0.06,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "ltv",
+        "path": "valuation.ltv",
+        "stated": 0.6,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "ltc",
+        "path": "valuation.ltc",
+        "stated": 0.6,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "dscr",
+        "path": "valuation.dscr",
+        "stated": 1.5,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 1.5,
+        "comparison": 1.5,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "debt_yield",
+        "path": "valuation.debt_yield",
+        "stated": 0.1,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.1,
+        "comparison": 0.1,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "cash_on_cash",
+        "path": "valuation.cash_on_cash",
+        "stated": 0.05,
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.05,
+        "comparison": 0.05,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "physical_occupancy",
+        "path": "valuation.physical_occupancy",
+        "stated": 0.9,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.9,
+        "comparison": 0.9,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "annual_pad_rent_potential",
+        "path": "valuation.annual_pad_rent_potential",
+        "stated": 1320000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 1320000,
+        "comparison": 1320000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "poh_share",
+        "path": "valuation.poh_share",
+        "stated": 0.1,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.1,
+        "comparison": 0.1,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "annual_poh_home_rent_potential",
+        "path": "valuation.annual_poh_home_rent_potential",
+        "stated": 180000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 180000,
+        "comparison": 180000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "price_per_site",
+        "path": "valuation.price_per_site",
+        "stated": 60000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 60000,
+        "comparison": 60000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "noi_per_site",
+        "path": "valuation.noi_per_site",
+        "stated": 3600,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 3600,
+        "comparison": 3600,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "loan_per_site",
+        "path": "valuation.loan_per_site",
+        "stated": 36000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 36000,
+        "comparison": 36000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "total_sites",
+        "path": "property.total_sites",
+        "stated": 200,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 200,
+        "comparison": 200
+      }
+    ]
+  },
+  {
     "example": "Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md",
     "asset_class": "industrial",
     "counts": {
@@ -396,6 +546,316 @@
         "state": "verified",
         "computed": 220000,
         "comparison": 220000
+      }
+    ]
+  },
+  {
+    "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+    "asset_class": "data_center",
+    "counts": {
+      "verified": 30,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.07,
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.cap_rate",
+        "stated": 0.07,
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.07,
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.6,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "ltv",
+        "path": "valuation.ltv",
+        "stated": 0.6,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.6,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "ltc",
+        "path": "valuation.ltc",
+        "stated": 0.581818,
+        "stated_decimals": 6,
+        "state": "verified",
+        "computed": 0.581818,
+        "comparison": 0.581818,
+        "comparison_decimals": 6
+      },
+      {
+        "id": "ltc",
+        "path": "debt_structure.ltc",
+        "stated": 0.58,
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.58,
+        "comparison": 0.58,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.579,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.579,
+        "comparison": 1.579,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "dscr",
+        "path": "valuation.dscr",
+        "stated": 1.579,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.579,
+        "comparison": 1.579,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.579,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.579,
+        "comparison": 1.579,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1167,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1167,
+        "comparison": 0.1167,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "debt_yield",
+        "path": "valuation.debt_yield",
+        "stated": 0.116667,
+        "stated_decimals": 6,
+        "state": "verified",
+        "computed": 0.116667,
+        "comparison": 0.116667,
+        "comparison_decimals": 6
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1167,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1167,
+        "comparison": 0.1167,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "cash_on_cash",
+        "path": "valuation.cash_on_cash",
+        "stated": 0.059521,
+        "stated_decimals": 6,
+        "state": "verified",
+        "computed": 0.059521,
+        "comparison": 0.059521,
+        "comparison_decimals": 6
+      },
+      {
+        "id": "utilization",
+        "path": "valuation.utilization",
+        "stated": 1.1,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 1.1,
+        "comparison": 1.1,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "commissioned_share",
+        "path": "valuation.commissioned_share",
+        "stated": 0.8,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.8,
+        "comparison": 0.8,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "facility_load_kw",
+        "path": "valuation.facility_load_kw",
+        "stated": 12500,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 12500,
+        "comparison": 12500,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "annual_facility_kwh_at_contract",
+        "path": "valuation.annual_facility_kwh_at_contract",
+        "stated": 120450000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 120450000,
+        "comparison": 120450000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "annual_power_cost",
+        "path": "valuation.annual_power_cost",
+        "stated": 9636000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 9636000,
+        "comparison": 9636000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "power_cost_per_kw_month",
+        "path": "valuation.power_cost_per_kw_month",
+        "stated": 73,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 73,
+        "comparison": 73,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "annual_rent_revenue",
+        "path": "valuation.annual_rent_revenue",
+        "stated": 19800000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 19800000,
+        "comparison": 19800000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "blended_revenue_per_kw_month",
+        "path": "valuation.blended_revenue_per_kw_month",
+        "stated": 157,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 157,
+        "comparison": 157,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "rent_index",
+        "path": "valuation.rent_index",
+        "stated": 0.8,
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.8,
+        "comparison": 0.8,
+        "comparison_decimals": 2
+      },
+      {
+        "id": "price_per_commissioned_kw",
+        "path": "valuation.price_per_commissioned_kw",
+        "stated": 16000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 16000,
+        "comparison": 16000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "noi_per_commissioned_kw",
+        "path": "valuation.noi_per_commissioned_kw",
+        "stated": 1120,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 1120,
+        "comparison": 1120,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "price_per_kw",
+        "path": "valuation.price_per_kw",
+        "stated": 16000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 16000,
+        "comparison": 16000,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "noi_per_kw",
+        "path": "valuation.noi_per_kw",
+        "stated": 1120,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 1120,
+        "comparison": 1120,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "loan_per_kw",
+        "path": "valuation.loan_per_kw",
+        "stated": 9600,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 9600,
+        "comparison": 9600,
+        "comparison_decimals": 0
+      },
+      {
+        "id": "critical_it_load_kw",
+        "path": "property.critical_it_load_kw",
+        "stated": 10000,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 10000,
+        "comparison": 10000
       }
     ]
   },

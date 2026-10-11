@@ -1,7 +1,7 @@
 {
   "name": "@uwmd/module-data-center",
   "version": "0.1.13",
-  "description": "Data-center module for UW Markdown (RFC 0039) — declares the org.uwmd.data_center asset class; capacity, power-economics and revenue sections; kW-denominated calculations; PUE, utility-feed and utilization validations. The first product module on a module-declared asset class.",
+  "description": "Compatibility shell for the retired official data-center module (RFC 0039). Since RFC 0080 data_center is a builtin class in @uwmd/core; this package declares no class, section, calculation or rule, and exists so existing installs and org.uwmd.datacenters module lists keep resolving.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",

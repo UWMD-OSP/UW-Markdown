@@ -606,8 +606,8 @@ function cmdDiff(fileA: string, fileB: string): void {
 
 function cmdInit(flags: Record<string, string | boolean>): void {
   const requestedFormat = flags['format'] as string | undefined;
-  if (requestedFormat !== undefined && requestedFormat !== '2.0' && requestedFormat !== '1.1') {
-    console.error(`--format must be '2.0' (default, nested _meta) or '1.1' (legacy flat shape); got '${requestedFormat}'.`);
+  if (requestedFormat !== undefined && requestedFormat !== '2.1' && requestedFormat !== '2.0' && requestedFormat !== '1.1') {
+    console.error(`--format must be '2.1' (default, nested _meta), '2.0' or '1.1' (legacy flat shape); got '${requestedFormat}'.`);
     process.exit(1);
   }
   // Writers use standard plans or owned extensions; legacy documents still read.
@@ -621,7 +621,7 @@ function cmdInit(flags: Record<string, string | boolean>): void {
   let content: string;
   try {
     content = generateBlankUWFile({
-      formatVersion: requestedFormat as '2.0' | '1.1' | undefined,
+      formatVersion: requestedFormat as '2.1' | '2.0' | '1.1' | undefined,
       dealName: flags['name'] as string | undefined,
       address: flags['address'] as string | undefined,
       city: flags['city'] as string | undefined,
@@ -1148,6 +1148,7 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
     source?: string;
     range?: unknown;
     resolved_from?: string;
+    citation?: string;
     refused?: { code: string; message: string };
   }> = {};
   for (const path of Object.keys(table.fields)) {
@@ -1172,14 +1173,21 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
       source: r.source,
       range: r.range,
       resolved_from: r.resolved_from,
+      // The published caveat behind an asset-class default (additive; absent
+      // for every other step) — a proxy range stays labelled as one.
+      citation: r.citation,
     };
   }
 
   const payload = {
     deal_id: parsed.frontmatter.deal_id ?? null,
     deal_stage_target: 'scope',
-    asset_class: assetClass,
-    defaults_table: `${assetClass}@${table.version}`,
+    // One identity throughout: the resolved builtin the table belongs to. A
+    // legacy alias (`org.uwmd.data_center`) is reported as stated alongside,
+    // never rewritten (RFC 0080 §5).
+    asset_class: table.asset_class,
+    ...(table.asset_class !== assetClass ? { declared_asset_class: assetClass } : {}),
+    defaults_table: `${table.asset_class}@${table.version}`,
     ...(market ? { market_data: market.identity } : {}),
     resolved: out,
   };

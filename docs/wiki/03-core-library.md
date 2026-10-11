@@ -197,9 +197,15 @@ the prior version, bumping `version`, updating pipeline state, appending a
 `resolveValue(fieldPath, parsed, …)` walks the **fallback cascade** (`CASCADE_ORDER`
 in `protocol.ts`): `user_override → user_input → investor_profile → market_data →
 asset_class_default → global_default → system_default`. Asset-class defaults are
-published `{low, central, high}` ranges with citations in `defaults.ts`
-(multifamily, office, retail, industrial, and self-storage today). The CLI
-`uwmd scope` command materializes the full resolved triage view.
+published `{low, central, high}` ranges with citations in `defaults.ts`, one
+table per builtin class. A resolved default carries its table
+(`resolved_from`) and its entry's `citation`, so a starter proxy stays labelled
+as one. A table may omit a field outright (land's and mixed-use's income
+fields; data center's expense ratio, which producers state); the cascade then
+falls through to the host's global/system default and never borrows another
+class's table. The CLI `uwmd scope` command materializes the full resolved
+triage view, reporting the resolved builtin as `asset_class` (and a legacy
+alias such as `org.uwmd.data_center` as `declared_asset_class`).
 In-file steps read a block's payload through `blockPayload`, so a
 content-envelope block resolves the same values as a flat one, as in the calc
 evaluator.
@@ -248,8 +254,9 @@ warning` to `INT-07 error` once a block is signed.
 
 ## asset-class.ts
 
-Module-declared asset classes (RFC 0003). The ten builtins stay a **closed**
-union; a custom class is reverse-DNS with at least three lower-snake-case
+Module-declared asset classes (RFC 0003). The twelve builtins (RFC 0080 added
+`data_center` and `manufactured_housing`) form a **closed** union that grows
+only by RFC; a custom class is reverse-DNS with at least three lower-snake-case
 segments, so ownership is fixed at the identifier.
 
 **`AssetClass` is not widened, and that is load-bearing.** The RFC proposed

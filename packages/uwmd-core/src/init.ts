@@ -9,11 +9,11 @@ import { writeDoubleQuotedScalar } from './yaml-scalar.js';
 
 export interface InitOptions {
   /**
-   * Format line to scaffold. Defaults to '2.0' (nested _meta — v2 writers
+   * Format line to scaffold. Defaults to '2.1' (nested _meta — v2 writers
    * emit the nested shape by default, format v2 spec §7); pass '1.1' for a
    * legacy flat-shape scaffold when downstream consumers are pinned to 1.x.
    */
-  formatVersion?: '2.0' | '1.1';
+  formatVersion?: '2.1' | '2.0' | '1.1';
   dealId?: string;
   dealName?: string;
   address?: string;
@@ -105,8 +105,8 @@ export function generateBlankUWFile(opts: InitOptions = {}): string {
   const assetClass = opts.assetClass ?? 'multifamily';
   const tier = opts.tier ?? 'screener';
   const dealStage = opts.dealStage ?? 'screening';
-  const formatVersion = opts.formatVersion ?? '2.0';
-  const v2 = formatVersion === '2.0';
+  const formatVersion = opts.formatVersion ?? '2.1';
+  const v2 = formatVersion !== '1.1';
 
   // Every caller-supplied frontmatter value goes through frontmatterScalar;
   // the expected parse of each is checked against the result before return.
@@ -235,6 +235,9 @@ source_documents: []
     { id: 'custom_scenarios', header: 'Custom Scenarios', label: '§4.21' },
   ];
 
+  const officialSections = assetClass === 'data_center' ? ['dc_capacity', 'dc_power', 'dc_revenue']
+    : assetClass === 'manufactured_housing' ? ['mhc_sites'] : assetClass === 'hospitality' ? ['hotel_metrics', 'hotel_brand', 'hotel_food_beverage'] : [];
+  sections.push(...officialSections.map(id => ({ id, header: id.replace(/_/g, ' '), label: 'RFC 0080' })));
   const sectionBlocks = sections.map(s => `
 ## ${s.header} {#${s.id}}
 

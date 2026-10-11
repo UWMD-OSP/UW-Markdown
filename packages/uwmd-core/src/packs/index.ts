@@ -1,3 +1,4 @@
+import { toBuiltinAssetClass } from '../types.js';
 // Asset-class calc packs — public surface.
 //
 // A "pack" is a ModuleManifest declaring derived-metric calcs (and, in future
@@ -15,6 +16,8 @@ import { HOSPITALITY_PACK } from './hospitality.js';
 import { SENIOR_HOUSING_PACK } from './senior-housing.js';
 import { STUDENT_HOUSING_PACK } from './student-housing.js';
 import { LAND_PACK } from './land.js';
+import { DATA_CENTER_PACK } from './data-center.js';
+import { MANUFACTURED_HOUSING_PACK } from './manufactured-housing.js';
 import { MIXED_USE_PACK } from './mixed-use.js';
 
 export { MULTIFAMILY_PACK } from './multifamily.js';
@@ -50,6 +53,8 @@ const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
   senior_housing: SENIOR_HOUSING_PACK,
   student_housing: STUDENT_HOUSING_PACK,
   land: LAND_PACK,
+  data_center: DATA_CENTER_PACK,
+  manufactured_housing: MANUFACTURED_HOUSING_PACK,
   mixed_use: MIXED_USE_PACK,
 });
 
@@ -58,5 +63,9 @@ const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
  * is registered (callers may fall back to the multifamily pack or skip metrics).
  */
 export function getPackForAssetClass(asset_class: string): ModuleManifest | null {
-  return PACK_REGISTRY[asset_class] ?? null;
+  return PACK_REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
 }
+
+export { DATA_CENTER_PACK } from './data-center.js';
+
+export { MANUFACTURED_HOUSING_PACK } from './manufactured-housing.js';

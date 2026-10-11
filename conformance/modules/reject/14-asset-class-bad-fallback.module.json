@@ -13,7 +13,7 @@
   "requires_tier": "tier-1-reader",
   "declares_asset_classes": [
     {
-      "id": "com.example.data_center",
+      "id": "com.example.specialty_facility",
       "display_name": "Data Center",
       "fallback": "com.example.other"
     }

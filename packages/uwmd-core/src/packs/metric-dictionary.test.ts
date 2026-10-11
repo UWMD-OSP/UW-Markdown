@@ -75,7 +75,7 @@ describe('normative metric dictionary parity', () => {
   it('matches every calculation in every builtin pack in both directions', () => {
     for (const m of dictionary.calculations) {
       expect(m.minimum_stated_decimals).toBeLessThanOrEqual(m.round_to);
-      expect(m.round_to).toBe(({ '$': 2, '%': 6, x: 4 } as Record<string, number>)[m.unit]);
+      expect(m.round_to).toBe(resolveRoundTo(getPackForAssetClass(m.asset_classes[0]!)!.calculations!.find(c => c.id === m.id)!));
       expect(evaluateCalc(m, { parsed: parseUWFile(''), prior_results: {}, locale: 'en-US' }).round_to).toBe(m.round_to);
     }
     unique(dictionary.calculations);

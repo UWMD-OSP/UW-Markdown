@@ -41,6 +41,7 @@ import {
   applyEditAsync,
   getSection,
   evaluateCalc,
+  getPackForAssetClass,
   evaluateSensitivity,
   evaluateStochastic,
   render,
@@ -104,7 +105,6 @@ import {
   SUPPORTED_LOCALES,
   getSizeIntensive,
   resolveDealSize,
-  getPackForAssetClass,
   renderReportHtml,
   computeBlockHash,
   canonicalV2BlockContent,
@@ -1651,7 +1651,24 @@ const RUNTIME_MODULES = {
   '@uwmd/module-data-center': async () => (await import('@uwmd/module-data-center')).DATA_CENTER_MODULE,
 };
 
+async function runBuiltinClassControls() {
+  const dir = join(ROOT, 'conformance/builtin-classes');
+  for (const id of readdirSync(dir).filter(name => statSync(join(dir, name)).isDirectory()).sort()) {
+    const expected = JSON.parse(readFileSync(join(dir, id, 'expected.json'), 'utf8'));
+    const parsed = parseUWFile(readFileSync(join(dir, id, 'deal.uwx.md'), 'utf8'));
+    const computed = Object.fromEntries((getPackForAssetClass(parsed.frontmatter.asset_class)?.calculations ?? [])
+      .map(c => { const result = evaluateCalc(c, { parsed, prior_results: {}, locale: 'en-US' }); return [c.id, result.value]; }));
+    const codes = [...new Set(validateUWFile(parsed).issues.map(i => i.code))]
+      .filter(code => /^CC-(?:DC|MH|HOSP)-/.test(code) || ['CLS-03', 'CLS-04', 'MOD-RULE-ERROR', 'MOD-CALC-ERROR'].includes(code)).sort();
+    const problems = [];
+    for (const [key, want] of Object.entries(expected.expected_calcs)) if (computed[key] !== want) problems.push(`${key}: ${computed[key]} != ${want}`);
+    if (!isDeepStrictEqual(codes, [...new Set(expected.expected_codes)].sort())) problems.push(`codes ${codes} != ${expected.expected_codes}`);
+    record('modules', `builtin/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
+}
+
 async function runModuleRuntime() {
+  await runBuiltinClassControls();
   const dir = join(MODULES_DIR, 'runtime');
   if (!existsSync(dir)) return;
 
@@ -3550,7 +3567,7 @@ async function runSizeIntensive() {
       if (stray.length) { bad = `${cls}: pack reads property.${stray[0]} missing from the registry entry`; break; }
     }
     record('size-intensive', 'pack-agreement', bad ? 'fail' : 'pass',
-      bad ?? 'both coverage directions hold for all nine classes');
+      bad ?? 'both coverage directions hold for all eleven sized classes');
   }
 
   // ── 3. csv-exports-size-for-every-class — plus the total_units pin ─────────
@@ -3567,7 +3584,7 @@ async function runSizeIntensive() {
       if (off) { bad = `${example}: ${off} = "${got[off]}", pinned "${want[off]}"`; break; }
     }
     record('size-intensive', 'csv-exports-size-for-every-class', bad ? 'fail' : 'pass',
-      bad ?? `${Object.keys(expected.examples).length} examples pinned (nine sized, mixed_use empty)`);
+      bad ?? `${Object.keys(expected.examples).length} examples pinned (eleven sized classes, mixed_use empty)`);
   }
 
   // ── 4. report-cover-states-size ────────────────────────────────────────────

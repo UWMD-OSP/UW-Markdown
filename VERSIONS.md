@@ -184,7 +184,7 @@ versions advance independently.
 
 | Surface | Version | Pairs with |
 |---|---|---|
-| `.uw.md` format spec | **2.0** | authors `uw_version: "2.0"`; reads `"1.0"` / `"1.1"` / `"2.0"` (format v2 §1.2) |
+| `.uw.md` format spec | **2.1** | authors `uw_version: "2.1"`; reads `"1.0"` / `"1.1"` / `"2.0"` / `"2.1"` (format v2 §1.2) |
 | UW Protocol | **2.25.0** | format ≥ 1.0; RFC 0065 `RDB-NN` codes + §VIII.12 reserve draw binding verifier on 2.24.0; carried by core/CLI 2.21.0 |
 | `@uwmd/core` | **2.21.0** | format 2.0 (reads 1.x), protocol 2.25.0 |
 | `@uwmd/cli` (CLI) | **2.21.0** | `@uwmd/core` 2.21.0 |
@@ -217,8 +217,8 @@ manifest compatibility requirements, not a new loader policy.
 
 | Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_tier | Core pin |
 |---|---|---|---|---|---|---|---|---|
-| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.13** | **0.1.0** | `1` | `>=1.0.0` | `>=1.1` | `tier-3-calc-host` | `2.21.0` |
-| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.13** | **0.1.0** | `1` | `>=2.5.0` | `>=1.1` | `tier-3-calc-host` | `2.21.0` |
+| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.13** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `2.21.0` |
+| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.13** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `2.21.0` |
 
 Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
 its module ID. `verify-versions` reads typed source literals and package manifests
@@ -314,3 +314,5 @@ this; see "The three release states" in
 For per-release details see [CHANGELOG.md](CHANGELOG.md). For why a
 specific design was made the way it was, see
 [`docs/rfcs/`](docs/rfcs/) or the relevant spec section.
+
+RFC 0080 (Unreleased): Format 2.1 authors two new official builtins; all twelve have full standard and starter support. The Protocol label and npm package/core-pin versions move at release preparation. Both official module packages stay in the publish set as declaration-free compatibility shells; their manifest contracts are 0.2.0.

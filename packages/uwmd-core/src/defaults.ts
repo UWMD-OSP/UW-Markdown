@@ -1,6 +1,7 @@
+import { toBuiltinAssetClass } from './types.js';
 // Asset-class default tables — Protocol §V.7-§V.8
 //
-// Published normative defaults for the cascade resolver. Each entry is a
+// Published starter defaults for the cascade resolver. Each entry is a
 // {low, central, high} range so refinement/VOI consumers can quantify what's
 // at stake before any document arrives.
 //
@@ -1202,6 +1203,206 @@ export const MIXED_USE_DEFAULTS: AssetClassDefaults = {
   },
 };
 
+/**
+ * RFC 0080 starter defaults, owner-approved 2026-10-10; independently versioned.
+ *
+ * Deliberately publishes no `noi_model.expense_ratio` (owner decision
+ * 2026-10-10): the industrial NNN proxy does not match a data center's
+ * power-grossed-up expense basis (Mesa Gateway runs 0.595). Producers state it,
+ * like physical size; the cascade falls through to the host-supplied
+ * `global_default`/`system_default`, never another class's table.
+ */
+export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
+  "asset_class": "data_center",
+  "version": "1.0.0",
+  "fields": {
+    "noi_model.expense_recovery_rate": {
+      "low": 0.85,
+      "central": 0.92,
+      "high": 0.98,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: noi_model.expense_recovery_rate reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "rent_roll.vacancy_pct": {
+      "low": 0.03,
+      "central": 0.05,
+      "high": 0.09,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: rent_roll.vacancy_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "noi_model.rent_growth_pct_y1": {
+      "low": 0.02,
+      "central": 0.035,
+      "high": 0.05,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: noi_model.rent_growth_pct_y1 reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "noi_model.management_fee_pct": {
+      "low": 0.015,
+      "central": 0.025,
+      "high": 0.035,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: noi_model.management_fee_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "noi_model.leasing_commission_pct": {
+      "low": 0.04,
+      "central": 0.05,
+      "high": 0.06,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: noi_model.leasing_commission_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.rate_pct": {
+      "low": 0.058,
+      "central": 0.065,
+      "high": 0.075,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.rate_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.amortization_months": {
+      "low": 300,
+      "central": 360,
+      "high": 360,
+      "unit": "months",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.amortization_months reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.io_months": {
+      "low": 0,
+      "central": 0,
+      "high": 24,
+      "unit": "months",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.io_months reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.ltv_pct": {
+      "low": 0.55,
+      "central": 0.62,
+      "high": 0.7,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.ltv_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "valuation.exit_cap_rate_pct": {
+      "low": 0.055,
+      "central": 0.065,
+      "high": 0.075,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: valuation.exit_cap_rate_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "sources_uses.closing_costs_pct": {
+      "low": 0.015,
+      "central": 0.025,
+      "high": 0.035,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: sources_uses.closing_costs_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
+    }
+  }
+};
+
+/** RFC 0080 starter defaults, owner-approved 2026-10-10; independently versioned. */
+export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
+  "asset_class": "manufactured_housing",
+  "version": "1.0.0",
+  "fields": {
+    "noi_model.expense_ratio": {
+      "low": 0.34,
+      "central": 0.4,
+      "high": 0.46,
+      "unit": "ratio",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: noi_model.expense_ratio reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "rent_roll.vacancy_pct": {
+      "low": 0.04,
+      "central": 0.06,
+      "high": 0.1,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: rent_roll.vacancy_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "noi_model.rent_growth_pct_y1": {
+      "low": 0.02,
+      "central": 0.04,
+      "high": 0.06,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: lot-rent growth has historically run above multifamily rent growth. Starter assumption, not a market estimate."
+    },
+    "noi_model.management_fee_pct": {
+      "low": 0.025,
+      "central": 0.035,
+      "high": 0.045,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: noi_model.management_fee_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "noi_model.replacement_reserve_per_site_y1": {
+      "low": 50,
+      "central": 75,
+      "high": 100,
+      "unit": "currency",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: residents own their homes, so the community reserves only for park infrastructure (roads, utilities); agency MHC underwriting uses roughly $50 per site. Starter assumption, not a market estimate."
+    },
+    "debt_structure.rate_pct": {
+      "low": 0.06,
+      "central": 0.067,
+      "high": 0.075,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.rate_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.amortization_months": {
+      "low": 300,
+      "central": 360,
+      "high": 360,
+      "unit": "months",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.amortization_months reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.io_months": {
+      "low": 0,
+      "central": 0,
+      "high": 60,
+      "unit": "months",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.io_months reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "debt_structure.ltv_pct": {
+      "low": 0.55,
+      "central": 0.65,
+      "high": 0.75,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.ltv_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "valuation.exit_cap_rate_pct": {
+      "low": 0.045,
+      "central": 0.055,
+      "high": 0.065,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: valuation.exit_cap_rate_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    },
+    "sources_uses.closing_costs_pct": {
+      "low": 0.015,
+      "central": 0.025,
+      "high": 0.035,
+      "unit": "percent",
+      "source": "asset_class_default",
+      "citation": "RFC 0080 owner-approved starter range: sources_uses.closing_costs_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
+    }
+  }
+};
+
 const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   multifamily: MULTIFAMILY_DEFAULTS,
   office: OFFICE_DEFAULTS,
@@ -1212,6 +1413,8 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
   senior_housing: SENIOR_HOUSING_DEFAULTS,
   student_housing: STUDENT_HOUSING_DEFAULTS,
   land: LAND_DEFAULTS,
+  data_center: DATA_CENTER_DEFAULTS,
+  manufactured_housing: MANUFACTURED_HOUSING_DEFAULTS,
   mixed_use: MIXED_USE_DEFAULTS,
 });
 
@@ -1221,7 +1424,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
  * `system_default` per the cascade in protocol §V.7).
  */
 export function getAssetClassDefaults(asset_class: string): AssetClassDefaults | null {
-  return REGISTRY[asset_class] ?? null;
+  return REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
 }
 
 /**

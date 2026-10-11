@@ -44,6 +44,8 @@ const ASSET_CLASS_FIXTURES = [
   ['senior_housing', 'Ocotillo-Senior-Living-Chandler-AZ.uwx.md'],
   ['student_housing', 'Mill-Ave-Commons-Student-Tempe-AZ.uwx.md'],
   ['land', 'Sundance-Ranch-Land-Buckeye-AZ.uwx.md'],
+  ['data_center', 'Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'],
+  ['manufactured_housing', 'Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'],
 ] as const;
 
 function exampleFixture(filename: string) {
@@ -354,6 +356,43 @@ describe('uwmd CLI', () => {
   it('validates the bundled fixture without errors', async () => {
     const r = await runCli(['validate', FIXTURE]);
     expect(r.status).toBe(0);
+  });
+
+  describe('scope on RFC 0080 classes', () => {
+    const legacy = resolve(__dirname, '..', '..', '..', 'conformance', 'modules', 'runtime', '06-data-center-fixture', 'deal.uwx.md');
+
+    it('reports one resolved identity for a legacy alias and keeps the stated id', async () => {
+      const r = await runCli(['scope', legacy, '--json']);
+      expect(r.status).toBe(0);
+      const out = JSON.parse(r.stdout);
+      expect(out).toMatchObject({
+        asset_class: 'data_center',
+        declared_asset_class: 'org.uwmd.data_center',
+        defaults_table: 'data_center@1.0.0',
+      });
+      for (const field of Object.values(out.resolved) as Array<{ step: string; resolved_from?: string }>) {
+        if (field.step === 'asset_class_default') expect(field.resolved_from).toBe('data_center@1.0.0');
+      }
+    });
+
+    it('surfaces each default citation beside source and resolved_from', async () => {
+      const r = await runCli(['scope', exampleFixture('Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'), '--json']);
+      expect(r.status).toBe(0);
+      const out = JSON.parse(r.stdout);
+      expect(out).not.toHaveProperty('declared_asset_class');
+      expect(out.resolved['rent_roll.vacancy_pct']).toMatchObject({
+        step: 'asset_class_default',
+        source: 'asset_class_default',
+        resolved_from: 'manufactured_housing@1.0.0',
+        citation: expect.stringMatching(/multifamily starter range as a proxy/),
+      });
+    });
+
+    it('lists no data-center expense-ratio default (owner decision 2026-10-10)', async () => {
+      const r = await runCli(['scope', exampleFixture('Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'), '--json']);
+      expect(r.status).toBe(0);
+      expect(JSON.parse(r.stdout).resolved).not.toHaveProperty('noi_model.expense_ratio');
+    });
   });
 
   describe('a role-bearing debt map (RFC 0066)', () => {

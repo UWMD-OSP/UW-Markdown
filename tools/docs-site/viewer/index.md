@@ -39,6 +39,12 @@ embedded viewer without leaving this page.
   <a href="/viewer/app/?sample=/viewer/samples/Sonoran-Self-Storage-Peoria-AZ.uwx.md" target="uwmd-reference-viewer">Self-storage</a>
   <a href="/viewer/app/?sample=/viewer/samples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md" target="uwmd-reference-viewer">Mixed-use</a>
   <a href="/viewer/app/?sample=/viewer/samples/Agave-Court-Apts-Scottsdale-AZ.uwx.md" target="uwmd-reference-viewer">Capital stack</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md" target="uwmd-reference-viewer">Data center</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md" target="uwmd-reference-viewer">Manufactured housing</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md" target="uwmd-reference-viewer">Hospitality</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Ocotillo-Senior-Living-Chandler-AZ.uwx.md" target="uwmd-reference-viewer">Senior housing</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Mill-Ave-Commons-Student-Tempe-AZ.uwx.md" target="uwmd-reference-viewer">Student housing</a>
+  <a href="/viewer/app/?sample=/viewer/samples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md" target="uwmd-reference-viewer">Land</a>
 </nav>
 
 <div class="viewer-frame-shell">

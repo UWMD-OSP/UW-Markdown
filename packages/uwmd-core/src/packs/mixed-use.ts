@@ -33,7 +33,7 @@
 //
 // Component fields are addressed by static path (`components.retail.net_operating_income`),
 // which is all the Tier-3 calc engine can express — see RFC 0019 §1. Every
-// admissible component class (all nine income classes except land) gets its own
+// admissible component class (all ten income classes except land and mixed-use) gets its own
 // NOI-share metric; a class simply not present in a given deal evaluates to null.
 
 import type { ModuleManifest } from '../protocol.js';
@@ -42,7 +42,7 @@ export const MIXED_USE_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.mixed_use',
   name: 'Mixed-Use Starter Pack',
-  version: '1.0.1',
+  version: '1.0.2',
   description:
     'Derived metrics for mixed-use underwriting: property-level cap rate, LTV, DSCR, debt yield, and cash-on-cash; a NOI share per component use; allocation-gated price per unit / psf / bed; and per-component operating-business intermediates (GOP, labor). Deliberately omits property price/unit, loan/unit, and any blended market cap rate.',
   authors: ['UW Markdown Working Group'],
@@ -216,5 +216,9 @@ export const MIXED_USE_PACK: ModuleManifest = {
       unit: '$',
       deterministic: true,
     },
+    {"id": "data_center_noi_share", "label": "data_center NOI Share", "formula": "components.data_center.net_operating_income / noi_model.net_operating_income", "unit": "%", "deterministic": true},
+    {"id": "data_center_price_per_kw", "label": "data_center Price / kw", "formula": "(valuation.purchase_price * components.data_center.allocation_pct) / components.data_center.critical_it_load_kw", "unit": "$", "deterministic": true},
+    {"id": "manufactured_housing_noi_share", "label": "manufactured_housing NOI Share", "formula": "components.manufactured_housing.net_operating_income / noi_model.net_operating_income", "unit": "%", "deterministic": true},
+    {"id": "manufactured_housing_price_per_site", "label": "manufactured_housing Price / site", "formula": "(valuation.purchase_price * components.manufactured_housing.allocation_pct) / components.manufactured_housing.total_sites", "unit": "$", "deterministic": true},
   ],
 };

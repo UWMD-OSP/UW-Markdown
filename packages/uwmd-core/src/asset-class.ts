@@ -1,33 +1,8 @@
-// Asset-class identifiers: the closed builtin set, plus module-declared
-// custom classes (RFC 0003, format spec §2.3a, protocol §X.2).
-//
-// The closed enum was right for v1: it answers "what does `data_center` mean?"
-// by not allowing the question. But it makes the asset class the one extension
-// point a module cannot reach, so an adopter who needs one must lobby for a
-// spec bump, misuse an existing class (a data center as `industrial`, which
-// then fails industrial's validations), or fork.
-//
-// What keeps this from becoming an open enum — which would destroy the
-// determinism the closed one bought — is two rules:
-//
-//   1. A custom identifier is reverse-DNS with at least three segments, so
-//      ownership is fixed at the identifier. Two hosts can never disagree
-//      about whose `com.example.data_center` this is.
-//   2. Resolution is deterministic in every outcome. A host with the module
-//      resolves it; a host without one either falls back identically or
-//      errors identically. There is no path where two conforming hosts read
-//      the same file differently.
-//
-// **`AssetClass` is deliberately NOT widened.** RFC 0003 proposed
-// `AssetClass = BuiltinAssetClass | string`, which in TypeScript collapses to
-// `string` — silently killing `ASSET_CLASS_MEMBERS`' exhaustiveness check,
-// every pack/layout lookup's narrowing, and the RFC 0027/0029 class tables.
-// The builtin union stays closed and `UWAssetClassId` is the wider type, used
-// only where a custom class is actually legal: the document's frontmatter and
-// a module's declarations. Anything that needs a builtin still asks for one.
+// Builtin and third-party asset identities (RFC 0080). The sole legacy
+// official alias is resolved without rewriting the document or its digest.
 
 import type { AssetClass, UWAssetClassId } from './types.js';
-import { ASSET_CLASSES } from './types.js';
+import { ASSET_CLASSES, toBuiltinAssetClass } from './types.js';
 import type { ModuleAssetClassDecl, ModuleManifest, ProtocolError } from './protocol.js';
 import type { ModuleRegistry } from './modules.js';
 
@@ -68,15 +43,16 @@ function invalid(code: string, message: string, remediation: string): AssetClass
  * an exception to propagate.
  */
 export function parseAssetClass(raw: string): AssetClassIdentity {
-  if ((ASSET_CLASSES as readonly string[]).includes(raw)) {
-    return { ok: true, kind: 'builtin', id: raw as AssetClass };
+  const builtin = toBuiltinAssetClass(raw);
+  if (builtin) {
+    return { ok: true, kind: 'builtin', id: builtin };
   }
 
   if (!CUSTOM_ASSET_CLASS.test(raw)) {
     return invalid(
       'INVALID-ASSET-CLASS-001',
       `'${raw}' is neither a builtin asset class nor a valid namespaced identifier.`,
-      `Use one of ${ASSET_CLASSES.join(', ')}, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. 'com.example.data_center').`,
+      `Use one of ${ASSET_CLASSES.join(', ')}, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. 'com.example.specialty_facility').`,
     );
   }
 
@@ -265,7 +241,11 @@ export function declaredModuleDependencies(
   const out: { id: string; version?: string }[] = [];
   for (const entry of raw) {
     if (typeof entry === 'string') {
-      out.push({ id: entry });
+      // Historical official examples used an object-list spelling which the
+      // restricted YAML reader retains as a literal scalar. Recognize exactly
+      // these core-satisfied dependencies without rewriting parsed frontmatter.
+      const legacyOfficial = /^id:\s*(org\.uwmd\.(?:datacenters|hospitality))$/.exec(entry);
+      out.push({ id: legacyOfficial?.[1] ?? entry });
       continue;
     }
     if (typeof entry === 'object' && entry !== null && typeof (entry as { id?: unknown }).id === 'string') {

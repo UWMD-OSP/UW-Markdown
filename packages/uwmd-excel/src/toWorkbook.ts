@@ -52,6 +52,7 @@ export class UnsupportedAssetClassError extends Error {
 
 // Excel number formats keyed by the layout's `format` discriminator.
 const NUMBER_FORMATS: Record<string, string> = {
+  decimal: '#,##0.00',
   currency: '$#,##0',
   percent:  '0.00%',
   ratio:    '0.00"x"',

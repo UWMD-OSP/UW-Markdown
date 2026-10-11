@@ -159,35 +159,31 @@ the transaction, so a partial load is visible rather than hidden. No live
 PostgreSQL instance is exercised by the test suite — a real load is an adopter
 integration step.
 
-## Hospitality module — `packages/uwmd-module-hospitality` (`@uwmd/module-hospitality` 0.1.0)
+## Hospitality module — `packages/uwmd-module-hospitality` (`@uwmd/module-hospitality` 0.2.0)
 
-The reference consumer of the protocol §X module system (RFC 0006). Three hotel
-sections (`hotel_metrics`, `hotel_brand`, `hotel_food_beverage`), five
-calculations (RevPAR, total room revenue, revenue/key, RevPAR index, F&B
-margin), and three validations — including `CC-MOD-HOSP-02`, an **error** for
-occupancy stored as `72` rather than `0.72`, because RevPAR still computes from
-a percentage, to a number a hundred times too large.
+A **compatibility shell** since RFC 0080. The module's three hotel sections
+(`hotel_metrics`, `hotel_brand`, `hotel_food_beverage`), its calculations and
+its rules (now `CC-HOSP-01..04`) belong to the builtin `hospitality` class in
+`@uwmd/core`. RevPAR keeps the builtin definition (rooms revenue / available
+room nights); a record that states a comp-set RevPAR without those inputs gets
+`CC-HOSP-04` instead of a silent skip. The frozen manifest declares nothing; the
+package keeps its identity, exports and core pin so existing installs and
+`org.uwmd.hospitality` module lists keep resolving (`CLS-02`). Originally the
+reference consumer of the protocol §X module system (RFC 0006); module support
+itself remains for third parties.
 
-Built against core's published surface only: a reference module that reached
-inside the library would demonstrate nothing about what an external author can
-do. The manifest's source of truth is TypeScript, with `dist/manifest.json`
-emitted at build for hosts without a TS toolchain. **Unpublished**, like the
-other satellites.
+## Data-center module — `packages/uwmd-module-data-center` (`@uwmd/module-data-center` 0.2.0)
 
-## Data-center module — `packages/uwmd-module-data-center` (`@uwmd/module-data-center` 0.1.0)
-
-The first *product* module on a module-declared asset class (RFC 0039).
-Declares `org.uwmd.data_center` with an `industrial` fallback; three sections
-(`dc_capacity` required, `dc_power`, `dc_revenue`); eleven calculations, every
-power figure in **kW** and every rate a fraction; seven validations
-(`CC-MOD-DC-01..07`) — including `CC-MOD-DC-01`, an **error** for a PUE below
-1.0, which is physically impossible. `price_per_commissioned_kw` and
-`noi_per_commissioned_kw` read the *standard* sections (frontmatter
-`quick_metrics`, `noi_model`) — the per-unit metrics the size-intensive
-registry withholds from a custom class, supplied by the module instead.
-
-Same shape as hospitality: built against core's published surface only,
-TypeScript manifest with `dist/manifest.json` emitted at build, **unpublished**.
+A **compatibility shell** since RFC 0080. Data center is now the builtin
+`data_center` class in `@uwmd/core`: its `dc_capacity` / `dc_power` /
+`dc_revenue` sections, eleven calculations (every power figure in **kW**, every
+rate a fraction) and `CC-DC-01..08` rules live in core, with a pack, Excel
+layout, size row (`property.critical_it_load_kw`) and defaults like every other
+builtin. The package's manifest declares no class, section, calculation or rule;
+it keeps its identity, exports and core pin so existing installs and documents
+whose module list names `org.uwmd.datacenters` keep resolving (`CLS-02`).
+Documents on the legacy `org.uwmd.data_center` id read as `data_center` with a
+`CLS-01` deprecation warning.
 A host without it reads `examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` as
 `degraded` under `industrial` (`MOD-FALLBACK-001`) — every dollar figure
 correct, every kilowatt absent.
@@ -241,9 +237,9 @@ Key design: the workbook ships **formulas, not pre-computed values**, so it stay
 in sync with the calc engine by construction. The engine (`toWorkbook.ts`) is
 generic; each asset class supplies a `WorkbookLayout` (`src/layout.ts`) selected
 by `frontmatter.asset_class` via the registry (`src/layouts.ts`,
-`getLayoutForAssetClass`). Supported: **all ten classes** — multifamily, office,
+`getLayoutForAssetClass`). Supported: **all twelve classes** — multifamily, office,
 retail, industrial, self-storage, hospitality, senior housing, student housing,
-land, and `mixed_use`. `SUPPORTED_ASSET_CLASSES` is the live list; a class with
+land, data center, manufactured housing, and `mixed_use`. `SUPPORTED_ASSET_CLASSES` is the live list; a class with
 no layout throws `UnsupportedAssetClassError`.
 
 `mixed_use` (RFC 0019) is the one class whose workbook is **not** a single
@@ -396,8 +392,12 @@ issuance/verification). Six tabs:
   class its own size intensive (`rentable_square_feet` for office/industrial,
   `gross_leasable_area` for retail, `net_rentable_square_feet` + `rentable_units`
   for self-storage, `keys` for hospitality, `total_beds` for student/senior,
-  `gross_acres`/`usable_acres`/`entitled_units` for land, `total_units` for
-  multifamily/senior/student) and not another class's. The filter is
+  `gross_acres`/`usable_acres`/`entitled_units` for land, `critical_it_load_kw`
+  (kW) for data center, `total_sites` (sites) for manufactured housing,
+  `total_units` for multifamily/senior/student) and not another class's. The
+  class-section fields keep their stated precision: integers are counts, unit
+  prices and tariffs (ADR, $/kW-month, $/kWh, pad rent) are unrounded numbers,
+  and fractions such as `power_margin` are rates. The filter is
   deliberately **opt-out** — an unset, unrecognized, or `mixed_use` class sees
   the full list, class-independent fields (`year_built`, `parking_spaces`) are
   never filtered, and anything hidden is still reachable in the generic
@@ -570,3 +570,9 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 ## RFC 0065 reserve draw bindings
 
 `reserve-draw-bindings.ts` exports browser-safe `verifyReserveDrawBindings(parsed, plan?)`. Its optional external `ReserveDrawBindingPlan` uses exact variants, reserve account/period/movement identities, lease-up TI/LC components or gross cash-row addresses, declared selected-draw completeness and explicit funded shares. `RDB-01`–09 findings and the two companion schemas mirror Protocol §VIII.12. CLI: `uwmd verify-reserve-draws <file> [plan.json] --json`. Synthetic default/portable fixtures, shared-quantizer cent controls and regressions preserve gross rows and the unchanged RFC 0045 reserve refusal. No document field, transfer, owner cash or financing assembly is added.
+
+## Official builtin starters (RFC 0080)
+
+All twelve classes have packs and Excel layouts. Data center uses critical IT kW; manufactured housing uses sites. Their layouts bind every class calculation and the six standard income metrics to stated inputs. Hospitality also binds the former module's hotel and F&B fields; missing optional hotel inputs produce blank metrics. The web editor includes both new class names, primary-size fields and standard class sections. Legacy official module packages remain compatibility shells until retirement at release.
+
+The Lite bridge defaults the two new official classes to Format 2.1 with nested metadata and recognizes their standard section/size anchors. Existing classes keep their original 1.1 bridge output; an explicit source version is preserved.

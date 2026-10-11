@@ -652,6 +652,12 @@ capability is unconditional: every implementation owes it.
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
+| `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
+| `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
+| `CLS-NN` | Official builtin identity compatibility and field contracts (RFC 0080). | `validate` | warning / info / error |
+| `CC-DC-NN` | Data-center class rules (Format §4.29–31). | `validate` | warning / error |
+| `CC-MH-NN` | Manufactured-housing class rules. | `validate` | error |
+| `CC-HOSP-NN` | Hospitality class rules. | `validate` | warning / error |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |
@@ -2008,7 +2014,7 @@ Every class's `ltv` uses `debt_structure.loan_amount / valuation.underwritten_va
 falling back to `valuation.purchase_price` only when no underwritten value is
 stated. This agrees with the validator's CC-02 and capital-stack `ltv_through`.
 
-All nine income-class `cash_on_cash` entries use stated
+All eleven income-class `cash_on_cash` entries (the nine RFC 0079 classes plus RFC 0080's `data_center` and `manufactured_housing`) use stated
 `dcf.annual_cash_flows.Y1.net_cash_flow_levered` over
 `sources_uses.equity_metrics.equity_total`; absent/null Y1 levered flow falls
 back to `noi_model.net_operating_income - debt_structure.annual_debt_service`.
@@ -3480,11 +3486,11 @@ Two declarations sharing a **display name** is `MOD-DISPLAY-CONFLICT-001`
 confusing for a reader and irrelevant to a machine; a host SHOULD show
 the identifier alongside the name and otherwise carry on.
 
-#### X.2.4 What custom classes do not get
+#### X.2.4 Third-party custom classes and official builtins
 
 A custom class has no builtin calc pack, no Excel layout, and no entry
 in the §XIII size-intensive registry — those tables are keyed to the
-closed builtin set and stay that way. A module supplies its own
+official builtin set, which grows by RFC with full standard and starter support (RFC 0080). Every official asset class is builtin; only third-party private or unofficial classes use module declarations. A module supplies its own
 calculations for the classes it declares (§X, module runtime); anything
 the module does not supply, a custom class does not have.
 
@@ -3494,6 +3500,10 @@ size-intensive registry would mean a third party could change what
 a silent denominator change does the most damage.
 
 ---
+
+### Official builtin compatibility (RFC 0080)
+
+`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin. The format-neutral envelope retains v1 or v2 metadata on disk and normalizes v2 metadata when read for eligibility; raw content and source identity are preserved.
 
 ## XI. Error Taxonomy
 

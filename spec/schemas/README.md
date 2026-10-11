@@ -29,7 +29,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-capital-stack.schema.json`](section-capital-stack.schema.json) | `capital_stack` section (tranches + sizing) | Format §4.24 / RFC 0026 |
 | [`section-lease-up-schedule.schema.json`](section-lease-up-schedule.schema.json) | `lease_up_schedule` section (trajectory + stabilized summary) | Format §4.25 / RFC 0008 |
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
-| [section-reserve-accounts.schema.json](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
+| [`section-reserve-accounts.schema.json`](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
 | [reserve-accounts-verification.schema.json](reserve-accounts-verification.schema.json) | ReserveAccountsVerification | Protocol §VIII.11 / RFC 0064 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
 | [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |
@@ -57,6 +57,14 @@ files live in this directory pending publication on `uwmd.org`.
 | [`period-excel-binding.schema.json`](period-excel-binding.schema.json) | `PeriodExcelBinding` | Protocol §VIII.2c / RFC 0043 |
 | [`period-column-snapshot.schema.json`](period-column-snapshot.schema.json) | `PeriodColumnSnapshot` | Protocol §VIII.2c / RFC 0043 |
 
+| [`section-dc-capacity.schema.json`](section-dc-capacity.schema.json) | RFC 0080 standard `dc_capacity` payload | RFC 0080 |
+| [`section-dc-power.schema.json`](section-dc-power.schema.json) | RFC 0080 standard `dc_power` payload | RFC 0080 |
+| [`section-dc-revenue.schema.json`](section-dc-revenue.schema.json) | RFC 0080 standard `dc_revenue` payload | RFC 0080 |
+| [`section-hotel-metrics.schema.json`](section-hotel-metrics.schema.json) | RFC 0080 standard `hotel_metrics` payload | RFC 0080 |
+| [`section-hotel-brand.schema.json`](section-hotel-brand.schema.json) | RFC 0080 standard `hotel_brand` payload | RFC 0080 |
+| [`section-hotel-food-beverage.schema.json`](section-hotel-food-beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload | RFC 0080 |
+| [`section-mhc-sites.schema.json`](section-mhc-sites.schema.json) | RFC 0080 standard `mhc_sites` payload | RFC 0080 |
+
 ## Validating a schema
 
 ```bash
@@ -71,6 +79,7 @@ The TypeScript types in `@uwmd/core/src/protocol.ts` and `types.ts` are
 the canonical definition. When you change one of those types, update
 the matching schema here in the **same PR**. Drift between the two is
 a normative protocol bug.
+
 
 If you add a new schema:
 1. Place it next to the existing schemas, named `<thing>.schema.json`.

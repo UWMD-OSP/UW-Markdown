@@ -124,14 +124,14 @@ describe('evaluateModuleCalculations', () => {
     const manifest: ModuleManifest = {
       ...BASE,
       declares_asset_classes: [
-        { id: 'org.example.data_center', display_name: 'Data Center', fallback: 'industrial' },
+        { id: 'org.example.specialty_facility', display_name: 'Data Center', fallback: 'industrial' },
       ],
       sections: [{ id: 'dc_capacity', display_name: 'Capacity', required: true, schema: {} }],
       calculations: [{ id: 'x', label: 'X', formula: '1', deterministic: true }],
     };
     delete (manifest as { asset_classes?: unknown }).asset_classes;
     const registry = registryOf(manifest);
-    expect(evaluateModuleCalculations(file({}, 'org.example.data_center'), registry)).toHaveLength(1);
+    expect(evaluateModuleCalculations(file({}, 'org.example.specialty_facility'), registry)).toHaveLength(1);
     expect(evaluateModuleCalculations(file({}, 'office'), registry)).toEqual([]);
     expect(evaluateModuleCalculations(file({}, 'industrial'), registry)).toEqual([]);
     expect(validateAgainstModules(file({}, 'industrial'), registry)).toEqual([]);

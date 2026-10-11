@@ -1,0 +1,6 @@
+{
+  "description": "RFC 0080 core builtin control. RFC 0068: as-multifamily.",
+  "expected_calcs": {},
+  "expected_codes": [],
+  "builtin_class": "manufactured_housing"
+}

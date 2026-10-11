@@ -146,7 +146,9 @@ export type AssetClass =
   | 'mixed_use'
   | 'senior_housing'
   | 'student_housing'
-  | 'land';
+  | 'land'
+  | 'data_center'
+  | 'manufactured_housing';
 
 /**
  * An asset class as it may appear in a document: a builtin, or a
@@ -189,6 +191,8 @@ const ASSET_CLASS_MEMBERS: Record<AssetClass, true> = {
   senior_housing: true,
   student_housing: true,
   land: true,
+  data_center: true,
+  manufactured_housing: true,
 };
 
 /**
@@ -584,4 +588,10 @@ export interface InstitutionConfig {
   thresholds?: Partial<FinancialThresholds>;
   required_fields?: string[];       // dot-path fields that must be non-null
   render_template?: string;
+}
+
+/** Resolve only published builtin identities; never suffix-match custom ids. */
+export function toBuiltinAssetClass(raw: string): AssetClass | null {
+  if (raw === 'org.uwmd.data_center') return 'data_center';
+  return (ASSET_CLASSES as readonly string[]).includes(raw) ? raw as AssetClass : null;
 }

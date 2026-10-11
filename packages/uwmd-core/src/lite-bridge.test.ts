@@ -12,6 +12,8 @@ import {
   type UWEnvelopeBlock,
   type UWEnvelopeSectionEntry,
 } from './envelope.js';
+import { validateUWFile } from './validator.js';
+import { detectMetaShape } from './meta-shape.js';
 import { getSection, parseUWFile } from './parser.js';
 
 /**
@@ -67,6 +69,27 @@ describe('compileUWLite', () => {
     expect(result.report.defaults).toContainEqual(
       expect.objectContaining({ path: 'frontmatter.uw_version', value: '1.1' }),
     );
+  });
+
+  it('authors both new official classes at 2.1 with nested metadata and class-section anchors', () => {
+    for (const [cls, section, field] of [['data_center', 'dc_capacity', 'critical_it_load_kw'], ['manufactured_housing', 'mhc_sites', 'total_sites']]) {
+      const source = `${LITE.replace('asset_class: multifamily', `asset_class: ${cls}`)}\n- Size: 200 <!-- uw:${section}.${field} -->\n`;
+      const result = compileUWLite(parseUWLite(source));
+      expect(result.ok).toBe(true);
+      if (!result.ok) throw new Error(JSON.stringify(result.report));
+      expect(result.envelope.format_version).toBe('2.1');
+      expect(result.envelope.frontmatter.uw_version).toBe('2.1');
+      for (const entry of Object.values(result.envelope.sections)) {
+        const block = singleBlock(entry);
+        expect(detectMetaShape(block.content._meta as Record<string, unknown>)).toBe('v2');
+      }
+      expect(detectMetaShape(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!.content._meta as Record<string, unknown>)).toBe('v2');
+      const parsed = parseUWFile(stringifyUWX(result.envelope));
+      const codes = validateUWFile(parsed).issues.map(issue => issue.code);
+      expect(codes).not.toContain('CLS-05');
+      expect(codes).not.toContain('META-V1-IN-V2');
+      expect((singleBlock(result.envelope.sections[section!]).content.content as Record<string, unknown>)[field!]).toBe(200);
+    }
   });
 
   it('preserves the complete Lite source in a namespaced extension', () => {

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/module-manifest.schema.json",
   "title": "UW Markdown Module Manifest",
-  "description": "Declarative manifest for a UW Markdown module. Modules extend the standard 21 sections with asset-class-specific schemas, calculations, validations, view models, and agent layer prompts. Modules in v1 are declarative-only — formulas use a safe-expression language; no executable code. Mirrors the TypeScript ModuleManifest type in @uwmd/core/protocol.ts.",
+  "description": "Declarative manifest for a UW Markdown module. Modules extend the standard 21 sections with asset-class-specific schemas, calculations, validations, view models, and agent layer prompts. Modules in v1 are declarative-only \u2014 formulas use a safe-expression language; no executable code. Mirrors the TypeScript ModuleManifest type in @uwmd/core/protocol.ts.",
   "type": "object",
   "required": [
     "manifest_version",
@@ -69,7 +69,12 @@
     },
     "requires_tier": {
       "type": "string",
-      "enum": ["tier-1-reader", "tier-2-editor", "tier-3-calc-host", "tier-4-agent-host"],
+      "enum": [
+        "tier-1-reader",
+        "tier-2-editor",
+        "tier-3-calc-host",
+        "tier-4-agent-host"
+      ],
       "description": "Minimum host tier required to load this module. A module with custom calculations requires at least tier-3-calc-host."
     },
     "asset_classes": {
@@ -77,8 +82,18 @@
       "items": {
         "type": "string",
         "enum": [
-          "multifamily", "office", "retail", "industrial", "self_storage",
-          "hospitality", "mixed_use", "senior_housing", "student_housing", "land"
+          "multifamily",
+          "office",
+          "retail",
+          "industrial",
+          "self_storage",
+          "hospitality",
+          "mixed_use",
+          "senior_housing",
+          "student_housing",
+          "land",
+          "data_center",
+          "manufactured_housing"
         ]
       },
       "uniqueItems": true,
@@ -89,22 +104,37 @@
       "items": {
         "type": "string",
         "enum": [
-          "scope", "screening", "term_sheet", "full_underwrite",
-          "credit_approval", "closing", "monitoring"
+          "scope",
+          "screening",
+          "term_sheet",
+          "full_underwrite",
+          "credit_approval",
+          "closing",
+          "monitoring"
         ]
       },
       "uniqueItems": true
     },
     "sections": {
       "type": "array",
-      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) — this field is about sections.",
+      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) \u2014 this field is about sections.",
       "items": {
         "type": "object",
-        "required": ["id", "display_name", "schema"],
+        "required": [
+          "id",
+          "display_name",
+          "schema"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "minLength": 1 },
-          "display_name": { "type": "string", "minLength": 1 },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1
+          },
           "schema": {
             "type": "object",
             "description": "JSON Schema fragment for the section content. Validated by the calc host on load."
@@ -122,25 +152,36 @@
       "description": "Custom calculations contributed by this module. Each is a safe-expression formula evaluated by a Tier-3 calc host.",
       "items": {
         "type": "object",
-        "required": ["id", "label", "formula", "deterministic"],
+        "required": [
+          "id",
+          "label",
+          "formula",
+          "deterministic"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
-          "label": { "type": "string", "minLength": 1 },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
           "formula": {
             "type": "string",
             "minLength": 1,
-            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL_v1.md §VIII.1."
+            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL_v1.md \u00a7VIII.1."
           },
           "unit": {
             "type": "string",
-            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted — see UW_PROTOCOL_v1.md §VIII.5."
+            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted \u2014 see UW_PROTOCOL_v1.md \u00a7VIII.5."
           },
           "round_to": {
             "type": "integer",
             "minimum": 0,
             "maximum": 12,
-            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL_v1.md §VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
+            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL_v1.md \u00a7VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
           },
           "deterministic": {
             "type": "boolean",
@@ -148,9 +189,19 @@
           },
           "section_roles": {
             "type": "object",
-            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL_v1.md §VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
-            "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
-            "additionalProperties": { "enum": ["primary", "senior", "junior", "summary", "detail"] }
+            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL_v1.md \u00a7VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
+            "propertyNames": {
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "additionalProperties": {
+              "enum": [
+                "primary",
+                "senior",
+                "junior",
+                "summary",
+                "detail"
+              ]
+            }
           }
         }
       }
@@ -160,7 +211,12 @@
       "description": "Cross-section consistency rules contributed by this module.",
       "items": {
         "type": "object",
-        "required": ["code", "severity", "message", "rule"],
+        "required": [
+          "code",
+          "severity",
+          "message",
+          "rule"
+        ],
         "additionalProperties": false,
         "properties": {
           "code": {
@@ -168,8 +224,18 @@
             "pattern": "^[A-Z]{2,8}-[A-Z0-9-]+$",
             "description": "Module-namespaced validation code (e.g. 'CC-MOD-HOSP-01')."
           },
-          "severity": { "type": "string", "enum": ["error", "warning", "info"] },
-          "message": { "type": "string", "minLength": 1 },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
           "rule": {
             "type": "string",
             "minLength": 1,
@@ -188,22 +254,43 @@
       "description": "Per-section view-model overrides. Replaces BUILTIN_VIEW_MODELS entries for matching section_id.",
       "items": {
         "type": "object",
-        "required": ["section_id", "display_name", "display_order", "description", "primary_fields"],
+        "required": [
+          "section_id",
+          "display_name",
+          "display_order",
+          "description",
+          "primary_fields"
+        ],
         "additionalProperties": false,
         "properties": {
-          "section_id": { "type": "string" },
-          "display_name": { "type": "string" },
-          "display_order": { "type": "integer", "minimum": 0 },
-          "description": { "type": "string" },
+          "section_id": {
+            "type": "string"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "display_order": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": {
+            "type": "string"
+          },
           "primary_fields": {
             "type": "array",
-            "items": { "$ref": "#/$defs/fieldViewHint" }
+            "items": {
+              "$ref": "#/$defs/fieldViewHint"
+            }
           },
           "detail_fields": {
             "type": "array",
-            "items": { "$ref": "#/$defs/fieldViewHint" }
+            "items": {
+              "$ref": "#/$defs/fieldViewHint"
+            }
           },
-          "multi_variant": { "type": "boolean" }
+          "multi_variant": {
+            "type": "boolean"
+          }
         }
       }
     },
@@ -217,12 +304,30 @@
       "description": "Bancroft-style agent layer declarations contributed by this module.",
       "items": {
         "type": "object",
-        "required": ["id", "reads", "writes", "prompt_template"],
+        "required": [
+          "id",
+          "reads",
+          "writes",
+          "prompt_template"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^L\\d+(?:_[a-z_]+)?$" },
-          "reads": { "type": "array", "items": { "type": "string" } },
-          "writes": { "type": "array", "items": { "type": "string" } },
+          "id": {
+            "type": "string",
+            "pattern": "^L\\d+(?:_[a-z_]+)?$"
+          },
+          "reads": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "writes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "prompt_template": {
             "type": "string",
             "description": "Template body for the layer's system prompt. Placeholders use {{ section.field }} syntax resolved by the agent host."
@@ -235,10 +340,15 @@
       "description": "Other modules this one requires. The host MUST refuse to load if a dependency is missing or version-incompatible.",
       "items": {
         "type": "object",
-        "required": ["id", "version"],
+        "required": [
+          "id",
+          "version"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
           "version": {
             "type": "string",
             "description": "Semver range."
@@ -248,10 +358,13 @@
     },
     "declares_asset_classes": {
       "type": "array",
-      "description": "Optional. Custom asset classes this module introduces (§X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
+      "description": "Optional. Custom asset classes this module introduces (\u00a7X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
       "items": {
         "type": "object",
-        "required": ["id", "display_name"],
+        "required": [
+          "id",
+          "display_name"
+        ],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -259,42 +372,95 @@
             "pattern": "^[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*){2,}$",
             "description": "Reverse-DNS, at least three lower-snake-case segments. Ownership is fixed at the identifier, so two hosts can never disagree about whose class this is. A final segment matching a builtin name is refused (INVALID-ASSET-CLASS-002)."
           },
-          "display_name": { "type": "string", "minLength": 1 },
+          "display_name": {
+            "type": "string",
+            "minLength": 1
+          },
           "fallback": {
-            "enum": ["multifamily", "office", "retail", "industrial", "self_storage", "hospitality", "mixed_use", "senior_housing", "student_housing", "land"],
+            "enum": [
+              "multifamily",
+              "office",
+              "retail",
+              "industrial",
+              "self_storage",
+              "hospitality",
+              "mixed_use",
+              "senior_housing",
+              "student_housing",
+              "land",
+              "data_center",
+              "manufactured_housing"
+            ],
             "description": "The closest builtin, for readers that do not hold this module. Omitting it is a deliberate choice that no approximation is honest, and costs those readers the document entirely (MOD-MISSING-001 rather than MOD-FALLBACK-001)."
           },
-          "required_sections": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-          "optional_sections": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          "required_sections": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "optional_sections": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
         }
       }
     },
     "signature": {
       "$ref": "https://uwmd.org/schemas/module-signature.schema.json",
-      "description": "Optional. Detached signature over the canonical manifest (§X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
+      "description": "Optional. Detached signature over the canonical manifest (\u00a7X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
     }
   },
   "$defs": {
     "fieldViewHint": {
       "type": "object",
-      "required": ["path", "label", "kind"],
+      "required": [
+        "path",
+        "label",
+        "kind"
+      ],
       "additionalProperties": false,
       "properties": {
         "path": {
           "type": "string",
           "description": "Dot-path within the section's content, resolved via parser.deepGet."
         },
-        "label": { "type": "string" },
+        "label": {
+          "type": "string"
+        },
         "kind": {
           "type": "string",
-          "enum": ["currency", "percent", "ratio", "count", "date", "string", "enum", "list"]
+          "enum": [
+            "currency",
+            "percent",
+            "ratio",
+            "count",
+            "date",
+            "string",
+            "enum",
+            "list"
+          ]
         },
-        "primary": { "type": "boolean" },
-        "unit": { "type": "string" },
-        "decimals": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "primary": {
+          "type": "boolean"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
         "enum": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

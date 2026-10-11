@@ -59,6 +59,12 @@ change `asset_class` when appropriate.
 - [Retail](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md)
 - [Industrial](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md)
 - [Self-storage](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md)
+- [Hospitality](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md)
+- [Senior housing](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ocotillo-Senior-Living-Chandler-AZ.uwx.md)
+- [Student housing](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Mill-Ave-Commons-Student-Tempe-AZ.uwx.md)
+- [Land](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md)
+- [Data center (Format 2.1)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md)
+- [Manufactured housing (Format 2.1)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md)
 - [Mixed-use (RFC 0019 components)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md)
 - [Capital stack (RFC 0026 senior + mezz + pref)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md)
 

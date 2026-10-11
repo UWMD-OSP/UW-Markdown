@@ -2,8 +2,8 @@
 
 A **calc pack** is a `ModuleManifest` that bundles a set of derived-metric
 declarations for an asset class. Their normative source is now the
-[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2): 130
-class-scoped calculations across ten builtin packs, plus the primary-size
+[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2, extended by RFC 0080): 171
+class-scoped calculations across twelve builtin packs, plus the primary-size
 registry. Packs derive their definitions from that contract as TypeScript
 mirrors, enforced by exact, bidirectional tests rather than runtime generation.
 Every consumer (web editor, Excel converter, CLI, conformance, refinement)
@@ -47,6 +47,8 @@ File | Role
 `packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
 `packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
 `packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
+`packs/data-center.ts` | `DATA_CENTER_PACK` — twenty data-center metrics
+`packs/manufactured-housing.ts` | `MANUFACTURED_HOUSING_PACK` — thirteen manufactured-housing metrics
 `packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
 `packs/mixed-use.ts` | `MIXED_USE_PACK` — property metrics and component calculations
 `packs/metric-dictionary.test.ts` | Every pack declaration and size row equals its normative dictionary entry, in both directions
@@ -101,7 +103,7 @@ Missing total equity stays uncomputed; zero follows `CALC-DIV-ZERO`.
 Sponsor/LP allocation is optional for this generic metric. A sponsor contribution
 alone never substitutes for aggregate equity. No `sponsor_cash_on_cash` or
 `lp_cash_on_cash` declaration is added: those need separately named metrics,
-attributable sponsor/LP cash flows and contribution inputs. RFC 0079 applies this definition to all nine income-class packs; land
+attributable sponsor/LP cash flows and contribution inputs. RFC 0079 applied this definition to all nine income-class packs of the time, and RFC 0080's `data_center` and `manufactured_housing` packs use it too; land
 retains its omission of income metrics. The eight corrected packs and land move to 1.0.1; multifamily moves to 1.0.2
 for the shared LTV denominator correction.
 
@@ -132,7 +134,7 @@ a `variant=` key. Every metric that reads `debt_structure` must then say which
 block it means (Protocol §VIII.2).
 
 - **Lender-side metrics declare `senior`.** In every built-in pack, `ltv`,
-  `ltc`, `dscr`, `debt_yield` and `loan_per_*` (46 declarations across ten
+  `ltc`, `dscr`, `debt_yield` and `loan_per_*` (56 declarations across twelve
   packs) declare `section_roles: { debt_structure: 'senior' }`. This mirrors the
   validator's registered senior preference for CC-02/03/05/09, stated on the
   declaration rather than inherited.
@@ -367,10 +369,10 @@ the `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` worked example.
 > found to be zero*. A test pins the distinction, because every downstream reader
 > — renderer, Excel, receipt, agent — depends on it.
 
-There are **ten builtin packs**. `mixed_use` composes stated component
+There are **twelve builtin packs**. `mixed_use` composes stated component
 subtotals and allocations under RFC 0019 instead of blending incompatible
 sizes. Each class's metrics remain in the normative dictionary, including the
-shared cash-on-cash definition across the nine income classes. Official new
+shared cash-on-cash definition across the eleven income classes. Official new
 classes follow the builtin contract; modules support private extensions.
 
 ## Who consumes the pack
@@ -467,3 +469,9 @@ extensions use modules.
 > pack pass, something is wrong — those tests assert that an *unknown* class
 > resolves to nothing, which stays true no matter how many real classes ship.
 > `__unregistered_test_class__` must never be added to the `AssetClass` union.
+
+## Official builtin classes (RFC 0080, Unreleased)
+
+All twelve official classes are full builtins, including `data_center` and `manufactured_housing`. Their normative metric definitions and size selectors live in `spec/metrics/`, with bidirectional pack/registry parity tests. Both new packs use all six RFC 0079 standard income definitions, including equity_total-based cash-on-cash. Source size is `property.critical_it_load_kw` or `property.total_sites`, mirrored against the detailed capacity/site count. They have Excel layouts and starter defaults, and take the base stage lists verbatim like multifamily (no stage overlay; a missing `rent_roll` is DQ-06). Default tables are owner-approved starter proxies (2026-10-10), never verification inputs; data center publishes no expense-ratio default, so producers state it.
+
+Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only, retained in the publish set until the transition release. Legacy `org.uwmd.data_center` reads without source/digest mutation (CLS-01); official module dependencies are satisfied by core (CLS-02). Third-party classes remain module extensions.

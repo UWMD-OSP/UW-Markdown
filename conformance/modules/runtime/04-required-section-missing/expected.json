@@ -1,11 +1,6 @@
 {
-  "description": "hotel_metrics removed. The module declares it required, so MOD-SECTION-MISSING is an error naming the module that asked. The calcs that read it degrade to null rather than throwing. CC-MOD-HOSP-03 still fires: hotel_brand is untouched, and one missing section does not suppress findings about the sections that are present.",
+  "description": "RFC 0080 compatibility shell declares and executes no financial content; class controls moved to conformance/builtin-classes.",
   "module": "@uwmd/module-hospitality",
-  "expected_calcs": {
-    "revpar": null
-  },
-  "expected_codes": [
-    "CC-MOD-HOSP-03",
-    "MOD-SECTION-MISSING"
-  ]
+  "expected_calcs": {},
+  "expected_codes": []
 }

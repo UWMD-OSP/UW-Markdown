@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-dc-revenue.schema.json",
+  "title": "Revenue",
+  "type": "object",
+  "required": [
+    "lease_type",
+    "rent_per_kw_month"
+  ],
+  "properties": {
+    "lease_type": {
+      "type": "string",
+      "enum": [
+        "powered_shell",
+        "wholesale_turnkey",
+        "retail_colocation",
+        "hyperscale_build_to_suit"
+      ],
+      "description": "Predominant lease structure."
+    },
+    "rent_per_kw_month": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Weighted-average contracted rent, $/kW/month, on contracted_it_load_kw."
+    },
+    "interconnection_revenue_annual": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Cross-connects and meet-me-room revenue, annual."
+    },
+    "services_revenue_annual": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Remote hands and other services revenue, annual."
+    },
+    "market_rent_per_kw_month": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Comp rent, $/kW/month. Null means no comp set was obtained — which is different from a comp set showing zero."
+    }
+  }
+}
