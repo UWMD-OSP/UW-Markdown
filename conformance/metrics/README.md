@@ -81,7 +81,8 @@ exact address and values are in `expected.json`.
 
 ## Controls
 
-The independent controls cover statement tampering; missing/null/type-invalid
+The independent controls verify the import graph excludes packs, defaults,
+cascade and the core barrel. They cover statement tampering; missing/null/type-invalid
 inputs; zero division; dictionary formula selection; cent-level quantization of
 a noisy binary64 amount over $100k and a one-cent negative; negative half cents;
 class-scoped cash-on-cash definitions; lazy stated-year-1 selection (including

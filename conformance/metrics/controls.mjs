@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { parseUWFile } from '../../packages/uwmd-core/dist/parser.js';
 import { verifyStatedMetric } from './verifier.mjs';
 
@@ -16,6 +16,21 @@ export function controls(root) {
     debt_structure: block('debt_structure', { annual_debt_service: 25000, loan_amount: 75000 }),
   });
   return [
+    ['verifier-import-graph-excludes-starter-engine', () => {
+      const visited = new Set();
+      function inspect(file) {
+        if (visited.has(file)) return;
+        visited.add(file);
+        const portable = file.replaceAll('\\', '/');
+        assert.doesNotMatch(portable, /\/(?:packs\/|defaults\.js$|cascade\.js$)/);
+        assert.notEqual(file, resolve(root, 'packages/uwmd-core/dist/index.js'));
+        const source = readFileSync(file, 'utf8');
+        for (const match of source.matchAll(/\b(?:import|export)[\s\S]*?\bfrom\s*['"](\.[^'"]+)['"]/g)) {
+          inspect(resolve(dirname(file), match[1]));
+        }
+      }
+      inspect(resolve(root, 'conformance/metrics/verifier.mjs'));
+    }],
     ['stated-value-tampering', () => {
       assert.equal(verifyStatedMetric(metric('dscr'), simple(), 2).state, 'verified');
       assert.equal(verifyStatedMetric(metric('dscr'), simple(), 2.0001).state, 'failed');
@@ -91,11 +106,13 @@ export function controls(root) {
       assert.equal(verifyStatedMetric(m, p, 100).state, 'unverifiable');
       p.sections.property.content.gross_acres = '100';
       assert.equal(verifyStatedMetric(m, p, 100).state, 'unverifiable');
-      p.sections.property.content.gross_acres = Infinity;
+      p.sections.property.content.gross_acres = Number.POSITIVE_INFINITY;
       assert.equal(verifyStatedMetric(m, p, 100).state, 'unverifiable');
     }],
     ['inputs-and-definition-remain-unchanged', () => {
-      const m = metric('dscr'), p = simple(), before = JSON.stringify({ m, p });
+      const m = metric('dscr');
+      const p = simple();
+      const before = JSON.stringify({ m, p });
       verifyStatedMetric(m, p, 2);
       assert.equal(JSON.stringify({ m, p }), before);
     }],
