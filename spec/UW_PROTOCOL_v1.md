@@ -369,9 +369,10 @@ reads it.
 
 ### II.6 Self-certification
 
-To self-certify, run every conformance case whose required
-capabilities (§II.6a.5) are a subset of the capabilities the
-implementation claims, and verify the output matches. A
+To self-certify, run the cases owned by the claimed tier (including Reader
+for Verifier) and explicitly claimed profiles whose required capabilities
+(§II.6a.5) are a subset of the capabilities the implementation claims, and
+verify the output matches. Publish starter-product results separately. A
 self-certification claim MUST be published together with the capability
 list it was run against, and with the number of cases skipped; "passes
 the corpus" without that list does not identify what was run.
@@ -507,8 +508,10 @@ baselines.
 #### II.6a.5 Required capabilities and skips
 
 Each conformance case MAY declare `requires_capabilities`, an array of
-`ViewerCapability` values. A case with no such key is required of every
-implementation.
+`ViewerCapability` values. Within the selected tier/profile scope, a
+case with no such key has no capability-based exemption. Unclaimed
+profiles remain `unverifiable` (§II.3), and starter-product checks remain
+outside Protocol conformance (§II.4).
 
 An implementation driven by the conformance driver **MUST** populate
 `capabilities` in its `manifest` output. An absent or empty list

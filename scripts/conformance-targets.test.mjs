@@ -23,9 +23,11 @@ test('case and ownership schemas mirror protocol closed vocabularies', () => {
   const corpusSchema = json('../spec/schemas/conformance-corpus.schema.json');
   assert.deepEqual(schema.properties.target.enum, [...CONFORMANCE_TARGETS]);
   assert.deepEqual(corpusSchema.properties.cases.items.properties.target.enum, [...CONFORMANCE_TARGETS]);
+  ajv.addSchema(json('../spec/schemas/implementation-manifest.schema.json'));
   const validate = ajv.compile(schema);
   for (const c of cases) assert.ok(validate(c), `${c.id}: ${JSON.stringify(validate.errors)}`);
   assert.ok(ajv.compile(corpusSchema)(corpus));
+  assert.equal(validate({ ...cases[0], requires_capabilities: ['unknown-capability'] }), false);
   assert.equal(validate({ ...cases[0], target: 'unknown' }), false);
   assert.equal(validate({ ...cases[0], target: 'tier-1-reader' }), false);
 });
