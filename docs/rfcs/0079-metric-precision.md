@@ -215,8 +215,9 @@ the dictionary, source readers, section resolver, expression evaluator and this
 comparison boundary. Pack expressions and Excel named inputs change together,
 including mixed-use property inputs. Full reporting quantization is unchanged.
 The receipt verifier separately removes the obsolete relative comparison.
-Release preparation pairs it with Protocol 3.0.0 and core/CLI 3.0.0 under
-Format 2.1.
+Release preparation paired it with Protocol 3.0.0 and core/CLI 3.0.0 under
+Format 2.1; the `v3.0.0` release published it (see
+[Publication and verification](#publication-and-verification-2026-10-11)).
 
 ## Alternatives considered
 
@@ -238,3 +239,18 @@ RFC 0078's independent verification boundary; RFC 0023's quantization contract;
 CC-02 and capital-stack LTV; Format §4.19 and multifamily's total-equity correction.
 The monetary/ratio minimums use the reporting examples linked in Decisions;
 these are UWMD policy choices, not standards imposed by those publishers.
+
+## Publication and verification (2026-10-11)
+
+Annotated `v3.0.0` targets the release-prepared merge
+`44ab7347a8a3054fc377e19e85f89ad6f1539dea` (PR #305).
+[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
+succeeded and published core/CLI 3.0.0, signing 0.2.26, batch 0.8.21, Excel
+0.9.14, report 0.8.26, lake 0.2.10 and both module packages 0.2.0, pairing
+Stable Protocol 3.0.0 with Format 2.1. Independent registry, provenance,
+published-file, delivered-CLI (332/332 portable cases, no skips) and consumer
+checks passed; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
+This RFC's status already read `implemented` from PR #301, before release
+preparation; the verified publication confirms it. The immutable release tag
+and every normative section above remain unchanged.

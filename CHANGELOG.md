@@ -10,6 +10,34 @@ protocol, and each package each carry an independent semver).
 
 ## [3.0.0] - 2026-10-11
 
+### Released
+
+Published core/CLI **3.0.0**, signing **0.2.26**, batch **0.8.21**, Excel
+**0.9.14**, report **0.8.26**, lake **0.2.10** and
+`@uwmd/module-hospitality` and `@uwmd/module-data-center` **0.2.0** from
+annotated `v3.0.0` on `44ab7347a8a3054fc377e19e85f89ad6f1539dea`.
+[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
+succeeded through trusted publishing with provenance; it is the first run to
+publish Excel, report and lake. Every registry version and `latest` matches,
+and all nine `gitHead` values name the authorized commit. Integrity, registry
+and DSSE signatures, authenticated TUF/Fulcio/SCT trust, Rekor timestamps and
+inclusion proofs, and all 638 published file contents verify. The
+registry-installed CLI reports Protocol 3.0.0 / Format 2.1 and passes
+**332/332** portable cases with no skips (Reader 16, Verifier 280, module
+profile 1, starter products 35). An isolated consumer confirms the published
+core claims the `verifier` tier and carries all twelve builtin classes, both
+module shells declare nothing and pin core 3.0.0, and strict TypeScript
+compiles against all nine packages with `skipLibCheck: false` and no
+Anthropic SDK. RFCs 0078 and 0080 are `implemented`, and RFC 0079's
+`implemented` status is confirmed; Protocol **3.0.0** is Stable, paired with
+Format **2.1**. The owner deprecated both module package names on npm on
+2026-10-11, every version, as RFC 0080 §6 requires. Lake **0.2.9**, published
+by hand from `v2.21.0` on 2026-10-11 so lake's trusted publisher could be
+created, is not part of this release. No other package generation was
+published. The immutable tagged tree keeps its neutral preparation records.
+Exact evidence is in `docs/releases/3.0.0-publication-evidence.json` and the
+verification method in `docs/releases/3.0.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **3.0.0** pair with Protocol **3.0.0** and Format **2.1**.
@@ -22,9 +50,11 @@ they are now declaration-free compatibility shells (RFC 0080 §6); 0.2.0 is
 their final version and matches their manifest contracts (**0.2.0**). The
 workflow scope is nine packages: core, CLI, signing, batch, Excel, report,
 lake, `@uwmd/module-hospitality` and `@uwmd/module-data-center`. RFCs 0078,
-0079 and 0080 stay `accepted` in the tagged preparation state.
+0079 and 0080 stayed `accepted` in the tagged preparation state (RFC 0079's
+own status already read `implemented` from #301); the Released evidence above
+records the verified lifecycle transition.
 
-### Contract — Protocol 3.0.0 (RFCs 0078, 0079, 0080), Format 2.1
+### Released contract — Protocol 3.0.0 (RFCs 0078, 0079, 0080), Format 2.1
 
 - **Protocol 3.0.0** is the verification contract (RFC 0078). Conformance is
   a **Reader** or **Verifier** tier plus optional `module`, `integrity`,
