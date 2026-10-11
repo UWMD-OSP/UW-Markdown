@@ -54,11 +54,12 @@ const UNREGISTERED_CLASS = '__unregistered_test_class__';
 // A blank named cell is represented by null; Excel distinguishes blank from 0.
 function excelValue(formula: string): number | null {
   const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIFOR]+$/.test(expression), expression).toBe(true);
+  expect(/^[\d. +\-*/(),!=>nullIFORROUND]+$/.test(expression), expression).toBe(true);
   // eslint-disable-next-line no-new-func
-  return new Function('IF', 'OR', `return (${expression});`)(
+  return new Function('IF', 'OR', 'ROUND', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
     (...tests: boolean[]) => tests.some(Boolean),
+    quantizeDecimal,
   ) as number | null;
 }
 

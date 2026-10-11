@@ -517,7 +517,7 @@ function compileFrontmatter(
       value: bridgeVersion,
       reason: bridgeVersion === '2.1'
         ? 'RFC 0080 new official classes require Format 2.1 with nested provenance.'
-        : 'RFC 0017 pins the existing-class Lite bridge to UW semantic format 1.1 (format v2 spec §7).',
+        : 'RFC 0017 pins the Lite bridge to UW semantic format 1.1; Lite is a 1.x-format source representation until its own RFC moves it (format v2 spec §7).',
     });
   }
 
