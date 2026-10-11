@@ -1660,7 +1660,7 @@ async function runBuiltinClassControls() {
     const computed = Object.fromEntries((getPackForAssetClass(parsed.frontmatter.asset_class)?.calculations ?? [])
       .map(c => { const result = evaluateCalc(c, { parsed, prior_results: {}, locale: 'en-US' }); return [c.id, result.value]; }));
     const codes = [...new Set(validateUWFile(parsed).issues.map(i => i.code))]
-      .filter(code => /^CC-(?:DC|MH|HOSP)-/.test(code) || ['CLS-03', 'CLS-04', 'MOD-RULE-ERROR'].includes(code)).sort();
+      .filter(code => /^CC-(?:DC|MH|HOSP)-/.test(code) || ['CLS-03', 'CLS-04', 'MOD-RULE-ERROR', 'MOD-CALC-ERROR'].includes(code)).sort();
     const problems = [];
     for (const [key, want] of Object.entries(expected.expected_calcs)) if (computed[key] !== want) problems.push(`${key}: ${computed[key]} != ${want}`);
     if (!isDeepStrictEqual(codes, [...new Set(expected.expected_codes)].sort())) problems.push(`codes ${codes} != ${expected.expected_codes}`);

@@ -110,6 +110,8 @@ function fixture(opts: { multifamilyAllocation?: number | null } = {}): string {
 // so emitExcelFormula can emit every formula and the parity substitution is a
 // plain word-boundary replace.
 const ALL_PATHS = [
+  'components.data_center.net_operating_income', 'components.data_center.allocation_pct', 'components.data_center.critical_it_load_kw',
+  'components.manufactured_housing.net_operating_income', 'components.manufactured_housing.allocation_pct', 'components.manufactured_housing.total_sites',
   'noi_model.net_operating_income',
   'valuation.purchase_price',
   'valuation.underwritten_value',
@@ -183,6 +185,8 @@ describe('MIXED_USE_PACK', () => {
     expect(ids).toEqual([
       'cap_rate',
       'cash_on_cash',
+      'data_center_noi_share',
+      'data_center_price_per_kw',
       'debt_yield',
       'dscr',
       'hospitality_gross_operating_profit',
@@ -190,6 +194,8 @@ describe('MIXED_USE_PACK', () => {
       'industrial_noi_share',
       'industrial_price_psf',
       'ltv',
+      'manufactured_housing_noi_share',
+      'manufactured_housing_price_per_site',
       'multifamily_noi_share',
       'multifamily_price_per_unit',
       'office_noi_share',

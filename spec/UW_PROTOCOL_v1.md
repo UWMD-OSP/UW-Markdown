@@ -652,6 +652,7 @@ capability is unconditional: every implementation owes it.
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
+| `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin identity compatibility and field contracts (RFC 0080). | `validate` | warning / info / error |
 | `CC-DC-NN` | Data-center class rules (Format §4.29–31). | `validate` | warning / error |

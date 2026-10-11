@@ -30,7 +30,7 @@ const NAMED_RANGES = new Map<string, string>([
   ['hotel_metrics.key_count', 'hotel_metrics_key_count'],
   ['hotel_metrics.market_revpar', 'hotel_metrics_market_revpar'],
   ['hotel_food_beverage.fb_revenue', 'hotel_food_beverage_fb_revenue'],
-  ['hotel_food_beverage.fb_cost_of_goods', 'hotel_food_beverage_fb_cost_of_goods'],
+  ['hotel_food_beverage.fb_cogs', 'hotel_food_beverage_fb_cogs'],
   ['hotel_food_beverage.fb_labor', 'hotel_food_beverage_fb_labor'],
 
   ['noi_model.gross_operating_profit', 'gross_operating_profit'],

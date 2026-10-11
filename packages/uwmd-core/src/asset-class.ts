@@ -241,7 +241,11 @@ export function declaredModuleDependencies(
   const out: { id: string; version?: string }[] = [];
   for (const entry of raw) {
     if (typeof entry === 'string') {
-      out.push({ id: entry });
+      // Historical official examples used an object-list spelling which the
+      // restricted YAML reader retains as a literal scalar. Recognize exactly
+      // these core-satisfied dependencies without rewriting parsed frontmatter.
+      const legacyOfficial = /^id:\s*(org\.uwmd\.(?:datacenters|hospitality))$/.exec(entry);
+      out.push({ id: legacyOfficial?.[1] ?? entry });
       continue;
     }
     if (typeof entry === 'object' && entry !== null && typeof (entry as { id?: unknown }).id === 'string') {

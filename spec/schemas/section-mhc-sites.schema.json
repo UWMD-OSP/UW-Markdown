@@ -40,7 +40,10 @@
       "description": "Monthly home rent per park-owned home across all owned homes, vacant at stated asking rent; excludes pad rent. Required when homes exist; absent or null otherwise."
     },
     "as_of_date": {
-      "description": "Presence only in first scope. Date validity is a separate core RFC."
+      "description": "Presence only in first scope. Date validity is a separate core RFC.",
+      "not": {
+        "type": "null"
+      }
     }
   },
   "allOf": [

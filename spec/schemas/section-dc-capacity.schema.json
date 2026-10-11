@@ -15,7 +15,7 @@
     "critical_it_load_kw": {
       "type": "number",
       "minimum": 0,
-      "description": "Commissioned critical IT load, in kW \u00e2\u20ac\u201d the capacity that can be sold today."
+      "description": "Commissioned critical IT load, in kW — the capacity that can be sold today."
     },
     "planned_it_load_kw": {
       "type": "number",
@@ -54,7 +54,7 @@
         "2n",
         "2n_plus_1"
       ],
-      "description": "Electrical/mechanical topology. The fact, not the Uptime tier \u00e2\u20ac\u201d the tier is a claim about it."
+      "description": "Electrical/mechanical topology. The fact, not the Uptime tier — the tier is a claim about it."
     },
     "raised_floor_sf": {
       "type": [

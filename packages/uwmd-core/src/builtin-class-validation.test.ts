@@ -14,7 +14,7 @@ import { createModuleRegistry } from './modules.js';
 import { getSizeIntensive, resolveDealSize } from './protocol.js';
 const root = resolve(__dirname, '../../..');
 const corpus = resolve(root, 'conformance/builtin-classes');
-const classCodes = (codes: string[]) => [...new Set(codes)].filter(c => /^CC-(DC|MH|HOSP)-/.test(c) || ['CLS-03', 'CLS-04', 'MOD-RULE-ERROR'].includes(c)).sort();
+const classCodes = (codes: string[]) => [...new Set(codes)].filter(c => /^CC-(DC|MH|HOSP)-/.test(c) || ['CLS-03', 'CLS-04', 'MOD-RULE-ERROR', 'MOD-CALC-ERROR'].includes(c)).sort();
 
 describe('RFC 0080 official builtin controls', () => {
   for (const name of readdirSync(corpus).filter(n => /^\d+/.test(n))) {
@@ -25,7 +25,7 @@ describe('RFC 0080 official builtin controls', () => {
       expect(classCodes(validateUWFile(parsed).issues.map(i => i.code))).toEqual([...new Set(expected.expected_codes)].sort());
       const results = Object.fromEntries((getPackForAssetClass(parsed.frontmatter.asset_class)?.calculations ?? []).map(c => {
         const result = evaluateCalc(c, { parsed, prior_results: {}, locale: 'en-US' });
-        if (Object.hasOwn(expected.expected_calcs, c.id)) expect(result.ok, c.id + ':' + result.error?.message).toBe(true);
+        if (typeof expected.expected_calcs[c.id] === 'number') expect(result.ok, c.id + ':' + result.error?.message).toBe(true);
         return [c.id, result.value];
       }));
       for (const [id, value] of Object.entries(expected.expected_calcs)) expect(results[id], id).toBe(value);

@@ -1,7 +1,7 @@
 // Standard class content extracted from the official manifests (RFC 0080).
 import type { ModuleSectionDecl, ModuleValidationDecl, SectionViewModel } from './protocol.js';
 
-export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { sections: ModuleSectionDecl[]; validations: ModuleValidationDecl[]; view_models: SectionViewModel[] }>> = {
+export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: string[]; sections: ModuleSectionDecl[]; validations: ModuleValidationDecl[]; view_models: SectionViewModel[] }>> = {
   "data_center": {
     "sections": [
       {
@@ -355,6 +355,19 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { sections: ModuleSe
           }
         ]
       }
+    ],
+    "calculation_ids": [
+      "utilization",
+      "commissioned_share",
+      "facility_load_kw",
+      "annual_facility_kwh_at_contract",
+      "annual_power_cost",
+      "power_cost_per_kw_month",
+      "annual_rent_revenue",
+      "blended_revenue_per_kw_month",
+      "rent_index",
+      "price_per_commissioned_kw",
+      "noi_per_commissioned_kw"
     ]
   },
   "hospitality": {
@@ -601,6 +614,13 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { sections: ModuleSe
           }
         ]
       }
+    ],
+    "calculation_ids": [
+      "revpar",
+      "total_room_revenue",
+      "room_revenue_per_key",
+      "revpar_index",
+      "fb_gross_margin"
     ]
   },
   "manufactured_housing": {
@@ -648,7 +668,10 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { sections: ModuleSe
               "description": "Monthly home rent per park-owned home across all owned homes, vacant at stated asking rent; excludes pad rent. Required when homes exist; absent or null otherwise."
             },
             "as_of_date": {
-              "description": "Presence only in first scope. Date validity is a separate core RFC."
+              "description": "Presence only in first scope. Date validity is a separate core RFC.",
+              "not": {
+                "type": "null"
+              }
             }
           },
           "allOf": [
@@ -788,6 +811,14 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { sections: ModuleSe
           }
         ]
       }
+    ],
+    "calculation_ids": [
+      "physical_occupancy",
+      "annual_pad_rent_potential",
+      "poh_share",
+      "annual_poh_home_rent_potential",
+      "price_per_site",
+      "noi_per_site"
     ]
   }
 };

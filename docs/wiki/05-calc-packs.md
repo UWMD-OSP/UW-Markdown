@@ -2,8 +2,8 @@
 
 A **calc pack** is a `ModuleManifest` that bundles a set of derived-metric
 declarations for an asset class. Their normative source is now the
-[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2): 130
-class-scoped calculations across ten builtin packs, plus the primary-size
+[metric dictionary](../../spec/metrics/README.md) (RFC 0078 Phase 2, extended by RFC 0080): 171
+class-scoped calculations across twelve builtin packs, plus the primary-size
 registry. Packs derive their definitions from that contract as TypeScript
 mirrors, enforced by exact, bidirectional tests rather than runtime generation.
 Every consumer (web editor, Excel converter, CLI, conformance, refinement)
@@ -47,6 +47,8 @@ File | Role
 `packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
 `packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
 `packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
+`packs/data-center.ts` | `DATA_CENTER_PACK` — twenty data-center metrics
+`packs/manufactured-housing.ts` | `MANUFACTURED_HOUSING_PACK` — thirteen manufactured-housing metrics
 `packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
 `packs/mixed-use.ts` | `MIXED_USE_PACK` — property metrics and component calculations
 `packs/metric-dictionary.test.ts` | Every pack declaration and size row equals its normative dictionary entry, in both directions
@@ -132,7 +134,7 @@ a `variant=` key. Every metric that reads `debt_structure` must then say which
 block it means (Protocol §VIII.2).
 
 - **Lender-side metrics declare `senior`.** In every built-in pack, `ltv`,
-  `ltc`, `dscr`, `debt_yield` and `loan_per_*` (46 declarations across ten
+  `ltc`, `dscr`, `debt_yield` and `loan_per_*` (56 declarations across twelve
   packs) declare `section_roles: { debt_structure: 'senior' }`. This mirrors the
   validator's registered senior preference for CC-02/03/05/09, stated on the
   declaration rather than inherited.
@@ -367,7 +369,7 @@ the `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` worked example.
 > found to be zero*. A test pins the distinction, because every downstream reader
 > — renderer, Excel, receipt, agent — depends on it.
 
-There are **ten builtin packs**. `mixed_use` composes stated component
+There are **twelve builtin packs**. `mixed_use` composes stated component
 subtotals and allocations under RFC 0019 instead of blending incompatible
 sizes. Each class's metrics remain in the normative dictionary, including the
 shared cash-on-cash definition across the nine income classes. Official new

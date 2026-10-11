@@ -55,6 +55,7 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   for (const decl of getPackForAssetClass(assetClass)?.calculations ?? []) {
     const result = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
     if (result.ok) prior[decl.id] = result.value;
+    else if (content.calculation_ids.includes(decl.id)) issues.push({ code: 'MOD-CALC-ERROR', severity: 'error', message: `Builtin ${assetClass} calculation ${decl.id} failed: ${result.error?.message}` });
   }
   for (const rule of content.validations) {
     const result = evaluateCalc({ id: rule.code, label: rule.code, formula: rule.rule, deterministic: true },
