@@ -506,7 +506,7 @@ function compileFrontmatter(
   const dealName = readRequiredString(document.frontmatter, 'deal_name', report);
   const created = readRequiredString(document.frontmatter, 'created', report);
   if (!dealId || !dealName || !created) return null;
-  const bridgeVersion = FORMAT_21_CLASSES.has(String(document.frontmatter['asset_class'])) ? '2.1' : bridgeVersion;
+  const bridgeVersion = FORMAT_21_CLASSES.has(String(document.frontmatter['asset_class'])) ? '2.1' : UW_LITE_BRIDGE_FORMAT_VERSION;
   const semanticVersion =
     typeof document.frontmatter['uw_version'] === 'string'
       ? document.frontmatter['uw_version']
