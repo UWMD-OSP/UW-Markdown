@@ -39,7 +39,7 @@ function block(section: string, content: Record<string, unknown>): UWBlock {
 function file(sections: Record<string, UWBlock>): ParsedUWFile {
   return {
     frontmatter: {
-      uw_version: '1.1', deal_id: 'cs_test', deal_name: 'CS Test', asset_class: 'multifamily',
+      uw_version: '3.0', deal_id: 'cs_test', deal_name: 'CS Test', asset_class: 'multifamily',
     } as unknown as ParsedUWFile['frontmatter'],
     sections, prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
     extensions: {}, superseded: {}, raw: '',

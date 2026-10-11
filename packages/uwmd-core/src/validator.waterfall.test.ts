@@ -21,7 +21,7 @@ ${opts.series ?? `{
 \`\`\`
 `;
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-WF
 asset_class: multifamily
 ---

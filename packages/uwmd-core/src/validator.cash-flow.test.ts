@@ -10,7 +10,7 @@ import { parseUWFile } from './parser.js';
 
 function doc(cashFlowJson: string, variant = 'base'): string {
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-CF
 asset_class: multifamily
 ---

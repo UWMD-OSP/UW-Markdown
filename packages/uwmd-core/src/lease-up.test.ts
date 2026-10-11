@@ -111,7 +111,7 @@ describe('verifyLeaseUpSchedule — unverifiable', () => {
 
 describe('leaseUpContext — the §XIII denominator', () => {
   const doc = (propertyJson: string, assetClass = 'office') => parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LU-CTX
 asset_class: ${assetClass}
 ---

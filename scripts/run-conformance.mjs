@@ -3359,7 +3359,7 @@ async function runLocale() {
   }
   const base = readFileSync(join(LOCALE_DIR, 'deal.uwx.md'), 'utf8');
   const withLocale = (tag) =>
-    tag === 'en-US' ? base : base.replace("uw_version: \"3.0\"", `uw_version: "1.1"\nlocale: ${tag}`);
+    tag === 'en-US' ? base : base.replace("uw_version: \"3.0\"", `uw_version: "3.0"\nlocale: ${tag}`);
 
   const scenarios = readdirSync(LOCALE_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory())

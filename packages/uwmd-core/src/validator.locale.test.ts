@@ -10,7 +10,7 @@ import { SUPPORTED_LOCALES } from './protocol.js';
 
 function doc(localeLine: string): string {
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LOC
 deal_name: "Locale Deal"
 created: "2026-09-01T00:00:00Z"

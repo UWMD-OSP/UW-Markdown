@@ -5,7 +5,7 @@ import type { ParsedUWFile } from './types.js';
 
 const envelope = toUWEnvelope({
   frontmatter: {
-    uw_version: '1.1',
+    uw_version: '3.0',
     deal_id: 'uw_codecs',
     deal_name: 'Codec registry',
   } as ParsedUWFile['frontmatter'],

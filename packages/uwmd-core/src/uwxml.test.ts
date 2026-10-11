@@ -9,7 +9,7 @@ import { parseUWXml, parseUWXmlVerified, stringifyUWXml, UWXmlError } from './uw
 
 const envelope = toUWEnvelope({
   frontmatter: {
-    uw_version: '1.1',
+    uw_version: '3.0',
     deal_id: 'uw_xml',
     deal_name: 'XML & Unicode — 東京',
   } as ParsedUWFile['frontmatter'],

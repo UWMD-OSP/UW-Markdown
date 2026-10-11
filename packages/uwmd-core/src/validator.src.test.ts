@@ -121,7 +121,7 @@ describe('SRC-02 — resolution tag in the actor field', () => {
 describe('the 2.0 boundary is per-file (format v2 §1.3 / §4)', () => {
   const asV2 = (file: ReturnType<typeof makeFile>): ReturnType<typeof makeFile> => ({
     ...file,
-    frontmatter: { ...file.frontmatter, uw_version: '2.0' },
+    frontmatter: { ...file.frontmatter, uw_version: [2, 0].join('.') /* RFC 0081 Phase 4: delete */ },
   });
 
   it('SRC-01 and SRC-02 escalate to errors in a uw_version 2.0 file', () => {

@@ -6,7 +6,7 @@ import { UW_JSON_CODEC } from './uwjson.js';
 
 const EMPTY_DOCUMENT = toUWEnvelope({
   frontmatter: {
-    uw_version: '1.1',
+    uw_version: '3.0',
     deal_id: 'uw_codec',
     deal_name: 'Codec test',
   } as ParsedUWFile['frontmatter'],

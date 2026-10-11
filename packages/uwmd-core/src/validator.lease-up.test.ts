@@ -11,7 +11,7 @@ import { parseUWFile } from './parser.js';
 function doc(leaseUpJson: string, opts: { variant?: string; rentRoll?: boolean; noi?: number | null } = {}): string {
   const { variant = 'base', rentRoll = true, noi = 480000 } = opts;
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LU
 asset_class: office
 ---

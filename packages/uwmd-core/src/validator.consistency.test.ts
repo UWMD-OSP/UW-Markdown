@@ -34,7 +34,7 @@ function file(
 ): ParsedUWFile {
   return {
     frontmatter: {
-      uw_version: '1.1',
+      uw_version: '3.0',
       deal_id: 'uw_2026_VALIDATOR',
       deal_name: 'Validator Fixture',
       asset_class: 'multifamily',

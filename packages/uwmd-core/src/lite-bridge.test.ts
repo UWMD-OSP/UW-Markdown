@@ -53,7 +53,7 @@ describe('compileUWLite', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.envelope.frontmatter).toMatchObject({
-      uw_version: '1.1',
+      uw_version: '3.0',
       deal_id: 'uw_lite_test',
       deal_name: 'Lite Test',
     });

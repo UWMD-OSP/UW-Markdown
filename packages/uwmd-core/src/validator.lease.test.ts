@@ -24,7 +24,7 @@ const STEPS = [
 
 function doc(...tenants: Record<string, unknown>[]): string {
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LSE
 asset_class: office
 ---

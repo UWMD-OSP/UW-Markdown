@@ -320,7 +320,7 @@ describe('render — size intensives (RFC 0027)', () => {
 function noiDoc(content: Record<string, unknown>): string {
   const meta = '"_meta": { "section": "noi_model", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-10-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }';
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_NOI"
 deal_name: "NOI Read Fixture"
 created: "2026-10-01T00:00:00Z"

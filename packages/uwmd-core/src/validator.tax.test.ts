@@ -33,7 +33,7 @@ ${JSON.stringify(dcf, null, 2)}
 \`\`\`
 `;
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-TAX
 asset_class: multifamily
 ---

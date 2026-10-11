@@ -31,7 +31,7 @@ ${JSON.stringify({ uses }, null, 2)}
 \`\`\``);
   }
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-HDG
 asset_class: office
 ---
@@ -253,7 +253,7 @@ describe('RFC 0075 — the hedge is read from the senior loan', () => {
   /** A `debt_structure` variant map, one block per [variant, content]. */
   const tranches = (...blocks: Array<[string, Record<string, unknown>]>): string[] =>
     validateUWFile(parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-HDG
 asset_class: office
 ---
@@ -297,7 +297,7 @@ ${JSON.stringify(content, null, 2)}
 \`\`\``;
   const issuesOf = (debts: Blocks, sources: Blocks = []) =>
     validateUWFile(parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-HDG
 asset_class: office
 ---

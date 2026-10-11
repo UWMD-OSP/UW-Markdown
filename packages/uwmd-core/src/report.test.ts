@@ -16,7 +16,7 @@ function loadParkview() {
 
 function minimalFile(dealName = 'Minimal Deal') {
   return parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_REPORT"
 deal_name: "${dealName}"
 created: "2026-01-01T00:00:00Z"

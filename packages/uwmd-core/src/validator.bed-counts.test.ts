@@ -29,7 +29,7 @@ function doc(
   const property = totalBeds === undefined ? {} : { total_beds: totalBeds };
   const rollBody = envelope ? { content: roll } : roll;
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-BED
 asset_class: ${assetClass}
 ---
@@ -236,7 +236,7 @@ describe('RFC 0069 — what the family never does', () => {
 \`\`\`
 `;
     const source = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-BED
 asset_class: student_housing
 ---

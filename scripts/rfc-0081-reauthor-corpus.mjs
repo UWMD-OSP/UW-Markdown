@@ -261,7 +261,7 @@ async function refreshArtifacts() {
   if(!agent.success)throw new Error(agent.error);if(cursor!==cassette.exchanges.length)throw new Error('Replay dropped a provider call');
   writeFileSync(replay+'/cassette.json',JSON.stringify(cassette,null,2)+'\n');writeFileSync(replay+'/after.uwx.md',agent.updatedContent);
 }
-if(!process.argv.includes('--artifacts-only')) for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !f.startsWith('spec/') && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) await processFile(file);
-if(write) await refreshArtifacts();
+if(!process.argv.includes('--artifacts-only')) for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !f.startsWith('spec/') && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) if (!process.argv.includes('--test-headers-only') || file.endsWith('.test.ts')) await processFile(file);
+if(write && !process.argv.includes('--test-headers-only')) await refreshArtifacts();
 if(process.argv.includes('--report')) writeFileSync(process.argv[process.argv.indexOf('--report')+1],JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({write,files:Object.keys(report.files).length,areas:Object.values(report.files).reduce((a,k)=>(a[k]=(a[k]??0)+1,a),{}),refusals:report.refusals.length,conflicts:report.conflicts.length,dropped:report.dropped,uses_differences:report.uses_differences}));

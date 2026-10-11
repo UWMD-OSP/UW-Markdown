@@ -6,7 +6,7 @@ import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cas
 const specimen = JSON.parse(readFileSync(new URL('../../../conformance/cash-flow/verify-all-metrics/case.json', import.meta.url), 'utf8')).series;
 const block = (content: unknown, variant = 'base', suffix = '') =>
   `\n\`\`\`json uw:section=cash_flow_series variant=${variant} source=manual v=1${suffix}\n${JSON.stringify(content)}\n\`\`\`\n`;
-const doc = (content: unknown = specimen) => `---\nuw_version: "2.0"\n---\n${block(content)}`;
+const doc = (content: unknown = specimen) => `---\nuw_version: "3.0"\n---\n${block(content)}`;
 
 describe('cash-flow verification CLI boundary', () => {
   it('preserves the existing all-metric verification and source text', () => {

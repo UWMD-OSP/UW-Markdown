@@ -38,7 +38,7 @@ ${JSON.stringify(noi, null, 2)}
 \`\`\``);
   }
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-CAPX
 asset_class: multifamily
 ---

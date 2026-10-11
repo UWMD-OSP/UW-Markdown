@@ -3,7 +3,7 @@ import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 
 const doc = (blocks: Array<[string, Record<string, unknown>, string?]>) => parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 asset_class: multifamily
 ---
 ${blocks.map(([section, content, variant]) => `\`\`\`json uw:section=${section}${variant ? ` variant=${variant}` : ''}

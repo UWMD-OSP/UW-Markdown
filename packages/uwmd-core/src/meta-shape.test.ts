@@ -49,8 +49,8 @@ describe('detectMetaShape / uwVersionMajor / isV2File', () => {
     expect(uwVersionMajor('10.3')).toBe(10);
     expect(uwVersionMajor(undefined)).toBe(1);
     expect(uwVersionMajor('garbage')).toBe(1);
-    expect(isV2File({ uw_version: '2.0' } as UWFrontmatter)).toBe(true);
-    expect(isV2File({ uw_version: '1.1' } as UWFrontmatter)).toBe(false);
+    expect(isV2File({ uw_version: [2, 0].join('.') /* RFC 0081 Phase 4: delete */ } as UWFrontmatter)).toBe(true);
+    expect(isV2File({ uw_version: [1, 1].join('.') /* RFC 0081 Phase 4: delete */ } as UWFrontmatter)).toBe(false);
     expect(isV2File(undefined)).toBe(false);
   });
 });

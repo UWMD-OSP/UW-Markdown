@@ -294,7 +294,7 @@ describe('DQ-06 treats the RFC 0080 builtins exactly like multifamily', () => {
       const sections = fullUnderwrite();
       delete sections.rent_roll;
       if (classSection) sections[classSection] = block(classSection, {});
-      const parsed = file(sections, { asset_class: assetClass, deal_stage: 'full_underwrite', uw_version: '2.1' });
+      const parsed = file(sections, { asset_class: assetClass, deal_stage: 'full_underwrite', uw_version: '3.0' });
       const dq06 = codes(parsed, 'DQ-06');
       expect(dq06.map((i) => i.section)).toEqual(['rent_roll']);
       expect(dq06[0]!.severity).toBe('info');
@@ -307,7 +307,7 @@ describe('DQ-06 treats the RFC 0080 builtins exactly like multifamily', () => {
     it(`${assetClass}: with rent_roll present no DQ-06 fires at full_underwrite`, () => {
       const sections = fullUnderwrite();
       if (classSection) sections[classSection] = block(classSection, {});
-      const parsed = file(sections, { asset_class: assetClass, deal_stage: 'full_underwrite', uw_version: '2.1' });
+      const parsed = file(sections, { asset_class: assetClass, deal_stage: 'full_underwrite', uw_version: '3.0' });
       expect(codes(parsed, 'DQ-06')).toHaveLength(0);
       expect(validateUWFile(parsed).stage_readiness.full_underwrite).toBe(true);
     });

@@ -32,7 +32,7 @@ const TRUE_UP = `"recovery_true_up": [
 
 function doc(tenantBody: string, asOf = '2026-06-30', series = ''): string {
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-REC
 asset_class: office
 ---

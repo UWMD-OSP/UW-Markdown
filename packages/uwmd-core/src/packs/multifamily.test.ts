@@ -22,7 +22,7 @@ function deal(equity: unknown = 3_000_000, allocation?: Record<string, unknown>,
   const blocks = Object.entries(sections).map(([id, value]) =>
     `\n\`\`\`json uw:section=${id} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`,
   ).join('');
-  return parseUWFile(`---\nuw_version: "2.0"\nasset_class: multifamily\n---\n${blocks}`);
+  return parseUWFile(`---\nuw_version: "3.0"\nasset_class: multifamily\n---\n${blocks}`);
 }
 
 describe.each(ASSET_CLASSES.filter(c => c !== 'land'))('%s deal-level cash_on_cash (RFC 0079)', assetClass => {
@@ -88,7 +88,7 @@ describe.each(ASSET_CLASSES)('%s LTV denominator (RFC 0079 revised D2)', assetCl
   const ltv = getPackForAssetClass(assetClass)!.calculations!.find(c => c.id === 'ltv')!;
   const value = (valuation: Record<string, unknown>) => {
     const parsed = parseUWFile(`---
-uw_version: "2.0"
+uw_version: "3.0"
 asset_class: ${assetClass}
 ---
 

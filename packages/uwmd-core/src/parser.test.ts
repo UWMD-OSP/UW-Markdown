@@ -240,7 +240,7 @@ asset_class: multifamily
 \`\`\``;
 
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -475,7 +475,7 @@ describe('deepGet', () => {
 
 describe('document-authored keys never reach the prototype', () => {
   const wrap = (frontmatter: string) => `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "d"
 deal_name: "d"
 created: "2026-01-01"
@@ -798,7 +798,7 @@ tags:
 
 describe('read-time interpretation of a legacy tag in _meta.source', () => {
   const fileWithSource = (source: string): string => `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "test-interp"
 asset_class: multifamily
 ---

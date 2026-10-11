@@ -54,7 +54,7 @@ function block(value: number): UWBlock {
 function document(value = 24): ParsedUWFile {
   return {
     frontmatter: {
-      uw_version: '1.1',
+      uw_version: '3.0',
       deal_id: 'uw_test',
       deal_name: 'Envelope test',
     } as ParsedUWFile['frontmatter'],
