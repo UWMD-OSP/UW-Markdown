@@ -9,6 +9,8 @@ describe('official compatibility shell', () => {
     expect(DATA_CENTER_MODULE.calculations).toEqual([]);
     expect(DATA_CENTER_MODULE.validations).toEqual([]);
     expect(DATA_CENTER_VIEW_MODELS).toEqual([]);
+    expect(Object.isFrozen(DATA_CENTER_MODULE)).toBe(true);
+    expect(Object.isFrozen(DATA_CENTER_VIEW_MODELS)).toBe(true);
     expect(getPackForAssetClass('data_center')!.calculations!.length).toBeGreaterThan(10);
   });
 });

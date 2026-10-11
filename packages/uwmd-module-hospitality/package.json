@@ -1,7 +1,7 @@
 {
   "name": "@uwmd/module-hospitality",
   "version": "0.1.13",
-  "description": "Hospitality reference module for UW Markdown (RFC 0006) — hotel operating, brand, and F&B sections, RevPAR/ADR calculations, and STR-comp validations. The reference consumer of the protocol §X module system.",
+  "description": "Compatibility shell for the retired official hospitality module (RFC 0006). Since RFC 0080 its hotel sections, calculations and rules are part of the builtin hospitality class in @uwmd/core; this package declares nothing and exists so existing installs and org.uwmd.hospitality module lists keep resolving.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",

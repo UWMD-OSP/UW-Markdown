@@ -34,6 +34,8 @@ import { HOSPITALITY_LAYOUT } from './hospitality.js';
 import { SENIOR_HOUSING_LAYOUT } from './senior-housing.js';
 import { STUDENT_HOUSING_LAYOUT } from './student-housing.js';
 import { LAND_LAYOUT } from './land.js';
+import { DATA_CENTER_LAYOUT } from './data-center.js';
+import { MANUFACTURED_HOUSING_LAYOUT } from './manufactured-housing.js';
 import {
   MIXED_USE_LAYOUT,
   MIXED_USE_COMPONENT_SPECS,
@@ -783,8 +785,10 @@ describe('toWorkbook — deal-level multifamily cash-on-cash', () => {
   });
 });
 
-// The same source-shaped aggregate-equity/Y1 contract works in every income layout.
-describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT].filter(l => l.assetClass !== 'land').map(l => [l.assetClass, l])).values()])(
+// The same source-shaped aggregate-equity/Y1 contract works in every income layout,
+// the RFC 0080 builtins included (their examples state no DCF, so only this
+// binding exercises the stated-Y1-flow branch for them).
+describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_CENTER_LAYOUT, MANUFACTURED_HOUSING_LAYOUT].filter(l => l.assetClass !== 'land').map(l => [l.assetClass, l])).values()])(
   'RFC 0079 cash-on-cash Excel binding: $assetClass', layout => {
     it.each([600_000, 0, -600_000])('emits and evaluates the stated Y1 flow %s over total equity', async flow => {
       const raw = await readFile(resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md'), 'utf8');
@@ -815,7 +819,7 @@ describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT].filter
 );
 
 // Every class uses the same value denominator, independently of its sizing basis.
-describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT].map(l => [l.assetClass, l])).values()])(
+describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_CENTER_LAYOUT, MANUFACTURED_HOUSING_LAYOUT].map(l => [l.assetClass, l])).values()])(
   'RFC 0079 LTV Excel binding: $assetClass', layout => {
     it.each([120_000, null, undefined])('selects underwritten value %s, with a lazy purchase-price fallback', async underwritten => {
       const raw = await readFile(resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md'), 'utf8');

@@ -9,6 +9,8 @@ describe('official compatibility shell', () => {
     expect(HOSPITALITY_MODULE.calculations).toEqual([]);
     expect(HOSPITALITY_MODULE.validations).toEqual([]);
     expect(HOSPITALITY_VIEW_MODELS).toEqual([]);
+    expect(Object.isFrozen(HOSPITALITY_MODULE)).toBe(true);
+    expect(Object.isFrozen(HOSPITALITY_VIEW_MODELS)).toBe(true);
     expect(getPackForAssetClass('hospitality')!.calculations!.length).toBeGreaterThan(10);
   });
 });
