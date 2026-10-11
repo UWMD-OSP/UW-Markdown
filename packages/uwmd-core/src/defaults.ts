@@ -1203,19 +1203,19 @@ export const MIXED_USE_DEFAULTS: AssetClassDefaults = {
   },
 };
 
-/** RFC 0080 starter defaults, owner-approved 2026-10-10; independently versioned. */
+/**
+ * RFC 0080 starter defaults, owner-approved 2026-10-10; independently versioned.
+ *
+ * Deliberately publishes no `noi_model.expense_ratio` (owner decision
+ * 2026-10-10): the industrial NNN proxy does not match a data center's
+ * power-grossed-up expense basis (Mesa Gateway runs 0.595). Producers state it,
+ * like physical size; the cascade falls through to the host-supplied
+ * `global_default`/`system_default`, never another class's table.
+ */
 export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
   "asset_class": "data_center",
   "version": "1.0.0",
   "fields": {
-    "noi_model.expense_ratio": {
-      "low": 0.15,
-      "central": 0.22,
-      "high": 0.3,
-      "unit": "ratio",
-      "source": "asset_class_default",
-      "citation": "RFC 0080 owner-approved starter range: noi_model.expense_ratio reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
-    },
     "noi_model.expense_recovery_rate": {
       "low": 0.85,
       "central": 0.92,

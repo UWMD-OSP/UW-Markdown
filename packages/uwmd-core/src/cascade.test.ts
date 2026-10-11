@@ -65,6 +65,40 @@ describe('cascade — empty file falls through to asset-class defaults', () => {
     expect(result.range).toEqual({ low: 0.34, central: 0.4, high: 0.46 });
   });
 
+  it('carries the default entry citation alongside the value (additive)', () => {
+    const result = resolveValue('noi_model.expense_ratio', makeFile());
+    expect(result.citation).toBe('NCREIF / IREM Income & Expense Survey (typical garden + mid-rise band)');
+    expect(result.resolved_from).toBe('multifamily@1.0.0');
+  });
+
+  it('surfaces a starter proxy caveat for the RFC 0080 classes', () => {
+    const result = resolveValue('rent_roll.vacancy_pct', makeFile({ asset_class: 'data_center' }));
+    expect(result.step).toBe('asset_class_default');
+    expect(result.citation).toMatch(/industrial starter range as a proxy/);
+  });
+
+  // Owner decision 2026-10-10: data_center publishes no expense-ratio default
+  // (the industrial NNN proxy does not fit a power-grossed-up basis). The
+  // cascade falls through exactly as land's does, never to another class.
+  it.each(['data_center', 'org.uwmd.data_center', 'land'])(
+    '%s expense_ratio falls through past asset_class_default, unresolved',
+    (asset_class) => {
+      const result = resolveValue('noi_model.expense_ratio', makeFile({ asset_class }));
+      expect(result.step).toBe('system_default');
+      expect(result.value).toBeUndefined();
+      expect(result.range).toBeUndefined();
+      expect(result.citation).toBeUndefined();
+    },
+  );
+
+  it('a stated data_center expense_ratio is used as-is', () => {
+    const file = makeFile({
+      asset_class: 'data_center',
+      sections: { noi_model: makeBlock('noi_model', { expense_ratio: 0.595 }, 'user_input') },
+    });
+    expect(resolveValue('noi_model.expense_ratio', file)).toMatchObject({ value: 0.595, step: 'user_input' });
+  });
+
   it('returns range for vacancy_pct', () => {
     const result = resolveValue('rent_roll.vacancy_pct', makeFile());
     expect(result.range?.low).toBe(0.04);

@@ -163,6 +163,13 @@ export interface ResolvedValue {
   range?: { low: number; central: number; high: number };
   /** Identifier of the table or document that produced the value. */
   resolved_from?: string;
+  /**
+   * The published citation of the asset-class default that produced the
+   * value (step `asset_class_default` only). Additive: it keeps a starter
+   * table's proxy caveat ("reuses the industrial range as a proxy") visible
+   * next to the number it qualifies.
+   */
+  citation?: string;
 }
 
 // ─── Internal helpers ────────────────────────────────────────────────────────
@@ -362,6 +369,7 @@ export function resolveValue(
       step: 'asset_class_default',
       range: { low: range.low, central: range.central, high: range.high },
       resolved_from: `${table?.asset_class}@${table?.version}`,
+      ...(range.citation ? { citation: range.citation } : {}),
     };
   }
 

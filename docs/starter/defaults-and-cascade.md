@@ -127,6 +127,16 @@ Tables are versioned independently of the protocol; consumers MAY
 pin a specific table version via institution config. Default-table
 revisions bump their semver and appear in the CHANGELOG.
 
+Each entry also carries a `citation` naming its basis. The reference
+resolver returns it with the value (`ResolvedValue.citation`) and `uwmd scope`
+prints it beside `source` and `resolved_from`, so a starter proxy (for example
+a data-center range that reuses the industrial table) is never shown as a bare
+number. A table MAY omit a field outright — land and mixed-use publish no
+income-property ranges, and data center publishes no expense ratio because its
+expense basis is grossed up for power (owner decision 2026-10-10, RFC 0080).
+An omitted field resolves past `asset_class_default` to the global or system
+default; a resolver MUST NOT borrow another class's table for it.
+
 The `MarketDataLookup` interface (cascade step 4) is defined by the
 reference library but ships no built-in implementation; adopters
 bring their own (CoStar, Yardi, internal). When no implementation is

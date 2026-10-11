@@ -10,6 +10,8 @@ import {
   STUDENT_HOUSING_DEFAULTS,
   LAND_DEFAULTS,
   MIXED_USE_DEFAULTS,
+  DATA_CENTER_DEFAULTS,
+  MANUFACTURED_HOUSING_DEFAULTS,
   getAssetClassDefaults,
   getDefaultRange,
   listDefaultedFields,
@@ -514,6 +516,36 @@ describe('defaults — MIXED_USE_DEFAULTS', () => {
     for (const path of Object.keys(MIXED_USE_DEFAULTS.fields)) {
       expect(path.startsWith('rent_roll.'), `${path} should not exist for mixed_use`).toBe(false);
     }
+  });
+});
+
+describe('defaults — RFC 0080 starter tables', () => {
+  // Owner decision 2026-10-10: a data center's expense basis is grossed up for
+  // power, so no industrial NNN proxy is published; producers state it.
+  it('data_center publishes no expense-ratio default', () => {
+    expect(DATA_CENTER_DEFAULTS.fields['noi_model.expense_ratio']).toBeUndefined();
+    expect(getDefaultRange('data_center', 'noi_model.expense_ratio')).toBeNull();
+    expect(getDefaultRange('org.uwmd.data_center', 'noi_model.expense_ratio')).toBeNull();
+  });
+
+  it('keeps every other owner-approved data_center field', () => {
+    expect(Object.keys(DATA_CENTER_DEFAULTS.fields).sort()).toEqual([
+      'debt_structure.amortization_months',
+      'debt_structure.io_months',
+      'debt_structure.ltv_pct',
+      'debt_structure.rate_pct',
+      'noi_model.expense_recovery_rate',
+      'noi_model.leasing_commission_pct',
+      'noi_model.management_fee_pct',
+      'noi_model.rent_growth_pct_y1',
+      'rent_roll.vacancy_pct',
+      'sources_uses.closing_costs_pct',
+      'valuation.exit_cap_rate_pct',
+    ]);
+  });
+
+  it('manufactured_housing keeps its expense-ratio default', () => {
+    expect(MANUFACTURED_HOUSING_DEFAULTS.fields['noi_model.expense_ratio']).toBeDefined();
   });
 });
 
