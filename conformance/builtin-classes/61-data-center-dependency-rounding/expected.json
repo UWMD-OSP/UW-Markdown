@@ -14,7 +14,7 @@
     "noi_per_commissioned_kw": 11198.62
   },
   "expected_codes": [
-    "CC-DC-07"
+    
   ],
   "builtin_class": "data_center"
 }

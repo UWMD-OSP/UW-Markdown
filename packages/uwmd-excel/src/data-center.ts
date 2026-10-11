@@ -1,9 +1,5 @@
-// Self-storage workbook layout.
-//
-// Layout-only; derived-metric formulas come from DATA_CENTER_PACK in
-// @uwmd/core. Self-storage sizes by net rentable square feet (NRSF) and rentable
-// units; the operating statement includes facility-specific income lines such as
-// admin fees, tenant insurance, and truck/retail income.
+// Data-center workbook layout; stated operating lines and commissioned critical IT kW.
+// Derived metrics come exclusively from the corresponding core pack.
 
 import { DATA_CENTER_PACK } from '@uwmd/core';
 import { sizeNamedInputs } from './layout.js';
@@ -38,13 +34,13 @@ const namedInputs: readonly NamedInput[] = [
   {"name": "dc_revenue_interconnection_revenue_annual", "label": "Interconnection Revenue Annual", "source": {"section": "dc_revenue", "path": "interconnection_revenue_annual"}, "format": "currency"},
   {"name": "dc_revenue_services_revenue_annual", "label": "Services Revenue Annual", "source": {"section": "dc_revenue", "path": "services_revenue_annual"}, "format": "currency"},
   {"name": "dc_revenue_market_rent_per_kw_month", "label": "Market Rent Per Kw Month", "source": {"section": "dc_revenue", "path": "market_rent_per_kw_month"}, "format": "currency"},
-  {"name": "quick_purchase_price", "label": "Stated Purchase Price", "source": {"section": "quick_metrics", "path": "purchase_price"}, "format": "count"},
+  {"name": "quick_purchase_price", "label": "Stated Purchase Price", "source": {"section": "quick_metrics", "path": "purchase_price"}, "format": "currency"},
 
   { name: 'purchase_price',              label: 'Purchase Price',       source: { section: 'valuation',      path: 'purchase_price' },              format: 'currency' },
   { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },
   { name: 'loan_amount',                 label: 'Loan Amount',          source: { section: 'debt_structure', path: 'loan_amount' },                 format: 'currency' },
   { name: 'annual_debt_service',         label: 'Annual Debt Service',  source: { section: 'debt_structure', path: 'annual_debt_service' },         format: 'currency' },
-  ...sizeNamedInputs('data_center', { critical_it_load_kw: 'Critical It Load Kw' }),
+  ...sizeNamedInputs('data_center', { critical_it_load_kw: 'Critical IT Load (kW)' }),
   { name: 'equity_total', label: 'Total Invested Equity', source: { section: 'sources_uses', path: 'equity_metrics.equity_total' }, format: 'currency' },
   { name: 'levered_cash_flow_y1', label: 'Year 1 Levered Cash Flow', source: { section: 'dcf', path: 'annual_cash_flows.Y1.net_cash_flow_levered' }, format: 'currency' },
   { name: 'total_uses',                  label: 'Total Project Cost',   source: { section: 'sources_uses',   path: 'uses.total' },                  format: 'currency' },

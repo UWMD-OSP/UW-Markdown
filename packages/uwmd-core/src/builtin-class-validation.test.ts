@@ -25,7 +25,7 @@ describe('RFC 0080 official builtin controls', () => {
       expect(classCodes(validateUWFile(parsed).issues.map(i => i.code))).toEqual([...new Set(expected.expected_codes)].sort());
       const results = Object.fromEntries((getPackForAssetClass(parsed.frontmatter.asset_class)?.calculations ?? []).map(c => {
         const result = evaluateCalc(c, { parsed, prior_results: {}, locale: 'en-US' });
-        if (typeof expected.expected_calcs[c.id] === 'number') expect(result.ok, c.id + ':' + result.error?.message).toBe(true);
+        if (typeof expected.expected_calcs[c.id] === 'number') expect(result.ok, `${c.id}:${result.error?.message}`).toBe(true);
         return [c.id, result.value];
       }));
       for (const [id, value] of Object.entries(expected.expected_calcs)) expect(results[id], id).toBe(value);
@@ -57,14 +57,14 @@ describe('RFC 0080 official builtin controls', () => {
   });
   it('mirrors every standard section schema without field-contract drift', () => {
     for (const content of Object.values(BUILTIN_CLASS_CONTENT)) for (const section of content.sections) {
-      const { $schema, $id, title, ...schema } = JSON.parse(readFileSync(resolve(root, 'spec/schemas/section-' + section.id.replace(/_/g, '-') + '.schema.json'), 'utf8'));
+      const { $schema, $id, title, ...schema } = JSON.parse(readFileSync(resolve(root, `spec/schemas/section-${section.id.replace(/_/g, '-')}.schema.json`), 'utf8'));
       expect(schema, section.id).toEqual(section.schema);
     }
   });
   it('issues and resolves receipts for every builtin without injected packs', async () => {
     const source = readFileSync(resolve(root, 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
     for (const cls of ASSET_CLASSES) {
-      const input = source.replace(/asset_class:.*$/m, 'asset_class: ' + cls).replace(/uw_version:.*$/m, 'uw_version: "2.1"');
+      const input = source.replace(/asset_class:.*$/m, `asset_class: ${cls}`).replace(/uw_version:.*$/m, 'uw_version: "2.1"');
       const receipt = await issueReceipt(input, { issued_at: '2026-10-10T00:00:00Z' });
       expect(receipt.computation.pack).toBe(getPackForAssetClass(cls)!.id);
       expect((await verifyReceipt(receipt, input)).verdict, cls).toBe('verified');

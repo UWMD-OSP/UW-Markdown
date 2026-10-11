@@ -686,6 +686,7 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
                   "park_owned_homes"
                 ]
               },
+              // biome-ignore lint/suspicious/noThenProperty: JSON Schema conditionals require this keyword.
               "then": {
                 "properties": {
                   "poh_home_rent_monthly": {
@@ -705,6 +706,7 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
                   "park_owned_homes"
                 ]
               },
+              // biome-ignore lint/suspicious/noThenProperty: JSON Schema conditionals require this keyword.
               "then": {
                 "required": [
                   "poh_home_rent_monthly"

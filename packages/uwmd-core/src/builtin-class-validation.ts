@@ -42,7 +42,10 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
       const matches = !types || types.some(type => type === 'null' ? value === null
         : type === 'integer' ? typeof value === 'number' && Number.isInteger(value)
         : type === 'number' ? typeof value === 'number' && Number.isFinite(value)
-        : typeof value === type);
+        : type === 'string' ? typeof value === 'string'
+        : type === 'boolean' ? typeof value === 'boolean'
+        : type === 'object' ? value !== null && typeof value === 'object' && !Array.isArray(value)
+        : false);
       const bounds = typeof value !== 'number' ||
         ((rule.minimum === undefined || value >= rule.minimum) && (rule.maximum === undefined || value <= rule.maximum));
       if (!matches || !bounds || (rule.enum && !rule.enum.includes(value))) {

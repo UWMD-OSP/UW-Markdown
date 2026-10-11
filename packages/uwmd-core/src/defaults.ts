@@ -1206,14 +1206,14 @@ export const MIXED_USE_DEFAULTS: AssetClassDefaults = {
 /** RFC 0080 proposal: owner must review these starter assumptions before merge. */
 export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
   asset_class: 'data_center', version: '1.0.0', fields: Object.fromEntries(
-    Object.entries(INDUSTRIAL_DEFAULTS.fields).filter(([path]) => path !== 'noi_model.ti_allowance_psf_new').map(([path, range]) => [path, { ...range, citation: 'RFC 0080 owner-review proposal: '+path+' uses the existing industrial starter range as a transparent triage proxy; not a market estimate.' }]),
+    Object.entries(INDUSTRIAL_DEFAULTS.fields).filter(([path]) => path !== 'noi_model.ti_allowance_psf_new').map(([path, range]) => [path, { ...range, citation: `RFC 0080 owner-review proposal: ${path} uses the existing industrial starter range as a transparent triage proxy; not a market estimate.` }]),
   ),
 };
 
 /** RFC 0080 proposal: owner must review these starter assumptions before merge. */
 export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
   asset_class: 'manufactured_housing', version: '1.0.0', fields: Object.fromEntries(
-    Object.entries(MULTIFAMILY_DEFAULTS.fields).map(([originalPath, range]) => { const path = originalPath.replace('replacement_reserve_per_unit_y1', 'replacement_reserve_per_site_y1'); return [path, { ...range, citation: 'RFC 0080 owner-review proposal: '+path+' uses the existing multifamily starter range as a transparent triage proxy; not a market estimate.' }]; }),
+    Object.entries(MULTIFAMILY_DEFAULTS.fields).map(([originalPath, range]) => { const path = originalPath.replace('replacement_reserve_per_unit_y1', 'replacement_reserve_per_site_y1'); return [path, { ...range, citation: `RFC 0080 owner-review proposal: ${path} uses the existing multifamily starter range as a transparent triage proxy; not a market estimate.` }]; }),
   ),
 };
 

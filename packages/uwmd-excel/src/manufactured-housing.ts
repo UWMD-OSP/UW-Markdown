@@ -1,9 +1,5 @@
-// Self-storage workbook layout.
-//
-// Layout-only; derived-metric formulas come from MANUFACTURED_HOUSING_PACK in
-// @uwmd/core. Self-storage sizes by net rentable square feet (NRSF) and rentable
-// units; the operating statement includes facility-specific income lines such as
-// admin fees, tenant insurance, and truck/retail income.
+// Manufactured-housing workbook layout; stated operating lines and sites.
+// Derived metrics come exclusively from the corresponding core pack.
 
 import { MANUFACTURED_HOUSING_PACK } from '@uwmd/core';
 import { sizeNamedInputs } from './layout.js';
