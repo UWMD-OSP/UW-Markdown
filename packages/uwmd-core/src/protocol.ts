@@ -979,6 +979,7 @@ export function lookupStageContract(
   field_path?: string,
   assetClass?: string,
 ): StageContractEntry | null {
+  if (assetClass) assetClass = toBuiltinAssetClass(assetClass) ?? assetClass;
   let best: StageContractEntry | null = null;
   let bestScore = -1;
   for (const row of STAGE_CONTRACT) {
@@ -2181,6 +2182,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
     capabilities: ['edit-replace', 'edit-supersede'],
   },
   { prefix: 'SRC', description: 'Source vocabulary (RFC 0031)', capabilities: ['validate'] },
+  { prefix: 'MOD-RULE', description: 'Safe-expression rule evaluation errors, builtin or module', capabilities: ['validate', 'module-load'] },
   { prefix: 'MOD', description: 'Module runtime', capabilities: ['module-load'] },
   { prefix: 'CALC', description: 'Calc engine', capabilities: ['calc-evaluate'] },
   {

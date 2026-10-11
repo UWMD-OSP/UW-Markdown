@@ -146,7 +146,9 @@
           "mixed_use",
           "senior_housing",
           "student_housing",
-          "land"
+          "land",
+          "data_center",
+          "manufactured_housing"
         ]
       },
       "uniqueItems": true,

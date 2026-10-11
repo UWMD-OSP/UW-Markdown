@@ -29,7 +29,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-capital-stack.schema.json`](section-capital-stack.schema.json) | `capital_stack` section (tranches + sizing) | Format §4.24 / RFC 0026 |
 | [`section-lease-up-schedule.schema.json`](section-lease-up-schedule.schema.json) | `lease_up_schedule` section (trajectory + stabilized summary) | Format §4.25 / RFC 0008 |
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
-| [section-reserve-accounts.schema.json](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
+| [`section-reserve-accounts.schema.json`](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
 | [reserve-accounts-verification.schema.json](reserve-accounts-verification.schema.json) | ReserveAccountsVerification | Protocol §VIII.11 / RFC 0064 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
 | [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |
@@ -72,13 +72,13 @@ the canonical definition. When you change one of those types, update
 the matching schema here in the **same PR**. Drift between the two is
 a normative protocol bug.
 
-| [section-dc_capacity.schema.json](section-dc_capacity.schema.json) | RFC 0080 standard `dc_capacity` payload |
-| [section-dc_power.schema.json](section-dc_power.schema.json) | RFC 0080 standard `dc_power` payload |
-| [section-dc_revenue.schema.json](section-dc_revenue.schema.json) | RFC 0080 standard `dc_revenue` payload |
-| [section-hotel_metrics.schema.json](section-hotel_metrics.schema.json) | RFC 0080 standard `hotel_metrics` payload |
-| [section-hotel_brand.schema.json](section-hotel_brand.schema.json) | RFC 0080 standard `hotel_brand` payload |
-| [section-hotel_food_beverage.schema.json](section-hotel_food_beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload |
-| [section-mhc_sites.schema.json](section-mhc_sites.schema.json) | RFC 0080 standard `mhc_sites` payload |
+| [`section-dc_capacity.schema.json`](section-dc_capacity.schema.json) | RFC 0080 standard `dc_capacity` payload |
+| [`section-dc_power.schema.json`](section-dc_power.schema.json) | RFC 0080 standard `dc_power` payload |
+| [`section-dc_revenue.schema.json`](section-dc_revenue.schema.json) | RFC 0080 standard `dc_revenue` payload |
+| [`section-hotel_metrics.schema.json`](section-hotel_metrics.schema.json) | RFC 0080 standard `hotel_metrics` payload |
+| [`section-hotel_brand.schema.json`](section-hotel_brand.schema.json) | RFC 0080 standard `hotel_brand` payload |
+| [`section-hotel_food_beverage.schema.json`](section-hotel_food_beverage.schema.json) | RFC 0080 standard `hotel_food_beverage` payload |
+| [`section-mhc_sites.schema.json`](section-mhc_sites.schema.json) | RFC 0080 standard `mhc_sites` payload |
 
 If you add a new schema:
 1. Place it next to the existing schemas, named `<thing>.schema.json`.

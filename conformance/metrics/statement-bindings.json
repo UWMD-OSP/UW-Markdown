@@ -5,7 +5,13 @@
     "noi_model",
     "rent_roll",
     "property",
-    "components"
+    "components",
+    "dc_capacity",
+    "dc_power",
+    "dc_revenue",
+    "mhc_sites",
+    "hotel_metrics",
+    "hotel_food_beverage"
   ],
   "aliases": {
     "cap_rate": [

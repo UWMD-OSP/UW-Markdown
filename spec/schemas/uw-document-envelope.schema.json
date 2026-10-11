@@ -52,9 +52,36 @@
         },
         "deal_name": {
           "type": "string"
+        },
+        "asset_class": {
+          "type": "string"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "asset_class"
+            ],
+            "properties": {
+              "asset_class": {
+                "enum": [
+                  "data_center",
+                  "manufactured_housing"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "uw_version": {
+                "const": "2.1"
+              }
+            }
+          }
+        }
+      ]
     },
     "sections": {
       "type": "object",

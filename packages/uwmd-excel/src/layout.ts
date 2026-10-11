@@ -75,7 +75,7 @@ export interface DerivedMetric {
   label: string;
   /** Excel formula, leading "=" included. */
   formula: string;
-  format: 'percent' | 'ratio' | 'currency' | 'count';
+  format: 'percent' | 'ratio' | 'currency' | 'count' | 'decimal';
 }
 
 /**

@@ -924,3 +924,5 @@ export { toBuiltinAssetClass } from './types.js';
 export { DATA_CENTER_DEFAULTS, MANUFACTURED_HOUSING_DEFAULTS } from './defaults.js';
 
 export { checkBuiltinClassContent } from './builtin-class-validation.js';
+
+export { DATA_CENTER_PACK, MANUFACTURED_HOUSING_PACK } from './packs/index.js';
