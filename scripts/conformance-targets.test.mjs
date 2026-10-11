@@ -1,3 +1,5 @@
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -65,4 +67,14 @@ test('standard reproduction, custom formula checks and starter behavior stay dis
   assert.equal(corpus.cases.find(c => c.suite === '3-refinement').target, 'starter-products');
   assert.ok(corpus.cases.filter(c => c.suite === 'metrics').every(c => c.target === 'verifier'));
   for (const c of corpus.cases.filter(c => ['2', '4', '4-profile', '4-replay', 'migrate', 'capability'].includes(c.suite))) assert.equal(c.target, 'starter-products');
+});
+
+
+test('actual CLI legacy warning stays on stderr and produces Reader-only JSON', () => {
+  const proc = spawnSync(process.execPath, [fileURLToPath(new URL('./run-conformance.mjs', import.meta.url)), '--tier=tier-2-editor', '--json'], { encoding: 'utf8', timeout: 30000 });
+  assert.equal(proc.status, 0, proc.stderr);
+  assert.match(proc.stderr, /Deprecated tier/);
+  const report = JSON.parse(proc.stdout);
+  assert.deepEqual(report.summary, { pass: 23, fail: 0, updated: 0 });
+  assert.ok(report.results.every(r => r.target === 'reader' && r.tier === 'reader' && !r.profile && !r.starter_product));
 });

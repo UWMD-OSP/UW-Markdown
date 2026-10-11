@@ -1,6 +1,10 @@
 import contextlib
 import io
 import unittest
+import json
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 from copy import deepcopy
 import runner
 
@@ -44,3 +48,22 @@ class SelectionTests(unittest.TestCase):
         self.assertNotIn("tier", runner.result_owner({"target": "starter-products"}))
         self.assertNotIn("tier", runner.result_owner({"target": "module"}))
         self.assertEqual(runner.result_owner({"target": "reader"}), {"target": "reader", "tier": "reader"})
+
+
+class ReportingTests(unittest.TestCase):
+    def test_unclaimed_profile_is_neither_passed_nor_failed_and_no_skip_refuses(self):
+        with tempfile.TemporaryDirectory() as directory:
+            case_dir = Path(directory)
+            (case_dir / "module.case.json").write_text(json.dumps({"id": "custom", "target": "module"}), encoding="utf-8")
+            output = case_dir / "report.json"
+            for no_skip, expected_exit in [(False, 0), (True, 1)]:
+                args = ["runner.py", "--cases", directory, "--manifest-out", str(output)] + (["--no-skip"] if no_skip else [])
+                with patch("sys.argv", args), patch.object(runner, "read_manifest", return_value={"tier": "tier-3-calc-host", "capabilities": ["calc-evaluate"]}), patch.object(runner, "run_case") as run, contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(runner.main(), expected_exit)
+                    run.assert_not_called()
+                report = json.loads(output.read_text(encoding="utf-8"))
+                self.assertEqual(report["summary"]["passed"], 0)
+                self.assertEqual(report["summary"]["failed"], 0)
+                self.assertEqual(report["summary"]["unverifiable"], 1)
+                self.assertEqual(report["summary"]["skipped"], 0)
+                self.assertEqual(report["by_target"]["module"]["unverifiable"], 1)

@@ -103,7 +103,7 @@ imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + market-data + modules + packages + composition + capital-stack
+npm run conformance                 # all indexed standard and starter checks
 npm run conformance -- --tier=verifier --profile=module,integrity,representations,portfolio,sensitivity,stochastic --starter-products
 npm run conformance -- --suite=lite         # the UW Lite suite alone
 npm run conformance -- --suite=receipts     # the receipts suite alone
@@ -120,22 +120,13 @@ npm run conformance -- --suite=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
 
-Exit code 0 = all pass, 1 = at least one failure. The **`4-replay`** suite runs
-by default — it is deterministic and needs no network or API key. The numbered
-**tier 4** suite stays gated behind an explicit `--tier=4`, because it is
-shape/lint-only plus the profile contract and assumes an operator-driven live
-run.
+Exit code 0 = all pass, 1 = a failed assertion, 2 = an invalid selector or
+coverage error. Shape, layer-profile and deterministic replay checks all run
+by default as starter products; no live model is called. JSON reports contain
+canonical `target` plus `tier`, `profile` or `starter_product`, and `by_target`
+counts. Historical suite numbers are exposed only as fixture-family addresses.
 
-> **Directory names vs Protocol 3.0 tiers.** RFC 0078 replaced the four
-> Protocol 2.x tiers with two (Reader, Verifier) plus six optional profiles
-> (`UW_PROTOCOL_v1.md` Part II). The corpus directories below keep their 2.x
-> names until the corpus is re-tiered in RFC 0078 phase 3, and directory
-> membership was never a normative signal (§II.6). Today `tier-1-reader` is the
-> Reader corpus; the verifier-relevant `tier-3-calc-host` fixtures are the
-> Verifier corpus; `tier-2-editor` and `tier-4-agent-host` test starter
-> products ([`docs/starter/`](../starter/README.md)) and still run in CI.
-
-### Legacy tier-1 fixture storage — Reader
+### Reader, Verifier and starter fixture storage
 
 `conformance/tier-1-reader/`:
 - `fixtures/*.uw.md` parsed and compared (canonical JSON projection) against
@@ -154,17 +145,17 @@ run.
   `verifyChain`/`verifyProvenance`; an optional `<id>.policies.json` supplies
   custom policies.
 
-### Editor starter checks — Editor
+### Editor starter checks
 
 `conformance/tier-2-editor/fixtures/<scenario>/`: `before.uw.md` +
 `operation.json` → run `applyEdit` (or `applyEditAsync` when `options.json` has
 `integrity: true`) with `context.json` → compare against `after.uw.md`. Volatile
 fields (`last_modified`, `timestamp`, `ts=`, `content_hash`) are stripped before
 byte comparison. Negative scenarios provide `expected-error.json` declaring the
-`code` `applyEdit` must fail with. **The point of Tier 2: bytes outside the edited
+`code` `applyEdit` must fail with. **The editor quality bar: bytes outside the edited
 region must be preserved.**
 
-### Verifier and Module calculations — Calc Host
+### Verifier and Module calculations
 
 `conformance/tier-3-calc-host/fixtures/<scenario>/`: `deal.uw.md` + `calc.json`
 (a `ModuleCalcDecl`) → `evaluateCalc` → compare projected `{calc_id, ok, value,
@@ -172,7 +163,7 @@ unit?, error?}` against `expected-result.json`. Plus a **refinement** mode
 (`refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
 projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 
-### Agent starter checks — Agent Host
+### Agent starter checks
 
 `conformance/tier-4-agent-host/`:
 - `replay/<scenario>/` — **the real gate, and it runs by default.**
@@ -193,7 +184,7 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
   order. See `conformance/tier-4-agent-host/replay/README.md`, including its
   note on what recorded replay does *not* prove.
 - `fixtures/<scenario>/`: `before.uw.md` + `expected-after-shape.json` —
-  **lint-only** (parse + JSON-validate), retained for operator-driven live runs.
+  **shape checks** (parse + JSON-validate), run by default without a live model.
   Note the `l6-risk-rating` fixture is not runnable as written: it carries only
   a `property` section while L6 requires `noi_model`, `valuation`, and
   `debt_structure`. The replay scenario uses its own input for that reason.
