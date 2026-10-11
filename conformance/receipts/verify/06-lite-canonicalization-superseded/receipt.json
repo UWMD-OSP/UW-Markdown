@@ -4,7 +4,7 @@
     "representation": "uw-lite-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-lite-financial",
-    "canonicalization_version": "1.1",
+    "canonicalization_version": "1.0",
     "digest": "sha256:36ec78958ed36855c2b6b3c4516dbd3bf4b9279c02b17640ef767e5ddffe7aa1"
   },
   "computation": {

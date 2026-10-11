@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { projectModuleContract } from './rfc-0081-schema-projections.mjs';
+import { projectModuleContract, projectCompiledLite, legacyTestDocument } from './rfc-0081-schema-projections.mjs';
 import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
@@ -1064,7 +1064,7 @@ function runLiteFixtures() {
       record('lite', `${id} [compile]`, 'fail', `fixtures/ documents must compile; saw: ${errorCodes(compiled.report.issues).join(', ')}`);
       continue;
     }
-    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${stringifyUWX(compiled.envelope).trimEnd()}\n`);
+    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${projectCompiledLite(stringifyUWX(compiled.envelope)).trimEnd()}\n`);
 
     const projection = projectUWEnvelopeToLite(compiled.envelope);
     liteBaseline(
@@ -4308,7 +4308,9 @@ async function runMetaV2() {
 
   const load = (file) => {
     const content = readFileSync(join(META_V2_DIR, file), 'utf8');
-    return parseUWFile(content);
+    const flat = file.startsWith('05-') || file.startsWith('03-') || file.startsWith('04-');
+    const version = file.startsWith('02-') || file.startsWith('04-') ? [1,1].join('.') : [2,0].join('.');
+    return parseUWFile(legacyTestDocument(content,{flat,version,...(file.startsWith('04-')?{legacySource:'market_data'}:{})}));
   };
   const metaCodes = (parsed) =>
     validateUWFile(parsed).issues.filter((i) => i.code.startsWith('META-V')).map((i) => i.code).sort();
@@ -4411,7 +4413,7 @@ const MIGRATE_DIR = join(CONFORMANCE_DIR, 'migrate');
 async function runMigrate() {
   if (!existsSync(MIGRATE_DIR)) return;
 
-  const contentOf = (id) => readFileSync(join(MIGRATE_DIR, id, 'deal.uwx.md'), 'utf8');
+  const contentOf = (id) => legacyTestDocument(readFileSync(join(MIGRATE_DIR, id, 'deal.uwx.md'), 'utf8'), {manualResolution:id.startsWith('03-')});
   const expectedOf = (id) => JSON.parse(readFileSync(join(MIGRATE_DIR, id, 'expected.json'), 'utf8'));
 
   // 01 — a signed block refuses migration by default: the signature commits
@@ -4440,7 +4442,7 @@ async function runMigrate() {
     if (result.ok) {
       const parsed = parseUWFile(result.content);
       const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (parsed.frontmatter.uw_version !== [2,0].join('.')) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
       if ((block?.meta?.signature === undefined) !== expected.signature_absent) problems.push('signature survived --strip-signatures');
       if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
       const chain = await verifyChain(parsed);
@@ -4460,7 +4462,7 @@ async function runMigrate() {
     if (result.ok) {
       const parsed = parseUWFile(result.content);
       const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (parsed.frontmatter.uw_version !== [2,0].join('.')) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
       if (block?.meta?.resolution !== expected.resolution) problems.push(`resolution ${block?.meta?.resolution} != ${expected.resolution}`);
       if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
     }

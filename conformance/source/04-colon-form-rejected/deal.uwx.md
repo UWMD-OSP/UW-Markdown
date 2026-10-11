@@ -11,7 +11,7 @@ deal_stage: screening
 # The retired colon form
 
 `agent:L0-01` raises `SRC-01`, and an actor writing under that spelling is
-NOT classified as a human write — the prefix test's negative space used to
+NOT classified as a human write â€” the prefix test's negative space used to
 grant it `human_only` authority.
 
 ```json uw:section=property source=manual ts=2026-08-31T00:00:00Z v=1 confidence=medium
@@ -47,7 +47,7 @@ grant it `human_only` authority.
   "_meta": {
     "section": "valuation",
     "provenance": {
-      "source": "agent/L0-01",
+      "source": "agent:L0-01",
       "actor": "system",
       "agent_id": "L0-01",
       "agent_version": "1.0.0",

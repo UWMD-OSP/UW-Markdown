@@ -203,7 +203,7 @@ async function processFile(file) {
   } else if(/\.[cm]?[jt]sx?$/.test(file) && !file.startsWith('scripts/rfc-0081-')) {
     const source=ts.createSourceFile(file,before,ts.ScriptTarget.Latest,true); const edits=[];
     async function visit(node) {
-      if((ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)) && /uw_version\s*:|```json\s+uw:/.test(node.text)) {
+      if((ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)) && (/^---[\r\n]/.test(node.text) || node.text.includes('```json uw:'))) {
         const replacement=await document(node.text,file+':'+source.getLineAndCharacterOfPosition(node.getStart()).line);
         if(replacement!==node.text) {
           const quote=before[node.getStart()];
@@ -226,9 +226,10 @@ async function refreshArtifacts() {
     const fresh=await issueReceipt(readFileSync(dir+'/'+deal,'utf8'),{issued_at:old.issued_at,issuer:old.issuer});
     if(suite==='issue') writeFileSync(dir+'/'+receiptFile,JSON.stringify(fresh,null,2)+'\n');
     else {
-      old.subject=fresh.subject;old.receipt_version='1.1';
+      const oldCanonical=old.subject.canonicalization_version;old.subject=fresh.subject;old.receipt_version='1.1';
       const expected=JSON.parse(readFileSync(dir+'/expected-verdict.json','utf8'));
-      if(expected.codes?.includes('RCP-01')) old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0');
+      if(expected.expected_codes?.includes('RCP-10')) old.subject.canonicalization_version=oldCanonical;
+      if((expected.expected_codes??expected.codes)?.includes('RCP-01')) old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0');
       writeFileSync(dir+'/'+receiptFile,JSON.stringify(old,null,2)+'\n');
     }
     report.receipts.push(dir+'/'+receiptFile);
