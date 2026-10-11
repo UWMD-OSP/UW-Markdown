@@ -3501,6 +3501,10 @@ a silent denominator change does the most damage.
 
 ---
 
+### Official builtin compatibility (RFC 0080)
+
+`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin.
+
 ## XI. Error Taxonomy
 
 **Normative schema:** [`spec/schemas/protocol-error.schema.json`](schemas/protocol-error.schema.json).
@@ -3817,7 +3821,3 @@ validations:
 - **View model**: a per-section layout description used to render the
   section uniformly across implementations. A starter-product term
   (starter guide §IV).
-
-### Official builtin compatibility (RFC 0080)
-
-`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin.

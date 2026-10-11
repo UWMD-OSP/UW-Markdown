@@ -570,3 +570,7 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 ## RFC 0065 reserve draw bindings
 
 `reserve-draw-bindings.ts` exports browser-safe `verifyReserveDrawBindings(parsed, plan?)`. Its optional external `ReserveDrawBindingPlan` uses exact variants, reserve account/period/movement identities, lease-up TI/LC components or gross cash-row addresses, declared selected-draw completeness and explicit funded shares. `RDB-01`–09 findings and the two companion schemas mirror Protocol §VIII.12. CLI: `uwmd verify-reserve-draws <file> [plan.json] --json`. Synthetic default/portable fixtures, shared-quantizer cent controls and regressions preserve gross rows and the unchanged RFC 0045 reserve refusal. No document field, transfer, owner cash or financing assembly is added.
+
+## Official builtin starters (RFC 0080)
+
+All twelve classes have packs and Excel layouts. Data center uses critical IT kW; manufactured housing uses sites. Their layouts bind every class calculation and the six standard income metrics to stated inputs. Hospitality also binds the former module's hotel and F&B fields; missing optional hotel inputs produce blank metrics. The web editor includes both new class names, primary-size fields and standard class sections. Legacy official module packages remain compatibility shells until retirement at release.

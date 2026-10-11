@@ -6,7 +6,7 @@ of any starter engine, defaults, underwriting workflow, or Excel layout.
 
 | Dictionary | Contents | Schema |
 |---|---|---|
-| [builtin.json](builtin.json) | 130 class-scoped calculations and nine primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
+| [builtin.json](builtin.json) | 171 class-scoped calculations and eleven primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
 
 ## Calculation entries
 
@@ -53,7 +53,7 @@ entries and `x` entries use 2; dollar entries per SF/NRSF (ids containing `sqft`
 `psf`, or `nrsf`) use 2; other dollar entries use 0. Raw sizes use 0 and exact
 finite-number equality. The RFC's Decisions table explains each group.
 
-All ten `ltv` entries divide loan amount by stated `valuation.underwritten_value`,
+All twelve `ltv` entries divide loan amount by stated `valuation.underwritten_value`,
 falling back to `valuation.purchase_price` only when the former is absent/null,
 in agreement with CC-02 and capital-stack `ltv_through`.
 Producers now need to state `sources_uses.equity_metrics.equity_total` for

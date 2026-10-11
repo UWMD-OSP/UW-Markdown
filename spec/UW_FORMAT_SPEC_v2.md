@@ -2,13 +2,13 @@
 
 ## Version 2.1 | October 2026 | Delta specification
 
-This document is the normative text for **format 2.0** — files declaring
+This document is the normative text for **format 2.0 and 2.1** — files declaring
 `uw_version: "2.0"` (or a later 2.x) in their frontmatter. It is a **delta
 specification**: [`UW_FORMAT_SPEC_v1.md`](./UW_FORMAT_SPEC_v1.md) is
 incorporated by reference, and everything it specifies — the file grammar
 (Part II), the section registry (Part IV), validation rules (Part V), the
 toolchain interface (Part VI), rendering targets (Part VII), and all
-appendices — continues to govern 2.0 files **except as amended below**. A
+appendices — continues to govern 2.x files **except as amended below**. A
 statement in this document supersedes the corresponding v1 statement for 2.0
 files only; v1.x files are governed by the v1 document alone, unamended.
 

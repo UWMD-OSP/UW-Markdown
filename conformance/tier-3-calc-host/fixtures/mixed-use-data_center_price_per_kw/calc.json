@@ -1,0 +1,7 @@
+{
+  "id": "data_center_price_per_kw",
+  "label": "data_center Price / kw",
+  "formula": "(valuation.purchase_price * components.data_center.allocation_pct) / components.data_center.critical_it_load_kw",
+  "unit": "$",
+  "deterministic": true
+}

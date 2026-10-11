@@ -1,0 +1,7 @@
+{
+  "id": "price_per_kw",
+  "label": "Price / Critical IT kW",
+  "formula": "valuation.purchase_price / property.critical_it_load_kw",
+  "unit": "$",
+  "deterministic": true
+}

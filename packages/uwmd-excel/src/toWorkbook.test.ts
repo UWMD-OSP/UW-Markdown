@@ -54,10 +54,11 @@ const UNREGISTERED_CLASS = '__unregistered_test_class__';
 // A blank named cell is represented by null; Excel distinguishes blank from 0.
 function excelValue(formula: string): number | null {
   const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  expect(/^[\d. +\-*/(),!=>nullIFOR]+$/.test(expression), expression).toBe(true);
   // eslint-disable-next-line no-new-func
-  return new Function('IF', `return (${expression});`)(
+  return new Function('IF', 'OR', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+    (...tests: boolean[]) => tests.some(Boolean),
   ) as number | null;
 }
 
@@ -233,7 +234,8 @@ for (const { file, layout } of CASES) {
       const values: Record<string, number | null> = {};
       for (const input of layout.namedInputs) {
         const n = namedNumber(wb, input.name);
-        if (!['levered_cash_flow_y1', 'equity_total', 'underwritten_value'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
+        if (input.name.startsWith('hotel_metrics_') || input.name.startsWith('hotel_food_beverage_')) expect(n, input.name + ' absent in this example').toBeNull();
+        else if (!['levered_cash_flow_y1', 'equity_total', 'underwritten_value'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
         values[input.name] = n;
       }
       for (const line of layout.incomeLines) {
@@ -259,10 +261,10 @@ for (const { file, layout } of CASES) {
           formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
         }
         let excelLike: number | null;
-        if (['cash_on_cash', 'ltv'].includes(decl.id)) {
+        if (['cash_on_cash', 'ltv', 'total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(decl.id)) {
           excelLike = excelValue(formula);
         } else {
-          if (!['cash_on_cash', 'ltv'].includes(decl.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
+          if (!['cash_on_cash', 'ltv', 'total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(decl.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
           // eslint-disable-next-line no-new-func
           excelLike = new Function(`return (${formula});`)() as number;
         }
@@ -499,7 +501,7 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
       for (const name of Object.keys(values)) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       }
-      if (!['cash_on_cash', 'ltv'].includes(decl.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv', 'total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(decl.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `${decl.id} sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = excelValue(formula)!;
       const excelCell = quantizeDecimal(excelLike, resolveRoundTo(decl));

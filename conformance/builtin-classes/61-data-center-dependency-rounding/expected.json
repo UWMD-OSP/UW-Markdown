@@ -1,0 +1,20 @@
+{
+  "description": "Fractional input control pinned from the pre-promotion official module: quantized intermediate results remain identical after inlining.",
+  "expected_calcs": {
+    "utilization": 0.9999,
+    "commissioned_share": 0.6665,
+    "facility_load_kw": 1234.72,
+    "annual_facility_kwh_at_contract": 10814666,
+    "annual_power_cost": 947905.47,
+    "power_cost_per_kw_month": 78.99,
+    "annual_rent_revenue": 1801457.38,
+    "blended_revenue_per_kw_month": 157.79,
+    "rent_index": 0.9383,
+    "price_per_commissioned_kw": 159980.32,
+    "noi_per_commissioned_kw": 11198.62
+  },
+  "expected_codes": [
+    "CC-DC-07"
+  ],
+  "builtin_class": "data_center"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "annual_power_cost",
+  "label": "Annual Power Cost",
+  "formula": "dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : round((dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760), 0) * dc_power.utility_rate_per_kwh",
+  "unit": "$",
+  "round_to": 2,
+  "deterministic": true
+}

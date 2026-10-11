@@ -1,0 +1,7 @@
+{
+  "id": "manufactured_housing_noi_share",
+  "label": "manufactured_housing NOI Share",
+  "formula": "components.manufactured_housing.net_operating_income / noi_model.net_operating_income",
+  "unit": "%",
+  "deterministic": true
+}

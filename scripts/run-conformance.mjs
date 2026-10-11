@@ -105,7 +105,6 @@ import {
   SUPPORTED_LOCALES,
   getSizeIntensive,
   resolveDealSize,
-  getPackForAssetClass,
   renderReportHtml,
   computeBlockHash,
   canonicalV2BlockContent,

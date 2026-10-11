@@ -1,0 +1,7 @@
+{
+  "id": "data_center_noi_share",
+  "label": "data_center NOI Share",
+  "formula": "components.data_center.net_operating_income / noi_model.net_operating_income",
+  "unit": "%",
+  "deterministic": true
+}

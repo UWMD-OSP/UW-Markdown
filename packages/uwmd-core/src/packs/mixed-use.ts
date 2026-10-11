@@ -33,7 +33,7 @@
 //
 // Component fields are addressed by static path (`components.retail.net_operating_income`),
 // which is all the Tier-3 calc engine can express — see RFC 0019 §1. Every
-// admissible component class (all nine income classes except land) gets its own
+// admissible component class (all ten income classes except land and mixed-use) gets its own
 // NOI-share metric; a class simply not present in a given deal evaluates to null.
 
 import type { ModuleManifest } from '../protocol.js';

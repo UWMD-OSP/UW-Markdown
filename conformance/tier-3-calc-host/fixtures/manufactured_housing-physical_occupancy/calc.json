@@ -1,0 +1,8 @@
+{
+  "id": "physical_occupancy",
+  "label": "Physical Occupancy",
+  "formula": "mhc_sites.occupied_sites / mhc_sites.total_sites",
+  "unit": "%",
+  "round_to": 4,
+  "deterministic": true
+}

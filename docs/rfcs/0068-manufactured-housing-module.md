@@ -15,6 +15,9 @@ affects:
 
 # RFC 0068: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
 
+**Packaging superseded by [RFC 0080](0080-official-classes-are-builtins.md).** Official class content now ships as a full builtin. The recorded field, calculation and owner decisions remain its design history.
+
+
 **Draft agent proposal.** A coding agent wrote this RFC. StackUW's
 manufactured-housing plan is adopter requirements evidence, not UWMD
 authority, and it is not verifiable in this repository.
