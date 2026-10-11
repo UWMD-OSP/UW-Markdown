@@ -504,7 +504,7 @@ def main() -> int:
         "tiers": sorted({c["target"] for c in cases if c["target"] in ("reader", "verifier")}),
         "profiles": sorted({c["target"] for c in cases if c["target"] in READINGS["profiles"]}),
         "by_target": {target: {
-            "passed": sum(r["target"] == target and r["ok"] and not r["skipped"] for r in results),
+            "passed": sum(r["target"] == target and r["ok"] is True and not r["skipped"] for r in results),
             "failed": sum(r["target"] == target and r["ok"] is False for r in results),
             "skipped": sum(r["target"] == target and r["skipped"] for r in results),
             "unverifiable": sum(r["target"] == target and r.get("unverifiable", False) for r in results),
