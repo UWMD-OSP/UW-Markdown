@@ -14,6 +14,8 @@ affects:
 
 # RFC 0009: `_meta` v2 sub-object reorganization
 
+**Compatibility clauses superseded by [RFC 0081](0081-one-format-one-protocol.md).** Format 3.0 has one `_meta` shape: the read shim, the one-shape-per-file rule, the deprecation timeline, the per-file 1.x/2.0 boundary and the v1/v2 block digest rules are replaced. The nested shape and vocabulary stand.
+
 > **Revised 2026-08-31, after [RFC 0031](./0031-source-vocabulary.md)
 > implemented.** The original draft typed the nested provenance field as
 > `source: SourceTag` — the short-form *resolution* reading (`user_input`,

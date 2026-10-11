@@ -18,6 +18,8 @@ affects:
 
 # RFC 0022: Market data as an attributable UW document
 
+**Receipt 1.0 acceptance superseded by [RFC 0081](0081-one-format-one-protocol.md).** Receipts are version 1.1 only. The market-data profile stands.
+
 ## Summary
 
 Define `market-data-v1`, a document profile for dated, attributable market

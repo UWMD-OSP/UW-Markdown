@@ -15,6 +15,8 @@ affects:
 
 # RFC 0017: Split `.uw.md` Lite from `.uwx.md` Extended as distinct source representations
 
+**Legacy detection and the Lite-to-1.1 bridge superseded by [RFC 0081](0081-one-format-one-protocol.md).** Structured content under `.uw.md` is refused, and the Lite bridge emits Format 3.0 for every class. The two-representation design stands.
+
 > **Corrective and retroactive.** The change this RFC describes had already
 > shipped when this RFC was written. It documents the change after the fact to
 > close a governance gap, and records that gap honestly in

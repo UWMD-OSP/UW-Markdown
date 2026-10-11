@@ -13,6 +13,8 @@ affects:
 
 # RFC 0010: Signed blocks
 
+**Hash-scope note resolved by [RFC 0081](0081-one-format-one-protocol.md).** From Format 3.0 a block's `content_hash` excludes `_meta`, so a signature no longer binds `parent_hash` transitively. That is this RFC's §4 intent; its implementation note about the gap no longer applies.
+
 ## Summary
 
 Add an optional `_meta.integrity.signature` field carrying a detached

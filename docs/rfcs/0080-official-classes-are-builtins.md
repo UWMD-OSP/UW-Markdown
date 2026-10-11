@@ -24,6 +24,8 @@ affects:
 
 # RFC 0080: Every official asset class is a builtin; data center and manufactured housing join the builtin set
 
+**Compatibility clauses superseded by [RFC 0081](0081-one-format-one-protocol.md).** §5 (the `org.uwmd.data_center` alias, `CLS-01`/`CLS-02`, module-gated severities), the module shells and the transition decision rows are removed, and the hotel facts consolidate into `rent_roll`. The builtin-class design stands.
+
 **Accepted with its implementation.** The direction is the owner's
 (Product principle 1, 2026-10-10); this RFC turns it into a contract. It lands
 `accepted` together with its implementation in one PR, as RFCs 0064, 0065 and
