@@ -146,4 +146,3 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "poh_home_rent_monthly": 750
 }
 ```
-

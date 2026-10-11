@@ -160,4 +160,3 @@ Restaurant and bar, no banquet business.
   "_notes": null
 }
 ```
-

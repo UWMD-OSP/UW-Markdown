@@ -146,4 +146,3 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "as_of_date": "2026-09-30"
 }
 ```
-

@@ -13,8 +13,6 @@
     "price_per_commissioned_kw": 159980.32,
     "noi_per_commissioned_kw": 11198.62
   },
-  "expected_codes": [
-    
-  ],
+  "expected_codes": [],
   "builtin_class": "data_center"
 }

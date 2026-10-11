@@ -56,7 +56,7 @@ source_documents:
 
 # Mesa Gateway Data Center — Mesa, AZ
 
-> **Deal ID:** uw_2026_dc7q4m1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
+> **Deal ID:** uw_2026_dc7q4m1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress
 > **10.0 MW Commissioned / 12.5 MW Planned** | **11.0 MW Contracted** | **PUE 1.25** | **$160,000,000 Purchase** | **$16,000/kW** | **7.00% Cap Rate (in-place)**
 
 This file is the corpus's **first custom-class example**: its `asset_class` is

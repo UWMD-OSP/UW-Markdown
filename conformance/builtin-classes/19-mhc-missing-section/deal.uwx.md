@@ -119,4 +119,3 @@ reader, while `property.total_units` is unstated to avoid a wrong denominator.
   "annual_debt_service": 480000
 }
 ```
-

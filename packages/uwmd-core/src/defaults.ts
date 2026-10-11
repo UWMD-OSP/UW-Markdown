@@ -1258,4 +1258,3 @@ export function listDefaultedFields(asset_class: string): string[] {
   const table = getAssetClassDefaults(asset_class);
   return table ? Object.keys(table.fields) : [];
 }
-

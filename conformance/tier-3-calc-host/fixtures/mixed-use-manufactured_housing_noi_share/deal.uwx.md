@@ -41,7 +41,7 @@ source_documents:
 
 # Roosevelt Row Commons — Mixed-Use, Phoenix, AZ
 
-> **Deal ID:** uw_2026_mx8k2p | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
+> **Deal ID:** uw_2026_mx8k2p | **Scenario:** Stabilized Acquisition | **Status:** In Progress
 > **Three uses, one price, one loan** | **$40,000,000 Purchase** | **6.43% Cap Rate (in-place)**
 
 This file is the **mixed-use worked example** for the conformance corpus (RFC 0019,
