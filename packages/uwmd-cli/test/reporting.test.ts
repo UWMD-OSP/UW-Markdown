@@ -80,7 +80,7 @@ describe('CLI validation and receipt reporting', () => {
       { calc_id: 'cash_on_cash', computed: false, value: null, unit: '%' },
     ]);
     expect(result.stdout.replace(/sha256:[0-9a-f]{64}/g, '<digest>')).toMatchInlineSnapshot(`
-"Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.1)
+"Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.2)
 Metric completeness: partial
 Computed: 7/8
 Uncomputed: cash_on_cash

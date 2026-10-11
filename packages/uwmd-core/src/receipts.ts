@@ -84,15 +84,9 @@ export const UWX_CANONICALIZATION_VERSION = '1.0' as const;
 /** Canonicalization used for structured records (Document Envelope 1.0). */
 export const UWX_CANONICALIZATION = 'uw-envelope-semantic' as const;
 
-/**
- * Tolerance for comparing a stated numeric result against recomputation.
- * Relative for large magnitudes, absolute near zero.
- *
- * Since §VIII.5, a *conforming* issuer can never need this: both sides quantize
- * before comparison, so they agree exactly or disagree materially. It is kept as
- * defence-in-depth against a third-party issuer running an alternate precision
- * routine — that lands as a clean `RCP-03` naming the calc rather than an
- * `RCP-04` digest mismatch that reads as corruption.
+/** @deprecated Historical pre-quantization comparison bound. RFC 0079 receipt
+ * verification uses exact reported-value equality; this export is retained for
+ * source compatibility and is no longer used by the verifier.
  */
 export const RECEIPT_RESULT_TOLERANCE = 1e-6;
 
@@ -256,7 +250,7 @@ export type UWReceiptIssueCode =
   | 'RCP-01'
   /** Stated results do not cover exactly the pack's declared outputs. */
   | 'RCP-02'
-  /** A stated result disagrees with recomputation beyond tolerance. */
+  /** A stated result disagrees with its quantized recomputation. */
   | 'RCP-03'
   /** `results_digest` does not recompute — accidental corruption. */
   | 'RCP-04'
@@ -929,10 +923,7 @@ function compareResults(
 
 function valuesAgree(stated: unknown, actual: unknown): boolean {
   if (typeof stated === 'number' && typeof actual === 'number') {
-    if (Number.isNaN(stated) || Number.isNaN(actual)) return false;
-    if (stated === actual) return true;
-    const scale = Math.max(1, Math.abs(stated), Math.abs(actual));
-    return Math.abs(stated - actual) <= RECEIPT_RESULT_TOLERANCE * scale;
+    return Number.isFinite(stated) && Number.isFinite(actual) && stated === actual;
   }
   return stated === actual;
 }

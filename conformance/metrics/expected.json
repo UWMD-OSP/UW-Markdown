@@ -3,8 +3,8 @@
     "example": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 1,
-      "failed": 8,
+      "verified": 9,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -12,70 +12,87 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0542,
-        "state": "failed",
-        "computed": 0.054167,
-        "comparison": 0.0542
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0542,
+        "comparison": 0.0542,
+        "comparison_decimals": 4
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0542,
-        "state": "failed",
-        "computed": 0.054167,
-        "comparison": 0.0542
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0542,
+        "comparison": 0.0542,
+        "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.4938,
-        "state": "failed",
-        "computed": 0.5,
-        "comparison": 0.4938
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.4938,
+        "comparison": 0.4938,
+        "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.4938,
-        "state": "failed",
-        "computed": 0.5,
-        "comparison": 0.4938
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.4938,
+        "comparison": 0.4938,
+        "comparison_decimals": 4
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.514,
-        "state": "failed",
-        "computed": 1.5139,
-        "comparison": 1.514
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.514,
+        "comparison": 1.514,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.514,
-        "state": "failed",
-        "computed": 1.5139,
-        "comparison": 1.514
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.514,
+        "comparison": 1.514,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.1083,
-        "state": "failed",
-        "computed": 0.108333,
-        "comparison": 0.1083
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1083,
+        "comparison": 0.1083,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.1083,
-        "state": "failed",
-        "computed": 0.108333,
-        "comparison": 0.1083
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1083,
+        "comparison": 0.1083,
+        "comparison_decimals": 4
       },
       {
         "id": "total_units",
         "path": "property.total_units",
         "stated": 180,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 180,
         "comparison": 180
@@ -86,8 +103,8 @@
     "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
     "asset_class": "retail",
     "counts": {
-      "verified": 9,
-      "failed": 5,
+      "verified": 14,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -95,110 +112,137 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.07,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.07,
-        "comparison": 0.07
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.07,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.07,
-        "comparison": 0.07
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.62,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.62,
-        "comparison": 0.62
+        "comparison": 0.62,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.62,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.62,
-        "comparison": 0.62
+        "comparison": 0.62,
+        "comparison_decimals": 2
       },
       {
         "id": "ltc",
         "path": "debt_structure.ltc",
         "stated": 0.594,
-        "state": "failed",
-        "computed": 0.593916,
-        "comparison": 0.594
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 0.594,
+        "comparison": 0.594,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.451,
-        "state": "failed",
-        "computed": 1.4506,
-        "comparison": 1.451
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.451,
+        "comparison": 1.451,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.451,
-        "state": "failed",
-        "computed": 1.4506,
-        "comparison": 1.451
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.451,
+        "comparison": 1.451,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.1129,
-        "state": "failed",
-        "computed": 0.112903,
-        "comparison": 0.1129
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1129,
+        "comparison": 0.1129,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.1129,
-        "state": "failed",
-        "computed": 0.112903,
-        "comparison": 0.1129
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1129,
+        "comparison": 0.1129,
+        "comparison_decimals": 4
       },
       {
         "id": "price_per_sqft",
         "path": "valuation.price_per_sf",
         "stated": 194.74,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 194.74,
-        "comparison": 194.74
+        "comparison": 194.74,
+        "comparison_decimals": 2
       },
       {
         "id": "noi_per_sqft",
         "path": "noi_model.noi_per_sf",
         "stated": 13.63,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 13.63,
-        "comparison": 13.63
+        "comparison": 13.63,
+        "comparison_decimals": 2
       },
       {
         "id": "occupancy",
         "path": "property.occupancy_pct",
         "stated": 0.94,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.94,
-        "comparison": 0.94
+        "comparison": 0.94,
+        "comparison_decimals": 2
       },
       {
         "id": "occupancy",
         "path": "rent_roll.occupancy_pct",
         "stated": 0.94,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.94,
-        "comparison": 0.94
+        "comparison": 0.94,
+        "comparison_decimals": 2
       },
       {
         "id": "gross_leasable_area",
         "path": "property.gross_leasable_area",
         "stated": 95000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 95000,
         "comparison": 95000
@@ -209,8 +253,8 @@
     "example": "Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md",
     "asset_class": "industrial",
     "counts": {
-      "verified": 10,
-      "failed": 4,
+      "verified": 14,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -218,110 +262,137 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0625,
+        "stated_decimals": 4,
         "state": "verified",
         "computed": 0.0625,
-        "comparison": 0.0625
+        "comparison": 0.0625,
+        "comparison_decimals": 4
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0625,
+        "stated_decimals": 4,
         "state": "verified",
         "computed": 0.0625,
-        "comparison": 0.0625
+        "comparison": 0.0625,
+        "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.58,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.58,
-        "comparison": 0.58
+        "comparison": 0.58,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.58,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.58,
-        "comparison": 0.58
+        "comparison": 0.58,
+        "comparison_decimals": 2
       },
       {
         "id": "ltc",
         "path": "debt_structure.ltc",
         "stated": 0.56,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.56,
-        "comparison": 0.56
+        "comparison": 0.56,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.458,
-        "state": "failed",
-        "computed": 1.4584,
-        "comparison": 1.458
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.458,
+        "comparison": 1.458,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.458,
-        "state": "failed",
-        "computed": 1.4584,
-        "comparison": 1.458
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.458,
+        "comparison": 1.458,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.1078,
-        "state": "failed",
-        "computed": 0.107759,
-        "comparison": 0.1078
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1078,
+        "comparison": 0.1078,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.1078,
-        "state": "failed",
-        "computed": 0.107759,
-        "comparison": 0.1078
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1078,
+        "comparison": 0.1078,
+        "comparison_decimals": 4
       },
       {
         "id": "price_per_sqft",
         "path": "valuation.price_per_sf",
         "stated": 127.27,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 127.27,
-        "comparison": 127.27
+        "comparison": 127.27,
+        "comparison_decimals": 2
       },
       {
         "id": "noi_per_sqft",
         "path": "noi_model.noi_per_sf",
         "stated": 7.95,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 7.95,
-        "comparison": 7.95
+        "comparison": 7.95,
+        "comparison_decimals": 2
       },
       {
         "id": "occupancy",
         "path": "property.occupancy_pct",
         "stated": 0.96,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.96,
-        "comparison": 0.96
+        "comparison": 0.96,
+        "comparison_decimals": 2
       },
       {
         "id": "occupancy",
         "path": "rent_roll.occupancy_pct",
         "stated": 0.96,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.96,
-        "comparison": 0.96
+        "comparison": 0.96,
+        "comparison_decimals": 2
       },
       {
         "id": "rentable_square_feet",
         "path": "property.rentable_square_feet",
         "stated": 220000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 220000,
         "comparison": 220000
@@ -341,110 +412,137 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0575291624,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.057529,
-        "comparison": 0.057529
+        "comparison": 0.057529,
+        "comparison_decimals": 6
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0575291624,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.057529,
-        "comparison": 0.057529
+        "comparison": 0.057529,
+        "comparison_decimals": 6
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.6,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.6,
-        "comparison": 0.6
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.6,
-        "comparison": 0.6
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.2976998918,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 1.2977,
-        "comparison": 1.2977
+        "comparison": 1.2977,
+        "comparison_decimals": 4
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.2976998918,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 1.2977,
-        "comparison": 1.2977
+        "comparison": 1.2977,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.0958819373,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.095882,
-        "comparison": 0.095882
+        "comparison": 0.095882,
+        "comparison_decimals": 6
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.0958819373,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.095882,
-        "comparison": 0.095882
+        "comparison": 0.095882,
+        "comparison_decimals": 6
       },
       {
         "id": "price_per_bed",
         "path": "valuation.price_per_bed",
         "stated": 97500,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 97500,
-        "comparison": 97500
+        "comparison": 97500,
+        "comparison_decimals": 0
       },
       {
         "id": "expense_ratio",
         "path": "noi_model.expense_ratio",
         "stated": 0.4903604095,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.49036,
-        "comparison": 0.49036
+        "comparison": 0.49036,
+        "comparison_decimals": 6
       },
       {
         "id": "occupancy",
         "path": "rent_roll.occupancy",
         "stated": 0.945,
+        "stated_decimals": 3,
         "state": "verified",
         "computed": 0.945,
-        "comparison": 0.945
+        "comparison": 0.945,
+        "comparison_decimals": 3
       },
       {
         "id": "pre_lease_rate",
         "path": "rent_roll.pre_lease_rate",
         "stated": 0.955,
+        "stated_decimals": 3,
         "state": "verified",
         "computed": 0.955,
-        "comparison": 0.955
+        "comparison": 0.955,
+        "comparison_decimals": 3
       },
       {
         "id": "revenue_per_bed",
         "path": "noi_model.revenue_per_bed",
         "stated": 11006,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 11006,
-        "comparison": 11006
+        "comparison": 11006,
+        "comparison_decimals": 0
       },
       {
         "id": "total_beds",
         "path": "property.total_beds",
         "stated": 600,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 600,
         "comparison": 600
@@ -464,118 +562,147 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0774268456,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.077427,
-        "comparison": 0.077427
+        "comparison": 0.077427,
+        "comparison_decimals": 6
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0774268456,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.077427,
-        "comparison": 0.077427
+        "comparison": 0.077427,
+        "comparison_decimals": 6
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.62,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.62,
-        "comparison": 0.62
+        "comparison": 0.62,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.62,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.62,
-        "comparison": 0.62
+        "comparison": 0.62,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.5030528173,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 1.5031,
-        "comparison": 1.5031
+        "comparison": 1.5031,
+        "comparison_decimals": 4
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.5030528173,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 1.5031,
-        "comparison": 1.5031
+        "comparison": 1.5031,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.1248820091,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.124882,
-        "comparison": 0.124882
+        "comparison": 0.124882,
+        "comparison_decimals": 6
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.1248820091,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.124882,
-        "comparison": 0.124882
+        "comparison": 0.124882,
+        "comparison_decimals": 6
       },
       {
         "id": "price_per_unit",
         "path": "valuation.price_per_unit",
         "stated": 248333.3333333333,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 248333.33,
-        "comparison": 248333.33
+        "comparison": 248333.33,
+        "comparison_decimals": 2
       },
       {
         "id": "expense_ratio",
         "path": "noi_model.expense_ratio",
         "stated": 0.7607904122,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.76079,
-        "comparison": 0.76079
+        "comparison": 0.76079,
+        "comparison_decimals": 6
       },
       {
         "id": "occupancy",
         "path": "rent_roll.occupancy",
         "stated": 0.8833333333,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.883333,
-        "comparison": 0.883333
+        "comparison": 0.883333,
+        "comparison_decimals": 6
       },
       {
         "id": "revpor",
         "path": "noi_model.revpor_monthly",
         "stated": 7583.0188679245,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 7583.02,
-        "comparison": 7583.02
+        "comparison": 7583.02,
+        "comparison_decimals": 2
       },
       {
         "id": "labor_ratio",
         "path": "noi_model.labor_ratio",
         "stated": 0.4136601145,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.41366,
-        "comparison": 0.41366
+        "comparison": 0.41366,
+        "comparison_decimals": 6
       },
       {
         "id": "care_revenue_ratio",
         "path": "noi_model.care_revenue_ratio",
         "stated": 0.1978104006,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.19781,
-        "comparison": 0.19781
+        "comparison": 0.19781,
+        "comparison_decimals": 6
       },
       {
         "id": "total_units",
         "path": "property.total_units",
         "stated": 120,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 120,
         "comparison": 120
@@ -586,8 +713,8 @@
     "example": "Parkview-Apts-Glendale-AZ.uw.md",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 1,
-      "failed": 1,
+      "verified": 2,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -595,14 +722,17 @@
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0551,
-        "state": "failed",
-        "computed": 0.055088,
-        "comparison": 0.0551
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0551,
+        "comparison": 0.0551,
+        "comparison_decimals": 4
       },
       {
         "id": "total_units",
         "path": "property.total_units",
         "stated": 48,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 48,
         "comparison": 48
@@ -613,8 +743,8 @@
     "example": "Parkview-Apts-Glendale-AZ.uwx.md",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 4,
-      "failed": 5,
+      "verified": 9,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -622,70 +752,87 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0551,
-        "state": "failed",
-        "computed": 0.055088,
-        "comparison": 0.0551
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0551,
+        "comparison": 0.0551,
+        "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.7,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.7,
-        "comparison": 0.7
+        "comparison": 0.7,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.sizing_metrics.ltv",
         "stated": 0.7,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.7,
-        "comparison": 0.7
+        "comparison": 0.7,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.109,
-        "state": "failed",
-        "computed": 1.1091,
-        "comparison": 1.109
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.109,
+        "comparison": 1.109,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "debt_structure.sizing_metrics.dscr_underwritten",
         "stated": 1.109,
-        "state": "failed",
-        "computed": 1.1091,
-        "comparison": 1.109
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.109,
+        "comparison": 1.109,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.0787,
-        "state": "failed",
-        "computed": 0.078697,
-        "comparison": 0.0787
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0787,
+        "comparison": 0.0787,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.sizing_metrics.debt_yield",
         "stated": 0.0787,
-        "state": "failed",
-        "computed": 0.078697,
-        "comparison": 0.0787
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0787,
+        "comparison": 0.0787,
+        "comparison_decimals": 4
       },
       {
         "id": "price_per_unit",
         "path": "valuation.purchase_price_per_unit",
         "stated": 150000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 150000,
-        "comparison": 150000
+        "comparison": 150000,
+        "comparison_decimals": 0
       },
       {
         "id": "total_units",
         "path": "property.total_units",
         "stated": 48,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 48,
         "comparison": 48
@@ -696,8 +843,8 @@
     "example": "Riverside-Office-Phoenix-AZ.uwx.md",
     "asset_class": "office",
     "counts": {
-      "verified": 7,
-      "failed": 7,
+      "verified": 14,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -705,110 +852,137 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.06,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.06,
-        "comparison": 0.06
+        "comparison": 0.06,
+        "comparison_decimals": 3
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.06,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.06,
-        "comparison": 0.06
+        "comparison": 0.06,
+        "comparison_decimals": 3
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.65,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.65,
-        "comparison": 0.65
+        "comparison": 0.65,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.65,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.65,
-        "comparison": 0.65
+        "comparison": 0.65,
+        "comparison_decimals": 2
       },
       {
         "id": "ltc",
         "path": "debt_structure.ltc",
         "stated": 0.6,
-        "state": "failed",
-        "computed": 0.601852,
-        "comparison": 0.6
+        "stated_decimals": 1,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.026,
-        "state": "failed",
-        "computed": 1.0256,
-        "comparison": 1.026
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.026,
+        "comparison": 1.026,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.026,
-        "state": "failed",
-        "computed": 1.0256,
-        "comparison": 1.026
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.026,
+        "comparison": 1.026,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.0923,
-        "state": "failed",
-        "computed": 0.092308,
-        "comparison": 0.0923
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0923,
+        "comparison": 0.0923,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.0923,
-        "state": "failed",
-        "computed": 0.092308,
-        "comparison": 0.0923
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0923,
+        "comparison": 0.0923,
+        "comparison_decimals": 4
       },
       {
         "id": "price_per_sqft",
         "path": "valuation.price_per_sf",
         "stated": 117.65,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 117.65,
-        "comparison": 117.65
+        "comparison": 117.65,
+        "comparison_decimals": 2
       },
       {
         "id": "noi_per_sqft",
         "path": "noi_model.noi_per_sf",
         "stated": 7.06,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 7.06,
-        "comparison": 7.06
+        "comparison": 7.06,
+        "comparison_decimals": 2
       },
       {
         "id": "occupancy",
         "path": "property.occupancy_pct",
         "stated": 0.73,
-        "state": "failed",
-        "computed": 0.729412,
-        "comparison": 0.73
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.73,
+        "comparison": 0.73,
+        "comparison_decimals": 2
       },
       {
         "id": "occupancy",
         "path": "rent_roll.occupancy_pct",
         "stated": 0.73,
-        "state": "failed",
-        "computed": 0.729412,
-        "comparison": 0.73
+        "stated_decimals": 2,
+        "state": "verified",
+        "computed": 0.73,
+        "comparison": 0.73,
+        "comparison_decimals": 2
       },
       {
         "id": "rentable_square_feet",
         "path": "property.rentable_square_feet",
         "stated": 42500,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 42500,
         "comparison": 42500
@@ -819,8 +993,8 @@
     "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
     "asset_class": "mixed_use",
     "counts": {
-      "verified": 3,
-      "failed": 2,
+      "verified": 5,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -828,41 +1002,51 @@
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0643,
+        "stated_decimals": 4,
         "state": "verified",
         "computed": 0.0643,
-        "comparison": 0.0643
+        "comparison": 0.0643,
+        "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.65,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.65,
-        "comparison": 0.65
+        "comparison": 0.65,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.354,
-        "state": "failed",
-        "computed": 1.3537,
-        "comparison": 1.354
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.354,
+        "comparison": 1.354,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.0989,
-        "state": "failed",
-        "computed": 0.098923,
-        "comparison": 0.0989
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0989,
+        "comparison": 0.0989,
+        "comparison_decimals": 4
       },
       {
         "id": "hospitality_gross_operating_profit",
         "path": "components.hospitality.gross_operating_profit",
         "stated": 1400000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 1400000,
-        "comparison": 1400000
+        "comparison": 1400000,
+        "comparison_decimals": 0
       }
     ]
   },
@@ -879,118 +1063,147 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0824201681,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.08242,
-        "comparison": 0.08242
+        "comparison": 0.08242,
+        "comparison_decimals": 6
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.0824201681,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.08242,
-        "comparison": 0.08242
+        "comparison": 0.08242,
+        "comparison_decimals": 6
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.6,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.6,
-        "comparison": 0.6
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.6,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.6,
-        "comparison": 0.6
+        "comparison": 0.6,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.5287953137,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 1.5288,
-        "comparison": 1.5288
+        "comparison": 1.5288,
+        "comparison_decimals": 4
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
         "stated": 1.5287953137,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 1.5288,
-        "comparison": 1.5288
+        "comparison": 1.5288,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.1373669468,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.137367,
-        "comparison": 0.137367
+        "comparison": 0.137367,
+        "comparison_decimals": 6
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.1373669468,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.137367,
-        "comparison": 0.137367
+        "comparison": 0.137367,
+        "comparison_decimals": 6
       },
       {
         "id": "price_per_key",
         "path": "valuation.price_per_key",
         "stated": 167605.6338028169,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 167605.63,
-        "comparison": 167605.63
+        "comparison": 167605.63,
+        "comparison_decimals": 2
       },
       {
         "id": "expense_ratio",
         "path": "noi_model.expense_ratio",
         "stated": 0.7157101449,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.71571,
-        "comparison": 0.71571
+        "comparison": 0.71571,
+        "comparison_decimals": 6
       },
       {
         "id": "occupancy",
         "path": "rent_roll.occupancy",
         "stated": 0.73316612,
+        "stated_decimals": 8,
         "state": "verified",
         "computed": 0.733166,
-        "comparison": 0.733166
+        "comparison": 0.733166,
+        "comparison_decimals": 6
       },
       {
         "id": "adr",
         "path": "rent_roll.adr",
         "stated": 160,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 160,
-        "comparison": 160
+        "comparison": 160,
+        "comparison_decimals": 1
       },
       {
         "id": "revpar",
         "path": "rent_roll.revpar",
         "stated": 117.3065792012,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 117.31,
-        "comparison": 117.31
+        "comparison": 117.31,
+        "comparison_decimals": 2
       },
       {
         "id": "gop_margin",
         "path": "noi_model.gop_margin",
         "stated": 0.4177681159,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.417768,
-        "comparison": 0.417768
+        "comparison": 0.417768,
+        "comparison_decimals": 6
       },
       {
         "id": "keys",
         "path": "property.keys",
         "stated": 142,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 142,
         "comparison": 142
@@ -1001,8 +1214,8 @@
     "example": "Sonoran-Self-Storage-Peoria-AZ.uwx.md",
     "asset_class": "self_storage",
     "counts": {
-      "verified": 11,
-      "failed": 2,
+      "verified": 13,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -1010,102 +1223,127 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.07,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.07,
-        "comparison": 0.07
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "cap_rate",
         "path": "valuation.going_in_cap_rate",
         "stated": 0.07,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.07,
-        "comparison": 0.07
+        "comparison": 0.07,
+        "comparison_decimals": 3
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.65,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.65,
-        "comparison": 0.65
+        "comparison": 0.65,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.65,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.65,
-        "comparison": 0.65
+        "comparison": 0.65,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
-        "stated": 1.3153,
-        "state": "failed",
+        "stated": 1.3161,
+        "stated_decimals": 4,
+        "state": "verified",
         "computed": 1.3161,
-        "comparison": 1.3153
+        "comparison": 1.3161,
+        "comparison_decimals": 4
       },
       {
         "id": "dscr",
         "path": "debt_structure.dscr",
-        "stated": 1.3153,
-        "state": "failed",
+        "stated": 1.3161,
+        "stated_decimals": 4,
+        "state": "verified",
         "computed": 1.3161,
-        "comparison": 1.3153
+        "comparison": 1.3161,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.1076923077,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.107692,
-        "comparison": 0.107692
+        "comparison": 0.107692,
+        "comparison_decimals": 6
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.debt_yield",
         "stated": 0.1076923077,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.107692,
-        "comparison": 0.107692
+        "comparison": 0.107692,
+        "comparison_decimals": 6
       },
       {
         "id": "price_per_nrsf",
         "path": "valuation.price_per_nrsf",
         "stated": 117.0731707317,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 117.07,
-        "comparison": 117.07
+        "comparison": 117.07,
+        "comparison_decimals": 2
       },
       {
         "id": "expense_ratio",
         "path": "noi_model.expense_ratio",
         "stated": 0.3618233618,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.361823,
-        "comparison": 0.361823
+        "comparison": 0.361823,
+        "comparison_decimals": 6
       },
       {
         "id": "physical_occupancy",
         "path": "rent_roll.physical_occupancy",
         "stated": 0.8636363636,
+        "stated_decimals": 10,
         "state": "verified",
         "computed": 0.863636,
-        "comparison": 0.863636
+        "comparison": 0.863636,
+        "comparison_decimals": 6
       },
       {
         "id": "economic_occupancy",
         "path": "rent_roll.economic_occupancy",
         "stated": 0.975,
+        "stated_decimals": 3,
         "state": "verified",
         "computed": 0.975,
-        "comparison": 0.975
+        "comparison": 0.975,
+        "comparison_decimals": 3
       },
       {
         "id": "net_rentable_square_feet",
         "path": "property.net_rentable_square_feet",
         "stated": 82000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 82000,
         "comparison": 82000
@@ -1125,54 +1363,67 @@
         "id": "price_per_acre",
         "path": "valuation.price_per_acre",
         "stated": 103500,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 103500,
-        "comparison": 103500
+        "comparison": 103500,
+        "comparison_decimals": 0
       },
       {
         "id": "price_per_usable_acre",
         "path": "valuation.price_per_usable_acre",
         "stated": 120000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 120000,
-        "comparison": 120000
+        "comparison": 120000,
+        "comparison_decimals": 0
       },
       {
         "id": "price_per_buildable_unit",
         "path": "valuation.price_per_buildable_unit",
         "stated": 30000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 30000,
-        "comparison": 30000
+        "comparison": 30000,
+        "comparison_decimals": 0
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.5,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.5,
-        "comparison": 0.5
+        "comparison": 0.5,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.ltv",
         "stated": 0.5,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.5,
-        "comparison": 0.5
+        "comparison": 0.5,
+        "comparison_decimals": 2
       },
       {
         "id": "carry_cost_per_acre",
         "path": "noi_model.carry_cost_per_acre",
         "stated": 1812.5,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 1812.5,
-        "comparison": 1812.5
+        "comparison": 1812.5,
+        "comparison_decimals": 1
       },
       {
         "id": "gross_acres",
         "path": "property.gross_acres",
         "stated": 160,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 160,
         "comparison": 160
@@ -1193,8 +1444,8 @@
     "example": "parkview-after-L6.uwx.md",
     "asset_class": "multifamily",
     "counts": {
-      "verified": 4,
-      "failed": 5,
+      "verified": 9,
+      "failed": 0,
       "unverifiable": 0
     },
     "evidence": [
@@ -1202,70 +1453,87 @@
         "id": "cap_rate",
         "path": "quick_metrics.cap_rate",
         "stated": 0.0551,
-        "state": "failed",
-        "computed": 0.055088,
-        "comparison": 0.0551
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0551,
+        "comparison": 0.0551,
+        "comparison_decimals": 4
       },
       {
         "id": "ltv",
         "path": "quick_metrics.ltv",
         "stated": 0.7,
+        "stated_decimals": 2,
         "state": "verified",
         "computed": 0.7,
-        "comparison": 0.7
+        "comparison": 0.7,
+        "comparison_decimals": 2
       },
       {
         "id": "ltv",
         "path": "debt_structure.sizing_metrics.ltv",
         "stated": 0.7,
+        "stated_decimals": 1,
         "state": "verified",
         "computed": 0.7,
-        "comparison": 0.7
+        "comparison": 0.7,
+        "comparison_decimals": 2
       },
       {
         "id": "dscr",
         "path": "quick_metrics.dscr",
         "stated": 1.109,
-        "state": "failed",
-        "computed": 1.1091,
-        "comparison": 1.109
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.109,
+        "comparison": 1.109,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
         "path": "debt_structure.sizing_metrics.dscr_underwritten",
         "stated": 1.109,
-        "state": "failed",
-        "computed": 1.1091,
-        "comparison": 1.109
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.109,
+        "comparison": 1.109,
+        "comparison_decimals": 3
       },
       {
         "id": "debt_yield",
         "path": "quick_metrics.debt_yield",
         "stated": 0.0787,
-        "state": "failed",
-        "computed": 0.078697,
-        "comparison": 0.0787
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0787,
+        "comparison": 0.0787,
+        "comparison_decimals": 4
       },
       {
         "id": "debt_yield",
         "path": "debt_structure.sizing_metrics.debt_yield",
         "stated": 0.0787,
-        "state": "failed",
-        "computed": 0.078697,
-        "comparison": 0.0787
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0787,
+        "comparison": 0.0787,
+        "comparison_decimals": 4
       },
       {
         "id": "price_per_unit",
         "path": "valuation.purchase_price_per_unit",
         "stated": 150000,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 150000,
-        "comparison": 150000
+        "comparison": 150000,
+        "comparison_decimals": 0
       },
       {
         "id": "total_units",
         "path": "property.total_units",
         "stated": 48,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 48,
         "comparison": 48
@@ -1285,6 +1553,7 @@
         "id": "total_units",
         "path": "property.total_units",
         "stated": 3,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 3,
         "comparison": 3
@@ -1304,6 +1573,7 @@
         "id": "total_units",
         "path": "property.total_units",
         "stated": 3,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 3,
         "comparison": 3
@@ -1323,6 +1593,7 @@
         "id": "total_units",
         "path": "property.total_units",
         "stated": 3,
+        "stated_decimals": 0,
         "state": "verified",
         "computed": 3,
         "comparison": 3

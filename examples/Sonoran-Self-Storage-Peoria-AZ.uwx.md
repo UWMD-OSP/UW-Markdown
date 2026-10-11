@@ -31,7 +31,7 @@ quick_metrics:
   purchase_price:    9600000
   loan_amount:       6240000
   noi_underwritten:  672000
-  dscr:              1.3153
+  dscr:              1.3161
   ltv:               0.65
   debt_yield:        0.1076923077
   cap_rate:          0.07
@@ -228,7 +228,7 @@ growth and continued physical occupancy above 85%.
   "amortization_years": 30,
   "io_period_months": 0,
   "annual_debt_service": 510606,
-  "dscr": 1.3153,
+  "dscr": 1.3161,
   "ltv": 0.65,
   "debt_yield": 0.1076923077,
   "recourse": "non_recourse"
@@ -255,6 +255,8 @@ growth and continued physical occupancy above 85%.
     "notes": null
   },
   "_notes": null,
+  "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (3,560,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
+  "equity_metrics": { "equity_total": 3560000 },
   "sources": {
     "loan_amount": 6240000,
     "sponsor_equity": 3560000,

@@ -11,7 +11,7 @@
 //
 // Office differs from multifamily on three field paths: size is measured in
 // rentable square feet (`property.rentable_square_feet`, not `total_units`),
-// sponsor equity is `sources_uses.sources.sponsor_equity` (not `equity_sponsor`),
+// total equity is `sources_uses.equity_metrics.equity_total`,
 // and the NOI model splits income/expenses into nested objects.
 
 import type { ModuleManifest } from '../protocol.js';
@@ -20,7 +20,7 @@ export const OFFICE_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.office',
   name: 'Office Starter Pack',
-  version: '1.0.0',
+  version: '1.0.1',
   description:
     'Eleven derived metrics for office underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/sqft, loan/sqft, NOI/sqft, expense ratio, cash-on-cash, occupancy.',
   authors: ['UW Markdown Working Group'],
@@ -40,7 +40,7 @@ export const OFFICE_PACK: ModuleManifest = {
     {
       id: 'ltv',
       label: 'LTV',
-      formula: 'debt_structure.loan_amount / valuation.purchase_price',
+      formula: 'debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)',
       unit: '%',
       deterministic: true,
       section_roles: { debt_structure: 'senior' },
@@ -103,7 +103,7 @@ export const OFFICE_PACK: ModuleManifest = {
       id: 'cash_on_cash',
       label: 'Cash-on-Cash',
       formula:
-        '(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity',
+        'sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total',
       unit: '%',
       deterministic: true,
     },

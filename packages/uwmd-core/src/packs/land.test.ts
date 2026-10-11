@@ -12,11 +12,21 @@ import { emitExcelFormula } from './excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { LAND_PACK } from './land.js';
 
+function excelValue(formula: string): number | null {
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  // eslint-disable-next-line no-new-func
+  return new Function('IF', `return (${expression});`)(
+    (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+  ) as number | null;
+}
+
 const EXAMPLE = resolve(__dirname, '../../../../examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
+      ['valuation.underwritten_value', 'underwritten_value'],
   ['valuation.projected_gross_sellout', 'projected_gross_sellout'],
   ['debt_structure.loan_amount', 'loan_amount'],
   ['property.gross_acres', 'gross_acres'],
@@ -86,9 +96,10 @@ describe('LAND_PACK', () => {
     const expenses = noi.content['expenses'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
-    const values: Record<string, number> = {
+    const values: Record<string, number | null> = {
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
+      underwritten_value: (valuation.content['underwritten_value'] as number | undefined) ?? null,
       projected_gross_sellout: valuation.content['projected_gross_sellout'] as number,
       loan_amount: debt.content['loan_amount'] as number,
       gross_acres: property.content['gross_acres'] as number,
@@ -105,9 +116,9 @@ describe('LAND_PACK', () => {
       for (const [, name] of NAMED_RANGES) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       }
-      expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (c.id !== 'ltv') expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
-      const excelLike = new Function(`return (${formula});`)() as number;
+      const excelLike = excelValue(formula)!;
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
       // (§VIII.5), so the simulated result is quantized the same way. Parity is
       // then *exact* rather than approximate: one identical rounding rule on both

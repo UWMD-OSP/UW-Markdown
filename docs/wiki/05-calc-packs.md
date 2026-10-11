@@ -16,6 +16,25 @@ continues to use the same pack objects and Excel bindings.
   `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
+## Stated precision and output precision (RFC 0079)
+
+A dictionary entry's `minimum_stated_decimals` is a comparison floor.
+`getStatedDecimals` reads a **source numeric token**, preserving trailing zeroes
+and exponents. `compareStatedMetric` takes the **unrounded** expression result,
+the stated number, its source decimals and the dictionary entry. It compares
+at `min(max(stated_decimals, minimum_stated_decimals), round_to)` with the shared
+half-away quantizer and never double rounds. Coarse statements compare at the
+minimum: `0.07` can equal 7.0%, LTC `0.6` can verify raw `0.601852`, and DSCR
+`1.5` versus `1.7` fails. Absent/invalid precision arguments are typed caller
+errors; unverifiable remains for absent usable formula inputs. It imports no packs,
+defaults or cascade. Callers must preserve precision before numeric parsing;
+`String(parsedNumber)` cannot recover it.
+
+Calc/Excel reporting and receipt result digests still use full `round_to`.
+Receipts compare those quantized outputs exactly, with no old relative tolerance.
+The [lender fixture](../../conformance/metrics/README.md) reports all examples,
+including failures and absent-input findings without hiding coarse statements.
+
 ## File layout
 
 File | Role
@@ -62,7 +81,7 @@ multifamily derived metrics. Each is a `ModuleCalcDecl`
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `debt_structure.loan_amount / valuation.purchase_price` | `%`
+`ltv` | LTV | `debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
 `price_per_unit` | Price / Unit | `valuation.purchase_price / property.total_units` | `$`
@@ -70,10 +89,10 @@ id | label | formula | unit
 `loan_per_sqft` | Loan / SqFt | `debt_structure.loan_amount / property.total_nra_sqft` | `$`
 `cash_on_cash` | Cash-on-Cash | `year-1 levered cash flow / sources_uses.equity_metrics.equity_total` | `%`
 
-### Deal-level cash-on-cash (multifamily pack 1.0.1)
+### One deal-level cash-on-cash definition (RFC 0079)
 
 Format §4.19 defines cash-on-cash as levered cash flow divided by total equity
-invested. The multifamily pack selects `dcf.annual_cash_flows.Y1.net_cash_flow_levered`
+invested. Every income-class pack selects `dcf.annual_cash_flows.Y1.net_cash_flow_levered`
 by its stated year, independently of array order. When that input is absent or
 null, it retains the existing `noi_model.net_operating_income - debt_structure.annual_debt_service`
 fallback. The denominator is `sources_uses.equity_metrics.equity_total`.
@@ -82,12 +101,28 @@ Missing total equity stays uncomputed; zero follows `CALC-DIV-ZERO`.
 Sponsor/LP allocation is optional for this generic metric. A sponsor contribution
 alone never substitutes for aggregate equity. No `sponsor_cash_on_cash` or
 `lp_cash_on_cash` declaration is added: those need separately named metrics,
-attributable sponsor/LP cash flows and contribution inputs. The other asset-class
-packs retain their existing formulas pending separate corrections.
+attributable sponsor/LP cash flows and contribution inputs. RFC 0079 applies this definition to all nine income-class packs; land
+retains its omission of income metrics. The eight corrected packs and land move to 1.0.1; multifamily moves to 1.0.2
+for the shared LTV denominator correction.
 
 The Excel layout binds total equity and the stated year-1 flow to the same pack
 expression; absent total equity emits a blank, and stated zero cash flow is kept.
 See [the classification and scope note](../reviews/2026-10-03-deal-cash-on-cash.md).
+
+### LTV denominator and producer inputs (RFC 0079 revised direction)
+
+Every builtin class uses loan / `valuation.underwritten_value`, falling back to
+`valuation.purchase_price` when no underwritten value is stated. This matches
+CC-02 and capital-stack `ltv_through`. The Excel layouts bind both value and
+price; the shared conditional expression selects the same denominator.
+
+**Producers of non-multifamily documents now need
+`sources_uses.equity_metrics.equity_total` for cash-on-cash.** The eight worked
+examples explicitly declare this equal to their sole non-debt sponsor source,
+with the identity documented in `_notes`. This is producer-authored evidence;
+the runtime does not infer it. Agave's mezz/preferred/common stack remains
+ambiguous and its cash-on-cash stays null without a total-equity statement.
+Cap rate/debt yield/cash-on-cash comparison minimums are now 3 decimals (0.1%).
 
 ### Debt metrics over several debt blocks (RFC 0066)
 
@@ -104,7 +139,7 @@ block it means (Protocol §VIII.2).
 - **`cash_on_cash` declares no role.** Equity cash flow deducts all debt
   service, so a senior-only cash-on-cash would overstate the return. On a
   multi-tranche map the debt-service fallback refuses `CALC-RESOLVE-002`.
-  Multifamily can use its stated year-1 DCF levered cash flow without reading
+  Every income class can use its stated year-1 DCF levered cash flow without reading
   that fallback; the pack never sums debt blocks.
 - **A standalone block is unaffected.** A `primary` + `junior` map reads the
   `primary` block, because an unclaimed declared role falls through to the
@@ -125,7 +160,7 @@ A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `debt_structure.loan_amount / valuation.purchase_price` | `%`
+`ltv` | LTV | `debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)` | `%`
 `ltc` | LTC | `debt_structure.loan_amount / sources_uses.uses.total` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
@@ -133,14 +168,15 @@ id | label | formula | unit
 `loan_per_sqft` | Loan / SqFt | `debt_structure.loan_amount / property.rentable_square_feet` | `$`
 `noi_per_sqft` | NOI / SqFt | `noi_model.net_operating_income / property.rentable_square_feet` | `$`
 `expense_ratio` | Operating Expense Ratio | `noi_model.expenses.total_operating_expenses / noi_model.income.effective_gross_income` | `%`
-`cash_on_cash` | Cash-on-Cash | `(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity` | `%`
+`cash_on_cash` | Cash-on-Cash | `year-1 levered cash flow / sources_uses.equity_metrics.equity_total` | `%`
 `occupancy` | Occupancy | `rent_roll.occupied_sf / rent_roll.total_rentable_sf` | `%`
 
-Office diverges from multifamily on three field shapes: size is **rentable square
-feet** (`property.rentable_square_feet`, not `total_units`/`total_nra_sqft`),
-sponsor equity is `sources_uses.sources.sponsor_equity` (not `equity_sponsor`),
-and the NOI model nests `income`/`expenses`. Verified against the
-`Riverside-Office-Phoenix-AZ.uwx.md` worked example.
+Office sizes by **rentable square feet** (`property.rentable_square_feet`,
+not `total_units`/`total_nra_sqft`), and its NOI model nests `income`/`expenses`.
+The cash-on-cash inputs are common to all income classes. The
+`Riverside-Office-Phoenix-AZ.uwx.md` worked example carries the office fields
+and explicitly states aggregate equity equal to its sole non-debt sponsor source,
+so its standardized cash-on-cash computes with the NOI-minus-debt-service fallback.
 
 ## `RETAIL_PACK`
 
@@ -275,8 +311,10 @@ line: turning nearly the whole property in one August window is a materially
 larger and less smoothable cost than conventional multifamily turnover, which is
 why the class expense-ratio band sits above multifamily's. Verified against the
 `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` worked example, which also
-demonstrates honest **negative leverage** — a 5.75% going-in cap against 6.25%
-debt, giving 3.0% year-one cash-on-cash.
+demonstrates **negative leverage** — a 5.75% going-in cap against 6.25% debt.
+The example explicitly states aggregate equity equal to its sole non-debt sponsor
+source, documenting that identity in `_notes`; its standardized cash-on-cash
+uses the NOI-minus-debt-service fallback (about 3.00%).
 
 ## `LAND_PACK`
 
@@ -329,17 +367,11 @@ the `Sundance-Ranch-Land-Buckeye-AZ.uwx.md` worked example.
 > found to be zero*. A test pins the distinction, because every downstream reader
 > — renderer, Excel, receipt, agent — depends on it.
 
-These are the **nine asset-class packs today** (`multifamily`, `office`,
-`retail`, `industrial`, `self_storage`, `hospitality`, `senior_housing`,
-`student_housing`, `land`). Only `mixed_use` remains undefined, and it is the one
-class the recipe below does not fit: it composes other classes rather than
-standing alone. See [RFC 0019](../rfcs/0019-mixed-use-composition.md) — unlike
-the other nine, it needs a normative format change (a `components` section)
-before its pack can be written, because the calc engine cannot iterate over a
-variable-length component list. Adding another **built-in** pack for any other
-existing enum value remains a library-only change (follow the recipe below). Letting **third-party modules** declare entirely new
-asset-class identifiers is the separate v2 RFC topic — see
-`docs/rfcs/0003-module-asset-classes.md`.
+There are **ten builtin packs**. `mixed_use` composes stated component
+subtotals and allocations under RFC 0019 instead of blending incompatible
+sizes. Each class's metrics remain in the normative dictionary, including the
+shared cash-on-cash definition across the nine income classes. Official new
+classes follow the builtin contract; modules support private extensions.
 
 ## Who consumes the pack
 

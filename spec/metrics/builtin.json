@@ -16,7 +16,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -24,9 +25,10 @@
       "asset_classes": [
         "multifamily"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -35,7 +37,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -54,7 +57,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -73,7 +77,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_unit",
@@ -90,7 +95,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "loan_per_unit",
@@ -109,7 +115,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "loan_per_sqft",
@@ -128,7 +135,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -147,7 +155,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "cap_rate",
@@ -164,7 +173,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -172,9 +182,10 @@
       "asset_classes": [
         "office"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -183,7 +194,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -202,7 +214,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -221,7 +234,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -240,7 +254,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_sqft",
@@ -257,7 +272,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "loan_per_sqft",
@@ -276,7 +292,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "noi_per_sqft",
@@ -293,7 +310,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "expense_ratio",
@@ -310,7 +328,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -318,17 +337,19 @@
       "asset_classes": [
         "office"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -345,7 +366,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cap_rate",
@@ -362,7 +384,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -370,9 +393,10 @@
       "asset_classes": [
         "retail"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -381,7 +405,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -400,7 +425,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -419,7 +445,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -438,7 +465,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_sqft",
@@ -455,7 +483,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "loan_per_sqft",
@@ -474,7 +503,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "noi_per_sqft",
@@ -491,7 +521,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "expense_ratio",
@@ -508,7 +539,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "expense_recovery_ratio",
@@ -525,7 +557,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -533,17 +566,19 @@
       "asset_classes": [
         "retail"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -560,7 +595,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cap_rate",
@@ -577,7 +613,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -585,9 +622,10 @@
       "asset_classes": [
         "industrial"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -596,7 +634,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -615,7 +654,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -634,7 +674,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -653,7 +694,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_sqft",
@@ -670,7 +712,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "loan_per_sqft",
@@ -689,7 +732,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "noi_per_sqft",
@@ -706,7 +750,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "expense_ratio",
@@ -723,7 +768,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "expense_recovery_ratio",
@@ -740,7 +786,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -748,17 +795,19 @@
       "asset_classes": [
         "industrial"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -775,7 +824,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cap_rate",
@@ -792,7 +842,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -800,9 +851,10 @@
       "asset_classes": [
         "self_storage"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -811,7 +863,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -830,7 +883,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -849,7 +903,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -868,7 +923,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_nrsf",
@@ -885,7 +941,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "loan_per_nrsf",
@@ -904,7 +961,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "noi_per_nrsf",
@@ -921,7 +979,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "expense_ratio",
@@ -938,7 +997,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -946,17 +1006,19 @@
       "asset_classes": [
         "self_storage"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "physical_occupancy",
@@ -973,7 +1035,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "economic_occupancy",
@@ -990,7 +1053,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cap_rate",
@@ -1007,7 +1071,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1015,9 +1080,10 @@
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1026,7 +1092,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -1045,7 +1112,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -1064,7 +1132,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -1083,7 +1152,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_key",
@@ -1100,7 +1170,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "loan_per_key",
@@ -1119,7 +1190,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "noi_per_key",
@@ -1136,7 +1208,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "expense_ratio",
@@ -1153,7 +1226,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -1161,17 +1235,19 @@
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -1188,7 +1264,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "adr",
@@ -1205,7 +1282,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "revpar",
@@ -1222,7 +1300,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "gop_margin",
@@ -1239,7 +1318,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cap_rate",
@@ -1256,7 +1336,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1264,9 +1345,10 @@
       "asset_classes": [
         "mixed_use"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1275,7 +1357,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -1294,7 +1377,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -1313,7 +1397,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "cash_on_cash",
@@ -1321,17 +1406,19 @@
       "asset_classes": [
         "mixed_use"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.equity_sponsor",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.equity_sponsor"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "multifamily_noi_share",
@@ -1348,7 +1435,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "retail_noi_share",
@@ -1365,7 +1453,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "office_noi_share",
@@ -1382,7 +1471,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "industrial_noi_share",
@@ -1399,7 +1489,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "self_storage_noi_share",
@@ -1416,7 +1507,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "hospitality_noi_share",
@@ -1433,7 +1525,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "senior_housing_noi_share",
@@ -1450,7 +1543,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "student_housing_noi_share",
@@ -1467,7 +1561,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "multifamily_price_per_unit",
@@ -1485,7 +1580,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "retail_price_psf",
@@ -1503,7 +1599,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "office_price_psf",
@@ -1521,7 +1618,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "industrial_price_psf",
@@ -1539,7 +1637,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "self_storage_price_psf",
@@ -1557,7 +1656,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "student_housing_price_per_bed",
@@ -1575,7 +1675,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "hospitality_gross_operating_profit",
@@ -1591,7 +1692,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "senior_housing_total_labor_expense",
@@ -1607,7 +1709,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "cap_rate",
@@ -1624,7 +1727,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1632,9 +1736,10 @@
       "asset_classes": [
         "senior_housing"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1643,7 +1748,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -1662,7 +1768,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -1681,7 +1788,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -1700,7 +1808,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_unit",
@@ -1717,7 +1826,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "loan_per_unit",
@@ -1736,7 +1846,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "noi_per_unit",
@@ -1753,7 +1864,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "expense_ratio",
@@ -1770,7 +1882,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -1778,17 +1891,19 @@
       "asset_classes": [
         "senior_housing"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -1805,7 +1920,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "revpor",
@@ -1822,7 +1938,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "labor_ratio",
@@ -1839,7 +1956,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "care_revenue_ratio",
@@ -1856,7 +1974,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cap_rate",
@@ -1873,7 +1992,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1881,9 +2001,10 @@
       "asset_classes": [
         "student_housing"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1892,7 +2013,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -1911,7 +2033,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "dscr",
@@ -1930,7 +2053,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "debt_yield",
@@ -1949,7 +2073,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_bed",
@@ -1966,7 +2091,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "loan_per_bed",
@@ -1985,7 +2111,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "noi_per_bed",
@@ -2002,7 +2129,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "expense_ratio",
@@ -2019,7 +2147,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "cash_on_cash",
@@ -2027,17 +2156,19 @@
       "asset_classes": [
         "student_housing"
       ],
-      "formula": "(noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.sources.sponsor_equity",
+      "formula": "sources_uses.equity_metrics.equity_total == null ? null : (dcf.annual_cash_flows.Y1.net_cash_flow_levered != null ? dcf.annual_cash_flows.Y1.net_cash_flow_levered : noi_model.net_operating_income - debt_structure.annual_debt_service) / sources_uses.equity_metrics.equity_total",
       "input_paths": [
+        "sources_uses.equity_metrics.equity_total",
+        "dcf.annual_cash_flows.Y1.net_cash_flow_levered",
         "noi_model.net_operating_income",
-        "debt_structure.annual_debt_service",
-        "sources_uses.sources.sponsor_equity"
+        "debt_structure.annual_debt_service"
       ],
       "unit": "%",
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -2054,7 +2185,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "pre_lease_rate",
@@ -2071,7 +2203,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "revenue_per_bed",
@@ -2088,7 +2221,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "rent_per_bed_monthly",
@@ -2105,7 +2239,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "price_per_acre",
@@ -2122,7 +2257,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "price_per_usable_acre",
@@ -2139,7 +2275,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "price_per_buildable_unit",
@@ -2156,7 +2293,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "usable_land_ratio",
@@ -2173,7 +2311,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "density_per_usable_acre",
@@ -2190,7 +2329,8 @@
       "round_to": 4,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltv",
@@ -2198,9 +2338,10 @@
       "asset_classes": [
         "land"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -2209,7 +2350,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "ltc",
@@ -2228,7 +2370,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "loan_per_acre",
@@ -2247,7 +2390,8 @@
         "debt_structure": "senior"
       },
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "basis_per_buildable_unit",
@@ -2264,7 +2408,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "carry_ratio",
@@ -2281,7 +2426,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     },
     {
       "id": "carry_cost_per_acre",
@@ -2298,7 +2444,8 @@
       "round_to": 2,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 0
     },
     {
       "id": "land_to_sellout_ratio",
@@ -2315,7 +2462,8 @@
       "round_to": 6,
       "section_roles": {},
       "null_semantics": "expression",
-      "deterministic": true
+      "deterministic": true,
+      "minimum_stated_decimals": 2
     }
   ],
   "size_intensives": [
@@ -2336,7 +2484,8 @@
       "path": "total_units",
       "secondary": [
         "total_nra_sqft"
-      ]
+      ],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "rentable_square_feet",
@@ -2353,7 +2502,8 @@
       "section_roles": {},
       "null_semantics": "finite_stated_number",
       "path": "rentable_square_feet",
-      "secondary": []
+      "secondary": [],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "rentable_square_feet",
@@ -2370,7 +2520,8 @@
       "section_roles": {},
       "null_semantics": "finite_stated_number",
       "path": "rentable_square_feet",
-      "secondary": []
+      "secondary": [],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "gross_leasable_area",
@@ -2387,7 +2538,8 @@
       "section_roles": {},
       "null_semantics": "finite_stated_number",
       "path": "gross_leasable_area",
-      "secondary": []
+      "secondary": [],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "net_rentable_square_feet",
@@ -2406,7 +2558,8 @@
       "path": "net_rentable_square_feet",
       "secondary": [
         "rentable_units"
-      ]
+      ],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "keys",
@@ -2423,7 +2576,8 @@
       "section_roles": {},
       "null_semantics": "finite_stated_number",
       "path": "keys",
-      "secondary": []
+      "secondary": [],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "total_beds",
@@ -2442,7 +2596,8 @@
       "path": "total_beds",
       "secondary": [
         "total_units"
-      ]
+      ],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "total_units",
@@ -2461,7 +2616,8 @@
       "path": "total_units",
       "secondary": [
         "total_beds"
-      ]
+      ],
+      "minimum_stated_decimals": 0
     },
     {
       "id": "gross_acres",
@@ -2481,7 +2637,8 @@
       "secondary": [
         "usable_acres",
         "entitled_units"
-      ]
+      ],
+      "minimum_stated_decimals": 0
     }
   ]
 }

@@ -15,7 +15,7 @@ export const MULTIFAMILY_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.multifamily',
   name: 'Multifamily Starter Pack',
-  version: '1.0.1',
+  version: '1.0.2',
   description:
     'Eight derived metrics for multifamily underwriting: cap rate, LTV, DSCR, debt yield, $/unit, $/sqft, price/unit, cash-on-cash.',
   authors: ['UW Markdown Working Group'],
@@ -35,7 +35,7 @@ export const MULTIFAMILY_PACK: ModuleManifest = {
     {
       id: 'ltv',
       label: 'LTV',
-      formula: 'debt_structure.loan_amount / valuation.purchase_price',
+      formula: 'debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)',
       unit: '%',
       deterministic: true,
       section_roles: { debt_structure: 'senior' },

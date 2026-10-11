@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/metric-dictionary.schema.json",
   "title": "UW Metric Dictionary",
-  "description": "Normative class-scoped calculation definitions and unrounded primary-size selectors extracted under RFC 0078 Phase 2. Expression syntax, resolution and numeric semantics are Protocol VIII.1, VIII.2 and VIII.5. See spec/metrics/README.md.",
+  "description": "Normative class-scoped calculation definitions, minimum comparison precision (RFC 0079), and unrounded primary-size selectors (RFC 0078 Phase 2). Expression syntax, resolution and numeric semantics are Protocol VIII.1, VIII.2 and VIII.5. See spec/metrics/README.md.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -43,7 +43,8 @@
         "section_roles",
         "round_to",
         "null_semantics",
-        "deterministic"
+        "deterministic",
+        "minimum_stated_decimals"
       ],
       "properties": {
         "id": {
@@ -115,8 +116,220 @@
         },
         "deterministic": {
           "const": true
+        },
+        "minimum_stated_decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12,
+          "description": "Comparison floor in stored units: compare at min(max(source decimals, this minimum), round_to); a coarser statement is checked at this floor, not refused."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 0
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 0,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 1,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 2
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 2,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 3
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 3,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 4
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 4,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 5
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 5,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 6
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 6,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 7
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 7,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 8
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 8,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 9
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 9,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 10
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 10,
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "round_to": {
+                "const": 11
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "minimum_stated_decimals": {
+                "maximum": 11,
+                "type": "integer"
+              }
+            }
+          }
+        }
+      ]
     },
     "size": {
       "type": "object",
@@ -132,7 +345,8 @@
         "round_to",
         "null_semantics",
         "path",
-        "secondary"
+        "secondary",
+        "minimum_stated_decimals"
       ],
       "properties": {
         "id": {
@@ -211,6 +425,10 @@
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$"
           }
+        },
+        "minimum_stated_decimals": {
+          "const": 0,
+          "description": "Raw size selectors retain exact finite-number identity and impose no fractional minimum."
         }
       }
     }

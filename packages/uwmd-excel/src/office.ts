@@ -3,7 +3,7 @@
 // Layout-only; derived-metric formulas come from OFFICE_PACK in @uwmd/core via
 // the shared engine. Office sizes by rentable square feet and the operating
 // statement's EGI = gross potential rent − vacancy loss (matching the office
-// noi_model). Sponsor equity is `sources_uses.sources.sponsor_equity`.
+// noi_model). Cash-on-cash binds total equity and stated year-1 leveraged flow.
 
 import { OFFICE_PACK } from '@uwmd/core';
 import { sizeNamedInputs } from './layout.js';
@@ -26,10 +26,12 @@ const expenseLines: readonly ExpenseLine[] = [
 
 const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',      label: 'Purchase Price',       source: { section: 'valuation',      path: 'purchase_price' },         format: 'currency' },
+  { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },
   { name: 'loan_amount',         label: 'Loan Amount',          source: { section: 'debt_structure', path: 'loan_amount' },            format: 'currency' },
   { name: 'annual_debt_service', label: 'Annual Debt Service',  source: { section: 'debt_structure', path: 'annual_debt_service' },    format: 'currency' },
   ...sizeNamedInputs('office', { rentable_square_feet: 'Rentable SF' }),
-  { name: 'sponsor_equity',      label: 'Sponsor Equity',       source: { section: 'sources_uses',   path: 'sources.sponsor_equity' }, format: 'currency' },
+  { name: 'equity_total', label: 'Total Invested Equity', source: { section: 'sources_uses', path: 'equity_metrics.equity_total' }, format: 'currency' },
+  { name: 'levered_cash_flow_y1', label: 'Year 1 Levered Cash Flow', source: { section: 'dcf', path: 'annual_cash_flows.Y1.net_cash_flow_levered' }, format: 'currency' },
   { name: 'total_uses',          label: 'Total Project Cost',   source: { section: 'sources_uses',   path: 'uses.total' },             format: 'currency' },
   { name: 'occupied_sf',         label: 'Occupied SF',          source: { section: 'rent_roll',      path: 'occupied_sf' },            format: 'count' },
   { name: 'total_rentable_sf',   label: 'Total Rentable SF',    source: { section: 'rent_roll',      path: 'total_rentable_sf' },      format: 'count' },

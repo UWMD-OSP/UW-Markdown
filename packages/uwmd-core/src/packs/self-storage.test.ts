@@ -11,6 +11,15 @@ import { emitExcelFormula } from './excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { SELF_STORAGE_PACK } from './self-storage.js';
 
+function excelValue(formula: string): number | null {
+  const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
+  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  // eslint-disable-next-line no-new-func
+  return new Function('IF', `return (${expression});`)(
+    (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+  ) as number | null;
+}
+
 const EXAMPLE = resolve(__dirname, '../../../../examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md');
 
 const NAMED_RANGES = new Map<string, string>([
@@ -19,11 +28,13 @@ const NAMED_RANGES = new Map<string, string>([
   ['noi_model.income.gross_potential_rent.value', 'gross_potential_rent'],
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
+      ['valuation.underwritten_value', 'underwritten_value'],
   ['debt_structure.loan_amount', 'loan_amount'],
   ['debt_structure.annual_debt_service', 'annual_debt_service'],
   ['property.net_rentable_square_feet', 'net_rentable_square_feet'],
   ['property.rentable_units', 'rentable_units'],
-  ['sources_uses.sources.sponsor_equity', 'sponsor_equity'],
+  ['sources_uses.equity_metrics.equity_total', 'equity_total'],
+  ['dcf.annual_cash_flows.Y1.net_cash_flow_levered', 'levered_cash_flow_y1'],
   ['sources_uses.uses.total', 'total_uses'],
   ['rent_roll.occupied_units', 'occupied_units'],
 ]);
@@ -81,20 +92,21 @@ describe('SELF_STORAGE_PACK', () => {
     const rentRoll = parsed.sections['rent_roll'] as { content: Record<string, unknown> };
     const income = noi.content['income'] as Record<string, unknown>;
     const expenses = noi.content['expenses'] as Record<string, number>;
-    const sources = sus.content['sources'] as Record<string, number>;
     const uses = sus.content['uses'] as Record<string, number>;
 
-    const values: Record<string, number> = {
+    const values: Record<string, number | null> = {
       noi: noi.content['net_operating_income'] as number,
       effective_gross_income: lineValue(income['effective_gross_income']),
       gross_potential_rent: lineValue(income['gross_potential_rent']),
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
+      underwritten_value: (valuation.content['underwritten_value'] as number | undefined) ?? null,
       loan_amount: debt.content['loan_amount'] as number,
       annual_debt_service: debt.content['annual_debt_service'] as number,
       net_rentable_square_feet: property.content['net_rentable_square_feet'] as number,
       rentable_units: property.content['rentable_units'] as number,
-      sponsor_equity: sources['sponsor_equity']!,
+      equity_total: ((parsed.sections['sources_uses'] as { content: Record<string, unknown> }).content['equity_metrics'] as Record<string, number>)['equity_total'],
+      levered_cash_flow_y1: null,
       total_uses: uses['total']!,
       occupied_units: rentRoll.content['occupied_units'] as number,
     };
@@ -107,14 +119,14 @@ describe('SELF_STORAGE_PACK', () => {
       for (const [, name] of NAMED_RANGES) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       }
-      expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
-      const excelLike = new Function(`return (${formula});`)() as number;
+      const excelLike = excelValue(formula);
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it
       // (§VIII.5), so the simulated result is quantized the same way. Parity is
       // then *exact* rather than approximate: one identical rounding rule on both
       // sides, which is the whole point of having a quantization boundary.
-      const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));
+      const excelCell = excelLike === null ? null : quantizeDecimal(excelLike, resolveRoundTo(c));
       expect(excelCell, c.id).toBe(direct.value as number);
     }
   });

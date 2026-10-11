@@ -62,10 +62,11 @@ function expectedSections(parsed: ReturnType<typeof parseUWFile>, layout: Workbo
     const source = parsed.sections[input.source.section]?.content as Record<string, unknown>;
     // The corrected generic cash-on-cash input is selected by stated year,
     // while the import still returns the layout's ordinary editable fragment.
-    const value = layout.assetClass === 'multifamily' && input.name === 'levered_cash_flow_y1'
-      ? (source['annual_cash_flows'] as Record<string, unknown>[]).find((row) => row['year'] === 1)?.['net_cash_flow_levered']
+    const value = input.name === 'levered_cash_flow_y1'
+      ? (source?.['annual_cash_flows'] as Record<string, unknown>[] | undefined)?.find((row) => row['year'] === 1)?.['net_cash_flow_levered']
       : valueAt(source, input.source.path);
-    setPath(target, input.source.path, value);
+    // Editable blank cells import as null, including absent optional equity/Y1 inputs.
+    setPath(target, input.source.path, value ?? null);
   }
   const noi = parsed.sections.noi_model!.content as Record<string, unknown>;
   const noiTarget = sectionFor(sections, 'noi_model');

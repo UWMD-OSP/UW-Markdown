@@ -38,6 +38,7 @@ const expenseLines: readonly ExpenseLine[] = [
 
 const namedInputs: readonly NamedInput[] = [
   { name: 'purchase_price',      label: 'Purchase Price',      source: { section: 'valuation',      path: 'purchase_price' },          format: 'currency' },
+  { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },
   { name: 'loan_amount',         label: 'Loan Amount',         source: { section: 'debt_structure', path: 'loan_amount' },             format: 'currency' },
   { name: 'annual_debt_service', label: 'Annual Debt Service', source: { section: 'debt_structure', path: 'annual_debt_service' },     format: 'currency' },
   ...sizeNamedInputs('multifamily', { total_units: 'Total Units', total_nra_sqft: 'Total NRA (sqft)' }),
