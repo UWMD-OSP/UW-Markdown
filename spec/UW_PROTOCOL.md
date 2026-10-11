@@ -652,7 +652,7 @@ selections; role-free results remain unchanged. `ROLE-01` is a structural
 error in every active block with an invalid scalar `_role`. This annotation
 is included in the existing content hash; `_meta.role` is not an alias.
 
-`FV-NN` is the financial-validity vocabulary; no legacy_code is emitted. `META_*` (underscore) is provenance completeness: META_MISSING, META_FIELD_MISSING_<FIELD>, and META_LOW_CONFIDENCE_NO_REVIEW_FLAG. The separate hyphenated META-01 rejects a non-Format-3.0 block shape. SOURCE_CONTENT_MISMATCH rejects structured fences under .uw.md; UNSUPPORTED_FORMAT_VERSION rejects absent or non-3.0 frontmatter.
+`FV-NN` is the financial-validity vocabulary; no legacy_code is emitted. `META_*` (underscore) is provenance completeness: META_MISSING, `META_FIELD_MISSING_<FIELD>`, and META_LOW_CONFIDENCE_NO_REVIEW_FLAG. The separate hyphenated META-01 rejects a non-Format-3.0 block shape. SOURCE_CONTENT_MISMATCH rejects structured fences under .uw.md; UNSUPPORTED_FORMAT_VERSION rejects absent or non-3.0 frontmatter.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 

@@ -21,8 +21,8 @@
       "const": "1.0"
     },
     "format_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+$"
+      "const": "3.0",
+      "description": "Only admitted document format (RFC 0081); envelope_version remains independently versioned."
     },
     "generated_at": {
       "type": "string",

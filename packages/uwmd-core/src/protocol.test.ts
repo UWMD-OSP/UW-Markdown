@@ -243,13 +243,12 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
     expect(readConformanceTier('tier-2-editor')?.tier).toBe('reader');
   });
 
-  it('agrees with the mapping table in UW_PROTOCOL §II.5', () => {
-    // The spec table and the helper are two copies of one rule; this keeps them
-    // from drifting the way the capability enum did.
+  it('final Protocol §II.5 admits no runtime tier aliases (RFC 0081)', () => {
     const section = repoFile('spec/UW_PROTOCOL.md').split('### II.5 Tier composition')[1]?.split('\n### ')[0] ?? '';
-    const rows = [...section.matchAll(/^\| `(tier-[1-4]-[a-z-]+)` \| `(reader|verifier)` \|/gm)]
-      .map((m) => [m[1], m[2]]);
-    expect(rows).toEqual(LEGACY.map((tier) => [tier, readConformanceTier(tier)?.tier]));
+    expect(section).toContain('No legacy value or numeric alias is admitted');
+    for (const tier of LEGACY) expect(section).not.toContain(tier);
+    // The old alias helper is deliberately retained until Phase 4, and remains
+    // pinned by the exact independent mappings above.
   });
 
   it('names exactly the six profiles in the §II.3 table', () => {

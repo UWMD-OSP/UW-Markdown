@@ -60,8 +60,15 @@ describe('RFC 0080 official builtin controls', () => {
   });
   it('mirrors every standard section schema without field-contract drift', () => {
     for (const content of Object.values(BUILTIN_CLASS_CONTENT)) for (const section of content.sections) {
-      const { $schema, $id, title, ...schema } = JSON.parse(readFileSync(resolve(root, `spec/schemas/section-${section.id.replace(/_/g, '-')}.schema.json`), 'utf8'));
-      expect(schema, section.id).toEqual(section.schema);
+      const { $schema, $id, title, description: _description, ...schema } = JSON.parse(readFileSync(resolve(root, `spec/schemas/section-${section.id.replace(/_/g, '-')}.schema.json`), 'utf8'));
+      // RFC 0081 Phase 2: only the hotel schema moves before runtime Phase 4.
+      const runtime = structuredClone(section.schema);
+      if (section.id === 'hotel_metrics') {
+        delete runtime.required;
+        runtime.properties = { market_revpar: runtime.properties!.market_revpar };
+        runtime.additionalProperties = false;
+      }
+      expect(schema, section.id).toEqual(runtime);
     }
   });
   it('issues and resolves receipts for every builtin without injected packs', async () => {
@@ -82,6 +89,19 @@ describe('Format 2.1 builtin record shapes', () => {
   const blockSchema = ajv.compile(readSchema('uwmd-block'));
   const bare = (content: Record<string, unknown>) => Object.hasOwn(content, 'section_id')
     ? { _meta: content._meta, ...content.content as Record<string, unknown> } : content;
+  // Test projection only: actual envelope round-trip assertions below remain exact.
+  function projectEnvelope(envelope: ReturnType<typeof toUWEnvelope>) {
+    const result = structuredClone(envelope);
+    result.format_version = '3.0';
+    const project = (block: { content: Record<string, unknown> }) => { block.content = bare(block.content); };
+    for (const entry of Object.values(result.sections)) {
+      if ('annotation' in entry) project(entry as { content: Record<string, unknown> });
+      else for (const block of Object.values(entry)) project(block);
+    }
+    for (const block of Object.values(result.extensions ?? {})) project(block);
+    for (const blocks of Object.values(result.superseded ?? {})) for (const block of blocks) project(block);
+    return result;
+  }
   const envelopeSchema = ajv.compile(readSchema('uw-document-envelope'));
   ajv.addSchema(readSchema('section-capital-stack'));
   const componentSchema = ajv.compile(readSchema('section-components'));
@@ -93,12 +113,7 @@ describe('Format 2.1 builtin record shapes', () => {
         for (const block of blocks) expect(blockSchema(bare(block.content)), JSON.stringify(blockSchema.errors)).toBe(true);
       }
       const envelope = toUWEnvelope(parsed);
-      const projected = structuredClone(envelope);
-      for (const entry of Object.values(projected.sections)) {
-        if (Array.isArray(entry)) for (const block of entry) block.content = bare(block.content);
-        else for (const blocks of Object.values(entry)) for (const block of blocks) block.content = bare(block.content);
-      }
-      expect(envelopeSchema(projected), JSON.stringify(envelopeSchema.errors)).toBe(true);
+      expect(envelopeSchema(projectEnvelope(envelope)), JSON.stringify(envelopeSchema.errors)).toBe(true);
       const restored = fromUWEnvelope(envelope);
       for (const id of Object.keys(parsed.sections)) {
         expect((restored.sections[id] as UWBlock).meta).toEqual((parsed.sections[id] as UWBlock).meta);
@@ -114,7 +129,7 @@ describe('Format 2.1 builtin record shapes', () => {
       const components = parsed.sections.components as UWBlock;
       expect(componentSchema(blockPayload(components)), JSON.stringify(componentSchema.errors)).toBe(true);
       expect(validateUWFile(parsed).issues.filter(i => /^(MU-|CC-11$|CC-12$|CLS-05$)/.test(i.code))).toEqual([]);
-      expect(envelopeSchema(toUWEnvelope(parsed)), JSON.stringify(envelopeSchema.errors)).toBe(true);
+      expect(envelopeSchema(projectEnvelope(toUWEnvelope(parsed))), JSON.stringify(envelopeSchema.errors)).toBe(true);
       const wrong = parseUWFile(source);
       const badPayload = blockPayload(wrong.sections.components as UWBlock) as Record<string, Record<string, unknown>>;
       badPayload.data_center!.component_class = 'industrial';

@@ -10,7 +10,7 @@ import { mkdir, copyFile, readFile, writeFile, rm, readdir, stat } from 'node:fs
 import { existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { rfcCopies, docsVersions, docsSiteVersions } from '../../../scripts/docs-site-sources.mjs';
+import { rfcCopies, docsSiteVersions } from '../../../scripts/docs-site-sources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
@@ -30,7 +30,6 @@ if (process.argv.includes('--clean')) {
 // ─── Copy plan ────────────────────────────────────────────────────────────────
 // Each entry: { from: repo-relative path, to: site-relative path, transform?: fn }
 
-const versions = docsVersions(REPO_ROOT);
 
 // The non-normative starter products guide (RFC 0078). Listed rather than
 // discovered so each page carries a site title, like the other copies.
