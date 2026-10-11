@@ -20,7 +20,7 @@ import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/ind
 //
 // Exit codes: 0 = all passed, 1 = at least one failure.
 
-import { index, key, selection, assertCoverage, publicOwner } from './conformance-targets.mjs';
+import { index, key, suiteFamily, selection, assertCoverage, publicOwner } from './conformance-targets.mjs';
 import { isDeepStrictEqual } from 'node:util';
 import { verifyExamples } from '../conformance/metrics/verifier.mjs';
 import { controls as metricControls } from '../conformance/metrics/controls.mjs';
@@ -4479,7 +4479,7 @@ const dispatch = {
   'meta-v2': async () => { await runMetaV2(); },
   'migrate': async () => { await runMigrate(); },
 };
-const dispatchKey = suite => suite === '3-refinement' ? '3' : suite === '4-profile' ? '4' : suite;
+const dispatchKey = suiteFamily;
 const dispatched = new Set(selected.map(c => dispatchKey(c.suite)));
 try {
   for (const suite of dispatched) {

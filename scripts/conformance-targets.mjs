@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { CONFORMANCE_TARGETS, CONFORMANCE_PROFILES, readConformanceTier } from '../packages/uwmd-core/dist/protocol.js';
 
 export const corpus = JSON.parse(readFileSync(new URL('../conformance/corpus-index.json', import.meta.url), 'utf8'));
+export const suiteFamily = suite => suite === '3-refinement' ? '3' : suite === '4-profile' ? '4' : suite;
 export const key = (suite, scenario) => JSON.stringify([String(suite), scenario]);
 export function indexCases(cases) {
   const index = new Map();
@@ -51,8 +52,14 @@ export function selection(args, warn = message => console.error(message)) {
   for (const name of suites) if (!corpus.cases.some(c => c.suite === name)) throw new Error(`Unknown suite: ${name}`);
   if (!targets.size) for (const target of CONFORMANCE_TARGETS) targets.add(target);
   if (args.includes('--update') && (value('tier') || value('profile') || args.includes('--starter-products'))) throw new Error('Baseline updates require a full run or --suite; target-filtered updates could overwrite unselected baselines.');
-  const cases = corpus.cases.filter(c => targets.has(c.target) && (!suites.size || suites.has(c.suite)));
+  const cases = corpus.cases.filter(c => targets.has(c.target) && (!suites.size || suites.has(c.suite) || suites.has(suiteFamily(c.suite))));
   if (!cases.length) throw new Error('No cases matched');
+  if (args.includes('--update')) {
+    const families = new Set(cases.map(c => suiteFamily(c.suite)));
+    const selectedIds = new Set(cases.map(c => key(c.suite, c.scenario)));
+    const outside = corpus.cases.find(c => families.has(suiteFamily(c.suite)) && !selectedIds.has(key(c.suite, c.scenario)));
+    if (outside) throw new Error(`Baseline updates require the entire suite family: use --suite=${suiteFamily(outside.suite)}.`);
+  }
   return cases;
 }
 

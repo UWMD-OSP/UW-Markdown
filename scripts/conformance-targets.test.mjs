@@ -66,6 +66,10 @@ test('legacy aliases use readConformanceTier and warn outside JSON results', () 
 test('unknown selectors and unsafe filtered updates are refused', () => {
   for (const args of [['--tier=unknown'], ['--profile=unknown'], ['--suite=unknown'], ['--tier=reader', '--update'], ['--profile=module', '--update']]) assert.throws(() => selection(args));
   assert.ok(selection(['--suite=metrics', '--update']).length);
+  assert.ok(selection(['--suite=3', '--update']).some(c => c.suite === '3-refinement'));
+  assert.ok(selection(['--suite=4']).some(c => c.suite === '4-profile'));
+  assert.throws(() => selection(['--suite=3-refinement', '--update']), /entire suite family/);
+  assert.throws(() => selection(['--suite=4-profile', '--update']), /entire suite family/);
 });
 test('standard reproduction, custom formula checks and starter behavior stay distinct', () => {
   assert.equal(index.get(key('3', 'revpar-basic')).target, 'module');

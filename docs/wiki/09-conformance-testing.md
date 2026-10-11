@@ -95,6 +95,8 @@ selector every indexed check runs, with counts by target.
 Unknown owners, duplicate/missing results and unindexed portable identities
 fail the gate. Baseline updates require full runs or `--suite`; a target
 filter is refused because mixed-suite updates could alter unselected baselines.
+A family includes its child suites (`3-refinement` under `3`, `4-profile`
+under `4`); baseline updates selecting only a child suite are refused.
 The descriptions below retain historical fixture paths, not old tier claims.
 
 

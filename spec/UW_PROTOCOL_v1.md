@@ -503,7 +503,8 @@ fixture-family selections remain available in the reference runner via
 `--suite=<family>`; old named `--tier=<family>` selectors warn and resolve
 to that suite. Baseline updates require a full run or `--suite`, because
 target filtering inside a mixed suite must not overwrite unselected
-baselines.
+baselines. A family includes its child suites (`3-refinement` under `3`,
+`4-profile` under `4`); updates selecting only a child suite are refused.
 
 #### II.6a.5 Required capabilities and skips
 
