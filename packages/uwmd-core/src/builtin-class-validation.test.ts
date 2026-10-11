@@ -64,6 +64,8 @@ describe('RFC 0080 official builtin controls', () => {
       // RFC 0081 Phase 2: only the hotel schema moves before runtime Phase 4.
       const runtime = structuredClone(section.schema);
       if (section.id === 'hotel_metrics') {
+        expect(runtime.required).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count']);
+        expect(Object.keys(runtime.properties as Record<string, unknown>)).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count', 'market_revpar']);
         delete runtime.required;
         runtime.properties = { market_revpar: (runtime.properties as Record<string, unknown>).market_revpar };
         runtime.additionalProperties = false;
@@ -87,8 +89,11 @@ describe('Format 2.1 builtin record shapes', () => {
   const ajv = new Ajv2020({ strict: false, allErrors: true, validateFormats: false });
   const readSchema = (name: string) => JSON.parse(readFileSync(resolve(root, `spec/schemas/${name}.schema.json`), 'utf8'));
   const blockSchema = ajv.compile(readSchema('uwmd-block'));
-  const bare = (content: Record<string, unknown>) => Object.hasOwn(content, 'section_id')
-    ? { _meta: content._meta, ...content.content as Record<string, unknown> } : content;
+  const bare = (content: Record<string, unknown>) => {
+    if (!Object.hasOwn(content, 'section_id')) return content;
+    const { section_id: _section, content: payload, ...annotations } = content;
+    return { ...annotations, ...payload as Record<string, unknown> };
+  };
   // Test projection only: actual envelope round-trip assertions below remain exact.
   function projectEnvelope(envelope: ReturnType<typeof toUWEnvelope>) {
     const result = structuredClone(envelope);

@@ -2,18 +2,7 @@
 
 # 02 — The `.uw.md` format
 
-> **Lite/UWX transition:** human-readable Lite now uses `.uw.md`; the
-> structured format documented on this page is UW Extended Markdown and moves
-> to `.uwx.md`. Legacy structured `.uw.md` remains readable with a migration
-> warning. Lite's normative grammar is
-> [`spec/UW_LITE_SPEC.md`](../../spec/UW_LITE_SPEC.md). The linked
-> `UW_FORMAT_SPEC.md` is the consolidated structured specification; its
-> compatibility rename is completed.
-
-> Normative source: [`spec/UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
-> (v1.1). This page is a working summary for code work; the spec is authoritative.
-> Types live in [`packages/uwmd-core/src/types.ts`](../../packages/uwmd-core/src/types.ts)
-> (see [07 — Data model reference](07-data-model-reference.md) for the type shapes).
+> **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). This page's runtime examples are pending Phases 3–4. Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
 
 ## Anatomy of a file
 

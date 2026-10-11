@@ -86,6 +86,7 @@ test('final module schema rejects old vocabulary; phase projection never hides i
   assert.ok(validate(projectModuleContract({ ...base, requires_tier: 'tier-3-calc-host' })));
   for (const value of ['unknown', null, 3, {}, []]) assert.equal(validate(projectModuleContract({ ...base, requires_tier: value })), false);
   assert.equal(validate(projectModuleContract({ ...base, requires_tier: 'tier-3-calc-host', unknown: true })), false);
+  assert.equal(validate(projectModuleContract({ ...base, requires_tier: 'tier-3-calc-host', requires_profiles: ['unknown'], calculations: [{ id: 'x', formula: '1' }] })), false);
 });
 test('case projections remove only the obsolete reconciliation bookkeeping', () => {
   const corpus = json('conformance/corpus-index.json');
@@ -107,4 +108,31 @@ test('single specification files, all 34 starter stubs gone, and every historica
     assert.ok(!build.includes(`from: 'spec/${old}'`), old);
   }
   assert.doesNotMatch(build, /\/spec\/format-v2/);
+});
+
+test('every Format example carries nested metadata with a nonempty section identity', () => {
+  const format = read('spec/UW_FORMAT_SPEC.md');
+  let count = 0;
+  for (const match of format.matchAll(/"_meta":\s*\{/g)) {
+    const start = match.index + match[0].lastIndexOf('{');
+    let depth = 0, quoted = false, escaped = false, end = start;
+    for (; end < format.length; end++) {
+      const c = format[end];
+      if (quoted) {
+        if (escaped) escaped = false;
+        else if (c === '\\') escaped = true;
+        else if (c === '"') quoted = false;
+      } else if (c === '"') quoted = true;
+      else if (c === '{') depth++;
+      else if (c === '}' && --depth === 0) break;
+    }
+    const value = JSON.parse(format.slice(start, end + 1));
+    assert.ok(value.section?.length, `example at ${start}`);
+    for (const key of ['provenance', 'quality', 'lifecycle']) assert.equal(typeof value[key], 'object');
+    assert.ok(value.provenance.source); assert.ok(value.provenance.actor); assert.ok(value.provenance.timestamp);
+    assert.ok(value.quality.confidence); assert.equal(typeof value.quality.human_review_required, 'boolean');
+    assert.equal(typeof value.lifecycle.revision, 'number'); assert.equal(typeof value.lifecycle.superseded, 'boolean');
+    count++;
+  }
+  assert.equal(count, 30);
 });

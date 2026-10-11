@@ -534,9 +534,7 @@ make.
 Not part of the projection, and MUST NOT be required of any
 implementation: fence-annotation echoes recoverable from `_meta`, source
 line numbers, per-block prose recoverable from the document, and the
-`_notes` fence member (a sibling of `_meta`, not block content — a
-baseline that kept it inside `content` on flat fences while excluding it
-on wrapped ones was requiring the same artifact inconsistently). These
+`_notes` fence member (an annotation excluded from this parse projection, though included in the block digest). These
 are artifacts of a particular reader. `prose` therefore appears in a
 baseline as `{}`: an implementation MAY populate it, and a baseline MUST
 NOT demand entries.

@@ -10,7 +10,7 @@ export function projectModuleContract(manifest) {
   if (Object.hasOwn(result, 'requires_tier') && !Object.hasOwn(result, 'requires_conformance')) {
     result.requires_conformance = tiers[result.requires_tier] ?? result.requires_tier;
     delete result.requires_tier;
-    if (Array.isArray(result.calculations) && result.calculations.length) result.requires_profiles = ['module'];
+    if (!Object.hasOwn(result, 'requires_profiles') && Array.isArray(result.calculations) && result.calculations.length) result.requires_profiles = ['module'];
   }
   return result;
 }

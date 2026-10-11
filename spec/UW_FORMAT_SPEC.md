@@ -73,7 +73,7 @@ A `.uwx.md` file solves this by being structured enough for machines while stayi
 
 **Provenance on every block.** Every data block carries a `_meta` object that records who wrote it, when, with what confidence, and whether it requires human review. No fact in the file is anonymous.
 
-**Source-tagged assumptions.** Every assumption carries a `source` tag: `scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed`. Users and reviewers always know whether a number came from AI, from market data, or from their own input.
+**Resolution-tagged assumptions.** Every assumption carries a resolution tag: `scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed`. Users and reviewers always know whether a number came from AI, from market data, or from their own input.
 
 **Pipeline-stateful.** The frontmatter tracks which pipeline stages have run. A tool reading a `.uwx.md` knows immediately what work has been done, what is pending, and what is blocked.
 
@@ -677,15 +677,23 @@ The Deal Context section has two distinct layers:
 
 The `ai_synthesis` sub-object is populated by `agent/L7-01` after the full underwriting runs. It summarizes what the data actually shows in one paragraph, identifies strengths and risks from the model's perspective, and gives an overall impression. It is appended as a separate versioned block — the user's narrative is never touched.
 
-```json uw:section=deal_context source=user ts=ISO8601 v=1 confidence=high
+```json uw:section=deal_context source=manual ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "_notes": null,
 
@@ -772,12 +780,20 @@ frontmatter fallback. Other free values are unchanged.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "address": {
     "street": "string",
@@ -869,12 +885,20 @@ Field notes:
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "transaction_type": "acquisition | refinance | cash_out_refi | recapitalization",
   "current_owner": "string | null",
@@ -919,12 +943,20 @@ Field notes:
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "rent_roll_type": "multifamily",
   "as_of_date": "YYYY-MM-DD",
@@ -1071,12 +1103,20 @@ stated values with each other, never with the current date or file metadata.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "rent_roll_type": "commercial",
   "as_of_date": "YYYY-MM-DD",
@@ -1300,12 +1340,20 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "period_type": "T12 | T3 | YTD | Budget | T24",
   "period_start": "YYYY-MM-DD",
@@ -1382,12 +1430,20 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "underwriting_basis": "stabilized | value_add | lease_up | as_is | stressed",
   "income": {
@@ -1578,12 +1634,20 @@ from `jurisdiction`, which is a label.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "purchase_price": null,
   "purchase_price_per_unit": null,
@@ -1633,12 +1697,20 @@ from `jurisdiction`, which is a label.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "loan_amount": 0.0,
   "loan_purpose": "acquisition | refinance | cash_out_refi | construction | bridge | supplement",
@@ -1789,12 +1861,20 @@ identically.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "total_project_cost": 0.0,
   "sources": {
@@ -1972,12 +2052,20 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "hold_period_years": 5,
   "analysis_start_date": null,
@@ -2116,12 +2204,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "base_dscr": 0.0,
   "base_debt_yield": 0.0,
@@ -2180,12 +2276,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "market": "string",
   "submarket": "string",
@@ -2277,12 +2381,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "principals": [
     {
@@ -2351,12 +2463,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "appraisal": {
     "received": false,
@@ -2479,12 +2599,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "scoring_model_version": "string",
   "component_scores": {
@@ -2579,12 +2707,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "hvcre": {
     "classification": "hvcre | non_hvcre | uncertain | not_applicable | null",
@@ -2662,12 +2798,20 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "assumptions": [
     {
@@ -2729,12 +2873,20 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "overall_status": "clean | warnings_only | errors_present | blocking",
   "financial_validity": [
@@ -2817,12 +2969,20 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 ```json
 {
   "_meta": {
-  "section": "",
+  "section": "deal_context",
   "provenance": {
-    "...": "see §2.5 (note: pipeline_log _meta has no superseded field — it is always append-only)"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "entries": [
     {
@@ -2867,15 +3027,23 @@ file orders them so readers see the most recent run history at the bottom.
 
 **Live reference syntax:** `"source_ref": "noi_model.net_operating_income"` — the engine substitutes the current value of that field into the calculation. If the field is null or the section doesn't exist yet, `status` is set to `awaiting_inputs` and `result` remains null.
 
-```json uw:section=custom_calculations source=user ts=ISO8601 v=1
+```json uw:section=custom_calculations source=manual ts=ISO8601 v=1
 {
   "_meta": {
-  "section": "",
+  "section": "custom_calculations",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "_notes": null,
   "calculations": [
@@ -2941,15 +3109,23 @@ file orders them so readers see the most recent run history at the bottom.
 
 The `sensitivity_sweeps` array supports single-variable sweeps: the user specifies a range of values for one assumption and the engine computes the target metric at each point, producing a result series for charting or tabular display.
 
-```json uw:section=custom_scenarios source=user ts=ISO8601 v=1
+```json uw:section=custom_scenarios source=manual ts=ISO8601 v=1
 {
   "_meta": {
-  "section": "",
+  "section": "custom_scenarios",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "_notes": null,
   "scenarios": [
@@ -3047,7 +3223,7 @@ The `sensitivity_sweeps` array supports single-variable sweeps: the user specifi
 5. Cross-section consistency checks do not apply to extension sections
 6. The `schema_version` field signals a stable schema ready for standardization review — set it to a semver string when the schema has stabilized across deals
 
-```json uw:section=x_{user_defined_id} source=user ts=ISO8601 v=1
+```json uw:section=x_{user_defined_id} source=manual ts=ISO8601 v=1
 {
   "_meta": {
   "section": "x_your_id",
@@ -3120,12 +3296,20 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 ```json uw:section=gaps source=system/gaps-maintainer ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "",
+  "section": "gaps",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "_notes": null,
   "items": [
@@ -3191,12 +3375,20 @@ The section is a **bounded map keyed by the component's own asset class**, not a
 ```json uw:section=components source=manual ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "",
+  "section": "components",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "_notes": null,
   "multifamily": {
@@ -3274,12 +3466,20 @@ An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balanc
 ```json uw:section=capital_stack source=manual ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "",
+  "section": "capital_stack",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "tranches": [
     { "id": "senior", "class": "senior_debt",      "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "io_months": 24, "term_months": 120, "accrual": "cash" },
@@ -3333,12 +3533,20 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 ```json uw:section=lease_up_schedule variant=base source=manual ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "",
+  "section": "lease_up_schedule",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "model_type": "natural_turnover",
   "period_granularity": "quarterly",
@@ -3403,12 +3611,20 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 ```json uw:section=cash_flow_series variant=base source=manual ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "",
+  "section": "cash_flow_series",
   "provenance": {
-    "...": "see §2.5"
+    "source": "manual",
+    "actor": "example-author",
+    "timestamp": "2026-10-11T00:00:00Z"
   },
-  "quality": {},
-  "lifecycle": {}
+  "quality": {
+    "confidence": "high",
+    "human_review_required": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  }
 },
   "label": "Levered hold-period cash flow",
   "day_count": "actual/365f",
