@@ -34,20 +34,42 @@ the single most important diagram in the repo (also in [`ARCHITECTURE.md`](../..
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## The four conformance tiers
+## The standard and the starter products
 
-Every capability in the system is organized around four cumulative tiers
-(defined in `UW_PROTOCOL_v1.md` Part II, typed in `protocol.ts` as `ViewerTier`):
+[RFC 0078](../rfcs/0078-protocol-is-verification.md) (accepted 2026-10-10,
+Protocol 3.0 contract, unreleased) splits the repo into two layers:
 
-Tier | Name | What it does | Reference impl
----|---|---|---
-**1** | Reader | Parse + render, read-only | `parser.ts`, `renderer.ts`
-**2** | Editor | Round-trip writes with supersede semantics, byte-preserving | `editor.ts`
-**3** | Calc Host | Evaluate safe-expression formulas | `calc/`, `packs/`
-**4** | Agent Host | Host AI agents that emit `write_uw_section` tool calls | `agents/`, `context.ts`
+- **The standard** — the format, the verification Protocol, receipts, the module
+  system and the representation specs. It defines how any party *verifies* a
+  document: well formed, internally consistent, reproducible.
+- **The starter products** — the tools given away on top of it: calc engine and
+  packs, editor, viewer and report renderer, Excel exporter, defaults and the
+  cascade, refinement, Bancroft agents. Their behavior is described
+  non-normatively in [`docs/starter/`](../starter/README.md) and versions with
+  the packages only.
 
-A tool declares its tier in an `ImplementationManifest` (`protocol.ts`). Higher
-tiers include all lower ones.
+The Protocol defines two conformance tiers (`UW_PROTOCOL_v1.md` Part II, typed
+in `protocol.ts` as `ConformanceTier`) and six optional profiles
+(`ConformanceProfile`):
+
+Tier | What it does | Reference impl
+---|---|---
+**Reader** | Parse and check well-formedness, read-only | `parser.ts`, `validator.ts`
+**Verifier** | Reader + Format validation, metric reproduction, the stated-figure verifiers, receipts | `validator.ts`, `calc/`, the stated-figure verifiers, `receipts.ts`
+
+Profiles: `module`, `integrity`, `representations`, `portfolio`, `sensitivity`,
+`stochastic`. A tool declares its tier and profiles in an
+`ImplementationManifest` (`protocol.ts`); the reference claims `verifier` with
+all six.
+
+The four Protocol 2.x tiers (Reader, Editor, Calc Host, Agent Host; the
+`ViewerTier` type) are retired as implementation tiers. Their manifest values
+stay readable, deprecated, during 3.x: tier-1 and tier-2 → reader, tier-3 and
+tier-4 → verifier (2.x Tier 4 included Tier 3), with the editor and agent-host
+claims kept as non-normative starter-product claims
+(`readConformanceTier` in `protocol.ts`). Module manifests keep `requires_tier`
+in the 2.x vocabulary. The corpus directories keep their 2.x names until the
+corpus is re-tiered (RFC 0078 phase 3).
 
 ## Repository map
 
@@ -55,7 +77,7 @@ tiers include all lower ones.
 spec/                      Normative specs + JSON Schemas + XML XSD
   UW_FORMAT_SPEC_v1.md     File shape: frontmatter, 21 standard sections (§4.0-4.20),
                            extension meta-spec (§4.21), gaps (§4.22), CC-NN checks
-  UW_PROTOCOL_v1.md        Tiers, display, edit semantics, calc EBNF, AI-host contract
+  UW_PROTOCOL_v1.md        Verification: tiers + profiles, provenance rules, calc EBNF, verifiers
   UW_XML_MAPPING_v1.md     Deterministic Envelope 1.0 XML representation
   UW_CSV_BUNDLE_v1.md      Normalized CSV directory/ZIP representation
   bindings/                HTTP/MCP profiles + OpenAPI 3.1 contract
@@ -75,7 +97,7 @@ tools/
 conformance/    tier-1-reader … tier-4-agent-host fixtures + expected outputs
 scripts/        run-conformance.mjs, regen-conformance.mjs, validate-schemas.mjs
 examples/       Sample .uw.md deal files (Parkview is the canonical fixture)
-docs/           GLOSSARY.md, TOOLS.md, rfcs/, and this wiki/
+docs/           GLOSSARY.md, TOOLS.md, rfcs/, starter/ (non-normative starter guide), and this wiki/
 ```
 
 ## Dependency rules (enforced — violating these blocks a PR)

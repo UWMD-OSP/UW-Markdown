@@ -1,4 +1,9 @@
-# 06 — Bancroft agents (Tier-4)
+# 06 — Bancroft agents (starter product)
+
+> RFC 0078 retired Tier 4 (Agent Host) as a Protocol tier. The agent host is a
+> non-normative starter product; its former Protocol text is in
+> [`docs/starter/ai-host.md`](../starter/ai-host.md), and its fixtures still run
+> from `conformance/tier-4-agent-host/` until the corpus is re-tiered.
 
 Bancroft is UWMD optional **reference suite** of AI agents. It is not part of the file format and no user or implementer must run it to create, read, validate, edit, calculate, or exchange UWMD files. Each agent is a **layer** in an underwriting
 pipeline (L0…L7). A layer reads a curated subset of the deal, calls Claude with a

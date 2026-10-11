@@ -200,7 +200,8 @@ reopened backlog items from the audit.
 - **`ImplementationManifest`.** The `tier` enum changes to `reader` /
   `verifier` with a `profiles` list. During 3.x the four old values stay
   readable and are mapped with a deprecation warning: tier-1 → reader,
-  tier-3 → verifier, tier-2/4 → reader plus a non-normative product note.
+  tier-3 → verifier, tier-4 → verifier (2.x Tier 4 included Tier 3), tier-2 →
+  reader; the editor and agent-host claims become non-normative product notes.
 - **Modules.** No manifest change. A verifier without an evaluator reports
   module metrics `unverifiable`, never wrong.
 - **`@uwmd/core` API.** No breaking change in this RFC; the package split (D8)

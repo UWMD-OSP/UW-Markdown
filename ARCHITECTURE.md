@@ -62,9 +62,12 @@ implement only one tier can read just the relevant sections.
 - [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) — file shape:
   frontmatter, the 21 standard sections, supersede semantics, the
   cross-section consistency rules (`CC-NN`).
-- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — what conforming
-  software must do: the four conformance tiers, display conventions,
-  edit semantics, calc-engine grammar (EBNF), AI-host contract.
+- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — how any party
+  verifies a document: the Reader and Verifier tiers and optional profiles,
+  the provenance rules, the calc-engine grammar (EBNF) and the stated-figure
+  verifiers (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and
+  the AI host are non-normative starter-product guidance in
+  [`docs/starter/`](docs/starter/README.md).
 - [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md) — deterministic
   Envelope 1.0 mapping, namespace, integrity, and secure decoding rules.
 - [`spec/UW_CSV_BUNDLE_v1.md`](spec/UW_CSV_BUNDLE_v1.md) — normalized tables,
@@ -120,7 +123,8 @@ nothing else from this monorepo:
 
 [`conformance/`](conformance/) is the trust anchor for third parties.
 [`scripts/run-conformance.mjs`](scripts/run-conformance.mjs) drives
-the four tiers:
+the corpus directories, which keep their Protocol 2.x tier names until
+RFC 0078 phase 3 re-tiers them:
 
 - **Tier 1 (Reader)** — byte-exact comparison of parser/render output
   against `expected/`.

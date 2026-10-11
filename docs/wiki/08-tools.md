@@ -18,9 +18,9 @@ Command | Purpose
 `validate <file>` | Run validation (`--institution <cfg>`, `--json`)
 `verify <file>` | Validate + integrity (hashes) + provenance (`--validate`/`--integrity`/`--policy`/`--json`)
 `render <file>` | Render (`--format json\|csv\|chat\|summary`, or `--profile`, `--max-tokens`, `--output`)
-`run <file> --agent <id>` | Tier-4 agent (`--context-only`, `--prompt`, `--live`, `--model`, `--api-key`, `--instructions`)
-`edit <file> <op.json>` | Apply a Tier-2 `EditOperation` (`--actor`, `--source`, `--confidence`, …)
-`calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula (Tier-3)
+`run <file> --agent <id>` | Bancroft agent, a starter product (`--context-only`, `--prompt`, `--live`, `--model`, `--api-key`, `--instructions`)
+`edit <file> <op.json>` | Apply an `EditOperation` with the starter editor (`--actor`, `--source`, `--confidence`, …)
+`calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula
 `compact <file>` | Strip superseded blocks (`--dry-run`, `--output`)
 `diff <a> <b>` | Section-by-section comparison
 `init` | Scaffold a blank `.uwx.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--scenario`, `--tier`, `--output`); `--scenario` takes a standard business plan or reverse-DNS extension; `--asset-subtype` carries the open subtype, including multifamily `build_to_rent` (RFC 0072)
@@ -375,13 +375,13 @@ browser is present).
 ## Web viewer — `tools/web-viewer`
 
 Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
-it renders (embeds a minimal Parser + Renderer). Tier-1 demo. Skip it for editing
+it renders (embeds a minimal Parser + Renderer). Reader demo. Skip it for editing
 or calc.
 
 ## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.5.0, private)
 
 React 18 + Tailwind CSS 4 (Vite). Opens `.uw.md` Lite summaries by compiling their supported anchored fields into a canonical `.uwx.md` record (retaining the complete Lite source in a namespaced extension), and opens `.uwx.md` structured records directly. Export Lite is explicitly loss-reported: omitted UWX paths are listed before the smaller deal-summary projection is downloaded. Embeds `@uwmd/core/browser` (parser, validator,
-Tier-2 edit dispatcher, Tier-3 calc engine, report renderer, init scaffolder,
+edit dispatcher, calc engine, report renderer, init scaffolder,
 cascade/refinement/gaps intelligence, calc dependency introspection, receipt
 issuance/verification). Six tabs:
 

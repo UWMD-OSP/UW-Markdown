@@ -5,14 +5,14 @@ Everything else depends on it. Its runtime dependencies are `fast-xml-parser` an
 `fflate`. `@anthropic-ai/sdk` is an **optional peer dependency**: only the
 reference Anthropic provider needs it, it is loaded dynamically on the first
 request, and it is excluded from the browser entry. A host that brings its own
-`AgentProvider` — or never runs a Tier-4 agent — does not install it, and
+`AgentProvider` — or never runs a Bancroft agent — does not install it, and
 importing `@uwmd/core` works without it.
 
 - **Package:** `@uwmd/core` 1.1.0 release candidate, ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
 - **Public API:** [`src/index.ts`](../../packages/uwmd-core/src/index.ts) — the
   single source of truth for what's exported. If it isn't there, tools can't import it.
 - **Entry points (`package.json` `exports`):**
-  - `.` → `dist/index.js` (full library, including the Tier-4 agent host)
+  - `.` → `dist/index.js` (full library, including the starter agent host)
   - `./browser` → `dist/browser.js` (everything **except** `@anthropic-ai/sdk` — for web bundling)
   - `./cli` → `dist/cli.js` (the CLI program; `uwmd-cli` just imports this)
 - **Build:** `tsc` (per-package). **Test:** `vitest run`. Coverage:
@@ -26,7 +26,7 @@ Module | Responsibility | Key exports
 `lite.ts` | Constrained Lite parser, AST, renderer, financial canonical form | `parseUWLite`, `canonicalizeUWLiteFinancial`
 `lite-bridge.ts` | Lite compilation, UWX serialization, lossy projections | `compileUWLite`, `stringifyUWX`, `projectUWEnvelopeToLite`
 `validator.ts` | Cross-section / financial / DQ checks | `validateUWFile`, `lookupRemediation`
-`editor.ts` | Tier-2 edit dispatcher | `applyEdit`, `applyEditAsync`, `resolvePolicy`
+`editor.ts` | Edit dispatcher (starter product; Protocol 2.x Tier-2) | `applyEdit`, `applyEditAsync`, `resolvePolicy`
 `renderer.ts` | Render to json/csv/chat/summary | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)
 `report.ts` | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
 `envelope.ts` | Format-neutral model + semantic digest/equivalence | `UWDocumentEnvelope`, `toUWEnvelope`, `verifyEnvelopeDigest`
@@ -55,9 +55,9 @@ Module | Responsibility | Key exports
 `receipts.ts` | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
 `version.ts` | Engine identity recorded in receipts | `CORE_PACKAGE_NAME`, `CORE_VERSION`
 `modules.ts` | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
-`calc/` | Tier-3 safe-expression engine | see [04 — Calc engine](04-calc-engine.md)
+`calc/` | Safe-expression engine (the Verifier's evaluator; Protocol 2.x Tier-3) | see [04 — Calc engine](04-calc-engine.md)
 `packs/` | Calc packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
-`agents/` | Optional Tier-4 Bancroft reference agent host | see [06 — Bancroft agents](06-bancroft-agents.md)
+`agents/` | Optional Bancroft reference agent host (starter product; Protocol 2.x Tier-4) | see [06 — Bancroft agents](06-bancroft-agents.md)
 
 ## parser.ts
 
@@ -93,7 +93,7 @@ walks a dot-path into a content object.
   (RFC 0072); warnings in both format generations, no stage or math changes.
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.
 
-## editor.ts (Tier-2)
+## editor.ts (starter editor)
 
 `applyEdit(content, parsed, op, ctx, …, opts) → EditResult` and the async
 `applyEditAsync` (used when an edit must stamp content/parent hashes). Dispatches
@@ -107,22 +107,22 @@ It enforces edit policy: `resolvePolicy` matches `_meta.source` against
 parsed by `parseActorSource` (never prefix tests); resolution methods live in
 the separate optional `_meta.resolution`, and the table ends in a `*`
 catch-all so every source resolves the conservative policy. **The
-golden rule of Tier-2:** bytes outside the modified region are preserved exactly
+golden rule of the editor:** bytes outside the modified region are preserved exactly
 (round-trip stability). Failures return a typed `ProtocolError` in
 `EditResult.error` (e.g. `INT-02` stale parent hash, `POL-01` unauthorized actor).
 
-## renderer.ts (Tier-1)
+## renderer.ts (starter renderer)
 
 `render(parsed, options) → RenderResult`. Formats: `json`, `csv`, `chat`
 (token-budgeted context string for an LLM), `summary` (markdown).
-`chat`/`summary` are the formats exercised by Tier-1 conformance. The `pdf` and
+`chat`/`summary` are the formats exercised by the `tier-1-reader` corpus (starter-product renders, RFC 0078). The `pdf` and
 `docx` enum values are reserved for dedicated pipelines; requesting either from
 the core renderer throws typed `UnsupportedRenderFormatError` instead of
 returning empty content. Use `report.ts` (HTML) plus `@uwmd/report` for PDF.
 `RenderOptions` include `format`,
 `tier` (`screener`|`analyst`), and `maxTokens`.
 
-## report.ts (Tier-1)
+## report.ts (starter report renderer)
 
 `renderReportHtml(parsed, opts?) → ReportResult` implements the spec's rendering
 targets **§7.1 Lender Package** (tier `screener`, 10 sections from cover page to
@@ -140,7 +140,7 @@ recomputed at render time; sections with no data are skipped and reported in
 `uwmd report <file> [--tier] [--prepared-by] [--output|--stdout]`. PDF is
 `@uwmd/report`'s job (see [08 — Tools](08-tools.md)).
 
-## uwjson.ts — the `.uw.json` sibling form (Tier-1)
+## uwjson.ts — the `.uw.json` sibling form (Reader)
 
 A `.uw.json` document is the **lossless, machine-first projection** of a `.uw.md`
 file. It exists so tools — the coming calc-aware editor/viewer especially — can

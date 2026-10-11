@@ -129,7 +129,7 @@ standard data sections (§4.0–§4.20)** + the extension meta-spec (§4.21) + g
 4.16 | `assumptions` | Assumptions registry — assumption sources & cascade record
 4.17 | `validation` | Flags & validation summary
 4.18 | `pipeline_log` | **Always last** — append-only execution audit
-4.19 | `custom_calculations` | User-authored Tier-3 formulas
+4.19 | `custom_calculations` | User-authored formulas (Protocol 3.0 Module profile)
 4.20 | `custom_scenarios` | User-defined what-if scenarios
 4.21 | `x_*` | Extension-section meta-spec (non-standard content namespace)
 4.22 | `gaps` | Open data gaps blocking stage advancement / provisional defaults

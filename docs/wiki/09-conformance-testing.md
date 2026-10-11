@@ -102,6 +102,15 @@ by default — it is deterministic and needs no network or API key. The numbered
 shape/lint-only plus the profile contract and assumes an operator-driven live
 run.
 
+> **Directory names vs Protocol 3.0 tiers.** RFC 0078 replaced the four
+> Protocol 2.x tiers with two (Reader, Verifier) plus six optional profiles
+> (`UW_PROTOCOL_v1.md` Part II). The corpus directories below keep their 2.x
+> names until the corpus is re-tiered in RFC 0078 phase 3, and directory
+> membership was never a normative signal (§II.6). Today `tier-1-reader` is the
+> Reader corpus; the verifier-relevant `tier-3-calc-host` fixtures are the
+> Verifier corpus; `tier-2-editor` and `tier-4-agent-host` test starter
+> products ([`docs/starter/`](../starter/README.md)) and still run in CI.
+
 ### Tier 1 — Reader
 
 `conformance/tier-1-reader/`:

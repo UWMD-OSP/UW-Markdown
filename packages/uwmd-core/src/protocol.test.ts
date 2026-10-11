@@ -12,6 +12,8 @@ import {
   PROTOCOL_VERSION,
   FORMAT_VERSION,
   REFERENCE_IMPLEMENTATION_MANIFEST,
+  CONFORMANCE_PROFILES,
+  readConformanceTier,
   BUILTIN_REMEDIATIONS,
   VALIDATOR_CODE_FAMILIES,
   validatorCodeFamily,
@@ -142,6 +144,103 @@ describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
     expect(() => {
       (REFERENCE_IMPLEMENTATION_MANIFEST as { id: string }).id = 'something.else';
     }).toThrow();
+  });
+
+  it('claims the Protocol 3.0 Verifier tier with every profile (RFC 0078)', () => {
+    // The reference implements every stated-figure verifier and every optional
+    // profile. Editing and agent hosting are starter-product capabilities now,
+    // not tiers, so the old 'tier-4-agent-host' claim has no 3.0 equivalent.
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.tier).toBe('verifier');
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.profiles).toEqual([...CONFORMANCE_PROFILES]);
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toEqual(
+      expect.arrayContaining(['edit-supersede', 'agent-host', 'render-chat']),
+    );
+  });
+});
+
+// ─── RFC 0078: tiers, profiles and the legacy tier mapping ───────────────────
+
+describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
+  const repoFile = (path: string) => readFileSync(fileURLToPath(new URL(`../../../${path}`, import.meta.url)), 'utf8');
+  const schema = JSON.parse(repoFile('spec/schemas/implementation-manifest.schema.json'));
+  const validate = new Ajv2020({ strict: false, validateFormats: false }).compile(schema);
+  const LEGACY = ['tier-1-reader', 'tier-2-editor', 'tier-3-calc-host', 'tier-4-agent-host'] as const;
+  const base = { id: 'org.example.verifier', name: 'Example', version: '1.0.0', protocol_version: '2.25.0', format_version: '2.0' };
+
+  it('the reference manifest validates against the normative schema', () => {
+    // The mirror had drifted: protocol.ts claimed calc-cash-flow and
+    // portfolio-relationships, which the schema's capability enum lacked, so
+    // the reference implementation's own `uwmd manifest` output was invalid.
+    expect(validate(REFERENCE_IMPLEMENTATION_MANIFEST), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  it('the schema tier and profile vocabularies mirror protocol.ts', () => {
+    const [current, legacy] = schema.properties.tier.anyOf;
+    expect(current.enum).toEqual(['reader', 'verifier']);
+    expect(legacy.enum).toEqual([...LEGACY]);
+    expect(legacy.deprecated).toBe(true);
+    expect(schema.properties.profiles.items.enum).toEqual([...CONFORMANCE_PROFILES]);
+  });
+
+  it('accepts the 3.0 tiers, with or without profiles', () => {
+    expect(validate({ ...base, tier: 'reader' })).toBe(true);
+    expect(validate({ ...base, tier: 'verifier', profiles: ['module', 'stochastic'] })).toBe(true);
+    expect(validate({ ...base, profiles: ['integrity'] })).toBe(true);
+  });
+
+  it.each(LEGACY)('still accepts the deprecated legacy tier %s during 3.x', (tier) => {
+    expect(validate({ ...base, tier })).toBe(true);
+  });
+
+  it('refuses tiers and profiles outside the closed vocabularies', () => {
+    expect(validate({ ...base, tier: 'tier-5-oracle' })).toBe(false);
+    expect(validate({ ...base, tier: 'calc-host' })).toBe(false);
+    expect(validate({ ...base, profiles: ['editor'] })).toBe(false);
+    expect(validate({ ...base, profiles: ['module', 'module'] })).toBe(false);
+  });
+
+  it('reads the 3.0 tiers as themselves', () => {
+    expect(readConformanceTier('reader')).toEqual({ tier: 'reader' });
+    expect(readConformanceTier('verifier')).toEqual({ tier: 'verifier' });
+  });
+
+  it('maps every legacy tier exactly as RFC 0078 fixes it, inferring no profile', () => {
+    expect(readConformanceTier('tier-1-reader')).toEqual({ tier: 'reader', legacy: 'tier-1-reader' });
+    expect(readConformanceTier('tier-2-editor')).toEqual({
+      tier: 'reader', legacy: 'tier-2-editor', starter_product_claim: 'editor',
+    });
+    expect(readConformanceTier('tier-3-calc-host')).toEqual({ tier: 'verifier', legacy: 'tier-3-calc-host' });
+    expect(readConformanceTier('tier-4-agent-host')).toEqual({
+      tier: 'verifier', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host',
+    });
+    for (const tier of LEGACY) expect(readConformanceTier(tier)).not.toHaveProperty('profiles');
+  });
+
+  it('refuses rather than guesses an unknown tier', () => {
+    for (const tier of ['tier-5', 'Reader', '', null, undefined, 3, 'constructor', '__proto__']) {
+      expect(readConformanceTier(tier)).toBeNull();
+    }
+  });
+
+  it('returns a fresh reading, so a caller cannot corrupt the mapping', () => {
+    const reading = readConformanceTier('tier-2-editor')!;
+    reading.tier = 'verifier';
+    expect(readConformanceTier('tier-2-editor')?.tier).toBe('reader');
+  });
+
+  it('agrees with the mapping table in UW_PROTOCOL §II.5', () => {
+    // The spec table and the helper are two copies of one rule; this keeps them
+    // from drifting the way the capability enum did.
+    const section = repoFile('spec/UW_PROTOCOL_v1.md').split('### II.5 Tier composition')[1]?.split('\n### ')[0] ?? '';
+    const rows = [...section.matchAll(/^\| `(tier-[1-4]-[a-z-]+)` \| `(reader|verifier)` \|/gm)]
+      .map((m) => [m[1], m[2]]);
+    expect(rows).toEqual(LEGACY.map((tier) => [tier, readConformanceTier(tier)?.tier]));
+  });
+
+  it('names exactly the six profiles in the §II.3 table', () => {
+    const section = repoFile('spec/UW_PROTOCOL_v1.md').split('### II.3 Verification profiles')[1]?.split('\n### ')[0] ?? '';
+    const profiles = [...section.matchAll(/^\| `([a-z]+)` \|/gm)].map((m) => m[1]);
+    expect(profiles).toEqual([...CONFORMANCE_PROFILES]);
   });
 });
 
