@@ -1,7 +1,7 @@
 # Language-agnostic conformance driver (RFC 0004)
 
 `runner.py` runs the UW Markdown corpus against **any** implementation that
-speaks the CLI protocol in [protocol §II.6a](../../spec/UW_PROTOCOL_v1.md).
+speaks the CLI protocol in [protocol §II.6a](../../spec/UW_PROTOCOL.md).
 It shells out; it knows nothing about TypeScript, Node, or `@uwmd/core`. The
 reference implementation is tested exactly the way a Python, Go, or Rust one
 would be — which is the point. A corpus that only its own author's language can
@@ -155,7 +155,7 @@ which the fixture fixes, so it is stable and worth checking.
 
 ## Implementing the protocol
 
-See [protocol §II.6a](../../spec/UW_PROTOCOL_v1.md) for the normative
+See [protocol §II.6a](../../spec/UW_PROTOCOL.md) for the normative
 definition. The short version: six subcommands, exactly one JSON document on
 stdout (except `render`, which emits text), stderr free for logging, exit `0`
 success / `1` protocol error with parseable stdout / `2` unrecoverable.

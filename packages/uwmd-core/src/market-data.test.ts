@@ -46,7 +46,7 @@ describe('STANDARD_SECTION_IDS', () => {
   it('matches the section ids FORMAT_SPEC Part IV declares', () => {
     // Read the spec rather than restating it: this is the check that keeps the
     // list from drifting the way BUILTIN_VIEW_MODELS did.
-    const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+    const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC.md', import.meta.url));
     const spec = readFileSync(specPath, 'utf-8');
     const declared = [...spec.matchAll(/^\*\*ID:\*\* `([a-z_]+)`/gm)].map((m) => m[1]!);
     expect(declared.length).toBeGreaterThan(0);

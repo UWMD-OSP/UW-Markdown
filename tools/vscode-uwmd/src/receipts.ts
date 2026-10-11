@@ -8,7 +8,7 @@
 // people that receipts are noise. Verification is the operation that fits an
 // editor: "someone sent me this deal and this receipt — do they agree?"
 //
-// UW_RECEIPT_v1 §1 applies to every consumer, this one included: a verified
+// UW_RECEIPT §1 applies to every consumer, this one included: a verified
 // receipt must never be surfaced as a bare checkmark, so `summaryLine` always
 // carries what the verdict does and does not mean.
 
@@ -16,7 +16,7 @@ import { readFile } from 'node:fs/promises';
 import { assertUWReceipt, verifyReceipt } from '@uwmd/core';
 import type { UWReceipt, UWReceiptVerdict, UWReceiptVerification } from '@uwmd/core';
 
-/** Conventional sidecar location (UW_RECEIPT_v1 §2). */
+/** Conventional sidecar location (UW_RECEIPT §2). */
 export function receiptPathFor(dealPath: string): string {
   return `${dealPath.replace(/\.(uw|uwx)\.md$/i, '').replace(/\.md$/i, '')}.receipt.json`;
 }
@@ -173,7 +173,7 @@ export function formatReport(check: ReceiptCheck, dealPath: string): string {
     '  2. The stated outputs follow deterministically from that content under the',
     '     named pack and policy set.',
     'It attests NOTHING about whether the inputs are true, complete, sourced from',
-    'genuine documents, or reasonable. See spec/UW_RECEIPT_v1.md §1.',
+    'genuine documents, or reasonable. See spec/UW_RECEIPT.md §1.',
   );
 
   return lines.join('\n');

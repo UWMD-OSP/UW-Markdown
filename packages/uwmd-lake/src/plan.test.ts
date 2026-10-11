@@ -29,7 +29,7 @@ const RECEIPT = {
   receipt_version: '1.1',
   subject: { representation: 'uwx', representation_version: '2.0', canonicalization: 'envelope', canonicalization_version: '1.0', digest: DIGEST },
   computation: { pack_id: 'org.uwmd.multifamily', pack_version: '1.2.0', engine: '@uwmd/core', engine_version: '2.10.0', results: [] },
-  // The shape UW_RECEIPT_v1 actually defines. A receipt states its validation
+  // The shape UW_RECEIPT actually defines. A receipt states its validation
   // counts; it carries no verdict, because a verdict is what verifying one
   // produces (§5). An earlier fixture invented `computation.verdict`, which is
   // why a permanently-NULL projection column went unnoticed until a real

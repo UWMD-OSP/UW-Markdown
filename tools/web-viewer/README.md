@@ -1,7 +1,7 @@
 # Reference Reader Viewer
 
 A single static HTML file that demonstrates a fully conformant
-[Reader](../../spec/UW_PROTOCOL_v1.md) of the UW Markdown protocol
+[Reader](../../spec/UW_PROTOCOL.md) of the UW Markdown protocol
 in under 500 lines of code.
 
 **This is a reference, not a product.** It exists to prove that a

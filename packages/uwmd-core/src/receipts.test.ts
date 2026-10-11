@@ -1,4 +1,4 @@
-// Receipts — RFC 0016 / `spec/UW_RECEIPT_v1.md`.
+// Receipts — RFC 0016 / `spec/UW_RECEIPT.md`.
 //
 // The behaviours worth pinning: issuance is total (a receipt or a typed error,
 // never something in between), re-issuance over an unmodified record is stable,

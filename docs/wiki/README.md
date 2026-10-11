@@ -57,13 +57,13 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
   with `@anthropic-ai/sdk` an optional peer dependency for the Anthropic provider.
 - **The public API is a single file:** [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts).
   If a symbol isn't exported there, tools can't use it.
-- **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC_v1.md`](../../spec/UW_FORMAT_SPEC_v1.md)
-  defines the authoring file (with [`UW_FORMAT_SPEC_v2.md`](../../spec/UW_FORMAT_SPEC_v2.md)
-  for Format 2.x), [`spec/UW_PROTOCOL_v1.md`](../../spec/UW_PROTOCOL_v1.md)
+- **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
+  defines the authoring file (with [`UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
+  for Format 2.x), [`spec/UW_PROTOCOL.md`](../../spec/UW_PROTOCOL.md)
   ("UW Protocol — verification") defines how any party verifies a document,
   [`spec/metrics/`](../../spec/metrics/README.md) defines every builtin metric,
-  [`spec/UW_RECEIPT_v1.md`](../../spec/UW_RECEIPT_v1.md) defines receipts, while [`spec/UW_XML_MAPPING_v1.md`](../../spec/UW_XML_MAPPING_v1.md)
-  and [`spec/UW_CSV_BUNDLE_v1.md`](../../spec/UW_CSV_BUNDLE_v1.md) define model
+  [`spec/UW_RECEIPT.md`](../../spec/UW_RECEIPT.md) defines receipts, while [`spec/UW_XML_MAPPING.md`](../../spec/UW_XML_MAPPING.md)
+  and [`spec/UW_CSV_BUNDLE.md`](../../spec/UW_CSV_BUNDLE.md) define model
   representations. Optional HTTP/MCP companion profiles live under
   [`spec/bindings/`](../../spec/bindings/). `protocol.ts` mirrors the protocol surface.
 - **One invariant rules them all:** *AI extracts and narrates; it never

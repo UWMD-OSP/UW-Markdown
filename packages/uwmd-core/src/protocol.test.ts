@@ -11,6 +11,11 @@ import {
   lookupIncompleteDataPolicy,
   PROTOCOL_VERSION,
   FORMAT_VERSION,
+  SPEC_FORMAT_VERSION,
+  SPEC_PROTOCOL_VERSION,
+  RESOLUTION_METHODS,
+  SUPPORTED_FORMAT_VERSIONS,
+  SUPPORTED_PROTOCOL_VERSIONS,
   REFERENCE_IMPLEMENTATION_MANIFEST,
   CONFORMANCE_TARGETS,
   CONFORMANCE_PROFILES,
@@ -100,6 +105,18 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 });
 
 describe('protocol — version', () => {
+  it('stages the accepted RFC 0081 versions without changing release labels', () => {
+    expect(SUPPORTED_FORMAT_VERSIONS).toContain(SPEC_FORMAT_VERSION);
+    expect(SUPPORTED_PROTOCOL_VERSIONS).toContain(SPEC_PROTOCOL_VERSION);
+    expect(SPEC_FORMAT_VERSION).toBe('3.0');
+    expect(SPEC_PROTOCOL_VERSION).toBe('4.0.0');
+    const blockSchema = JSON.parse(readFileSync(resolve(__dirname, '../../../spec/schemas/uwmd-block.schema.json'), 'utf8'));
+    expect(blockSchema.$defs.ResolutionTag.enum).toEqual([...RESOLUTION_METHODS]);
+    expect(validatorCodeFamily('UNSUPPORTED_FORMAT_VERSION')?.capabilities).toEqual(['parse']);
+    expect(BUILTIN_REMEDIATIONS.find(r => r.code === 'META-01')).toBeDefined();
+    const spec = readFileSync(resolve(__dirname, '../../../spec/UW_PROTOCOL.md'), 'utf8');
+    expect(spec).toContain(`— protocol **${SPEC_PROTOCOL_VERSION}**`);
+  });
   it('publishes the current protocol version', () => {
     expect(PROTOCOL_VERSION).toBe('3.0.0');
   });
@@ -176,10 +193,7 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
   });
 
   it('the schema tier and profile vocabularies mirror protocol.ts', () => {
-    const [current, legacy] = schema.properties.tier.anyOf;
-    expect(current.enum).toEqual(['reader', 'verifier']);
-    expect(legacy.enum).toEqual([...LEGACY]);
-    expect(legacy.deprecated).toBe(true);
+    expect(schema.properties.tier.enum).toEqual(['reader', 'verifier']);
     expect(schema.properties.profiles.items.enum).toEqual([...CONFORMANCE_PROFILES]);
   });
 
@@ -189,8 +203,8 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
     expect(validate({ ...base, profiles: ['integrity'] })).toBe(true);
   });
 
-  it.each(LEGACY)('still accepts the deprecated legacy tier %s during 3.x', (tier) => {
-    expect(validate({ ...base, tier })).toBe(true);
+  it.each(LEGACY)('final schema refuses retired tier %s (RFC 0081)', (tier) => {
+    expect(validate({ ...base, tier })).toBe(false);
   });
 
   it('refuses tiers and profiles outside the closed vocabularies', () => {
@@ -232,14 +246,14 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
   it('agrees with the mapping table in UW_PROTOCOL §II.5', () => {
     // The spec table and the helper are two copies of one rule; this keeps them
     // from drifting the way the capability enum did.
-    const section = repoFile('spec/UW_PROTOCOL_v1.md').split('### II.5 Tier composition')[1]?.split('\n### ')[0] ?? '';
+    const section = repoFile('spec/UW_PROTOCOL.md').split('### II.5 Tier composition')[1]?.split('\n### ')[0] ?? '';
     const rows = [...section.matchAll(/^\| `(tier-[1-4]-[a-z-]+)` \| `(reader|verifier)` \|/gm)]
       .map((m) => [m[1], m[2]]);
     expect(rows).toEqual(LEGACY.map((tier) => [tier, readConformanceTier(tier)?.tier]));
   });
 
   it('names exactly the six profiles in the §II.3 table', () => {
-    const section = repoFile('spec/UW_PROTOCOL_v1.md').split('### II.3 Verification profiles')[1]?.split('\n### ')[0] ?? '';
+    const section = repoFile('spec/UW_PROTOCOL.md').split('### II.3 Verification profiles')[1]?.split('\n### ')[0] ?? '';
     const profiles = [...section.matchAll(/^\| `([a-z]+)` \|/gm)].map((m) => m[1]);
     expect(profiles).toEqual([...CONFORMANCE_PROFILES]);
   });
@@ -376,7 +390,7 @@ describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
   // never shipped (CC-01 "NOI mismatch" for a rule that compares rent-roll GPR
   // to the operating statement), and enrichWithRemediation attached that copy
   // to real issues. Nothing noticed because nothing compared the two.
-  const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+  const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC.md', import.meta.url));
   const spec = readFileSync(specPath, 'utf-8');
   const table = spec.slice(spec.indexOf('### 5.3 Cross-Section Consistency Checks'));
   const rows = [...table.matchAll(/^\| `(CC-\d\d)` \| (.+?) \| (.+?) \|$/gm)]
@@ -417,7 +431,7 @@ describe('BUILTIN_VIEW_MODELS.noi_model reads Format §4.5 paths', () => {
   // The paths come from the §4.5 template in the spec, not from whichever
   // worked example happens to pass. The view model read top-level keys that
   // §4.5 never states, so every NOI card field but NOI resolved to nothing.
-  const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+  const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC.md', import.meta.url));
   const spec = readFileSync(specPath, 'utf-8');
   const s45 = spec.slice(spec.indexOf('### § 4.5 — NOI Model'));
   const open = s45.indexOf('```json\n') + '```json\n'.length;
@@ -502,7 +516,7 @@ describe('protocol — ProtocolError category lockstep (§XI)', () => {
   });
 
   it('the §XI interface lists exactly the schema enum', () => {
-    const section = repoFile('spec/UW_PROTOCOL_v1.md').split('## XI. Error Taxonomy')[1]?.split('\n## ')[0] ?? '';
+    const section = repoFile('spec/UW_PROTOCOL.md').split('## XI. Error Taxonomy')[1]?.split('\n## ')[0] ?? '';
     const union = section.match(/category:\s*((?:'[a-z]+'\s*\|?\s*)+),/)?.[1] ?? '';
     const specCategories = [...union.matchAll(/'([a-z]+)'/g)].map((m) => m[1]);
     expect(specCategories.sort()).toEqual([...schemaCategories].sort());

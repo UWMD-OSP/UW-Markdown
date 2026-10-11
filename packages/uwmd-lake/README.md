@@ -159,7 +159,7 @@ WHERE r.subject_digest = $1 AND r.validation_errors = 0;
 ```
 
 There is no `verdict` column. A verdict is what *verifying* a receipt produces
-(`UW_RECEIPT_v1` §5) — `verified`, `failed`, `unverifiable` — not something a
+(`UW_RECEIPT` §5) — `verified`, `failed`, `unverifiable` — not something a
 receipt states about itself, so projecting one would index a column that is
 NULL for every real receipt. What a receipt does carry is its
 `policy.validation` counts, and those are the columns above.

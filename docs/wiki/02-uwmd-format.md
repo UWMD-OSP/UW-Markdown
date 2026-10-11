@@ -1,14 +1,16 @@
+> RFC 0081 Phase 2 consolidates the normative contract in [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0). The implementation still carries its current release labels until Phase 6; corpus re-authoring and runtime deletion are Phases 3 and 4. The older shape examples below describe that pending implementation, not an additional normative format. Format 3.0 uses only bare payloads with inline nested `_meta`, `_meta.section`, and a JCS block digest excluding the whole `_meta` member.
+
 # 02 — The `.uw.md` format
 
 > **Lite/UWX transition:** human-readable Lite now uses `.uw.md`; the
 > structured format documented on this page is UW Extended Markdown and moves
 > to `.uwx.md`. Legacy structured `.uw.md` remains readable with a migration
 > warning. Lite's normative grammar is
-> [`spec/UW_LITE_SPEC_v1.md`](../../spec/UW_LITE_SPEC_v1.md). The linked
-> `UW_FORMAT_SPEC_v1.md` remains the structured specification until its
+> [`spec/UW_LITE_SPEC.md`](../../spec/UW_LITE_SPEC.md). The linked
+> `UW_FORMAT_SPEC.md` remains the structured specification until its
 > compatibility rename is completed.
 
-> Normative source: [`spec/UW_FORMAT_SPEC_v1.md`](../../spec/UW_FORMAT_SPEC_v1.md)
+> Normative source: [`spec/UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
 > (v1.1). This page is a working summary for code work; the spec is authoritative.
 > Types live in [`packages/uwmd-core/src/types.ts`](../../packages/uwmd-core/src/types.ts)
 > (see [07 — Data model reference](07-data-model-reference.md) for the type shapes).
@@ -78,7 +80,7 @@ are recognized; unknown keys are preserved.
 ## The `_meta` object (provenance)
 
 Every data block begins with `_meta` (`UWMeta`). This is the backbone of the
-provenance model (`UW_FORMAT_SPEC_v1.md` Part III). Core fields:
+provenance model (`UW_FORMAT_SPEC.md` Part III). Core fields:
 
 Field | Meaning
 ---|---
@@ -104,7 +106,7 @@ Universal optional field: every block also accepts a top-level **`_notes`** stri
 
 ## The section registry (§4.0 – §4.22)
 
-`UW_FORMAT_SPEC_v1.md` Part IV registers **23 numbered subsections**: **21
+`UW_FORMAT_SPEC.md` Part IV registers **23 numbered subsections**: **21
 standard data sections (§4.0–§4.20)** + the extension meta-spec (§4.21) + gaps
 (§4.22). "The 21 standard sections" = §4.0–§4.20.
 
@@ -162,7 +164,7 @@ by dropping superseded blocks; `diff()` compares two files section-by-section.
 
 ## Cross-section consistency (CC-NN)
 
-`UW_FORMAT_SPEC_v1.md` §5.3 defines consistency checks the validator enforces;
+`UW_FORMAT_SPEC.md` §5.3 defines consistency checks the validator enforces;
 their remediation copy lives in `BUILTIN_REMEDIATIONS` (`protocol.ts`). Examples:
 CC-01 rent-roll GPR vs operating-statement GPR (3%), CC-02 stated LTV vs
 `loan_amount / underwritten_value`, CC-03 senior loan across `sources_uses`,

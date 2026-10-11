@@ -729,6 +729,18 @@ roughly 800 files. Keep 2 → 3 → 4 separate. Phase 5 is mechanical and could
 fold into Phase 4. Keeping it separate is recommended, because renames
 dominate any diff they share.
 
+## RFC 0081 Phase 2 implementation decisions
+
+| Question | Phase 2 decision | Precedent / boundary |
+|---|---|---|
+| Final spec labels versus released implementation labels | Specs describe Format 3.0 / Protocol 4.0.0. Export SPEC_FORMAT_VERSION / SPEC_PROTOCOL_VERSION, and add them to supported sets; keep FORMAT_VERSION, PROTOCOL_VERSION and package versions unchanged. Version guards compare the spec banner to its accepted constant and retain the release matrix checks. | RFC 0081 Reference implementation phases 2, 4 and 6; invariant 6. |
+| Schema/type lockstep while the old loader remains | Export ProtocolModuleManifest with required requires_conformance and optional requires_profiles, plus ProtocolImplementationManifest with only reader/verifier. The final schemas admit no retired vocabulary. Keep runtime ModuleManifest and alias readers until Phase 4. | RFC §6 and Phase 2 requires_conformance types; Phase 4 code deletion; invariant 7. |
+| Schema checks on fixtures before Phase 3 | Test-only projections change only the named module tier and case/index bookkeeping; invalid and unknown values stay invalid. Bare-block schema checks project the existing wrapper without changing its model round-trip checks. Original corpus inputs and all existing assertions remain. Remove projections in later phases. | RFC phased ordering; no runtime compatibility, corpus re-authoring deferred to Phase 3. |
+| Hospitality dictionary/pack parity across phases | Re-path only total_room_revenue and room_revenue_per_key to rent_roll ADR/occupancy/available nights and property.keys. Parity projects only these four addresses; arithmetic, null guards, units, precision and all other definitions compare exactly. Packs and financial baselines remain unchanged in Phase 2. | Owner G3 and RFC §5 explicitly re-path dictionary in Phase 2; runtime move in Phase 4. |
+| Lone-fact group schema representation | Use dependentRequired for all-or-none terms/draw/assessment groups, and method-dependent recovery members; require at least budget or contingency. Replacement funding requires the terms group. Preserve existing field ranges and closed unions. | Owner G1; RFC §7; existing JSON Schema 2020-12 and HDG/CAPX/REC/TAX shape conventions. |
+| Historical spec links and documentation | Current links use versionless filenames; historical RFC/release sources remain byte-identical. The docs-site build rewrites old spec filenames to the new pages. One format page replaces the delta page; no retained spec files, routes or redirects. | RFC §2 / owner Q1; RFC 0025 dead-link precedent. |
+| Refusal registry staging | Register UNSUPPORTED_FORMAT_VERSION and META-01, and expose the final closed resolution vocabulary with generalized SRC-03 copy. Existing runtime emissions and their retirement remain Phase 4. | RFC Decisions and D3/D10/D11; Phase 2 new code registry, Phase 4 execution changes. |
+
 ## Alternatives considered
 
 1. **Keep the read path and drop only the write path** (readers accept

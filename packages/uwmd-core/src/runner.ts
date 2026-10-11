@@ -10,7 +10,7 @@
 // The runner uses exact line numbers from the parser to do targeted surgery.
 // Output is always a valid .uw.md string that parseUWFile can round-trip.
 //
-// Spec: UW_FORMAT_SPEC_v1.md §2.7 (update semantics), §6.3 (uwmd run)
+// Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.3 (uwmd run)
 
 import type { ParsedUWFile, UWBlock, UWMeta, PipelineStatus, UWFrontmatter } from './types.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';

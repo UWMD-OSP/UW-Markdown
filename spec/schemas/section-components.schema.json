@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/section-components.schema.json",
   "title": "UW Markdown Components Section",
-  "description": "Content payload for the `components` section (UW_FORMAT_SPEC_v1.md \u00a74.23), used only when frontmatter.asset_class is `mixed_use` (RFC 0019). A bounded map keyed by the component's own asset class; each entry states that use's own income so property NOI foots as the sum of the components. `land` is excluded by construction (its NOI model nets negative). This schema enforces the structural rules \u2014 admissible keys, key equals component_class, required NOI, no component-level debt. The cross-field rules the validator adds are: at least two components present, allocation_pct summing to 1.0, the section appearing only under mixed_use (CC-11), and property NOI equalling the component NOI sum (CC-12).",
+  "description": "Content payload for the `components` section (UW_FORMAT_SPEC.md \u00a74.23), used only when frontmatter.asset_class is `mixed_use` (RFC 0019). A bounded map keyed by the component's own asset class; each entry states that use's own income so property NOI foots as the sum of the components. `land` is excluded by construction (its NOI model nets negative). This schema enforces the structural rules \u2014 admissible keys, key equals component_class, required NOI, no component-level debt. The cross-field rules the validator adds are: at least two components present, allocation_pct summing to 1.0, the section appearing only under mixed_use (CC-11), and property NOI equalling the component NOI sum (CC-12).",
   "type": "object",
   "additionalProperties": false,
   "properties": {

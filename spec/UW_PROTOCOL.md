@@ -1,12 +1,8 @@
 # UW Protocol — verification
 
-**Status:** Stable — protocol **3.0.0**  ·  **Format pairing:** authors format **2.1** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads 2.0 and the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Accepted — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
 
-> **Protocol 3.0.** This text carries the Protocol 3.0.0 conformance model
-> accepted in [RFC 0078](../docs/rfcs/0078-protocol-is-verification.md): the
-> standard is verification, and the starter products moved to a non-normative
-> [starter products guide](../docs/starter/README.md). The file keeps the name
-> `UW_PROTOCOL_v1.md` through 3.0 so links do not break (RFC 0078 D12).
+> **Protocol 4.0.0.** Accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md). The implementation is staged through Phases 2–6; release labels move in Phase 6. This normative text describes the single final contract, with no alternate versions or spellings.
 
 This document specifies how any party **verifies** a UW Markdown
 document: that it is well formed, that its stated figures agree with
@@ -60,20 +56,15 @@ claims.
 | Sensitivity | `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). |
 | Stochastic | `stochastic` | Reproduce stated seeded distributions (§VIII.8). |
 
-Protocol 2.x defined four cumulative tiers: Reader, Editor, Calc Host
-and Agent Host. They are retired. Editing and AI-agent hosting are
-starter products, outside the Protocol. §II.5 maps the legacy tier
-values, which stay readable during 3.x.
+Editing and AI-agent hosting are starter products, outside the Protocol. Conformance claims use only Reader and Verifier and the six profiles above.
 
 ### 0.3 Semantic versioning
 
 Three independent semvers are tracked:
 
-- **Format version** (`uw_version` in frontmatter, currently `2.1` for
-  authoring; `2.0`, `1.0` and `1.1` are still read — see
-  `SUPPORTED_FORMAT_VERSIONS`)
+- **Format version** (`uw_version` in frontmatter, currently `3.0`, the only admitted version)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `3.0.0`) — the
+- **Protocol version** (this document, currently `4.0.0`) — the
   verification contract. Bumped on any normative change to required
   behavior. From 3.0.0 it moves only when what a document *means* or
   how it is *verified* changes. Starter-product changes version their
@@ -137,8 +128,7 @@ them.
 
 ### I.2 What this document does not specify
 
-- The bytes-on-disk format. See [`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)
-  and [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md).
+- The bytes-on-disk format. See [`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md).
 - **The starter products.** How a tool produces, edits, displays,
   computes or projects a document is not part of the standard: display
   conventions and locales, view models, byte-preserving round trips,
@@ -214,10 +204,9 @@ The reference functions are `negotiateRepresentation` and
 
 ## II. Capability Tiers
 
-Protocol 3.0 has two conformance tiers, Reader and Verifier, and a
+Protocol 4.0.0 has two conformance tiers, Reader and Verifier, and a
 Verifier satisfies every Reader requirement. Optional verification
-profiles (§II.3) add to either tier. The four Protocol 2.x tiers are
-retired; §II.5 says how their manifest values are read.
+profiles (§II.3) add to either tier. Only reader and verifier tier values are admitted; §II.5 says how their manifest values are read.
 
 <a id="ii1-tier-1--reader"></a>
 
@@ -257,7 +246,7 @@ which needs an edit engine. A read-only reader could not satisfy it.
 A Verifier MUST satisfy all Reader requirements, and additionally:
 
 1. Claim `validate` and apply the Format validation rules (format spec
-   v1 Part V, as amended for 2.0 files by the v2 delta) to every
+   Format 3.0 Part V) to every
    document it verifies, emitting only registered codes (§III.6a).
 2. Reproduce the standard's metric definitions. For each metric the
    standard defines, reproduce its quantized value (§VIII.5) from the
@@ -265,18 +254,14 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
    value that disagrees after quantization is a verification failure.
    A metric whose inputs are absent is `unverifiable`, not failed. The
    definitions are written in the expression notation of
-   §VIII.1–VIII.3. The normative metric dictionary that holds them
-   (RFC 0078 §3) is added by a later revision of this document before
-   Protocol 3.0.0 is released. Until then the only definitions are the
-   reference implementation's builtin calc packs, which that revision
-   extracts into the dictionary with no change in meaning.
+   §VIII.1–VIII.3 and published in the normative [metric dictionary](metrics/README.md), including class-scoped formulas, input paths, minimum stated precision, round_to and null semantics.
 3. Implement the stated-figure verifiers and apply them to the figures
    a document states: calendar-anchored cash flows, including the IRR
    procedure (§VIII.9); property cash-flow assembly (§VIII.9.6);
    distribution waterfalls (§VIII.10); property reserve accounts
    (§VIII.11); reserve draw bindings (§VIII.12); and
    replacement-funding bindings (§V.12).
-4. Verify receipts as [`UW_RECEIPT_v1`](UW_RECEIPT_v1.md)
+4. Verify receipts as [`UW_RECEIPT`](UW_RECEIPT.md)
    specifies.
 5. Be deterministic (§VIII.4) and follow the numeric model (§VIII.5):
    the same document and inputs MUST produce the same verdict and the
@@ -348,23 +333,7 @@ A partial claim is **checkable**, not merely declarative: conformance
 cases carry the capabilities they require (§II.6a.5), so a claim can be
 run rather than believed.
 
-**The Protocol 2.x tiers.** Protocol 2.x defined four cumulative tiers
-(`tier-1-reader`, `tier-2-editor`, `tier-3-calc-host`,
-`tier-4-agent-host`). They are retired. During Protocol 3.x a manifest
-carrying one of them stays valid, is deprecated, and is read as below.
-A consumer reading a legacy value SHOULD report that it is deprecated.
-
-| Legacy `tier` | Read as | Note |
-|---|---|---|
-| `tier-1-reader` | `reader` | — |
-| `tier-2-editor` | `reader` | The editing claim becomes a non-normative starter-product claim. |
-| `tier-3-calc-host` | `verifier` | An implementation that also evaluates module calculations claims the `module` profile. |
-| `tier-4-agent-host` | `verifier` | Protocol 2.x Tier 4 included Tier 3's calc engine, so it reads as a verifier; the agent-host claim becomes a non-normative starter-product claim. |
-
-The mapping does not infer profiles. A legacy manifest that wants a
-profile recognized declares it in `profiles`. A module's
-`requires_tier` keeps the legacy vocabulary; §VII.4 says how a host
-reads it.
+Conformance tier values are only reader and verifier. No legacy value or numeric alias is admitted; modules declare requires_conformance and optional requires_profiles (§VII.4).
 
 ### II.6 Self-certification
 
@@ -379,7 +348,7 @@ the corpus" without that list does not identify what was run.
 Directory membership is **not** a normative signal. Each case is tagged
 with exactly one owner in [`conformance/corpus-index.json`](../conformance/corpus-index.json):
 `reader`, `verifier`, one of the six profiles, or `starter-products`.
-Legacy fixture paths are retained for compatibility; their names do not
+Directories are named by content (§Appendix C); their names do not
 make editor, agent, rendering, default/cascade, projection or refinement
 checks part of the standard. Starter checks remain in CI under
 [`docs/starter/`](../docs/starter/README.md) ownership and are reported
@@ -459,8 +428,8 @@ implementation that omits one validation issue has not been concise; it
 has disagreed.
 
 Values that differ legitimately between two correct runs —
-`last_modified`, `_meta.timestamp`, the fence `ts=`, and `content_hash`,
-which is computed over a timestamp — are masked before comparison. A
+`last_modified`, `_meta.provenance.timestamp`, the fence `ts=`, and `content_hash`,
+which changes with the authored payload — are masked before comparison. A
 baseline that pinned any of them would be asserting the clock.
 `parent_hash` is **not** masked: it is stamped from the prior head's
 `content_hash`, which the fixture fixes.
@@ -471,8 +440,7 @@ Each generated portable case MUST carry exactly one `target`: `reader`,
 `verifier`, `module`, `integrity`, `representations`, `portfolio`,
 `sensitivity`, `stochastic`, or `starter-products`. The closed vocabulary
 is mirrored by [`conformance-case.schema.json`](schemas/conformance-case.schema.json)
-and `ConformanceTarget` in `protocol.ts`. `legacy_id` preserves its old
-case address for migration reconciliation. Directory and id prefixes do
+and `ConformanceTarget` in `protocol.ts`.  Directory and id prefixes do
 not determine conformance. The reference ownership index is checked for
 missing, duplicated and unclassified results; generating portable cases
 also checks its exhaustive case identities.
@@ -481,12 +449,7 @@ The reference runner and the [portable driver](../conformance/runner/README.md)
 select `--tier reader` or `--tier verifier` (which includes Reader),
 `--profile <name,...>`, and `--starter-products`. With no selector they run
 all their cases and report counts by target, keeping starter checks
-separate. Profile selection does not imply another profile. Legacy tier
-names are accepted through `readConformanceTier` with a deprecation notice
-on stderr; numeric shorts `1`–`4` first expand to their corresponding
-legacy names. No profile or product check is inferred from an alias.
-The Python driver reads the generated `tier-readings.json` mirror of that
-helper, so it needs no TypeScript runtime.
+separate. Profile selection does not imply another profile. `--tier` accepts only reader or verifier; any other value is a usage error. No numeric shortcuts or suite aliases are admitted.
 
 Profile cases without an explicit manifest profile claim are reported
 `unverifiable` (§II.3), never passed or failed. Capability skips (§II.6a.5)
@@ -499,11 +462,9 @@ reference runner also checks multi-step contracts, receipt verification,
 integrity, representations and other cross-fixture invariants. Passing
 only the portable subset is not a claim about omitted checks. Existing
 fixture-family selections remain available in the reference runner via
-`--suite=<family>`; old named `--tier=<family>` selectors warn and resolve
-to that suite. Baseline updates require a full run or `--suite`, because
+`--suite=<family>`. Baseline updates require a full run or `--suite`, because
 target filtering inside a mixed suite must not overwrite unselected
-baselines. A family includes its child suites (`3-refinement` under `3`,
-`4-profile` under `4`); updates selecting only a child suite are refused.
+baselines. A family includes its child suites; updates selecting only a child suite are refused.
 
 #### II.6a.5 Required capabilities and skips
 
@@ -536,7 +497,6 @@ Example:
 {
   "id": "starter-products/tier-2/section-supersede-risk-rating",
   "target": "starter-products",
-  "legacy_id": "tier-2/section-supersede-risk-rating",
   "requires_capabilities": ["edit-supersede"],
   "command": "edit",
   "args": ["before.uw.md", "operation.json", "--json"]
@@ -589,23 +549,17 @@ corpus is not the place to add one silently.
 
 ---
 
-## III. Display Conventions
+## III. Currency and Validator Codes
 
 Display is starter-product guidance (RFC 0078 D11): verification is
 defined over values, and display strings carry no meaning. The display
 conventions moved to the non-normative
-[starter products guide](../docs/starter/display.md). Two sections stay
+[starter products guide](../docs/starter/README.md). Two sections stay
 normative here because they are not display: §III.1b, document currency
 identity, is format semantics, and §III.6a, the validator code
 taxonomy, belongs to the error taxonomy (Part XI).
 
-### III.1 Number formatting
 
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii1-number-formatting) (RFC 0078). Not part of the standard.*
-
-### III.1a Display locales (RFC 0001)
-
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii1a-display-locales-rfc-0001) (RFC 0078). Not part of the standard.*
 
 ### III.1b Document currency identity (RFC 0046)
 
@@ -622,25 +576,10 @@ calculation. This first tranche supports one currency per document only;
 per-value identity, FX, and mixed-currency arithmetic require a future
 additive money representation.
 
-### III.2 Date/time
 
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii2-datetime) (RFC 0078). Not part of the standard.*
 
-### III.3 Section display hierarchy
 
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii3-section-display-hierarchy) (RFC 0078). Not part of the standard.*
 
-### III.4 Badge system
-
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii4-badge-system) (RFC 0078). Not part of the standard.*
-
-### III.5 Supersede UX
-
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii5-supersede-ux) (RFC 0078). Not part of the standard.*
-
-### III.6 Validation issue display
-
-*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii6-validation-issue-display) (RFC 0078). Not part of the standard.*
 
 ### III.6a Validator code taxonomy
 
@@ -673,25 +612,26 @@ capability is unconditional: every implementation owes it.
 | `HDG-NN` | RFC 0070 adds HDG-07/08/10 structural funding rules and HDG-09 solely for async digest mismatch. Interest-rate hedges — cap strike, notional, term and post-expiration assumption (format §4.7, RFC 0056). `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`. | `validate` | `error` |
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
-| `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `REC-10` warning; otherwise `error` |
+| `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
 | `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `calc-evaluate` | `error` |
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape (`META-01`, RFC 0081). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
-| `CLS-NN` | Official builtin identity compatibility and field contracts (RFC 0080). | `validate` | warning / info / error |
+| `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
 | `CC-DC-NN` | Data-center class rules (Format §4.29–31). | `validate` | warning / error |
 | `CC-MH-NN` | Manufactured-housing class rules. | `validate` | error |
 | `CC-HOSP-NN` | Hospitality class rules. | `validate` | warning / error |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
-| `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
+| `SRC-NN` | Actor grammar and closed resolution vocabulary (Format §2.6). | `validate` | `error` |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |
 | `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, §XIV, starter guide). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
 | `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (format Appendix D). | `parse` | `error` |
+| `UNSUPPORTED_FORMAT_VERSION` | Absent or non-3.0 document version (RFC 0081). | `parse` | `error` |
 | `PROTO-*` | Protocol-level refusal — a malformed request. | *(none)* | `error` |
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
 
@@ -712,27 +652,13 @@ selections; role-free results remain unchanged. `ROLE-01` is a structural
 error in every active block with an invalid scalar `_role`. This annotation
 is included in the existing content hash; `_meta.role` is not an alias.
 
-`FV_*` with an underscore was the v1.0 spelling and was renamed to
-`FV-NN` in v1.1. `META_*` (underscore) is the **provenance-completeness
-family** and is live: the reference validator emits exactly three codes
-— `META_MISSING` (no `_meta` object), `META_FIELD_MISSING_<FIELD>` (a
-required `_meta` field absent; `<FIELD>` ranges over `SECTION`,
-`VERSION`, `SOURCE`, `TIMESTAMP`, `CONFIDENCE`), and
-`META_LOW_CONFIDENCE_NO_REVIEW_FLAG` (`info`: low confidence without
-`human_review_required`) — and the tier-1 conformance baselines pin
-them. A prior revision of this table declared the family retired on the
-claim that it was "specified and never emitted" and that `DQ-NN`
-covered its conditions; both halves of that claim were false (the
-`DQ-NN` sequence polices incomplete *data*, not incomplete
-*provenance*), and a conforming implementation was left choosing
-between the spec's prose and the corpus's baselines. The corpus was
-right. The hyphenated `META-*` family (RFC 0009) is a separate concern
-under the same registry prefix — it polices which `_meta` *shape* a
-file's `uw_version` admits, not provenance completeness.
+`FV-NN` is the financial-validity vocabulary; no legacy_code is emitted. `META_*` (underscore) is provenance completeness: META_MISSING, META_FIELD_MISSING_<FIELD>, and META_LOW_CONFIDENCE_NO_REVIEW_FLAG. The separate hyphenated META-01 rejects a non-Format-3.0 block shape. SOURCE_CONTENT_MISMATCH rejects structured fences under .uw.md; UNSUPPORTED_FORMAT_VERSION rejects absent or non-3.0 frontmatter.
+
+Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
 RFC 0072 extends the existing data-quality sequence with `DQ-07`
 (scenario structure/vocabulary), `DQ-08` (BTR subtype carrier disagreement)
-and `DQ-09` (BTR class scope), all **warning** in both format generations.
+and `DQ-09` (BTR class scope), all **warning**.
 Their rules live in Format §2.2b/c and §5.4; they introduce no calculation,
 default-selection or underwriting procedure. Their canonical copy is in
 `BUILTIN_REMEDIATIONS`; the remediation schema already admits these entries.
@@ -767,21 +693,9 @@ issues" toggle while always surfacing `CC-NN` and `FV-NN` inline.
 
 ---
 
-## IV. View Models
 
-*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv-view-models) (RFC 0078). Not part of the standard.*
 
-### IV.1 SectionViewModel
 
-*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv1-sectionviewmodel) (RFC 0078). Not part of the standard.*
-
-### IV.2 BUILTIN_VIEW_MODELS
-
-*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv2-builtin_view_models) (RFC 0078). Not part of the standard.*
-
-### IV.3 Composition
-
-*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv3-composition) (RFC 0078). Not part of the standard.*
 
 ---
 
@@ -809,9 +723,6 @@ field from model output. Agent writing preserves an existing role and strips
 invented roles on new blocks. Hashing and signature verification cover this
 annotation through the existing content path, without new exclusions.
 
-### V.1 Round-trip preservation
-
-*Moved to the non-normative [starter products guide](../docs/starter/editing.md#v1-round-trip-preservation) (RFC 0078). Not part of the standard.*
 
 ### V.2 Replace vs supersede
 
@@ -824,7 +735,7 @@ annotation through the existing content path, without new exclusions.
 
 ### V.3 Source authority
 
-`_meta.source` is **actor-only** (RFC 0031): `manual`, or
+`_meta.provenance.source` is **actor-only** (RFC 0031): `manual`, or
 `<namespace>/<id>` where the namespace is one of the closed set
 `agent | document | system | institution` (runtime registry
 `ACTOR_NAMESPACES`) and `<id>` matches `[A-Za-z0-9][A-Za-z0-9._-]*`.
@@ -833,7 +744,7 @@ belong in `_meta.resolution` (the fallback cascade,
 [starter guide §V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)).
 
 `BUILTIN_EDIT_POLICIES` (`protocol.ts`) establishes the default policy
-for each `_meta.source` pattern:
+for each `_meta.provenance.source` pattern:
 
 - `agent/*` → `either` authority, `supersede_on_edit: true`.
 - `manual` → `either` authority, `supersede_on_edit: false`.
@@ -876,7 +787,7 @@ On every write, the host MUST set:
   version (or 1 for a new section).
 - `_meta.superseded` — `false` on the new block; `true` on the prior
   block when superseding.
-- `_meta.source` — the actor:
+- `_meta.provenance.source` — the actor:
   `manual | agent/<id> | document/<id> | system/<id> | institution/<id>`,
   with `<id>` matching `[A-Za-z0-9][A-Za-z0-9._-]*` (format spec §2.6;
   RFC 0031). This is the grammar a producer is bound to — nothing
@@ -885,83 +796,27 @@ On every write, the host MUST set:
   how the value was resolved (e.g. a step of the starter fallback
   cascade, [§V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)), when the
   host knows it.
-- `_meta.timestamp` — current ISO-8601 UTC timestamp.
-- `_meta.actor` — human or system identifier of the writer.
+- `_meta.provenance.timestamp` — current ISO-8601 UTC timestamp.
+- `_meta.provenance.actor` — human or system identifier of the writer.
 - `_meta.agent_id`, `_meta.agent_version` — populated for agent
   writes; null otherwise.
 
-### V.5 Multi-variant edits
 
-*Moved to the non-normative [starter products guide](../docs/starter/editing.md#v5-multi-variant-edits) (RFC 0078). Not part of the standard.*
 
-### V.6 Frontmatter update rules
 
-*Moved to the non-normative [starter products guide](../docs/starter/editing.md#v6-frontmatter-update-rules) (RFC 0078). Not part of the standard.*
 
-### V.7 Fallback cascade
-
-*Moved to the non-normative [starter products guide](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade) (RFC 0078). Not part of the standard.*
-
-#### V.7.1 Inherited assumptions
-
-*Moved to the non-normative [starter products guide](../docs/starter/defaults-and-cascade.md#v71-inherited-assumptions) (RFC 0078). Not part of the standard.*
-
-### V.8 Asset-class default tables
-
-*Moved to the non-normative [starter products guide](../docs/starter/defaults-and-cascade.md#v8-asset-class-default-tables) (RFC 0078). Not part of the standard.*
 
 ### V.9 Canonical block JSON
 
-The `_meta.content_hash` of a block is the SHA-256 hash of the
-**canonical JSON serialization** of the block's content (the JSON
-object inside the fence, exclusive of the fence annotation line and
-exclusive of `_meta.content_hash` and `_meta.signature` themselves).
+`_meta.integrity.content_hash` is lowercase hexadecimal SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the fenced block object with its `_meta` member removed. Every other member is included: all payload fields, `_role`, `_overrides` and `_notes` when present. A payload member named `content` is ordinary content; no wrapper is interpreted. Nothing else is stripped or defaulted. The existing `canonicalizeExact` is the reference serializer.
 
-The canonical form is **RFC 8785 (JCS — JSON Canonicalization
-Scheme)** with one uw-md addition: the keys `content_hash` and
-`signature` inside any nested `_meta`-shaped object are removed
-before hashing. A `_meta`-shaped object is any object that carries
-`version`, `source`, AND either `section` or `section_id` — this
-catches both the top-level `_meta` (whose on-disk spelling is
-`section_id`) and any nested provenance (e.g. inside
-`field_overrides`).
+Implementations MUST produce byte-identical canonical output: object keys sort by UTF-16 code-unit comparison, strings escape under RFC 8785, finite numbers use ECMAScript ToString (`-0` becomes `0`), array order is preserved and no whitespace is emitted. This block rule does not replace generic canonicalization used for receipts and other non-block digests.
 
-Implementations MUST produce **byte-identical** canonical output
-across platforms. Specifically:
-
-- Object keys are sorted by code-unit comparison (RFC 8785 §3.2.3).
-- Strings are JSON-escaped per RFC 8785 §3.2.2.
-- Numbers serialize per ECMAScript ToString (RFC 8785 §3.2.2.3),
-  with `-0` rendered as `0` and non-finite numbers rejected
-  (canonical JSON has no representation for `Infinity` or `NaN`).
-- `undefined` values inside objects are dropped (mirroring
-  `JSON.stringify`).
-
-The reference library's implementation is in
-`@uwmd/core/integrity-canonical`; it is dependency-free and ~120
-lines.
-
-**Canonicalization is versioned by the file's `uw_version` (RFC 0009).**
-The rule above is the **v1 rule** and is frozen for the life of the
-format: no digest stamped in a `uw_version: "1.x"` file is ever
-invalidated by a later canonicalization change. Files declaring
-`uw_version: "2.0"` or later use **canonicalization v2** —
-normalize-then-hash: the block content is first reshaped to the
-canonical nested `_meta` form (the RFC 0009 shim, including the
-`field_overrides` → `_overrides` lift), then `integrity.content_hash`,
-`integrity.signature`, and a defaulted (`'sha256'`) `integrity.algorithm`
-are removed, then RFC 8785 serialization applies with the same
-byte-identity requirements. Because normalization runs first, the two
-`_meta` shapes a dual-shape parser accepts yield **identical digests**
-for semantically identical blocks. Migration between the versions
-re-stamps every hash (`uwmd migrate --to-v2`); signatures commit to the
-v1 digest and do not survive it — the migrating tool MUST refuse signed
-blocks unless explicitly told to re-sign or strip
-(RFC 0009 § Canonicalization).
+Metadata-only edits leave content_hash unchanged. The signature input remains content_hash, section, actor, timestamp, kid and signed_at (§V.11), so signatures bind author and time to content. They do not transitively bind parent_hash. Chain verification still compares parent_hash with the predecessor content_hash.
 
 ### V.10 Block integrity (content_hash + parent_hash chains)
 
-Two optional `_meta` fields make supersede chains tamper-evident:
+Two optional `_meta.integrity` fields make supersede chains tamper-evident:
 
 - `content_hash` — the canonical-JSON SHA-256 of the block (§V.9).
 - `parent_hash` — the `content_hash` of the block this one
@@ -994,7 +849,7 @@ SHA-256 is async); the sync `applyEdit` performs only the INT-02
 mismatch check.
 
 **Provenance verification (`verifyProvenance`).** Cross-checks
-`_meta.actor` and the operation that produced the block against the
+`_meta.provenance.actor` and the operation that produced the block against the
 section's `EditPolicy`:
 
 - `POL-01 error` — actor not authorized for the policy authority
@@ -1015,9 +870,9 @@ requires one reports its absence.
 
 ### V.11 Block signatures (RFC 0010)
 
-`_meta.content_hash` is tamper-**evident**, not tamper-**proof**: it
+`_meta.integrity.content_hash` is tamper-**evident**, not tamper-**proof**: it
 detects a change only for a reader who already holds a trusted copy
-of the hash. `_meta.signature` closes that gap for the deployments
+of the hash. `_meta.integrity.signature` closes that gap for the deployments
 that need it — regulated lender data rooms, multi-party deal flow
 where sponsor, lender, and appraiser each sign their own sections,
 and agent-host accountability where a signature proves *which* agent
@@ -1032,21 +887,21 @@ live in the separate optional `@uwmd/signing` package.
 
 #### V.11.1 Wire format
 
-`_meta.signature` is an object:
+`_meta.integrity.signature` is an object:
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `alg` | `"ed25519"` \| `"es256"` \| `"es384"` | yes | Signature algorithm. Closed set for protocol 1.x. |
+| `alg` | `"ed25519"` \| `"es256"` \| `"es384"` | yes | Signature algorithm. Closed signature algorithm set. |
 | `kid` | string | yes | Opaque key identifier the verifier resolves in its own key store. |
 | `sig` | string | yes | Signature bytes, base64url (RFC 4648 §5), unpadded. |
-| `signed_at` | string | yes | ISO 8601 instant the signature was produced. MAY differ from `_meta.timestamp` — a block edited offline is signed when re-uploaded. |
+| `signed_at` | string | yes | ISO 8601 instant the signature was produced. MAY differ from `_meta.provenance.timestamp` — a block edited offline is signed when re-uploaded. |
 | `v` | string | no | Signing-protocol version. Absent means `"1"`. |
 
 `es256` and `es384` signatures are raw `r || s` (IEEE P1363), the
 JOSE convention and what Web Crypto produces. DER-wrapped ECDSA
 signatures are **not** interchangeable and MUST NOT be emitted.
 
-Like `content_hash`, `signature` is excluded from canonicalization
+The entire `_meta` member, including `content_hash` and `signature`, is excluded from block canonicalization
 (§V.9), so stamping one does not change the hash it commits to.
 
 #### V.11.2 What is signed
@@ -1056,12 +911,12 @@ six fields, and nothing else:
 
 ```json
 {
-  "actor": "<_meta.actor>",
-  "content_hash": "<_meta.content_hash>",
+  "actor": "<_meta.provenance.actor>",
+  "content_hash": "<_meta.integrity.content_hash>",
   "kid": "<signature.kid>",
   "section": "<the block's section id>",
   "signed_at": "<signature.signed_at>",
-  "timestamp": "<_meta.timestamp>"
+  "timestamp": "<_meta.provenance.timestamp>"
 }
 ```
 
@@ -1144,7 +999,7 @@ stay verifiable for as long as the store retains it.
 
 `signed_at` is self-asserted by the signer. Audit-grade
 non-repudiation needs a timestamping authority's countersignature,
-which protocol 1.x does not define.
+which this protocol does not define.
 
 #### V.11.5 Capability declaration
 
@@ -1156,6 +1011,8 @@ does not claim `signing` skips the suite and remains conformant.
 ---
 
 ### V.12 Replacement-funding binding verification (RFC 0070)
+
+This procedure and HDG-06–10 apply only when the all-or-none hedge terms group is stated (Format §4.7, RFC 0081 G1). A strike-only hedge states no replacement-selection claim; replacement_funding requires the terms group.
 
 Released in Protocol 2.21.0 (RFC 0070). Synchronous validateUWFile
 retains its result shape. CLI complete validation exits nonzero for structural
@@ -1274,7 +1131,7 @@ rule. Lack of hashing is not a structural error.
 
 | Phase | Condition | Exact finding/result |
 |---|---|---|
-| Sync | Escrow branch (legacy absent/null funding or explicit escrow) lacks the named replacement escrow, including missing sources/uses | ESC-04. This includes the RFC 0056 coverage-defect regression. |
+| Sync | Escrow branch (absent/null funding or explicit escrow) lacks the named replacement escrow, including missing sources/uses | ESC-04. This includes the RFC 0056 coverage-defect regression. |
 | Sync | Named replacement escrow without `replace`, or alongside outright mode, even if zero funded | ESC-04. Preserve existing ESC-01/02/03 for invalid escrow data. |
 | Sync | Non-null funding object has illegal shape/mode, unknown members, missing required union members, reference under escrow, or is stated without `replace` | HDG-07. Missing `cash_flow_ref` or one of its required members is a shape failure; an authored member with invalid type/value is checked by HDG-08. |
 | Sync | Exact cash variant missing/wrong/superseded, required section selection ambiguous/unresolvable, invalid/out-of-range index, malformed digest value, or illegal selected row/series structure | HDG-08. Preserve applicable existing CF findings. Never use fallback selection. |
@@ -1288,14 +1145,14 @@ rule. Lack of hashing is not a structural error.
 | Async | Supported hash provider cannot perform the check | `unverifiable`, reason `crypto_unavailable`; no fabricated HDG-09 and no new structural error. |
 | Consumer | Outright verifier not invoked | `not_checked`, reason `not_invoked`; cannot claim complete success. |
 | Consumer | Outright structurally valid but verification `failed`, `unverifiable` or `not_checked` | Complete claim refuses, independently of the synchronous `ValidationResult` status. |
-| Async | No outright binding is applicable and funding structure is lawful | `not_checked`, reason `not_applicable`; legacy funding relies on synchronous RFC 0056 checks. |
+| Async | No outright binding is applicable and funding structure is lawful | `not_checked`, reason `not_applicable`; escrow funding relies on synchronous RFC 0056 checks. |
 
 Initial-premium/use agreement remains unchanged. The successor payment does not
 become part of `premium` or `uses.rate_cap_cost`.
 
 Within a selected funding object, check shape/assumption first, selection and
 reference next, then series structure and payment semantics. Stop that binding's
-deeper checks when prerequisites are invalid; retain independent legacy/CF/CUR
+deeper checks when prerequisites are invalid; retain independent shape/CF/CUR
 errors. HDG-07 never creates a successful alternate funding path. ESC-04
 independently reports applicable escrow conflict/absence; a well-formed outright
 branch is exempt from **escrow-absence** ESC-04 but must pass its own HDG rules.
@@ -1460,7 +1317,7 @@ Module profile reports them `unverifiable`, never wrong.
 
 A `.uw.institution.json` sidecar (format spec Appendix C.6) overrides
 threshold defaults. Implementations MUST apply the institution config
-to validation but MUST NOT apply it to display formatting in v1
+to validation but MUST NOT apply it to display formatting in display
 (locale is frozen).
 
 ---
@@ -1470,7 +1327,7 @@ to validation but MUST NOT apply it to display formatting in v1
 ### VII.1 What a module is
 
 A module is a declarative manifest (see §X) plus optional supporting
-files. Modules in v1 contain no executable code; all dynamic behavior
+files. Modules contain no executable code; all dynamic behavior
 is expressed via the safe-expression language (§VIII).
 
 ### VII.2 Lifecycle
@@ -1479,7 +1336,7 @@ is expressed via the safe-expression language (§VIII).
 2. Host validates against
    `spec/schemas/module-manifest.schema.json`.
 3. Host checks `requires_protocol` and `requires_format` against its
-   own versions. If incompatible, refuse with `ProtocolError`
+   single Format 3.0 and Protocol 4.0.0 values. If incompatible, refuse with `ProtocolError`
    category `module`.
 4. Host registers the module's sections, calculations, validations,
    thresholds, view models, and agent layers.
@@ -1568,18 +1425,11 @@ refused as a whole. `conformance/modules/registry/` pins these rules.
 
 ### VII.4 Capability negotiation
 
-A module's `requires_tier` declares the minimum host tier. Module
-manifests keep the Protocol 2.x tier vocabulary: RFC 0078 changes no
-module manifest. A host reads the value through the §II.5 mapping, with
-one addition: a module whose `requires_tier` is `tier-3-calc-host` or
-higher carries calculations the host must evaluate, so a host that does
-not claim the Module profile MUST refuse to load it. A module requiring
-`tier-4-agent-host` also contributes agent layers, which only a starter
-agent host runs (starter guide §IX).
+A manifest MUST declare `requires_conformance: "reader" | "verifier"` and MAY declare `requires_profiles`, an array of unique members of the closed profile list (§II.3). Reader < Verifier. Absent profiles means none. An invalid tier or unknown profile is `PROTO-MOD-006`; a host below the tier or lacking a required profile is `PROTO-MOD-029`. `requires_tier` is not admitted.
+
+A module declaring calculations SHOULD require Verifier plus the module profile; this recommendation adds no new refusal. Builtin packs declare Verifier with no profiles. Reference LoadModuleOptions uses hostConformance (default verifier) and hostProfiles (default the reference ImplementationManifest profiles).
 
 ---
-
-<a id="viii-calc-engine-contract-tier-3"></a>
 
 ## VIII. Calc Engine Contract
 
@@ -1798,13 +1648,7 @@ Existing LU/CF/WF structural and financial rules remain unchanged. These new
 diagnostics may expose missing period identities in older files; do not fabricate
 years or dates to clear them.
 
-### VIII.2b Stated period inputs in refinement (RFC 0042)
 
-*Moved to the non-normative [starter products guide](../docs/starter/refinement-and-workbooks.md#viii2b-stated-period-inputs-in-refinement-rfc-0042) (RFC 0078). Not part of the standard.*
-
-### VIII.2c Contextual workbook bindings (RFC 0043)
-
-*Moved to the non-normative [starter products guide](../docs/starter/refinement-and-workbooks.md#viii2c-contextual-workbook-bindings-rfc-0043) (RFC 0078). Not part of the standard.*
 
 ### VIII.3 Built-in functions
 
@@ -1933,7 +1777,7 @@ reference emitter already refuses `avg` and `coalesce` (`EXCEL-EMIT-FN`).
 
 A module that calls `is_calendar_date` is subject to the protocol floor in §X.
 
-`xirr` and day-count conventions remain deferred to v2.
+Calendar-anchored `xirr` and day counts are specified in §VIII.9.
 
 ### VIII.4 Determinism
 
@@ -1950,7 +1794,7 @@ Evaluation and reporting are separate concerns, and this section fixes
 the boundary between them. Without it, two conforming hosts agree on
 every arithmetic step and still disagree in the last unit in the last
 place — which is invisible to a tolerant comparison and fatal to a
-digest. UW Receipts (`UW_RECEIPT_v1.md`) hash calc outputs, so an
+digest. UW Receipts (`UW_RECEIPT.md`) hash calc outputs, so an
 unstated precision is an unstated interoperability contract.
 
 **Evaluation.** A host MUST evaluate expressions in IEEE 754 binary64
@@ -2435,7 +2279,7 @@ one that does not MUST report a typed refusal rather than crash.
 registered `day_count`, and non-empty `cash_dates: [{ period, date }]`; other
 plan or mapping fields MUST be refused. Selection MUST use the exact variant
 (including eligible component roles), with no base/default fallback. Flat and
-Format 2.0 wrapped section payloads use the existing period-selection contract.
+Format 3.0 bare section payloads use the period-selection contract.
 
 The selected schedule MUST satisfy RFC 0008 LU-01/02/03 structural rules and
 `verifyLeaseUpSchedule(schedule, leaseUpContext(parsed))` MUST return `verified`.
@@ -3189,41 +3033,14 @@ net expenditure or assemble financing.
 
 ---
 
-## IX. AI Host Contract (Tier 4)
 
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix-ai-host-contract-tier-4) (RFC 0078). Not part of the standard.*
 
-### IX.1 Layer DAG
 
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix1-layer-dag) (RFC 0078). Not part of the standard.*
 
-### IX.2 Context bundling
 
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix2-context-bundling) (RFC 0078). Not part of the standard.*
 
-### IX.3 Tool schemas
 
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix3-tool-schemas) (RFC 0078). Not part of the standard.*
 
-### IX.4 _meta substitution
-
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix4-_meta-substitution) (RFC 0078). Not part of the standard.*
-
-### IX.5 Pipeline log
-
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix5-pipeline-log) (RFC 0078). Not part of the standard.*
-
-### IX.6 Shape assertions for tests
-
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix6-shape-assertions-for-tests) (RFC 0078). Not part of the standard.*
-
-### IX.7 Context Profiles
-
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix7-context-profiles) (RFC 0078). Not part of the standard.*
-
-### IX.8 Layer-declared profile consumption
-
-*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix8-layer-declared-profile-consumption) (RFC 0078). Not part of the standard.*
 
 ---
 
@@ -3234,9 +3051,9 @@ The canonical schema is
 Implementations MAY validate manifests with any compliant JSON Schema
 2020-12 validator (`ajv`, `Validator`, `jsonschema`, etc.).
 
-Required fields: `manifest_version` (always `"1"` in v1), `id`, `name`,
+Required fields: `manifest_version` (always `"1"`), `id`, `name`,
 `version`, `description`, `authors`, `license`, `requires_protocol`,
-`requires_format`, `requires_tier`.
+`requires_format`, `requires_conformance`. `requires_profiles` is optional. Both ranges MUST be satisfied by the single admitted Format 3.0 and Protocol 4.0.0 values.
 
 Optional fields are documented in the schema. The TypeScript mirror
 type `ModuleManifest` in `protocol.ts` is kept in lockstep.
@@ -3272,55 +3089,14 @@ nothing. A host that loads modules:
   than silently skipping it. A skipped rule is a rule its author believes
   is protecting them.
 
-**Protocol floor for `is_calendar_date` (RFC 0071).** A module manifest
-whose `calculations[].formula` or `validations[].rule` calls
-`is_calendar_date` anywhere in its expression **MUST** declare a
-`requires_protocol` range that excludes every Protocol version in which
-`is_calendar_date` is unavailable. That is, the range must require a Protocol
-version at or above the first release that contains RFC 0071, and no earlier
-version may satisfy it.
-
-That release is Protocol 2.22.0, so the floor is `>=2.22.0`. A comparator that
-only excludes the previous label, such as `>2.21.0`, does not meet the
-requirement, because a 2.21.x release without RFC 0071 would satisfy it.
-
-The range is what lets an older host decline the module. Under §VII.2 step 3,
-a host refuses a manifest whose `requires_protocol` its own versions do not
-satisfy, with a `ProtocolError` of category `module`. It therefore never
-registers a rule it cannot evaluate. Without the floor, that host would load
-the module and report each such rule as a failure to evaluate
-(`CALC-RESOLVE-001`) on every document.
-
-This requirement adds no loader check and no error code. §VII.2 step 3 is the
-enforcement, and the reference library already reports it as `PROTO-MOD-030`.
-A manifest that violates the requirement is non-conforming. A host is not
-required to detect the violation.
-
-**Protocol floor for modules that override (RFC 0074).** A module manifest
-that redeclares a section ID, calculation ID or view-model `section_id`
-declared by a module it names in `depends_on` uses the §VII.3 override rules.
-It **MUST** declare a `requires_protocol` range that excludes every Protocol
-version before the first release that contains RFC 0074. That release is
-Protocol 2.22.0, so the floor is `>=2.22.0`. As with `is_calendar_date`, a
-comparator that only excludes the previous label does not meet the
-requirement.
-
-A host without RFC 0074 runs both declarations, and it may accept a module set
-§VII.3 now refuses, so calculation outcomes and validation behavior can
-differ. The floor keeps such a host from loading the module at all: it
-refuses the manifest under §VII.2 step 3 (`PROTO-MOD-030` in the reference
-library). This requirement, too, adds no loader check and no error code. A
-manifest that violates it is non-conforming, and a host is not required to
-detect the violation.
+**Module ranges.** is_calendar_date and dependent declaration overrides (§VII.3) are part of Protocol 4.0.0. A module's requires_protocol MUST admit 4.0.0, and requires_format MUST admit 3.0. No earlier contract satisfies a module range; unavailable features do not trigger fallback loading. A failed range check is PROTO-MOD-030.
 
 Section `schema` fragments are normative JSON Schema. A host holding a
 JSON Schema validator SHOULD apply them; one that does not is still
 conforming, and the reference library is in the second category by
 design (§Layering — `@uwmd/core` takes no validator dependency).
 
-The reference module is
-[`@uwmd/module-hospitality`](../packages/uwmd-module-hospitality/README.md),
-built against the library's published surface and nothing else.
+Third-party modules are declarative extensions. Every official asset class is builtin; none requires an official module.
 
 ### X.1 Module signatures (RFC 0002)
 
@@ -3362,7 +3138,7 @@ dependency without breaking the signature.
 | `signed_at` | string | yes | ISO 8601 instant the signature was produced. |
 | `identity` | string | no | Identity the signer claims. **Advisory** — see §X.1.5. |
 
-`uwmd-keystore` is the one scheme protocol 1.x implements: a detached
+`uwmd-keystore` is the one scheme this protocol implements: a detached
 signature verified against a key store the host holds, reusing the
 block-signature machinery of §V.11 rather than inventing a second one.
 
@@ -3528,9 +3304,9 @@ a silent denominator change does the most damage.
 
 ---
 
-### Official builtin compatibility (RFC 0080)
+### Official builtin contracts (RFC 0080, RFC 0081)
 
-`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin. The format-neutral envelope retains v1 or v2 metadata on disk and normalizes v2 metadata when read for eligibility; raw content and source identity are preserved.
+Only the twelve builtin ids resolve as builtins. Namespaced suffix shadows, including org.uwmd.data_center, are INVALID-ASSET-CLASS-002. Module lists use object entries; official module ids are ordinary unsatisfied dependencies. No class behavior varies by version or prior packaging. CLS-03/04 and MOD-CALC-ERROR are errors; rules retain declared severities. Hospitality rent_roll requires available_room_nights when stated; optional hotel_metrics holds only market_revpar. CC-HOSP-02 reads `rent_roll.occupancy == null || (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)`. Standard class formulas and paths live in spec/metrics/; eleven classes have property-level primary sizes and mixed-use uses component slots. Envelope content is the bare fenced object with nested metadata.
 
 ## XI. Error Taxonomy
 
@@ -3579,14 +3355,11 @@ MUST be parsed and surfaced. Validators MAY warn but MUST NOT error.
 
 ### XII.3 Format version skew
 
-If the file's `uw_version` exceeds the implementation's supported
-format version by a major bump, the implementation MUST refuse to
-edit and SHOULD refuse to display sections it does not recognize.
+A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and supported value. No partial read, display-only mode or newer-minor tolerance is admitted.
 
 ### XII.4 Protocol version skew
 
-A module declaring `requires_protocol: ">=2"` MUST NOT load on a
-host advertising protocol version `1.x.y`.
+A module MUST NOT load unless its requires_protocol range is satisfied by 4.0.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
 
 ---
 
@@ -3612,29 +3385,11 @@ See [the missing-entry rule](metrics/README.md#mixed-use-and-unknown-classes).
 
 ---
 
-## XIV. Capability Tokens (optional, RFC 0011)
 
-*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv-capability-tokens-optional-rfc-0011) (RFC 0078). Not part of the standard.*
 
-### XIV.1 Tokens narrow, never widen
 
-*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv1-tokens-narrow-never-widen) (RFC 0078). Not part of the standard.*
 
-### XIV.2 Token shape
 
-*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv2-token-shape) (RFC 0078). Not part of the standard.*
-
-### XIV.3 Verification
-
-*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv3-verification) (RFC 0078). Not part of the standard.*
-
-### XIV.4 Persistence
-
-*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv4-persistence) (RFC 0078). Not part of the standard.*
-
-### XIV.5 Conformance
-
-*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv5-conformance) (RFC 0078). Not part of the standard.*
 
 ---
 
@@ -3687,7 +3442,7 @@ Schema: `uw-portfolio-profile.schema.json`. Reference surface:
 - Each provenance entry MUST contain a stable `source` identifier and
   MAY carry `locator`, `note`, or `retrieved_at`. **`source` here is a
   document/source identifier** (the lease-abstract `SourceRef`
-  posture), NOT the §V.3/RFC 0031 `_meta.source` actor grammar.
+  posture), NOT the §V.3/RFC 0031 `_meta.provenance.source` actor grammar.
 
 ### XV.3 Update and preservation obligations
 
@@ -3770,9 +3525,7 @@ For the tier and each profile you claim:
 
 ## Appendix C — Conformance corpus index
 
-See [`conformance/README.md`](../conformance/README.md). Per-tier
-directories contain fixtures and expected outputs. They keep their
-Protocol 2.x tier names until the corpus is re-tiered (RFC 0078 phase 3);
+See [`conformance/README.md`](../conformance/README.md). Content directories contain fixtures and expected outputs with explicit target ownership (RFC 0081 Phase 5);
 directory membership is not a normative signal (§II.6).
 
 <a id="appendix-d--worked-example-tier-1-reader-in-500-loc"></a>
@@ -3788,33 +3541,34 @@ not part of the standard. A worked Verifier example, a consumer that
 checks a document with only the metric dictionary and an expression
 evaluator, arrives with the dictionary (RFC 0078 phase 2).
 
-## Appendix E — Worked example: authoring a hospitality module
+## Appendix E — Worked example: authoring a third-party specialty module
 
 A minimal hospitality module manifest:
 
 ```yaml
 manifest_version: "1"
-id: org.uwmd.hospitality
-name: Hospitality Underwriting Module
+id: com.example.specialty
+name: Specialty facility Underwriting Module
 version: 0.1.0
 description: Adds RevPAR/ADR/occupancy fields and STR comp validations.
 authors: [UW Markdown contributors]
 license: MIT
-requires_protocol: ">=1.0.0 <2.0.0"
-requires_format: ">=1.1 <2.0"
-requires_tier: tier-3-calc-host
-asset_classes: [hospitality]
+requires_protocol: "^4.0.0"
+requires_format: "^3.0"
+requires_conformance: verifier
+requires_profiles: [module]
+asset_classes: [industrial]
 calculations:
-  - id: revpar
-    label: RevPAR
-    formula: adr * occupancy
+  - id: specialty_revenue
+    label: Specialty revenue
+    formula: industrial_inputs.unit_rate * industrial_inputs.occupied_units
     unit: "$"
     deterministic: true
 validations:
-  - code: CC-MOD-HOSP-01
+  - code: CC-SPECIALTY-01
     severity: warning
-    message: "RevPAR below market by more than 15%."
-    rule: "revpar >= market_revpar * 0.85"
+    message: "Specialty revenue below the stated benchmark."
+    rule: "specialty_revenue >= industrial_inputs.benchmark_revenue"
 ```
 
 ## Appendix F — Glossary

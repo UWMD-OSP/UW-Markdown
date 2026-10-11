@@ -2,17 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/debt-rate-hedge.schema.json",
   "title": "debt-rate-hedge",
-  "description": "RFC 0056 / format 4.7. Shape only. The rate_type gate (HDG-03), the rate_cap_pct agreement (HDG-04) and the rate_cap_cost agreement (HDG-05) are semantic checks. rate_swap and rate_collar are reserved by HDG-02 and are deliberately absent from the instrument enum. RFC 0070 adds optional replacement funding; exact reference/payment/digest consistency are semantic checks.",
+  "description": "RFC 0081 G1 / Format §4.7. instrument and strike_rate required; the terms group is all-or-none. premium may be stated without terms. HDG-06–10 and replacement funding evaluate only with the terms group. HDG-02 refuses reserved instruments; HDG-03 rate type is semantic.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "instrument",
-    "notional",
-    "strike_rate",
-    "index",
-    "effective_date",
-    "expiration_date",
-    "post_expiration_assumption"
+    "strike_rate"
   ],
   "properties": {
     "instrument": {
@@ -148,8 +143,50 @@
           "post_expiration_assumption": {
             "const": "replace"
           }
-        }
+        },
+        "required": [
+          "post_expiration_assumption"
+        ]
       }
     }
-  ]
+  ],
+  "dependentRequired": {
+    "notional": [
+      "index",
+      "effective_date",
+      "expiration_date",
+      "post_expiration_assumption"
+    ],
+    "index": [
+      "notional",
+      "effective_date",
+      "expiration_date",
+      "post_expiration_assumption"
+    ],
+    "effective_date": [
+      "notional",
+      "index",
+      "expiration_date",
+      "post_expiration_assumption"
+    ],
+    "expiration_date": [
+      "notional",
+      "index",
+      "effective_date",
+      "post_expiration_assumption"
+    ],
+    "post_expiration_assumption": [
+      "notional",
+      "index",
+      "effective_date",
+      "expiration_date"
+    ],
+    "replacement_funding": [
+      "notional",
+      "index",
+      "effective_date",
+      "expiration_date",
+      "post_expiration_assumption"
+    ]
+  }
 }

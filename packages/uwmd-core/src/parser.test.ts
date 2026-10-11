@@ -460,7 +460,7 @@ describe('Parkview example file', () => {
   });
 });
 
-// ─── YAML subset enforcement (UW_FORMAT_SPEC_v1.md Appendix D) ────────────────
+// ─── YAML subset enforcement (UW_FORMAT_SPEC.md Appendix D) ────────────────
 
 describe('parseUWFile — YAML subset rejection', () => {
   const HEADER = `---

@@ -10,7 +10,7 @@ products. The directory name is history kept for stable paths;
 A Reader (Protocol §II.1) MUST:
 
 - Parse all required frontmatter fields and surface them as structured data.
-- Recognize all 21 standard sections defined in `UW_FORMAT_SPEC_v1.md` §4.
+- Recognize all 21 standard sections defined in `UW_FORMAT_SPEC.md` §4.
 - Treat unknown frontmatter keys, sections and `x_*` blocks as informative.
 - Honor the `superseded` semantics: when multiple blocks share a `section_id`,
   the most recent non-superseded block is canonical.

@@ -130,7 +130,7 @@ if (implementedChecked > 0) {
 
 // ── 2. Format-spec rule bullets ──────────────────────────────────────────────
 
-const formatSpec = read('spec/UW_FORMAT_SPEC_v1.md');
+const formatSpec = read('spec/UW_FORMAT_SPEC.md');
 const documented = new Set(
   [...formatSpec.matchAll(new RegExp(`^- \`(${CODE.source})\``, 'gm'))].map((m) => m[1]),
 );
@@ -149,7 +149,7 @@ if (undocumentedlyUnenforced.length > 0) {
 // `INVALID-ASSET-CLASS-NNN`. A family is registered when its prefix appears
 // there in any of those spellings.
 
-const protocol = read('spec/UW_PROTOCOL_v1.md');
+const protocol = read('spec/UW_PROTOCOL.md');
 const registered = new Set(
   [...protocol.matchAll(/\|\s*`([A-Z][A-Z0-9-]*?)-(?:NN|N|\*|NNN)`/g)].map((m) => m[1]),
 );

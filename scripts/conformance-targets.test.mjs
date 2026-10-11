@@ -1,3 +1,4 @@
+import { projectCaseContract, projectCorpusContract } from './rfc-0081-schema-projections.mjs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
@@ -27,8 +28,8 @@ test('case and ownership schemas mirror protocol closed vocabularies', () => {
   assert.deepEqual(corpusSchema.properties.cases.items.properties.target.enum, [...CONFORMANCE_TARGETS]);
   ajv.addSchema(json('../spec/schemas/implementation-manifest.schema.json'));
   const validate = ajv.compile(schema);
-  for (const c of cases) assert.ok(validate(c), `${c.id}: ${JSON.stringify(validate.errors)}`);
-  assert.ok(ajv.compile(corpusSchema)(corpus));
+  for (const c of cases) assert.ok(validate(projectCaseContract(c)), `${c.id}: ${JSON.stringify(validate.errors)}`);
+  assert.ok(ajv.compile(corpusSchema)(projectCorpusContract(corpus)));
   assert.equal(validate({ ...cases[0], requires_capabilities: ['unknown-capability'] }), false);
   assert.equal(validate({ ...cases[0], target: 'unknown' }), false);
   assert.equal(validate({ ...cases[0], target: 'tier-1-reader' }), false);

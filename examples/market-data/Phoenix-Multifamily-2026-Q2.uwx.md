@@ -18,7 +18,7 @@ provider published; none of it is a conclusion about any particular property.
 outputs follow deterministically from its inputs, and *these particular
 observations* were the ones used. It proves nothing about whether these
 observations are accurate, current, or representative — see
-`spec/UW_RECEIPT_v1.md` §10.3.
+`spec/UW_RECEIPT.md` §10.3.
 
 ## Market Observations {#market_observations}
 

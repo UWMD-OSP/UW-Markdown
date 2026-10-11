@@ -39,7 +39,7 @@ describe('postgresLakeSchema', () => {
   });
 
   it('projects no receipt verdict, because no receipt carries one', () => {
-    // A verdict is what verifying a receipt produces (UW_RECEIPT_v1 §5), not a
+    // A verdict is what verifying a receipt produces (UW_RECEIPT §5), not a
     // field the receipt states. The column was NULL for every real receipt and
     // led the (verdict, pack_id) index with a dead column.
     expect(ddl).not.toMatch(/^\s+verdict\s+text/m);

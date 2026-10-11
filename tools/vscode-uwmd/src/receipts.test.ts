@@ -4,7 +4,7 @@
 // filesystem or launching VS Code. The properties that matter: every failure
 // mode is a value rather than a throw (a thrown error in a command handler
 // becomes an opaque "command failed" toast), and the notification text honours
-// UW_RECEIPT_v1 §1 — a verified receipt is never a bare checkmark.
+// UW_RECEIPT §1 — a verified receipt is never a bare checkmark.
 
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';

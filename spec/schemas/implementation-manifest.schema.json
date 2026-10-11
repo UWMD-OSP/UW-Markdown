@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/implementation-manifest.schema.json",
   "title": "UW Implementation Manifest",
-  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, verification profiles, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md \u00a7I.4 and Part II (Protocol 3.0 conformance model, RFC 0078).",
+  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, verification profiles, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/core/protocol.ts. See UW_PROTOCOL.md §I.4 and Part II (Protocol 4.0 conformance model, RFC 0078).",
   "type": "object",
   "required": [
     "id",
@@ -41,25 +41,11 @@
       "description": "Format semver this implementation can read (e.g. '1.1')."
     },
     "tier": {
-      "anyOf": [
-        {
-          "enum": [
-            "reader",
-            "verifier"
-          ]
-        },
-        {
-          "enum": [
-            "tier-1-reader",
-            "tier-2-editor",
-            "tier-3-calc-host",
-            "tier-4-agent-host"
-          ],
-          "deprecated": true,
-          "description": "Protocol 2.x tier, deprecated by RFC 0078 and accepted during Protocol 3.x. Read through the mapping in UW_PROTOCOL \u00a7II.5."
-        }
+      "enum": [
+        "reader",
+        "verifier"
       ],
-      "description": "Conformance tier the implementation self-certifies to (UW_PROTOCOL Part II, RFC 0078): 'reader' (parse and check that a document is well formed) or 'verifier' (reader, plus the Format validation rules, metric reproduction, the stated-figure verifiers and receipt verification). OPTIONAL per \u00a7II.5: an implementation whose capabilities do not stack into a tier SHOULD publish `capabilities` and omit this field rather than round down (or up). The four Protocol 2.x values stay accepted during Protocol 3.x, are deprecated, and are read as: tier-1-reader -> reader; tier-2-editor -> reader, plus a non-normative starter-product editing claim; tier-3-calc-host -> verifier; tier-4-agent-host -> verifier, plus a non-normative starter-product agent-host claim. The mapping infers no profiles; declare them in `profiles`."
+      "description": "Optional conformance tier; Verifier includes Reader. Partial capabilities may be stated without a tier (Protocol §II.5). No aliases."
     },
     "profiles": {
       "type": "array",
@@ -74,7 +60,7 @@
         ]
       },
       "uniqueItems": true,
-      "description": "Optional verification profiles the implementation claims (UW_PROTOCOL \u00a7II.3, RFC 0078). module: evaluate module-declared and document-declared formulas. integrity: hash chains and block signatures. representations: UW Lite, XML mapping and CSV bundle. portfolio: portfolio and relationship sidecars. sensitivity: reproduce stated sensitivity grids. stochastic: reproduce stated seeded distributions. A profile adds to either tier. Absent means none."
+      "description": "Optional verification profiles the implementation claims (UW_PROTOCOL §II.3, RFC 0078). module: evaluate module-declared and document-declared formulas. integrity: hash chains and block signatures. representations: UW Lite, XML mapping and CSV bundle. portfolio: portfolio and relationship sidecars. sensitivity: reproduce stated sensitivity grids. stochastic: reproduce stated seeded distributions. A profile adds to either tier. Absent means none."
     },
     "capabilities": {
       "type": "array",
@@ -107,7 +93,7 @@
         ]
       },
       "uniqueItems": true,
-      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, agent-host, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL \u00a7II.4)."
+      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, agent-host, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL §II.4)."
     },
     "representations": {
       "type": "array",

@@ -122,7 +122,7 @@ export function postgresLakeSchemaStatements(schema = 'public'): string[] {
     '  signed           boolean NOT NULL DEFAULT false,',
     '  -- The counts the receipt states in policy.validation. There is no',
     "  -- verdict column: a verdict is what *verifying* a receipt produces",
-    '  -- (UW_RECEIPT_v1 §5), not a field any receipt carries, so projecting',
+    '  -- (UW_RECEIPT §5), not a field any receipt carries, so projecting',
     '  -- one would index a column that is NULL for every real receipt.',
     '  validation_errors   integer,',
     '  validation_warnings integer,',

@@ -92,14 +92,14 @@ conformance/
 │   ├── compile/        Documents that parse cleanly but must FAIL the bridge
 │   │                     (LITE_COMPILE_*), same <id>.expected.json shape
 │   ├── equivalence.json  Groups of fixtures that differ only along axes
-│   │                     UW_LITE_SPEC_v1 §6 excludes; all must share one digest
+│   │                     UW_LITE_SPEC §6 excludes; all must share one digest
 │   └── expected/       Per fixture: <id>.canonical.json (RFC 8785 financial
 │                         canonical form), <id>.digest.txt (sha256 over its exact
 │                         UTF-8 bytes), <id>.rendered.uw.md (canonical rendering),
 │                         <id>.compile.json + <id>.uwx.md (deal-summary-v1
 │                         compilation), <id>.projection.json + <id>.projected.uw.md
 │                         (UWX→Lite projection with its omission report)
-├── receipts/           Verification receipts (RFC 0016, spec/UW_RECEIPT_v1.md)
+├── receipts/           Verification receipts (RFC 0016, spec/UW_RECEIPT.md)
 │   ├── issue/          <scenario>/{deal.uwx.md|deal.uwx.md, expected-receipt.json}
 │   │                     Issuance is deterministic apart from issued_at, which
 │   │                     the runner stubs
@@ -374,7 +374,7 @@ third-party implementer rather than a restatement of our implementation.
 ## How to self-certify
 
 1. Implement (or update) your tool against the published
-   [`UW_PROTOCOL_v1.md`](../spec/UW_PROTOCOL_v1.md).
+   [`UW_PROTOCOL.md`](../spec/UW_PROTOCOL.md).
 2. Select your tier and explicitly claimed profiles; run their indexed cases through your tool.
 3. Compare your output to the corresponding `expected/` output.
 

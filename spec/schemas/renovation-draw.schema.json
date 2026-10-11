@@ -2,10 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/renovation-draw.schema.json",
   "title": "renovation-draw",
-  "description": "RFC 0057 / format 4.8. Shape only. The draw relations (CAPX-02, CAPX-03), the remaining verification (CAPX-04) and the legacy-scalar agreement (CAPX-05) are semantic checks. A draw is a fact as of as_of_date; nothing is projected.",
+  "description": "RFC 0081 G1 / Format §4.8. At least budget or contingency; draw group all-or-none and requires both. contingency_remaining only with draw group. CAPX-01 validates stated members; CAPX-02–04 evaluate only with draw group.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["budget", "contingency", "contingency_used", "drawn_to_date", "as_of_date"],
   "properties": {
     "budget": {
       "description": "Hard plus soft costs, excluding the contingency.",
@@ -23,7 +22,10 @@
     },
     "contingency_remaining": {
       "description": "Stated and verified against contingency less contingency_used, rather than left to every reader's subtraction.",
-      "type": ["number", "null"]
+      "type": [
+        "number",
+        "null"
+      ]
     },
     "drawn_to_date": {
       "description": "Total drawn, the budget line plus the contingency draw.",
@@ -38,7 +40,48 @@
     "expense_targeted": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "https://uwmd.org/schemas/expense-targeted-capex.schema.json" }
+      "items": {
+        "$ref": "https://uwmd.org/schemas/expense-targeted-capex.schema.json"
+      }
     }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "budget"
+      ]
+    },
+    {
+      "required": [
+        "contingency"
+      ]
+    }
+  ],
+  "dependentRequired": {
+    "contingency_used": [
+      "drawn_to_date",
+      "as_of_date",
+      "budget",
+      "contingency"
+    ],
+    "drawn_to_date": [
+      "contingency_used",
+      "as_of_date",
+      "budget",
+      "contingency"
+    ],
+    "as_of_date": [
+      "contingency_used",
+      "drawn_to_date",
+      "budget",
+      "contingency"
+    ],
+    "contingency_remaining": [
+      "contingency_used",
+      "drawn_to_date",
+      "as_of_date",
+      "budget",
+      "contingency"
+    ]
   }
 }

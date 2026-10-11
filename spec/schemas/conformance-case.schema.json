@@ -29,10 +29,6 @@
         "starter-products"
       ]
     },
-    "legacy_id": {
-      "type": "string",
-      "minLength": 1
-    },
     "requires_capabilities": {
       "type": "array",
       "items": {

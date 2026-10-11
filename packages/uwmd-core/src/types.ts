@@ -1,7 +1,7 @@
 import type { UWScenarioId } from './scenario.js';
 
 // .uw.md format — TypeScript type definitions
-// Spec: UW_FORMAT_SPEC_v1.md v1.1
+// Spec: UW_FORMAT_SPEC.md v1.1
 
 /** The signed block annotation used for property-level selection (RFC 0040). */
 export type BlockRole = 'primary' | 'senior' | 'junior' | 'summary' | 'detail' | 'component';
@@ -201,7 +201,7 @@ const ASSET_CLASS_MEMBERS: Record<AssetClass, true> = {
  *
  * Adding an asset class is a normative format change (see RFC 0003 for
  * module-declared classes); this list is the library's mirror of the enum in
- * `spec/UW_FORMAT_SPEC_v1.md` and `spec/schemas/`, not an independent registry.
+ * `spec/UW_FORMAT_SPEC.md` and `spec/schemas/`, not an independent registry.
  */
 export const ASSET_CLASSES: readonly AssetClass[] = Object.freeze(
   Object.keys(ASSET_CLASS_MEMBERS) as AssetClass[],

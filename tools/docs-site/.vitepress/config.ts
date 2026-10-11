@@ -68,7 +68,7 @@ export default defineConfig({
           {
             text: 'The standard (normative)',
             items: [
-              { text: `Format specification (v${versions.format})`, link: '/spec/format-v2' },
+              { text: `Format specification (v${versions.format})`, link: '/spec/format' },
               { text: `Protocol — verification (${versions.protocol})`, link: '/spec/protocol' },
               { text: 'Metric dictionary', link: '/spec/metrics/' },
               { text: 'Verification receipts', link: '/spec/receipt' },
@@ -231,7 +231,7 @@ export default defineConfig({
         {
           text: 'The standard (normative)',
           items: [
-            { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
+            { text: 'Format spec (3.0)', link: '/spec/format' },
             { text: 'Format spec (v1.1)', link: '/spec/format' },
             { text: `Protocol — verification (${versions.protocol})`, link: '/spec/protocol' },
             { text: 'Metric dictionary', link: '/spec/metrics/' },
@@ -290,7 +290,7 @@ export default defineConfig({
           text: 'The standard',
           items: [
             { text: `Protocol — verification (${versions.protocol})`, link: '/spec/protocol' },
-            { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
+            { text: 'Format spec (3.0)', link: '/spec/format' },
             { text: 'Metric dictionary', link: '/spec/metrics/' },
           ],
         },

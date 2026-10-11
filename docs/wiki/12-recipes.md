@@ -45,7 +45,7 @@ new inputs).
 
 ## Add / change a standard section
 
-**Files:** `spec/UW_FORMAT_SPEC_v1.md` (§4.x schema), `protocol.ts`
+**Files:** `spec/UW_FORMAT_SPEC.md` (§4.x schema), `protocol.ts`
 (`BUILTIN_VIEW_MODELS` entry), possibly `types.ts`, `validator.ts`,
 `spec/schemas/`.
 1. Define the section schema in the spec (this is **normative → RFC required**).

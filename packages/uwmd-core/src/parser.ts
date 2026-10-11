@@ -1,5 +1,5 @@
 // .uw.md parser — extracts frontmatter, section blocks, prose, and pipeline log
-// Spec: UW_FORMAT_SPEC_v1.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
+// Spec: UW_FORMAT_SPEC.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
 
 import type {
   UWBlock,
@@ -29,7 +29,7 @@ const FRONTMATTER_RE = /^---\s*$/;
 const KV_RE = /(\w+)=([^\s]+)/g;
 
 // ─── YAML frontmatter parser ──────────────────────────────────────────────────
-// Deliberately implements a strict YAML SUBSET — see UW_FORMAT_SPEC_v1.md
+// Deliberately implements a strict YAML SUBSET — see UW_FORMAT_SPEC.md
 // Appendix D "YAML Subset (Frontmatter)" for the full grammar. The supported surface:
 //
 //   - Scalars: string (bare or single/double-quoted), number, boolean, null, ~
@@ -92,7 +92,7 @@ function rejectUnsupportedYaml(lines: string[]): void {
       if (pattern.test(codePart)) {
         throw new UWMDParseError(
           'UNSUPPORTED_YAML_FEATURE',
-          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix D).`,
+          `Frontmatter line ${n + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D).`,
           { line: n + 1, feature },
         );
       }
@@ -184,7 +184,7 @@ function readFrontmatterScalar(rest: string, lineIndex: number): { value: unknow
     const feature = YAML_SCALAR_FAILURE_FEATURE[scalar.failure];
     throw new UWMDParseError(
       'UNSUPPORTED_YAML_FEATURE',
-      `Frontmatter line ${lineIndex + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC_v1.md Appendix D).`,
+      `Frontmatter line ${lineIndex + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D).`,
       { line: lineIndex + 1, feature },
     );
   }

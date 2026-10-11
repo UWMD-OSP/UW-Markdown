@@ -4,7 +4,11 @@
   "title": "UW Fragment Frontmatter 1.0",
   "description": "Frontmatter of a `.uwpart.md` fragment — one section's content held outside the record that references it (UW Composition 1.0, RFC 0021). This schema covers the YAML frontmatter object only; the fragment's blocks are ordinary UW blocks and validate against `uwmd-block.schema.json` plus their section's own schema. A fragment is NOT an underwriting record: validating against this schema establishes that the fragment is identifiable and independently reviewable, and establishes nothing about whether the section it carries is complete or correct.",
   "type": "object",
-  "required": ["uwpart_version", "part_id", "section"],
+  "required": [
+    "uwpart_version",
+    "part_id",
+    "section"
+  ],
   "properties": {
     "uwpart_version": {
       "type": "string",
@@ -21,7 +25,7 @@
       "pattern": "^[a-z][a-z0-9_]*$",
       "minLength": 1,
       "maxLength": 128,
-      "description": "The single section every block in this fragment targets. Standard sections use the IDs registered in UW_FORMAT_SPEC_v1.md §4; extension sections MUST start with 'x_'. A fragment carrying a block for any other section is refused (`COMP-SECTION-MISMATCH`) — contributing to two sections is what two fragments are for."
+      "description": "The single section every block in this fragment targets. Standard sections use the IDs registered in UW_FORMAT_SPEC.md §4; extension sections MUST start with 'x_'. A fragment carrying a block for any other section is refused (`COMP-SECTION-MISMATCH`) — contributing to two sections is what two fragments are for."
     },
     "collection_member": {
       "type": "boolean",

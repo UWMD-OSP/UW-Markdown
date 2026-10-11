@@ -5,7 +5,7 @@
 // full file. Prevents agents from having to parse the raw .uw.md themselves,
 // and ensures each layer only sees the sections it depends on.
 //
-// Spec: UW_FORMAT_SPEC_v1.md §1.3 (Bancroft layer ↔ section mapping)
+// Spec: UW_FORMAT_SPEC.md §1.3 (Bancroft layer ↔ section mapping)
 
 import type { ParsedUWFile, UWBlock, UWFrontmatter, PipelineStatus } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';

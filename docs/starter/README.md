@@ -4,8 +4,8 @@
 
 UW Markdown is two things. **The standard** is the document format plus
 the rules any party uses to *verify* a document: the
-[Format specification](../../spec/UW_FORMAT_SPEC_v2.md), the verification
-[Protocol](../../spec/UW_PROTOCOL_v1.md), receipts, the module system and
+[Format specification](../../spec/UW_FORMAT_SPEC.md), the verification
+[Protocol](../../spec/UW_PROTOCOL.md), receipts, the module system and
 the representation specs. **The starter products** are the tools the
 project gives away so the standard spreads: a calc engine, a web editor, a
 report viewer, an Excel exporter, default assumptions and AI agents.

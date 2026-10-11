@@ -3,9 +3,9 @@
 This document describes how the UW Markdown repository is organized so
 contributors can navigate it without reverse-engineering from commit
 history. For *what* the format is and *why* it's designed the way it
-is, see [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md),
-[`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md), and the representation
-mappings such as [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md), plus optional transport profiles under [`spec/bindings/`](spec/bindings/).
+is, see [`spec/UW_FORMAT_SPEC.md`](spec/UW_FORMAT_SPEC.md),
+[`spec/UW_PROTOCOL.md`](spec/UW_PROTOCOL.md), and the representation
+mappings such as [`spec/UW_XML_MAPPING.md`](spec/UW_XML_MAPPING.md), plus optional transport profiles under [`spec/bindings/`](spec/bindings/).
 
 ## The big picture
 
@@ -13,9 +13,9 @@ The project has five layers, each consuming the one above it:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Standard         spec/UW_FORMAT_SPEC_v1.md (+ v2)          │  normative
-│  (normative)      spec/UW_PROTOCOL_v1.md  (verification)    │  text
-│                   spec/UW_RECEIPT_v1.md                     │
+│  Standard         spec/UW_FORMAT_SPEC.md (+ v2)          │  normative
+│  (normative)      spec/UW_PROTOCOL.md  (verification)    │  text
+│                   spec/UW_RECEIPT.md                     │
 │                   spec/metrics/builtin.json (dictionary)    │
 │                   spec/schemas/*.schema.json                │
 └─────────────────────────────────────────────────────────────┘
@@ -61,18 +61,18 @@ The project has five layers, each consuming the one above it:
 Versioned normative documents and one schema set. Adopters needing to
 implement only one tier can read just the relevant sections.
 
-- [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) — file shape:
+- [`spec/UW_FORMAT_SPEC.md`](spec/UW_FORMAT_SPEC.md) — file shape:
   frontmatter, the 21 standard sections, supersede semantics, the
   cross-section consistency rules (`CC-NN`).
-- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — how any party
+- [`spec/UW_PROTOCOL.md`](spec/UW_PROTOCOL.md) — how any party
   verifies a document: the Reader and Verifier tiers and optional profiles,
   the provenance rules, the calc-engine grammar (EBNF) and the stated-figure
   verifiers (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and
   the AI host are non-normative starter-product guidance in
   [`docs/starter/`](docs/starter/README.md).
-- [`spec/UW_XML_MAPPING_v1.md`](spec/UW_XML_MAPPING_v1.md) — deterministic
+- [`spec/UW_XML_MAPPING.md`](spec/UW_XML_MAPPING.md) — deterministic
   Envelope 1.0 mapping, namespace, integrity, and secure decoding rules.
-- [`spec/UW_CSV_BUNDLE_v1.md`](spec/UW_CSV_BUNDLE_v1.md) — normalized tables,
+- [`spec/UW_CSV_BUNDLE.md`](spec/UW_CSV_BUNDLE.md) — normalized tables,
   deterministic ZIP, model reconstruction, views, and extraction limits.
 - [`spec/bindings/`](spec/bindings/) — HTTP Binding 1.0, MCP Binding 1.0,
   and the example OpenAPI 3.1 API contract.

@@ -79,7 +79,9 @@ describe('RFC 0080 official builtin controls', () => {
 describe('Format 2.1 builtin record shapes', () => {
   const ajv = new Ajv2020({ strict: false, allErrors: true, validateFormats: false });
   const readSchema = (name: string) => JSON.parse(readFileSync(resolve(root, `spec/schemas/${name}.schema.json`), 'utf8'));
-  const blockSchema = ajv.compile(readSchema('uwmd-block-v2'));
+  const blockSchema = ajv.compile(readSchema('uwmd-block'));
+  const bare = (content: Record<string, unknown>) => Object.hasOwn(content, 'section_id')
+    ? { _meta: content._meta, ...content.content as Record<string, unknown> } : content;
   const envelopeSchema = ajv.compile(readSchema('uw-document-envelope'));
   ajv.addSchema(readSchema('section-capital-stack'));
   const componentSchema = ajv.compile(readSchema('section-components'));
@@ -88,10 +90,15 @@ describe('Format 2.1 builtin record shapes', () => {
       const parsed = parseUWFile(readFileSync(resolve(root, 'examples', file), 'utf8'));
       for (const entry of Object.values(parsed.sections)) {
         const blocks = 'annotation' in entry ? [entry as UWBlock] : Object.values(entry);
-        for (const block of blocks) expect(blockSchema(block.content), JSON.stringify(blockSchema.errors)).toBe(true);
+        for (const block of blocks) expect(blockSchema(bare(block.content)), JSON.stringify(blockSchema.errors)).toBe(true);
       }
       const envelope = toUWEnvelope(parsed);
-      expect(envelopeSchema(envelope), JSON.stringify(envelopeSchema.errors)).toBe(true);
+      const projected = structuredClone(envelope);
+      for (const entry of Object.values(projected.sections)) {
+        if (Array.isArray(entry)) for (const block of entry) block.content = bare(block.content);
+        else for (const blocks of Object.values(entry)) for (const block of blocks) block.content = bare(block.content);
+      }
+      expect(envelopeSchema(projected), JSON.stringify(envelopeSchema.errors)).toBe(true);
       const restored = fromUWEnvelope(envelope);
       for (const id of Object.keys(parsed.sections)) {
         expect((restored.sections[id] as UWBlock).meta).toEqual((parsed.sections[id] as UWBlock).meta);

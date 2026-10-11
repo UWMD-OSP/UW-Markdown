@@ -2,7 +2,7 @@
 
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 >
-> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL_v1.md)
+> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL.md)
 > §V.1, §V.5 and §V.6, and from the retired Tier-2 Editor requirements
 > (Protocol 2.x §II.2), under
 > [RFC 0078](../rfcs/0078-protocol-is-verification.md) (D3). Section

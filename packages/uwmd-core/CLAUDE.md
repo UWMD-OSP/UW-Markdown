@@ -10,7 +10,7 @@ root [`CLAUDE.md`](../../CLAUDE.md).
   `browser.ts` if browser-safe). If it isn't exported here, tools can't use it.
 - `parser.ts` / `validator.ts` / `editor.ts` / `renderer.ts` — Tiers 1–2 core.
 - `runner.ts` — supersede-aware block writer (`writeAgentBlock`, `buildMeta`).
-- `protocol.ts` — executable mirror of `UW_PROTOCOL_v1.md`: `BUILTIN_*` tables
+- `protocol.ts` — executable mirror of `UW_PROTOCOL.md`: `BUILTIN_*` tables
   (view models, edit policies, remediations, incomplete-data policies), the
   cascade order, module-manifest types. Mirrors `spec/schemas/*` — keep in lockstep.
 - `types.ts` — format types (`UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`,

@@ -38,7 +38,7 @@ describe('RFC 0041 canonical period identities', () => {
 
 it('keeps the executable period registry, protocol table and schemas aligned', () => {
   const root = resolve(process.cwd(), '../..');
-  const spec = readFileSync(resolve(root, 'spec/UW_PROTOCOL_v1.md'), 'utf8');
+  const spec = readFileSync(resolve(root, 'spec/UW_PROTOCOL.md'), 'utf8');
   const ajv = new Ajv2020({ strict: false });
   addFormats.default(ajv);
   const entrySchema = ajv.compile(JSON.parse(readFileSync(resolve(root, 'spec/schemas/period-series-entry.schema.json'), 'utf8')));

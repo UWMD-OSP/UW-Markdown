@@ -424,7 +424,7 @@ function parseAttributes(
  * admits: it reads the same decimal digits back out and defers the single
  * rounding to `Number`, which is correctly rounded.
  *
- * Spec: `UW_LITE_SPEC_v1.md` §4. See RFC 0025.
+ * Spec: `UW_LITE_SPEC.md` §4. See RFC 0025.
  */
 function scaleDecimalLiteral(literal: string, places: number): number {
   const negative = literal.startsWith('-');

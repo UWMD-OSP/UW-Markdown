@@ -15,7 +15,7 @@ defined, where applicable.
 ### `_meta` / provenance
 Every block in a `.uwx.md` record may carry a `_meta` object recording
 who wrote it, with what confidence, and whether human review is
-required. See [`UW_FORMAT_SPEC_v1.md` §V](../spec/UW_FORMAT_SPEC_v1.md).
+required. See [`UW_FORMAT_SPEC.md` §V](../spec/UW_FORMAT_SPEC.md).
 Validation surfaces issues in the `META_*` family (protocol §III.6a).
 
 ### Append-only / supersede
@@ -92,7 +92,7 @@ read by people. It compiles deterministically into a `.uwx.md` record
 (the `deal-summary-v1` bridge) and a record projects back to Lite with
 an explicit report of everything omitted. Lite is not the working
 record; it is the on-ramp. See [UW Lite and UWX](UW_LITE_AND_UWX.md)
-and [`UW_LITE_SPEC_v1.md`](../spec/UW_LITE_SPEC_v1.md).
+and [`UW_LITE_SPEC.md`](../spec/UW_LITE_SPEC.md).
 
 ### UWX (`.uwx.md`)
 The complete, lossless **working record**: Markdown narrative plus
@@ -116,7 +116,7 @@ are true. Verification returns one of three states — `verified`,
 `failed`, or `unverifiable` — and never collapses the third into
 either of the others. See
 [Verification receipts](UW_RECEIPTS.md) and
-[the spec](../spec/UW_RECEIPT_v1.md).
+[the spec](../spec/UW_RECEIPT.md).
 
 ### View model
 A declarative spec for how a section renders. Registered in
@@ -198,13 +198,13 @@ covenants. Maps to the `debt_structure` section.
 
 | Term | Spec ref |
 |---|---|
-| Conformance tiers | [protocol §II](../spec/UW_PROTOCOL_v1.md) |
-| Cross-section codes (`CC-NN`) | [format §VI](../spec/UW_FORMAT_SPEC_v1.md), [protocol §III.6a](../spec/UW_PROTOCOL_v1.md) |
-| Edit operations | [protocol §V](../spec/UW_PROTOCOL_v1.md) |
-| Calc grammar (EBNF) | [protocol §VIII.1](../spec/UW_PROTOCOL_v1.md) |
-| Calc builtins | [protocol §VIII.3](../spec/UW_PROTOCOL_v1.md) |
-| Bancroft layers | [protocol §IX](../spec/UW_PROTOCOL_v1.md) |
-| Module manifest | [protocol §X](../spec/UW_PROTOCOL_v1.md) |
-| Frontmatter shape | [format §III](../spec/UW_FORMAT_SPEC_v1.md) |
-| `_meta` / provenance | [format §V](../spec/UW_FORMAT_SPEC_v1.md) |
-| Supersede semantics | [format §VII](../spec/UW_FORMAT_SPEC_v1.md) |
+| Conformance tiers | [protocol §II](../spec/UW_PROTOCOL.md) |
+| Cross-section codes (`CC-NN`) | [format §VI](../spec/UW_FORMAT_SPEC.md), [protocol §III.6a](../spec/UW_PROTOCOL.md) |
+| Edit operations | [protocol §V](../spec/UW_PROTOCOL.md) |
+| Calc grammar (EBNF) | [protocol §VIII.1](../spec/UW_PROTOCOL.md) |
+| Calc builtins | [protocol §VIII.3](../spec/UW_PROTOCOL.md) |
+| Bancroft layers | [protocol §IX](../spec/UW_PROTOCOL.md) |
+| Module manifest | [protocol §X](../spec/UW_PROTOCOL.md) |
+| Frontmatter shape | [format §III](../spec/UW_FORMAT_SPEC.md) |
+| `_meta` / provenance | [format §V](../spec/UW_FORMAT_SPEC.md) |
+| Supersede semantics | [format §VII](../spec/UW_FORMAT_SPEC.md) |

@@ -23,7 +23,7 @@ data *in*, the calc engine derives metrics *out*, with no AI involved.
 > Reader and Verifier; the old "Tier-3 Calc Host" is retired.
 
 - **Location:** [`packages/uwmd-core/src/calc/`](../../packages/uwmd-core/src/calc/)
-- **Normative grammar/semantics:** `UW_PROTOCOL_v1.md` §VIII (the parts listed
+- **Normative grammar/semantics:** `UW_PROTOCOL.md` §VIII (the parts listed
   above); metric definitions: [`spec/metrics/builtin.json`](../../spec/metrics/README.md).
 - **Public API (via `index.ts`):** `evaluateCalc`, `parseExpression`, `evaluate`,
   `BUILTINS`, `CalcError`, `calcError`; types `CalcValue`, `Builtin`, `CalcErrorCode`.

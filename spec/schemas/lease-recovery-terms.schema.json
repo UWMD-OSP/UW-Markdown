@@ -2,12 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/lease-recovery-terms.schema.json",
   "title": "lease-recovery-terms",
-  "description": "RFC 0058 / format 4.3. Shape only; the method-input pairing, the pool membership and the cap-accumulation requirement are semantic checks (REC-01..REC-03).",
+  "description": "RFC 0081 G1 / Format §4.3. cap may be stated alone; method is required whenever any other member is stated. Method-dependent REC rules run only when method is stated. No cap over or accumulation default.",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "method"
-  ],
   "properties": {
     "method": {
       "enum": [
@@ -115,5 +112,31 @@
         }
       }
     }
+  },
+  "dependentRequired": {
+    "pro_rata_share": [
+      "method"
+    ],
+    "share_basis": [
+      "method"
+    ],
+    "base_year": [
+      "method"
+    ],
+    "expense_stop_per_sqft": [
+      "method"
+    ],
+    "fixed_recovery_annual": [
+      "method"
+    ],
+    "admin_fee_pct": [
+      "method"
+    ],
+    "gross_up_pct": [
+      "method"
+    ],
+    "recoverable_pool": [
+      "method"
+    ]
   }
 }

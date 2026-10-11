@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/module-signature.schema.json",
   "title": "UW Markdown module signature",
-  "description": "A detached signature over a module manifest (UW_PROTOCOL_v1.md §X.1, RFC 0002). Advisory at the protocol level: the protocol fixes what 'signature valid' means so two hosts agree, and leaves what to do about an unsigned or invalid module to host policy. The signed bytes are the RFC 8785 canonical JSON of the manifest with `signature` removed.",
+  "description": "A detached signature over a module manifest (UW_PROTOCOL.md §X.1, RFC 0002). Advisory at the protocol level: the protocol fixes what 'signature valid' means so two hosts agree, and leaves what to do about an unsigned or invalid module to host policy. The signed bytes are the RFC 8785 canonical JSON of the manifest with `signature` removed.",
   "type": "object",
   "required": ["scheme", "alg", "kid", "sig", "signed_at"],
   "additionalProperties": false,

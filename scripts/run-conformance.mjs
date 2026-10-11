@@ -1,3 +1,4 @@
+import { projectModuleContract } from './rfc-0081-schema-projections.mjs';
 #!/usr/bin/env node
 import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
@@ -962,7 +963,7 @@ function firstDifference(expected, actual) {
 }
 
 // ─── Lite: parse → canonicalize → render → compile → project ─────────────────
-// UW Lite (`spec/UW_LITE_SPEC_v1.md`) is a source representation rather than a
+// UW Lite (`spec/UW_LITE_SPEC.md`) is a source representation rather than a
 // protocol tier, so it runs under the name `lite`. Each fixture in `fixtures/`
 // must parse cleanly and then freeze five artifacts: the RFC 8785 financial
 // canonical form, its SHA-256 digest, the canonical rendering, the
@@ -1224,7 +1225,7 @@ function runLiteEquivalence() {
 }
 
 // ─── Receipts: issue → verify → refuse ───────────────────────────────────────
-// Verification receipts (`spec/UW_RECEIPT_v1.md`, RFC 0016) are a detached
+// Verification receipts (`spec/UW_RECEIPT.md`, RFC 0016) are a detached
 // artifact rather than a protocol tier, so like `lite` this suite is named.
 //
 //   issue/<scenario>/    deal.{uw,uwx}.md + expected-receipt.json (issued_at stubbed)
@@ -1334,7 +1335,7 @@ async function runReceiptVerify() {
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
 
     // Optional sibling inputs.json — the referenced-input digests this verifier
-    // is meant to hold (receipt format 1.1, UW_RECEIPT_v1 §10). Absent means
+    // is meant to hold (receipt format 1.1, UW_RECEIPT §10). Absent means
     // "holds none", which is the market-data-absent scenario rather than a
     // fixture defect, so its absence is deliberately not an error.
     const inputsPath = join(dir, 'inputs.json');
@@ -1611,7 +1612,7 @@ async function runModules() {
   };
 
   const parity = (id, manifest, loaderOk, divergence) => {
-    const schemaOk = schemaCheck(manifest);
+    const schemaOk = schemaCheck(projectModuleContract(manifest));
     if (schemaOk === loaderOk) {
       record('modules', `${id} [schema-parity]`, 'pass');
     } else if (divergence && loaderOk === false && schemaOk === true) {
@@ -1864,7 +1865,7 @@ async function runModuleRegistry() {
     const problems = [];
 
     for (const [key, manifest] of Object.entries(manifests)) {
-      if (!schemaCheck(manifest)) problems.push(`${key}.module.json fails the manifest schema`);
+      if (!schemaCheck(projectModuleContract(manifest))) problems.push(`${key}.module.json fails the manifest schema`);
       // Alone, a dependent cannot load (its dependency is absent), so the
       // standalone check is structural: no code other than PROTO-MOD-027.
       const alone = loadModuleManifest(manifest, HOST);
@@ -2080,7 +2081,7 @@ async function runPackages() {
     } else {
       record('packages', `accept/${id}`, 'fail', `expected acceptance, got ${errors.map((e) => e.code).join(', ')}`);
     }
-    if (errors.length === 0 && !schemaCheck(manifest)) {
+    if (errors.length === 0 && !schemaCheck(projectModuleContract(manifest))) {
       record('packages', `accept/${id} [schema]`, 'fail',
         (schemaCheck.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join('; '));
     } else {

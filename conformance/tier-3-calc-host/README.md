@@ -18,7 +18,7 @@ each case’s single owner.
 An implementation that evaluates expressions (a Verifier using the notation,
 or a Module-profile evaluator for `custom_calculations` and module
 `calculations`) uses the safe-expression language defined in
-`UW_PROTOCOL_v1.md` Part VIII, and MUST:
+`UW_PROTOCOL.md` Part VIII, and MUST:
 
 - Parse the safe-expression grammar exactly as specified (no eval, no
   arbitrary code execution).

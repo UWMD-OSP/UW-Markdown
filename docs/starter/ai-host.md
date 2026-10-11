@@ -2,7 +2,7 @@
 
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 >
-> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL_v1.md) §IX,
+> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL.md) §IX,
 > and from the retired Tier-4 Agent Host requirements (Protocol 2.x §II.4),
 > under [RFC 0078](../rfcs/0078-protocol-is-verification.md) (D3). Section
 > numbers and headings are kept so existing references still find the text;

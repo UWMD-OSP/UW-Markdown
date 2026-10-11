@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Accepted contract — RFC 0081 Phase 2
+
+- Consolidated the two Format specifications into `spec/UW_FORMAT_SPEC.md`, describing only Format 3.0: bare payloads with inline nested `_meta`, the block digest excluding the whole `_meta` member, lone-fact structured replacements and single-home hospitality fields. Renamed the Protocol and Lite/Receipt/XML/CSV/Composition specifications without version suffixes and removed all 34 starter-product stubs.
+- Merged the block schemas, fixed UTF-8 descriptions, and aligned manifest, ownership, G1 field-group and hotel schemas with the accepted contract. Re-pathed the two hotel dictionary metrics without changing arithmetic or rounding.
+- Added accepted spec constants 3.0/4.0.0 and staged supported-version entries, final module requirements/types and new refusal registrations. Release labels, runtime readers and corpus authoring stay in later RFC phases. Test projections preserve all existing checks across that boundary; historical RFC/release filenames resolve through the docs-site build map.
+
+
 ## [3.0.0] - 2026-10-11
 
 ### Released

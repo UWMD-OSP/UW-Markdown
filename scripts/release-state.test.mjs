@@ -243,7 +243,7 @@ test('6. the historical v2.14.0 and v2.15.0 tags stay where they were, with thei
     const failures = checkReleaseState({
       changelog: show('CHANGELOG.md'),
       versions: show('VERSIONS.md'),
-      protocolDoc: show('spec/UW_PROTOCOL_v1.md'),
+      protocolDoc: show('spec/UW_PROTOCOL.md'),
       coreVersion: JSON.parse(show('packages/uwmd-core/package.json')).version,
       protocolVersion: show('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)[1],
       cliVersion: cli.version,
@@ -341,7 +341,7 @@ test('actual 2.16.0 and 2.17.0 tag trees remain valid with their four-package so
     const show = (path) => git('show', `${tag}:${path}`);
     const cli = JSON.parse(show('packages/uwmd-cli/package.json'));
     const state = checkReleaseState({
-      changelog: show('CHANGELOG.md'), versions: show('VERSIONS.md'), protocolDoc: show('spec/UW_PROTOCOL_v1.md'),
+      changelog: show('CHANGELOG.md'), versions: show('VERSIONS.md'), protocolDoc: show('spec/UW_PROTOCOL.md'),
       coreVersion: JSON.parse(show('packages/uwmd-core/package.json')).version,
       protocolVersion: show('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)[1],
       cliVersion: cli.version, cliCoreDependency: cli.dependencies['@uwmd/core'], tag,
@@ -407,7 +407,7 @@ test('every v2.* tag has an empty [Unreleased]; the 2.18.0 preparation passes an
     const show = (path) => git('show', `${rev}:${path}`);
     const cli = JSON.parse(show('packages/uwmd-cli/package.json'));
     return {
-      changelog: show('CHANGELOG.md'), versions: show('VERSIONS.md'), protocolDoc: show('spec/UW_PROTOCOL_v1.md'),
+      changelog: show('CHANGELOG.md'), versions: show('VERSIONS.md'), protocolDoc: show('spec/UW_PROTOCOL.md'),
       coreVersion: JSON.parse(show('packages/uwmd-core/package.json')).version,
       protocolVersion: show('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)[1],
       cliVersion: cli.version, cliCoreDependency: cli.dependencies['@uwmd/core'],

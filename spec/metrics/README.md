@@ -16,7 +16,7 @@ that array. The extraction keeps one entry per pack declaration, including
 mixed-use's component calculations; identical ids in different classes retain
 their own formulas, inputs and labels.
 
-`formula` uses [Protocol §VIII.1](../UW_PROTOCOL_v1.md#viii-1-safe-expression-grammar-ebnf)
+`formula` uses [Protocol §VIII.1](../UW_PROTOCOL.md#viii-1-safe-expression-grammar-ebnf)
 notation. `input_paths` enumerates every potential document read in expression
 order, once each, including conditional branches. It is **not** a list of
 inputs that must all be present: evaluate the stated expression, including its
@@ -44,7 +44,7 @@ can verify `0.601852` at the 1% floor. DSCR `1.5` versus `1.7` fails, rather
 than becoming unverifiable. Equality verifies and a finite disagreement fails;
 unverifiable is for absent usable inputs, not inadequate spelling precision.
 No additional tolerance or double rounding is allowed.
-[Protocol §VIII.5.1](../UW_PROTOCOL_v1.md#viii-5-1-stated-metric-precision-rfc-0079)
+[Protocol §VIII.5.1](../UW_PROTOCOL.md#viii-5-1-stated-metric-precision-rfc-0079)
 is normative. The reference API rejects unavailable/invalid source precision
 as a typed caller error; preserve it before numeric parsing.
 
@@ -138,3 +138,7 @@ The [verifier-only conformance fixture](../../conformance/metrics/README.md)
 checks example statements from dictionary expressions without importing packs,
 defaults or cascade. Known example disagreements are recorded as findings;
 they do not change the dictionary or the examples.
+
+## RFC 0081 Phase 2 hospitality addresses
+
+The dictionary describes the final single-home hotel fields: `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights`, and `property.keys`. Only `total_room_revenue` and `room_revenue_per_key` move input addresses; their arithmetic, null guards, units and rounding are unchanged. Packs remain on their pre-cleanup addresses until Phase 4; the parity test projects precisely these four addresses while the Phase 3 corpus is pending.

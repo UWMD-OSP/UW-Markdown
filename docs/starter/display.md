@@ -2,7 +2,7 @@
 
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 >
-> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL_v1.md)
+> This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL.md)
 > §III (except §III.1b and §III.6a)
 > under [RFC 0078](../rfcs/0078-protocol-is-verification.md) (D11). Section
 > numbers and headings are kept so existing references still find the text;

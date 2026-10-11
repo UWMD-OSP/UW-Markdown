@@ -16,11 +16,11 @@ body:
       label: Which document?
       multiple: true
       options:
-        - "Format spec (UW_FORMAT_SPEC_v1.md / v2.md)"
-        - "UW Lite spec (UW_LITE_SPEC_v1.md)"
-        - "Protocol spec (UW_PROTOCOL_v1.md)"
-        - "Receipt spec (UW_RECEIPT_v1.md)"
-        - "Composition spec (UW_COMPOSITION_v1.md)"
+        - "Format spec (UW_FORMAT_SPEC.md / v2.md)"
+        - "UW Lite spec (UW_LITE_SPEC.md)"
+        - "Protocol spec (UW_PROTOCOL.md)"
+        - "Receipt spec (UW_RECEIPT.md)"
+        - "Composition spec (UW_COMPOSITION.md)"
         - "XML mapping, CSV bundle, or HTTP/MCP bindings"
         - "JSON Schemas (spec/schemas)"
         - "Conformance corpus expectations"

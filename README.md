@@ -8,12 +8,12 @@
 
 **UW Markdown** is a canonical underwriting record for commercial real-estate systems. It carries narrative, typed deal facts, deterministic calculations, validation, and append-only provenance in an open format that AI agents, services, editors, viewers, and internal platforms can all load.
 
-A deal record is a **`.uwx.md`** file — the complete, lossless underwriting record. Colloquially it is "a UW Markdown document," much as a `.docx` is "a Word document." Its lossy sibling, **UW Lite** (`.uw.md`), is a constrained human-readable summary with its own [specification](spec/UW_LITE_SPEC_v1.md) — not an older version, and not deprecated. UWX is what a deal *is*; Lite is one way of showing it.
+A deal record is a **`.uwx.md`** file — the complete, lossless underwriting record. Colloquially it is "a UW Markdown document," much as a `.docx` is "a Word document." Its lossy sibling, **UW Lite** (`.uw.md`), is a constrained human-readable summary with its own [specification](spec/UW_LITE_SPEC.md) — not an older version, and not deprecated. UWX is what a deal *is*; Lite is one way of showing it.
 
 This repository is the home of the standard:
 
-- [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) — the file format specification.
-- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — UW Protocol — verification: how any party checks that a document is well formed, internally consistent and reproducible (Reader and Verifier tiers).
+- [`spec/UW_FORMAT_SPEC.md`](spec/UW_FORMAT_SPEC.md) — the file format specification.
+- [`spec/UW_PROTOCOL.md`](spec/UW_PROTOCOL.md) — UW Protocol — verification: how any party checks that a document is well formed, internally consistent and reproducible (Reader and Verifier tiers).
 - [`spec/metrics/`](spec/metrics/README.md) — the normative metric dictionary that defines every builtin metric.
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
@@ -68,8 +68,8 @@ To open the reference web viewer, point any browser at
 
 ## What ships in v1
 
-- The format spec (`UW_FORMAT_SPEC_v1.md`) — 21 standard sections, validation rules, supersede semantics.
-- The protocol spec (`UW_PROTOCOL_v1.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
+- The format spec (`UW_FORMAT_SPEC.md`) — 21 standard sections, validation rules, supersede semantics.
+- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, runner, and an optional Claude-backed Bancroft reference agent suite.
 - A conformance corpus per tier so third parties can self-certify.
 - A single-file web viewer demonstrating a Reader in <500 LOC.
@@ -110,8 +110,8 @@ This project follows the [Contributor Covenant](./CODE_OF_CONDUCT.md).
 - [MAINTAINERS.md](./MAINTAINERS.md) — current maintainers and areas of ownership.
 - [SECURITY.md](./SECURITY.md) — how to report a vulnerability.
 - [CHANGELOG.md](./CHANGELOG.md) — release-by-release history.
-- [UW XML Mapping 1.0](./spec/UW_XML_MAPPING_v1.md) — deterministic, lossless XML representation and secure decoding rules.
-- [UW CSV Bundle 1.0](./spec/UW_CSV_BUNDLE_v1.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.
+- [UW XML Mapping 1.0](./spec/UW_XML_MAPPING.md) — deterministic, lossless XML representation and secure decoding rules.
+- [UW CSV Bundle 1.0](./spec/UW_CSV_BUNDLE.md) — normalized CSV tables, deterministic ZIP, safe extraction, and named views.
 - [HTTP Binding 1.0](./spec/bindings/UW_HTTP_BINDING_v1.md) and [MCP Binding 1.0](./spec/bindings/UW_MCP_BINDING_v1.md) — API negotiation, semantic ETags, stable resources, and AI-friendly tool results.
 - [1.1+ interchange release plan](./docs/releases/1.1-plus-interchange-plan.md) —
   governance gates and phased delivery for JSON, XML, CSV, API, and MCP.

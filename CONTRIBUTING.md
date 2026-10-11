@@ -70,7 +70,7 @@ npm test -w @uwmd/core -- --watch        # tests in watch mode
 
 ## Filing a spec change
 
-Spec changes — to `UW_FORMAT_SPEC_v1.md`, `UW_PROTOCOL_v1.md`, or
+Spec changes — to `UW_FORMAT_SPEC.md`, `UW_PROTOCOL.md`, or
 `spec/schemas/*` — are higher-stakes than code changes because third parties
 build on top of these documents. The process depends on whether the change is
 **editorial** or **normative** (see [GOVERNANCE.md](./GOVERNANCE.md) for the

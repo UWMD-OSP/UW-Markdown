@@ -56,9 +56,8 @@ Know which side a change is on before you start.
   non-normative starter products guide. `docs/wiki/` — developer reference.
 
 The public API is `packages/uwmd-core/src/index.ts` (browser-safe subset:
-`src/browser.ts`). The contract is `spec/UW_FORMAT_SPEC_v2.md`,
-`spec/UW_FORMAT_SPEC_v1.md`, `spec/UW_PROTOCOL_v1.md` (titled "UW Protocol —
-verification"; the filename is kept through 3.0), `spec/UW_RECEIPT_v1.md` and
+`src/browser.ts`). The contract is `spec/UW_FORMAT_SPEC.md`, `spec/UW_PROTOCOL.md`,
+`spec/UW_RECEIPT.md` and
 `spec/metrics/`; `packages/uwmd-core/src/protocol.ts` is the executable mirror
 of the protocol.
 Current state: [`docs/wiki/13-status.md`](docs/wiki/13-status.md) and
@@ -89,7 +88,7 @@ the standard; every rule here still blocks a PR.
 5. **Append-only provenance:** supersede, don't destroy; the host owns `_meta`.
 6. **Semver-per-surface:** format, protocol, and each package version independently.
 7. **Spec/schema/protocol stay in lockstep:** `protocol.ts`, `spec/schemas/` and
-   `spec/UW_PROTOCOL_v1.md` change in the same PR or not at all.
+   `spec/UW_PROTOCOL.md` change in the same PR or not at all.
 8. **Workspace isolation:** `@uwmd/*` always resolves through local workspace
    links, never a registry tarball.
 9. **Descriptive identity never selects underwriting behavior:** frontmatter

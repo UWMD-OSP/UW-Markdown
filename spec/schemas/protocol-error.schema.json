@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/protocol-error.schema.json",
   "title": "UW Protocol Error",
-  "description": "Structured error returned by any conforming implementation when an operation fails. Mirrors the ProtocolError interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §XI for the full error taxonomy and the per-category code prefixes.",
+  "description": "Structured error returned by any conforming implementation when an operation fails. Mirrors the ProtocolError interface in @uwmd/core/protocol.ts. See UW_PROTOCOL.md §XI for the full error taxonomy and the per-category code prefixes.",
   "type": "object",
   "required": ["category", "code", "message"],
   "additionalProperties": false,

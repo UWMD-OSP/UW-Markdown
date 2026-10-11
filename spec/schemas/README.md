@@ -11,10 +11,9 @@ files live in this directory pending publication on `uwmd.org`.
 
 | Schema | Mirrors | Spec section |
 |---|---|---|
-| [`uwmd-block.schema.json`](uwmd-block.schema.json) | `UWBlock` + `UWMeta` (v1.x flat shape) | Format §2.4–§2.6 |
-| [`uwmd-block-v2.schema.json`](uwmd-block-v2.schema.json) | `UWBlock` + nested `UWMetaV2` + `_overrides` (format 2.0) | Format v2 §2–§3 / RFC 0009 |
+| [`uwmd-block.schema.json`](uwmd-block.schema.json) | Bare payload + nested `_meta` (Format 3.0) | Format §2.4–§2.6 |
 | [uw-document-envelope.schema.json](uw-document-envelope.schema.json) | UWDocumentEnvelope | RFC 0014 / Envelope 1.0 |
-| [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 1.0 tooling schema | [UW XML Mapping 1.0](../UW_XML_MAPPING_v1.md) |
+| [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 1.0 tooling schema | [UW XML Mapping 1.0](../UW_XML_MAPPING.md) |
 | [`edit-operation.schema.json`](edit-operation.schema.json) | `EditOperation` (discriminated union) | Protocol §V |
 | [`protocol-error.schema.json`](protocol-error.schema.json) | `ProtocolError` | Protocol §XI |
 | [`implementation-manifest.schema.json`](implementation-manifest.schema.json) | `ImplementationManifest` | Protocol §I.4 |
@@ -23,9 +22,9 @@ files live in this directory pending publication on `uwmd.org`.
 | [`conformance-corpus.schema.json`](conformance-corpus.schema.json) | Exhaustive corpus ownership index | Protocol §II.6 / RFC 0078 Phase 3 |
 | [`calc-result.schema.json`](calc-result.schema.json) | `CalcResult` | Protocol §VIII |
 | [`issue-remediation.schema.json`](issue-remediation.schema.json) | `IssueRemediation` | Protocol §III.6 |
-| [`module-manifest.schema.json`](module-manifest.schema.json) | `ModuleManifest` | Protocol §X |
+| [`module-manifest.schema.json`](module-manifest.schema.json) | `ProtocolModuleManifest` | Protocol §X |
 | [`module-signature.schema.json`](module-signature.schema.json) | `ModuleSignature` | Protocol §X.1 |
-| [`uw-receipt.schema.json`](uw-receipt.schema.json) | `UWReceipt` | [UW Receipt 1.0](../UW_RECEIPT_v1.md) / RFC 0016 |
+| [`uw-receipt.schema.json`](uw-receipt.schema.json) | `UWReceipt` | [UW Receipt 1.1](../UW_RECEIPT.md) / RFC 0016 |
 | [`section-gaps.schema.json`](section-gaps.schema.json) | `SectionGaps` | Protocol §VII |
 | [`section-components.schema.json`](section-components.schema.json) | `components` section (mixed-use) | Format §4.23 / RFC 0019 |
 | [`section-capital-stack.schema.json`](section-capital-stack.schema.json) | `capital_stack` section (tranches + sizing) | Format §4.24 / RFC 0026 |
@@ -49,9 +48,9 @@ files live in this directory pending publication on `uwmd.org`.
 | [`uw-deal-package-manifest.schema.json`](uw-deal-package-manifest.schema.json) | `UWDealPackageManifest` | RFC 0018 |
 | [`uw-portfolio-profile.schema.json`](uw-portfolio-profile.schema.json) | `.uwportfolio.json` sidecar (`PortfolioProfile`) | Protocol §XV / RFC 0015 |
 | [`uw-market-data.schema.json`](uw-market-data.schema.json) | `market-data-v1` documents | RFC 0022 |
-| [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §2 / RFC 0021 |
-| [`uw-external-section.schema.json`](uw-external-section.schema.json) | `external` section directive | [UW Composition 1.0](../UW_COMPOSITION_v1.md) §3 / RFC 0021 |
-| [`uw-rollup.schema.json`](uw-rollup.schema.json) | `portfolio_rollup` payload | [UW Receipt 1.0](../UW_RECEIPT_v1.md) §11 / RFC 0021 §6 |
+| [`uwpart.schema.json`](uwpart.schema.json) | `.uwpart.md` frontmatter | [UW Composition 1.0](../UW_COMPOSITION.md) §2 / RFC 0021 |
+| [`uw-external-section.schema.json`](uw-external-section.schema.json) | `external` section directive | [UW Composition 1.0](../UW_COMPOSITION.md) §3 / RFC 0021 |
+| [`uw-rollup.schema.json`](uw-rollup.schema.json) | `portfolio_rollup` payload | [UW Receipt 1.1](../UW_RECEIPT.md) §11 / RFC 0021 §6 |
 | [`period-key.schema.json`](period-key.schema.json) | `PeriodKey` | Protocol §VIII.2a / RFC 0041 |
 | [`period-series-entry.schema.json`](period-series-entry.schema.json) | `PeriodSeriesEntry` | Protocol §VIII.2a / RFC 0041 |
 | [`period-refinement-issue.schema.json`](period-refinement-issue.schema.json) | `PeriodRefinementIssue` | Protocol §VIII.2b / RFC 0042 |
