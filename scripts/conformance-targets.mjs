@@ -61,7 +61,8 @@ export function assertCoverage(expected, observed) {
   if (missing.length) throw new Error(`Missing corpus results: ${missing.join(', ')}`);
 }
 export function portableOwner(id) {
-  let suite, scenario;
+  let suite;
+  let scenario;
   if (id.startsWith('tier-1-malformed/')) [suite, scenario] = ['1', `malformed/${id.slice('tier-1-malformed/'.length)}`];
   else if (id.startsWith('tier-1/')) {
     const [, stem, action] = id.split('/');

@@ -123,10 +123,6 @@ const CONFORMANCE_DIR = join(ROOT, 'conformance');
 
 const args = process.argv.slice(2);
 const flag = (name) => args.some((a) => a === `--${name}` || a.startsWith(`--${name}=`));
-const flagVal = (name) => {
-  const a = args.find((x) => x.startsWith(`--${name}=`));
-  return a ? a.slice(name.length + 3) : undefined;
-};
 let selected;
 try { selected = selection(args); }
 catch (error) { console.error(error.message); process.exit(2); }
