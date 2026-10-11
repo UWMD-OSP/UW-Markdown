@@ -108,6 +108,10 @@ test('single specification files, all 34 starter stubs gone, and every historica
     assert.ok(!build.includes(`from: 'spec/${old}'`), old);
   }
   assert.doesNotMatch(build, /\/spec\/format-v2/);
+  assert.ok(build.includes("await rm(join(SITE_ROOT, 'spec', 'format-v2.md'), { force: true })"));
+  for (const file of ['docs/ABOUT.md', 'tools/docs-site/ai/index.md', 'tools/docs-site/tutorials/quickstart.md', 'tools/docs-site/tutorials/your-first-uwmd-file.md', 'tools/docs-site/.vitepress/theme/HomePage.vue']) {
+    assert.doesNotMatch(read(file), /\/spec\/format-v2/, file);
+  }
 });
 
 test('every Format example carries nested metadata with a nonempty section identity', () => {

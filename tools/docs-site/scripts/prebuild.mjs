@@ -385,6 +385,9 @@ function withRfcStatusBanner(md, toPath) {
 
 // ─── Run copies ───────────────────────────────────────────────────────────────
 
+// Do not let a retired generated page mask dead links in an incremental build.
+await rm(join(SITE_ROOT, 'spec', 'format-v2.md'), { force: true });
+
 let count = 0;
 for (const c of COPIES) {
   const src = join(REPO_ROOT, c.from);

@@ -41,7 +41,7 @@ schema.
 | Credit narrative | Ordinary Markdown prose between the blocks, plus `risk_assessment` |
 | Who wrote what, when, from which source | The `_meta` object on every block, with append-only revisions |
 
-The [format specification](/spec/format-v2) defines every section. The
+The [format specification](/spec/format) defines every section. The
 [UWX and UW Lite guide](/guide/lite-and-uwx) explains how the complete record
 relates to the compact Lite summary.
 
@@ -121,7 +121,7 @@ detail it leaves out.
 
 ## What is available today
 
-- **The normative contract.** The [format specification](/spec/format-v2), the
+- **The normative contract.** The [format specification](/spec/format), the
   [protocol](/spec/protocol) that defines how any party verifies a record
   (Reader and Verifier tiers), the [metric dictionary](/spec/metrics/),
   [JSON Schemas](/spec/schemas/) for every cross-boundary type, and the

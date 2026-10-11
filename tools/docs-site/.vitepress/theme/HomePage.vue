@@ -265,7 +265,7 @@ the post-sale value.
         <div>
           <h3 class="uw-column-title">The standard</h3>
           <div class="uw-link-list">
-            <a href="/spec/format-v2"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.format }}</code></a>
+            <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.format }}</code></a>
             <a href="/spec/protocol"><span><strong>Protocol — verification</strong><small>How any party checks a record: Reader and Verifier tiers, optional profiles</small></span><code>v{{ versions.protocol }}</code></a>
             <a href="/spec/metrics/"><span><strong>Metric dictionary</strong><small>The normative definition of every builtin metric</small></span><code>JSON</code></a>
             <a href="/spec/receipt"><span><strong>Verification receipts</strong><small>An offline, recomputable proof of the arithmetic</small></span><code>spec</code></a>
