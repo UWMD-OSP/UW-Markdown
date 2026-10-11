@@ -20,7 +20,7 @@ import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/ind
 //
 // Exit codes: 0 = all passed, 1 = at least one failure.
 
-import { index, key, suiteFamily, selection, assertCoverage, publicOwner } from './conformance-targets.mjs';
+import { index, key, suiteFamily, selection, assertCoverage, assertDispatch, publicOwner } from './conformance-targets.mjs';
 import { isDeepStrictEqual } from 'node:util';
 import { verifyExamples } from '../conformance/metrics/verifier.mjs';
 import { controls as metricControls } from '../conformance/metrics/controls.mjs';
@@ -255,6 +255,54 @@ function normalize(text) {
   return `${text.replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trimEnd()}\n`;
 }
 
+// ─── Validate-only Verifier projections (RFC 0078 Phase 3) ──────────────────
+//
+// Some mixed checks pin a registered validator or provenance code beside
+// starter behavior (a render refusal, an edit refusal). The mixed check stays a
+// starter check with every assertion intact; the corpus index adds a separate
+// `<scenario> [validate]` Verifier case for the code alone. Its baseline is the
+// deduplicated (code, severity) set tier-1 `[validate]` baselines use, and the
+// source case's required codes must appear in it as well. Where a provenance
+// policy is the rule under test, its findings are baselined beside it.
+function hasValidateCase(suite, scenario) {
+  return index.has(key(suite, `${scenario} [validate]`));
+}
+
+function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCodes, provenanceIssues) {
+  const id = `${scenario} [validate]`;
+  let validation;
+  try {
+    validation = validateUWFile(parsed);
+  } catch (e) {
+    record(suite, id, 'fail', `validateUWFile threw: ${e.message}`);
+    return;
+  }
+  const pairsOf = (issues) => [...new Map(
+    issues.map((i) => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }])
+  ).values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity));
+  const issues = pairsOf(validation.issues ?? []);
+  const provenance = provenanceIssues ? pairsOf(provenanceIssues) : undefined;
+  const seen = [...issues, ...(provenance ?? [])].map((p) => p.code);
+  const missing = requiredCodes.filter((code) => !seen.includes(code));
+  if (requiredCodes.length === 0 || missing.length) {
+    record(suite, id, 'fail', `required ${missing.join(', ') || '(none listed)'} absent: [${seen.join(', ')}]`);
+    return;
+  }
+  // `overall_status` stays the validator's own verdict; provenance findings
+  // (§V.3) are reported beside it rather than folded into it.
+  const actual = `${JSON.stringify({ overall_status: validation.overall_status, issues, ...(provenance ? { provenance } : {}) }, null, 2)}\n`;
+  if (UPDATE) {
+    writeFileSync(baselinePath, actual);
+    record(suite, id, 'updated');
+  } else if (!existsSync(baselinePath)) {
+    record(suite, id, 'fail', `missing baseline: ${basename(baselinePath)}`);
+  } else {
+    const expected = normalize(readFileSync(baselinePath, 'utf8'));
+    record(suite, id, expected === normalize(actual) ? 'pass' : 'fail',
+      expected === normalize(actual) ? requiredCodes.join(', ') : firstDifference(expected, normalize(actual)));
+  }
+}
+
 // RFC 0072 — warning-only identity, with no stage/financial side effects.
 function runScenario() {
   const base = join(CONFORMANCE_DIR, 'scenario');
@@ -461,7 +509,22 @@ async function runTier1Malformed() {
       parsed = parseUWFile(fixtureContent);
     } catch (e) {
       record('1', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
+      if (hasValidateCase('1', `malformed/${id}`)) record('1', `malformed/${id} [validate]`, 'fail', 'parse threw');
       continue;
+    }
+
+    if (hasValidateCase('1', `malformed/${id}`)) {
+      // The policy is the rule under test, so provenance findings are part of
+      // what a Verifier reports for this document (§V.3).
+      const policiesPath = join(malformedDir, `${id}.policies.json`);
+      const policies = existsSync(policiesPath) ? JSON.parse(readFileSync(policiesPath, 'utf8')) : undefined;
+      let provenance;
+      try {
+        provenance = expectedCodes.some((c) => c.startsWith('POL-')) ? verifyProvenance(parsed, policies).issues ?? [] : null;
+      } catch (e) {
+        record('1', `malformed/${id} [validate]`, 'fail', `verifyProvenance threw: ${e.message}`);
+      }
+      if (provenance !== undefined) recordValidationOnly('1', `malformed/${id}`, join(malformedDir, `${id}.validation.json`), parsed, expectedCodes, provenance);
     }
 
     let validation;
@@ -3334,6 +3397,9 @@ async function runLocale() {
     }
 
     const parsed = parseUWFile(withLocale(expected.locale));
+    if (hasValidateCase('locale', id)) {
+      recordValidationOnly('locale', id, join(dir, 'expected-validation.json'), parsed, expected.validator_codes ?? []);
+    }
 
     // ── Unregistered locale: display refuses, machines keep working ──────────
     if (expected.render_refuses) {
@@ -3390,7 +3456,11 @@ async function runCurrency() {
     let parsed;
     try { parsed = parseUWFile(source); } catch (e) {
       record('currency', id, 'fail', `parse threw: ${e.message}`);
+      if (hasValidateCase('currency', id)) record('currency', `${id} [validate]`, 'fail', 'parse threw');
       continue;
+    }
+    if (hasValidateCase('currency', id)) {
+      recordValidationOnly('currency', id, join(dir, 'expected-validation.json'), parsed, expected.validator_codes ?? []);
     }
     const codes = validateUWFile(parsed).issues.map((i) => i.code);
     const missing = (expected.validator_codes ?? []).filter((code) => !codes.includes(code));
@@ -4184,6 +4254,9 @@ async function runSource() {
     const id = '04-colon-form-rejected';
     const expected = expectedOf(id);
     const { content, parsed } = load(id);
+    if (hasValidateCase('source', id)) {
+      recordValidationOnly('source', id, join(SOURCE_DIR, id, 'expected-validation.json'), parsed, expected.src_codes);
+    }
     const problems = [];
     const codes = srcCodes(parsed);
     if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
@@ -4482,6 +4555,7 @@ const dispatch = {
 const dispatchKey = suiteFamily;
 const dispatched = new Set(selected.map(c => dispatchKey(c.suite)));
 try {
+  assertDispatch(Object.keys(dispatch));
   for (const suite of dispatched) {
     if (!dispatch[suite]) throw new Error(`No runner for suite: ${suite}`);
     await dispatch[suite]();

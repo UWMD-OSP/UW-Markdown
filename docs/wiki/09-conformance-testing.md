@@ -83,17 +83,40 @@ Editor/agent, rendering, defaults/cascade, projections and refinement checks
 belong to [docs/starter](../starter/README.md), remain in CI and have separate
 report counts. Mixed cases keep all their assertions and are product checks.
 
-The corpus reconciles **1,053 default + three opt-in = 1,056 reference checks**
-and **332 portable CLI projections**. The lender fixture stays **187/0/0**.
+The corpus reconciles **1,053 default + three opt-in = 1,056 existing reference
+checks, plus five new validate-only Verifier checks = 1,061**, and **332 portable
+CLI projections**. The lender fixture stays **187/0/0**.
+
+| Owner | Reference | Portable |
+|---|---:|---:|
+| reader | 23 | 16 |
+| verifier | 679 | 280 |
+| module | 68 | 1 |
+| integrity | 15 | 0 |
+| representations | 134 | 0 |
+| portfolio | 14 | 0 |
+| sensitivity | 5 | 0 |
+| stochastic | 7 | 0 |
+| starter-products | 116 | 35 |
+| **Total** | **1,061** | **332** |
+
+A case testing something §II.2 lists as a Verifier requirement is a Verifier
+case, even when it needs an expression evaluator: those keep
+`requires_capabilities: ["calc-evaluate"]` and are skipped, not failed, for a
+Verifier that does not claim it.
+
 `--tier=verifier` includes Reader; `--profile=module` selects only that profile;
 `--starter-products` selects product checks. Combine selectors to claim both.
-Numeric and long legacy tier names resolve through `readConformanceTier` and
-warn on stderr. They infer neither profiles nor starter checks. `--suite`
+Long legacy tier names and the numeric shorts `1`–`4` (exactly one digit;
+`3.0` or `+3` are refused) resolve through `readConformanceTier` and warn on
+stderr, so `--tier=3` now means Verifier and `--tier=2` runs Reader only. They
+infer neither profiles nor starter checks. `--suite`
 selects an existing fixture family independently of ownership. With no
 selector every indexed check runs, with counts by target.
 
 Unknown owners, duplicate/missing results and unindexed portable identities
-fail the gate. Baseline updates require full runs or `--suite`; a target
+fail the gate, as does a runner suite with no index rows or an indexed suite
+with no runner. Baseline updates require full runs or `--suite`; a target
 filter is refused because mixed-suite updates could alter unselected baselines.
 A family includes its child suites (`3-refinement` under `3`, `4-profile`
 under `4`); baseline updates selecting only a child suite are refused.
@@ -118,7 +141,7 @@ npm run conformance -- --suite=capability   # the RFC 0011 capability-token suit
 npm run conformance -- --suite=locale       # the RFC 0001 display-locale suite alone
 npm run conformance -- --suite=meta-v2      # the RFC 0009 nested-_meta suite alone
 npm run conformance -- --suite=migrate      # the RFC 0009 migrate --to-v2 suite alone
-npm run conformance -- --suite=2 --update   # regenerate that tier's baselines
+npm run conformance -- --suite=2 --update   # regenerate that family's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
 
@@ -146,6 +169,12 @@ counts. Historical suite numbers are exposed only as fixture-family addresses.
   optional `must_parse`. INT-/POL- expectations also exercise
   `verifyChain`/`verifyProvenance`; an optional `<id>.policies.json` supplies
   custom policies.
+- `malformed/<id>.validation.json` (06 and 07 only) freezes the Verifier
+  `[validate]` projection of a starter check: the validator's `overall_status`
+  and `(code, severity)` pairs, plus the `provenance` pairs `verifyProvenance`
+  reports under the fixture's policies. `currency/malformed`,
+  `locale/unsupported-locale-refuses` and `source/04-colon-form-rejected` carry
+  the same projection as `expected-validation.json`.
 
 ### Editor starter checks
 
@@ -158,6 +187,10 @@ byte comparison. Negative scenarios provide `expected-error.json` declaring the
 region must be preserved.**
 
 ### Verifier and Module calculations
+
+All but one of these are Verifier checks (§II.2: dictionary reproduction, the
+IRR procedure, the §VIII.1–VIII.3 notation). `revpar-basic`, a custom
+ADR × occupancy declaration, is the Module check.
 
 `conformance/tier-3-calc-host/fixtures/<scenario>/`: `deal.uw.md` + `calc.json`
 (a `ModuleCalcDecl`) → `evaluateCalc` → compare projected `{calc_id, ok, value,
@@ -247,7 +280,7 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,056 indexed checks across its suites, and most of what has been added
+runs all 1,061 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable

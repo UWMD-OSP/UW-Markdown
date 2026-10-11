@@ -3,7 +3,7 @@
 Recorded fixtures for the v1 declarative module loader (`modules.ts`). Run with:
 
 ```bash
-npm run conformance -- --tier=modules
+npm run conformance -- --suite=modules
 ```
 
 The suite runs by default alongside the other tiers. It needs no network and no
@@ -61,9 +61,10 @@ a fixture file holds one manifest and those properties are about how several
 interact. Protocol §VII.3 declaration conflicts are the exception: see
 `registry/` below.
 
-`accept/` fixtures load against `tier-4-agent-host`, the maximal host, so they
-assert manifest validity rather than host capability. Tier gating has its own
-unit test.
+`accept/` fixtures load against `tier-4-agent-host`, the maximal module-host
+tier, so they assert manifest validity rather than host capability. That value
+is the module-host vocabulary `requires_tier` keeps (Protocol §VII.4), not a
+conformance tier. Host-tier gating has its own unit test.
 
 Nothing in `accept/` or `reject/` executes a module: those fixtures assert that
 a manifest *loads*. Module signing is under `../signing/modules/` (RFC 0002) and

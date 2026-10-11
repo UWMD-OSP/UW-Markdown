@@ -277,13 +277,38 @@ reference case. The portable cases retain `legacy_id` for exact migration
 reconciliation. The baseline is 1,053 default plus three opt-in reference
 checks, and 332 portable projections; after tagging there are 1,056 and
 332 respectively, with no changed fixture, assertion or expected output.
+Review added five validate-only Verifier checks (marked `added` in the index),
+so the reference total is 1,056 existing + 5 new = 1,061. Owners after review:
+
+| Owner | Reference | Portable |
+|---|---:|---:|
+| reader | 23 | 16 |
+| verifier | 679 | 280 |
+| module | 68 | 1 |
+| integrity | 15 | 0 |
+| representations | 134 | 0 |
+| portfolio | 14 | 0 |
+| sensitivity | 5 | 0 |
+| stochastic | 7 | 0 |
+| starter-products | 116 | 35 |
+| **Total** | **1,061** | **332** |
+
 The lender-only fixture remains **187 verified / 0 failed / 0 unverifiable**.
 
 | Question | Decision | Why (precedent) |
 |---|---|---|
 | Move or tag existing cases? | Tag each reference case exactly once in the runtime corpus index; retain fixture paths and baselines. Generated portable cases carry the same single owner and their legacy id. | §II.6 already makes directory membership non-normative; preserves existing fixture consumers and the approved tagging alternative. |
 | Mixed standard/product assertions? | Keep the entire check as a starter-product check when it also asserts editing, rendering, defaults/cascade, authoring, projection or refinement. Do not remove assertions to claim standard coverage. | D3–D6 and D10–D11; product quality bars stay in CI, separately reported. |
-| Legacy calculation cases? | Exact dictionary reproductions belong to Verifier; custom declarations, expression grammar and resolution belong to Module. Existing custom ADR × occupancy is not a second standard RevPAR definition. | D1–D3, §II.3 Module and Phase 2 extraction/parity; no formula or baseline redesign. |
+| Legacy calculation cases? | Exact dictionary reproductions belong to Verifier; custom declarations belong to Module. Existing custom ADR × occupancy (`revpar-basic`) is not a second standard RevPAR definition and stays Module. Superseded in part by the review rows below. | D1–D3, §II.3 Module and Phase 2 extraction/parity; no formula or baseline redesign. |
+| Spec text or reviewer intuition when they differ? (owner, 2026-10-11) | **Spec text wins.** A case testing something §II.2 lists as a Verifier requirement is Verifier-owned. Cases that need expression evaluation keep `requires_capabilities: ["calc-evaluate"]`, so a Verifier that does not claim it skips them rather than failing. | Owner decision on review; §II.2 items 2, 3 and 6 and §II.6a.5 capability skips. |
+| IRR cases (`irr-01`…`05`)? | Verifier. | §II.2 item 3 names the IRR procedure among the stated-figure verifiers. |
+| Dictionary reproductions in suite 3? | Verifier when id, formula and unit equal a `spec/metrics/builtin.json` entry: the nine former Module cases (land usable-land ratio, self-storage economic occupancy, senior-housing care-revenue ratio, student-housing pre-lease rate, and five mixed-use cases). An independent re-scan of all 97 suite-3 calcs found no other exact match. `dscr-from-section` (the dictionary `dscr` formula and unit under the id `implied_dscr`) is Verifier because the formula is what is verified. | §II.2 item 2 and §3: a Verifier reproduces each dictionary definition by any method. |
+| Expression notation (`date-*`, `period-*`, `variant-*`)? | Verifier, `calc-evaluate` required. `date-01`…`48` pin the §VIII.3 `is_calendar_date` built-in; `period-01`…`12` the §VIII.1/§VIII.2a period grammar, including the same-day selection the cash-flow verifier mirrors; `variant-01`…`11` the §VIII.2 resolution of the role-bearing `debt_structure` map that every dictionary `ltv`/`dscr` entry reads through its `section_roles`. Each was checked: none depends on a module manifest or a custom-only construct, so none stays Module. Module keeps manifests, the registry, runtime and custom declarations. | §II.2 item 6 ("wherever it evaluates an expression … the built-in function set") and §2's disposition of §VIII.1–VIII.3 as the dictionary's notation. |
+| No-stack capital-stack pins (`no-stack-single-loan`, `gd05-total-equity`)? | Verifier. They assert the absence of `CS-*` validator codes and dictionary multifamily metrics; no starter behavior. | §II.2 items 1 and 2. |
+| Registered codes inside mixed starter checks? | Keep the mixed checks starter in full and add five new `<scenario> [validate]` Verifier cases for `CUR-01` (`currency/malformed`), `LOC-01` (`locale/unsupported-locale-refuses`), `SRC-01` (`source/04-colon-form-rejected`), `POL-01` and `POL-02` (`tier-1-reader/malformed/06`, `07`). Each reuses its fixture; its baseline is the validator's `overall_status` and `(code, severity)` pairs (plus `provenance` pairs for the POL cases) from unchanged validator output, and the source case's required code must also appear. They are reference-only: §II.6a.1 `validate` takes no policy input and the locale case derives its document, and `portable_legacy_ids` is the frozen migration set. | §III.6a code taxonomy and §V.3 source authority stay normative (§2 disposition); the "mixed checks stay starter" row above. |
+| Lite compilation (`lite [compile-report]`, `lite [uwx]`, `lite/compile/01`…`06`)? | Representations. Lite spec §8 states the conforming compiler's obligations, so the profile exercises both directions (compile and projection). | §II.3 Representations ("read and write the registered representations"); UW_LITE_SPEC_v1 §8. |
+| Package context invariants (`packages/invariant/context-valid`, `context-omits-source-bytes`, `deterministic-encoding`)? | Representations, consistent with their `standalone/package/*` siblings; none asserts starter behavior. `no-member-only-projection` (an RFC 0015 entity-edge projection) stays a starter check. | RFC 0018 §3–§5 package encodings and context boundary; consistency with existing Representations owners. |
+| Fail-closed dispatch and strict aliases? | A runner suite with no index rows, or an indexed suite with no runner, is a coverage error. A numeric legacy short is exactly `/^[1-4]$/`, as in the generated Python readings. The unused `readConformanceTarget` export (unreleased) is removed. | The "Baseline updates and coverage" row; one alias table for both drivers. |
 | Selection and legacy tier aliases? | Verifier includes Reader; profiles and starter products are explicit selectors. Old long names and numeric shorts resolve through readConformanceTier, warn on stderr and infer no profiles. Named fixture families use --suite; old named --tier selectors warn. | §II.2, §II.5 and §II.6a.2; the portable driver consumes the generated helper readings instead of maintaining another mapping. |
 | Default run and old opt-in agent shapes? | Run all 1,056 existing reference checks by default, including the three formerly opt-in shapes, and separate counts by owner. Retain all 332 portable cases with unchanged commands, arguments and expectations. | RFC Conformance impact: starter checks remain in CI; promotion adds coverage to the default without adding or dropping a case. |
 | Unclaimed profiles? | Report their cases unverifiable; retain distinct capability skips. --no-skip rejects an incomplete certification run without calling an unsupported profile a wrong result. | §II.3 requires explicit profile claims and forbids passed/failed numerical judgments for unsupported profiles; RFC 0030 capability skips remain unchanged. |

@@ -72,6 +72,10 @@
               "stochastic",
               "starter-products"
             ]
+          },
+          "added": {
+            "const": true,
+            "description": "The case was added after migration_base, so it is outside the `before` reconciliation counts. Absent on every case that existed at migration_base."
           }
         },
         "additionalProperties": false

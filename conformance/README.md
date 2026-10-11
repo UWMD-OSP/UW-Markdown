@@ -15,52 +15,70 @@ paths remain stable for consumers; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 23 | 16 |
-| Verifier | 586 | 194 |
-| Module | 154 | 87 |
+| Verifier | 679 | 280 |
+| Module | 68 | 1 |
 | Integrity | 15 | 0 |
-| Representations | 109 | 0 |
+| Representations | 134 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 143 | 35 |
-| **Total** | **1,056** | **332** |
+| Starter products | 116 | 35 |
+| **Total** | **1,061** | **332** |
 
 The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
-now run by default. Portable cases project a subset of those same checks, so
-332 is not an additional corpus. All expectations are preserved. The index
+now run by default, and five new Verifier checks (marked `added` in the index)
+bring the total to 1,061. Portable cases project a subset of those same checks,
+so 332 is not an additional corpus. All expectations are preserved. The index
 and generated cases are checked for exact ownership, missing/duplicate results
 and generation drift.
 
 Starter-product checks belong to the [starter guide](../docs/starter/README.md)
 and remain blocking CI checks. A mixed check with product assertions stays a
-product check in full. Exact dictionary reproduction belongs to Verifier;
-custom calculation declarations and expression semantics belong to Module.
+product check in full; where it also pins a registered validator or provenance
+code, a separate `<scenario> [validate]` Verifier case checks that code alone
+(`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`).
 
-The following tree describes **fixture storage**, including legacy names:
+Ownership follows Protocol §II.2. Exact dictionary reproduction (same id,
+formula and unit as [`spec/metrics/builtin.json`](../spec/metrics/builtin.json)),
+the IRR procedure, the §VIII.1–VIII.3 expression grammar, variable resolution
+and built-ins (`date-*`, `period-*`, `variant-*`) are Verifier checks; the
+expression cases keep `requires_capabilities: ["calc-evaluate"]`, so a Verifier
+that claims no evaluator skips rather than fails them. Module owns module
+manifests, the registry and custom declarations (the ADR × occupancy
+`revpar-basic` fixture). UW Lite compilation and projection
+(Lite spec §8) and the deal-package encodings (RFC 0018) belong to
+Representations.
+
+The following tree describes **fixture storage**. The `tier-N-*` directory
+names are Protocol 2.x history kept for stable paths; owners come from the
+index, not the directory:
 
 ```
 conformance/
-├── tier-1-reader/      Parse + display, read-only
+├── tier-1-reader/      Reader parse, Verifier validation, starter renders
 │   ├── fixtures/       Well-formed .uwx.md records an implementer parses
 │   ├── malformed/      Files exercising validator / integrity / policy codes
 │   │                     (CC-NN, FV-NN, DQ-NN, INT-NN, POL-NN, META_*)
 │   │                     plus optional <id>.policies.json siblings for
 │   │                     POL-* fixtures
+│   │                     <id>.validation.json (06, 07): Verifier [validate]
+│   │                     projection incl. provenance findings
 │   └── expected/       Expected JSON parses + frozen validation verdicts
 │                         (<id>.validation.json: overall_status + every
 │                         (code, severity) pair) + display strings +
 │                         chat-format renders
-├── tier-2-editor/      Round-trip writes, supersede semantics
+├── tier-2-editor/      Starter products: round-trip writes, supersede
 │   └── fixtures/       <scenario>/{before.uwx.md, operation.json, after.uwx.md}
 │                         Optional siblings: context.json (EditContext),
 │                         options.json (ApplyEditOptions, e.g. {integrity: true,
 │                         maintainGaps: true}), expected-error.json (negative
 │                         path — assert applyEdit rejects with a specific code)
-├── tier-3-calc-host/   Custom calculation evaluation
+├── tier-3-calc-host/   Verifier calcs (dictionary, IRR, §VIII notation);
+│                         one Module custom declaration (revpar-basic)
 │   ├── fixtures/       <scenario>/{deal.uwx.md, calc.json, expected-result.json}
 │   └── refinement/     <scenario>/{deal.uwx.md, expected-graph.json}
 │                         Exercises extractDependencyGraph() against a fixture
-├── tier-4-agent-host/  AI agent layers producing write_uw_section calls
+├── tier-4-agent-host/  Starter products: AI agent layers (shape, profile, replay)
 │   ├── fixtures/       <scenario>/{before.uwx.md, expected-after-shape.json}
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract

@@ -26,7 +26,7 @@ the single most important diagram in the repo (also in [`ARCHITECTURE.md`](../..
 └──────────────────────────────────────────────────────────────┘
                          ▲ certified by
 ┌──────────────────────────────────────────────────────────────┐
-│  Conformance corpus     conformance/tier-1-reader … tier-4     │  trust anchor
+│  Conformance corpus     conformance/ + corpus-index.json     │  trust anchor
 └──────────────────────────────────────────────────────────────┘
                          ▲ governed by
 ┌──────────────────────────────────────────────────────────────┐
@@ -96,7 +96,8 @@ tools/
   vscode-uwmd/  Authoring extension (syntax, folding, on-save validation)
   docs-site/    VitePress site assembling spec + protocol + governance
 
-conformance/    tier-1-reader … tier-4-agent-host fixtures + expected outputs
+conformance/    Fixture families + expected outputs; corpus-index.json owns each case
+                (reader, verifier, profiles, starter products). tier-N dirs are legacy names
 scripts/        run-conformance.mjs, regen-conformance.mjs, validate-schemas.mjs
 examples/       Sample .uw.md deal files (Parkview is the canonical fixture)
 docs/           GLOSSARY.md, TOOLS.md, rfcs/, starter/ (non-normative starter guide), and this wiki/

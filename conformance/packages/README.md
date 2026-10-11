@@ -4,7 +4,7 @@ Manifest-level fixtures for RFC 0018 §3–§5, plus invariants asserted without
 baselines. Run with:
 
 ```bash
-npm run conformance -- --tier=packages
+npm run conformance -- --suite=packages
 ```
 
 Runs by default alongside the other suites. No network, no API key, nothing

@@ -16,7 +16,11 @@ export function indexCases(cases) {
 }
 export const index = indexCases(corpus.cases);
 export const legacyNames = ['tier-1-reader', 'tier-2-editor', 'tier-3-calc-host', 'tier-4-agent-host'];
-export const tierReadings = Object.fromEntries(['reader', 'verifier', ...legacyNames, '1', '2', '3', '4'].map(value => [value, readConformanceTier(legacyNames[Number(value) - 1] ?? value)]));
+// A numeric short is exactly one digit 1-4, as the Python driver's generated
+// reading table has it. Number() would also accept '3.0', '0x3', '1e0', '+3'
+// and ' 3', silently widening the selector vocabulary on one side only.
+export const legacyAlias = name => /^[1-4]$/.test(name) ? legacyNames[Number(name) - 1] : name;
+export const tierReadings = Object.fromEntries(['reader', 'verifier', ...legacyNames, '1', '2', '3', '4'].map(value => [value, readConformanceTier(legacyAlias(value))]));
 export const portableReadings = { targets: CONFORMANCE_TARGETS, profiles: CONFORMANCE_PROFILES, tiers: tierReadings };
 export const publicOwner = target => ({ target, ...(target === 'reader' || target === 'verifier' ? { tier: target } : target === 'starter-products' ? { starter_product: true } : { profile: target }) });
 
@@ -34,7 +38,7 @@ export function selection(args, warn = message => console.error(message)) {
   const targets = new Set();
   const suites = new Set(split(value('suite')));
   for (const name of split(value('tier'))) {
-    const reading = readConformanceTier(legacyNames[Number(name) - 1] ?? name);
+    const reading = readConformanceTier(legacyAlias(name));
     if (reading) {
       targets.add(reading.tier);
       if (reading.tier === 'verifier') targets.add('reader');
@@ -61,6 +65,20 @@ export function selection(args, warn = message => console.error(message)) {
     if (outside) throw new Error(`Baseline updates require the entire suite family: use --suite=${suiteFamily(outside.suite)}.`);
   }
   return cases;
+}
+
+/**
+ * Every runner suite must own indexed cases, and every indexed suite family
+ * must have a runner. A dispatch entry with no index rows would never be
+ * selected, so its assertions would silently stop running.
+ */
+export function assertDispatch(dispatchKeys, cases = corpus.cases) {
+  const families = new Set(cases.map(c => suiteFamily(c.suite)));
+  const orphaned = [...dispatchKeys].filter(k => !families.has(k));
+  if (orphaned.length) throw new Error(`Runner suites with no corpus index rows: ${orphaned.join(', ')}`);
+  const keys = new Set(dispatchKeys);
+  const unrun = [...families].filter(f => !keys.has(f));
+  if (unrun.length) throw new Error(`Indexed suites with no runner: ${unrun.join(', ')}`);
 }
 
 export function assertCoverage(expected, observed) {

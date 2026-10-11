@@ -14,9 +14,8 @@ not the reference library version. The reference library will release
 patches and features faster than the format will evolve; tying them
 together would force every adopter to track every library release.
 
-The same logic applies to the protocol: a Tier-2 editor and a Tier-3
-calc host can be released independently as long as both honor the
-same protocol version.
+The same logic applies to the protocol: an editor and a verifier can be
+released independently as long as both honor the same protocol version.
 
 ## Current matrix
 

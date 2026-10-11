@@ -1122,5 +1122,11 @@ expectations. Legacy paths stay stable and no fixture/baseline is changed.
 Reports separate product counts; both drivers accept deprecated tier aliases
 through generated `readConformanceTier` readings, without inferring profiles.
 Coverage guards reject missing, duplicate and unclassified cases. The lender-only
-metric fixture remains 187 verified / 0 failed / 0 unverifiable. Phase 3 is
+metric fixture remains 187 verified / 0 failed / 0 unverifiable. Review
+follow-up: the §II.2 Verifier requirements own their cases (IRR, dictionary
+reproductions, §VIII.1–VIII.3 notation incl. `date-*`/`period-*`/`variant-*`,
+the no-stack capital-stack pins), Lite compilation and the package-context
+invariants move to Representations, and five new validate-only Verifier checks
+(`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
+1,061 (Verifier 679 / 280 portable, Module 68 / 1). Phase 3 is
 unreleased; version labels are unchanged and release preparation remains separate.

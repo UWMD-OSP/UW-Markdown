@@ -13,7 +13,7 @@
 // the prompt-drift detector doing its job; this script is the acknowledged
 // re-record, and the cassette diff in review is the record of what drifted.
 // After re-recording, refresh the document baseline:
-//   npm run conformance -- --tier=4-replay --update
+//   npm run conformance -- --suite=4-replay --update
 //
 // recorded_at is pinned to the replay clock so a re-record is a stable file,
 // not a spurious one-line diff.

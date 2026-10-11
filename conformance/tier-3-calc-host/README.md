@@ -1,14 +1,24 @@
 # Verifier and Module calculation fixtures
 
-Exact dictionary reproductions belong to Verifier; custom declarations, expression grammar and resolution belong to Module. Refinement is a starter-product check. Legacy paths are retained;
-[corpus-index.json](../corpus-index.json) determines each case’s single owner.
+Every scenario but one is a Verifier check (Protocol §II.2): exact dictionary
+reproductions (same id, formula and unit as
+[`spec/metrics/builtin.json`](../../spec/metrics/builtin.json), or the
+dictionary formula under another id, as `dscr-from-section`), the IRR
+procedure (`irr-*`, item 3), and the §VIII.1–VIII.3 notation item 6 requires
+wherever a Verifier evaluates an expression: grammar and built-ins (`date-*`),
+period addressing (`period-*`) and variable resolution, including the
+`section_roles` preferences dictionary entries carry (`variant-*`). They keep
+`requires_capabilities: ["calc-evaluate"]`, so a Verifier that evaluates no
+expressions skips them rather than failing. `revpar-basic`, a custom
+ADR × occupancy declaration rather than the dictionary RevPAR, is the Module
+check. Refinement is a starter-product check. The directory name is history
+kept for stable paths; [corpus-index.json](../corpus-index.json) determines
+each case’s single owner.
 
-
-Module-profile evaluators evaluate `custom_calculations` blocks (and the
-`calculations` declared by loaded modules) using the safe-expression
-language defined in `UW_PROTOCOL_v1.md` Part VIII.
-
-A Module-profile evaluator MUST:
+An implementation that evaluates expressions (a Verifier using the notation,
+or a Module-profile evaluator for `custom_calculations` and module
+`calculations`) uses the safe-expression language defined in
+`UW_PROTOCOL_v1.md` Part VIII, and MUST:
 
 - Parse the safe-expression grammar exactly as specified (no eval, no
   arbitrary code execution).
@@ -36,8 +46,8 @@ fixtures/<scenario-id>/
 
 | Scenario | Tests |
 |---|---|
-| `fixtures/revpar-basic` | RevPAR = adr × occupancy with literal inputs from `quick_metrics` |
-| `fixtures/dscr-from-section` | DSCR derived by deepGet path resolution across `noi_model` and `debt_structure` sections |
+| `fixtures/revpar-basic` | Module: a custom adr × occupancy declaration with literal inputs from `quick_metrics` (not the dictionary RevPAR) |
+| `fixtures/dscr-from-section` | Verifier: the dictionary `dscr` formula, under the id `implied_dscr`, resolved across `noi_model` and `debt_structure` |
 
 ### Variant-map scenarios (RFC 0066)
 
@@ -102,11 +112,11 @@ the matrix, not from a captured run.
 
 ### Refinement scenarios
 
-> **Capability: `refinement`. No tier requires these.** Protocol II.3 lists
-> four requirements for a Tier-3 Calc Host and a dependency graph is not among
-> them; II.6 is explicit that a fixture group's directory is not a normative
-> signal. A calc host that does not project a dependency graph is a conforming
-> calc host, and the RFC 0004 driver generates no cases here.
+> **Capability: `refinement`. A starter-product check.** Protocol §II.2 does
+> not require a dependency graph, and §II.6 is explicit that a fixture group's
+> directory is not a normative signal. A Verifier that does not project a
+> dependency graph is conforming, and the RFC 0004 driver generates no cases
+> here.
 
 
 A separate `refinement/` subdirectory exercises the dependency-graph

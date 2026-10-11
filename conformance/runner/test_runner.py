@@ -67,3 +67,15 @@ class ReportingTests(unittest.TestCase):
                 self.assertEqual(report["summary"]["unverifiable"], 1)
                 self.assertEqual(report["summary"]["skipped"], 0)
                 self.assertEqual(report["by_target"]["module"]["unverifiable"], 1)
+
+    def test_legacy_notice_prints_once_for_tier_and_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "verifier.case.json").write_text(json.dumps({"id": "v", "target": "verifier"}), encoding="utf-8")
+            for manifest_tier in ["tier-3-calc-host", "tier-4-agent-host"]:
+                stderr = io.StringIO()
+                args = ["runner.py", "--cases", directory, "--tier", "3"]
+                with patch("sys.argv", args), patch.object(runner, "read_manifest", return_value={"tier": manifest_tier}), patch.object(runner, "run_case", return_value=(0.0, [])), contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(stderr):
+                    self.assertEqual(runner.main(), 0)
+                self.assertEqual(stderr.getvalue().count("Deprecated tier"), 1, stderr.getvalue())
+                self.assertIn("'3' as 'verifier'", stderr.getvalue())
+                self.assertIn(f"'{manifest_tier}' as 'verifier'", stderr.getvalue())

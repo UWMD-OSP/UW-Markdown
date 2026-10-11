@@ -1,7 +1,7 @@
-# Reference Tier-1 Viewer
+# Reference Reader Viewer
 
 A single static HTML file that demonstrates a fully conformant
-[Tier-1 Reader](../../spec/UW_PROTOCOL_v1.md) of the UW Markdown protocol
+[Reader](../../spec/UW_PROTOCOL_v1.md) of the UW Markdown protocol
 in under 500 lines of code.
 
 **This is a reference, not a product.** It exists to prove that a
@@ -46,6 +46,6 @@ This is the minimum bar. It does not:
   in `@uwmd/core` for that.
 - Render every standard section — only the eight most-displayed ones have
   view models inlined here. The full registry is in `protocol.ts`.
-- Edit. That requires Tier-2.
-- Evaluate `custom_calculations`. That requires Tier-3.
-- Run agents. That requires Tier-4.
+- Edit. That is a starter-product capability (the editor).
+- Evaluate `custom_calculations`. That requires the Module profile.
+- Run agents. That is a starter-product capability (the agent host).

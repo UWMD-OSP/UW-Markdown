@@ -161,7 +161,7 @@ preceded it, and the full append-only `superseded` history. The round trip
 is faithful at the model level: `fromUWJson` rebuilds the same `ParsedUWFile`
 shape `parseUWFile` produces, so `validateUWFile`, the calc engine, the packs,
 and `render` all run against a `.uw.json` source unchanged. (Re-hydrated `raw` is
-`''` — there is no canonical Markdown byte stream behind a `.uw.json`, so Tier-2
+`''` — there is no canonical Markdown byte stream behind a `.uw.json`, so the
 byte-preserving `applyEdit` still needs the `.uw.md`; read/validate/calc
 consumers do not.)
 
@@ -229,8 +229,8 @@ and perturbation over the default ranges. Exposed via `uwmd refine`.
 `verifyChain(parsed, options?)` (async) checks the `content_hash`/`parent_hash`
 supersede chain; `verifyProvenance(parsed, policies?)` checks actor/policy
 authority. `integrity-canonical.ts` `canonicalize()` defines the canonical form
-hashed by `computeBlockHash`. Both feed the `uwmd verify` command and the Tier-1
-malformed conformance fixtures (INT-/POL- codes).
+hashed by `computeBlockHash`. Both feed the `uwmd verify` command and the
+`tier-1-reader/malformed/` conformance fixtures (INT-/POL- codes).
 
 **Block signatures (RFC 0010, protocol §V.11).** `_meta.signature` is optional
 and, like `content_hash`, excluded from canonicalization. Core owns only the

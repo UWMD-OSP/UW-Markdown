@@ -15,5 +15,9 @@ with `POL-01` and `POL-02` both unable to fire.
 | `04-colon-form-rejected` | `agent:L0-01` warns `SRC-01` and is **not** classified as a human write — the prefix test's negative space used to grant it `human_only` authority. |
 | `05-custom-policies-no-catchall` | A caller-supplied policy list that covers no matching pattern refuses the write rather than granting it. |
 
-Run with `node scripts/run-conformance.mjs --tier=source` (included in the
+`03`–`05` also assert edit behavior, so they are starter-product checks.
+`04-colon-form-rejected [validate]` is the Verifier check for `SRC-01` alone,
+against `04-colon-form-rejected/expected-validation.json`.
+
+Run with `node scripts/run-conformance.mjs --suite=source` (included in the
 default suite list).

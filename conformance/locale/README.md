@@ -15,3 +15,9 @@ byte-identical across locales by construction.
 - `calc-locale-invariant/` — one formula evaluated under every registered
   locale in the calc context; the values must be identical.
 - `csv-stays-canonical/` — the CSV render is byte-identical across locales.
+
+Display locales are starter-product guidance (RFC 0078 D11), so every case
+above is a starter check. `LOC-01` is a registered validator code, so
+`unsupported-locale-refuses [validate]` is a separate Verifier check of the
+validator verdict alone, against
+`unsupported-locale-refuses/expected-validation.json`.

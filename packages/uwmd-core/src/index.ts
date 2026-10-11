@@ -842,7 +842,6 @@ export type {
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {
   CONFORMANCE_TARGETS,
-  readConformanceTarget,
   readConformanceTier,
   BLOCK_ROLES,
   CROSS_CHECK_ROLE_PREFERENCE,

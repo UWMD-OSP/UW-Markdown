@@ -42,10 +42,10 @@ The project has five layers, each consuming the one above it:
                           ▲
                           │ certified by
 ┌─────────────────────────────────────────────────────────────┐
-│  Conformance      conformance/tier-1-reader                  │  fixtures +
-│  corpus           conformance/tier-2-editor                  │  expected
-│                   conformance/tier-3-calc-host               │  outputs
-│                   conformance/tier-4-agent-host              │
+│  Conformance      conformance/corpus-index.json             │  one owner
+│  corpus           (reader, verifier, six profiles,          │  per case
+│                    starter products) over fixture families  │  fixtures +
+│                   conformance/<family>/  (legacy dir names) │  expected
 └─────────────────────────────────────────────────────────────┘
                           ▲
                           │ governed by
@@ -125,21 +125,24 @@ nothing else from this monorepo:
 
 [`conformance/`](conformance/) is the trust anchor for third parties.
 [`scripts/run-conformance.mjs`](scripts/run-conformance.mjs) drives
-the corpus directories, which keep their Protocol 2.x tier names until
-RFC 0078 phase 3 re-tiers them:
+every fixture family, and
+[`conformance/corpus-index.json`](conformance/corpus-index.json) gives each
+case exactly one owner (Protocol §II.6, RFC 0078):
 
-- **Tier 1 (Reader)** — byte-exact comparison of parser/render output
-  against `expected/`.
-- **Tier 2 (Editor)** — round-trip edits must preserve bytes outside
-  the modified region.
-- **Tier 3 (Calc Host)** — calc evaluator output compared against
-  recorded expected values.
-- **Tier 4 (Agent Host)** — shape assertions only; LLM nondeterminism
-  rules out byte equality.
+- **Reader** — parsing and well-formedness.
+- **Verifier** — Reader plus the Format validation rules, metric-dictionary
+  reproduction, the stated-figure verifiers (including the IRR procedure),
+  receipts and the §VIII.1–VIII.3 expression notation.
+- **Profiles** — Module, Integrity, Representations, Portfolio,
+  Sensitivity and Stochastic, each claimed explicitly.
+- **Starter products** — editor, agent, rendering, defaults and refinement
+  checks. Not conformance; still blocking in CI and reported separately.
 
-A `malformed/` subdirectory under each tier (where applicable) holds
-deliberately-invalid fixtures whose `expected.json` declares which
-validator codes the parser must surface.
+Fixture directories keep their historical names (`tier-1-reader/`,
+`tier-2-editor/`, `tier-3-calc-host/`, `tier-4-agent-host/`) so paths stay
+stable; a directory name is not an ownership claim. A `malformed/`
+subdirectory (where applicable) holds deliberately-invalid fixtures whose
+`expected.json` declares which validator codes the parser must surface.
 
 ## Governance and process
 

@@ -354,8 +354,20 @@
     },
     {
       "suite": "1",
+      "scenario": "malformed/06-wrong-actor [validate]",
+      "target": "verifier",
+      "added": true
+    },
+    {
+      "suite": "1",
       "scenario": "malformed/07-replace-where-supersede-required",
       "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/07-replace-where-supersede-required [validate]",
+      "target": "verifier",
+      "added": true
     },
     {
       "suite": "1",
@@ -470,247 +482,247 @@
     {
       "suite": "3",
       "scenario": "date-01-valid-leap-divisible-by-4",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-02-valid-leap-divisible-by-400",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-03-valid-ordinary-date",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-04-valid-year-0000-leap",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-05-valid-year-9999-last-day",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-06-valid-first-day-of-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-07-invalid-not-leap-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-08-invalid-century-not-leap",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-09-invalid-february-30",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-10-invalid-april-31",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-11-invalid-month-00",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-12-invalid-month-13",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-13-invalid-day-00",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-14-invalid-one-digit-month",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-15-invalid-one-digit-day",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-16-invalid-two-digit-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-17-invalid-five-digit-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-18-invalid-signed-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-19-invalid-negative-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-20-invalid-expanded-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-21-invalid-leading-space",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-22-invalid-trailing-space",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-23-invalid-internal-space",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-24-invalid-leading-tab",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-25-invalid-trailing-newline",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-26-invalid-date-time-zulu",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-27-invalid-date-time-local",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-28-invalid-zone-suffix",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-29-invalid-offset-suffix",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-30-invalid-slash-form",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-31-invalid-compact-form",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-32-invalid-week-date",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-33-invalid-ordinal-date",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-34-invalid-full-width-digits",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-35-invalid-non-ascii-hyphen",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-36-invalid-empty-string",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-37-document-quoted-string",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-38-document-unquoted-yaml-date",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-39-document-null",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-40-document-absent-path",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-41-document-number",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-42-document-boolean",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-43-document-array",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-44-document-object",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-45-document-impossible-date",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-46-error-no-arguments",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-47-error-two-arguments",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "date-48-error-argument-propagates",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "dscr-from-section",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -720,32 +732,32 @@
     {
       "suite": "3",
       "scenario": "irr-01-out-of-bracket",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "irr-02-even-root-count",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "irr-03-conventional",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "irr-04-endpoint-root",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "irr-05-degenerate",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "land-usable-land-ratio",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -755,12 +767,12 @@
     {
       "suite": "3",
       "scenario": "mixed-use-absent-component-null",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "mixed-use-data_center_noi_share",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -770,7 +782,7 @@
     {
       "suite": "3",
       "scenario": "mixed-use-manufactured_housing_noi_share",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -790,12 +802,12 @@
     {
       "suite": "3",
       "scenario": "mixed-use-two-component-cap-rate",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "mixed-use-two-component-noi-share",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -805,62 +817,62 @@
     {
       "suite": "3",
       "scenario": "period-01-year-order",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-02-keyed-year",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-03-calendar-quarter",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-04-dated-series",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-05-missing",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-06-kind-mismatch",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-07-duplicate",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-08-unregistered",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-09-same-day-unique",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-10-same-day-repeated",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-11-same-day-absent",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "period-12-other-series-duplicate",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -870,17 +882,17 @@
     {
       "suite": "3",
       "scenario": "self-storage-economic-occupancy",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "senior-housing-care-revenue-ratio",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "student-housing-pre-lease-rate",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
@@ -890,57 +902,57 @@
     {
       "suite": "3",
       "scenario": "variant-01-primary-resolves",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-02-default-resolves",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-03-unresolvable",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-04-role-preference",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-05-explicit-variant",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-06-missing-section",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-07-explicit-missing",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-08-primary-collision",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-09-role-collision",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-10-role-unclaimed",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3",
       "scenario": "variant-11-explicit-beats-role",
-      "target": "module"
+      "target": "verifier"
     },
     {
       "suite": "3-refinement",
@@ -985,12 +997,12 @@
     {
       "suite": "lite",
       "scenario": "01-minimal [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "01-minimal [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1030,12 +1042,12 @@
     {
       "suite": "lite",
       "scenario": "02-full-deal-summary [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "02-full-deal-summary [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1075,12 +1087,12 @@
     {
       "suite": "lite",
       "scenario": "03-display-variants [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "03-display-variants [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1120,12 +1132,12 @@
     {
       "suite": "lite",
       "scenario": "04-typed-values [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "04-typed-values [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1165,12 +1177,12 @@
     {
       "suite": "lite",
       "scenario": "05-prose-and-normalization [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "05-prose-and-normalization [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1210,12 +1222,12 @@
     {
       "suite": "lite",
       "scenario": "06-decimal-exact-percents [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "06-decimal-exact-percents [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1255,12 +1267,12 @@
     {
       "suite": "lite",
       "scenario": "07-decimal-exact-fractions [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "07-decimal-exact-fractions [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1300,12 +1312,12 @@
     {
       "suite": "lite",
       "scenario": "08-frontmatter-yaml-scalars [compile-report]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "08-frontmatter-yaml-scalars [uwx]",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -1395,32 +1407,32 @@
     {
       "suite": "lite",
       "scenario": "compile/01-period-unsupported",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "compile/02-scenario-unsupported",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "compile/03-unit-mismatch",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "compile/04-field-unknown",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "compile/05-frontmatter-required",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
       "scenario": "compile/06-target-conflict",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "lite",
@@ -2340,7 +2352,7 @@
     {
       "suite": "packages",
       "scenario": "invariant/deterministic-encoding",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "packages",
@@ -2360,12 +2372,12 @@
     {
       "suite": "packages",
       "scenario": "invariant/context-omits-source-bytes",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "packages",
       "scenario": "invariant/context-valid",
-      "target": "starter-products"
+      "target": "representations"
     },
     {
       "suite": "packages",
@@ -2480,12 +2492,12 @@
     {
       "suite": "capital-stack",
       "scenario": "gd05-total-equity",
-      "target": "starter-products"
+      "target": "verifier"
     },
     {
       "suite": "capital-stack",
       "scenario": "no-stack-single-loan",
-      "target": "starter-products"
+      "target": "verifier"
     },
     {
       "suite": "capital-stack",
@@ -4353,6 +4365,12 @@
       "target": "starter-products"
     },
     {
+      "suite": "locale",
+      "scenario": "unsupported-locale-refuses [validate]",
+      "target": "verifier",
+      "added": true
+    },
+    {
       "suite": "currency",
       "scenario": "explicit-code",
       "target": "starter-products"
@@ -4361,6 +4379,12 @@
       "suite": "currency",
       "scenario": "malformed",
       "target": "starter-products"
+    },
+    {
+      "suite": "currency",
+      "scenario": "malformed [validate]",
+      "target": "verifier",
+      "added": true
     },
     {
       "suite": "size-intensive",
@@ -4536,6 +4560,12 @@
       "suite": "source",
       "scenario": "04-colon-form-rejected",
       "target": "starter-products"
+    },
+    {
+      "suite": "source",
+      "scenario": "04-colon-form-rejected [validate]",
+      "target": "verifier",
+      "added": true
     },
     {
       "suite": "source",

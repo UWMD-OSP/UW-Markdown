@@ -40,7 +40,7 @@ Run after building core:
 
 ```sh
 node --test conformance/metrics/verifier.test.mjs
-npm run conformance -- --tier=metrics
+npm run conformance -- --suite=metrics
 ```
 
 The named `metrics` suite also runs by default in `npm run conformance`. Its pass
