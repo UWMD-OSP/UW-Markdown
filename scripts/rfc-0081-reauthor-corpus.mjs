@@ -203,6 +203,11 @@ async function processFile(file) {
   } else if(/\.[cm]?[jt]sx?$/.test(file) && !file.startsWith('scripts/rfc-0081-')) {
     const source=ts.createSourceFile(file,before,ts.ScriptTarget.Latest,true); const edits=[];
     async function visit(node) {
+      if (ts.isTemplateExpression(node) && /uw_version\s*:/.test(node.getText(source))) {
+        const text=node.getText(source).replace(/(uw_version:\s*(?:\\?["'])?)[12]\.[012]/g, (_m,head)=>head+'3.0');
+        if(text!==node.getText(source)) edits.push({start:node.getStart(),end:node.end,text});
+        return;
+      }
       if((ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)) && (/^---[\r\n]/.test(node.text) || node.text.includes('```json uw:'))) {
         const replacement=await document(node.text,file+':'+source.getLineAndCharacterOfPosition(node.getStart()).line);
         if(replacement!==node.text) {
