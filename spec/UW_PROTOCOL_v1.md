@@ -3747,6 +3747,10 @@ See [primary-size selection](metrics/README.md#primary-size-selection).
 
 See [mixed-use and unknown classes](metrics/README.md#mixed-use-and-unknown-classes).
 
+### XIII.3 Unrecognized classes
+
+See [the missing-entry rule](metrics/README.md#mixed-use-and-unknown-classes).
+
 ---
 
 ## XIV. Capability Tokens (optional, RFC 0011)

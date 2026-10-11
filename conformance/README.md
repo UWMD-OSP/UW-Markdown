@@ -459,7 +459,7 @@ verify consistency, while producer purpose evidence must reject that mapping.
 
 ## Metric dictionary verification (RFC 0078 Phase 2)
 
-The [metrics suite](metrics/README.md) verifies every builtin example using the
+The [metrics suite](../conformance/metrics/README.md) verifies every builtin example using the
 normative dictionary and safe-expression evaluator, without packs, defaults or
 cascade. It records 104 verified statements and 39 existing example mismatches,
 with per-example counts and per-statement evidence. Known findings are compared
