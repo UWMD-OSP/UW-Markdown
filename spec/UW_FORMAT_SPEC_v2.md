@@ -320,7 +320,7 @@ normative requirement, not the behavior.
   `"2.0"`, every block reshaped, `field_overrides` lifted, `resolution:
   "manual"` rewritten with a note, hashes re-stamped chain-aware, and the
   §5 signature policy applied. `--emit-v2-shape` is accepted as a synonym.
-- Tier-2 editors write nested blocks into 2.0 files natively (the 1.x-era
+- Editors (starter products since RFC 0078, Protocol §II.4) write nested blocks into 2.0 files natively (the 1.x-era
   `PROTO-EDIT-010` refusal is retired at 2.0); all v1 edit semantics —
   byte preservation outside the edited region, append-only supersede,
   host-owns-`_meta`, edit policies keyed on `provenance.source` — carry
@@ -347,7 +347,8 @@ normative requirement, not the behavior.
 - The v2 block schema is
   [`schemas/uwmd-block-v2.schema.json`](./schemas/uwmd-block-v2.schema.json);
   the v1 schema continues to govern v1.x blocks.
-- A reader claiming 2.0 conformance MUST pass the v1 tier-1 corpus as well:
+- A reader claiming 2.0 conformance MUST pass the v1 Reader corpus
+  (`conformance/tier-1-reader/`) as well:
   reading v1.x files is part of the 2.0 contract (§1.2).
 
 ---

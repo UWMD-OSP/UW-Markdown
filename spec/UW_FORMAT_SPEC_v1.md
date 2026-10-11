@@ -3029,7 +3029,7 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 }
 ```
 
-**Auto-maintenance.** When a Tier-2 editor is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.source: 'system/gaps-maintainer'` and `_meta.actor: 'system'` so it is filterable from human-authored entries.
+**Auto-maintenance.** When an editor (a starter product since RFC 0078, Protocol §II.4) is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.source: 'system/gaps-maintainer'` and `_meta.actor: 'system'` so it is filterable from human-authored entries.
 
 **Validator codes.** A `provisional` block with no matching gap entry triggers `DQ-01`; a `partial` block with no `field_overrides` triggers `DQ-03`; consuming a provisional block at a stage whose policy is `halt` triggers `DQ-02`; a stale entry (older than the institution's freshness threshold) triggers `DQ-05`. See Protocol §III.6a.
 
@@ -3232,7 +3232,7 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 **Schema:** [`spec/schemas/section-cash-flow-series.schema.json`](schemas/section-cash-flow-series.schema.json)  
 **Introduced by:** RFC 0034 (calendar-anchored cash flows).
 
-Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **state-and-verify** structure (RFC 0021 § 6): the Tier-3 calc engine never reads the series by pack formula, so the variable-length array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyCashFlowSeries`, a sibling of `verifyCapitalStack` and `verifyLeaseUpSchedule`) over a **fixed, closed recompute vocabulary** (Protocol § VIII.9). The series is **data, not formulas**. Rows are read by the verifier and by host code, **not** by pack formulas: calc paths are flat identifiers, so `cash_flow_series.series[3].amount` does not parse and raises `CALC-PARSE-001` (corrected by RFC 0055).
+Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **state-and-verify** structure (RFC 0021 § 6): the calc engine never reads the series by pack formula, so the variable-length array is safe, and every stated aggregate is recomputed by a deterministic verifier (`verifyCashFlowSeries`, a sibling of `verifyCapitalStack` and `verifyLeaseUpSchedule`) over a **fixed, closed recompute vocabulary** (Protocol § VIII.9). The series is **data, not formulas**. Rows are read by the verifier and by host code, **not** by pack formulas: calc paths are flat identifiers, so `cash_flow_series.series[3].amount` does not parse and raises `CALC-PARSE-001` (corrected by RFC 0055).
 
 **Fields.**
 

@@ -92,7 +92,7 @@ export default defineConfig({
       },
       {
         text: 'Reference',
-        activeMatch: '^/(spec|conformance)/',
+        activeMatch: '^/(spec|conformance|starter)/',
         items: [
           {
             text: 'Normative contract',
@@ -102,6 +102,12 @@ export default defineConfig({
               { text: 'UW Lite specification', link: '/spec/lite' },
               { text: 'Schemas', link: '/spec/schemas/' },
               { text: 'Conformance corpus', link: '/conformance/' },
+            ],
+          },
+          {
+            text: 'Starter products (non-normative)',
+            items: [
+              { text: 'Starter products guide', link: '/starter/' },
             ],
           },
           {
@@ -206,6 +212,28 @@ export default defineConfig({
             { text: 'MCP binding (v1.0)', link: '/spec/mcp' },
             { text: 'OpenAPI 3.1 contract', link: '/spec/UW_HTTP_API_v1.openapi.json' },
             { text: 'Schemas', link: '/spec/schemas/' },
+          ],
+        },
+      ],
+      '/starter/': [
+        {
+          text: 'Starter products (non-normative)',
+          items: [
+            { text: 'Overview', link: '/starter/' },
+            { text: 'Display conventions', link: '/starter/display' },
+            { text: 'View models', link: '/starter/view-models' },
+            { text: 'Editing', link: '/starter/editing' },
+            { text: 'Defaults and the cascade', link: '/starter/defaults-and-cascade' },
+            { text: 'Refinement and workbooks', link: '/starter/refinement-and-workbooks' },
+            { text: 'AI agent host', link: '/starter/ai-host' },
+            { text: 'Capability tokens', link: '/starter/capability-tokens' },
+          ],
+        },
+        {
+          text: 'The standard',
+          items: [
+            { text: `Protocol (${versions.protocol})`, link: '/spec/protocol' },
+            { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
           ],
         },
       ],

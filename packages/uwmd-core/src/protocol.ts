@@ -2,9 +2,10 @@
 //
 // This module is the executable counterpart to spec/UW_PROTOCOL_v1.md.
 // Where the prose document defines normative behavior, this module names the
-// types implementers must satisfy and exports the BUILTIN_* tables that any
-// Tier-1+ Reader, Tier-2+ Editor, Tier-3+ Calc Host, or Tier-4 Agent Host
-// references.
+// types implementers must satisfy and exports the BUILTIN_* tables that a
+// Reader or Verifier (Protocol 3.0, RFC 0078) references. Some tables here
+// (view models, number formats, the cascade, agent layers) serve the
+// non-normative starter products in docs/starter/, not verification.
 //
 // Types defined in `./types.ts` are re-used here, never duplicated. The
 // protocol surface is a layer over the format types — same way OpenAPI
@@ -60,12 +61,77 @@ export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
-/** The four conformance tiers defined in UW_PROTOCOL_v1.md Part II. */
+/**
+ * The two conformance tiers of Protocol 3.0 (UW_PROTOCOL_v1.md Part II,
+ * RFC 0078). A Verifier satisfies every Reader requirement.
+ */
+export type ConformanceTier =
+  | 'reader'               // parse and check well-formedness, read-only (§II.1)
+  | 'verifier';            // + Format validation, metric reproduction, stated-figure verifiers, receipts (§II.2)
+
+/**
+ * The optional verification profiles (§II.3, RFC 0078). Closed: a profile
+ * outside this list is refused by the schema, never read as a claim.
+ */
+export const CONFORMANCE_PROFILES = Object.freeze([
+  'module',
+  'integrity',
+  'representations',
+  'portfolio',
+  'sensitivity',
+  'stochastic',
+] as const);
+
+export type ConformanceProfile = (typeof CONFORMANCE_PROFILES)[number];
+
+/**
+ * The four Protocol 2.x tiers. **Deprecated as an implementation tier**
+ * (RFC 0078): an `ImplementationManifest` may still carry one during
+ * Protocol 3.x, read through {@link readConformanceTier}. It stays the
+ * vocabulary of `ModuleManifest.requires_tier` and of module-host
+ * negotiation, which RFC 0078 leaves unchanged (§VII.4).
+ */
 export type ViewerTier =
   | 'tier-1-reader'        // parse + display, read-only
   | 'tier-2-editor'        // round-trip writes, supersede semantics
   | 'tier-3-calc-host'     // evaluate custom_calculations / custom_scenarios
   | 'tier-4-agent-host';   // host AI agents that produce write_uw_section calls
+
+/** How a manifest's `tier` reads under Protocol 3.0 (§II.5). */
+export interface ConformanceTierReading {
+  tier: ConformanceTier;
+  /** The deprecated Protocol 2.x value the manifest carried, if any. */
+  legacy?: ViewerTier;
+  /**
+   * The non-normative starter-product claim a legacy value carried:
+   * `tier-2-editor` claimed an editor, `tier-4-agent-host` an agent host.
+   * Neither is Protocol conformance any more (§II.4).
+   */
+  starter_product_claim?: 'editor' | 'agent-host';
+}
+
+const LEGACY_TIER_READINGS: Readonly<Record<ViewerTier, ConformanceTierReading>> = Object.freeze({
+  'tier-1-reader': { tier: 'reader', legacy: 'tier-1-reader' },
+  'tier-2-editor': { tier: 'reader', legacy: 'tier-2-editor', starter_product_claim: 'editor' },
+  'tier-3-calc-host': { tier: 'verifier', legacy: 'tier-3-calc-host' },
+  'tier-4-agent-host': { tier: 'reader', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host' },
+});
+
+/**
+ * Read an `ImplementationManifest.tier` under the Protocol 3.0 model
+ * (§II.5, RFC 0078). Current values pass through; the four deprecated
+ * Protocol 2.x values map as the RFC fixes them (tier-1 → reader,
+ * tier-3 → verifier, tier-2/4 → reader plus a starter-product claim). The
+ * mapping never infers a profile. Anything else is outside the closed
+ * vocabulary and returns `null` rather than a guess.
+ */
+export function readConformanceTier(tier: unknown): ConformanceTierReading | null {
+  if (tier === 'reader' || tier === 'verifier') return { tier };
+  if (typeof tier === 'string' && Object.hasOwn(LEGACY_TIER_READINGS, tier)) {
+    return { ...LEGACY_TIER_READINGS[tier as ViewerTier] };
+  }
+  return null;
+}
 
 /** What kind of actor the implementation serves. Informational. */
 export type ViewerRole = 'web' | 'cli' | 'desktop' | 'ide-extension' | 'library' | 'service';
@@ -113,8 +179,8 @@ export type ViewerCapability =
   | 'integrity'
   /**
    * Projects a calc-expression dependency graph (`extractDependencyGraph`).
-   * **No tier requires this** — §II.3 lists four requirements and refinement is
-   * not among them. It is a capability so its fixtures can be tagged rather
+   * **No tier or profile requires this** — refinement is starter-product
+   * behavior (RFC 0078; starter guide §VIII.2b). It is a capability so its fixtures can be tagged rather
    * than inferred from a directory name.
    */
   | 'refinement';
@@ -152,14 +218,19 @@ export interface ImplementationManifest {
   /** Format semver this implementation can read. */
   format_version: string;
   /**
-   * Tier the implementation self-certifies to. OPTIONAL per §II.5: an
-   * implementation whose capabilities do not stack into a clean cumulative
-   * tier SHOULD publish `capabilities` and omit this field rather than round
-   * down (or up). The schema requiring it was a defect (UPSTREAM-003,
-   * reported by underwriter.cc) — the spec's normative text always allowed
-   * the omission.
+   * Tier the implementation self-certifies to: `reader` or `verifier`
+   * (Protocol 3.0, RFC 0078). OPTIONAL per §II.5: an implementation whose
+   * capabilities do not stack into a tier SHOULD publish `capabilities` and
+   * omit this field rather than round down (or up). The schema requiring it
+   * was a defect (UPSTREAM-003, reported by underwriter.cc) — the spec's
+   * normative text always allowed the omission.
+   *
+   * The four Protocol 2.x values stay accepted during 3.x and are
+   * **deprecated**; read them with {@link readConformanceTier}.
    */
-  tier?: ViewerTier;
+  tier?: ConformanceTier | ViewerTier;
+  /** Optional verification profiles claimed (§II.3, RFC 0078). Absent = none. */
+  profiles?: ConformanceProfile[];
   /** Optional finer-grained capability list. */
   capabilities?: ViewerCapability[];
   /** Machine-readable representation discovery (Protocol 1.2+). */
@@ -222,7 +293,11 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   version: CORE_VERSION,
   protocol_version: PROTOCOL_VERSION,
   format_version: FORMAT_VERSION,
-  tier: 'tier-4-agent-host',
+  // RFC 0078: a Verifier with every optional profile. Editing, rendering and
+  // agent hosting stay claimed as capabilities: they are starter-product
+  // claims now (§II.4), still exercised by their fixtures.
+  tier: 'verifier',
+  profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
   capabilities: Object.freeze([
     'parse',
     'validate',
@@ -982,7 +1057,7 @@ export interface IssueRemediation {
   spec_ref?: string;
 }
 
-// ─── Calc engine contract (Part VIII, Tier 3) ─────────────────────────────────
+// ─── Calc engine contract (Part VIII; Verifier and profiles, RFC 0078) ────────
 
 /**
  * Variables made available to a custom_calculation expression. The host
@@ -1100,7 +1175,7 @@ export interface CalcResult {
   error?: ProtocolError;
 }
 
-// ─── Agent host contract (Part IX, Tier 4) ────────────────────────────────────
+// ─── Agent host (starter guide §IX; non-normative since RFC 0078) ─────────────
 
 export interface AgentHostCapability {
   /** Layer ID this host can run (e.g. "L6"). Maps to BANCROFT_LAYERS. */
@@ -1127,6 +1202,7 @@ export interface ModuleManifest {
   license: string;                  // SPDX identifier
   requires_protocol: string;        // semver range
   requires_format: string;          // semver range
+  /** Protocol 2.x tier vocabulary, unchanged by RFC 0078 (§VII.4). */
   requires_tier: ViewerTier;
   asset_classes?: AssetClass[];
   deal_stages?: DealStage[];
