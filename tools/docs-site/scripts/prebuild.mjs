@@ -299,6 +299,16 @@ function rewriteLinks(md) {
       return `](/about/rfcs/${rfcMatch[1]}${frag})`;
     }
 
+    // Corpus ownership and its schemas are source artifacts, not site pages.
+    // Keep their new links usable without changing the site's navigation.
+    if (/^(?:conformance\/)?corpus-index\.json$/.test(norm)) {
+      return `](${GITHUB_BLOB}/conformance/corpus-index.json${frag})`;
+    }
+    const corpusSchema = norm.match(/^(?:(?:spec\/)?schemas\/)?(conformance-(?:case|corpus)\.schema\.json)$/);
+    if (corpusSchema) {
+      return `](${GITHUB_BLOB}/spec/schemas/${corpusSchema[1]}${frag})`;
+    }
+
     // JSON Schemas are not site pages; the starter guide links them by repo
     // path (../../spec/schemas/...), so send those to GitHub too.
     if (/^spec\/schemas\/[^/]+\.json$/.test(norm)) {

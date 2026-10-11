@@ -118,8 +118,8 @@ for (const profile of PROFILES) {
 rmSync(tmp, { recursive: true, force: true });
 
 if (failures.length > 0) {
-  console.error('\nconformance profiles: the capability-skip mechanism is wrong.');
+  console.error('\ncapability-skip controls: the mechanism is wrong.');
   for (const f of failures) console.error(`  - ${f}`);
   process.exit(1);
 }
-console.log(`\n[PASS] ${PROFILES.length} conformance profiles behave as RFC 0030 specifies.`);
+console.log(`\n[PASS] ${PROFILES.length} capability-skip controls behave as RFC 0030 specifies.`);
