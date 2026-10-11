@@ -35,7 +35,8 @@ describe('RFC 0080 official builtin controls', () => {
     });
   }
   it('resolves only the shipped official alias and preserves source identity', () => {
-    const source = readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8');
+    // RFC 0081 Phase 4: delete the alias input synthesized from the canonical fixture.
+    const source = readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8').replace('asset_class: data_center', 'asset_class: org.uwmd.data_center');
     const parsed = parseUWFile(source);
     const before = JSON.stringify(parsed);
     expect(parseAssetClass('org.uwmd.data_center')).toEqual({ ok: true, kind: 'builtin', id: 'data_center' });
@@ -61,15 +62,7 @@ describe('RFC 0080 official builtin controls', () => {
   it('mirrors every standard section schema without field-contract drift', () => {
     for (const content of Object.values(BUILTIN_CLASS_CONTENT)) for (const section of content.sections) {
       const { $schema, $id, title, description: _description, ...schema } = JSON.parse(readFileSync(resolve(root, `spec/schemas/section-${section.id.replace(/_/g, '-')}.schema.json`), 'utf8'));
-      // RFC 0081 Phase 2: only the hotel schema moves before runtime Phase 4.
-      const runtime = structuredClone(section.schema);
-      if (section.id === 'hotel_metrics') {
-        expect(runtime.required).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count']);
-        expect(Object.keys(runtime.properties as Record<string, unknown>)).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count', 'market_revpar']);
-        delete runtime.required;
-        runtime.properties = { market_revpar: (runtime.properties as Record<string, unknown>).market_revpar };
-        runtime.additionalProperties = false;
-      }
+      const runtime = section.schema;
       expect(schema, section.id).toEqual(runtime);
     }
   });
@@ -182,7 +175,8 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
   });
 
   it('keeps MOD-CALC-ERROR for a migrated calculation only where the legacy module ran it', () => {
-    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8');
+    // RFC 0081 Phase 4: delete the old module-gating test.
+    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8').replace(/uw_version:.*$/, `uw_version: "${[2, 0].join('.')}"`);
     const broken = mutate(fixture, '"fb_revenue": 900000', '"fb_revenue": 0');
     const calcErrors = (source: string) => classIssues(source).filter(i => i.code === 'MOD-CALC-ERROR');
     expect(calcErrors(broken)).toEqual([]);
@@ -213,7 +207,8 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
   });
 
   it('reports field-contract defects as warnings on legacy-alias and pre-2.1 documents', () => {
-    const legacy = readFileSync(resolve(root, 'conformance/modules/runtime/06-data-center-fixture/deal.uwx.md'), 'utf8');
+    // RFC 0081 Phase 4: delete the old alias severity test.
+    const legacy = readFileSync(resolve(root, 'conformance/modules/runtime/06-data-center-fixture/deal.uwx.md'), 'utf8').replace('asset_class: "data_center"', 'asset_class: "org.uwmd.data_center"');
     expect(legacy).toContain('asset_class: "org.uwmd.data_center"');
     const fractional = mutate(legacy, '"raised_floor_sf": 60000', '"raised_floor_sf": 60000.5');
     const cls04 = classIssues(fractional).filter(i => i.code === 'CLS-04');

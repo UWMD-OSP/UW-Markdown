@@ -1032,7 +1032,7 @@ function validateCompatibility(
     // RFC 0081 Phase 4: delete hostTier alias resolution.
     const host = opts.hostConformance ?? (opts.hostTier ? readConformanceTier(opts.hostTier)?.tier : undefined) ?? 'verifier';
     const profiles = opts.hostProfiles ?? CONFORMANCE_PROFILES;
-    if ((host === 'reader' && manifest.requires_conformance === 'verifier') || manifest.requires_profiles?.some(p => !profiles.includes(p))) {
+    if ((host === 'reader' && manifest.requires_conformance === 'verifier') || (Array.isArray(manifest.requires_profiles) && manifest.requires_profiles.some(p => !profiles.includes(p)))) {
       errors.push(moduleError('PROTO-MOD-029', 'Host conformance or profiles do not satisfy the module.', 'requires_conformance'));
     }
   } else {

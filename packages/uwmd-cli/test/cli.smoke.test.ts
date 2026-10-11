@@ -361,13 +361,13 @@ describe('uwmd CLI', () => {
   describe('scope on RFC 0080 classes', () => {
     const legacy = resolve(__dirname, '..', '..', '..', 'conformance', 'modules', 'runtime', '06-data-center-fixture', 'deal.uwx.md');
 
-    it('reports one resolved identity for a legacy alias and keeps the stated id', async () => {
+    it('reports one identity for the re-authored builtin record', async () => {
       const r = await runCli(['scope', legacy, '--json']);
       expect(r.status).toBe(0);
       const out = JSON.parse(r.stdout);
       expect(out).toMatchObject({
         asset_class: 'data_center',
-        declared_asset_class: 'org.uwmd.data_center',
+        declared_asset_class: 'data_center',
         defaults_table: 'data_center@1.0.0',
       });
       for (const field of Object.values(out.resolved) as Array<{ step: string; resolved_from?: string }>) {

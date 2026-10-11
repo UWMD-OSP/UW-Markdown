@@ -305,7 +305,7 @@ asset_class: multifamily
 `;
     const parsed = parseUWFile(content);
     const block = getSection(parsed, 'noi_model');
-    expect(block?.annotation.source).toBe('engine:calculations.ts');
+    expect(block?.annotation.source).toBe('system/calculations.ts');
     expect(block?.annotation.v).toBe(3);
     expect(block?.annotation.confidence).toBe('high');
   });

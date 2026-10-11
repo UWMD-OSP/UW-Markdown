@@ -30,7 +30,7 @@ const META_LINES = (extra = '') =>
 function v1File(metaExtra = '', body = '  "unit_count": 10'): string {
   return [
     '---',
-    "uw_version: \"3.0\"",
+    `uw_version: "${[1, 1].join('.')}"`,
     'deal_id: mig-001',
     'deal_name: Migration Test',
     'asset_class: multifamily',

@@ -237,7 +237,7 @@ for (const { file, layout } of CASES) {
       const values: Record<string, number | null> = {};
       for (const input of layout.namedInputs) {
         const n = namedNumber(wb, input.name);
-        if (input.name.startsWith('hotel_metrics_') || input.name.startsWith('hotel_brand_') || input.name.startsWith('hotel_food_beverage_')) expect(n, `${input.name} absent in this example`).toBeNull();
+        if (input.name === 'hotel_metrics_market_revpar' || input.name.startsWith('hotel_brand_') || input.name.startsWith('hotel_food_beverage_')) expect(n, `${input.name} absent in this example`).toBeNull();
         else if (!['levered_cash_flow_y1', 'equity_total', 'underwritten_value'].includes(input.name)) expect(n, `${input.name} resolved`).not.toBeNull();
         values[input.name] = n;
       }

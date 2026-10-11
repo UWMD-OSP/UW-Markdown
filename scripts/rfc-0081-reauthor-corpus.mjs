@@ -228,7 +228,7 @@ async function refreshArtifacts() {
     else {
       const oldCanonical=old.subject.canonicalization_version;old.subject=fresh.subject;old.receipt_version='1.1';
       const expected=JSON.parse(readFileSync(dir+'/expected-verdict.json','utf8'));
-      if(expected.expected_codes?.includes('RCP-10')) old.subject.canonicalization_version=oldCanonical;
+      if(expected.expected_codes?.includes('RCP-10')) { old.subject.canonicalization_version=oldCanonical; old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0'); }
       if((expected.expected_codes??expected.codes)?.includes('RCP-01')) old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0');
       writeFileSync(dir+'/'+receiptFile,JSON.stringify(old,null,2)+'\n');
     }

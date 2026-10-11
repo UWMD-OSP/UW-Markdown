@@ -42,6 +42,8 @@ const NAMED_RANGES = new Map<string, string>([
   ['debt_structure.loan_amount', 'loan_amount'],
   ['debt_structure.annual_debt_service', 'annual_debt_service'],
   ['property.keys', 'keys'],
+  ['rent_roll.adr', 'stated_adr'],
+  ['rent_roll.occupancy', 'stated_occupancy'],
   ['sources_uses.equity_metrics.equity_total', 'equity_total'],
   ['dcf.annual_cash_flows.Y1.net_cash_flow_levered', 'levered_cash_flow_y1'],
   ['sources_uses.uses.total', 'total_uses'],
@@ -116,13 +118,15 @@ describe('HOSPITALITY_PACK', () => {
       total_uses: uses['total']!,
       occupied_room_nights: rentRoll.content['occupied_room_nights'] as number,
       available_room_nights: rentRoll.content['available_room_nights'] as number,
+      stated_adr: rentRoll.content['adr'] as number,
+      stated_occupancy: rentRoll.content['occupancy'] as number,
     };
 
     for (const c of HOSPITALITY_PACK.calculations ?? []) {
       const direct = evaluateCalc(c, ctx);
       expect(direct.ok, `${c.id}: ${direct.error?.message ?? ''}`).toBe(true);
 
-      if (['total_room_revenue', 'room_revenue_per_key', 'revpar_index', 'fb_gross_margin'].includes(c.id)) {
+      if (['revpar_index', 'fb_gross_margin'].includes(c.id)) {
         expect(direct.value, c.id).toBeNull();
         expect(emitExcelFormula(c.formula, { namedRanges: NAMED_RANGES })).toBeTruthy();
         continue;
@@ -131,7 +135,7 @@ describe('HOSPITALITY_PACK', () => {
       for (const [, name] of NAMED_RANGES) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       }
-      if (!['cash_on_cash', 'ltv'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv', 'total_room_revenue', 'room_revenue_per_key'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = excelValue(formula);
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it

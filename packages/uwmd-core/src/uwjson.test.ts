@@ -123,9 +123,9 @@ describe('.uw.json 1.0', () => {
     const property = document.sections['property'] as UWEnvelopeBlock;
 
     expect(document.envelope_version).toBe('1.0');
-    expect(document.format_version).toBe('1.1');
+    expect(document.format_version).toBe('3.0');
     expect(property.content['total_units']).toBe(24);
-    expect((property.content['_meta'] as Record<string, unknown>)['version']).toBe(2);
+    expect(((property.content['_meta'] as Record<string, unknown>)['lifecycle'] as Record<string, unknown>)['revision']).toBe(2);
     expect(property).not.toHaveProperty('meta');
     expect(document).not.toHaveProperty('prose');
     expect(property.prose).toContain('Narrative prose');
