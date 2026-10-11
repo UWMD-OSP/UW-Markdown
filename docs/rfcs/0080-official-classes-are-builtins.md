@@ -1,7 +1,8 @@
 ---
 rfc: 0080
 title: Every official asset class is a builtin; data center and manufactured housing join the builtin set
-status: accepted
+status: implemented
+implemented: 2026-10-11
 author: claude-code (agent proposal, from owner direction 2026-10-10)
 created: 2026-10-10
 depends_on:
@@ -26,7 +27,9 @@ affects:
 **Accepted with its implementation.** The direction is the owner's
 (Product principle 1, 2026-10-10); this RFC turns it into a contract. It lands
 `accepted` together with its implementation in one PR, as RFCs 0064, 0065 and
-0072 did. Merging that PR is the acceptance.
+0072 did. Merging that PR is the acceptance. **Implemented; released and
+independently verified** in 3.0.0 with Format 2.1 and Stable Protocol 3.0.0
+(see [Publication and verification](#publication-and-verification-2026-10-11)).
 
 ## Summary
 
@@ -181,8 +184,9 @@ the choice in the Decisions table.
   and 1.x unchanged.
 - **Protocol.** The label moves at release preparation, as before. Release
   preparation pairs Format 2.1 with Protocol 3.0.0 and core/CLI 3.0.0; both
-  module packages ship 0.2.0 as their final version. The RFC stays `accepted`
-  until a release ships it and publication is verified.
+  module packages ship 0.2.0 as their final version. Released in 3.0.0;
+  publication was independently verified before this RFC moved to
+  `implemented`.
 
 ## Compatibility analysis
 
@@ -295,3 +299,22 @@ Also in this change:
 - **XBRL taxonomies.** New industries extend the standard taxonomy through
   the standard's own process, rather than living as permanent private
   extensions.
+
+## Publication and verification (2026-10-11)
+
+Annotated `v3.0.0` targets the release-prepared merge
+`44ab7347a8a3054fc377e19e85f89ad6f1539dea` (PR #305).
+[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
+succeeded and published core/CLI 3.0.0, signing 0.2.26, batch 0.8.21, Excel
+0.9.14, report 0.8.26, lake 0.2.10 and both module packages 0.2.0, pairing
+Stable Protocol 3.0.0 with Format 2.1. Independent registry, provenance,
+published-file, delivered-CLI (332/332 portable cases, no skips) and consumer
+checks passed, including all twelve builtin classes in the published core and
+both 0.2.0 module shells declaring nothing and pinning core 3.0.0 exactly; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
+The §6 retirement is complete: the owner deprecated `@uwmd/module-hospitality`
+and `@uwmd/module-data-center` on npm on 2026-10-11, and the registry shows
+the retirement message on every version of each. Removing both packages from
+the release workflow is left to a later release. Publication verification
+precedes this separate `accepted` → `implemented` reconciliation. The
+immutable release tag and every normative section above remain unchanged.

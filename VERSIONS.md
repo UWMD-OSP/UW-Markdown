@@ -40,7 +40,18 @@ exactly. Core's optional signing peer is 0.2.26. The workflow scope is nine
 packages: core, CLI, signing, batch, Excel, report, lake and both module
 packages. The two module packages at 0.2.0 are declaration-free compatibility
 shells and their final version (RFC 0080 §6); their manifest contracts are
-0.2.0. RFCs 0078, 0079 and 0080 stay `accepted` in the release-prepared state.
+0.2.0. RFCs 0078, 0079 and 0080 are implemented; Protocol 3.0.0 is Stable.
+All nine packages are published from immutable annotated `v3.0.0` on
+`44ab7347a8a3054fc377e19e85f89ad6f1539dea` through trusted publishing with
+provenance. Release run 38163964522 succeeded and was the first to publish
+Excel, report and lake. All registry versions, `latest`, `gitHead`,
+signatures, attestations, Rekor checks, 638 published files, 332
+delivered-CLI portable cases and an isolated consumer of all nine packages
+were independently verified. The owner deprecated both module package names
+on npm on 2026-10-11, every version. No other package generation shipped.
+Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md)
+remain separate records.
 
 Release 2.21.0 pairs core/CLI 2.21.0 with Protocol 2.25.0 and Format 2.0.
 Protocol 2.25.0 carries one RFC: RFC 0065's `RDB-NN` reserve draw
@@ -233,8 +244,9 @@ public npm packages. Distribution support is in the ordinary tag workflow.
 Neither module was published in 2.17.0 or earlier; 0.1.10, pairing core 2.18.0,
 is their first public generation. Since RFC 0080 both are declaration-free
 compatibility shells: 0.2.0, pairing core 3.0.0, is the final version of each.
-After that generation publishes, the owner deprecates both package names on
-npm (wiki 11), and they leave the publish set in a later release.
+That generation published on 2026-10-11, and the owner deprecated both
+package names on npm the same day, every version, with the wiki 11 messages.
+They leave the publish set in a later release.
 
 Package semver identifies an immutable npm artifact. Contract `version` identifies
 the manifest contract required by document `modules[].version` and module
@@ -346,4 +358,4 @@ For per-release details see [CHANGELOG.md](CHANGELOG.md). For why a
 specific design was made the way it was, see
 [`docs/rfcs/`](docs/rfcs/) or the relevant spec section.
 
-RFC 0080 (3.0.0): Format 2.1 authors two new official builtins; all twelve have full standard and starter support. Release 3.0.0 pairs it with Protocol 3.0.0. Both official module packages ship 0.2.0 as declaration-free compatibility shells, their final version; their manifest contracts are 0.2.0.
+RFC 0080 (3.0.0): Format 2.1 authors two new official builtins; all twelve have full standard and starter support. Release 3.0.0 pairs it with Protocol 3.0.0. Both official module packages shipped 0.2.0 as declaration-free compatibility shells, their final version, and are deprecated on npm; their manifest contracts are 0.2.0.

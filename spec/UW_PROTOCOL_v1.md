@@ -1,6 +1,6 @@
 # UW Protocol — verification
 
-**Status:** Accepted release contract (RFCs 0078, 0079, 0080) — protocol **3.0.0**  ·  **Format pairing:** authors format **2.1** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads 2.0 and the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Stable — protocol **3.0.0**  ·  **Format pairing:** authors format **2.1** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads 2.0 and the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
 > **Protocol 3.0.** This text carries the Protocol 3.0.0 conformance model
 > accepted in [RFC 0078](../docs/rfcs/0078-protocol-is-verification.md): the

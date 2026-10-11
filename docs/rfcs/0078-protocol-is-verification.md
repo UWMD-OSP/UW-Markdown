@@ -1,8 +1,9 @@
 ---
 rfc: 0078
 title: 'The protocol is verification: separate the standard from the starter products'
-status: accepted
+status: implemented
 accepted: 2026-10-10
+implemented: 2026-10-11
 author: claude-code (agent proposal, from owner direction 2026-10-10)
 created: 2026-10-10
 affects:
@@ -20,7 +21,9 @@ direction of 2026-10-10 (D1–D13). It is a breaking change to the Protocol's
 conformance model (Protocol 3.0.0), so it landed as a draft first; the owner
 accepted it in session the same day ("accept"), and merging PR #298 records
 that. Implementation follows in the phases under Reference implementation,
-each its own PR. The RFC stays `accepted` until Protocol 3.0.0 ships.
+each its own PR. **Implemented; released and independently verified.** The
+`v3.0.0` release published Protocol 3.0.0 as Stable with core/CLI 3.0.0 (see
+[Publication and verification](#publication-and-verification-2026-10-11)).
 
 ## Summary
 
@@ -251,8 +254,8 @@ In phases, each its own PR once this RFC is accepted:
    - Wiki 04/05/10/11 and docs site (Standard vs Tools navigation).
 5. **Release.** Protocol 3.0.0 with the next core release. Release
    preparation pairs Protocol 3.0.0 with core/CLI 3.0.0 and Format 2.1
-   (RFC 0080). The RFC stays `accepted` until a release ships it and
-   publication is verified.
+   (RFC 0080). Released in 3.0.0; publication was independently verified
+   before this RFC moved to `implemented`.
 6. **Follow-up RFCs:** `@uwmd/verify` package split (D8); asset classes as
    full builtins (principle 1, including data center and manufactured
    housing); levered and after-tax definitions (D7).
@@ -371,3 +374,19 @@ recommended; see D9–D13.
 - **HTML and browsers, JSON Schema and validators.** In both, the spec defines
   what documents mean and how to check them, and any number of independent
   tools implement it.
+
+## Publication and verification (2026-10-11)
+
+Annotated `v3.0.0` targets the release-prepared merge
+`44ab7347a8a3054fc377e19e85f89ad6f1539dea` (PR #305).
+[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
+succeeded and published core/CLI 3.0.0, signing 0.2.26, batch 0.8.21, Excel
+0.9.14, report 0.8.26, lake 0.2.10 and both module packages 0.2.0, pairing
+Stable Protocol 3.0.0 with Format 2.1. Independent registry, provenance,
+published-file, delivered-CLI (332/332 portable cases, no skips) and consumer
+checks passed, including the published core's `verifier` tier claim and its
+Reader/Verifier portable split (16/280); see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every normative section above
+remain unchanged. The follow-up RFCs in item 6 remain open.

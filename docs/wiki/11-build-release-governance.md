@@ -37,10 +37,11 @@ Script | Does
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (2.1, RFC 0080) and
   `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (3.0.0, the accepted
-  release contract for RFCs 0078, 0079 and 0080, paired with core/CLI 3.0.0
-  and Format 2.1. Published core/CLI 2.21.0 retain Stable Protocol 2.25.0,
-  and 2.20.0 retain Stable Protocol 2.24.0).
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 3.0.0 after
+  RFCs 0078, 0079 and 0080 shipped and publication was independently
+  verified; published core/CLI 3.0.0 pair with it and Format 2.1. Historical
+  core/CLI 2.21.0 retain Stable Protocol 2.25.0, and 2.20.0 retain Stable
+  Protocol 2.24.0).
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
   two cannot drift apart silently. **Protocol 3.0.0** (RFC 0078): conformance
   is the **Reader** and **Verifier** tiers plus optional profiles. The
@@ -256,9 +257,9 @@ is required solely to distribute these existing implementations.
 > **Since RFC 0080 both packages are compatibility shells.** Hospitality's and
 > data center's official content is builtin in `@uwmd/core`; the manifests
 > declare no classes, sections, calculations, rules or views, and core
-> satisfies existing module-list dependencies (CLS-02). They stay in the publish
-> set for the transition release; retirement and npm deprecation follow
-> separately. Official asset classes are never module classes now; modules are
+> satisfies existing module-list dependencies (CLS-02). They stayed in the
+> publish set for the 3.0.0 transition release, and both names were deprecated
+> on npm on 2026-10-11 (Retirement, below). Official asset classes are never module classes now; modules are
 > for third parties. The rest of this section describes the distribution
 > mechanics, which are unchanged.
 
@@ -286,6 +287,13 @@ and only show the message. Record the deprecation in the post-publication
 reconciliation. The packages leave `release.yml`, `release-packages.mjs` and
 the matrix in a later release, never in the one that ships their final
 version.
+
+**Done 2026-10-11.** 3.0.0 published 0.2.0 of both packages (release run
+38163964522), and the owner then ran both commands. The registry shows the
+message on every version of each name, `0.0.0-stage` through `0.2.0`; see the
+[3.0.0 publication record](../releases/3.0.0-publication.md#module-package-retirement).
+Both packages are still in `release.yml` and `release-packages.mjs`; removing
+them is the remaining step, for a later release.
 
 **Independent versions and explicit loading.** npm package semver identifies the
 artifact; manifest `version` identifies its contract; `manifest_version` identifies
