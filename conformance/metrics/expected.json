@@ -651,12 +651,12 @@
       {
         "id": "dscr",
         "path": "valuation.dscr",
-        "stated": 1.5789,
-        "stated_decimals": 4,
+        "stated": 1.579,
+        "stated_decimals": 3,
         "state": "verified",
-        "computed": 1.5789,
-        "comparison": 1.5789,
-        "comparison_decimals": 4
+        "computed": 1.579,
+        "comparison": 1.579,
+        "comparison_decimals": 3
       },
       {
         "id": "dscr",
@@ -701,11 +701,11 @@
       {
         "id": "cash_on_cash",
         "path": "valuation.cash_on_cash",
-        "stated": 0.059514,
+        "stated": 0.059521,
         "stated_decimals": 6,
         "state": "verified",
-        "computed": 0.059514,
-        "comparison": 0.059514,
+        "computed": 0.059521,
+        "comparison": 0.059521,
         "comparison_decimals": 6
       },
       {

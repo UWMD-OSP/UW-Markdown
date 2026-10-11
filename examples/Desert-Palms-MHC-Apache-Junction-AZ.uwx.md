@@ -62,6 +62,67 @@ with NOI. The standard sections carry the common income and financing metrics, w
 }
 ```
 
+## Rent Roll {#rent_roll}
+
+Site-level rent roll summary, as of the same date as `mhc_sites`. It restates the
+stated site inventory and rents — 180 of 200 sites occupied, a $550 weighted
+monthly pad rent across all sites, and 20 park-owned homes renting at $750 a
+month before pad rent — so the term-sheet stage has its rent roll like every
+other income class. Synthetic, like the rest of this example; the per-site
+records would live in the source file.
+
+```json uw:section=rent_roll source=manual ts=2026-10-10T12:00:00Z v=1 confidence=high
+{
+  "section_id": "rent_roll",
+  "_meta": {
+    "section": "rent_roll",
+    "provenance": {
+      "actor": "codex",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-10T12:00:00Z",
+      "notes": null,
+      "source": "manual"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "content": {
+    "rent_roll_type": "manufactured_housing",
+    "as_of_date": "2026-09-30",
+    "total_sites": 200,
+    "occupied_sites": 180,
+    "vacant_sites": 20,
+    "physical_occupancy_pct": 0.9,
+    "weighted_pad_rent_monthly": 550,
+    "park_owned_homes": 20,
+    "poh_home_rent_monthly": 750,
+    "site_mix_summary": [
+      {
+        "site_status": "occupied",
+        "count": 180,
+        "avg_pad_rent_monthly": 550
+      },
+      {
+        "site_status": "vacant",
+        "count": 20,
+        "avg_pad_rent_monthly": 550
+      }
+    ],
+    "_notes": "Synthetic summary mirroring mhc_sites. Pad rent is per site (vacant sites at stated asking rent); park-owned-home rent is per home and excludes pad rent. No unit count is stated, so no dwelling-unit denominator is implied."
+  }
+}
+```
+
 ## Valuation
 
 ```json uw:section=valuation source=manual ts=2026-10-10T12:00:00Z v=1 confidence=high
@@ -155,7 +216,7 @@ with NOI. The standard sections carry the common income and financing metrics, w
       "marketing": 0,
       "total_operating_expenses": 648000
     },
-    "_notes": " Synthetic starter operating statement: income and expenses are explicitly stated for workbook footing, preserving the original $720,000 NOI. These collected amounts are not inferred from the site occupancy or home counts."
+    "_notes": " Synthetic starter operating statement: income and expenses are explicitly stated for workbook footing, preserving the original $720,000 NOI. The collected rents equal full collection at the stated rents with no credit loss: pad rent is 180 occupied sites x $550 x 12 = $1,188,000 and park-owned-home rent is 20 homes x $750 x 12 = $180,000. They are stated inputs; the pack does not derive them."
   }
 }
 ```

@@ -187,6 +187,11 @@ describe('requiredSectionsFor — class overlays (RFC 0029)', () => {
       const base = STAGE_REQUIREMENTS[stage].required_sections;
       expect(requiredSectionsFor(stage, 'office')).toEqual(base);
       expect(requiredSectionsFor(stage, 'specialty_facility')).toEqual(base);
+      // RFC 0080: the new builtins take the base lists verbatim, like
+      // multifamily — §5.1's overlay set stays exactly land and mixed_use.
+      expect(requiredSectionsFor(stage, 'data_center')).toEqual(base);
+      expect(requiredSectionsFor(stage, 'org.uwmd.data_center')).toEqual(base);
+      expect(requiredSectionsFor(stage, 'manufactured_housing')).toEqual(base);
       expect(requiredSectionsFor(stage)).toEqual(base);
     }
   });
@@ -265,4 +270,46 @@ describe('DQ-06 and stage_readiness respect the overlays (RFC 0029)', () => {
     const parsed = file({}, { asset_class: 'land', deal_stage: 'scope' });
     expect(codes(parsed, 'CC-14')).toHaveLength(1);
   });
+});
+
+describe('DQ-06 treats the RFC 0080 builtins exactly like multifamily', () => {
+  // The format spec's §5.1 overlay set is exhaustive (land, mixed_use). A data
+  // center's dc_capacity or a park's mhc_sites never stands in for rent_roll.
+  const fullUnderwrite = (): Record<string, UWBlock> => {
+    const sections: Record<string, UWBlock> = {};
+    for (const id of STAGE_REQUIREMENTS.full_underwrite.required_sections) sections[id] = block(id, {});
+    return sections;
+  };
+
+  it('has no overlay entry for either new class', () => {
+    expect(Object.keys(STAGE_SECTION_OVERLAYS).sort()).toEqual(['land', 'mixed_use']);
+  });
+
+  for (const [assetClass, classSection] of [
+    ['multifamily', null],
+    ['data_center', 'dc_capacity'],
+    ['manufactured_housing', 'mhc_sites'],
+  ] as const) {
+    it(`${assetClass}: a missing rent_roll fires DQ-06 and blocks term_sheet readiness`, () => {
+      const sections = fullUnderwrite();
+      delete sections.rent_roll;
+      if (classSection) sections[classSection] = block(classSection, {});
+      const parsed = file(sections, { asset_class: assetClass, deal_stage: 'full_underwrite', uw_version: '2.1' });
+      const dq06 = codes(parsed, 'DQ-06');
+      expect(dq06.map((i) => i.section)).toEqual(['rent_roll']);
+      expect(dq06[0]!.severity).toBe('info');
+      const readiness = validateUWFile(parsed).stage_readiness;
+      expect(readiness.screening).toBe(true);
+      expect(readiness.term_sheet).toBe(false);
+      expect(readiness.full_underwrite).toBe(false);
+    });
+
+    it(`${assetClass}: with rent_roll present no DQ-06 fires at full_underwrite`, () => {
+      const sections = fullUnderwrite();
+      if (classSection) sections[classSection] = block(classSection, {});
+      const parsed = file(sections, { asset_class: assetClass, deal_stage: 'full_underwrite', uw_version: '2.1' });
+      expect(codes(parsed, 'DQ-06')).toHaveLength(0);
+      expect(validateUWFile(parsed).stage_readiness.full_underwrite).toBe(true);
+    });
+  }
 });

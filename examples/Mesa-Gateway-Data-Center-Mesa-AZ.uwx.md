@@ -286,6 +286,54 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
 
 ---
 
+## Operating Statement (T-12) {#operating_statement}
+
+Trailing-twelve summary reconciled to the NOI model — same revenue, expense and NOI totals, with power billed through at cost on both sides. The line-item detail lives in the source statement.
+
+```json uw:section=operating_statement source=system/extractor ts=2026-09-09T11:00:00Z v=1 confidence=medium
+{
+  "section_id": "operating_statement",
+  "_meta": {
+    "section": "operating_statement",
+    "provenance": {
+      "source": "system/extractor",
+      "resolution": "ai_extracted",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T11:00:00Z",
+      "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "content": {
+    "period": "t12",
+    "period_end": "2026-06-30",
+    "statement_basis": "accrual",
+    "income": {
+      "total_revenue": 27684000
+    },
+    "expenses": {
+      "total_operating_expenses": 16484000
+    },
+    "net_operating_income": 11200000,
+    "reconciles_to_noi_model": true
+  }
+}
+```
+
+---
+
 ## Debt Structure {#debt_structure}
 
 ```json uw:section=debt_structure source=manual ts=2026-09-09T10:45:00Z v=1 confidence=high
@@ -326,7 +374,7 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
     "amortization_months": 360,
     "amortization": "30yr_amortizing",
     "io_months": 0,
-    "annual_debt_service": 7093500,
+    "annual_debt_service": 7093062,
     "underwritten_noi": 11200000,
     "dscr": 1.579,
     "debt_yield": 0.1167,
@@ -431,9 +479,9 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
     "cap_rate": 0.07,
     "ltv": 0.6,
     "ltc": 0.581818,
-    "dscr": 1.5789,
+    "dscr": 1.579,
     "debt_yield": 0.116667,
-    "cash_on_cash": 0.059514,
+    "cash_on_cash": 0.059521,
     "utilization": 1.1,
     "commissioned_share": 0.8,
     "facility_load_kw": 12500,
@@ -513,6 +561,59 @@ Loan sizing against the three standard constraints. The governing test is LTV; t
   }
 }
 ```
+
+## Borrower / Sponsor {#borrower_sponsor}
+
+Mesa Gateway Holdings LLC, a single-asset borrower controlled by one sponsor entity. Principals only: sponsor financial statements are requested for the diligence period, so no net-worth or liquidity figure is stated yet.
+
+```json uw:section=borrower_sponsor source=manual ts=2026-09-09T11:00:00Z v=1 confidence=medium
+{
+  "section_id": "borrower_sponsor",
+  "_meta": {
+    "section": "borrower_sponsor",
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T11:00:00Z",
+      "notes": "Principals only; sponsor PFS and liquidity statements requested for the DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "content": {
+    "principals": [
+      {
+        "name": "Sonoran Digital Infrastructure Partners LP",
+        "role": "sponsor",
+        "ownership_pct": 1,
+        "is_guarantor": true,
+        "is_key_man": false,
+        "pfs_received": false,
+        "tax_returns_received": false,
+        "figures_verified": false
+      }
+    ],
+    "entity": {
+      "name": "Mesa Gateway Holdings LLC",
+      "type": "llc",
+      "state": "DE"
+    }
+  }
+}
+```
+
+---
 
 ## Market Analysis
 
@@ -686,6 +787,74 @@ Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, a
     "interconnection_revenue_annual": 660000,
     "services_revenue_annual": 264000,
     "market_rent_per_kw_month": 187.5
+  }
+}
+```
+
+---
+
+## Validation {#validation}
+
+Financial-validity engine run over the sections above.
+
+```json uw:section=validation source=system/financialValidityChecker ts=2026-09-09T11:00:00Z v=1 confidence=high
+{
+  "section_id": "validation",
+  "_meta": {
+    "section": "validation",
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T11:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "content": {
+    "overall_status": "clean",
+    "financial_validity": [
+      {
+        "flag_id": "FV-001",
+        "metric": "dscr",
+        "value": 1.579,
+        "threshold": {
+          "type": "min",
+          "min": 1.2,
+          "max": null
+        },
+        "severity": "pass",
+        "message": "DSCR (1.579x) clears the 1.20x warning threshold.",
+        "suppressed": false,
+        "suppress_reason": null
+      },
+      {
+        "flag_id": "FV-002",
+        "metric": "ltv",
+        "value": 0.6,
+        "threshold": {
+          "type": "max",
+          "min": null,
+          "max": 0.75
+        },
+        "severity": "pass",
+        "message": "LTV at 60.0% is within the 75% policy maximum.",
+        "suppressed": false,
+        "suppress_reason": null
+      }
+    ],
+    "completeness": []
   }
 }
 ```

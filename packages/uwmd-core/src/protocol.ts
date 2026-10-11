@@ -778,8 +778,6 @@ export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
   exempt?: readonly string[];
   substitute?: Readonly<Record<string, string>>;
 }>> = {
-  data_center: { substitute: { rent_roll: 'dc_capacity' } },
-  manufactured_housing: { substitute: { rent_roll: 'mhc_sites' } },
   land:      { exempt: ['rent_roll', 'operating_statement'] },
   mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
 };
@@ -2746,7 +2744,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'INVALID-ASSET-CLASS-002', severity: 'error',
     title: 'Asset-class identifier shadows a builtin',
-    description: 'A namespaced identifier whose final segment is one of the ten builtin names.',
+    description: 'A namespaced identifier whose final segment is one of the twelve builtin names.',
     remediation: 'Rename the final segment so it does not shadow a builtin; a suffix such as _specialty both disambiguates and says more.',
     spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
   },
