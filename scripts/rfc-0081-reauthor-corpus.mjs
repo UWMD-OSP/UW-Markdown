@@ -169,7 +169,7 @@ async function document(source,file) {
     }
   }
   for(const b of blocks.reverse()) {
-    const replacement=b.match[0].replace(b.match[3],preserveNumbers(b.original,JSON.stringify(b.body,null,2))+'\n');
+    const replacement=b.match[0].replace(b.match[3],preserveNumbers(original,JSON.stringify(b.body,null,2))+'\n');
     source=source.slice(0,b.match.index)+replacement+source.slice(b.match.index+b.match[0].length);
   }
   return source;

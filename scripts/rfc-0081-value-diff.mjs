@@ -38,7 +38,7 @@ for (const file of files.filter(f => /^conformance\/receipts\/verify\/.*\/receip
   const result = await core.verifyReceipt(receipt, readFileSync(resolve(root, deal), 'utf8'));
   snapshot.receipts[file] = { verdict: result.verdict, codes: result.issues.map(i => i.code).sort(), values: receipt.results };
 }
-const run = JSON.parse(execFileSync(process.execPath, ['scripts/run-conformance.mjs', '--json'], { cwd: root, maxBuffer: 32 * 1024 * 1024 }).toString());
+const run = args.includes('--no-conformance') ? {results:[], summary:{}} : JSON.parse(execFileSync(process.execPath, ['scripts/run-conformance.mjs', '--json'], { cwd: root, maxBuffer: 32 * 1024 * 1024 }).toString());
 snapshot.conformance = run.results.map(({ suite, scenario, status }) => ({ suite, scenario, status }));
 if (args.includes('--out')) {
   writeFileSync(args[args.indexOf('--out') + 1], JSON.stringify(snapshot, null, 2) + '\n');

@@ -1426,7 +1426,8 @@ function checkRecoveryTerms(
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
-      if (pct != null) {
+      // RFC 0081 Phase 4: delete old cap accumulation requiredness.
+      if (pct != null && (!loneFacts || Object.hasOwn(c, 'accumulation'))) {
         const acc = c['accumulation'];
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,

@@ -129,7 +129,7 @@ the sources & uses rather than out of operations.
   "available_room_nights": 51830,
   "occupied_room_nights": 38000,
   "occupancy": 0.73316612,
-  "adr": 160,
+  "adr": 160.0,
   "revpar": 117.3065792012,
   "vacancy_pct": 0.26683388,
   "segmentation": [
