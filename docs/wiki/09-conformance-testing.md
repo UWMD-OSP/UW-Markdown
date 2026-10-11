@@ -238,19 +238,20 @@ baselines need no volatile-field stripping.
 ## The language-agnostic driver (RFC 0004)
 
 `npm run conformance:v2` → [`conformance/runner/runner.py`](../../conformance/runner/README.md)
-runs the tier fixtures against **any** implementation that speaks the CLI
+runs the generated CLI projections against **any** implementation that speaks the CLI
 protocol in protocol §II.6a. It shells out; it knows nothing about TypeScript
 or `@uwmd/core`, so the reference implementation is tested exactly the way a
 Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs 341 assertions across its suites, and most of what has been added
+runs all 1,056 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
-signature key stores, invariants asserted with no baseline at all. The v2
-driver gates the **protocol** — that a non-TS implementation *can* self-certify
-— while the v1 runner gates the **corpus**. Replacing one with the other would
+signature key stores, invariants asserted with no baseline at all. The portable
+driver checks its 332-case subset using shared comparison logic, while the
+reference runner checks the full indexed corpus. A result claims only the
+checks actually run. Replacing one with the other would
 trade breadth for portability.
 
 Output is TAP version 14 plus an optional JSON manifest (`--manifest-out`)
@@ -264,9 +265,9 @@ The `cases/*.case.json` files are **generated** —
 `npm run gen-conformance-cases`, with `--check` in CI. A case restates what is
 already on disk (which fixture, which command, which baseline), and
 hand-maintaining fifty invites one to go stale silently. The known gaps are
-listed in the runner README rather than hidden: two tier-2 fixtures need
-`applyEditAsync` and a volatile hash the synchronous CLI cannot express, tier 4
-has no CLI surface, and the named suites are TypeScript-only.
+listed in the runner README rather than hidden: two editor starter fixtures need
+`applyEditAsync` and a volatile hash the synchronous CLI cannot express, agent starter checks
+have no CLI surface, and the named suites are TypeScript-only.
 
 Comparison is **subset-by-default**: the baselines are projections, so an
 implementation reporting `round_to` and `display` alongside the four fields a
@@ -475,13 +476,13 @@ assertions; register portable legacy ids before regenerating case files.
 The following family names describe storage and baseline update selectors.
 
 
-- **Tier 1:** drop a `.uw.md` in `fixtures/`, then `--suite=1 --update` to mint the
+- **Legacy family 1:** drop a `.uw.md` in `fixtures/`, then `--suite=1 --update` to mint the
   expected baselines (review the diff before committing).
-- **Tier 1 malformed:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
+- **Legacy family 1 malformed:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
   with `expected_codes`.
-- **Tier 2:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
+- **Editor family 2:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
   `context.json`/`options.json`), then `--suite=2 --update` to mint `after.uw.md`.
-- **Tier 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--suite=3
+- **Calculation family 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--suite=3
   --update`.
 - **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--suite=lite --update`. Run
   `--suite=lite` *without* `--update` first — the negative and invariant checks
@@ -505,7 +506,7 @@ The hedge suite adds 57 source/expected pairs and retains all 17 RFC 0056
 pairs unchanged. Expected structural codes and separate verifier state/reason/code
 projections are compared independently. Portable validate--json cases exercise
 the same separation and exit behavior. Run the default suite, generated-case
-freshness, portable --no-skip driver and capability profiles after building.
+freshness, portable --no-skip driver and capability-skip controls after building.
 
 Focused unit tests additionally pin USD/null JCS known answers, real Node/Web
 Crypto parity, pre-await snapshots, key-order/numeric-spelling normalization,

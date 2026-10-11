@@ -498,7 +498,7 @@ verify consistency, while producer purpose evidence must reject that mapping.
 
 The [metrics suite](../conformance/metrics/README.md) verifies every builtin example using the
 normative dictionary and safe-expression evaluator, without packs, defaults or
-cascade. It records 104 verified statements and 39 existing example mismatches,
-with per-example counts and per-statement evidence. Known findings are compared
-exactly, and negative controls pin missing-input refusal and quantization. Run
+cascade. It records 187 verified statements, zero failures and zero unverifiable
+statements, with per-example counts and per-statement evidence. Findings are
+compared exactly, and negative controls pin missing-input refusal and quantization. Run
 `npm run conformance -- --suite=metrics`; it is included in the default suite.
