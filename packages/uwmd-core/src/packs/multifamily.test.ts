@@ -87,9 +87,19 @@ describe.each(ASSET_CLASSES.filter(c => c !== 'land'))('%s deal-level cash_on_ca
 describe.each(ASSET_CLASSES)('%s LTV denominator (RFC 0079 revised D2)', assetClass => {
   const ltv = getPackForAssetClass(assetClass)!.calculations!.find(c => c.id === 'ltv')!;
   const value = (valuation: Record<string, unknown>) => {
-    const parsed = parseUWFile(`---\nuw_version: "2.0"\nasset_class: ${assetClass}\n---\n` +
-      `\n\`\`\`json uw:section=valuation source=manual\n${JSON.stringify(valuation)}\n\`\`\`\n` +
-      '\n\`\`\`json uw:section=debt_structure source=manual\n{"loan_amount":75000}\n\`\`\`\n');
+    const parsed = parseUWFile(`---
+uw_version: "2.0"
+asset_class: ${assetClass}
+---
+
+\`\`\`json uw:section=valuation source=manual
+${JSON.stringify(valuation)}
+\`\`\`
+
+\`\`\`json uw:section=debt_structure source=manual
+{"loan_amount":75000}
+\`\`\`
+`);
     return evaluateCalc(ltv, { parsed, prior_results: {}, locale: 'en-US' });
   };
   it('prefers the stated underwritten value over price, and does not require the unused price', () => {
