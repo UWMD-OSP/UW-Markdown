@@ -139,7 +139,7 @@
       }
     },
     "meta": {
-      "oneOf": [
+      "anyOf": [
         {
           "$ref": "#/$defs/metaV1"
         },
