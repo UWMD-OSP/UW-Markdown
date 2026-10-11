@@ -755,6 +755,7 @@ dominate any diff they share.
 | Question | Phase 3 decision | Precedent / cause |
 |---|---|---|
 | Corpus versus released versions | Re-author stated document versions and module/pack ranges now; keep package/release labels and all old runtime paths until Phases 4 and 6. Mark interim old paths for deletion. | Reference implementation Phase 3; owner task boundary. |
+| Saguaro planned additions | total_room_revenue: null → $6,080,000; room_revenue_per_key: null → $42,816.90. All stated figures and lender evidence remain identical. Jared confirmed on 2026-10-11 that these are the planned additions, and authorized continuing. | RFC §5; owner follow-up. |
 | Financial comparison | Snapshot the built Phase 2 base before editing; compare all calc baselines, lender evidence, receipt verdicts, validation codes, conformance outcomes and derived uses. No example or lender value change is authorized. | D5; owner Phase 3 acceptance criterion and follow-up. |
 | Additional fixture exceptions | Jared approved all five below on 2026-10-11: they follow mechanically from §7. Retire a fixture whose only assertion is a retired conflict code; preserve any live refusal. Report every further fixture-only value change with its cause; stop for any example/lender value change. | Owner follow-up to the measured corpus inventory. |
 | capex/reject-legacy-budget-disagrees | $9,470,000 → $6,470,000 before retirement: removing the disagreeing $3,000,000 legacy budget leaves the typed budget. | Retired CAPX-05-only conflict control; owner approved exception. |

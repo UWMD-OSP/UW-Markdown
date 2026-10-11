@@ -4,7 +4,7 @@
 // stack must balance, so the surface shows a live sources-vs-uses balance check
 // and the gap (e.g. a missing equity plug) without ever silently writing it.
 
-import { deriveSourcesUses, type EditOperation, type UWBlock } from '@uwmd/core/browser';
+import { deriveSourcesUses, type EditOperation, type UWBlock, type ParsedUWFile } from '@uwmd/core/browser';
 import { getNumeric, deepGet } from '../catalog.js';
 import { FootedRow, GroupHeading, InputRow, SubHeading, useFooting, type InputDef } from './model-kit.js';
 
@@ -27,20 +27,21 @@ function scalarInputs(content: Row, parentPath: string): InputDef[] {
 }
 
 export function SourcesUsesModel(props: {
+  parsed?: ParsedUWFile;
   sectionId: string;
   variant: string | undefined;
   block: UWBlock;
   dispatch: (op: EditOperation) => void;
 }) {
-  const { sectionId, variant, block, dispatch } = props;
+  const { parsed, sectionId, variant, block, dispatch } = props;
   const { content, commitInput, footed } = useFooting(
     sectionId,
     variant,
     block,
     dispatch,
-    deriveSourcesUses,
+    content => deriveSourcesUses(content, parsed),
   );
-  const { gap, balanced } = deriveSourcesUses(content);
+  const { gap, balanced } = deriveSourcesUses(content, parsed);
 
   const hasStack = isObj(deepGet(content, 'sources')) || isObj(deepGet(content, 'uses'));
   if (!hasStack) {

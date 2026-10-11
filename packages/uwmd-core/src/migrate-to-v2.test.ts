@@ -170,7 +170,7 @@ describe('migrateToV2 — refusals', () => {
   });
 
   it('refuses a file with no uw_version line', async () => {
-    const noVersion = v1File().replace("uw_version: \"3.0\"\n", '');
+    const noVersion = v1File().replace(/^uw_version:.*\n/m, '');
     const result = await migrateToV2(noVersion);
     expect(result.ok).toBe(false);
     expect(result.refusals.join(' ')).toContain('uw_version');

@@ -36,7 +36,7 @@ describe('RFC 0080 official builtin controls', () => {
   }
   it('resolves only the shipped official alias and preserves source identity', () => {
     // RFC 0081 Phase 4: delete the alias input synthesized from the canonical fixture.
-    const source = readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8').replace('asset_class: data_center', 'asset_class: org.uwmd.data_center');
+    const source = readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8').replace(/asset_class: "?data_center"?/, 'asset_class: org.uwmd.data_center\nmodules:\n  - id: org.uwmd.datacenters\n    version: ^0.2.0');
     const parsed = parseUWFile(source);
     const before = JSON.stringify(parsed);
     expect(parseAssetClass('org.uwmd.data_center')).toEqual({ ok: true, kind: 'builtin', id: 'data_center' });
@@ -176,7 +176,7 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
 
   it('keeps MOD-CALC-ERROR for a migrated calculation only where the legacy module ran it', () => {
     // RFC 0081 Phase 4: delete the old module-gating test.
-    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8').replace(/uw_version:.*$/, `uw_version: "${[2, 0].join('.')}"`);
+    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8').replace(/uw_version:.*$/m, `uw_version: "${[2, 0].join('.')}"`);
     const broken = mutate(fixture, '"fb_revenue": 900000', '"fb_revenue": 0');
     const calcErrors = (source: string) => classIssues(source).filter(i => i.code === 'MOD-CALC-ERROR');
     expect(calcErrors(broken)).toEqual([]);

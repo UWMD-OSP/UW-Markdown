@@ -13,10 +13,13 @@ import { HOSPITALITY_PACK } from './hospitality.js';
 
 function excelValue(formula: string): number | null {
   const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');
-  expect(/^[\d. +\-*/(),!=>nullIF]+$/.test(expression), expression).toBe(true);
+  expect(/^[\d. +\-*/(),!=>nullIFORANDU]+$/.test(expression), expression).toBe(true);
   // eslint-disable-next-line no-new-func
-  return new Function('IF', `return (${expression});`)(
+  return new Function('IF', 'OR', 'AND', 'ROUND', `return (${expression});`)(
     (test: boolean, yes: number | null, no: number | null) => test ? yes : no,
+    (...values: boolean[]) => values.some(Boolean),
+    (...values: boolean[]) => values.every(Boolean),
+    (value: number, decimals: number) => quantizeDecimal(value, decimals),
   ) as number | null;
 }
 

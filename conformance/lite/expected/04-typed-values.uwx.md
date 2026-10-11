@@ -41,7 +41,6 @@ created_by: conformance
   }
 }
 ```
-
 ```json uw:section=dcf confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {
@@ -69,7 +68,6 @@ created_by: conformance
   "terminal_value": null
 }
 ```
-
 ```json uw:section=market_analysis confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {
@@ -97,7 +95,6 @@ created_by: conformance
   "tier": "Primary"
 }
 ```
-
 ```json uw:section=risk_assessment confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {
@@ -125,7 +122,6 @@ created_by: conformance
   "sponsor_rating": "BBB-"
 }
 ```
-
 ```json uw:section=x_uw_lite_source confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {

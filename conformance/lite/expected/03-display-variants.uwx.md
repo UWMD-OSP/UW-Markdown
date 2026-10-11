@@ -37,7 +37,6 @@ created_by: conformance
   "loan_amount": 17250000
 }
 ```
-
 ```json uw:section=noi_model confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {
@@ -65,7 +64,6 @@ created_by: conformance
   "net_operating_income": 1653125
 }
 ```
-
 ```json uw:section=property confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {
@@ -94,7 +92,6 @@ created_by: conformance
   "total_units": 148
 }
 ```
-
 ```json uw:section=valuation confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {
@@ -123,7 +120,6 @@ created_by: conformance
   "purchase_price": 28750000
 }
 ```
-
 ```json uw:section=x_uw_lite_source confidence=high source=manual ts=2026-08-08T00:00:00Z v=1
 {
   "_meta": {

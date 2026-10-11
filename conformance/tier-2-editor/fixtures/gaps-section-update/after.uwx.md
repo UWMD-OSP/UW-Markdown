@@ -54,6 +54,12 @@ created_by: "test-fixture"
 
 ```json uw:section=gaps source=system/gaps-maintainer ts=<volatile> v=1 confidence=high
 {
+  "items": [],
+  "summary": {
+    "total_open": 0,
+    "blocking_current_stage": 0,
+    "blocking_next_stage": 0
+  },
   "_meta": {
     "section": "gaps",
     "provenance": {
@@ -75,12 +81,6 @@ created_by: "test-fixture"
       "revision": 1,
       "superseded": false
     }
-  },
-  "items": [],
-  "summary": {
-    "total_open": 0,
-    "blocking_current_stage": 0,
-    "blocking_next_stage": 0
   }
 }
 ```

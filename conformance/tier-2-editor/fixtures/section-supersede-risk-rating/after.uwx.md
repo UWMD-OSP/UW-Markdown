@@ -57,6 +57,14 @@ created_by: "test-fixture"
 
 ```json uw:section=risk_assessment source=agent/L6 ts=<volatile> v=2 confidence=medium
 {
+  "overall_rating": "elevated",
+  "risk_score": 7,
+  "key_risks": [
+    "market softening",
+    "concentration",
+    "rate environment"
+  ],
+  "review_notes": "Updated post-rate-shock analysis.",
   "_meta": {
     "section": "risk_assessment",
     "provenance": {
@@ -78,14 +86,6 @@ created_by: "test-fixture"
       "revision": 2,
       "superseded": false
     }
-  },
-  "overall_rating": "elevated",
-  "risk_score": 7,
-  "key_risks": [
-    "market softening",
-    "concentration",
-    "rate environment"
-  ],
-  "review_notes": "Updated post-rate-shock analysis."
+  }
 }
 ```

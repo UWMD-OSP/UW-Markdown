@@ -22,6 +22,10 @@ created_by: "test-fixture"
 
 ```json uw:section=property source=manual ts=<volatile> v=2 confidence=high
 {
+  "total_units": 60,
+  "year_built": 1995,
+  "building_class": "B+",
+  "renovated_year": 2022,
   "_meta": {
     "section": "property",
     "provenance": {
@@ -43,10 +47,6 @@ created_by: "test-fixture"
       "revision": 2,
       "superseded": false
     }
-  },
-  "total_units": 60,
-  "year_built": 1995,
-  "building_class": "B+",
-  "renovated_year": 2022
+  }
 }
 ```

@@ -21,14 +21,7 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-11T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "property"
       },
       "content": {
         "total_units": 100
@@ -36,14 +29,7 @@
     },
     "sources_uses": {
       "meta": {
-        "section": "sources_uses",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-11T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "sources_uses"
       },
       "content": {
         "sources": {
@@ -53,14 +39,7 @@
     },
     "valuation": {
       "meta": {
-        "section": "valuation",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-11T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "valuation"
       },
       "content": {
         "underwritten_value": 10000000
@@ -68,14 +47,7 @@
     },
     "noi_model": {
       "meta": {
-        "section": "noi_model",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-11T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "noi_model"
       },
       "content": {
         "net_operating_income": 600000
@@ -84,14 +56,7 @@
     "stress_tests": {
       "base": {
         "meta": {
-          "section": "stress_tests",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "stress_tests"
         },
         "content": {
           "base_case": {
@@ -103,14 +68,7 @@
     "debt_structure": {
       "producer-senior": {
         "meta": {
-          "section": "debt_structure",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "debt_structure"
         },
         "content": {
           "_role": "senior",
@@ -122,14 +80,7 @@
       },
       "producer-mezz": {
         "meta": {
-          "section": "debt_structure",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "debt_structure"
         },
         "content": {
           "_role": "junior",
@@ -140,14 +91,7 @@
     "rent_roll": {
       "detail-producer": {
         "meta": {
-          "section": "rent_roll",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "rent_roll"
         },
         "content": {
           "_role": "detail",
@@ -156,14 +100,7 @@
       },
       "summary-producer": {
         "meta": {
-          "section": "rent_roll",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "rent_roll"
         },
         "content": {
           "_role": "summary",
@@ -174,14 +111,7 @@
     "operating_statement": {
       "actuals": {
         "meta": {
-          "section": "operating_statement",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "operating_statement"
         },
         "content": {
           "_role": "primary",
@@ -190,14 +120,7 @@
       },
       "budget": {
         "meta": {
-          "section": "operating_statement",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-11T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "operating_statement"
         },
         "content": {
           "gross_potential_rent": 9999999

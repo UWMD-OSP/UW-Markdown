@@ -21,14 +21,7 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "property"
       },
       "content": {
         "address": "38 Basis Blvd, Phoenix AZ",
@@ -37,14 +30,7 @@
     },
     "dcf": {
       "meta": {
-        "section": "dcf",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "dcf"
       },
       "content": {
         "hold_period_years": 5,

@@ -92,6 +92,7 @@ export function SectionView(props: {
       {variants.map(([variant, block]) => (
         <BlockView
           key={variant ?? 'default'}
+          parsed={parsed}
           sectionId={activeId}
           assetClass={assetClass}
           variant={variant}
@@ -176,6 +177,7 @@ function ProseView({ prose }: { prose: string | undefined }) {
 }
 
 function BlockView(props: {
+  parsed: ParsedUWFile;
   sectionId: string;
   assetClass: string;
   variant: string | undefined;
@@ -183,7 +185,7 @@ function BlockView(props: {
   dispatch: Dispatch;
   issues: ValidationMessage[];
 }) {
-  const { sectionId, assetClass, variant, block, dispatch, issues } = props;
+  const { parsed, sectionId, assetClass, variant, block, dispatch, issues } = props;
   const [showJson, setShowJson] = useState(false);
   const meta = block.meta;
   const fields = fieldsForSection(sectionId, assetClass);
@@ -217,7 +219,7 @@ function BlockView(props: {
         <DebtModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
       {sectionId === 'sources_uses' && (
-        <SourcesUsesModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+        <SourcesUsesModel parsed={parsed} sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
       {sectionId === 'valuation' && (
         <ValuationModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />

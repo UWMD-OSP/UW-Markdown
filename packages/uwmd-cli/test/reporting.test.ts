@@ -36,10 +36,7 @@ describe('CLI validation and receipt reporting', () => {
 
   it('keeps clean validation separate from incomplete optional later stages and skipped checks', async () => {
     const minimal = readFileSync(resolve(root, 'conformance/tier-1-reader/fixtures/01-minimal-screening.uwx.md'), 'utf8');
-    // The historical fixture intentionally warns about its v1 meta spelling.
-    // Correct only that spelling in a temporary copy, retaining its stage gaps.
-    const clean = minimal.replace(/"section_id": "property",(\r?\n\s+"version")/, '"section": "property",$1');
-    expect(clean).not.toBe(minimal);
+    const clean = minimal; // Re-authored nested metadata is already complete.
     const file = resolve(temp, 'clean.uwx.md');
     writeFileSync(file, clean);
     const human = await cli('validate', file);

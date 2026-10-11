@@ -38,7 +38,6 @@ created_by: conformance
   }
 }
 ```
-
 ```json uw:section=debt_structure confidence=high source=manual ts=2026-08-25T00:00:00Z v=1
 {
   "_meta": {
@@ -66,7 +65,6 @@ created_by: conformance
   "interest_rate": 0.0619
 }
 ```
-
 ```json uw:section=valuation confidence=high source=manual ts=2026-08-25T00:00:00Z v=1
 {
   "_meta": {
@@ -95,7 +93,6 @@ created_by: conformance
   "purchase_price": 10000000
 }
 ```
-
 ```json uw:section=x_uw_lite_source confidence=high source=manual ts=2026-08-25T00:00:00Z v=1
 {
   "_meta": {

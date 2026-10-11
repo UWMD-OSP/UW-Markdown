@@ -1,5 +1,5 @@
 {
-  "overall_status": "warnings",
+  "overall_status": "errors",
   "issues": [
     {
       "code": "DQ-06",
@@ -7,7 +7,7 @@
     },
     {
       "code": "SRC-01",
-      "severity": "warning"
+      "severity": "error"
     }
   ]
 }

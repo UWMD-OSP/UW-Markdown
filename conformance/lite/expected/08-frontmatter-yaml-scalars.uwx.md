@@ -35,7 +35,6 @@ asset_class: multifamily
   "purchase_price": 12500000
 }
 ```
-
 ```json uw:section=x_uw_lite_source confidence=high source=manual ts=2026-07-29T00:00:00Z v=1
 {
   "_meta": {

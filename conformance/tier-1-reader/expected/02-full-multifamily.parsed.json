@@ -52,19 +52,7 @@
   "sections": {
     "deal_context": {
       "meta": {
-        "section": "deal_context",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "agent_id": "user",
-        "agent_version": null,
-        "actor": "jared",
-        "timestamp": "2026-04-24T09:15:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "deal_context"
       },
       "content": {
         "deal_summary": "48-unit garden-style multifamily in Glendale AZ (westside Phoenix). Stabilized acquisition, owner-operated with below-market rents. Buy at in-place yield, professionalize management, push rents through natural turnover. 5-year hold.",
@@ -132,20 +120,7 @@
     },
     "property": {
       "meta": {
-        "section": "property",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "resolution": "user_input",
-        "agent_id": "wizard",
-        "agent_version": "4.0.0",
-        "actor": "jared",
-        "timestamp": "2026-04-24T09:05:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "property"
       },
       "content": {
         "address": {
@@ -194,20 +169,7 @@
     },
     "ownership": {
       "meta": {
-        "section": "ownership",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "resolution": "user_input",
-        "agent_id": "wizard",
-        "agent_version": "4.0.0",
-        "actor": "jared",
-        "timestamp": "2026-04-24T09:08:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "ownership"
       },
       "content": {
         "transaction_type": "acquisition",
@@ -237,21 +199,7 @@
     },
     "rent_roll": {
       "meta": {
-        "section": "rent_roll",
-        "version": 1,
-        "superseded": false,
-        "source": "agent/L0-01",
-        "agent_id": "L0-01",
-        "agent_version": "1.0.0",
-        "actor": "system",
-        "timestamp": "2026-04-24T10:12:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [
-          "7_units_month_to_month"
-        ],
-        "input_hash": "sha256:e3b0c44298fc",
-        "notes": "Parsed from parkview_rent_roll_apr2026.xlsx. 48 unit records found, 0 parse errors."
+        "section": "rent_roll"
       },
       "content": {
         "rent_roll_type": "multifamily",
@@ -353,23 +301,7 @@
     "operating_statement": {
       "t12": {
         "meta": {
-          "section": "operating_statement",
-          "version": 1,
-          "superseded": false,
-          "source": "agent/L0-02",
-          "agent_id": "L0-02",
-          "agent_version": "1.0.0",
-          "actor": "system",
-          "timestamp": "2026-04-24T10:18:00Z",
-          "confidence": "medium",
-          "human_review_required": true,
-          "flags": [
-            "management_fee_above_market",
-            "utilities_potentially_understated",
-            "not_cpa_certified"
-          ],
-          "input_hash": "sha256:a1b2c3d4e5f6",
-          "notes": "Management company-prepared. Management fee at 10% of EGI is 450bps above market benchmark. Recommend requesting trailing 24-month statements and utility bills."
+          "section": "operating_statement"
         },
         "content": {
           "period_type": "T12",
@@ -437,19 +369,7 @@
     },
     "noi_model": {
       "meta": {
-        "section": "noi_model",
-        "version": 1,
-        "superseded": false,
-        "source": "system/calculations.ts",
-        "agent_id": "engine",
-        "agent_version": "3.2.1",
-        "actor": "system",
-        "timestamp": "2026-04-24T11:05:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": "sha256:f7e8d9c0b1a2",
-        "notes": null
+        "section": "noi_model"
       },
       "content": {
         "underwriting_basis": "stabilized",
@@ -495,10 +415,12 @@
             "value": 58000,
             "per_unit": 1208,
             "source": "reassessment_estimate",
-            "sale_triggers_reassessment": true,
             "reassessment_basis": "70% of purchase price per Maricopa County methodology = $5,040,000 AV × 1.15% = $57,960, rounded to $58,000",
             "benchmark_low": 48000,
-            "benchmark_high": 64000
+            "benchmark_high": 64000,
+            "reassessment": {
+              "trigger": "sale"
+            }
           },
           "insurance": {
             "value": 28800,
@@ -578,21 +500,7 @@
     },
     "valuation": {
       "meta": {
-        "section": "valuation",
-        "version": 1,
-        "superseded": false,
-        "source": "system/calculations.ts",
-        "agent_id": "engine",
-        "agent_version": "3.2.1",
-        "actor": "system",
-        "timestamp": "2026-04-24T11:06:00Z",
-        "confidence": "medium",
-        "human_review_required": true,
-        "flags": [
-          "appraisal_not_yet_received"
-        ],
-        "input_hash": "sha256:f7e8d9c0b1a2",
-        "notes": null
+        "section": "valuation"
       },
       "content": {
         "purchase_price": 7200000,
@@ -634,22 +542,7 @@
     },
     "debt_structure": {
       "meta": {
-        "section": "debt_structure",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "resolution": "user_input",
-        "agent_id": "wizard",
-        "agent_version": "4.0.0",
-        "actor": "jared",
-        "timestamp": "2026-04-24T09:45:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [
-          "dscr_warning_amortizing"
-        ],
-        "input_hash": null,
-        "notes": null
+        "section": "debt_structure"
       },
       "content": {
         "loan_amount": 5040000,
@@ -660,7 +553,6 @@
         "rate_index": "fixed",
         "rate_spread_bps": null,
         "rate_floor_pct": null,
-        "rate_cap_pct": null,
         "note_rate_at_close": 0.05875,
         "amortization_years": 30,
         "loan_term_years": 5,
@@ -715,19 +607,7 @@
     },
     "sources_uses": {
       "meta": {
-        "section": "sources_uses",
-        "version": 1,
-        "superseded": false,
-        "source": "system/calculations.ts",
-        "agent_id": "engine",
-        "agent_version": "3.2.1",
-        "actor": "system",
-        "timestamp": "2026-04-24T11:07:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": "sha256:f7e8d9c0b1a2",
-        "notes": null
+        "section": "sources_uses"
       },
       "content": {
         "total_project_cost": 7440000,
@@ -759,13 +639,14 @@
             "other": 0,
             "total": 139000
           },
-          "renovation_budget": null,
-          "renovation_contingency": null,
-          "operating_reserves": 96000,
-          "interest_reserve": null,
-          "rate_cap_cost": null,
           "other_reserves": 5000,
-          "total": 7440000
+          "total": 7440000,
+          "escrows": [
+            {
+              "name": "operating",
+              "upfront": 96000
+            }
+          ]
         },
         "equity_metrics": {
           "equity_total": 2400000,
@@ -779,19 +660,7 @@
     },
     "dcf": {
       "meta": {
-        "section": "dcf",
-        "version": 1,
-        "superseded": false,
-        "source": "system/dcfEngine.ts",
-        "agent_id": "engine",
-        "agent_version": "3.2.1",
-        "actor": "system",
-        "timestamp": "2026-04-24T11:10:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": "sha256:f7e8d9c0b1a2",
-        "notes": null
+        "section": "dcf"
       },
       "content": {
         "hold_period_years": 5,
@@ -953,21 +822,7 @@
     "stress_tests": {
       "default": {
         "meta": {
-          "section": "stress_tests",
-          "version": 1,
-          "superseded": false,
-          "source": "system/calculations.ts",
-          "agent_id": "engine",
-          "agent_version": "3.2.1",
-          "actor": "system",
-          "timestamp": "2026-04-24T11:12:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": [
-            "moderate_stress_fails_dscr"
-          ],
-          "input_hash": "sha256:f7e8d9c0b1a2",
-          "notes": null
+          "section": "stress_tests"
         },
         "content": {
           "base_dscr": 1.109,
@@ -1068,19 +923,7 @@
     },
     "market_analysis": {
       "meta": {
-        "section": "market_analysis",
-        "version": 1,
-        "superseded": false,
-        "source": "agent/L2-CRE-07",
-        "agent_id": "L2-CRE-07",
-        "agent_version": "1.0.0",
-        "actor": "system",
-        "timestamp": "2026-04-24T12:30:00Z",
-        "confidence": "medium",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": "Market data from web search; CoStar data not connected. Recommend CoStar validation before credit committee."
+        "section": "market_analysis"
       },
       "content": {
         "market": "Phoenix Metro",
@@ -1225,23 +1068,7 @@
     },
     "borrower_sponsor": {
       "meta": {
-        "section": "borrower_sponsor",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "resolution": "user_input",
-        "agent_id": "wizard",
-        "agent_version": "4.0.0",
-        "actor": "jared",
-        "timestamp": "2026-04-24T09:30:00Z",
-        "confidence": "medium",
-        "human_review_required": true,
-        "flags": [
-          "pfs_not_verified",
-          "liquidity_to_loan_ratio_below_preferred"
-        ],
-        "input_hash": null,
-        "notes": "Figures are PFS-stated. CPA letter requested, expected before end of DD period."
+        "section": "borrower_sponsor"
       },
       "content": {
         "principals": [
@@ -1305,23 +1132,7 @@
     "due_diligence": {
       "default": {
         "meta": {
-          "section": "due_diligence",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "agent_id": "user",
-          "agent_version": null,
-          "actor": "jared",
-          "timestamp": "2026-04-24T09:50:00Z",
-          "confidence": "medium",
-          "human_review_required": true,
-          "flags": [
-            "appraisal_pending",
-            "phase1_pending",
-            "inspection_pending"
-          ],
-          "input_hash": null,
-          "notes": null
+          "section": "due_diligence"
         },
         "content": {
           "appraisal": {
@@ -1457,21 +1268,7 @@
     },
     "risk_assessment": {
       "meta": {
-        "section": "risk_assessment",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "agent_id": "user",
-        "agent_version": null,
-        "actor": "jared",
-        "timestamp": "2026-04-24T14:00:00Z",
-        "confidence": "low",
-        "human_review_required": true,
-        "flags": [
-          "preliminary_analyst_only_L6_not_run"
-        ],
-        "input_hash": null,
-        "notes": "Run L6 agents before credit committee submission."
+        "section": "risk_assessment"
       },
       "content": {
         "scoring_model_version": null,
@@ -1567,19 +1364,7 @@
     },
     "compliance": {
       "meta": {
-        "section": "compliance",
-        "version": 1,
-        "superseded": false,
-        "source": "agent/L5-01",
-        "agent_id": "L5-01",
-        "agent_version": "1.0.0",
-        "actor": "system",
-        "timestamp": "2026-04-24T13:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "compliance"
       },
       "content": {
         "hvcre": {
@@ -1634,19 +1419,7 @@
     },
     "assumptions": {
       "meta": {
-        "section": "assumptions",
-        "version": 1,
-        "superseded": false,
-        "source": "system/calculations.ts",
-        "agent_id": "engine",
-        "agent_version": "3.2.1",
-        "actor": "system",
-        "timestamp": "2026-04-24T11:15:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": "sha256:f7e8d9c0b1a2",
-        "notes": null
+        "section": "assumptions"
       },
       "content": {
         "assumptions": [
@@ -1814,19 +1587,7 @@
     },
     "validation": {
       "meta": {
-        "section": "validation",
-        "version": 1,
-        "superseded": false,
-        "source": "system/financialValidityChecker",
-        "agent_id": "engine",
-        "agent_version": "3.2.1",
-        "actor": "system",
-        "timestamp": "2026-04-24T11:16:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": "sha256:f7e8d9c0b1a2",
-        "notes": null
+        "section": "validation"
       },
       "content": {
         "overall_status": "warnings_only",
@@ -2222,19 +1983,7 @@
   "custom_calculations": [
     {
       "meta": {
-        "section": "custom_calculations",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "agent_id": "user",
-        "agent_version": null,
-        "actor": "jared",
-        "timestamp": "2026-04-24T14:10:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "custom_calculations"
       },
       "content": {
         "calculations": [
@@ -2337,19 +2086,7 @@
   "custom_scenarios": [
     {
       "meta": {
-        "section": "custom_scenarios",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "agent_id": "user",
-        "agent_version": null,
-        "actor": "jared",
-        "timestamp": "2026-04-24T14:20:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "custom_scenarios"
       },
       "content": {
         "scenarios": [
@@ -2431,83 +2168,59 @@
   "extensions": {
     "x_lender_matrix": {
       "meta": {
-        "section": "x_lender_matrix",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "agent_id": null,
-        "agent_version": null,
-        "actor": "jared",
-        "timestamp": "2026-04-24T10:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "section": "x_lender_matrix"
       },
       "content": {
-        "render_hint": {
-          "include_in_output": false,
-          "output_label": "Lender Outreach Log",
-          "output_position": "appendix",
-          "after_section_id": null,
-          "visible_tiers": [
-            "analyst"
-          ]
-        },
-        "schema_version": null,
-        "content": {
-          "lenders": [
-            {
-              "name": "First Western Bank",
-              "contact": "Sarah M., CRE Lending",
-              "status": "term_sheet_verbal",
-              "loan_amount_quoted": 5040000,
-              "rate_quoted": "5.875% fixed",
-              "term_years": 5,
-              "amortization": 30,
-              "io_months_offered": 12,
-              "ltv_max": 0.7,
-              "recourse": "partial",
-              "origination_fee": "1.0%",
-              "notes": "Preferred lender. Verbally confirmed 12mo IO; exploring 24mo IO — answer expected by 4/28. Relationship lender, familiar with our other deals.",
-              "next_step": "Follow up 4/28 re: 24mo IO availability",
-              "last_contact": "2026-04-22"
-            },
-            {
-              "name": "Western Alliance Bank",
-              "contact": "Mike T., Commercial RE",
-              "status": "indicative_terms_received",
-              "loan_amount_quoted": 5040000,
-              "rate_quoted": "6.125% fixed",
-              "term_years": 5,
-              "amortization": 30,
-              "io_months_offered": 0,
-              "ltv_max": 0.7,
-              "recourse": "full",
-              "origination_fee": "0.75%",
-              "notes": "Higher rate, no IO, full recourse. Less competitive. Keep as backup.",
-              "next_step": "Hold — only engage if First Western falls through",
-              "last_contact": "2026-04-20"
-            },
-            {
-              "name": "Triumph Bank",
-              "contact": "Direct outreach, no response yet",
-              "status": "outreach_sent",
-              "loan_amount_quoted": null,
-              "rate_quoted": null,
-              "term_years": null,
-              "amortization": null,
-              "io_months_offered": null,
-              "ltv_max": null,
-              "recourse": null,
-              "origination_fee": null,
-              "notes": "Smaller community bank, known for competitive multifamily terms in Phoenix. Sent package 4/23.",
-              "next_step": "Follow up 4/28 if no response",
-              "last_contact": "2026-04-23"
-            }
-          ]
-        }
+        "lenders": [
+          {
+            "name": "First Western Bank",
+            "contact": "Sarah M., CRE Lending",
+            "status": "term_sheet_verbal",
+            "loan_amount_quoted": 5040000,
+            "rate_quoted": "5.875% fixed",
+            "term_years": 5,
+            "amortization": 30,
+            "io_months_offered": 12,
+            "ltv_max": 0.7,
+            "recourse": "partial",
+            "origination_fee": "1.0%",
+            "notes": "Preferred lender. Verbally confirmed 12mo IO; exploring 24mo IO — answer expected by 4/28. Relationship lender, familiar with our other deals.",
+            "next_step": "Follow up 4/28 re: 24mo IO availability",
+            "last_contact": "2026-04-22"
+          },
+          {
+            "name": "Western Alliance Bank",
+            "contact": "Mike T., Commercial RE",
+            "status": "indicative_terms_received",
+            "loan_amount_quoted": 5040000,
+            "rate_quoted": "6.125% fixed",
+            "term_years": 5,
+            "amortization": 30,
+            "io_months_offered": 0,
+            "ltv_max": 0.7,
+            "recourse": "full",
+            "origination_fee": "0.75%",
+            "notes": "Higher rate, no IO, full recourse. Less competitive. Keep as backup.",
+            "next_step": "Hold — only engage if First Western falls through",
+            "last_contact": "2026-04-20"
+          },
+          {
+            "name": "Triumph Bank",
+            "contact": "Direct outreach, no response yet",
+            "status": "outreach_sent",
+            "loan_amount_quoted": null,
+            "rate_quoted": null,
+            "term_years": null,
+            "amortization": null,
+            "io_months_offered": null,
+            "ltv_max": null,
+            "recourse": null,
+            "origination_fee": null,
+            "notes": "Smaller community bank, known for competitive multifamily terms in Phoenix. Sent package 4/23.",
+            "next_step": "Follow up 4/28 if no response",
+            "last_contact": "2026-04-23"
+          }
+        ]
       }
     }
   },

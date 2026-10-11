@@ -21,14 +21,7 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "property"
       },
       "content": {
         "address": "16 Variant Way, Phoenix AZ",
@@ -37,14 +30,7 @@
     },
     "valuation": {
       "meta": {
-        "section": "valuation",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "valuation"
       },
       "content": {
         "purchase_price": 10000000,
@@ -55,14 +41,7 @@
     "due_diligence": {
       "appraisal": {
         "meta": {
-          "section": "due_diligence",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-09T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "due_diligence"
         },
         "content": {
           "appraised_value": 9000000,
@@ -71,14 +50,7 @@
       },
       "environmental": {
         "meta": {
-          "section": "due_diligence",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-09T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "due_diligence"
         },
         "content": {
           "phase_one": "no_recognized_environmental_conditions"
@@ -87,14 +59,7 @@
     },
     "rent_roll": {
       "meta": {
-        "section": "rent_roll",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "rent_roll"
       },
       "content": {
         "gross_potential_rent": 1800000
@@ -103,14 +68,7 @@
     "operating_statement": {
       "t3": {
         "meta": {
-          "section": "operating_statement",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-09T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "operating_statement"
         },
         "content": {
           "gross_potential_rent": 1750000
@@ -118,14 +76,7 @@
       },
       "budget": {
         "meta": {
-          "section": "operating_statement",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-09T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "operating_statement"
         },
         "content": {
           "gross_potential_rent": 1900000
@@ -134,14 +85,7 @@
     },
     "debt_structure": {
       "meta": {
-        "section": "debt_structure",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "debt_structure"
       },
       "content": {
         "loan_amount": 6500000,
@@ -151,14 +95,7 @@
     },
     "dcf": {
       "meta": {
-        "section": "dcf",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-09-09T00:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "dcf"
       },
       "content": {
         "assumptions": {
@@ -169,14 +106,7 @@
     "stress_tests": {
       "downside": {
         "meta": {
-          "section": "stress_tests",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-09T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "stress_tests"
         },
         "content": {
           "base_case": {
@@ -187,14 +117,7 @@
       },
       "upside": {
         "meta": {
-          "section": "stress_tests",
-          "version": 1,
-          "superseded": false,
-          "source": "manual",
-          "timestamp": "2026-09-09T00:00:00Z",
-          "confidence": "high",
-          "human_review_required": false,
-          "flags": []
+          "section": "stress_tests"
         },
         "content": {
           "base_case": {

@@ -21,14 +21,7 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "property"
       },
       "content": {
         "address": "700 Mixed Ave, Phoenix AZ"
@@ -36,14 +29,7 @@
     },
     "components": {
       "meta": {
-        "section": "components",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "components"
       },
       "content": {
         "multifamily": {
@@ -66,14 +52,7 @@
     },
     "noi_model": {
       "meta": {
-        "section": "noi_model",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "noi_model"
       },
       "content": {
         "net_operating_income": 1672000
@@ -81,92 +60,43 @@
     },
     "debt_structure": {
       "meta": {
-        "section": "debt_structure",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "debt_structure"
       },
       "content": {}
     },
     "validation": {
       "meta": {
-        "section": "validation",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "validation"
       },
       "content": {}
     },
     "borrower_sponsor": {
       "meta": {
-        "section": "borrower_sponsor",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "borrower_sponsor"
       },
       "content": {}
     },
     "preliminary_sizing": {
       "meta": {
-        "section": "preliminary_sizing",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "preliminary_sizing"
       },
       "content": {}
     },
     "valuation": {
       "meta": {
-        "section": "valuation",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "valuation"
       },
       "content": {}
     },
     "sources_uses": {
       "meta": {
-        "section": "sources_uses",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "sources_uses"
       },
       "content": {}
     },
     "market_analysis": {
       "meta": {
-        "section": "market_analysis",
-        "version": 1,
-        "superseded": false,
-        "source": "manual",
-        "timestamp": "2026-08-26T12:00:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": []
+        "section": "market_analysis"
       },
       "content": {}
     }
