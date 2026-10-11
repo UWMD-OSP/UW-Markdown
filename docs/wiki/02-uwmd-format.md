@@ -1,6 +1,6 @@
-> RFC 0081 Phase 2 consolidates the normative contract in [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0). The implementation still carries its current release labels until Phase 6; corpus re-authoring and runtime deletion are Phases 3 and 4. The older shape examples below describe that pending implementation, not an additional normative format. Format 3.0 uses only bare payloads with inline nested `_meta`, `_meta.section`, and a JCS block digest excluding the whole `_meta` member.
-
 # 02 — The `.uw.md` format
+
+> RFC 0081 Phase 2 consolidates the normative contract in [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0). The implementation still carries its current release labels until Phase 6; corpus re-authoring and runtime deletion are Phases 3 and 4. The older shape examples below describe that pending implementation, not an additional normative format. Format 3.0 uses only bare payloads with inline nested `_meta`, `_meta.section`, and a JCS block digest excluding the whole `_meta` member.
 
 > **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). This page's runtime examples are pending Phases 3–4. Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
 

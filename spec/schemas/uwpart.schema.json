@@ -25,7 +25,7 @@
       "pattern": "^[a-z][a-z0-9_]*$",
       "minLength": 1,
       "maxLength": 128,
-      "description": "The single section every block in this fragment targets. Standard sections use the IDs registered in UW_FORMAT_SPEC.md §4; extension sections MUST start with 'x_'. A fragment carrying a block for any other section is refused (`COMP-SECTION-MISMATCH`) — contributing to two sections is what two fragments are for."
+      "description": "The single section every block in this fragment targets. Standard sections use the IDs registered in UW_FORMAT_SPEC.md Part IV; extension sections MUST start with 'x_'. A fragment carrying a block for any other section is refused (`COMP-SECTION-MISMATCH`) — contributing to two sections is what two fragments are for."
     },
     "collection_member": {
       "type": "boolean",

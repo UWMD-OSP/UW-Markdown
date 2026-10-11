@@ -4,14 +4,7 @@
   "title": "UW Verification Receipt 1.1",
   "description": "A detached JSON document binding a canonical digest of an underwriting record to the deterministic outputs a named calc pack produced from it. Normative definition: UW_RECEIPT.md (RFC 0016). A receipt attests that the stated outputs follow from the record's canonical financial content — it attests nothing about whether that content is true.",
   "type": "object",
-  "required": [
-    "receipt_version",
-    "subject",
-    "computation",
-    "policy",
-    "issued_at",
-    "issuer"
-  ],
+  "required": ["receipt_version", "subject", "computation", "policy", "issued_at", "issuer"],
   "additionalProperties": false,
   "properties": {
     "receipt_version": {
@@ -31,10 +24,7 @@
       "additionalProperties": false,
       "properties": {
         "representation": {
-          "enum": [
-            "uw-lite-markdown",
-            "uwx-markdown"
-          ],
+          "enum": ["uw-lite-markdown", "uwx-markdown"],
           "description": "Source representation identifier (UW_LITE_SPEC / RFC 0017)."
         },
         "representation_version": {
@@ -42,10 +32,7 @@
           "minLength": 1
         },
         "canonicalization": {
-          "enum": [
-            "uw-lite-financial",
-            "uw-envelope-semantic"
-          ],
+          "enum": ["uw-lite-financial", "uw-envelope-semantic"],
           "description": "Named canonical form the digest covers. `uw-lite-financial` is UW_LITE_SPEC §6; `uw-envelope-semantic` is the Document Envelope 1.0 semantic value under RFC 8785."
         },
         "canonicalization_version": {
@@ -63,14 +50,7 @@
     "computation": {
       "type": "object",
       "description": "Which deterministic pack ran, on which engine, and what it produced.",
-      "required": [
-        "pack",
-        "pack_version",
-        "engine",
-        "engine_version",
-        "results",
-        "results_digest"
-      ],
+      "required": ["pack", "pack_version", "engine", "engine_version", "results", "results_digest"],
       "additionalProperties": false,
       "properties": {
         "pack": {
@@ -100,9 +80,7 @@
           "type": "array",
           "minItems": 1,
           "description": "Exactly the outputs the named pack declares — no more, no fewer. Never a place for hand-entered numbers.",
-          "items": {
-            "$ref": "#/$defs/result"
-          }
+          "items": { "$ref": "#/$defs/result" }
         },
         "results_digest": {
           "type": "string",
@@ -114,51 +92,28 @@
     "policy": {
       "type": "object",
       "description": "Which policy set was applied, and what it found.",
-      "required": [
-        "policy_set",
-        "policy_set_version",
-        "validation"
-      ],
+      "required": ["policy_set", "policy_set_version", "validation"],
       "additionalProperties": false,
       "properties": {
-        "policy_set": {
-          "type": "string",
-          "minLength": 1
-        },
-        "policy_set_version": {
-          "type": "string",
-          "minLength": 1
-        },
+        "policy_set": { "type": "string", "minLength": 1 },
+        "policy_set_version": { "type": "string", "minLength": 1 },
         "validation": {
           "type": "object",
-          "required": [
-            "errors",
-            "warnings"
-          ],
+          "required": ["errors", "warnings"],
           "additionalProperties": false,
           "properties": {
-            "errors": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "warnings": {
-              "type": "integer",
-              "minimum": 0
-            }
+            "errors": { "type": "integer", "minimum": 0 },
+            "warnings": { "type": "integer", "minimum": 0 }
           }
         }
       }
     },
     "inputs_provenance": {
       "type": "array",
-      "description": "Artifacts beyond the subject record that the computation depended on (format 1.1, UW_RECEIPT §10). One section shared by RFC 0022 (market-data observation sets) and RFC 0021 (composite child records), discriminated by `source`, because a verifier handles both identically: resolve, compare digest, and keep 'cannot find it' (RCP-11, unverifiable) distinct from 'does not match' (RCP-12, failed). Optional — a record that consumed no external input omits it.",
+      "description": "Artifacts beyond the subject record that the computation depended on (receipt_version 1.1, UW_RECEIPT §10). One section shared by RFC 0022 (market-data observation sets) and RFC 0021 (composite child records), discriminated by `source`, because a verifier handles both identically: resolve, compare digest, and keep 'cannot find it' (RCP-11, unverifiable) distinct from 'does not match' (RCP-12, failed). Optional — a record that consumed no external input omits it.",
       "items": {
         "type": "object",
-        "required": [
-          "source",
-          "document_id",
-          "digest"
-        ],
+        "required": ["source", "document_id", "digest"],
         "additionalProperties": false,
         "properties": {
           "source": {
@@ -196,30 +151,15 @@
     "signature": {
       "description": "Optional detached signature over the RFC 8785 canonicalization of this receipt with `signature` set to null. Same wire shape as RFC 0010 block signatures. Key distribution is out of scope.",
       "oneOf": [
-        {
-          "type": "null"
-        },
+        { "type": "null" },
         {
           "type": "object",
-          "required": [
-            "algorithm",
-            "key_id",
-            "value"
-          ],
+          "required": ["algorithm", "key_id", "value"],
           "additionalProperties": false,
           "properties": {
-            "algorithm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "key_id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "value": {
-              "type": "string",
-              "minLength": 1
-            }
+            "algorithm": { "type": "string", "minLength": 1 },
+            "key_id": { "type": "string", "minLength": 1 },
+            "value": { "type": "string", "minLength": 1 }
           }
         }
       ]
@@ -228,29 +168,15 @@
   "$defs": {
     "result": {
       "type": "object",
-      "required": [
-        "calc_id",
-        "value",
-        "computed"
-      ],
+      "required": ["calc_id", "value", "computed"],
       "additionalProperties": false,
       "properties": {
-        "calc_id": {
-          "type": "string",
-          "minLength": 1
-        },
+        "calc_id": { "type": "string", "minLength": 1 },
         "value": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "null"
-          ],
+          "type": ["number", "string", "boolean", "null"],
           "description": "The pack's output. MUST be null when `computed` is false."
         },
-        "unit": {
-          "type": "string"
-        },
+        "unit": { "type": "string" },
         "computed": {
           "type": "boolean",
           "description": "False when the pack declares this output but the record lacks the inputs to produce it. Distinguishes 'not computed' from 'computed to null'."
@@ -258,23 +184,8 @@
       },
       "allOf": [
         {
-          "if": {
-            "properties": {
-              "computed": {
-                "const": false
-              }
-            },
-            "required": [
-              "computed"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "type": "null"
-              }
-            }
-          }
+          "if": { "properties": { "computed": { "const": false } }, "required": ["computed"] },
+          "then": { "properties": { "value": { "type": "null" } } }
         }
       ]
     }

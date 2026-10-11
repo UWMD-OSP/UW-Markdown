@@ -215,7 +215,7 @@ conformance/
 ├── currency/           Document currency identity (RFC 0046, Protocol
 │                         §III.1b): explicit code display and CUR-01 refusal.
 ├── capability/         Capability-token write authorization (RFC 0011,
-│                         Protocol §XIV). Each scenario edits the shared
+│                         starter guide §XIV). Each scenario edits the shared
 │                         deal.uwx.md under a generated token through the
 │                         @uwmd/signing reference verifier; pins POL-03's
 │                         typed reasons, the jti note, and the never-escalates

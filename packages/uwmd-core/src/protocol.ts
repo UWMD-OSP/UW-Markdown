@@ -445,13 +445,13 @@ export interface SectionViewModel {
 
 export type ViewModelRegistry = Readonly<Record<string, SectionViewModel>>;
 
-// ─── Source tags & fallback cascade (Protocol §IX) ────────────────────────────
+// ─── Source tags & fallback cascade (starter guide §IX) ────────────────────────────
 
 /**
  * Ordered cascade steps used to resolve a value that has no explicit
  * user input or document extraction. A producer MUST stamp
  * `_meta.source` with the cascade step that produced the value, and
- * MUST NOT reorder this cascade. See protocol §IX.
+ * MUST NOT reorder this cascade. See starter guide §IX.
  *
  * Step 0 (`user_override`) and step 1 (`user_input`) are detected by
  * walking the parsed file for an existing block at the field path
@@ -2081,7 +2081,7 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
   { source_pattern: '*', authority: 'either', supersede_on_edit: true },
 ]);
 
-// ─── Capability tokens (Protocol §XIV, RFC 0011) ─────────────────────────────
+// ─── Capability tokens (starter guide §XIV, RFC 0011) ─────────────────────────────
 //
 // An optional second gate on writes, for orchestrator-bound deployments: a
 // short-lived, scope-limited JWT the editor verifies before accepting an edit.
@@ -2091,7 +2091,7 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
 // never widen it: the §V.3 static policy check runs first and a token cannot
 // override its refusal.
 
-/** Why a capability token was rejected (Protocol §XIV.3). */
+/** Why a capability token was rejected (starter guide §XIV.3). */
 export type CapabilityRejection =
   | 'expired'
   | 'not_yet_valid'
@@ -2640,7 +2640,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Provisional value consumed at incompatible stage',
     description: 'A provisional / placeholder value is being consumed at a stage whose policy requires real data.',
     remediation: 'Replace the provisional value with observed data, downgrade deal_stage, or update INCOMPLETE_DATA_POLICIES if appropriate.',
-    spec_ref: 'UW_PROTOCOL.md §V.7-§V.8',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4 / docs/starter/defaults-and-cascade.md §V.7-§V.8',
   },
   {
     code: 'DQ-03', severity: 'warning',
@@ -2671,7 +2671,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: 'UW_FORMAT_SPEC.md §5.1',
   },
 
-  // RFC 0072 — descriptive identity, warnings in both format generations.
+  // RFC 0072 — descriptive identity; always warnings.
   {
     code: 'DQ-07', severity: 'warning',
     title: 'Unrecognized business plan',
@@ -2852,7 +2852,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Unsupported display locale',
     description: 'The file declares a `locale` this implementation does not list in `supported_locales` (or an unregistered tag). Display renders are refused — never silently produced in a different locale; parsing, validation, editing, and calc are unaffected (RFC 0001).',
     remediation: 'Render with an implementation that supports the declared locale, or change the file\'s `locale` to one this implementation supports. Content is canonical and locale-free, so no data conversion is involved.',
-    spec_ref: 'UW_PROTOCOL.md §III.1a',
+    spec_ref: 'docs/starter/display.md §III.1a',
   },
   {
     code: 'CUR-01', severity: 'error',
@@ -2866,7 +2866,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Capability token rejected',
     description: 'The editor is configured with a capability verifier and the write presented no token, or a token the verifier rejected (expired, out of scope, bad signature — the reason travels in the issue detail). RFC 0011.',
     remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
-    spec_ref: 'UW_PROTOCOL.md §XIV',
+    spec_ref: 'docs/starter/capability-tokens.md §XIV',
   },
   {
     code: 'META-V2-IN-V1', severity: 'error',
@@ -2885,16 +2885,16 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'SRC-01', severity: 'error',
     title: 'Unrecognized actor source',
-    description: '_meta.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (RFC 0031). Severity is per-file (format v2 §1.3): error in a uw_version 2.0 file, warning in 1.x — where the block still parses and edits resolve only the conservative catch-all policy.',
-    remediation: 'Rewrite _meta.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`. `uwmd migrate --source-tags` rewrites a file mechanically.',
-    spec_ref: '§2.6, UW_FORMAT_SPEC.md §4.2',
+    description: '_meta.provenance.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (Format §2.6, RFC 0031). Always an error.',
+    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
   {
     code: 'SRC-02', severity: 'error',
     title: 'Resolution tag in the actor field',
-    description: '_meta.source holds a canonical SOURCE_TAGS value (a resolution method) where an actor belongs. Severity is per-file (format v2 §1.3): error in a uw_version 2.0 file; warning in 1.x, where readers interpret it as `resolution` and treat the actor as absent (the read-time interpretation never applies inside a 2.0 file).',
-    remediation: 'Move the tag to _meta.resolution and state the actual actor in _meta.source (or omit it as manual). `uwmd migrate --source-tags` performs the move mechanically.',
-    spec_ref: '§2.6, UW_FORMAT_SPEC.md §4.2',
+    description: '_meta.provenance.source holds a resolution tag where an actor belongs (Format §2.6). Always an error; readers never reinterpret it as a resolution.',
+    remediation: 'Move the tag to _meta.provenance.resolution and state the actual actor (for example `manual`) in _meta.provenance.source.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
   {
     code: 'SRC-03', severity: 'error',

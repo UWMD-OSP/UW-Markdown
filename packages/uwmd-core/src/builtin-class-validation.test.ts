@@ -98,6 +98,8 @@ describe('Format 2.1 builtin record shapes', () => {
   function projectEnvelope(envelope: ReturnType<typeof toUWEnvelope>) {
     const result = structuredClone(envelope);
     result.format_version = '3.0';
+    // The envelope schema admits only Format 3.0; project the declared version consistently.
+    result.frontmatter.uw_version = '3.0';
     const project = (block: { content: Record<string, unknown> }) => { block.content = bare(block.content); };
     for (const entry of Object.values(result.sections)) {
       if ('annotation' in entry) project(entry as { content: Record<string, unknown> });

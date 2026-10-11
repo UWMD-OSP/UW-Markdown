@@ -1668,7 +1668,7 @@ switch (command) {
       confidence: (flags['confidence'] as 'high' | 'medium' | 'low' | undefined) ?? 'medium',
     };
 
-    // Capability enforcement (Protocol §XIV, RFC 0011). Same optional-peer
+    // Capability enforcement (starter guide §XIV, RFC 0011). Same optional-peer
     // dynamic-import arrangement as `--signing` above: core takes no crypto
     // dependency to satisfy a flag most invocations never pass.
     let result: EditResult;

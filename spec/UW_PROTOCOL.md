@@ -154,7 +154,8 @@ Verification is locale-free. Canonical JSON content, digests,
 signatures, receipts and expression evaluation do not vary by locale,
 and a Verifier MUST reach the same verdict whatever display locale a
 document declares (`frontmatter.locale`) or an implementation supports.
-Display locales (formerly §III.1a) are starter-product guidance. The
+Display locales are starter-product guidance
+([starter guide §III.1a](../docs/starter/display.md#iii1a-display-locales-rfc-0001)). The
 `LOC-NN` validator family stays registered (§III.6a).
 
 ### I.4 Self-declaration
@@ -206,7 +207,7 @@ The reference functions are `negotiateRepresentation` and
 
 Protocol 4.0.0 has two conformance tiers, Reader and Verifier, and a
 Verifier satisfies every Reader requirement. Optional verification
-profiles (§II.3) add to either tier. Only reader and verifier tier values are admitted; §II.5 says how their manifest values are read.
+profiles (§II.3) add to either tier. Only `reader` and `verifier` tier values are admitted (§II.5).
 
 <a id="ii1-tier-1--reader"></a>
 
@@ -217,7 +218,7 @@ A Reader MUST:
 1. Parse all required frontmatter fields (`uw_version`, `deal_id`,
    `deal_name`, `created`, `last_modified`, `property_address`, `city`,
    `state`, `zip`, `asset_class`).
-2. Recognize all 21 standard section IDs from the format spec §4.
+2. Recognize all 21 standard section IDs from format spec Part IV.
 3. Treat unknown frontmatter keys, unknown sections, and unknown
    `x_*` extension blocks as informative: parse and surface them, but
    do not error.
@@ -232,7 +233,7 @@ A Reader MUST NOT silently mutate any input bytes.
 A Reader surfaces structured values. How it displays them is not part
 of the standard: the display conventions Protocol 2.x required of a
 Tier-1 Reader (Part III) and the rendering of `BUILTIN_REMEDIATIONS`
-copy (former §III.6) are starter-product guidance (RFC 0078 D11).
+copy ([starter guide §III.6](../docs/starter/display.md#iii6-validation-issue-display)) are starter-product guidance (RFC 0078 D11).
 
 Parsing and validating are separate capabilities (`parse`, `validate`).
 The validator requirement once read as owing every family to any
@@ -603,7 +604,7 @@ capability is unconditional: every implementation owes it.
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |
 | `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
-| `LOC-NN` | Display locale (§III.1a, RFC 0001). | `validate` | `error` |
+| `LOC-NN` | Display locale ([starter guide §III.1a](../docs/starter/display.md#iii1a-display-locales-rfc-0001), RFC 0001). | `validate` | `error` |
 | `CUR-NN` | Document currency identity (§III.1b, RFC 0046). | `validate` | `error` |
 | `TAX-NN` | Property-tax reassessment basis and abatement schedule (format §4.5 and §4.9, RFC 0053). | `validate` | `error` |
 | `LSE-NN` | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (format §4.3, RFC 0055). | `validate` | `error` |
@@ -619,13 +620,13 @@ capability is unconditional: every implementation owes it.
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
-| `CC-DC-NN` | Data-center class rules (Format §4.29–31). | `validate` | warning / error |
+| `CC-DC-NN` | Data-center class rules (Format §4.29–§4.31). | `validate` | warning / error |
 | `CC-MH-NN` | Manufactured-housing class rules. | `validate` | error |
 | `CC-HOSP-NN` | Hospitality class rules. | `validate` | warning / error |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Actor grammar and closed resolution vocabulary (Format §2.6). | `validate` | `error` |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |
-| `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, §XIV, starter guide). | `edit-replace` or `edit-supersede` | `error` |
+| `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, [starter guide §XIV](../docs/starter/capability-tokens.md#xiv-capability-tokens-optional-rfc-0011)). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
 | `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (format Appendix D). | `parse` | `error` |
@@ -650,7 +651,24 @@ selections; role-free results remain unchanged. `ROLE-01` is a structural
 error in every active block with an invalid scalar `_role`. This annotation
 is included in the existing content hash; `_meta.role` is not an alias.
 
-`FV-NN` is the financial-validity vocabulary; no legacy_code is emitted. `META_*` (underscore) is provenance completeness: META_MISSING, `META_FIELD_MISSING_<FIELD>`, and META_LOW_CONFIDENCE_NO_REVIEW_FLAG. The separate hyphenated META-01 rejects a non-Format-3.0 block shape. SOURCE_CONTENT_MISMATCH rejects structured fences under .uw.md; UNSUPPORTED_FORMAT_VERSION rejects absent or non-3.0 frontmatter.
+`FV-NN` is the financial-validity vocabulary; no `legacy_code` is emitted.
+`META_*` (underscore) is the **provenance-completeness family** and is live:
+the reference validator emits exactly three codes — `META_MISSING` (no `_meta`
+object), `META_FIELD_MISSING_<FIELD>` (a required `_meta` field absent), and
+`META_LOW_CONFIDENCE_NO_REVIEW_FLAG` (`info`: low confidence without
+`human_review_required`) — and the Reader conformance baselines pin them.
+`<FIELD>` ranges over exactly five names, each naming one nested Format 3.0
+field: `SECTION` (`_meta.section`), `VERSION` (`_meta.lifecycle.revision`),
+`SOURCE` (`_meta.provenance.source`), `TIMESTAMP`
+(`_meta.provenance.timestamp`) and `CONFIDENCE` (`_meta.quality.confidence`).
+The code names are unchanged (RFC 0081 §3), so `VERSION` names the revision
+field. The `DQ-NN` sequence polices incomplete *data*, not incomplete
+*provenance*; the two families do not overlap.
+
+The separate hyphenated `META-01` rejects a block that is not in the Format
+3.0 shape (format §2.4–§2.5). `SOURCE_CONTENT_MISMATCH` rejects structured
+fences under `.uw.md`; `UNSUPPORTED_FORMAT_VERSION` rejects absent or non-3.0
+frontmatter.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
@@ -681,8 +699,7 @@ The spec states the rule; the assertion enforces the list.
 **Remediation entries.** Every entry in `BUILTIN_REMEDIATIONS` and any
 module remediation table MUST validate against
 [`spec/schemas/issue-remediation.schema.json`](schemas/issue-remediation.schema.json).
-(Protocol 2.x stated this at the head of §III.1; it stays normative here
-because it governs the code registry, not display.)
+(This stays normative because it governs the code registry, not display.)
 
 Implementations that surface validator output to end users SHOULD use
 the prefix to colorize, group, or filter issues — for example,
@@ -704,11 +721,11 @@ defines the wire shape for every `EditOperation`.
 
 Editors are starter products (§II.4). What stays normative in this part
 are the rules that protect verification, which bind every tool that
-writes a document: §V.2–V.4 and §V.9–V.12. Round-trip preservation
-(§V.1), multi-variant edits (§V.5), frontmatter update rules (§V.6), the
-fallback cascade (§V.7) and default tables (§V.8) moved to the
-non-normative [starter products guide](../docs/starter/README.md)
-(RFC 0078 D3, D4). Integrity hashes are computed over canonical JSON
+writes a document: §V.2–§V.4 and §V.9–§V.12. Round-trip preservation
+(starter guide §V.1), multi-variant edits (starter guide §V.5), frontmatter
+update rules (starter guide §V.6), the fallback cascade (starter guide §V.7)
+and default tables (starter guide §V.8) are in the non-normative
+[starter products guide](../docs/starter/README.md) (RFC 0078 D3, D4). Integrity hashes are computed over canonical JSON
 (§V.9), not raw bytes, so byte preservation is an editor guarantee, not a
 verification requirement.
 
@@ -728,7 +745,7 @@ annotation through the existing content path, without new exclusions.
 |---|---|
 | `frontmatter_set` | In-place update of one frontmatter path. `last_modified` MUST be updated. |
 | `section_replace` | Overwrite the canonical block for `section_id`. The previous block is discarded. Permitted only for sources whose policy is `supersede_on_edit: false`. |
-| `section_supersede` | The previous block is marked `superseded: true` in its `_meta`; a new block is appended with `version = previous.version + 1`. |
+| `section_supersede` | The previous block is marked `_meta.lifecycle.superseded: true`; a new block is appended with `_meta.lifecycle.revision = previous.revision + 1`. |
 | `pipeline_log_append` | Append-only. Existing entries are immutable. |
 
 ### V.3 Source authority
@@ -738,7 +755,7 @@ annotation through the existing content path, without new exclusions.
 `agent | document | system | institution` (runtime registry
 `ACTOR_NAMESPACES`) and `<id>` matches `[A-Za-z0-9][A-Za-z0-9._-]*`.
 The grammar is normative in format spec §2.6; resolution methods
-belong in `_meta.resolution` (the fallback cascade,
+belong in `_meta.provenance.resolution` (the fallback cascade,
 [starter guide §V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)).
 
 `BUILTIN_EDIT_POLICIES` (`protocol.ts`) establishes the default policy
@@ -781,23 +798,23 @@ any module pattern is more specific than the catch-all.
 
 On every write, the host MUST set:
 
-- `_meta.version` — incremented from the prior canonical block's
-  version (or 1 for a new section).
-- `_meta.superseded` — `false` on the new block; `true` on the prior
-  block when superseding.
+- `_meta.lifecycle.revision` — incremented from the prior canonical
+  block's revision (or 1 for a new section).
+- `_meta.lifecycle.superseded` — `false` on the new block; `true` on the
+  prior block when superseding.
 - `_meta.provenance.source` — the actor:
   `manual | agent/<id> | document/<id> | system/<id> | institution/<id>`,
   with `<id>` matching `[A-Za-z0-9][A-Za-z0-9._-]*` (format spec §2.6;
   RFC 0031). This is the grammar a producer is bound to — nothing
   outside it resolves a specific edit policy or an authority class.
-- `_meta.resolution` — OPTIONAL; the canonical `SOURCE_TAGS` tag naming
-  how the value was resolved (e.g. a step of the starter fallback
+- `_meta.provenance.resolution` — OPTIONAL; one member of the closed
+  resolution vocabulary (format §2.6) naming how the value was resolved (e.g. a step of the starter fallback
   cascade, [§V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)), when the
   host knows it.
 - `_meta.provenance.timestamp` — current ISO-8601 UTC timestamp.
 - `_meta.provenance.actor` — human or system identifier of the writer.
-- `_meta.agent_id`, `_meta.agent_version` — populated for agent
-  writes; null otherwise.
+- `_meta.provenance.agent_id`, `_meta.provenance.agent_version` —
+  populated for agent writes; null otherwise.
 
 
 
@@ -808,7 +825,17 @@ On every write, the host MUST set:
 
 `_meta.integrity.content_hash` is lowercase hexadecimal SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the fenced block object with its `_meta` member removed. Every other member is included: all payload fields, `_role`, `_overrides` and `_notes` when present. A payload member named `content` is ordinary content; no wrapper is interpreted. Nothing else is stripped or defaulted. The existing `canonicalizeExact` is the reference serializer.
 
-Implementations MUST produce byte-identical canonical output: object keys sort by UTF-16 code-unit comparison, strings escape under RFC 8785, finite numbers use ECMAScript ToString (`-0` becomes `0`), array order is preserved and no whitespace is emitted. This block rule does not replace generic canonicalization used for receipts and other non-block digests.
+Implementations MUST produce **byte-identical** canonical output across platforms. Specifically:
+
+- Object keys are sorted by UTF-16 code-unit comparison (RFC 8785 §3.2.3).
+- Strings are JSON-escaped per RFC 8785 §3.2.2.
+- Numbers serialize per ECMAScript ToString (RFC 8785 §3.2.2.3), with `-0`
+  rendered as `0`. Non-finite numbers MUST be rejected: canonical JSON has no
+  representation for `Infinity` or `NaN`.
+- `undefined` values inside objects are dropped (mirroring `JSON.stringify`).
+- Array order is preserved and no whitespace is emitted.
+
+This block rule does not replace the generic canonicalization used for receipts and other non-block digests.
 
 Metadata-only edits leave content_hash unchanged. The signature input remains content_hash, section, actor, timestamp, kid and signed_at (§V.11), so signatures bind author and time to content. They do not transitively bind parent_hash. Chain verification still compares parent_hash with the predecessor content_hash.
 
@@ -853,8 +880,8 @@ section's `EditPolicy`:
 - `POL-01 error` — actor not authorized for the policy authority
   (`agent_only`, `human_only`, `system_only`, `either`).
 - `POL-02 error` — `section_replace` used where the policy mandates
-  `section_supersede` (heuristic: `version > 1` with no superseded
-  prior versions visible).
+  `section_supersede` (heuristic: `_meta.lifecycle.revision > 1` with no
+  superseded prior revisions visible).
 
 **Adversarial-write caveat.** A non-conforming producer can
 trivially defeat integrity by simply not stamping `content_hash`
@@ -932,18 +959,18 @@ content produce different signing inputs and different signatures
 verifier MUST NOT treat signature disagreement between
 independently-produced blocks as evidence that either is
 non-conforming; conformance of *values* is the province of §VIII
-determinism and RFC 0016 receipts. This includes divergence
-introduced by optional `_meta` stamps such as `provisional` (starter guide §V.7),
-which is covered by `content_hash` like any other `_meta` field
-outside §V.9's two exclusions.
+determinism and RFC 0016 receipts.
 
-The signing input names no `parent_hash` field. RFC 0010 read that as
-a guarantee that re-rooting a supersede chain leaves prior signatures
-intact; **it is not**. `content_hash` is computed over the block's
-`_meta` as well as its content (§V.9), and `parent_hash` lives in
-`_meta`, so a re-rooted block gets a new hash and its signature no
-longer applies. Re-rooting therefore requires re-signing. See the
-[erratum](../docs/rfcs/0010-signed-blocks.md#erratum-parent_hash-is-covered-transitively).
+The whole `_meta` member is outside `content_hash` (§V.9). An edit that
+changes only `_meta` — provenance, quality stamps such as `provisional`,
+lifecycle, or any `integrity` member including `parent_hash` — leaves
+`content_hash` unchanged, and the signature stays valid as long as the signed
+`actor`, `timestamp` and `section` are unchanged. The signing input names no
+`parent_hash`, and `parent_hash` is outside the hash, so a signature does not
+bind it transitively: re-rooting a supersede chain does not invalidate prior
+signatures, as RFC 0010 §4 intended (RFC 0081 §3). Chain order is still
+verified by comparing each `parent_hash` with the predecessor's
+`content_hash` (§V.10).
 
 A signature is over one block. A document with several signed blocks
 carries several independent signatures, which is the property
@@ -1130,7 +1157,7 @@ rule. Lack of hashing is not a structural error.
 | Phase | Condition | Exact finding/result |
 |---|---|---|
 | Sync | Escrow branch (absent/null funding or explicit escrow) lacks the named replacement escrow, including missing sources/uses | ESC-04. This includes the RFC 0056 coverage-defect regression. |
-| Sync | Named replacement escrow without `replace`, or alongside outright mode, even if zero funded | ESC-04. Preserve existing ESC-01/02/03 for invalid escrow data. |
+| Sync | Named replacement escrow without `replace`, or alongside outright mode, even if zero funded | ESC-04. Preserve existing ESC-01/02 for invalid escrow data. |
 | Sync | Non-null funding object has illegal shape/mode, unknown members, missing required union members, reference under escrow, or is stated without `replace` | HDG-07. Missing `cash_flow_ref` or one of its required members is a shape failure; an authored member with invalid type/value is checked by HDG-08. |
 | Sync | Exact cash variant missing/wrong/superseded, required section selection ambiguous/unresolvable, invalid/out-of-range index, malformed digest value, or illegal selected row/series structure | HDG-08. Preserve applicable existing CF findings. Never use fallback selection. |
 | Sync | Validly addressed amount is positive, or valid payment date is on/before a valid stated initial effective date | HDG-10. Amount zero is valid; before/on/after expiration is valid when after effective date. |
@@ -1145,8 +1172,8 @@ rule. Lack of hashing is not a structural error.
 | Consumer | Outright structurally valid but verification `failed`, `unverifiable` or `not_checked` | Complete claim refuses, independently of the synchronous `ValidationResult` status. |
 | Async | No outright binding is applicable and funding structure is lawful | `not_checked`, reason `not_applicable`; escrow funding relies on synchronous RFC 0056 checks. |
 
-Initial-premium/use agreement remains unchanged. The successor payment does not
-become part of `premium` or `uses.rate_cap_cost`.
+The initial premium's single home is `rate_hedge.premium` (format §4.7). The
+successor payment does not become part of `premium`.
 
 Within a selected funding object, check shape/assumption first, selection and
 reference next, then series structure and payment semantics. Stop that binding's
@@ -1315,8 +1342,8 @@ Module profile reports them `unverifiable`, never wrong.
 
 A `.uw.institution.json` sidecar (format spec Appendix C.6) overrides
 threshold defaults. Implementations MUST apply the institution config
-to validation but MUST NOT apply it to display formatting in display
-(locale is frozen).
+to validation but MUST NOT apply it to display formatting (display is a
+starter product; locale is frozen).
 
 ---
 
@@ -1443,8 +1470,9 @@ evaluates an expression (§II.2). Determinism (§VIII.4), the numeric
 model (§VIII.5) and the error taxonomy (§VIII.6) bind every Verifier.
 Sensitivity tables (§VIII.7) and stochastic calculations (§VIII.8) are
 the Sensitivity and Stochastic profiles. §VIII.9–VIII.12 are the
-stated-figure verifiers every Verifier implements. Refinement (§VIII.2b)
-and workbook bindings (§VIII.2c) moved to the non-normative
+stated-figure verifiers every Verifier implements. Refinement
+(starter guide §VIII.2b) and workbook bindings (starter guide §VIII.2c) are
+in the non-normative
 [starter products guide](../docs/starter/refinement-and-workbooks.md).
 
 ### VIII.1 Safe-expression grammar (EBNF)
@@ -1535,8 +1563,9 @@ context carries none.
 Every consumer that reads a section for a calculation's inputs MUST select
 by this rule, so no two consumers read different blocks of one map. That
 covers a Verifier reproducing a metric (§II.2) and every starter product
-that reads calculation inputs: the cascade's in-file steps (§V.7),
-refinement (§VIII.2b) and workbook binding (§VIII.2c), all described in the
+that reads calculation inputs: the cascade's in-file steps (starter guide §V.7),
+refinement (starter guide §VIII.2b) and workbook binding
+(starter guide §VIII.2c), all described in the
 non-normative [starter products guide](../docs/starter/README.md).
 
 ### VIII.2a Explicit period addressing (RFC 0041)
@@ -1618,15 +1647,15 @@ period identity and distinguishing a literal dotted key from nested traversal.
 No document writes or changes to numeric quantization occur.
 Rows retain identity through existing source-row binding surfaces; this
 exception adds no numeric-index calc grammar. Whole-column contextual Excel
-projection (§VIII.2c, starter guide) still refuses duplicate identities rather than collapsing
+projection (starter guide §VIII.2c) still refuses duplicate identities rather than collapsing
 rows into a unique-key column. Its whole-series validity guard is distinct from
 ordinary scalar date selection.
 
 Excel emission MUST refuse selector nodes with `EXCEL-EMIT-PATH` unless explicit
-contextual bindings under §VIII.2c (starter guide) are supplied. A static named-range mapping
+contextual bindings under starter guide §VIII.2c are supplied. A static named-range mapping
 alone MUST NOT stand for a row chosen by its current position. The reference refinement engine
-uses finite stated period inputs as fixed values under §VIII.2b (starter
-guide). Its general
+uses finite stated period inputs as fixed values under
+starter guide §VIII.2b. Its general
 cascade is unchanged.
 
 **Validation.** Inspect all active variants of every present registered series:
@@ -2722,8 +2751,8 @@ three cells in `rent`, `concessions`, `ti_lc` order. Each supplemental binding
 owns exactly one cell. Every binding's date and amount match its output row.
 
 Result `cells` are ordered acquisition first, source periods in source order,
-then disposition. Within each slot, use the category order printed in §3's
-table. `output_rows` are ascending output indexes. Input coverage entry order
+then disposition. Within each slot, use the category order printed in the
+§VIII.9.6.3 table. `output_rows` are ascending output indexes. Input coverage entry order
 and order within an input `rows` list do not change output rows or cell evidence.
 Zero explanations are copied verbatim. Every output row is covered; the three
 lease-up cells intentionally reference their common single bundled row.
@@ -3054,7 +3083,7 @@ Required fields: `manifest_version` (always `"1"`), `id`, `name`,
 `requires_format`, `requires_conformance`. `requires_profiles` is optional. Both ranges MUST be satisfied by the single admitted Format 3.0 and Protocol 4.0.0 values.
 
 Optional fields are documented in the schema. The TypeScript mirror
-type `ModuleManifest` in `protocol.ts` is kept in lockstep.
+type `ProtocolModuleManifest` in `protocol.ts` is kept in lockstep.
 
 **Calculation role preferences (RFC 0066).** A `calculations[]` entry MAY
 declare `section_roles`, a map from section id to any `_role` except
@@ -3087,7 +3116,43 @@ nothing. A host that loads modules:
   than silently skipping it. A skipped rule is a rule its author believes
   is protecting them.
 
-**Module ranges.** is_calendar_date and dependent declaration overrides (§VII.3) are part of Protocol 4.0.0. A module's requires_protocol MUST admit 4.0.0, and requires_format MUST admit 3.0. No earlier contract satisfies a module range; unavailable features do not trigger fallback loading. A failed range check is PROTO-MOD-030.
+**Module ranges.** A module's `requires_protocol` MUST be satisfied by
+4.0.0 and its `requires_format` by 3.0. No earlier contract satisfies a
+module range, and an unavailable feature never triggers a fallback load.
+§VII.2 step 3 is the enforcement: a host refuses a manifest whose ranges
+its own versions do not satisfy, with a `ProtocolError` of category
+`module` (`PROTO-MOD-030` in the reference library).
+
+**Protocol floor for `is_calendar_date` (RFC 0071).** A module manifest
+whose `calculations[].formula` or `validations[].rule` calls
+`is_calendar_date` anywhere in its expression **MUST** declare a
+`requires_protocol` range that excludes every Protocol version in which
+`is_calendar_date` is unavailable. Protocol 4.0.0 is the only contract that
+defines it, so the floor is `>=4.0.0` (for example `^4.0.0`). A comparator
+that only excludes an earlier label, such as `>3.0.0`, does not meet the
+requirement, because a later 3.x label would satisfy it without the builtin.
+
+The range is what lets a host without the builtin decline the module. Under
+§VII.2 step 3 that host refuses the manifest, so it never registers a rule
+it cannot evaluate. Without the floor, it would load the module and report
+each such rule as a failure to evaluate (`CALC-RESOLVE-001`) on every
+document.
+
+**Protocol floor for modules that override (RFC 0074).** A module manifest
+that redeclares a section ID, calculation ID or view-model `section_id`
+declared by a module it names in `depends_on` uses the §VII.3 override
+rules. It **MUST** declare a `requires_protocol` range that excludes every
+Protocol version without those rules. Protocol 4.0.0 is the only contract
+that carries them, so the floor is `>=4.0.0`. As with `is_calendar_date`, a
+comparator that only excludes an earlier label does not meet the
+requirement. A host without the §VII.3 override rules runs both
+declarations and may accept a module set §VII.3 refuses, so calculation
+outcomes and validation behavior can differ; the floor keeps such a host
+from loading the module at all.
+
+Neither floor adds a loader check or an error code: §VII.2 step 3 is the
+enforcement. A manifest that violates either requirement is
+non-conforming, and a host is not required to detect the violation.
 
 Section `schema` fragments are normative JSON Schema. A host holding a
 JSON Schema validator SHOULD apply them; one that does not is still
@@ -3541,14 +3606,16 @@ evaluator, is in [`conformance/metrics/`](https://github.com/UWMD-OSP/UW-Markdow
 
 ## Appendix E — Worked example: authoring a third-party specialty module
 
-A minimal hospitality module manifest:
+A minimal third-party module manifest. Every official asset class,
+hospitality included, is builtin (Format §2.2a); a module adds private or
+unofficial content on top of one:
 
 ```yaml
 manifest_version: "1"
 id: com.example.specialty
-name: Specialty facility Underwriting Module
+name: Specialty Facility Underwriting Module
 version: 0.1.0
-description: Adds RevPAR/ADR/occupancy fields and STR comp validations.
+description: Adds a private specialty-revenue calculation and benchmark check for industrial assets.
 authors: [UW Markdown contributors]
 license: MIT
 requires_protocol: "^4.0.0"
@@ -3592,9 +3659,9 @@ validations:
   the standard (calc engine, editor, viewer, Excel exporter, defaults,
   AI agents). Non-normative; see the
   [starter products guide](../docs/starter/README.md).
-- **Supersede**: the operation of marking a prior block as
-  `superseded: true` and appending a new block with incremented
-  version.
+- **Supersede**: the operation of marking a prior block
+  `_meta.lifecycle.superseded: true` and appending a new block with an
+  incremented `_meta.lifecycle.revision`.
 - **Verifier**: the conformance tier that checks a document is well
   formed, internally consistent and reproducible (§II.2).
 - **View model**: a per-section layout description used to render the

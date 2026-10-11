@@ -376,9 +376,9 @@ describe('SRC code family (RFC 0031)', () => {
   it('ships remediation copy for SRC-01 through SRC-03', () => {
     const codes = BUILTIN_REMEDIATIONS.filter((r) => r.code.startsWith('SRC-'));
     expect(codes.map((r) => r.code).sort()).toEqual(['SRC-01', 'SRC-02', 'SRC-03']);
-    // The registered severity is the HIGHEST any emission carries: error in a
-    // uw_version 2.0 file (the per-file boundary, format v2 §1.3); the same
-    // codes still emit as warnings against 1.x files.
+    // Format 3.0 §2.6 makes all three errors. Until RFC 0081 Phase 4 deletes
+    // the 1.x read path, the runtime still emits SRC-01/02 as warnings against
+    // 1.x files; the registered severity is the highest any emission carries.
     for (const r of codes) expect(r.severity).toBe('error');
   });
 });

@@ -288,7 +288,7 @@
                 "simple",
                 "compound_annual"
               ],
-              "description": "compound_annual: unpaid pref itself compounds (Protocol §VIII.10.1)."
+              "description": "compound_annual: unpaid pref itself compounds (Protocol §VIII.10)."
             }
           }
         },

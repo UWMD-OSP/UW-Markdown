@@ -1,6 +1,6 @@
-> RFC 0081 Phase 2 schemas describe the final Format 3.0 / Protocol 4.0.0 contract. Test-only `scripts/rfc-0081-schema-projections.mjs` projects the unchanged corpus to the new manifest and ownership schemas. Invalid and unknown values are preserved so negative controls still refuse. Phase 3 re-authors the fixtures; Phases 4–5 remove the projections and old runtime vocabulary. No production reader uses the projections.
-
 # 09 — Conformance & testing
+
+> RFC 0081 Phase 2 schemas describe the final Format 3.0 / Protocol 4.0.0 contract. Test-only `scripts/rfc-0081-schema-projections.mjs` projects the unchanged corpus to the new manifest and ownership schemas. Invalid and unknown values are preserved so negative controls still refuse. Phase 3 re-authors the fixtures; Phases 4–5 remove the projections and old runtime vocabulary. No production reader uses the projections.
 
 Two test systems guard this repo: **unit tests** (Vitest, per package) and the
 **conformance corpus** (fixture/expected pairs that any implementation — including

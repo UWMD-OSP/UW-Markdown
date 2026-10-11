@@ -545,7 +545,7 @@ export type { ValuationDerivation } from './valuation.js';
 export { deriveDCF } from './dcf.js';
 export type { DCFDerivation } from './dcf.js';
 
-// ─── Asset-class defaults & cascade (Protocol §V.7-§V.8) ──────────────────────
+// ─── Asset-class defaults & cascade (starter guide §V.7-§V.8) ──────────────────────
 export {
   MULTIFAMILY_DEFAULTS,
   OFFICE_DEFAULTS,
@@ -934,7 +934,7 @@ export type {
 export type { SectionDiff } from './compactor.js';
 export type { InitOptions } from './init.js';
 
-// ─── Refinement / context profiles (Protocol §IX, §X) ────────────────────────
+// ─── Refinement / context profiles (starter guide §IX, §X) ────────────────────────
 export { extractDependencyGraph, getExprDependencies } from './calc/dependencies.js';
 export type { DependencyGraph } from './calc/dependencies.js';
 
@@ -1003,5 +1003,7 @@ export { toBuiltinAssetClass } from './types.js';
 export { DATA_CENTER_DEFAULTS, MANUFACTURED_HOUSING_DEFAULTS } from './defaults.js';
 
 export { checkBuiltinClassContent } from './builtin-class-validation.js';
+// The twelve builtin classes' section, rule and view-model declarations (RFC 0080). Pure data.
+export { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
 
 export { DATA_CENTER_PACK, MANUFACTURED_HOUSING_PACK } from './packs/index.js';

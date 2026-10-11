@@ -139,7 +139,7 @@ locale: "en-US"                     # display locale (RFC 0001); absent = en-US.
                                     # content stays canonical (JSON numbers,
                                     # ISO dates, fraction rates). Registered
                                     # values: en-US, en-GB, de-DE, fr-FR,
-                                    # ja-JP, zh-CN (Protocol §III.1a). An
+                                    # ja-JP, zh-CN (starter guide §III.1a). An
                                     # unregistered value is LOC-01: display
                                     # renders are refused, never silently
                                     # produced in a different locale.
@@ -216,7 +216,8 @@ provisional blocks (see Part III §3.4 `_meta.quality.provisional`) and
 represents triage rather than commitment. The minimum content for
 `scope` is a `property` section with at least an address, an asset
 class, and one of `units` or `asking_price`; everything else MAY be
-filled in from the fallback cascade (see Protocol §IX). Advancing
+filled in from the fallback cascade (see the
+[starter guide](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)). Advancing
 past `scope` requires real documents, not better assumptions —
 producers MUST re-stamp defaulted blocks with observed data before
 setting `deal_stage: screening` or later.
@@ -310,7 +311,7 @@ there is no automatic precedence among axes or inference of an unstated plan.
 Stress tests, custom scenarios and analytical section variants keep their
 separate meanings.
 
-Any unlisted bare scenario value or non-null malformed structure is preserved and receives `DQ-07` (warning). A value outside the standard vocabulary cannot identify an execution plan; readers do not infer one.
+Any unlisted bare scenario value or non-null malformed structure receives `DQ-07` (warning). A reader MUST preserve it and MUST NOT reject or rewrite it solely for this reason. A value outside the standard vocabulary cannot identify an execution plan; readers do not infer one.
 
 Scenario and subtype identity are **descriptive and routable only**. No
 calculation, default, pack or underwriting behavior MAY depend on either
@@ -420,7 +421,7 @@ organized into four named sub-objects by concern:
   },
   "integrity": {
     "input_hash": null,
-    "content_hash": "…64 hex…",
+    "content_hash": "3f0c2a9e5b7d14c86a1e2f9b0d4c7a35e8f61b2d9c0a7e4f3b5d81c6a2e9f07b",
     "parent_hash": null
   }
 }
@@ -439,10 +440,10 @@ organized into four named sub-objects by concern:
 | `source` | string | yes | The actor (§2.6 grammar, RFC 0031): `manual` or `<namespace>/<id>` with a registered namespace. The grammar is enforced (§2.6). |
 | `resolution` | string | no | How the value was resolved — one member of the closed resolution vocabulary (§2.6). Orthogonal to `source`. |
 | `actor` | string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. |
-| `agent_id` | string\|null | no |  REQUIRED when `source` matches `agent/*`. |
-| `agent_version` | string\|null | no |  |
-| `timestamp` | ISO 8601 | yes |  |
-| `notes` | string\|null | no |  |
+| `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
+| `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
+| `timestamp` | ISO 8601 | yes | When this block was written. |
+| `notes` | string\|null | no | Free-text notes from the agent or user. |
 | `market_data_ref` | object | cond. | RFC 0022 §4 — REQUIRED when `resolution` is `market_data_accepted`. |
 | `inherited_from` | object | cond. | RFC 0021 §5 — REQUIRED when `resolution` is `inherited_assumption`. |
 
@@ -456,7 +457,7 @@ value. The conditional-requirement rules are defined against `provenance.resolut
 |---|---|---|---|
 | `confidence` | enum | yes | `high` / `medium` / `low`, as §3.2. |
 | `human_review_required` | boolean | yes | See §3.3. |
-| `flags` | string[] | no |  |
+| `flags` | string[] | no | Flags raised by this specific block. |
 | `partial` | boolean | no | See §3.4. When true, `_overrides` (§2.5f) SHOULD enumerate which paths and why. |
 | `provisional` | boolean | no | See §3.4. |
 
@@ -466,15 +467,15 @@ Per-field exceptions are stated only in block-level `_overrides` (§2.5f).
 
 | Field | Type | Req | Description |
 |---|---|---|---|
-| `revision` | integer ≥ 1 | yes | 1-based supersede-chain position. |
-| `superseded` | boolean | yes | True on every block that is not the chain head. |
+| `revision` | integer ≥ 1 | yes | 1-based supersede-chain position; monotonically increasing per section per file. |
+| `superseded` | boolean | yes | True on every block that is not the chain head (a newer revision exists in this file). |
 
 #### 2.5e `integrity` — cryptographic / structural verification (all optional)
 
 | Field | Type | Description |
 |---|---|---|
 | `algorithm` | `"sha256"` | Hash algorithm for the three hash fields. **Absent means `sha256`**, and `sha256` is the only admitted value — the field exists for forward agility, not present choice (RFC 0009 resolved question 2). The entire `_meta` object is outside the block digest. |
-| `input_hash` | string\|null | Reproducibility anchor over the block's inputs. |
+| `input_hash` | string\|null | Hash of the inputs that produced this block: a reproducibility anchor. |
 | `content_hash` | string | SHA-256 of JCS of the fenced object with its `_meta` member removed (Protocol §V.9). |
 | `parent_hash` | string\|null | The `content_hash` of the superseded predecessor; null on a chain root. |
 | `signature` | object | See §3.4 and Protocol §V.11 (RFC 0010). |
@@ -503,8 +504,11 @@ top-level block annotation, a sibling of `_meta`:
 }
 ```
 
-Each entry states path,
-optional `confidence`, `source`, `resolution`, `reason` and `note`. The
+Each entry states a dot-notated `path` relative to the block's payload root
+and MAY carry its own `confidence`, `source` (actor, §2.6 grammar),
+`resolution` (closed vocabulary, §2.6), `reason` and `note`. `reason` is a
+closed vocabulary: `illegible | missing | overridden | estimated | computed`.
+The
 precedence rule is unchanged and remains as RFC 0031 stated it: `_overrides`
 wins for the paths it covers — `confidence`, `source`, and `resolution`
 alike — `_meta.quality` / `_meta.provenance` apply elsewhere.
@@ -524,20 +528,24 @@ A `_meta` without nested `provenance` and `lifecycle` is `META-01`. The provenan
 
 | Tag | Meaning |
 |---|---|
-| `user_input` | Initial human entry. |
-| `user_override` | Explicit override of a prior value. |
-| `inherited_assumption` | Inherited from a composition ancestor. |
-| `investor_profile` | Resolved from the active investor profile. |
-| `market_data` | Market lookup at write time. |
-| `market_data_accepted` | Explicitly accepted market observation (RFC 0022). |
-| `ai_extracted` | Extracted from a source document. |
-| `agent_computed` | Computed from prior outputs. |
-| `asset_class_default` | Asset-class default table. |
-| `scenario_default` | Named analytical scenario; never selected by frontmatter scenario. |
-| `global_default` | Non-asset-class fallback table. |
-| `system_default` | Tool or institution constant. |
+| `user_input` | The user typed the value (initial entry). |
+| `user_override` | The user explicitly overrode a prior value. |
+| `inherited_assumption` | Inherited from an ancestor in the composition DAG ([starter guide §V.7.1](../docs/starter/defaults-and-cascade.md#v71-inherited-assumptions)). |
+| `investor_profile` | Resolved from the active investor profile / buy box. |
+| `market_data` | Resolved from a market-data lookup at write time. |
+| `market_data_accepted` | A market observation an analyst explicitly accepted as the underwritten value (RFC 0022 §4). |
+| `ai_extracted` | Extracted from a source document by an AI agent. |
+| `agent_computed` | Computed by an agent from prior agent outputs. |
+| `asset_class_default` | Pulled from the published asset-class default table for the deal's asset class. |
+| `scenario_default` | A value derived from a named analytical scenario in this file or institution config; never selected by frontmatter `scenario` (§2.2b). |
+| `global_default` | Pulled from a non-asset-class fallback table. |
+| `system_default` | Hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
 
-Block-level source and resolution also have leaf counterparts in `_overrides`. Defaults and their precedence are starter-product behavior, described in [the starter guide](../docs/starter/defaults-and-cascade.md); these tags record provenance and do not authorize inference by a verifier.
+Block-level source and resolution also have leaf counterparts in `_overrides`. Defaults and their precedence are starter-product behavior, described in [the starter guide](../docs/starter/defaults-and-cascade.md); these tags record provenance and do not authorize inference by a verifier. The cascade tags are nonetheless normative for cascade resolution: a producer stamping a value resolved by the fallback cascade MUST use the tag of the cascade step that produced the value ([starter guide §V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade) holds the authoritative step table).
+
+Both fields MAY be present; they answer different questions. A block
+written by agent L6-01 from the asset-class default table carries
+`"provenance": { "source": "agent/L6-01", "resolution": "asset_class_default", ... }`.
 
 ### 2.7 Update Semantics
 
@@ -617,13 +625,28 @@ The pipeline respects two types of human review requirements:
 
 ### 3.4 Optional Integrity / Quality Fields
 
-The nested fields of §2.5 are optional except where explicitly required. Quality flags `partial` and `provisional` belong to `_meta.quality`; leaf exceptions belong only to block-level `_overrides`. A matching override replaces block-level source, resolution and confidence for that path. Paths use dot notation with bracketed indices, such as `units[7].current_rent`; keys containing literal dots are not expressible.
+The nested fields of §2.5 are optional except where explicitly required. A
+block omitting an optional field is well-formed; validators MUST NOT reject a
+block for its absence.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `_meta.quality.partial` | boolean | The block is present but at least one field inside it is missing or unknown. When `partial: true`, an enumeration of which paths and why SHOULD be provided in `_overrides` (§2.5f). |
+| `_meta.quality.provisional` | boolean | The entire block is a placeholder, derived from defaults rather than observed data. Stronger signal than `confidence: "low"`. Downstream consumers SHOULD label outputs derived from provisional blocks accordingly. |
+
+Leaf exceptions belong only to block-level `_overrides`. **Precedence:** an
+`_overrides` entry whose `path` matches a field replaces, for that field only,
+the block-level `confidence`, `source` and `resolution`; the block-level values
+still apply to every field not enumerated. **Path syntax:** paths use dot
+notation with bracketed array indices, such as `units[7].current_rent`; keys
+containing a literal `.` are not expressible, and no section schema uses
+dotted keys.
 
 `_meta.integrity.content_hash` is lowercase hexadecimal SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the fenced object **with its `_meta` member removed** (Protocol §V.9). All other members, including `_role`, `_overrides`, `_notes`, and any payload member named `content`, are included. Nothing else is excluded or defaulted. Metadata-only changes keep the hash; payload edits change it.
 
-`parent_hash` is the predecessor's `content_hash`, or null at a chain root. Once any block in a supersede chain carries a hash, every later block carries both `content_hash` and `parent_hash`. Integrity is opt-in; a chain with no hashes is unchecked.
+`parent_hash` is the predecessor's `content_hash`, or null at a chain root. Once any block in a supersede chain carries `content_hash`, every later block in that chain MUST carry both `content_hash` and `parent_hash`. **Integrity opt-in:** a file containing no `content_hash` is unchecked, and chain verification is a no-op. A producer that adopts the integrity path SHOULD stamp `content_hash` on every block it writes.
 
-`signature` is optional: `{ alg, kid, sig, signed_at, v? }`, with `alg` one of `ed25519`, `es256`, `es384`, `sig` unpadded base64url and `signed_at` an ISO timestamp. It requires `content_hash` (`INT-05`). The signing input is unchanged (Protocol §V.11): content hash, section, actor, timestamp, kid and signed_at. It binds author and time to content, but does not transitively bind parent_hash. A consumer with no backend reports a signature present and unchecked, never verified.
+`signature` is optional: `{ alg, kid, sig, signed_at, v? }`, with `alg` one of `ed25519`, `es256`, `es384`, `sig` unpadded base64url and `signed_at` an ISO timestamp. It requires `content_hash` (`INT-05`). The signing input is unchanged (Protocol §V.11): content hash, section, actor, timestamp, kid and signed_at. It binds author and time to content, but does not transitively bind `parent_hash`. **Signing opt-in:** a signature is meaningful only where `content_hash` is stamped, and reading, validating and computing over a document never require cryptography. A consumer with no key store MUST treat a signature as opaque metadata and MUST report it as present but unchecked, never as verified (Protocol §V.11.3).
 
 ### 3.5 `confidence` vs `human_review_required`
 
@@ -680,21 +703,21 @@ The `ai_synthesis` sub-object is populated by `agent/L7-01` after the full under
 ```json uw:section=deal_context source=manual ts=ISO8601 v=1 confidence=high
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "deal_context",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "_notes": null,
 
   "deal_summary": "string | null",
@@ -780,21 +803,21 @@ frontmatter fallback. Other free values are unchanged.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "address": {
     "street": "string",
     "city": "string",
@@ -885,21 +908,21 @@ Field notes:
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "ownership",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "transaction_type": "acquisition | refinance | cash_out_refi | recapitalization",
   "current_owner": "string | null",
   "acquisition_date": "YYYY-MM-DD | null",
@@ -943,21 +966,21 @@ Field notes:
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "rent_roll_type": "multifamily",
   "as_of_date": "YYYY-MM-DD",
   "total_units": 0,
@@ -1103,21 +1126,21 @@ stated values with each other, never with the current date or file metadata.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "rent_roll_type": "commercial",
   "as_of_date": "YYYY-MM-DD",
   "total_nra_sqft": 0,
@@ -1236,7 +1259,7 @@ stated values with each other, never with the current date or file metadata.
 ```
 
 **Expense recoveries and the CAM true-up (RFC 0058).** `recovery_terms` and
-`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated. Rules reading method evaluate only when it is stated. Like the RFC 0055 clauses these are
+`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated non-null. A lone `cap` needs neither `over` nor `accumulation`. Rules reading method evaluate only when it is stated. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). Like the RFC 0055 clauses these are
 **attributes of a lease** plus a reconciliation of a **closed** period — not a
 periodic ledger, which RFC 0054 placed behind a named consumer.
 
@@ -1252,9 +1275,11 @@ and is a modeling decision, not a recorded fact; each tenant states its own shar
   recovery by a hundred, which is why this is an error and not a warning.
 - `REC-02` — the `method` vocabulary is closed, and `base_year_stop`,
   `fixed_stop` and `fixed_amount` each REQUIRE their input (`base_year`,
-  `expense_stop_per_sqft`, `fixed_recovery_annual`). When method is stated, a stated `cap.pct` REQUIRES
+  `expense_stop_per_sqft`, `fixed_recovery_annual`). Once `method` is stated, a stated `cap.pct` REQUIRES
   `cap.accumulation`: there is **no default**, because `cumulative`,
   `non_cumulative` and `compounding` diverge materially inside three years.
+  A lone `cap` with no `method` is the G1 lone fact and is valid without
+  `accumulation`; REC-02 does not reach it (RFC 0081 G1).
 - `REC-03` — every `recoverable_pool` entry names a § 4.4
   `operating_statement.expenses` key. `total_operating_expenses` (a total),
   `management_fee_pct_egi` (a ratio), `capital_expenditures_actual` and
@@ -1325,6 +1350,8 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 #### Hospitality Variant (RFC 0081 G3)
 
+**Normative schema:** [rent-roll-hospitality.schema.json](schemas/rent-roll-hospitality.schema.json) (the class contract for a hospitality `rent_roll`; other members of the section are unconstrained by it).
+
 Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. ADR, occupancy and available room nights also feed total_room_revenue; room_revenue_per_key divides its 2dp rounded total by property.keys. The dictionary supplies the unchanged null guards, units and round_to.
 
 ### § 4.4 — Operating Statement
@@ -1340,21 +1367,21 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "operating_statement",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "period_type": "T12 | T3 | YTD | Budget | T24",
   "period_start": "YYYY-MM-DD",
   "period_end": "YYYY-MM-DD",
@@ -1430,21 +1457,21 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "underwriting_basis": "stabilized | value_add | lease_up | as_is | stressed",
   "income": {
     "gross_potential_rent": {
@@ -1594,7 +1621,7 @@ property taxes, and this section holds the second:
 unchanged. Rates are fractions, not percents. The prose `reassessment_basis`
 is retained as narrative; when `reassessment` is present it governs.
 
-Only `trigger` is required. `assessed_value`, `millage_rate` and `indicated_tax` form an all-or-none assessment group. `jurisdiction`, `value_basis`, `assessment_ratio` and `round_to_decimals` are admitted only with that group. `TAX-01`–`TAX-03` evaluate only when the group is stated. A lone `reassessment: {"trigger": "sale"}` states the sale-trigger fact.
+Only `trigger` is required. `assessed_value`, `millage_rate` and `indicated_tax` form an all-or-none assessment group. `jurisdiction`, `value_basis`, `assessment_ratio` and `round_to_decimals` are admitted only with that group. `TAX-01`–`TAX-03` evaluate only when the group is stated. A lone `reassessment: {"trigger": "sale"}` states the sale-trigger fact. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence).
 
 - `TAX-01` — `trigger` is one of the four listed values, `assessed_value`,
   `millage_rate` and `indicated_tax` are finite, and when `value_basis` and
@@ -1634,21 +1661,21 @@ from `jurisdiction`, which is a label.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "valuation",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "purchase_price": null,
   "purchase_price_per_unit": null,
   "purchase_price_per_sqft": null,
@@ -1697,21 +1724,21 @@ from `jurisdiction`, which is a label.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "debt_structure",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "loan_amount": 0.0,
   "loan_purpose": "acquisition | refinance | cash_out_refi | construction | bridge | supplement",
   "loan_type": "conventional | agency_fannie | agency_freddie | cmbs | sba_504 | sba_7a | bridge | construction | life_co | hud_221d4 | hud_223f | mezzanine | null",
@@ -1767,7 +1794,7 @@ from `jurisdiction`, which is a label.
 }
 ```
 
-**Rate hedges (RFC 0056, RFC 0081 G1).** `rate_hedge` is OPTIONAL. Only `instrument` and `strike_rate` are required. `notional`, `index`, `effective_date`, `expiration_date` and `post_expiration_assumption` form an all-or-none terms group (`HDG-01`). A strike-only hedge may also state premium; no other fact is inferred. `HDG-01` validates stated members; `HDG-02`/`HDG-03` apply to every hedge. `HDG-06`–`HDG-10`, replacement_funding and the hedge clauses of `ESC-04` evaluate only when the terms group is stated. The premium is the single home of the cap cost.
+**Rate hedges (RFC 0056, RFC 0081 G1).** `rate_hedge` is OPTIONAL. Only `instrument` and `strike_rate` are required. `notional`, `index`, `effective_date`, `expiration_date` and `post_expiration_assumption` form an all-or-none terms group (`HDG-01`). A strike-only hedge may also state premium; no other fact is inferred. `HDG-01` validates stated members; `HDG-02`/`HDG-03` apply to every hedge. `HDG-06`–`HDG-10`, replacement_funding and the hedge clauses of `ESC-04` evaluate only when the terms group is stated. The premium is the single home of the cap cost. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). `replacement_funding: null` therefore requires no terms group.
 When `debt_structure` is a variant map, the hedge rules read the one block
 §5.3 selects for them, preferring `senior` (RFC 0075). A hedge on any other
 block is not read.
@@ -1861,21 +1888,21 @@ identically.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "sources_uses",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "total_project_cost": 0.0,
   "sources": {
     "senior_loan": 0.0,
@@ -1963,7 +1990,7 @@ consumer.
   `sources_uses` selection refuses. `HDG-08` reports that instead (RFC 0076).
   Existing valid escrow-funded documents need no edits or new currency field.
 
-**The renovation draw (RFC 0057, RFC 0081 G1).** `uses.renovation` is OPTIONAL and requires at least one of budget or contingency. `contingency_used`, `drawn_to_date`, `as_of_date` form an all-or-none draw group (`CAPX-01`); stating it requires both budget and contingency. `contingency_remaining` is admitted only with that group. `CAPX-01` validates stated members; `CAPX-02`–`CAPX-04` evaluate only with the draw group. Two deals stating the same contingency are indistinguishable when one has
+**The renovation draw (RFC 0057, RFC 0081 G1).** `uses.renovation` is OPTIONAL and requires at least one of budget or contingency. `contingency_used`, `drawn_to_date`, `as_of_date` form an all-or-none draw group (`CAPX-01`); stating it requires both budget and contingency. `contingency_remaining` is admitted only with that group. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). `CAPX-01` validates stated members; `CAPX-02`–`CAPX-04` evaluate only with the draw group. Two deals stating the same contingency are indistinguishable when one has
 drawn none of it and the other has drawn all of it.
 
 ```json
@@ -2052,21 +2079,21 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "dcf",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "hold_period_years": 5,
   "analysis_start_date": null,
   "assumptions": {
@@ -2204,21 +2231,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "stress_tests",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "base_dscr": 0.0,
   "base_debt_yield": 0.0,
   "base_noi": 0.0,
@@ -2276,21 +2303,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "market_analysis",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "market": "string",
   "submarket": "string",
   "market_tier": "1 | 2 | 3 | null",
@@ -2381,21 +2408,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "borrower_sponsor",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "principals": [
     {
       "name": "string",
@@ -2463,21 +2490,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "due_diligence",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "appraisal": {
     "received": false,
     "appraiser_name": null,
@@ -2599,21 +2626,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "risk_assessment",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "scoring_model_version": "string",
   "component_scores": {
     "property": {
@@ -2707,21 +2734,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "compliance",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "hvcre": {
     "classification": "hvcre | non_hvcre | uncertain | not_applicable | null",
     "contributing_capital_test_met": null,
@@ -2798,21 +2825,21 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "assumptions",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "assumptions": [
     {
       "key": "string",
@@ -2873,21 +2900,21 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "validation",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "overall_status": "clean | warnings_only | errors_present | blocking",
   "financial_validity": [
     {
@@ -2969,21 +2996,21 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 ```json
 {
   "_meta": {
-  "section": "deal_context",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "pipeline_log",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "entries": [
     {
       "entry_id": "string",
@@ -3030,21 +3057,21 @@ file orders them so readers see the most recent run history at the bottom.
 ```json uw:section=custom_calculations source=manual ts=2026-10-11T00:00:00Z v=1
 {
   "_meta": {
-  "section": "custom_calculations",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "custom_calculations",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "_notes": null,
   "calculations": [
     {
@@ -3112,21 +3139,21 @@ The `sensitivity_sweeps` array supports single-variable sweeps: the user specifi
 ```json uw:section=custom_scenarios source=manual ts=2026-10-11T00:00:00Z v=1
 {
   "_meta": {
-  "section": "custom_scenarios",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "custom_scenarios",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "_notes": null,
   "scenarios": [
     {
@@ -3223,31 +3250,31 @@ The `sensitivity_sweeps` array supports single-variable sweeps: the user specifi
 5. Cross-section consistency checks do not apply to extension sections
 6. The `schema_version` field signals a stable schema ready for standardization review — set it to a semver string when the schema has stabilized across deals
 
-```json uw:section=x_{user_defined_id} source=manual ts=ISO8601 v=1
+```json uw:section=x_{user_defined_id} source=manual ts=2026-10-11T00:00:00Z v=1
 {
   "_meta": {
-  "section": "x_your_id",
-  "provenance": {
-    "source": "user",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "string",
-    "timestamp": "ISO8601",
-    "notes": null
+    "section": "x_your_id",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": []
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": null
+    }
   },
-  "quality": {
-    "confidence": "high | medium | low",
-    "human_review_required": false,
-    "flags": []
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  },
-  "integrity": {
-    "input_hash": null
-  }
-},
   "_notes": null,
   "render_hint": {
     "include_in_output": false,
@@ -3296,21 +3323,21 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 ```json uw:section=gaps source=system/gaps-maintainer ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
-  "section": "gaps",
-  "provenance": {
-    "source": "system/gaps-maintainer",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "gaps",
+    "provenance": {
+      "source": "system/gaps-maintainer",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "_notes": null,
   "items": [
     {
@@ -3375,21 +3402,21 @@ The section is a **bounded map keyed by the component's own asset class**, not a
 ```json uw:section=components source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
-  "section": "components",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "components",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "_notes": null,
   "multifamily": {
     "component_class": "multifamily",
@@ -3466,21 +3493,21 @@ An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balanc
 ```json uw:section=capital_stack source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
-  "section": "capital_stack",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "capital_stack",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "tranches": [
     { "id": "senior", "class": "senior_debt",      "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "io_months": 24, "term_months": 120, "accrual": "cash" },
     { "id": "mezz_a", "class": "mezzanine_debt",    "position": 2, "amount": 6000000,  "rate": 0.11,   "amortization_months": 0,   "io_months": 120, "term_months": 120, "accrual": "cash" },
@@ -3533,21 +3560,21 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 ```json uw:section=lease_up_schedule variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
-  "section": "lease_up_schedule",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "lease_up_schedule",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "model_type": "natural_turnover",
   "period_granularity": "quarterly",
   "stabilization_target": "2027-Q4",
@@ -3611,21 +3638,21 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 ```json uw:section=cash_flow_series variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
   "_meta": {
-  "section": "cash_flow_series",
-  "provenance": {
-    "source": "manual",
-    "actor": "example-author",
-    "timestamp": "2026-10-11T00:00:00Z"
+    "section": "cash_flow_series",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "quality": {
-    "confidence": "high",
-    "human_review_required": false
-  },
-  "lifecycle": {
-    "revision": 1,
-    "superseded": false
-  }
-},
   "label": "Levered hold-period cash flow",
   "day_count": "actual/365f",
   "series": [
@@ -4126,8 +4153,7 @@ model, not a second.
 
 ### 5.4 Descriptive identity guidance (RFC 0072)
 
-These diagnostics MUST be warnings in **both** format generations, never errors.
-No new error is introduced for a document that was valid before this RFC.
+These diagnostics MUST be warnings, never errors.
 
 - `DQ-07`: non-null `scenario` outside the eight standard plans and reverse-DNS
   extension grammar, including unlisted values and non-string
@@ -4171,7 +4197,7 @@ Reads a `.uwx.md` file and outputs a structured JSON object containing:
 
 ### 6.2 `uwmd validate <file> [--stage <stage>]`
 
-Runs all validation rules (§5) and returns:
+Runs all validation rules (Part V) and returns:
 
 ```json
 {
@@ -4240,9 +4266,9 @@ Any Bancroft agent writing to a `.uwx.md` file MUST:
 1. Read the current state of its input sections before running
 2. Produce a single data block JSON object matching the section schema exactly
 3. Include a valid `_meta` object as the first key
-4. Set `_meta.lifecycle.revision` to `previous_version + 1` (or `1` if no previous block exists)
+4. Set `_meta.lifecycle.revision` to `previous_revision + 1` (or `1` if no previous block exists)
 5. Set `_meta.lifecycle.superseded = false`
-6. Never write to sections outside its defined scope (see §4 "Written by" field)
+6. Never write to sections outside its defined scope (see the Part IV "Written by" field)
 7. Never set `human_review_required: false` if the block contains any `low` confidence values
 8. Return `{ "status": "awaiting_input", "required": ["section_id", ...] }` if required input sections are missing, rather than failing
 
@@ -4312,7 +4338,8 @@ uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uwx.md
 
 **RFC 0072 clarification:** this legacy heading and `scenario_defaults.json`
 reference do not refer to frontmatter `scenario` (§2.2b). That field MUST NOT
-select defaults. The operative cascade/default contract is Protocol §V.7,
+select defaults. Defaults and the fallback cascade are starter-product
+guidance ([starter guide §V.7–§V.8](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)),
 whose published defaults are keyed by asset class. Repair of the vestigial
 file reference and broader terminology is deferred separately.
 

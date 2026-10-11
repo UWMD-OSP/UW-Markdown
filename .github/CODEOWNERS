@@ -13,8 +13,8 @@
 
 # ── Spec (normative) ────────────────────────────────────────────────────────
 # Any change to the spec or protocol requires BDFL review per GOVERNANCE.md.
-/spec/UW_FORMAT_SPEC.md              @jaredmaxey
-/spec/UW_PROTOCOL.md                 @jaredmaxey
+/spec/UW_FORMAT_SPEC.md                 @jaredmaxey
+/spec/UW_PROTOCOL.md                    @jaredmaxey
 /spec/schemas/                          @jaredmaxey
 
 # ── Reference library ───────────────────────────────────────────────────────

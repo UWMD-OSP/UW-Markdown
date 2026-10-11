@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { BUILTIN_CLASS_CONTENT } from '../../../packages/uwmd-core/dist/builtin-class-content.js';
+import { BUILTIN_CLASS_CONTENT } from '@uwmd/core/browser';
 import {
   deepGet,
   deepSet,

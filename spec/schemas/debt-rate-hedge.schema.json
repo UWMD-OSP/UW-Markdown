@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/debt-rate-hedge.schema.json",
   "title": "debt-rate-hedge",
-  "description": "RFC 0081 G1 / Format §4.7. instrument and strike_rate required; the terms group is all-or-none. premium may be stated without terms. HDG-06–10 and replacement funding evaluate only with the terms group. HDG-02 refuses reserved instruments; HDG-03 rate type is semantic.",
+  "description": "RFC 0081 G1 / Format §4.7. instrument and strike_rate required; the terms group is all-or-none. premium may be stated without terms. HDG-06–10 and replacement funding evaluate only with the terms group. HDG-02 refuses reserved instruments; HDG-03 rate type is semantic. A member stated as null is not stated: replacement_funding: null requires no terms group.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -180,13 +180,26 @@
       "index",
       "effective_date",
       "expiration_date"
-    ],
-    "replacement_funding": [
-      "notional",
-      "index",
-      "effective_date",
-      "expiration_date",
-      "post_expiration_assumption"
     ]
+  },
+  "dependentSchemas": {
+    "replacement_funding": {
+      "if": {
+        "properties": {
+          "replacement_funding": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "notional",
+          "index",
+          "effective_date",
+          "expiration_date",
+          "post_expiration_assumption"
+        ]
+      }
+    }
   }
 }

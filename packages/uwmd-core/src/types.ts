@@ -1,7 +1,7 @@
 import type { UWScenarioId } from './scenario.js';
 
-// .uw.md format — TypeScript type definitions
-// Spec: UW_FORMAT_SPEC.md v1.1
+// .uwx.md format — TypeScript type definitions
+// Spec: spec/UW_FORMAT_SPEC.md (Format 3.0)
 
 /** The signed block annotation used for property-level selection (RFC 0040). */
 export type BlockRole = 'primary' | 'senior' | 'junior' | 'summary' | 'detail' | 'component';
@@ -218,7 +218,7 @@ export interface UWFieldOverride {
   source?: SourceTag;
   /**
    * How this field's value was resolved (a canonical `SOURCE_TAGS` member,
-   * e.g. the cascade step that produced it — protocol §V.7 permits stamping
+   * e.g. the cascade step that produced it — starter guide §V.7 permits stamping
    * at leaf level). A leaf-level `resolution` wins over the block-level one
    * for its path. RFC 0031.
    */
@@ -242,7 +242,7 @@ export interface UWMeta {
    * How the block's value was resolved — one canonical `SOURCE_TAGS` member
    * (`user_input`, `asset_class_default`, …). Optional and orthogonal to
    * `source`: an agent that filled a field from the asset-class default table
-   * has both an actor and a method. RFC 0031; protocol §V.7.
+   * has both an actor and a method. RFC 0031; starter guide §V.7.
    */
   resolution?: SourceTag;
   agent_id: string | null;
@@ -277,8 +277,7 @@ export interface UWMeta {
   field_overrides?: UWFieldOverride[];
 
   /**
-   * sha256 of the canonicalized block content (excluding _meta.content_hash
-   * and _meta.signature themselves). See protocol §IX.2 for the
+   * sha256 of the canonicalized block content. See Protocol §V.9 for the
    * canonicalization rule. Optional; when present, the chain becomes
    * verifiable.
    */

@@ -22,14 +22,20 @@ export function rfcCopies(repoRoot) {
 }
 
 export function docsVersions(repoRoot) {
-  const protocol = readFileSync(join(repoRoot, 'packages/uwmd-core/src/protocol.ts'), 'utf8');
+  const protocolSource = readFileSync(join(repoRoot, 'packages/uwmd-core/src/protocol.ts'), 'utf8');
   const constant = (name) => {
-    const value = new RegExp(`export const ${name} = '([^']+)'`).exec(protocol)?.[1];
+    const value = new RegExp(`export const ${name} = '([^']+)'`).exec(protocolSource)?.[1];
     if (!value) throw new TypeError(`Cannot read ${name} for the docs site`);
     return value;
   };
   const core = JSON.parse(readFileSync(join(repoRoot, 'packages/uwmd-core/package.json'), 'utf8')).version;
-  return { format: constant('FORMAT_VERSION'), protocol: constant('PROTOCOL_VERSION'), core };
+  const format = constant('FORMAT_VERSION');
+  const protocol = constant('PROTOCOL_VERSION');
+  // The normative pages describe SPEC_*_VERSION. While an accepted spec runs ahead
+  // of the implementation (RFC 0081 Phases 2-6) the two differ; once they agree
+  // the SPEC_* constants may go, and the spec labels follow the implementation.
+  const optional = (name) => new RegExp(`export const ${name} = '([^']+)'`).exec(protocolSource)?.[1];
+  return { format, protocol, core, specFormat: optional('SPEC_FORMAT_VERSION') ?? format, specProtocol: optional('SPEC_PROTOCOL_VERSION') ?? protocol };
 }
 
 // Packages actually on npm, for the home release card and Downloads page.

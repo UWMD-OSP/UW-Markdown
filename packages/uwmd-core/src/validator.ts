@@ -35,7 +35,7 @@ import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
 
-// ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL.md §III.6) ──────────────────
+// ─── BUILTIN_REMEDIATIONS lookup (Protocol §III.6a) ──────────────────
 //
 // Validator constructs inline messages with deal-specific values, but the
 // registry provides canonical title/remediation/spec_ref copy keyed by code.

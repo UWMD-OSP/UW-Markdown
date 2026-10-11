@@ -41,6 +41,8 @@ test('G1 lone-fact groups admit facts alone and reject every partial group', () 
     const partial = { ...strike, ...terms }; delete partial[key]; assert.equal(cap(partial), false, key);
   }
   assert.equal(cap({ ...strike, replacement_funding: { mode: 'escrow' } }), false);
+  // null states nothing in every G1 group (ESC-04 absent/null precedent).
+  assert.ok(cap({ ...strike, replacement_funding: null })); assert.ok(cap({ ...strike, ...terms, replacement_funding: null }));
   assert.equal(cap({ ...strike, premium: -1 }), false);
   const draw = { contingency_used: 1, drawn_to_date: 2, as_of_date: '2026-10-11' };
   const renovation = check('renovation-draw');
@@ -52,10 +54,20 @@ test('G1 lone-fact groups admit facts alone and reject every partial group', () 
   }
   for (const key of ['budget', 'contingency']) { const partial = { budget: 4, contingency: 3, ...draw }; delete partial[key]; assert.equal(renovation(partial), false); }
   assert.equal(renovation({}), false); assert.equal(renovation({ budget: 4, contingency_remaining: 2 }), false);
+  assert.ok(renovation({ budget: 4, contingency_remaining: null })); assert.equal(renovation({ contingency_remaining: null }), false);
   const recovery = check('lease-recovery-terms');
-  assert.ok(recovery({ cap: { pct: 0.05 } })); assert.ok(recovery({ method: 'net', cap: { pct: 0.05 } }));
-  for (const key of Object.keys(json('spec/schemas/lease-recovery-terms.schema.json').properties).filter(k => !['method', 'cap'].includes(k))) {
-    assert.equal(recovery({ cap: { pct: 0.05 }, [key]: null }), false, key);
+  // REC-02 (owner decision): a lone cap needs no accumulation; once method is stated it does.
+  assert.ok(recovery({ cap: { pct: 0.05 } }));
+  assert.ok(recovery({ method: 'net', cap: { pct: 0.05, accumulation: 'cumulative' } }));
+  assert.equal(recovery({ method: 'net', cap: { pct: 0.05 } }), false);
+  assert.equal(recovery({ method: 'net', cap: { pct: 0.05, accumulation: null } }), false);
+  assert.ok(recovery({ method: 'net', cap: { pct: null } }));
+  const stated = { pro_rata_share: 0.1, share_basis: 'nra', base_year: 2024, expense_stop_per_sqft: 5, fixed_recovery_annual: 100, admin_fee_pct: 0.1, gross_up_pct: 0.95, recoverable_pool: ['taxes'] };
+  assert.deepEqual(Object.keys(stated).sort(), Object.keys(json('spec/schemas/lease-recovery-terms.schema.json').properties).filter(k => !['method', 'cap'].includes(k)).sort());
+  for (const [key, value] of Object.entries(stated)) {
+    assert.equal(recovery({ cap: { pct: 0.05 }, [key]: value }), false, key); // a stated member needs method
+    assert.ok(recovery({ cap: { pct: 0.05 }, [key]: null }), key); // null states nothing (ESC-04 absent/null precedent)
+    assert.ok(recovery({ method: 'net', [key]: value }), key);
   }
   assert.equal(recovery({ cam_cap_pct: 0.05 }), false);
   const assessment = { assessed_value: 100, millage_rate: 0.01, indicated_tax: 1 };
@@ -65,13 +77,27 @@ test('G1 lone-fact groups admit facts alone and reject every partial group', () 
     assert.equal(tax({ trigger: 'sale', [key]: assessment[key] }), false, key);
     const partial = { trigger: 'sale', ...assessment }; delete partial[key]; assert.equal(tax(partial), false, key);
   }
-  for (const key of ['jurisdiction', 'value_basis', 'assessment_ratio', 'round_to_decimals']) assert.equal(tax({ trigger: 'sale', [key]: null }), false, key);
+  for (const [key, value] of Object.entries({ jurisdiction: 'Maricopa', value_basis: 100, assessment_ratio: 1, round_to_decimals: 2 })) {
+    assert.equal(tax({ trigger: 'sale', [key]: value }), false, key);
+    assert.ok(tax({ trigger: 'sale', [key]: null }), key); // null states nothing
+    assert.ok(tax({ trigger: 'sale', ...assessment, [key]: value }), key);
+  }
   assert.equal(tax({ trigger: 'sale', sale_triggers_reassessment: true }), false);
 });
 test('G3 hotel section has exactly one optional fact, and receipt 1.1 is the only admitted version', () => {
   const hotel = check('section-hotel-metrics');
   assert.ok(hotel({})); assert.ok(hotel({ market_revpar: null })); assert.ok(hotel({ market_revpar: 100 }));
   for (const key of ['adr', 'occupancy', 'available_room_nights', 'key_count']) assert.equal(hotel({ [key]: 1 }), false, key);
+  // The hotel facts' single home: the hospitality rent_roll (Format §4.3 Hospitality Variant).
+  const rooms = check('rent-roll-hospitality');
+  const nights = { available_room_nights: 29200 };
+  assert.ok(rooms(nights));
+  assert.ok(rooms({ ...nights, occupied_room_nights: 21024, adr: 180, occupancy: 0.72, rent_roll_type: 'hospitality', segmentation: [] }));
+  assert.equal(rooms({ adr: 180, occupancy: 0.72 }), false); // available_room_nights is required (CLS-04)
+  assert.equal(rooms({ ...nights, keys: 80 }), false); // key count lives only in property.keys
+  for (const [key, value] of [['available_room_nights', 1.5], ['available_room_nights', -1], ['occupied_room_nights', 0.5], ['adr', -1], ['occupancy', 1.2], ['occupancy', -0.1]]) {
+    assert.equal(rooms({ ...nights, [key]: value }), false, `${key}=${value}`);
+  }
   const schema = json('spec/schemas/uw-receipt.schema.json');
   assert.deepEqual(schema.properties.receipt_version, { const: '1.1', description: schema.properties.receipt_version.description });
 });
@@ -109,14 +135,31 @@ test('single specification files, all 34 starter stubs gone, and every historica
   }
   assert.doesNotMatch(build, /\/spec\/format-v2/);
   assert.ok(build.includes("await rm(join(SITE_ROOT, 'spec', 'format-v2.md'), { force: true })"));
-  for (const file of ['docs/ABOUT.md', 'tools/docs-site/ai/index.md', 'tools/docs-site/tutorials/quickstart.md', 'tools/docs-site/tutorials/your-first-uwmd-file.md', 'tools/docs-site/.vitepress/theme/HomePage.vue']) {
+  for (const file of ['docs/ABOUT.md', 'docs/downloads/llms.txt', 'docs/downloads/llms-full.txt', 'tools/docs-site/ai/index.md', 'tools/docs-site/tutorials/quickstart.md', 'tools/docs-site/tutorials/your-first-uwmd-file.md', 'tools/docs-site/.vitepress/theme/HomePage.vue']) {
     assert.doesNotMatch(read(file), /\/spec\/format-v2/, file);
   }
 });
 
-test('every Format example carries nested metadata with a nonempty section identity', () => {
+test('every Format example carries nested metadata naming its own section, valid against the block schema', () => {
   const format = read('spec/UW_FORMAT_SPEC.md');
-  let count = 0;
+  const validateMeta = ajv.getSchema('https://uwmd.org/schemas/uwmd-block.schema.json#/$defs/UWMeta');
+  const validateBlock = check('uwmd-block');
+  const lines = format.split('\n');
+  const offsets = [];
+  for (let i = 0, at = 0; i < lines.length; at += lines[i].length + 1, i++) offsets.push(at);
+  const lineAt = index => { let lo = 0; let hi = offsets.length - 1; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (offsets[mid] <= index) lo = mid; else hi = mid - 1; } return lo; };
+  // The section an example belongs to: its fence annotation, else the **ID:** of the
+  // enclosing registry entry. Template ids such as x_{user_defined_id} are skipped.
+  const expectedSection = line => {
+    let fence = line; while (fence >= 0 && !lines[fence].startsWith('```')) fence--;
+    const annotated = lines[fence]?.match(/uw:section=(\S+)/)?.[1];
+    if (annotated) return { fence, section: annotated };
+    let id = line; while (id >= 0 && !/^\*\*ID:\*\*/.test(lines[id]) && !/^#{2,3} /.test(lines[id])) id--;
+    return { fence, section: lines[id]?.match(/^\*\*ID:\*\*\s*`([^`]+)`/)?.[1] };
+  };
+  const registryStart = lines.indexOf('## Part IV — Section Registry');
+  assert.ok(registryStart > 0);
+  let count = 0; let wholeBlocks = 0;
   for (const match of format.matchAll(/"_meta":\s*\{/g)) {
     const start = match.index + match[0].lastIndexOf('{');
     let depth = 0;
@@ -133,13 +176,24 @@ test('every Format example carries nested metadata with a nonempty section ident
       else if (c === '{') depth++;
       else if (c === '}' && --depth === 0) break;
     }
+    const line = lineAt(start);
     const value = JSON.parse(format.slice(start, end + 1));
-    assert.ok(value.section?.length, `example at ${start}`);
-    for (const key of ['provenance', 'quality', 'lifecycle']) assert.equal(typeof value[key], 'object');
-    assert.ok(value.provenance.source); assert.ok(value.provenance.actor); assert.ok(value.provenance.timestamp);
-    assert.ok(value.quality.confidence); assert.equal(typeof value.quality.human_review_required, 'boolean');
-    assert.equal(typeof value.lifecycle.revision, 'number'); assert.equal(typeof value.lifecycle.superseded, 'boolean');
+    assert.ok(validateMeta(value), `example _meta at line ${line + 1}: ${JSON.stringify(validateMeta.errors)}`);
+    const { fence, section } = expectedSection(line);
+    // Part II illustrations (§2.5) name no registry entry; every Part IV example does.
+    if (line > registryStart) assert.ok(section, `example at line ${line + 1} has no section identity`);
+    if (section && !section.includes('{')) assert.equal(value.section, section, `example at line ${line + 1}`);
+    // When the whole fenced object is literal JSON, it must also be a valid Format 3.0 block.
+    let close = fence + 1; while (close < lines.length && !lines[close].startsWith('```')) close++;
+    let block;
+    try { block = JSON.parse(lines.slice(fence + 1, close).join('\n')); } catch { block = undefined; }
+    if (block && typeof block === 'object' && '_meta' in block) {
+      assert.equal(Object.keys(block)[0], '_meta', `example at line ${line + 1}`);
+      assert.ok(validateBlock(block), `example block at line ${line + 1}: ${JSON.stringify(validateBlock.errors)}`);
+      wholeBlocks++;
+    }
     count++;
   }
   assert.equal(count, 30);
+  assert.ok(wholeBlocks > 0);
 });

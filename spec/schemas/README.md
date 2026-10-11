@@ -21,7 +21,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`conformance-case.schema.json`](conformance-case.schema.json) | Portable case with one `ConformanceTarget` | Protocol §II.6a.4 / RFC 0078 Phase 3 |
 | [`conformance-corpus.schema.json`](conformance-corpus.schema.json) | Exhaustive corpus ownership index | Protocol §II.6 / RFC 0078 Phase 3 |
 | [`calc-result.schema.json`](calc-result.schema.json) | `CalcResult` | Protocol §VIII |
-| [`issue-remediation.schema.json`](issue-remediation.schema.json) | `IssueRemediation` | Protocol §III.6 |
+| [`issue-remediation.schema.json`](issue-remediation.schema.json) | `IssueRemediation` | Protocol §III.6a |
 | [`module-manifest.schema.json`](module-manifest.schema.json) | `ProtocolModuleManifest` | Protocol §X |
 | [`module-signature.schema.json`](module-signature.schema.json) | `ModuleSignature` | Protocol §X.1 |
 | [`uw-receipt.schema.json`](uw-receipt.schema.json) | `UWReceipt` | [UW Receipt 1.1](../UW_RECEIPT.md) / RFC 0016 |
@@ -33,6 +33,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-reserve-accounts.schema.json`](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
 | [reserve-accounts-verification.schema.json](reserve-accounts-verification.schema.json) | ReserveAccountsVerification | Protocol §VIII.11 / RFC 0064 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
+| [`rent-roll-hospitality.schema.json`](rent-roll-hospitality.schema.json) | hospitality `rent_roll` class contract (room nights, ADR, occupancy; no `keys`) | Format §4.3 / RFC 0081 G3 |
 | [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |
 | [`lease-recovery-terms.schema.json`](lease-recovery-terms.schema.json) | commercial tenant expense-recovery terms | Format §4.3 / RFC 0058 |
 | [`lease-recovery-true-up.schema.json`](lease-recovery-true-up.schema.json) | closed-period CAM reconciliation rows | Format §4.3 / RFC 0058 |
@@ -53,10 +54,10 @@ files live in this directory pending publication on `uwmd.org`.
 | [`uw-rollup.schema.json`](uw-rollup.schema.json) | `portfolio_rollup` payload | [UW Receipt 1.1](../UW_RECEIPT.md) §11 / RFC 0021 §6 |
 | [`period-key.schema.json`](period-key.schema.json) | `PeriodKey` | Protocol §VIII.2a / RFC 0041 |
 | [`period-series-entry.schema.json`](period-series-entry.schema.json) | `PeriodSeriesEntry` | Protocol §VIII.2a / RFC 0041 |
-| [`period-refinement-issue.schema.json`](period-refinement-issue.schema.json) | `PeriodRefinementIssue` | Protocol §VIII.2b / RFC 0042 |
-| [`section-refinement-issue.schema.json`](section-refinement-issue.schema.json) | `SectionRefinementIssue` | Protocol §VIII.2b / RFC 0066 |
-| [`period-excel-binding.schema.json`](period-excel-binding.schema.json) | `PeriodExcelBinding` | Protocol §VIII.2c / RFC 0043 |
-| [`period-column-snapshot.schema.json`](period-column-snapshot.schema.json) | `PeriodColumnSnapshot` | Protocol §VIII.2c / RFC 0043 |
+| [`period-refinement-issue.schema.json`](period-refinement-issue.schema.json) | `PeriodRefinementIssue` | [Starter guide §VIII.2b](../../docs/starter/refinement-and-workbooks.md#viii2b-stated-period-inputs-in-refinement-rfc-0042) / RFC 0042 |
+| [`section-refinement-issue.schema.json`](section-refinement-issue.schema.json) | `SectionRefinementIssue` | [Starter guide §VIII.2b](../../docs/starter/refinement-and-workbooks.md#viii2b-stated-period-inputs-in-refinement-rfc-0042) / RFC 0066 |
+| [`period-excel-binding.schema.json`](period-excel-binding.schema.json) | `PeriodExcelBinding` | [Starter guide §VIII.2c](../../docs/starter/refinement-and-workbooks.md#viii2c-contextual-workbook-bindings-rfc-0043) / RFC 0043 |
+| [`period-column-snapshot.schema.json`](period-column-snapshot.schema.json) | `PeriodColumnSnapshot` | [Starter guide §VIII.2c](../../docs/starter/refinement-and-workbooks.md#viii2c-contextual-workbook-bindings-rfc-0043) / RFC 0043 |
 
 | [`section-dc-capacity.schema.json`](section-dc-capacity.schema.json) | RFC 0080 standard `dc_capacity` payload | RFC 0080 |
 | [`section-dc-power.schema.json`](section-dc-power.schema.json) | RFC 0080 standard `dc_power` payload | RFC 0080 |

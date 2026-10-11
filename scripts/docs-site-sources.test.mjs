@@ -40,7 +40,10 @@ test('site versions track independent package and standard versions', () => {
     writeFileSync(join(root, 'packages/uwmd-core/package.json'), JSON.stringify({ version: '7.4.2' }));
     const path = join(root, 'packages/uwmd-core/src/protocol.ts');
     writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;\nexport const PROTOCOL_VERSION = '4.1.0' as const;");
-    assert.deepEqual(docsVersions(root), { core: '7.4.2', format: '3.0', protocol: '4.1.0' });
+    assert.deepEqual(docsVersions(root), { core: '7.4.2', format: '3.0', protocol: '4.1.0', specFormat: '3.0', specProtocol: '4.1.0' });
+    // An accepted spec ahead of the implementation labels the normative pages.
+    writeFileSync(path, "export const FORMAT_VERSION = '2.1' as const;\nexport const PROTOCOL_VERSION = '3.0.0' as const;\nexport const SPEC_FORMAT_VERSION = '3.0' as const;\nexport const SPEC_PROTOCOL_VERSION = '4.0.0' as const;");
+    assert.deepEqual(docsVersions(root), { core: '7.4.2', format: '2.1', protocol: '3.0.0', specFormat: '3.0', specProtocol: '4.0.0' });
     writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;");
     assert.throws(() => docsVersions(root), /Cannot read PROTOCOL_VERSION/);
   } finally {
@@ -97,7 +100,7 @@ test('a prepared-but-unpublished core version is kept apart from publication sta
     // Release-prepared tree: the source carries 2.18.0, npm still serves 2.17.0's scope.
     manifest('2.18.0');
     assert.deepEqual(docsSiteVersions(root), {
-      format: '2.0', protocol: '2.22.0', core: '2.18.0',
+      format: '2.0', protocol: '2.22.0', core: '2.18.0', specFormat: '2.0', specProtocol: '2.22.0',
       published: '2.17.0', npm: ORIGINAL, unpublishedSource: true,
     });
 

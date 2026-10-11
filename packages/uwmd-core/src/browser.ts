@@ -933,5 +933,7 @@ export { toBuiltinAssetClass } from './types.js';
 export { DATA_CENTER_DEFAULTS, MANUFACTURED_HOUSING_DEFAULTS } from './defaults.js';
 
 export { checkBuiltinClassContent } from './builtin-class-validation.js';
+// The twelve builtin classes' section, rule and view-model declarations (RFC 0080). Pure data.
+export { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
 
 export { DATA_CENTER_PACK, MANUFACTURED_HOUSING_PACK } from './packs/index.js';

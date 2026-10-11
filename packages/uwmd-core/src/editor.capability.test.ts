@@ -1,4 +1,4 @@
-// Capability gate — the RFC 0011 editor hook (Protocol §XIV), tested with a
+// Capability gate — the RFC 0011 editor hook (starter guide §XIV), tested with a
 // stub verifier. The crypto (JWT decode, signatures) lives in @uwmd/signing
 // and is tested there; what core owns is the gate: token required when a
 // verifier is configured, the edit context handed to it, the jti note, the

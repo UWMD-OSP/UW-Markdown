@@ -62,7 +62,7 @@ The Bancroft pipeline stages. L0 ingestion, L1 screening, L2
 underwriting, L3 reserved, L4 structuring, L5 compliance, L6 risk,
 L7 assembly. Definitions live in `BANCROFT_LAYERS`
 ([`packages/uwmd-core/src/context.ts`](../packages/uwmd-core/src/context.ts)).
-See protocol §IX.
+See [starter guide §IX](starter/ai-host.md#ix-ai-host-contract-tier-4).
 
 ### Pipeline state
 The frontmatter object recording each layer's status (`complete`,
@@ -122,7 +122,7 @@ either of the others. See
 A declarative spec for how a section renders. Registered in
 `BUILTIN_VIEW_MODELS` in
 [`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts).
-See protocol §IV.
+See [starter guide §IV](starter/view-models.md#iv-view-models).
 
 ---
 
@@ -203,8 +203,8 @@ covenants. Maps to the `debt_structure` section.
 | Edit operations | [protocol §V](../spec/UW_PROTOCOL.md) |
 | Calc grammar (EBNF) | [protocol §VIII.1](../spec/UW_PROTOCOL.md) |
 | Calc builtins | [protocol §VIII.3](../spec/UW_PROTOCOL.md) |
-| Bancroft layers | [protocol §IX](../spec/UW_PROTOCOL.md) |
+| Bancroft layers | [starter guide §IX](starter/ai-host.md#ix-ai-host-contract-tier-4) |
 | Module manifest | [protocol §X](../spec/UW_PROTOCOL.md) |
-| Frontmatter shape | [format §III](../spec/UW_FORMAT_SPEC.md) |
+| Frontmatter shape | [format §2.2](../spec/UW_FORMAT_SPEC.md#22-frontmatter-schema) |
 | `_meta` / provenance | [format §V](../spec/UW_FORMAT_SPEC.md) |
 | Supersede semantics | [format §VII](../spec/UW_FORMAT_SPEC.md) |

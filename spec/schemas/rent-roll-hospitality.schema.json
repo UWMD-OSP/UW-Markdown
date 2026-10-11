@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/rent-roll-hospitality.schema.json",
+  "title": "Hospitality rent_roll class contract",
+  "description": "Format §4.3 Hospitality Variant / RFC 0081 G3. Applies to the rent_roll payload of a document whose asset_class is hospitality. available_room_nights is required when rent_roll is stated (CLS-04 otherwise); occupied_room_nights, adr and occupancy are optional. The key count is stated only as property.keys, so rent_roll.keys is refused. Other rent_roll members are not constrained by this fragment.",
+  "type": "object",
+  "required": [
+    "available_room_nights"
+  ],
+  "properties": {
+    "available_room_nights": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Keys × days in the period. The RevPAR denominator."
+    },
+    "occupied_room_nights": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Room nights sold in the period."
+    },
+    "adr": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Stated average daily rate."
+    },
+    "occupancy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Stated occupancy, a fraction."
+    }
+  },
+  "not": {
+    "required": [
+      "keys"
+    ],
+    "description": "The key count lives only in property.keys (RFC 0081 G3)."
+  },
+  "additionalProperties": true
+}

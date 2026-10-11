@@ -1,7 +1,7 @@
 // The agent-provider contract — the narrow waist between the Bancroft runner
 // and whatever model actually answers.
 //
-// Protocol §IX describes a Tier-4 host as provider-neutral. Until this file
+// starter guide §IX describes a Tier-4 host as provider-neutral. Until this file
 // existed that was an aspiration: `bancroft.ts` imported `@anthropic-ai/sdk`
 // directly, so "provider-neutral" could not be demonstrated, let alone tested.
 //

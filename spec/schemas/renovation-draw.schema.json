@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/renovation-draw.schema.json",
   "title": "renovation-draw",
-  "description": "RFC 0081 G1 / Format §4.8. At least budget or contingency; draw group all-or-none and requires both. contingency_remaining only with draw group. CAPX-01 validates stated members; CAPX-02–04 evaluate only with draw group.",
+  "description": "RFC 0081 G1 / Format §4.8. At least budget or contingency; draw group all-or-none and requires both. contingency_remaining only with draw group. CAPX-01 validates stated members; CAPX-02–04 evaluate only with draw group. A member stated as null is not stated: contingency_remaining: null needs no draw group.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -75,13 +75,26 @@
       "drawn_to_date",
       "budget",
       "contingency"
-    ],
-    "contingency_remaining": [
-      "contingency_used",
-      "drawn_to_date",
-      "as_of_date",
-      "budget",
-      "contingency"
     ]
+  },
+  "dependentSchemas": {
+    "contingency_remaining": {
+      "if": {
+        "properties": {
+          "contingency_remaining": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "contingency_used",
+          "drawn_to_date",
+          "as_of_date",
+          "budget",
+          "contingency"
+        ]
+      }
+    }
   }
 }
