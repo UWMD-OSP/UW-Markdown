@@ -16,6 +16,8 @@ affects:
 
 # RFC 0078: The protocol is verification: separate the standard from the starter products
 
+**Legacy tier readings superseded by [RFC 0081](0081-one-format-one-protocol.md).** The "during 3.x" readability of the Protocol 2.x tier names, D12's file-name deferral and the Phase 3 legacy-id bookkeeping are removed in Protocol 4.0.0. The two-layer design stands.
+
 **Accepted 2026-10-10.** A coding agent wrote this RFC from the owner's
 direction of 2026-10-10 (D1–D13). It is a breaking change to the Protocol's
 conformance model (Protocol 3.0.0), so it landed as a draft first; the owner

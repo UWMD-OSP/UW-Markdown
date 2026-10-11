@@ -18,6 +18,8 @@ affects:
 
 # RFC 0056: Typed rate hedges and escrows
 
+**Legacy scalars superseded by [RFC 0081](0081-one-format-one-protocol.md).** `rate_cap_pct`, `uses.rate_cap_cost`, `uses.interest_reserve` and `uses.operating_reserves` are removed with `HDG-04`, `HDG-05` and `ESC-03`; `rate_hedge` requires only `instrument` and `strike_rate`, with its terms as an all-or-none group. The rest stands.
+
 ## Summary
 
 `debt_structure` records a floating loan's hedge as a single number,

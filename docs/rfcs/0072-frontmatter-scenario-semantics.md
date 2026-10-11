@@ -14,6 +14,8 @@ affects:
 
 # RFC 0072: Give frontmatter `scenario` a defined meaning
 
+**Compatibility wording superseded by [RFC 0081](0081-one-format-one-protocol.md).** Retired scenario values get the ordinary `DQ-07` message, and the per-generation clauses no longer apply. The business-plan vocabulary stands.
+
 ## Summary
 
 Frontmatter `scenario` describes one business plan / execution strategy. It

@@ -12,6 +12,8 @@ affects:
 
 # RFC 0006: Hospitality reference module
 
+**Hotel field set superseded in part by [RFC 0081](0081-one-format-one-protocol.md).** Keys, ADR, occupancy and available room nights now live once, in `property.keys` and the hospitality `rent_roll`; `hotel_metrics` keeps only `market_revpar`. The rest stands as design history.
+
 ## Summary
 
 The protocol's module system has been specified ([Part X](../../spec/UW_PROTOCOL_v1.md))

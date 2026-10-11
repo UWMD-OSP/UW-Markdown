@@ -18,6 +18,8 @@ affects:
 
 # RFC 0057: The renovation draw and expense-targeted capex
 
+**Renovation scalars superseded by [RFC 0081](0081-one-format-one-protocol.md).** `uses.renovation_budget`/`_contingency` and `CAPX-05` are removed; `uses.renovation` may state its budget alone, with the draw members as an all-or-none group. The rest stands.
+
 ## Summary
 
 `sources_uses.uses` records a renovation as two numbers, `renovation_budget` and

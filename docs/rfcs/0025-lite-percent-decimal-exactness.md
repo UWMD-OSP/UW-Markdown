@@ -13,6 +13,8 @@ affects:
 
 # RFC 0025: Scale percent displays by moving the point, not by dividing
 
+**The explicit-override path for structured `.uw.md` superseded by [RFC 0081](0081-one-format-one-protocol.md).** The percent-scaling rule and canonicalization 1.1 stand; canonicalization 1.0 is no longer recognized.
+
 ## Summary
 
 UW Lite normalizes a percent display by dividing the displayed number by 100.

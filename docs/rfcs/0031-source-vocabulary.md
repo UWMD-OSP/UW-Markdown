@@ -14,6 +14,8 @@ affects:
 
 # RFC 0031: Reconcile the source vocabularies and close the unpoliced-write path
 
+**Legacy source tags superseded in part by [RFC 0081](0081-one-format-one-protocol.md).** No read-time interpretation, no 1.x warning severities and no migration tool remain; `SRC-01`/`SRC-02` are always errors. The actor/resolution split stands.
+
 > **Status: accepted and implemented 2026-08-31** (protocol 1.9.0 → 1.10.0).
 > The unpoliced-write half had already shipped as a bug fix (see §2's note);
 > this change landed the rest: the `source`/`resolution` split, `SRC-01`/

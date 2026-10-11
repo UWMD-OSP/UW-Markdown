@@ -17,6 +17,8 @@ affects:
 
 # RFC 0053: Tax abatements and reassessment basis
 
+**`sale_triggers_reassessment` and `TAX-04` superseded by [RFC 0081](0081-one-format-one-protocol.md).** A sale trigger is stated as `reassessment.trigger` alone; the assessment members form an all-or-none group. The rest stands.
+
 ## Summary
 
 `noi_model.expenses.real_estate_taxes` has carried two stubs since Format 1.0:

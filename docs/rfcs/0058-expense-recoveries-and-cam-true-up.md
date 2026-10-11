@@ -19,6 +19,8 @@ affects:
 
 # RFC 0058: Expense recoveries and the CAM true-up
 
+**`cam_cap_pct` superseded by [RFC 0081](0081-one-format-one-protocol.md).** `REC-10` is retired, and `recovery_terms` may state `cap` alone. The rest stands.
+
 ## Summary
 
 A commercial tenant record can say its lease is `nnn` and that its CAM is
