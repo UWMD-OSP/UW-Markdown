@@ -16,7 +16,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
 const REPO_ROOT = resolve(SITE_ROOT, '..', '..');
 
-const GENERATED_DIRS = ['spec', 'conformance', 'about', 'guide', 'public'];
+const GENERATED_DIRS = ['spec', 'conformance', 'about', 'guide', 'starter', 'public'];
 
 if (process.argv.includes('--clean')) {
   for (const d of GENERATED_DIRS) {
@@ -31,11 +31,25 @@ if (process.argv.includes('--clean')) {
 // Each entry: { from: repo-relative path, to: site-relative path, transform?: fn }
 
 const versions = docsVersions(REPO_ROOT);
+
+// The non-normative starter products guide (RFC 0078). Listed rather than
+// discovered so each page carries a site title, like the other copies.
+const STARTER_PAGES = [
+  ['README.md', 'Starter products'],
+  ['display.md', 'Starter products: display conventions'],
+  ['view-models.md', 'Starter products: view models'],
+  ['editing.md', 'Starter products: editing'],
+  ['defaults-and-cascade.md', 'Starter products: defaults and the fallback cascade'],
+  ['refinement-and-workbooks.md', 'Starter products: refinement and workbook bindings'],
+  ['ai-host.md', 'Starter products: AI agent host'],
+  ['capability-tokens.md', 'Starter products: capability tokens'],
+];
+
 const COPIES = [
   // Spec
   { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
   { from: 'spec/UW_FORMAT_SPEC_v2.md',   to: 'spec/format-v2.md', title: 'UW Format Specification (v2.0)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: `UW Protocol Specification (${versions.protocol})` },
+  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: `UW Protocol — verification (${versions.protocol})` },
   { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
   { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
   { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
@@ -55,6 +69,13 @@ const COPIES = [
   { from: 'conformance/tier-3-calc-host/README.md', to: 'conformance/tier-3.md', title: 'Tier 3 — Calc Host' },
   { from: 'conformance/tier-4-agent-host/README.md', to: 'conformance/tier-4.md', title: 'Tier 4 — Agent Host' },
   { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
+
+  // Starter products (non-normative, RFC 0078) — docs/starter/ is the source.
+  ...STARTER_PAGES.map(([file, title]) => ({
+    from: `docs/starter/${file}`,
+    to: `starter/${file === 'README.md' ? 'index.md' : file}`,
+    title,
+  })),
 
   // Project documents
   { from: 'docs/ABOUT.md',       to: 'about/index.md', title: 'About UW Markdown' },
@@ -171,6 +192,15 @@ const NORMALIZED_LINK_MAP = new Map([
   ['releases/1.1-plus-interchange-plan.md', '/about/releases/1.1-plus-interchange'],
   ['LICENSE', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/LICENSE'],
 
+  // Starter products guide (RFC 0078)
+  ['docs/starter/', '/starter/'],
+  ['docs/starter/README.md', '/starter/'],
+  ['starter/README.md', '/starter/'],
+  ...STARTER_PAGES.filter(([file]) => file !== 'README.md').flatMap(([file]) => [
+    [`docs/starter/${file}`, `/starter/${file.replace(/\.md$/, '')}`],
+    [`starter/${file}`, `/starter/${file.replace(/\.md$/, '')}`],
+  ]),
+
   // Spec
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
   ['spec/UW_FORMAT_SPEC_v2.md', '/spec/format-v2'],
@@ -257,6 +287,12 @@ function rewriteLinks(md) {
     const rfcMatch = norm.match(/^(?:docs\/)?(?:rfcs\/)?(\d{4}-[a-z0-9-]+)\.md$/);
     if (rfcMatch) {
       return `](/about/rfcs/${rfcMatch[1]}${frag})`;
+    }
+
+    // JSON Schemas are not site pages; the starter guide links them by repo
+    // path (../../spec/schemas/...), so send those to GitHub too.
+    if (/^spec\/schemas\/[^/]+\.json$/.test(norm)) {
+      return `](${GITHUB_BLOB}/${norm}${frag})`;
     }
 
     // Paths into source/code dirs → link out to GitHub.

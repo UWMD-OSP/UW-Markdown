@@ -8,6 +8,45 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Protocol 3.0 contract: the Protocol is verification (RFC 0078 phase 1)
+
+Breaking for conformance claims. The label moves to Protocol 3.0.0 at release
+preparation; until then the protocol constant and document label stay 2.25.0.
+Format stays 2.0 and no document changes meaning or validity.
+
+- **Two tiers and six profiles.** `UW_PROTOCOL_v1.md` §0, §I and §II are
+  rewritten: the standard is verification (well formed, internally consistent,
+  reproducible), with the boundary test that a lender can verify an Argus, Excel
+  or StackUW export using only the standard. The tiers are **Reader** and
+  **Verifier**; the optional verification profiles are `module`, `integrity`,
+  `representations`, `portfolio`, `sensitivity` and `stochastic`. Editor
+  (Tier 2) and Agent Host (Tier 4) are retired as Protocol tiers and become
+  starter-product claims. The document is retitled "UW Protocol — verification";
+  the filename is unchanged (D12).
+- **Starter products guide.** Display conventions (§III except §III.1b and
+  §III.6a), view models (§IV), §V.1, §V.5–§V.8, §VIII.2b, §VIII.2c, the AI host
+  contract (§IX) and capability tokens (§XIV) moved verbatim to the new
+  non-normative [`docs/starter/`](docs/starter/README.md), with the retired
+  Tier-2 and Tier-4 requirement lists. The Protocol keeps a stub at every moved
+  heading, so existing section references and anchors still resolve. Kept
+  sections that named Tier 3 or Tier 4 as a conformance requirement now name the
+  Verifier or a profile; the remediation-entry schema rule moved from §III.1 to
+  §III.6a, and the `INT-NN` row now points at §V.10.
+- **`ImplementationManifest`.** `tier` is `reader | verifier`, with a new
+  `profiles` array. The four Protocol 2.x values stay accepted, deprecated,
+  during 3.x and read as tier-1 → reader, tier-2 → reader, tier-3 → verifier,
+  tier-4 → verifier (2.x Tier 4 included Tier 3); the editor and agent-host
+  claims become non-normative product claims. `@uwmd/core` adds the `ConformanceTier`
+  and `ConformanceProfile` types and an internal `readConformanceTier` helper;
+  the reference manifest (`uwmd manifest`) now claims `verifier` with all six
+  profiles. The schema's capability enum gains `calc-cash-flow` and
+  `portfolio-relationships`, which `protocol.ts` already declared and the
+  reference manifest already claimed, so `uwmd manifest` output validates
+  against the schema again. Module manifests keep `requires_tier` in the 2.x
+  vocabulary.
+- **Docs.** Format v1/v2 tier wording, the wiki (01, 02, 03, 06, 08, 09, 13) and
+  a new "Starter products" area on the docs site.
+
 ### Test reliability under concurrent load
 
 - Caps root Vitest runs and core coverage at two isolated fork workers, and replaces blocking CLI test spawns with a shared asynchronous runner with child deadlines and cleanup.

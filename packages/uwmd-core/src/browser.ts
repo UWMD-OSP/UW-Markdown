@@ -655,6 +655,8 @@ export {
 export type {
   StageContractEntry,
   StageRequirement,
+  ConformanceTier,
+  ConformanceProfile,
   ViewerTier,
   ViewerRole,
   ViewerCapability,

@@ -1986,10 +1986,10 @@ switch (command) {
     const sub = positional[0];
     const files = positional.slice(1);
     if (sub === 'validate') {
-      if (files.length === 0) { console.error('Usage: uwmd modules validate <manifest.json...> [--tier <viewer-tier>] [--json]'); process.exit(1); }
+      if (files.length === 0) { console.error('Usage: uwmd modules validate <manifest.json...> [--tier <module-host-tier>] [--json]'); process.exit(1); }
       cmdModulesValidate(files, flags);
     } else if (sub === 'list') {
-      if (files.length === 0) { console.error('Usage: uwmd modules list <manifest.json...> [--tier <viewer-tier>] [--json]'); process.exit(1); }
+      if (files.length === 0) { console.error('Usage: uwmd modules list <manifest.json...> [--tier <module-host-tier>] [--json]'); process.exit(1); }
       cmdModulesList(files, flags);
     } else {
       console.error('Usage: uwmd modules <validate|list> <manifest.json...>');
@@ -2109,7 +2109,7 @@ Options:
   --to <format>       Target: lite|uwx|uw-json|uw-xml|uw-csv-bundle (convert)
   --projection-report Write the UWX-to-Lite omission report as JSON (convert)
   --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
-  --tier <tier>      Host viewer tier to load modules against (modules)
+  --tier <tier>      Module host tier, tier-1-reader..tier-4-agent-host (modules)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)

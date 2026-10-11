@@ -1,20 +1,34 @@
-# UW Protocol — v1
+# UW Protocol — verification
 
 **Status:** Stable — protocol **2.25.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
-This document specifies the contract that any conforming **viewer**,
-**editor**, **calc host**, or **agent host** must satisfy in order to
-interoperate with UW Markdown files.
+> **Protocol 3.0 contract, unreleased.** This text carries the Protocol
+> 3.0.0 conformance model accepted in
+> [RFC 0078](../docs/rfcs/0078-protocol-is-verification.md): the standard is
+> verification, and the starter products moved to a non-normative
+> [starter products guide](../docs/starter/README.md). The version label
+> above moves to 3.0.0 at release preparation. The file keeps the name
+> `UW_PROTOCOL_v1.md` through 3.0 so links do not break (RFC 0078 D12).
 
-The format spec defines what bytes are allowed on disk. The protocol
-spec defines what implementations must do with them.
+This document specifies how any party **verifies** a UW Markdown
+document: that it is well formed, that its stated figures agree with
+each other under the standard's definitions, and that its results
+reproduce from its stated inputs. It defines two conformance tiers,
+**Reader** and **Verifier**, and six optional verification profiles.
+
+The format spec defines what bytes are allowed on disk. This protocol
+defines what a document's contents mean and how a receiver checks them.
+It does not define how documents are produced, edited, displayed or
+computed. Those are the starter products (calc engine, editor, viewer,
+Excel exporter, defaults, AI agents), described non-normatively in the
+[starter products guide](../docs/starter/README.md).
 
 The reference TypeScript implementation lives in
 [`packages/uwmd-core/`](../packages/uwmd-core/). Where this document
-references a code symbol (e.g. `BUILTIN_REMEDIATIONS`, `BANCROFT_LAYERS`,
-`WRITE_UW_SECTION_TOOL`), the symbol is exported from `@uwmd/core` and is
-the single source of truth — this document describes what those exports
-mean.
+references a code symbol (e.g. `BUILTIN_EDIT_POLICIES`,
+`VALIDATOR_CODE_FAMILIES`, `SIZE_INTENSIVES`), the symbol is exported
+from `@uwmd/core` and is the single source of truth — this document
+describes what those exports mean.
 
 ---
 
@@ -29,16 +43,29 @@ The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
 
 ### 0.2 Abstract
 
-The UW Protocol defines four conformance tiers. Each tier is a
-strict superset of the previous: a Tier-N implementation MUST satisfy
-all requirements of tiers 1..N.
+The UW Protocol defines two conformance tiers and six optional
+verification profiles. A Verifier MUST satisfy every Reader
+requirement. A profile adds to whichever tier the implementation
+claims.
 
-| Tier | Name | Capability |
+| Tier | Manifest value | Capability |
 |---|---|---|
-| 1 | Reader | Parse + display, read-only |
-| 2 | Editor | Round-trip writes, supersede semantics |
-| 3 | Calc Host | Evaluate `custom_calculations` and module calculations |
-| 4 | Agent Host | Run AI agent layers and apply structured edits |
+| Reader | `reader` | Parse a document and check that it is well formed, read-only (§II.1). |
+| Verifier | `verifier` | Reader, plus the Format validation rules, reproduction of the standard's metric definitions, the stated-figure verifiers and receipt verification (§II.2). |
+
+| Profile | Manifest value | Adds |
+|---|---|---|
+| Module | `module` | Evaluate formulas the standard does not itself define: module calculations and a document's own `custom_calculations` (§II.3). |
+| Integrity | `integrity` | Recompute hash chains and verify block signatures (§V.9–V.11). |
+| Representations | `representations` | Lite, XML and CSV representations and their negotiation (§I.5). |
+| Portfolio | `portfolio` | Portfolio and relationship sidecars (Part XV). |
+| Sensitivity | `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). |
+| Stochastic | `stochastic` | Reproduce stated seeded distributions (§VIII.8). |
+
+Protocol 2.x defined four cumulative tiers: Reader, Editor, Calc Host
+and Agent Host. They are retired. Editing and AI-agent hosting are
+starter products, outside the Protocol. §II.5 maps the legacy tier
+values, which stay readable during 3.x.
 
 ### 0.3 Semantic versioning
 
@@ -48,8 +75,10 @@ Three independent semvers are tracked:
   authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
 - **Protocol version** (this document, currently `2.25.0`) — the
-  contract for implementations. Bumped on any normative change to
-  required behavior.
+  verification contract. Bumped on any normative change to required
+  behavior. From 3.0.0 it moves only when what a document *means* or
+  how it is *verified* changes. Starter-product changes version their
+  packages only; there is no starter-guide version (RFC 0078 D13).
 - **Reference library version** (`@uwmd/core`'s `package.json`) — the
   implementation. Independent semver.
 
@@ -60,28 +89,70 @@ supports via its `ImplementationManifest` (§I.4).
 
 ## I. Scope and Conformance
 
+**The standard is verification.** UW Markdown exists so that parties
+who do not share software (sponsor and lender, lender and credit
+committee, GP and LP) can exchange a document that the receiver checks
+independently of the producer's tools. One test draws the boundary of
+this document: *if Argus, an Excel model or StackUW exported a
+`.uw.md`, a lender could verify it using only the standard, with none of
+this project's tools.* A rule a verifier needs is normative here. A rule
+that only a producing, editing or displaying tool needs is
+starter-product guidance.
+
+To **verify** a document means all three of the following
+(RFC 0078 D1):
+
+1. **Well formed.** It parses, carries its required fields, and its
+   values are valid.
+2. **Internally consistent.** Its stated figures agree with each other
+   under the standard's definitions.
+3. **Reproducible.** Its results recompute from its stated inputs, as
+   its receipts attest.
+
+The standard defines and checks numbers. It never produces or projects
+them.
+
 ### I.1 What this document specifies
 
-- The four conformance tiers.
-- Display conventions implementers MUST follow when rendering values
-  to humans.
-- View models implementers SHOULD use as the default per-section
-  layout.
-- Edit semantics — what counts as a replace, what requires supersede,
-  who is allowed to write what.
-- The expression language and evaluation contract for `custom_calculations`.
-- The contract for hosting Bancroft-style AI agents.
-- The module manifest schema.
-- The protocol error taxonomy.
-- Representation discovery, fidelity classes, and media negotiation.
+- The two conformance tiers, Reader and Verifier, and the optional
+  verification profiles (Part II).
+- Document currency identity (§III.1b) and the validator code taxonomy
+  (§III.6a).
+- The provenance rules verification depends on: replace vs supersede,
+  source authority, `_meta` authorship, canonical block JSON, integrity
+  chains, block signatures and replacement-funding verification (§V.2–V.4,
+  §V.9–V.12).
+- Extensibility, the module system and the module manifest schema
+  (Parts VI, VII and X).
+- The expression language, as the notation the standard's metric
+  definitions and module calculations are written in, with its
+  determinism, numeric model and error taxonomy (§VIII.1–VIII.6).
+- The stated-figure verifiers (§VIII.9–VIII.12) and the optional
+  sensitivity and stochastic profiles (§VIII.7, §VIII.8).
+- The protocol error taxonomy (Part XI).
+- The size-intensive registry (Part XIII).
+- Representation discovery, fidelity classes, and media negotiation (§I.5).
+- The optional portfolio profile (Part XV).
 - The forward-compatibility rules for unknown frontmatter fields,
-  unknown sections, and unknown extensions.
+  unknown sections, and unknown extensions (Part XII).
 
 ### I.2 What this document does not specify
 
-- The bytes-on-disk format. See [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md).
-- UI design beyond display conventions. Implementations MAY render
-  any way they wish provided values resolve to the same display strings.
+- The bytes-on-disk format. See [`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)
+  and [`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md).
+- **The starter products.** How a tool produces, edits, displays,
+  computes or projects a document is not part of the standard: display
+  conventions and locales, view models, byte-preserving round trips,
+  multi-variant edits, frontmatter update rules, the fallback cascade
+  and default tables, refinement, workbook bindings, the AI agent host
+  and capability tokens. The non-normative
+  [starter products guide](../docs/starter/README.md) describes how the
+  reference tools behave. Those tools keep their test suites and can
+  change without a Protocol version (RFC 0078). A rule that protects
+  verification stays here even when only a writer can break it:
+  append-only provenance and `_meta` authorship (§V.2–V.4) are examples.
+- UI design. Verification is defined over values, and display strings
+  carry no meaning (RFC 0078 D11).
 - Deployment-specific network server behavior. Optional [HTTP](bindings/UW_HTTP_BINDING_v1.md)
   and [MCP](bindings/UW_MCP_BINDING_v1.md) companion profiles carry registered
   representations, but no conformance tier requires a network transport.
@@ -90,16 +161,19 @@ supports via its `ImplementationManifest` (§I.4).
 
 ### I.3 Locale
 
-V1 freezes locale to `en-US` for all numeric and date formatting.
-Implementations MUST NOT vary number formatting by user locale in v1.
-V2 will introduce a locale negotiation mechanism; the type
-`SupportedLocale` exists in `protocol.ts` as a v2 hook.
+Verification is locale-free. Canonical JSON content, digests,
+signatures, receipts and expression evaluation do not vary by locale,
+and a Verifier MUST reach the same verdict whatever display locale a
+document declares (`frontmatter.locale`) or an implementation supports.
+Display locales (formerly §III.1a) are starter-product guidance. The
+`LOC-NN` validator family stays registered (§III.6a).
 
 ### I.4 Self-declaration
 
 Every conforming implementation SHOULD expose an
-`ImplementationManifest` that documents its tier, capabilities, representations,
-supported asset classes, protocol version, and format version. Hosts
+`ImplementationManifest` that documents its tier, profiles, capabilities,
+representations, supported asset classes, protocol version, and format
+version. Hosts
 that load `.uwx.md` files from third parties MAY use the manifest to
 refuse files that exceed their declared format version.
 
@@ -141,9 +215,16 @@ The reference functions are `negotiateRepresentation` and
 
 ## II. Capability Tiers
 
-### II.1 Tier 1 — Reader
+Protocol 3.0 has two conformance tiers, Reader and Verifier, and a
+Verifier satisfies every Reader requirement. Optional verification
+profiles (§II.3) add to either tier. The four Protocol 2.x tiers are
+retired; §II.5 says how their manifest values are read.
 
-A Tier-1 Reader MUST:
+<a id="ii1-tier-1--reader"></a>
+
+### II.1 Reader
+
+A Reader MUST:
 
 1. Parse all required frontmatter fields (`uw_version`, `deal_id`,
    `deal_name`, `created`, `last_modified`, `property_address`, `city`,
@@ -154,79 +235,137 @@ A Tier-1 Reader MUST:
    do not error.
 4. Resolve supersede semantics: when multiple blocks share a `section_id`,
    the most recent non-superseded block is canonical (§V.2).
-5. Apply the display conventions in Part III when surfacing any value
-   to a human user.
-6. If — and only if — it claims the `validate` capability, surface
-   validation issues using the remediation copy from
-   `BUILTIN_REMEDIATIONS`, and emit only codes whose family is
-   registered in §III.6a. A Tier-1 Reader that does not claim
-   `validate` owes no validator codes.
+5. If — and only if — it claims the `validate` capability, emit only
+   codes whose family is registered in §III.6a. A Reader that does not
+   claim `validate` owes no validator codes.
 
-A Tier-1 Reader MUST NOT silently mutate any input bytes.
+A Reader MUST NOT silently mutate any input bytes.
 
-Parsing and validating are separate capabilities (`parse`, `validate`),
-and requirement 6 previously read as owing every family to any reader —
-including `INT-NN`, which needs a hash chain, and `POL-NN`, which needs
-an edit engine. A read-only reader could not satisfy it.
+A Reader surfaces structured values. How it displays them is not part
+of the standard: the display conventions Protocol 2.x required of a
+Tier-1 Reader (Part III) and the rendering of `BUILTIN_REMEDIATIONS`
+copy (former §III.6) are starter-product guidance (RFC 0078 D11).
 
-### II.2 Tier 2 — Editor
+Parsing and validating are separate capabilities (`parse`, `validate`).
+The validator requirement once read as owing every family to any
+reader, including `INT-NN`, which needs a hash chain, and `POL-NN`,
+which needs an edit engine. A read-only reader could not satisfy it.
 
-A Tier-2 Editor MUST satisfy all Tier-1 requirements, and additionally:
+<a id="ii3-tier-3--calc-host"></a>
 
-1. Round-trip preservation: bytes outside the modified region of the
-   file MUST be preserved, modulo line-ending normalization.
-2. Honor `BUILTIN_EDIT_POLICIES` (§V.3) — supersede vs replace.
-3. Update `_meta` on every write per §V.4 (new `version`, new
-   `timestamp`, correct `actor` and `source`).
-4. Update `frontmatter.last_modified` on every write.
-5. Reject any `EditOperation` whose `meta.source` is not permitted by
-   policy with a `ProtocolError` of category `edit`.
+### II.2 Verifier
 
-### II.3 Tier 3 — Calc Host
+A Verifier MUST satisfy all Reader requirements, and additionally:
 
-A Tier-3 Calc Host MUST satisfy all Tier-2 requirements, and additionally:
-
-1. Parse the safe-expression grammar in Part VIII exactly as specified.
-2. Implement the built-in function set (§VIII.3) with the listed
-   signatures and semantics.
-3. Be deterministic: same `CalcEvaluationContext` MUST produce the same
-   `CalcResult`.
-4. Refuse expressions containing constructs outside the grammar
+1. Claim `validate` and apply the Format validation rules (format spec
+   v1 Part V, as amended for 2.0 files by the v2 delta) to every
+   document it verifies, emitting only registered codes (§III.6a).
+2. Reproduce the standard's metric definitions. For each metric the
+   standard defines, reproduce its quantized value (§VIII.5) from the
+   document's stated inputs, by any method (RFC 0078 D2). A stated
+   value that disagrees after quantization is a verification failure.
+   A metric whose inputs are absent is `unverifiable`, not failed. The
+   definitions are written in the expression notation of
+   §VIII.1–VIII.3. The normative metric dictionary that holds them
+   (RFC 0078 §3) is added by a later revision of this document before
+   Protocol 3.0.0 is released. Until then the only definitions are the
+   reference implementation's builtin calc packs, which that revision
+   extracts into the dictionary with no change in meaning.
+3. Implement the stated-figure verifiers and apply them to the figures
+   a document states: calendar-anchored cash flows, including the IRR
+   procedure (§VIII.9); property cash-flow assembly (§VIII.9.6);
+   distribution waterfalls (§VIII.10); property reserve accounts
+   (§VIII.11); reserve draw bindings (§VIII.12); and
+   replacement-funding bindings (§V.12).
+4. Verify receipts as [`UW_RECEIPT_v1`](UW_RECEIPT_v1.md)
+   specifies.
+5. Be deterministic (§VIII.4) and follow the numeric model (§VIII.5):
+   the same document and inputs MUST produce the same verdict and the
+   same quantized values on every run and platform.
+6. Wherever it evaluates an expression, whether as its method for
+   requirement 2 or under the Module profile: parse the safe-expression
+   grammar (§VIII.1) exactly as specified; implement the built-in
+   function set (§VIII.3) with the listed signatures and semantics; and
+   refuse expressions containing constructs outside the grammar
    (function definitions, assignments, lambdas, control flow keywords,
    property access on disallowed targets) with a `ProtocolError` of
    category `calc`.
 
-### II.4 Tier 4 — Agent Host
+A Verifier checks numbers. It never produces, defaults or projects one:
+a value a document does not state is never filled in to make a check
+pass (§I).
 
-A Tier-4 Agent Host MUST satisfy all Tier-3 requirements, and additionally:
+### II.3 Verification profiles
 
-1. Honor the `BANCROFT_LAYERS` dependency graph: layer L depends on
-   inputs from earlier layers; the host MUST NOT run L until its
-   dependencies are satisfied (§IX.1).
-2. Validate every agent tool call against `WRITE_UW_SECTION_TOOL` or
-   `WRITE_MULTIPLE_SECTIONS_TOOL` before applying.
-3. Strip any `_meta` and `_notes` the agent included inside
-   `section_data` and substitute the canonical `_meta` constructed by
-   the host (§IX.4).
-4. Append a `pipeline_log` entry for every successful agent invocation.
+A profile is an optional, named addition to a tier. An implementation
+declares the profiles it claims in `ImplementationManifest.profiles`
+(§I.4). A check that belongs to a profile the implementation does not
+claim is reported `unverifiable`, or refused with the typed refusal its
+section names, and never reported as passed or failed.
+
+| Profile | An implementation claiming it MUST | Capability flags (§II.6a.5) |
+|---|---|---|
+| `module` | Evaluate the formulas the standard does not itself define, in the expression language (§VIII.1–VIII.6): module calculations (Parts VII and X) and a document's own `custom_calculations` and `custom_scenarios` (§VI.2). | `module-load`, `calc-evaluate` |
+| `integrity` | Recompute `content_hash` / `parent_hash` chains (§V.9, §V.10) and verify block signatures (§V.11). | `integrity`, `signing` |
+| `representations` | Read and write the registered representations it advertises (UW Lite, XML mapping, CSV bundle) and negotiate them (§I.5). | the `representations` array |
+| `portfolio` | Read and validate portfolio and relationship sidecars (Part XV). | `portfolio-relationships` |
+| `sensitivity` | Reproduce stated sensitivity grids (§VIII.7). | `calc-sensitivity` |
+| `stochastic` | Reproduce stated seeded distributions with the exact sampler (§VIII.8). | `calc-stochastic` |
+
+A Verifier without the Module profile reports module and
+document-declared calculations `unverifiable`, never wrong.
+
+<a id="ii2-tier-2--editor"></a>
+<a id="ii4-tier-4--agent-host"></a>
+
+### II.4 Starter-product claims
+
+Editing, display and AI-agent hosting are not conformance tiers. A tool
+that edits documents or hosts agents compatibly with the reference
+starter products says so as a product claim, against the
+[starter products guide](../docs/starter/README.md) and its test
+suites, not as Protocol conformance. The capability flags for that work
+(`edit-replace`, `edit-supersede`, `edit-frontmatter`, `agent-host`,
+`refinement`, `capability-verify` and the `render-*` family) stay in
+`ImplementationManifest.capabilities`, so those claims remain checkable
+against their fixtures (§II.6a.5).
+
+A tool that writes documents is still bound by the rules that protect
+verification: replace vs supersede (§V.2), source authority (§V.3),
+`_meta` authorship (§V.4), canonical block JSON (§V.9) and integrity
+chains (§V.10). A document that breaks them fails verification,
+whoever wrote it.
 
 ### II.5 Tier composition
 
-An implementation MAY claim partial conformance — e.g. "Tier 1 + edit
-on `frontmatter` only". Such partial claims are expressed via
-`ViewerCapability` flags rather than tier number.
-
-Tiers are **cumulative**: a Tier-3 Calc Host satisfies all of Tier 2,
-which satisfies all of Tier 1. An implementation with a complete calc
-engine and no edit engine therefore cannot claim Tier 3, and claiming
-Tier 1 would discard a true statement about most of what it does. That
-combination is exactly what capability flags exist to express, and an
-implementation in that position SHOULD publish capabilities and omit a
-tier claim rather than round down.
+An implementation MAY claim partial conformance — e.g. "Reader + the
+Integrity profile + `edit-frontmatter`". Such partial claims are
+expressed via `ViewerCapability` flags and profiles rather than a tier
+alone. An implementation whose capabilities do not stack into a tier
+SHOULD publish capabilities and omit a tier claim rather than round
+down.
 
 A partial claim is **checkable**, not merely declarative: conformance
 cases carry the capabilities they require (§II.6a.5), so a claim can be
 run rather than believed.
+
+**The Protocol 2.x tiers.** Protocol 2.x defined four cumulative tiers
+(`tier-1-reader`, `tier-2-editor`, `tier-3-calc-host`,
+`tier-4-agent-host`). They are retired. During Protocol 3.x a manifest
+carrying one of them stays valid, is deprecated, and is read as below.
+A consumer reading a legacy value SHOULD report that it is deprecated.
+
+| Legacy `tier` | Read as | Note |
+|---|---|---|
+| `tier-1-reader` | `reader` | — |
+| `tier-2-editor` | `reader` | The editing claim becomes a non-normative starter-product claim. |
+| `tier-3-calc-host` | `verifier` | An implementation that also evaluates module calculations claims the `module` profile. |
+| `tier-4-agent-host` | `verifier` | Protocol 2.x Tier 4 included Tier 3's calc engine, so it reads as a verifier; the agent-host claim becomes a non-normative starter-product claim. |
+
+The mapping does not infer profiles. A legacy manifest that wants a
+profile recognized declares it in `profiles`. A module's
+`requires_tier` keeps the legacy vocabulary; §VII.4 says how a host
+reads it.
 
 ### II.6 Self-certification
 
@@ -236,13 +375,14 @@ implementation claims, and verify the output matches. A
 self-certification claim MUST be published together with the capability
 list it was run against, and with the number of cases skipped; "passes
 the corpus" without that list does not identify what was run.
-Tier 4 uses shape assertions due to LLM nondeterminism (§IX.6).
 
-Directory membership is **not** a normative signal. A fixture group
-under `conformance/tier-N-*/` is not thereby required of a Tier-N
-implementation — `conformance/tier-3-calc-host/refinement/` requires
-the `refinement` capability, which no tier requires (§II.3 lists four
-requirements and refinement is not among them).
+Directory membership is **not** a normative signal. The corpus
+directories still carry the Protocol 2.x tier names until they are
+re-tiered (RFC 0078 phase 3), and a fixture group under
+`conformance/tier-N-*/` is not thereby required of any tier.
+`conformance/tier-3-calc-host/refinement/` requires the `refinement`
+capability, which neither tier nor any profile requires: refinement is
+starter-product behavior.
 
 An implementation in any language can be driven by the shared
 conformance driver instead of writing its own, by exposing the CLI
@@ -280,6 +420,10 @@ testing.
 `render` emits the body rather than a JSON envelope. It is the one
 subcommand whose natural output is text, and wrapping it would gain
 nothing a driver can use.
+
+`render` and `edit` drive starter-product fixtures (§II.4). Neither
+tier requires them: an implementation that does not claim the `render-*`
+or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
 
 #### II.6a.2 Stream and exit-code contract
 
@@ -321,14 +465,15 @@ baseline that pinned any of them would be asserting the clock.
 
 #### II.6a.4 Scope
 
-This protocol covers the **tier** fixtures — the conformance surface a
-tier claim is about. The named suites (receipts, composition, market
+This protocol covers the **tier** fixtures (the `conformance/tier-*`
+directories) — the conformance surface a tier or profile claim is
+about. The named suites (receipts, composition, market
 data, packages, signing, and the rest) exercise behavior that is not a
 single command with a single output, and remain driven by an
 implementation's own test suite.
 
 An implementation that passes the tier cases under the shared driver has
-demonstrated its tier claim against the same corpus, executed by the
+demonstrated its claim against the same corpus, executed by the
 same logic, as every other implementation. That is the whole
 proposition: without it, each adopter reimplements the runner, and two
 reimplementations of a runner drift.
@@ -419,80 +564,21 @@ corpus is not the place to add one silently.
 
 ## III. Display Conventions
 
+Display is starter-product guidance (RFC 0078 D11): verification is
+defined over values, and display strings carry no meaning. The display
+conventions moved to the non-normative
+[starter products guide](../docs/starter/display.md). Two sections stay
+normative here because they are not display: §III.1b, document currency
+identity, is format semantics, and §III.6a, the validator code
+taxonomy, belongs to the error taxonomy (Part XI).
+
 ### III.1 Number formatting
 
-**Normative schema for remediation entries:**
-[`spec/schemas/issue-remediation.schema.json`](schemas/issue-remediation.schema.json)
-(used by §III.6). Every entry in `BUILTIN_REMEDIATIONS` and any module
-remediation table MUST validate against it.
-
-
-
-All numeric display strings MUST be produced by rules equivalent to
-those encoded in `DEFAULT_NUMBER_FORMAT` (`protocol.ts`) and
-implemented in `format.ts`.
-
-| Kind | Default | Example input | Example output |
-|---|---|---|---|
-| Currency | `$1,234,567` (no fractional digits, en-US separators) | `1234567` | `$1,234,567` |
-| Percent | `5.51%` (decimal × 100, 2 decimals) | `0.0551` | `5.51%` |
-| Ratio | `1.234x` (3 decimals, `x` suffix) | `1.234567` | `1.235x` |
-| Count | `50` (no thousands separator by default in CSV; with separator in display) | `50` | `50` |
-| Null | `n/a` | `null` | `n/a` |
-
-Implementations MAY override per-call to add fractional digits or
-suppress suffixes (the second-arg options in `format.ts`), but the
-default presentation MUST match the table above.
-
-The table above is the **`en-US`** row of the per-locale registry; see
-§III.1a for the other registered locales.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii1-number-formatting) (RFC 0078). Not part of the standard.*
 
 ### III.1a Display locales (RFC 0001)
 
-A file MAY declare the display locale it was authored in
-(`frontmatter.locale`; absent = `en-US`), and an implementation declares
-the locales it renders (`ImplementationManifest.supported_locales`;
-absent = `['en-US']`). Negotiation is support-or-refuse:
-
-> An implementation MUST support `en-US` and MAY support additional
-> registered locales. When producing a **display render** (chat, summary,
-> report) of a file whose `locale` it does not support, it MUST emit
-> `LOC-01` (error, `LOC` family §III.6a) and MUST NOT fall back to a
-> different locale — two readers disagreeing about what `1.234,56` means
-> is the failure this rule prevents. Parsing, validation, editing, and
-> calc of such a file are unaffected.
-
-**The display-only boundary.** `locale` governs human display renders
-ONLY. Canonical JSON content (numbers, ISO dates, fraction rates), the
-CSV renders (interchange, not display), UW Lite's canonical form,
-digests/signatures/receipts, and calc evaluation are locale-free.
-`CalcEvaluationContext.locale` is locale-invariant: evaluation MUST be
-identical whatever locale a context declares.
-
-**The registry, not ICU.** Formatting for every non-`en-US` locale MUST
-be produced from the rules below (`BUILTIN_FORMAT_RULES`,
-`format-rules.ts`) — never from runtime `Intl`/ICU, whose output varies
-across runtimes and versions. The rows are the normative contract; new
-locales land via additive RFC amendments to this table.
-
-| Locale | Decimal | Grouping | Currency | Percent | Date (display) |
-|---|---|---|---|---|---|
-| `en-US` | `.` | `,` | `$` prefix | `5.51%` | ISO passthrough |
-| `en-GB` | `.` | `,` | `£` prefix | `5.51%` | `DD/MM/YYYY` |
-| `de-DE` | `,` | `.` | `€` suffix, NBSP | `5,51 %` (NBSP) | `DD.MM.YYYY` |
-| `fr-FR` | `,` | NBSP | `€` suffix, NBSP | `5,51 %` (NBSP) | `DD/MM/YYYY` |
-| `ja-JP` | `.` | `,` | `¥` prefix | `5.51%` | `YYYY/MM/DD` |
-| `zh-CN` | `.` | `,` | `¥` prefix | `5.51%` | `YYYY-MM-DD` |
-
-NBSP is U+00A0. Currency symbols are the locale's conventional default
-symbol when `frontmatter.currency_code` is absent. When that optional field
-is present, its three-uppercase-letter identity is rendered as an explicit
-prefix (`USD 1,234.56`), while the locale continues to control numeric
-separators. Identity is never inferred from `$`, locale, address, or asset
-location; no FX conversion or currency-specific precision is performed.
-Date patterns are applied textually to the ISO source — no timezone
-arithmetic. Example (`de-DE`): `1234567.5` → `1.234.567,5 €`;
-`0.0551` → `5,51 %`; `2026-04-15` → `15.04.2026`.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii1a-display-locales-rfc-0001) (RFC 0078). Not part of the standard.*
 
 ### III.1b Document currency identity (RFC 0046)
 
@@ -511,47 +597,23 @@ additive money representation.
 
 ### III.2 Date/time
 
-Dates in the file are ISO-8601 strings. The default display style is
-the declared locale's date pattern (§III.1a) — for `en-US`, `iso`
-passthrough. Implementations MAY surface `short`, `medium`, or `long`
-styles via `Intl.DateTimeFormat`; those styles are convenience, not
-conformance surfaces.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii2-datetime) (RFC 0078). Not part of the standard.*
 
 ### III.3 Section display hierarchy
 
-Section cards SHOULD be presented in the order defined by
-`BUILTIN_VIEW_MODELS[id].display_order`. Sections not present in the
-file MUST NOT render an empty card.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii3-section-display-hierarchy) (RFC 0078). Not part of the standard.*
 
 ### III.4 Badge system
 
-Each block carries provenance via `_meta.source`. Implementations
-SHOULD display a compact badge per block:
-
-| `_meta.source` pattern | Suggested label | Color hint |
-|---|---|---|
-| `agent/*` | "AI" or layer ID | accent |
-| `manual` | "Manual" | neutral |
-| `document/*` | "Document" | neutral |
-| `system/*` | "System" | muted |
-| `institution/*` | "Institution" | muted |
-
-Confidence is rendered from `_meta.confidence` ∈ `{high, medium, low}`.
-Style options (pill/icon/text) are at implementer discretion.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii4-badge-system) (RFC 0078). Not part of the standard.*
 
 ### III.5 Supersede UX
 
-When a section has superseded blocks, implementations SHOULD provide
-a way to reveal them (a toggle, a side panel, etc.). Superseded blocks
-MUST NOT be confused with the canonical block in any default view.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii5-supersede-ux) (RFC 0078). Not part of the standard.*
 
 ### III.6 Validation issue display
 
-Each issue from `validateUWFile()` carries a `code`. Implementations
-SHOULD render the matching `IssueRemediation` from
-`BUILTIN_REMEDIATIONS` — title and remediation copy verbatim. The
-goal is uniform UX across implementations, so end-users learning the
-format on one tool see the same remediation copy on another.
+*Moved to the non-normative [starter products guide](../docs/starter/display.md#iii6-validation-issue-display) (RFC 0078). Not part of the standard.*
 
 ### III.6a Validator code taxonomy
 
@@ -592,8 +654,8 @@ capability is unconditional: every implementation owes it.
 | `META-*` | `_meta` shape by `uw_version` — the RFC 0009 one-shape-per-file rule (`META-V2-IN-V1`, `META-V1-IN-V2`). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Source vocabulary — `_meta.source` outside the §2.6 actor grammar (RFC 0031), and the retired `resolution: "manual"` spelling (`SRC-03`, RFC 0009). | `validate` | per-file (format v2 §1.3): `error` in a `uw_version: "2.0"` file, `warning` in 1.x |
-| `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§IX.2). | `integrity` | `warning` or `error` |
-| `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, §XIV). | `edit-replace` or `edit-supersede` | `error` |
+| `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |
+| `POL-NN` | Edit policy (§V.3; `POL-03` is the capability-token refusal, §XIV, starter guide). | `edit-replace` or `edit-supersede` | `error` |
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
 | `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (format Appendix D). | `parse` | `error` |
@@ -659,6 +721,12 @@ remediation copy is `BUILTIN_REMEDIATIONS` beside it, and a test
 asserts every code in the latter resolves to a family in the former.
 The spec states the rule; the assertion enforces the list.
 
+**Remediation entries.** Every entry in `BUILTIN_REMEDIATIONS` and any
+module remediation table MUST validate against
+[`spec/schemas/issue-remediation.schema.json`](schemas/issue-remediation.schema.json).
+(Protocol 2.x stated this at the head of §III.1; it stays normative here
+because it governs the code registry, not display.)
+
 Implementations that surface validator output to end users SHOULD use
 the prefix to colorize, group, or filter issues — for example,
 collapsing `MOD-*` and `INT-NN` notices behind a "show provenance
@@ -668,42 +736,36 @@ issues" toggle while always surfacing `CC-NN` and `FV-NN` inline.
 
 ## IV. View Models
 
+*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv-view-models) (RFC 0078). Not part of the standard.*
+
 ### IV.1 SectionViewModel
 
-A `SectionViewModel` (`protocol.ts`) describes how to lay out one
-section. It comprises:
-
-- `display_name` — heading shown to users.
-- `display_order` — sort key relative to other sections.
-- `description` — one-line context shown on hover or below the heading.
-- `primary_fields` — fields surfaced on the section's collapsed card.
-- `detail_fields` — additional fields revealed on expand.
-- `multi_variant` — true for sections like `stress_tests` that may
-  appear with multiple variants.
-
-Each `FieldViewHint` declares a `path` resolved via `parser.deepGet`,
-a `label`, and a `kind` mapping to a formatter in `format.ts`.
+*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv1-sectionviewmodel) (RFC 0078). Not part of the standard.*
 
 ### IV.2 BUILTIN_VIEW_MODELS
 
-`protocol.ts` exports a registry covering all 21 standard sections.
-Implementations SHOULD use this registry as the default. Modules MAY
-override per-section by declaring a `view_models[]` entry with the
-matching `section_id` (§X).
+*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv2-builtin_view_models) (RFC 0078). Not part of the standard.*
 
 ### IV.3 Composition
 
-When a module's view model and `BUILTIN_VIEW_MODELS` both define an
-entry for the same `section_id`, the module's entry wins. When two
-modules conflict, the host MUST refuse to load both unless they
-declare `depends_on` relationships that establish a precedence.
+*Moved to the non-normative [starter products guide](../docs/starter/view-models.md#iv3-composition) (RFC 0078). Not part of the standard.*
 
 ---
 
 ## V. Edit Semantics
 
 **Normative schema:** [`spec/schemas/edit-operation.schema.json`](schemas/edit-operation.schema.json)
-defines the wire shape for every `EditOperation` accepted by a Tier-2 Editor.
+defines the wire shape for every `EditOperation`.
+
+Editors are starter products (§II.4). What stays normative in this part
+are the rules that protect verification, which bind every tool that
+writes a document: §V.2–V.4 and §V.9–V.12. Round-trip preservation
+(§V.1), multi-variant edits (§V.5), frontmatter update rules (§V.6), the
+fallback cascade (§V.7) and default tables (§V.8) moved to the
+non-normative [starter products guide](../docs/starter/README.md)
+(RFC 0078 D3, D4). Integrity hashes are computed over canonical JSON
+(§V.9), not raw bytes, so byte preservation is an editor guarantee, not a
+verification requirement.
 
 **Trusted role assignment (RFC 0040).** `section_replace` and
 `section_supersede` accept optional `role: BlockRole | null` outside `content`.
@@ -716,13 +778,7 @@ annotation through the existing content path, without new exclusions.
 
 ### V.1 Round-trip preservation
 
-A Tier-2 Editor receiving an `.uwx.md` and returning an `.uwx.md`
-MUST preserve bytes outside the directly-modified region, modulo:
-
-- Line-ending normalization (CRLF → LF is permitted).
-- Trailing-whitespace stripping is permitted.
-- Reordering of frontmatter keys is NOT permitted.
-- Reformatting JSON inside untouched fence blocks is NOT permitted.
+*Moved to the non-normative [starter products guide](../docs/starter/editing.md#v1-round-trip-preservation) (RFC 0078). Not part of the standard.*
 
 ### V.2 Replace vs supersede
 
@@ -740,7 +796,8 @@ MUST preserve bytes outside the directly-modified region, modulo:
 `agent | document | system | institution` (runtime registry
 `ACTOR_NAMESPACES`) and `<id>` matches `[A-Za-z0-9][A-Za-z0-9._-]*`.
 The grammar is normative in format spec §2.6; resolution methods
-belong in `_meta.resolution` (§V.7).
+belong in `_meta.resolution` (the fallback cascade,
+[starter guide §V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)).
 
 `BUILTIN_EDIT_POLICIES` (`protocol.ts`) establishes the default policy
 for each `_meta.source` pattern:
@@ -792,7 +849,8 @@ On every write, the host MUST set:
   RFC 0031). This is the grammar a producer is bound to — nothing
   outside it resolves a specific edit policy or an authority class.
 - `_meta.resolution` — OPTIONAL; the canonical `SOURCE_TAGS` tag naming
-  how the value was resolved (e.g. the §V.7 cascade step), when the
+  how the value was resolved (e.g. a step of the starter fallback
+  cascade, [§V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)), when the
   host knows it.
 - `_meta.timestamp` — current ISO-8601 UTC timestamp.
 - `_meta.actor` — human or system identifier of the writer.
@@ -801,137 +859,23 @@ On every write, the host MUST set:
 
 ### V.5 Multi-variant edits
 
-For sections with `multi_variant: true`, edits MUST specify a
-`variant` key. Operations against missing variants create a new
-variant; operations against existing variants follow the same
-replace/supersede policy as single-variant sections.
+*Moved to the non-normative [starter products guide](../docs/starter/editing.md#v5-multi-variant-edits) (RFC 0078). Not part of the standard.*
 
 ### V.6 Frontmatter update rules
 
-`uw_version`, `deal_id`, and `created` MUST NOT be modified by
-post-init edits. `last_modified` MUST be updated on every write.
-`pipeline_state` MUST be updated by Tier-4 hosts as layers complete.
+*Moved to the non-normative [starter products guide](../docs/starter/editing.md#v6-frontmatter-update-rules) (RFC 0078). Not part of the standard.*
 
 ### V.7 Fallback cascade
 
-A producer that needs to assign a value to a field for which no
-explicit user input or document extraction is available MUST resolve
-the value by walking the following ordered cascade. The first step
-that yields a value wins. The producer MUST stamp the resulting
-`_meta.resolution` (or, when only a subset of fields was resolved this
-way, a `_meta.field_overrides[].resolution`) with the cascade step
-that produced the value; a leaf-level `resolution` wins over the
-block-level one for its path. (Before RFC 0031 split the field, the
-tag was stamped into `_meta.source`; readers MUST interpret a
-canonical tag found there as `resolution` — format spec §2.6.)
-
-| Step | Source tag | Description |
-|---:|---|---|
-| 1 | `user_override` | An explicit user-entered correction. |
-| 2 | `user_input` | An explicit user-entered initial value. |
-| 3 | `inherited_assumption` | An assumption declared by an ancestor in the composition DAG. See §V.7.1. |
-| 4 | `investor_profile` | Values declared in the active investor profile (e.g. preferred rate spread). |
-| 5 | `market_data` | A market-data lookup at the time of resolution. |
-| 6 | `asset_class_default` | The published default for the deal's asset class. See §V.8. |
-| 7 | `global_default` | The published global default. |
-| 8 | `system_default` | A hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
-
-`market_data_accepted` (RFC 0022 §4) is **not** a cascade step. It is an in-file
-value of record that resolves at step 2 while retaining its own source tag,
-because a market observation an analyst accepted for lack of better evidence
-must stay distinguishable from a value someone entered from diligence.
-
-A producer MAY skip steps that are not available (e.g. no investor
-profile attached). A producer MUST NOT reorder the cascade. The
-runtime constant `CASCADE_ORDER` in `protocol.ts` is the canonical
-machine-readable representation; conformant resolvers walk this
-array.
-
-**Variant-map sections (RFC 0066).** The in-file steps read a
-variant-map section's value from the one block §VIII.2 selects. That
-covers steps 1 and 2, and recognition of an in-file `market_data`
-value. The selection is the consumer's explicit variant, then the role
-its calculations declare, then RFC 0040's generic order. Another
-variant's tagged value never stands in for the selected block. When no
-block can be selected, resolution refuses with `CALC-RESOLVE-002`
-rather than letting fence order choose, just as §V.7.1 refuses
-equidistant ancestors.
-
-A producer that resolves a value via a step at or below
-`asset_class_default` (i.e. not from observed user or document data)
-SHOULD also stamp the resulting block with `_meta.provisional: true`
-unless the value originated from `inherited_assumption`,
-`investor_profile`, or fresher `market_data`. This signals the
-refinement engine that the field is a candidate for
-value-of-information ranking.
-
-This obligation is deliberately a SHOULD, and it is safe to leave as
-one (*stated by [RFC 0032](../docs/rfcs/0032-provisional-signing-scope.md)*):
-`_meta.provisional` sits inside canonical block JSON (§V.9), so
-stamping it moves the block's `content_hash` and therefore any §V.11
-signature — and the protocol accepts that two conforming producers
-may diverge here. Agreement of hashes or signatures across
-independently-produced blocks is **not a protocol goal** and is
-unachievable regardless of this clause, since canonical content
-includes producer-specific fields (`timestamp`, `source`) in every
-block. What the protocol does guarantee across implementations is
-agreement on *computed values* (§VIII; RFCs 0023 and 0024) and on
-*verification verdicts* (RFC 0016 receipts). A signature attests to
-who wrote what, when — it does not attest that every conforming
-producer would have written the same bytes.
+*Moved to the non-normative [starter products guide](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade) (RFC 0078). Not part of the standard.*
 
 #### V.7.1 Inherited assumptions
 
-*Added at protocol 1.5.0 by [RFC 0021](../docs/rfcs/0021-composable-documents.md)
-§5, taking the cascade from seven steps to eight.*
-
-A composite record MAY declare assumptions its descendants inherit. Resolution
-of `inherited_assumption` is subject to four normative rules:
-
-1. **Composition-scoped only.** Inheritance resolves along the composition DAG.
-   A document not reachable as an ancestor contributes nothing, and there is no
-   ambient or global assumption scope. A standalone record therefore can never
-   resolve at this step, which is why introducing it moves no existing digest.
-2. **Nearest ancestor wins.** Where several ancestors assert one field, the one
-   fewest hops away supplies the value.
-3. **Equidistant ancestors are an error** (`COMP-AMBIGUOUS-INHERIT`), never a
-   silent pick. Diamond inheritance resolves explicitly or not at all: choosing
-   by traversal order would make the answer depend on how the graph was walked.
-4. **The value is traceable.** An inherited value MUST record the asserting
-   ancestor's `document_id` and digest in `_meta.inherited_from`. An inherited
-   value with no named ancestor is indistinguishable from an ambient default,
-   which rule 1 forbids.
-
-Step 3's position is normative in both directions. It sits **below**
-`user_input`, so a value entered on the deal always wins — inheritance supplies
-defaults, it never overrides. It sits **above** `investor_profile`, because an
-assumption asserted by a named ancestor of this specific deal is more specific
-than an institution-wide preference set.
-
-When the resolved value carries an associated range (e.g.
-asset-class defaults publish `{low, central, high}`), the producer
-MAY also stamp `_meta.field_overrides` for that path with the range
-recorded under the entry's `note`, so downstream tooling can compute
-value-of-information without re-resolving the cascade.
+*Moved to the non-normative [starter products guide](../docs/starter/defaults-and-cascade.md#v71-inherited-assumptions) (RFC 0078). Not part of the standard.*
 
 ### V.8 Asset-class default tables
 
-The reference library publishes per-asset-class default tables under
-`@uwmd/core/defaults`. Each entry resolves to a `{low, central,
-high}` triple plus a unit and source tag. Producers consuming the
-table at cascade step 5 (`asset_class_default`) MUST use the
-published `central` value as the resolved scalar and MAY surface the
-range to downstream consumers via `field_overrides`.
-
-Tables are versioned independently of the protocol; consumers MAY
-pin a specific table version via institution config. Default-table
-revisions bump their semver and appear in the CHANGELOG.
-
-The `MarketDataLookup` interface (cascade step 4) is defined by the
-reference library but ships no built-in implementation; adopters
-bring their own (CoStar, Yardi, internal). When no implementation is
-attached, step 4 is silently skipped and resolution falls through to
-step 5.
+*Moved to the non-normative [starter products guide](../docs/starter/defaults-and-cascade.md#v8-asset-class-default-tables) (RFC 0078). Not part of the standard.*
 
 ### V.9 Canonical block JSON
 
@@ -1103,7 +1047,7 @@ verifier MUST NOT treat signature disagreement between
 independently-produced blocks as evidence that either is
 non-conforming; conformance of *values* is the province of §VIII
 determinism and RFC 0016 receipts. This includes divergence
-introduced by optional `_meta` stamps such as `provisional` (§V.7),
+introduced by optional `_meta` stamps such as `provisional` (starter guide §V.7),
 which is covered by `content_hash` like any other `_meta` field
 outside §V.9's two exclusions.
 
@@ -1466,16 +1410,18 @@ status; it must qualify its result and cannot advertise complete verification.
 
 ### VI.1 `x_*` extension blocks
 
-Section IDs prefixed with `x_` are reserved for extensions. Tier-1
-Readers MUST parse and surface them but MAY render them as raw JSON
-if no view model is registered.
+Section IDs prefixed with `x_` are reserved for extensions. A Reader
+MUST parse and surface them. How a tool displays them (for example as raw
+JSON when no view model is registered) is starter-product guidance.
 
 ### VI.2 Custom calculations and scenarios
 
 `custom_calculations` and `custom_scenarios` are first-class blocks,
-not `x_*` extensions. A Tier-3 Calc Host MUST evaluate them; lower
-tiers MUST surface their declared result and unit verbatim from the
-file (treating the host as a fixed observer of pre-computed values).
+not `x_*` extensions. An implementation claiming the Module profile
+(§II.3) MUST evaluate them. Any other implementation MUST surface their
+declared result and unit verbatim from the file (treating itself as a
+fixed observer of pre-computed values), and a Verifier without the
+Module profile reports them `unverifiable`, never wrong.
 
 ### VI.3 InstitutionConfig layering
 
@@ -1589,16 +1535,36 @@ refused as a whole. `conformance/modules/registry/` pins these rules.
 
 ### VII.4 Capability negotiation
 
-A module's `requires_tier` declares the minimum host tier. A Tier-2
-host MUST refuse to load a module whose `requires_tier` is
-`tier-3-calc-host` or higher.
+A module's `requires_tier` declares the minimum host tier. Module
+manifests keep the Protocol 2.x tier vocabulary: RFC 0078 changes no
+module manifest. A host reads the value through the §II.5 mapping, with
+one addition: a module whose `requires_tier` is `tier-3-calc-host` or
+higher carries calculations the host must evaluate, so a host that does
+not claim the Module profile MUST refuse to load it. A module requiring
+`tier-4-agent-host` also contributes agent layers, which only a starter
+agent host runs (starter guide §IX).
 
 ---
 
-## VIII. Calc Engine Contract (Tier 3)
+<a id="viii-calc-engine-contract-tier-3"></a>
+
+## VIII. Calc Engine Contract
 
 **Normative schema:** [`spec/schemas/calc-result.schema.json`](schemas/calc-result.schema.json)
-defines the shape of every value a Tier-3 Calc Host returns.
+defines the shape of every value an implementation returns when it
+evaluates an expression.
+
+**What binds whom (RFC 0078).** §VIII.1–VIII.3, with §VIII.2a, are the
+notation the standard's metric definitions and module calculations are
+written in. A Verifier MAY compute a definition any way that reproduces
+its quantized value, and MUST follow the notation exactly wherever it
+evaluates an expression (§II.2). Determinism (§VIII.4), the numeric
+model (§VIII.5) and the error taxonomy (§VIII.6) bind every Verifier.
+Sensitivity tables (§VIII.7) and stochastic calculations (§VIII.8) are
+the Sensitivity and Stochastic profiles. §VIII.9–VIII.12 are the
+stated-figure verifiers every Verifier implements. Refinement (§VIII.2b)
+and workbook bindings (§VIII.2c) moved to the non-normative
+[starter products guide](../docs/starter/refinement-and-workbooks.md).
 
 ### VIII.1 Safe-expression grammar (EBNF)
 
@@ -1687,8 +1653,10 @@ context carries none.
 
 Every consumer that reads a section for a calculation's inputs MUST select
 by this rule, so no two consumers read different blocks of one map. That
-covers the cascade's in-file steps (§V.7), refinement (§VIII.2b) and
-workbook binding (§VIII.2c).
+covers a Verifier reproducing a metric (§II.2) and every starter product
+that reads calculation inputs: the cascade's in-file steps (§V.7),
+refinement (§VIII.2b) and workbook binding (§VIII.2c), all described in the
+non-normative [starter products guide](../docs/starter/README.md).
 
 ### VIII.2a Explicit period addressing (RFC 0041)
 
@@ -1769,14 +1737,15 @@ period identity and distinguishing a literal dotted key from nested traversal.
 No document writes or changes to numeric quantization occur.
 Rows retain identity through existing source-row binding surfaces; this
 exception adds no numeric-index calc grammar. Whole-column contextual Excel
-projection (§VIII.2c) still refuses duplicate identities rather than collapsing
+projection (§VIII.2c, starter guide) still refuses duplicate identities rather than collapsing
 rows into a unique-key column. Its whole-series validity guard is distinct from
 ordinary scalar date selection.
 
 Excel emission MUST refuse selector nodes with `EXCEL-EMIT-PATH` unless explicit
-contextual bindings under §VIII.2c are supplied. A static named-range mapping
+contextual bindings under §VIII.2c (starter guide) are supplied. A static named-range mapping
 alone MUST NOT stand for a row chosen by its current position. The reference refinement engine
-uses finite stated period inputs as fixed values under §VIII.2b. Its general
+uses finite stated period inputs as fixed values under §VIII.2b (starter
+guide). Its general
 cascade is unchanged.
 
 **Validation.** Inspect all active variants of every present registered series:
@@ -1798,125 +1767,11 @@ years or dates to clear them.
 
 ### VIII.2b Stated period inputs in refinement (RFC 0042)
 
-Refinement is an optional consumer; no tier requires it. A consumer implementing
-this extension MUST resolve period AST dependencies with §VIII.2a and preserve
-the complete selector identity. `RankGapsOptions.periodContext` MAY supply
-`sectionVariants` and full-path `overrides` under CalcEvaluationContext semantics.
-Its overrides apply to period dependencies only. Its `sectionVariants` also select
-the block that scalar dependencies are read from (§VIII.2). Validate the
-registry/selector before an own-key override; null is explicit, and an override
-bypasses document lookup. Unrelated override keys do not alter scalar cascade
-resolution.
-
-**Section selection for scalar inputs (RFC 0066).** The scalar cascade holds one
-value per path, so each section a selected target reads is read from one block.
-That block is the §VIII.2 selection under the role the section's reading targets
-declare. A target MUST be excluded from numeric ranking when:
-
-- targets declare different roles for one section; or
-- the target's own §VIII.2 selection refuses; or
-- the target's own selection names a different block.
-
-Report each excluded target in `diagnostics.section_inputs`, in target order, as
-a `SectionRefinementIssue`. It carries `output_id`, `section`,
-`code: CALC-RESOLVE-002` and `message`; see the
-[schema](schemas/section-refinement-issue.schema.json). Include the member
-whenever a selected target reads a variant-map section or a section named by an
-explicit variant, and leave it empty when nothing is excluded; omit it
-otherwise. Unaffected targets are ranked as before.
-
-Finite numeric period inputs MUST remain fixed during ordinary gap perturbation.
-Period dependencies MUST NOT enter the default cascade or acquire inferred ranges,
-including from profile, inheritance or market providers. A missing value is not
-zero. Scalar resolution, range arithmetic and normalization remain unchanged.
-
-For each selected output and distinct unresolved period dependency, return a
-`PeriodRefinementIssue` with `output_id`, canonical `field_path`, `code`, and
-human-readable `message`. Null/absent/kind-mismatched or blocked values use
-`REFINE-PERIOD-MISSING`; strings, booleans, objects, arrays and nonfinite numbers
-use `REFINE-PERIOD-NONNUMERIC`. Resolver failures retain `CALC-PERIOD-001`,
-`CALC-PERIOD-002` or `CALC-PERIOD-003`. Do not suppress unexpected internal errors.
-The type, [schema](schemas/period-refinement-issue.schema.json), and these codes
-describe the same contract; message wording is not stable machine data.
-
-Expose these issues as `diagnostics.period_inputs`, in target order and first
-reference occurrence order, including when there are no rankable ordinary gaps.
-Omit the member when selected formulas contain no period references; otherwise
-include an array, empty on successful resolution. Exclude affected outputs from
-numeric ranking while preserving unaffected outputs. An empty ranking with
-issues MUST NOT be represented as proof of complete inputs. The historical
-`diagnostics.resolved` count remains the number of distinct dependency entries
-processed, not the number of finite values.
-
-A period leaf is supported by the numeric interpreter; other unsupported AST
-operations retain their existing diagnostics and behavior. This extension does
-not improve the existing perturbation approximation, define period defaults or
-stochastic VOI, or change evaluateCalc's quantization boundary.
+*Moved to the non-normative [starter products guide](../docs/starter/refinement-and-workbooks.md#viii2b-stated-period-inputs-in-refinement-rfc-0042) (RFC 0078). Not part of the standard.*
 
 ### VIII.2c Contextual workbook bindings (RFC 0043)
 
-The optional numeric workbook consumer binds a canonical period reference to a
-`PeriodExcelBinding`. A `series` binding names aligned key/value ranges and a
-whole-series validity cell; an `override` binding names an explicit override
-input. A normal namedRanges entry alone is insufficient. Hosts MUST validate
-the reference registry and selector before emission, including overrides.
-Names MUST be workbook-scoped identifiers rather than cell addresses, formulas,
-or external links. The binding is a trusted host assertion about this workbook;
-the string emitter cannot inspect or authenticate workbook contents.
-
-Series bindings MUST use canonical identities and exact lookup, independent of
-row order. Before lookup, the validity cell MUST reject duplicate, blank or
-changed identities across the complete bound series. This stage exports a closed
-identity set: editing values and reordering rows is supported; adding/removing
-periods requires editing the source document and re-exporting. A protected or
-hidden registry is not a security boundary; deliberate workbook tampering is
-outside this edit contract. Blank source series are valid empty sets.
-
-`resolvePeriodColumn` returns a `PeriodColumnSnapshot` using §VIII.2a role selection
-and full-series validation, projecting one literal leaf without rounding values.
-Missing sections yield an empty set. Generic/explicit variants are preserved;
-malformed/duplicate/unresolvable source series raise the existing CALC-PERIOD
-errors. Safe traversal and literal key rules remain unchanged.
-
-Missing periods and blank values MUST yield #N/A in Excel. Invalid identity sets
-and nonnumeric inputs MUST yield #VALUE!, never coerced zero. Finite numeric zero
-is valid. Explicit own-key overrides bypass source lookup after reference
-validation, including null-as-missing, under §VIII.2a semantics. Numeric expression
-results MUST be rounded once at the existing §VIII.5 boundary.
-
-The reference converter exports only explicitly requested custom-calculation IDs
-through `toWorkbook(parsed, { calculations, calculationContext })`. The context
-selects variants for period inputs and supplies exact full-path overrides. It
-does not alter existing pack sheets. The first custom exporter supports numeric
-literals, paths, period paths, unary minus and arithmetic +, -, *, /; other AST
-nodes explicitly refuse. Ordinary input snapshots use calc resolution without
-default inference or boundary rounding. Under §VIII.2 that includes variant
-selection: an ordinary input whose section refuses raises `CALC-RESOLVE-002`,
-as an unresolvable period selection raises `CALC-PERIOD-003`. Shared inputs are written once and
-referenced by formulas. No general calc-result chaining is implied.
-
-**Pack sheets over variant-map sections (RFC 0066).** The converter reads each of
-a pack's named inputs from the block §VIII.2 selects under the role the pack's
-calculations declare for that section.
-
-- **Disagreeing roles.** Calculations declaring different roles for one section
-  refuse the export.
-- **Refused input.** An input whose section refuses MUST be written as `#VALUE!`,
-  the invalid-identity value above, and never blank, because Excel reads a blank
-  as zero.
-- **Refused metric.** A metric whose own §VIII.2 selection refuses MUST show
-  `#VALUE!` exactly where the calc engine reports `ok: false`. Every other metric
-  keeps exact parity.
-- **Different block.** A metric whose own selection names a different block than
-  the one its named input holds refuses the export. One input cannot stand for
-  two blocks.
-
-Default toWorkbook output is otherwise unchanged. Additional period/custom input edits are
-export-only in this stage: reverse import MUST refuse marked extended workbooks,
-rather than silently discarding those edits. Excel 2016-compatible functions
-(IF, INDEX/MATCH exact, COUNTIF, SUMPRODUCT/EXACT, ISBLANK, ISNUMBER, VALUE, NA,
-ROUND) implement the reference bindings. Native recalculation tests are required
-to establish supported-case parity; formula snapshots alone are insufficient.
+*Moved to the non-normative [starter products guide](../docs/starter/refinement-and-workbooks.md#viii2c-contextual-workbook-bindings-rfc-0043) (RFC 0078). Not part of the standard.*
 
 ### VIII.3 Built-in functions
 
@@ -2049,7 +1904,8 @@ A module that calls `is_calendar_date` is subject to the protocol floor in §X.
 
 ### VIII.4 Determinism
 
-Calc hosts MUST be deterministic across runs and platforms. No
+Every implementation that evaluates an expression or reproduces a
+metric MUST be deterministic across runs and platforms. No
 function in the standard library may consult system time, environment
 variables, or randomness. Floating-point operations MUST follow IEEE
 754 double precision. Determinism of the *reported* value additionally
@@ -2231,9 +2087,9 @@ appears.
 
 #### VIII.7.5 Host obligations
 
-A Tier-3 host that does not implement sensitivity tables MUST report a
-typed refusal rather than crash or silently skip. A host that does
-implement them MUST produce the same grid as any other host for the same
+An implementation that evaluates expressions but does not claim the
+Sensitivity profile (§II.3) MUST report a typed refusal rather than
+crash or silently skip. One that claims it MUST produce the same grid as any other host for the same
 document and declaration — the base formula is deterministic, the axes
 are literals, and quantization is §VIII.5, so there is nothing left to
 disagree about.
@@ -2384,10 +2240,10 @@ tolerated: the later draw silently wins for every sample while the
 earlier one still consumes the stream, so the distribution is wrong in
 a way no output reveals.
 
-A host that evaluates stochastic declarations declares
-`calc-stochastic` in its `ImplementationManifest.capabilities`. One
-that does not MUST report a typed refusal rather than crash or silently
-return a point estimate.
+A host that evaluates stochastic declarations claims the Stochastic
+profile (§II.3) and declares `calc-stochastic` in its
+`ImplementationManifest.capabilities`. One that does not MUST report a
+typed refusal rather than crash or silently return a point estimate.
 
 ### VIII.9 Calendar-anchored cash flows (RFC 0034)
 
@@ -3248,134 +3104,39 @@ net expenditure or assemble financing.
 
 ## IX. AI Host Contract (Tier 4)
 
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix-ai-host-contract-tier-4) (RFC 0078). Not part of the standard.*
+
 ### IX.1 Layer DAG
 
-`BANCROFT_LAYERS` (`context.ts`) is the normative layer dependency
-graph for v1. Each layer declares its `reads` (sections it needs as
-input) and `writes` (sections it produces). A host MUST satisfy all
-`reads` before invoking a layer.
-
-The seven canonical layers are L0 (ingestion), L1 (screening), L2
-(underwriting), L4 (structuring), L5 (compliance), L6 (risk), L7
-(assembly). Modules MAY contribute additional layers; module layers
-MUST NOT use IDs that shadow canonical IDs.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix1-layer-dag) (RFC 0078). Not part of the standard.*
 
 ### IX.2 Context bundling
 
-`buildAgentPrompt()` defines the canonical context bundle shape: the
-deal frontmatter, the relevant `reads` sections (canonical blocks
-only — superseded blocks excluded), validation issues affecting those
-sections, and the layer's prompt template.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix2-context-bundling) (RFC 0078). Not part of the standard.*
 
 ### IX.3 Tool schemas
 
-Two normative tool schemas are exported from
-`packages/uwmd-core/src/agents/schemas.ts`:
-
-- `WRITE_UW_SECTION_TOOL` — single-section writes.
-- `WRITE_MULTIPLE_SECTIONS_TOOL` — batched writes for layers that
-  produce multiple sections (see `MULTI_SECTION_LAYERS`).
-
-Tool calls that fail validation against these schemas MUST be
-rejected; the host MAY surface the failure to the agent for retry.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix3-tool-schemas) (RFC 0078). Not part of the standard.*
 
 ### IX.4 _meta substitution
 
-Agents may include `_meta` and `_notes` inside `section_data`. The
-host MUST strip both keys from the agent payload and substitute the
-canonical `_meta` constructed via `buildMeta()`. This prevents agents
-from forging provenance.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix4-_meta-substitution) (RFC 0078). Not part of the standard.*
 
 ### IX.5 Pipeline log
 
-Every successful layer invocation MUST append a `pipeline_log` entry
-with `timestamp`, `agent_or_actor`, `event_type`, and `status`.
-Failures MUST also be logged, with `status: "failed"` and an error
-string.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix5-pipeline-log) (RFC 0078). Not part of the standard.*
 
 ### IX.6 Shape assertions for tests
 
-Because LLM outputs are nondeterministic, the Tier-4 conformance
-fixtures use JSON Schema shape assertions rather than byte-equality.
-A run is considered conformant if the post-run file shape matches
-the expected schema and the `pipeline_log` entry was appended.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix6-shape-assertions-for-tests) (RFC 0078). Not part of the standard.*
 
 ### IX.7 Context Profiles
 
-A consumer of a `.uwx.md` file SHOULD declare which **context profile**
-it consumes. The profile determines which sections are included,
-whether superseded blocks appear, whether prose is included, and the
-approximate token budget the producer targets when constructing the
-context payload.
-
-The five normative profiles are:
-
-| Profile | Audience | Includes | Notes |
-|---|---|---|---|
-| `summary` | Chat agents, orchestration heuristics | Frontmatter slim subset, `pipeline_state`, `quick_metrics`, `gaps` head | Soft target ≤ 600 tokens (chars/4 estimate). |
-| `live` | Calc-aware editors | All non-superseded sections, full prose | Default for human-facing tools. |
-| `compact` | LLMs at scale | All non-superseded sections, JSON only, minified, ordered stable→volatile | Targets ≤ 55% of `live` token count on the canonical Parkview fixture. `_meta` stripped by default. |
-| `full` | Archival / forensic | Every byte, prose included, no compaction | Round-trips the input file byte-for-byte when no truncation. |
-| `relevant` | Custom Bancroft layers | Caller-supplied section list, `live`-style payload | Used by `consumed_profile: 'relevant'` layers; the host passes the layer's `reads` as the section filter. |
-
-A producer that satisfies a request for profile `X` MUST NOT return
-a context strictly larger than `X` allows; it MAY return a smaller
-context (e.g. truncated to fit `maxTokens`) and MUST set
-`truncated: true` in the result when it does.
-
-The `compact` profile MUST order sections **stable-first** so prompt-
-cache prefixes survive frequent edits to volatile downstream
-sections. The canonical order is:
-
-1. `frontmatter`
-2. `property`
-3. `ownership`
-4. `borrower_sponsor`
-5. `debt_structure`
-6. `sources_uses`
-7. `valuation`
-8. `rent_roll`
-9. `operating_statement`
-10. `noi_model`
-11. `market_analysis`
-12. `compliance`
-13. `risk_assessment`
-14. `dcf`
-15. `stress_tests`
-16. `custom_calculations`
-17. `gaps`
-18. `extensions`
-
-Sections not on this list trail the canonical prefix in
-`Object.keys` order.
-
-Token estimates use the `chars/4` approximation; producers MUST
-document the approximation and SHOULD validate periodically against
-the true tokenizer cost (typical drift ±5% on `.uwx.md` content).
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix7-context-profiles) (RFC 0078). Not part of the standard.*
 
 ### IX.8 Layer-declared profile consumption
 
-Each Bancroft layer declares a `consumed_profile` field in
-`BANCROFT_LAYERS`. A host MUST request that profile (and only that
-profile) when preparing the layer's input context. Conformance Tier-4
-verifies the declaration via the
-`consumer-profile-contract` fixture.
-
-For canonical v1 layers the declared profiles are:
-
-| Layer | `consumed_profile` |
-|---|---|
-| L0 — Document Ingestion | `summary` |
-| L1 — Screening | `summary` |
-| L2 — Underwriting | `relevant` |
-| L4 — Structuring | `relevant` |
-| L5 — Compliance | `relevant` |
-| L6 — Risk Rating | `relevant` |
-| L7 — Assembly | `live` |
-
-Module-contributed layers MUST declare `consumed_profile`. A module
-layer that consumes `full` or that declines to declare a profile is
-non-conformant.
+*Moved to the non-normative [starter products guide](../docs/starter/ai-host.md#ix8-layer-declared-profile-consumption) (RFC 0078). Not part of the standard.*
 
 ---
 
@@ -3702,7 +3463,14 @@ All protocol-level errors MUST be expressible as a `ProtocolError`:
 ```
 
 Error codes follow `CATEGORY-PREFIX-NNN`. Categories are stable across
-versions; specific codes may be added but never repurposed.
+versions; specific codes may be added but never repurposed. The
+`render`, `edit` and `agent` categories stay registered for the starter
+products (§II.4); no tier requires an implementation to emit them.
+
+Validator issue codes are part of this taxonomy. Their registered
+families, owning capabilities and remediation-entry schema are
+normative in §III.6a, which keeps its section number so existing
+references resolve (RFC 0078).
 
 ---
 
@@ -3786,96 +3554,27 @@ one.
 
 ## XIV. Capability Tokens (optional, RFC 0011)
 
-An **opt-in** second gate on writes, for orchestrator-bound deployments
-(lending platforms, agent fleets) where authorization must be enforced at
-the file API layer rather than the network layer. Nothing in this section
-applies to a host that does not configure a verifier; the everyday flow of
-the open standard is unchanged.
+*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv-capability-tokens-optional-rfc-0011) (RFC 0078). Not part of the standard.*
 
 ### XIV.1 Tokens narrow, never widen
 
-A capability token is a second condition **ANDed with the static §V.3 edit
-policy, never an escalation past it**. The §V.3 authority check runs
-regardless of any token: a write the policy table refuses stays refused no
-matter what a token claims, and once a verifier is configured, a write the
-table permits additionally needs an in-scope token.
-
-This is deliberate. The static table is the floor every implementation can
-evaluate offline from the file and this document alone; if a token could
-override it, a document's policy story would depend on key material the
-reader does not hold. In particular, **`institution/*` keeps
-`system_only`** — a deployment wanting agent-authored institution overrides
-models that as its coordinator issuing the write to a `system/*` writer it
-controls, an orchestration pattern rather than a policy escalation.
+*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv1-tokens-narrow-never-widen) (RFC 0078). Not part of the standard.*
 
 ### XIV.2 Token shape
 
-A capability token is a JWS Compact–encoded JWT. Header:
-`{ "alg": <JOSE name>, "kid": <key id>, "typ": "JWT" }`, where the JOSE
-`alg` maps onto the §V.11 algorithm shortlist (`EdDSA` → `ed25519`,
-`ES256` → `es256`, `ES384` → `es384`; Ed25519 is the default). The verifier
-resolves `kid` through the same key-store contract §V.11 block signatures
-use — one key-distribution story, not two.
-
-Claims:
-
-| Claim | Meaning |
-|---|---|
-| `iss` | Coordinator identity (informational). |
-| `sub` | The actor being authorized — a **valid §2.6 actor source** (`manual` or `<namespace>/<id>`). Instance identity lives inside the id segment (`agent/L2.instance-abc-123`); a `sub` outside the grammar is `malformed`. |
-| `aud` | MUST be `uwmd-edit`. |
-| `deal` | Binds to the file's frontmatter `deal_id`. |
-| `sections` | Section ids the token may write; frontmatter ops use the reserved name `_frontmatter`, pipeline-log appends `pipeline_log`. Absent = unconstrained. |
-| `stages` | `deal_stage` values the token is valid at. Absent = unconstrained. |
-| `ops` | `EditOperation` kinds permitted. Absent = unconstrained. |
-| `iat` / `exp` | Validity window, unix seconds. Short lifetimes (default guidance: 1 hour) are the revocation story. |
-| `jti` | Unique token id, recorded on the written block (§XIV.4). |
+*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv2-token-shape) (RFC 0078). Not part of the standard.*
 
 ### XIV.3 Verification
 
-When an editor is configured with a capability verifier, every write MUST
-present a token, and ALL of the following MUST hold — each failure maps to
-a typed reason surfaced with the `POL-03` refusal:
-
-1. The token parses as JWS Compact, names a known `kid`, and its signature
-   verifies (`malformed` / `unknown_kid` / `bad_signature`).
-2. `iat ≤ now < exp` (`not_yet_valid` / `expired`).
-3. `aud` is `uwmd-edit` (`wrong_audience`).
-4. `deal` equals the file's `deal_id` (`wrong_deal`).
-5. The target section appears in `sections` (`wrong_section`).
-6. The file's declared `deal_stage` appears in `stages` (`wrong_stage`). A
-   file with **no** declared stage fails a stage-constrained token — the
-   token asserts a scope the file cannot demonstrate — and passes an
-   unconstrained one.
-7. The operation kind appears in `ops` (`wrong_op`).
-8. `sub` equals the prospective block's `_meta.source` (`sub_mismatch`).
-   Free-form `_meta.actor` is display metadata and takes no part in
-   authorization.
-
-A write with no token, or a token failing any rule, is refused with
-**`POL-03`** (error, `POL` family §III.6a). Verification is asynchronous
-(Web Crypto); a synchronous edit path with a verifier configured MUST
-refuse rather than skip the check.
+*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv3-verification) (RFC 0078). Not part of the standard.*
 
 ### XIV.4 Persistence
 
-The token itself is NOT stored in the file — only its `jti`, appended to
-the new block's `_meta.notes` as `capability:<jti>` (`; `-separated when
-notes already exist). Embedding the token would disclose coordinator
-infrastructure, and per §V.11.2's posture, provenance metadata is outside
-any cross-producer hash-agreement guarantee — it would buy disclosure, not
-verifiability. Hosts wanting full forensic recall MAY keep a sidecar audit
-log (`<file>.audit.jsonl`); retention is theirs (90 days recommended,
-non-normative).
+*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv4-persistence) (RFC 0078). Not part of the standard.*
 
 ### XIV.5 Conformance
 
-Hosts that enforce tokens claim the **`capability-verify`** capability
-(§II.6a); conformance cases for `POL-03` are tagged with it, so a host
-that does not opt in owes nothing. Multi-issuer scenarios (sponsor's and
-lender's coordinators over one file) are a key-store configuration
-concern — the verifier holds several public keys — not a protocol
-mechanism.
+*Moved to the non-normative [starter products guide](../docs/starter/capability-tokens.md#xiv5-conformance) (RFC 0078). Not part of the standard.*
 
 ---
 
@@ -3957,7 +3656,8 @@ composite with rollup receipts; the sidecar stays descriptive.
 Every RFC accepted through protocol 2.6.0 is implemented (RFC 0001–0038,
 excepting 0013). The items below were **named and deliberately deferred**
 by an implemented RFC; each records where its design lives so later work
-does not foreclose it. None is required for conformance at any tier, and
+does not foreclose it. None is required for conformance at any tier or
+profile, and
 each opens as its own RFC under `docs/rfcs/` when taken up. The
 maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
 
@@ -3988,11 +3688,12 @@ maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
 
 ## Appendix A — Self-certification checklist
 
-For each tier you claim:
+For the tier and each profile you claim:
 
-- [ ] Run every fixture in `conformance/tier-N-*/`. Output matches.
+- [ ] Run every conformance case whose required capabilities you claim
+      (§II.6). Output matches. Publish the skip count with the result.
 - [ ] Publish your `ImplementationManifest` (id, version, tier,
-      capabilities, representations, supported asset classes).
+      profiles, capabilities, representations, supported asset classes).
 - [ ] Document any non-default configuration users must set to
       achieve conformance.
 - [ ] Add yourself to the README's "Who's building on it" section
@@ -4001,22 +3702,31 @@ For each tier you claim:
 ## Appendix B — Reference implementations
 
 - **`@uwmd/core`** — TypeScript reference: parser, validator,
-  renderer, runner, agent host. All four tiers.
-- **`tools/web-viewer/`** — Single-file Tier-1 reference viewer.
-  Self-contained HTML, no build step.
+  expression evaluator and stated-figure verifiers. Verifier, with all
+  six profiles. It also carries the starter products (renderer, editor,
+  calc packs, defaults, agent host), which are not part of the standard.
+- **`tools/web-viewer/`** — Single-file reference Reader and starter
+  viewer. Self-contained HTML, no build step.
 
 ## Appendix C — Conformance corpus index
 
 See [`conformance/README.md`](../conformance/README.md). Per-tier
-directories contain fixtures and expected outputs.
+directories contain fixtures and expected outputs. They keep their
+Protocol 2.x tier names until the corpus is re-tiered (RFC 0078 phase 3);
+directory membership is not a normative signal (§II.6).
 
-## Appendix D — Worked example: Tier-1 Reader in <500 LOC
+<a id="appendix-d--worked-example-tier-1-reader-in-500-loc"></a>
+
+## Appendix D — Worked example: a Reader in <500 LOC
 
 The file [`tools/web-viewer/index.html`](../tools/web-viewer/index.html)
-is a complete Tier-1 Reader in ~450 lines of HTML/CSS/JS, including
+is a complete Reader in ~450 lines of HTML/CSS/JS, including
 an inline parser, the `BUILTIN_VIEW_MODELS` subset, and the formatter
 helpers. It is intended to be read end-to-end as a learning
-artifact.
+artifact. Its view models and formatters are starter-product display,
+not part of the standard. A worked Verifier example, a consumer that
+checks a document with only the metric dictionary and an expression
+evaluator, arrives with the dictionary (RFC 0078 phase 2).
 
 ## Appendix E — Worked example: authoring a hospitality module
 
@@ -4054,15 +3764,27 @@ validations:
 - **Canonical block**: the most recent, non-superseded block for a
   given section ID (and variant, if applicable).
 - **Layer**: a Bancroft AI agent stage with declared `reads` and
-  `writes`.
+  `writes`. A starter-product term (starter guide §IX).
 - **Module**: a declarative manifest extending the standard sections,
   calculations, validations, view models, and/or agent layers.
 - **Provenance**: the `_meta` block carried inside every fenced
   section, recording authorship, timestamp, version, and confidence.
+- **Profile**: an optional, named verification capability added to a
+  tier (§II.3).
+- **Reader**: the conformance tier that parses a document and checks it
+  is well formed (§II.1).
 - **Round-trip preservation**: writing an unchanged region back to
-  disk produces byte-identical output (modulo line endings).
+  disk produces byte-identical output (modulo line endings). An editor
+  guarantee of the starter products (starter guide §V.1).
+- **Starter product**: a reference tool the project gives away on top of
+  the standard (calc engine, editor, viewer, Excel exporter, defaults,
+  AI agents). Non-normative; see the
+  [starter products guide](../docs/starter/README.md).
 - **Supersede**: the operation of marking a prior block as
   `superseded: true` and appending a new block with incremented
   version.
+- **Verifier**: the conformance tier that checks a document is well
+  formed, internally consistent and reproducible (§II.2).
 - **View model**: a per-section layout description used to render the
-  section uniformly across implementations.
+  section uniformly across implementations. A starter-product term
+  (starter guide §IV).
