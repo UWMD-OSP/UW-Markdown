@@ -105,12 +105,16 @@ describe('rankGaps — minimal multifamily file', () => {
     expect(r.by_voi.length).toBeLessThanOrEqual(2);
   });
 
-  it('flags only cash_on_cash for the existing conservative conditional-AST policy', () => {
+  it('flags LTV and cash_on_cash for the existing conservative conditional-AST policy', () => {
     const r = rankGaps(parsed);
     // Generic cash-on-cash now guards missing aggregate equity and selects its
     // year-1 input. Refinement already refuses to bracket conditional ASTs.
-    // All other built-in multifamily metrics retain the same ratio diagnostics.
+    // LTV now lazily falls back from underwritten value to purchase price.
+    // Preserve exact diagnostics for both conditional formulas.
     expect(r.diagnostics.non_monotonic).toEqual([{
+      output_id: 'ltv',
+      reason: 'AST contains non-monotonic op (mod / call / cond)',
+    }, {
       output_id: 'cash_on_cash',
       reason: 'AST contains non-monotonic op (mod / call / cond)',
     }]);

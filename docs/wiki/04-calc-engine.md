@@ -432,10 +432,11 @@ the role its reading targets declare. A target is excluded and reported with
 `CALC-RESOLVE-002` when its own selection refuses, reads another block, or
 conflicts with another target's declared role. With the built-in packs on a
 senior + junior debt map, that excludes only `cash_on_cash`. The shared
-income-class cash-on-cash formula has conditional input guards, so refinement's existing
-conservative AST policy also reports it in `diagnostics.non_monotonic`; it does
-not attempt VOI bracketing for that output. This does not block `evaluateCalc`
-from computing a stated year-1 flow over total equity.
+income-class cash-on-cash formula has conditional input guards, and LTV has a
+conditional underwritten-value/purchase-price fallback. Refinement's existing
+conservative AST policy reports both in `diagnostics.non_monotonic`; it does
+not attempt VOI bracketing for those outputs. `evaluateCalc` still computes
+the shared formulas normally.
 `periodContext.sectionVariants` now selects for scalar inputs too; its
 `overrides` remain period-only.
 Literal ordinary @ keys use a separate environment even when graph strings
