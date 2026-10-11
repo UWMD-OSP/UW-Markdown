@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LU-04
 deal_name: "Turnover With No Starting Point"
 created: "2026-09-01T10:00:00Z"
@@ -28,18 +28,25 @@ model_type natural_turnover with no rent_roll: the turnover trajectory has no st
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "500 Absorption Ave",
   "asset_class": "office",
@@ -52,18 +59,25 @@ model_type natural_turnover with no rent_roll: the turnover trajectory has no st
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "net_operating_income": 480000
 }
@@ -73,28 +87,35 @@ model_type natural_turnover with no rent_roll: the turnover trajectory has no st
 {
   "_meta": {
     "section": "lease_up_schedule",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "model_type": "natural_turnover",
   "period_granularity": "quarterly",
   "stabilization_target": "2027-Q4",
   "assumptions": {
     "monthly_turnover_rate": 0.04,
-    "market_rent_psf_at_stabilization": 22.0,
+    "market_rent_psf_at_stabilization": 22,
     "vacancy_during_lease_up": 0.18,
     "concession_months_per_lease": 1,
-    "tenant_improvement_psf": 35.0,
+    "tenant_improvement_psf": 35,
     "leasing_commission_rate": 0.06
   },
   "schedule": [
@@ -103,7 +124,7 @@ model_type natural_turnover with no rent_roll: the turnover trajectory has no st
       "occupied_sf": 31000,
       "leased_sf": 31000,
       "in_place_rent_psf": 21.5,
-      "market_rent_psf": 22.0,
+      "market_rent_psf": 22,
       "vacancy_rate": 0.27,
       "rent_revenue": 166375,
       "concessions": -5400,
@@ -115,7 +136,7 @@ model_type natural_turnover with no rent_roll: the turnover trajectory has no st
       "occupied_sf": 40500,
       "leased_sf": 41000,
       "in_place_rent_psf": 21.65,
-      "market_rent_psf": 22.0,
+      "market_rent_psf": 22,
       "vacancy_rate": 0.05,
       "rent_revenue": 184025,
       "concessions": -8100,

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-MU-02
 deal_name: "Malformed: mixed-use-land-component"
 created: "2026-01-15T10:00:00Z"
@@ -24,18 +24,25 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 40000000
 }
@@ -45,18 +52,25 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "net_operating_income": 1622000
 }
@@ -66,18 +80,25 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "components",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "multifamily": {
     "component_class": "multifamily",

@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: v2-006
 deal_name: Digest Shape Insensitivity
 asset_class: multifamily

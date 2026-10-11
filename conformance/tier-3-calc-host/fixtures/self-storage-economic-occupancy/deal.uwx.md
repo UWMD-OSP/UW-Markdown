@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-STORAGE-001
 deal_name: "Self-Storage Economic Occupancy"
 created: "2026-09-28T00:00:00Z"
@@ -26,74 +26,85 @@ Result = 1,053,000 / 1,080,000 = 0.975.
 
 ```json uw:section=property source=manual ts=2026-09-28T00:00:00Z v=1 confidence=high
 {
-  "section_id": "property",
   "_meta": {
-    "section_id": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "timestamp": "2026-09-28T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-28T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": { "net_rentable_square_feet": 82000, "rentable_units": 640 }
+  "net_rentable_square_feet": 82000,
+  "rentable_units": 640
 }
 ```
 
 ```json uw:section=noi_model source=manual ts=2026-09-28T00:00:00Z v=1 confidence=high
 {
-  "section_id": "noi_model",
   "_meta": {
-    "section_id": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "timestamp": "2026-09-28T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-28T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "underwriting_basis": "stabilized",
-    "income": {
-      "gross_potential_rent": {
-        "value": 1080000,
-        "source": "rent_roll",
-        "per_unit_monthly": null,
-        "per_sqft_annually": null,
-        "rationale": null
-      },
-      "vacancy_credit_loss": {
-        "value": 162000,
-        "rate_applied": 0.15,
-        "source": "underwritten",
-        "vs_t12_actual": null,
-        "vs_submarket_avg": null,
-        "rationale": null
-      },
-      "other_income": {
-        "value": 135000,
-        "vs_t12": null,
-        "non_recurring_excluded": null,
-        "breakdown": {}
-      },
-      "effective_gross_income": 1053000
+  "underwriting_basis": "stabilized",
+  "income": {
+    "gross_potential_rent": {
+      "value": 1080000,
+      "source": "rent_roll",
+      "per_unit_monthly": null,
+      "per_sqft_annually": null,
+      "rationale": null
     },
-    "expenses": {
-      "total_operating_expenses": 381000
+    "vacancy_credit_loss": {
+      "value": 162000,
+      "rate_applied": 0.15,
+      "source": "underwritten",
+      "vs_t12_actual": null,
+      "vs_submarket_avg": null,
+      "rationale": null
     },
-    "net_operating_income": 672000
-  }
+    "other_income": {
+      "value": 135000,
+      "vs_t12": null,
+      "non_recurring_excluded": null,
+      "breakdown": {}
+    },
+    "effective_gross_income": 1053000
+  },
+  "expenses": {
+    "total_operating_expenses": 381000
+  },
+  "net_operating_income": 672000
 }
 ```

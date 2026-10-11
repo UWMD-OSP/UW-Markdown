@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_dc7q4m1"
 deal_name: "Mesa Gateway Data Center — Mesa, AZ"
 created: "2026-09-09T08:00:00Z"
@@ -9,10 +9,7 @@ property_address: "6200 S Sossaman Rd"
 city: "Mesa"
 state: "AZ"
 zip: "85212"
-asset_class: "org.uwmd.data_center"
-modules:
-  - id: org.uwmd.datacenters
-    version: ">=0.1.0 <1.0.0"
+asset_class: "data_center"
 loan_type: "permanent"
 scenario: "stabilized_acquisition"
 
@@ -60,7 +57,7 @@ source_documents:
 > **10.0 MW Commissioned / 12.5 MW Planned** | **11.0 MW Contracted** | **PUE 1.25** | **$160,000,000 Purchase** | **$16,000/kW** | **7.00% Cap Rate (in-place)**
 
 This file is the corpus's **first custom-class example**: its `asset_class` is
-`org.uwmd.data_center`, declared by the `org.uwmd.datacenters` module ([RFC
+`data_center`, declared by the `org.uwmd.datacenters` module ([RFC
 0039](../docs/rfcs/0039-data-center-module.md)) rather than by the builtin enum.
 The standard sections read as ordinary industrial real estate — a building, a
 lease, an NOI, a loan — which is why the module states `industrial` as its
@@ -83,14 +80,25 @@ Mesa Gateway is a 10 MW (critical IT) wholesale data center in the Elliot Road T
 {
   "_meta": {
     "section": "deal_context",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-09-09T08:20:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T08:20:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Utility feed is 15 MW under an executed SRP capacity agreement, which covers the 12.5 MW build-out at design PUE. Phase 2 (2.5 MW) is permitted; 1 MW of it is pre-leased to the anchor with rent commencing on delivery.",
   "deal_summary": "10 MW commissioned wholesale data center in Mesa, 100% contracted to two tenants under metered pass-through power, with a permitted 2.5 MW phase 2 of which 1 MW is pre-leased.",
@@ -112,14 +120,25 @@ Square footage is the **building** footprint, carried so that a fallback reader 
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-09-09T08:40:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T08:40:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "rentable_square_feet": 180000,
   "year_built": 2021,
@@ -144,15 +163,26 @@ Two in-place tenants on wholesale leases, rent quoted per kW-month and carried h
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "actor": "jared",
-    "timestamp": "2026-09-09T09:10:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T09:10:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Both leases are metered pass-through on power. Anchor rolls 2029-12-31; in-place at $150/kW-mo vs ~$187.50 market. Phase-2 pre-lease (1,000 kW, $150/kW-mo) commences on delivery, targeted 2027-07-01.",
   "as_of_date": "2026-08-01",
@@ -202,14 +232,25 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "actor": "system",
-    "timestamp": "2026-09-09T10:30:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T10:30:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Base rent = 10,000 kW x $150 x 12. Reimbursements = 10,000 kW x 1.25 PUE x 8,760 h x $0.08/kWh, matched by utilities expense. Other income = interconnection ($660,000) + remote hands and services ($264,000).",
   "income": {
@@ -242,14 +283,25 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-09-09T10:45:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T10:45:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Fixed-rate permanent debt at 60% LTV, sized inside a 1.58x DSCR / 11.7% debt yield. Lender underwrote the in-place 10 MW only; phase 2 is unencumbered upside.",
   "loan_type": "permanent",
@@ -280,14 +332,25 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "actor": "system",
-    "timestamp": "2026-09-09T10:50:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T10:50:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sources": {
     "loan_amount": 96000000,
@@ -315,15 +378,26 @@ Year-1 underwritten on the 10,000 kW in place. Power is a pass-through: the $8.7
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "actor": "jared",
-    "timestamp": "2026-09-09T11:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T11:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 160000000,
   "appraised_value": 162500000,
@@ -344,18 +418,25 @@ Loan sizing against the three standard constraints. The governing test is LTV; t
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-09-09T10:40:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T10:40:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "noi_underwritten": 11200000,
@@ -395,18 +476,25 @@ East Valley wholesale fundamentals as of 2026-08. Rent is quoted per kW-month; t
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-09-09T09:30:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Broker survey and published capacity reports; refresh before credit committee."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T09:30:00Z",
+      "notes": "Broker survey and published capacity reports; refresh before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "market": "Phoenix Metro",
   "submarket": "Mesa / East Valley",
@@ -440,14 +528,25 @@ Every figure is in **kW** — capacity is quoted in MW and rent in $/kW-month, a
 {
   "_meta": {
     "section": "dc_capacity",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-09-09T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Commissioned 10 MW in three halls; permitted phase 2 adds 2.5 MW. Utility feed 15 MW per the SRP capacity agreement — covers full build-out at design PUE (12,500 kW x 1.25 = 15,625 kW is the future check, not today's). Measured PUE 1.32 on the T-12, within 15% of the 1.25 design.",
   "critical_it_load_kw": 1000.123,
@@ -470,14 +569,25 @@ Metered pass-through: tenants pay their own metered power at cost, so the landlo
 {
   "_meta": {
     "section": "dc_power",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-09-09T09:05:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T09:05:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "utility_rate_per_kwh": 0.08765,
   "billing": "metered_pass_through",
@@ -494,14 +604,25 @@ Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, a
 {
   "_meta": {
     "section": "dc_revenue",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-09-09T09:15:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T09:15:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "lease_type": "wholesale_turnkey",
   "rent_per_kw_month": 150.1234,

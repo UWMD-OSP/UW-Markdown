@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-SI-CC13-WARN
 deal_name: "Office Without A Stated RSF"
 created: "2026-08-25T10:00:00Z"
@@ -30,18 +30,25 @@ refusal, owns "we don't know this yet."
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-25T10:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-25T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "year_built": 1998,
@@ -53,18 +60,25 @@ refusal, owns "we don't know this yet."
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-25T10:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-25T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "purchase_price": 12000000
@@ -75,18 +89,25 @@ refusal, owns "we don't know this yet."
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-25T10:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-25T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "net_operating_income": 690000

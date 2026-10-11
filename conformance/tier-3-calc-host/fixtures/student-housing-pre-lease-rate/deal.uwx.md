@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-STUDENT-001
 deal_name: "Student Housing Pre-Lease Rate"
 created: "2026-08-13T00:00:00Z"
@@ -22,44 +22,58 @@ created_by: "conformance"
 
 ```json uw:section=property source=manual ts=2026-08-13T00:00:00Z v=1 confidence=high
 {
-  "section_id": "property",
   "_meta": {
-    "section_id": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "timestamp": "2026-08-13T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": { "total_beds": 600 }
+  "total_beds": 600
 }
 ```
 
 ```json uw:section=rent_roll source=manual ts=2026-08-13T00:00:00Z v=1 confidence=high
 {
-  "section_id": "rent_roll",
   "_meta": {
-    "section_id": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "timestamp": "2026-08-13T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": { "preleased_beds": 570, "preleased_as_of": "2026-03-15", "preleased_term_start": "2026-08-15" }
+  "preleased_beds": 570,
+  "preleased_as_of": "2026-03-15",
+  "preleased_term_start": "2026-08-15"
 }
 ```

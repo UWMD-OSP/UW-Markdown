@@ -633,3 +633,22 @@ describe('ModuleRegistry public shape', () => {
     expect(getModuleCalculationsForAssetClass(handBuilt, 'self_storage')).toHaveLength(1);
   });
 });
+
+
+describe('RFC 0081 conformance/profile module requirements', () => {
+  const { requires_tier: _old, ...base } = BASE;
+  const manifest = { ...base, requires_conformance: 'verifier' as const, requires_profiles: ['module' as const], requires_protocol: '^4.0.0', requires_format: '^3.0' };
+  it('loads the final manifest and checks the host tier and every profile', () => {
+    expect(loadModuleManifest(manifest).ok).toBe(true);
+    for (const host of [{ hostConformance: 'reader' as const }, { hostProfiles: [] }]) {
+      expect(loadModuleManifest(manifest, host).errors.map(e => e.code)).toContain('PROTO-MOD-029');
+    }
+    expect(loadModuleManifest(manifest, { hostConformance: 'verifier', hostProfiles: ['module'] }).ok).toBe(true);
+  });
+  it('refuses unknown, duplicate or malformed profile declarations', () => {
+    for (const profiles of [['unknown'], ['module', 'module'], 'module']) {
+      expect(loadModuleManifest({ ...manifest, requires_profiles: profiles }).errors.map(e => e.code)).toContain('PROTO-MOD-006');
+    }
+    expect(loadModuleManifest({ ...manifest, requires_conformance: 'editor' }).errors.map(e => e.code)).toContain('PROTO-MOD-006');
+  });
+});

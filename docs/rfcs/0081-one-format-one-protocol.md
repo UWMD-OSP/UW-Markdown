@@ -750,6 +750,19 @@ dominate any diff they share.
 | Docs-site version labels | Spec links and the home version card show `SPEC_FORMAT_VERSION`/`SPEC_PROTOCOL_VERSION`; the card notes the implementation's versions while they differ. | §2 one spec per page; Phase 6 aligns the release labels. |
 | Web editor reads class contracts | `@uwmd/core` and `@uwmd/core/browser` export the pure-data `BUILTIN_CLASS_CONTENT`, replacing the editor test's deep import of core's `dist/`. | Invariant 2 (tools consume core's public entry); AGENTS export rule. |
 
+## RFC 0081 Phase 3 implementation decisions
+
+| Question | Phase 3 decision | Precedent / cause |
+|---|---|---|
+| Corpus versus released versions | Re-author stated document versions and module/pack ranges now; keep package/release labels and all old runtime paths until Phases 4 and 6. Mark interim old paths for deletion. | Reference implementation Phase 3; owner task boundary. |
+| Financial comparison | Snapshot the built Phase 2 base before editing; compare all calc baselines, lender evidence, receipt verdicts, validation codes, conformance outcomes and derived uses. No example or lender value change is authorized. | D5; owner Phase 3 acceptance criterion and follow-up. |
+| Additional fixture exceptions | Jared approved all five below on 2026-10-11: they follow mechanically from §7. Retire a fixture whose only assertion is a retired conflict code; preserve any live refusal. Report every further fixture-only value change with its cause; stop for any example/lender value change. | Owner follow-up to the measured corpus inventory. |
+| capex/reject-legacy-budget-disagrees | $9,470,000 → $6,470,000 before retirement: removing the disagreeing $3,000,000 legacy budget leaves the typed budget. | Retired CAPX-05-only conflict control; owner approved exception. |
+| hedge/reject-legacy-reserve-disagrees | $750,000 → $500,000 before retirement: removing the legacy reserve leaves the stated escrow upfront. | Retired ESC-03-only conflict control; owner approved exception. |
+| hedge/reject-premium-disagrees-with-use | $500,000 → $410,000 before retirement: the typed premium is the single cost home. | Retired HDG-05-only conflict control; owner approved exception. |
+| hedge/0070-ambiguous-debt | $1,150,000 → $1,550,000: each of two stated $400,000 premiums counts once, alongside the $750,000 interest escrow. Keep its live refusal. | §7 footing; owner approved exception. |
+| hedge/0076-sources-refused-malformed-hedge | Each sources variant: $1,150,000 → $750,000. Drop the $400,000 cost because the malformed hedge supplies no usable attributable home; keep its live refusal. | No invented attribution; owner approved exception. |
+
 ## Alternatives considered
 
 1. **Keep the read path and drop only the write path** (readers accept

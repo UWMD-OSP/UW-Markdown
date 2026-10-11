@@ -21,7 +21,10 @@ asset_class: office
 \`\`\`
 ${rentRoll ? `
 \`\`\`json uw:section=rent_roll source=manual ts=2026-09-01T00:00:00Z v=1
-{ "total_units": 12, "occupied_units": 9 }
+{
+  "total_units": 12,
+  "occupied_units": 9
+}
 \`\`\`
 ` : ''}${noi !== null ? `
 \`\`\`json uw:section=noi_model source=manual ts=2026-09-01T00:00:00Z v=1

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-009
 deal_name: "Malformed: partial block without field_overrides"
 created: "2026-01-15T10:00:00Z"
@@ -30,19 +30,26 @@ MUST emit `DQ-03` (warning).
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "909 DQ-03 Lane, Phoenix, AZ 85001",
   "asset_class": "multifamily",
@@ -56,20 +63,26 @@ MUST emit `DQ-03` (warning).
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "agent/agent-L2",
-    "resolution": "ai_extracted",
-    "agent_id": "agent/L2",
-    "agent_version": "1.0.0",
-    "actor": "agent/L2",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "T-12 was partially illegible; some lines could not be extracted.",
-    "partial": true
+    "provenance": {
+      "source": "agent/agent-L2",
+      "resolution": "ai_extracted",
+      "actor": "agent/L2",
+      "agent_id": "agent/L2",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": "T-12 was partially illegible; some lines could not be extracted."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": true,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "expense_ratio": 0.42
 }

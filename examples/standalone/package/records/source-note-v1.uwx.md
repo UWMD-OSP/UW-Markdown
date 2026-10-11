@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 document_profile: source-note-v1
 document_id: note:parkview:rent-roll-review
 ---
@@ -15,14 +15,23 @@ file. It is not a rent-roll row and it is not an underwriting conclusion.
 {
   "_meta": {
     "section": "deal_context",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "profile": "source-note-v1",
   "document_id": "note:parkview:rent-roll-review",

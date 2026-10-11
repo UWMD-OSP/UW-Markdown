@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: HDG-CONF
 asset_class: office
 ---
@@ -8,8 +8,7 @@ asset_class: office
 {
   "loan_amount": 40000000,
   "rate_type": "fixed",
-  "interest_rate": 0.0551,
-  "rate_cap_pct": null
+  "interest_rate": 0.0551
 }
 ```
 
@@ -17,7 +16,12 @@ asset_class: office
 {
   "uses": {
     "purchase_price": 55000000,
-    "interest_reserve": 750000
+    "escrows": [
+      {
+        "name": "interest",
+        "upfront": 750000
+      }
+    ]
   }
 }
 ```

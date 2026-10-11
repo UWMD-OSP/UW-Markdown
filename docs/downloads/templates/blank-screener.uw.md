@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_TEMPLATE_SCREEN"
 deal_name: "Untitled Deal"
 created: "2026-01-01T00:00:00.000Z"

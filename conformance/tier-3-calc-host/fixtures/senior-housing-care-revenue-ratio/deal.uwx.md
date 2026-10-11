@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-SENIOR-001
 deal_name: "Senior Housing Care Revenue Ratio"
 created: "2026-08-13T00:00:00Z"
@@ -22,27 +22,31 @@ created_by: "conformance"
 
 ```json uw:section=noi_model source=manual ts=2026-08-13T00:00:00Z v=1 confidence=high
 {
-  "section_id": "noi_model",
   "_meta": {
-    "section_id": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "timestamp": "2026-08-13T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
-  },
-  "content": {
-    "income": {
-      "care_revenue": 1800000,
-      "effective_gross_income": 9000000
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
     }
+  },
+  "income": {
+    "care_revenue": 1800000,
+    "effective_gross_income": 9000000
   }
 }
 ```

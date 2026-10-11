@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_mx8k2p"
 deal_name: "Roosevelt Row Commons — Mixed-Use, Phoenix, AZ"
 created: "2026-08-10T09:00:00Z"
@@ -66,14 +66,25 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "deal_context",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-08-10T09:15:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T09:15:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Live-work-stay block in the Roosevelt Row arts district. The residential tower drives the majority of NOI; the boutique hotel adds operating-business upside but also operating risk. Allocation of the single price across uses is the underwriter's judgment, stated as an input.",
   "deal_summary": "Three-use mixed property in downtown Phoenix: 120 apartments over 18,000 SF of street retail, plus a 90-key boutique hotel. Stabilized acquisition at a 6.43% in-place cap.",
@@ -93,14 +104,25 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-08-10T09:30:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T09:30:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Property-level counts (units, SF, keys) live inside each component; there is no single property denominator for a mixed-use block.",
   "year_built": 2019,
@@ -118,14 +140,25 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "components",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-08-10T11:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T11:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Each use rolls up by use type (not by tenancy). Component NOIs sum to the property NOI (CC-12). allocation_pct is a stated underwriter judgment and sums to 1.0 (MU-05); it gates every price-per metric.",
   "multifamily": {
@@ -164,14 +197,25 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "actor": "system",
-    "timestamp": "2026-08-10T12:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T12:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Property NOI is the plain sum of the component NOIs — the §3a footing invariant. There is no property-level income/expense breakdown; the breakdown lives per component.",
   "net_operating_income": 2572000
@@ -186,14 +230,25 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-08-10T13:30:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T13:30:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "One property-level loan covers all three uses (RFC 0019 §4). No component carries its own debt_structure (MU-06); component-level tranches are deferred to RFC 0026.",
   "loan_type": "permanent",
@@ -221,17 +276,30 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "actor": "system",
-    "timestamp": "2026-08-10T13:35:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T13:35:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "equity_metrics.equity_total equals the stated sources.equity_sponsor (14,000,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
-  "equity_metrics": { "equity_total": 14000000 },
+  "equity_metrics": {
+    "equity_total": 14000000
+  },
   "sources": {
     "loan_amount": 26000000,
     "equity_sponsor": 14000000,
@@ -254,15 +322,26 @@ intensive metric divides its own allocated share instead.
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "actor": "jared",
-    "timestamp": "2026-08-10T14:30:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-10T14:30:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "One purchase price buys the whole block. The going-in cap rate is the property NOI over that single price — an arithmetic fact about this deal, not a blended market cap rate.",
   "purchase_price": 40000000,
@@ -282,18 +361,25 @@ Financial-validity engine run over the consolidated property figures; per-compon
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/financialValidityChecker",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Consolidated-property basis; component NOIs foot to the property NOI (CC-12)."
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Consolidated-property basis; component NOIs foot to the property NOI (CC-12)."
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "overall_status": "clean",
   "financial_validity": [
@@ -338,18 +424,25 @@ Consolidated-property sizing against the three standard constraints; the governi
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T15:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T15:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "noi_underwritten": 2572000,
@@ -389,18 +482,25 @@ Roosevelt Row Mixed-Use Ventures LLC — single-principal sponsorship; figures P
 {
   "_meta": {
     "section": "borrower_sponsor",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T15:00:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T15:00:00Z",
+      "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "principals": [
     {
@@ -445,18 +545,25 @@ Roosevelt Row / Downtown Phoenix mixed-use fundamentals as of 2026-08.
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T15:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Broker survey and published market reports; refresh before credit committee."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T15:00:00Z",
+      "notes": "Broker survey and published market reports; refresh before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "market": "Phoenix Metro",
   "submarket": "Roosevelt Row / Downtown Phoenix",

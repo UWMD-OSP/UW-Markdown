@@ -8,7 +8,7 @@ import { buildAgentContext, isContextReady, BANCROFT_LAYERS } from './context.js
 // ─── Shared fixture ───────────────────────────────────────────────────────────
 
 const MINIMAL_FILE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_TEST"
 deal_name: "Test Deal"
 created: "2026-01-01T00:00:00Z"
@@ -53,22 +53,30 @@ source_documents: []
 
 Garden-style multifamily in Phoenix.
 
-\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "wizard",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "total_units": 24,
@@ -81,22 +89,29 @@ Garden-style multifamily in Phoenix.
 
 ## Pipeline Log {#pipeline_log}
 
-\`\`\`json uw:section=pipeline_log source=engine ts=2026-01-01T00:00:00Z v=1 confidence=high
+\`\`\`json uw:section=pipeline_log source=system/engine ts=2026-01-01T00:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "engine",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": [
     {

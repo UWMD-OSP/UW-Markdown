@@ -27,7 +27,7 @@ function file(sections: Record<string, UWBlock | Record<string, UWBlock>>): Pars
   return { frontmatter: { asset_class: 'multifamily' } as ParsedUWFile['frontmatter'], sections,
     prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [], extensions: {}, superseded: {}, raw: '' };
 }
-const frontmatter = '---\nuw_version: "1.1"\ndeal_id: roles\nasset_class: multifamily\nlast_modified: "2026-09-11T00:00:00Z"\n---\n';
+const frontmatter = "---\nuw_version: \"3.0\"\ndeal_id: roles\nasset_class: multifamily\nlast_modified: \"2026-09-11T00:00:00Z\"\n---\n";
 const document = (role: unknown = 'primary') => `${frontmatter}Untouched prose.
 
 \`\`\`json uw:section=property source=manual v=1
@@ -145,7 +145,7 @@ describe('RFC 0040 trusted writers and integrity', () => {
   });
   it.each(['1.1', '2.0'])('preserves the %s annotation through Markdown, JSON, XML and CSV envelopes', async (version) => {
     let source = document();
-    if (version === '2.0') source = source.replace('uw_version: "1.1"', 'uw_version: "2.0"').replace(JSON.stringify(meta('property'), null, 2).split('\n').join('\n  '), JSON.stringify(reshapeMetaV1toV2(meta('property')), null, 2).split('\n').join('\n  '));
+    if (version === '2.0') source = source.replace("uw_version: \"3.0\"", "uw_version: \"3.0\"").replace(JSON.stringify(meta('property'), null, 2).split('\n').join('\n  '), JSON.stringify(reshapeMetaV1toV2(meta('property')), null, 2).split('\n').join('\n  '));
     const parsed = parseUWFile(source); const envelope = toUWEnvelope(parsed);
     expect(getSection(parseUWFile(stringifyUWX(envelope)), 'property')?.content['_role']).toBe('primary');
     const representations = [parseUWJson(stringifyUWJson(parsed)), await parseUWXml(await stringifyUWXml(envelope)), await decodeUWCSVBundle(await encodeUWCSVBundle(envelope))];

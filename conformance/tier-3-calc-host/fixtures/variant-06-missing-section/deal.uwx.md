@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-VARIANT-06
 deal_name: "RFC 0066 No debt_structure section"
 created: "2026-10-02T00:00:00Z"
@@ -27,13 +27,24 @@ A missing section is not an ambiguity: the path stays `null` and the result is `
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-10-02T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 10000000
 }

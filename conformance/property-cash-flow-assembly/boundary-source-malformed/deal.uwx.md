@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: SYNTHETIC-PROPERTY-CASH-FLOWS
 deal_name: "Synthetic assembly test ledger"
 asset_class: office

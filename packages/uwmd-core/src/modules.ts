@@ -10,6 +10,10 @@ import { parseExpression, type Expr } from './calc/parser.js';
 import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
   BLOCK_ROLES,
+  CONFORMANCE_PROFILES,
+  readConformanceTier,
+  type ConformanceTier,
+  type ConformanceProfile,
   SUPPORTED_FORMAT_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
   type ModuleCalcDecl,
@@ -63,7 +67,7 @@ const FIELD_VIEW_KINDS: readonly string[] = [
 // silently contributes nothing — `manifest_version` is the forward-compat lever.
 const MANIFEST_KEYS: readonly string[] = [
   'manifest_version', 'id', 'name', 'version', 'description', 'authors', 'license',
-  'requires_protocol', 'requires_format', 'requires_tier', 'asset_classes',
+  'requires_protocol', 'requires_format', 'requires_tier', 'requires_conformance', 'requires_profiles', 'asset_classes',
   'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
   'view_models', 'ui', 'agent_layers', 'depends_on', 'signature',
   'declares_asset_classes',
@@ -135,7 +139,10 @@ export function ownsDeclaration(
 }
 
 export interface LoadModuleOptions {
+  // RFC 0081 Phase 4: delete hostTier and its old vocabulary.
   hostTier?: ViewerTier;
+  hostConformance?: ConformanceTier;
+  hostProfiles?: readonly ConformanceProfile[];
   protocolVersion?: string;
   formatVersion?: string;
   alreadyLoaded?: readonly ModuleManifest[];
@@ -593,7 +600,8 @@ function validateModuleManifest(
   requireString(errors, manifest, 'license');
   requireString(errors, manifest, 'requires_protocol');
   requireString(errors, manifest, 'requires_format');
-  requireString(errors, manifest, 'requires_tier');
+  // RFC 0081 Phase 4: delete the requires_tier fallback.
+  requireString(errors, manifest, manifest.requires_conformance !== undefined ? 'requires_conformance' : 'requires_tier');
 
   if (manifest.manifest_version !== '1') {
     errors.push(moduleError('PROTO-MOD-002', 'Unsupported module manifest_version.', 'manifest_version'));
@@ -615,7 +623,12 @@ function validateModuleManifest(
     const shape = checkSignatureShape(manifest.signature);
     if (shape) errors.push(shape.error);
   }
-  if (!TIERS.includes(manifest.requires_tier)) {
+  if (manifest.requires_conformance !== undefined) {
+    if (!['reader', 'verifier'].includes(manifest.requires_conformance)) errors.push(moduleError('PROTO-MOD-006', 'Module requires_conformance must be reader or verifier.', 'requires_conformance'));
+    const profiles = manifest.requires_profiles;
+    if (profiles !== undefined && (!Array.isArray(profiles) || profiles.some(p => !CONFORMANCE_PROFILES.includes(p)) || new Set(profiles).size !== profiles.length)) errors.push(moduleError('PROTO-MOD-006', 'Module requires_profiles must be unique known profiles.', 'requires_profiles'));
+  // RFC 0081 Phase 4: delete the old tier validation branch.
+  } else if (!manifest.requires_tier || !TIERS.includes(manifest.requires_tier)) {
     errors.push(moduleError('PROTO-MOD-006', 'Module requires_tier is not a valid viewer tier.', 'requires_tier'));
   }
 
@@ -1015,13 +1028,19 @@ function validateCompatibility(
   manifest: ModuleManifest,
   opts: LoadModuleOptions,
 ): void {
-  const hostTier = opts.hostTier ?? 'tier-3-calc-host';
-  if (TIERS.indexOf(hostTier) < TIERS.indexOf(manifest.requires_tier)) {
-    errors.push(moduleError(
-      'PROTO-MOD-029',
-      `Host tier ${hostTier} does not satisfy required tier ${manifest.requires_tier}.`,
-      'requires_tier',
-    ));
+  if (manifest.requires_conformance !== undefined) {
+    // RFC 0081 Phase 4: delete hostTier alias resolution.
+    const host = opts.hostConformance ?? (opts.hostTier ? readConformanceTier(opts.hostTier)?.tier : undefined) ?? 'verifier';
+    const profiles = opts.hostProfiles ?? CONFORMANCE_PROFILES;
+    if ((host === 'reader' && manifest.requires_conformance === 'verifier') || manifest.requires_profiles?.some(p => !profiles.includes(p))) {
+      errors.push(moduleError('PROTO-MOD-029', 'Host conformance or profiles do not satisfy the module.', 'requires_conformance'));
+    }
+  } else {
+    // RFC 0081 Phase 4: delete legacy manifest and host tier compatibility.
+    const hostTier = opts.hostTier ?? 'tier-3-calc-host';
+    if (TIERS.indexOf(hostTier) < TIERS.indexOf(manifest.requires_tier!)) {
+      errors.push(moduleError('PROTO-MOD-029', `Host tier ${hostTier} does not satisfy required tier ${manifest.requires_tier}.`, 'requires_tier'));
+    }
   }
   // An explicitly supplied version is checked alone; the host default is the
   // SUPPORTED set — a 2.0 implementation still honors the 1.x contracts for

@@ -1,6 +1,6 @@
 {
   "frontmatter": {
-    "uw_version": "1.1",
+    "uw_version": "3.0",
     "deal_id": "uw_2026_a3f9b1",
     "deal_name": "Parkview Apartments — Glendale, AZ",
     "created": "2026-04-24T09:00:00Z",
@@ -1943,18 +1943,25 @@
     {
       "_meta": {
         "section": "pipeline_log",
-        "version": 1,
-        "superseded": false,
-        "source": "system/unspecified",
-        "agent_id": "system",
-        "agent_version": "1.1.0",
-        "actor": "system",
-        "timestamp": "2026-04-24T15:42:00Z",
-        "confidence": "high",
-        "human_review_required": false,
-        "flags": [],
-        "input_hash": null,
-        "notes": null
+        "provenance": {
+          "source": "system/unspecified",
+          "actor": "system",
+          "agent_id": "system",
+          "agent_version": "1.1.0",
+          "timestamp": "2026-04-24T15:42:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "entries": [
         {

@@ -229,7 +229,10 @@ describe('RFC 0069 — what the family never does', () => {
   it('does not read a component block as the roll', () => {
     const component = `
 \`\`\`json uw:section=rent_roll variant=dorm source=manual ts=2026-09-28T00:00:00Z v=1
-{ "_role": "component", "occupied_beds": -5 }
+{
+  "_role": "component",
+  "occupied_beds": -5
+}
 \`\`\`
 `;
     const source = `---

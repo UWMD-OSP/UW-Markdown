@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: DEAL-CAP-01
 deal_name: "Capability Token Conformance Deal"
 created: "2026-09-01T10:00:00Z"
@@ -29,18 +29,25 @@ key, which authenticates nothing.
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "net_operating_income": 480000
 }
@@ -50,18 +57,25 @@ key, which authenticates nothing.
 {
   "_meta": {
     "section": "risk_assessment",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "overall_rating": "moderate"
 }
@@ -71,18 +85,25 @@ key, which authenticates nothing.
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/uwmd",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "status": "clean"
 }

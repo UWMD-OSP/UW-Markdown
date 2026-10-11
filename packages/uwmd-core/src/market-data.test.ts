@@ -209,7 +209,7 @@ describe('createDocumentMarketData', () => {
     const deal = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: uw_test',
         'asset_class: multifamily',
         '---',
@@ -349,7 +349,7 @@ describe('promoteMarketObservation', () => {
     const deal = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: uw_promoted',
         'asset_class: multifamily',
         '---',
@@ -407,7 +407,7 @@ describe('promoteMarketObservation', () => {
 describe('parseMarketDataDocument', () => {
   const SOURCE = [
     '---',
-    'uw_version: "1.1"',
+    "uw_version: \"3.0\"",
     'document_profile: market-data-v1',
     'document_id: md:phx-multifamily:2026-Q2',
     'as_of: "2026-06-30"',

@@ -75,7 +75,7 @@ interface UWMeta {
 
 ```ts
 interface UWFrontmatter {
-  uw_version: string; deal_id: string; deal_name: string;
+  uw_version: "3.0" deal_id: string; deal_name: string;
   created: string; last_modified: string;
   property_address: string; city: string; state: string; zip: string;
   asset_class: AssetClass; asset_subtype?: string | null;

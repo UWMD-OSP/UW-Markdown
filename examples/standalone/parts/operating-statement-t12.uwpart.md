@@ -10,14 +10,23 @@ section: operating_statement
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "period": "2025-T12",
   "variant": "t12",

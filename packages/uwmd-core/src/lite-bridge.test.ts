@@ -165,7 +165,7 @@ describe('UWX bridge rendering and Lite projection', () => {
     const source = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: empty-array-roundtrip',
         'deal_name: Empty Array Roundtrip',
         'asset_class: multifamily',

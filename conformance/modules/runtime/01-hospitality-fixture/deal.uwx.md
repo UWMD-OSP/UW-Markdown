@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MOD-HOSP-001
 deal_name: "Boutique Hotel Austin"
 created: "2026-08-27T00:00:00Z"
@@ -33,34 +33,38 @@ the thing hotel operators most often get wrong.
 ## Property
 ```json uw:section=property source=manual ts=2026-08-27T00:00:00Z v=1 confidence=high
 {
-  "section_id": "property",
   "_meta": {
-    "section_id": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-27T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-27T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "key_count": 80,
-    "year_built": 1964,
-    "renovated_year": 2021,
-    "building_class": "B+",
-    "asset_subtype": "boutique",
-    "stories": 3,
-    "parking_spaces": 42,
-    "parking_type": "surface",
-    "condition": "good"
-  },
-  "_notes": null
+  "_notes": null,
+  "year_built": 1964,
+  "renovated_year": 2021,
+  "building_class": "B+",
+  "asset_subtype": "boutique",
+  "stories": 3,
+  "parking_spaces": 42,
+  "parking_type": "surface",
+  "condition": "good",
+  "keys": 80
 }
 ```
 
@@ -70,30 +74,33 @@ Trailing twelve months. 80 keys x 365 nights = 29,200 available room nights.
 Comp-set RevPAR of $160 comes from the STR report dated 2026-07-31.
 ```json uw:section=hotel_metrics source=manual ts=2026-08-27T00:00:00Z v=1 confidence=high
 {
-  "section_id": "hotel_metrics",
   "_meta": {
-    "section_id": "hotel_metrics",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-27T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "hotel_metrics",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-27T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "adr": 180,
-    "occupancy": 0.72,
-    "available_room_nights": 29200,
-    "key_count": 80,
-    "market_revpar": 160
-  },
-  "_notes": null
+  "_notes": null,
+  "adr": 180,
+  "occupancy": 0.72,
+  "available_room_nights": 29200,
+  "market_revpar": 160
 }
 ```
 
@@ -103,30 +110,34 @@ Comp-set RevPAR of $160 comes from the STR report dated 2026-07-31.
 the 13% the module warns at. That is the point of the fixture, not an error in it.
 ```json uw:section=hotel_brand source=manual ts=2026-08-27T00:00:00Z v=1 confidence=high
 {
-  "section_id": "hotel_brand",
   "_meta": {
-    "section_id": "hotel_brand",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-27T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "hotel_brand",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-27T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "flag": "Marriott Autograph Collection",
-    "franchise_fee_pct_of_rooms": 0.06,
-    "marketing_fund_pct": 0.03,
-    "loyalty_program_pct": 0.05,
-    "term_years": 20
-  },
-  "_notes": null
+  "_notes": null,
+  "flag": "Marriott Autograph Collection",
+  "franchise_fee_pct_of_rooms": 0.06,
+  "marketing_fund_pct": 0.03,
+  "loyalty_program_pct": 0.05,
+  "term_years": 20
 }
 ```
 
@@ -135,29 +146,33 @@ the 13% the module warns at. That is the point of the fixture, not an error in i
 Restaurant and bar, no banquet business.
 ```json uw:section=hotel_food_beverage source=manual ts=2026-08-27T00:00:00Z v=1 confidence=high
 {
-  "section_id": "hotel_food_beverage",
   "_meta": {
-    "section_id": "hotel_food_beverage",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-27T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "hotel_food_beverage",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-27T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "fb_revenue": 900000,
-    "fb_cogs": 270000,
-    "fb_labor": 380000,
-    "complimentary_breakfast_cost_per_occupied_room": 4.25
-  },
-  "_notes": null
+  "_notes": null,
+  "fb_revenue": 900000,
+  "fb_cogs": 270000,
+  "fb_labor": 380000,
+  "complimentary_breakfast_cost_per_occupied_room": 4.25
 }
 ```
 

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TAX-CONF
 asset_class: multifamily
 ---
@@ -9,7 +9,6 @@ asset_class: multifamily
   "expenses": {
     "real_estate_taxes": {
       "value": 58000,
-      "sale_triggers_reassessment": false,
       "reassessment": {
         "trigger": "sale",
         "jurisdiction": "Maricopa County, AZ",

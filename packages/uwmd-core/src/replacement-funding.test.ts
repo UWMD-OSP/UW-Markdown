@@ -242,7 +242,7 @@ describe('RFC 0070 canonical snapshot controls', () => {
   it('verifies Format 2.0 nested metadata without committing metadata', async () => {
     const original = source('outright-payment');
     const text = original
-      .replace('uw_version: "1.1"', 'uw_version: "2.0"')
+      .replace("uw_version: \"3.0\"", "uw_version: \"3.0\"")
       .replace(
         /\{\r?\n {2}"(loan_amount|uses|series)"/g,
         '{\n  "_meta": {"section":"test","lifecycle":{"revision":1},"provenance":{"source":"manual"}},\n  "$1"'

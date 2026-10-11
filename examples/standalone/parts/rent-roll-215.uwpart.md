@@ -11,14 +11,23 @@ collection_member: true
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "unit_id": "215",
   "tenant_name": "Desert Legal Group",

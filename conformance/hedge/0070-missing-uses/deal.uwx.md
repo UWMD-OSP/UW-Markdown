@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: HDG-CONF
 asset_class: office
 currency_code: USD
@@ -11,7 +11,6 @@ currency_code: USD
   "rate_type": "floating",
   "rate_index": "sofr",
   "rate_spread_bps": 275,
-  "rate_cap_pct": 0.035,
   "rate_hedge": {
     "instrument": "rate_cap",
     "notional": 30000000,

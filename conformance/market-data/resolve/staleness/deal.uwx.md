@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: uw_md_conformance
 asset_class: multifamily
 ---
@@ -10,14 +10,23 @@ asset_class: multifamily
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "ts": "2026-06-01T00:00:00Z"
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   }
 }
 ```

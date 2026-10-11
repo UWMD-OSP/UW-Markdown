@@ -8,7 +8,7 @@ import { computeBlockHash, verifyChain } from './integrity.js';
 import type { EditOperation } from './protocol.js';
 
 const BASE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_INT"
 deal_name: "Integrity Test Deal"
 created: "2026-01-01T00:00:00Z"
@@ -37,18 +37,25 @@ source_documents: []
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 24,
   "year_built": 1995,

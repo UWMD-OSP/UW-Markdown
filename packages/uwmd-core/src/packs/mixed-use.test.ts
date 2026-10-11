@@ -71,7 +71,7 @@ function fixture(opts: { multifamilyAllocation?: number | null } = {}): string {
 
   return [
     '---',
-    'uw_version: "1.1"',
+    "uw_version: \"3.0\"",
     'deal_id: "uw_2026_mixed_001"',
     'deal_name: "Cactus Corners Mixed-Use — Tempe, AZ"',
     'asset_class: "mixed_use"',

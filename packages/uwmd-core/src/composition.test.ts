@@ -59,7 +59,7 @@ function fragment(row: Record<string, unknown>): UWPart {
 function externalRecord(partIds: string[]): string {
   return [
     '---',
-    'uw_version: "1.1"',
+    "uw_version: \"3.0\"",
     'deal_id: uw_composition',
     'asset_class: multifamily',
     '---',
@@ -90,7 +90,7 @@ function externalRecord(partIds: string[]): string {
 function inlineRecord(rows: Record<string, unknown>[]): string {
   return [
     '---',
-    'uw_version: "1.1"',
+    "uw_version: \"3.0\"",
     'deal_id: uw_composition',
     'asset_class: multifamily',
     '---',
@@ -358,7 +358,7 @@ describe('inherited_assumption (RFC 0021 §5)', () => {
     parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: uw_child',
         'asset_class: multifamily',
         '---',

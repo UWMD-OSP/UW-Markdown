@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 document_profile: lease-abstract-v1
 document_id: doc:parkview:anchor-tenant
 lease_id: lease:anchor-tenant
@@ -23,14 +23,23 @@ the reviewed materials. No rent or cash-flow figure is calculated here.
 {
   "_meta": {
     "section": "deal_context",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "profile": "lease-abstract-v1",
   "document_id": "doc:parkview:anchor-tenant",
@@ -38,39 +47,62 @@ the reviewed materials. No rent or cash-flow figure is calculated here.
   "artifact_kind": "executed_lease",
   "tenant": "Anchor Tenant LLC",
   "premises": "Suite 210",
-  "governing_documents": ["source:anchor-lease"],
+  "governing_documents": [
+    "source:anchor-lease"
+  ],
   "lease_context": {
     "suite": {
       "value": "210",
-      "source_ref": { "source": "source:anchor-lease", "locator": "§1.1, p. 2" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§1.1, p. 2"
+      }
     },
     "status": {
       "value": "executed",
-      "source_ref": { "source": "source:anchor-lease", "locator": "Cover, p. 1" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "Cover, p. 1"
+      }
     }
   },
   "lease_term": {
     "commencement": {
       "value": "2024-03-01",
-      "source_ref": { "source": "source:anchor-lease", "locator": "§2.1, p. 5" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§2.1, p. 5"
+      }
     },
     "expiration": {
       "value": "2034-02-28",
-      "source_ref": { "source": "source:anchor-lease", "locator": "§2.1, p. 5" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§2.1, p. 5"
+      }
     },
     "renewal_options": {
       "value": 2,
-      "source_ref": { "source": "source:anchor-lease", "locator": "§2.3, p. 6" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§2.3, p. 6"
+      }
     }
   },
   "lease_economics": {
     "base_rent_annual": {
       "value": 184800,
-      "source_ref": { "source": "source:anchor-lease", "locator": "§4.1, p. 11" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§4.1, p. 11"
+      }
     },
     "free_rent_months": {
       "value": 1,
-      "source_ref": { "source": "source:anchor-lease", "locator": "§4.4, p. 13" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§4.4, p. 13"
+      }
     },
     "percentage_rent": {
       "value": null,
@@ -80,7 +112,10 @@ the reviewed materials. No rent or cash-flow figure is calculated here.
   "lease_obligations": {
     "permitted_use": {
       "value": "Medical office",
-      "source_ref": { "source": "source:anchor-lease", "locator": "§7.1, p. 24" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§7.1, p. 24"
+      }
     },
     "co_tenancy_remedy": {
       "value": null,
@@ -94,7 +129,10 @@ the reviewed materials. No rent or cash-flow figure is calculated here.
     },
     "security_deposit": {
       "value": 30800,
-      "source_ref": { "source": "source:anchor-lease", "locator": "§9.1, p. 31" }
+      "source_ref": {
+        "source": "source:anchor-lease",
+        "locator": "§9.1, p. 31"
+      }
     }
   },
   "lease_abstract_findings": {

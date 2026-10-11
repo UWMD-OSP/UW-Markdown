@@ -99,13 +99,16 @@ export function checkReplacementFundingStructure(
     // RFC 0076 D2: any current block stating a hedge, as RFC 0070 scanned for funding.
     const payloads = sectionBlocks(parsed.sections.debt_structure).map(blockPayload);
     if (payloads.some((p) => deepGet(p, at) != null)) out.funding = 'invalid';
-    if (payloads.some((p) => deepGet(p, 'rate_hedge') != null))
+    // RFC 0081 Phase 4: delete the old any-hedge selection branch.
+    if (payloads.some((p) => { const h = deepGet(p, 'rate_hedge'); return h != null && (parsed.frontmatter.uw_version !== '3.0' || !record(h) || ['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption'].some(k => Object.hasOwn(h, k))); }))
       return refuse('a stated rate_hedge requires unambiguous property-level debt selection');
     return out;
   }
   if (!debt.block) return out;
   const hedge = deepGet(blockPayload(debt.block), 'rate_hedge');
   if (hedge == null) return out;
+  // RFC 0081 Phase 4: delete the old any-hedge cash-selection branch.
+  if (parsed.frontmatter.uw_version === '3.0' && record(hedge) && !['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption', 'replacement_funding'].some(k => Object.hasOwn(hedge, k))) return out;
   // RFC 0076 D3: HDG-05 and ESC-04 need the cash side for any stated hedge.
   // The debt-only rules, HDG-07 here, still run first.
   const sourcesRefused =

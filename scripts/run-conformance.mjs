@@ -2108,7 +2108,7 @@ async function runPackages() {
 
   // Invariants, asserted without baselines so they bind any implementation.
   const encoder = new TextEncoder();
-  const dealText = '---\nuw_version: "1.1"\ndeal_id: rt\n---\n';
+  const dealText = "---\nuw_version: \"3.0\"\ndeal_id: rt\n---\n";
   const pdf = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0xff, 0xfe, 0x00, 0x80]);
   try {
     const manifest = {
@@ -2986,7 +2986,7 @@ async function runPropertyCashFlowAssembly() {
           throw new Error('Source tie ordering mismatch');
         if (expected.metrics) {
           const metricDoc = parseUWFile([
-            '---', 'uw_version: "2.0"', '---', '',
+            '---', "uw_version: \"3.0\"", '---', '',
             '```json uw:section=cash_flow_series variant=base', JSON.stringify(result.series), '```',
           ].join('\n'));
           const decls = ['xirr', 'xnpv', 'moic', 'total_net'].map(metric => ({ id: metric, metric, series_path: 'cash_flow_series', variant: 'base', ...(metric === 'xnpv' ? { rate: 0.08 } : {}) }));
@@ -3357,7 +3357,7 @@ async function runLocale() {
   }
   const base = readFileSync(join(LOCALE_DIR, 'deal.uwx.md'), 'utf8');
   const withLocale = (tag) =>
-    tag === 'en-US' ? base : base.replace('uw_version: "1.1"', `uw_version: "1.1"\nlocale: ${tag}`);
+    tag === 'en-US' ? base : base.replace("uw_version: \"3.0\"", `uw_version: "1.1"\nlocale: ${tag}`);
 
   const scenarios = readdirSync(LOCALE_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory())

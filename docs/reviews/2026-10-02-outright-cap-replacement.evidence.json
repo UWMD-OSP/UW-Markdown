@@ -120,13 +120,11 @@
     {
       "name": "replace_initial_premium_inflated",
       "relevant_codes": [
-        "ESC-04",
-        "HDG-05"
+        "ESC-04"
       ],
       "all_codes": [
         "CC-14",
-        "ESC-04",
-        "HDG-05"
+        "ESC-04"
       ],
       "issues": [
         {

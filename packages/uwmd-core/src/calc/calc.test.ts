@@ -23,7 +23,7 @@ import {
 } from '../browser.js';
 
 const FIXTURE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_test"
 deal_name: "Test"
 created: "2026-01-01T00:00:00Z"
@@ -57,20 +57,29 @@ quick_metrics:
 
 \`\`\`json uw:section=noi source=manual confidence=high
 {
-  "section_id": "noi",
   "_meta": {
-    "section_id": "noi",
-    "version": 1,
-    "timestamp": "2026-01-01T00:00:00Z",
-    "source": "manual",
-    "actor": "tester",
-    "confidence": "high"
+    "section": "noi",
+    "provenance": {
+      "source": "manual",
+      "actor": "tester",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
-  "content": {
-    "egi": 800000,
-    "operating_expenses": 375000,
-    "noi": 425000
-  }
+  "egi": 800000,
+  "operating_expenses": 375000,
+  "noi": 425000
 }
 \`\`\`
 `;
@@ -675,7 +684,7 @@ describe('evaluateCalc — the quantization boundary', () => {
 
 describe('RFC 0041 period-indexed path navigation and array offsets', () => {
   const PERIOD_FIXTURE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: PERIOD-TEST
 asset_class: multifamily
 status: draft
@@ -684,26 +693,70 @@ deal_stage: underwriting
 
 \`\`\`json uw:section=dcf source=manual confidence=high
 {
-  "section_id": "dcf",
-  "_meta": { "section_id": "dcf", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
-  "content": {
-    "annual_cash_flows": [
-      { "year": 1, "noi": 100000, "net_cash_flow": 80000 },
-      { "year": 2, "noi": 110000, "net_cash_flow": 88000 },
-      { "year": 3, "noi": 120000, "net_cash_flow": 95000 }
-    ]
-  }
+  "_meta": {
+    "section": "dcf",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
+  },
+  "annual_cash_flows": [
+    {
+      "year": 1,
+      "noi": 100000,
+      "net_cash_flow": 80000
+    },
+    {
+      "year": 2,
+      "noi": 110000,
+      "net_cash_flow": 88000
+    },
+    {
+      "year": 3,
+      "noi": 120000,
+      "net_cash_flow": 95000
+    }
+  ]
 }
 \`\`\`
 
 \`\`\`json uw:section=noi_model source=manual confidence=high
 {
-  "section_id": "noi_model",
-  "_meta": { "section_id": "noi_model", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
-  "content": {
-    "projections": {
-      "year_1": { "projected_noi": 100000 },
-      "year_2": { "projected_noi": 110000 }
+  "_meta": {
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
+  },
+  "projections": {
+    "year_1": {
+      "projected_noi": 100000
+    },
+    "year_2": {
+      "projected_noi": 110000
     }
   }
 }
@@ -711,27 +764,64 @@ deal_stage: underwriting
 
 \`\`\`json uw:section=lease_up_schedule variant=base source=manual confidence=high
 {
-  "section_id": "lease_up_schedule",
-  "_meta": { "section_id": "lease_up_schedule", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
-  "content": {
-    "period_granularity": "quarterly",
-    "schedule": [
-      { "period": "2028-Q1", "rent_revenue": 25000 },
-      { "period": "2028-Q2", "rent_revenue": 30000 }
-    ]
-  }
+  "_meta": {
+    "section": "lease_up_schedule",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
+  },
+  "period_granularity": "quarterly",
+  "schedule": [
+    {
+      "period": "2028-Q1",
+      "rent_revenue": 25000
+    },
+    {
+      "period": "2028-Q2",
+      "rent_revenue": 30000
+    }
+  ]
 }
 \`\`\`
 
 \`\`\`json uw:section=cash_flow_series variant=base source=manual confidence=high
 {
-  "section_id": "cash_flow_series",
-  "_meta": { "section_id": "cash_flow_series", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual" },
-  "content": {
-    "series": [
-      { "date": "2028-02-29", "amount": 45000 }
-    ]
-  }
+  "_meta": {
+    "section": "cash_flow_series",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
+  },
+  "series": [
+    {
+      "date": "2028-02-29",
+      "amount": 45000
+    }
+  ]
 }
 \`\`\`
 `;
@@ -908,7 +998,7 @@ describe('is_calendar_date (RFC 0071)', () => {
   // unquoted YAML date the strict subset must keep as a string; a JSON section
   // carries the shapes YAML cannot (arrays, objects).
   const DATE_DOC = `---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: "uw_date_probe"
 asset_class: office
 probe_quoted: "2026-10-03"
@@ -920,17 +1010,37 @@ probe_bool: true
 
 \`\`\`json uw:section=date_probe source=manual confidence=high
 {
-  "section_id": "date_probe",
-  "_meta": { "section_id": "date_probe", "version": 1, "timestamp": "2026-01-01T00:00:00Z", "source": "manual", "actor": "tester", "confidence": "high" },
-  "content": {
-    "valid": "2024-02-29",
-    "impossible": "2026-02-30",
-    "date_time": "2026-10-03T00:00:00Z",
-    "number": 20261003,
-    "boolean": false,
-    "null_value": null,
-    "array": ["2026-10-03"],
-    "object": { "date": "2026-10-03" }
+  "_meta": {
+    "section": "date_probe",
+    "provenance": {
+      "source": "manual",
+      "actor": "tester",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
+  },
+  "valid": "2024-02-29",
+  "impossible": "2026-02-30",
+  "date_time": "2026-10-03T00:00:00Z",
+  "number": 20261003,
+  "boolean": false,
+  "null_value": null,
+  "array": [
+    "2026-10-03"
+  ],
+  "object": {
+    "date": "2026-10-03"
   }
 }
 \`\`\`

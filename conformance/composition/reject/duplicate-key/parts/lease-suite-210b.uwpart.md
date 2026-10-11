@@ -11,13 +11,22 @@ collection_member: true
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "document/rent_roll",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "ts": "2026-06-01T00:00:00Z"
+    "provenance": {
+      "source": "document/rent_roll",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "unit_id": "210",
   "tenant_name": "Conflicting Tenant LLC",

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-IRR-04
 deal_name: "IRR with a root on the bracket endpoint"
 created: "2026-08-15T10:00:00Z"

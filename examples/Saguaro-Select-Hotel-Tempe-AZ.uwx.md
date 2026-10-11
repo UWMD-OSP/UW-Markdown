@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_hospitality_001"
 deal_name: "Saguaro Select Hotel - Tempe, AZ"
 created: "2026-08-11T09:00:00Z"
@@ -63,18 +63,25 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "keys": 142,
@@ -98,31 +105,49 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Hospitality has no lease-based rent roll. This section carries the trailing-twelve room-night statistics that stand in for one: available room nights are keys x 365, and occupied room nights come from the STR report.",
-  "keys": 142,
   "available_room_nights": 51830,
   "occupied_room_nights": 38000,
   "occupancy": 0.73316612,
-  "adr": 160.0,
+  "adr": 160,
   "revpar": 117.3065792012,
   "vacancy_pct": 0.26683388,
   "segmentation": [
-    { "segment": "transient", "room_nights": 21280, "adr": 168.5 },
-    { "segment": "group", "room_nights": 9120, "adr": 152.0 },
-    { "segment": "contract", "room_nights": 7600, "adr": 141.25 }
+    {
+      "segment": "transient",
+      "room_nights": 21280,
+      "adr": 168.5
+    },
+    {
+      "segment": "group",
+      "room_nights": 9120,
+      "adr": 152
+    },
+    {
+      "segment": "contract",
+      "room_nights": 7600,
+      "adr": 141.25
+    }
   ]
 }
 ```
@@ -133,18 +158,25 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "USALI-shaped. Gross operating profit is struck after departmental and undistributed expenses; the management fee, fixed charges, and the FF&E reserve fall below GOP to reach NOI.",
   "income": {
@@ -173,7 +205,7 @@ the sources & uses rather than out of operations.
   "net_operating_income": 1961600,
   "expense_ratio": 0.7157101449,
   "gop_margin": 0.4177681159,
-  "adr_growth_pct_y1": 0.0,
+  "adr_growth_pct_y1": 0,
   "revpar_per_key": 42816.9014084507
 }
 ```
@@ -184,18 +216,25 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "purchase_price": 23800000,
@@ -211,18 +250,25 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "loan_amount": 14280000,
@@ -244,22 +290,30 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "_notes": null,
   "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (11,370,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
-  "equity_metrics": { "equity_total": 11370000 },
+  "equity_metrics": {
+    "equity_total": 11370000
+  },
   "sources": {
     "loan_amount": 14280000,
     "sponsor_equity": 11370000,
@@ -283,18 +337,25 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "dcf",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "assumptions": {
@@ -315,18 +376,25 @@ the sources & uses rather than out of operations.
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "system/engine",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-11T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-11T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": [
     {
@@ -359,19 +427,26 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "system/extractor",
-    "resolution": "ai_extracted",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    "provenance": {
+      "source": "system/extractor",
+      "resolution": "ai_extracted",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "period": "t12",
   "period_end": "2026-06-30",
@@ -395,18 +470,25 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "noi_underwritten": 1961600,
@@ -446,18 +528,25 @@ Saguaro Hospitality Ventures LLC — single-principal sponsorship; figures PFS-s
 {
   "_meta": {
     "section": "borrower_sponsor",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "principals": [
     {
@@ -502,18 +591,25 @@ Tempe / Airport select-service hotel fundamentals as of 2026-08.
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Broker survey and published market reports; refresh before credit committee."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Broker survey and published market reports; refresh before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "market": "Phoenix Metro",
   "submarket": "Tempe / Airport",
@@ -545,18 +641,25 @@ Financial-validity engine run over the sections above.
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/financialValidityChecker",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "overall_status": "clean",
   "financial_validity": [

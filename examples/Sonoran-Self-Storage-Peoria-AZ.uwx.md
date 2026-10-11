@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_self_storage_001"
 deal_name: "Sonoran Self Storage - Peoria, AZ"
 created: "2026-06-05T09:00:00Z"
@@ -61,18 +61,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "rentable_units": 880,
@@ -95,18 +102,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "rentable_units": 880,
@@ -117,8 +131,18 @@ growth and continued physical occupancy above 85%.
   "economic_vacancy_pct": 0.15,
   "average_monthly_rent_per_occupied_unit": 118.42,
   "unit_mix": [
-    { "type": "drive_up", "units": 598, "occupied_units": 524, "nrsf": 55760 },
-    { "type": "climate_control", "units": 282, "occupied_units": 236, "nrsf": 26240 }
+    {
+      "type": "drive_up",
+      "units": 598,
+      "occupied_units": 524,
+      "nrsf": 55760
+    },
+    {
+      "type": "climate_control",
+      "units": 282,
+      "occupied_units": 236,
+      "nrsf": 26240
+    }
   ]
 }
 ```
@@ -129,18 +153,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "income": {
@@ -181,18 +212,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "purchase_price": 9600000,
@@ -208,18 +246,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "loan_amount": 6240000,
@@ -241,22 +286,30 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "_notes": null,
   "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (3,560,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
-  "equity_metrics": { "equity_total": 3560000 },
+  "equity_metrics": {
+    "equity_total": 3560000
+  },
   "sources": {
     "loan_amount": 6240000,
     "sponsor_equity": 3560000,
@@ -279,18 +332,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "dcf",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "assumptions": {
@@ -311,18 +371,25 @@ growth and continued physical occupancy above 85%.
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "system/engine",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-06-05T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-06-05T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": [
     {
@@ -355,19 +422,26 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "system/extractor",
-    "resolution": "ai_extracted",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    "provenance": {
+      "source": "system/extractor",
+      "resolution": "ai_extracted",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "period": "t12",
   "period_end": "2026-06-30",
@@ -391,18 +465,25 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "noi_underwritten": 672000,
@@ -442,18 +523,25 @@ Sonoran Storage Partners LLC — single-principal sponsorship; figures PFS-state
 {
   "_meta": {
     "section": "borrower_sponsor",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "principals": [
     {
@@ -498,18 +586,25 @@ Peoria / Northwest Valley self-storage fundamentals as of 2026-08.
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Broker survey and published market reports; refresh before credit committee."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Broker survey and published market reports; refresh before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "market": "Phoenix Metro",
   "submarket": "Peoria / Northwest Valley",
@@ -541,18 +636,25 @@ Financial-validity engine run over the sections above.
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/financialValidityChecker",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "overall_status": "clean",
   "financial_validity": [

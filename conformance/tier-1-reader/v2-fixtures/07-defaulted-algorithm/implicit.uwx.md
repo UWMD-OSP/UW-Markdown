@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: v2-007
 deal_name: Defaulted Algorithm Digest
 asset_class: multifamily

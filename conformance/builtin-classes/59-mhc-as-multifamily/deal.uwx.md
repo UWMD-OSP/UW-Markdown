@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: "uw_2026_mhc_desert_palms"
 deal_name: "Desert Palms MHC — Apache Junction, AZ"
 created: "2026-10-10T12:00:00Z"

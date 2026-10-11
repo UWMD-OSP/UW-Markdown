@@ -375,36 +375,10 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
       {
         "id": "hotel_metrics",
         "display_name": "Hotel Operating Metrics",
-        "required": true,
+        "required": false,
         "schema": {
           "type": "object",
-          "required": [
-            "adr",
-            "occupancy",
-            "available_room_nights",
-            "key_count"
-          ],
           "properties": {
-            "adr": {
-              "type": "number",
-              "minimum": 0,
-              "description": "Average daily rate, in dollars."
-            },
-            "occupancy": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "A FRACTION, not a percent: 0.72, never 72. Format-wide rule."
-            },
-            "available_room_nights": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Keys x days in the period. Not occupied room nights."
-            },
-            "key_count": {
-              "type": "integer",
-              "minimum": 0
-            },
             "market_revpar": {
               "type": [
                 "number",
@@ -412,7 +386,8 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
               ],
               "description": "Comp-set RevPAR for the same period. Null means no comp set was obtained — which is different from a comp set showing zero."
             }
-          }
+          },
+          "additionalProperties": false
         }
       },
       {
@@ -490,7 +465,7 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
         "code": "CC-HOSP-02",
         "severity": "error",
         "message": "Occupancy must be between 0 and 1 (use a fraction, not a percentage).",
-        "rule": "hotel_metrics.occupancy >= 0 && hotel_metrics.occupancy <= 1"
+        "rule": "rent_roll.occupancy == null || (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)"
       },
       {
         "code": "CC-HOSP-03",
@@ -504,35 +479,9 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
         "section_id": "hotel_metrics",
         "display_name": "Hotel Operating Metrics",
         "display_order": 30,
-        "description": "The four numbers every hotel underwrite starts from, plus the market comp.",
-        "primary_fields": [
-          {
-            "path": "adr",
-            "label": "ADR",
-            "kind": "currency",
-            "primary": true,
-            "decimals": 2
-          },
-          {
-            "path": "occupancy",
-            "label": "Occupancy",
-            "kind": "percent",
-            "primary": true,
-            "decimals": 1
-          },
-          {
-            "path": "key_count",
-            "label": "Keys",
-            "kind": "count",
-            "primary": true
-          }
-        ],
+        "description": "Optional comp-set RevPAR; operating inputs live in rent_roll and property.",
+        "primary_fields": [],
         "detail_fields": [
-          {
-            "path": "available_room_nights",
-            "label": "Available Room Nights",
-            "kind": "count"
-          },
           {
             "path": "market_revpar",
             "label": "Market RevPAR",

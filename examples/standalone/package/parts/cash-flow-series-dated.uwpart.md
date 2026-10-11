@@ -10,21 +10,38 @@ section: cash_flow_series
 {
   "_meta": {
     "section": "cash_flow_series",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "series_id": "parkview-stated-ledger",
   "currency": "USD",
   "period_kind": "date",
   "flows": [
-    { "date": "2026-01-01", "amount": -48000000, "label": "acquisition" },
-    { "date": "2026-12-31", "amount": 2140000, "label": "stated_unlevered_cash" }
+    {
+      "date": "2026-01-01",
+      "amount": -48000000,
+      "label": "acquisition"
+    },
+    {
+      "date": "2026-12-31",
+      "amount": 2140000,
+      "label": "stated_unlevered_cash"
+    }
   ],
   "calculation_boundary": "Dated stated cash lines; no return metric is calculated in this fragment."
 }

@@ -1227,7 +1227,10 @@ export interface ModuleManifest {
   requires_protocol: string;        // semver range
   requires_format: string;          // semver range
   /** Protocol 2.x tier vocabulary, unchanged by RFC 0078 (§VII.4). */
-  requires_tier: ViewerTier;
+  // RFC 0081 Phase 4: delete the interim requires_tier spelling.
+  requires_tier?: ViewerTier;
+  requires_conformance?: ConformanceTier;
+  requires_profiles?: ConformanceProfile[];
   asset_classes?: AssetClass[];
   deal_stages?: DealStage[];
   sections?: ModuleSectionDecl[];

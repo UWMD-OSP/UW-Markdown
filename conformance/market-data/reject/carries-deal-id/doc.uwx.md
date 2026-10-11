@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 document_profile: market-data-v1
 document_id: md:x
 as_of: "2026-06-30"
@@ -15,14 +15,23 @@ deal_id: uw_parkview
 {
   "_meta": {
     "section": "market_observations",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "market_data",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "ts": "2026-06-30T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "market_data",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "observations": [
     {

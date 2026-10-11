@@ -58,7 +58,10 @@ const SERIES_BLOCK = `
 \`\`\`json uw:section=cash_flow_series variant=recoveries source=manual ts=2026-09-16T00:00:00Z v=1
 {
   "series": [
-    { "date": "2026-03-15", "amount": 7299.2 }
+    {
+      "date": "2026-03-15",
+      "amount": 7299.2
+    }
   ]
 }
 \`\`\`

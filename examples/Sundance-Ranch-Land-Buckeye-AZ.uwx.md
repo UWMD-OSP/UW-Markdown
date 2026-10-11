@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_land_001"
 deal_name: "Sundance Ranch - Buckeye, AZ"
 created: "2026-08-13T09:00:00Z"
@@ -79,18 +79,25 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Usable acres are gross acres net of the regional wash, drainage easements, and dedicated open space. Entitled units is the final-plat lot count, not a density estimate.",
   "gross_acres": 160,
@@ -115,18 +122,25 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "For land this section is a CARRY model, not an operating model. Expenses are the annual cost of holding the asset; income is incidental interim revenue only. Net operating income is negative by design and must not be capitalized.",
   "income": {
@@ -153,18 +167,25 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "going_in_cap_rate and exit_cap_rate are null by construction — there is no stabilized income to capitalize. Value is expressed per acre and per buildable unit, and tested against the projected finished-lot sellout.",
   "purchase_price": 16560000,
@@ -185,18 +206,25 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Interest-only land acquisition facility with partial-release provisions on lot takedown. Interest is funded from the entitlement carry reserve in sources & uses, not from operations — there are none.",
   "loan_amount": 8280000,
@@ -219,18 +247,25 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "sources": {
@@ -256,25 +291,37 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "dcf",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Returns come from lot takedown proceeds, not from an exit capitalization. There is no exit cap rate.",
   "assumptions": {
     "hold_period_years": 4,
     "exit_cap_rate": null,
     "annual_lot_price_growth": 0.03,
-    "takedown_schedule_lots_per_year": [0, 138, 207, 207]
+    "takedown_schedule_lots_per_year": [
+      0,
+      138,
+      207,
+      207
+    ]
   },
   "levered_irr": 0.19,
   "summary": {
@@ -289,18 +336,25 @@ finished-lot sellout.
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "system/engine",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-13T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-13T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": [
     {
@@ -333,18 +387,25 @@ Financial-validity engine run. Income-property thresholds do not apply to a land
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/financialValidityChecker",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Land basis: no income-property thresholds (DSCR / debt yield / cap rate) apply — the carry statement nets negative by design. Sizing discipline lives in LTC and the interest reserve."
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Land basis: no income-property thresholds (DSCR / debt yield / cap rate) apply — the carry statement nets negative by design. Sizing discipline lives in LTC and the interest reserve."
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "overall_status": "clean",
   "financial_validity": [
@@ -375,18 +436,25 @@ Sizing for a land carry: LTC at 50% against an 80% limit is the only applicable 
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T15:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Land basis: income-property constraints (DSCR, debt yield) do not apply — the carry nets negative by design. LTC is the governing test; the interest reserve is sized in sources & uses."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T15:00:00Z",
+      "notes": "Land basis: income-property constraints (DSCR, debt yield) do not apply — the carry nets negative by design. LTC is the governing test; the interest reserve is sized in sources & uses."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "total_cost": 16560000,
@@ -415,18 +483,25 @@ Sundance Ranch Land Partners LLC — single-principal sponsorship; figures PFS-s
 {
   "_meta": {
     "section": "borrower_sponsor",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T15:00:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T15:00:00Z",
+      "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "principals": [
     {
@@ -471,18 +546,25 @@ Buckeye / Far West Valley land fundamentals as of 2026-08.
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T15:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Broker survey and county land-sale comps; refresh before credit committee."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T15:00:00Z",
+      "notes": "Broker survey and county land-sale comps; refresh before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "market": "Phoenix Metro",
   "submarket": "Buckeye / Far West Valley",

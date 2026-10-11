@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-VARIANT-CC
 deal_name: "Variant Cross-Check Fixture"
 created: "2026-09-09T00:00:00Z"
@@ -34,13 +34,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "16 Variant Way, Phoenix AZ",
   "total_units": 120
@@ -50,13 +61,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 10000000,
   "underwritten_value": 10000000,
@@ -67,13 +89,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "due_diligence",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "appraised_value": 9000000,
   "appraisal_date": "2026-08-15"
@@ -83,13 +116,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "due_diligence",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "phase_one": "no_recognized_environmental_conditions"
 }
@@ -98,13 +142,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "gross_potential_rent": 1800000
 }
@@ -113,13 +168,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "gross_potential_rent": 1750000
 }
@@ -128,13 +194,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "gross_potential_rent": 1900000
 }
@@ -143,13 +220,24 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "loan_amount": 6500000,
   "ltv": 0.65,
@@ -160,44 +248,85 @@ their checks are skipped and `CC-16` names each of them once.
 {
   "_meta": {
     "section": "dcf",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "assumptions": { "exit_cap_rate": 0.055 }
+  "assumptions": {
+    "exit_cap_rate": 0.055
+  }
 }
 ```
 ```json uw:section=stress_tests variant=downside source=manual ts=2026-09-09T00:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "stress_tests",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "base_case": { "exit_cap_rate": 0.065, "annual_debt_service": 480000 }
+  "base_case": {
+    "exit_cap_rate": 0.065,
+    "annual_debt_service": 480000
+  }
 }
 ```
 ```json uw:section=stress_tests variant=upside source=manual ts=2026-09-09T00:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "stress_tests",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "base_case": { "exit_cap_rate": 0.05, "annual_debt_service": 480000 }
+  "base_case": {
+    "exit_cap_rate": 0.05,
+    "annual_debt_service": 480000
+  }
 }
 ```

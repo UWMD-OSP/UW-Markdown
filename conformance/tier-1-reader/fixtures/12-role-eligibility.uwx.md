@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-VARIANT-CC
 deal_name: "Variant Cross-Check Fixture"
 created: "2026-09-09T00:00:00Z"
@@ -23,13 +23,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 100
 }
@@ -39,13 +50,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sources": {
     "loan_amount": 6000000
@@ -57,13 +79,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "underwritten_value": 10000000
 }
@@ -73,13 +106,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "net_operating_income": 600000
 }
@@ -89,13 +133,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "stress_tests",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "base_case": {
     "annual_debt_service": 300000
@@ -107,13 +162,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_role": "component",
   "loan_amount": 6000000
@@ -124,13 +190,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_role": "main"
 }
@@ -140,13 +217,24 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-09-11T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_role": "component",
   "gross_potential_rent": 1000000

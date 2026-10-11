@@ -205,7 +205,7 @@ fields; data center's expense ratio, which producers state); the cascade then
 falls through to the host's global/system default and never borrows another
 class's table. The CLI `uwmd scope` command materializes the full resolved
 triage view, reporting the resolved builtin as `asset_class` (and a legacy
-alias such as `org.uwmd.data_center` as `declared_asset_class`).
+alias such as `data_center` as `declared_asset_class`).
 In-file steps read a block's payload through `blockPayload`, so a
 content-envelope block resolves the same values as a flat one, as in the calc
 evaluator.

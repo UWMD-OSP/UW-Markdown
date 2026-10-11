@@ -149,7 +149,7 @@ describe('bancroft — failure handling is provider-agnostic', () => {
   it('refuses to run when context is not ready, without calling the provider', async () => {
     const provider = fakeProvider(sectionCompletion('risk_assessment', {}));
     // A document with no sections cannot satisfy any layer's required reads.
-    const empty = ['---', 'uw_version: "1.1"', 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "multifamily"', '---', '# X'].join('\n');
+    const empty = ['---', "uw_version: \"3.0\"", 'deal_id: "x"', 'deal_name: "X"', 'asset_class: "multifamily"', '---', '# X'].join('\n');
 
     const result = await runBancroftAgent(empty, 'L6-01', { provider });
 

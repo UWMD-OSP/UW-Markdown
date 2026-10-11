@@ -137,7 +137,7 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     });
     expect(frontmatterOf(content)).toContain(
       [
-        'uw_version: "2.1"',
+        "uw_version: \"3.0\"",
         'deal_id: "uw_2026_BYTES"',
         'deal_name: "Sunrise Senior Living"',
       ].join('\n'),

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-006
 deal_name: "Malformed: wrong actor for section policy (POL-01)"
 created: "2026-01-15T10:00:00Z"
@@ -31,18 +31,25 @@ restricted to `human_only` authority. `verifyProvenance` MUST emit
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "606 POL-01 Way",
   "asset_class": "multifamily",
@@ -56,18 +63,25 @@ restricted to `human_only` authority. `verifyProvenance` MUST emit
 {
   "_meta": {
     "section": "risk_assessment",
-    "version": 1,
-    "superseded": false,
-    "source": "agent/L1",
-    "agent_id": "agent/L1",
-    "agent_version": "1.0.0",
-    "actor": "agent/L1",
-    "timestamp": "2026-01-15T10:30:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Risk write by L1 — under fixture policy this section requires human authority."
+    "provenance": {
+      "source": "agent/L1",
+      "actor": "agent/L1",
+      "agent_id": "agent/L1",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-15T10:30:00Z",
+      "notes": "Risk write by L1 — under fixture policy this section requires human authority."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "summary": "Auto-generated risk score.",
   "risk_score": 0.42

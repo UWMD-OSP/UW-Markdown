@@ -339,3 +339,17 @@ describe('verifyChain signature checks', () => {
     expect(r.signatures_verified).toBe(1);
   });
 });
+
+
+describe('RFC 0081 Format 3.0 payload digest', () => {
+  it('excludes all metadata but includes every payload and annotation member', async () => {
+    const block = makeBlock('property', { _meta: { provenance: { actor: 'a' }, lifecycle: { revision: 1 }, integrity: { parent_hash: 'a' } }, value: 100, content: 2, _role: 'primary', _notes: 'source note' });
+    const before = await computeBlockHash(block, { shape: 'v3' });
+    block.content._meta = { arbitrary: 'changed', integrity: { parent_hash: 'b' } };
+    expect(await computeBlockHash(block, { shape: 'v3' })).toBe(before);
+    for (const field of ['value', 'content', '_role', '_notes']) {
+      const changed = { ...block, content: { ...block.content, [field]: 'different' } };
+      expect(await computeBlockHash(changed, { shape: 'v3' })).not.toBe(before);
+    }
+  });
+});

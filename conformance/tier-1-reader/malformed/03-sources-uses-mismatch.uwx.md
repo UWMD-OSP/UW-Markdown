@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-003
 deal_name: "Malformed: Sources do not equal Uses"
 created: "2026-01-15T10:00:00Z"
@@ -36,10 +36,22 @@ validator MUST emit `CC-04` (severity: error) with the $500,000 delta.
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "source": "manual",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high"
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "sources": {
     "loan_amount": 7500000,

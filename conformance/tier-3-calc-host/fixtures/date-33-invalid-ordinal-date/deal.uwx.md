@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: TEST-T3-DATE
 deal_name: "Calendar-date predicate probes"
 created: "2026-10-04T00:00:00Z"
@@ -32,22 +32,35 @@ below, which carries the shapes YAML cannot.
 
 ```json uw:section=date_probe source=manual confidence=high
 {
-  "section_id": "date_probe",
   "_meta": {
-    "section_id": "date_probe",
-    "version": 1,
-    "timestamp": "2026-10-04T00:00:00Z",
-    "source": "manual",
-    "actor": "test-fixture",
-    "confidence": "high"
+    "section": "date_probe",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-04T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
-  "content": {
-    "impossible": "2026-02-30",
-    "number": 20261003,
-    "boolean": false,
-    "null_value": null,
-    "array": ["2026-10-03"],
-    "object": { "date": "2026-10-03" }
+  "impossible": "2026-02-30",
+  "number": 20261003,
+  "boolean": false,
+  "null_value": null,
+  "array": [
+    "2026-10-03"
+  ],
+  "object": {
+    "date": "2026-10-03"
   }
 }
 ```

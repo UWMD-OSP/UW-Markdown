@@ -1,5 +1,5 @@
 ---
-uw_version: "2.1"
+uw_version: "3.0"
 deal_id: "uw_2026_mx8k2p"
 deal_name: "Roosevelt Row Commons — Mixed-Use, Phoenix, AZ"
 created: "2026-08-10T09:00:00Z"
@@ -64,7 +64,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=deal_context source=manual ts=2026-08-10T09:15:00Z v=1 confidence=high
 {
-  "section_id": "deal_context",
   "_meta": {
     "section": "deal_context",
     "provenance": {
@@ -87,15 +86,13 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "_notes": "Live-work-stay block in the Roosevelt Row arts district. The residential tower drives the majority of NOI; the boutique hotel adds operating-business upside but also operating risk. Allocation of the single price across uses is the underwriter's judgment, stated as an input.",
-    "deal_summary": "Three-use mixed property in downtown Phoenix: 120 apartments over 18,000 SF of street retail, plus a 90-key boutique hotel. Stabilized acquisition at a 6.43% in-place cap.",
-    "investment_thesis": "Own the whole block in a supply-constrained arts district. Residential provides durable base cash flow; retail captures foot traffic; the hotel harvests event- and tourism-driven RevPAR.",
-    "value_creation_strategy": "Hold residential for stable distributions, mark inline retail rents to market on rollover, and drive hotel GOP through revenue management.",
-    "hold_strategy": "core_plus_hold",
-    "exit_strategy_description": "Sell the residential-plus-retail podium and the hotel either together or as separated condominium interests at year 7-10.",
-    "deal_goal": "12-13% levered IRR with a durable residential floor under the operating-business upside."
-  }
+  "_notes": "Live-work-stay block in the Roosevelt Row arts district. The residential tower drives the majority of NOI; the boutique hotel adds operating-business upside but also operating risk. Allocation of the single price across uses is the underwriter's judgment, stated as an input.",
+  "deal_summary": "Three-use mixed property in downtown Phoenix: 120 apartments over 18,000 SF of street retail, plus a 90-key boutique hotel. Stabilized acquisition at a 6.43% in-place cap.",
+  "investment_thesis": "Own the whole block in a supply-constrained arts district. Residential provides durable base cash flow; retail captures foot traffic; the hotel harvests event- and tourism-driven RevPAR.",
+  "value_creation_strategy": "Hold residential for stable distributions, mark inline retail rents to market on rollover, and drive hotel GOP through revenue management.",
+  "hold_strategy": "core_plus_hold",
+  "exit_strategy_description": "Sell the residential-plus-retail podium and the hotel either together or as separated condominium interests at year 7-10.",
+  "deal_goal": "12-13% levered IRR with a durable residential floor under the operating-business upside."
 }
 ```
 
@@ -105,7 +102,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=property source=manual ts=2026-08-10T09:30:00Z v=1 confidence=high
 {
-  "section_id": "property",
   "_meta": {
     "section": "property",
     "provenance": {
@@ -128,13 +124,11 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "_notes": "Property-level counts (units, SF, keys) live inside each component; there is no single property denominator for a mixed-use block.",
-    "year_built": 2019,
-    "building_class": "A",
-    "buildings": 2,
-    "submarket": "Downtown Phoenix / Roosevelt Row"
-  }
+  "_notes": "Property-level counts (units, SF, keys) live inside each component; there is no single property denominator for a mixed-use block.",
+  "year_built": 2019,
+  "building_class": "A",
+  "buildings": 2,
+  "submarket": "Downtown Phoenix / Roosevelt Row"
 }
 ```
 
@@ -144,7 +138,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=components source=manual ts=2026-10-10T00:00:00Z v=1 confidence=high
 {
-  "section_id": "components",
   "_meta": {
     "section": "components",
     "provenance": {
@@ -167,19 +160,17 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "data_center": {
-      "net_operating_income": 1028800,
-      "allocation_pct": 0.4,
-      "critical_it_load_kw": 1000,
-      "component_class": "data_center"
-    },
-    "manufactured_housing": {
-      "net_operating_income": 1543200,
-      "allocation_pct": 0.6,
-      "total_sites": 200,
-      "component_class": "manufactured_housing"
-    }
+  "data_center": {
+    "net_operating_income": 1028800,
+    "allocation_pct": 0.4,
+    "critical_it_load_kw": 1000,
+    "component_class": "data_center"
+  },
+  "manufactured_housing": {
+    "net_operating_income": 1543200,
+    "allocation_pct": 0.6,
+    "total_sites": 200,
+    "component_class": "manufactured_housing"
   }
 }
 ```
@@ -190,7 +181,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=noi_model source=system/calculations.ts ts=2026-08-10T12:00:00Z v=1 confidence=high
 {
-  "section_id": "noi_model",
   "_meta": {
     "section": "noi_model",
     "provenance": {
@@ -213,10 +203,8 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "_notes": "Property NOI is the plain sum of the component NOIs — the §3a footing invariant. There is no property-level income/expense breakdown; the breakdown lives per component.",
-    "net_operating_income": 2572000
-  }
+  "_notes": "Property NOI is the plain sum of the component NOIs — the §3a footing invariant. There is no property-level income/expense breakdown; the breakdown lives per component.",
+  "net_operating_income": 2572000
 }
 ```
 
@@ -226,7 +214,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=debt_structure source=manual ts=2026-08-10T13:30:00Z v=1 confidence=high
 {
-  "section_id": "debt_structure",
   "_meta": {
     "section": "debt_structure",
     "provenance": {
@@ -249,23 +236,21 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "_notes": "One property-level loan covers all three uses (RFC 0019 §4). No component carries its own debt_structure (MU-06); component-level tranches are deferred to RFC 0026.",
-    "loan_type": "permanent",
-    "lender_type": "bank",
-    "loan_amount": 26000000,
-    "ltv": 0.65,
-    "interest_rate_type": "fixed",
-    "all_in_rate_at_close": 0.0625,
-    "term_months": 120,
-    "amortization_months": 360,
-    "io_months": 24,
-    "annual_debt_service": 1900000,
-    "underwritten_noi": 2572000,
-    "dscr": 1.354,
-    "debt_yield": 0.0989,
-    "recourse": "non_recourse_with_carve_outs"
-  }
+  "_notes": "One property-level loan covers all three uses (RFC 0019 §4). No component carries its own debt_structure (MU-06); component-level tranches are deferred to RFC 0026.",
+  "loan_type": "permanent",
+  "lender_type": "bank",
+  "loan_amount": 26000000,
+  "ltv": 0.65,
+  "interest_rate_type": "fixed",
+  "all_in_rate_at_close": 0.0625,
+  "term_months": 120,
+  "amortization_months": 360,
+  "io_months": 24,
+  "annual_debt_service": 1900000,
+  "underwritten_noi": 2572000,
+  "dscr": 1.354,
+  "debt_yield": 0.0989,
+  "recourse": "non_recourse_with_carve_outs"
 }
 ```
 
@@ -275,7 +260,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=sources_uses source=system/calculations.ts ts=2026-08-10T13:35:00Z v=1 confidence=high
 {
-  "section_id": "sources_uses",
   "_meta": {
     "section": "sources_uses",
     "provenance": {
@@ -298,23 +282,21 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "_notes": "equity_metrics.equity_total equals the stated sources.equity_sponsor (14,000,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
-    "equity_metrics": {
-      "equity_total": 14000000
-    },
-    "sources": {
-      "loan_amount": 26000000,
-      "equity_sponsor": 14000000,
-      "total": 40000000
-    },
-    "uses": {
-      "purchase_price": 40000000,
-      "total": 40000000
-    },
-    "total_sources": 40000000,
-    "total_uses": 40000000
-  }
+  "_notes": "equity_metrics.equity_total equals the stated sources.equity_sponsor (14,000,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
+  "equity_metrics": {
+    "equity_total": 14000000
+  },
+  "sources": {
+    "loan_amount": 26000000,
+    "equity_sponsor": 14000000,
+    "total": 40000000
+  },
+  "uses": {
+    "purchase_price": 40000000,
+    "total": 40000000
+  },
+  "total_sources": 40000000,
+  "total_uses": 40000000
 }
 ```
 
@@ -324,7 +306,6 @@ intensive metric divides its own allocated share instead.
 
 ```json uw:section=valuation source=manual ts=2026-08-10T14:30:00Z v=1 confidence=high
 {
-  "section_id": "valuation",
   "_meta": {
     "section": "valuation",
     "provenance": {
@@ -348,15 +329,13 @@ intensive metric divides its own allocated share instead.
       "superseded": false
     }
   },
-  "content": {
-    "_notes": "One purchase price buys the whole block. The going-in cap rate is the property NOI over that single price — an arithmetic fact about this deal, not a blended market cap rate.",
-    "purchase_price": 40000000,
-    "appraised_value": 40500000,
-    "underwritten_value": 40000000,
-    "going_in_cap_rate": 0.0643,
-    "valuation_method": "sum_of_the_parts",
-    "stabilized_value_estimate": 43000000
-  }
+  "_notes": "One purchase price buys the whole block. The going-in cap rate is the property NOI over that single price — an arithmetic fact about this deal, not a blended market cap rate.",
+  "purchase_price": 40000000,
+  "appraised_value": 40500000,
+  "underwritten_value": 40000000,
+  "going_in_cap_rate": 0.0643,
+  "valuation_method": "sum_of_the_parts",
+  "stabilized_value_estimate": 43000000
 }
 ```
 
@@ -366,7 +345,6 @@ Financial-validity engine run over the consolidated property figures; per-compon
 
 ```json uw:section=validation source=system/financialValidityChecker ts=2026-08-26T09:00:00Z v=1 confidence=high
 {
-  "section_id": "validation",
   "_meta": {
     "section": "validation",
     "provenance": {
@@ -389,40 +367,38 @@ Financial-validity engine run over the consolidated property figures; per-compon
       "superseded": false
     }
   },
-  "content": {
-    "overall_status": "clean",
-    "financial_validity": [
-      {
-        "flag_id": "FV-001",
-        "metric": "dscr",
-        "value": 1.3537,
-        "threshold": {
-          "type": "min",
-          "min": 1.2,
-          "max": null
-        },
-        "severity": "pass",
-        "message": "DSCR (1.3537x) clears the 1.20x warning threshold.",
-        "suppressed": false,
-        "suppress_reason": null
+  "overall_status": "clean",
+  "financial_validity": [
+    {
+      "flag_id": "FV-001",
+      "metric": "dscr",
+      "value": 1.3537,
+      "threshold": {
+        "type": "min",
+        "min": 1.2,
+        "max": null
       },
-      {
-        "flag_id": "FV-002",
-        "metric": "ltv",
-        "value": 0.65,
-        "threshold": {
-          "type": "max",
-          "min": null,
-          "max": 0.75
-        },
-        "severity": "pass",
-        "message": "LTV at 65.0% is within the 75% policy maximum.",
-        "suppressed": false,
-        "suppress_reason": null
-      }
-    ],
-    "completeness": []
-  }
+      "severity": "pass",
+      "message": "DSCR (1.3537x) clears the 1.20x warning threshold.",
+      "suppressed": false,
+      "suppress_reason": null
+    },
+    {
+      "flag_id": "FV-002",
+      "metric": "ltv",
+      "value": 0.65,
+      "threshold": {
+        "type": "max",
+        "min": null,
+        "max": 0.75
+      },
+      "severity": "pass",
+      "message": "LTV at 65.0% is within the 75% policy maximum.",
+      "suppressed": false,
+      "suppress_reason": null
+    }
+  ],
+  "completeness": []
 }
 ```
 
@@ -432,7 +408,6 @@ Consolidated-property sizing against the three standard constraints; the governi
 
 ```json uw:section=preliminary_sizing source=manual ts=2026-08-26T15:00:00Z v=1 confidence=medium
 {
-  "section_id": "preliminary_sizing",
   "_meta": {
     "section": "preliminary_sizing",
     "provenance": {
@@ -455,35 +430,33 @@ Consolidated-property sizing against the three standard constraints; the governi
       "superseded": false
     }
   },
-  "content": {
-    "sizing_basis": {
-      "noi_underwritten": 2572000,
-      "value_basis": 40000000,
-      "annual_debt_constant": 0.0731
+  "sizing_basis": {
+    "noi_underwritten": 2572000,
+    "value_basis": 40000000,
+    "annual_debt_constant": 0.0731
+  },
+  "constraints": [
+    {
+      "test": "max_ltv",
+      "limit": 0.75,
+      "max_loan": 30000000
     },
-    "constraints": [
-      {
-        "test": "max_ltv",
-        "limit": 0.75,
-        "max_loan": 30000000
-      },
-      {
-        "test": "min_dscr",
-        "limit": 1.25,
-        "max_loan": 28156632
-      },
-      {
-        "test": "min_debt_yield",
-        "limit": 0.09,
-        "max_loan": 28577778
-      }
-    ],
-    "max_supportable_loan": 28156632,
-    "governing_constraint": "dscr",
-    "proposed_loan": 26000000,
-    "proposed_within_constraints": true,
-    "cushion": 2156632
-  }
+    {
+      "test": "min_dscr",
+      "limit": 1.25,
+      "max_loan": 28156632
+    },
+    {
+      "test": "min_debt_yield",
+      "limit": 0.09,
+      "max_loan": 28577778
+    }
+  ],
+  "max_supportable_loan": 28156632,
+  "governing_constraint": "dscr",
+  "proposed_loan": 26000000,
+  "proposed_within_constraints": true,
+  "cushion": 2156632
 }
 ```
 
@@ -493,7 +466,6 @@ Roosevelt Row Mixed-Use Ventures LLC — single-principal sponsorship; figures P
 
 ```json uw:section=borrower_sponsor source=manual ts=2026-08-26T15:00:00Z v=1 confidence=medium
 {
-  "section_id": "borrower_sponsor",
   "_meta": {
     "section": "borrower_sponsor",
     "provenance": {
@@ -516,39 +488,37 @@ Roosevelt Row Mixed-Use Ventures LLC — single-principal sponsorship; figures P
       "superseded": false
     }
   },
-  "content": {
-    "principals": [
-      {
-        "name": "Alicia Fontaine",
-        "role": "managing_member",
-        "ownership_pct": 1,
-        "is_guarantor": true,
-        "is_key_man": true,
-        "net_worth_stated": 46800000,
-        "liquid_assets_stated": 2860000,
-        "contingent_liabilities_stated": 0,
-        "years_cre_experience": 18,
-        "pfs_received": true,
-        "tax_returns_received": false,
-        "figures_verified": false,
-        "verification_basis": "pfs_stated"
-      }
-    ],
-    "entity": {
-      "name": "Roosevelt Row Mixed-Use Ventures LLC",
-      "type": "llc",
-      "state": "AZ"
-    },
-    "financial_summary": {
-      "global_net_worth": 46800000,
-      "global_liquidity": 2860000,
-      "nw_to_loan_ratio": 1.8,
-      "nw_to_loan_policy_min": 1,
-      "liquidity_to_loan_ratio": 0.11,
-      "liquidity_to_loan_policy_min": 0.1,
-      "all_figures_verified": false,
-      "unverified_flag": true
+  "principals": [
+    {
+      "name": "Alicia Fontaine",
+      "role": "managing_member",
+      "ownership_pct": 1,
+      "is_guarantor": true,
+      "is_key_man": true,
+      "net_worth_stated": 46800000,
+      "liquid_assets_stated": 2860000,
+      "contingent_liabilities_stated": 0,
+      "years_cre_experience": 18,
+      "pfs_received": true,
+      "tax_returns_received": false,
+      "figures_verified": false,
+      "verification_basis": "pfs_stated"
     }
+  ],
+  "entity": {
+    "name": "Roosevelt Row Mixed-Use Ventures LLC",
+    "type": "llc",
+    "state": "AZ"
+  },
+  "financial_summary": {
+    "global_net_worth": 46800000,
+    "global_liquidity": 2860000,
+    "nw_to_loan_ratio": 1.8,
+    "nw_to_loan_policy_min": 1,
+    "liquidity_to_loan_ratio": 0.11,
+    "liquidity_to_loan_policy_min": 0.1,
+    "all_figures_verified": false,
+    "unverified_flag": true
   }
 }
 ```
@@ -559,7 +529,6 @@ Roosevelt Row / Downtown Phoenix mixed-use fundamentals as of 2026-08.
 
 ```json uw:section=market_analysis source=manual ts=2026-08-26T15:00:00Z v=1 confidence=medium
 {
-  "section_id": "market_analysis",
   "_meta": {
     "section": "market_analysis",
     "provenance": {
@@ -582,27 +551,25 @@ Roosevelt Row / Downtown Phoenix mixed-use fundamentals as of 2026-08.
       "superseded": false
     }
   },
-  "content": {
-    "market": "Phoenix Metro",
-    "submarket": "Roosevelt Row / Downtown Phoenix",
-    "data_as_of": "2026-08-01",
-    "vacancy": {
-      "residential_rate": 0.055,
-      "retail_rate": 0.07,
-      "trend": "stable"
-    },
-    "rents": {
-      "residential_yoy_growth_pct": 0.028,
-      "retail_yoy_growth_pct": 0.018,
-      "trend": "moderate"
-    },
-    "cap_rates": {
-      "range_low": 0.06,
-      "range_high": 0.0675
-    },
-    "supply": {
-      "note": "Two mixed-use projects (410 units, 28k SF retail combined) delivering through 2027 within the arts district; hotel supply stable."
-    }
+  "market": "Phoenix Metro",
+  "submarket": "Roosevelt Row / Downtown Phoenix",
+  "data_as_of": "2026-08-01",
+  "vacancy": {
+    "residential_rate": 0.055,
+    "retail_rate": 0.07,
+    "trend": "stable"
+  },
+  "rents": {
+    "residential_yoy_growth_pct": 0.028,
+    "retail_yoy_growth_pct": 0.018,
+    "trend": "moderate"
+  },
+  "cap_rates": {
+    "range_low": 0.06,
+    "range_high": 0.0675
+  },
+  "supply": {
+    "note": "Two mixed-use projects (410 units, 28k SF retail combined) delivering through 2027 within the arts district; hotel supply stable."
   }
 }
 ```

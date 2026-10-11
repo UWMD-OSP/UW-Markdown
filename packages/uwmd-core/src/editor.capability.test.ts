@@ -17,7 +17,7 @@ import type {
 } from './protocol.js';
 
 const FILE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "DEAL-CAP-01"
 deal_name: "Capability Gate Deal"
 created: "2026-01-01T00:00:00Z"
@@ -34,18 +34,25 @@ created_by: wizard
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "net_operating_income": 480000
 }
@@ -55,18 +62,25 @@ created_by: wizard
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/uwmd",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": []
 }

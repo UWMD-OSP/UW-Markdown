@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: "RFC-0072-19-btr-fallback"
 deal_name: "Scenario identity fixture"
 asset_class: multifamily

@@ -34,9 +34,9 @@ export const LAND_PACK: ModuleManifest = {
     'Twelve derived metrics for land underwriting: $/acre, $/usable acre, $/buildable unit, usable-land ratio, density, LTV, LTC, loan/acre, basis per buildable unit, carry ratio, carry cost per acre, and land-to-sellout ratio. Deliberately omits cap rate, DSCR, and debt yield — land has no stabilized income.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['land'],
   calculations: [
     {

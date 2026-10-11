@@ -65,13 +65,21 @@ describe('RFC 0055 lease clauses — the quiet path', () => {
 
   it('leaves a multifamily rent roll alone', () => {
     const source = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LSE-MF
 asset_class: multifamily
 ---
 
 \`\`\`json uw:section=rent_roll variant=base source=manual ts=2026-09-15T00:00:00Z v=1
-{ "rent_roll_type": "multifamily", "units": [ { "unit_id": "101", "monthly_rent": 1500 } ] }
+{
+  "rent_roll_type": "multifamily",
+  "units": [
+    {
+      "unit_id": "101",
+      "monthly_rent": 1500
+    }
+  ]
+}
 \`\`\`
 `;
     expect(validateUWFile(parseUWFile(source)).issues.filter(i => i.code.startsWith('LSE-'))).toEqual([]);

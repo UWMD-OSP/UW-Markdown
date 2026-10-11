@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-001
 deal_name: "RevPAR Basic"
 created: "2026-01-15T10:00:00Z"

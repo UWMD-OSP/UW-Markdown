@@ -15,7 +15,7 @@ import {
 import type { UWEnvelopeBlock } from './envelope.js';
 
 const FIXTURE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_JSON"
 deal_name: "JSON Fixture"
 created: "2026-01-01T00:00:00Z"
@@ -29,17 +29,89 @@ flags: []
 ---
 
 \`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 superseded=true confidence=medium
-{ "_meta": { "section": "property", "version": 1, "superseded": true, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "medium", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 12 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    }
+  },
+  "total_units": 12
+}
 \`\`\`
 
 Narrative prose for the current property block.
 
 \`\`\`json uw:section=property source=manual ts=2026-01-02T00:00:00Z v=2 confidence=high
-{ "_meta": { "section": "property", "version": 2, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-02T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 24 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
+  },
+  "total_units": 24
+}
 \`\`\`
 
 \`\`\`json uw:section=operating_statement variant=t12 source=manual ts=2026-01-02T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "operating_statement", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-02T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "net_operating_income": 396635 }
+{
+  "_meta": {
+    "section": "operating_statement",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "net_operating_income": 396635
+}
 \`\`\`
 `;
 

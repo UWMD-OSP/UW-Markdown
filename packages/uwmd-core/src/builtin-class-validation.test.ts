@@ -76,7 +76,7 @@ describe('RFC 0080 official builtin controls', () => {
   it('issues and resolves receipts for every builtin without injected packs', async () => {
     const source = readFileSync(resolve(root, 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
     for (const cls of ASSET_CLASSES) {
-      const input = source.replace(/asset_class:.*$/m, `asset_class: ${cls}`).replace(/uw_version:.*$/m, 'uw_version: "2.1"');
+      const input = source.replace(/asset_class:.*$/m, `asset_class: ${cls}`).replace(/uw_version:.*$/m, "uw_version: \"3.0\"");
       const receipt = await issueReceipt(input, { issued_at: '2026-10-10T00:00:00Z' });
       expect(receipt.computation.pack).toBe(getPackForAssetClass(cls)!.id);
       expect((await verifyReceipt(receipt, input)).verdict, cls).toBe('verified');
@@ -144,7 +144,7 @@ describe('Format 2.1 builtin record shapes', () => {
       expect(componentSchema(badPayload)).toBe(false);
       expect(validateUWFile(wrong).issues.map(i => i.code)).toEqual(expect.arrayContaining(['MU-03', 'CC-12']));
       for (const version of ['1.1', '2.0']) {
-        const old = parseUWFile(source.replace('uw_version: "2.1"', `uw_version: "${version}"`));
+        const old = parseUWFile(source.replace("uw_version: \"3.0\"", `uw_version: "${version}"`));
         expect(checkBuiltinClassContent(old).map(i => i.code)).toContain('CLS-05');
         expect(envelopeSchema(toUWEnvelope(old))).toBe(false);
         old.sections.components = { base: old.sections.components as UWBlock };
@@ -220,7 +220,7 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
     expect(cls04.map(i => [i.field, i.severity])).toEqual([['raised_floor_sf', 'warning']]);
     expect(errors(fractional)).toEqual([]);
     // Same alias at Format 2.1 is still the legacy identity: warning.
-    const legacy21 = mutate(fractional, 'uw_version: "1.1"', 'uw_version: "2.1"');
+    const legacy21 = mutate(fractional, "uw_version: \"3.0\"", "uw_version: \"3.0\"");
     expect(classIssues(legacy21).filter(i => i.code === 'CLS-04').map(i => i.severity)).toEqual(['warning']);
   });
 
@@ -232,7 +232,7 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
 
   it('accepts Format 2.1 and any later version for the new ids, refusing earlier ones (CLS-05)', () => {
     const desert = readFileSync(resolve(root, 'examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'), 'utf8');
-    const cls05 = (version: string) => classIssues(mutate(desert, 'uw_version: "2.1"', `uw_version: "${version}"`))
+    const cls05 = (version: string) => classIssues(mutate(desert, "uw_version: \"3.0\"", `uw_version: "${version}"`))
       .filter(i => i.code === 'CLS-05');
     expect(cls05('2.1')).toEqual([]);
     expect(cls05('2.10')).toEqual([]);

@@ -143,7 +143,7 @@ export async function migrateToV2(
     const line = lines[i] as string;
     const fence = FENCE_OPEN_RE.exec(line);
     if (!fence) {
-      out.push(i === uwVersionLine ? line.replace(/uw_version:.*$/, 'uw_version: "2.0"') : line);
+      out.push(i === uwVersionLine ? line.replace(/uw_version:.*$/, "uw_version: \"3.0\"") : line);
       i++;
       continue;
     }

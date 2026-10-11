@@ -8,9 +8,8 @@
     "UW Markdown contributors"
   ],
   "license": "MIT",
-  "requires_protocol": "^1",
-  "requires_format": "^1",
-  "requires_tier": "tier-3-calc-host",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
   "calculations": [
     {
       "id": "signed_module_example",
@@ -19,5 +18,9 @@
       "unit": "count",
       "deterministic": true
     }
+  ],
+  "requires_conformance": "verifier",
+  "requires_profiles": [
+    "module"
   ]
 }

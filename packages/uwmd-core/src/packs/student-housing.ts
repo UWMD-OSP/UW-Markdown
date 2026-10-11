@@ -20,9 +20,9 @@ export const STUDENT_HOUSING_PACK: ModuleManifest = {
     'Fourteen derived metrics for student-housing underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/bed, loan/bed, NOI/bed, expense ratio, cash-on-cash, occupancy, pre-lease rate, revenue per bed, and monthly rent per bed.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['student_housing'],
   calculations: [
     {

@@ -9,7 +9,7 @@ describe('replacement binding qualification', () => {
     render(
       <ValidationPanel
         validation={validateUWFile(
-          parseUWFile('---\nuw_version: "1.1"\ndeal_id: TEST\nasset_class: office\n---\n')
+          parseUWFile("---\nuw_version: \"3.0\"\ndeal_id: TEST\nasset_class: office\n---\n")
         )}
       />
     );

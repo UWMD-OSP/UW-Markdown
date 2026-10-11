@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: REC-C3
 asset_class: office
 ---
@@ -14,7 +14,11 @@ asset_class: office
       "tenant_name": "Anchor Co",
       "nra_sqft": 40000,
       "lease_type": "nnn",
-      "cam_cap_pct": 0.05
+      "recovery_terms": {
+        "cap": {
+          "pct": 0.05
+        }
+      }
     }
   ]
 }

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-001
 deal_name: "Malformed: Missing _meta on a section block"
 created: "2026-01-15T10:00:00Z"

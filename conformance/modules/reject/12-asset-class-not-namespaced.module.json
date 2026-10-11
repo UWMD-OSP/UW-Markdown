@@ -8,13 +8,13 @@
     "UW Markdown contributors"
   ],
   "license": "MIT",
-  "requires_protocol": "^1",
-  "requires_format": "^1",
-  "requires_tier": "tier-1-reader",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
   "declares_asset_classes": [
     {
       "id": "data_center",
       "display_name": "Data Center"
     }
-  ]
+  ],
+  "requires_conformance": "reader"
 }

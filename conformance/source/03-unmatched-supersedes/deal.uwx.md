@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "SRC-03-UNMATCHED-SUPERSEDES"
 deal_name: "Unmatched Supersedes"
 created: "2026-08-31T00:00:00Z"
@@ -18,15 +18,25 @@ silently destroyed data before the catch-all existed.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "legacy-import-tool",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-31T00:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false
+    "provenance": {
+      "source": "legacy-import-tool",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-31T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 48
 }

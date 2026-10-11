@@ -6,7 +6,7 @@ import { MULTIFAMILY_PACK } from './packs/multifamily.js';
 import type { ModuleCalcDecl, ModuleManifest } from './protocol.js';
 
 const MINIMAL_MULTIFAMILY = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_TEST"
 deal_name: "Test Deal"
 created: "2026-01-01T00:00:00Z"
@@ -35,18 +35,25 @@ source_documents: []
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 24,
   "total_nra_sqft": 20000,
@@ -60,18 +67,25 @@ source_documents: []
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 5000000
 }
@@ -126,7 +140,7 @@ describe('rankGaps — synthetic gap-driven calc', () => {
   // map to defaulted paths. We piggyback on multifamily defaults so the
   // cascade returns a {low, central, high} range for each input.
   const file = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_VOI"
 deal_name: "VOI Test"
 created: "2026-01-01T00:00:00Z"
@@ -155,18 +169,25 @@ source_documents: []
 {
   "_meta": {
     "section": "custom_calculations",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "id": "synth_score",
   "label": "Synthetic Score",

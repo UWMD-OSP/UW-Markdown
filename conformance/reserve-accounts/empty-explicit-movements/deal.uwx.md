@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: SYNTHETIC-RESERVE
 asset_class: industrial
 deal_stage: screening
@@ -12,17 +12,18 @@ created: "2026-01-01"
 ```json uw:section=reserve_accounts
 {
   "_meta": {
+    "section": "reserve_accounts",
     "provenance": {
-      "source": "manual",
-      "author": "synthetic-fixture",
-      "timestamp": "2026-01-01T00:00:00Z"
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
     },
-    "status": {
-      "confidence": "verified"
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
     },
-    "lineage": {
-      "version": 1
-    }
+    "lifecycle": {}
   },
   "content": {
     "accounts": [

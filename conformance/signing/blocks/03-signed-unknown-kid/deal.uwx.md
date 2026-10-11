@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-SIG-001
 deal_name: "Signing Base Fixture"
 created: "2026-01-15T10:00:00Z"
@@ -37,46 +37,54 @@ hand.
 
 ```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=medium
 {
-  "section_id": "property",
   "_meta": {
-    "section_id": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null,
-    "content_hash": "8d5d92991cded2903e1d200e379d5f7ec74428a9c375b51afaf4b076188dc1ad",
-    "signature": {
-      "alg": "ed25519",
-      "kid": "rotated-out-2019",
-      "sig": "CDHhh5_SL03JALmsNTRJlgx29iDwtczuQdJ_mAFkBQZRjco5qXDnla8RJZ67qpha4bNbI462QDf9eb7IER8LDA",
-      "signed_at": "2026-08-27T00:00:00Z"
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": "signature re-issued at v2 migration (kid=rotated-out-2019)"
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": null,
+      "parent_hash": null,
+      "signature": {
+        "alg": "ed25519",
+        "kid": "rotated-out-2019",
+        "sig": "sGXqXFwSDGZLGf7wBJnYg5pW_hMmE7FEgjxerD55Unm6itb0XDLkH6q7dtRzlF85vP7VmfAypji0ayWTzI5fDw",
+        "signed_at": "2026-08-27T00:00:00Z"
+      },
+      "content_hash": "0f2100fd78214c07fbc8f7c3281b10a1b87fb760f1ed8028f3cd77177ec4b38c"
     }
   },
-  "content": {
-    "total_units": 50,
-    "year_built": 1995,
-    "building_class": "B",
-    "asset_subtype": "garden",
-    "total_nra_sqft": 45000,
-    "land_area_acres": 2.1,
-    "stories": 2,
-    "parking_spaces": 75,
-    "parking_type": "surface",
-    "zoning": "R-3",
-    "condition": "good",
-    "amenities": [
-      "pool",
-      "laundry"
-    ]
-  },
-  "_notes": null
+  "_notes": null,
+  "total_units": 50,
+  "year_built": 1995,
+  "building_class": "B",
+  "asset_subtype": "garden",
+  "total_nra_sqft": 45000,
+  "land_area_acres": 2.1,
+  "stories": 2,
+  "parking_spaces": 75,
+  "parking_type": "surface",
+  "zoning": "R-3",
+  "condition": "good",
+  "amenities": [
+    "pool",
+    "laundry"
+  ]
 }
 ```

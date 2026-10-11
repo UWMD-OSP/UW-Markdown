@@ -148,7 +148,7 @@ describe('layout registry', () => {
     const parsed = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: "x"',
         'deal_name: "X"',
         `asset_class: "${UNREGISTERED_CLASS}"`,

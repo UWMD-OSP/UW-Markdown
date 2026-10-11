@@ -82,11 +82,16 @@ function bytesToHex(bytes: Uint8Array): string {
  */
 export async function computeBlockHash(
   block: UWBlock,
-  options: { shape?: MetaShape } = {},
+  options: { shape?: MetaShape | 'v3' } = {},
 ): Promise<string> {
   // The canonical scope is the block CONTENT including meta, since meta
   // carries the cascade-relevant provenance. The excluded keys are stripped
   // by the canonicalizer.
+  if (options.shape === 'v3') {
+    const { _meta: _excluded, ...payload } = block.content;
+    return sha256TextHex(canonicalizeExact(payload));
+  }
+  // RFC 0081 Phase 4: delete both old digest branches.
   if (options.shape === 'v2') {
     const normalized = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
     return sha256TextHex(canonicalizeV2(normalized));
@@ -264,7 +269,7 @@ export async function verifyChain(
   let chainsVerified = 0;
   // Canonicalization is versioned by the file's own frontmatter (RFC 0009):
   // digests in a `uw_version: "2.0"` file recompute under the v2 rule.
-  const shape: MetaShape = isV2File(parsed.frontmatter) ? 'v2' : 'v1';
+  const shape = parsed.frontmatter.uw_version === '3.0' ? 'v3' : isV2File(parsed.frontmatter) ? 'v2' : 'v1'; // RFC 0081 Phase 4: delete old digest selection.
 
   for (const sectionId of Object.keys(parsed.sections)) {
     // Build the chain: prior (superseded) blocks first, then current head.
@@ -394,7 +399,7 @@ async function verifySignatures(
     // unsigned block a drifted hash is a bookkeeping slip, but on a signed one
     // it means the content in front of you is not the content anybody signed.
     const recomputed = await computeBlockHash(block, {
-      shape: isV2File(parsed.frontmatter) ? 'v2' : 'v1',
+      shape: parsed.frontmatter.uw_version === '3.0' ? 'v3' : isV2File(parsed.frontmatter) ? 'v2' : 'v1', // RFC 0081 Phase 4: delete old digest selection.
     });
     if (recomputed !== block.meta.content_hash) {
       issues.push({
