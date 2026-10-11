@@ -108,12 +108,27 @@ its schema and the packs move together, and the dictionary parity test fails
 if they do not. (The cascade, view models and edit policies are starter-product
 behavior now, but their single definition still lives in `protocol.ts`.)
 
-### 8. Descriptive identity does not select underwriting behavior
+### 8. Workspace isolation
+*Project rule for this repository.* Every `@uwmd/*` dependency resolves through
+the local workspace link (`packages/*`, or a `file:` link from `tools/`), never
+a registry tarball, so a change is always tested against the code beside it.
+Published packages still pin each other exactly (`@uwmd/core` `3.0.0`, not a
+range); the workspace satisfies that pin locally, and external consumers
+resolve it from npm. `npm run verify-lockfile` fails if any lockfile resolves
+an `@uwmd/*` package from the registry or a pin disagrees with the declared
+version, and `verify-packages` refuses a published package that depends on a
+workspace-only specifier.
+
+### 9. Descriptive identity does not select underwriting behavior
 *Standard (Format §2.2b).* Frontmatter `scenario` is the single business plan (RFC 0072, Format §2.2b).
 Subtype remains open, with a defined multifamily `build_to_rent` identity.
 These may route descriptive workflows, but never choose calculations, defaults,
 packs or underwriting rules. DQ-07–09 are structural/vocabulary warnings only,
 in both format generations. Do not infer a plan from a subtype or vice versa.
+
+This rule was numbered 8 here from 2026-10-08 until 3.0.0 release
+preparation, while `AGENTS.md`'s 8 was workspace isolation. Nothing cited
+either number; both lists now agree, keeping the older 8.
 
 ## Coding conventions
 

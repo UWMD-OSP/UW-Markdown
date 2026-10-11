@@ -1,11 +1,34 @@
 # Roadmap
 
-Reconciled **2026-10-10** (America/Phoenix) for published and independently
-verified **2.21.0**, pairing core/CLI 2.21.0 with Stable Protocol **2.25.0**
-and unchanged Format **2.0**. No accepted RFC is waiting for a release.
+Reconciled **2026-10-11** (America/Phoenix) for release-prepared **3.0.0**
+(Protocol **3.0.0**, Format **2.1**). The current published release remains
+**2.21.0**, pairing core/CLI 2.21.0 with Stable Protocol **2.25.0** and Format
+**2.0**.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 3.0.0
+
+Core/CLI **3.0.0** pair with Protocol **3.0.0** and Format **2.1**. The
+generation carries three accepted RFCs:
+- **RFC 0078:** the Protocol is verification. Conformance is a **Reader** or
+  **Verifier** tier plus six optional profiles; the editor, agent host, calc
+  engine, defaults, Excel and viewer are non-normative starter products; the
+  metric dictionary (`spec/metrics/`) is normative.
+- **RFC 0079:** stated metrics compare at their stated precision with a
+  per-metric minimum (§VIII.5.1), and every class uses one LTV and one
+  cash-on-cash definition.
+- **RFC 0080:** data center and manufactured housing are full builtins under
+  Format 2.1, and hospitality's module content is builtin.
+
+Signing 0.2.26, batch 0.8.21, Excel 0.9.14, report 0.8.26, lake 0.2.10 and
+both module packages 0.2.0 pin core 3.0.0. The workflow grows to nine
+packages: Excel, report and lake join it. The module packages ship 0.2.0 as
+declaration-free compatibility shells, their final version, and the owner
+deprecates them on npm after publication. No new §X floor applies. RFCs
+0078–0080 remain `accepted` until shipment and independently verified
+publication.
 
 ## Current published release: 2.21.0
 
@@ -324,7 +347,7 @@ surfaces usable for the next producer wave.
 | 2 | Per-lease monthly ledger | **RFC 0054, `decided` (terminal); the series half is deliberately unbuilt.** Splits by shape: type the lease clauses in place on the commercial rent roll (the stubs already exist), and defer the periodic series until a consumer exists. The calc grammar addresses neither collections nor two period dimensions, so a ledger is unreachable from pack formulas. |
 | 2 | Rate caps, escrow and replacement | **RFC 0056, implemented.** Types `debt_structure.rate_hedge` (strike, notional, term, premium and a required `post_expiration_assumption`) and `sources_uses.uses.escrows` under a closed vocabulary with a label-bearing `other` (`HDG-01`–`HDG-06`, `ESC-01`–`ESC-04`). `ESC-04` ties a `"replace"` assumption to a funded `rate_cap_replacement` line. `rate_swap` and `rate_collar` are reserved and refused pending an MTM contract; nothing is priced. |
 | 2 | Construction contingency used share | **RFC 0057, implemented.** `uses.renovation` carries budget, contingency, used, a verified remaining and total drawn as of a stated date (`CAPX-01`–`CAPX-05`). Milestone releases and draw projection stay out of scope. |
-| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), implemented and released in core/CLI 2.16.0 (stable Protocol 2.20.0, Format 2.0; accepted 2026-10-02).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **RFC 0080 (accepted, Unreleased):** data center and manufactured housing are full official builtins, superseding RFC 0068's module packaging while preserving its owner decisions. Defaults await Jared review before merge. Parcel-array versus RFC 0021 composition for SFR/BTR remains separate future work. **Single-site build-to-rent identity** (#255, `UPSTREAM-022`): [RFC 0072](docs/rfcs/0072-frontmatter-scenario-semantics.md) (PR #285) shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented**. `scenario` is the business plan, from a closed vocabulary with warnings (`DQ-07`–`DQ-09`) for unlisted or retired values, and single-site BTR is a product/subtype on `multifamily`, not a scenario. |
+| 2 | Nearest asset-class extensions | **Student bed counts: [RFC 0069](docs/rfcs/0069-student-rent-roll-bed-counts.md), implemented and released in core/CLI 2.16.0 (stable Protocol 2.20.0, Format 2.0; accepted 2026-10-02).** The top-level student-housing roll may state `occupied_beds` and `preleased_beds` with their measurement dates; the `BED-NN` errors refuse a stated count that is malformed, undated or above `property.total_beds`. Per-floor-plan bed columns, senior-housing beds, mixed-use component beds and future-phase capacity stay out of scope. **RFC 0080 (accepted; prepared for 3.0.0 with Format 2.1):** data center and manufactured housing are full official builtins, superseding RFC 0068's module packaging while preserving its owner decisions. Their starter defaults are owner-approved (2026-10-10). Parcel-array versus RFC 0021 composition for SFR/BTR remains separate future work. **Single-site build-to-rent identity** (#255, `UPSTREAM-022`): [RFC 0072](docs/rfcs/0072-frontmatter-scenario-semantics.md) (PR #285) shipped in 2.20.0 with Stable Protocol 2.24.0 and is **implemented**. `scenario` is the business plan, from a closed vocabulary with warnings (`DQ-07`–`DQ-09`) for unlisted or retired values, and single-site BTR is a product/subtype on `multifamily`, not a scenario. |
 | 2 | CAM, redevelopment and OpEx compression | **Resolved. RFC 0057 shipped expense-targeted capex; RFC 0058 shipped the CAM true-up in 2.12.0.** Expense-targeted capex is implemented (`CAPX-06`–`CAPX-08`), with `in_noi_model` required so a stated saving cannot be double-counted; nothing applies the saving. Redevelopment downtime needs **no new field**: §4.25 `natural_turnover` already expresses suppressed occupancy carrying its own `ti_lc_capex`. On CAM, RFC 0058 disputes the earlier "it is periodic, so RFC 0054 defers it" reading: it proposes an **annual reconciliation of a closed period**, which needs neither collection iteration nor a second period dimension — the two things RFC 0054 actually found unreachable. Settled amounts land in §4.26. That distinction was the RFC's load-bearing claim, and it was accepted: RFC 0058 shipped in 2.12.0 with the `REC-NN` family and its own conformance suite. |
 | 2 | Ground lease / leasehold tenure | **Not a tranche class ([RFC 0060](docs/rfcs/0060-tranche-class-candidates.md)); the tenure contract remains demand-gated.** The earlier "reserve `ground_lease` as a tranche concept" framing conflated the leasehold estate and its ground-rent obligation with financing merely secured by a leasehold, which is already `senior_debt`. A `Tranche` has no field for tenure, and no honest `amount` exists for one. **The format does not model ground leases today:** §4.4 has no `ground_rent` key (only the generic `other_expenses`), §4.5 `noi_model.expenses` has no ground-rent line *and no generic bucket at all*, and no section types the leasehold as an object — term, resets, extension options, fee relationship and subordination are all untyped. Where the underwriting does include ground rent in OpEx, adding it again as a debt tranche would double-count it. The open work is a property/tenure contract against its own section, gated on a demonstrated consumer. |
 | 3 | Operating-business modules and executions | **Demand-gated.** Senior-housing refinements, cold storage, life science, marina/outdoor storage, affordable housing, parking, phased delivery, condo sell-off, adaptive reuse, swaps and collars each require a concrete engine scope and module/RFC pair. **PACE-specific mechanics** stay on this demand-gated list: RFC 0060 closed the *enum* question — it is stated as `other_debt` where the existing fields suffice — but assessment servicing above or below NOI, jurisdictional lien behaviour and transferability are unmodelled and would need their own contract. |
@@ -409,10 +432,12 @@ product specification; lease economics and cash timing are.
 - **Official module publication:** hospitality and data-center are approved together
   as public npm packages. Both first published at 0.1.10 with core 2.18.0, through
   the ordinary release workflow after the account bootstrap and trusted-publisher
-  setup; 0.1.11 followed with core 2.19.0, 0.1.12 with core 2.20.0 and 0.1.13 with core 2.21.0. Package semver is separate from the 0.1.0 manifest contracts; exact core
-  pins and explicit host loading remain.
-- **Standalone Excel/report publication:** implemented current packages remain
-  source-only until a consumer and supported distribution scope are chosen.
+  setup; 0.1.11 followed with core 2.19.0, 0.1.12 with core 2.20.0 and 0.1.13 with core 2.21.0. Package semver is separate from the manifest contracts; exact core
+  pins and explicit host loading remain. RFC 0080 retires both: 0.2.0, a
+  declaration-free compatibility shell pinning core 3.0.0, is their final
+  version, and npm deprecation follows as an owner step.
+- **Excel, report and lake publication:** all three join the release workflow
+  from 3.0.0, so every package is on npm each release.
 - **DOCX output:** scoped out by the owner; reconsider on an actual adopter ask.
 - **Native bps units:** deferred until a pack demonstrates the required unit
   and precision contract. This is not an unresolved Excel ROUND-parity defect.

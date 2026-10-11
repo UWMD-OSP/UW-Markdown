@@ -37,7 +37,7 @@ the single most important diagram in the repo (also in [`ARCHITECTURE.md`](../..
 ## The standard and the starter products
 
 [RFC 0078](../rfcs/0078-protocol-is-verification.md) (accepted 2026-10-10,
-Protocol 3.0 contract, unreleased) splits the repo into two layers:
+the Protocol 3.0 contract) splits the repo into two layers:
 
 - **The standard** — the format, the verification Protocol, receipts, the module
   system and the representation specs. It defines how any party *verifies* a

@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/module-data-center",
-  "version": "0.1.13",
+  "version": "0.2.0",
   "description": "Compatibility shell for the retired official data-center module (RFC 0039). Since RFC 0080 data_center is a builtin class in @uwmd/core; this package declares no class, section, calculation or rule, and exists so existing installs and org.uwmd.datacenters module lists keep resolving.",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@uwmd/core": "2.21.0"
+    "@uwmd/core": "3.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

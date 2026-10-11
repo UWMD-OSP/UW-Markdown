@@ -270,12 +270,24 @@ test('publication scope expands only after the verified four-package 2.17.0 gene
   for (const version of ['1.8.0', '2.16.0', '2.17.0', '2.17.0-rc.1']) {
     assert.equal(releasePackagesForGeneration(version).length, 4);
   }
-  for (const version of ['2.17.1', '2.17.1-rc.1', '2.18.0', '3.0.0']) {
+  for (const version of ['2.17.1', '2.17.1-rc.1', '2.18.0', '2.21.0', '2.21.1']) {
     assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), [
       '@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch', '@uwmd/module-hospitality', '@uwmd/module-data-center',
     ]);
   }
   assert.throws(() => releasePackagesForGeneration('not-a-version'), /Invalid release generation/);
+});
+
+test('Excel, report and lake join the publication scope after the six-package 2.21.x generations', () => {
+  for (const version of ['2.22.0', '3.0.0', '3.0.0-rc.1', '3.1.0']) {
+    assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), [
+      '@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch', '@uwmd/module-hospitality', '@uwmd/module-data-center',
+      '@uwmd/excel', '@uwmd/report', '@uwmd/lake',
+    ]);
+  }
+  // Core publishes before every package that pins it exactly.
+  const names = releasePackagesForGeneration('3.0.0').map((pkg) => pkg.name);
+  assert.equal(names[0], '@uwmd/core');
 });
 
 test('future prepared/tagged generations require both official module rows and exact core pairings', () => {
@@ -292,6 +304,34 @@ test('future prepared/tagged generations require both official module rows and e
       const wrongPin = NEXT_PREPARED.versions.replace(row, row.replace('2.17.1 |', '2.17.x |'));
       assert.match(checkReleaseState({ ...NEXT_PREPARED, versions: wrongPin, tag }).failures.join('\n'), /not exactly @uwmd\/core 2\.17\.1/);
     }
+  }
+});
+
+// A nine-package generation: Excel, report and lake rows lose their
+// source-only annotations, like every other published row.
+const NINE_PREPARED = {
+  ...NEXT_PREPARED,
+  changelog: NEXT_PREPARED.changelog.replaceAll('2.17.1', '2.22.0'),
+  versions: NEXT_PREPARED.versions.replaceAll('2.17.1', '2.22.0'),
+  coreVersion: '2.22.0',
+  cliVersion: '2.22.0',
+  cliCoreDependency: '2.22.0',
+};
+
+test('a nine-package generation requires bare Excel, report and lake rows', () => {
+  const excel = '**0.9.7** (unpublished; stale \`0.3.0\` on the registry, deprecated 2026-10-02)';
+  const lake = '**0.2.3** (unpublished)';
+  assert.ok(NINE_PREPARED.versions.includes(excel) && NINE_PREPARED.versions.includes(lake));
+  const fixed = NINE_PREPARED.versions
+    .replace(excel, '**0.9.7**')
+    .replace(lake, '**0.2.3**')
+    .replace('## Historical 1.1+', '| \`@uwmd/report\` | **0.8.9** | \`@uwmd/core\` 2.22.0 |\n\n## Historical 1.1+');
+  for (const tag of [undefined, 'v2.22.0']) {
+    const failures = checkReleaseState({ ...NINE_PREPARED, tag }).failures.join('\n');
+    assert.match(failures, /@uwmd\/excel 0\.9\.7 is still annotated/);
+    assert.match(failures, /@uwmd\/lake 0\.2\.3 is still annotated/);
+    assert.match(failures, /no "Current matrix" row for @uwmd\/report/);
+    assert.deepEqual(checkReleaseState({ ...NINE_PREPARED, versions: fixed, tag }).failures, []);
   }
 });
 

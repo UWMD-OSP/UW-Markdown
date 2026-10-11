@@ -224,6 +224,18 @@ describe('loadModuleManifest', () => {
       expect(result.errors.filter((e) => e.code === 'PROTO-MOD-030' || e.code === 'PROTO-MOD-031')).toEqual([]);
     }
   });
+
+  // Protocol 3.0.0 changed the conformance claim, not the module system
+  // (RFC 0078), so a module written for the 2.x line keeps loading, as `^1`
+  // modules did across 2.0.0. An explicit 3.x host still refuses `^2`.
+  it('keeps loading modules written for the 2.x protocol line on a 3.0 host', () => {
+    for (const range of ['^2', '^2.22.0', '>=2.22.0 <3', '>=2.25.0', '>=3']) {
+      const result = loadModuleManifest({ ...BASE, requires_protocol: range });
+      expect(result.errors.filter((e) => e.code === 'PROTO-MOD-030')).toEqual([]);
+    }
+    expect(loadModuleManifest({ ...BASE, requires_protocol: '^2' }, { protocolVersion: '3.0.0' })
+      .errors.some((e) => e.code === 'PROTO-MOD-030')).toBe(true);
+  });
 });
 
 describe('createModuleRegistry', () => {

@@ -118,7 +118,7 @@ full lake pipeline.
 The output is intentionally a read model, not a new storage protocol: databases or
 other structured systems may import it while `.uw.md` remains the canonical record.
 Invalid or non-UW files are included with an error instead of halting the batch.
-## PostgreSQL lake adapter — `packages/uwmd-lake` (`@uwmd/lake` 0.1.0, unpublished)
+## PostgreSQL lake adapter — `packages/uwmd-lake` (`@uwmd/lake`)
 
 The RFC 0049 reference adapter. It is a **host-side integration**, not part of the
 protocol: it reads canonical outputs the standard already produces and plans

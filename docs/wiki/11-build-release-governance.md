@@ -35,16 +35,18 @@ Script | Does
 ## Versioning (semver-per-surface)
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
-- **Format** — `FORMAT_VERSION` in `protocol.ts` (2.0) and `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 2.25.0 after
-  RFC 0065 shipped and publication was independently verified; published
-  core/CLI 2.21.0 pair with it and Format 2.0. Historical core/CLI 2.20.0
-  retain Stable Protocol 2.24.0, and 2.19.0 retain Stable Protocol 2.23.0).
+- **Format** — `FORMAT_VERSION` in `protocol.ts` (2.1, RFC 0080) and
+  `uw_version` in files.
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (3.0.0, the accepted
+  release contract for RFCs 0078, 0079 and 0080, paired with core/CLI 3.0.0
+  and Format 2.1. Published core/CLI 2.21.0 retain Stable Protocol 2.25.0,
+  and 2.20.0 retain Stable Protocol 2.24.0).
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
-  two cannot drift apart silently. **Protocol 3.0.0 is next** (RFC 0078,
-  accepted; the contract is on `main`, the label moves at release
-  preparation): conformance becomes the **Reader** and **Verifier** tiers plus
-  optional profiles. From 3.0 the Protocol version moves only when what a
+  two cannot drift apart silently. **Protocol 3.0.0** (RFC 0078): conformance
+  is the **Reader** and **Verifier** tiers plus optional profiles. The
+  reference host keeps 2.25.0 in `SUPPORTED_PROTOCOL_VERSIONS`, as it kept
+  1.14.0 at 2.0.0, so modules written for `^2` keep loading; 3.0 changed the
+  conformance claim, not the module system. From 3.0 the Protocol version moves only when what a
   document *means* or how it is *verified* changes (format, verification rules,
   receipts, module system, metric dictionary). Starter-product changes (calc
   engine code, defaults, editor, viewer/report, Excel, agents, the
@@ -68,9 +70,12 @@ each with a guard that fails loudly if you miss it:
 2. The dependents' pins and their own versions (above). `verify-lockfile`.
 3. The two `conformance/receipts/issue/` baselines, which record the issuing
    engine — regenerate with `npm run conformance -- --suite=receipts --update`.
-4. `conformance/receipts/verify/03-result-disagrees/receipt.json`, whose
+4. Every `conformance/receipts/verify/` receipt whose expected verdict is
+   `failed` and that the current engine issued: `03-result-disagrees`,
+   `10-rehashed-one-cent` and `11-rehashed-subquantum-ratio`. Each
    `engine_version` must be the **new** one or `RCP-07` reclassifies the
-   scenario from `failed` to `unverifiable`. See
+   scenario from `failed` to `unverifiable`. Their `results_digest` does not
+   cover it, so the edit is by hand. See
    [09](09-conformance-testing.md#conformance-corpus-conformance).
 5. The `Current matrix` rows in [`VERSIONS.md`](../../VERSIONS.md) — both the
    version cell and the "pairs with `@uwmd/core` 1.x" notes. `verify-versions`.
@@ -94,8 +99,9 @@ exception. `### Released` is added only after the tag exists, so `main` can
 never claim a release that has no tag.
 
 Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
-all six supported publishing packages (core, CLI, signing, batch, hospitality and data-center)** (below). The tag is the trigger, so a missing
-publisher fails the job after every gate has already passed.
+all nine publishing packages (core, CLI, signing, batch, hospitality,
+data-center, Excel, report and lake)** (below). The tag is the trigger, so a
+missing publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
@@ -126,7 +132,7 @@ when the release workflow runs.
      - the dated heading `## [X.Y.Z] - YYYY-MM-DD`, with the complete release
        contents;
      - bare matrix version cells for the generation's publishing packages, with exact
-       pairings (four through 2.17.0; six afterward);
+       pairings (four through 2.17.0; six through 2.21.x; nine afterward);
      - a core row that pairs with `PROTOCOL_VERSION`, and a CLI that pins core
        exactly;
      - a Protocol row with no annotation;
@@ -207,7 +213,12 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   model is called: agent checks run as deterministic replays.
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
   `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`,
-  `@uwmd/module-hospitality`, and `@uwmd/module-data-center`. Authentication is **npm trusted publishing
+  `@uwmd/module-hospitality`, `@uwmd/module-data-center`, `@uwmd/excel`,
+  `@uwmd/report` and `@uwmd/lake`, core first because every other package
+  pins it exactly. Excel, report and lake joined after 2.21.x; each already
+  existed on npm, which a trusted publisher requires (a deprecated stray
+  `0.3.0` of Excel and report, and lake `0.2.9`, published by hand from
+  `v2.21.0` on 2026-10-11). Authentication is **npm trusted publishing
   (OIDC)** — no `NPM_TOKEN`, no secret of any kind. The runner trades the
   `id-token: write` permission for a short-lived token scoped to this repo and
   workflow, and provenance is attached automatically.
@@ -251,13 +262,30 @@ is required solely to distribute these existing implementations.
 > for third parties. The rest of this section describes the distribution
 > mechanics, which are unchanged.
 
-**Ordinary releases only.** Both join the existing four packages in `release.yml`.
-First official publication waits for the next ordinary owner-authorized UWMD
-generation; no module-only trigger or new tag family exists. Releases through
+**Ordinary releases only.** Both joined the existing four packages in `release.yml`
+from 2.18.0; no module-only trigger or new tag family exists. Releases through
 2.17.0 retain their actual four-package publication scope. `release-packages.mjs`
-selects four rows for generations at or below 2.17.0 and six afterward, including
-patch generations; this boundary does not select the next release version.
-Historical tags and publication records stay immutable.
+selects four rows for generations at or below 2.17.0, six through 2.21.x
+(including patch generations) and nine afterward; these boundaries record
+history and do not select the next release version. Historical tags and
+publication records stay immutable.
+
+**Retirement (RFC 0080 §6).** The 3.0.0 transition release publishes 0.2.0 of
+both packages, pinning core 3.0.0 and declaring nothing; it is their final
+version. After the release run succeeds and publication is verified, the owner
+deprecates both names on npm. This is an account step that needs the owner's
+npm login and 2FA, so the workflow does not do it:
+
+```
+npm deprecate @uwmd/module-hospitality "Retired: hospitality is a builtin asset class in @uwmd/core 3.0.0 and later (RFC 0080). Use @uwmd/core; no module install is needed."
+npm deprecate @uwmd/module-data-center "Retired: data_center is a builtin asset class in @uwmd/core 3.0.0 and later (RFC 0080). Use @uwmd/core; no module install is needed."
+```
+
+Deprecating a name marks every version, so existing installs keep resolving
+and only show the message. Record the deprecation in the post-publication
+reconciliation. The packages leave `release.yml`, `release-packages.mjs` and
+the matrix in a later release, never in the one that ships their final
+version.
 
 **Independent versions and explicit loading.** npm package semver identifies the
 artifact; manifest `version` identifies its contract; `manifest_version` identifies
@@ -283,8 +311,11 @@ selected exact versions, using publication-neutral wording in the tagged tree.
 view models, exported JSON, README, package metadata and the complete root MIT
 notice. `verify-packages` checks artifacts, license equality and manifest parity;
 `verify-versions` checks the package/contract/schema/ID/ranges/tier/core columns
-in `VERSIONS.md` without a build. `release:check` covers all six supported
-packages, including exact core dependencies, public exports and OIDC metadata.
+in `VERSIONS.md` without a build. `release:check` covers all nine publishing
+packages, including exact core dependencies, public exports, OIDC metadata and
+core publishing before its dependents. `verify-packages` refuses a publishing
+package with a workspace-only dependency (`file:`, `link:`, `workspace:`), an
+inexact `@uwmd/*` pin, or an export or bin target missing from its tarball.
 Repository workspace-link rules remain unchanged; external consumers correctly
 resolve published npm packages rather than repository workspace links.
 
@@ -336,7 +367,7 @@ browser-safe exports, TypeScript declarations, JSON parity, compatibility checks
 and existing module fixtures. Retain durable evidence under `docs/releases/`.
 For a skipped unchanged artifact, verify its original publication commit and
 provenance rather than claiming it was republished by the new run. Confirm no
-Excel/report/lake or other package was unintentionally published.
+package outside the generation's scope was unintentionally published.
 
 npm/Sigstore package provenance and `ModuleManifest.signature` are distinct trust
 layers. These manifests remain unsigned; a host requiring signed manifests may
@@ -371,8 +402,8 @@ refuse them. Preserve the existing synchronous/async verification boundary.
   calendar math (0034), and distribution waterfalls (0035/0036) are implemented.
   RFC 0040 (signed block roles) and RFC 0041 (period-indexed addressing)
   shipped in core/CLI 2.7.0. RFCs 0042–0044 shipped in core/CLI 2.8.0 with
-  Protocol 2.11.0; their RFC status is `implemented`. Standalone Excel remains
-  unpublished. RFCs 0062 and 0063 shipped in core/CLI 2.14.0 with Protocol
+  Protocol 2.11.0; their RFC status is `implemented`. Standalone Excel is in
+  the release workflow from 3.0.0. RFCs 0062 and 0063 shipped in core/CLI 2.14.0 with Protocol
   2.18.0; their RFC status is `implemented`.
 - Other process docs: [`docs/FEEDBACK.md`](../FEEDBACK.md),
   [`CONTRIBUTING.md`](../../CONTRIBUTING.md),

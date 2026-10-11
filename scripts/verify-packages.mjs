@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { OFFICIAL_MODULE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
+import { OFFICIAL_MODULE_PACKAGES, RELEASE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
 
 const ts = createRequire(new URL('../packages/uwmd-core/package.json', import.meta.url))('typescript');
 const npmCli = process.env.npm_execpath;
@@ -93,7 +93,7 @@ const batchFiles = packedFiles('@uwmd/batch');
 requireFiles('@uwmd/batch', batchFiles, ['package.json', 'README.md', 'bin/uwmd-batch.mjs', 'dist/index.js', 'dist/index.d.ts']);
 rejectSourceOrTests('@uwmd/batch', batchFiles);
 
-// @uwmd/lake is unpublished but packs like any other workspace; leaving it out
+// @uwmd/lake packs like any other workspace (published from 3.0.0); leaving it out
 // of this check is how a test file reaches a tarball unnoticed.
 const lakeFiles = packedFiles('@uwmd/lake');
 requireFiles('@uwmd/lake', lakeFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts']);
@@ -130,6 +130,42 @@ for (const pkg of OFFICIAL_MODULE_PACKAGES) {
 const signingFiles = packedFiles('@uwmd/signing');
 requireFiles('@uwmd/signing', signingFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/keystore-file.js']);
 rejectSourceOrTests('@uwmd/signing', signingFiles);
+
+// Every package the release workflow publishes (nine since Excel, report and
+// lake joined after 2.21.x) must install outside this repository: no
+// workspace-only dependency specifier, exact @uwmd/* pins, public metadata,
+// and every export and bin target inside the tarball it ships.
+const packedByName = new Map([
+  ['@uwmd/core', coreFiles], ['@uwmd/cli', cliFiles], ['@uwmd/batch', batchFiles], ['@uwmd/lake', lakeFiles],
+  ['@uwmd/excel', excelFiles], ['@uwmd/report', reportFiles], ['@uwmd/signing', signingFiles],
+]);
+for (const pkg of RELEASE_PACKAGES) {
+  const files = packedByName.get(pkg.name) ?? packedFiles(pkg.name);
+  const manifest = JSON.parse(readFileSync(resolve(pkg.dir, 'package.json'), 'utf8'));
+  assert.notStrictEqual(manifest.private, true, `${pkg.name}: a published package cannot be private`);
+  assert.ok(manifest.license, `${pkg.name}: license metadata is required`);
+  assert.strictEqual(manifest.repository?.directory, pkg.dir, `${pkg.name}: repository.directory must be ${pkg.dir}`);
+  for (const field of ['dependencies', 'peerDependencies', 'optionalDependencies']) {
+    for (const [dependency, spec] of Object.entries(manifest[field] ?? {})) {
+      assert.ok(!/^(?:file|link|workspace|portal):/.test(spec), `${pkg.name}: ${field}.${dependency} uses workspace-only specifier ${spec}`);
+      if (dependency.startsWith('@uwmd/')) {
+        assert.match(spec, /^\d+\.\d+\.\d+$/, `${pkg.name}: ${field}.${dependency} must pin an exact version, not ${spec}`);
+      }
+    }
+  }
+  const targets = [];
+  const collect = (target) => {
+    if (typeof target === 'string') targets.push(target);
+    else if (target && typeof target === 'object') Object.values(target).forEach(collect);
+  };
+  collect(manifest.exports);
+  collect(typeof manifest.bin === 'string' ? [manifest.bin] : manifest.bin);
+  for (const target of [manifest.main, manifest.types, ...targets].filter(Boolean)) {
+    const path = target.replace(/^\.\//, '');
+    assert.ok(files.has(path), `${pkg.name}: ${target} is declared but not in the packed tarball`);
+  }
+}
+console.log(`[PASS] ${RELEASE_PACKAGES.length} published packages: no workspace-only dependencies, exact @uwmd/* pins, export and bin targets packed`);
 
 console.log(`[PASS] @uwmd/core package: ${coreFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/cli package: ${cliFiles.size} files, CLI wrapper present`);

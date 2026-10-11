@@ -489,7 +489,7 @@ extensions use modules.
 > resolves to nothing, which stays true no matter how many real classes ship.
 > `__unregistered_test_class__` must never be added to the `AssetClass` union.
 
-## Official builtin classes (RFC 0080, Unreleased)
+## Official builtin classes (RFC 0080)
 
 All twelve official classes are full builtins, including `data_center` and `manufactured_housing`. Their normative metric definitions and size selectors live in `spec/metrics/`, with bidirectional pack/registry parity tests. Both new packs use all six RFC 0079 standard income definitions, including equity_total-based cash-on-cash. Source size is `property.critical_it_load_kw` or `property.total_sites`, mirrored against the detailed capacity/site count. They have Excel layouts and starter defaults, and take the base stage lists verbatim like multifamily (no stage overlay; a missing `rent_roll` is DQ-06). Default tables are owner-approved starter proxies (2026-10-10), never verification inputs; data center publishes no expense-ratio default, so producers state it.
 

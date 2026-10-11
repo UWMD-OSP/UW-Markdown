@@ -249,7 +249,10 @@ In phases, each its own PR once this RFC is accepted:
      bar.
    - Add "the standard vs the starter products" to orientation.
    - Wiki 04/05/10/11 and docs site (Standard vs Tools navigation).
-5. **Release.** Protocol 3.0.0 with the next core release.
+5. **Release.** Protocol 3.0.0 with the next core release. Release
+   preparation pairs Protocol 3.0.0 with core/CLI 3.0.0 and Format 2.1
+   (RFC 0080). The RFC stays `accepted` until a release ships it and
+   publication is verified.
 6. **Follow-up RFCs:** `@uwmd/verify` package split (D8); asset classes as
    full builtins (principle 1, including data center and manufactured
    housing); levered and after-tax definitions (D7).
