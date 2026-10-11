@@ -182,7 +182,7 @@ async function document(source,file) {
 function jsonValue(value,file) {
   if(Array.isArray(value)) return value.filter(v=>!retired.has(v)).map(v=>jsonValue(v,file));
   if(!obj(value)) return value;
-  if(value._meta) value=bare(value,value._meta.section??value.section_id,file);
+  if(value._meta && !value.$schema && !value.$ref && !obj(value._meta.$ref) && !value._meta.$ref && !value._meta.type && !value._meta.properties) value=bare(value,value._meta.section??value.section_id,file);
   if(value.manifest_version==='1' && (Object.hasOwn(value,'requires_tier')||Object.hasOwn(value,'requires_conformance'))) {
     if(Object.hasOwn(value,'requires_tier')) {value.requires_conformance=oldTiers[value.requires_tier]??value.requires_tier;delete value.requires_tier;}
     if(value.calculations?.length && !value.requires_profiles) value.requires_profiles=['module'];
@@ -256,7 +256,7 @@ async function refreshArtifacts() {
   if(!agent.success)throw new Error(agent.error);if(cursor!==cassette.exchanges.length)throw new Error('Replay dropped a provider call');
   writeFileSync(replay+'/cassette.json',JSON.stringify(cassette,null,2)+'\n');writeFileSync(replay+'/after.uwx.md',agent.updatedContent);
 }
-if(!process.argv.includes('--artifacts-only')) for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) await processFile(file);
+if(!process.argv.includes('--artifacts-only')) for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !f.startsWith('spec/') && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) await processFile(file);
 if(write) await refreshArtifacts();
 if(process.argv.includes('--report')) writeFileSync(process.argv[process.argv.indexOf('--report')+1],JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({write,files:Object.keys(report.files).length,areas:Object.values(report.files).reduce((a,k)=>(a[k]=(a[k]??0)+1,a),{}),refusals:report.refusals.length,conflicts:report.conflicts.length,dropped:report.dropped,uses_differences:report.uses_differences}));
