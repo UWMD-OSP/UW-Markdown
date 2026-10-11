@@ -36,6 +36,7 @@ const NAMED_RANGES = new Map<string, string>([
   ['noi_model.income.expense_reimbursements', 'expense_reimbursements'],
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
+      ['valuation.underwritten_value', 'underwritten_value'],
   ['debt_structure.loan_amount', 'loan_amount'],
   ['debt_structure.annual_debt_service', 'annual_debt_service'],
   ['property.gross_leasable_area', 'gross_leasable_area'],
@@ -83,8 +84,7 @@ describe('RETAIL_PACK', () => {
     for (const c of RETAIL_PACK.calculations ?? []) {
       const r = evaluateCalc(c, ctx);
       expect(r.ok, `${c.id}: ${r.error?.message ?? ''}`).toBe(true);
-      if (c.id === 'cash_on_cash') expect(r.value).toBeNull();
-      else expect(typeof r.value).toBe('number');
+      expect(typeof r.value).toBe('number');
     }
   });
 
@@ -121,10 +121,11 @@ describe('Retail Excel emit ↔ evaluateCalc parity', () => {
       expense_reimbursements: income['expense_reimbursements']!,
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
+      underwritten_value: (valuation.content['underwritten_value'] as number | undefined) ?? null,
       loan_amount: debt.content['loan_amount'] as number,
       annual_debt_service: debt.content['annual_debt_service'] as number,
       gross_leasable_area: property.content['gross_leasable_area'] as number,
-      equity_total: null,
+      equity_total: ((parsed.sections['sources_uses'] as { content: Record<string, unknown> }).content['equity_metrics'] as Record<string, number>)['equity_total'],
       levered_cash_flow_y1: null,
       total_uses: uses['total']!,
       occupied_gla: rentRoll.content['occupied_gla'] as number,
@@ -140,7 +141,7 @@ describe('Retail Excel emit ↔ evaluateCalc parity', () => {
         const re = new RegExp(`\\b${name}\\b`, 'g');
         formula = formula.replace(re, String(values[name]));
       }
-      if (c.id !== 'cash_on_cash') expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = excelValue(formula);
 

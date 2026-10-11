@@ -83,3 +83,26 @@ describe.each(ASSET_CLASSES.filter(c => c !== 'land'))('%s deal-level cash_on_ca
     expect(ids).not.toContain('lp_cash_on_cash');
   });
 });
+
+describe.each(ASSET_CLASSES)('%s LTV denominator (RFC 0079 revised D2)', assetClass => {
+  const ltv = getPackForAssetClass(assetClass)!.calculations!.find(c => c.id === 'ltv')!;
+  const value = (valuation: Record<string, unknown>) => {
+    const parsed = parseUWFile(`---\nuw_version: "2.0"\nasset_class: ${assetClass}\n---\n` +
+      `\n\`\`\`json uw:section=valuation source=manual\n${JSON.stringify(valuation)}\n\`\`\`\n` +
+      '\n\`\`\`json uw:section=debt_structure source=manual\n{"loan_amount":75000}\n\`\`\`\n');
+    return evaluateCalc(ltv, { parsed, prior_results: {}, locale: 'en-US' });
+  };
+  it('prefers the stated underwritten value over price, and does not require the unused price', () => {
+    expect(value({ underwritten_value: 120000, purchase_price: 100000 })).toMatchObject({ ok: true, value: 0.625 });
+    expect(value({ underwritten_value: 120000 })).toMatchObject({ ok: true, value: 0.625 });
+  });
+  it('falls back only for absent/null underwritten value', () => {
+    expect(value({ purchase_price: 100000 })).toMatchObject({ ok: true, value: 0.75 });
+    expect(value({ underwritten_value: null, purchase_price: 100000 })).toMatchObject({ ok: true, value: 0.75 });
+    expect(value({})).toMatchObject({ ok: true, value: null });
+  });
+  it('does not hide a stated zero or invalid underwritten value behind the price', () => {
+    expect(value({ underwritten_value: 0, purchase_price: 100000 })).toMatchObject({ ok: false, error: { code: 'CALC-DIV-ZERO' } });
+    expect(value({ underwritten_value: '120000', purchase_price: 100000 })).toMatchObject({ ok: false, error: { code: 'CALC-TYPE-001' } });
+  });
+});

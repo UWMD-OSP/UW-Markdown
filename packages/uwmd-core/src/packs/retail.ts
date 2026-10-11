@@ -40,7 +40,7 @@ export const RETAIL_PACK: ModuleManifest = {
     {
       id: 'ltv',
       label: 'LTV',
-      formula: 'debt_structure.loan_amount / valuation.purchase_price',
+      formula: 'debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)',
       unit: '%',
       deterministic: true,
       section_roles: { debt_structure: 'senior' },

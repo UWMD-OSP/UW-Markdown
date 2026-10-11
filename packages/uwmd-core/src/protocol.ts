@@ -1426,7 +1426,7 @@ export interface MetricDictionaryCalculation {
   readonly unit: string;
   /** Effective Protocol §VIII.5 decimal places, including unit defaults. */
   readonly round_to: number;
-  /** RFC 0079 minimum source-token precision, in stored units. */
+  /** RFC 0079 comparison floor in stored units; coarse statements are checked at this precision. */
   readonly minimum_stated_decimals: number;
   readonly section_roles: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
   readonly null_semantics: 'expression';

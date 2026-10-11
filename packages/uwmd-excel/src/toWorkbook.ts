@@ -440,6 +440,7 @@ function writePipelineLogSheet(wb: ExcelJS.Workbook, parsed: ParsedUWFile): void
 
 const MIXED_USE_PROPERTY_INPUTS: ReadonlyArray<{ label: string; path: string }> = [
   { label: 'Purchase Price', path: 'valuation.purchase_price' },
+  { label: 'Underwritten Value', path: 'valuation.underwritten_value' },
   { label: 'Loan Amount', path: 'debt_structure.loan_amount' },
   { label: 'Annual Debt Service', path: 'debt_structure.annual_debt_service' },
   { label: 'Total Invested Equity', path: 'sources_uses.equity_metrics.equity_total' },

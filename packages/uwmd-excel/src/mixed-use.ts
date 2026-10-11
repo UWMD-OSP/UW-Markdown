@@ -74,6 +74,7 @@ export const MIXED_USE_COMPONENT_SPECS: readonly MixedUseComponentSpec[] = [
 export const MIXED_USE_PROPERTY_PATHS: readonly string[] = [
   'noi_model.net_operating_income',
   'valuation.purchase_price',
+  'valuation.underwritten_value',
   'debt_structure.loan_amount',
   'debt_structure.annual_debt_service',
   'sources_uses.equity_metrics.equity_total',

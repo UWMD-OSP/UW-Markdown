@@ -23,11 +23,24 @@ describe('RFC 0079 stated precision', () => {
     expect(compare(1.51394, '1.513940000').state).toBe('verified');
     expect(compare(1.51394, '1.514040000').state).toBe('failed');
   });
-  it('refuses insufficient or unavailable precision, even when values agree', () => {
-    expect(compare(1.2, '1.2').reason).toBe('insufficient_stated_precision');
-    expect(compare(1.2, '1.20').state).toBe('verified');
+  it('checks coarse statements at the minimum instead of refusing them', () => {
+    expect(compare(1.2, '1.2')).toMatchObject({ state: 'verified', comparison_decimals: 2 });
+    expect(compare(1.7, '1.5').state).toBe('failed');
+    expect(compare(1.54, '1.5').state).toBe('failed');
+    const rate = { round_to: 6, minimum_stated_decimals: 3 };
+    const leverage = { round_to: 6, minimum_stated_decimals: 2 };
+    expect(compareStatedMetric(0.601852, 0.6, 1, leverage)).toMatchObject({ state: 'verified', computed: 0.6, comparison_decimals: 2 });
+    for (const raw of [0.07, 0.070499999]) {
+      expect(compareStatedMetric(raw, 0.07, 2, rate)).toMatchObject({ state: 'verified', comparison_decimals: 3 });
+    }
+    for (const raw of [0.0705, 0.08]) expect(compareStatedMetric(raw, 0.07, 2, rate).state).toBe('failed');
+    // Stating four places keeps the stricter half-bp boundary; no double rounding.
+    expect(compareStatedMetric(0.07005, 0.07, 4, rate).state).toBe('failed');
+    expect(compareStatedMetric(0.070049999, 0.07, 4, rate).state).toBe('verified');
+  });
+  it('rejects an absent or malformed precision argument as a typed caller error', () => {
     for (const places of [undefined, -1, 1.5, Number.POSITIVE_INFINITY]) {
-      expect(compareStatedMetric(1.2, 1.2, places, ratio).reason).toBe('unknown_stated_precision');
+      expect(() => compareStatedMetric(1.2, 1.2, places, ratio)).toThrow('CALC-TYPE-001');
     }
   });
   it('does not round a stated value falsely labeled with fewer decimals', () => {

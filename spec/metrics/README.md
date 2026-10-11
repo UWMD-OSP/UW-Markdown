@@ -26,29 +26,39 @@ there is no declared role. It does not confer a senior preference implicitly.
 
 `unit` is the existing unit token; `%` values are fractions. `round_to` is the
 full §VIII.5 reporting precision: money (`$`) uses 2, rates (`%`) use 6 and ratios
-(`x`) use 4. **`minimum_stated_decimals`** is each entry's minimum numeric-source
-precision, in stored units, under [RFC 0079](../../docs/rfcs/0079-metric-precision.md).
-It is an integer from zero through `round_to`. Each entry below carries it
-explicitly; it is verification metadata, not a change to engine/Excel reporting.
+(`x`) use 4. **`minimum_stated_decimals`** is each entry's minimum **comparison** precision,
+in stored units, under [RFC 0079](../../docs/rfcs/0079-metric-precision.md).
+It is an integer from zero through `round_to`, stated explicitly in each entry;
+it does not change engine/Excel reporting.
 
-To check a statement, preserve its source token's decimal places, including
-trailing zeroes and exponent shifts. `1.20` carries two; `1.2` carries one;
-`1.200e-2` carries five. Fractional `0.0550` carries four (0.01%); an anchored Lite
-`5.50%` decodes to that same precision. A derived display string carries none.
-Absent precision and a statement below the minimum are **unverifiable**.
+Retain source decimal places, including trailing zeroes and exponent shifts:
+`1.20` carries two; `1.2` carries one; `1.200e-2` carries five. Fractional
+`0.0550` carries four (0.01%); an anchored Lite `5.50%` decodes to that same
+precision. A derived display string carries none.
 
-Evaluate without intermediate rounding in IEEE-754 binary64. Quantize the
-**unrounded** expression value once, half away from zero, at
-`min(stated_decimals, round_to)`. Compare to the stated value, quantizing that
-statement only when it carries more places than `round_to`. Equality verifies;
-there is no extra tolerance. Do not round first at the reporting precision.
+Evaluate unrounded in binary64. Quantize the **unrounded** expression once,
+half away from zero, at `min(max(stated_decimals, minimum_stated_decimals), round_to)`.
+Compare to the stated value, quantizing the statement only above `round_to`.
+A coarse statement is checked at the minimum: `0.07` can equal 7.0%; LTC `0.6`
+can verify `0.601852` at the 1% floor. DSCR `1.5` versus `1.7` fails, rather
+than becoming unverifiable. Equality verifies and a finite disagreement fails;
+unverifiable is for absent usable inputs, not inadequate spelling precision.
+No additional tolerance or double rounding is allowed.
 [Protocol §VIII.5.1](../UW_PROTOCOL_v1.md#viii-5-1-stated-metric-precision-rfc-0079)
-is the normative comparison procedure.
+is normative. The reference API rejects unavailable/invalid source precision
+as a typed caller error; preserve it before numeric parsing.
 
-Minimums: `cap_rate`, `debt_yield` and `cash_on_cash` use 4; other `%` entries
-and `x` entries use 2; dollar entries per SF/NRSF (ids containing `sqft`, `psf`,
-or `nrsf`) use 2; other dollar entries use 0. Raw size selectors use 0 and retain
-exact finite-number equality. The RFC's Decisions table explains each group.
+Minimums: `cap_rate`, `debt_yield` and `cash_on_cash` use 3 (0.1%); other `%`
+entries and `x` entries use 2; dollar entries per SF/NRSF (ids containing `sqft`,
+`psf`, or `nrsf`) use 2; other dollar entries use 0. Raw sizes use 0 and exact
+finite-number equality. The RFC's Decisions table explains each group.
+
+All ten `ltv` entries divide loan amount by stated `valuation.underwritten_value`,
+falling back to `valuation.purchase_price` only when the former is absent/null,
+in agreement with CC-02 and capital-stack `ltv_through`.
+Producers now need to state `sources_uses.equity_metrics.equity_total` for
+non-multifamily cash-on-cash. A single sole non-debt source can be documented as
+an identity of stated fields; neither the verifier nor the packs infer it.
 
 `null_semantics: "expression"` means §VIII.2's expression semantics apply:
 missing or null operands propagate null in arithmetic; explicit null tests and

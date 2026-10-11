@@ -18,7 +18,7 @@ continues to use the same pack objects and Excel bindings.
 
 ## Stated precision and output precision (RFC 0079)
 
-A dictionary entry's `minimum_stated_decimals` is a verification floor.
+A dictionary entry's `minimum_stated_decimals` is a comparison floor.
 `getStatedDecimals` reads a **source numeric token**, preserving trailing zeroes
 and exponents. `compareStatedMetric` takes the **unrounded** expression result,
 the stated number, its source decimals and the dictionary entry. It compares
@@ -30,7 +30,7 @@ defaults or cascade. Callers must preserve precision before numeric parsing;
 Calc/Excel reporting and receipt result digests still use full `round_to`.
 Receipts compare those quantized outputs exactly, with no old relative tolerance.
 The [lender fixture](../../conformance/metrics/README.md) reports all examples,
-including insufficient-precision claims and missing cash-on-cash inputs.
+including failures and absent-input findings without hiding coarse statements.
 
 ## File layout
 
@@ -78,7 +78,7 @@ multifamily derived metrics. Each is a `ModuleCalcDecl`
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `debt_structure.loan_amount / valuation.purchase_price` | `%`
+`ltv` | LTV | `loan_amount / (underwritten_value ?? purchase_price)` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
 `price_per_unit` | Price / Unit | `valuation.purchase_price / property.total_units` | `$`
@@ -99,11 +99,27 @@ Sponsor/LP allocation is optional for this generic metric. A sponsor contributio
 alone never substitutes for aggregate equity. No `sponsor_cash_on_cash` or
 `lp_cash_on_cash` declaration is added: those need separately named metrics,
 attributable sponsor/LP cash flows and contribution inputs. RFC 0079 applies this definition to all nine income-class packs; land
-retains its omission of income metrics. The eight corrected packs move to 1.0.1.
+retains its omission of income metrics. The eight corrected packs and land move to 1.0.1; multifamily moves to 1.0.2
+for the shared LTV denominator correction.
 
 The Excel layout binds total equity and the stated year-1 flow to the same pack
 expression; absent total equity emits a blank, and stated zero cash flow is kept.
 See [the classification and scope note](../reviews/2026-10-03-deal-cash-on-cash.md).
+
+### LTV denominator and producer inputs (RFC 0079 revised direction)
+
+Every builtin class uses loan / `valuation.underwritten_value`, falling back to
+`valuation.purchase_price` when no underwritten value is stated. This matches
+CC-02 and capital-stack `ltv_through`. The Excel layouts bind both value and
+price; the shared conditional expression selects the same denominator.
+
+**Producers of non-multifamily documents now need
+`sources_uses.equity_metrics.equity_total` for cash-on-cash.** The eight worked
+examples explicitly declare this equal to their sole non-debt sponsor source,
+with the identity documented in `_notes`. This is producer-authored evidence;
+the runtime does not infer it. Agave's mezz/preferred/common stack remains
+ambiguous and its cash-on-cash stays null without a total-equity statement.
+Cap rate/debt yield/cash-on-cash comparison minimums are now 3 decimals (0.1%).
 
 ### Debt metrics over several debt blocks (RFC 0066)
 
@@ -141,7 +157,7 @@ A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `debt_structure.loan_amount / valuation.purchase_price` | `%`
+`ltv` | LTV | `loan_amount / (underwritten_value ?? purchase_price)` | `%`
 `ltc` | LTC | `debt_structure.loan_amount / sources_uses.uses.total` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
@@ -156,7 +172,8 @@ Office sizes by **rentable square feet** (`property.rentable_square_feet`,
 not `total_units`/`total_nra_sqft`), and its NOI model nests `income`/`expenses`.
 The cash-on-cash inputs are common to all income classes. The
 `Riverside-Office-Phoenix-AZ.uwx.md` worked example carries the office fields
-but lacks aggregate equity, so its standardized cash-on-cash remains uncomputed.
+and explicitly states aggregate equity equal to its sole non-debt sponsor source,
+so its standardized cash-on-cash computes with the NOI-minus-debt-service fallback.
 
 ## `RETAIL_PACK`
 

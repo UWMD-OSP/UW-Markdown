@@ -17,7 +17,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -25,9 +25,10 @@
       "asset_classes": [
         "multifamily"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -77,7 +78,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_unit",
@@ -155,7 +156,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "cap_rate",
@@ -173,7 +174,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -181,9 +182,10 @@
       "asset_classes": [
         "office"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -253,7 +255,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_sqft",
@@ -347,7 +349,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -383,7 +385,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -391,9 +393,10 @@
       "asset_classes": [
         "retail"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -463,7 +466,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_sqft",
@@ -575,7 +578,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -611,7 +614,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -619,9 +622,10 @@
       "asset_classes": [
         "industrial"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -691,7 +695,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_sqft",
@@ -803,7 +807,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -839,7 +843,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -847,9 +851,10 @@
       "asset_classes": [
         "self_storage"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -919,7 +924,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_nrsf",
@@ -1013,7 +1018,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "physical_occupancy",
@@ -1067,7 +1072,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1075,9 +1080,10 @@
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1147,7 +1153,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_key",
@@ -1241,7 +1247,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -1331,7 +1337,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1339,9 +1345,10 @@
       "asset_classes": [
         "mixed_use"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1391,7 +1398,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "cash_on_cash",
@@ -1411,7 +1418,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "multifamily_noi_share",
@@ -1721,7 +1728,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1729,9 +1736,10 @@
       "asset_classes": [
         "senior_housing"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -1801,7 +1809,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_unit",
@@ -1895,7 +1903,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -1985,7 +1993,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "ltv",
@@ -1993,9 +2001,10 @@
       "asset_classes": [
         "student_housing"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",
@@ -2065,7 +2074,7 @@
       },
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "price_per_bed",
@@ -2159,7 +2168,7 @@
       "section_roles": {},
       "null_semantics": "expression",
       "deterministic": true,
-      "minimum_stated_decimals": 4
+      "minimum_stated_decimals": 3
     },
     {
       "id": "occupancy",
@@ -2329,9 +2338,10 @@
       "asset_classes": [
         "land"
       ],
-      "formula": "debt_structure.loan_amount / valuation.purchase_price",
+      "formula": "debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)",
       "input_paths": [
         "debt_structure.loan_amount",
+        "valuation.underwritten_value",
         "valuation.purchase_price"
       ],
       "unit": "%",

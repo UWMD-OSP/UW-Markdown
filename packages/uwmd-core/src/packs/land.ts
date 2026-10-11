@@ -29,7 +29,7 @@ export const LAND_PACK: ModuleManifest = {
   manifest_version: '1',
   id: 'org.uwmd.pack.land',
   name: 'Land Starter Pack',
-  version: '1.0.0',
+  version: '1.0.1',
   description:
     'Twelve derived metrics for land underwriting: $/acre, $/usable acre, $/buildable unit, usable-land ratio, density, LTV, LTC, loan/acre, basis per buildable unit, carry ratio, carry cost per acre, and land-to-sellout ratio. Deliberately omits cap rate, DSCR, and debt yield — land has no stabilized income.',
   authors: ['UW Markdown Working Group'],
@@ -77,7 +77,7 @@ export const LAND_PACK: ModuleManifest = {
     {
       id: 'ltv',
       label: 'LTV',
-      formula: 'debt_structure.loan_amount / valuation.purchase_price',
+      formula: 'debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)',
       unit: '%',
       deterministic: true,
       section_roles: { debt_structure: 'senior' },

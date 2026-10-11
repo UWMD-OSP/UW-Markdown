@@ -267,6 +267,8 @@ cost line and the operator has limited pricing power mid-year.
     "notes": null
   },
   "_notes": null,
+  "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (13,224,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
+  "equity_metrics": { "equity_total": 13224000 },
   "sources": {
     "loan_amount": 18476000,
     "sponsor_equity": 13224000,

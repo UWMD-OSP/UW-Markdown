@@ -258,6 +258,8 @@ the sources & uses rather than out of operations.
     "notes": null
   },
   "_notes": null,
+  "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (11,370,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
+  "equity_metrics": { "equity_total": 11370000 },
   "sources": {
     "loan_amount": 14280000,
     "sponsor_equity": 11370000,

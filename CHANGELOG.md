@@ -10,10 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### RFC 0079 — stated metric precision and one cash-on-cash definition
 
-- Every dictionary entry gains `minimum_stated_decimals`; Protocol §VIII.5.1 verifies the unrounded expression result at source numeric precision, capped at `round_to`, with the existing half-away quantizer and no double rounding. Core/browser export `getStatedDecimals` and `compareStatedMetric`; reporting/Excel rounding is unchanged.
-- All nine income-class cash-on-cash definitions use stated Y1 levered flow over total equity, with the existing lazy NOI-minus-debt-service fallback. Eight corrected packs move to 1.0.1 and their Excel bindings follow; missing total equity remains null. LTV remains loan / purchase price; land gains no income metric.
-- Corrects Agave's two LTV copies (`0.4938` → `0.5000`) and Sonoran's two DSCR copies (`1.3153` → `1.3161`) from their own inputs. The lender fixture records 128 verified, zero failed and 15 insufficient-precision statements; eight changed-class examples lack aggregate equity and become uncomputed for cash-on-cash. Findings remain visible.
-- Receipt §5.2 and the reference verifier require exact reported-value equality, removing the stale relative tolerance; the old public constant remains deprecated for source compatibility. Rehashed one-cent/subquantum negative controls, source-token precision tests, all-class cash-on-cash and exact Excel parity protect the change. Protocol/Format labels are unchanged pending release preparation.
+- Implements Jared's revised directions (2026-10-10): every dictionary entry gains a minimum comparison precision; Protocol §VIII.5.1 checks the unrounded result at `min(max(stated_decimals, minimum_stated_decimals), round_to)`. Coarse statements verify or fail at the minimum instead of becoming unverifiable. Cap rate/debt yield/cash-on-cash minimums are 3 fractional decimals (0.1%); no double rounding or new tolerance. Reporting/Excel rounding is unchanged.
+- Every class's LTV uses loan / stated underwritten value, with a purchase-price fallback, matching CC-02 and capital-stack `ltv_through`. Restores Agave's correct `0.4938` figures and original notes; no other example LTV changes. Multifamily pack moves to 1.0.2; the other nine corrected packs move to 1.0.1. Excel inputs/formulas follow in lockstep.
+- All nine income-class cash-on-cash definitions use stated Y1 levered flow / total equity with the lazy NOI-minus-debt-service fallback. **Non-multifamily producers now need to state `sources_uses.equity_metrics.equity_total` for cash-on-cash.** Eight examples declare it equal to their sole non-debt sponsor-equity line, an identity of stated fields documented in each `_notes`; Agave's ambiguous stack remains uncomputed.
+- Retains Sonoran's two proven DSCR corrections (`1.3153` → `1.3161`). The lender fixture reports all remaining failures/absent-input findings. Core/browser export the comparison helper; all-class LTV/cash-on-cash Excel parity and precision boundaries remain protected. Protocol/Format labels are unchanged pending release preparation.
+
+#### Fixed
+
+- **Receipt reported-output equality (independent defect fix).** Receipt §5.2 and the verifier remove the obsolete relative tolerance, requiring exact full-`round_to` reported values and matching digests. Both rehashed one-cent/subquantum negatives incorrectly verified on main; they now fail with RCP-03. This is separate from owner decisions 1–3. The historical exported tolerance constant remains deprecated and unused for source compatibility; existing engine/pack mismatch precedence remains unchanged.
 
 ### Protocol 3.0 contract: the Protocol is verification (RFC 0078 phase 1)
 

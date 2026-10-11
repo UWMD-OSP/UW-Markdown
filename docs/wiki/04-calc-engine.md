@@ -431,8 +431,8 @@ cascade holds one value per path, so a section's block is selected once, under
 the role its reading targets declare. A target is excluded and reported with
 `CALC-RESOLVE-002` when its own selection refuses, reads another block, or
 conflicts with another target's declared role. With the built-in packs on a
-senior + junior debt map, that excludes only `cash_on_cash`. The corrected
-multifamily formula has conditional input guards, so refinement's existing
+senior + junior debt map, that excludes only `cash_on_cash`. The shared
+income-class cash-on-cash formula has conditional input guards, so refinement's existing
 conservative AST policy also reports it in `diagnostics.non_monotonic`; it does
 not attempt VOI bracketing for that output. This does not block `evaluateCalc`
 from computing a stated year-1 flow over total equity.

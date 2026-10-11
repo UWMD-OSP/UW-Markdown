@@ -28,6 +28,7 @@ const NAMED_RANGES = new Map<string, string>([
   ['noi_model.income.gross_potential_rent.value', 'gross_potential_rent'],
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
+      ['valuation.underwritten_value', 'underwritten_value'],
   ['debt_structure.loan_amount', 'loan_amount'],
   ['debt_structure.annual_debt_service', 'annual_debt_service'],
   ['property.net_rentable_square_feet', 'net_rentable_square_feet'],
@@ -99,11 +100,12 @@ describe('SELF_STORAGE_PACK', () => {
       gross_potential_rent: lineValue(income['gross_potential_rent']),
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
+      underwritten_value: (valuation.content['underwritten_value'] as number | undefined) ?? null,
       loan_amount: debt.content['loan_amount'] as number,
       annual_debt_service: debt.content['annual_debt_service'] as number,
       net_rentable_square_feet: property.content['net_rentable_square_feet'] as number,
       rentable_units: property.content['rentable_units'] as number,
-      equity_total: null,
+      equity_total: ((parsed.sections['sources_uses'] as { content: Record<string, unknown> }).content['equity_metrics'] as Record<string, number>)['equity_total'],
       levered_cash_flow_y1: null,
       total_uses: uses['total']!,
       occupied_units: rentRoll.content['occupied_units'] as number,
@@ -117,7 +119,7 @@ describe('SELF_STORAGE_PACK', () => {
       for (const [, name] of NAMED_RANGES) {
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(values[name]));
       }
-      if (c.id !== 'cash_on_cash') expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv'].includes(c.id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = excelValue(formula);
       // Excel's cell holds ROUND(expr, round_to) because the emitter wraps it

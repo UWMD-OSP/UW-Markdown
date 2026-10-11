@@ -112,6 +112,7 @@ function fixture(opts: { multifamilyAllocation?: number | null } = {}): string {
 const ALL_PATHS = [
   'noi_model.net_operating_income',
   'valuation.purchase_price',
+  'valuation.underwritten_value',
   'debt_structure.loan_amount',
   'debt_structure.annual_debt_service',
   'sources_uses.equity_metrics.equity_total',
@@ -146,6 +147,7 @@ const NAMED_RANGES = new Map<string, string>(ALL_PATHS.map((p) => [p, p.replace(
 const VALUES: Record<string, number | null> = {
   noi_model_net_operating_income: 2_572_000,
   valuation_purchase_price: 40_000_000,
+  valuation_underwritten_value: null,
   debt_structure_loan_amount: 26_000_000,
   debt_structure_annual_debt_service: 1_900_000,
   sources_uses_equity_metrics_equity_total: 14_000_000,
@@ -254,7 +256,7 @@ describe('MIXED_USE_PACK', () => {
         if (VALUES[name] === undefined) continue;
         formula = formula.replace(new RegExp(`\\b${name}\\b`, 'g'), String(VALUES[name]));
       }
-      if (id !== 'cash_on_cash') expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
+      if (!['cash_on_cash', 'ltv'].includes(id)) expect(/^[\d.+\-*/() ]+$/.test(formula), `formula sanitized: ${formula}`).toBe(true);
       // eslint-disable-next-line no-new-func
       const excelLike = excelValue(formula)!;
       const excelCell = quantizeDecimal(excelLike, resolveRoundTo(c));

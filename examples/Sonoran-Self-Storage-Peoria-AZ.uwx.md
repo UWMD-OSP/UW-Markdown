@@ -255,6 +255,8 @@ growth and continued physical occupancy above 85%.
     "notes": null
   },
   "_notes": null,
+  "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (3,560,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
+  "equity_metrics": { "equity_total": 3560000 },
   "sources": {
     "loan_amount": 6240000,
     "sponsor_equity": 3560000,

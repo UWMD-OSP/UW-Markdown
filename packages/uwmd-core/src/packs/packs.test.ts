@@ -79,6 +79,7 @@ describe('emitExcelFormula', () => {
   const namedRanges = new Map<string, string>([
     ['noi_model.net_operating_income', 'noi'],
     ['valuation.purchase_price', 'purchase_price'],
+      ['valuation.underwritten_value', 'underwritten_value'],
     ['debt_structure.loan_amount', 'loan_amount'],
     ['debt_structure.annual_debt_service', 'annual_debt_service'],
     ['property.total_units', 'total_units'],
@@ -179,6 +180,7 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
     const namedRanges = new Map<string, string>([
       ['noi_model.net_operating_income', 'noi'],
       ['valuation.purchase_price', 'purchase_price'],
+      ['valuation.underwritten_value', 'underwritten_value'],
       ['debt_structure.loan_amount', 'loan_amount'],
       ['debt_structure.annual_debt_service', 'annual_debt_service'],
       ['property.total_units', 'total_units'],
@@ -194,9 +196,10 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
     const propertyContent = parsed.sections['property'] as { content: Record<string, unknown> };
     const susContent = parsed.sections['sources_uses'] as { content: Record<string, unknown> };
 
-    const values: Record<string, number> = {
+    const values: Record<string, number | null> = {
       noi: noiContent.content['net_operating_income'] as number,
       purchase_price: valuationContent.content['purchase_price'] as number,
+      underwritten_value: (valuationContent.content['underwritten_value'] as number | undefined) ?? null,
       loan_amount: debtContent.content['loan_amount'] as number,
       annual_debt_service: debtContent.content['annual_debt_service'] as number,
       total_units: propertyContent.content['total_units'] as number,

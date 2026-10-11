@@ -136,9 +136,34 @@ export function controls(root) {
       const verify = token => verifyWithPrecision(metric('dscr'), p, Number(token), undefined, getStatedDecimals(token));
       assert.equal(verify('1.24').state, 'verified');
       assert.equal(verify('1.25').state, 'failed');
-      assert.equal(verify('1.2').reason, 'insufficient_stated_precision');
+      assert.equal(verify('1.2').state, 'failed');
       assert.equal(verify('1.245000000').state, 'verified');
-      assert.equal(verifyWithPrecision(metric('dscr'), p, 1.2449).reason, 'unknown_stated_precision');
+      assert.equal(verifyWithPrecision(metric('dscr'), p, 1.2449).reason, 'CALC-TYPE-001');
+    }],
+    ['coarse-statements-verify-or-fail-at-the-minimum', () => {
+      const p = simple(); p.sections.debt_structure.content.annual_debt_service = 1;
+      p.sections.noi_model.content.net_operating_income = 1.7;
+      assert.equal(verifyWithPrecision(metric('dscr'), p, 1.5, undefined, 1).state, 'failed');
+      for (const [raw, state] of [[0.07, 'verified'], [0.070499999, 'verified'], [0.0705, 'failed'], [0.08, 'failed']]) {
+        p.sections.noi_model.content.net_operating_income = raw * 100000.21;
+        assert.equal(verifyWithPrecision(metric('cap_rate'), p, 0.07, undefined, 2).state, state);
+      }
+      p.sections.sources_uses = block('sources_uses', { uses: { total: 124615.3846153846 } });
+      assert.equal(verifyWithPrecision(metric('ltc', 'office'), p, 0.6, undefined, 1).state, 'verified');
+    }],
+    ['all-class-LTV-uses-underwritten-value-with-lazy-price-fallback', () => {
+      for (const cls of d.calculations.filter(m => m.id === 'ltv').flatMap(m => m.asset_classes)) {
+        const p = simple(); p.sections.valuation.content.underwritten_value = 120000;
+        assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.625).state, 'verified');
+        assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.749998).state, 'failed');
+        delete p.sections.valuation.content.purchase_price;
+        assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.625).state, 'verified');
+        p.sections.valuation.content.underwritten_value = 0;
+        assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.625).reason, 'CALC-DIV-ZERO');
+        p.sections.valuation.content.underwritten_value = null;
+        p.sections.valuation.content.purchase_price = 100000.21;
+        assert.equal(verifyStatedMetric(metric('ltv', cls), p, 0.749998).state, 'verified');
+      }
     }],
     ['Lite-ratio-token-retains-stated-precision', () => {
       const bindings = JSON.parse(readFileSync(join(root, 'conformance/metrics/statement-bindings.json'), 'utf8'));

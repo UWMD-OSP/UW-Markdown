@@ -7,7 +7,7 @@ export interface StatedMetricComparison {
   computed: number | null;
   comparison?: number;
   comparison_decimals?: number;
-  reason?: 'no_numeric_statement' | 'unknown_stated_precision' | 'insufficient_stated_precision' | 'nonfinite_or_nonnumeric_result';
+  reason?: 'no_numeric_statement' | 'nonfinite_or_nonnumeric_result';
 }
 
 /** Decimal places of a numeric source token, including trailing zeros and exponents.
@@ -47,12 +47,9 @@ export function compareStatedMetric(
     return { state: unrounded === stated ? 'verified' : 'failed', computed: unrounded, comparison: stated };
   }
   if (statedDecimals === undefined || !Number.isSafeInteger(statedDecimals) || statedDecimals < 0) {
-    return { state: 'unverifiable', reason: 'unknown_stated_precision', computed: null };
+    throw new CalcError('CALC-TYPE-001', 'Stated precision must be supplied as a non-negative safe integer.');
   }
-  if (statedDecimals < metric.minimum_stated_decimals) {
-    return { state: 'unverifiable', reason: 'insufficient_stated_precision', computed: null };
-  }
-  const decimals = Math.min(statedDecimals, metric.round_to);
+  const decimals = Math.min(Math.max(statedDecimals, minimum), metric.round_to);
   const computed = quantizeDecimal(unrounded, decimals);
   const comparison = statedDecimals > metric.round_to ? quantizeDecimal(stated, decimals) : stated;
   return { state: computed === comparison ? 'verified' : 'failed', computed, comparison, comparison_decimals: decimals };
