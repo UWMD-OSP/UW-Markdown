@@ -841,6 +841,9 @@ export type {
 
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {
+  CONFORMANCE_TARGETS,
+  readConformanceTarget,
+  readConformanceTier,
   BLOCK_ROLES,
   CROSS_CHECK_ROLE_PREFERENCE,
   PERIOD_SERIES,
@@ -876,6 +879,7 @@ export {
 export type {
   StageContractEntry,
   StageRequirement,
+  ConformanceTarget,
   ConformanceTier,
   ConformanceProfile,
   ViewerTier,

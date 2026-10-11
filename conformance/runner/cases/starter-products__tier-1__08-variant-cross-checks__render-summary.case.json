@@ -1,0 +1,20 @@
+{
+  "id": "starter-products/tier-1/08-variant-cross-checks/render-summary",
+  "target": "starter-products",
+  "legacy_id": "tier-1/08-variant-cross-checks/render-summary",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "08-variant-cross-checks.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/08-variant-cross-checks.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "starter-products/tier-1/01-minimal-screening/render-summary",
+  "target": "starter-products",
+  "legacy_id": "tier-1/01-minimal-screening/render-summary",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "01-minimal-screening.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/01-minimal-screening.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

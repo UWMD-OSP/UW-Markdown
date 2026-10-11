@@ -402,7 +402,7 @@ web editor can verify client-side. Signature creation and validation stay
 outside core, keeping it free of cryptographic dependencies.
 
 CLI: `uwmd receipt issue <file>` / `uwmd receipt verify <file> <receipt.json>`
-(exit 0 verified, 1 failed, 3 unverifiable). Conformance: `--tier=receipts`.
+(exit 0 verified, 1 failed, 3 unverifiable). Conformance: `--suite=receipts`.
 
 > A `verified` receipt attests that the record is unchanged and that its stated
 > outputs follow from its contents. It attests **nothing** about whether those

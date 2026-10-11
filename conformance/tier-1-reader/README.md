@@ -1,6 +1,10 @@
-# Tier-1 Reader conformance
+# Reader, Verifier and starter fixtures
 
-Tier-1 Readers parse `.uw.md` files and present their contents read-only.
+Parse cases belong to Reader; Format-validation cases to Verifier; integrity checks to Integrity. Render and policy/editor checks are starter products. Legacy paths are retained;
+[corpus-index.json](../corpus-index.json) determines each case’s single owner.
+
+
+Readers parse `.uw.md` files and present their contents read-only.
 They MUST:
 
 - Parse all required frontmatter fields and surface them as structured data.
@@ -87,7 +91,7 @@ the defect.
 ## Running
 
 ```bash
-node scripts/run-conformance.mjs --tier=1
+node scripts/run-conformance.mjs --suite=1
 ```
 
 The reference runner compares a canonical projection of the parse output

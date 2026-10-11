@@ -10,12 +10,16 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- RFC 0078 Phase 3: an exhaustive machine-readable corpus index and case schemas assign every reference check to Reader, Verifier, one optional verification profile, or starter products. All 1,056 existing reference checks (1,053 default + three formerly opt-in agent shapes) and 332 portable CLI cases are retained; fixtures, assertions and expected values are unchanged. The lender-only dictionary check stays 187 verified / 0 failed / 0 unverifiable.
+
 - RFC 0080: Format 2.1 adds full builtin `data_center` and `manufactured_housing` support: standard sections and rules, dictionary metrics, size registry, packs, Excel layouts, defaults and examples. Like multifamily they take the base stage lists verbatim: no stage overlay is added, so a missing `rent_roll` fires DQ-06 (Desert Palms gains a site rent roll; Mesa Gateway gains its T-12 summary, principals and validation sections and now reaches its declared `full_underwrite`). Both new classes use all six RFC 0079 standard income definitions. Hospitality's official sections and four additional calculations now belong to its builtin pack; its existing rooms-revenue / available-room-nights RevPAR is canonical.
 - Data-center and manufactured-housing starter default ranges (owner-approved 2026-10-10) are explicit proxy assumptions, not verified economics or physical source facts. Data center publishes **no** `noi_model.expense_ratio` default (owner decision 2026-10-10: the industrial NNN proxy does not fit a power-grossed-up expense basis; Mesa Gateway runs 0.595). Producers state it; the cascade falls through to the host default exactly as for land, never to another class's table.
 - `CC-HOSP-04` (warning): a hotel record that states `hotel_metrics.market_revpar` but whose canonical RevPAR is uncomputable now says so, naming `noi_model.income.rooms_revenue` and `rent_roll.available_room_nights`, instead of silently skipping the comp-set check. No ADR × occupancy fallback is inferred.
 - `uwmd scope` and `resolveValue` report each asset-class default's `citation` beside `source` / `resolved_from` (additive field).
 
 ### Changed
+
+- Conformance runners report canonical tier/profile names and separate starter-product counts. Verifier selection includes Reader; profiles and starter checks are explicit. Legacy tier names and numeric aliases use `readConformanceTier` with stderr deprecation notices; fixture-family selections use `--suite`. The Python driver uses generated readings, distinguishes unclaimed-profile unverifiable outcomes from capability skips, and retains `--no-skip` certification enforcement. Coverage guards refuse omitted, duplicated or unclassified cases; baseline updates require a full run or suite selection. No version label changes.
 
 - The exact legacy `org.uwmd.data_center` identity remains valid with CLS-01. Official hospitality/data-center module dependencies are satisfied by core (CLS-02); their packages remain in the publish set as empty, frozen compatibility shells.
 - **New refusal:** third-party ids whose final segment is `data_center` or `manufactured_housing` (e.g. `com.example.data_center`) now get `INVALID-ASSET-CLASS-002`, because those names became builtins; before this release they were accepted as ordinary module-declared ids.

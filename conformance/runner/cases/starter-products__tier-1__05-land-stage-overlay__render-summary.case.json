@@ -1,0 +1,20 @@
+{
+  "id": "starter-products/tier-1/05-land-stage-overlay/render-summary",
+  "target": "starter-products",
+  "legacy_id": "tier-1/05-land-stage-overlay/render-summary",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "05-land-stage-overlay.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/05-land-stage-overlay.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

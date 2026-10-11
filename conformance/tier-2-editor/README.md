@@ -1,6 +1,10 @@
-# Tier-2 Editor conformance
+# Editor starter-product checks
 
-Tier-2 Editors apply structured edits to a `.uw.md` file and produce a new
+Every case here is a starter-product check, owned by docs/starter, not a Protocol tier. All existing byte-preservation and edit assertions remain in CI. Legacy paths are retained;
+[corpus-index.json](../corpus-index.json) determines each case’s single owner.
+
+
+Compatible editors apply structured edits to a `.uw.md` file and produce a new
 `.uw.md` that:
 
 - Round-trips formatting for unrelated regions (untouched bytes stay
@@ -43,7 +47,7 @@ reference runner to populate `_meta` provenance.
 - `options.json` — `ApplyEditOptions` (`{integrity?: boolean, maintainGaps?: boolean, …}`); when `integrity: true` the runner routes the edit through `applyEditAsync`.
 - `expected-error.json` — `{code, category}` for negative-path fixtures. When present, the runner asserts the edit fails with that code instead of comparing against `after.uwx.md`.
 
-A conforming Tier-2 Editor's output for `before.uwx.md + operation.json` MUST
+A compatible starter editor's output for `before.uwx.md + operation.json` MUST
 match `after.uwx.md` after both files are normalized (stripping trailing
 whitespace, CRLF differences, and volatile fields: `last_modified`,
 `_meta.timestamp`, `ts=` fence attributes).
@@ -51,5 +55,5 @@ whitespace, CRLF differences, and volatile fields: `last_modified`,
 Run via:
 
 ```bash
-node scripts/run-conformance.mjs --tier=2
+node scripts/run-conformance.mjs --suite=2
 ```

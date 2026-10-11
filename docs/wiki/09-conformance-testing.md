@@ -74,25 +74,49 @@ keep the competing revision fixed when comparing before and after.
 
 ## Conformance corpus (`conformance/`)
 
+RFC 0078 Phase 3 uses case-level ownership in
+[`conformance/corpus-index.json`](../../conformance/corpus-index.json).
+Every check belongs exactly once to Reader, Verifier, one optional profile
+(Module, Integrity, Representations, Portfolio, Sensitivity or Stochastic),
+or starter products. Legacy directories are storage paths, never tier claims.
+Editor/agent, rendering, defaults/cascade, projections and refinement checks
+belong to [docs/starter](../starter/README.md), remain in CI and have separate
+report counts. Mixed cases keep all their assertions and are product checks.
+
+The corpus reconciles **1,053 default + three opt-in = 1,056 reference checks**
+and **332 portable CLI projections**. The lender fixture stays **187/0/0**.
+`--tier=verifier` includes Reader; `--profile=module` selects only that profile;
+`--starter-products` selects product checks. Combine selectors to claim both.
+Numeric and long legacy tier names resolve through `readConformanceTier` and
+warn on stderr. They infer neither profiles nor starter checks. `--suite`
+selects an existing fixture family independently of ownership. With no
+selector every indexed check runs, with counts by target.
+
+Unknown owners, duplicate/missing results and unindexed portable identities
+fail the gate. Baseline updates require full runs or `--suite`; a target
+filter is refused because mixed-suite updates could alter unselected baselines.
+The descriptions below retain historical fixture paths, not old tier claims.
+
+
 Runner: [`scripts/run-conformance.mjs`](../../scripts/run-conformance.mjs). It
 imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
 npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + market-data + modules + packages + composition + capital-stack
-npm run conformance -- --tier=1,2,3,4,lite,receipts,modules
-npm run conformance -- --tier=lite         # the UW Lite suite alone
-npm run conformance -- --tier=receipts     # the receipts suite alone
-npm run conformance -- --tier=modules      # the module manifest suite alone
-npm run conformance -- --tier=packages     # the deal package suite alone
-npm run conformance -- --tier=composition  # the RFC 0021 composition suite alone
-npm run conformance -- --tier=capital-stack  # the RFC 0026 capital-stack suite alone
-npm run conformance -- --tier=lease-up     # the RFC 0008 lease-up suite alone
-npm run conformance -- --tier=capability   # the RFC 0011 capability-token suite alone
-npm run conformance -- --tier=locale       # the RFC 0001 display-locale suite alone
-npm run conformance -- --tier=meta-v2      # the RFC 0009 nested-_meta suite alone
-npm run conformance -- --tier=migrate      # the RFC 0009 migrate --to-v2 suite alone
-npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
+npm run conformance -- --tier=verifier --profile=module,integrity,representations,portfolio,sensitivity,stochastic --starter-products
+npm run conformance -- --suite=lite         # the UW Lite suite alone
+npm run conformance -- --suite=receipts     # the receipts suite alone
+npm run conformance -- --suite=modules      # the module manifest suite alone
+npm run conformance -- --suite=packages     # the deal package suite alone
+npm run conformance -- --suite=composition  # the RFC 0021 composition suite alone
+npm run conformance -- --suite=capital-stack  # the RFC 0026 capital-stack suite alone
+npm run conformance -- --suite=lease-up     # the RFC 0008 lease-up suite alone
+npm run conformance -- --suite=capability   # the RFC 0011 capability-token suite alone
+npm run conformance -- --suite=locale       # the RFC 0001 display-locale suite alone
+npm run conformance -- --suite=meta-v2      # the RFC 0009 nested-_meta suite alone
+npm run conformance -- --suite=migrate      # the RFC 0009 migrate --to-v2 suite alone
+npm run conformance -- --suite=2 --update   # regenerate that tier's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
 
@@ -111,7 +135,7 @@ run.
 > Verifier corpus; `tier-2-editor` and `tier-4-agent-host` test starter
 > products ([`docs/starter/`](../starter/README.md)) and still run in CI.
 
-### Tier 1 — Reader
+### Legacy tier-1 fixture storage — Reader
 
 `conformance/tier-1-reader/`:
 - `fixtures/*.uw.md` parsed and compared (canonical JSON projection) against
@@ -130,7 +154,7 @@ run.
   `verifyChain`/`verifyProvenance`; an optional `<id>.policies.json` supplies
   custom policies.
 
-### Tier 2 — Editor
+### Editor starter checks — Editor
 
 `conformance/tier-2-editor/fixtures/<scenario>/`: `before.uw.md` +
 `operation.json` → run `applyEdit` (or `applyEditAsync` when `options.json` has
@@ -140,7 +164,7 @@ byte comparison. Negative scenarios provide `expected-error.json` declaring the
 `code` `applyEdit` must fail with. **The point of Tier 2: bytes outside the edited
 region must be preserved.**
 
-### Tier 3 — Calc Host
+### Verifier and Module calculations — Calc Host
 
 `conformance/tier-3-calc-host/fixtures/<scenario>/`: `deal.uw.md` + `calc.json`
 (a `ModuleCalcDecl`) → `evaluateCalc` → compare projected `{calc_id, ok, value,
@@ -148,7 +172,7 @@ unit?, error?}` against `expected-result.json`. Plus a **refinement** mode
 (`refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
 projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 
-### Tier 4 — Agent Host
+### Agent starter checks — Agent Host
 
 `conformance/tier-4-agent-host/`:
 - `replay/<scenario>/` — **the real gate, and it runs by default.**
@@ -288,7 +312,7 @@ detached artifact, not a protocol tier. It runs by default.
 > **Three receipt fixtures move on every `@uwmd/core` release.** The two
 > `issue/` baselines record the issuing engine, so `expected-receipt.json`
 > carries the new `engine_version` (and `protocol_version`, on a protocol bump)
-> — regenerate with `npm run conformance -- --tier=receipts --update` and check
+> — regenerate with `npm run conformance -- --suite=receipts --update` and check
 > the diff is only those fields.
 >
 > `verify/03-result-disagrees` is the subtle one: its receipt must be stamped
@@ -454,22 +478,28 @@ ensure identity remains descriptive. See its README for the case list.
 
 ## Adding fixtures (quick reference)
 
-- **Tier 1:** drop a `.uw.md` in `fixtures/`, then `--tier=1 --update` to mint the
+First register every emitted `(suite, scenario)` once in the corpus index,
+choosing its owner from the closed target vocabulary. Retain all existing
+assertions; register portable legacy ids before regenerating case files.
+The following family names describe storage and baseline update selectors.
+
+
+- **Tier 1:** drop a `.uw.md` in `fixtures/`, then `--suite=1 --update` to mint the
   expected baselines (review the diff before committing).
 - **Tier 1 malformed:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
   with `expected_codes`.
 - **Tier 2:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
-  `context.json`/`options.json`), then `--tier=2 --update` to mint `after.uw.md`.
-- **Tier 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--tier=3
+  `context.json`/`options.json`), then `--suite=2 --update` to mint `after.uw.md`.
+- **Tier 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--suite=3
   --update`.
-- **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--tier=lite --update`. Run
-  `--tier=lite` *without* `--update` first — the negative and invariant checks
+- **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--suite=lite --update`. Run
+  `--suite=lite` *without* `--update` first — the negative and invariant checks
   (malformed, compile, round-trip, equivalence) need no baselines, so they
   validate your fixture before you freeze anything. For a negative case, add
   `<id>.uw.md` + `<id>.expected.json` under `lite/malformed/` (parse errors) or
   `lite/compile/` (bridge errors); neither needs `--update`.
 - **Receipts:** make `receipts/issue/<scenario>/` with a deal document, then
-  `--tier=receipts --update` to mint `expected-receipt.json`. Verify and refuse
+  `--suite=receipts --update` to mint `expected-receipt.json`. Verify and refuse
   scenarios need no `--update`: hand-write `expected-verdict.json` /
   `expected.json`, and produce `receipt.json` with
   `uwmd receipt issue <deal> --issued-at 2026-08-09T00:00:00Z --stdout`.

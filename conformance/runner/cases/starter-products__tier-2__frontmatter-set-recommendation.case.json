@@ -1,0 +1,24 @@
+{
+  "id": "starter-products/tier-2/frontmatter-set-recommendation",
+  "target": "starter-products",
+  "legacy_id": "tier-2/frontmatter-set-recommendation",
+  "requires_capabilities": [
+    "edit-frontmatter"
+  ],
+  "command": "edit",
+  "args": [
+    "before.uwx.md",
+    "operation.json",
+    "--json",
+    "--actor",
+    "conformance-runner",
+    "--source",
+    "manual"
+  ],
+  "fixture_dir": "conformance/tier-2-editor/fixtures/frontmatter-set-recommendation",
+  "expect": {
+    "kind": "json-field-text",
+    "field": "content",
+    "file": "after.uwx.md"
+  }
+}

@@ -1,10 +1,14 @@
-# Tier-3 Calc Host conformance
+# Verifier and Module calculation fixtures
 
-Tier-3 Calc Hosts evaluate `custom_calculations` blocks (and the
+Exact dictionary reproductions belong to Verifier; custom declarations, expression grammar and resolution belong to Module. Refinement is a starter-product check. Legacy paths are retained;
+[corpus-index.json](../corpus-index.json) determines each case’s single owner.
+
+
+Module-profile evaluators evaluate `custom_calculations` blocks (and the
 `calculations` declared by loaded modules) using the safe-expression
 language defined in `UW_PROTOCOL_v1.md` Part VIII.
 
-A Tier-3 host MUST:
+A Module-profile evaluator MUST:
 
 - Parse the safe-expression grammar exactly as specified (no eval, no
   arbitrary code execution).
@@ -123,7 +127,7 @@ refinement/<scenario-id>/
 Run via:
 
 ```bash
-node scripts/run-conformance.mjs --tier=3
+node scripts/run-conformance.mjs --suite=3
 ```
 
 Comparison strips the volatile `evaluated_at` timestamp from

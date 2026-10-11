@@ -1,0 +1,20 @@
+{
+  "id": "module/tier-3/date-08-invalid-century-not-leap",
+  "target": "module",
+  "legacy_id": "tier-3/date-08-invalid-century-not-leap",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/date-08-invalid-century-not-leap",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

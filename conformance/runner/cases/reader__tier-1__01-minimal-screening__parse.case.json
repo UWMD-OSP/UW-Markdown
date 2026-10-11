@@ -1,0 +1,17 @@
+{
+  "id": "reader/tier-1/01-minimal-screening/parse",
+  "target": "reader",
+  "legacy_id": "tier-1/01-minimal-screening/parse",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "01-minimal-screening.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/01-minimal-screening.parsed.json"
+  }
+}

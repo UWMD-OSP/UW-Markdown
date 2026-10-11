@@ -1,0 +1,20 @@
+{
+  "id": "verifier/reserve-accounts/missing-source",
+  "target": "verifier",
+  "legacy_id": "reserve-accounts/missing-source",
+  "requires_capabilities": [
+    "parse",
+    "calc-evaluate"
+  ],
+  "command": "verify-reserve-accounts",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/reserve-accounts/missing-source",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 1
+  }
+}

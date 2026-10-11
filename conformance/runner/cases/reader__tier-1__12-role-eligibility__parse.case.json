@@ -1,0 +1,17 @@
+{
+  "id": "reader/tier-1/12-role-eligibility/parse",
+  "target": "reader",
+  "legacy_id": "tier-1/12-role-eligibility/parse",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "12-role-eligibility.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/12-role-eligibility.parsed.json"
+  }
+}

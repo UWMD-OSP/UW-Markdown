@@ -138,6 +138,21 @@ export function readConformanceTier(tier: unknown): ConformanceTierReading | nul
   return null;
 }
 
+/** Single owner of each corpus case (RFC 0078 Phase 3, §II.6a). */
+export const CONFORMANCE_TARGETS = Object.freeze([
+  'reader', 'verifier', ...CONFORMANCE_PROFILES, 'starter-products',
+] as const);
+export type ConformanceTarget = (typeof CONFORMANCE_TARGETS)[number];
+
+/** A corpus selector; legacy values are resolved by the existing tier reader. */
+export function readConformanceTarget(value: unknown): (ConformanceTierReading & { target: ConformanceTier }) | { target: ConformanceProfile | 'starter-products' } | null {
+  const reading = readConformanceTier(value);
+  if (reading) return { ...reading, target: reading.tier };
+  if (typeof value === 'string' && (CONFORMANCE_PROFILES as readonly string[]).includes(value)) return { target: value as ConformanceProfile };
+  if (value === 'starter-products') return { target: value };
+  return null;
+}
+
 /** What kind of actor the implementation serves. Informational. */
 export type ViewerRole = 'web' | 'cli' | 'desktop' | 'ide-extension' | 'library' | 'service';
 

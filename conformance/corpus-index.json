@@ -1,0 +1,5625 @@
+{
+  "schema_version": "1.0",
+  "migration_base": "6eec774",
+  "before": {
+    "reference_default": 1053,
+    "reference_opt_in": 3,
+    "portable": 332
+  },
+  "cases": [
+    {
+      "suite": "1",
+      "scenario": "01-minimal-screening [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "01-minimal-screening [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "01-minimal-screening [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "01-minimal-screening [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "02-full-multifamily [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "02-full-multifamily [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "02-full-multifamily [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "02-full-multifamily [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "04-scope-only [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "04-scope-only [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "04-scope-only [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "04-scope-only [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "05-land-stage-overlay [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "05-land-stage-overlay [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "05-land-stage-overlay [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "05-land-stage-overlay [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "06-mixed-use-stage-overlay [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "06-mixed-use-stage-overlay [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "06-mixed-use-stage-overlay [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "06-mixed-use-stage-overlay [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "07-stage-overlay-control [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "07-stage-overlay-control [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "07-stage-overlay-control [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "07-stage-overlay-control [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "08-variant-cross-checks [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "08-variant-cross-checks [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "08-variant-cross-checks [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "08-variant-cross-checks [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "09-returns-tax-basis [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "09-returns-tax-basis [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "09-returns-tax-basis [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "09-returns-tax-basis [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "10-declared-roles [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "10-declared-roles [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "10-declared-roles [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "10-declared-roles [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "11-role-collision [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "11-role-collision [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "11-role-collision [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "11-role-collision [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "12-role-eligibility [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "12-role-eligibility [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "12-role-eligibility [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "12-role-eligibility [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "13-period-identities [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "13-period-identities [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "13-period-identities [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "13-period-identities [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "14-student-bed-counts [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "14-student-bed-counts [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "14-student-bed-counts [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "14-student-bed-counts [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "15-student-bed-counts-inconsistent [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "15-student-bed-counts-inconsistent [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "15-student-bed-counts-inconsistent [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "15-student-bed-counts-inconsistent [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "16-frontmatter-yaml-scalars [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "16-frontmatter-yaml-scalars [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "16-frontmatter-yaml-scalars [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "16-frontmatter-yaml-scalars [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "17-exit-proceeds-junior-capital [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "17-exit-proceeds-junior-capital [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "17-exit-proceeds-junior-capital [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "17-exit-proceeds-junior-capital [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/01-missing-section-meta",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/02-low-confidence-no-review",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/03-sources-uses-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/04-broken-chain",
+      "target": "integrity"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/06-wrong-actor",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/07-replace-where-supersede-required",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/08-provisional-without-gap",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/09-partial-without-overrides",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/10-property-section-missing",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/11-yaml-flow-mapping",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/12-yaml-flow-sequence",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/13-yaml-invalid-escape",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/14-yaml-unquoted-anchor",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-allocation-not-unity",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-component-debt-refused",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-components-on-other-class",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-land-component",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-noi-does-not-foot",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-present-but-unmeasured",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/mixed-use-single-component",
+      "target": "verifier"
+    },
+    {
+      "suite": "2",
+      "scenario": "frontmatter-set-recommendation",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "gaps-section-update",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "parent-hash-stamp",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "section-replace-property",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "section-supersede-risk-rating",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "stale-parent-rejected",
+      "target": "starter-products"
+    },
+    {
+      "suite": "3",
+      "scenario": "data-center-module-dependency-rounding",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "data_center-price_per_kw",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-01-valid-leap-divisible-by-4",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-02-valid-leap-divisible-by-400",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-03-valid-ordinary-date",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-04-valid-year-0000-leap",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-05-valid-year-9999-last-day",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-06-valid-first-day-of-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-07-invalid-not-leap-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-08-invalid-century-not-leap",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-09-invalid-february-30",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-10-invalid-april-31",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-11-invalid-month-00",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-12-invalid-month-13",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-13-invalid-day-00",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-14-invalid-one-digit-month",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-15-invalid-one-digit-day",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-16-invalid-two-digit-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-17-invalid-five-digit-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-18-invalid-signed-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-19-invalid-negative-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-20-invalid-expanded-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-21-invalid-leading-space",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-22-invalid-trailing-space",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-23-invalid-internal-space",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-24-invalid-leading-tab",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-25-invalid-trailing-newline",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-26-invalid-date-time-zulu",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-27-invalid-date-time-local",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-28-invalid-zone-suffix",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-29-invalid-offset-suffix",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-30-invalid-slash-form",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-31-invalid-compact-form",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-32-invalid-week-date",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-33-invalid-ordinal-date",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-34-invalid-full-width-digits",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-35-invalid-non-ascii-hyphen",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-36-invalid-empty-string",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-37-document-quoted-string",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-38-document-unquoted-yaml-date",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-39-document-null",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-40-document-absent-path",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-41-document-number",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-42-document-boolean",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-43-document-array",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-44-document-object",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-45-document-impossible-date",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-46-error-no-arguments",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-47-error-two-arguments",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "date-48-error-argument-propagates",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "dscr-from-section",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "hospitality-revpar",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "irr-01-out-of-bracket",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "irr-02-even-root-count",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "irr-03-conventional",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "irr-04-endpoint-root",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "irr-05-degenerate",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "land-usable-land-ratio",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "manufactured_housing-physical_occupancy",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-absent-component-null",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-data_center_noi_share",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-data_center_price_per_kw",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-manufactured_housing_noi_share",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-manufactured_housing_price_per_site",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-no-allocation-null",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-operating-business-gop",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-two-component-cap-rate",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-two-component-noi-share",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "mixed-use-two-component-price-per-unit",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-01-year-order",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-02-keyed-year",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-03-calendar-quarter",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-04-dated-series",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-05-missing",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-06-kind-mismatch",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-07-duplicate",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-08-unregistered",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-09-same-day-unique",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-10-same-day-repeated",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-11-same-day-absent",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "period-12-other-series-duplicate",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "revpar-basic",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "self-storage-economic-occupancy",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "senior-housing-care-revenue-ratio",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "student-housing-pre-lease-rate",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "student-housing-rent-per-bed-monthly",
+      "target": "verifier"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-01-primary-resolves",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-02-default-resolves",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-03-unresolvable",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-04-role-preference",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-05-explicit-variant",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-06-missing-section",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-07-explicit-missing",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-08-primary-collision",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-09-role-collision",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-10-role-unclaimed",
+      "target": "module"
+    },
+    {
+      "suite": "3",
+      "scenario": "variant-11-explicit-beats-role",
+      "target": "module"
+    },
+    {
+      "suite": "3-refinement",
+      "scenario": "dependency-graph-multifamily",
+      "target": "starter-products"
+    },
+    {
+      "suite": "4-replay",
+      "scenario": "l6-risk-rating/sections",
+      "target": "starter-products"
+    },
+    {
+      "suite": "4-replay",
+      "scenario": "l6-risk-rating/document",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [parse]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [render]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [render-roundtrip]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [compile-report]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [uwx]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [projection-report]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [projection]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/01-missing-version",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/02-unsupported-version",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/03-duplicate-identity",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/04-empty-value",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/05-anchor-without-field",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/06-frontmatter-nesting",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/07-frontmatter-duplicate",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/08-frontmatter-syntax",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/09-missing-frontmatter",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/10-unclosed-frontmatter",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/11-attribute-syntax",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/12-attribute-duplicate",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/13-frontmatter-flow-sequence",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/14-frontmatter-flow-mapping",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "malformed/15-frontmatter-invalid-escape",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "compile/01-period-unsupported",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "compile/02-scenario-unsupported",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "compile/03-unit-mismatch",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "compile/04-field-unknown",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "compile/05-frontmatter-required",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "compile/06-target-conflict",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lite",
+      "scenario": "equivalence/display-formatting-invariance",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "equivalence/decimal-exactness-percent-vs-fraction",
+      "target": "representations"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "issue/01-uwx-multifamily",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "issue/01-uwx-multifamily [re-issuance stable]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "issue/02-lite-industrial",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "issue/02-lite-industrial [re-issuance stable]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/01-clean",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/02-record-mutated",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/03-result-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/04-unknown-pack",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/05-signed-no-backend",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/06-lite-canonicalization-superseded",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/07-market-data-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/08-market-data-mutated",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/09-multifamily-old-pack-version",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/10-rehashed-one-cent",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/11-rehashed-subquantum-ratio",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "refuse/01-lite-parse-errors",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "refuse/02-no-pack-for-asset-class",
+      "target": "starter-products"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "valid/quarterly-observations",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/carries-deal-id",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/duplicate-field-path",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/empty-basis",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/impossible-as-of",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/no-as-of",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/no-provider",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "reject/unknown-field-path",
+      "target": "verifier"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "resolve/ambiguous-as-of",
+      "target": "starter-products"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "resolve/most-recent-wins",
+      "target": "starter-products"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "resolve/staleness",
+      "target": "starter-products"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "promote/confidence-preserved",
+      "target": "starter-products"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "promote/explicit",
+      "target": "starter-products"
+    },
+    {
+      "suite": "market-data",
+      "scenario": "promote/explicit [resolves as input of record]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/01-minimal",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/01-minimal [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/02-full-surface",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/02-full-surface [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/03-calc-round-to",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/03-calc-round-to [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/04-declares-asset-class",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "accept/04-declares-asset-class [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/01-unknown-top-level-key",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/01-unknown-top-level-key [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/02-agent-layer-malformed",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/02-agent-layer-malformed [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/03-view-model-malformed",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/03-view-model-malformed [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/04-section-malformed",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/04-section-malformed [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/05-id-too-short",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/05-id-too-short [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/06-calc-unknown-key",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/06-calc-unknown-key [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/07-depends-on-malformed",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/07-depends-on-malformed [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/08-nondeterministic-calc",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/08-nondeterministic-calc [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/09-unparseable-formula",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/09-unparseable-formula [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/10-calc-round-to-out-of-range",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/10-calc-round-to-out-of-range [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/11-calc-round-to-non-integer",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/11-calc-round-to-non-integer [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/12-asset-class-not-namespaced",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/12-asset-class-not-namespaced [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/13-asset-class-shadows-builtin",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/13-asset-class-shadows-builtin [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/14-asset-class-bad-fallback",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/14-asset-class-bad-fallback [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/15-asset-class-duplicate-id",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/15-asset-class-duplicate-id [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/01-hospitality-fixture",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/02-no-comp-set",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/03-occupancy-as-percent",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/04-required-section-missing",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/05-wrong-asset-class",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/06-data-center-fixture",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/07-data-center-pue-below-one",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/08-data-center-no-comp",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/09-data-center-required-section",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/10-data-center-as-industrial",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/11-data-center-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/12-mhc-fixture",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/13-mhc-no-poh",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/14-mhc-no-poh-rent-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/15-mhc-zero-pad-rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/16-mhc-zero-home-rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/17-mhc-zero-both-rents",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/18-mhc-zero-debt-and-egi",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/19-mhc-missing-section",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/20-mhc-missing-total_sites",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/21-mhc-missing-occupied_sites",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/22-mhc-missing-park_owned_homes",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/23-mhc-missing-weighted_pad_rent_monthly",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/24-mhc-missing-as_of_date",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/25-mhc-missing-home-rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/26-mhc-null-home-rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/27-mhc-total_sites-0",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/28-mhc-total_sites-negative-1",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/29-mhc-total_sites-1_5",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/30-mhc-occupied_sites-negative-1",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/31-mhc-occupied_sites-180_5",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/32-mhc-occupied_sites-201",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/33-mhc-park_owned_homes-negative-1",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/34-mhc-park_owned_homes-20_5",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/35-mhc-park_owned_homes-201",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/36-mhc-weighted_pad_rent_monthly-negative-1",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/37-mhc-poh_home_rent_monthly-negative-1",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/38-mhc-home-rent-without-poh",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/39-mhc-type-total_sites-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/40-mhc-type-total_sites-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/41-mhc-type-total_sites-object",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/42-mhc-type-occupied_sites-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/43-mhc-type-occupied_sites-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/44-mhc-type-occupied_sites-object",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/45-mhc-type-park_owned_homes-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/46-mhc-type-park_owned_homes-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/47-mhc-type-park_owned_homes-object",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/48-mhc-type-weighted_pad_rent_monthly-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/49-mhc-type-weighted_pad_rent_monthly-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/50-mhc-type-weighted_pad_rent_monthly-object",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/51-mhc-type-poh_home_rent_monthly-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/52-mhc-type-poh_home_rent_monthly-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/53-mhc-type-poh_home_rent_monthly-object",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/54-mhc-date-presence-only-impossible",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/55-mhc-date-presence-only-malformed",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/56-mhc-date-presence-only-non-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/57-mhc-missing-standard-amounts",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/58-mhc-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/59-mhc-as-multifamily",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/60-mhc-cent-rounding",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/61-data-center-dependency-rounding",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/01-hospitality-fixture",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/02-no-comp-set",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/03-occupancy-as-percent",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/04-required-section-missing",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/05-wrong-asset-class",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/06-data-center-fixture",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/07-data-center-pue-below-one",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/08-data-center-no-comp",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/09-data-center-required-section",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/10-data-center-as-industrial",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "runtime/11-data-center-fallback",
+      "target": "starter-products"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/01-section-unrelated",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/02-calculation-unrelated",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/03-view-model-unrelated",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/04-sibling-dependents-unrelated",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/05-dependent-pair-not-a-conflict",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/06-section-override",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/07-calculation-override",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/08-view-model-override",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/09-override-dependency-later-reader-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/10-override-sibling-reader-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/11-override-reader-depends-on-overrider",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/12-override-scope-narrower-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/13-override-scope-covering-allowed",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/14-override-reads-before-own-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/15-unrelated-reader-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/16-transitive-only-pair-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/17-override-text-not-a-read",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/18-override-scope-section-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/19-override-scope-view-model-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/20-override-self-read-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/21-chain-override-dependent-reader-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/22-override-past-current-owner-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/23-first-declarer-earlier-reader-allowed",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "registry/24-override-scope-narrower-and-unscoped-refused",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "asset-classes/01-module-loaded",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "asset-classes/02-fallback-degraded",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "asset-classes/03-unresolved",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "asset-classes/04-undeclared-modules",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "asset-classes/same-document-across-hosts",
+      "target": "module"
+    },
+    {
+      "suite": "packages",
+      "scenario": "accept/01-valid-deal-with-note",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "accept/01-valid-deal-with-note [schema]",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "accept/02-extension-link-type",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "accept/02-extension-link-type [schema]",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/01-dangling-link",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/02-duplicate-member-id",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/03-duplicate-path",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/04-zip-traversal-path",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/05-wrong-layer-edge",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/06-bad-digest-format",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "reject/07-unknown-role",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/deterministic-encoding",
+      "target": "starter-products"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/binary-roundtrip",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/verify-clean",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/verify-tampered",
+      "target": "representations"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/context-omits-source-bytes",
+      "target": "starter-products"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/context-valid",
+      "target": "starter-products"
+    },
+    {
+      "suite": "packages",
+      "scenario": "invariant/no-member-only-projection",
+      "target": "starter-products"
+    },
+    {
+      "suite": "composition",
+      "scenario": "resolve/collection-order [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "resolve/collection-order [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "resolve/inline-vs-external [canonical]",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "resolve/inline-vs-external [digest]",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "reject/count-mismatch",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "reject/duplicate-key",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "reject/part-malformed",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "reject/section-mismatch",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "unresolved/missing-part",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "composite/cycle",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "composite/depth-exceeded",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "composite/nested",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "composite/stale-leaf",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "inherit/ambiguous",
+      "target": "starter-products"
+    },
+    {
+      "suite": "composition",
+      "scenario": "inherit/nearest-ancestor",
+      "target": "starter-products"
+    },
+    {
+      "suite": "composition",
+      "scenario": "rollup/child-mutated",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "rollup/stated-disagrees",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "rollup/verified",
+      "target": "portfolio"
+    },
+    {
+      "suite": "composition",
+      "scenario": "lite-projection/externalized [content]",
+      "target": "representations"
+    },
+    {
+      "suite": "composition",
+      "scenario": "lite-projection/externalized",
+      "target": "representations"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "ab-mezz-notes",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "gd05-total-equity",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "no-stack-single-loan",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "pref-cash-vs-accrued",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "reject-waterfall-in-v1",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "senior-mezz-pref-verified",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "senior-reconciles-debt-structure",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "split-coupon",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "split-coupon-bad-fields",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "split-coupon-bad-total",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-abated-above-full",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-assessed-value",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-duplicate-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-flag-disagrees-with-trigger",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-freeze-decreasing",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-indicated-tax-off-by-a-cent",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-mixed-period-granularity",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-ratio-without-basis",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-stabilized-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-terminal-missing-in-exit-noi",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-terminal-uses-going-in-basis",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-undeclared-rounding",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-unknown-trigger",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "valid-abatement-phase-in",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "valid-holding-years-order-numerically",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "valid-legacy-prose-only",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "valid-terminal-explained-difference",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "valid-terminal-ties-to-exit",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "valid-typed-basis",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-break-after-expiration",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-clause-without-details",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-details-without-clause",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-duplicate-penalty-component",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-duplicate-step-date",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-fractional-notice",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-lc-balance-above-original",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-named-trigger-without-names",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-reduction-without-value",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-schedule-on-flat-lease",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-step-outside-term",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-steps-out-of-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-termination-right-with-value",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-threshold-as-percent",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-ti-balance-above-original",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "reject-unknown-penalty-component",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "valid-every-clause",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "valid-full-rent-reduction",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "valid-no-clauses-stated",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "valid-null-penalty",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease",
+      "scenario": "valid-single-step-mid-term",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-legacy-cam-cap-alone",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-no-recovery-stated",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-recovery-true-up",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-true-up-lands-in-cash-flows",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-cap-without-accumulation",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-capped-above-uncapped",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-cash-flow-ref-dangling",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-method-without-input",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-pool-names-no-expense",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-pool-names-the-total",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-share-as-percent",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-share-disagrees-with-pool",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-true-up-not-capped-less-billed",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-true-up-period-inverted",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-true-up-period-open",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "warn-legacy-cam-cap-beside-typed-cap",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-after-expiration",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-ambiguous-debt",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-ambiguous-sources",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-amount",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-currency",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-date",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-index--1",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-index-0_5",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-index-9007199254740992",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-kind",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-row-label",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-bad-row-member",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-before-expiration",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-currency-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-currency-null",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-digest-member-missing",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-digest-syntax",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-empty-series",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-escrow-contradiction-0",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-escrow-contradiction-100",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-escrow-missing",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-escrow-reference",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-explicit-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-explicit-zero",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-invalid-effective",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-legacy-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-missing-reference",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-missing-row",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-missing-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-missing-sources-uses",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-missing-uses",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-nonreplacement-loan_matures_first-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-nonreplacement-loan_matures_first-outright",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-nonreplacement-unhedged-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-nonreplacement-unhedged-outright",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-on-expiration",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-outright-payment",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-payment-before-effective",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-payment-on-effective",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-positive-payment",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-reviewed-rebind",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-same-day-distinct",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-amount",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-currency",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-currency-removed",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-deletion",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-index",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-insertion",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-label",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-reorder",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-stale-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-superseded-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-unknown-member",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-unknown-mode",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-unrelated-edit",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0070-variant-fallback-forbidden",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0075-junior-keyed-base",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0075-junior-only-hedge",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0075-malformed-hedge-beside-junior",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0075-senior-junior-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0075-senior-junior-outright",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0075-two-seniors",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-components-only-hedge",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-sources-refused-escrow-mode",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-sources-refused-malformed-hedge",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-sources-refused-replace",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-two-seniors-hedge-malformed",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-two-seniors-hedge-unfunded",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-two-seniors-no-hedge-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0076-two-seniors-replace-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "accept-full-hedge-and-escrows",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "accept-no-hedge-stated",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-duplicate-escrow-name",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-escrow-funding-nothing",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-expiration-before-effective",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-hedge-on-fixed-loan",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-legacy-reserve-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-other-escrow-without-label",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-premium-disagrees-with-use",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-replace-without-escrow",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-replacement-escrow-without-assumption",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-reserved-collar",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-reserved-swap",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-strike-as-percent",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-strike-disagrees-with-legacy",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-unknown-escrow-name",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "reject-unstated-expiry-assumption",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "accept-draw-with-verified-remaining",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "accept-module-expense-key",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "accept-no-renovation-stated",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-contingency-overdrawn",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-drawn-above-budget-plus-contingency",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-drawn-below-contingency-used",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-empty-label",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-impossible-as-of-date",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-legacy-budget-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-malformed-savings-begin",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-missing-in-noi-model",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-negative-budget",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-payback-against-zero-savings",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-payback-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-remaining-does-not-subtract",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-target-names-no-expense",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "reject-bad-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "reject-empty-schedule",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "reject-gapped-periods",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "valid-ground-up-absorption",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "valid-value-add-turnover",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "verify-missing-denominator",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "verify-stated-sum-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "warn-stabilized-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up",
+      "scenario": "warn-turnover-no-rent-roll",
+      "target": "verifier"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "component",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "decreasing",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "duplicate-map",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "exact-zero",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "extra-map",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "failed",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "gap",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "invalid-date",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "missing-amount",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "missing-map",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "monthly-leap",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "quarterly",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "same-day",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "unverifiable",
+      "target": "starter-products"
+    },
+    {
+      "suite": "lease-up-projection",
+      "scenario": "wrong-variant",
+      "target": "starter-products"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-acquisition-equal",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-acquisition-outside",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-early-gross-sale",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-early-reserve-return",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-early-sale-cost",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-extra-coverage-cell",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-extra-mapping",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-february-2027",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-february-2028",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-financing-tax",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-following-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-invalid-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-invalid-empty",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-invalid-null",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-invalid-object",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-invalid-unknown",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-map-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-missing-reserve-coverage",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-beyond",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-boundary-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-boundary-within_final_period",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-inside-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-inside-allow_exclusive_end",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-inside-within_final_period",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-leading-year",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-overflow-inside",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-year-rollover",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-monthly-year-rollover-beyond",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-named-sale-deductions",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-nested-option",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-projected-after-sale",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-projected-before-acquisition",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-beyond",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-boundary-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-boundary-within_final_period",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-inside-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-inside-allow_exclusive_end",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-inside-within_final_period",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-leading-year",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-overflow-inside",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-year-rollover",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-quarterly-year-rollover-beyond",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-reserve-gross-sale",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-reserve-spending",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-reserved-defeasance",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-reserved-loan_payoff",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-reserved-prepayment_penalty",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-restricted-reserve",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-source-after-sale",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-source-duplicate",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-source-gap",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-source-malformed",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-source-mixed",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-source-reordered",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-supplemental-after-sale",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-supplemental-before-acquisition",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "boundary-unknown-reserve-return",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "currency-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "duplicate-row",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "failed-lease-up",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "false-reserve-assertion",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "lease-up-overlap",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "missing-coverage",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "null-expense",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "positive-expense",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "post-sale-cash",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-duplicate-sale-deduction-row",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-label-on-named-deduction",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-net-proceeds-off-by-a-cent",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-other-without-label",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-partial-sale-deduction-naming",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-reserved-defeasance",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-reserved-levered-deduction",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "reject-sale-deduction-outside-cell",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "unverifiable-lease-up",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-map-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-monthly-leap",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-named-sale-deductions",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-no-reserves",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-other-sale-deduction",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-quarterly",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "valid-same-day",
+      "target": "verifier"
+    },
+    {
+      "suite": "property-cash-flow-assembly",
+      "scenario": "wrong-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-day-count-trio",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-diverge",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-early-year-day-count",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-missing-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-override-shadow",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-xirr-decl",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "calc-xnpv-decl",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "reject-bad-date",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "reject-duplicate-year-selection",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "reject-early-year-unordered",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "reject-unordered",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "reject-xirr-no-sign-change",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "valid-early-year-ordering",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "valid-hold-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "valid-same-day-selection",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "verify-all-metrics",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "verify-moic-no-outflows",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "verify-procedure-refuses",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "verify-same-day-flows",
+      "target": "verifier"
+    },
+    {
+      "suite": "cash-flow",
+      "scenario": "verify-stated-xirr-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-capped-final-split",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-clawback-cap-not-promote-received",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-clawback-floor-rate-as-percent",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-clawback-irr-floor-without-rate",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-clawback-preferred-shortfall-without-pref",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-clawback-tax-rate-as-percent",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-clawback-unknown-basis",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-dangling-ref",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-gp-share-le-target",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-hurdle-mode-single-hurdle",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-irr-hurdle-lp-share-zero",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-irr-hurdle-non-increasing",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-irr-hurdle-on-final-split",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-irr-hurdle-out-of-range",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-no-capital",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "reject-out-of-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-classic-outcomes",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-classic-schedule",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-amount-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-capped-at-promote",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-em-floor",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-irr-floor-already-met",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-net-of-tax",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-preferred-shortfall-zero",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-clawback-stated-without-provision",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-combined-hurdles-any-mode",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-combined-hurdles-em-binds",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-combined-hurdles-irr-binds",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-compound-pref",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-compound-pref-then-irr",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-em-hurdle-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-irr-hurdle-already-met",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-irr-hurdle-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-irr-hurdle-crossing",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-irr-hurdle-interleaved-call",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-irr-ladder",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-moic-no-contributions",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-no-catchup",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-promote-overstated",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "verify-unresolvable-series",
+      "target": "verifier"
+    },
+    {
+      "suite": "waterfall",
+      "scenario": "warn-clawback-without-distribution",
+      "target": "verifier"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "01-valid-multi-deal",
+      "target": "portfolio"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "02-missing-provenance",
+      "target": "portfolio"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "03-duplicate-id",
+      "target": "portfolio"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "04-dangling-edge",
+      "target": "portfolio"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "05-unknown-preservation",
+      "target": "portfolio"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "06-wrong-layer",
+      "target": "portfolio"
+    },
+    {
+      "suite": "portfolio-relationships",
+      "scenario": "07-package-projection",
+      "target": "portfolio"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "profiles/lease-abstract-v1",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "profiles/source-note-v1",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "profiles/inline-deal",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "profiles/externalized-deal",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "lease-abstract/api-shape",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "fragments/standalone-parse",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "composition/inline-external-canonical",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "composition/inline-external-digest",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "package/manifest",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "package/integrity",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "package/context-boundary",
+      "target": "representations"
+    },
+    {
+      "suite": "capability",
+      "scenario": "01-valid-token-accepts",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "02-expired-token-rejects",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "03-wrong-section",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "04-wrong-deal",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "05-sub-mismatch",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "06-bad-signature",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "07-no-escalation",
+      "target": "starter-products"
+    },
+    {
+      "suite": "capability",
+      "scenario": "08-missing-token",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "calc-locale-invariant",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "csv-stays-canonical",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "render-de-DE",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "render-en-GB",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "render-fr-FR",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "render-ja-JP",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "render-zh-CN",
+      "target": "starter-products"
+    },
+    {
+      "suite": "locale",
+      "scenario": "unsupported-locale-refuses",
+      "target": "starter-products"
+    },
+    {
+      "suite": "currency",
+      "scenario": "explicit-code",
+      "target": "starter-products"
+    },
+    {
+      "suite": "currency",
+      "scenario": "malformed",
+      "target": "starter-products"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "registry-covers-every-class",
+      "target": "verifier"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "pack-agreement",
+      "target": "starter-products"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "csv-exports-size-for-every-class",
+      "target": "starter-products"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "report-cover-states-size",
+      "target": "starter-products"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "lite-round-trip-non-multifamily",
+      "target": "starter-products"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "cc-13-warns-and-does-not-refuse",
+      "target": "starter-products"
+    },
+    {
+      "suite": "size-intensive",
+      "scenario": "cc-13-silent-for-mixed-use",
+      "target": "verifier"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/01-signed-valid",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/02-signed-tampered",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/03-signed-unknown-kid",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/04-signed-no-hash",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/05-signed-no-backend",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/present-count is backend-independent",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "modules/01-valid",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "modules/02-tampered",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "modules/03-unknown-kid",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "modules/04-unsigned",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "modules/05-unsupported-scheme",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "modules/06-malformed",
+      "target": "integrity"
+    },
+    {
+      "suite": "sensitivity",
+      "scenario": "01-exit-value-grid",
+      "target": "sensitivity"
+    },
+    {
+      "suite": "sensitivity",
+      "scenario": "02-error-cell",
+      "target": "sensitivity"
+    },
+    {
+      "suite": "sensitivity",
+      "scenario": "03-document-unchanged",
+      "target": "sensitivity"
+    },
+    {
+      "suite": "sensitivity",
+      "scenario": "04-refuse-same-variable",
+      "target": "sensitivity"
+    },
+    {
+      "suite": "sensitivity",
+      "scenario": "05-refuse-over-cell-limit",
+      "target": "sensitivity"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "01-uniform-determinism",
+      "target": "stochastic"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "02-different-seed-differs",
+      "target": "stochastic"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "03-triangular-from-default-ranges",
+      "target": "stochastic"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "04-normal-is-not-bit-exact",
+      "target": "stochastic"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "05-refuse-missing-seed",
+      "target": "stochastic"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "06-refuse-no-random-inputs",
+      "target": "stochastic"
+    },
+    {
+      "suite": "stochastic",
+      "scenario": "02-different-seed-differs [differs from 01-uniform-determinism]",
+      "target": "stochastic"
+    },
+    {
+      "suite": "source",
+      "scenario": "01-actor-and-resolution",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "02-legacy-tag-in-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "03-unmatched-supersedes",
+      "target": "starter-products"
+    },
+    {
+      "suite": "source",
+      "scenario": "04-colon-form-rejected",
+      "target": "starter-products"
+    },
+    {
+      "suite": "source",
+      "scenario": "05-custom-policies-no-catchall",
+      "target": "starter-products"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "01-stabilized_acquisition",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "02-ground_up_development",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "03-value_add",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "04-lease_up",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "05-house_flip",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "06-commercial_flip",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "07-property_conversion",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "08-land_banking",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "09-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "10-null",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "11-unlisted",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "12-retired-build_to_rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "13-retired-nnn_single_tenant",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "14-retired-lihtc_section8",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "15-retired-distressed_reo",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "16-namespaced",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "17-malformed-namespace",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "18-non-string",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "19-btr-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "20-btr-carrier-conflict",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "21-btr-class-scope",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "22-free-subtypes",
+      "target": "verifier"
+    },
+    {
+      "suite": "scenario",
+      "scenario": "23-btr-reverse-conflict",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "balance-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "bank-interest",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "broken-continuity",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "currency-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "duplicate-account",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "duplicate-movement",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "duplicate-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "empty-explicit-movements",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "half-away-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "invalid-date",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "large-cent-draw-contribution",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "large-cent-multiple-contributions",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "large-cent-one-cent-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "legacy-v1",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "lender-reserve",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "missing-movements",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "missing-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "negative-movement",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "overflow",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "overflow-then-finite-periods",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "quantum-equal",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "unclassified",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "unknown-field",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "unordered-movements",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "unordered-periods",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "verified-source-classes",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-accounts",
+      "scenario": "wrong-previous-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "ambiguous-net-row",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "cent-multiple-draws",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "cent-one-cent-share",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "cent-one-cent-unallocated",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "cent-split-draw",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "closed-plan",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "duplicate-edge",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "duplicate-selected-draw",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "duplicate-source-row",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "excess-draw-allocation",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "external-release",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "funded-share-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "incomplete-draw",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "invalid-source-date",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "lease-up-component",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "legacy-v1",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "lender-reserve",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "many-to-many-partial",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-account",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-completeness",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-expenditure-row",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-movement",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-period",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-reserve-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "missing-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "nonfinite-allocation",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "null-plan",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "one-to-one",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "operating-expense",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "overbinding-gross",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "partial-expenditure",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "reserve-balance-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "same-day-identities",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "split-draw",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "stale-digest",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "stated-final-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "subcent-allocation",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "superseded-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "unbound-selected-draw",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "unclassified-movement",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "undeclared-draw-edge",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "wrong-category",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "wrong-currency",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "wrong-expenditure-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "reserve-draw-bindings",
+      "scenario": "wrong-gross-sign",
+      "target": "verifier"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "01-nested-meta",
+      "target": "reader"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "02-mixed-shape",
+      "target": "verifier"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "03-shim-roundtrip",
+      "target": "reader"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "04-legacy-tag-through-shim",
+      "target": "reader"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "05-flat-in-v2",
+      "target": "verifier"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "06-digest-shape-insensitive",
+      "target": "integrity"
+    },
+    {
+      "suite": "meta-v2",
+      "scenario": "07-defaulted-algorithm",
+      "target": "integrity"
+    },
+    {
+      "suite": "migrate",
+      "scenario": "01-signed-refused",
+      "target": "starter-products"
+    },
+    {
+      "suite": "migrate",
+      "scenario": "02-strip-signatures",
+      "target": "starter-products"
+    },
+    {
+      "suite": "migrate",
+      "scenario": "03-manual-resolution",
+      "target": "starter-products"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Desert-Palms-MHC-Apache-Junction-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Mill-Ave-Commons-Student-Tempe-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Parkview-Apts-Glendale-AZ.uw.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Parkview-Apts-Glendale-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Riverside-Office-Phoenix-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Saguaro-Select-Hotel-Tempe-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Sonoran-Self-Storage-Peoria-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "market-data/Phoenix-Multifamily-2026-Q2.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "parkview-after-L6.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/externalized-deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/inline-deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/package/records/externalized-deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "verifier-import-graph-excludes-starter-engine",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "stated-value-tampering",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "missing-input-is-not-a-default",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "explicit-null-does-not-become-zero",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "zero-divisor-refuses",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "invalid-input-refuses",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "dictionary-formula-controls-comparison",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "currency-quantum-and-one-cent-negative",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "half-away-from-zero-at-output-only",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "all-income-classes-require-total-equity",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "all-income-classes-stated-Y1-and-lazy-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "declared-senior-selection-and-unresolved-equity",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "mixed-use-allocation-is-stated",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "primary-size-is-unrounded-and-uninferred",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "source-tokens-preserve-zeroes-exponents-and-addresses",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "stated-precision-minimum-and-no-double-rounding",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "coarse-statements-verify-or-fail-at-the-minimum",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "all-class-LTV-uses-underwritten-value-with-lazy-price-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "Lite-ratio-token-retains-stated-precision",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "inputs-and-definition-remain-unchanged",
+      "target": "verifier"
+    },
+    {
+      "suite": "4",
+      "scenario": "l0a-scope-deterministic",
+      "target": "starter-products"
+    },
+    {
+      "suite": "4",
+      "scenario": "l6-risk-rating",
+      "target": "starter-products"
+    },
+    {
+      "suite": "4-profile",
+      "scenario": "consumer-profile-contract",
+      "target": "starter-products"
+    }
+  ],
+  "portable_legacy_ids": [
+    "replacement-funding/0070-after-expiration",
+    "replacement-funding/0070-ambiguous-debt",
+    "replacement-funding/0070-ambiguous-sources",
+    "replacement-funding/0070-bad-amount",
+    "replacement-funding/0070-bad-currency",
+    "replacement-funding/0070-bad-date",
+    "replacement-funding/0070-bad-index--1",
+    "replacement-funding/0070-bad-index-0_5",
+    "replacement-funding/0070-bad-index-9007199254740992",
+    "replacement-funding/0070-bad-kind",
+    "replacement-funding/0070-bad-order",
+    "replacement-funding/0070-bad-row-label",
+    "replacement-funding/0070-bad-row-member",
+    "replacement-funding/0070-before-expiration",
+    "replacement-funding/0070-currency-absent",
+    "replacement-funding/0070-currency-null",
+    "replacement-funding/0070-digest-member-missing",
+    "replacement-funding/0070-digest-syntax",
+    "replacement-funding/0070-empty-series",
+    "replacement-funding/0070-escrow-contradiction-0",
+    "replacement-funding/0070-escrow-contradiction-100",
+    "replacement-funding/0070-escrow-missing",
+    "replacement-funding/0070-escrow-reference",
+    "replacement-funding/0070-explicit-escrow",
+    "replacement-funding/0070-explicit-zero",
+    "replacement-funding/0070-invalid-effective",
+    "replacement-funding/0070-legacy-escrow",
+    "replacement-funding/0070-missing-reference",
+    "replacement-funding/0070-missing-row",
+    "replacement-funding/0070-missing-source",
+    "replacement-funding/0070-missing-sources-uses",
+    "replacement-funding/0070-missing-uses",
+    "replacement-funding/0070-nonreplacement-loan_matures_first-escrow",
+    "replacement-funding/0070-nonreplacement-loan_matures_first-outright",
+    "replacement-funding/0070-nonreplacement-unhedged-escrow",
+    "replacement-funding/0070-nonreplacement-unhedged-outright",
+    "replacement-funding/0070-on-expiration",
+    "replacement-funding/0070-outright-payment",
+    "replacement-funding/0070-payment-before-effective",
+    "replacement-funding/0070-payment-on-effective",
+    "replacement-funding/0070-positive-payment",
+    "replacement-funding/0070-reviewed-rebind",
+    "replacement-funding/0070-same-day-distinct",
+    "replacement-funding/0070-stale-amount",
+    "replacement-funding/0070-stale-currency-removed",
+    "replacement-funding/0070-stale-currency",
+    "replacement-funding/0070-stale-deletion",
+    "replacement-funding/0070-stale-index",
+    "replacement-funding/0070-stale-insertion",
+    "replacement-funding/0070-stale-label",
+    "replacement-funding/0070-stale-reorder",
+    "replacement-funding/0070-stale-variant",
+    "replacement-funding/0070-superseded-source",
+    "replacement-funding/0070-unknown-member",
+    "replacement-funding/0070-unknown-mode",
+    "replacement-funding/0070-unrelated-edit",
+    "replacement-funding/0070-variant-fallback-forbidden",
+    "replacement-funding/0075-junior-keyed-base",
+    "replacement-funding/0075-junior-only-hedge",
+    "replacement-funding/0075-malformed-hedge-beside-junior",
+    "replacement-funding/0075-senior-junior-escrow",
+    "replacement-funding/0075-senior-junior-outright",
+    "replacement-funding/0075-two-seniors",
+    "replacement-funding/0076-components-only-hedge",
+    "replacement-funding/0076-sources-refused-escrow-mode",
+    "replacement-funding/0076-sources-refused-malformed-hedge",
+    "replacement-funding/0076-sources-refused-replace",
+    "replacement-funding/0076-two-seniors-hedge-malformed",
+    "replacement-funding/0076-two-seniors-hedge-unfunded",
+    "replacement-funding/0076-two-seniors-no-hedge-escrow",
+    "replacement-funding/0076-two-seniors-replace-escrow",
+    "reserve-accounts/absent",
+    "reserve-accounts/balance-mismatch",
+    "reserve-accounts/bank-interest",
+    "reserve-accounts/broken-continuity",
+    "reserve-accounts/currency-disagrees",
+    "reserve-accounts/duplicate-account",
+    "reserve-accounts/duplicate-movement",
+    "reserve-accounts/duplicate-period",
+    "reserve-accounts/empty-explicit-movements",
+    "reserve-accounts/half-away-mismatch",
+    "reserve-accounts/invalid-date",
+    "reserve-accounts/large-cent-draw-contribution",
+    "reserve-accounts/large-cent-multiple-contributions",
+    "reserve-accounts/large-cent-one-cent-mismatch",
+    "reserve-accounts/legacy-v1",
+    "reserve-accounts/lender-reserve",
+    "reserve-accounts/missing-movements",
+    "reserve-accounts/missing-source",
+    "reserve-accounts/negative-movement",
+    "reserve-accounts/overflow-then-finite-periods",
+    "reserve-accounts/overflow",
+    "reserve-accounts/quantum-equal",
+    "reserve-accounts/unclassified",
+    "reserve-accounts/unknown-field",
+    "reserve-accounts/unordered-movements",
+    "reserve-accounts/unordered-periods",
+    "reserve-accounts/verified-source-classes",
+    "reserve-accounts/wrong-previous-period",
+    "reserve-draw-bindings/absent",
+    "reserve-draw-bindings/ambiguous-net-row",
+    "reserve-draw-bindings/cent-multiple-draws",
+    "reserve-draw-bindings/cent-one-cent-share",
+    "reserve-draw-bindings/cent-one-cent-unallocated",
+    "reserve-draw-bindings/cent-split-draw",
+    "reserve-draw-bindings/closed-plan",
+    "reserve-draw-bindings/duplicate-edge",
+    "reserve-draw-bindings/duplicate-selected-draw",
+    "reserve-draw-bindings/duplicate-source-row",
+    "reserve-draw-bindings/excess-draw-allocation",
+    "reserve-draw-bindings/external-release",
+    "reserve-draw-bindings/funded-share-disagrees",
+    "reserve-draw-bindings/incomplete-draw",
+    "reserve-draw-bindings/invalid-source-date",
+    "reserve-draw-bindings/lease-up-component",
+    "reserve-draw-bindings/legacy-v1",
+    "reserve-draw-bindings/lender-reserve",
+    "reserve-draw-bindings/many-to-many-partial",
+    "reserve-draw-bindings/missing-account",
+    "reserve-draw-bindings/missing-completeness",
+    "reserve-draw-bindings/missing-expenditure-row",
+    "reserve-draw-bindings/missing-movement",
+    "reserve-draw-bindings/missing-period",
+    "reserve-draw-bindings/missing-reserve-variant",
+    "reserve-draw-bindings/missing-source",
+    "reserve-draw-bindings/nonfinite-allocation",
+    "reserve-draw-bindings/null-plan",
+    "reserve-draw-bindings/one-to-one",
+    "reserve-draw-bindings/operating-expense",
+    "reserve-draw-bindings/overbinding-gross",
+    "reserve-draw-bindings/partial-expenditure",
+    "reserve-draw-bindings/reserve-balance-mismatch",
+    "reserve-draw-bindings/same-day-identities",
+    "reserve-draw-bindings/split-draw",
+    "reserve-draw-bindings/stale-digest",
+    "reserve-draw-bindings/stated-final-boundary",
+    "reserve-draw-bindings/subcent-allocation",
+    "reserve-draw-bindings/superseded-source",
+    "reserve-draw-bindings/unbound-selected-draw",
+    "reserve-draw-bindings/unclassified-movement",
+    "reserve-draw-bindings/undeclared-draw-edge",
+    "reserve-draw-bindings/wrong-category",
+    "reserve-draw-bindings/wrong-currency",
+    "reserve-draw-bindings/wrong-expenditure-variant",
+    "reserve-draw-bindings/wrong-gross-sign",
+    "scenario/01-stabilized_acquisition",
+    "scenario/02-ground_up_development",
+    "scenario/03-value_add",
+    "scenario/04-lease_up",
+    "scenario/05-house_flip",
+    "scenario/06-commercial_flip",
+    "scenario/07-property_conversion",
+    "scenario/08-land_banking",
+    "scenario/09-absent",
+    "scenario/10-null",
+    "scenario/11-unlisted",
+    "scenario/12-retired-build_to_rent",
+    "scenario/13-retired-nnn_single_tenant",
+    "scenario/14-retired-lihtc_section8",
+    "scenario/15-retired-distressed_reo",
+    "scenario/16-namespaced",
+    "scenario/17-malformed-namespace",
+    "scenario/18-non-string",
+    "scenario/19-btr-fallback",
+    "scenario/20-btr-carrier-conflict",
+    "scenario/21-btr-class-scope",
+    "scenario/22-free-subtypes",
+    "scenario/23-btr-reverse-conflict",
+    "tier-1/01-minimal-screening/parse",
+    "tier-1/01-minimal-screening/render-chat",
+    "tier-1/01-minimal-screening/render-summary",
+    "tier-1/01-minimal-screening/validate",
+    "tier-1/02-full-multifamily/parse",
+    "tier-1/02-full-multifamily/render-chat",
+    "tier-1/02-full-multifamily/render-summary",
+    "tier-1/02-full-multifamily/validate",
+    "tier-1/04-scope-only/parse",
+    "tier-1/04-scope-only/render-chat",
+    "tier-1/04-scope-only/render-summary",
+    "tier-1/04-scope-only/validate",
+    "tier-1/05-land-stage-overlay/parse",
+    "tier-1/05-land-stage-overlay/render-chat",
+    "tier-1/05-land-stage-overlay/render-summary",
+    "tier-1/05-land-stage-overlay/validate",
+    "tier-1/06-mixed-use-stage-overlay/parse",
+    "tier-1/06-mixed-use-stage-overlay/render-chat",
+    "tier-1/06-mixed-use-stage-overlay/render-summary",
+    "tier-1/06-mixed-use-stage-overlay/validate",
+    "tier-1/07-stage-overlay-control/parse",
+    "tier-1/07-stage-overlay-control/render-chat",
+    "tier-1/07-stage-overlay-control/render-summary",
+    "tier-1/07-stage-overlay-control/validate",
+    "tier-1/08-variant-cross-checks/parse",
+    "tier-1/08-variant-cross-checks/render-chat",
+    "tier-1/08-variant-cross-checks/render-summary",
+    "tier-1/08-variant-cross-checks/validate",
+    "tier-1/09-returns-tax-basis/parse",
+    "tier-1/09-returns-tax-basis/render-chat",
+    "tier-1/09-returns-tax-basis/render-summary",
+    "tier-1/09-returns-tax-basis/validate",
+    "tier-1/10-declared-roles/parse",
+    "tier-1/10-declared-roles/render-chat",
+    "tier-1/10-declared-roles/render-summary",
+    "tier-1/10-declared-roles/validate",
+    "tier-1/11-role-collision/parse",
+    "tier-1/11-role-collision/render-chat",
+    "tier-1/11-role-collision/render-summary",
+    "tier-1/11-role-collision/validate",
+    "tier-1/12-role-eligibility/parse",
+    "tier-1/12-role-eligibility/render-chat",
+    "tier-1/12-role-eligibility/render-summary",
+    "tier-1/12-role-eligibility/validate",
+    "tier-1/13-period-identities/parse",
+    "tier-1/13-period-identities/render-chat",
+    "tier-1/13-period-identities/render-summary",
+    "tier-1/13-period-identities/validate",
+    "tier-1/14-student-bed-counts/parse",
+    "tier-1/14-student-bed-counts/render-chat",
+    "tier-1/14-student-bed-counts/render-summary",
+    "tier-1/14-student-bed-counts/validate",
+    "tier-1/15-student-bed-counts-inconsistent/parse",
+    "tier-1/15-student-bed-counts-inconsistent/render-chat",
+    "tier-1/15-student-bed-counts-inconsistent/render-summary",
+    "tier-1/15-student-bed-counts-inconsistent/validate",
+    "tier-1/16-frontmatter-yaml-scalars/parse",
+    "tier-1/16-frontmatter-yaml-scalars/render-chat",
+    "tier-1/16-frontmatter-yaml-scalars/render-summary",
+    "tier-1/16-frontmatter-yaml-scalars/validate",
+    "tier-1/17-exit-proceeds-junior-capital/parse",
+    "tier-1/17-exit-proceeds-junior-capital/render-chat",
+    "tier-1/17-exit-proceeds-junior-capital/render-summary",
+    "tier-1/17-exit-proceeds-junior-capital/validate",
+    "tier-2/frontmatter-set-recommendation",
+    "tier-2/section-replace-property",
+    "tier-2/section-supersede-risk-rating",
+    "tier-3/data-center-module-dependency-rounding",
+    "tier-3/data_center-price_per_kw",
+    "tier-3/date-01-valid-leap-divisible-by-4",
+    "tier-3/date-02-valid-leap-divisible-by-400",
+    "tier-3/date-03-valid-ordinary-date",
+    "tier-3/date-04-valid-year-0000-leap",
+    "tier-3/date-05-valid-year-9999-last-day",
+    "tier-3/date-06-valid-first-day-of-year",
+    "tier-3/date-07-invalid-not-leap-year",
+    "tier-3/date-08-invalid-century-not-leap",
+    "tier-3/date-09-invalid-february-30",
+    "tier-3/date-10-invalid-april-31",
+    "tier-3/date-11-invalid-month-00",
+    "tier-3/date-12-invalid-month-13",
+    "tier-3/date-13-invalid-day-00",
+    "tier-3/date-14-invalid-one-digit-month",
+    "tier-3/date-15-invalid-one-digit-day",
+    "tier-3/date-16-invalid-two-digit-year",
+    "tier-3/date-17-invalid-five-digit-year",
+    "tier-3/date-18-invalid-signed-year",
+    "tier-3/date-19-invalid-negative-year",
+    "tier-3/date-20-invalid-expanded-year",
+    "tier-3/date-21-invalid-leading-space",
+    "tier-3/date-22-invalid-trailing-space",
+    "tier-3/date-23-invalid-internal-space",
+    "tier-3/date-24-invalid-leading-tab",
+    "tier-3/date-25-invalid-trailing-newline",
+    "tier-3/date-26-invalid-date-time-zulu",
+    "tier-3/date-27-invalid-date-time-local",
+    "tier-3/date-28-invalid-zone-suffix",
+    "tier-3/date-29-invalid-offset-suffix",
+    "tier-3/date-30-invalid-slash-form",
+    "tier-3/date-31-invalid-compact-form",
+    "tier-3/date-32-invalid-week-date",
+    "tier-3/date-33-invalid-ordinal-date",
+    "tier-3/date-34-invalid-full-width-digits",
+    "tier-3/date-35-invalid-non-ascii-hyphen",
+    "tier-3/date-36-invalid-empty-string",
+    "tier-3/date-37-document-quoted-string",
+    "tier-3/date-38-document-unquoted-yaml-date",
+    "tier-3/date-39-document-null",
+    "tier-3/date-40-document-absent-path",
+    "tier-3/date-41-document-number",
+    "tier-3/date-42-document-boolean",
+    "tier-3/date-43-document-array",
+    "tier-3/date-44-document-object",
+    "tier-3/date-45-document-impossible-date",
+    "tier-3/date-46-error-no-arguments",
+    "tier-3/date-47-error-two-arguments",
+    "tier-3/date-48-error-argument-propagates",
+    "tier-3/dscr-from-section",
+    "tier-3/hospitality-revpar",
+    "tier-3/irr-01-out-of-bracket",
+    "tier-3/irr-02-even-root-count",
+    "tier-3/irr-03-conventional",
+    "tier-3/irr-04-endpoint-root",
+    "tier-3/irr-05-degenerate",
+    "tier-3/land-usable-land-ratio",
+    "tier-3/manufactured_housing-physical_occupancy",
+    "tier-3/mixed-use-absent-component-null",
+    "tier-3/mixed-use-data_center_noi_share",
+    "tier-3/mixed-use-data_center_price_per_kw",
+    "tier-3/mixed-use-manufactured_housing_noi_share",
+    "tier-3/mixed-use-manufactured_housing_price_per_site",
+    "tier-3/mixed-use-no-allocation-null",
+    "tier-3/mixed-use-operating-business-gop",
+    "tier-3/mixed-use-two-component-cap-rate",
+    "tier-3/mixed-use-two-component-noi-share",
+    "tier-3/mixed-use-two-component-price-per-unit",
+    "tier-3/period-01-year-order",
+    "tier-3/period-02-keyed-year",
+    "tier-3/period-03-calendar-quarter",
+    "tier-3/period-04-dated-series",
+    "tier-3/period-05-missing",
+    "tier-3/period-06-kind-mismatch",
+    "tier-3/period-07-duplicate",
+    "tier-3/period-08-unregistered",
+    "tier-3/period-09-same-day-unique",
+    "tier-3/period-10-same-day-repeated",
+    "tier-3/period-11-same-day-absent",
+    "tier-3/period-12-other-series-duplicate",
+    "tier-3/revpar-basic",
+    "tier-3/self-storage-economic-occupancy",
+    "tier-3/senior-housing-care-revenue-ratio",
+    "tier-3/student-housing-pre-lease-rate",
+    "tier-3/student-housing-rent-per-bed-monthly",
+    "tier-3/variant-01-primary-resolves",
+    "tier-3/variant-02-default-resolves",
+    "tier-3/variant-03-unresolvable",
+    "tier-3/variant-04-role-preference",
+    "tier-3/variant-05-explicit-variant",
+    "tier-3/variant-06-missing-section",
+    "tier-3/variant-07-explicit-missing",
+    "tier-3/variant-08-primary-collision",
+    "tier-3/variant-09-role-collision",
+    "tier-3/variant-10-role-unclaimed",
+    "tier-3/variant-11-explicit-beats-role"
+  ]
+}

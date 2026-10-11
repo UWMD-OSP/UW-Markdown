@@ -6,8 +6,37 @@ test corpus — analogous to the
 [CommonMark spec corpus](https://spec.commonmark.org/dingus/) or
 [OpenAPI's compliance suite](https://github.com/OAI/OpenAPI-Specification/tree/main/tests).
 
-The corpus is organized by **conformance tier** (see
-[`UW_PROTOCOL_v1.md`](../spec/UW_PROTOCOL_v1.md) Part II for tier definitions):
+The corpus is **tagged by case**, rather than by directory. Its authoritative
+runtime [ownership index](corpus-index.json) gives each reference check exactly
+one target: `reader`, `verifier`, one of `module`, `integrity`, `representations`,
+`portfolio`, `sensitivity`, `stochastic`, or `starter-products`. Legacy fixture
+paths remain stable for consumers; they do not confer a tier claim.
+
+| Target | Reference checks | Portable CLI cases |
+|---|---:|---:|
+| Reader | 23 | 16 |
+| Verifier | 586 | 194 |
+| Module | 154 | 87 |
+| Integrity | 15 | 0 |
+| Representations | 109 | 0 |
+| Portfolio | 14 | 0 |
+| Sensitivity | 5 | 0 |
+| Stochastic | 7 | 0 |
+| Starter products | 143 | 35 |
+| **Total** | **1,056** | **332** |
+
+The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
+now run by default. Portable cases project a subset of those same checks, so
+332 is not an additional corpus. All expectations are preserved. The index
+and generated cases are checked for exact ownership, missing/duplicate results
+and generation drift.
+
+Starter-product checks belong to the [starter guide](../docs/starter/README.md)
+and remain blocking CI checks. A mixed check with product assertions stays a
+product check in full. Exact dictionary reproduction belongs to Verifier;
+custom calculation declarations and expression semantics belong to Module.
+
+The following tree describes **fixture storage**, including legacy names:
 
 ```
 conformance/
@@ -285,8 +314,8 @@ market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and
 size-intensive registry are *verified protocol surfaces*, and signing is an
 *optional capability* — none is itself a protocol conformance tier. All run by
-default; select one alone with `--tier=<name>` (e.g. `--tier=lite`,
-`--tier=signing`).
+default; select one alone with `--suite=<name>` (e.g. `--suite=lite`,
+`--suite=signing`).
 
 `signing` is the one suite an implementation may skip and stay conformant: it
 gates the `signing` capability claim in `ImplementationManifest.capabilities`,
@@ -347,10 +376,10 @@ the corpus against `@uwmd/core`. CI runs tiers 1–3 on every PR.
 node scripts/run-conformance.mjs
 
 # Specific tiers
-node scripts/run-conformance.mjs --tier=1,3
+node scripts/run-conformance.mjs --tier=verifier --profile=module
 
 # Tier 4 is operator-driven (lint-only — does not invoke an LLM)
-node scripts/run-conformance.mjs --tier=4
+node scripts/run-conformance.mjs --starter-products --suite=4
 
 # Bootstrap / refresh expected outputs from the current library
 node scripts/run-conformance.mjs --update
@@ -366,6 +395,13 @@ even when content is stable). These change every run and are not
 normative.
 
 ## Adding a fixture
+
+Add one `(suite, scenario, target)` row to `corpus-index.json` for every check
+reported by the reference runner. Add generated portable identities when the
+fixture has a CLI projection, then run `npm run gen-conformance-cases`.
+Ownership is explicit and closed; neither a directory name nor a legacy id
+assigns it. Coverage guards reject a fixture that has no indexed owner.
+
 
 Fixtures are normative once merged. To add one:
 
@@ -398,7 +434,7 @@ protocol version in `UW_PROTOCOL_v1.md`.
 The default `lease-up-projection` suite exercises RFC 0044 explicit cash-date
 mapping and candidate output. See `lease-up-projection/README.md` for its
 self-contained source/plan/expected cases. Run it alone with
-`npm run conformance -- --tier=lease-up-projection` after building core.
+`npm run conformance -- --suite=lease-up-projection` after building core.
 
 ### Property cash-flow assembly (RFC 0045)
 
@@ -406,7 +442,7 @@ The default `property-cash-flow-assembly` suite contains self-contained syntheti
 source/plan/expected triples. Cases exercise complete coverage, monthly/leap and
 same-date timing, reserve declarations, duplicates, currency, signs and original
 source-verifier refusals. These fixtures are engineering inputs, not real deals.
-Run `npm run conformance -- --tier=property-cash-flow-assembly` after building.
+Run `npm run conformance -- --suite=property-cash-flow-assembly` after building.
 
 ### Standalone document kit (RFC 0048)
 
@@ -414,7 +450,7 @@ The default `standalone` suite exercises the worked examples under
 `examples/standalone/`: profile and lease-abstract validation, independent
 fragment parsing, inline/externalized canonical and semantic-digest equality,
 and package integrity/context-boundary behavior. Run it alone with
-`npm run conformance -- --tier=standalone` after building.
+`npm run conformance -- --suite=standalone` after building.
 
 ### Same-day cash-flow reconciliation (RFC 0062, accepted)
 
@@ -429,7 +465,7 @@ row/binding checks. Receipt issuance baselines change only their protocol label
 to 2.17.1; engine/package versions are unchanged. Run the focused suites with:
 
 ```sh
-npm run conformance -- --tier=cash-flow,property-cash-flow-assembly
+npm run conformance -- --suite=cash-flow,property-cash-flow-assembly
 ```
 
 ## RFC 0070 replacement funding (Protocol 2.21.0)
@@ -464,4 +500,4 @@ normative dictionary and safe-expression evaluator, without packs, defaults or
 cascade. It records 104 verified statements and 39 existing example mismatches,
 with per-example counts and per-statement evidence. Known findings are compared
 exactly, and negative controls pin missing-input refusal and quantization. Run
-`npm run conformance -- --tier=metrics`; it is included in the default suite.
+`npm run conformance -- --suite=metrics`; it is included in the default suite.

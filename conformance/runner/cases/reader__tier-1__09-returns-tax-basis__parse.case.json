@@ -1,0 +1,17 @@
+{
+  "id": "reader/tier-1/09-returns-tax-basis/parse",
+  "target": "reader",
+  "legacy_id": "tier-1/09-returns-tax-basis/parse",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "09-returns-tax-basis.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/09-returns-tax-basis.parsed.json"
+  }
+}

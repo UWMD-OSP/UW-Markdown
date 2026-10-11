@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/conformance-case.schema.json",
+  "title": "Conformance CLI case (RFC 0078 Phase 3)",
+  "type": "object",
+  "required": [
+    "id",
+    "target",
+    "command",
+    "args",
+    "fixture_dir",
+    "expect"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "enum": [
+        "reader",
+        "verifier",
+        "module",
+        "integrity",
+        "representations",
+        "portfolio",
+        "sensitivity",
+        "stochastic",
+        "starter-products"
+      ]
+    },
+    "legacy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requires_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "command": {
+      "type": "string",
+      "minLength": 1
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fixture_dir": {
+      "type": "string"
+    },
+    "expect": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

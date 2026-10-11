@@ -270,6 +270,26 @@ records current example findings independently of the starter packs.
 | Example disagreements | Freeze per-statement evidence and per-example counts as findings; preserve the examples and metric definitions. | RFC 0078 D1–D3; the approved lender-with-only-the-standard fixture reports failures rather than silently correcting them. |
 | Versioning | Add the dictionary contract without changing Format or `PROTOCOL_VERSION`; release preparation remains separate. | RFC 0078 Phase 2 scope and semver per surface. |
 
+### Phase 3 implementation decisions
+
+The [runtime corpus index](../../conformance/corpus-index.json) tags every
+reference case. The portable cases retain `legacy_id` for exact migration
+reconciliation. The baseline is 1,053 default plus three opt-in reference
+checks, and 332 portable projections; after tagging there are 1,056 and
+332 respectively, with no changed fixture, assertion or expected output.
+The lender-only fixture remains **187 verified / 0 failed / 0 unverifiable**.
+
+| Question | Decision | Why (precedent) |
+|---|---|---|
+| Move or tag existing cases? | Tag each reference case exactly once in the runtime corpus index; retain fixture paths and baselines. Generated portable cases carry the same single owner and their legacy id. | §II.6 already makes directory membership non-normative; preserves existing fixture consumers and the approved tagging alternative. |
+| Mixed standard/product assertions? | Keep the entire check as a starter-product check when it also asserts editing, rendering, defaults/cascade, authoring, projection or refinement. Do not remove assertions to claim standard coverage. | D3–D6 and D10–D11; product quality bars stay in CI, separately reported. |
+| Legacy calculation cases? | Exact dictionary reproductions belong to Verifier; custom declarations, expression grammar and resolution belong to Module. Existing custom ADR × occupancy is not a second standard RevPAR definition. | D1–D3, §II.3 Module and Phase 2 extraction/parity; no formula or baseline redesign. |
+| Selection and legacy tier aliases? | Verifier includes Reader; profiles and starter products are explicit selectors. Old long names and numeric shorts resolve through readConformanceTier, warn on stderr and infer no profiles. Named fixture families use --suite; old named --tier selectors warn. | §II.2, §II.5 and §II.6a.2; the portable driver consumes the generated helper readings instead of maintaining another mapping. |
+| Default run and old opt-in agent shapes? | Run all 1,056 existing reference checks by default, including the three formerly opt-in shapes, and separate counts by owner. Retain all 332 portable cases with unchanged commands, arguments and expectations. | RFC Conformance impact: starter checks remain in CI; promotion adds coverage to the default without adding or dropping a case. |
+| Unclaimed profiles? | Report their cases unverifiable; retain distinct capability skips. --no-skip rejects an incomplete certification run without calling an unsupported profile a wrong result. | §II.3 requires explicit profile claims and forbids passed/failed numerical judgments for unsupported profiles; RFC 0030 capability skips remain unchanged. |
+| Baseline updates and coverage? | Permit updates only for full runs or fixture-family selections; reject target-filtered updates. Refuse unknown owners, duplicate results, missing results and portable identities without an indexed owner. | Frozen-baseline precedent (§II.6a.3); filtering a mixed suite must not overwrite an unselected baseline or hide a case. |
+| Versions and product ownership? | Change no version label; starter checks belong to docs/starter and remain blocking CI checks. | D13, Phase 3 scope and the separate release phase. |
+
 ### Phase 4 implementation decisions
 
 Project docs only: `AGENTS.md`, the wiki, the docs site and the root

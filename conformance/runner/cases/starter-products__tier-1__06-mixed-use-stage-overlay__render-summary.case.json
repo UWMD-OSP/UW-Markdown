@@ -1,0 +1,20 @@
+{
+  "id": "starter-products/tier-1/06-mixed-use-stage-overlay/render-summary",
+  "target": "starter-products",
+  "legacy_id": "tier-1/06-mixed-use-stage-overlay/render-summary",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "06-mixed-use-stage-overlay.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/06-mixed-use-stage-overlay.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

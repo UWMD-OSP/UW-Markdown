@@ -12,6 +12,8 @@ import {
   PROTOCOL_VERSION,
   FORMAT_VERSION,
   REFERENCE_IMPLEMENTATION_MANIFEST,
+  CONFORMANCE_TARGETS,
+  readConformanceTarget,
   CONFORMANCE_PROFILES,
   readConformanceTier,
   BUILTIN_REMEDIATIONS,
@@ -515,5 +517,17 @@ describe('protocol — ProtocolError category lockstep (§XI)', () => {
     for (const error of emitted) {
       expect(validate(error), `${error.code}: ${JSON.stringify(validate.errors)}`).toBe(true);
     }
+  });
+});
+
+
+describe('conformance corpus owners (RFC 0078 Phase 3)', () => {
+  it('accepts exactly tiers, optional profiles and a separate starter owner', () => {
+    expect(CONFORMANCE_TARGETS).toEqual(['reader', 'verifier', ...CONFORMANCE_PROFILES, 'starter-products']);
+    for (const target of CONFORMANCE_TARGETS) expect(readConformanceTarget(target)?.target).toBe(target);
+    for (const unknown of ['calc-host', 'editor', 'agent-host', 'portfolio-extra', null, 1]) expect(readConformanceTarget(unknown)).toBeNull();
+    expect(readConformanceTarget('tier-2-editor')).toEqual({ target: 'reader', ...readConformanceTier('tier-2-editor') });
+    expect(readConformanceTarget('tier-4-agent-host')).not.toHaveProperty('profile');
+    expect(Object.isFrozen(CONFORMANCE_TARGETS)).toBe(true);
   });
 });
