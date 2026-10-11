@@ -1203,7 +1203,7 @@ export const MIXED_USE_DEFAULTS: AssetClassDefaults = {
   },
 };
 
-/** RFC 0080 proposal: independent versioned values; Jared reviews before merge. */
+/** RFC 0080 starter defaults, owner-approved 2026-10-10; independently versioned. */
 export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
   "asset_class": "data_center",
   "version": "1.0.0",
@@ -1214,7 +1214,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.3,
       "unit": "ratio",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.expense_ratio uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.expense_ratio reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "noi_model.expense_recovery_rate": {
       "low": 0.85,
@@ -1222,7 +1222,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.98,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.expense_recovery_rate uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.expense_recovery_rate reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "rent_roll.vacancy_pct": {
       "low": 0.03,
@@ -1230,7 +1230,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.09,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: rent_roll.vacancy_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: rent_roll.vacancy_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "noi_model.rent_growth_pct_y1": {
       "low": 0.02,
@@ -1238,7 +1238,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.05,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.rent_growth_pct_y1 uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.rent_growth_pct_y1 reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "noi_model.management_fee_pct": {
       "low": 0.015,
@@ -1246,7 +1246,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.035,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.management_fee_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.management_fee_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "noi_model.leasing_commission_pct": {
       "low": 0.04,
@@ -1254,7 +1254,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.06,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.leasing_commission_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.leasing_commission_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.rate_pct": {
       "low": 0.058,
@@ -1262,7 +1262,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.075,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.rate_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.rate_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.amortization_months": {
       "low": 300,
@@ -1270,7 +1270,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 360,
       "unit": "months",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.amortization_months uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.amortization_months reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.io_months": {
       "low": 0,
@@ -1278,7 +1278,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 24,
       "unit": "months",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.io_months uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.io_months reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.ltv_pct": {
       "low": 0.55,
@@ -1286,7 +1286,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.7,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.ltv_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.ltv_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "valuation.exit_cap_rate_pct": {
       "low": 0.055,
@@ -1294,7 +1294,7 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.075,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: valuation.exit_cap_rate_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: valuation.exit_cap_rate_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     },
     "sources_uses.closing_costs_pct": {
       "low": 0.015,
@@ -1302,12 +1302,12 @@ export const DATA_CENTER_DEFAULTS: AssetClassDefaults = {
       "high": 0.035,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: sources_uses.closing_costs_pct uses the existing industrial starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: sources_uses.closing_costs_pct reuses the existing industrial starter range as a proxy. Starter assumption, not a market estimate."
     }
   }
 };
 
-/** RFC 0080 proposal: independent versioned values; Jared reviews before merge. */
+/** RFC 0080 starter defaults, owner-approved 2026-10-10; independently versioned. */
 export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
   "asset_class": "manufactured_housing",
   "version": "1.0.0",
@@ -1318,7 +1318,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.46,
       "unit": "ratio",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.expense_ratio uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.expense_ratio reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "rent_roll.vacancy_pct": {
       "low": 0.04,
@@ -1326,15 +1326,15 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.1,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: rent_roll.vacancy_pct uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: rent_roll.vacancy_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "noi_model.rent_growth_pct_y1": {
       "low": 0.02,
-      "central": 0.03,
-      "high": 0.05,
+      "central": 0.04,
+      "high": 0.06,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.rent_growth_pct_y1 uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: lot-rent growth has historically run above multifamily rent growth. Starter assumption, not a market estimate."
     },
     "noi_model.management_fee_pct": {
       "low": 0.025,
@@ -1342,15 +1342,15 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.045,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.management_fee_pct uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: noi_model.management_fee_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "noi_model.replacement_reserve_per_site_y1": {
-      "low": 250,
-      "central": 300,
-      "high": 400,
+      "low": 50,
+      "central": 75,
+      "high": 100,
       "unit": "currency",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: noi_model.replacement_reserve_per_site_y1 uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: residents own their homes, so the community reserves only for park infrastructure (roads, utilities); agency MHC underwriting uses roughly $50 per site. Starter assumption, not a market estimate."
     },
     "debt_structure.rate_pct": {
       "low": 0.06,
@@ -1358,7 +1358,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.075,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.rate_pct uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.rate_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.amortization_months": {
       "low": 300,
@@ -1366,7 +1366,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 360,
       "unit": "months",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.amortization_months uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.amortization_months reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.io_months": {
       "low": 0,
@@ -1374,7 +1374,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 60,
       "unit": "months",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.io_months uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.io_months reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "debt_structure.ltv_pct": {
       "low": 0.55,
@@ -1382,7 +1382,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.75,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: debt_structure.ltv_pct uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: debt_structure.ltv_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "valuation.exit_cap_rate_pct": {
       "low": 0.045,
@@ -1390,7 +1390,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.065,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: valuation.exit_cap_rate_pct uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: valuation.exit_cap_rate_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     },
     "sources_uses.closing_costs_pct": {
       "low": 0.015,
@@ -1398,7 +1398,7 @@ export const MANUFACTURED_HOUSING_DEFAULTS: AssetClassDefaults = {
       "high": 0.035,
       "unit": "percent",
       "source": "asset_class_default",
-      "citation": "RFC 0080 owner-review proposal: sources_uses.closing_costs_pct uses the existing multifamily starter range as a transparent triage proxy; not a market estimate."
+      "citation": "RFC 0080 owner-approved starter range: sources_uses.closing_costs_pct reuses the existing multifamily starter range as a proxy. Starter assumption, not a market estimate."
     }
   }
 };
