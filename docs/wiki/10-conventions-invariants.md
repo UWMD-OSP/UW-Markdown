@@ -3,9 +3,31 @@
 If you read one page before editing code, read this one. These are the rules that
 hold the system together. Breaking them is grounds for blocking a PR.
 
+## Which layer a rule belongs to
+
+[RFC 0078](../rfcs/0078-protocol-is-verification.md) separates **the standard**
+(the Format spec, the Protocol as verification, receipts, the module system,
+the representation specs and the normative metric dictionary in
+[`spec/metrics/`](../../spec/metrics/README.md)) from **the starter products**
+(the calc engine code and packs, defaults and the cascade, refinement, the
+editor, viewer and report, the Excel exporter, the AI agents, capability tokens
+and display conventions, described in [`docs/starter/`](../starter/README.md)).
+
+The invariants below mix both layers, and each says which it belongs to. A
+standard invariant protects what a verifier relies on; changing it needs an
+RFC. A starter-product invariant is a quality bar for the reference tools: it
+still blocks a PR here, but another implementation of the standard owes it
+nothing. The numbering is fixed because source comments cite invariants by
+number (`invariant #4` in `dcf.ts`, `debt.ts`, `rentroll.ts` and others).
+
+Every official asset class is a full builtin on both layers, equal to
+multifamily ([RFC 0080](../rfcs/0080-official-classes-are-builtins.md)).
+Module-declared classes are for third parties only.
+
 ## The hard invariants
 
 ### 1. The deterministic calc boundary — AI never does financial math
+*Project rule for every tool, standard and starter alike.*
 All NOI / DSCR / LTV / cap rate / IRR / DCF / amortization math is computed by the
 deterministic calc engine (`calc/` + `packs/`). AI agents (including the optional Bancroft reference suite) only
 **extract data** (from documents, market knowledge) and **write narrative**. The
@@ -19,6 +41,7 @@ figures."* Agents may write an *input* a formula reads (e.g.
   it write the inputs and add/extend a calc in `packs/`.
 
 ### 2. Dependency layering
+*Repository structure, both layers.*
 - Spec depends on nothing (changes need an RFC).
 - `@uwmd/core` takes no vendor SDK as a hard dependency. `@anthropic-ai/sdk` is an
   **optional peer dependency**, reached only through a dynamic import in
@@ -32,39 +55,61 @@ figures."* Agents may write an *input* a formula reads (e.g.
 - Tools depend on `@uwmd/core` + their own stack. **Tools never import other tools.**
 - Conformance fixtures depend on nothing (pure data).
 
-### 3. Tier-2 byte preservation
-`applyEdit` must leave bytes outside the modified region exactly as they were
-(round-trip stability). The Tier-2 conformance fixtures enforce this. Never reflow
-or re-serialize the whole file on an edit.
+### 3. Editor byte preservation
+*Starter-product guarantee (the editor).* `applyEdit` must leave bytes outside
+the modified region exactly as they were (round-trip stability). The editor
+fixtures (`conformance/tier-2-editor/`, a starter-product suite under RFC 0078)
+enforce this. Never reflow or re-serialize the whole file on an edit.
+- **Why it is not a standard rule:** integrity chains hash canonical block JSON
+  (Protocol §V.9), not raw bytes, so a verifier never depends on byte
+  preservation. The rule moved with §V.1 to the
+  [editing guide](../starter/editing.md).
 
 ### 4. Excel ↔ evaluator parity
-The calc engine and the Excel emitter are two renderings of one AST. For every
+*Starter-product quality bar (RFC 0078 D6), not a Protocol requirement.* The
+calc engine and the Excel emitter are two renderings of one AST. For every
 metric, both must produce the same number *exactly* — both sides quantize at
 the declaration's `round_to` per protocol §VIII.5 (`packs/packs.test.ts`).
 If you add a metric, keep both paths in agreement; if a builtin has no Excel
 equivalent, don't use it in a pack formula.
+- **What is normative here:** the metric definitions in `spec/metrics/`, the
+  §VIII.1 notation they are written in, and the §VIII.5 numeric model
+  (unrounded binary64, one half-away-from-zero quantization). Every pack must
+  equal its dictionary entries exactly (`packs/metric-dictionary.test.ts`), and
+  that is what keeps the engine, the Excel exporter and any third-party verifier
+  on one set of definitions. A verifier may compute a definition any way that
+  reproduces its quantized value; it owes no Excel output at all.
 
 ### 5. Append-only provenance
+*Standard (Protocol §V.2–§V.4).*
 Prefer **supersede** over destructive replace for agent/document writes: the prior
 block stays inline marked `superseded: true`, version bumps by 1, and a
 `pipeline_log` entry records the write. Every block carries a `_meta`. The host
 owns `_meta` — strip any `_meta`/`_notes` an agent puts in `section_data`.
 
 ### 6. Semver-per-surface
-The format, the protocol, and each npm package each carry an **independent**
-version (`PROTOCOL_VERSION`/`FORMAT_VERSION` in `protocol.ts`; `version` in each
+*Both layers.* The format, the protocol, and each npm package each carry an
+**independent** version (`PROTOCOL_VERSION`/`FORMAT_VERSION` in `protocol.ts`; `version` in each
 `package.json`; `MULTIFAMILY_PACK.version`; defaults table `version`). See
 [`VERSIONS.md`](../../VERSIONS.md) for the compatibility matrix. Don't bump them
-together reflexively — bump the surface that actually changed.
+together reflexively — bump the surface that actually changed. From Protocol
+3.0 the Protocol version moves only when what a document *means* or how it is
+*verified* changes; a starter-product change (engine, defaults, editor, viewer,
+Excel, agents) versions its package only. There is no starter-guide version
+(RFC 0078 D13).
 
 ### 7. Spec / schema / protocol lockstep
-`protocol.ts` types mirror `spec/schemas/*.schema.json` (explicitly so for
+*Standard.* `protocol.ts` types mirror `spec/schemas/*.schema.json` (explicitly so for
 `ModuleManifest`). Validation-code copy lives once in `BUILTIN_REMEDIATIONS`. The
 cascade order, source tags, view models, and edit policies are defined once in
 `protocol.ts`. Change them in one place; run `npm run validate-schemas`.
+The metric dictionary is part of the same contract: `spec/metrics/builtin.json`,
+its schema and the packs move together, and the dictionary parity test fails
+if they do not. (The cascade, view models and edit policies are starter-product
+behavior now, but their single definition still lives in `protocol.ts`.)
 
 ### 8. Descriptive identity does not select underwriting behavior
-Frontmatter `scenario` is the single business plan (RFC 0072, Format §2.2b).
+*Standard (Format §2.2b).* Frontmatter `scenario` is the single business plan (RFC 0072, Format §2.2b).
 Subtype remains open, with a defined multifamily `build_to_rent` identity.
 These may route descriptive workflows, but never choose calculations, defaults,
 packs or underwriting rules. DQ-07–09 are structural/vocabulary warnings only,

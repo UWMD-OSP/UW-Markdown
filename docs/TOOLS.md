@@ -7,6 +7,13 @@ just want to create and validate a first record, start with the
 The tools overlap on purpose: the format is the contract, and the tools are
 interchangeable. Pick the one that matches what you're trying to do.
 
+Every tool on this page is a **starter product**: a non-normative reference
+tool built on the standard ([RFC 0078](rfcs/0078-protocol-is-verification.md)).
+The standard is the format, the [Protocol](../spec/UW_PROTOCOL_v1.md) as
+verification, receipts and the [metric dictionary](../spec/metrics/README.md);
+a lender can verify a record with none of these tools. Their behavior is
+described in the [starter products guide](starter/README.md).
+
 Two file extensions appear below. `.uwx.md` is the complete structured
 record every tool works on. `.uw.md` is the UW Lite summary, which only
 the editor, the CLI, and the VS Code extension read. See
@@ -116,8 +123,8 @@ Not yet on the marketplace; install via `vsce package` + `code
 
 It opens readable `.uw.md` Lite summaries and complete `.uwx.md` structured records. Lite imports compile into UWX before editing; exporting back to Lite always shows any omitted advanced fields. See [UW Lite and UWX](UW_LITE_AND_UWX.md).
 
-Single-page app. Embeds the `@uwmd/core` parser, validator, Tier-2
-edit dispatcher, and Tier-3 calc engine in the browser. Every
+Single-page app. Embeds the `@uwmd/core` parser, validator, edit
+dispatcher, and calc engine in the browser. Every
 numeric edit re-runs every dependent calc immediately, so the file
 can never be left internally inconsistent.
 
@@ -234,10 +241,10 @@ Read-only by construction. Published on npm as `@uwmd/batch`.
 
 ## Programmatic agent host
 
-Bancroft is UW Markdown's optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a deal file; other providers and application-specific agents can use the same format and Tier-4 host contract.
+Bancroft is UW Markdown's optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a deal file; other providers and application-specific agents can use the same format and the starter [agent host guide](starter/ai-host.md).
 
 **[`packages/uwmd-core/src/agents/bancroft.ts`](../packages/uwmd-core/src/agents/bancroft.ts)
-— Tier-4 reference implementation.**
+— the reference agent host (a starter product).**
 
 `runBancroftAgent(file, layerId, opts)` runs a single Bancroft layer
 (`L1`–`L7`) over the deal. Edits are dispatched through the same
@@ -249,8 +256,9 @@ The model is pluggable through the `provider` option. With no provider,
 the built-in Anthropic adapter loads the optional `@anthropic-ai/sdk` peer
 and needs an `ANTHROPIC_API_KEY`. `createRecordingProvider` and
 `createReplayProvider` record real exchanges once and replay them with no
-network and no key, which makes a Tier-4 run deterministic and testable.
-The protocol §IX contract is provider-neutral; any `AgentProvider`
+network and no key, which makes an agent run deterministic and testable.
+The agent host contract (former Protocol §IX, now the
+[starter guide](starter/ai-host.md)) is provider-neutral; any `AgentProvider`
 implementation can stand in.
 
 Best for: building a custom underwriting pipeline. Researching what
@@ -263,12 +271,12 @@ calculation, and receipts never involve an agent.
 
 ## Where each tool lives
 
-| Tool | Path | Conformance tier |
+| Tool | Path | Role (Protocol 3.0 tier, or starter product) |
 |---|---|---|
-| Web viewer | `tools/web-viewer/` | 1 |
-| VS Code extension | `tools/vscode-uwmd/` | 1 |
-| Web editor | `tools/web-editor/` | 2 + 3 |
-| `uwmd` CLI | `packages/uwmd-cli/` | 1 + 2 |
-| Excel converter | `packages/uwmd-excel/` | 3 (export) |
-| Batch indexer | `packages/uwmd-batch/` | 1 + 3 (read-only) |
-| Bancroft agent host | `packages/uwmd-core/src/agents/` | 4 |
+| Web viewer | `tools/web-viewer/` | Reader |
+| VS Code extension | `tools/vscode-uwmd/` | Reader |
+| Web editor | `tools/web-editor/` | Starter editor; recomputes with the reference engine |
+| `uwmd` CLI | `packages/uwmd-cli/` | Verifier (all six profiles, `uwmd manifest`), plus starter editing |
+| Excel converter | `packages/uwmd-excel/` | Starter export |
+| Batch indexer | `packages/uwmd-batch/` | Reader (read-only index) |
+| Bancroft agent host | `packages/uwmd-core/src/agents/` | Starter agent host |

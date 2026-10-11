@@ -257,29 +257,30 @@ the post-sale value.
     <section class="uw-section uw-ecosystem" aria-labelledby="ecosystem-title">
       <div class="uw-section-heading">
         <div>
-          <p class="uw-eyebrow">Integrate and reference</p>
-          <h2 id="ecosystem-title">Practical tools on top. A normative contract underneath.</h2>
+          <p class="uw-eyebrow">Standard and starter products</p>
+          <h2 id="ecosystem-title">A normative standard for verification. Free starter tools on top.</h2>
         </div>
       </div>
       <div class="uw-link-columns">
         <div>
-          <h3 class="uw-column-title">Integrate</h3>
+          <h3 class="uw-column-title">The standard</h3>
           <div class="uw-link-list">
-            <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, convert, render, and issue receipts</small></span><code>v{{ versions.published }} · npm</code></a>
-            <a href="/guide/data-lake"><span><strong>Portfolio and data lake</strong><small>Index a folder of deals into one fact table, digests intact</small></span><code>guide</code></a>
-            <a href="/ai/"><span><strong>AI agents</strong><small>Instruction files, bounded skills, and the optional MCP profile</small></span><code>guide</code></a>
-            <a href="/spec/http"><span><strong>HTTP and MCP bindings</strong><small>Optional profiles for services that exchange records</small></span><code>spec</code></a>
-            <a href="/guide/receipts"><span><strong>Verification receipts</strong><small>Issue and check an offline proof of the arithmetic</small></span><code>guide</code></a>
+            <a href="/spec/format-v2"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.format }}</code></a>
+            <a href="/spec/protocol"><span><strong>Protocol — verification</strong><small>How any party checks a record: Reader and Verifier tiers, optional profiles</small></span><code>v{{ versions.protocol }}</code></a>
+            <a href="/spec/metrics/"><span><strong>Metric dictionary</strong><small>The normative definition of every builtin metric</small></span><code>JSON</code></a>
+            <a href="/spec/receipt"><span><strong>Verification receipts</strong><small>An offline, recomputable proof of the arithmetic</small></span><code>spec</code></a>
+            <a href="/spec/bindings/"><span><strong>Representations and bindings</strong><small>UW Lite, XML, CSV, and optional HTTP and MCP profiles</small></span><code>spec</code></a>
+            <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixture and expected-output pairs any implementation can run</small></span><code>tests</code></a>
           </div>
         </div>
         <div>
-          <h3 class="uw-column-title">Reference</h3>
+          <h3 class="uw-column-title">Starter products</h3>
           <div class="uw-link-list">
-            <a href="/spec/format-v2"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.format }}</code></a>
-            <a href="/spec/protocol"><span><strong>Protocol</strong><small>Requirements for readers, editors, calculation hosts, and agents</small></span><code>v{{ versions.protocol }}</code></a>
-            <a href="/spec/lite"><span><strong>UW Lite specification</strong><small>The compact <code>.uw.md</code> summary representation</small></span><code>spec</code></a>
-            <a href="/spec/schemas/"><span><strong>Schemas</strong><small>JSON Schemas for every cross-boundary type</small></span><code>JSON Schema</code></a>
-            <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixture and expected-output pairs any implementation can run</small></span><code>tests</code></a>
+            <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, convert, render, and issue receipts</small></span><code>v{{ versions.published }} · npm</code></a>
+            <a href="/guide/calc-conventions"><span><strong>Calc engine and defaults</strong><small>The reference evaluator, packs, and starter assumptions</small></span><code>guide</code></a>
+            <a href="/starter/"><span><strong>Editor, viewer, and Excel</strong><small>Non-normative guidance for the reference tools</small></span><code>guide</code></a>
+            <a href="/guide/data-lake"><span><strong>Portfolio and data lake</strong><small>Index a folder of deals into one fact table, digests intact</small></span><code>guide</code></a>
+            <a href="/ai/"><span><strong>AI agents</strong><small>Instruction files, bounded skills, and the reference agent host</small></span><code>guide</code></a>
           </div>
         </div>
       </div>

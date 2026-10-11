@@ -270,6 +270,25 @@ records current example findings independently of the starter packs.
 | Example disagreements | Freeze per-statement evidence and per-example counts as findings; preserve the examples and metric definitions. | RFC 0078 D1–D3; the approved lender-with-only-the-standard fixture reports failures rather than silently correcting them. |
 | Versioning | Add the dictionary contract without changing Format or `PROTOCOL_VERSION`; release preparation remains separate. | RFC 0078 Phase 2 scope and semver per surface. |
 
+### Phase 4 implementation decisions
+
+Project docs only: `AGENTS.md`, the wiki, the docs site and the root
+orientation pages. No spec, schema, `protocol.ts`, conformance or version
+change.
+
+| Question | Decision | Why (precedent) |
+|---|---|---|
+| Renumber the invariants once some become starter-product rules? | No. Keep 1–8 in place and label each rule's layer. | Source comments cite invariants by number (`invariant #4` in `dcf.ts`, `debt.ts`, `rentroll.ts`, `sourcesuses.ts`, `valuation.ts`; RFCs 0024, 0060, 0071). Renumbering would silently repoint them. |
+| Does a starter-product invariant still block a PR? | Yes. Excel parity (4) and byte preservation (3) stay blocking quality bars for the reference tools; another implementation of the standard owes them nothing. | D6 ("a quality bar for the Excel starter product") keeps the bar and only moves its layer; the parity tests stay in CI (Conformance impact: starter suites "still run in CI"). |
+| Invariant 3 (byte preservation) was not named in item 4. Reframe it too? | Yes: "Tier-2" no longer exists, and §V.1 moved to the starter guide. | D3 and the §V disposition row: "byte preservation is an editor guarantee, not a verification requirement". |
+| Do starter-product changes need an RFC? | No RFC and no Protocol version, but tests, a CHANGELOG entry, package semver, and maintainer sign-off on any number (defaults, formulas, rounding). | D4, D13 and §4 Versioning; AGENTS "Never guess at numerics", which applies to every tool. |
+| Is adding a metric to a pack still "usually no RFC"? | No. A new or changed metric definition is a dictionary change and needs an RFC; the wiki 11 table is corrected. | §3: "Adding or changing a definition after that is an RFC, as any normative change is." |
+| Where does the docs site put receipts, which are both a spec and a CLI feature? | The Receipt spec goes under **Standard**; the receipts guide (issuing with the CLI) goes under **Starter products** as "Issuing receipts". | §1 lists `UW_RECEIPT_v1` in the standard; issuing is tool work. |
+| Where do HTTP/MCP bindings and the representation specs go? | **Standard**, in a "Representations and bindings" group. | §1: the representation specs and the optional HTTP/MCP bindings are in the standard, "unchanged in status". |
+| The module system has no page of its own. | Link the Protocol's §VII anchor from the Standard menu rather than adding a new copy target. | §2: §VI, §VII and §X stay normative in the Protocol; no new source page is needed. |
+| Touch conformance tier names, pages or the corpus directory references? | No. Leave the `/conformance/tier-*` sidebar, the prebuild conformance copies, the `--tier` gate text and the corpus paths in `ARCHITECTURE.md` and wiki 09/11 to Phase 3. Drop the one hand-written link into a Tier 4 page so a rename cannot break the site build. | Phase 3 owns corpus re-tiering and the CLI's tier names; separate PRs, one topic each. |
+| AGENTS.md lists invariant 8 as workspace isolation; wiki 10's #8 is descriptive identity. | Left as is and reported. The mismatch predates RFC 0078. | One PR, one topic. |
+
 ## Alternatives considered
 
 1. **Keep the four nested tiers.** It is the current state and needs no

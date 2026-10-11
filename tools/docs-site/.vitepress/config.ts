@@ -60,66 +60,86 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Integrate',
-        activeMatch: '^/(guide|ai)/',
+        // RFC 0078: the standard is the format plus verification, everything a
+        // lender needs to check a record with none of the project's tools.
+        text: 'Standard',
+        activeMatch: '^/(spec|conformance)/',
         items: [
           {
+            text: 'The standard (normative)',
             items: [
-              { text: 'Tools and packages', link: '/guide/tools' },
-              { text: 'Cookbook', link: '/guide/cookbook' },
-              { text: 'Verification receipts', link: '/guide/receipts' },
-              { text: 'Portfolio and data lake', link: '/guide/data-lake' },
+              { text: `Format specification (v${versions.format})`, link: '/spec/format-v2' },
+              { text: `Protocol — verification (${versions.protocol})`, link: '/spec/protocol' },
+              { text: 'Metric dictionary', link: '/spec/metrics/' },
+              { text: 'Verification receipts', link: '/spec/receipt' },
+              { text: 'Module system', link: '/spec/protocol#vii-module-system' },
+              { text: 'Conformance corpus', link: '/conformance/' },
             ],
           },
           {
-            text: 'Calculation',
+            text: 'Representations and bindings',
             items: [
-              { text: 'Calc conventions', link: '/guide/calc-conventions' },
-              { text: 'Calculation context', link: '/guide/calculation-context' },
-              { text: 'Property cash flows', link: '/guide/property-cash-flow' },
-              { text: 'Lease-up cash flows', link: '/guide/lease-up-cash-flow' },
-            ],
-          },
-          {
-            text: 'AI and services',
-            items: [
-              { text: 'Building with AI', link: '/ai/' },
-              { text: 'Bounded agent skills', link: '/ai/skills' },
+              { text: 'UW Lite specification', link: '/spec/lite' },
+              { text: 'XML mapping', link: '/spec/xml' },
+              { text: 'CSV bundle', link: '/spec/csv' },
               { text: 'HTTP and MCP bindings', link: '/spec/bindings/' },
+              { text: 'Schemas', link: '/spec/schemas/' },
             ],
           },
         ],
       },
       {
-        text: 'Reference',
-        activeMatch: '^/(spec|conformance|starter)/',
+        // Non-normative reference tools, given away so the standard spreads.
+        text: 'Starter products',
+        activeMatch: '^/(starter|guide|ai)/',
         items: [
           {
-            text: 'Normative contract',
-            items: [
-              { text: `Format specification (v${versions.format})`, link: '/spec/format-v2' },
-              { text: `Protocol (${versions.protocol})`, link: '/spec/protocol' },
-              { text: 'UW Lite specification', link: '/spec/lite' },
-              { text: 'Schemas', link: '/spec/schemas/' },
-              { text: 'Conformance corpus', link: '/conformance/' },
-            ],
-          },
-          {
-            text: 'Starter products (non-normative)',
             items: [
               { text: 'Starter products guide', link: '/starter/' },
+              { text: 'Tools and packages', link: '/guide/tools' },
+              { text: 'Cookbook', link: '/guide/cookbook' },
             ],
           },
           {
-            text: 'Project',
+            text: 'Calc engine and defaults',
             items: [
-              { text: 'Version matrix', link: '/about/versions' },
-              { text: 'Changelog', link: '/about/changelog' },
-              { text: 'Roadmap', link: '/about/roadmap' },
-              { text: 'RFCs', link: '/about/rfcs/' },
-              { text: 'Governance', link: '/about/governance' },
+              { text: 'Calc conventions', link: '/guide/calc-conventions' },
+              { text: 'Calculation context', link: '/guide/calculation-context' },
+              { text: 'Property cash flows', link: '/guide/property-cash-flow' },
+              { text: 'Lease-up cash flows', link: '/guide/lease-up-cash-flow' },
+              { text: 'Defaults and the cascade', link: '/starter/defaults-and-cascade' },
             ],
           },
+          {
+            text: 'Editor, viewer, report and Excel',
+            items: [
+              { text: 'Editing', link: '/starter/editing' },
+              { text: 'Viewer', link: '/viewer/' },
+              { text: 'Display conventions', link: '/starter/display' },
+              { text: 'Excel converter', link: '/guide/tools#excel-converter' },
+              { text: 'Issuing receipts', link: '/guide/receipts' },
+              { text: 'Portfolio and data lake', link: '/guide/data-lake' },
+            ],
+          },
+          {
+            text: 'AI agents',
+            items: [
+              { text: 'Building with AI', link: '/ai/' },
+              { text: 'Bounded agent skills', link: '/ai/skills' },
+              { text: 'AI agent host', link: '/starter/ai-host' },
+            ],
+          },
+        ],
+      },
+      {
+        text: 'Project',
+        activeMatch: '^/about/.',
+        items: [
+          { text: 'Version matrix', link: '/about/versions' },
+          { text: 'Changelog', link: '/about/changelog' },
+          { text: 'Roadmap', link: '/about/roadmap' },
+          { text: 'RFCs', link: '/about/rfcs/' },
+          { text: 'Governance', link: '/about/governance' },
         ],
       },
     ],
@@ -140,8 +160,10 @@ export default defineConfig({
         {
           text: 'Next',
           items: [
+            { text: 'The standard: Protocol — verification', link: '/spec/protocol' },
+            { text: 'The standard: metric dictionary', link: '/spec/metrics/' },
+            { text: 'Starter products guide', link: '/starter/' },
             { text: 'Tools and packages', link: '/guide/tools' },
-            { text: 'Verification receipts', link: '/guide/receipts' },
             { text: 'Building with AI', link: '/ai/' },
           ],
         },
@@ -157,17 +179,26 @@ export default defineConfig({
           ],
         },
         {
-          text: 'Integrate',
+          text: 'The standard',
           items: [
+            { text: 'Protocol — verification', link: '/spec/protocol' },
+            { text: 'Metric dictionary', link: '/spec/metrics/' },
+            { text: 'Receipt specification', link: '/spec/receipt' },
+          ],
+        },
+        {
+          text: 'Starter products',
+          items: [
+            { text: 'Starter products guide', link: '/starter/' },
             { text: 'Tools and packages', link: '/guide/tools' },
             { text: 'Cookbook', link: '/guide/cookbook' },
-            { text: 'Verification receipts', link: '/guide/receipts' },
+            { text: 'Issuing receipts', link: '/guide/receipts' },
             { text: 'Portfolio and data lake', link: '/guide/data-lake' },
             { text: 'Building with AI', link: '/ai/' },
           ],
         },
         {
-          text: 'Calculation',
+          text: 'Calc engine (starter)',
           items: [
             { text: 'Calc conventions', link: '/guide/calc-conventions' },
             { text: 'Calculation context', link: '/guide/calculation-context' },
@@ -178,12 +209,13 @@ export default defineConfig({
       ],
       '/ai/': [
         {
-          text: 'AI and agents',
+          text: 'AI agents (starter products)',
           items: [
             { text: 'Building with AI', link: '/ai/' },
             { text: 'Bounded agent skills', link: '/ai/skills' },
             { text: 'MCP binding', link: '/spec/mcp' },
             { text: 'HTTP binding', link: '/spec/http' },
+            { text: 'AI agent host guide', link: '/starter/ai-host' },
           ],
         },
         {
@@ -197,21 +229,36 @@ export default defineConfig({
       ],
       '/spec/': [
         {
-          text: 'Specifications',
+          text: 'The standard (normative)',
           items: [
             { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
             { text: 'Format spec (v1.1)', link: '/spec/format' },
-            { text: `Protocol spec (${versions.protocol})`, link: '/spec/protocol' },
+            { text: `Protocol — verification (${versions.protocol})`, link: '/spec/protocol' },
+            { text: 'Metric dictionary', link: '/spec/metrics/' },
+            { text: 'Verification receipt (v1.0)', link: '/spec/receipt' },
+            { text: 'Module system', link: '/spec/protocol#vii-module-system' },
+            { text: 'Conformance corpus', link: '/conformance/' },
+            { text: 'Metric verification', link: '/conformance/metrics' },
+          ],
+        },
+        {
+          text: 'Representations and bindings',
+          items: [
             { text: 'UW Lite spec (v1.0)', link: '/spec/lite' },
             { text: 'XML mapping (v1.0)', link: '/spec/xml' },
             { text: 'CSV bundle (v1.0)', link: '/spec/csv' },
-            { text: 'Verification receipt (v1.0)', link: '/spec/receipt' },
             { text: 'Composition spec (v1.0)', link: '/spec/composition' },
             { text: 'Transport bindings', link: '/spec/bindings/' },
             { text: 'HTTP binding (v1.0)', link: '/spec/http' },
             { text: 'MCP binding (v1.0)', link: '/spec/mcp' },
             { text: 'OpenAPI 3.1 contract', link: '/spec/UW_HTTP_API_v1.openapi.json' },
             { text: 'Schemas', link: '/spec/schemas/' },
+          ],
+        },
+        {
+          text: 'Starter products (non-normative)',
+          items: [
+            { text: 'Starter products guide', link: '/starter/' },
           ],
         },
       ],
@@ -230,10 +277,21 @@ export default defineConfig({
           ],
         },
         {
+          text: 'The reference tools',
+          items: [
+            { text: 'Tools and packages', link: '/guide/tools' },
+            { text: 'Calc conventions', link: '/guide/calc-conventions' },
+            { text: 'Excel converter', link: '/guide/tools#excel-converter' },
+            { text: 'Viewer', link: '/viewer/' },
+            { text: 'Building with AI', link: '/ai/' },
+          ],
+        },
+        {
           text: 'The standard',
           items: [
-            { text: `Protocol (${versions.protocol})`, link: '/spec/protocol' },
+            { text: `Protocol — verification (${versions.protocol})`, link: '/spec/protocol' },
             { text: 'Format spec (v2.0)', link: '/spec/format-v2' },
+            { text: 'Metric dictionary', link: '/spec/metrics/' },
           ],
         },
       ],

@@ -23,15 +23,18 @@ leaves every NOI, DSCR, and IRR to the calculation engine.
 2. Extract source facts, classify information, identify gaps, and draft narrative.
 3. Never calculate financial results. NOI, DSCR, LTV, debt yield, cap rate, IRR,
    NPV, and DCF come from deterministic code or formulas.
-4. For Tier-2 edits, preserve bytes outside the requested edit region.
+4. When editing, preserve bytes outside the requested edit region.
 5. Preserve provenance. Append or supersede; never silently destroy history.
    The host, not the agent, writes each block's `_meta`.
 6. Rates are fractions (`0.055` means `5.5%`).
-7. Treat the format specification, protocol, schemas, and conformance fixtures
-   as the contract.
+7. Treat the format specification, protocol, metric dictionary, schemas, and
+   conformance fixtures as the contract.
 
-The [protocol's agent-host section](/spec/protocol) makes these rules normative,
-and the [Tier 4 conformance fixtures](/conformance/tier-4) test them. The
+The agent host is a starter product, not part of the standard
+([RFC 0078](/about/rfcs/0078-protocol-is-verification)). These rules come from
+the non-normative [AI agent host guide](/starter/ai-host), and the reference
+host's test fixtures check them. Rule 3 binds every tool, and the standard
+keeps its provenance rules (append or supersede, host-owned `_meta`). The
 reference agent host in `@uwmd/core` takes any model provider, including a
 recorded-replay provider that makes agent runs deterministic for testing. See
 [tools and packages](/guide/tools#programmatic-agent-host).

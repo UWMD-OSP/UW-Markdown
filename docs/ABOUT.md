@@ -122,19 +122,22 @@ detail it leaves out.
 ## What is available today
 
 - **The normative contract.** The [format specification](/spec/format-v2), the
-  [protocol](/spec/protocol) for readers, editors, calculation hosts, and agent
-  hosts, [JSON Schemas](/spec/schemas/) for every cross-boundary type, and the
-  [conformance corpus](/conformance/).
+  [protocol](/spec/protocol) that defines how any party verifies a record
+  (Reader and Verifier tiers), the [metric dictionary](/spec/metrics/),
+  [JSON Schemas](/spec/schemas/) for every cross-boundary type, and the
+  [conformance corpus](/conformance/). The tools below are non-normative
+  [starter products](/starter/) built on it.
 - **The reference library and CLI.** `@uwmd/core` parses, validates, renders,
-  edits with byte preservation (a Tier-2 edit leaves every byte outside the
+  edits with byte preservation (an edit leaves every byte outside the
   edited region unchanged), calculates, converts, and verifies. `@uwmd/cli` wraps it
   as the `uwmd` command. Both are on npm.
 - **Companion packages on npm.** `@uwmd/signing` for block and receipt
   signatures, and `@uwmd/batch`, which indexes a folder of deals into a corpus
   fact table.
 - **Open-source packages not yet published to npm.** The Excel exporter, the
-  report renderer, the PostgreSQL lake adapter, and the hospitality and
-  data-center modules all build from source in the repository.
+  report renderer and the PostgreSQL lake adapter build from source in the
+  repository. Hospitality and data center are builtin asset classes; their
+  former module packages remain only as compatibility shells.
 - **Representations and bindings.** The same record round-trips through UW
   JSON, UW XML, and a CSV bundle, each with a semantic digest. Optional HTTP and
   MCP profiles describe how services and AI agents exchange it.

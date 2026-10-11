@@ -17,7 +17,7 @@ By the end you'll have a small `.uwx.md` file containing:
 
 - Frontmatter identifying the deal.
 - One `property` section with full provenance.
-- Enough metadata that the validator and any Tier-1 reader can
+- Enough metadata that the validator and any conforming Reader can
   display it.
 
 This is *intentionally* the smallest useful file, not a realistic
@@ -195,9 +195,11 @@ with the property section as a card.
 - **Try the supersede pattern.** Edits never destroy history: append a
   new block for the same section with `lifecycle.revision` incremented,
   and the old block stays in the file with `superseded: true`.
-- **Wire up calc.** A Tier-3 calc host evaluates safe-expression
-  formulas (cap rate, DSCR, etc.) against your sections. See the
-  [protocol §VIII](/spec/protocol#viii-calc-engine).
+- **Wire up calc.** A calc engine evaluates safe-expression formulas
+  (cap rate, DSCR, etc.) against your sections. The
+  [metric dictionary](/spec/metrics/) defines each builtin metric in the
+  [protocol §VIII](/spec/protocol#viii-calc-engine-contract) notation; the
+  reference engine in `@uwmd/core` is one starter implementation.
 - **Verify it.** `npx @uwmd/cli receipt issue hello-deal.uwx.md` writes
   a [verification receipt](/guide/receipts) attesting that the deal's
   computed outputs follow from its stated inputs.

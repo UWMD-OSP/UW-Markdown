@@ -82,7 +82,7 @@ pack first; do not change the receipt to make a verifier pass.
 ## Why is a workbook edit not reflected in the deal?
 
 Workbooks are exports. The reference converter does not yet import workbook
-edits into a UWX record. Apply source-backed edits to the deal via a Tier-2
+edits into a UWX record. Apply source-backed edits to the deal via an
 editor workflow, then regenerate the workbook.
 
 ## The command cannot find my file

@@ -21,7 +21,7 @@ npm run cli -- validate canyon.uwx.md
 
 The initial validation may contain expected incompleteness warnings. Fill fields
 from source documents, preserve each block's `_meta` provenance, and use an
-editor or the Tier-2 `edit` command rather than rebuilding the file as text.
+editor or the CLI `edit` command rather than rebuilding the file as text.
 
 ## Inspect an existing deal
 
@@ -32,7 +32,7 @@ npm run cli -- render examples/Parkview-Apts-Glendale-AZ.uwx.md --format summary
 ```
 
 `summary` is a quick screen. `validate` reports the structured rule codes and
-canonical remediation text. `render` produces a reviewable Tier-1 view without
+canonical remediation text. `render` produces a reviewable read-only view without
 changing the source file.
 
 ## Evaluate a formula without giving an agent control of the math
