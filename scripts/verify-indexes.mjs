@@ -62,6 +62,14 @@ if (schemaFiles.length > 0) {
   checks.push(`${schemaFiles.length} schemas indexed in ${SCHEMAS_DIR}/README.md`);
 }
 
+// Metric dictionary files must all be reachable from the normative index.
+const metricFiles = readdirSync(resolve(root, 'spec/metrics')).filter(f => f.endsWith('.json'));
+const metricIndex = read('spec/metrics/README.md');
+const linkedMetrics = new Set([...metricIndex.matchAll(/\]\(([a-z0-9-]+\.json)\)/g)].map(m => m[1]));
+for (const file of metricFiles) if (!linkedMetrics.has(file)) failures.push(`spec/metrics/README.md: missing ${file}`);
+for (const file of linkedMetrics) if (!metricFiles.includes(file)) failures.push(`spec/metrics/README.md: absent ${file}`);
+checks.push(`${metricFiles.length} metric dictionaries indexed in spec/metrics/README.md`);
+
 // ── 2. The RFC copy list ─────────────────────────────────────────────────────
 
 const RFC_INDEX = 'docs/rfcs/README.md';

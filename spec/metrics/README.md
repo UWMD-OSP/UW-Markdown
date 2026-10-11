@@ -1,0 +1,107 @@
+# UW metric dictionary
+
+This directory is normative under [RFC 0078](../../docs/rfcs/0078-protocol-is-verification.md).
+It defines the current builtin calculations and primary-size registry independently
+of any starter engine, defaults, underwriting workflow, or Excel layout.
+
+| Dictionary | Contents | Schema |
+|---|---|---|
+| [builtin.json](builtin.json) | 130 class-scoped calculations and nine primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
+
+## Calculation entries
+
+Select a `calculations` entry by **asset class and id**, never by id alone.
+`asset_classes` states applicability. Each (class, id) MUST occur once within
+that array. The extraction keeps one entry per pack declaration, including
+mixed-use's component calculations; identical ids in different classes retain
+their own formulas, inputs and labels.
+
+`formula` uses [Protocol §VIII.1](../UW_PROTOCOL_v1.md#viii-1-safe-expression-grammar-ebnf)
+notation. `input_paths` enumerates every potential document read in expression
+order, once each, including conditional branches. It is **not** a list of
+inputs that must all be present: evaluate the stated expression, including its
+null tests and lazy conditional selection. `section_roles` supplies the
+expression's declared role preferences under §VIII.2 (RFC 0066); `{}` means
+there is no declared role. It does not confer a senior preference implicitly.
+
+`unit` is the existing unit token; `%` values are fractions. `round_to` states
+the effective §VIII.5 decimal precision explicitly: money (`$`) uses 2, rates
+(`%`) use 6, and ratios (`x`) use 4. Evaluate without intermediate rounding in
+IEEE-754 binary64 and quantize once, half away from zero, at the stated precision.
+A numeric statement verifies when its quantized value equals the quantized
+expression value; there is no additional tolerance.
+
+`null_semantics: "expression"` means §VIII.2's expression semantics apply:
+missing or null operands propagate null in arithmetic; explicit null tests and
+conditional branches follow the formula. In particular, multifamily cash-on-cash
+requires stated total equity and retains its stated-Y1 / NOI-minus-debt-service
+fallback exactly as written. Zero divisors, invalid operand types and unresolved
+section selection retain the existing calc refusals. A null or refused result
+is **unverifiable**, not an inferred zero or a disagreement. A finite numeric
+result that disagrees at the stated precision is **failed**.
+`deterministic: true` preserves the existing declarations' deterministic contract.
+
+The dictionary is an extraction, not a reconciliation. `cash_on_cash`,
+`loan_per_sqft`, `price_per_sqft`, `noi_per_sqft` and `occupancy` retain their
+class-specific differences. Mixed-use `cap_rate` retains its different label
+with the same formula. Changing these definitions requires a separate normative
+change; selecting an entry does not authorize filling absent inputs.
+
+| Asset class | Calculation entries |
+|---|---|
+| `multifamily` | 8 |
+| `office` | 11 |
+| `retail` | 12 |
+| `industrial` | 12 |
+| `self_storage` | 12 |
+| `hospitality` | 14 |
+| `senior_housing` | 14 |
+| `student_housing` | 14 |
+| `land` | 12 |
+| `mixed_use` | 21 |
+
+## Primary-size selection
+
+`size_intensives` replaces the registry formerly printed in Protocol §XIII.
+Each row's `path` is relative to the `property` section (Format §4.1), and its
+`formula` / `input_paths` is the corresponding `property.<path>` selector.
+`secondary` preserves the other legitimate size field paths, also relative to
+`property`. It does not supply fallback denominators or conversion formulas.
+A class MUST have at most one primary-size entry.
+
+A conforming implementation displaying, exporting, or indexing deal size MUST
+select the primary field through this dictionary and MUST NOT assume
+`total_units`. The primary is the class's denominator for its per-unit value
+metrics; labels and units come from the same entry.
+
+These are **stated selectors**, not rounded calculations. `round_to: null` and
+`null_semantics: "finite_stated_number"` preserve the raw finite number stated
+in `property`. Missing, null, nonnumeric (including numeric strings), or nonfinite
+quantities yield no size. No quantity, fallback size, or rounding precision is
+inferred. This preserves `resolveDealSize()`'s existing behavior, including
+fractional acres.
+
+### Mixed-use and unknown classes
+
+`mixed_use` has no property-level primary size. A consumer needing its size
+MUST read per-component intensives from `components` (Format §4.23) and MUST NOT
+synthesize a property total by summing across uses: a bed and a square foot do
+not add. An asset class without an entry has no primary size; a consumer MUST
+state no size rather than guess. The lookup is nullable. Future builtin classes
+add their explicit entries through the normal RFC process.
+
+## Executable mirrors and drift checks
+
+The existing ten starter packs derive their definitions from this dictionary's
+contract through exact, bidirectional parity tests. Packs are kept as TypeScript
+mirrors, so existing Excel layouts and their expression-to-Excel bindings remain
+unchanged. `packs/metric-dictionary.test.ts` compares every declaration, potential
+input, effective precision, role, label, unit and null contract, and proves there
+are no orphan dictionary entries. It also compares every `SIZE_INTENSIVES` row,
+including secondary paths, against `size_intensives`. Both directions run in
+`npm test`; `validate-schemas` compiles the dictionary schema.
+
+The [verifier-only conformance fixture](../../conformance/metrics/README.md)
+checks example statements from dictionary expressions without importing packs,
+defaults or cascade. Known example disagreements are recorded as findings;
+they do not change the dictionary or the examples.

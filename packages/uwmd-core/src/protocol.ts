@@ -1413,10 +1413,45 @@ export function isStandardSectionId(id: string): boolean {
 /** The `x_` namespace FORMAT_SPEC § 4.21 reserves for non-standard content. */
 export const EXTENSION_SECTION_PREFIX = 'x_' as const;
 
+// ─── Metric dictionary (RFC 0078 Phase 2, spec/metrics/) ────────────────────
+
+/** A class-scoped normative calculation; packs mirror these definitions. */
+export interface MetricDictionaryCalculation {
+  readonly id: string;
+  readonly label: string;
+  readonly asset_classes: readonly AssetClass[];
+  readonly formula: string;
+  /** All potential reads, including conditional branches; not a required-input list. */
+  readonly input_paths: readonly string[];
+  readonly unit: string;
+  /** Effective Protocol §VIII.5 decimal places, including unit defaults. */
+  readonly round_to: number;
+  readonly section_roles: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
+  readonly null_semantics: 'expression';
+  readonly deterministic: true;
+}
+
+/** A stated primary-size selector. It preserves raw quantities without rounding. */
+export interface MetricDictionarySize extends Omit<MetricDictionaryCalculation,
+  'round_to' | 'null_semantics' | 'deterministic'> {
+  readonly round_to: null;
+  readonly null_semantics: 'finite_stated_number';
+  /** Primary and secondary paths relative to property, as in SIZE_INTENSIVES. */
+  readonly path: string;
+  readonly secondary: readonly string[];
+}
+
+/** Mirrors metric-dictionary.schema.json; uniqueness is by (asset class, id) per array. */
+export interface MetricDictionary {
+  readonly $schema: 'https://uwmd.org/schemas/metric-dictionary.schema.json';
+  readonly calculations: readonly MetricDictionaryCalculation[];
+  readonly size_intensives: readonly MetricDictionarySize[];
+}
+
 // ─── Size-intensive registry (PROTOCOL §XIII, RFC 0027) ──────────────────────
 
 /**
- * One asset class's entry in the Protocol §XIII selection table: which
+ * One asset class's entry in spec/metrics/ (Protocol §XIII): which
  * `property` field is the class's size, what to call it, and what unit it
  * carries. The primary size field is the denominator that class's calc pack
  * uses for its per-unit value metrics.
@@ -1433,10 +1468,10 @@ export interface SizeIntensive {
 }
 
 /**
- * The Protocol §XIII registry, keyed by asset class. `mixed_use` is
+ * The spec/metrics/ size registry mirror, keyed by asset class. `mixed_use` is
  * deliberately absent (§XIII.2): its size lives per-component in the
  * `components` section and MUST NOT be synthesized by summing across uses.
- * The table is closed for protocol 1.x (§XIII.3) — an unrecognized class has
+ * An unrecognized class has
  * no primary size field, never a guessed one.
  */
 export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.freeze({

@@ -47,6 +47,13 @@ Format stays 2.0 and no document changes meaning or validity.
 - **Docs.** Format v1/v2 tier wording, the wiki (01, 02, 03, 06, 08, 09, 13) and
   a new "Starter products" area on the docs site.
 
+### RFC 0078 Phase 2 — normative metric dictionary
+
+- Adds `spec/metrics/builtin.json` and its schema: all 130 calculations from ten builtin packs, including mixed-use components, and all nine primary-size selectors. Existing formulas, input paths, labels, units, role preferences and precision are preserved, with class-scoped differences retained.
+- Enforces exact bidirectional dictionary/pack and size-registry parity; existing runtime calculations and Excel layouts remain unchanged. Protocol §XIII points to the dictionary and retains its selection anchors.
+- Adds an independent dictionary/evaluator conformance fixture for every builtin example, with per-statement evidence, recorded disagreements and negative controls for missing inputs, role selection, nulls and quantization. No Format or Protocol version change.
+
+
 ### Test reliability under concurrent load
 
 - Caps root Vitest runs and core coverage at two isolated fork workers, and replaces blocking CLI test spawns with a shared asynchronous runner with child deadlines and cleanup.

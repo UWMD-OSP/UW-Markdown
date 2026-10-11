@@ -1,0 +1,1332 @@
+[
+  {
+    "example": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 8,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0542,
+        "state": "failed",
+        "computed": 0.054167,
+        "comparison": 0.0542
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0542,
+        "state": "failed",
+        "computed": 0.054167,
+        "comparison": 0.0542
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.4938,
+        "state": "failed",
+        "computed": 0.5,
+        "comparison": 0.4938
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.4938,
+        "state": "failed",
+        "computed": 0.5,
+        "comparison": 0.4938
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.514,
+        "state": "failed",
+        "computed": 1.5139,
+        "comparison": 1.514
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.514,
+        "state": "failed",
+        "computed": 1.5139,
+        "comparison": 1.514
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1083,
+        "state": "failed",
+        "computed": 0.108333,
+        "comparison": 0.1083
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1083,
+        "state": "failed",
+        "computed": 0.108333,
+        "comparison": 0.1083
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 180,
+        "state": "verified",
+        "computed": 180,
+        "comparison": 180
+      }
+    ]
+  },
+  {
+    "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
+    "asset_class": "retail",
+    "counts": {
+      "verified": 9,
+      "failed": 5,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.07,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.07,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.62,
+        "state": "verified",
+        "computed": 0.62,
+        "comparison": 0.62
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.62,
+        "state": "verified",
+        "computed": 0.62,
+        "comparison": 0.62
+      },
+      {
+        "id": "ltc",
+        "path": "debt_structure.ltc",
+        "stated": 0.594,
+        "state": "failed",
+        "computed": 0.593916,
+        "comparison": 0.594
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.451,
+        "state": "failed",
+        "computed": 1.4506,
+        "comparison": 1.451
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.451,
+        "state": "failed",
+        "computed": 1.4506,
+        "comparison": 1.451
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1129,
+        "state": "failed",
+        "computed": 0.112903,
+        "comparison": 0.1129
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1129,
+        "state": "failed",
+        "computed": 0.112903,
+        "comparison": 0.1129
+      },
+      {
+        "id": "price_per_sqft",
+        "path": "valuation.price_per_sf",
+        "stated": 194.74,
+        "state": "verified",
+        "computed": 194.74,
+        "comparison": 194.74
+      },
+      {
+        "id": "noi_per_sqft",
+        "path": "noi_model.noi_per_sf",
+        "stated": 13.63,
+        "state": "verified",
+        "computed": 13.63,
+        "comparison": 13.63
+      },
+      {
+        "id": "occupancy",
+        "path": "property.occupancy_pct",
+        "stated": 0.94,
+        "state": "verified",
+        "computed": 0.94,
+        "comparison": 0.94
+      },
+      {
+        "id": "occupancy",
+        "path": "rent_roll.occupancy_pct",
+        "stated": 0.94,
+        "state": "verified",
+        "computed": 0.94,
+        "comparison": 0.94
+      },
+      {
+        "id": "gross_leasable_area",
+        "path": "property.gross_leasable_area",
+        "stated": 95000,
+        "state": "verified",
+        "computed": 95000,
+        "comparison": 95000
+      }
+    ]
+  },
+  {
+    "example": "Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md",
+    "asset_class": "industrial",
+    "counts": {
+      "verified": 10,
+      "failed": 4,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0625,
+        "state": "verified",
+        "computed": 0.0625,
+        "comparison": 0.0625
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0625,
+        "state": "verified",
+        "computed": 0.0625,
+        "comparison": 0.0625
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.58,
+        "state": "verified",
+        "computed": 0.58,
+        "comparison": 0.58
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.58,
+        "state": "verified",
+        "computed": 0.58,
+        "comparison": 0.58
+      },
+      {
+        "id": "ltc",
+        "path": "debt_structure.ltc",
+        "stated": 0.56,
+        "state": "verified",
+        "computed": 0.56,
+        "comparison": 0.56
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.458,
+        "state": "failed",
+        "computed": 1.4584,
+        "comparison": 1.458
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.458,
+        "state": "failed",
+        "computed": 1.4584,
+        "comparison": 1.458
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1078,
+        "state": "failed",
+        "computed": 0.107759,
+        "comparison": 0.1078
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1078,
+        "state": "failed",
+        "computed": 0.107759,
+        "comparison": 0.1078
+      },
+      {
+        "id": "price_per_sqft",
+        "path": "valuation.price_per_sf",
+        "stated": 127.27,
+        "state": "verified",
+        "computed": 127.27,
+        "comparison": 127.27
+      },
+      {
+        "id": "noi_per_sqft",
+        "path": "noi_model.noi_per_sf",
+        "stated": 7.95,
+        "state": "verified",
+        "computed": 7.95,
+        "comparison": 7.95
+      },
+      {
+        "id": "occupancy",
+        "path": "property.occupancy_pct",
+        "stated": 0.96,
+        "state": "verified",
+        "computed": 0.96,
+        "comparison": 0.96
+      },
+      {
+        "id": "occupancy",
+        "path": "rent_roll.occupancy_pct",
+        "stated": 0.96,
+        "state": "verified",
+        "computed": 0.96,
+        "comparison": 0.96
+      },
+      {
+        "id": "rentable_square_feet",
+        "path": "property.rentable_square_feet",
+        "stated": 220000,
+        "state": "verified",
+        "computed": 220000,
+        "comparison": 220000
+      }
+    ]
+  },
+  {
+    "example": "Mill-Ave-Commons-Student-Tempe-AZ.uwx.md",
+    "asset_class": "student_housing",
+    "counts": {
+      "verified": 14,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0575291624,
+        "state": "verified",
+        "computed": 0.057529,
+        "comparison": 0.057529
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0575291624,
+        "state": "verified",
+        "computed": 0.057529,
+        "comparison": 0.057529
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.6,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.6,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.2976998918,
+        "state": "verified",
+        "computed": 1.2977,
+        "comparison": 1.2977
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.2976998918,
+        "state": "verified",
+        "computed": 1.2977,
+        "comparison": 1.2977
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.0958819373,
+        "state": "verified",
+        "computed": 0.095882,
+        "comparison": 0.095882
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.0958819373,
+        "state": "verified",
+        "computed": 0.095882,
+        "comparison": 0.095882
+      },
+      {
+        "id": "price_per_bed",
+        "path": "valuation.price_per_bed",
+        "stated": 97500,
+        "state": "verified",
+        "computed": 97500,
+        "comparison": 97500
+      },
+      {
+        "id": "expense_ratio",
+        "path": "noi_model.expense_ratio",
+        "stated": 0.4903604095,
+        "state": "verified",
+        "computed": 0.49036,
+        "comparison": 0.49036
+      },
+      {
+        "id": "occupancy",
+        "path": "rent_roll.occupancy",
+        "stated": 0.945,
+        "state": "verified",
+        "computed": 0.945,
+        "comparison": 0.945
+      },
+      {
+        "id": "pre_lease_rate",
+        "path": "rent_roll.pre_lease_rate",
+        "stated": 0.955,
+        "state": "verified",
+        "computed": 0.955,
+        "comparison": 0.955
+      },
+      {
+        "id": "revenue_per_bed",
+        "path": "noi_model.revenue_per_bed",
+        "stated": 11006,
+        "state": "verified",
+        "computed": 11006,
+        "comparison": 11006
+      },
+      {
+        "id": "total_beds",
+        "path": "property.total_beds",
+        "stated": 600,
+        "state": "verified",
+        "computed": 600,
+        "comparison": 600
+      }
+    ]
+  },
+  {
+    "example": "Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
+    "asset_class": "senior_housing",
+    "counts": {
+      "verified": 15,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0774268456,
+        "state": "verified",
+        "computed": 0.077427,
+        "comparison": 0.077427
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0774268456,
+        "state": "verified",
+        "computed": 0.077427,
+        "comparison": 0.077427
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.62,
+        "state": "verified",
+        "computed": 0.62,
+        "comparison": 0.62
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.62,
+        "state": "verified",
+        "computed": 0.62,
+        "comparison": 0.62
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.5030528173,
+        "state": "verified",
+        "computed": 1.5031,
+        "comparison": 1.5031
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.5030528173,
+        "state": "verified",
+        "computed": 1.5031,
+        "comparison": 1.5031
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1248820091,
+        "state": "verified",
+        "computed": 0.124882,
+        "comparison": 0.124882
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1248820091,
+        "state": "verified",
+        "computed": 0.124882,
+        "comparison": 0.124882
+      },
+      {
+        "id": "price_per_unit",
+        "path": "valuation.price_per_unit",
+        "stated": 248333.3333333333,
+        "state": "verified",
+        "computed": 248333.33,
+        "comparison": 248333.33
+      },
+      {
+        "id": "expense_ratio",
+        "path": "noi_model.expense_ratio",
+        "stated": 0.7607904122,
+        "state": "verified",
+        "computed": 0.76079,
+        "comparison": 0.76079
+      },
+      {
+        "id": "occupancy",
+        "path": "rent_roll.occupancy",
+        "stated": 0.8833333333,
+        "state": "verified",
+        "computed": 0.883333,
+        "comparison": 0.883333
+      },
+      {
+        "id": "revpor",
+        "path": "noi_model.revpor_monthly",
+        "stated": 7583.0188679245,
+        "state": "verified",
+        "computed": 7583.02,
+        "comparison": 7583.02
+      },
+      {
+        "id": "labor_ratio",
+        "path": "noi_model.labor_ratio",
+        "stated": 0.4136601145,
+        "state": "verified",
+        "computed": 0.41366,
+        "comparison": 0.41366
+      },
+      {
+        "id": "care_revenue_ratio",
+        "path": "noi_model.care_revenue_ratio",
+        "stated": 0.1978104006,
+        "state": "verified",
+        "computed": 0.19781,
+        "comparison": 0.19781
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 120,
+        "state": "verified",
+        "computed": 120,
+        "comparison": 120
+      }
+    ]
+  },
+  {
+    "example": "Parkview-Apts-Glendale-AZ.uw.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 1,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0551,
+        "state": "failed",
+        "computed": 0.055088,
+        "comparison": 0.0551
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 48,
+        "state": "verified",
+        "computed": 48,
+        "comparison": 48
+      }
+    ]
+  },
+  {
+    "example": "Parkview-Apts-Glendale-AZ.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 4,
+      "failed": 5,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0551,
+        "state": "failed",
+        "computed": 0.055088,
+        "comparison": 0.0551
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.7,
+        "state": "verified",
+        "computed": 0.7,
+        "comparison": 0.7
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.sizing_metrics.ltv",
+        "stated": 0.7,
+        "state": "verified",
+        "computed": 0.7,
+        "comparison": 0.7
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.109,
+        "state": "failed",
+        "computed": 1.1091,
+        "comparison": 1.109
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.sizing_metrics.dscr_underwritten",
+        "stated": 1.109,
+        "state": "failed",
+        "computed": 1.1091,
+        "comparison": 1.109
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.0787,
+        "state": "failed",
+        "computed": 0.078697,
+        "comparison": 0.0787
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.sizing_metrics.debt_yield",
+        "stated": 0.0787,
+        "state": "failed",
+        "computed": 0.078697,
+        "comparison": 0.0787
+      },
+      {
+        "id": "price_per_unit",
+        "path": "valuation.purchase_price_per_unit",
+        "stated": 150000,
+        "state": "verified",
+        "computed": 150000,
+        "comparison": 150000
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 48,
+        "state": "verified",
+        "computed": 48,
+        "comparison": 48
+      }
+    ]
+  },
+  {
+    "example": "Riverside-Office-Phoenix-AZ.uwx.md",
+    "asset_class": "office",
+    "counts": {
+      "verified": 7,
+      "failed": 7,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.06,
+        "state": "verified",
+        "computed": 0.06,
+        "comparison": 0.06
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.06,
+        "state": "verified",
+        "computed": 0.06,
+        "comparison": 0.06
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.65,
+        "state": "verified",
+        "computed": 0.65,
+        "comparison": 0.65
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.65,
+        "state": "verified",
+        "computed": 0.65,
+        "comparison": 0.65
+      },
+      {
+        "id": "ltc",
+        "path": "debt_structure.ltc",
+        "stated": 0.6,
+        "state": "failed",
+        "computed": 0.601852,
+        "comparison": 0.6
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.026,
+        "state": "failed",
+        "computed": 1.0256,
+        "comparison": 1.026
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.026,
+        "state": "failed",
+        "computed": 1.0256,
+        "comparison": 1.026
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.0923,
+        "state": "failed",
+        "computed": 0.092308,
+        "comparison": 0.0923
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.0923,
+        "state": "failed",
+        "computed": 0.092308,
+        "comparison": 0.0923
+      },
+      {
+        "id": "price_per_sqft",
+        "path": "valuation.price_per_sf",
+        "stated": 117.65,
+        "state": "verified",
+        "computed": 117.65,
+        "comparison": 117.65
+      },
+      {
+        "id": "noi_per_sqft",
+        "path": "noi_model.noi_per_sf",
+        "stated": 7.06,
+        "state": "verified",
+        "computed": 7.06,
+        "comparison": 7.06
+      },
+      {
+        "id": "occupancy",
+        "path": "property.occupancy_pct",
+        "stated": 0.73,
+        "state": "failed",
+        "computed": 0.729412,
+        "comparison": 0.73
+      },
+      {
+        "id": "occupancy",
+        "path": "rent_roll.occupancy_pct",
+        "stated": 0.73,
+        "state": "failed",
+        "computed": 0.729412,
+        "comparison": 0.73
+      },
+      {
+        "id": "rentable_square_feet",
+        "path": "property.rentable_square_feet",
+        "stated": 42500,
+        "state": "verified",
+        "computed": 42500,
+        "comparison": 42500
+      }
+    ]
+  },
+  {
+    "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
+    "asset_class": "mixed_use",
+    "counts": {
+      "verified": 3,
+      "failed": 2,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0643,
+        "state": "verified",
+        "computed": 0.0643,
+        "comparison": 0.0643
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.65,
+        "state": "verified",
+        "computed": 0.65,
+        "comparison": 0.65
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.354,
+        "state": "failed",
+        "computed": 1.3537,
+        "comparison": 1.354
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.0989,
+        "state": "failed",
+        "computed": 0.098923,
+        "comparison": 0.0989
+      },
+      {
+        "id": "hospitality_gross_operating_profit",
+        "path": "components.hospitality.gross_operating_profit",
+        "stated": 1400000,
+        "state": "verified",
+        "computed": 1400000,
+        "comparison": 1400000
+      }
+    ]
+  },
+  {
+    "example": "Saguaro-Select-Hotel-Tempe-AZ.uwx.md",
+    "asset_class": "hospitality",
+    "counts": {
+      "verified": 15,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0824201681,
+        "state": "verified",
+        "computed": 0.08242,
+        "comparison": 0.08242
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0824201681,
+        "state": "verified",
+        "computed": 0.08242,
+        "comparison": 0.08242
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.6,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.6,
+        "state": "verified",
+        "computed": 0.6,
+        "comparison": 0.6
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.5287953137,
+        "state": "verified",
+        "computed": 1.5288,
+        "comparison": 1.5288
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.5287953137,
+        "state": "verified",
+        "computed": 1.5288,
+        "comparison": 1.5288
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1373669468,
+        "state": "verified",
+        "computed": 0.137367,
+        "comparison": 0.137367
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1373669468,
+        "state": "verified",
+        "computed": 0.137367,
+        "comparison": 0.137367
+      },
+      {
+        "id": "price_per_key",
+        "path": "valuation.price_per_key",
+        "stated": 167605.6338028169,
+        "state": "verified",
+        "computed": 167605.63,
+        "comparison": 167605.63
+      },
+      {
+        "id": "expense_ratio",
+        "path": "noi_model.expense_ratio",
+        "stated": 0.7157101449,
+        "state": "verified",
+        "computed": 0.71571,
+        "comparison": 0.71571
+      },
+      {
+        "id": "occupancy",
+        "path": "rent_roll.occupancy",
+        "stated": 0.73316612,
+        "state": "verified",
+        "computed": 0.733166,
+        "comparison": 0.733166
+      },
+      {
+        "id": "adr",
+        "path": "rent_roll.adr",
+        "stated": 160,
+        "state": "verified",
+        "computed": 160,
+        "comparison": 160
+      },
+      {
+        "id": "revpar",
+        "path": "rent_roll.revpar",
+        "stated": 117.3065792012,
+        "state": "verified",
+        "computed": 117.31,
+        "comparison": 117.31
+      },
+      {
+        "id": "gop_margin",
+        "path": "noi_model.gop_margin",
+        "stated": 0.4177681159,
+        "state": "verified",
+        "computed": 0.417768,
+        "comparison": 0.417768
+      },
+      {
+        "id": "keys",
+        "path": "property.keys",
+        "stated": 142,
+        "state": "verified",
+        "computed": 142,
+        "comparison": 142
+      }
+    ]
+  },
+  {
+    "example": "Sonoran-Self-Storage-Peoria-AZ.uwx.md",
+    "asset_class": "self_storage",
+    "counts": {
+      "verified": 11,
+      "failed": 2,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.07,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.07,
+        "state": "verified",
+        "computed": 0.07,
+        "comparison": 0.07
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.65,
+        "state": "verified",
+        "computed": 0.65,
+        "comparison": 0.65
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.65,
+        "state": "verified",
+        "computed": 0.65,
+        "comparison": 0.65
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.3153,
+        "state": "failed",
+        "computed": 1.3161,
+        "comparison": 1.3153
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.3153,
+        "state": "failed",
+        "computed": 1.3161,
+        "comparison": 1.3153
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1076923077,
+        "state": "verified",
+        "computed": 0.107692,
+        "comparison": 0.107692
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1076923077,
+        "state": "verified",
+        "computed": 0.107692,
+        "comparison": 0.107692
+      },
+      {
+        "id": "price_per_nrsf",
+        "path": "valuation.price_per_nrsf",
+        "stated": 117.0731707317,
+        "state": "verified",
+        "computed": 117.07,
+        "comparison": 117.07
+      },
+      {
+        "id": "expense_ratio",
+        "path": "noi_model.expense_ratio",
+        "stated": 0.3618233618,
+        "state": "verified",
+        "computed": 0.361823,
+        "comparison": 0.361823
+      },
+      {
+        "id": "physical_occupancy",
+        "path": "rent_roll.physical_occupancy",
+        "stated": 0.8636363636,
+        "state": "verified",
+        "computed": 0.863636,
+        "comparison": 0.863636
+      },
+      {
+        "id": "economic_occupancy",
+        "path": "rent_roll.economic_occupancy",
+        "stated": 0.975,
+        "state": "verified",
+        "computed": 0.975,
+        "comparison": 0.975
+      },
+      {
+        "id": "net_rentable_square_feet",
+        "path": "property.net_rentable_square_feet",
+        "stated": 82000,
+        "state": "verified",
+        "computed": 82000,
+        "comparison": 82000
+      }
+    ]
+  },
+  {
+    "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+    "asset_class": "land",
+    "counts": {
+      "verified": 7,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "price_per_acre",
+        "path": "valuation.price_per_acre",
+        "stated": 103500,
+        "state": "verified",
+        "computed": 103500,
+        "comparison": 103500
+      },
+      {
+        "id": "price_per_usable_acre",
+        "path": "valuation.price_per_usable_acre",
+        "stated": 120000,
+        "state": "verified",
+        "computed": 120000,
+        "comparison": 120000
+      },
+      {
+        "id": "price_per_buildable_unit",
+        "path": "valuation.price_per_buildable_unit",
+        "stated": 30000,
+        "state": "verified",
+        "computed": 30000,
+        "comparison": 30000
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.5,
+        "state": "verified",
+        "computed": 0.5,
+        "comparison": 0.5
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.5,
+        "state": "verified",
+        "computed": 0.5,
+        "comparison": 0.5
+      },
+      {
+        "id": "carry_cost_per_acre",
+        "path": "noi_model.carry_cost_per_acre",
+        "stated": 1812.5,
+        "state": "verified",
+        "computed": 1812.5,
+        "comparison": 1812.5
+      },
+      {
+        "id": "gross_acres",
+        "path": "property.gross_acres",
+        "stated": 160,
+        "state": "verified",
+        "computed": 160,
+        "comparison": 160
+      }
+    ]
+  },
+  {
+    "example": "market-data/Phoenix-Multifamily-2026-Q2.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 0,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": []
+  },
+  {
+    "example": "parkview-after-L6.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 4,
+      "failed": 5,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0551,
+        "state": "failed",
+        "computed": 0.055088,
+        "comparison": 0.0551
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.7,
+        "state": "verified",
+        "computed": 0.7,
+        "comparison": 0.7
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.sizing_metrics.ltv",
+        "stated": 0.7,
+        "state": "verified",
+        "computed": 0.7,
+        "comparison": 0.7
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.109,
+        "state": "failed",
+        "computed": 1.1091,
+        "comparison": 1.109
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.sizing_metrics.dscr_underwritten",
+        "stated": 1.109,
+        "state": "failed",
+        "computed": 1.1091,
+        "comparison": 1.109
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.0787,
+        "state": "failed",
+        "computed": 0.078697,
+        "comparison": 0.0787
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.sizing_metrics.debt_yield",
+        "stated": 0.0787,
+        "state": "failed",
+        "computed": 0.078697,
+        "comparison": 0.0787
+      },
+      {
+        "id": "price_per_unit",
+        "path": "valuation.purchase_price_per_unit",
+        "stated": 150000,
+        "state": "verified",
+        "computed": 150000,
+        "comparison": 150000
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 48,
+        "state": "verified",
+        "computed": 48,
+        "comparison": 48
+      }
+    ]
+  },
+  {
+    "example": "standalone/externalized-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
+  },
+  {
+    "example": "standalone/inline-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
+  },
+  {
+    "example": "standalone/package/records/externalized-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
+  }
+]

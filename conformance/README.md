@@ -456,3 +456,12 @@ Unit controls cover unavailable crypto, pre-await immutability, known-answer
 Node/browser parity and explicitly unchecked consumers. The reviewed-rebind
 case intentionally targets an unrelated outflow with a fresh digest: UWMD can
 verify consistency, while producer purpose evidence must reject that mapping.
+
+## Metric dictionary verification (RFC 0078 Phase 2)
+
+The [metrics suite](../conformance/metrics/README.md) verifies every builtin example using the
+normative dictionary and safe-expression evaluator, without packs, defaults or
+cascade. It records 104 verified statements and 39 existing example mismatches,
+with per-example counts and per-statement evidence. Known findings are compared
+exactly, and negative controls pin missing-input refusal and quantization. Run
+`npm run conformance -- --tier=metrics`; it is included in the default suite.
