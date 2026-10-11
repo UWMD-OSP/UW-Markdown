@@ -19,16 +19,16 @@
       "deterministic": true
     }
   ],
+  "requires_conformance": "verifier",
+  "requires_profiles": [
+    "module"
+  ],
   "signature": {
     "scheme": "sigstore",
     "alg": "ed25519",
     "kid": "uwmd-conformance-ed25519",
-    "sig": "TWh8jO6bJYElrKzA-eoBib2xvmh5TDmqvRearEU1bNm8ec9PmRkw4OdouwJqgyuc7prHU4c4t2Pud5uKAhL5CA",
+    "sig": "D6wkpGDGcKzlL4O0ky8VONA0pfrMbWYJV0LktPi-2RKEgO0ClqXiFvxXYqPILH9hxM8j_-IeZPLgzpeYx__qDA",
     "signed_at": "2026-08-27T00:00:00Z",
     "identity": "modules@uwmd.org"
-  },
-  "requires_conformance": "verifier",
-  "requires_profiles": [
-    "module"
-  ]
+  }
 }

@@ -1,11 +1,11 @@
 {
-  "receipt_version": "1.0",
+  "receipt_version": "1.1",
   "subject": {
     "representation": "uw-lite-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-lite-financial",
     "canonicalization_version": "1.1",
-    "digest": "sha256:f930ebf20c9b0cc1159b65cc653f50a728fa07858080be5f6592ab307953d216"
+    "digest": "sha256:12ac56067c460c06c2fda697a79101b655f793c0486cc2212a6e662c08455342"
   },
   "computation": {
     "pack": "org.uwmd.pack.industrial",

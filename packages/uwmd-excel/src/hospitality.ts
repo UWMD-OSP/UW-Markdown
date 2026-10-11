@@ -33,10 +33,10 @@ const expenseLines: readonly ExpenseLine[] = [
 ];
 
 const namedInputs: readonly NamedInput[] = [
-  {"name": "hotel_metrics_adr", "label": "Adr", "source": {"section": "hotel_metrics", "path": "adr"}, "format": "currency"},
-  {"name": "hotel_metrics_occupancy", "label": "Occupancy", "source": {"section": "hotel_metrics", "path": "occupancy"}, "format": "decimal"},
-  {"name": "hotel_metrics_available_room_nights", "label": "Available Room Nights", "source": {"section": "hotel_metrics", "path": "available_room_nights"}, "format": "count"},
-  {"name": "hotel_metrics_key_count", "label": "Key Count", "source": {"section": "hotel_metrics", "path": "key_count"}, "format": "count"},
+  {"name": "hotel_metrics_adr", "label": "Adr", "source": {"section": "rent_roll", "path": "adr"}, "format": "currency"},
+  {"name": "hotel_metrics_occupancy", "label": "Occupancy", "source": {"section": "rent_roll", "path": "occupancy"}, "format": "decimal"},
+  {"name": "hotel_metrics_available_room_nights", "label": "Available Room Nights", "source": {"section": "rent_roll", "path": "available_room_nights"}, "format": "count"},
+  {"name": "hotel_metrics_key_count", "label": "Key Count", "source": {"section": "property", "path": "keys"}, "format": "count"},
   {"name": "hotel_metrics_market_revpar", "label": "Market Revpar", "source": {"section": "hotel_metrics", "path": "market_revpar"}, "format": "currency"},
   {"name": "hotel_brand_franchise_fee_pct_of_rooms", "label": "Franchise Fee Pct Of Rooms", "source": {"section": "hotel_brand", "path": "franchise_fee_pct_of_rooms"}, "format": "decimal"},
   {"name": "hotel_brand_marketing_fund_pct", "label": "Marketing Fund Pct", "source": {"section": "hotel_brand", "path": "marketing_fund_pct"}, "format": "decimal"},

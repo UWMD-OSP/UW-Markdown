@@ -58,7 +58,7 @@ export function deriveSourcesUses(content: Row, parsed?: ParsedUWFile): SourcesU
   const sourcesTotal = sumLines(sources);
   let usesTotal = sumLines(uses);
   // RFC 0081 Phase 4: delete the old-format footing branch.
-  if (!parsed || parsed.frontmatter.uw_version === '3.0') {
+  if (isObj(content['uses']) && (!parsed || parsed.frontmatter.uw_version === '3.0')) {
     if (Array.isArray(uses['escrows'])) for (const escrow of uses['escrows']) {
       if (isObj(escrow) && ['interest', 'operating'].includes(String(escrow['name']))) usesTotal += num(escrow['upfront']) ?? 0;
     }

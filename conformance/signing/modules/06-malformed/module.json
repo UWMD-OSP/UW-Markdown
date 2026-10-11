@@ -19,13 +19,13 @@
       "deterministic": true
     }
   ],
+  "requires_conformance": "verifier",
+  "requires_profiles": [
+    "module"
+  ],
   "signature": {
     "scheme": "uwmd-keystore",
     "alg": "ed25519",
     "kid": "uwmd-conformance-ed25519"
-  },
-  "requires_conformance": "verifier",
-  "requires_profiles": [
-    "module"
-  ]
+  }
 }

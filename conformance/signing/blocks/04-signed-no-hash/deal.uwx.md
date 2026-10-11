@@ -45,7 +45,7 @@ hand.
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-01-15T10:00:00Z",
-      "notes": "signature dropped at v2 migration: block has no content_hash to commit to (was kid=uwmd-conformance-ed25519)"
+      "notes": null
     },
     "quality": {
       "confidence": "medium",
@@ -60,7 +60,13 @@ hand.
     },
     "integrity": {
       "input_hash": null,
-      "parent_hash": null
+      "parent_hash": null,
+      "signature": {
+        "alg": "ed25519",
+        "kid": "uwmd-conformance-ed25519",
+        "sig": "zhe8oIV8xBpurcO-L_NQi9BwJ6HsOmeS1Fiojn1D1tlI9qKSg3KGGFiX8gHGmEq9eoyiD69UcTiGLHIfXhYjDg",
+        "signed_at": "2026-08-27T00:00:00Z"
+      }
     }
   },
   "_notes": null,

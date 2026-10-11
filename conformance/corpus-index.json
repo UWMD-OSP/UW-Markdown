@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "migration_base": "6eec774",
   "before": {
-    "reference_default": 1053,
-    "reference_opt_in": 3,
+    "reference_default": 1043,
+    "reference_opt_in": 7,
     "portable": 332
   },
   "cases": [
@@ -2556,11 +2556,6 @@
     },
     {
       "suite": "tax",
-      "scenario": "reject-flag-disagrees-with-trigger",
-      "target": "verifier"
-    },
-    {
-      "suite": "tax",
       "scenario": "reject-freeze-decreasing",
       "target": "verifier"
     },
@@ -2812,11 +2807,6 @@
     {
       "suite": "recoveries",
       "scenario": "reject-true-up-period-open",
-      "target": "verifier"
-    },
-    {
-      "suite": "recoveries",
-      "scenario": "warn-legacy-cam-cap-beside-typed-cap",
       "target": "verifier"
     },
     {
@@ -3206,17 +3196,7 @@
     },
     {
       "suite": "hedge",
-      "scenario": "reject-legacy-reserve-disagrees",
-      "target": "verifier"
-    },
-    {
-      "suite": "hedge",
       "scenario": "reject-other-escrow-without-label",
-      "target": "verifier"
-    },
-    {
-      "suite": "hedge",
-      "scenario": "reject-premium-disagrees-with-use",
       "target": "verifier"
     },
     {
@@ -3242,11 +3222,6 @@
     {
       "suite": "hedge",
       "scenario": "reject-strike-as-percent",
-      "target": "verifier"
-    },
-    {
-      "suite": "hedge",
-      "scenario": "reject-strike-disagrees-with-legacy",
       "target": "verifier"
     },
     {
@@ -3297,11 +3272,6 @@
     {
       "suite": "capex",
       "scenario": "reject-impossible-as-of-date",
-      "target": "verifier"
-    },
-    {
-      "suite": "capex",
-      "scenario": "reject-legacy-budget-disagrees",
       "target": "verifier"
     },
     {

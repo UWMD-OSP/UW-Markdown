@@ -97,9 +97,6 @@ Comp-set RevPAR of $160 comes from the STR report dated 2026-07-31.
     }
   },
   "_notes": null,
-  "adr": 180,
-  "occupancy": 0.72,
-  "available_room_nights": 29200,
   "market_revpar": null
 }
 ```
@@ -176,3 +173,33 @@ Restaurant and bar, no banquet business.
 }
 ```
 
+
+```json uw:section=rent_roll source=manual ts=2026-08-27T00:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-27T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "adr": 180,
+  "occupancy": 0.72,
+  "available_room_nights": 29200
+}
+```

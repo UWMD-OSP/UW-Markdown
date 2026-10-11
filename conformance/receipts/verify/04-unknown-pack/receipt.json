@@ -1,11 +1,11 @@
 {
-  "receipt_version": "1.0",
+  "receipt_version": "1.1",
   "subject": {
     "representation": "uwx-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
     "canonicalization_version": "1.0",
-    "digest": "sha256:caa73f0e1dc38cf536149ff5dbdfbd72e21fad6263f6574adeea99f8803822f2"
+    "digest": "sha256:9026f5d2e216260587b9d939fb563da90e1e0feca6bfe0b254f29ed68f3a5980"
   },
   "computation": {
     "pack": "com.example.pack.bespoke",

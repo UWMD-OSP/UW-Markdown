@@ -19,7 +19,7 @@ The raw block bytes are never rewritten — `content._meta` feeds digests.
   "_meta": {
     "section": "property",
     "provenance": {
-      "source": "system/uwmd",
+      "source": "market_data",
       "resolution": "market_data",
       "actor": "system",
       "agent_id": null,

@@ -88,7 +88,7 @@ v1's `content_hash`. `verifyChain` MUST emit `INT-01` for v2.
     },
     "integrity": {
       "input_hash": null,
-      "parent_hash": "930f7cfebf6ed49621b0b6f59c8ebd1833ed42ba2d0d652f8ac0bcb4e493acf0",
+      "parent_hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "content_hash": "01f499e7d0af9d8b293d4ecbf22b2fc5d7b1ed0094939fa81cb06c0e870c3851"
     }
   },

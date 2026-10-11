@@ -1,11 +1,11 @@
 // One-off RFC 0081 Phase 3 corpus re-authoring; delete in Phase 4.
 // This is repository maintenance, not an exported migration feature.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
-import { migrateSourceTags, migrateToV2, reshapeMetaV1toV2, reshapeMetaV2toV1, parseUWFile, issueReceipt } from '../packages/uwmd-core/dist/index.js';
+import { migrateSourceTags, migrateToV2, reshapeMetaV1toV2, reshapeMetaV2toV1, parseUWFile, issueReceipt, toUWEnvelope, computeEnvelopeDigest, encodeUWDealPackageZip, runBancroftAgent } from '../packages/uwmd-core/dist/index.js';
 import { canonicalizeExact } from '../packages/uwmd-core/dist/integrity-canonical.js';
 import { importPrivateKey, signBlock, stampModuleSignature } from '../packages/uwmd-signing/dist/index.js';
 
@@ -125,8 +125,12 @@ async function document(source,file) {
     delete uses.rate_cap_cost;
   }
   if(/^asset_class:\s*["']?hospitality/m.test(source)) {
-    const roll=active.find(b=>b.section==='rent_roll'); const property=active.find(b=>b.section==='property');
+    let roll=active.find(b=>b.section==='rent_roll'); const property=active.find(b=>b.section==='property');
     for(const hotel of active.filter(b=>b.section==='hotel_metrics')) {
+      if(!roll && ['adr', 'occupancy', 'available_room_nights', 'occupied_room_nights'].some(k=>Object.hasOwn(hotel.body,k))) {
+        const meta=structuredClone(hotel.body._meta); if(meta) meta.section='rent_roll';
+        roll={section:'rent_roll',body:{...(meta?{_meta:meta}:{})}, original:'', match:null}; active.push(roll);
+      }
       for(const field of ['adr','occupancy','available_room_nights','occupied_room_nights']) if(Object.hasOwn(hotel.body,field)&&roll) {mergeFact(roll.body,field,hotel.body[field],file);delete hotel.body[field];}
       if(Object.hasOwn(hotel.body,'key_count')&&property) {mergeFact(property.body,'keys',hotel.body.key_count,file);delete hotel.body.key_count;}
     }
@@ -172,6 +176,7 @@ async function document(source,file) {
     const replacement=b.match[0].replace(b.match[3],preserveNumbers(original,JSON.stringify(b.body,null,2))+'\n');
     source=source.slice(0,b.match.index)+replacement+source.slice(b.match.index+b.match[0].length);
   }
+  for(const b of active.filter(b=>b.match===null)) source+='\n```json uw:section='+b.section+'\n'+preserveNumbers(original,JSON.stringify(b.body,null,2))+'\n```\n';
   return source;
 }
 function jsonValue(value,file) {
@@ -212,6 +217,45 @@ async function processFile(file) {
   }
   if(after!==before) {report.files[file]=file.split('/')[0]; if(write) writeFileSync(file,after);}
 }
-for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) await processFile(file);
+async function refreshArtifacts() {
+  const dirs = path => readdirSync(path,{withFileTypes:true}).filter(e=>e.isDirectory()).map(e=>e.name);
+  for(const suite of ['issue','verify']) for(const name of dirs('conformance/receipts/'+suite)) {
+    const dir='conformance/receipts/'+suite+'/'+name;const entries=readdirSync(dir);
+    const deal=entries.find(f=>/^deal\.uwx?\.md$/.test(f));const receiptFile=entries.find(f=>f==='receipt.json'||f==='expected-receipt.json');if(!deal||!receiptFile)continue;
+    const old=JSON.parse(readFileSync(dir+'/'+receiptFile,'utf8'));
+    const fresh=await issueReceipt(readFileSync(dir+'/'+deal,'utf8'),{issued_at:old.issued_at,issuer:old.issuer});
+    if(suite==='issue') writeFileSync(dir+'/'+receiptFile,JSON.stringify(fresh,null,2)+'\n');
+    else {
+      old.subject=fresh.subject;old.receipt_version='1.1';
+      const expected=JSON.parse(readFileSync(dir+'/expected-verdict.json','utf8'));
+      if(expected.codes?.includes('RCP-01')) old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0');
+      writeFileSync(dir+'/'+receiptFile,JSON.stringify(old,null,2)+'\n');
+    }
+    report.receipts.push(dir+'/'+receiptFile);
+  }
+  for(const name of dirs('conformance/reserve-draw-bindings')) {
+    const dir='conformance/reserve-draw-bindings/'+name;const entries=readdirSync(dir);if(!entries.includes('plan.json')||name==='stale-digest')continue;
+    const plan=JSON.parse(readFileSync(dir+'/plan.json','utf8'));const deal=entries.find(f=>/^deal\.uwx?\.md$/.test(f));
+    if(!deal||!plan||typeof plan.source_digest!=='string'||!/^sha256:[0-9a-f]{64}$/.test(plan.source_digest))continue;
+    plan.source_digest=await computeEnvelopeDigest(toUWEnvelope(parseUWFile(readFileSync(dir+'/'+deal,'utf8'))));
+    writeFileSync(dir+'/plan.json',JSON.stringify(plan,null,2)+'\n');
+  }
+  const dir='examples/standalone/package';const manifest=JSON.parse(readFileSync(dir+'/manifest.json','utf8'));const payloads={};
+  for(const member of manifest.members) {
+    const bytes=readFileSync(dir+'/'+member.path);payloads[member.path]=bytes;member.sha256='sha256:'+createHash('sha256').update(bytes).digest('hex');
+    if(member.semantic_digest&&member.path.endsWith('.uwx.md')) member.semantic_digest=await computeEnvelopeDigest(toUWEnvelope(parseUWFile(bytes.toString())));
+  }
+  writeFileSync(dir+'/manifest.json',JSON.stringify(manifest,null,2)+'\n');
+  writeFileSync(dir+'/standalone-demo.uwpkg.zip',await encodeUWDealPackageZip({manifest,payloads}));
+  execFileSync(process.execPath,['scripts/gen-signing-fixtures.mjs'],{stdio:'inherit'});
+  const replay='conformance/tier-4-agent-host/replay/l6-risk-rating';
+  const cassette=JSON.parse(readFileSync(replay+'/cassette.json','utf8'));let cursor=0;
+  const provider={id:'replay',async complete(request) {const exchange=cassette.exchanges[cursor++];if(!exchange)throw new Error('Replay added a provider call');exchange.request=request;return exchange.completion;}};
+  const agent=await runBancroftAgent(readFileSync(replay+'/before.uwx.md','utf8'),'L6-01',{provider,now:()=>Date.parse('2026-08-13T00:00:00.000Z')});
+  if(!agent.success)throw new Error(agent.error);if(cursor!==cassette.exchanges.length)throw new Error('Replay dropped a provider call');
+  writeFileSync(replay+'/cassette.json',JSON.stringify(cassette,null,2)+'\n');writeFileSync(replay+'/after.uwx.md',agent.updatedContent);
+}
+if(!process.argv.includes('--artifacts-only')) for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) await processFile(file);
+if(write) await refreshArtifacts();
 if(process.argv.includes('--report')) writeFileSync(process.argv[process.argv.indexOf('--report')+1],JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({write,files:Object.keys(report.files).length,areas:Object.values(report.files).reduce((a,k)=>(a[k]=(a[k]??0)+1,a),{}),refusals:report.refusals.length,conflicts:report.conflicts.length,dropped:report.dropped,uses_differences:report.uses_differences}));

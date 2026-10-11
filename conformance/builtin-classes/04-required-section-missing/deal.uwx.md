@@ -144,3 +144,7 @@ Restaurant and bar, no banquet business.
   "complimentary_breakfast_cost_per_occupied_room": 4.25
 }
 ```
+
+```json uw:section=rent_roll source=manual
+{}
+```

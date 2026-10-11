@@ -4,8 +4,8 @@
     "revpar": null
   },
   "expected_codes": [
-    "CC-HOSP-03",
-    "CLS-03"
+    "CLS-04",
+    "CC-HOSP-03"
   ],
   "builtin_class": "hospitality"
 }

@@ -45,7 +45,7 @@ hand.
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-01-15T10:00:00Z",
-      "notes": "signature re-issued at v2 migration (kid=rotated-out-2019)"
+      "notes": null
     },
     "quality": {
       "confidence": "medium",
@@ -60,14 +60,14 @@ hand.
     },
     "integrity": {
       "input_hash": null,
+      "content_hash": "0f2100fd78214c07fbc8f7c3281b10a1b87fb760f1ed8028f3cd77177ec4b38c",
       "parent_hash": null,
       "signature": {
         "alg": "ed25519",
         "kid": "rotated-out-2019",
-        "sig": "sGXqXFwSDGZLGf7wBJnYg5pW_hMmE7FEgjxerD55Unm6itb0XDLkH6q7dtRzlF85vP7VmfAypji0ayWTzI5fDw",
+        "sig": "zhe8oIV8xBpurcO-L_NQi9BwJ6HsOmeS1Fiojn1D1tlI9qKSg3KGGFiX8gHGmEq9eoyiD69UcTiGLHIfXhYjDg",
         "signed_at": "2026-08-27T00:00:00Z"
-      },
-      "content_hash": "0f2100fd78214c07fbc8f7c3281b10a1b87fb760f1ed8028f3cd77177ec4b38c"
+      }
     }
   },
   "_notes": null,
