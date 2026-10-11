@@ -17,8 +17,7 @@ This repository is the home of the standard:
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
 - [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned).
-- [`examples/`](examples/) — sample deal files: nine complete `.uwx.md` records
-  (one per asset class) plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`
+- [`examples/`](examples/) — sample deal files covering all twelve builtin asset classes in `.uwx.md` plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`
   exists in **both** representations, so the two can be read side by side.
 
 ## Why a standard?
@@ -85,7 +84,7 @@ The full, status-tracked roadmap lives in [ROADMAP.md](./ROADMAP.md). Highlights
   lossless JSON, XML, and normalized CSV-bundle codecs, plus HTTP/MCP companion
   bindings, under accepted [RFC 0014](./docs/rfcs/0014-multi-format-interchange.md).
 - **Next** — additional asset-class calc packs, starting with hospitality.
-- **v2 spec exploration** — locale negotiation, lease-up modeling, `_meta` v2, portfolio relationships. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/). The signing chain shipped 2026-08-27: signed blocks ([RFC 0010](./docs/rfcs/0010-signed-blocks.md), protocol §V.11) and module signatures ([RFC 0002](./docs/rfcs/0002-module-signing.md), protocol §X.1), both on the optional [`@uwmd/signing`](./packages/uwmd-signing/) package; core stays crypto-free. A language-agnostic conformance driver ([RFC 0004](./docs/rfcs/0004-conformance-runner-v2.md), protocol §II.6a) shipped alongside, so an implementation in any language can self-certify against the same corpus — see [`conformance/runner/`](./conformance/runner/README.md). And [RFC 0006](./docs/rfcs/0006-hospitality-module.md) gave the module system its first real consumer — [`@uwmd/module-hospitality`](./packages/uwmd-module-hospitality/) — plus the runtime that actually executes what a module declares. [RFC 0003](./docs/rfcs/0003-module-asset-classes.md) then let a module declare its own **asset class** — the builtin ten stay closed, with a namespaced space beside them.
+- **v2 spec exploration** — locale negotiation, lease-up modeling, `_meta` v2, portfolio relationships. Each opens as an RFC under [`docs/rfcs/`](./docs/rfcs/). The signing chain shipped 2026-08-27: signed blocks ([RFC 0010](./docs/rfcs/0010-signed-blocks.md), protocol §V.11) and module signatures ([RFC 0002](./docs/rfcs/0002-module-signing.md), protocol §X.1), both on the optional [`@uwmd/signing`](./packages/uwmd-signing/) package; core stays crypto-free. A language-agnostic conformance driver ([RFC 0004](./docs/rfcs/0004-conformance-runner-v2.md), protocol §II.6a) shipped alongside, so an implementation in any language can self-certify against the same corpus — see [`conformance/runner/`](./conformance/runner/README.md). And [RFC 0006](./docs/rfcs/0006-hospitality-module.md) gave the module system its first real consumer — [`@uwmd/module-hospitality`](./packages/uwmd-module-hospitality/) — plus the runtime that actually executes what a module declares. [RFC 0003](./docs/rfcs/0003-module-asset-classes.md) then let a module declare its own **asset class** — third-party classes have a namespaced space. [RFC 0080](./docs/rfcs/0080-official-classes-are-builtins.md) makes all official classes full builtins: twelve equal standard and starter surfaces, with future official additions by RFC.
 
 ## Who's building on it
 

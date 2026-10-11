@@ -574,3 +574,5 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 ## Official builtin starters (RFC 0080)
 
 All twelve classes have packs and Excel layouts. Data center uses critical IT kW; manufactured housing uses sites. Their layouts bind every class calculation and the six standard income metrics to stated inputs. Hospitality also binds the former module's hotel and F&B fields; missing optional hotel inputs produce blank metrics. The web editor includes both new class names, primary-size fields and standard class sections. Legacy official module packages remain compatibility shells until retirement at release.
+
+The Lite bridge defaults the two new official classes to Format 2.1 with nested metadata and recognizes their standard section/size anchors. Existing classes keep their original 1.1 bridge output; an explicit source version is preserved.

@@ -6,12 +6,13 @@ import type {
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
+import { canonicalV2BlockContent } from './meta-shape.js';
 
-// Lite compiles to format 1.1 envelopes regardless of the implementation's
-// authoring FORMAT_VERSION: the bridge's block writer emits the flat v1
-// _meta shape, and a 2.0-stamped file with flat blocks is exactly the
-// META-V1-IN-V2 corruption the one-shape rule forbids. Lite moves to the
-// nested shape only via its own RFC (format v2 spec §7).
+const FORMAT_21_CLASSES = new Set(['data_center', 'manufactured_housing']);
+
+// Existing classes retain the RFC 0017 flat Format 1.1 bridge. RFC 0080
+// adds Format 2.1 authoring for the two new official classes; explicit source
+// versions are preserved, and no financial values are inferred.
 const UW_LITE_BRIDGE_FORMAT_VERSION = '1.1' as const;
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter, UWMeta } from './types.js';
@@ -196,6 +197,8 @@ const _MAPPING_BY_TARGET_PATH = new Map(
   UW_LITE_FIELD_MAPPINGS.map((mapping) => [mapping.target_path, mapping]),
 );
 const KNOWN_SECTIONS = new Set([
+  'dc_capacity', 'dc_power', 'dc_revenue', 'mhc_sites',
+  'hotel_metrics', 'hotel_brand', 'hotel_food_beverage',
   'deal_context',
   'property',
   'ownership',
@@ -313,7 +316,9 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
   for (const [section, values] of [...sectionValues.entries()].sort(([left], [right]) =>
     left.localeCompare(right),
   )) {
-    sections[section] = createEnvelopeBlock(section, values, timestamp, actor);
+    const block = createEnvelopeBlock(section, values, timestamp, actor);
+    if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) block.content = canonicalV2BlockContent(block.content);
+    sections[section] = block;
   }
 
   const sourceExtension = createEnvelopeBlock(
@@ -328,11 +333,13 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     actor,
   );
 
+  if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) sourceExtension.content = canonicalV2BlockContent(sourceExtension.content);
+
   return {
     ok: true,
     envelope: {
       envelope_version: '1.0',
-      format_version: UW_LITE_BRIDGE_FORMAT_VERSION,
+      format_version: FORMAT_21_CLASSES.has(frontmatter.asset_class) ? frontmatter.uw_version : UW_LITE_BRIDGE_FORMAT_VERSION,
       frontmatter,
       sections,
       pipeline_log: [],
@@ -499,15 +506,18 @@ function compileFrontmatter(
   const dealName = readRequiredString(document.frontmatter, 'deal_name', report);
   const created = readRequiredString(document.frontmatter, 'created', report);
   if (!dealId || !dealName || !created) return null;
+  const bridgeVersion = FORMAT_21_CLASSES.has(String(document.frontmatter['asset_class'])) ? '2.1' : bridgeVersion;
   const semanticVersion =
     typeof document.frontmatter['uw_version'] === 'string'
       ? document.frontmatter['uw_version']
-      : UW_LITE_BRIDGE_FORMAT_VERSION;
+      : bridgeVersion;
   if (document.frontmatter['uw_version'] === undefined) {
     report.defaults.push({
       path: 'frontmatter.uw_version',
-      value: UW_LITE_BRIDGE_FORMAT_VERSION,
-      reason: 'RFC 0017 pins the Lite bridge to UW semantic format 1.1; Lite is a 1.x-format source representation until its own RFC moves it (format v2 spec §7).',
+      value: bridgeVersion,
+      reason: bridgeVersion === '2.1'
+        ? 'RFC 0080 new official classes require Format 2.1 with nested provenance.'
+        : 'RFC 0017 pins the existing-class Lite bridge to UW semantic format 1.1 (format v2 spec §7).',
     });
   }
 
