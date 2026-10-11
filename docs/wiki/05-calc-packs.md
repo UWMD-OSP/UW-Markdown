@@ -9,10 +9,23 @@ mirrors, enforced by exact, bidirectional tests rather than runtime generation.
 Every consumer (web editor, Excel converter, CLI, conformance, refinement)
 continues to use the same pack objects and Excel bindings.
 
+> **Standard or starter product?** The **dictionary** is the standard: a
+> Verifier must reproduce each entry's quantized value, by any method, and
+> adding or changing an entry needs an RFC. The **packs** are starter-product
+> code ([RFC 0078](../rfcs/0078-protocol-is-verification.md)): the reference
+> engine's TypeScript mirror of the dictionary, plus the Excel layouts, which
+> no other implementation owes. Excel parity is a starter-product quality bar
+> ([invariant 4](10-conventions-invariants.md)); dictionary parity is what
+> keeps every consumer on the normative definitions. All twelve official
+> classes are full builtins on both layers
+> ([RFC 0080](../rfcs/0080-official-classes-are-builtins.md)); modules are for
+> third-party classes and metrics.
+
 - **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
   `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
-  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `LAND_PACK`, `MIXED_USE_PACK`,
+  `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `LAND_PACK`,
+  `DATA_CENTER_PACK`, `MANUFACTURED_HOUSING_PACK`, `MIXED_USE_PACK`,
   `getPackForAssetClass`,
   `emitFromAst`, `emitExcelFormula`, `ExcelEmitError`, type `ExcelEmitOptions`.
 
@@ -71,7 +84,9 @@ File | Role
 `defaults.ts`. The CLI's `refine`/`scope` and any consumer should select the pack
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
 Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
-`hospitality`, `senior_housing`, `student_housing`, `land`, `mixed_use`.
+`hospitality`, `senior_housing`, `student_housing`, `land`, `data_center`,
+`manufactured_housing`, `mixed_use`. A legacy alias such as `org.uwmd.data_center`
+resolves to its builtin first.
 
 ## `MULTIFAMILY_PACK`
 
@@ -384,7 +399,9 @@ classes follow the builtin contract; modules support private extensions.
 - **CLI** — `uwmd calc`, `uwmd refine`/`uwmd scope` (which select the pack via
   `getPackForAssetClass(frontmatter.asset_class)`).
 - **Refinement engine** — `extractDependencyGraph(parsed, { packs })`.
-- **Conformance** — Tier-3 fixtures.
+- **Conformance** — the calc fixtures, and the dictionary-only
+  [lender fixture](../../conformance/metrics/README.md) that checks every
+  builtin example without pack or engine code.
 
 ## Excel emit + the parity invariant
 
@@ -403,8 +420,8 @@ to Excel equivalents (`sum→SUM`, `pmt→PMT`, `npv→NPV`, `irr→IRR`, `round
   null-aware `avg`).
 - `EXCEL-EMIT-OP` — unreachable operator guard.
 
-> **The invariant:** the calc engine and the Excel emitter are two renderings of
-> the *same* AST. `packs.test.ts` asserts that for every metric in the pack, the
+> **The invariant (a starter-product quality bar, RFC 0078 D6):** the calc
+> engine and the Excel emitter are two renderings of the *same* AST. `packs.test.ts` asserts that for every metric in the pack, the
 > evaluator's number and the Excel formula's number agree **exactly after §VIII.5 quantization**.
 > If you add or change a metric, both paths must still agree, or the test fails.
 
@@ -419,7 +436,8 @@ junior, two-senior and default-junior cases.
 
 ## Recipe: add a derived metric to the multifamily pack
 
-1. Record the accepted normative definition in `spec/metrics/builtin.json`,
+1. Record the accepted normative definition in `spec/metrics/builtin.json`
+   (a new or changed definition is a normative change and needs an RFC),
    including effective precision, potential inputs and declared section roles.
    Mirror it as a `ModuleCalcDecl` in `MULTIFAMILY_PACK.calculations` in
    `packs/multifamily.ts` — pick an `id`, `label`, `unit` (`%`/`$`/`x`), and a
@@ -453,8 +471,9 @@ extensions use modules.
    `src/browser.ts`.
 3. Add an `<assetclass>` defaults table in `defaults.ts` and register it in that
    file's `REGISTRY` so the cascade and refinement engine can resolve its inputs.
-4. Decide the Excel layout (named inputs/ranges) in a corresponding Excel layout
-   module if Excel export is in scope.
+4. Add the Excel layout (named inputs/ranges) in a corresponding Excel layout
+   module. Every official class gets one, together with its defaults table and
+   a worked example (full starter support, RFC 0078 D5 and RFC 0080).
 5. Add its normative calculation and size entries to `spec/metrics/builtin.json`;
    dictionary parity must prove completeness. Add a parity test analogous to
    `packs/office.test.ts` (and Tier-3 conformance

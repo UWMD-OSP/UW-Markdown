@@ -80,6 +80,8 @@ spec/                      Normative specs + JSON Schemas + XML XSD
   UW_PROTOCOL_v1.md        Verification: tiers + profiles, provenance rules, calc EBNF, verifiers
   UW_XML_MAPPING_v1.md     Deterministic Envelope 1.0 XML representation
   UW_CSV_BUNDLE_v1.md      Normalized CSV directory/ZIP representation
+  UW_RECEIPT_v1.md         Verification receipts
+  metrics/                 Normative metric dictionary (builtin.json)
   bindings/                HTTP/MCP profiles + OpenAPI 3.1 contract
   schemas/                 JSON Schema 2020-12 plus structural UW XML XSD
 
@@ -89,8 +91,8 @@ packages/
   uwmd-excel/  (@uwmd/excel 0.2.0) .uw.md → .xlsx workbook (formulas, not values)
 
 tools/
-  web-viewer/   Single-file (<500 LOC) drag-drop Tier-1 reader, no build
-  web-editor/   Vite app, Tier-2/3 calc-aware editor (no framework)
+  web-viewer/   Single-file (<500 LOC) drag-drop Reader, no build (starter product)
+  web-editor/   Vite app, calc-aware editor (starter product, no framework)
   vscode-uwmd/  Authoring extension (syntax, folding, on-save validation)
   docs-site/    VitePress site assembling spec + protocol + governance
 
@@ -122,13 +124,16 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
    pipeline log + superseded history.
 2. It is **validated** (`validateUWFile`) against cross-section consistency
    (CC-NN), financial thresholds (FV-NN), and data-quality rules (DQ-NN).
-3. **Optional Bancroft reference agents** (Tier-4) read curated context, call Claude, and write
+3. **Optional Bancroft reference agents** (a starter product) read curated context, call Claude, and write
    structured section blocks back — *extracting data, never computing financials*.
 4. **Derived metrics** (cap rate, DSCR, LTV, …) are computed **deterministically**
-   by the calc engine from the multifamily pack — same formulas, every tool.
+   by the calc engine from the asset class's pack — same formulas, every tool.
+   The packs mirror the normative [metric dictionary](../../spec/metrics/README.md),
+   which is what a third-party Verifier reproduces without our engine.
 5. The same formulas are **emitted as Excel** by `@uwmd/excel` so a workbook
-   stays in lock-step with the calc engine (parity tested as exact equality).
-6. Edits go through the **Tier-2 editor** which supersedes (append-only) or
+   stays in lock-step with the calc engine (parity tested as exact equality, a
+   starter-product quality bar).
+6. Edits go through the **reference editor** which supersedes (append-only) or
    replaces blocks while preserving bytes outside the edited region.
 
 ## The invariants in one breath
@@ -137,8 +142,8 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
 
 - **Deterministic calc boundary** — AI never does financial math.
 - **Layering** — spec→∅, core→SDK only (excluded from browser), tools→core only.
-- **Byte preservation** — Tier-2 edits don't reflow unrelated regions.
+- **Byte preservation** — editor edits don't reflow unrelated regions (starter product).
 - **Excel ↔ evaluator parity** — both paths agree exactly (one pack; both
-  quantize at the same `round_to`, §VIII.5).
+  quantize at the same `round_to`, §VIII.5); a starter-product quality bar.
 - **Append-only provenance** — supersede, don't destroy; every block carries `_meta`.
 - **Semver-per-surface** — format, protocol, and each package version independently.

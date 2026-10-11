@@ -41,7 +41,15 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   core/CLI 2.21.0 pair with it and Format 2.0. Historical core/CLI 2.20.0
   retain Stable Protocol 2.24.0, and 2.19.0 retain Stable Protocol 2.23.0).
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
-  two cannot drift apart silently. That test covered *only* the protocol row,
+  two cannot drift apart silently. **Protocol 3.0.0 is next** (RFC 0078,
+  accepted; the contract is on `main`, the label moves at release
+  preparation): conformance becomes the **Reader** and **Verifier** tiers plus
+  optional profiles. From 3.0 the Protocol version moves only when what a
+  document *means* or how it is *verified* changes (format, verification rules,
+  receipts, module system, metric dictionary). Starter-product changes (calc
+  engine code, defaults, editor, viewer/report, Excel, agents, the
+  [starter guide](../starter/README.md)) version their packages only; there is
+  no starter-guide version (D13). That test covered *only* the protocol row,
   which is why the protocol row stayed correct while the package rows went
   stale through the 1.4.0 release; `verify-versions` now covers every row.
 - **Packages** — each `package.json`; consult the current matrix rather than
@@ -232,6 +240,15 @@ not a new normative feature: Format 2.0, Protocol 2.21.0, accepted module contra
 IDs, compatibility fields and runtime/signature behavior are unchanged. No RFC
 is required solely to distribute these existing implementations.
 
+> **Since RFC 0080 both packages are compatibility shells.** Hospitality's and
+> data center's official content is builtin in `@uwmd/core`; the manifests
+> declare no classes, sections, calculations, rules or views, and core
+> satisfies existing module-list dependencies (CLS-02). They stay in the publish
+> set for the transition release; retirement and npm deprecation follow
+> separately. Official asset classes are never module classes now; modules are
+> for third parties. The rest of this section describes the distribution
+> mechanics, which are unchanged.
+
 **Ordinary releases only.** Both join the existing four packages in `release.yml`.
 First official publication waits for the next ordinary owner-authorized UWMD
 generation; no module-only trigger or new tag family exists. Releases through
@@ -329,10 +346,23 @@ refuse them. Preserve the existing synchronous/async verification boundary.
   ([`GOVERNANCE.md`](../../GOVERNANCE.md)). The owner can accept and implement
   changes immediately. External PRs require owner review; after the first external
   PR merges, normative RFCs also receive a 14-day public comment window.
-- **Normative = anything that changes the spec, protocol, schemas, or
-  conformance contract.** That includes most things this wiki's recipes touch when
-  they alter behavior: new sections, new validation codes that change conformance,
-  new calc semantics, new asset classes.
+- **Normative = anything that changes the spec, protocol, schemas, metric
+  dictionary or conformance contract.** That includes most things this wiki's
+  recipes touch when they alter behavior: new sections, new validation codes
+  that change conformance, new calc notation or numeric semantics, new or
+  changed metric definitions in `spec/metrics/`, new official asset classes
+  (each a full builtin, RFC 0080).
+- **Starter products are not normative** (RFC 0078). A change that only touches
+  the calc engine's code, defaults and the cascade, refinement, the editor,
+  viewer/report, Excel, the agents or a `docs/starter/` page needs no RFC and
+  no Protocol version. It still needs its tests, a CHANGELOG entry and a
+  package version at release. Numbers are never a judgment call either way: a
+  new default, formula or rounding choice goes to the maintainers.
+- **Conformance claims under Protocol 3.0** are a tier (`reader` or
+  `verifier`) plus `profiles` (`module`, `integrity`, `representations`,
+  `portfolio`, `sensitivity`, `stochastic`). An RFC states which tier or
+  profile its change affects, under "Conformance impact". Editor and agent-host
+  claims are starter-product compatibility claims, outside the Protocol.
 - RFCs live in [`docs/rfcs/`](../rfcs/), numbered from `0000-template.md`.
   Read the index and each RFC's status before treating it as future work:
   signing (0002/0010), capability tokens (0011), iterative determinism (0024),
@@ -386,10 +416,11 @@ the [adopter feedback review](../reviews/2026-10-04-adopter-feedback-loop.md).
 Change | RFC?
 ---|---
 Fix a parser/validator/calc bug | No (editorial)
-Add a Vitest test or non-malformed Tier-1 fixture | No
-Add a derived metric to an existing pack | Usually no (additive), but coordinate
+Add a Vitest test or non-malformed Reader (Tier-1) fixture | No
+Add or change a metric definition (dictionary entry + its pack mirror) | Yes (metric dictionary, RFC 0078)
 Change a validation code's meaning/severity | Yes (changes conformance)
 Add/rename a standard section or `_meta` field | Yes (format spec)
-Add a new asset class / pack contract | Yes (`0003`)
-Change edit semantics, cascade order, calc grammar | Yes (protocol)
+Add a new official asset class | Yes (full builtin, RFC 0080); third-party classes use modules
+Change provenance rules (§V.2–§V.4), integrity, calc notation or numeric model | Yes (protocol)
+Change starter behavior: cascade order, defaults, editor mechanics, view models, display, agents | No (starter guide + package semver); numerics still go to maintainers
 Anything touching `spec/` or `spec/schemas/` | Yes

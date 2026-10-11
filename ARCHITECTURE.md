@@ -13,8 +13,10 @@ The project has five layers, each consuming the one above it:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Format spec      spec/UW_FORMAT_SPEC_v1.md                 │  normative
-│  (file shape)     spec/UW_PROTOCOL_v1.md                    │  text
+│  Standard         spec/UW_FORMAT_SPEC_v1.md (+ v2)          │  normative
+│  (normative)      spec/UW_PROTOCOL_v1.md  (verification)    │  text
+│                   spec/UW_RECEIPT_v1.md                     │
+│                   spec/metrics/builtin.json (dictionary)    │
 │                   spec/schemas/*.schema.json                │
 └─────────────────────────────────────────────────────────────┘
                           ▲
@@ -22,18 +24,18 @@ The project has five layers, each consuming the one above it:
 ┌─────────────────────────────────────────────────────────────┐
 │  Reference        packages/uwmd-core (@uwmd/core)           │  TypeScript
 │  library          ├── parser / validator / renderer          │  library
-│                   ├── editor (Tier-2 dispatcher)             │
+│                   ├── editor (starter edit dispatcher)       │
 │                   ├── calc/  (parser, evaluator, builtins)   │
-│                   ├── packs/ (multifamily, excel-emit)       │
-│                   └── agents/ (Bancroft / Tier-4)            │
+│                   ├── packs/ (12 builtin packs, excel-emit)  │
+│                   └── agents/ (Bancroft, starter agent host) │
 └─────────────────────────────────────────────────────────────┘
                           ▲
                           │ used by
 ┌─────────────────────────────────────────────────────────────┐
 │  Tools            packages/uwmd-cli   (standalone CLI)       │  user-facing
 │                   packages/uwmd-excel (.uw.md → .xlsx)       │
-│                   tools/web-viewer    (Tier-1 drag-drop)     │
-│                   tools/web-editor    (Tier-2/3 calc-aware)  │
+│                   tools/web-viewer    (Reader, drag-drop)    │
+│                   tools/web-editor    (calc-aware editor)    │
 │                   tools/vscode-uwmd   (authoring extension)  │
 │                   tools/docs-site     (VitePress docs)       │
 └─────────────────────────────────────────────────────────────┘
@@ -87,12 +89,12 @@ this library; tools depend on it.
 |---|---|
 | `parser.ts` | `.uw.md` → `ParsedUWFile` (frontmatter + sections + `_meta`). |
 | `validator.ts` | Cross-section + financial-validity + meta-integrity checks. Hosts `BUILTIN_REMEDIATIONS`, the registry referenced by protocol §III.6a. |
-| `editor.ts` | Tier-2 dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
+| `editor.ts` | Starter-product edit dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
 | `bindings.ts` | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs/editor. |
 | `renderer.ts` | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
-| `runner.ts` + `agents/` | Tier-4 host. `runBancroftAgent` is the Claude-backed reference implementation; the contract in `protocol.ts` §IX is provider-neutral. |
+| `runner.ts` + `agents/` | Starter agent host. `runBancroftAgent` is the Claude-backed reference implementation; the contract (`protocol.ts` types, [starter guide](docs/starter/ai-host.md)) is provider-neutral. |
 | `calc/` | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
-| `packs/` | `multifamily.ts` is the canonical Tier-3 calc pack. `excel-emit.ts` translates the same AST to Excel formulas — and `packs.test.ts` asserts the two paths agree to six decimals. |
+| `packs/` | One pack per builtin asset class, each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`). `excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
 | `protocol.ts` | `BUILTIN_VIEW_MODELS`, `BUILTIN_EDIT_POLICIES`, the AI-host contract types. |
 | `format.ts` | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
 | `context.ts` | `BANCROFT_LAYERS` definitions and `buildAgentContext`. |
@@ -109,10 +111,10 @@ nothing else from this monorepo:
 - `packages/uwmd-cli` — the public `uwmd` CLI. Wraps `cli.ts` and
   ships its own bin entry.
 - `packages/uwmd-excel` — `.uw.md` → `.xlsx` export. Consumes the same
-  multifamily pack as the calc host so formulas in the workbook match
+  packs as the calc engine so formulas in the workbook match
   evaluator output.
-- `tools/web-viewer` — single-file drag-drop reader. Tier 1.
-- `tools/web-editor` — calc-aware editor demonstrating Tier 2 + Tier 3.
+- `tools/web-viewer` — single-file drag-drop Reader.
+- `tools/web-editor` — calc-aware starter editor.
 - `tools/vscode-uwmd` — authoring extension (syntax, validation
   squiggles, calc-pack hover).
 - `tools/docs-site` — VitePress site that assembles spec + protocol +

@@ -13,10 +13,11 @@ A deal record is a **`.uwx.md`** file — the complete, lossless underwriting re
 This repository is the home of the standard:
 
 - [`spec/UW_FORMAT_SPEC_v1.md`](spec/UW_FORMAT_SPEC_v1.md) — the file format specification.
-- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — the contract any conforming viewer, editor, calc host, or AI host must satisfy.
+- [`spec/UW_PROTOCOL_v1.md`](spec/UW_PROTOCOL_v1.md) — UW Protocol — verification: how any party checks that a document is well formed, internally consistent and reproducible (Reader and Verifier tiers).
+- [`spec/metrics/`](spec/metrics/README.md) — the normative metric dictionary that defines every builtin metric.
 - [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
-- [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned).
+- [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned). The calc engine, editor, viewer, Excel exporter, defaults and AI agents are non-normative starter products ([`docs/starter/`](docs/starter/README.md)).
 - [`examples/`](examples/) — sample deal files covering all twelve builtin asset classes in `.uwx.md` plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`
   exists in **both** representations, so the two can be read side by side.
 
@@ -71,7 +72,7 @@ To open the reference web viewer, point any browser at
 - The protocol spec (`UW_PROTOCOL_v1.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, runner, and an optional Claude-backed Bancroft reference agent suite.
 - A conformance corpus per tier so third parties can self-certify.
-- A single-file web viewer demonstrating Tier-1 conformance in <500 LOC.
+- A single-file web viewer demonstrating a Reader in <500 LOC.
 
 ## Roadmap
 

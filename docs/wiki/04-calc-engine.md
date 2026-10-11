@@ -1,11 +1,30 @@
-# 04 — Calc engine (Tier-3)
+# 04 — Calc engine (starter product)
 
 The calc engine evaluates **safe expressions** (formulas) against a parsed
 `.uw.md` file. It is the deterministic counterpart to the AI agents: agents put
 data *in*, the calc engine derives metrics *out*, with no AI involved.
 
+> **Standard or starter product?** The engine *code* in `calc/` is a starter
+> product ([RFC 0078](../rfcs/0078-protocol-is-verification.md)): the
+> reference evaluator the CLI, editor, Excel exporter and receipts use. It is
+> not what the standard requires. What stays **normative** in Protocol §VIII is
+> what a Verifier needs to reproduce a stated figure: the §VIII.1 grammar,
+> §VIII.2 variable resolution and §VIII.3 builtins as the *notation* of the
+> [metric dictionary](../../spec/metrics/README.md) and of module metrics;
+> §VIII.4 determinism; the §VIII.5 numeric model (unrounded binary64, one
+> half-away-from-zero quantization, and §VIII.5.1 stated precision); the
+> §VIII.6 error taxonomy; the IRR procedure; and the stated-figure verifiers
+> (§VIII.9–§VIII.12). Sensitivity (§VIII.7) and stochastic (§VIII.8) results
+> are normative **optional verification profiles**. Refinement (§VIII.2b) and
+> workbook bindings (§VIII.2c) moved to the
+> [starter guide](../starter/refinement-and-workbooks.md). A third-party
+> Verifier may compute a dictionary definition any way that reproduces its
+> quantized value; it does not have to run this engine. Conformance tiers are
+> Reader and Verifier; the old "Tier-3 Calc Host" is retired.
+
 - **Location:** [`packages/uwmd-core/src/calc/`](../../packages/uwmd-core/src/calc/)
-- **Normative grammar/semantics:** `UW_PROTOCOL_v1.md` §VIII.
+- **Normative grammar/semantics:** `UW_PROTOCOL_v1.md` §VIII (the parts listed
+  above); metric definitions: [`spec/metrics/builtin.json`](../../spec/metrics/README.md).
 - **Public API (via `index.ts`):** `evaluateCalc`, `parseExpression`, `evaluate`,
   `BUILTINS`, `CalcError`, `calcError`; types `CalcValue`, `Builtin`, `CalcErrorCode`.
 
@@ -74,6 +93,11 @@ quantizer rather than writing another rounding algorithm.
 differently. Digests, equality, and Excel parity are defined over `value`.
 
 ### Excel parity and balance precision
+
+Excel parity is a **starter-product quality bar** (RFC 0078 D6), not a
+Protocol requirement: the standard pins the numeric model both sides follow,
+and the dictionary keeps them on one set of definitions. See
+[invariant 4](10-conventions-invariants.md#4-excel--evaluator-parity).
 
 [RFC 0023](../rfcs/0023-numeric-determinism.md) established half-away-from-zero
 boundary quantization. `packs/excel-emit.ts` wraps supported emitted formulas in
@@ -276,8 +300,8 @@ Code | Meaning
 `extractDependencyGraph(parsed, { packs })` and `getExprDependencies(ast)` walk
 formulas to produce `{ outputs, inputs, formulas }` maps. This is **descriptive,
 not prescriptive** — a formula referencing a non-existent path is still recorded.
-It powers `refinement.ts` (VOI gap ranking) and the Tier-3 refinement conformance
-fixtures.
+It powers `refinement.ts` (VOI gap ranking, a starter product since RFC 0078)
+and the refinement conformance fixtures.
 
 ## The determinism boundary (do not cross)
 
@@ -290,6 +314,9 @@ always computed here, never by an LLM.** See
 [10 — Conventions & invariants](10-conventions-invariants.md).
 
 ## Sensitivity tables (RFC 0007, §VIII.7)
+
+*Normative as the optional `sensitivity` verification profile (RFC 0078 D9): a
+document that states a grid must reproduce. Authoring grids is starter work.*
 
 Two-axis grids: one base formula, evaluated once per (row, column) pair with
 the two axis variables overridden.
@@ -337,6 +364,10 @@ Excel emit is deferred; `SensitivityResult` hands an emitter the grid structure
 whenever one is written.
 
 ## Stochastic calculations (RFC 0005, §VIII.8)
+
+*Normative as the optional `stochastic` verification profile (RFC 0078 D9): the
+sampler (PCG64) and the rules below stay pinned so a stated seeded
+distribution reproduces. Running simulations is starter work.*
 
 Distributions instead of point estimates. Same shape as sensitivity tables: a
 JSON `StochasticDecl` declares which paths vary and from what distribution, and

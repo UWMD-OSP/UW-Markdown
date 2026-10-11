@@ -90,6 +90,40 @@ Format stays 2.0 and no document changes meaning or validity.
 - Adds an independent dictionary/evaluator conformance fixture for every builtin example, with per-statement evidence, recorded disagreements and negative controls for missing inputs, role selection, nulls and quantization. No Format or Protocol version change.
 
 
+### RFC 0078 Phase 4 — project docs: the standard vs the starter products
+
+Documentation only. No spec, schema, `protocol.ts`, conformance, code or
+version change.
+
+- **`AGENTS.md`** gains a short "standard vs starter products" orientation: what
+  is normative (format, Protocol as verification, receipts, module system,
+  representations, the `spec/metrics/` dictionary; Reader and Verifier tiers),
+  what is a starter product (engine code and packs, defaults, editor, viewer,
+  Excel, agents, capability tokens, display), and that every official asset
+  class is a full builtin, with modules for third parties only. Invariant 4
+  (Excel ↔ engine parity) and invariant 3 (byte preservation) become
+  starter-product quality bars that still block a PR; invariant numbers are
+  unchanged because source comments cite them. The contract list adds the
+  receipt spec and the metric dictionary; module packages are described as
+  compatibility shells; metric definitions and new official classes are named
+  as RFC-gated.
+- **Wiki.** 04 reframes the calc engine as a starter product over the normative
+  §VIII notation, numeric model, verifiers and the sensitivity/stochastic
+  profiles; 05 separates the normative dictionary from the starter packs and
+  fixes the stale pack registry and export lists; 10 labels each invariant's
+  layer; 11 adds the Protocol 3.0 versioning rule, the starter-product
+  no-RFC rule, the 3.0 tier/profile vocabulary, the module shells, and a
+  corrected "needs an RFC?" table (a new or changed metric definition now
+  needs one). README, 01 and 13-status follow.
+- **Docs site.** Top navigation splits into **Standard** (format, Protocol —
+  verification, metric dictionary, receipts, module system, conformance,
+  representations and bindings) and **Starter products** (starter guide, tools,
+  calc engine and defaults, editor, viewer, Excel, receipts issuing, data lake,
+  AI agents); the guide, spec, starter and AI sidebars and the home page follow.
+  Hand-written pages, `docs/TOOLS.md`, `docs/ABOUT.md`, `ARCHITECTURE.md` and the
+  root README drop the retired Tier-2/3/4 wording outside the conformance corpus
+  (renamed in phase 3); the AI page no longer links the Tier 4 corpus page.
+
 ### Test reliability under concurrent load
 
 - Caps root Vitest runs and core coverage at two isolated fork workers, and replaces blocking CLI test spawns with a shared asynchronous runner with child deadlines and cleanup.

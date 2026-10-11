@@ -4,9 +4,13 @@ title: "Calc conventions"
 
 # Calc calling conventions
 
-UW Markdown calculations are a small deterministic expression language. A
-formula is evaluated by the Tier-3 engine; an agent may describe assumptions
-and extract facts, but never supplies financial math.
+UW Markdown calculations are a small deterministic expression language. The
+notation and numeric model are normative (Protocol §VIII.1 and §VIII.5), and the
+[metric dictionary](/spec/metrics/) uses them to define every builtin metric.
+The reference calc engine that evaluates them is a
+[starter product](/starter/); any engine that reproduces the quantized values
+will do. An agent may describe assumptions and extract facts, but never
+supplies financial math.
 
 ## Write paths from the parsed record
 
