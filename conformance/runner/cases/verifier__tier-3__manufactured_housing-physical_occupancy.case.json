@@ -1,0 +1,20 @@
+{
+  "id": "verifier/tier-3/manufactured_housing-physical_occupancy",
+  "target": "verifier",
+  "legacy_id": "tier-3/manufactured_housing-physical_occupancy",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/manufactured_housing-physical_occupancy",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

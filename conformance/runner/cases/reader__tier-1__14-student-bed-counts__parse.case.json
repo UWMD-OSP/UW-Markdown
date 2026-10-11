@@ -1,0 +1,17 @@
+{
+  "id": "reader/tier-1/14-student-bed-counts/parse",
+  "target": "reader",
+  "legacy_id": "tier-1/14-student-bed-counts/parse",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "14-student-bed-counts.uwx.md"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/14-student-bed-counts.parsed.json"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "verifier/tier-1/13-period-identities/validate",
+  "target": "verifier",
+  "legacy_id": "tier-1/13-period-identities/validate",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "13-period-identities.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/13-period-identities.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 1
+  }
+}

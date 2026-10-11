@@ -14,7 +14,7 @@ python conformance/runner/runner.py
 
 # Somebody else's
 python conformance/runner/runner.py --impl "./target/release/uwmd"
-python conformance/runner/runner.py --impl "python -m uwmd" --tier 1,3
+python conformance/runner/runner.py --impl "python -m uwmd" --tier verifier --profile module
 ```
 
 Python 3.10+, standard library only. That constraint is deliberate: a driver
@@ -22,24 +22,29 @@ that needs a package index is a driver an air-gapped implementer cannot run.
 
 ## What it does not cover
 
-**`npm run conformance` remains the CI gate.** It runs 396 assertions across
-twenty-four suites, and most of them are not "run a command, compare the output":
-receipt re-issuance stability, composition DAG resolution, ZIP packaging,
-signature key stores, cross-fixture invariants asserted with no baseline at
-all. Replacing it with this driver would trade breadth for portability, which
-is a bad trade.
+**`npm run conformance` remains the full CI gate:** 1,061 reference checks.
+This driver retains all 332 CLI projections, including Reader, Verifier,
+Module and separately reported starter-product cases. A portable result
+claims coverage of those cases, not the omitted cross-fixture contracts.
 
-This driver runs the subset that *is* a CLI call — the tier fixtures across
-tiers 1–3 (`npm run gen-conformance-cases` prints the current count). That is
-enough to self-certify to a tier, which is what RFC 0004 set out to make
-possible.
+Select `--tier reader` or `--tier verifier` (includes Reader), `--profile
+module,integrity,...`, or `--starter-products`. With no selector all cases
+run and `by_target` separates standard and product outcomes. Old long tier
+names and numeric shorts remain aliases with deprecation notices on stderr;
+`tier-readings.json` is generated from `readConformanceTier` in `protocol.ts`.
+Aliases never infer a profile or include starter checks.
+
+A profile must be explicitly claimed in the implementation manifest. An
+unclaimed profile yields `unverifiable`, never pass/fail. Capability skips
+remain separate. `--no-skip` rejects a run containing either outcome;
+`summary` and `by_target` retain their distinct counts.
 
 Known gaps inside the tiers it does cover, listed rather than hidden:
 
 - **`tier-2-editor/parent-hash-stamp` and `stale-parent-rejected`** need
   `applyEditAsync` and a volatile content hash, which the CLI's synchronous
   `edit` cannot express. Covered by the TypeScript runner only.
-- **Tier 4** is shape-only and replay-driven; it has no CLI surface.
+- **Agent starter checks** are shape-only and replay-driven; they have no CLI surface.
 - **The named suites** (`lite`, `receipts`, `market-data`, `modules`,
   `packages`, `composition`, `capital-stack`, `size-intensive`, `signing`) are
   TypeScript-only today.
@@ -55,8 +60,8 @@ TAP version 14 on stdout, plus an optional JSON manifest:
 TAP version 14
 1..44
 # implementation: org.uwmd.core@1.7.0
-ok 1 - tier-1/01-minimal-screening/parse # 141ms
-not ok 42 - tier-3/revpar-basic # 157ms
+ok 1 - reader/tier-1/01-minimal-screening/parse # 141ms
+not ok 42 - module/tier-3/revpar-basic # 157ms
   ---
   - value: 999.0 != 104.76
   ...
@@ -73,7 +78,7 @@ standard way to attach that, and without it two implementations' results cannot
 be aggregated. An implementation with no `manifest` subcommand still runs; it is
 reported as `unidentified` rather than assumed to be anything.
 
-Exit code: `0` all passed, `1` at least one failure, `2` the driver could not
+Exit code: `0` no failures, `1` a failure or an incomplete `--no-skip` run, `2` the driver could not
 run (unknown case format, implementation not executable).
 
 ## Case files
@@ -81,12 +86,17 @@ run (unknown case format, implementation not executable).
 `cases/*.case.json` are **generated** — `node scripts/gen-conformance-cases.mjs`,
 or `npm run gen-conformance-cases`. A case file is a restatement of what is
 already on disk (which fixture, which command, which baseline), and
-hand-maintaining fifty of those invites one to go stale silently.
+the [case schema](../../spec/schemas/conformance-case.schema.json) checks its
+closed owner vocabulary. The [corpus index](../corpus-index.json) records
+one owner for each case; the generator refuses missing or duplicate identities.
+`legacy_id` permits exact reconciliation while new reports use canonical owners.
+Neither the old directory nor id prefix is a conformance claim.
 
 ```json
 {
-  "id": "tier-3/revpar-basic",
-  "tier": "3",
+  "id": "module/tier-3/revpar-basic",
+  "target": "module",
+  "legacy_id": "tier-3/revpar-basic",
   "command": "calc",
   "args": ["deal.uwx.md", "calc.json", "--json"],
   "fixture_dir": "conformance/tier-3-calc-host/fixtures/revpar-basic",
@@ -124,7 +134,7 @@ make the extension honest.
 ### `expect.project`
 
 A named, closed vocabulary of projections the driver applies to the response
-before comparing. Today there is exactly one:
+before comparing. Examples include:
 
 - `issue-code-severity-set` — reduce a `ValidationResult` to
   `{overall_status, issues: [{code, severity}]}`, deduplicated and sorted.

@@ -1110,3 +1110,23 @@ Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its s
 ## 2026-10-10 — RFC 0078 phase 4: project docs
 
 Phase 4 (unreleased, docs only) carries the standard/starter split into the project's own guidance. `AGENTS.md` gains a "standard vs starter products" orientation, names the metric dictionary and receipts in the contract, and marks the module packages as compatibility shells; invariant 4 (Excel ↔ engine parity) and invariant 3 (byte preservation) are starter-product quality bars, still blocking, with their numbers unchanged because source comments cite them. Wiki 04 and 05 reframe the engine and packs as starter code over the normative dictionary and §VIII notation; wiki 10 labels each invariant's layer; wiki 11 adds the Protocol 3.0 versioning rule, the starter-product RFC rule and an updated "needs an RFC?" table. The docs site's navigation splits into **Standard** and **Starter products**. No spec, schema, protocol, conformance or version change. Still to come: corpus re-tiering (phase 3) and release (phase 5).
+
+
+## 2026-10-11 — RFC 0078 phase 3: corpus owners and selectors
+
+Every existing reference case is tagged exactly once as Reader, Verifier, one
+optional profile or a starter-product check. All 1,056 reference checks
+(1,053 previously default + three opt-in agent shapes) now run by default;
+all 332 portable cases retain their commands, arguments, capabilities and
+expectations. Legacy paths stay stable and no fixture/baseline is changed.
+Reports separate product counts; both drivers accept deprecated tier aliases
+through generated `readConformanceTier` readings, without inferring profiles.
+Coverage guards reject missing, duplicate and unclassified cases. The lender-only
+metric fixture remains 187 verified / 0 failed / 0 unverifiable. Review
+follow-up: the §II.2 Verifier requirements own their cases (IRR, dictionary
+reproductions, §VIII.1–VIII.3 notation incl. `date-*`/`period-*`/`variant-*`,
+the no-stack capital-stack pins), Lite compilation and the package-context
+invariants move to Representations, and five new validate-only Verifier checks
+(`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
+1,061 (Verifier 679 / 280 portable, Module 68 / 1). Phase 3 is
+unreleased; version labels are unchanged and release preparation remains separate.

@@ -75,11 +75,11 @@ embedded viewer without leaving this page.
     <p>See frontmatter, quick metrics, common underwriting sections, flags, pipeline state, and prior versions.</p>
   </section>
   <section>
-    <strong>Understand Tier 1</strong>
+    <strong>Understand a Reader</strong>
     <p>The viewer is deliberately small and readable. Production software should use <code>@uwmd/core</code>.</p>
   </section>
 </div>
 
 The viewer is read-only. To validate, edit, calculate, convert, or export a
 document, see the [tools comparison](/guide/tools) and
-[protocol conformance tiers](/spec/protocol).
+[protocol conformance (Reader and Verifier)](/spec/protocol).

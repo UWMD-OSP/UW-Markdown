@@ -1,0 +1,20 @@
+{
+  "id": "verifier/tier-1/02-full-multifamily/validate",
+  "target": "verifier",
+  "legacy_id": "tier-1/02-full-multifamily/validate",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "02-full-multifamily.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/02-full-multifamily.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

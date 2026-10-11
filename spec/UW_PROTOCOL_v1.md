@@ -369,20 +369,23 @@ reads it.
 
 ### II.6 Self-certification
 
-To self-certify, run every conformance case whose required
-capabilities (§II.6a.5) are a subset of the capabilities the
-implementation claims, and verify the output matches. A
+To self-certify, run the cases owned by the claimed tier (including Reader
+for Verifier) and explicitly claimed profiles whose required capabilities
+(§II.6a.5) are a subset of the capabilities the implementation claims, and
+verify the output matches. Publish starter-product results separately. A
 self-certification claim MUST be published together with the capability
 list it was run against, and with the number of cases skipped; "passes
 the corpus" without that list does not identify what was run.
 
-Directory membership is **not** a normative signal. The corpus
-directories still carry the Protocol 2.x tier names until they are
-re-tiered (RFC 0078 phase 3), and a fixture group under
-`conformance/tier-N-*/` is not thereby required of any tier.
-`conformance/tier-3-calc-host/refinement/` requires the `refinement`
-capability, which neither tier nor any profile requires: refinement is
-starter-product behavior.
+Directory membership is **not** a normative signal. Each case is tagged
+with exactly one owner in [`conformance/corpus-index.json`](../conformance/corpus-index.json):
+`reader`, `verifier`, one of the six profiles, or `starter-products`.
+Legacy fixture paths are retained for compatibility; their names do not
+make editor, agent, rendering, default/cascade, projection or refinement
+checks part of the standard. Starter checks remain in CI under
+[`docs/starter/`](../docs/starter/README.md) ownership and are reported
+separately from standard claims. A mixed check that also asserts product
+behavior is a starter check; its assertions are retained in full.
 
 An implementation in any language can be driven by the shared
 conformance driver instead of writing its own, by exposing the CLI
@@ -465,27 +468,51 @@ baseline that pinned any of them would be asserting the clock.
 
 #### II.6a.4 Scope
 
-This protocol covers the **tier** fixtures (the `conformance/tier-*`
-directories) — the conformance surface a tier or profile claim is
-about. The named suites (receipts, composition, market
-data, packages, signing, and the rest) exercise behavior that is not a
-single command with a single output, and remain driven by an
-implementation's own test suite.
+Each generated portable case MUST carry exactly one `target`: `reader`,
+`verifier`, `module`, `integrity`, `representations`, `portfolio`,
+`sensitivity`, `stochastic`, or `starter-products`. The closed vocabulary
+is mirrored by [`conformance-case.schema.json`](schemas/conformance-case.schema.json)
+and `ConformanceTarget` in `protocol.ts`. `legacy_id` preserves its old
+case address for migration reconciliation. Directory and id prefixes do
+not determine conformance. The reference ownership index is checked for
+missing, duplicated and unclassified results; generating portable cases
+also checks its exhaustive case identities.
 
-An implementation that passes the tier cases under the shared driver has
-demonstrated its claim against the same corpus, executed by the
-same logic, as every other implementation. That is the whole
-proposition: without it, each adopter reimplements the runner, and two
-reimplementations of a runner drift.
+The reference runner and the [portable driver](../conformance/runner/README.md)
+select `--tier reader` or `--tier verifier` (which includes Reader),
+`--profile <name,...>`, and `--starter-products`. With no selector they run
+all their cases and report counts by target, keeping starter checks
+separate. Profile selection does not imply another profile. Legacy tier
+names are accepted through `readConformanceTier` with a deprecation notice
+on stderr; numeric shorts `1`–`4` first expand to their corresponding
+legacy names. No profile or product check is inferred from an alias.
+The Python driver reads the generated `tier-readings.json` mirror of that
+helper, so it needs no TypeScript runtime.
 
-The reference driver ships at
-[`conformance/runner/`](../conformance/runner/README.md).
+Profile cases without an explicit manifest profile claim are reported
+`unverifiable` (§II.3), never passed or failed. Capability skips (§II.6a.5)
+remain a distinct outcome. Both appear in the report; `--no-skip` makes
+an incomplete claim fail the certification run without treating an
+unsupported profile as a wrong numerical answer.
+
+The portable cases cover checks expressible as one CLI operation. The
+reference runner also checks multi-step contracts, receipt verification,
+integrity, representations and other cross-fixture invariants. Passing
+only the portable subset is not a claim about omitted checks. Existing
+fixture-family selections remain available in the reference runner via
+`--suite=<family>`; old named `--tier=<family>` selectors warn and resolve
+to that suite. Baseline updates require a full run or `--suite`, because
+target filtering inside a mixed suite must not overwrite unselected
+baselines. A family includes its child suites (`3-refinement` under `3`,
+`4-profile` under `4`); updates selecting only a child suite are refused.
 
 #### II.6a.5 Required capabilities and skips
 
 Each conformance case MAY declare `requires_capabilities`, an array of
-`ViewerCapability` values. A case with no such key is required of every
-implementation.
+`ViewerCapability` values. Within the selected tier/profile scope, a
+case with no such key has no capability-based exemption. Unclaimed
+profiles remain `unverifiable` (§II.3), and starter-product checks remain
+outside Protocol conformance (§II.4).
 
 An implementation driven by the conformance driver **MUST** populate
 `capabilities` in its `manifest` output. An absent or empty list
@@ -508,8 +535,9 @@ Example:
 
 ```jsonc
 {
-  "id": "tier-2/section-supersede-risk-rating",
-  "tier": "2",
+  "id": "starter-products/tier-2/section-supersede-risk-rating",
+  "target": "starter-products",
+  "legacy_id": "tier-2/section-supersede-risk-rating",
   "requires_capabilities": ["edit-supersede"],
   "command": "edit",
   "args": ["before.uw.md", "operation.json", "--json"]

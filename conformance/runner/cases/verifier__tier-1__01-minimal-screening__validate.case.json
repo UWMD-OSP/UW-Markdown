@@ -1,0 +1,20 @@
+{
+  "id": "verifier/tier-1/01-minimal-screening/validate",
+  "target": "verifier",
+  "legacy_id": "tier-1/01-minimal-screening/validate",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "01-minimal-screening.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/01-minimal-screening.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

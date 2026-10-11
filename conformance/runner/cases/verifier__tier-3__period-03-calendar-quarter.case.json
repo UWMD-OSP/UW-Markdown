@@ -1,0 +1,20 @@
+{
+  "id": "verifier/tier-3/period-03-calendar-quarter",
+  "target": "verifier",
+  "legacy_id": "tier-3/period-03-calendar-quarter",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/period-03-calendar-quarter",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

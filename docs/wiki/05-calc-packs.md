@@ -452,7 +452,7 @@ junior, two-senior and default-junior cases.
    tranche, or none when it needs every tranche (it then refuses on a map).
    Keep one role per section within a pack; the workbook holds one input per path.
 3. Run `npm test` (dictionary completeness and Excel parity both exercise it) and, if
-   you added a Tier-3 fixture, `npm run conformance -- --tier=3`.
+   you added a calc fixture, `npm run conformance -- --suite=3`.
 
 ## Recipe: add a new built-in asset-class pack
 
@@ -476,8 +476,8 @@ extensions use modules.
    a worked example (full starter support, RFC 0078 D5 and RFC 0080).
 5. Add its normative calculation and size entries to `spec/metrics/builtin.json`;
    dictionary parity must prove completeness. Add a parity test analogous to
-   `packs/office.test.ts` (and Tier-3 conformance
-   fixtures if needed).
+   `packs/office.test.ts` (and Verifier calc conformance
+   fixtures under `tier-3-calc-host/` if needed).
 
 > **You should not have to touch the "unregistered class" negative tests.** They
 > anchor on the synthetic identifier `__unregistered_test_class__`, not on a real

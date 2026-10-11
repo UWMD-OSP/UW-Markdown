@@ -6,32 +6,79 @@ test corpus — analogous to the
 [CommonMark spec corpus](https://spec.commonmark.org/dingus/) or
 [OpenAPI's compliance suite](https://github.com/OAI/OpenAPI-Specification/tree/main/tests).
 
-The corpus is organized by **conformance tier** (see
-[`UW_PROTOCOL_v1.md`](../spec/UW_PROTOCOL_v1.md) Part II for tier definitions):
+The corpus is **tagged by case**, rather than by directory. Its authoritative
+runtime [ownership index](corpus-index.json) gives each reference check exactly
+one target: `reader`, `verifier`, one of `module`, `integrity`, `representations`,
+`portfolio`, `sensitivity`, `stochastic`, or `starter-products`. Legacy fixture
+paths remain stable for consumers; they do not confer a tier claim.
+
+| Target | Reference checks | Portable CLI cases |
+|---|---:|---:|
+| Reader | 23 | 16 |
+| Verifier | 679 | 280 |
+| Module | 68 | 1 |
+| Integrity | 15 | 0 |
+| Representations | 134 | 0 |
+| Portfolio | 14 | 0 |
+| Sensitivity | 5 | 0 |
+| Stochastic | 7 | 0 |
+| Starter products | 116 | 35 |
+| **Total** | **1,061** | **332** |
+
+The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
+now run by default, and five new Verifier checks (marked `added` in the index)
+bring the total to 1,061. Portable cases project a subset of those same checks,
+so 332 is not an additional corpus. All expectations are preserved. The index
+and generated cases are checked for exact ownership, missing/duplicate results
+and generation drift.
+
+Starter-product checks belong to the [starter guide](../docs/starter/README.md)
+and remain blocking CI checks. A mixed check with product assertions stays a
+product check in full; where it also pins a registered validator or provenance
+code, a separate `<scenario> [validate]` Verifier case checks that code alone
+(`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`).
+
+Ownership follows Protocol §II.2. Exact dictionary reproduction (same id,
+formula and unit as [`spec/metrics/builtin.json`](../spec/metrics/builtin.json)),
+the IRR procedure, the §VIII.1–VIII.3 expression grammar, variable resolution
+and built-ins (`date-*`, `period-*`, `variant-*`) are Verifier checks; the
+expression cases keep `requires_capabilities: ["calc-evaluate"]`, so a Verifier
+that claims no evaluator skips rather than fails them. Module owns module
+manifests, the registry and custom declarations (the ADR × occupancy
+`revpar-basic` fixture). UW Lite compilation and projection
+(Lite spec §8) and the deal-package encodings (RFC 0018) belong to
+Representations.
+
+The following tree describes **fixture storage**. The `tier-N-*` directory
+names are Protocol 2.x history kept for stable paths; owners come from the
+index, not the directory:
 
 ```
 conformance/
-├── tier-1-reader/      Parse + display, read-only
+├── tier-1-reader/      Reader parse, Verifier validation, starter renders
 │   ├── fixtures/       Well-formed .uwx.md records an implementer parses
 │   ├── malformed/      Files exercising validator / integrity / policy codes
 │   │                     (CC-NN, FV-NN, DQ-NN, INT-NN, POL-NN, META_*)
 │   │                     plus optional <id>.policies.json siblings for
 │   │                     POL-* fixtures
+│   │                     <id>.validation.json (06, 07): Verifier [validate]
+│   │                     projection incl. provenance findings
 │   └── expected/       Expected JSON parses + frozen validation verdicts
 │                         (<id>.validation.json: overall_status + every
 │                         (code, severity) pair) + display strings +
 │                         chat-format renders
-├── tier-2-editor/      Round-trip writes, supersede semantics
+├── tier-2-editor/      Starter products: round-trip writes, supersede
 │   └── fixtures/       <scenario>/{before.uwx.md, operation.json, after.uwx.md}
 │                         Optional siblings: context.json (EditContext),
 │                         options.json (ApplyEditOptions, e.g. {integrity: true,
 │                         maintainGaps: true}), expected-error.json (negative
 │                         path — assert applyEdit rejects with a specific code)
-├── tier-3-calc-host/   Custom calculation evaluation
+├── tier-3-calc-host/   Verifier calcs (dictionary, IRR, §VIII notation);
+│                         one Module custom declaration (revpar-basic)
 │   ├── fixtures/       <scenario>/{deal.uwx.md, calc.json, expected-result.json}
 │   └── refinement/     <scenario>/{deal.uwx.md, expected-graph.json}
 │                         Exercises extractDependencyGraph() against a fixture
-├── tier-4-agent-host/  AI agent layers producing write_uw_section calls
+├── tier-4-agent-host/  Starter products: AI agent layers (shape, profile, replay)
 │   ├── fixtures/       <scenario>/{before.uwx.md, expected-after-shape.json}
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
@@ -285,12 +332,12 @@ market data and deal packages are *companion document kinds*, module manifests
 and composition are *protocol machinery*, and the capital stack and
 size-intensive registry are *verified protocol surfaces*, and signing is an
 *optional capability* — none is itself a protocol conformance tier. All run by
-default; select one alone with `--tier=<name>` (e.g. `--tier=lite`,
-`--tier=signing`).
+default; select one alone with `--suite=<name>` (e.g. `--suite=lite`,
+`--suite=signing`).
 
-`signing` is the one suite an implementation may skip and stay conformant: it
-gates the `signing` capability claim in `ImplementationManifest.capabilities`,
-and an implementation that does not claim signing is not asked to pass it. Two
+`signing` belongs to the optional Integrity profile. Its required capabilities
+remain explicit; an unclaimed profile is unverifiable and an unclaimed
+capability is a reported skip, never a pass. Two
 of its five scenarios exist to pin distinctions rather than happy paths —
 `blocks/03-signed-unknown-kid` must report `INT-06` and never `INT-07` ("I
 cannot check this" is not "this is forged"), and `blocks/05-signed-no-backend`
@@ -328,29 +375,29 @@ third-party implementer rather than a restatement of our implementation.
 
 1. Implement (or update) your tool against the published
    [`UW_PROTOCOL_v1.md`](../spec/UW_PROTOCOL_v1.md).
-2. For each tier you claim, run every fixture in that tier through your tool.
+2. Select your tier and explicitly claimed profiles; run their indexed cases through your tool.
 3. Compare your output to the corresponding `expected/` output.
 
-**Tiers 1–3 use byte-exact comparison** (after JSON canonicalization and
-volatile-field stripping where applicable). **Tier 4 uses shape assertions** —
-LLM nondeterminism makes byte equality impractical, so the expected output is
-a JSON Schema fragment describing the shape of an acceptable agent response.
+Frozen comparisons retain their existing subset, exact, normalized-byte or
+shape rules; re-tiering changes ownership, never an assertion. Publish the
+capability/profile claims and all skipped/unverifiable counts with the result.
+Starter-product results are separate compatibility claims, not conformance.
 
 ## Running the reference test runner
 
 The reference implementation ships a runner at
 [`scripts/run-conformance.mjs`](../scripts/run-conformance.mjs) that exercises
-the corpus against `@uwmd/core`. CI runs tiers 1–3 on every PR.
+the corpus against `@uwmd/core`. CI runs all indexed checks on every PR.
 
 ```bash
-# Default: tiers 1, 2, 3
+# Default: every indexed standard and starter check
 node scripts/run-conformance.mjs
 
-# Specific tiers
-node scripts/run-conformance.mjs --tier=1,3
+# Reader + Verifier, plus the Module profile
+node scripts/run-conformance.mjs --tier=verifier --profile=module
 
-# Tier 4 is operator-driven (lint-only — does not invoke an LLM)
-node scripts/run-conformance.mjs --tier=4
+# Agent starter checks (lint-only — does not invoke an LLM)
+node scripts/run-conformance.mjs --starter-products --suite=4
 
 # Bootstrap / refresh expected outputs from the current library
 node scripts/run-conformance.mjs --update
@@ -367,7 +414,14 @@ normative.
 
 ## Adding a fixture
 
-Fixtures are normative once merged. To add one:
+Add one `(suite, scenario, target)` row to `corpus-index.json` for every check
+reported by the reference runner. Add generated portable identities when the
+fixture has a CLI projection, then run `npm run gen-conformance-cases`.
+Ownership is explicit and closed; neither a directory name nor a legacy id
+assigns it. Coverage guards reject a fixture that has no indexed owner.
+
+
+Standard fixtures are normative once merged; product fixtures specify starter compatibility. To add one:
 
 1. Open a PR with the fixture file and its expected output.
 2. Explain in the PR description what scenario the fixture covers and why it
@@ -389,16 +443,17 @@ fixtures. To regenerate after a non-breaking improvement:
 node scripts/regen-conformance.mjs
 ```
 
-If a regeneration changes any expected output, that's a normative change to
-the protocol — call it out explicitly in the PR description and bump the
-protocol version in `UW_PROTOCOL_v1.md`.
+If a regeneration changes a standard expectation, identify the normative
+change in the RFC and PR; its version label moves at release preparation.
+A changed starter expectation is a package quality-bar change, not a
+Protocol change. Neither should be regenerated merely to hide a failure.
 
 ## Lease-up projection
 
 The default `lease-up-projection` suite exercises RFC 0044 explicit cash-date
 mapping and candidate output. See `lease-up-projection/README.md` for its
 self-contained source/plan/expected cases. Run it alone with
-`npm run conformance -- --tier=lease-up-projection` after building core.
+`npm run conformance -- --suite=lease-up-projection` after building core.
 
 ### Property cash-flow assembly (RFC 0045)
 
@@ -406,7 +461,7 @@ The default `property-cash-flow-assembly` suite contains self-contained syntheti
 source/plan/expected triples. Cases exercise complete coverage, monthly/leap and
 same-date timing, reserve declarations, duplicates, currency, signs and original
 source-verifier refusals. These fixtures are engineering inputs, not real deals.
-Run `npm run conformance -- --tier=property-cash-flow-assembly` after building.
+Run `npm run conformance -- --suite=property-cash-flow-assembly` after building.
 
 ### Standalone document kit (RFC 0048)
 
@@ -414,7 +469,7 @@ The default `standalone` suite exercises the worked examples under
 `examples/standalone/`: profile and lease-abstract validation, independent
 fragment parsing, inline/externalized canonical and semantic-digest equality,
 and package integrity/context-boundary behavior. Run it alone with
-`npm run conformance -- --tier=standalone` after building.
+`npm run conformance -- --suite=standalone` after building.
 
 ### Same-day cash-flow reconciliation (RFC 0062, accepted)
 
@@ -429,7 +484,7 @@ row/binding checks. Receipt issuance baselines change only their protocol label
 to 2.17.1; engine/package versions are unchanged. Run the focused suites with:
 
 ```sh
-npm run conformance -- --tier=cash-flow,property-cash-flow-assembly
+npm run conformance -- --suite=cash-flow,property-cash-flow-assembly
 ```
 
 ## RFC 0070 replacement funding (Protocol 2.21.0)
@@ -461,7 +516,7 @@ verify consistency, while producer purpose evidence must reject that mapping.
 
 The [metrics suite](../conformance/metrics/README.md) verifies every builtin example using the
 normative dictionary and safe-expression evaluator, without packs, defaults or
-cascade. It records 104 verified statements and 39 existing example mismatches,
-with per-example counts and per-statement evidence. Known findings are compared
-exactly, and negative controls pin missing-input refusal and quantization. Run
-`npm run conformance -- --tier=metrics`; it is included in the default suite.
+cascade. It records 187 verified statements, zero failures and zero unverifiable
+statements, with per-example counts and per-statement evidence. Findings are
+compared exactly, and negative controls pin missing-input refusal and quantization. Run
+`npm run conformance -- --suite=metrics`; it is included in the default suite.

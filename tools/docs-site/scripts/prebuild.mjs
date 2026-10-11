@@ -68,10 +68,10 @@ const COPIES = [
 
   // Conformance
   { from: 'conformance/README.md',                  to: 'conformance/index.md',  title: 'Conformance Corpus' },
-  { from: 'conformance/tier-1-reader/README.md',    to: 'conformance/tier-1.md', title: 'Tier 1 — Reader' },
-  { from: 'conformance/tier-2-editor/README.md',    to: 'conformance/tier-2.md', title: 'Tier 2 — Editor' },
-  { from: 'conformance/tier-3-calc-host/README.md', to: 'conformance/tier-3.md', title: 'Tier 3 — Calc Host' },
-  { from: 'conformance/tier-4-agent-host/README.md', to: 'conformance/tier-4.md', title: 'Tier 4 — Agent Host' },
+  { from: 'conformance/tier-1-reader/README.md',    to: 'conformance/tier-1.md', title: 'Reader and validation fixtures (tier-1 directory)' },
+  { from: 'conformance/tier-2-editor/README.md',    to: 'conformance/tier-2.md', title: 'Editor starter checks (tier-2 directory)' },
+  { from: 'conformance/tier-3-calc-host/README.md', to: 'conformance/tier-3.md', title: 'Calculation fixtures (tier-3 directory)' },
+  { from: 'conformance/tier-4-agent-host/README.md', to: 'conformance/tier-4.md', title: 'Agent starter checks (tier-4 directory)' },
   { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
 
   // Starter products (non-normative, RFC 0078) — docs/starter/ is the source.
@@ -297,6 +297,16 @@ function rewriteLinks(md) {
     const rfcMatch = norm.match(/^(?:docs\/)?(?:rfcs\/)?(\d{4}-[a-z0-9-]+)\.md$/);
     if (rfcMatch) {
       return `](/about/rfcs/${rfcMatch[1]}${frag})`;
+    }
+
+    // Corpus ownership and its schemas are source artifacts, not site pages.
+    // Keep their new links usable without changing the site's navigation.
+    if (/^(?:conformance\/)?corpus-index\.json$/.test(norm)) {
+      return `](${GITHUB_BLOB}/conformance/corpus-index.json${frag})`;
+    }
+    const corpusSchema = norm.match(/^(?:(?:spec\/)?schemas\/)?(conformance-(?:case|corpus)\.schema\.json)$/);
+    if (corpusSchema) {
+      return `](${GITHUB_BLOB}/spec/schemas/${corpusSchema[1]}${frag})`;
     }
 
     // JSON Schemas are not site pages; the starter guide links them by repo

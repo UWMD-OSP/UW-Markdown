@@ -1,0 +1,20 @@
+{
+  "id": "verifier/scenario/11-unlisted",
+  "target": "verifier",
+  "legacy_id": "scenario/11-unlisted",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/scenario/11-unlisted",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

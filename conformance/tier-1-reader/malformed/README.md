@@ -1,4 +1,4 @@
-# Tier 1 — Malformed fixtures
+# Malformed fixtures (tier-1 directory)
 
 Negative-test counterpart to `../fixtures/`. Each `.uw.md` here is
 intentionally malformed in a way that the **validator** must catch.
@@ -45,5 +45,6 @@ validator must surface this problem," not "the validator must surface
    plus one offending section block is usually enough.
 3. Write the matching `<id>.expected.json` declaring the codes the
    validator must emit.
-4. Run `node scripts/run-conformance.mjs --tier=1` from the repo root
+4. Add its owner row to `conformance/corpus-index.json`, then run
+   `node scripts/run-conformance.mjs --suite=1` from the repo root
    and confirm the new fixture passes.

@@ -138,6 +138,12 @@ export function readConformanceTier(tier: unknown): ConformanceTierReading | nul
   return null;
 }
 
+/** Single owner of each corpus case (RFC 0078 Phase 3, §II.6a). */
+export const CONFORMANCE_TARGETS = Object.freeze([
+  'reader', 'verifier', ...CONFORMANCE_PROFILES, 'starter-products',
+] as const);
+export type ConformanceTarget = (typeof CONFORMANCE_TARGETS)[number];
+
 /** What kind of actor the implementation serves. Informational. */
 export type ViewerRole = 'web' | 'cli' | 'desktop' | 'ide-extension' | 'library' | 'service';
 

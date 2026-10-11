@@ -1,16 +1,22 @@
-# Tier-1 Reader conformance
+# Reader, Verifier and starter fixtures
 
-Tier-1 Readers parse `.uw.md` files and present their contents read-only.
-They MUST:
+Parse cases belong to Reader; Format-validation cases, and the `[validate]`
+projections of `malformed/06` (`POL-01`) and `malformed/07` (`POL-02`), to
+Verifier; integrity checks to Integrity. Render checks, and the mixed
+`malformed/06`/`07` cases that pin policy beside edit behavior, are starter
+products. The directory name is history kept for stable paths;
+[corpus-index.json](../corpus-index.json) determines each case’s single owner.
+
+A Reader (Protocol §II.1) MUST:
 
 - Parse all required frontmatter fields and surface them as structured data.
 - Recognize all 21 standard sections defined in `UW_FORMAT_SPEC_v1.md` §4.
-- Apply the display conventions in `UW_PROTOCOL_v1.md` Part III to render
-  numbers, percents, ratios, and dates uniformly.
-- Surface validation issues with the remediation copy from
-  `BUILTIN_REMEDIATIONS` (Part III §3.6).
+- Treat unknown frontmatter keys, sections and `x_*` blocks as informative.
 - Honor the `superseded` semantics: when multiple blocks share a `section_id`,
-  display the most recent non-superseded block as canonical.
+  the most recent non-superseded block is canonical.
+
+How a Reader displays values, including the Part III display conventions and
+`BUILTIN_REMEDIATIONS` copy, is starter-product guidance (RFC 0078 D11).
 
 ## Fixtures
 
@@ -39,8 +45,8 @@ coverage requires fixture-bound policies).
 | `malformed/02-low-confidence-no-review` | `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` | Validator (info) |
 | `malformed/03-sources-uses-mismatch` | `CC-04` | Validator (cross-section) |
 | `malformed/04-broken-chain` | `INT-01` | `verifyChain` (parent_hash mismatch) |
-| `malformed/06-wrong-actor` | `POL-01` | `verifyProvenance` + custom policy |
-| `malformed/07-replace-where-supersede-required` | `POL-02` | `verifyProvenance` |
+| `malformed/06-wrong-actor` | `POL-01` | `verifyProvenance` + custom policy; Verifier `[validate]` baseline `06-wrong-actor.validation.json` |
+| `malformed/07-replace-where-supersede-required` | `POL-02` | `verifyProvenance`; Verifier `[validate]` baseline `07-replace-where-supersede-required.validation.json` |
 | `malformed/08-provisional-without-gap` | `DQ-01` | Validator (data quality) |
 | `malformed/09-partial-without-overrides` | `DQ-03` | Validator (data quality) |
 | `malformed/10-property-section-missing` | `CC-14`, `DQ-06` | Validator (RFC 0028: missing property warns; declared-stage section gaps report at info) |
@@ -67,8 +73,9 @@ For each fixture `<id>.uwx.md`, the corresponding `expected/` directory contains
 - `<id>.rendered-summary.md` — output of `cli render --format summary`.
 - `<id>.rendered-chat.txt` — output of `cli render --format chat`.
 
-A conforming Tier-1 Reader does not need to match the `rendered-*` outputs
-byte-for-byte — different presentations are encouraged.
+A conforming Reader does not need to match the `rendered-*` outputs
+byte-for-byte — those are starter-product checks, and different presentations
+are encouraged.
 
 Its parse output MUST contain the **parse conformance projection** recorded in
 `<id>.parsed.json`, and MAY contain more. The projection is specified in
@@ -87,7 +94,7 @@ the defect.
 ## Running
 
 ```bash
-node scripts/run-conformance.mjs --tier=1
+node scripts/run-conformance.mjs --suite=1
 ```
 
 The reference runner compares a canonical projection of the parse output

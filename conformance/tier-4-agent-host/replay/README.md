@@ -1,13 +1,14 @@
-# Tier-4 recorded-replay scenarios
+# Agent recorded-replay scenarios (starter-product checks)
 
-Deterministic Tier-4 conformance. Each scenario replays a recorded cassette
+Deterministic agent-host checks, owned by the starter products (RFC 0078),
+not a Protocol tier. Each scenario replays a recorded cassette
 through the real agent runner and compares the resulting document **byte for
 byte** against a frozen baseline. No network, no API key, no cost — so unlike
 the shape-only fixtures in `../fixtures/`, these run in CI by default.
 
 ## Why this exists
 
-Tier-4 conformance used to be lint-only: the fixture and its expected-shape JSON
+Agent-host checks used to be lint-only: the fixture and its expected-shape JSON
 were parsed, and nothing else happened. Nothing checked that a host actually
 writes what the protocol says it writes.
 
@@ -30,7 +31,7 @@ execute cannot fail, which is the worst property a conformance fixture can have.
 
 ## What a scenario proves
 
-Replaying the cassette exercises the entire Tier-4 write path at once:
+Replaying the cassette exercises the entire agent-host write path at once:
 
 - context assembly and the readiness check,
 - tool-call extraction,
@@ -97,6 +98,6 @@ writeFileSync('cassette.json', JSON.stringify(recorder.cassette(), null, 2));
 
 ## Regenerating a baseline
 
-`npm run conformance -- --tier=4-replay --update` refreshes `after.uwx.md` from
+`npm run conformance -- --suite=4-replay --update` refreshes `after.uwx.md` from
 current library output, the same way every other suite handles baselines. Review
 that diff carefully — it is the assertion.

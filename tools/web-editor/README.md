@@ -1,6 +1,6 @@
 # `@uwmd/web-editor` — Calc-Aware Editor (preview 0.4.0)
 
-The single editor for `.uw.md` files. Embeds the [`@uwmd/core`](../../packages/uwmd-core/) parser, validator, Tier-2 dispatcher, Tier-3 calc engine, and the §7.1/§7.2 report renderer in the browser so derived values (NOI, DSCR, LTV, IRR, valuation) never drift from inputs — and the lender package is always one tab away.
+The single editor for `.uw.md` files. Embeds the [`@uwmd/core`](../../packages/uwmd-core/) parser, validator, edit dispatcher, calc engine, and the §7.1/§7.2 report renderer in the browser so derived values (NOI, DSCR, LTV, IRR, valuation) never drift from inputs — and the lender package is always one tab away.
 
 > **Status:** preview 0.4.0 — extensive build-out (intelligence, provenance, transparency, full data entry) on the React + Tailwind base. Same edit chokepoint throughout.
 

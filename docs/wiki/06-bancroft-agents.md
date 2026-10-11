@@ -30,7 +30,7 @@ skipLibCheck disabled and optional peers absent.
 
 Each `LayerDefinition` declares `id`, `layer` (number), `name`, `reads[]`,
 `writes[]`, `pipelineStateKey`, and `consumed_profile` (the normative context
-profile, verified by Tier-4 conformance).
+profile, verified by the agent starter-product checks).
 
 Layer | Name | Reads | Writes | Profile
 ---|---|---|---|---
@@ -140,7 +140,7 @@ goes `context_built → calling_claude → parsing_output → writing_block → 
 
 `buildContext(parsed, profile, opts) → ContextResult`. Profiles: `summary`,
 `compact`, `relevant`, `full`, `live`. Each layer declares which it `consumes`;
-Tier-4 profile conformance asserts the `layer → profile` map matches the baseline.
+The agent profile starter check asserts the `layer → profile` map matches the baseline.
 
 ## Running a layer from the CLI
 
@@ -163,5 +163,6 @@ uwmd layers                                      # list all layers
 4. If it writes multiple sections, add its id to `MULTI_SECTION_LAYERS` in
    `agents/schemas.ts`.
 5. If it consumes a new pipeline-state key, extend `UWPipelineState` in `types.ts`.
-6. Add a Tier-4 profile expectation and (optionally) a shape fixture under
-   `conformance/tier-4-agent-host/`. Run `npm run conformance -- --tier=4`.
+6. Add an agent profile expectation and (optionally) a shape fixture under
+   `conformance/tier-4-agent-host/` (starter-product checks). Run
+   `npm run conformance -- --suite=4`.

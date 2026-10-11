@@ -330,7 +330,7 @@ What it carries, and why each part earns its place:
   spreadsheet is treating a cached cell as ground truth and "helpfully"
   recomputing it. The rows say plainly: this workbook is a view, the canonical
   record is the `.uw.md`, derived metrics are pack-owned formulas, inputs apply
-  only through the Tier-2 editor, and the digest proves *source identity*, not
+  only through the starter editor, and the digest proves *source identity*, not
   input truth.
 
 `verifyWorkbookContract(wb, parsed, layout)` returns a **three-state** verdict —

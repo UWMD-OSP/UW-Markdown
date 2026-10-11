@@ -109,8 +109,10 @@ Fixtures live under `conformance/tier-N-*/fixtures/` with expected outputs in
    npm run cli -- parse <fixture> > <expected>.parsed.json
    npm run cli -- render <fixture> --format chat > <expected>.rendered.txt
    ```
-3. Add an entry to the per-tier README explaining what the fixture exercises.
-4. For Tier-4 (agent-host) fixtures, expected outputs are *shape assertions*,
+3. Add its owner row (Reader, Verifier, a profile, or starter products) to
+   `conformance/corpus-index.json`, and an entry to the suite README explaining
+   what the fixture exercises.
+4. For agent-host starter fixtures (`tier-4-agent-host/`), expected outputs are *shape assertions*,
    not byte equality — LLMs are nondeterministic, so the fixture's
    `expected-after-shape.json` lists fields that MUST be present, with allowed
    value types but not specific values.

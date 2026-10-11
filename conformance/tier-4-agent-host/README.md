@@ -1,6 +1,10 @@
-# Tier-4 Agent Host conformance
+# Agent starter-product checks
 
-Tier-4 Agent Hosts run the Bancroft layer DAG (or a module-contributed
+Every case here is a starter-product check, owned by docs/starter, not a Protocol tier. The existing shape, layer-profile and replay checks all remain in CI and now run by default. Legacy paths are retained;
+[corpus-index.json](../corpus-index.json) determines each case’s single owner.
+
+
+Compatible agent hosts run the Bancroft layer DAG (or a module-contributed
 equivalent) and apply the resulting `write_uw_section` / `write_multiple_sections`
 tool calls back into the file. Hosts MUST:
 
@@ -52,13 +56,13 @@ profile/<scenario-id>/
 
 ## Running
 
-Tier 4 is **operator-driven**, not part of CI — LLM calls cost money and
-are nondeterministic. The reference runner ships a lint-only pass that
-parses each `before.uwx.md`, validates each `expected-after-shape.json`
-as a well-formed JSON Schema, and runs the profile-contract assertion:
+The reference runner executes these starter checks by default, without live
+LLM calls. Its lint-only pass parses each `before.uwx.md`, validates each
+`expected-after-shape.json` as a well-formed JSON Schema, and runs the
+layer-profile contract. The same checks can be selected as a fixture family:
 
 ```bash
-node scripts/run-conformance.mjs --tier=4
+node scripts/run-conformance.mjs --suite=4
 ```
 
 Live agent runs against the shape are out of scope for the reference runner;

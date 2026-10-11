@@ -74,44 +74,84 @@ keep the competing revision fixed when comparing before and after.
 
 ## Conformance corpus (`conformance/`)
 
+RFC 0078 Phase 3 uses case-level ownership in
+[`conformance/corpus-index.json`](../../conformance/corpus-index.json).
+Every check belongs exactly once to Reader, Verifier, one optional profile
+(Module, Integrity, Representations, Portfolio, Sensitivity or Stochastic),
+or starter products. Legacy directories are storage paths, never tier claims.
+Editor/agent, rendering, defaults/cascade, projections and refinement checks
+belong to [docs/starter](../starter/README.md), remain in CI and have separate
+report counts. Mixed cases keep all their assertions and are product checks.
+
+The corpus reconciles **1,053 default + three opt-in = 1,056 existing reference
+checks, plus five new validate-only Verifier checks = 1,061**, and **332 portable
+CLI projections**. The lender fixture stays **187/0/0**.
+
+| Owner | Reference | Portable |
+|---|---:|---:|
+| reader | 23 | 16 |
+| verifier | 679 | 280 |
+| module | 68 | 1 |
+| integrity | 15 | 0 |
+| representations | 134 | 0 |
+| portfolio | 14 | 0 |
+| sensitivity | 5 | 0 |
+| stochastic | 7 | 0 |
+| starter-products | 116 | 35 |
+| **Total** | **1,061** | **332** |
+
+A case testing something §II.2 lists as a Verifier requirement is a Verifier
+case, even when it needs an expression evaluator: those keep
+`requires_capabilities: ["calc-evaluate"]` and are skipped, not failed, for a
+Verifier that does not claim it.
+
+`--tier=verifier` includes Reader; `--profile=module` selects only that profile;
+`--starter-products` selects product checks. Combine selectors to claim both.
+Long legacy tier names and the numeric shorts `1`–`4` (exactly one digit;
+`3.0` or `+3` are refused) resolve through `readConformanceTier` and warn on
+stderr, so `--tier=3` now means Verifier and `--tier=2` runs Reader only. They
+infer neither profiles nor starter checks. `--suite`
+selects an existing fixture family independently of ownership. With no
+selector every indexed check runs, with counts by target.
+
+Unknown owners, duplicate/missing results and unindexed portable identities
+fail the gate, as does a runner suite with no index rows or an indexed suite
+with no runner. Baseline updates require full runs or `--suite`; a target
+filter is refused because mixed-suite updates could alter unselected baselines.
+A family includes its child suites (`3-refinement` under `3`, `4-profile`
+under `4`); baseline updates selecting only a child suite are refused.
+The descriptions below retain historical fixture paths, not old tier claims.
+
+
 Runner: [`scripts/run-conformance.mjs`](../../scripts/run-conformance.mjs). It
 imports the **built** `@uwmd/core` from `dist/`, so **build before running**.
 
 ```bash
 npm run build
-npm run conformance                 # 1,2,3 + 4-replay + lite + receipts + market-data + modules + packages + composition + capital-stack
-npm run conformance -- --tier=1,2,3,4,lite,receipts,modules
-npm run conformance -- --tier=lite         # the UW Lite suite alone
-npm run conformance -- --tier=receipts     # the receipts suite alone
-npm run conformance -- --tier=modules      # the module manifest suite alone
-npm run conformance -- --tier=packages     # the deal package suite alone
-npm run conformance -- --tier=composition  # the RFC 0021 composition suite alone
-npm run conformance -- --tier=capital-stack  # the RFC 0026 capital-stack suite alone
-npm run conformance -- --tier=lease-up     # the RFC 0008 lease-up suite alone
-npm run conformance -- --tier=capability   # the RFC 0011 capability-token suite alone
-npm run conformance -- --tier=locale       # the RFC 0001 display-locale suite alone
-npm run conformance -- --tier=meta-v2      # the RFC 0009 nested-_meta suite alone
-npm run conformance -- --tier=migrate      # the RFC 0009 migrate --to-v2 suite alone
-npm run conformance -- --tier=2 --update   # regenerate that tier's baselines
+npm run conformance                 # all indexed standard and starter checks
+npm run conformance -- --tier=verifier --profile=module,integrity,representations,portfolio,sensitivity,stochastic --starter-products
+npm run conformance -- --suite=lite         # the UW Lite suite alone
+npm run conformance -- --suite=receipts     # the receipts suite alone
+npm run conformance -- --suite=modules      # the module manifest suite alone
+npm run conformance -- --suite=packages     # the deal package suite alone
+npm run conformance -- --suite=composition  # the RFC 0021 composition suite alone
+npm run conformance -- --suite=capital-stack  # the RFC 0026 capital-stack suite alone
+npm run conformance -- --suite=lease-up     # the RFC 0008 lease-up suite alone
+npm run conformance -- --suite=capability   # the RFC 0011 capability-token suite alone
+npm run conformance -- --suite=locale       # the RFC 0001 display-locale suite alone
+npm run conformance -- --suite=meta-v2      # the RFC 0009 nested-_meta suite alone
+npm run conformance -- --suite=migrate      # the RFC 0009 migrate --to-v2 suite alone
+npm run conformance -- --suite=2 --update   # regenerate that family's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
 
-Exit code 0 = all pass, 1 = at least one failure. The **`4-replay`** suite runs
-by default — it is deterministic and needs no network or API key. The numbered
-**tier 4** suite stays gated behind an explicit `--tier=4`, because it is
-shape/lint-only plus the profile contract and assumes an operator-driven live
-run.
+Exit code 0 = all pass, 1 = a failed assertion, 2 = an invalid selector or
+coverage error. Shape, layer-profile and deterministic replay checks all run
+by default as starter products; no live model is called. JSON reports contain
+canonical `target` plus `tier`, `profile` or `starter_product`, and `by_target`
+counts. Historical suite numbers are exposed only as fixture-family addresses.
 
-> **Directory names vs Protocol 3.0 tiers.** RFC 0078 replaced the four
-> Protocol 2.x tiers with two (Reader, Verifier) plus six optional profiles
-> (`UW_PROTOCOL_v1.md` Part II). The corpus directories below keep their 2.x
-> names until the corpus is re-tiered in RFC 0078 phase 3, and directory
-> membership was never a normative signal (§II.6). Today `tier-1-reader` is the
-> Reader corpus; the verifier-relevant `tier-3-calc-host` fixtures are the
-> Verifier corpus; `tier-2-editor` and `tier-4-agent-host` test starter
-> products ([`docs/starter/`](../starter/README.md)) and still run in CI.
-
-### Tier 1 — Reader
+### Reader, Verifier and starter fixture storage
 
 `conformance/tier-1-reader/`:
 - `fixtures/*.uw.md` parsed and compared (canonical JSON projection) against
@@ -129,18 +169,28 @@ run.
   optional `must_parse`. INT-/POL- expectations also exercise
   `verifyChain`/`verifyProvenance`; an optional `<id>.policies.json` supplies
   custom policies.
+- `malformed/<id>.validation.json` (06 and 07 only) freezes the Verifier
+  `[validate]` projection of a starter check: the validator's `overall_status`
+  and `(code, severity)` pairs, plus the `provenance` pairs `verifyProvenance`
+  reports under the fixture's policies. `currency/malformed`,
+  `locale/unsupported-locale-refuses` and `source/04-colon-form-rejected` carry
+  the same projection as `expected-validation.json`.
 
-### Tier 2 — Editor
+### Editor starter checks
 
 `conformance/tier-2-editor/fixtures/<scenario>/`: `before.uw.md` +
 `operation.json` → run `applyEdit` (or `applyEditAsync` when `options.json` has
 `integrity: true`) with `context.json` → compare against `after.uw.md`. Volatile
 fields (`last_modified`, `timestamp`, `ts=`, `content_hash`) are stripped before
 byte comparison. Negative scenarios provide `expected-error.json` declaring the
-`code` `applyEdit` must fail with. **The point of Tier 2: bytes outside the edited
+`code` `applyEdit` must fail with. **The editor quality bar: bytes outside the edited
 region must be preserved.**
 
-### Tier 3 — Calc Host
+### Verifier and Module calculations
+
+All but one of these are Verifier checks (§II.2: dictionary reproduction, the
+IRR procedure, the §VIII.1–VIII.3 notation). `revpar-basic`, a custom
+ADR × occupancy declaration, is the Module check.
 
 `conformance/tier-3-calc-host/fixtures/<scenario>/`: `deal.uw.md` + `calc.json`
 (a `ModuleCalcDecl`) → `evaluateCalc` → compare projected `{calc_id, ok, value,
@@ -148,7 +198,7 @@ unit?, error?}` against `expected-result.json`. Plus a **refinement** mode
 (`refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
 projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 
-### Tier 4 — Agent Host
+### Agent starter checks
 
 `conformance/tier-4-agent-host/`:
 - `replay/<scenario>/` — **the real gate, and it runs by default.**
@@ -169,7 +219,7 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
   order. See `conformance/tier-4-agent-host/replay/README.md`, including its
   note on what recorded replay does *not* prove.
 - `fixtures/<scenario>/`: `before.uw.md` + `expected-after-shape.json` —
-  **lint-only** (parse + JSON-validate), retained for operator-driven live runs.
+  **shape checks** (parse + JSON-validate), run by default without a live model.
   Note the `l6-risk-rating` fixture is not runnable as written: it carries only
   a `property` section while L6 requires `noi_model`, `valuation`, and
   `debt_structure`. The replay scenario uses its own input for that reason.
@@ -223,19 +273,20 @@ baselines need no volatile-field stripping.
 ## The language-agnostic driver (RFC 0004)
 
 `npm run conformance:v2` → [`conformance/runner/runner.py`](../../conformance/runner/README.md)
-runs the tier fixtures against **any** implementation that speaks the CLI
+runs the generated CLI projections against **any** implementation that speaks the CLI
 protocol in protocol §II.6a. It shells out; it knows nothing about TypeScript
 or `@uwmd/core`, so the reference implementation is tested exactly the way a
 Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs 341 assertions across its suites, and most of what has been added
+runs all 1,061 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
-signature key stores, invariants asserted with no baseline at all. The v2
-driver gates the **protocol** — that a non-TS implementation *can* self-certify
-— while the v1 runner gates the **corpus**. Replacing one with the other would
+signature key stores, invariants asserted with no baseline at all. The portable
+driver checks its 332-case subset using shared comparison logic, while the
+reference runner checks the full indexed corpus. A result claims only the
+checks actually run. Replacing one with the other would
 trade breadth for portability.
 
 Output is TAP version 14 plus an optional JSON manifest (`--manifest-out`)
@@ -249,9 +300,9 @@ The `cases/*.case.json` files are **generated** —
 `npm run gen-conformance-cases`, with `--check` in CI. A case restates what is
 already on disk (which fixture, which command, which baseline), and
 hand-maintaining fifty invites one to go stale silently. The known gaps are
-listed in the runner README rather than hidden: two tier-2 fixtures need
-`applyEditAsync` and a volatile hash the synchronous CLI cannot express, tier 4
-has no CLI surface, and the named suites are TypeScript-only.
+listed in the runner README rather than hidden: two editor starter fixtures need
+`applyEditAsync` and a volatile hash the synchronous CLI cannot express, agent starter checks
+have no CLI surface, and the named suites are TypeScript-only.
 
 Comparison is **subset-by-default**: the baselines are projections, so an
 implementation reporting `round_to` and `display` alongside the four fields a
@@ -288,7 +339,7 @@ detached artifact, not a protocol tier. It runs by default.
 > **Three receipt fixtures move on every `@uwmd/core` release.** The two
 > `issue/` baselines record the issuing engine, so `expected-receipt.json`
 > carries the new `engine_version` (and `protocol_version`, on a protocol bump)
-> — regenerate with `npm run conformance -- --tier=receipts --update` and check
+> — regenerate with `npm run conformance -- --suite=receipts --update` and check
 > the diff is only those fields.
 >
 > `verify/03-result-disagrees` is the subtle one: its receipt must be stamped
@@ -454,22 +505,28 @@ ensure identity remains descriptive. See its README for the case list.
 
 ## Adding fixtures (quick reference)
 
-- **Tier 1:** drop a `.uw.md` in `fixtures/`, then `--tier=1 --update` to mint the
+First register every emitted `(suite, scenario)` once in the corpus index,
+choosing its owner from the closed target vocabulary. Retain all existing
+assertions; register portable legacy ids before regenerating case files.
+The following family names describe storage and baseline update selectors.
+
+
+- **Legacy family 1:** drop a `.uw.md` in `fixtures/`, then `--suite=1 --update` to mint the
   expected baselines (review the diff before committing).
-- **Tier 1 malformed:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
+- **Legacy family 1 malformed:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
   with `expected_codes`.
-- **Tier 2:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
-  `context.json`/`options.json`), then `--tier=2 --update` to mint `after.uw.md`.
-- **Tier 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--tier=3
+- **Editor family 2:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
+  `context.json`/`options.json`), then `--suite=2 --update` to mint `after.uw.md`.
+- **Calculation family 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--suite=3
   --update`.
-- **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--tier=lite --update`. Run
-  `--tier=lite` *without* `--update` first — the negative and invariant checks
+- **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--suite=lite --update`. Run
+  `--suite=lite` *without* `--update` first — the negative and invariant checks
   (malformed, compile, round-trip, equivalence) need no baselines, so they
   validate your fixture before you freeze anything. For a negative case, add
   `<id>.uw.md` + `<id>.expected.json` under `lite/malformed/` (parse errors) or
   `lite/compile/` (bridge errors); neither needs `--update`.
 - **Receipts:** make `receipts/issue/<scenario>/` with a deal document, then
-  `--tier=receipts --update` to mint `expected-receipt.json`. Verify and refuse
+  `--suite=receipts --update` to mint `expected-receipt.json`. Verify and refuse
   scenarios need no `--update`: hand-write `expected-verdict.json` /
   `expected.json`, and produce `receipt.json` with
   `uwmd receipt issue <deal> --issued-at 2026-08-09T00:00:00Z --stdout`.
@@ -484,7 +541,7 @@ The hedge suite adds 57 source/expected pairs and retains all 17 RFC 0056
 pairs unchanged. Expected structural codes and separate verifier state/reason/code
 projections are compared independently. Portable validate--json cases exercise
 the same separation and exit behavior. Run the default suite, generated-case
-freshness, portable --no-skip driver and capability profiles after building.
+freshness, portable --no-skip driver and capability-skip controls after building.
 
 Focused unit tests additionally pin USD/null JCS known answers, real Node/Web
 Crypto parity, pre-await snapshots, key-order/numeric-spelling normalization,

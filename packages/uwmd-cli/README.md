@@ -25,10 +25,10 @@ uwmd <command> [args]
 |---|---|
 | `uwmd init [--output <file>]` | Scaffold a blank `.uwx.md` deal file |
 | `uwmd parse <file>` | Parse and emit canonical JSON |
-| `uwmd validate <file>` | Run the full Tier-1 validator and print issues |
+| `uwmd validate <file>` | Run the full Format validator and print issues |
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |
-| `uwmd edit <file> <op.json>` | Apply a Tier-2 `EditOperation` and write back |
-| `uwmd calc <file> <calc.json>` | Evaluate a Tier-3 calc declaration |
+| `uwmd edit <file> <op.json>` | Apply an `EditOperation` (starter editor) and write back |
+| `uwmd calc <file> <calc.json>` | Evaluate a calc declaration (§VIII expression notation) |
 | `uwmd run <file>` | Invoke UWMD optional Claude-backed Bancroft reference agent suite |
 | `uwmd compact <file>` | Strip narrative; emit the canonical JSON-only form |
 | `uwmd diff <a> <b>` | Diff two `.uw.md` files at the section level |
@@ -93,7 +93,7 @@ import { parseUWFile, validateUWFile, evaluateCalc } from '@uwmd/core';
 
 ## Conformance
 
-This CLI is the reference implementation of the UW Markdown protocol's Tier-1 (Reader), Tier-2 (Editor), Tier-3 (Calc Host), and Tier-4 (Agent Host) conformance levels. See the [protocol spec](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_PROTOCOL_v1.md) for what each tier guarantees.
+This CLI is the reference implementation of the UW Markdown protocol's Reader and Verifier tiers and its six optional verification profiles, and it ships the starter-product editor and agent host. See the [protocol spec](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_PROTOCOL_v1.md) for what each tier and profile guarantees.
 
 ## License
 

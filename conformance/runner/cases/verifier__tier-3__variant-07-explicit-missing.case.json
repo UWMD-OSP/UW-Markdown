@@ -1,0 +1,22 @@
+{
+  "id": "verifier/tier-3/variant-07-explicit-missing",
+  "target": "verifier",
+  "legacy_id": "tier-3/variant-07-explicit-missing",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--calc-context",
+    "calc-context.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-3-calc-host/fixtures/variant-07-explicit-missing",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 1
+  }
+}

@@ -81,7 +81,7 @@ npm run cli -- project-lease-up conformance/lease-up/valid-value-add-turnover/de
 The CLI always prints a successful candidate as JSON. With `--json`, a refusal
 prints `{ "error": { ... } }` and exits 1; otherwise it prints the error to stderr.
 Input files are never rewritten and write/output flags are refused. The host
-owns any subsequent Tier-2 edit and provenance.
+owns any subsequent edit (through the starter editor) and provenance.
 
 `candidate.series` is a `CashFlowSeries` with the label **Lease-up receipts and
 TI/LC only**, `kind: "other"` rows and no stated metrics. Amounts retain their

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/conformance-corpus.schema.json",
+  "title": "Conformance corpus ownership index (RFC 0078 Phase 3)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "migration_base",
+    "before",
+    "cases",
+    "portable_legacy_ids"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "migration_base": {
+      "type": "string"
+    },
+    "before": {
+      "type": "object",
+      "required": [
+        "reference_default",
+        "reference_opt_in",
+        "portable"
+      ],
+      "properties": {
+        "reference_default": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reference_opt_in": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "portable": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": [
+          "suite",
+          "scenario",
+          "target"
+        ],
+        "properties": {
+          "suite": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scenario": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "enum": [
+              "reader",
+              "verifier",
+              "module",
+              "integrity",
+              "representations",
+              "portfolio",
+              "sensitivity",
+              "stochastic",
+              "starter-products"
+            ]
+          },
+          "added": {
+            "const": true,
+            "description": "The case was added after migration_base, so it is outside the `before` reconciliation counts. Absent on every case that existed at migration_base."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "portable_legacy_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

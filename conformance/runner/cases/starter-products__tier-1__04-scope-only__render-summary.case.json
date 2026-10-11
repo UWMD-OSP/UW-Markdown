@@ -1,0 +1,20 @@
+{
+  "id": "starter-products/tier-1/04-scope-only/render-summary",
+  "target": "starter-products",
+  "legacy_id": "tier-1/04-scope-only/render-summary",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "04-scope-only.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/04-scope-only.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

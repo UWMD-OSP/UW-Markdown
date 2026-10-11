@@ -6,26 +6,21 @@ import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/ind
 // reference library and reports pass/fail per scenario.
 //
 // Usage:
-//   node scripts/run-conformance.mjs [--tier=1,2,3,4] [--update] [--json]
+//   node scripts/run-conformance.mjs [--tier=reader|verifier] [--profile=module,...]
+//     [--starter-products] [--suite=metrics,...] [--update] [--json]
 //
-//   --tier=...   Comma-separated tiers to run. Default: 1,2,3,4-replay,lite,
-//                receipts,market-data,modules,packages,composition,capital-stack,
-//                recoveries,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,size-intensive,signing,sensitivity,stochastic,source.
-//                Tier 4 requires --tier=4 explicitly because it is shape-only
-//                and assumes a deterministic-replay scenario; live LLM calls
-//                are out of scope for CI.
-//                `lite` is a representation-level suite (UW Lite parse,
-//                canonicalization, rendering, and the deal-summary-v1 bridge)
-//                and `receipts` is an artifact-level suite (RFC 0016 issuance,
-//                verification, and refusal) — neither is a protocol tier, so
-//                both are named rather than numbered. `market-data`,
-//                `packages`, and `composition` are named for the same reason.
+//   Default: all indexed standard and starter-product cases, reported separately.
+//   --tier      Reader, or Verifier including Reader; legacy names warn on stderr.
+//   --profile   Optional verification profiles; never inferred from legacy tiers.
+//   --suite     Existing fixture families, independent of their directory names.
+//   --starter-products  Select non-normative product checks.
 //   --update     Regenerate expected/* files from current library output.
 //                Use carefully — this overwrites the baseline.
 //   --json       Emit machine-readable JSON summary to stdout.
 //
 // Exit codes: 0 = all passed, 1 = at least one failure.
 
+import { index, key, suiteFamily, selection, assertCoverage, assertDispatch, publicOwner } from './conformance-targets.mjs';
 import { isDeepStrictEqual } from 'node:util';
 import { verifyExamples } from '../conformance/metrics/verifier.mjs';
 import { controls as metricControls } from '../conformance/metrics/controls.mjs';
@@ -128,11 +123,11 @@ const CONFORMANCE_DIR = join(ROOT, 'conformance');
 
 const args = process.argv.slice(2);
 const flag = (name) => args.some((a) => a === `--${name}` || a.startsWith(`--${name}=`));
-const flagVal = (name) => {
-  const a = args.find((x) => x.startsWith(`--${name}=`));
-  return a ? a.slice(name.length + 3) : undefined;
-};
-const TIERS = (flagVal('tier') ?? '1,2,3,4-replay,lite,receipts,market-data,modules,packages,composition,capital-stack,tax,lease,recoveries,hedge,capex,lease-up,lease-up-projection,property-cash-flow-assembly,cash-flow,waterfall,portfolio-relationships,standalone,capability,locale,currency,size-intensive,signing,sensitivity,stochastic,source,scenario,reserve-accounts,reserve-draw-bindings,meta-v2,migrate,metrics').split(',').map((s) => s.trim()).filter(Boolean);
+let selected;
+try { selected = selection(args); }
+catch (error) { console.error(error.message); process.exit(2); }
+const selectedIds = new Set(selected.map(c => key(c.suite, c.scenario)));
+const observed = [];
 const UPDATE = flag('update');
 const JSON_OUT = flag('json');
 
@@ -140,15 +135,17 @@ const JSON_OUT = flag('json');
 
 const results = []; // { tier, scenario, status: 'pass'|'fail'|'updated', message?: string }
 
-function record(tier, scenario, status, message) {
-  results.push({ tier, scenario, status, ...(message ? { message } : {}) });
+function record(suite, scenario, status, message) {
+  const id = key(suite, scenario);
+  const owner = index.get(id);
+  if (!owner) throw new Error(`Unclassified corpus result: ${id}`);
+  observed.push({ suite, scenario });
+  if (!selectedIds.has(id)) return;
+  const result = { ...publicOwner(owner.target), suite, scenario, status, ...(message ? { message } : {}) };
+  results.push(result);
   if (!JSON_OUT) {
     const tag = status === 'pass' ? 'PASS' : status === 'updated' ? 'UPDT' : 'FAIL';
-    const symbol = status === 'pass' ? ' ✓' : status === 'updated' ? ' ↻' : ' ✗';
-    // Numbered protocol tiers render as `tier-N`; named suites (e.g. `lite`)
-    // stand alone.
-    const label = /^\d/.test(String(tier)) ? `tier-${tier}` : String(tier);
-    console.log(`[${tag}]${symbol} ${label}/${scenario}${message ? ` — ${message}` : ''}`);
+    console.log(`[${tag}] ${owner.target}/${suite}/${scenario}${message ? ` — ${message}` : ''}`);
   }
 }
 
@@ -256,6 +253,54 @@ function isMultiVariant(entry) {
 
 function normalize(text) {
   return `${text.replace(/\r\n/g, '\n').replace(/[ \t]+$/gm, '').trimEnd()}\n`;
+}
+
+// ─── Validate-only Verifier projections (RFC 0078 Phase 3) ──────────────────
+//
+// Some mixed checks pin a registered validator or provenance code beside
+// starter behavior (a render refusal, an edit refusal). The mixed check stays a
+// starter check with every assertion intact; the corpus index adds a separate
+// `<scenario> [validate]` Verifier case for the code alone. Its baseline is the
+// deduplicated (code, severity) set tier-1 `[validate]` baselines use, and the
+// source case's required codes must appear in it as well. Where a provenance
+// policy is the rule under test, its findings are baselined beside it.
+function hasValidateCase(suite, scenario) {
+  return index.has(key(suite, `${scenario} [validate]`));
+}
+
+function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCodes, provenanceIssues) {
+  const id = `${scenario} [validate]`;
+  let validation;
+  try {
+    validation = validateUWFile(parsed);
+  } catch (e) {
+    record(suite, id, 'fail', `validateUWFile threw: ${e.message}`);
+    return;
+  }
+  const pairsOf = (issues) => [...new Map(
+    issues.map((i) => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }])
+  ).values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity));
+  const issues = pairsOf(validation.issues ?? []);
+  const provenance = provenanceIssues ? pairsOf(provenanceIssues) : undefined;
+  const seen = [...issues, ...(provenance ?? [])].map((p) => p.code);
+  const missing = requiredCodes.filter((code) => !seen.includes(code));
+  if (requiredCodes.length === 0 || missing.length) {
+    record(suite, id, 'fail', `required ${missing.join(', ') || '(none listed)'} absent: [${seen.join(', ')}]`);
+    return;
+  }
+  // `overall_status` stays the validator's own verdict; provenance findings
+  // (§V.3) are reported beside it rather than folded into it.
+  const actual = `${JSON.stringify({ overall_status: validation.overall_status, issues, ...(provenance ? { provenance } : {}) }, null, 2)}\n`;
+  if (UPDATE) {
+    writeFileSync(baselinePath, actual);
+    record(suite, id, 'updated');
+  } else if (!existsSync(baselinePath)) {
+    record(suite, id, 'fail', `missing baseline: ${basename(baselinePath)}`);
+  } else {
+    const expected = normalize(readFileSync(baselinePath, 'utf8'));
+    record(suite, id, expected === normalize(actual) ? 'pass' : 'fail',
+      expected === normalize(actual) ? requiredCodes.join(', ') : firstDifference(expected, normalize(actual)));
+  }
 }
 
 // RFC 0072 — warning-only identity, with no stage/financial side effects.
@@ -464,7 +509,22 @@ async function runTier1Malformed() {
       parsed = parseUWFile(fixtureContent);
     } catch (e) {
       record('1', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
+      if (hasValidateCase('1', `malformed/${id}`)) record('1', `malformed/${id} [validate]`, 'fail', 'parse threw');
       continue;
+    }
+
+    if (hasValidateCase('1', `malformed/${id}`)) {
+      // The policy is the rule under test, so provenance findings are part of
+      // what a Verifier reports for this document (§V.3).
+      const policiesPath = join(malformedDir, `${id}.policies.json`);
+      const policies = existsSync(policiesPath) ? JSON.parse(readFileSync(policiesPath, 'utf8')) : undefined;
+      let provenance;
+      try {
+        provenance = expectedCodes.some((c) => c.startsWith('POL-')) ? verifyProvenance(parsed, policies).issues ?? [] : null;
+      } catch (e) {
+        record('1', `malformed/${id} [validate]`, 'fail', `verifyProvenance threw: ${e.message}`);
+      }
+      if (provenance !== undefined) recordValidationOnly('1', `malformed/${id}`, join(malformedDir, `${id}.validation.json`), parsed, expectedCodes, provenance);
     }
 
     let validation;
@@ -3337,6 +3397,9 @@ async function runLocale() {
     }
 
     const parsed = parseUWFile(withLocale(expected.locale));
+    if (hasValidateCase('locale', id)) {
+      recordValidationOnly('locale', id, join(dir, 'expected-validation.json'), parsed, expected.validator_codes ?? []);
+    }
 
     // ── Unregistered locale: display refuses, machines keep working ──────────
     if (expected.render_refuses) {
@@ -3393,7 +3456,11 @@ async function runCurrency() {
     let parsed;
     try { parsed = parseUWFile(source); } catch (e) {
       record('currency', id, 'fail', `parse threw: ${e.message}`);
+      if (hasValidateCase('currency', id)) record('currency', `${id} [validate]`, 'fail', 'parse threw');
       continue;
+    }
+    if (hasValidateCase('currency', id)) {
+      recordValidationOnly('currency', id, join(dir, 'expected-validation.json'), parsed, expected.validator_codes ?? []);
     }
     const codes = validateUWFile(parsed).issues.map((i) => i.code);
     const missing = (expected.validator_codes ?? []).filter((code) => !codes.includes(code));
@@ -4187,6 +4254,9 @@ async function runSource() {
     const id = '04-colon-form-rejected';
     const expected = expectedOf(id);
     const { content, parsed } = load(id);
+    if (hasValidateCase('source', id)) {
+      recordValidationOnly('source', id, join(SOURCE_DIR, id, 'expected-validation.json'), parsed, expected.src_codes);
+    }
     const problems = [];
     const codes = srcCodes(parsed);
     if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
@@ -4482,12 +4552,22 @@ const dispatch = {
   'meta-v2': async () => { await runMetaV2(); },
   'migrate': async () => { await runMigrate(); },
 };
-for (const t of TIERS) {
-  if (!dispatch[t]) {
-    console.error(`Unknown tier: ${t}`);
-    process.exit(2);
+const dispatchKey = suiteFamily;
+const dispatched = new Set(selected.map(c => dispatchKey(c.suite)));
+try {
+  assertDispatch(Object.keys(dispatch));
+  for (const suite of dispatched) {
+    if (!dispatch[suite]) throw new Error(`No runner for suite: ${suite}`);
+    await dispatch[suite]();
   }
-  await dispatch[t]();
+  // Mixed suites execute all their existing assertions. Check their complete
+  // coverage before selecting report rows, so filtering cannot hide omissions.
+  const exercised = [...index.values()].filter(c => dispatched.has(dispatchKey(c.suite)));
+  assertCoverage(exercised, observed);
+  assertCoverage(selected, results);
+} catch (error) {
+  console.error(`Corpus coverage error: ${error.message}`);
+  process.exit(2);
 }
 
 const failures = results.filter((r) => r.status === 'fail');
@@ -4495,9 +4575,13 @@ const updates = results.filter((r) => r.status === 'updated');
 const passes = results.filter((r) => r.status === 'pass');
 
 if (JSON_OUT) {
-  console.log(JSON.stringify({ results, summary: { pass: passes.length, fail: failures.length, updated: updates.length } }, null, 2));
+  console.log(JSON.stringify({ results, summary: { pass: passes.length, fail: failures.length, updated: updates.length }, by_target: Object.fromEntries([...new Set(results.map(r => r.target))].map(target => [target, { pass: results.filter(r => r.target === target && r.status === 'pass').length, fail: results.filter(r => r.target === target && r.status === 'fail').length, updated: results.filter(r => r.target === target && r.status === 'updated').length }])) }, null, 2));
 } else {
   console.log('');
+  for (const target of [...new Set(results.map(r => r.target))]) {
+    const rows = results.filter(r => r.target === target);
+    console.log(`${target}: ${rows.filter(r => r.status === 'pass').length} pass, ${rows.filter(r => r.status === 'fail').length} fail, ${rows.filter(r => r.status === 'updated').length} updated`);
+  }
   console.log(`Summary: ${passes.length} pass, ${failures.length} fail${updates.length ? `, ${updates.length} updated` : ''}`);
 }
 

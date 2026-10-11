@@ -33,16 +33,20 @@ without globals or I/O, and is bounded at 4096 input characters.
 
 ### Calc pack
 A declarative bundle of named formulas + asset-class-specific defaults
-that a Tier-3 calc host evaluates against a deal. The canonical
+that the starter calc engine evaluates against a deal; each pack mirrors the
+normative metric dictionary (`spec/metrics/`). The canonical
 `MULTIFAMILY_PACK` lives at
 [`packages/uwmd-core/src/packs/multifamily.ts`](../packages/uwmd-core/src/packs/multifamily.ts).
 
 ### Conformance tier
-One of four self-certification levels: Tier 1 Reader, Tier 2 Editor,
-Tier 3 Calc Host, Tier 4 Agent Host. Defined in protocol §II.
+One of two self-certification levels, Reader and Verifier (a Verifier
+includes Reader), plus optional verification profiles (Module, Integrity,
+Representations, Portfolio, Sensitivity, Stochastic). Defined in protocol §II.
+The four Protocol 2.x tiers (Reader, Editor, Calc Host, Agent Host) are
+retired; editing and agent hosting are starter-product claims (RFC 0078).
 
 ### Edit policy
-Declarative gate on which sections / fields a Tier-2 editor is
+Declarative gate on which sections / fields an editor is
 allowed to modify, and via which operation type. Registered in
 `BUILTIN_EDIT_POLICIES` in
 [`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts).

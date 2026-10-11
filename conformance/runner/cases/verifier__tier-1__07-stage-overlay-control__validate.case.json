@@ -1,0 +1,20 @@
+{
+  "id": "verifier/tier-1/07-stage-overlay-control/validate",
+  "target": "verifier",
+  "legacy_id": "tier-1/07-stage-overlay-control/validate",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "07-stage-overlay-control.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/tier-1-reader/expected/07-stage-overlay-control.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

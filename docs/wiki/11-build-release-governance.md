@@ -18,7 +18,7 @@ Script | Does
 `npm test` | Vitest across all workspaces
 `npm run test:coverage` | `@uwmd/core` coverage
 `npm run cli -- <cmd>` | Run the CLI from source (`packages/uwmd-cli/bin/uwmd.mjs`)
-`npm run conformance` | `scripts/run-conformance.mjs` (tiers 1,2,3 + `lite` by default)
+`npm run conformance` | `scripts/run-conformance.mjs` (every indexed Reader, Verifier, profile and starter-product check by default)
 `npm run validate-schemas` | `scripts/validate-schemas.mjs`
 `npm run verify-packages` | `scripts/verify-packages.mjs` — what `npm pack` would actually ship
 `npm run verify-lockfile` | `scripts/verify-lockfile.mjs` — every `@uwmd/*` reference links to this tree, and cross-package pins match declared versions
@@ -67,7 +67,7 @@ each with a guard that fails loudly if you miss it:
    `version.test.ts` asserts it matches the manifest.
 2. The dependents' pins and their own versions (above). `verify-lockfile`.
 3. The two `conformance/receipts/issue/` baselines, which record the issuing
-   engine — regenerate with `--tier=receipts --update`.
+   engine — regenerate with `npm run conformance -- --suite=receipts --update`.
 4. `conformance/receipts/verify/03-result-disagrees/receipt.json`, whose
    `engine_version` must be the **new** one or `RCP-07` reclassifies the
    scenario from `failed` to `unverifiable`. See
@@ -201,8 +201,10 @@ node scripts/verify-release.mjs --tag vX.Y.Z
 ## CI / CD (`.github/workflows/`)
 
 - **`ci.yml`** — on push/PR: a lint job (Node 20, Biome) and a build+test job
-  (Node 20 & 22 matrix) that installs, builds, tests, and runs conformance
-  tiers 1–3. Tier 4 is excluded (non-deterministic / operator-driven).
+  (Node 20 & 22 matrix) that installs, builds, tests, and runs every indexed
+  conformance check (Reader, Verifier, profiles and starter products), the
+  portable driver with `--no-skip`, and the capability-skip controls. No live
+  model is called: agent checks run as deterministic replays.
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
   `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`,
   `@uwmd/module-hospitality`, and `@uwmd/module-data-center`. Authentication is **npm trusted publishing
@@ -416,7 +418,7 @@ the [adopter feedback review](../reviews/2026-10-04-adopter-feedback-loop.md).
 Change | RFC?
 ---|---
 Fix a parser/validator/calc bug | No (editorial)
-Add a Vitest test or non-malformed Reader (Tier-1) fixture | No
+Add a Vitest test or a well-formed `tier-1-reader/fixtures/` fixture | No
 Add or change a metric definition (dictionary entry + its pack mirror) | Yes (metric dictionary, RFC 0078)
 Change a validation code's meaning/severity | Yes (changes conformance)
 Add/rename a standard section or `_meta` field | Yes (format spec)

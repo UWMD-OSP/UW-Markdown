@@ -1,6 +1,6 @@
 # Business-plan and BTR identity (RFC 0072)
 
-Run `npm run conformance -- --tier=scenario` (also in the default corpus).
+Run `npm run conformance -- --suite=scenario` (also in the default corpus).
 The v2 CLI driver runs the same warning-only validation expectations.
 
 - 01–08: all eight standard plans, including stabilized multifamily BTR with

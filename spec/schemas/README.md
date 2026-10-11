@@ -19,6 +19,8 @@ files live in this directory pending publication on `uwmd.org`.
 | [`protocol-error.schema.json`](protocol-error.schema.json) | `ProtocolError` | Protocol §XI |
 | [`implementation-manifest.schema.json`](implementation-manifest.schema.json) | `ImplementationManifest` | Protocol §I.4 |
 | [`metric-dictionary.schema.json`](metric-dictionary.schema.json) | `MetricDictionary` | [Metric dictionary](../metrics/README.md) / RFC 0078 Phase 2 |
+| [`conformance-case.schema.json`](conformance-case.schema.json) | Portable case with one `ConformanceTarget` | Protocol §II.6a.4 / RFC 0078 Phase 3 |
+| [`conformance-corpus.schema.json`](conformance-corpus.schema.json) | Exhaustive corpus ownership index | Protocol §II.6 / RFC 0078 Phase 3 |
 | [`calc-result.schema.json`](calc-result.schema.json) | `CalcResult` | Protocol §VIII |
 | [`issue-remediation.schema.json`](issue-remediation.schema.json) | `IssueRemediation` | Protocol §III.6 |
 | [`module-manifest.schema.json`](module-manifest.schema.json) | `ModuleManifest` | Protocol §X |
