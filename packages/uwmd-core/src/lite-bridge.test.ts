@@ -81,9 +81,9 @@ describe('compileUWLite', () => {
       expect(result.envelope.frontmatter.uw_version).toBe('2.1');
       for (const entry of Object.values(result.envelope.sections)) {
         const block = singleBlock(entry);
-        expect(detectMetaShape(block.content._meta)).toBe('v2');
+        expect(detectMetaShape(block.content._meta as Record<string, unknown>)).toBe('v2');
       }
-      expect(detectMetaShape(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!.content._meta)).toBe('v2');
+      expect(detectMetaShape(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!.content._meta as Record<string, unknown>)).toBe('v2');
       const parsed = parseUWFile(stringifyUWX(result.envelope));
       const codes = validateUWFile(parsed).issues.map(issue => issue.code);
       expect(codes).not.toContain('CLS-05');
