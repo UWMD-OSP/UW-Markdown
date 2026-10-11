@@ -51,7 +51,7 @@ computed `content_hash`.
     "integrity": {
       "input_hash": null,
       "parent_hash": null,
-      "content_hash": "80b42de6702a102a5ffc7f084e2ec9267e6854ca7583ad58a981e986527649ae"
+      "content_hash": "<volatile>"
     }
   },
   "address": "700 Parent Hash Way",
@@ -63,6 +63,9 @@ computed `content_hash`.
 
 ```json uw:section=property source=manual ts=<volatile> v=2 confidence=high
 {
+  "address": "700 Parent Hash Way",
+  "asset_class": "multifamily",
+  "units": 36,
   "_meta": {
     "section": "property",
     "provenance": {
@@ -86,12 +89,9 @@ computed `content_hash`.
     },
     "integrity": {
       "input_hash": null,
-      "parent_hash": "80b42de6702a102a5ffc7f084e2ec9267e6854ca7583ad58a981e986527649ae",
-      "content_hash": "5e1d2bcfbfe419cec452baf18b4339748320afe62f4368f07b7521ae17c7c9e7"
+      "content_hash": "<volatile>",
+      "parent_hash": "80b42de6702a102a5ffc7f084e2ec9267e6854ca7583ad58a981e986527649ae"
     }
-  },
-  "address": "700 Parent Hash Way",
-  "asset_class": "multifamily",
-  "units": 36
+  }
 }
 ```

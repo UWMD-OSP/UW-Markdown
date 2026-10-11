@@ -8,7 +8,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { BUILTIN_CLASS_CONTENT } from '@uwmd/core/browser';
 import {
   deepGet,
   deepSet,
@@ -255,19 +254,7 @@ describe('catalog — RFC 0080 class-section fields keep their stated precision'
         resolve(__dirname, `../../../spec/schemas/${file}.schema.json`), 'utf8')) as {
         properties: { content?: { properties: Record<string, { type?: string | string[] }> } } & Record<string, { type?: string | string[] }>;
       };
-      let props = schema.properties.content?.properties ?? schema.properties;
-      if (section === 'hotel_metrics') {
-        // RFC 0081 Phase 2 moves the schema before Phase 4 moves the editor.
-        // Keep checking every current editor field against its runtime contract;
-        // core's schema parity test pins the exact G3 projection separately.
-        const runtime = BUILTIN_CLASS_CONTENT.hospitality!.sections.find(s => s.id === section)!.schema;
-        const runtimeProps = runtime.properties as Record<string, { type?: string | string[] }>;
-        expect(Object.keys(props)).toEqual(['market_revpar']);
-        expect(props.market_revpar).toEqual(runtimeProps.market_revpar);
-        expect(Object.keys(runtimeProps)).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count', 'market_revpar']);
-        expect(runtime.required).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count']);
-        props = runtimeProps;
-      }
+      const props = schema.properties.content?.properties ?? schema.properties;
       for (const field of NUMERIC_SECTION_FIELDS.filter((f) => f.section_id === section)) {
         const types = ([] as string[]).concat(props[field.path]?.type ?? []);
         expect(types.length, `${section}.${field.path} is in its schema`).toBeGreaterThan(0);
@@ -277,6 +264,11 @@ describe('catalog — RFC 0080 class-section fields keep their stated precision'
         checked += 1;
       }
     }
+    // G3 moves these typed fields out of hotel_metrics; keep all four checks.
+    for (const [section, path, kind] of [['rent_roll', 'adr', 'number'], ['rent_roll', 'occupancy', 'rate'], ['rent_roll', 'available_room_nights', 'count'], ['property', 'keys', 'count']]) {
+      expect(NUMERIC_SECTION_FIELDS.find(f => f.section_id === section && f.path === path)?.kind, `${section}.${path}`).toBe(kind);
+      checked++;
+    }
     expect(checked).toBeGreaterThanOrEqual(30);
   });
 
@@ -285,7 +277,7 @@ describe('catalog — RFC 0080 class-section fields keep their stated precision'
       NUMERIC_SECTION_FIELDS.find((f) => f.section_id === section && f.path === path)?.kind;
     expect(kind('dc_power', 'utility_rate_per_kwh')).toBe('number');
     expect(kind('dc_power', 'power_margin')).toBe('rate');
-    expect(kind('hotel_metrics', 'adr')).toBe('number');
+    expect(kind('rent_roll', 'adr')).toBe('number');
     expect(kind('hotel_metrics', 'market_revpar')).toBe('number');
   });
 });
