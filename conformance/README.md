@@ -219,7 +219,7 @@ conformance/
                           against the shipped table; primary-in-pack and
                           pack-paths-in-registry coverage in both directions),
                           the consumer pins (csv size_basis/size_quantity for
-                          all ten worked examples with the total_units
+                          every worked example with the total_units
                           compatibility column; the report cover's RSF/Keys
                           facts; the office Lite round-trip), and the CC-13
                           behavior pair (warns-and-does-not-refuse on a

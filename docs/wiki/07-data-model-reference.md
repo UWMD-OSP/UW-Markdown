@@ -17,6 +17,7 @@ DealStage = 'scope' | 'screening' | 'term_sheet' | 'full_underwrite'
           | 'credit_approval' | 'closing' | 'monitoring'
 AssetClass = 'multifamily' | 'office' | 'retail' | 'industrial' | 'self_storage'
            | 'hospitality' | 'mixed_use' | 'senior_housing' | 'student_housing' | 'land'
+           | 'data_center' | 'manufactured_housing'   // Format 2.1, RFC 0080
 ```
 
 `SourceTag` is the canonical-tag union *plus* `(string & {})` — long-form

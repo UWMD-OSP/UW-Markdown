@@ -2014,7 +2014,7 @@ Every class's `ltv` uses `debt_structure.loan_amount / valuation.underwritten_va
 falling back to `valuation.purchase_price` only when no underwritten value is
 stated. This agrees with the validator's CC-02 and capital-stack `ltv_through`.
 
-All nine income-class `cash_on_cash` entries use stated
+All eleven income-class `cash_on_cash` entries (the nine RFC 0079 classes plus RFC 0080's `data_center` and `manufactured_housing`) use stated
 `dcf.annual_cash_flows.Y1.net_cash_flow_levered` over
 `sources_uses.equity_metrics.equity_total`; absent/null Y1 levered flow falls
 back to `noi_model.net_operating_income - debt_structure.annual_debt_service`.

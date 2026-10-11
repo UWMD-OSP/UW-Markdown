@@ -70,7 +70,9 @@ is **unverifiable**, not an inferred zero or a disagreement. A finite numeric
 result that disagrees at the stated precision is **failed**.
 `deterministic: true` preserves the existing declarations' deterministic contract.
 
-RFC 0079 unifies all nine `cash_on_cash` definitions; land has no such metric.
+RFC 0079 unifies all nine `cash_on_cash` definitions of its time, and RFC 0080's
+`data_center` and `manufactured_housing` entries copy it exactly (eleven in
+all); land has no such metric.
 `loan_per_sqft`, `price_per_sqft`, `noi_per_sqft` and `occupancy` retain their
 class-specific differences extracted under RFC 0078. Mixed-use `cap_rate` retains its different label
 with the same formula. Changing these definitions requires a separate normative
@@ -83,11 +85,13 @@ change; selecting an entry does not authorize filling absent inputs.
 | `retail` | 12 |
 | `industrial` | 12 |
 | `self_storage` | 12 |
-| `hospitality` | 14 |
+| `hospitality` | 18 |
 | `senior_housing` | 14 |
 | `student_housing` | 14 |
 | `land` | 12 |
-| `mixed_use` | 21 |
+| `mixed_use` | 25 |
+| `data_center` | 20 |
+| `manufactured_housing` | 13 |
 
 ## Primary-size selection
 
@@ -121,7 +125,7 @@ add their explicit entries through the normal RFC process.
 
 ## Executable mirrors and drift checks
 
-The existing ten starter packs derive their definitions from this dictionary's
+The twelve builtin starter packs derive their definitions from this dictionary's
 contract through exact, bidirectional parity tests. Packs are kept as TypeScript
 mirrors, so existing Excel layouts and their expression-to-Excel bindings remain
 unchanged. `packs/metric-dictionary.test.ts` compares every declaration, potential

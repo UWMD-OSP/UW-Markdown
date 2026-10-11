@@ -61,8 +61,9 @@ the same Protocol §VIII.2 selection `evaluateCalc` uses.
 
 ## Scope
 
-Layouts cover multifamily, office, retail, industrial, self-storage, hospitality,
-senior housing, student housing, land and mixed-use. `fromWorkbook` and
+Layouts cover all twelve builtin classes: multifamily, office, retail,
+industrial, self-storage, hospitality, senior housing, student housing, land,
+data center, manufactured housing and mixed-use. `fromWorkbook` and
 `--import` recover editable section fragments from supported converter workbooks;
 apply those through the Tier-2 editor to preserve provenance. Extended custom
 calculation workbooks explicitly refuse reverse import. The standalone Excel

@@ -3584,7 +3584,7 @@ async function runSizeIntensive() {
       if (off) { bad = `${example}: ${off} = "${got[off]}", pinned "${want[off]}"`; break; }
     }
     record('size-intensive', 'csv-exports-size-for-every-class', bad ? 'fail' : 'pass',
-      bad ?? `${Object.keys(expected.examples).length} examples pinned (nine sized, mixed_use empty)`);
+      bad ?? `${Object.keys(expected.examples).length} examples pinned (eleven sized classes, mixed_use empty)`);
   }
 
   // ── 4. report-cover-states-size ────────────────────────────────────────────

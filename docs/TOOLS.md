@@ -195,7 +195,7 @@ Skip it for: storing your data in. The `.uwx.md` record remains the
 source of truth — the workbook is an export, not a roundtrip target
 in v1.
 
-Supports all ten asset classes. Mixed-use gets its own workbook shape
+Supports all twelve builtin asset classes. Mixed-use gets its own workbook shape
 — one footing operating statement per component plus a consolidation
 block that sums to the property NOI. A deal that states a
 `capital_stack` section gains a Capital Stack sheet: one row per

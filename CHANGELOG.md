@@ -10,16 +10,26 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
-- RFC 0080: Format 2.1 adds full builtin `data_center` and `manufactured_housing` support: standard sections and rules, dictionary metrics, size registry, packs, Excel layouts, stage overlays, defaults and examples. Both new classes use all six RFC 0079 standard income definitions. Hospitality's official sections and four additional calculations now belong to its builtin pack; its existing rooms-revenue / available-room-nights RevPAR is canonical.
-- Proposed data-center and manufactured-housing starter default ranges are explicit proxy assumptions requiring Jared's review before merge; they are not verified economics or physical source facts.
+- RFC 0080: Format 2.1 adds full builtin `data_center` and `manufactured_housing` support: standard sections and rules, dictionary metrics, size registry, packs, Excel layouts, defaults and examples. Like multifamily they take the base stage lists verbatim: no stage overlay is added, so a missing `rent_roll` fires DQ-06 (Desert Palms gains a site rent roll; Mesa Gateway gains its T-12 summary, principals and validation sections and now reaches its declared `full_underwrite`). Both new classes use all six RFC 0079 standard income definitions. Hospitality's official sections and four additional calculations now belong to its builtin pack; its existing rooms-revenue / available-room-nights RevPAR is canonical.
+- Data-center and manufactured-housing starter default ranges (owner-approved 2026-10-10) are explicit proxy assumptions, not verified economics or physical source facts. Data center publishes **no** `noi_model.expense_ratio` default (owner decision 2026-10-10: the industrial NNN proxy does not fit a power-grossed-up expense basis; Mesa Gateway runs 0.595). Producers state it; the cascade falls through to the host default exactly as for land, never to another class's table.
+- `CC-HOSP-04` (warning): a hotel record that states `hotel_metrics.market_revpar` but whose canonical RevPAR is uncomputable now says so, naming `noi_model.income.rooms_revenue` and `rent_roll.available_room_nights`, instead of silently skipping the comp-set check. No ADR × occupancy fallback is inferred.
+- `uwmd scope` and `resolveValue` report each asset-class default's `citation` beside `source` / `resolved_from` (additive field).
 
 ### Changed
 
-- The exact legacy `org.uwmd.data_center` identity remains valid with CLS-01. Official hospitality/data-center module dependencies are satisfied by core (CLS-02); their packages remain in the publish set as empty compatibility shells. Other third-party suffix shadows remain refused.
+- The exact legacy `org.uwmd.data_center` identity remains valid with CLS-01. Official hospitality/data-center module dependencies are satisfied by core (CLS-02); their packages remain in the publish set as empty, frozen compatibility shells.
+- **New refusal:** third-party ids whose final segment is `data_center` or `manufactured_housing` (e.g. `com.example.data_center`) now get `INVALID-ASSET-CLASS-002`, because those names became builtins; before this release they were accepted as ordinary module-declared ids.
+- Pre-existing documents keep validating as before (RFC 0080 §5). `CLS-04` field-contract findings are warnings on legacy-alias (`org.uwmd.data_center`) and pre-2.1 documents, errors only on canonical Format 2.1+ records. Class rule/calculation errors are warnings on pre-2.1 documents that do not name the legacy module. Builtin hospitality's pre-existing `revpar` fails uncomputed as before (no `MOD-CALC-ERROR`); the migrated hotel calculations report `MOD-CALC-ERROR` only for documents naming `org.uwmd.hospitality`.
+- `CLS-05` accepts Format 2.1 and any later version, compared numerically.
+- `uwmd scope` reports one identity: `asset_class` and `defaults_table` name the resolved builtin, and a legacy alias is shown unmodified as `declared_asset_class`. `uwmd init --format` accepts `2.1` (the default).
+- `@uwmd/batch` filters and summaries, and `@uwmd/lake`'s indexed `asset_class` columns, key on the resolved builtin, so legacy and canonical data-center records group together; index entries and stored envelopes keep the stated id.
+- Mesa Gateway's annual debt service is corrected to the amortizing payment on its stated terms ($96M, 6.25%, 30-year): $7,093,062, not $7,093,500. Its valuation DSCR (1.579) and cash-on-cash (0.059521) follow; the lender-only check still verifies all 30 claims.
 
 ### Fixed
 
 - Receipt lookup now resolves every official builtin pack instead of only five.
+- The web editor's class-section grid no longer rounds sub-unit values: tariffs, unit rents, ADR and comp-set RevPAR edit as unrounded numbers and `power_margin` as a rate.
+- Desert Palms' NOI notes now state that its rents equal full collection at the stated site and home rents, rather than claiming they are not derived from those counts.
 - The format-neutral machine envelope accepts existing v1 and nested v2 metadata, normalizing its read view without changing raw blocks or their semantic digest. New builtin examples and Lite output use canonical Format 2.1 block wrappers.
 
 

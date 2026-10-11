@@ -4,8 +4,8 @@
 //
 // CalcDashboard renders one card per calculation in the asset class's pack, so
 // the strip is only as correct as the pack selection behind it. The failure
-// mode worth pinning is not a crash — it is a card that renders anyway. Nine of
-// the ten packs are income-property shaped, and it is easy to assume every deal
+// mode worth pinning is not a crash — it is a card that renders anyway. Eleven of
+// the twelve packs are income-property shaped, and it is easy to assume every deal
 // has a cap rate, a DSCR, and a debt yield. `land` has none of those: its
 // noi_model is a carry model that nets negative, so a cap-rate card on a land
 // deal would show either an em-dash, a NaN, or worse, a plausible negative

@@ -325,7 +325,8 @@ normative requirement, not the behavior.
   byte preservation outside the edited region, append-only supersede,
   host-owns-`_meta`, edit policies keyed on `provenance.source` — carry
   over unchanged.
-- `uwmd init` scaffolds `uw_version: "2.0"` nested-shape files by default;
+- `uwmd init` scaffolds `uw_version: "2.1"` nested-shape files by default
+  (RFC 0080; `--format 2.0` remains available for 2.0-pinned consumers);
   `--format 1.1` scaffolds the legacy flat shape for operators pinned to
   1.x consumers.
 - UW Lite (`.uw.md`) remains a **1.x-format source representation**: the
