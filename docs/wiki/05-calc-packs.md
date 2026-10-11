@@ -22,8 +22,11 @@ A dictionary entry's `minimum_stated_decimals` is a comparison floor.
 `getStatedDecimals` reads a **source numeric token**, preserving trailing zeroes
 and exponents. `compareStatedMetric` takes the **unrounded** expression result,
 the stated number, its source decimals and the dictionary entry. It compares
-at `min(stated_decimals, round_to)` with the shared half-away quantizer, refuses
-missing/insufficient precision, and never double rounds. It imports no packs,
+at `min(max(stated_decimals, minimum_stated_decimals), round_to)` with the shared
+half-away quantizer and never double rounds. Coarse statements compare at the
+minimum: `0.07` can equal 7.0%, LTC `0.6` can verify raw `0.601852`, and DSCR
+`1.5` versus `1.7` fails. Absent/invalid precision arguments are typed caller
+errors; unverifiable remains for absent usable formula inputs. It imports no packs,
 defaults or cascade. Callers must preserve precision before numeric parsing;
 `String(parsedNumber)` cannot recover it.
 
@@ -78,7 +81,7 @@ multifamily derived metrics. Each is a `ModuleCalcDecl`
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `loan_amount / (underwritten_value ?? purchase_price)` | `%`
+`ltv` | LTV | `debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
 `price_per_unit` | Price / Unit | `valuation.purchase_price / property.total_units` | `$`
@@ -157,7 +160,7 @@ A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
 id | label | formula | unit
 ---|---|---|---
 `cap_rate` | Cap Rate | `noi_model.net_operating_income / valuation.purchase_price` | `%`
-`ltv` | LTV | `loan_amount / (underwritten_value ?? purchase_price)` | `%`
+`ltv` | LTV | `debt_structure.loan_amount / (valuation.underwritten_value != null ? valuation.underwritten_value : valuation.purchase_price)` | `%`
 `ltc` | LTC | `debt_structure.loan_amount / sources_uses.uses.total` | `%`
 `dscr` | DSCR | `noi_model.net_operating_income / debt_structure.annual_debt_service` | `x`
 `debt_yield` | Debt Yield | `noi_model.net_operating_income / debt_structure.loan_amount` | `%`
@@ -309,8 +312,9 @@ larger and less smoothable cost than conventional multifamily turnover, which is
 why the class expense-ratio band sits above multifamily's. Verified against the
 `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` worked example, which also
 demonstrates **negative leverage** — a 5.75% going-in cap against 6.25% debt.
-The example lacks aggregate equity, so standardized cash-on-cash is uncomputed
-under RFC 0079; its sponsor contribution does not substitute for that input.
+The example explicitly states aggregate equity equal to its sole non-debt sponsor
+source, documenting that identity in `_notes`; its standardized cash-on-cash
+uses the NOI-minus-debt-service fallback (about 3.00%).
 
 ## `LAND_PACK`
 
