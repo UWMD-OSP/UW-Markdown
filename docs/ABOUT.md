@@ -154,8 +154,8 @@ lake-level aggregate math; those belong to the platforms that consume it. What
 it contributes is what a data lake cannot retrofit later: canonical facts,
 stable identity through semantic digests, and a verifiable trust chain through
 receipts. The [data-lake guide](/guide/data-lake) runs the whole pipeline with
-the published CLI and DuckDB. A source-only reference adapter, `@uwmd/lake`,
-shows one way to project records into PostgreSQL.
+the published CLI and DuckDB. A reference adapter, `@uwmd/lake` (on npm
+from release 3.0.0), shows one way to project records into PostgreSQL.
 
 Commercial products build on the standard, and
 [underwriter.cc](https://underwriter.cc) is the first. The standard itself is

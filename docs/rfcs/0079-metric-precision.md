@@ -215,6 +215,8 @@ the dictionary, source readers, section resolver, expression evaluator and this
 comparison boundary. Pack expressions and Excel named inputs change together,
 including mixed-use property inputs. Full reporting quantization is unchanged.
 The receipt verifier separately removes the obsolete relative comparison.
+Release preparation pairs it with Protocol 3.0.0 and core/CLI 3.0.0 under
+Format 2.1.
 
 ## Alternatives considered
 

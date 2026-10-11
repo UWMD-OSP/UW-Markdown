@@ -7,8 +7,8 @@ const reply = (status, body) => async () => new Response(JSON.stringify(body), {
 const pkg = '@uwmd/module-data-center';
 const version = '0.1.9';
 
-test('all six intended packages skip a confirmed existing version', async () => {
-  assert.equal(RELEASE_PACKAGES.length, 6);
+test('all nine intended packages skip a confirmed existing version', async () => {
+  assert.equal(RELEASE_PACKAGES.length, 9);
   for (const { name } of RELEASE_PACKAGES) {
     assert.equal(await registryVersionState(name, version, reply(200, { name, versions: { [version]: { name, version } } })), 'published');
   }
@@ -49,6 +49,6 @@ test('probe targets the public canonical package endpoint without credentials or
     assert.ok(options.signal instanceof AbortSignal);
     return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 });
   });
-  await assert.rejects(registryVersionState('@uwmd/excel', version), /outside official release scope/);
+  await assert.rejects(registryVersionState('@uwmd/web-editor', version), /outside official release scope/);
   await assert.rejects(registryVersionState(pkg, 'latest'), /Invalid package version/);
 });

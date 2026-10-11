@@ -92,6 +92,9 @@ the standard; every rule here still blocks a PR.
    `spec/UW_PROTOCOL_v1.md` change in the same PR or not at all.
 8. **Workspace isolation:** `@uwmd/*` always resolves through local workspace
    links, never a registry tarball.
+9. **Descriptive identity never selects underwriting behavior:** frontmatter
+   `scenario` and `asset_subtype` may route descriptive workflows, but never
+   choose calculations, defaults, packs or rules (Format §2.2b).
 
 ## Conventions
 

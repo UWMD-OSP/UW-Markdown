@@ -1,6 +1,6 @@
 // Pre-flight check for npm Trusted Publishers (OIDC) automated publishing.
 // Verifies:
-// 1. Package versions and exact core pins across all six official publishing packages.
+// 1. Package versions and exact core pins across all nine official publishing packages.
 // 2. Export targets, binaries, and production build artifacts exist and resolve.
 // 3. OIDC provenance eligibility (repository metadata, public access, zero hardcoded tokens).
 // 4. .github/workflows/release.yml triggers on tag pushes and includes id-token: write,
@@ -65,6 +65,15 @@ try {
       failures.push(`${workflowPath}: ${pkg.name} must use the fail-closed registry version probe`);
     }
   }
+  // Every package pins core exactly, so core must publish first: a dependent
+  // that lands before its core version exists is an uninstallable tarball.
+  const corePublish = workflow.indexOf('working-directory: packages/uwmd-core\n');
+  for (const pkg of RELEASE_PACKAGES.filter((p) => p.name !== '@uwmd/core')) {
+    const at = workflow.indexOf(`working-directory: ${pkg.dir}\n`);
+    if (corePublish === -1 || (at !== -1 && at < corePublish)) {
+      failures.push(`${workflowPath}: ${pkg.name} publishes before @uwmd/core, which it pins exactly`);
+    }
+  }
   if (/workflow_dispatch:/.test(workflow)) {
     failures.push(`${workflowPath}: ordinary releases must remain tag-triggered; no module-only dispatch`);
   }
@@ -116,7 +125,7 @@ try {
   }
 
   passes.push(
-    'Version synchronization: six package versions, exact core pins and VERSIONS.md match',
+    `Version synchronization: ${RELEASE_PACKAGES.length} package versions, exact core pins and VERSIONS.md match`,
   );
 } catch (err) {
   failures.push(`Version synchronization check failed: ${err.message}`);

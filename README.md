@@ -2,7 +2,7 @@
 
 > An open interoperability standard for AI- and code-driven underwriting systems.
 
-> **Release status:** `@uwmd/core@1.1.2` and `@uwmd/cli@1.1.3` are published on npm. The spec, schemas, and conformance corpus are stable at format 1.1 / protocol 1.2.
+> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance; 3.0.0 also carries the final compatibility shells of the two retired module packages (RFC 0080).
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 

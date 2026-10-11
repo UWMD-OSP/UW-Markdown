@@ -34,7 +34,7 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '2.25.0' as const;
+export const PROTOCOL_VERSION = '3.0.0' as const;
 
 /**
  * The format version this implementation *authors* — what a fresh scaffold
@@ -58,8 +58,11 @@ export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0', '2.
  * every 1.x behavior for 1.x files (the boundary is per-file — format spec
  * v2 §1.3), so a module written against the 1.x protocol line still loads:
  * its `requires_protocol` range is satisfied against any member of this set.
+ * Protocol 3.0.0 (RFC 0078) changes the conformance claim, not the module
+ * system or what any document means, so the last 2.x contract stays here
+ * the same way 1.14.0 did at 2.0.0: a module written for `^2` keeps loading.
  */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', '2.2.0', PROTOCOL_VERSION] as const);
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', '2.2.0', '2.25.0', PROTOCOL_VERSION] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 

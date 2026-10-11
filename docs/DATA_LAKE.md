@@ -161,8 +161,9 @@ drops a deal.
 ## 5. A PostgreSQL reference loader
 
 DuckDB over JSONL is the zero-setup path. When the destination is a
-PostgreSQL-style warehouse, `@uwmd/lake` (RFC 0049, unpublished — install from
-source) turns the same canonical outputs into idempotent SQL:
+PostgreSQL-style warehouse, `@uwmd/lake` (RFC 0049; on npm from release
+3.0.0, or build it from source) turns the same canonical outputs into
+idempotent SQL:
 
 ```ts
 import {

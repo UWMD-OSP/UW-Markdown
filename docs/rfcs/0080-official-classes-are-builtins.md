@@ -179,7 +179,10 @@ the choice in the Decisions table.
 - **Format 2.1.** Additive: two new builtin values and new standard sections.
   A document using them declares `uw_version: "2.1"`. 2.1 readers read 2.0
   and 1.x unchanged.
-- **Protocol.** The label moves at release preparation, as before.
+- **Protocol.** The label moves at release preparation, as before. Release
+  preparation pairs Format 2.1 with Protocol 3.0.0 and core/CLI 3.0.0; both
+  module packages ship 0.2.0 as their final version. The RFC stays `accepted`
+  until a release ships it and publication is verified.
 
 ## Compatibility analysis
 

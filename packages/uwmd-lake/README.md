@@ -9,7 +9,9 @@ idempotent SQL an adopter runs with their own database client. Nothing here
 adds a PostgreSQL dependency to `@uwmd/core`, and database availability is never
 part of validation.
 
-> Unpublished. Install from source in this repository.
+> In the release workflow from 0.2.10, which pairs with `@uwmd/core` 3.0.0:
+> `npm install @uwmd/lake`. Version 0.2.9 was published by hand from the
+> `v2.21.0` tag to create the package; it pins core 2.21.0.
 
 ## What it does and does not do
 

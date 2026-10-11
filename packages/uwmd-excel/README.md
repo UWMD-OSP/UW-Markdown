@@ -66,8 +66,10 @@ industrial, self-storage, hospitality, senior housing, student housing, land,
 data center, manufactured housing and mixed-use. `fromWorkbook` and
 `--import` recover editable section fragments from supported converter workbooks;
 apply those through the starter editor (`applyEdit`) to preserve provenance. Extended custom
-calculation workbooks explicitly refuse reverse import. The standalone Excel
-package remains unpublished; source support is not a publication claim.
+calculation workbooks explicitly refuse reverse import. `@uwmd/excel` is in
+the release workflow from 0.9.14, which pairs with `@uwmd/core` 3.0.0. The
+deprecated `0.3.0` on the registry is a stray 2026-08-16 hand publish pinned
+to core 1.3.0; do not install it.
 
 ## Library use
 

@@ -5,8 +5,9 @@
 The source document is unchanged. Core/CLI **2.8.0** includes calculation and
 refinement context support. Use `npx @uwmd/cli@2.8.0` in place of `npm run cli --`
 for an installed command, or build the checkout with `npm run build` and run
-the examples below from its root. Standalone Excel **0.9.0** remains unpublished;
-the Excel examples require the source checkout.
+the examples below from its root. Standalone Excel is on npm from release
+3.0.0 (`@uwmd/excel` 0.9.14); before that the Excel examples require the source
+checkout.
 
 ## Context file
 

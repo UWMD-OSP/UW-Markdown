@@ -139,7 +139,7 @@ jobs:
         if: matrix.node == 20
         run: npm run verify-packages
 
-      - name: Verify six-package release readiness
+      - name: Verify nine-package release readiness
         if: matrix.node == 20
         run: npm run release:check
 

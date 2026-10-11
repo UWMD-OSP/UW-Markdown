@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/module-hospitality",
-  "version": "0.1.13",
+  "version": "0.2.0",
   "description": "Compatibility shell for the retired official hospitality module (RFC 0006). Since RFC 0080 its hotel sections, calculations and rules are part of the builtin hospitality class in @uwmd/core; this package declares nothing and exists so existing installs and org.uwmd.hospitality module lists keep resolving.",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@uwmd/core": "2.21.0"
+    "@uwmd/core": "3.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

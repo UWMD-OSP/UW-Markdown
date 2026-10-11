@@ -1,13 +1,11 @@
 # UW Protocol — verification
 
-**Status:** Stable — protocol **2.25.0**  ·  **Format pairing:** authors format **2.0** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
+**Status:** Accepted release contract (RFCs 0078, 0079, 0080) — protocol **3.0.0**  ·  **Format pairing:** authors format **2.1** ([`UW_FORMAT_SPEC_v2.md`](UW_FORMAT_SPEC_v2.md)) and reads 2.0 and the whole 1.x line ([`UW_FORMAT_SPEC_v1.md`](UW_FORMAT_SPEC_v1.md))  ·  **License:** MIT
 
-> **Protocol 3.0 contract, unreleased.** This text carries the Protocol
-> 3.0.0 conformance model accepted in
-> [RFC 0078](../docs/rfcs/0078-protocol-is-verification.md): the standard is
-> verification, and the starter products moved to a non-normative
-> [starter products guide](../docs/starter/README.md). The version label
-> above moves to 3.0.0 at release preparation. The file keeps the name
+> **Protocol 3.0.** This text carries the Protocol 3.0.0 conformance model
+> accepted in [RFC 0078](../docs/rfcs/0078-protocol-is-verification.md): the
+> standard is verification, and the starter products moved to a non-normative
+> [starter products guide](../docs/starter/README.md). The file keeps the name
 > `UW_PROTOCOL_v1.md` through 3.0 so links do not break (RFC 0078 D12).
 
 This document specifies how any party **verifies** a UW Markdown
@@ -71,10 +69,11 @@ values, which stay readable during 3.x.
 
 Three independent semvers are tracked:
 
-- **Format version** (`uw_version` in frontmatter, currently `2.0` for
-  authoring; `1.0` and `1.1` are still read — see `SUPPORTED_FORMAT_VERSIONS`)
+- **Format version** (`uw_version` in frontmatter, currently `2.1` for
+  authoring; `2.0`, `1.0` and `1.1` are still read — see
+  `SUPPORTED_FORMAT_VERSIONS`)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `2.25.0`) — the
+- **Protocol version** (this document, currently `3.0.0`) — the
   verification contract. Bumped on any normative change to required
   behavior. From 3.0.0 it moves only when what a document *means* or
   how it is *verified* changes. Starter-product changes version their

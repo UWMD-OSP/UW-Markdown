@@ -47,8 +47,9 @@ change `asset_class` when appropriate.
 - <a href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download the browser viewer (<code>.html</code>)</a>
   — save it, open it in a browser, and drop a `.uwx.md` record onto the page.
 - [Download all source code (`.zip`)](https://github.com/UWMD-OSP/UW-Markdown/archive/refs/heads/main.zip)
-  — includes the source-only Excel exporter, report renderer, lake adapter,
-  web tools, and VS Code extension, plus schemas and tests.
+  — includes the Excel exporter, report renderer and lake adapter (on npm
+  from release 3.0.0), the web tools and VS Code extension, plus schemas and
+  tests.
 - [GitHub releases](https://github.com/UWMD-OSP/UW-Markdown/releases) — tagged
   release notes.
 

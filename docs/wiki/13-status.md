@@ -1,5 +1,21 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-11** (America/Phoenix) for release-prepared **3.0.0**.
+Core/CLI **3.0.0** pair with the accepted release contract Protocol **3.0.0**
+and Format **2.1**. Protocol 3.0.0 carries RFC 0078 (the Protocol is
+verification: **Reader** and **Verifier** tiers, six optional profiles, the
+normative metric dictionary and the non-normative starter products guide),
+RFC 0079 (stated-metric precision and one LTV and cash-on-cash definition)
+and RFC 0080 (data center and manufactured housing as full builtins, with
+Format 2.1). No new §X floor applies. Core takes a major because the cut
+breaks public surfaces (CHANGELOG 3.0.0). Signing **0.2.26**, batch
+**0.8.21**, Excel **0.9.14**, report **0.8.26**, lake **0.2.10** and both
+module packages **0.2.0** pin core 3.0.0. The release workflow scope grows to
+nine packages: Excel, report and lake join core, CLI, signing, batch and the
+two module packages, which ship 0.2.0 as declaration-free compatibility shells
+and their final version. RFCs 0078–0080 remain `accepted` until shipment and
+independently verified publication.
+
 Reconciled **2026-10-10** (America/Phoenix) for published and independently
 verified **2.21.0**. Core/CLI **2.21.0**, signing **0.2.25**, batch **0.8.20**
 and both official modules **0.1.13** are published from immutable annotated
@@ -112,11 +128,13 @@ new receipt output.
 
 ## Implemented supporting tools
 
-Web editor/viewer, docs site and VS Code extension are implemented. Standalone
-Excel **0.9.13**, report **0.8.25** and lake **0.2.9** are source-only package
-generations. The hospitality/data-center module packages **0.1.13** pair with
-core 2.21.0 and are published through the release workflow; 0.1.10 was their
-first public generation. The
+Web editor/viewer, docs site and VS Code extension are implemented. Excel
+**0.9.14**, report **0.8.26** and lake **0.2.10** pair with core 3.0.0 and join
+the release workflow from that generation; through 2.21.0 they were
+source-only. Lake 0.2.9 was published by hand from `v2.21.0` on 2026-10-11 so
+its trusted publisher could be configured. The hospitality/data-center module
+packages **0.2.0** pair with core 3.0.0 as compatibility shells (RFC 0080),
+their final version; 0.1.10 was their first public generation. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
@@ -698,6 +716,12 @@ The guards:
 - [RFC 0065](../rfcs/0065-reserve-draw-gross-expenditure-binding.md) (PR #293)
   shipped in 2.21.0 with Stable Protocol 2.25.0 under Format 2.0 and is
   **implemented** ([publication record](../releases/2.21.0-publication.md)).
+- [RFC 0078](../rfcs/0078-protocol-is-verification.md) (PRs #298–#300, #303,
+  #304), [RFC 0079](../rfcs/0079-metric-precision.md) (PR #301) and
+  [RFC 0080](../rfcs/0080-official-classes-are-builtins.md) (PR #302) are
+  accepted and implemented, and prepared for 3.0.0 with Protocol 3.0.0 under
+  Format 2.1. RFC 0078's `@uwmd/verify` package split (D8) and the levered and
+  after-tax definitions (D7) remain follow-up RFCs.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -1099,17 +1123,17 @@ The optional external reserve draw binding plan and §VIII.12 verifier use RFC 0
 
 ## 2026-10-10 — RFC 0078 phase 1: the Protocol is verification
 
-RFC 0078 (accepted 2026-10-10) separates the standard from the starter products. Phase 1 (unreleased) rewrites Protocol §0, §I and §II around two tiers, **Reader** and **Verifier**, plus six optional profiles (`module`, `integrity`, `representations`, `portfolio`, `sensitivity`, `stochastic`), and retitles the document "UW Protocol — verification" (filename unchanged). Display conventions, view models, byte-preserving editing, multi-variant and frontmatter edit rules, the fallback cascade and default tables, refinement, workbook bindings, the AI host contract and capability tokens moved verbatim to the non-normative [starter products guide](../starter/README.md); the Protocol keeps a stub at each old heading. `ImplementationManifest.tier` is now `reader | verifier` with a `profiles` list; the four 2.x values stay accepted, deprecated, during 3.x (`readConformanceTier`). The reference manifest claims `verifier` with all six profiles. This is the Protocol 3.0.0 contract; the version label stays 2.25.0 until release preparation. Still to come: the metric dictionary (phase 2), corpus re-tiering (phase 3), project docs and AGENTS.md (phase 4), release (phase 5).
+RFC 0078 (accepted 2026-10-10) separates the standard from the starter products. Phase 1 rewrites Protocol §0, §I and §II around two tiers, **Reader** and **Verifier**, plus six optional profiles (`module`, `integrity`, `representations`, `portfolio`, `sensitivity`, `stochastic`), and retitles the document "UW Protocol — verification" (filename unchanged). Display conventions, view models, byte-preserving editing, multi-variant and frontmatter edit rules, the fallback cascade and default tables, refinement, workbook bindings, the AI host contract and capability tokens moved verbatim to the non-normative [starter products guide](../starter/README.md); the Protocol keeps a stub at each old heading. `ImplementationManifest.tier` is now `reader | verifier` with a `profiles` list; the four 2.x values stay accepted, deprecated, during 3.x (`readConformanceTier`). The reference manifest claims `verifier` with all six profiles. This is the Protocol 3.0.0 contract. Release: prepared for core/CLI 3.0.0 with Protocol 3.0.0 (phase 5).
 
-## Official builtin classes (RFC 0080, Unreleased)
+## Official builtin classes (RFC 0080)
 
 All twelve official classes are full builtins, including `data_center` and `manufactured_housing`. Their normative metric definitions and size selectors live in `spec/metrics/`, with bidirectional pack/registry parity tests. Both new packs use all six RFC 0079 standard income definitions, including equity_total-based cash-on-cash. Source size is `property.critical_it_load_kw` or `property.total_sites`, mirrored against the detailed capacity/site count. They have Excel layouts and starter defaults, and take the base stage lists verbatim like multifamily (no stage overlay; a missing `rent_roll` is DQ-06). Default tables are owner-approved starter proxies (2026-10-10), never verification inputs; data center publishes no expense-ratio default, so producers state it.
 
-Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only, retained in the publish set until the transition release. Legacy `org.uwmd.data_center` reads without source/digest mutation (CLS-01); official module dependencies are satisfied by core (CLS-02). Third-party classes remain module extensions.
+Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only. They ship 0.2.0, their final version, in the 3.0.0 transition release; the owner then deprecates both names on npm. Release: prepared for core/CLI 3.0.0 with Format 2.1 and Protocol 3.0.0. Legacy `org.uwmd.data_center` reads without source/digest mutation (CLS-01); official module dependencies are satisfied by core (CLS-02). Third-party classes remain module extensions.
 
 ## 2026-10-10 — RFC 0078 phase 4: project docs
 
-Phase 4 (unreleased, docs only) carries the standard/starter split into the project's own guidance. `AGENTS.md` gains a "standard vs starter products" orientation, names the metric dictionary and receipts in the contract, and marks the module packages as compatibility shells; invariant 4 (Excel ↔ engine parity) and invariant 3 (byte preservation) are starter-product quality bars, still blocking, with their numbers unchanged because source comments cite them. Wiki 04 and 05 reframe the engine and packs as starter code over the normative dictionary and §VIII notation; wiki 10 labels each invariant's layer; wiki 11 adds the Protocol 3.0 versioning rule, the starter-product RFC rule and an updated "needs an RFC?" table. The docs site's navigation splits into **Standard** and **Starter products**. No spec, schema, protocol, conformance or version change. Still to come: corpus re-tiering (phase 3) and release (phase 5).
+Phase 4 (docs only) carries the standard/starter split into the project's own guidance. `AGENTS.md` gains a "standard vs starter products" orientation, names the metric dictionary and receipts in the contract, and marks the module packages as compatibility shells; invariant 4 (Excel ↔ engine parity) and invariant 3 (byte preservation) are starter-product quality bars, still blocking, with their numbers unchanged because source comments cite them. Wiki 04 and 05 reframe the engine and packs as starter code over the normative dictionary and §VIII notation; wiki 10 labels each invariant's layer; wiki 11 adds the Protocol 3.0 versioning rule, the starter-product RFC rule and an updated "needs an RFC?" table. The docs site's navigation splits into **Standard** and **Starter products**. No spec, schema, protocol or conformance change. Release: prepared for 3.0.0.
 
 
 ## 2026-10-11 — RFC 0078 phase 3: corpus owners and selectors
@@ -1128,5 +1152,5 @@ reproductions, §VIII.1–VIII.3 notation incl. `date-*`/`period-*`/`variant-*`,
 the no-stack capital-stack pins), Lite compilation and the package-context
 invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
-1,061 (Verifier 679 / 280 portable, Module 68 / 1). Phase 3 is
-unreleased; version labels are unchanged and release preparation remains separate.
+1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: prepared for
+core/CLI 3.0.0 with Protocol 3.0.0.

@@ -30,13 +30,18 @@ publication state. At the time of writing:
 | `@uwmd/cli` (`uwmd` command) | `npx @uwmd/cli <command>` or `npm install @uwmd/cli` |
 | `@uwmd/signing` (block and receipt signatures) | `npm install @uwmd/signing` |
 | `@uwmd/batch` (collection index and fact table) | `npx @uwmd/batch <dir> --out <dir>` |
-| `@uwmd/excel`, `@uwmd/report`, `@uwmd/lake`, official modules | Source only: build from a clone of the repository |
+| `@uwmd/excel` (`.xlsx` workbooks) | `npm install @uwmd/excel` (release 3.0.0 on); before that, build from a clone |
+| `@uwmd/report` (PDF lender package) | `npm install @uwmd/report` (release 3.0.0 on); before that, build from a clone |
+| `@uwmd/lake` (PostgreSQL adapter) | `npm install @uwmd/lake` (release 3.0.0 on); before that, build from a clone |
+| Official modules (hospitality, data center) | Not needed: both classes are builtin in `@uwmd/core` 3.0.0 (RFC 0080). Their 0.2.0 packages are compatibility shells only |
 | Web viewer | Hosted at [uwmd.org/viewer](/viewer/), or download the single HTML file |
 | Web editor | Hosted public preview at [uwmd.org/editor](https://www.uwmd.org/editor/) |
 | VS Code extension | Source only: package with `vsce package` |
 
-The registry also serves a stale `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
-Both are deprecated and pinned to core 1.3.0; do not install them.
+The registry also serves a stray `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
+Both are deprecated and pinned to core 1.3.0; do not install them. Install an
+exact version that pins your core, for example `@uwmd/excel@0.9.14` with
+`@uwmd/core@3.0.0`.
 
 For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants
@@ -183,9 +188,9 @@ clone, `npm run cli -- <cmd>` runs it from source.
 
 **[`packages/uwmd-excel`](../packages/uwmd-excel/) — `.uwx.md` → `.xlsx`.**
 
-**Source only.** Not published to npm at its current version; build it from a
-clone (`npm run build`, then `node packages/uwmd-excel/bin/uwmd-excel.mjs
-deal.uwx.md -o deal.xlsx`).
+**On npm from release 3.0.0** (`npx @uwmd/excel deal.uwx.md -o deal.xlsx`).
+From a clone: `npm run build`, then `node packages/uwmd-excel/bin/uwmd-excel.mjs
+deal.uwx.md -o deal.xlsx`.
 
 Emits a live underwriting workbook. Derived metrics ship as Excel
 formulas, not pre-computed values, so the workbook stays in sync with

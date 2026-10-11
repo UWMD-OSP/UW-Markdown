@@ -19,6 +19,29 @@ released independently as long as both honor the same protocol version.
 
 ## Current matrix
 
+Release 3.0.0 pairs core/CLI 3.0.0 with Protocol 3.0.0 and Format 2.1.
+Protocol 3.0.0 carries three accepted RFCs. RFC 0078 makes the Protocol the
+verification contract: the conformance tiers are **Reader** and **Verifier**
+with six optional profiles (`module`, `integrity`, `representations`,
+`portfolio`, `sensitivity`, `stochastic`), the editor and agent-host material
+moves to the non-normative starter products guide, and the metric dictionary
+(`spec/metrics/`) is normative. The four Protocol 2.x tier names stay readable,
+deprecated, through 3.x. RFC 0079 adds stated-metric comparison precision
+(§VIII.5.1) and one LTV and cash-on-cash definition for every class. RFC 0080
+registers the `CLS-NN`, `CC-DC-NN`, `CC-MH-NN` and `CC-HOSP-NN` families for
+the two new builtin classes and the folded-in hospitality content. None adds a
+module capability, so no new §X `requires_protocol` floor applies, and the
+reference host keeps honoring the 2.25.0 module contract so modules written
+for `^2` keep loading. Format 2.1 (RFC 0080) authors the `data_center` and
+`manufactured_housing` builtins and their standard sections, and reads 2.0 and
+the whole 1.x line unchanged. Signing 0.2.26, batch 0.8.21, Excel 0.9.14,
+report 0.8.26, lake 0.2.10 and both module packages 0.2.0 pin core 3.0.0
+exactly. Core's optional signing peer is 0.2.26. The workflow scope is nine
+packages: core, CLI, signing, batch, Excel, report, lake and both module
+packages. The two module packages at 0.2.0 are declaration-free compatibility
+shells and their final version (RFC 0080 §6); their manifest contracts are
+0.2.0. RFCs 0078, 0079 and 0080 stay `accepted` in the release-prepared state.
+
 Release 2.21.0 pairs core/CLI 2.21.0 with Protocol 2.25.0 and Format 2.0.
 Protocol 2.25.0 carries one RFC: RFC 0065's `RDB-NN` reserve draw
 binding code family (§III.6a) with its separately invoked verifier binding
@@ -170,31 +193,35 @@ Release 2.13.0 paired core/CLI 2.13.0 with Protocol 2.17.0 and Format 2.0.
 Protocol 2.17.0 added §VIII.10 step 5 and the `WF-10`–`WF-15` clawback codes
 (RFC 0059) and the `REC-NN` recovery family (RFC 0058), on top of the
 `LSE-NN` / `HDG-NN` / `ESC-NN` / `CAPX-NN` families 2.15.0 registered.
-The reference modules have never been published. Excel and report are
-**not published at their current versions**, but the registry does serve a stale
-`0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0 manual release and
-never unwound; both declare `@uwmd/core` `1.3.0`. Neither is maintained at that
-version. Jared deprecated both on 2026-10-02, and the registry shows the
+At 2.13.0 the reference modules had never been published, and Excel and
+report were not published at their then-current versions. The registry does
+serve a stray `0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0
+manual release; both declare `@uwmd/core` `1.3.0` and neither was maintained at
+that version. Jared deprecated both on 2026-10-02, and the registry shows the
 deprecation message on each `0.3.0`. `verify-versions` reconciles the
 manifests against this file and never contacts the registry, which is why the
-earlier flat "unpublished" claim went unchallenged. Module package 0.1.1 only repins core; the typed module manifests
+earlier flat "unpublished" claim went unchallenged. From the 3.0.0 generation
+Excel and report are in the release workflow at their current versions, both
+above the deprecated `0.3.0`. Lake `0.2.9` was published by hand on 2026-10-11
+from the `v2.21.0` tag to create the package for its trusted publisher; lake
+is in the release workflow from 3.0.0 as well. Module package 0.1.1 only repins core; the typed module manifests
 retain their independent 0.1.0 contract version. Package, Format and Protocol
 versions advance independently.
 
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **2.1** | authors `uw_version: "2.1"`; reads `"1.0"` / `"1.1"` / `"2.0"` / `"2.1"` (format v2 §1.2) |
-| UW Protocol | **2.25.0** | format ≥ 1.0; RFC 0065 `RDB-NN` codes + §VIII.12 reserve draw binding verifier on 2.24.0; carried by core/CLI 2.21.0 |
-| `@uwmd/core` | **2.21.0** | format 2.0 (reads 1.x), protocol 2.25.0 |
-| `@uwmd/cli` (CLI) | **2.21.0** | `@uwmd/core` 2.21.0 |
-| `@uwmd/excel` | **0.9.13** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.21.0, format 2.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.25** (source only; stale `0.3.0` on the registry, deprecated 2026-10-02) | `@uwmd/core` 2.21.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.20** | `@uwmd/core` 2.21.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.9** (source only) | `@uwmd/core` 2.21.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.25** | `@uwmd/core` 2.21.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.1.13** | `@uwmd/core` 2.21.0, protocol §X module system |
-| `@uwmd/module-data-center` | **0.1.13** | `@uwmd/core` 2.21.0, protocol §X module system + §X.2 declared class `org.uwmd.data_center` (RFC 0039) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 2.21.0 browser entry |
+| UW Protocol | **3.0.0** | format ≥ 1.0; RFC 0078 Reader/Verifier tiers + six profiles and the normative metric dictionary, RFC 0079 stated-metric precision, RFC 0080 builtin class codes, on 2.25.0; carried by core/CLI 3.0.0 |
+| `@uwmd/core` | **3.0.0** | format 2.1 (reads 2.0 and 1.x), protocol 3.0.0 |
+| `@uwmd/cli` (CLI) | **3.0.0** | `@uwmd/core` 3.0.0 |
+| `@uwmd/excel` | **0.9.14** | `@uwmd/core` 3.0.0, format 2.1, explicit contextual calculations |
+| `@uwmd/report` | **0.8.26** | `@uwmd/core` 3.0.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.21** | `@uwmd/core` 3.0.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.10** | `@uwmd/core` 3.0.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.2.26** | `@uwmd/core` 3.0.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `@uwmd/module-hospitality` | **0.2.0** | `@uwmd/core` 3.0.0, protocol §X module system; compatibility shell (RFC 0080), content builtin in core |
+| `@uwmd/module-data-center` | **0.2.0** | `@uwmd/core` 3.0.0, protocol §X module system; compatibility shell (RFC 0080), `data_center` builtin in core |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 3.0.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
 
@@ -204,7 +231,10 @@ versions advance independently.
 The owner approves hospitality and data-center together as official first-party
 public npm packages. Distribution support is in the ordinary tag workflow.
 Neither module was published in 2.17.0 or earlier; 0.1.10, pairing core 2.18.0,
-is their first public generation.
+is their first public generation. Since RFC 0080 both are declaration-free
+compatibility shells: 0.2.0, pairing core 3.0.0, is the final version of each.
+After that generation publishes, the owner deprecates both package names on
+npm (wiki 11), and they leave the publish set in a later release.
 
 Package semver identifies an immutable npm artifact. Contract `version` identifies
 the manifest contract required by document `modules[].version` and module
@@ -216,8 +246,8 @@ manifest compatibility requirements, not a new loader policy.
 
 | Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_tier | Core pin |
 |---|---|---|---|---|---|---|---|---|
-| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.1.13** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `2.21.0` |
-| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.1.13** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `2.21.0` |
+| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.2.0** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `3.0.0` |
+| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.2.0** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `3.0.0` |
 
 Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
 its module ID. `verify-versions` reads typed source literals and package manifests
@@ -260,8 +290,10 @@ These were candidate versions when the plan was written. See the
 3. **Library majors require explicit re-pinning.** `@uwmd/core` 2.x
    may break the calling shape; 1.x will not. Patches and minors are
    safe to update through normal `npm install`.
-4. **The format and protocol majors move together.** A `.uw.md` v2
-   file requires UW Protocol v2 to be fully read.
+4. **A format major requires a protocol major.** A `.uw.md` v2 file
+   requires UW Protocol v2 or later to be fully read. The reverse does not
+   hold: Protocol 3.0 changed the conformance model, not what any document
+   means, so it pairs with Format 2.x (RFC 0078 §4).
 
 ### RFC 0062 errata treatment (released in 2.14.0)
 
@@ -278,9 +310,9 @@ protocol features.
 
 ## Pinning recommendations
 
-For new integrations, target Format 2.0 and the current Protocol 2.x contract
-listed above. Pin `@uwmd/core@^2` for readers, editors, calc hosts, and agent hosts,
-or `@uwmd/cli@^2` for CLI scripts. Readers retain the documented 1.x format
+For new integrations, target Format 2.1 and the current Protocol 3.x contract
+listed above. Pin `@uwmd/core@^3` for readers, verifiers and the starter
+products (editor, calc host, agent host), or `@uwmd/cli@^3` for CLI scripts. Readers retain the documented 1.x format
 compatibility. An agent host installs a provider SDK only if it uses that provider;
 `@anthropic-ai/sdk` remains an optional peer.
 
@@ -314,4 +346,4 @@ For per-release details see [CHANGELOG.md](CHANGELOG.md). For why a
 specific design was made the way it was, see
 [`docs/rfcs/`](docs/rfcs/) or the relevant spec section.
 
-RFC 0080 (Unreleased): Format 2.1 authors two new official builtins; all twelve have full standard and starter support. The Protocol label and npm package/core-pin versions move at release preparation. Both official module packages stay in the publish set as declaration-free compatibility shells; their manifest contracts are 0.2.0.
+RFC 0080 (3.0.0): Format 2.1 authors two new official builtins; all twelve have full standard and starter support. Release 3.0.0 pairs it with Protocol 3.0.0. Both official module packages ship 0.2.0 as declaration-free compatibility shells, their final version; their manifest contracts are 0.2.0.

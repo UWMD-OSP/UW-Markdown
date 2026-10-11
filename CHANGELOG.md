@@ -8,6 +8,49 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-10-11
+
+### Prepared package pairing
+
+Core/CLI **3.0.0** pair with Protocol **3.0.0** and Format **2.1**.
+Signing **0.2.26**, batch **0.8.21**, Excel **0.9.14**, report **0.8.26**,
+lake **0.2.10** and both official module packages **0.2.0** pin core
+**3.0.0**. Core's optional signing peer is **0.2.26**. Signing, batch, Excel,
+report and lake take their existing patch-version step; lake's also clears
+the hand-published **0.2.9**. The module packages move to **0.2.0** because
+they are now declaration-free compatibility shells (RFC 0080 §6); 0.2.0 is
+their final version and matches their manifest contracts (**0.2.0**). The
+workflow scope is nine packages: core, CLI, signing, batch, Excel, report,
+lake, `@uwmd/module-hospitality` and `@uwmd/module-data-center`. RFCs 0078,
+0079 and 0080 stay `accepted` in the tagged preparation state.
+
+### Contract — Protocol 3.0.0 (RFCs 0078, 0079, 0080), Format 2.1
+
+- **Protocol 3.0.0** is the verification contract (RFC 0078). Conformance is
+  a **Reader** or **Verifier** tier plus optional `module`, `integrity`,
+  `representations`, `portfolio`, `sensitivity` and `stochastic` profiles;
+  Editor and Agent Host are starter-product claims. The metric dictionary
+  (`spec/metrics/`) is normative. It also carries RFC 0079's stated-metric
+  comparison precision (§VIII.5.1) and single LTV and cash-on-cash
+  definitions, and RFC 0080's `CLS-NN`, `CC-DC-NN`, `CC-MH-NN` and
+  `CC-HOSP-NN` families. None adds a module capability, so there is no new §X
+  `requires_protocol` floor.
+- **Format 2.1** (RFC 0080) authors the `data_center` and
+  `manufactured_housing` builtins and their standard sections. It reads 2.0
+  and the whole 1.x line unchanged.
+- **Why core is 3.0.0, not 2.22.0.** The 2.0.0 precedent: a Protocol major
+  shipped with a core major because its cut was breaking for consumers of
+  public surfaces. This cut is too. `ImplementationManifest.tier` widens to
+  `ConformanceTier | ViewerTier`, so TypeScript code that reads it as a
+  `ViewerTier` no longer compiles. The reference manifest (`uwmd manifest`,
+  `REFERENCE_IMPLEMENTATION_MANIFEST`) claims `verifier` instead of
+  `tier-4-agent-host`. `FORMAT_VERSION` is `2.1`, so `uwmd init` scaffolds
+  files a 2.0 reader refuses. Third-party asset-class ids ending in `data_center` or
+  `manufactured_housing` are newly refused (`INVALID-ASSET-CLASS-002`).
+  VERSIONS.md rule 3 reserves calling-shape breaks for a library major.
+
+The sections below give each change in full.
+
 ### Added
 
 - RFC 0078 Phase 3: an exhaustive machine-readable corpus index and case schemas assign every reference check to Reader, Verifier, one optional verification profile, or starter products. All 1,056 existing reference checks (1,053 default + three formerly opt-in agent shapes) and 332 portable CLI cases are retained; fixtures, assertions and expected values are unchanged. Five new validate-only Verifier checks (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) project registered codes out of mixed starter checks, which keep every assertion, for 1,061 reference checks. Owners follow Protocol §II.2: the IRR procedure, exact dictionary reproductions, the §VIII.1–VIII.3 notation (`date-*`, `period-*`, `variant-*`) and the no-stack capital-stack pins are Verifier checks (expression cases still require `calc-evaluate`); Lite compilation and the package-context invariants are Representations. The lender-only dictionary check stays 187 verified / 0 failed / 0 unverifiable.
@@ -19,7 +62,7 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Conformance runners report canonical tier/profile names and separate starter-product counts. Verifier selection includes Reader; profiles and starter checks are explicit. Legacy tier names and numeric aliases use `readConformanceTier` with stderr deprecation notices; fixture-family selections use `--suite`. The Python driver uses generated readings, distinguishes unclaimed-profile unverifiable outcomes from capability skips, and retains `--no-skip` certification enforcement. Coverage guards refuse omitted, duplicated or unclassified cases; baseline updates require a full run or suite selection. No version label changes.
+- Conformance runners report canonical tier/profile names and separate starter-product counts. Verifier selection includes Reader; profiles and starter checks are explicit. Legacy tier names and numeric aliases use `readConformanceTier` with stderr deprecation notices; fixture-family selections use `--suite`. The Python driver uses generated readings, distinguishes unclaimed-profile unverifiable outcomes from capability skips, and retains `--no-skip` certification enforcement. Coverage guards refuse omitted, duplicated or unclassified cases; baseline updates require a full run or suite selection.
 - **`--tier` changed meaning** in `npm run conformance` and the portable driver: it now selects a Protocol 3.0 tier, not a fixture directory. `--tier=3` (and `tier-3-calc-host`) means Verifier, which includes Reader; `--tier=2` (`tier-2-editor`) runs Reader only, and `--tier=4` reads as Verifier, with no profile or starter-product check inferred. Select a fixture family with `--suite=<family>` (`--suite=1`, `--suite=receipts`, ...), which is also the only filtered form `--update` accepts. A numeric short is exactly one digit `1`–`4`; `3.0`, `0x3`, `1e0` and `+3` are refused.
 - Portable case ids and filenames now start with the owner (`verifier/tier-3/irr-01-out-of-bracket`, `verifier__tier-3__irr-01-out-of-bracket.case.json`), and the case key `tier` is renamed `target`. `legacy_id` keeps the old address; the portable driver still reads a legacy `tier` key through the generated readings.
 - The runner refuses a suite with no corpus index rows, or an indexed suite with no runner, instead of silently skipping it. The portable driver prints one legacy-tier notice per run even when both `--tier` and the manifest's `tier` are legacy.
@@ -30,6 +73,8 @@ protocol, and each package each carry an independent semver).
 - `CLS-05` accepts Format 2.1 and any later version, compared numerically.
 - `uwmd scope` reports one identity: `asset_class` and `defaults_table` name the resolved builtin, and a legacy alias is shown unmodified as `declared_asset_class`. `uwmd init --format` accepts `2.1` (the default).
 - `@uwmd/batch` filters and summaries, and `@uwmd/lake`'s indexed `asset_class` columns, key on the resolved builtin, so legacy and canonical data-center records group together; index entries and stored envelopes keep the stated id.
+- **Module `requires_protocol` across the 3.0 boundary.** The reference host's `SUPPORTED_PROTOCOL_VERSIONS` keeps the last 2.x contract (`2.25.0`) beside `3.0.0`, the way it kept `1.14.0` at 2.0.0, so a module written for `^2` keeps loading on the default host. Protocol 3.0.0 changes the conformance claim, not the module system (RFC 0078). An explicitly supplied host protocol is still checked alone.
+- **The release workflow publishes nine packages.** `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` join core, CLI, signing, batch and both module packages in `release.yml`, each with the same fail-closed registry probe and skip-if-published step. `release:check`, `verify-release` and the docs-site package list know the nine-package scope for generations after 2.21.0; earlier generations keep their four- and six-package scopes. `verify-packages` also refuses a publishable workspace whose manifest is private, lacks repository/license metadata, or depends on a `file:`, `link:` or `workspace:` specifier.
 - Mesa Gateway's annual debt service is corrected to the amortizing payment on its stated terms ($96M, 6.25%, 30-year): $7,093,062, not $7,093,500. Its valuation DSCR (1.579) and cash-on-cash (0.059521) follow; the lender-only check still verifies all 30 claims.
 
 ### Deprecated
@@ -49,7 +94,7 @@ protocol, and each package each carry an independent semver).
 - Implements Jared's revised directions (2026-10-10): every dictionary entry gains a minimum comparison precision; Protocol §VIII.5.1 checks the unrounded result at `min(max(stated_decimals, minimum_stated_decimals), round_to)`. Coarse statements verify or fail at the minimum instead of becoming unverifiable. Cap rate/debt yield/cash-on-cash minimums are 3 fractional decimals (0.1%); no double rounding or new tolerance. Reporting/Excel rounding is unchanged.
 - Every class's LTV uses loan / stated underwritten value, with a purchase-price fallback, matching CC-02 and capital-stack `ltv_through`. Restores Agave's correct `0.4938` figures and original notes; no other example LTV changes. Multifamily pack moves to 1.0.2; the other nine corrected packs move to 1.0.1. Excel inputs/formulas follow in lockstep.
 - All nine income-class cash-on-cash definitions use stated Y1 levered flow / total equity with the lazy NOI-minus-debt-service fallback. **Non-multifamily producers now need to state `sources_uses.equity_metrics.equity_total` for cash-on-cash.** Eight examples declare it equal to their sole non-debt sponsor-equity line, an identity of stated fields documented in each `_notes`; Agave's ambiguous stack remains uncomputed.
-- Retains Sonoran's two proven DSCR corrections (`1.3153` → `1.3161`). The lender fixture reports all remaining failures/absent-input findings. Core/browser export the comparison helper; all-class LTV/cash-on-cash Excel parity and precision boundaries remain protected. Protocol/Format labels are unchanged pending release preparation.
+- Retains Sonoran's two proven DSCR corrections (`1.3153` → `1.3161`). The lender fixture reports all remaining failures/absent-input findings. Core/browser export the comparison helper; all-class LTV/cash-on-cash Excel parity and precision boundaries remain protected. Carried by Protocol 3.0.0.
 
 #### Fixed
 
@@ -57,9 +102,9 @@ protocol, and each package each carry an independent semver).
 
 ### Protocol 3.0 contract: the Protocol is verification (RFC 0078 phase 1)
 
-Breaking for conformance claims. The label moves to Protocol 3.0.0 at release
-preparation; until then the protocol constant and document label stay 2.25.0.
-Format stays 2.0 and no document changes meaning or validity.
+Breaking for conformance claims, and the reason the Protocol label moves to
+3.0.0. No document changes meaning or validity under RFC 0078; the Format
+moves to 2.1 for RFC 0080 alone.
 
 - **Two tiers and six profiles.** `UW_PROTOCOL_v1.md` §0, §I and §II are
   rewritten: the standard is verification (well formed, internally consistent,
@@ -98,13 +143,13 @@ Format stays 2.0 and no document changes meaning or validity.
 
 - Adds `spec/metrics/builtin.json` and its schema: all 130 calculations from ten builtin packs, including mixed-use components, and all nine primary-size selectors. Existing formulas, input paths, labels, units, role preferences and precision are preserved, with class-scoped differences retained.
 - Enforces exact bidirectional dictionary/pack and size-registry parity; existing runtime calculations and Excel layouts remain unchanged. Protocol §XIII points to the dictionary and retains its selection anchors.
-- Adds an independent dictionary/evaluator conformance fixture for every builtin example, with per-statement evidence, recorded disagreements and negative controls for missing inputs, role selection, nulls and quantization. No Format or Protocol version change.
+- Adds an independent dictionary/evaluator conformance fixture for every builtin example, with per-statement evidence, recorded disagreements and negative controls for missing inputs, role selection, nulls and quantization. The dictionary is normative from Protocol 3.0.0.
 
 
 ### RFC 0078 Phase 4 — project docs: the standard vs the starter products
 
-Documentation only. No spec, schema, `protocol.ts`, conformance, code or
-version change.
+Documentation only. No spec, schema, `protocol.ts`, conformance or code
+change.
 
 - **`AGENTS.md`** gains a short "standard vs starter products" orientation: what
   is normative (format, Protocol as verification, receipts, module system,
