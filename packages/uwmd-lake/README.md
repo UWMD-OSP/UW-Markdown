@@ -20,6 +20,10 @@ part of validation.
 | `uw_receipts.receipt` jsonb | `pack_id`, `engine`, `subject_digest`, validation counts |
 | `uw_packages.manifest` jsonb | `member_count`, `link_count` |
 
+The `asset_class` projection columns hold the resolved builtin id, so a legacy
+`org.uwmd.data_center` record indexes under `data_center` with canonical
+records (RFC 0080); the envelope keeps the stated id unmodified.
+
 If a warehouse query disagrees with the calc engine, the query is against the
 projection. The JSONB column is the answer of record. The adapter deliberately
 does **not** classify rows, aggregate a portfolio, decide ingestion truth, set a

@@ -4,6 +4,7 @@ import {
   computeEnvelopeDigest,
   flattenEnvelopeBlockValues,
   parseUWFile,
+  toBuiltinAssetClass,
   toUWEnvelope,
   type UWBlockValueRow,
   validateUWFile,
@@ -109,10 +110,10 @@ export function filterUWMDCollection(
   index: UWMDCollectionIndex,
   filters: BatchDealFilters = {},
 ): BatchDealIndexEntry[] {
-  const assetClasses = normaliseFilter(filters.asset_class);
+  const assetClasses = normaliseFilter(filters.asset_class, assetClassKey);
   const dealStages = normaliseFilter(filters.deal_stage);
   return index.deals.filter((deal) => {
-    if (assetClasses && (!deal.asset_class || !assetClasses.has(deal.asset_class))) return false;
+    if (assetClasses && (!deal.asset_class || !assetClasses.has(assetClassKey(deal.asset_class)))) return false;
     if (dealStages && (!deal.deal_stage || !dealStages.has(deal.deal_stage))) return false;
     if (filters.flag && !deal.flags.includes(filters.flag) && !deal.blocking_flags.includes(filters.flag)) return false;
     return !filters.metric || matchesMetric(deal.quick_metrics[filters.metric.metric], filters.metric);
@@ -128,7 +129,7 @@ export function summarizeUWMDCollection(index: UWMDCollectionIndex): UWMDCollect
     invalid_deals: index.deals.length - validDeals,
     error_count: index.deals.reduce((total, deal) => total + deal.error_count, 0),
     warning_count: index.deals.reduce((total, deal) => total + deal.warning_count, 0),
-    by_asset_class: summarizeBy(index.deals, (deal) => deal.asset_class ?? '(unknown)'),
+    by_asset_class: summarizeBy(index.deals, (deal) => (deal.asset_class ? assetClassKey(deal.asset_class) : '(unknown)')),
     by_deal_stage: summarizeBy(index.deals, (deal) => deal.deal_stage ?? '(unknown)'),
     flags: summarizeFlags(index.deals),
   };
@@ -291,9 +292,20 @@ function hasUWEnvelope(frontmatter: Record<string, unknown>): boolean {
     .every((field) => typeof frontmatter[field] === 'string' && frontmatter[field].length > 0);
 }
 function csvCell(value: unknown): string { const text = value == null ? '' : String(value); return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text; }
-function normaliseFilter(value: string | readonly string[] | undefined): ReadonlySet<string> | undefined {
+function normaliseFilter(
+  value: string | readonly string[] | undefined,
+  key: (raw: string) => string = (raw) => raw,
+): ReadonlySet<string> | undefined {
   if (value === undefined) return undefined;
-  return new Set(typeof value === 'string' ? [value] : value);
+  return new Set((typeof value === 'string' ? [value] : value).map(key));
+}
+/**
+ * Grouping/filter key for an asset class: the resolved builtin when there is
+ * one (RFC 0080 reads `org.uwmd.data_center` as `data_center`), otherwise the
+ * stated id. Index entries keep the stated string; only the key is resolved.
+ */
+function assetClassKey(raw: string): string {
+  return toBuiltinAssetClass(raw) ?? raw;
 }
 function matchesMetric(value: number | undefined, filter: BatchMetricFilter): boolean {
   if (value === undefined) return false;

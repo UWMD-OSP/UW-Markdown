@@ -15,7 +15,7 @@
  * lake accumulates versions rather than overwriting history.
  */
 
-import { sha256Hex } from '@uwmd/core';
+import { sha256Hex, toBuiltinAssetClass } from '@uwmd/core';
 import { LakeError, UWMD_LAKE_SCHEMA_VERSION } from './schema.js';
 
 /** One parameterized statement. `params` positions match `$1..$n` in `sql`. */
@@ -204,7 +204,7 @@ export function planDocument(schema: string, document: LakeDocumentInput): LakeS
       nullable(document.path),
       nullable(document.deal_id),
       nullable(document.deal_name),
-      nullable(document.asset_class),
+      nullable(assetClassColumn(document.asset_class)),
       nullable(document.deal_stage),
       nullable(document.currency_code),
       nullable(document.format_version),
@@ -251,7 +251,7 @@ export function planFact(schema: string, fact: LakeFactInput): LakeStatement {
       shadow.value_boolean,
       shadow.value_date,
       nullable(fact.deal_id),
-      nullable(fact.asset_class),
+      nullable(assetClassColumn(fact.asset_class)),
       nullable(fact.path),
       fact.valid ?? null,
     ],
@@ -523,4 +523,14 @@ function requireText(value: unknown, code: string, message: string): string {
   const found = text(value);
   if (found === null) throw new LakeError(code, message);
   return found;
+}
+
+/**
+ * The indexed `asset_class` column holds the resolved builtin id, so a legacy
+ * `org.uwmd.data_center` record and a canonical `data_center` record share one
+ * benchmark key (RFC 0080 §5). The stored envelope keeps the stated string
+ * byte-for-byte; unknown or third-party ids pass through unchanged.
+ */
+function assetClassColumn(raw: string | null | undefined): string | null | undefined {
+  return typeof raw === 'string' ? toBuiltinAssetClass(raw) ?? raw : raw;
 }
