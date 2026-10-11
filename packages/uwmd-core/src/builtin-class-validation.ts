@@ -1,7 +1,7 @@
 // RFC 0080 standard field contracts and class verification rules.
 // This checks the fixed official fields, not arbitrary third-party JSON Schema.
 import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
-import { toBuiltinAssetClass, type ParsedUWFile, type ValidationMessage } from './types.js';
+import { toBuiltinAssetClass, type ParsedUWFile, type UWBlock, type ValidationMessage } from './types.js';
 import { blockPayload } from './parser.js';
 import { resolveRoleBlock } from './block-roles.js';
 import { declaredModuleDependencies } from './asset-class.js';
@@ -14,10 +14,16 @@ interface SectionContract { required?: string[]; properties?: Record<string, Fie
 export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessage[] {
   const assetClass = toBuiltinAssetClass(parsed.frontmatter.asset_class);
   if (!assetClass) return [];
-  const content = BUILTIN_CLASS_CONTENT[assetClass];
-  if (!content) return [];
   const issues: ValidationMessage[] = [];
-  if (['data_center', 'manufactured_housing'].includes(parsed.frontmatter.asset_class) && parsed.frontmatter.uw_version !== '2.1') issues.push({ code: 'CLS-05', severity: 'error', field: 'uw_version', message: 'The new official builtin ids require Format 2.1; the exact legacy org.uwmd.data_center alias remains readable at its original version.' });
+  const entry = parsed.sections.components;
+  const blocks = !entry ? [] : Object.hasOwn(entry, 'annotation') ? [entry as UWBlock] : Object.values(entry as Record<string, UWBlock>);
+  const newSlots = blocks.some(block => {
+    const payload = blockPayload(block) as Record<string, unknown>;
+    return Object.hasOwn(payload, 'data_center') || Object.hasOwn(payload, 'manufactured_housing');
+  });
+  const content = BUILTIN_CLASS_CONTENT[assetClass];
+  if ((newSlots || ['data_center', 'manufactured_housing'].includes(parsed.frontmatter.asset_class)) && parsed.frontmatter.uw_version !== '2.1') issues.push({ code: 'CLS-05', severity: 'error', field: 'uw_version', message: 'The new official builtin ids and component slots require Format 2.1; the exact legacy org.uwmd.data_center alias remains readable at its original version.' });
+  if (!content) return issues;
   for (const section of content.sections) {
     const resolved = resolveRoleBlock(parsed.sections[section.id], section.id, ['default', 'base']);
     if (!resolved.block) {

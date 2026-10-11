@@ -20,6 +20,7 @@ protocol, and each package each carry an independent semver).
 ### Fixed
 
 - Receipt lookup now resolves every official builtin pack instead of only five.
+- The format-neutral machine envelope accepts existing v1 and nested v2 metadata, normalizing its read view without changing raw blocks or their semantic digest. New builtin examples and Lite output use canonical Format 2.1 block wrappers.
 
 
 ### RFC 0079 — stated metric precision and one cash-on-cash definition

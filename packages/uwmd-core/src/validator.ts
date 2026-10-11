@@ -2132,7 +2132,7 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
 
 // ─── §4.23 Mixed-use components (RFC 0019) ───────────────────────────────────
 
-// The eight income classes admissible as a mixed-use component. `land` is
+// The ten income classes admissible as a mixed-use component. `land` is
 // excluded (its NOI model nets negative) and `mixed_use` cannot nest in itself.
 const ADMISSIBLE_COMPONENT_CLASSES: ReadonlySet<string> = new Set([
   'multifamily', 'retail', 'office', 'industrial', 'self_storage',
@@ -2170,7 +2170,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
   }
 
   // Present components are every key that is not the _meta / _notes envelope.
-  const entries = Object.entries(components.content).filter(([k]) => !k.startsWith('_'));
+  const entries = Object.entries(blockPayload(components)).filter(([k]) => !k.startsWith('_'));
   const admissible = entries.filter(([k]) => ADMISSIBLE_COMPONENT_CLASSES.has(k));
 
   // MU-01: at least two admissible components.
@@ -2184,7 +2184,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
 
   const allocations: number[] = [];
   for (const [key, raw] of entries) {
-    // MU-02: only the eight income classes are admissible; land and unknowns are not.
+    // MU-02: only the ten income classes are admissible; land and unknowns are not.
     if (!ADMISSIBLE_COMPONENT_CLASSES.has(key)) {
       issues.push({
         code: 'MU-02', severity: 'error', section: 'components', field: key,
@@ -2249,7 +2249,7 @@ function checkComponents(parsed: ParsedUWFile, issues: ValidationMessage[], ledg
   }
   if (!noiModel && !ledger.coverage['CC-12']) markSkipped(ledger, 'CC-12', 'section_absent', 'noi_model');
   if (noiModel) {
-    const propNOI = deepGet(noiModel.content, 'net_operating_income') as number | undefined;
+    const propNOI = deepGet(blockPayload(noiModel), 'net_operating_income') as number | undefined;
     const compNOIs = admissible
       .map(([, raw]) =>
         raw && typeof raw === 'object'

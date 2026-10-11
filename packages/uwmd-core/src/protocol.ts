@@ -2551,7 +2551,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'MU-02', severity: 'error',
     title: 'Inadmissible component class',
     description: 'A component key is not one of the eight income classes; `land` and unknown classes are excluded.',
-    remediation: 'Remove the inadmissible component. Only multifamily, retail, office, industrial, self_storage, hospitality, senior_housing, and student_housing may appear.',
+    remediation: 'Remove the inadmissible component. Only multifamily, retail, office, industrial, self_storage, hospitality, senior_housing, student_housing, data_center, and manufactured_housing may appear.',
     spec_ref: '§4.23 MU-02',
   },
   {

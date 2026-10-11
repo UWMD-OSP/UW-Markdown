@@ -3503,7 +3503,7 @@ a silent denominator change does the most damage.
 
 ### Official builtin compatibility (RFC 0080)
 
-`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin.
+`org.uwmd.data_center` resolves exactly to builtin `data_center` with CLS-01, without mutating the parsed document or source digest. Dependencies on `org.uwmd.datacenters` and `org.uwmd.hospitality` are satisfied by core with CLS-02. Third-party suffix shadows remain INVALID-ASSET-CLASS-002. Class calculations, rounding and input addresses are normative in spec/metrics/. The property size registry contains eleven sized classes; mixed-use remains per component. The twelve-pack starter registry and receipt lookup cover every builtin. The format-neutral envelope retains v1 or v2 metadata on disk and normalizes v2 metadata when read for eligibility; raw content and source identity are preserved.
 
 ## XI. Error Taxonomy
 

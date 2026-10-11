@@ -139,6 +139,70 @@
       }
     },
     "meta": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/metaV1"
+        },
+        {
+          "$ref": "https://uwmd.org/schemas/uwmd-block-v2.schema.json#/$defs/UWMetaV2"
+        }
+      ]
+    },
+    "content": {
+      "type": "object",
+      "required": [
+        "_meta"
+      ],
+      "properties": {
+        "_meta": {
+          "$ref": "#/$defs/meta"
+        },
+        "_role": {
+          "enum": [
+            "primary",
+            "senior",
+            "junior",
+            "summary",
+            "detail",
+            "component"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "annotation",
+        "content"
+      ],
+      "properties": {
+        "annotation": {
+          "$ref": "#/$defs/annotation"
+        },
+        "content": {
+          "$ref": "#/$defs/content"
+        },
+        "prose": {
+          "type": "string"
+        }
+      }
+    },
+    "variantMap": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/block"
+      }
+    },
+    "blockArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/block"
+      }
+    },
+    "metaV1": {
       "type": "object",
       "required": [
         "section",
@@ -219,59 +283,92 @@
       },
       "additionalProperties": true
     },
-    "content": {
+    "newComponentPayload": {
       "type": "object",
-      "required": [
-        "_meta"
-      ],
-      "properties": {
-        "_meta": {
-          "$ref": "#/$defs/meta"
+      "anyOf": [
+        {
+          "required": [
+            "data_center"
+          ]
         },
-        "_role": {
-          "enum": [
-            "primary",
-            "senior",
-            "junior",
-            "summary",
-            "detail",
-            "component"
+        {
+          "required": [
+            "manufactured_housing"
           ]
         }
-      },
-      "additionalProperties": true
+      ]
     },
-    "block": {
+    "newComponentBlock": {
       "type": "object",
-      "additionalProperties": true,
       "required": [
-        "annotation",
         "content"
       ],
       "properties": {
-        "annotation": {
-          "$ref": "#/$defs/annotation"
-        },
         "content": {
-          "$ref": "#/$defs/content"
-        },
-        "prose": {
-          "type": "string"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/newComponentPayload"
+            },
+            {
+              "type": "object",
+              "required": [
+                "content"
+              ],
+              "properties": {
+                "content": {
+                  "$ref": "#/$defs/newComponentPayload"
+                }
+              }
+            }
+          ]
         }
       }
-    },
-    "variantMap": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "$ref": "#/$defs/block"
-      }
-    },
-    "blockArray": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/block"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "sections"
+        ],
+        "properties": {
+          "sections": {
+            "required": [
+              "components"
+            ],
+            "properties": {
+              "components": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/newComponentBlock"
+                  },
+                  {
+                    "type": "object",
+                    "not": {
+                      "additionalProperties": {
+                        "not": {
+                          "$ref": "#/$defs/newComponentBlock"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "frontmatter": {
+            "properties": {
+              "uw_version": {
+                "const": "2.1"
+              }
+            }
+          }
+        }
       }
     }
-  }
+  ]
 }

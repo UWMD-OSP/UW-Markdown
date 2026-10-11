@@ -88,7 +88,7 @@ describe('compileUWLite', () => {
       const codes = validateUWFile(parsed).issues.map(issue => issue.code);
       expect(codes).not.toContain('CLS-05');
       expect(codes).not.toContain('META-V1-IN-V2');
-      expect(singleBlock(result.envelope.sections[section!]).content[field!]).toBe(200);
+      expect((singleBlock(result.envelope.sections[section!]).content.content as Record<string, unknown>)[field!]).toBe(200);
     }
   });
 

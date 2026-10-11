@@ -317,7 +317,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     left.localeCompare(right),
   )) {
     const block = createEnvelopeBlock(section, values, timestamp, actor);
-    if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) block.content = canonicalV2BlockContent(block.content);
+    if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) block.content = { section_id: section, _meta: canonicalV2BlockContent(block.content)._meta, content: values };
     sections[section] = block;
   }
 
@@ -333,7 +333,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     actor,
   );
 
-  if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) sourceExtension.content = canonicalV2BlockContent(sourceExtension.content);
+  if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) sourceExtension.content = { section_id: UW_LITE_SOURCE_EXTENSION, _meta: canonicalV2BlockContent(sourceExtension.content)._meta, content: Object.fromEntries(Object.entries(sourceExtension.content).filter(([key]) => key !== '_meta')) };
 
   return {
     ok: true,

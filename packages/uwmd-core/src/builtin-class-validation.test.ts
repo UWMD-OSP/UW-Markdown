@@ -1,3 +1,6 @@
+import { Ajv2020 } from 'ajv/dist/2020.js';
+import { toUWEnvelope, fromUWEnvelope, computeEnvelopeDigest } from './envelope.js';
+import type { UWBlock } from './types.js';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -69,5 +72,61 @@ describe('RFC 0080 official builtin controls', () => {
       expect(receipt.computation.pack).toBe(getPackForAssetClass(cls)!.id);
       expect((await verifyReceipt(receipt, input)).verdict, cls).toBe('verified');
     }
+  });
+});
+
+
+describe('Format 2.1 builtin record shapes', () => {
+  const ajv = new Ajv2020({ strict: false, allErrors: true, validateFormats: false });
+  const readSchema = (name: string) => JSON.parse(readFileSync(resolve(root, `spec/schemas/${name}.schema.json`), 'utf8'));
+  const blockSchema = ajv.compile(readSchema('uwmd-block-v2'));
+  const envelopeSchema = ajv.compile(readSchema('uw-document-envelope'));
+  ajv.addSchema(readSchema('section-capital-stack'));
+  const componentSchema = ajv.compile(readSchema('section-components'));
+  for (const file of ['Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md', 'Desert-Palms-MHC-Apache-Junction-AZ.uwx.md']) {
+    it(`${file}: canonical blocks and lossless machine envelope`, async () => {
+      const parsed = parseUWFile(readFileSync(resolve(root, 'examples', file), 'utf8'));
+      for (const entry of Object.values(parsed.sections)) {
+        const blocks = 'annotation' in entry ? [entry as UWBlock] : Object.values(entry);
+        for (const block of blocks) expect(blockSchema(block.content), JSON.stringify(blockSchema.errors)).toBe(true);
+      }
+      const envelope = toUWEnvelope(parsed);
+      expect(envelopeSchema(envelope), JSON.stringify(envelopeSchema.errors)).toBe(true);
+      const restored = fromUWEnvelope(envelope);
+      for (const id of Object.keys(parsed.sections)) {
+        expect((restored.sections[id] as UWBlock).meta).toEqual((parsed.sections[id] as UWBlock).meta);
+        expect((restored.sections[id] as UWBlock).content).toEqual((parsed.sections[id] as UWBlock).content);
+      }
+      expect(await computeEnvelopeDigest(toUWEnvelope(restored))).toBe(await computeEnvelopeDigest(envelope));
+    });
+  }
+  for (const name of readdirSync(resolve(root, 'conformance/tier-3-calc-host/fixtures')).filter(n => /^mixed-use-(data_center|manufactured_housing)_/.test(n))) {
+    it(`${name}: standard component_class and additive version gate`, () => {
+      const source = readFileSync(resolve(root, 'conformance/tier-3-calc-host/fixtures', name, 'deal.uwx.md'), 'utf8');
+      const parsed = parseUWFile(source);
+      const components = parsed.sections.components as UWBlock;
+      expect(componentSchema(blockPayload(components)), JSON.stringify(componentSchema.errors)).toBe(true);
+      expect(validateUWFile(parsed).issues.filter(i => /^(MU-|CC-11$|CC-12$|CLS-05$)/.test(i.code))).toEqual([]);
+      expect(envelopeSchema(toUWEnvelope(parsed)), JSON.stringify(envelopeSchema.errors)).toBe(true);
+      const wrong = parseUWFile(source);
+      const badPayload = blockPayload(wrong.sections.components as UWBlock) as Record<string, Record<string, unknown>>;
+      badPayload.data_center!.component_class = 'industrial';
+      badPayload.data_center!.net_operating_income = 1;
+      expect(componentSchema(badPayload)).toBe(false);
+      expect(validateUWFile(wrong).issues.map(i => i.code)).toEqual(expect.arrayContaining(['MU-03', 'CC-12']));
+      for (const version of ['1.1', '2.0']) {
+        const old = parseUWFile(source.replace('uw_version: "2.1"', `uw_version: "${version}"`));
+        expect(checkBuiltinClassContent(old).map(i => i.code)).toContain('CLS-05');
+        expect(envelopeSchema(toUWEnvelope(old))).toBe(false);
+        old.sections.components = { base: old.sections.components as UWBlock };
+        expect(checkBuiltinClassContent(old).map(i => i.code)).toContain('CLS-05');
+        expect(envelopeSchema(toUWEnvelope(old))).toBe(false);
+      }
+    });
+  }
+  it('retains the original mixed-use component contract at Format 1.1', () => {
+    const parsed = parseUWFile(readFileSync(resolve(root, 'examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md'), 'utf8'));
+    expect(checkBuiltinClassContent(parsed).map(i => i.code)).not.toContain('CLS-05');
+    expect(validateUWFile(parsed).issues.filter(i => /^(MU-|CC-11$|CC-12$|CLS-05$)/.test(i.code))).toEqual([]);
   });
 });
