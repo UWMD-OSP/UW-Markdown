@@ -115,7 +115,10 @@ test('every Format example carries nested metadata with a nonempty section ident
   let count = 0;
   for (const match of format.matchAll(/"_meta":\s*\{/g)) {
     const start = match.index + match[0].lastIndexOf('{');
-    let depth = 0, quoted = false, escaped = false, end = start;
+    let depth = 0;
+    let quoted = false;
+    let escaped = false;
+    let end = start;
     for (; end < format.length; end++) {
       const c = format[end];
       if (quoted) {

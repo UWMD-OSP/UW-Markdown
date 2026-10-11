@@ -3537,7 +3537,7 @@ helpers. It is intended to be read end-to-end as a learning
 artifact. Its view models and formatters are starter-product display,
 not part of the standard. A worked Verifier example, a consumer that
 checks a document with only the metric dictionary and an expression
-evaluator, arrives with the dictionary (RFC 0078 phase 2).
+evaluator, is in [`conformance/metrics/`](https://github.com/UWMD-OSP/UW-Markdown/tree/main/conformance/metrics) (RFC 0078 Phase 2).
 
 ## Appendix E — Worked example: authoring a third-party specialty module
 
