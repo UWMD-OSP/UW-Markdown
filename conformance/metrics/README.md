@@ -62,7 +62,9 @@ is unchanged. Missing-input/type/refusal cases remain controls.
 |---|---|---|---|
 | `Agave-Court-Apts-Scottsdale-AZ.uwx.md` | 9 | 0 | 0 |
 | `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` | 14 | 0 | 0 |
+| `Desert-Palms-MHC-Apache-Junction-AZ.uwx.md` | 14 | 0 | 0 |
 | `Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md` | 14 | 0 | 0 |
+| `Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` | 30 | 0 | 0 |
 | `Mill-Ave-Commons-Student-Tempe-AZ.uwx.md` | 14 | 0 | 0 |
 | `Ocotillo-Senior-Living-Chandler-AZ.uwx.md` | 15 | 0 | 0 |
 | `Parkview-Apts-Glendale-AZ.uw.md` | 2 | 0 | 0 |
@@ -85,7 +87,8 @@ The only value corrections authorized by the examples' own inputs are:
 | Sonoran Self-Storage | `quick_metrics.dscr` | `1.3153` | `1.3161` | Stated NOI 672,000 / stated annual debt service 510,606, quantized at 4 dp. |
 | Sonoran Self-Storage | `debt_structure.dscr` | `1.3153` | `1.3161` | Same inputs and quantization. |
 
-No cash-on-cash numeric claims are selected in these examples. The eight
+The original RFC 0079 examples do not state numeric cash-on-cash claims;
+the two RFC 0080 examples do, and all verify. The original eight
 examples with a sole sponsor-equity non-debt source now explicitly state
 `sources_uses.equity_metrics.equity_total`, equal to that source line. Each
 `_notes` identifies this as an identity of stated fields; the verifier never
@@ -101,11 +104,11 @@ The independent controls verify the import graph excludes packs, defaults,
 cascade and the core barrel. They cover statement tampering; missing/null/type-invalid
 inputs; zero division; dictionary formula selection; cent-level quantization of
 a noisy binary64 amount over $100k and a one-cent negative; negative half cents;
-common cash-on-cash across all nine income classes; lazy stated-year-1 selection (including
+common cash-on-cash across all eleven income classes; lazy stated-year-1 selection (including
 zero); senior debt selection and unresolved equity debt service; stated mixed-use
 allocation; fractional raw sizes with missing, string and nonfinite controls;
 immutability; source-token trailing zeroes, exponents, escaped/nested keys,
-content envelopes and YAML comments; coarse exact/wrong statements, all ten LTV denominators and lazy fallbacks,
+content envelopes and YAML comments; coarse exact/wrong statements, all twelve LTV denominators and lazy fallbacks,
 minimum precision, output ceilings and
 no double rounding. Dictionary/pack/size completeness is separately enforced by
 `packages/uwmd-core/src/packs/metric-dictionary.test.ts`.
